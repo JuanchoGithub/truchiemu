@@ -1,0 +1,2887 @@
+{
+  "schemaVersion": 1,
+  "romIds": [
+    "dbz2"
+  ],
+  "name": "Dragon Ball Z 2: Super Battle",
+  "year": 1994,
+  "manufacturer": "Banpresto",
+  "credits": "by: Fabricio Coroquer (Minoplis)",
+  "controls": {
+    "^E": "Weak Punch",
+    "^G": "Strong Punch",
+    "^H": "Weak Kick",
+    "^J": "Strong Kick",
+    "_S": "Start"
+  },
+  "controlGroups": {
+    "_P": [
+      "^E",
+      "^G"
+    ],
+    "_K": [
+      "^H",
+      "^J"
+    ]
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_*": "Super Moves",
+    "_&": "Powered Super Moves",
+    "_`": "Powered Super Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Powerful Punch",
+      "input": "^W",
+      "parsedInput": {
+        "raw": "^W",
+        "directions": [],
+        "buttons": [
+          [
+            "^W"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Powerful Kick",
+      "input": "^V",
+      "parsedInput": {
+        "raw": "^V",
+        "directions": [],
+        "buttons": [
+          [
+            "^V"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Charge Ki",
+      "input": "_O^E_+^H_+^G",
+      "parsedInput": {
+        "raw": "_O^E_+^H_+^G",
+        "directions": [],
+        "buttons": [
+          [
+            "^E",
+            "^H",
+            "^G"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": true,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Auto Combo",
+      "input": "^E^E^E^E",
+      "parsedInput": {
+        "raw": "^E^E^E^E",
+        "directions": [],
+        "buttons": [
+          [
+            "^E",
+            "^E",
+            "^E",
+            "^E"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    }
+  ],
+  "characters": [
+    {
+      "name": "SON GOKU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+^W",
+          "parsedInput": {
+            "raw": "_6_+^W",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Retreat",
+          "input": "_4_4",
+          "parsedInput": {
+            "raw": "_4_4",
+            "directions": [
+              [
+                4,
+                4
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Ducking Uppercut",
+          "input": "_2_+^W",
+          "parsedInput": {
+            "raw": "_2_+^W",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Axe Kick",
+          "input": "_6_+^V",
+          "parsedInput": {
+            "raw": "_6_+^V",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^V"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Kame Hame Ha",
+          "input": "_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Low Kame Hame Ha",
+          "input": "(_^)_2_3_6_+_K",
+          "parsedInput": {
+            "raw": "(_^)_2_3_6_+_K",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Scatter Shot",
+          "input": "_4_2_1_+_P",
+          "parsedInput": {
+            "raw": "_4_2_1_+_P",
+            "directions": [
+              [
+                4,
+                2,
+                1
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Flip Kick",
+          "input": "(_^)_2_1_4_+_K",
+          "parsedInput": {
+            "raw": "(_^)_2_1_4_+_K",
+            "directions": [
+              [
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Chou Kame Hame Ha",
+          "input": "_2_3_6_2_3_6_+^W",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+^W",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Shinron Blast",
+          "input": "_6_4_1_2_3_6_+^W",
+          "parsedInput": {
+            "raw": "_6_4_1_2_3_6_+^W",
+            "directions": [
+              [
+                6,
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_&",
+          "name": "Shinron Blast",
+          "input": "_6_4_1_2_3_6_+^W",
+          "parsedInput": {
+            "raw": "_6_4_1_2_3_6_+^W",
+            "directions": [
+              [
+                6,
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "SON GOHAN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+^W",
+          "parsedInput": {
+            "raw": "_6_+^W",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Dash",
+          "input": "_6_6",
+          "parsedInput": {
+            "raw": "_6_6",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Retreat",
+          "input": "_4_4",
+          "parsedInput": {
+            "raw": "_4_4",
+            "directions": [
+              [
+                4,
+                4
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Axe Kick",
+          "input": "_6_+^V",
+          "parsedInput": {
+            "raw": "_6_+^V",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^V"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Kame Hame Ha",
+          "input": "_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Low Kame Hame Ha",
+          "input": "(_^)_2_3_6_+_K",
+          "parsedInput": {
+            "raw": "(_^)_2_3_6_+_K",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Dive Punch",
+          "input": "^4_6_+_P",
+          "parsedInput": {
+            "raw": "^4_6_+_P",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 4,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Dragon Cartwheel",
+          "input": "_2_1_4_+_K",
+          "parsedInput": {
+            "raw": "_2_1_4_+_K",
+            "directions": [
+              [
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Scatter Shot",
+          "input": "_4_2_1_+_P",
+          "parsedInput": {
+            "raw": "_4_2_1_+_P",
+            "directions": [
+              [
+                4,
+                2,
+                1
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Rising Ki Wave",
+          "input": "_2_6_3_+_K",
+          "parsedInput": {
+            "raw": "_2_6_3_+_K",
+            "directions": [
+              [
+                2,
+                6,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Chou Kame Hame Ha",
+          "input": "_2_3_6_2_3_6_+^W",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+^W",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Super Izumi Drop close",
+          "input": "_6_2_3_+^V",
+          "parsedInput": {
+            "raw": "_6_2_3_+^V",
+            "directions": [
+              [
+                6,
+                2,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "^V"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_&",
+          "name": "Super Izumi Drop close",
+          "input": "_6_2_3_+^V",
+          "parsedInput": {
+            "raw": "_6_2_3_+^V",
+            "directions": [
+              [
+                6,
+                2,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "^V"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "VEGETA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+^W",
+          "parsedInput": {
+            "raw": "_6_+^W",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Dash",
+          "input": "_6_6",
+          "parsedInput": {
+            "raw": "_6_6",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Retreat",
+          "input": "_4_4",
+          "parsedInput": {
+            "raw": "_4_4",
+            "directions": [
+              [
+                4,
+                4
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Launcher",
+          "input": "_2_+^W",
+          "parsedInput": {
+            "raw": "_2_+^W",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Big Bang Attack",
+          "input": "_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Low Big Bang Attack",
+          "input": "(_^)_2_3_6_+_K",
+          "parsedInput": {
+            "raw": "(_^)_2_3_6_+_K",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Burning Rage",
+          "input": "_6_3_2_1_4_+_P",
+          "parsedInput": {
+            "raw": "_6_3_2_1_4_+_P",
+            "directions": [
+              [
+                6,
+                3,
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Burning Kick",
+          "input": "_2_1_4_+_K",
+          "parsedInput": {
+            "raw": "_2_1_4_+_K",
+            "directions": [
+              [
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Scatter Shot",
+          "input": "_4_2_1_+_P",
+          "parsedInput": {
+            "raw": "_4_2_1_+_P",
+            "directions": [
+              [
+                4,
+                2,
+                1
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Super Galik Ho",
+          "input": "_2_3_6_2_3_6_+^W",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+^W",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Final Flash",
+          "input": "_6_2_3_+^W",
+          "parsedInput": {
+            "raw": "_6_2_3_+^W",
+            "directions": [
+              [
+                6,
+                2,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_&",
+          "name": "Final Flash",
+          "input": "_6_2_3_+^W",
+          "parsedInput": {
+            "raw": "_6_2_3_+^W",
+            "directions": [
+              [
+                6,
+                2,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "TRUNKS",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+^W",
+          "parsedInput": {
+            "raw": "_6_+^W",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Dash",
+          "input": "_6_6",
+          "parsedInput": {
+            "raw": "_6_6",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Flying Grab",
+          "input": "^4_6_+_K",
+          "parsedInput": {
+            "raw": "^4_6_+_K",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 4,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Energy Shield",
+          "input": "^2_8_+_P",
+          "parsedInput": {
+            "raw": "^2_8_+_P",
+            "directions": [
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 2,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Finish Buster",
+          "input": "_2_1_4_6_2_3_+^W",
+          "parsedInput": {
+            "raw": "_2_1_4_6_2_3_+^W",
+            "directions": [
+              [
+                2,
+                1,
+                4,
+                6,
+                2,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Saber Twin",
+          "input": "_6_4_6_+^W",
+          "parsedInput": {
+            "raw": "_6_4_6_+^W",
+            "directions": [
+              [
+                6,
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_&",
+          "name": "Saber Twin",
+          "input": "_6_4_6_+^W",
+          "parsedInput": {
+            "raw": "_6_4_6_+^W",
+            "directions": [
+              [
+                6,
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "PICCOLO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+^W",
+          "parsedInput": {
+            "raw": "_6_+^W",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Launcher",
+          "input": "_2_+^W",
+          "parsedInput": {
+            "raw": "_2_+^W",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Makankousappou",
+          "input": "_4_1_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_4_1_2_3_6_+_P",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Low Makankousappou",
+          "input": "(_^)_4_1_2_3_6_+_K",
+          "parsedInput": {
+            "raw": "(_^)_4_1_2_3_6_+_K",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Rushing Combo",
+          "input": "_2_6_3_+_P",
+          "parsedInput": {
+            "raw": "_2_6_3_+_P",
+            "directions": [
+              [
+                2,
+                6,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Scatter Shot",
+          "input": "_4_2_1_+_P",
+          "parsedInput": {
+            "raw": "_4_2_1_+_P",
+            "directions": [
+              [
+                4,
+                2,
+                1
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Shocking Dive Kick",
+          "input": "_6_2_3_+_K",
+          "parsedInput": {
+            "raw": "_6_2_3_+_K",
+            "directions": [
+              [
+                6,
+                2,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Hurricane Slam close",
+          "input": "_2_1_4_6_+^W",
+          "parsedInput": {
+            "raw": "_2_1_4_6_+^W",
+            "directions": [
+              [
+                2,
+                1,
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_&",
+          "name": "Hurricane Slam close",
+          "input": "_2_1_4_6_+^W",
+          "parsedInput": {
+            "raw": "_2_1_4_6_+^W",
+            "directions": [
+              [
+                2,
+                1,
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "Mr. SATAN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+^W",
+          "parsedInput": {
+            "raw": "_6_+^W",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Forward Kick",
+          "input": "_6_+^V",
+          "parsedInput": {
+            "raw": "_6_+^V",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^V"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Satan Kick",
+          "input": "_2_3_6_+_K",
+          "parsedInput": {
+            "raw": "_2_3_6_+_K",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Satan Crusher",
+          "input": "_4_1_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_4_1_2_3_6_+_P",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Rising Twirl",
+          "input": "_2_6_3_+_P",
+          "parsedInput": {
+            "raw": "_2_6_3_+_P",
+            "directions": [
+              [
+                2,
+                6,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Jetpack Burn",
+          "input": "_2_1_4_+_P",
+          "parsedInput": {
+            "raw": "_2_1_4_+_P",
+            "directions": [
+              [
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Satan on the Loose",
+          "input": "_2_1_4_7_+^V",
+          "parsedInput": {
+            "raw": "_2_1_4_7_+^V",
+            "directions": [
+              [
+                2,
+                1,
+                4,
+                7
+              ]
+            ],
+            "buttons": [
+              [
+                "^V"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_&",
+          "name": "Satan on the Loose",
+          "input": "_2_1_4_7_+^V",
+          "parsedInput": {
+            "raw": "_2_1_4_7_+^V",
+            "directions": [
+              [
+                2,
+                1,
+                4,
+                7
+              ]
+            ],
+            "buttons": [
+              [
+                "^V"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "ANDROID #20",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Tornado Expert",
+          "input": "_^_4 / _6_+_P",
+          "parsedInput": {
+            "raw": "_^_4 / _6_+_P",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Dash",
+          "input": "_6_6",
+          "parsedInput": {
+            "raw": "_6_6",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Retreat",
+          "input": "_4_4",
+          "parsedInput": {
+            "raw": "_4_4",
+            "directions": [
+              [
+                4,
+                4
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Launcher",
+          "input": "_2_+^W",
+          "parsedInput": {
+            "raw": "_2_+^W",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Absorb",
+          "input": "_2_1_4_+_P",
+          "parsedInput": {
+            "raw": "_2_1_4_+_P",
+            "directions": [
+              [
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "#19 Headbutt",
+          "input": "_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Ball Drop",
+          "input": "_2_6_3_+^W",
+          "parsedInput": {
+            "raw": "_2_6_3_+^W",
+            "directions": [
+              [
+                2,
+                6,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Junk Throw",
+          "input": "_6_4_6_+^W",
+          "parsedInput": {
+            "raw": "_6_4_6_+^W",
+            "directions": [
+              [
+                6,
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_&",
+          "name": "Junk Throw",
+          "input": "_6_4_6_+^W",
+          "parsedInput": {
+            "raw": "_6_4_6_+^W",
+            "directions": [
+              [
+                6,
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "ANDROID #18",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Retreat",
+          "input": "_4_4",
+          "parsedInput": {
+            "raw": "_4_4",
+            "directions": [
+              [
+                4,
+                4
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Launcher",
+          "input": "_2_+^V",
+          "parsedInput": {
+            "raw": "_2_+^V",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "^V"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Fury Attack",
+          "input": "^4_6_+_P",
+          "parsedInput": {
+            "raw": "^4_6_+_P",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 4,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Ki Blast",
+          "input": "(_^)_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "(_^)_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Backhand Smash",
+          "input": "_2_1_4_6_+_P",
+          "parsedInput": {
+            "raw": "_2_1_4_6_+_P",
+            "directions": [
+              [
+                2,
+                1,
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Shoulder Toss close",
+          "input": "_6_3_2_1_4_+_P",
+          "parsedInput": {
+            "raw": "_6_3_2_1_4_+_P",
+            "directions": [
+              [
+                6,
+                3,
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Spiral Kick",
+          "input": "_2_3_6_9_+_K",
+          "parsedInput": {
+            "raw": "_2_3_6_9_+_K",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                9
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Death Beam",
+          "input": "_2_3_6_2_3_6_+^W",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+^W",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Destruction",
+          "input": "_2_1_4_1_2_3_6_+^V",
+          "parsedInput": {
+            "raw": "_2_1_4_1_2_3_6_+^V",
+            "directions": [
+              [
+                2,
+                1,
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^V"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_&",
+          "name": "Destruction",
+          "input": "_2_1_4_1_2_3_6_+^V",
+          "parsedInput": {
+            "raw": "_2_1_4_1_2_3_6_+^V",
+            "directions": [
+              [
+                2,
+                1,
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^V"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "ANDROID #16",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+^W",
+          "parsedInput": {
+            "raw": "_6_+^W",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Rocket Punch",
+          "input": "_2_1_4_+_P",
+          "parsedInput": {
+            "raw": "_2_1_4_+_P",
+            "directions": [
+              [
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Running Grab",
+          "input": "_1_4_6_+_P",
+          "parsedInput": {
+            "raw": "_1_4_6_+_P",
+            "directions": [
+              [
+                1,
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Rapid Shot close",
+          "input": "_6_3_2_1_4_+_P",
+          "parsedInput": {
+            "raw": "_6_3_2_1_4_+_P",
+            "directions": [
+              [
+                6,
+                3,
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Ground Explosion",
+          "input": "_2_3_6_2_3_6_+^W",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+^W",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Rocket Charge",
+          "input": "_2_3_6_4_1_2_3_6_+^W",
+          "parsedInput": {
+            "raw": "_2_3_6_4_1_2_3_6_+^W",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_&",
+          "name": "Rocket Charge",
+          "input": "_2_3_6_4_1_2_3_6_+^W",
+          "parsedInput": {
+            "raw": "_2_3_6_4_1_2_3_6_+^W",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "CELL",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+^W",
+          "parsedInput": {
+            "raw": "_6_+^W",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Retreat",
+          "input": "_4_4",
+          "parsedInput": {
+            "raw": "_4_4",
+            "directions": [
+              [
+                4,
+                4
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Roll of Death",
+          "input": "_2_3_6_3_2_1_4_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_3_2_1_4_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                3,
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Rising Phoenix",
+          "input": "_2_3_6_9_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_9_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                9
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Makankousappou close",
+          "input": "_2_1_4_6_+_P",
+          "parsedInput": {
+            "raw": "_2_1_4_6_+_P",
+            "directions": [
+              [
+                2,
+                1,
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Scatter Shot",
+          "input": "_4_2_1_+_P",
+          "parsedInput": {
+            "raw": "_4_2_1_+_P",
+            "directions": [
+              [
+                4,
+                2,
+                1
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Kamehameha",
+          "input": "_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Ki Blast Combo",
+          "input": "_6_2_3_+_P",
+          "parsedInput": {
+            "raw": "_6_2_3_+_P",
+            "directions": [
+              [
+                6,
+                2,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Chou Kamehameha",
+          "input": "_2_3_6_2_3_6_+^W",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+^W",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Super Energy Shield",
+          "input": "_4_1_2_8_+^W",
+          "parsedInput": {
+            "raw": "_4_1_2_8_+^W",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_&",
+          "name": "Super Energy Shield",
+          "input": "_4_1_2_8_+^W",
+          "parsedInput": {
+            "raw": "_4_1_2_8_+^W",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "^E": "LP",
+    "^G": "HP",
+    "^H": "LK",
+    "^J": "HK",
+    "_S": "ST"
+  }
+}

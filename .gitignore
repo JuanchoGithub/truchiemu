@@ -13,4 +13,13 @@ build/
 .opencode/
 .vscode/*
 .github/
-
+*.pyc
+__pycache__/
+*.log
+*.tmp
+*.swp
+*.swo
+*.bak
+*.backup
+*.orig
+*.rej

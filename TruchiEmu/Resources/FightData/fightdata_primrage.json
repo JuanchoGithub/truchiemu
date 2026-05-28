@@ -1,0 +1,1864 @@
+{
+  "schemaVersion": 1,
+  "romIds": [
+    "primrage",
+    "primrage20",
+    "primrageo"
+  ],
+  "name": "Primal Rage",
+  "credits": "by: Fabricio Coroquer (Created by: Procyon)",
+  "controls": {
+    "_S": "Start"
+  },
+  "categories": {
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_`": "Finishing Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "High Strong _a_+_b"
+    },
+    {
+      "category": "_)",
+      "name": "Low Strong _c_+_d"
+    }
+  ],
+  "characters": [
+    {
+      "name": "SAURON",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Primal Scream",
+          "input": "_O_a_+_c_2_8",
+          "parsedInput": {
+            "raw": "_O_a_+_c_2_8",
+            "directions": [
+              [
+                2,
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_c"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Earthquake Scream",
+          "input": "_O_a_+_b_+_d_8_2",
+          "parsedInput": {
+            "raw": "_O_a_+_b_+_d_8_2",
+            "directions": [
+              [
+                8,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_b",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Cranium Crusher",
+          "input": "_O_a_+_d_2_8",
+          "parsedInput": {
+            "raw": "_O_a_+_d_2_8",
+            "directions": [
+              [
+                2,
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Leaping Bone Bash",
+          "input": "_O_b_+_c_2_8_2",
+          "parsedInput": {
+            "raw": "_O_b_+_c_2_8_2",
+            "directions": [
+              [
+                2,
+                8,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_c"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Stun Roar",
+          "input": "_O_a_+_c_4_6",
+          "parsedInput": {
+            "raw": "_O_a_+_c_4_6",
+            "directions": [
+              [
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_c"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Neck Throw",
+          "input": "_O_b_+_d_6_4",
+          "parsedInput": {
+            "raw": "_O_b_+_d_6_4",
+            "directions": [
+              [
+                6,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Air Throw",
+          "input": "_O_b_+_d_8",
+          "parsedInput": {
+            "raw": "_O_b_+_d_8",
+            "directions": [
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Human Chomp",
+          "input": "_O_a_+_b_+_c_+_d_2_2_8",
+          "parsedInput": {
+            "raw": "_O_a_+_b_+_c_+_d_2_2_8",
+            "directions": [
+              [
+                2,
+                2,
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_b",
+                "_c",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Carnage                                                                _O_a_+_b_+_c_+_d_4_6_4_6_4",
+        "- Flesh Eating                                                           _O_a_+_c_2_2, then _O_a_+_b_+_c_+_d_8_8",
+        "- Grape Crusher                                                          _O_a_+_b_+_c_+_d_8_2_8_2_2"
+      ]
+    },
+    {
+      "name": "TALON",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Slide",
+          "input": "_2_+_c_+_d",
+          "parsedInput": {
+            "raw": "_2_+_c_+_d",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_c",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Brain Basher",
+          "input": "_O_b_+_c_4_8_6",
+          "parsedInput": {
+            "raw": "_O_b_+_c_4_8_6",
+            "directions": [
+              [
+                4,
+                8,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_c"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Pounce and Flip",
+          "input": "_O_b_+_c_6_2_3",
+          "parsedInput": {
+            "raw": "_O_b_+_c_6_2_3",
+            "directions": [
+              [
+                6,
+                2,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_c"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Frantic Fury",
+          "input": "_O_a_+_d_2_6",
+          "parsedInput": {
+            "raw": "_O_a_+_d_2_6",
+            "directions": [
+              [
+                2,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Slasher",
+          "input": "_O_a_+_c_+_d_2_6",
+          "parsedInput": {
+            "raw": "_O_a_+_c_+_d_2_6",
+            "directions": [
+              [
+                2,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_c",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Face Ripper",
+          "input": "_O_b_+_d_2_6",
+          "parsedInput": {
+            "raw": "_O_b_+_d_2_6",
+            "directions": [
+              [
+                2,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Jugular Bite",
+          "input": "_O_b_+_d_4_6",
+          "parsedInput": {
+            "raw": "_O_b_+_d_4_6",
+            "directions": [
+              [
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Run",
+          "input": "_O_a_+_c_4 / _6",
+          "parsedInput": {
+            "raw": "_O_a_+_c_4 / _6",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_c"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Human Chomp",
+          "input": "_O_a_+_b_+_c_+_d_6_2",
+          "parsedInput": {
+            "raw": "_O_a_+_b_+_c_+_d_6_2",
+            "directions": [
+              [
+                6,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_b",
+                "_c",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Heart Wrenching                                                        _O_a_+_c_+_d_6_2_4_8",
+        "- Shredder                                                               _O_a_+_d_6_2_4_8",
+        "- Stampede                                                               _O_a_+_b_+_c_+_d_6_4_8_2"
+      ]
+    },
+    {
+      "name": "VERTIGO",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Slow Venom Spit",
+          "input": "_O_a_+_c_6_6",
+          "parsedInput": {
+            "raw": "_O_a_+_c_6_6",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_c"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Fast Venom Spit",
+          "input": "_O_b_+_d_6_6",
+          "parsedInput": {
+            "raw": "_O_b_+_d_6_6",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Voodoo Spell",
+          "input": "_O_b_+_c_4_4",
+          "parsedInput": {
+            "raw": "_O_b_+_c_4_4",
+            "directions": [
+              [
+                4,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_c"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Ground Teleport",
+          "input": "_O_b_+_d_2_2",
+          "parsedInput": {
+            "raw": "_O_b_+_d_2_2",
+            "directions": [
+              [
+                2,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Air Teleport",
+          "input": "_O_b_+_d_2_8",
+          "parsedInput": {
+            "raw": "_O_b_+_d_2_8",
+            "directions": [
+              [
+                2,
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Come Slither",
+          "input": "_O_a_+_c_4_4",
+          "parsedInput": {
+            "raw": "_O_a_+_c_4_4",
+            "directions": [
+              [
+                4,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_c"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Scorpion Sting",
+          "input": "_O_b_+_c_6_6",
+          "parsedInput": {
+            "raw": "_O_b_+_c_6_6",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_c"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Human Chomp",
+          "input": "_O_a_+_b_+_c_+_d_2_6_8",
+          "parsedInput": {
+            "raw": "_O_a_+_b_+_c_+_d_2_6_8",
+            "directions": [
+              [
+                2,
+                6,
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_b",
+                "_c",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Petrify                                                                _O_b_+_d_4_4_4, then _O_a_+_b_+_c_+_d_6_6",
+        "- Shrink and Eat                                                         _O_b_+_d_4_4_4, then _O_a_+_b_+_c_+_d_2_8",
+        "- La Vache Qui Rit                                                       _O_a_+_b_+_c_+_d_4_4_4_2_6"
+      ]
+    },
+    {
+      "name": "BLIZZARD",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Slide",
+          "input": "_2_+_c_+_d",
+          "parsedInput": {
+            "raw": "_2_+_c_+_d",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_c",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Quick Mega Punch",
+          "input": "_O_a_+_c_4_6",
+          "parsedInput": {
+            "raw": "_O_a_+_c_4_6",
+            "directions": [
+              [
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_c"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Short Mega Punch",
+          "input": "_O_a_+_b_+_c_+_d_4_6",
+          "parsedInput": {
+            "raw": "_O_a_+_b_+_c_+_d_4_6",
+            "directions": [
+              [
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_b",
+                "_c",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Long Mega Punch",
+          "input": "_O_b_+_d_4_6",
+          "parsedInput": {
+            "raw": "_O_b_+_d_4_6",
+            "directions": [
+              [
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Fake Mega Punch",
+          "input": "_O_a_+_c_2_8",
+          "parsedInput": {
+            "raw": "_O_a_+_c_2_8",
+            "directions": [
+              [
+                2,
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_c"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Freeze Breath",
+          "input": "_O_a_+_b_+_d_4_6",
+          "parsedInput": {
+            "raw": "_O_a_+_b_+_d_4_6",
+            "directions": [
+              [
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_b",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Ice Geyser",
+          "input": "_O_a_+_b_+_d_2_8",
+          "parsedInput": {
+            "raw": "_O_a_+_b_+_d_2_8",
+            "directions": [
+              [
+                2,
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_b",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Punching Bag",
+          "input": "_O_a_+_d_6_2_4_8",
+          "parsedInput": {
+            "raw": "_O_a_+_d_6_2_4_8",
+            "directions": [
+              [
+                6,
+                2,
+                4,
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Throw",
+          "input": "_O_b_+_c_6_2_4_8",
+          "parsedInput": {
+            "raw": "_O_b_+_c_6_2_4_8",
+            "directions": [
+              [
+                6,
+                2,
+                4,
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_c"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Air Throw",
+          "input": "_O_b_+_c_8",
+          "parsedInput": {
+            "raw": "_O_b_+_c_8",
+            "directions": [
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_c"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Human Chomp",
+          "input": "_O_a_+_b_+_c_+_d_4_8_6_2",
+          "parsedInput": {
+            "raw": "_O_a_+_b_+_c_+_d_4_8_6_2",
+            "directions": [
+              [
+                4,
+                8,
+                6,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_b",
+                "_c",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Brain Bash                                                             _O_a_+_b_+_d_2_2_4_8_6",
+        "- To-Da-Moon                                                             _O_a_+_b_+_c_+_d_2_2_2_2_8",
+        "- Redemption                                                             _O_a_+_b_+_c_+_d_2_6_8_2_8"
+      ]
+    },
+    {
+      "name": "CHAOS",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Slide",
+          "input": "_2_+_c_+_d",
+          "parsedInput": {
+            "raw": "_2_+_c_+_d",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_c",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Grab-N-Throw",
+          "input": "_O_b_+_d_6_4",
+          "parsedInput": {
+            "raw": "_O_b_+_d_6_4",
+            "directions": [
+              [
+                6,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Slow Power Puke",
+          "input": "_O_b_+_c_8_6",
+          "parsedInput": {
+            "raw": "_O_b_+_c_8_6",
+            "directions": [
+              [
+                8,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_c"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Fast Power Puke",
+          "input": "_O_a_+_d_8_6",
+          "parsedInput": {
+            "raw": "_O_a_+_d_8_6",
+            "directions": [
+              [
+                8,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Fart of Fury",
+          "input": "_O_b_+_c_2_6_8_4",
+          "parsedInput": {
+            "raw": "_O_b_+_c_2_6_8_4",
+            "directions": [
+              [
+                2,
+                6,
+                8,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_c"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Ground Shaker",
+          "input": "_O_b_+_c_4_7_1",
+          "parsedInput": {
+            "raw": "_O_b_+_c_4_7_1",
+            "directions": [
+              [
+                4,
+                7,
+                1
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_c"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Flying Butt Slam",
+          "input": "_O_b_+_d_2_6_8_6_2_4",
+          "parsedInput": {
+            "raw": "_O_b_+_d_2_6_8_6_2_4",
+            "directions": [
+              [
+                2,
+                6,
+                8,
+                6,
+                2,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Battering Ram",
+          "input": "_O_a_+_c_6_6",
+          "parsedInput": {
+            "raw": "_O_a_+_c_6_6",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_c"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Human Chomp",
+          "input": "_O_a_+_b_+_c_+_d_6_2_4",
+          "parsedInput": {
+            "raw": "_O_a_+_b_+_c_+_d_6_2_4",
+            "directions": [
+              [
+                6,
+                2,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_b",
+                "_c",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Golden Shower                                                          _O_a_+_c_2_2, then _O_a_+_b_+_c_+_d_4_6_4_6",
+        "- Cannonball                                                             _O_a_+_b_+_c_+_d_4_2_6_2_4",
+        "- The Churl                                                              _O_a_+_b_+_c_+_d_6_6_6_4_4_4"
+      ]
+    },
+    {
+      "name": "ARMADON",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Bed-O-Nails",
+          "input": "_O_b_+_c_2_8",
+          "parsedInput": {
+            "raw": "_O_b_+_c_2_8",
+            "directions": [
+              [
+                2,
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_c"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Iron Maiden",
+          "input": "_O_b_+_c_4_8_6",
+          "parsedInput": {
+            "raw": "_O_b_+_c_4_8_6",
+            "directions": [
+              [
+                4,
+                8,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_c"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Mega Charge",
+          "input": "_O_a_+_c_4_2_6",
+          "parsedInput": {
+            "raw": "_O_a_+_c_4_2_6",
+            "directions": [
+              [
+                4,
+                2,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_c"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Gut Gouger",
+          "input": "_O_a_+_b_+_c_6_4",
+          "parsedInput": {
+            "raw": "_O_a_+_b_+_c_6_4",
+            "directions": [
+              [
+                6,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_b",
+                "_c"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Hornication Upper",
+          "input": "_O_a_+_b_+_c_3_6_9",
+          "parsedInput": {
+            "raw": "_O_a_+_b_+_c_3_6_9",
+            "directions": [
+              [
+                3,
+                6,
+                9
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_b",
+                "_c"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Spinning Death",
+          "input": "_O_a_+_d_4_6_2",
+          "parsedInput": {
+            "raw": "_O_a_+_d_4_6_2",
+            "directions": [
+              [
+                4,
+                6,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Flying Spikes",
+          "input": "_O_b_+_d_4_8",
+          "parsedInput": {
+            "raw": "_O_b_+_d_4_8",
+            "directions": [
+              [
+                4,
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Human Chomp",
+          "input": "_O_a_+_b_+_c_+_d_8_6_2",
+          "parsedInput": {
+            "raw": "_O_a_+_b_+_c_+_d_8_6_2",
+            "directions": [
+              [
+                8,
+                6,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_b",
+                "_c",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Gut Fling                                                              _O_a_+_b_+_c_2_2_2_2_8",
+        "- Meditation                                                             _O_a_+_b_+_c_+_d_6_2_4_6_6",
+        "- Falling Spikes                                                         _O_a_+_b_+_c_+_d_2_4_8_2"
+      ]
+    },
+    {
+      "name": "DIABLO",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Slow Fireball",
+          "input": "_O_b_+_d_2_6",
+          "parsedInput": {
+            "raw": "_O_b_+_d_2_6",
+            "directions": [
+              [
+                2,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Fast Fireball",
+          "input": "_O_a_+_c_2_6",
+          "parsedInput": {
+            "raw": "_O_a_+_c_2_6",
+            "directions": [
+              [
+                2,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_c"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Torch",
+          "input": "_O_a_+_c_8_6",
+          "parsedInput": {
+            "raw": "_O_a_+_c_8_6",
+            "directions": [
+              [
+                8,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_c"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Hot Foot",
+          "input": "_O_b_+_d_7_3",
+          "parsedInput": {
+            "raw": "_O_b_+_d_7_3",
+            "directions": [
+              [
+                7,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Mega Lunge",
+          "input": "_O_a_+_d_4_2_6",
+          "parsedInput": {
+            "raw": "_O_a_+_d_4_2_6",
+            "directions": [
+              [
+                4,
+                2,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "The Pulveriser",
+          "input": "_O_a_+_d_8_6_2",
+          "parsedInput": {
+            "raw": "_O_a_+_d_8_6_2",
+            "directions": [
+              [
+                8,
+                6,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Inferno Flash",
+          "input": "_O_b_+_c_+_d_8",
+          "parsedInput": {
+            "raw": "_O_b_+_c_+_d_8",
+            "directions": [
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_c",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Human Chomp",
+          "input": "_O_a_+_b_+_c_+_d_2_8_2",
+          "parsedInput": {
+            "raw": "_O_a_+_b_+_c_+_d_2_8_2",
+            "directions": [
+              [
+                2,
+                8,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_b",
+                "_c",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Incinerator                                                            _O_a_+_b_+_c_+_d_7_2_3",
+        "- Fireball                                                               _O_b_+_c_+_d_6_6_6",
+        "- Infernal                                                               _O_a_+_c_+_d_8_2_8_2_2"
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_S": "ST"
+  }
+}

@@ -1,0 +1,1664 @@
+{
+  "schemaVersion": 1,
+  "romIds": [
+    "souledge",
+    "souledgea",
+    "souledgeja",
+    "souledgeua",
+    "souledgeuc"
+  ],
+  "name": "Soul Edge Ver. II",
+  "year": 1996,
+  "manufacturer": "Namco",
+  "controls": {
+    "_K": "Kick",
+    "_G": "Guard",
+    "_S": "Start"
+  },
+  "categories": {
+    "_(": "Throws",
+    "_)": "Command Moves",
+    "_*": "Critical Edge Moves",
+    "_`": "String Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Run",
+      "input": "_6^6",
+      "parsedInput": {
+        "raw": "_6^6",
+        "directions": [
+          [
+            6
+          ]
+        ],
+        "buttons": [],
+        "charge": true,
+        "chargeDirection": 6,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4",
+      "parsedInput": {
+        "raw": "_4_4",
+        "directions": [
+          [
+            4,
+            4
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Crawl Forward",
+      "input": "^3",
+      "parsedInput": {
+        "raw": "^3",
+        "directions": [],
+        "buttons": [],
+        "charge": true,
+        "chargeDirection": 3,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Crawl Backward",
+      "input": "^1",
+      "parsedInput": {
+        "raw": "^1",
+        "directions": [],
+        "buttons": [],
+        "charge": true,
+        "chargeDirection": 1,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Sidestep Out",
+      "input": "_2_8",
+      "parsedInput": {
+        "raw": "_2_8",
+        "directions": [
+          [
+            2,
+            8
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Sidestep In",
+      "input": "_2_2",
+      "parsedInput": {
+        "raw": "_2_2",
+        "directions": [
+          [
+            2,
+            2
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Low Jump",
+      "input": "_8",
+      "parsedInput": {
+        "raw": "_8",
+        "directions": [
+          [
+            8
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "High Jump",
+      "input": "^8",
+      "parsedInput": {
+        "raw": "^8",
+        "directions": [],
+        "buttons": [],
+        "charge": true,
+        "chargeDirection": 8,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Short Quick Pounce opponent knocked down",
+      "input": "_8_+_a / _b",
+      "parsedInput": {
+        "raw": "_8_+_a / _b",
+        "directions": [
+          [
+            8
+          ]
+        ],
+        "buttons": [
+          [
+            "_a"
+          ],
+          [
+            "_b"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Long Quick Pounce opponent knocked down",
+      "input": "^8_+_a / _b",
+      "parsedInput": {
+        "raw": "^8_+_a / _b",
+        "directions": [],
+        "buttons": [
+          [
+            "_a"
+          ],
+          [
+            "_b"
+          ]
+        ],
+        "charge": true,
+        "chargeDirection": 8,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Roll Forward knocked down",
+      "input": "_6",
+      "parsedInput": {
+        "raw": "_6",
+        "directions": [
+          [
+            6
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Roll Backward knocked down",
+      "input": "_4",
+      "parsedInput": {
+        "raw": "_4",
+        "directions": [
+          [
+            4
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Roll Out knocked down",
+      "input": "_8_+_G",
+      "parsedInput": {
+        "raw": "_8_+_G",
+        "directions": [
+          [
+            8
+          ]
+        ],
+        "buttons": [
+          [
+            "_G"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Roll In knocked down",
+      "input": "_2_+_G",
+      "parsedInput": {
+        "raw": "_2_+_G",
+        "directions": [
+          [
+            2
+          ]
+        ],
+        "buttons": [
+          [
+            "_G"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Rising Attack knocked down _b"
+    },
+    {
+      "category": "_)",
+      "name": "Rising Kick knocked down",
+      "input": "_K",
+      "parsedInput": {
+        "raw": "_K",
+        "directions": [],
+        "buttons": [
+          [
+            "_K"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_*",
+      "name": "Critical Edge _a_+_b_+_K"
+    }
+  ],
+  "characters": [
+    {
+      "name": "MITSURUGI HEISHIRO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Sea of Madness _a_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Pulling Ivy _b_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Dirty Stab",
+          "input": "_4_+_a_+_G (reverse high/mid)",
+          "parsedInput": {
+            "raw": "_4_+_a_+_G (reverse high/mid)",
+            "directions": [
+              [
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Rising Uppercut _a_+_b_+_K,",
+          "input": "_4_1_2_3_6_+_a_+_K",
+          "parsedInput": {
+            "raw": "_4_1_2_3_6_+_a_+_K",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Cross the Styx _a_+_b_+_K,",
+          "input": "_4_1_2_3_6_+_b_+_K",
+          "parsedInput": {
+            "raw": "_4_1_2_3_6_+_b_+_K",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Strings Moves",
+        "_a_a_a                                                hhh",
+        "_a_a_b                                                hhm",
+        "_a_a_2_+_a                                            hhl",
+        "_a_+_b                                                mm",
+        "_b_b_a_b                                              mmhm",
+        "_b_b_a_2_+_a                                          mmhl",
+        "_6_+_a_b                                              mm",
+        "_6_+_a_2_+_a                                          ml",
+        "_6_+_b                                                m",
+        "_6_+_K                                                m",
+        "_6^6_+_a_+_b                                          m",
+        "_6^6_+_b                                              m",
+        "_6_3_2_1_4_+_b                                        !",
+        "_4_+_a                                                h",
+        "_4_+_b                                                m",
+        "_4_+_K_b                                              mm",
+        "_2_+_K_b                                              lm",
+        "_2_3_6_a_b                                            mm",
+        "_2_3_6_a_2_+_a                                        ml",
+        "_2_3_6_b                                              m",
+        "_2_3_6_K                                              m",
+        "^2_N_a_b                                              mm",
+        "^2_N_a_2_+_a                                          ml",
+        "^2_N_b                                                m",
+        "^2_N_K                                                m",
+        "_1_+_a                                                l",
+        "_3_+_a                                                m",
+        "_3_+_b                                                m",
+        "_3_+_K                                                m",
+        "running _K                                            l",
+        "opponent knocked down _3_+_b                          g"
+      ]
+    },
+    {
+      "name": "SIEGFREID SCHTAUFFEN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Hilt Impact _a_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Nightmare Slasher _b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Flap Jack",
+          "input": "_2_+_a_+_G",
+          "parsedInput": {
+            "raw": "_2_+_a_+_G",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Mortal Slaughter",
+          "input": "_1_+_b_4_+_b",
+          "parsedInput": {
+            "raw": "_1_+_b_4_+_b",
+            "directions": [
+              [
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_b"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Critical Edge _a_+_b_+_K,",
+          "input": "_6_2_3_+_b_+_K",
+          "parsedInput": {
+            "raw": "_6_2_3_+_b_+_K",
+            "directions": [
+              [
+                6,
+                2,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Strings Moves",
+        "_a_a_b                                                hhm",
+        "_a_+_K                                                h",
+        "_a_2_+_a                                              hl",
+        "_b_b_b                                                mml",
+        "_b_b_K                                                mmh",
+        "_b_K                                                  mm",
+        "_b_2_+_a                                              ml",
+        "_6_+_a                                                h",
+        "_6_+_b                                                m",
+        "_6_+_b_+_K                                            m",
+        "_6_+_K                                                h",
+        "_6_6_+_K                                              h",
+        "_6^6_+_a_+_b                                          m",
+        "_4_+_a                                                h",
+        "_4_+_b_a_b                                            hhh",
+        "_4_4_+_b_b                                            ml",
+        "_2_3_6_+_b                                            !",
+        "^2_N_a_a                                              ml",
+        "^2_N_b                                                m",
+        "^2_N_K                                                m",
+        "_1_+_b                                                m",
+        "_3_+_a                                                m",
+        "_3_+_b                                                m",
+        "_3_+_K_K_b                                            mlm",
+        "running _b_+_K                                        h",
+        "running _K                                            l",
+        "opponent knocked down ^3_+_K_K_K_K                    gggg"
+      ]
+    },
+    {
+      "name": "SOPHITIA ALEXANDER",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Widow Maker _a_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Heaven _b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Heaven to Hell",
+          "input": "_2_+_a_+_b_+_K",
+          "parsedInput": {
+            "raw": "_2_+_a_+_b_+_K",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_b",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Returning Madness",
+          "input": "_4_+_a_+_G (reverse high/mid)",
+          "parsedInput": {
+            "raw": "_4_+_a_+_G (reverse high/mid)",
+            "directions": [
+              [
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Soul Asylum _a_+_b_+_K,",
+          "input": "_2_3_6_+_a_+_G",
+          "parsedInput": {
+            "raw": "_2_3_6_+_a_+_G",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Dragon Blade _a_+_b_+_K,",
+          "input": "_2_3_6_+_b_+_G",
+          "parsedInput": {
+            "raw": "_2_3_6_+_b_+_G",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Strings Moves",
+        "_a_a_a_K                                              hhhm",
+        "_a_a_b                                                hhm",
+        "_a_a_K                                                hhm",
+        "_a_a_2_+_a                                            hhl",
+        "_a_a_2_+_K                                            hhl",
+        "_a_+_K                                                h",
+        "_b_b_a_b                                              mmhm",
+        "_b_b_b                                                mmm",
+        "_b_b_2_+_a                                            mml",
+        "_b_b_2_+_K                                            mml",
+        "_K_K_2_+_K_6_+_K                                      hmlm",
+        "_6_+_a                                                h",
+        "_6_+_b                                                m",
+        "_6_+_K                                                h",
+        "_6_2_3_+_a                                            m",
+        "_6_2_3_+_b                                            m",
+        "_4_+_a                                                m",
+        "_4_+_b                                                m",
+        "_4_4_4_+_a~_b                                         !",
+        "_2_3_6_+_b                                            m",
+        "^2_3_+_a                                              l",
+        "^2_3_+_b                                              l",
+        "^2_N_a                                                m",
+        "^2_N_b                                                m",
+        "^2_N_K                                                m",
+        "_1_+_b                                                m",
+        "_1_+_K                                                l",
+        "_3_+_a                                                m",
+        "_3_+_b                                                m",
+        "_3_+_K                                                m",
+        "_9_+_K_a                                              ml",
+        "_9_+_K_b                                              mm",
+        "_9_+_K_K                                              mm",
+        "running _K                                            l",
+        "opponent knocked down ^3_+_b_b_b_b                    gggg",
+        "on counter _4_+_a                                     mm"
+      ]
+    },
+    {
+      "name": "SEUNG MINA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Dropping Embrace _a_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Crushing Soul _b_+_G"
+        },
+        {
+          "category": "_*",
+          "name": "Crystal Cyclone _a_+_b_+_K,",
+          "input": "_4_4_+_a_+_b",
+          "parsedInput": {
+            "raw": "_4_4_+_a_+_b",
+            "directions": [
+              [
+                4,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_b"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Strings Moves",
+        "_a_a_a_K                                              hhhm",
+        "_a_a_a_2_+_K                                          hhhl",
+        "_a_a_b                                                hhm",
+        "_a_a_K                                                hhh",
+        "_a_K                                                  hh",
+        "_a_+_b_a_+_b                                          mm",
+        "_a_+_b_6_+_a_b                                        mhm",
+        "_a_6_+_a_a_K                                          hhhm",
+        "_a_6_+_a_a_2_+_K                                      hhhl",
+        "_b_a                                                  mh",
+        "_b_b_b                                                mmm",
+        "_b_b_2_+_a                                            mml",
+        "_b_K                                                  mh",
+        "_b_+_K                                                m",
+        "_b_2_+_a                                              ml",
+        "_6_+_a_K                                              mh",
+        "_6_+_b_a                                              mm",
+        "_6_+_b_b                                              mm",
+        "_6_+_b_2_+_a                                          mm",
+        "_6_+_K                                                m",
+        "_6^6_+_K_K_K                                          mmm",
+        "_4_+_b_2_+_a_+_b                                      mm",
+        "_4_+_K                                                h",
+        "_4_6_+_K                                              mm",
+        "^2_N_a                                                m",
+        "^2_N_b                                                m",
+        "^2_N_K                                                m",
+        "_1_+_a                                                l",
+        "_1_+_K                                                l",
+        "_3_+_a                                                m",
+        "_3_+_b                                                m",
+        "_3_+_K                                                m",
+        "_8_+_a_+_b                                            m",
+        "_9_+_a_+_b                                            ! (_O_G to cancel)",
+        "_9_+_b_+_K                                            mm",
+        "running _K                                            l",
+        "opponent knocked down _3_+_K                          g"
+      ]
+    },
+    {
+      "name": "TAKI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Return of the Sun _a_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Departure in Fire _b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Crossing the Cliff",
+          "input": "_2_1_4_+_b_+_G",
+          "parsedInput": {
+            "raw": "_2_1_4_+_b_+_G",
+            "directions": [
+              [
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Stalker",
+          "input": "_6^6_+_a_+_b",
+          "parsedInput": {
+            "raw": "_6^6_+_a_+_b",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_b"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 6,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Counter",
+          "input": "_4_+_a_+_G (reverse high/mid)",
+          "parsedInput": {
+            "raw": "_4_+_a_+_G (reverse high/mid)",
+            "directions": [
+              [
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Backflip",
+          "input": "_7",
+          "parsedInput": {
+            "raw": "_7",
+            "directions": [
+              [
+                7
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Critical Edge _a_+_b_+_K,",
+          "input": "_2_8_+_b_+_K",
+          "parsedInput": {
+            "raw": "_2_8_+_b_+_K",
+            "directions": [
+              [
+                2,
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Strings Moves",
+        "_a_a_a                                                hhh",
+        "_a_a_b                                                hhm",
+        "_a_a_2_+_K                                            hhl",
+        "_a_b_K                                                hmh",
+        "_a_K                                                  hh",
+        "_a_+_K                                                mm",
+        "_b_a_K                                                mhh",
+        "_b_a_6_+_K                                            mhm",
+        "_b_a_2_+_K                                            mhl",
+        "_b_b_a_K                                              mmhh",
+        "_b_b_b                                                mmm",
+        "_b_K                                                  mh",
+        "_K_K_a                                                hhh",
+        "_K_K_K                                                hhh",
+        "_K_K_2_+_K                                            hhl",
+        "_6_+_a_b_b_b                                          hmmm",
+        "_6_+_b                                                m",
+        "_6_+_K                                                m",
+        "_6^6_+_a                                              h",
+        "_6^6_+_b                                              m",
+        "_6^6_+_K                                              h",
+        "_6_3_2_1_+_b                                          !",
+        "_4_+_K                                                h",
+        "_2_+_K_K                                              lm",
+        "_2_3_6_N_b_K                                          mh",
+        "_2_3_6_N_K                                            l",
+        "^2_N_a                                                m",
+        "^2_N_b_b                                              mm",
+        "^2_N_K                                                h",
+        "_1_+_a                                                l",
+        "_3_+_a                                                m",
+        "_3_+_b                                                m",
+        "_3_+_K_K_K                                            mmm",
+        "running _K                                            l",
+        "opponent knocked down _3_+_K                          g"
+      ]
+    },
+    {
+      "name": "LI LONG",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Dangerous Driver _a_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Hell's Throat _b_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Dragon's Revenge",
+          "input": "_4_+_a_+_G (reverse high/mid)",
+          "parsedInput": {
+            "raw": "_4_+_a_+_G (reverse high/mid)",
+            "directions": [
+              [
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Fire and Brimstone _a_+_b_+_K,",
+          "input": "_6^6_+_a_+_b",
+          "parsedInput": {
+            "raw": "_6^6_+_a_+_b",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_b"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 6,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Strings Moves",
+        "_a_a_a                                                hhh",
+        "_a_a_K                                                hhm",
+        "_a_a_2_+_a                                            hhl",
+        "_a_a_2_+_K_b                                          hhlm",
+        "_a_b_K                                                hmh",
+        "_a_+_b                                                mm",
+        "_b_a                                                  mh",
+        "_b_b_b                                                mmm",
+        "_b_K                                                  mm",
+        "_K_K                                                  hm",
+        "_K_2_+_a                                              hl",
+        "_K_2_+_K                                              hl",
+        "_6_+_a_a_a                                            hhh",
+        "_6_+_a_a_2_+_a                                        hhl",
+        "_6_+_a_a_2_+_K_b                                      hhlm",
+        "_6_+_a_b_K                                            hmh",
+        "_6_+_b_b                                              hm",
+        "_6_+_K                                                h",
+        "_6^6_+_b                                              m",
+        "_6^6_+_K                                              h",
+        "_4_+_a                                                m",
+        "_4_+_b_b_b                                            mmm",
+        "_2_1_4_+_b_4_+_b                                      mh",
+        "_2_3_6_+_b                                            mm (_4 to cancel)",
+        "^2_+_a_8_+_b                                          lm",
+        "^2_N_a                                                m",
+        "^2_N_b                                                m",
+        "^2_N_K                                                l",
+        "_1_+_a                                                l",
+        "_1_+_b                                                m",
+        "_1_+_b_a                                              l",
+        "_1_+_b_+_K                                            !",
+        "_3_+_a                                                m",
+        "_3_+_b                                                m",
+        "_3_+_K                                                m",
+        "running _K                                            l",
+        "opponent knocked down _3_+_K                          g"
+      ]
+    },
+    {
+      "name": "ROCK ADAMS",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Rock Slam _a_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Canyon Dive _b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Falling Rock",
+          "input": "_2_1_4_+_b_+_G",
+          "parsedInput": {
+            "raw": "_2_1_4_+_b_+_G",
+            "directions": [
+              [
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Dynamite Slam opponent knocked down, close feet",
+          "input": "_3_+_a_+_G",
+          "parsedInput": {
+            "raw": "_3_+_a_+_G",
+            "directions": [
+              [
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Devastator _a_+_b_+_K,",
+          "input": "_6_3_2_1_4_+_a_+_G",
+          "parsedInput": {
+            "raw": "_6_3_2_1_4_+_a_+_G",
+            "directions": [
+              [
+                6,
+                3,
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Rising Uppercut _a_+_b_+_K,",
+          "input": "_6_3_2_1_4_+_b_+_G",
+          "parsedInput": {
+            "raw": "_6_3_2_1_4_+_b_+_G",
+            "directions": [
+              [
+                6,
+                3,
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Strings Moves",
+        "_a_a_a                                                hhh",
+        "_a_b                                                  hh",
+        "_a_K                                                  hh",
+        "_b_a                                                  mh",
+        "_b_b_b                                                mmm",
+        "_6_+_a_a_a                                            hhl",
+        "_6_+_a_a_b                                            hhm",
+        "_6_+_b                                                m",
+        "_6_+_K                                                m",
+        "_6^6_+_a_b                                            mm",
+        "_6^6_+_b                                              m",
+        "_6^6_+_K                                              m",
+        "_4_+_a_+_b                                            m",
+        "_4_+_b                                                m",
+        "_2_+_a_b                                              lm",
+        "_2_3_6_+_b_+_K                                        !",
+        "^2_N_a                                                m",
+        "^2_N_b                                                m",
+        "^2_N_K                                                m",
+        "_1_+_a                                                l",
+        "_1_+_K                                                l",
+        "_3_+_a                                                m",
+        "_3_+_b                                                m",
+        "_3_+_K_a                                              ml",
+        "running _K                                            l",
+        "opponent knocked down _8_+_K                          g"
+      ]
+    },
+    {
+      "name": "VOLDO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Spinning Umbrella _a_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Centipede Nightmare _b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Bloody Drill",
+          "input": "_2_3_6_+_b_+_G",
+          "parsedInput": {
+            "raw": "_2_3_6_+_b_+_G",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "BLIND STANCE: BS",
+          "input": "_2_1_4",
+          "parsedInput": {
+            "raw": "_2_1_4",
+            "directions": [
+              [
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "House of Pain _a_+_b_+_K,",
+          "input": "_8_2_+_a_+_b",
+          "parsedInput": {
+            "raw": "_8_2_+_a_+_b",
+            "directions": [
+              [
+                8,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_b"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Strings Moves",
+        "_a_a_b                                                hhm",
+        "_a_b_a                                                hmm",
+        "_a_+_b                                                m",
+        "_a_K                                                  hm",
+        "_a_+_K                                                hh",
+        "_a_2_+_b                                              l",
+        "_b_b                                                  mm",
+        "_6_+_a                                                h",
+        "_6_+_b                                                h",
+        "_6^6_+_a_+_b_K                                        mm",
+        "_6^6_+_a_+_b_+_G_K                                    mm",
+        "_6^6_+_b                                              m",
+        "_4_+_a_a                                              hh (BS)",
+        "_4_+_a_+_b                                            m",
+        "_4_+_b                                                m",
+        "_2_+_a_a_a_K                                          lllh",
+        "_2_+_a_+_b                                            l",
+        "_2_+_a_K                                              lh",
+        "_2_+_b_b                                              mm",
+        "_2_3_6_+_a                                            !",
+        "^2_3_+_a_+_b                                          h",
+        "^2_N_a                                                m",
+        "^2_N_b                                                m",
+        "^2_N_K                                                m",
+        "_1_+_K                                                m",
+        "_3_+_a                                                m",
+        "_3_+_b                                                m",
+        "_3_+_K                                                m",
+        "running _a                                            l",
+        "running _K                                            l",
+        "opponent knocked down ^3_+_a_a_a                      ggg",
+        "on counter _b_b_b_b_b                                 mmmmm",
+        "BLIND STANCE (BS)",
+        "Strings Moves",
+        "_a_+_G_8_+_b                                          ll",
+        "^2_+_a_+_b                                            l"
+      ]
+    },
+    {
+      "name": "HWANG SUNG KYUNG",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Sea of Madness _a_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Machine Gun Kick _b_+_G"
+        },
+        {
+          "category": "_*",
+          "name": "Cross the Styx _a_+_b_+_K,",
+          "input": "_4_1_2_3_6_+_a_+_b",
+          "parsedInput": {
+            "raw": "_4_1_2_3_6_+_a_+_b",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_b"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Rising Uppercut _a_+_b_+_K,",
+          "input": "_4_1_2_3_6_+_b_+_K",
+          "parsedInput": {
+            "raw": "_4_1_2_3_6_+_b_+_K",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_b",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Strings Moves",
+        "_a_a_a                                                hhh",
+        "_a_a_b                                                hhm",
+        "_a_a_2_+_a                                            hhl",
+        "_a_+_b                                                mm",
+        "_b_b_a_b                                              mmhm",
+        "_b_b_a_2_+_a                                          mmhl",
+        "_K_K                                                  hm",
+        "_6_+_a                                                h",
+        "_6_+_b                                                m",
+        "_6_+_K                                                h",
+        "_6^6_+_a_+_b                                          m",
+        "_6^6_+_b                                              m",
+        "_6^6_+_K_K_K                                          mmm",
+        "_4_+_a                                                h",
+        "_4_+_b                                                m",
+        "_4_+_b_+_K                                            !",
+        "_4_+_K                                                h",
+        "_4_6_+_K                                              mm",
+        "_2_+_K_b                                              lm",
+        "_2_3_6_N_a_b                                          hm",
+        "_2_3_6_N_b                                            m",
+        "_2_3_6_N_K                                            mh",
+        "^2_N_a_b                                              hm",
+        "^2_N_b                                                m",
+        "^2_N_K                                                mh",
+        "_1_+_a                                                l",
+        "_1_+_K                                                l",
+        "_3_+_a_a_b                                            lhm",
+        "_3_+_b                                                m",
+        "_3_+_K                                                m",
+        "running _K                                            l",
+        "opponent knocked down _3_+_K                          g"
+      ]
+    },
+    {
+      "name": "CERVANTES DE LEON",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Shoulder Blades _a_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Grand Slam Soul Edge _b_+_G"
+        },
+        {
+          "category": "_*",
+          "name": "Critical Edge _a_+_b_+_K,",
+          "input": "_6_2_3_+_a_+_K",
+          "parsedInput": {
+            "raw": "_6_2_3_+_a_+_K",
+            "directions": [
+              [
+                6,
+                2,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Strings Moves",
+        "_a_a_a                                                hhh",
+        "_a_a_b                                                hhh",
+        "_a_a_2_+_a                                            hhl",
+        "_a_+_b                                                h",
+        "_b_b_b                                                hhh",
+        "_b_b_2_+_a                                            hhl",
+        "_K_3_+_K                                              hm",
+        "_6_+_a                                                h",
+        "_6_+_a_+_b                                            m",
+        "_6_+_b_b_b                                            mhh",
+        "_6_+_K                                                h",
+        "_6^6_+_a_+_b                                          h",
+        "_6^6_+_b_+_K                                          m",
+        "_6^6_+_b                                              m",
+        "_6^6_+_K                                              h",
+        "_6_2_3_+_b                                            mm",
+        "_4_+_K                                                h",
+        "_4_4_+_b                                              m",
+        "_2_1_4_+_b                                            m",
+        "^2_N_a                                                m",
+        "^2_N_b                                                mm",
+        "^2_N_K                                                m",
+        "_1_+_a                                                l",
+        "_1_+_a_+_b                                            !",
+        "_1_+_a_+_K                                            l",
+        "_1_+_K                                                l",
+        "_3_+_a                                                m",
+        "_3_+_a_+_b                                            l",
+        "_3_+_b                                                m",
+        "_3_+_K                                                m",
+        "running _K                                            l",
+        "opponent knocked down _2_+_a_+_b                      g"
+      ]
+    }
+  ],
+  "cheatNotes": [
+    "_` 2nd Outfit",
+    "- On the Character Select Screen _O_G"
+  ],
+  "controlAbbr": {
+    "_K": "K",
+    "_G": "GR",
+    "_S": "ST"
+  }
+}

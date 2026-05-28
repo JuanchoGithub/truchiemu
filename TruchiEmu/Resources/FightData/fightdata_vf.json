@@ -1,0 +1,1515 @@
+{
+  "schemaVersion": 1,
+  "romIds": [
+    "vf"
+  ],
+  "name": "Virtua Fighter",
+  "year": 1993,
+  "manufacturer": "Sega",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "_G": "Guard",
+    "_P": "Punch",
+    "_K": "Kick",
+    "_S": "Start"
+  },
+  "categories": {
+    "_(": "Throws",
+    "_)": "Command Moves",
+    "_`": "String Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "_6_6",
+      "parsedInput": {
+        "raw": "_6_6",
+        "directions": [
+          [
+            6,
+            6
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Run",
+      "input": "_6^6",
+      "parsedInput": {
+        "raw": "_6^6",
+        "directions": [
+          [
+            6
+          ]
+        ],
+        "buttons": [],
+        "charge": true,
+        "chargeDirection": 6,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4",
+      "parsedInput": {
+        "raw": "_4_4",
+        "directions": [
+          [
+            4,
+            4
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Low Jump",
+      "input": "_8",
+      "parsedInput": {
+        "raw": "_8",
+        "directions": [
+          [
+            8
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "High Jump",
+      "input": "^8",
+      "parsedInput": {
+        "raw": "^8",
+        "directions": [],
+        "buttons": [],
+        "charge": true,
+        "chargeDirection": 8,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Side Kick",
+      "input": "_3_+_K",
+      "parsedInput": {
+        "raw": "_3_+_K",
+        "directions": [
+          [
+            3
+          ]
+        ],
+        "buttons": [
+          [
+            "_K"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Hopping Karate Chop",
+      "input": "_8_+_P",
+      "parsedInput": {
+        "raw": "_8_+_P",
+        "directions": [
+          [
+            8
+          ]
+        ],
+        "buttons": [
+          [
+            "_P"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Hop Kick",
+      "input": "_8_+_K",
+      "parsedInput": {
+        "raw": "_8_+_K",
+        "directions": [
+          [
+            8
+          ]
+        ],
+        "buttons": [
+          [
+            "_K"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Landing Side Kick",
+      "input": "_8_N_K",
+      "parsedInput": {
+        "raw": "_8_N_K",
+        "directions": [
+          [
+            8
+          ]
+        ],
+        "buttons": [
+          [
+            "_K"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": true,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Over Head Hammer",
+      "input": "_^^6_+_P",
+      "parsedInput": {
+        "raw": "_^^6_+_P",
+        "directions": [],
+        "buttons": [
+          [
+            "_P"
+          ]
+        ],
+        "charge": true,
+        "chargeDirection": 6,
+        "air": true,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Drop Kick Forward",
+      "input": "_^^6_+_K",
+      "parsedInput": {
+        "raw": "_^^6_+_K",
+        "directions": [],
+        "buttons": [
+          [
+            "_K"
+          ]
+        ],
+        "charge": true,
+        "chargeDirection": 6,
+        "air": true,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Drop Kick Backward",
+      "input": "_^^4_+_K",
+      "parsedInput": {
+        "raw": "_^^4_+_K",
+        "directions": [],
+        "buttons": [
+          [
+            "_K"
+          ]
+        ],
+        "charge": true,
+        "chargeDirection": 4,
+        "air": true,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Quick Pounce opponent knocked down",
+      "input": "_8_+_P",
+      "parsedInput": {
+        "raw": "_8_+_P",
+        "directions": [
+          [
+            8
+          ]
+        ],
+        "buttons": [
+          [
+            "_P"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Rising Heel Kick knocked down",
+      "input": "_K",
+      "parsedInput": {
+        "raw": "_K",
+        "directions": [],
+        "buttons": [
+          [
+            "_K"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Rising Sweep knocked down",
+      "input": "^2_+_K",
+      "parsedInput": {
+        "raw": "^2_+_K",
+        "directions": [],
+        "buttons": [
+          [
+            "_K"
+          ]
+        ],
+        "charge": true,
+        "chargeDirection": 2,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Roll Backward knocked down",
+      "input": "_4",
+      "parsedInput": {
+        "raw": "_4",
+        "directions": [
+          [
+            4
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Roll to the Side knocked down",
+      "input": "^*_G",
+      "parsedInput": {
+        "raw": "^*_G",
+        "directions": [],
+        "buttons": [
+          [
+            "_G"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": true,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Get Up knocked down",
+      "input": "_8",
+      "parsedInput": {
+        "raw": "_8",
+        "directions": [
+          [
+            8
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    }
+  ],
+  "characters": [
+    {
+      "name": "AKIRA YUKI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Trip",
+          "input": "_4_+_P",
+          "parsedInput": {
+            "raw": "_4_+_P",
+            "directions": [
+              [
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Reverse Bodycheck",
+          "input": "_4_3_+_P_+_K",
+          "parsedInput": {
+            "raw": "_4_3_+_P_+_K",
+            "directions": [
+              [
+                4,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_P",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Pull-in Push-out",
+          "input": "_1_6_+_P",
+          "parsedInput": {
+            "raw": "_1_6_+_P",
+            "directions": [
+              [
+                1,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "String Moves",
+        "_P_P                                                  hh",
+        "_P_K                                                  hh",
+        "_6_+_P                                                m",
+        "_6_6_+_P                                              m",
+        "_6_6_+_P_+_K_K_P                                      hhh",
+        "_6_6_+_P_+_K_P_P_K                                    hhhh",
+        "_6_6_+_K_K                                            mm",
+        "_4_6_6_+_P_+_K                                        m",
+        "^2_6_+_P                                              m",
+        "opponent knocked down _3_+_P                          g"
+      ]
+    },
+    {
+      "name": "JACKY BRYANT",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Brainbuster",
+          "input": "_P_+_G",
+          "parsedInput": {
+            "raw": "_P_+_G",
+            "directions": [],
+            "buttons": [
+              [
+                "_P",
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Clothesline",
+          "input": "_6_6_+_P",
+          "parsedInput": {
+            "raw": "_6_6_+_P",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Bulldog from behind",
+          "input": "_P_+_G",
+          "parsedInput": {
+            "raw": "_P_+_G",
+            "directions": [],
+            "buttons": [
+              [
+                "_P",
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "String Moves",
+        "_P_K                                                  hh",
+        "_P_P_P                                                hhh",
+        "_P_P_K                                                hhh",
+        "_P_P_6_+_P_K                                          hhmh",
+        "_P_P_4_+_P                                            hhh",
+        "_K_K                                                  hh",
+        "_K_+_G                                                h",
+        "_6_+_P_K                                              mh",
+        "_6_+_K                                                m",
+        "_6_6_+_P_+_K_K                                        hh",
+        "_6_6_+_P_+_K_P_P_K                                    hhhh",
+        "_6_6_+_P_+_K_P_K                                      hhh",
+        "_6_6_+_K                                              m",
+        "^6_+_P_P_P_K                                          hhmh",
+        "_4_+_P_K                                              hh",
+        "_4_+_P_2_+_K                                          hl",
+        "_2_+_K_+_G                                            l",
+        "_1_+_P_2_+_K                                          ll",
+        "_2_+_K                                                l",
+        "_7_+_K                                                m"
+      ]
+    },
+    {
+      "name": "PAI CHAN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Wrist Twist",
+          "input": "_P_+_G",
+          "parsedInput": {
+            "raw": "_P_+_G",
+            "directions": [],
+            "buttons": [
+              [
+                "_P",
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Reaping Throw",
+          "input": "_6_6_+_P_+_K",
+          "parsedInput": {
+            "raw": "_6_6_+_P_+_K",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "D.D.T.",
+          "input": "_6_2_+_P",
+          "parsedInput": {
+            "raw": "_6_2_+_P",
+            "directions": [
+              [
+                6,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Pushover",
+          "input": "_4_6_+_P",
+          "parsedInput": {
+            "raw": "_4_6_+_P",
+            "directions": [
+              [
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "String Moves",
+        "_P_K                                                  hh",
+        "_P_P_K                                                hhh",
+        "_P_P_P_K                                              hhhh",
+        "_P_P_P^2_+_K                                          hhhl",
+        "_P_P_P_7_+_K                                          hhhm",
+        "_P_K_+_G                                              hh",
+        "_P^2_+_K_+_G                                          hl",
+        "_K_+_G                                                h",
+        "_6_6_+_P_K                                            hh",
+        "_6_6_+_P_P_K                                          hhh",
+        "_6_6_+_P_P_P_K                                        hhhh",
+        "^2_+_K_+_G                                            l",
+        "^2_N_K                                                m",
+        "_7_+_K                                                m",
+        "opponent knocked down _3_+_P                          g"
+      ]
+    },
+    {
+      "name": "SARAH BRYANT",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Flipover",
+          "input": "_P_+_G",
+          "parsedInput": {
+            "raw": "_P_+_G",
+            "directions": [],
+            "buttons": [
+              [
+                "_P",
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Clothesline",
+          "input": "_6_6_+_P",
+          "parsedInput": {
+            "raw": "_6_6_+_P",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Backfall Suplex from behind",
+          "input": "_P_+_G",
+          "parsedInput": {
+            "raw": "_P_+_G",
+            "directions": [],
+            "buttons": [
+              [
+                "_P",
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "String Moves",
+        "_P_K                                                  hh",
+        "_P_2_+_K                                              hl",
+        "_P_P_K                                                hhh",
+        "_P_P_P_K                                              hhhm",
+        "_P_P_P_4_+_K                                          hhhm",
+        "_P_P_P_8_+_K                                          hhhm",
+        "_K_P                                                  hh",
+        "_6_+_P_K                                              mh",
+        "_6_+_K_3_+_K                                          mm",
+        "_6_6_+_P_+_K_P_P_K                                    hhhh",
+        "_6_6_+_P_+_K_P_K                                      hhh",
+        "_6_6_+_K                                              m",
+        "_2_+_K_K                                              lm",
+        "_2_+_K_+_G                                            l",
+        "^2_6_+_K                                              m",
+        "_3_+_K_K_K                                            mhh",
+        "_7_+_K                                                m"
+      ]
+    },
+    {
+      "name": "LAU CHAN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Waterwheel Drop",
+          "input": "_P_+_G",
+          "parsedInput": {
+            "raw": "_P_+_G",
+            "directions": [],
+            "buttons": [
+              [
+                "_P",
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Piggyback Drop",
+          "input": "_4_+_P",
+          "parsedInput": {
+            "raw": "_4_+_P",
+            "directions": [
+              [
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Face Grab",
+          "input": "_4_6_+_P",
+          "parsedInput": {
+            "raw": "_4_6_+_P",
+            "directions": [
+              [
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "String Moves",
+        "_P_K                                                  hh",
+        "_P_P_K                                                hhh",
+        "_P_P_P_K                                              hhhh",
+        "_P_P_P^2_+_K                                          hhhl",
+        "_P_P_P_7_+_K                                          hhhm",
+        "_P_K_+_G                                              hh",
+        "_P^2_+_K_+_G                                          hl",
+        "_K_+_G                                                h",
+        "_6_+_P                                                m",
+        "_6_6_+_P_K                                            hh",
+        "_6_6_+_P_P_K                                          hhh",
+        "_6_6_+_P_P_P_K                                        hhhh",
+        "_2_+_K_+_G                                            l",
+        "^2_N_K                                                m",
+        "_3_+_P_P_K                                            mhh",
+        "_3_+_P_P_P_K                                          mhhh",
+        "_3_+_P_P_P^2_+_K                                      mhhl",
+        "_3_+_P_P_P_7_+_K                                      mhhm",
+        "_7_+_K                                                m",
+        "_9_+_K                                                m"
+      ]
+    },
+    {
+      "name": "KAGEMARU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Shoulder Throw",
+          "input": "_P_+_G",
+          "parsedInput": {
+            "raw": "_P_+_G",
+            "directions": [],
+            "buttons": [
+              [
+                "_P",
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Turnover Toka Throw",
+          "input": "_P_+_K_+_G",
+          "parsedInput": {
+            "raw": "_P_+_K_+_G",
+            "directions": [],
+            "buttons": [
+              [
+                "_P",
+                "_K",
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Ten-Foot Toss",
+          "input": "_4_+_P",
+          "parsedInput": {
+            "raw": "_4_+_P",
+            "directions": [
+              [
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Reaping Throw",
+          "input": "_4_6_+_P",
+          "parsedInput": {
+            "raw": "_4_6_+_P",
+            "directions": [
+              [
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Torso Takedown from behind",
+          "input": "_P_+_G",
+          "parsedInput": {
+            "raw": "_P_+_G",
+            "directions": [],
+            "buttons": [
+              [
+                "_P",
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "String Moves",
+        "_P_K                                                  hh",
+        "_P_P_K                                                hhh",
+        "_P_P_P_K                                              hhhh",
+        "_P_P_P_7_+_K                                          hhhm",
+        "_6_+_P                                                m",
+        "_6_6_+_P_+_K_+_G                                      l",
+        "_6_6_+_K                                              l",
+        "_6_3_2_1_4_+_K                                        l",
+        "_4_4_+_K                                              m",
+        "_4_1_2_3_6_+_K                                        l",
+        "_2_+_K_+_G                                            m",
+        "^2_6_+_K                                              m",
+        "_7_+_K                                                m"
+      ]
+    },
+    {
+      "name": "WOLF HAWKFIELD",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Backfall Suplex",
+          "input": "_P_+_G",
+          "parsedInput": {
+            "raw": "_P_+_G",
+            "directions": [],
+            "buttons": [
+              [
+                "_P",
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Body Slam",
+          "input": "_6_+_P",
+          "parsedInput": {
+            "raw": "_6_+_P",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Giant Swing",
+          "input": "_4_1_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_4_1_2_3_6_+_P",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Crucifix Piledriver",
+          "input": "_3^3_+_P_+_K",
+          "parsedInput": {
+            "raw": "_3^3_+_P_+_K",
+            "directions": [
+              [
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_P",
+                "_K"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 3,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "German Suplex from behind",
+          "input": "_P_+_G",
+          "parsedInput": {
+            "raw": "_P_+_G",
+            "directions": [],
+            "buttons": [
+              [
+                "_P",
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Double Arm Suplex crouching opponent",
+          "input": "_1_+_P_+_K_+_G",
+          "parsedInput": {
+            "raw": "_1_+_P_+_K_+_G",
+            "directions": [
+              [
+                1
+              ]
+            ],
+            "buttons": [
+              [
+                "_P",
+                "_K",
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "String Moves",
+        "_P_K                                                  hh",
+        "_P_P_P                                                hhm",
+        "_6_+_K                                                m",
+        "_6_6_+_P                                              h",
+        "_4_6_+_P                                              h",
+        "^2_3_+_P                                              m",
+        "_3_+_P                                                m"
+      ]
+    },
+    {
+      "name": "JEFFRY McWILD",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Fireman's Carry",
+          "input": "_P_+_G",
+          "parsedInput": {
+            "raw": "_P_+_G",
+            "directions": [],
+            "buttons": [
+              [
+                "_P",
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Power Slam",
+          "input": "_6_+_P",
+          "parsedInput": {
+            "raw": "_6_+_P",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Military Press",
+          "input": "_4_4_+_P",
+          "parsedInput": {
+            "raw": "_4_4_+_P",
+            "directions": [
+              [
+                4,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Crucifix Piledriver",
+          "input": "_3_3_+_P_+_K",
+          "parsedInput": {
+            "raw": "_3_3_+_P_+_K",
+            "directions": [
+              [
+                3,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_P",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Backbreaker from behind",
+          "input": "_P_+_G",
+          "parsedInput": {
+            "raw": "_P_+_G",
+            "directions": [],
+            "buttons": [
+              [
+                "_P",
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Iron Claw crouching opponent",
+          "input": "_2_+_P",
+          "parsedInput": {
+            "raw": "_2_+_P",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Powerbomb crouching opponent",
+          "input": "_3_+_P_+_K_+_G",
+          "parsedInput": {
+            "raw": "_3_+_P_+_K_+_G",
+            "directions": [
+              [
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_P",
+                "_K",
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Triple Knee crouching opponent",
+          "input": "_2_6_+_K",
+          "parsedInput": {
+            "raw": "_2_6_+_K",
+            "directions": [
+              [
+                2,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "String Moves",
+        "_P_K                                                  hh",
+        "_P_P_P                                                hhm",
+        "_6_+_K                                                m",
+        "_6_6_+_P_P                                            hm",
+        "_6_4_+_P                                              m",
+        "_2_+_K_P                                              hh",
+        "^2_3_+_P                                              m",
+        "_3_+_P_P                                              mm"
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_G": "GR",
+    "_P": "P",
+    "_K": "K",
+    "_S": "ST"
+  }
+}

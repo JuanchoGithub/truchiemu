@@ -177,11 +177,11 @@ var body: some View {
         }
         .frame(maxHeight: .infinity)
         .clipped()
-        .onAppear {
-            if coreManager.shouldAutoFetchCores {
-                Task { await coreManager.fetchAvailableCores() }
-            }
-        }
+.onAppear {
+                    if coreManager.availableCores.isEmpty && coreManager.shouldAutoFetchCores {
+                        Task { await coreManager.fetchAvailableCores() }
+                    }
+                }
     }
 }
 

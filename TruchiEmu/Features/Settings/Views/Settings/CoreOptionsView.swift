@@ -154,7 +154,6 @@ class CoreOptionsViewModel: ObservableObject {
         Task {
             isLoading = true
             loadingPhase = .resolvingCore
-            try? await Task.sleep(for: .milliseconds(150))
 
             var dylibPath: String? = nil
             if let core = CoreManager.shared.installedCores.first(where: { $0.id == id }) {
@@ -181,7 +180,6 @@ class CoreOptionsViewModel: ObservableObject {
             }
 
             loadingPhase = .readingDefinitions
-            try? await Task.sleep(for: .milliseconds(200))
 
             self.manager.setScope(systemID: self.systemID, gameFilename: self.gameFilename)
             if self.isSystemMode, let sysID = self.systemID {
@@ -191,10 +189,7 @@ class CoreOptionsViewModel: ObservableObject {
             }
 
             loadingPhase = .applyingOverrides
-            try? await Task.sleep(for: .milliseconds(200))
-
             loadingPhase = .preparingView
-            try? await Task.sleep(for: .milliseconds(150))
 
             self.isLoading = false
             self.loadingPhase = .idle

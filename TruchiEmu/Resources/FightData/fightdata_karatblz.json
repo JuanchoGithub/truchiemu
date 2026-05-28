@@ -1,0 +1,919 @@
+{
+  "schemaVersion": 1,
+  "romIds": [
+    "karatblz",
+    "karatblza",
+    "karatblzj",
+    "karatblzt",
+    "karatblzu"
+  ],
+  "name": "Karate Blazers",
+  "controls": {
+    "_A": "Attack",
+    "_S": "Start"
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_*": "Desperation Moves",
+    "_`": "Desperation Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Pick Up Object close to object",
+      "input": "_A",
+      "parsedInput": {
+        "raw": "_A",
+        "directions": [],
+        "buttons": [
+          [
+            "_A"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    }
+  ],
+  "characters": [
+    {
+      "name": "MARK",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6",
+          "parsedInput": {
+            "raw": "_6",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Jawing Elbow",
+          "input": "_A",
+          "parsedInput": {
+            "raw": "_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Energy Swing",
+          "input": "_A",
+          "parsedInput": {
+            "raw": "_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Swiping Energy Kicks",
+          "input": "_A_A_A",
+          "parsedInput": {
+            "raw": "_A_A_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A",
+                "_A",
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "High Energy Kicks",
+          "input": "_6_+_A_A_A",
+          "parsedInput": {
+            "raw": "_6_+_A_A_A",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_A",
+                "_A",
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Low Sweep",
+          "input": "_2_+_A",
+          "parsedInput": {
+            "raw": "_2_+_A",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Ground Kicks opponent knocked down",
+          "input": "_A_A_A",
+          "parsedInput": {
+            "raw": "_A_A_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A",
+                "_A",
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Charging Forearm @J-button",
+          "input": "_6",
+          "parsedInput": {
+            "raw": "_6",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Force Ball",
+          "input": "_A_+@J-button",
+          "parsedInput": {
+            "raw": "_A_+@J-button",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "GLEN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6",
+          "parsedInput": {
+            "raw": "_6",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Jawing Elbow",
+          "input": "_A",
+          "parsedInput": {
+            "raw": "_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Energy Swing",
+          "input": "_A",
+          "parsedInput": {
+            "raw": "_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Swiping Energy Kicks",
+          "input": "_A_A_A",
+          "parsedInput": {
+            "raw": "_A_A_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A",
+                "_A",
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "High Energy Kicks",
+          "input": "_6_+_A_A_A",
+          "parsedInput": {
+            "raw": "_6_+_A_A_A",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_A",
+                "_A",
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Low Sweep",
+          "input": "_2_+_A",
+          "parsedInput": {
+            "raw": "_2_+_A",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Ground Kicks opponent knocked down",
+          "input": "_A_A_A",
+          "parsedInput": {
+            "raw": "_A_A_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A",
+                "_A",
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Torpedo Headbutt @J-button",
+          "input": "_6",
+          "parsedInput": {
+            "raw": "_6",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Earth Blast",
+          "input": "_A_+@J-button",
+          "parsedInput": {
+            "raw": "_A_+@J-button",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "AKIRA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6",
+          "parsedInput": {
+            "raw": "_6",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Jawing Elbow",
+          "input": "_A",
+          "parsedInput": {
+            "raw": "_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Energy Swing",
+          "input": "_A",
+          "parsedInput": {
+            "raw": "_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Swiping Energy Kicks",
+          "input": "_A_A_A",
+          "parsedInput": {
+            "raw": "_A_A_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A",
+                "_A",
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "High Energy Kicks",
+          "input": "_6_+_A_A_A",
+          "parsedInput": {
+            "raw": "_6_+_A_A_A",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_A",
+                "_A",
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Low Sweep",
+          "input": "_2_+_A",
+          "parsedInput": {
+            "raw": "_2_+_A",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Ground Kicks opponent knocked down",
+          "input": "_A_A_A",
+          "parsedInput": {
+            "raw": "_A_A_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A",
+                "_A",
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Sliding Split @J-button",
+          "input": "_6",
+          "parsedInput": {
+            "raw": "_6",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Triple Spirit Kick",
+          "input": "_A_+@J-button",
+          "parsedInput": {
+            "raw": "_A_+@J-button",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "GIL",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6",
+          "parsedInput": {
+            "raw": "_6",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Jawing Elbow",
+          "input": "_A",
+          "parsedInput": {
+            "raw": "_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Energy Swing",
+          "input": "_A",
+          "parsedInput": {
+            "raw": "_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Swiping Energy Kicks",
+          "input": "_A_A_A",
+          "parsedInput": {
+            "raw": "_A_A_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A",
+                "_A",
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "High Energy Kicks",
+          "input": "_6_+_A_A_A",
+          "parsedInput": {
+            "raw": "_6_+_A_A_A",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_A",
+                "_A",
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Low Sweep",
+          "input": "_2_+_A",
+          "parsedInput": {
+            "raw": "_2_+_A",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Ground Kicks opponent knocked down",
+          "input": "_A_A_A",
+          "parsedInput": {
+            "raw": "_A_A_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A",
+                "_A",
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Charging Forearm @J-button",
+          "input": "_6",
+          "parsedInput": {
+            "raw": "_6",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Spinning Fire",
+          "input": "_A_+@J-button",
+          "parsedInput": {
+            "raw": "_A_+@J-button",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_A": "AT",
+    "_S": "ST"
+  }
+}

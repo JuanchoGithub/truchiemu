@@ -139,18 +139,24 @@ public struct SaveDirectoriesSection: View {
     
     private func calculateSizes() async {
         isCalculating = true
-        
-        let saveSize = calculateDirectorySize(at: directoryManager.savefilesDirectory)
-        let stateSize = calculateDirectorySize(at: directoryManager.statesDirectory)
-        
-        await MainActor.run {
-            saveFileSize = saveSize
-            saveStateSize = stateSize
-            isCalculating = false
-        }
+
+        let saveDir = directoryManager.savefilesDirectory
+        let stateDir = directoryManager.statesDirectory
+
+        let saveSize = await Task.detached(priority: .utility) {
+            Self.calculateDirectorySize(at: saveDir)
+        }.value
+
+        let stateSize = await Task.detached(priority: .utility) {
+            Self.calculateDirectorySize(at: stateDir)
+        }.value
+
+        saveFileSize = saveSize
+        saveStateSize = stateSize
+        isCalculating = false
     }
-    
-    private func calculateDirectorySize(at url: URL) -> Int64 {
+
+    private static func calculateDirectorySize(at url: URL) -> Int64 {
         var totalSize: Int64 = 0
         let fileManager = FileManager.default
         

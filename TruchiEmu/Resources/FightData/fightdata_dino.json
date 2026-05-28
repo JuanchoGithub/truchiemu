@@ -1,0 +1,1776 @@
+{
+  "schemaVersion": 1,
+  "romIds": [
+    "dino",
+    "dinoa",
+    "dinoj",
+    "dinou"
+  ],
+  "name": "Cadillacs and Dinosaurs",
+  "year": 1993,
+  "manufacturer": "Capcom",
+  "controls": {
+    "_A": "Attack",
+    "_B": "Jump",
+    "_S": "Start"
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_*": "Desperation Moves",
+    "_#": "Tag Moves",
+    "_`": "Desperation Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash _? _? (same direction)"
+    },
+    {
+      "category": "_)",
+      "name": "Pick Up Object close to object",
+      "input": "_A",
+      "parsedInput": {
+        "raw": "_A",
+        "directions": [],
+        "buttons": [
+          [
+            "_A"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Pick Up Weapon close to weapon",
+      "input": "_A",
+      "parsedInput": {
+        "raw": "_A",
+        "directions": [],
+        "buttons": [
+          [
+            "_A"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Pick Up Barrel close to barrel",
+      "input": "_6_+_A",
+      "parsedInput": {
+        "raw": "_6_+_A",
+        "directions": [
+          [
+            6
+          ]
+        ],
+        "buttons": [
+          [
+            "_A"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Throw Knife with Knife",
+      "input": "_A",
+      "parsedInput": {
+        "raw": "_A",
+        "directions": [],
+        "buttons": [
+          [
+            "_A"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Stab with Knife with Knife, close",
+      "input": "_A",
+      "parsedInput": {
+        "raw": "_A",
+        "directions": [],
+        "buttons": [
+          [
+            "_A"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    }
+  ],
+  "characters": [
+    {
+      "name": "JACK TENREC",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6",
+          "parsedInput": {
+            "raw": "_6",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Face-Stomach Punch",
+          "input": "_A_A",
+          "parsedInput": {
+            "raw": "_A_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A",
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Finishing Punch",
+          "input": "_A",
+          "parsedInput": {
+            "raw": "_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Shoulder Toss",
+          "input": "_4 / _6_+_A",
+          "parsedInput": {
+            "raw": "_4 / _6_+_A",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Front Flip Kick",
+          "input": "_2_8_+_A",
+          "parsedInput": {
+            "raw": "_2_8_+_A",
+            "directions": [
+              [
+                2,
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Jump Escape",
+          "input": "_B",
+          "parsedInput": {
+            "raw": "_B",
+            "directions": [],
+            "buttons": [
+              [
+                "_B"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Straight Punches",
+          "input": "_A_A_A",
+          "parsedInput": {
+            "raw": "_A_A_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A",
+                "_A",
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Finish Punch",
+          "input": "_A",
+          "parsedInput": {
+            "raw": "_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Shoulder Toss",
+          "input": "_2 / _8_+_A",
+          "parsedInput": {
+            "raw": "_2 / _8_+_A",
+            "directions": [
+              [
+                2
+              ],
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Dive Kick",
+          "input": "_B _A",
+          "parsedInput": {
+            "raw": "_B _A",
+            "directions": [],
+            "buttons": [
+              [
+                "_B",
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Dive Kick Backward",
+          "input": "_B _4_+_A",
+          "parsedInput": {
+            "raw": "_B _4_+_A",
+            "directions": [
+              [
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_B",
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Slide Kick dashing",
+          "input": "_A",
+          "parsedInput": {
+            "raw": "_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Flying Upward Kick dashing",
+          "input": "_B _A",
+          "parsedInput": {
+            "raw": "_B _A",
+            "directions": [],
+            "buttons": [
+              [
+                "_B",
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Front Flip Kick",
+          "input": "_2_8_+_A",
+          "parsedInput": {
+            "raw": "_2_8_+_A",
+            "directions": [
+              [
+                2,
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Final Uppercut",
+          "input": "_A_+_B",
+          "parsedInput": {
+            "raw": "_A_+_B",
+            "directions": [],
+            "buttons": [
+              [
+                "_A",
+                "_B"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_#",
+          "name": "Irish Whip stand close and above a partner for 2 seconds"
+        }
+      ],
+      "notes": [
+        "Power          4",
+        "Speed          3",
+        "Skill          3"
+      ]
+    },
+    {
+      "name": "HANNAH DUNDEE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6",
+          "parsedInput": {
+            "raw": "_6",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Slap-Knee Strike",
+          "input": "_A_A",
+          "parsedInput": {
+            "raw": "_A_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A",
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Finishing Knee",
+          "input": "_A",
+          "parsedInput": {
+            "raw": "_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Shoulder Toss",
+          "input": "_4 / _6_+_A",
+          "parsedInput": {
+            "raw": "_4 / _6_+_A",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Rolling Elbow",
+          "input": "_2_8_+_A",
+          "parsedInput": {
+            "raw": "_2_8_+_A",
+            "directions": [
+              [
+                2,
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Jump Escape",
+          "input": "_B",
+          "parsedInput": {
+            "raw": "_B",
+            "directions": [],
+            "buttons": [
+              [
+                "_B"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Multi Elbows",
+          "input": "_A_A_A",
+          "parsedInput": {
+            "raw": "_A_A_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A",
+                "_A",
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Side Kick",
+          "input": "_A",
+          "parsedInput": {
+            "raw": "_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Shoulder Toss",
+          "input": "_2 / _8_+_A",
+          "parsedInput": {
+            "raw": "_2 / _8_+_A",
+            "directions": [
+              [
+                2
+              ],
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Dive Kick",
+          "input": "_B _A",
+          "parsedInput": {
+            "raw": "_B _A",
+            "directions": [],
+            "buttons": [
+              [
+                "_B",
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Dive Kick Backward",
+          "input": "_B _4_+_A",
+          "parsedInput": {
+            "raw": "_B _4_+_A",
+            "directions": [
+              [
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_B",
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Turned Knee dashing",
+          "input": "_A",
+          "parsedInput": {
+            "raw": "_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Flying Split Kick dashing",
+          "input": "_B _A",
+          "parsedInput": {
+            "raw": "_B _A",
+            "directions": [],
+            "buttons": [
+              [
+                "_B",
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Wall Jump jump toward the wall",
+          "input": "_B",
+          "parsedInput": {
+            "raw": "_B",
+            "directions": [],
+            "buttons": [
+              [
+                "_B"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Dive Kick",
+          "input": "_A",
+          "parsedInput": {
+            "raw": "_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Rolling Elbow",
+          "input": "_2_8_+_A",
+          "parsedInput": {
+            "raw": "_2_8_+_A",
+            "directions": [
+              [
+                2,
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Spiral Flash",
+          "input": "_A_+_B",
+          "parsedInput": {
+            "raw": "_A_+_B",
+            "directions": [],
+            "buttons": [
+              [
+                "_A",
+                "_B"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_#",
+          "name": "Assist Spring stand close and above a partner for 2 seconds"
+        }
+      ],
+      "notes": [
+        "Power          2",
+        "Speed          4",
+        "Skill          5"
+      ]
+    },
+    {
+      "name": "MUSTAPHA CAIRO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6",
+          "parsedInput": {
+            "raw": "_6",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Arm Punch-Knee Bash",
+          "input": "_A_A",
+          "parsedInput": {
+            "raw": "_A_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A",
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Finishing Knee",
+          "input": "_A",
+          "parsedInput": {
+            "raw": "_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Shoulder Toss",
+          "input": "_4 / _6_+_A",
+          "parsedInput": {
+            "raw": "_4 / _6_+_A",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Backflip",
+          "input": "_2_8_+_A",
+          "parsedInput": {
+            "raw": "_2_8_+_A",
+            "directions": [
+              [
+                2,
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Jump Escape",
+          "input": "_B",
+          "parsedInput": {
+            "raw": "_B",
+            "directions": [],
+            "buttons": [
+              [
+                "_B"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Reach Punches-Reach Punch",
+          "input": "_A_A_A",
+          "parsedInput": {
+            "raw": "_A_A_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A",
+                "_A",
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Power Kick",
+          "input": "_A",
+          "parsedInput": {
+            "raw": "_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Shoulder Toss",
+          "input": "_2 / _8_+_A",
+          "parsedInput": {
+            "raw": "_2 / _8_+_A",
+            "directions": [
+              [
+                2
+              ],
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Dive Kick dashing",
+          "input": "_A",
+          "parsedInput": {
+            "raw": "_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Dive Kick Backward",
+          "input": "_B _4_+_A",
+          "parsedInput": {
+            "raw": "_B _4_+_A",
+            "directions": [
+              [
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_B",
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Dropkick dashing",
+          "input": "_A",
+          "parsedInput": {
+            "raw": "_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Flying Retract Kick dashing",
+          "input": "_B _A",
+          "parsedInput": {
+            "raw": "_B _A",
+            "directions": [],
+            "buttons": [
+              [
+                "_B",
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Wall Jump jump toward the wall",
+          "input": "_B",
+          "parsedInput": {
+            "raw": "_B",
+            "directions": [],
+            "buttons": [
+              [
+                "_B"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Dive Kick",
+          "input": "_A",
+          "parsedInput": {
+            "raw": "_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Backflip",
+          "input": "_2_8_+_A",
+          "parsedInput": {
+            "raw": "_2_8_+_A",
+            "directions": [
+              [
+                2,
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Get Off Me Spin",
+          "input": "_A_+_B",
+          "parsedInput": {
+            "raw": "_A_+_B",
+            "directions": [],
+            "buttons": [
+              [
+                "_A",
+                "_B"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_#",
+          "name": "Shoulder Launch stand close and above a partner for 2 seconds"
+        }
+      ],
+      "notes": [
+        "Power          3",
+        "Speed          5",
+        "Skill          3"
+      ]
+    },
+    {
+      "name": "MESS O'BRADOVICH",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6",
+          "parsedInput": {
+            "raw": "_6",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Headbutt-Low Knee",
+          "input": "_A_A",
+          "parsedInput": {
+            "raw": "_A_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A",
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Finishing Knee",
+          "input": "_A",
+          "parsedInput": {
+            "raw": "_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Pancake Slam",
+          "input": "_6_+_A",
+          "parsedInput": {
+            "raw": "_6_+_A",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Backdrop",
+          "input": "_4_+_A",
+          "parsedInput": {
+            "raw": "_4_+_A",
+            "directions": [
+              [
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Back Splash",
+          "input": "_2_8_+_A",
+          "parsedInput": {
+            "raw": "_2_8_+_A",
+            "directions": [
+              [
+                2,
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Jump Escape",
+          "input": "_B",
+          "parsedInput": {
+            "raw": "_B",
+            "directions": [],
+            "buttons": [
+              [
+                "_B"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Multi Punches",
+          "input": "_A_A_A",
+          "parsedInput": {
+            "raw": "_A_A_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A",
+                "_A",
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Jawing Upper",
+          "input": "_A",
+          "parsedInput": {
+            "raw": "_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Pancake Slam",
+          "input": "_2 / _8_+_A",
+          "parsedInput": {
+            "raw": "_2 / _8_+_A",
+            "directions": [
+              [
+                2
+              ],
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Dive Kick dashing",
+          "input": "_A",
+          "parsedInput": {
+            "raw": "_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Dive Kick Backward",
+          "input": "_B _4_+_A",
+          "parsedInput": {
+            "raw": "_B _4_+_A",
+            "directions": [
+              [
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_B",
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Body Splash dashing",
+          "input": "_A",
+          "parsedInput": {
+            "raw": "_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Air Uppercut dashing",
+          "input": "_B _A",
+          "parsedInput": {
+            "raw": "_B _A",
+            "directions": [],
+            "buttons": [
+              [
+                "_B",
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Back Splash",
+          "input": "_2_8_+_A",
+          "parsedInput": {
+            "raw": "_2_8_+_A",
+            "directions": [
+              [
+                2,
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Haymaker",
+          "input": "_A_+_B",
+          "parsedInput": {
+            "raw": "_A_+_B",
+            "directions": [],
+            "buttons": [
+              [
+                "_A",
+                "_B"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_#",
+          "name": "Rag Doll Toss stand close and above a partner for 2 seconds"
+        }
+      ],
+      "notes": [
+        "Power          5",
+        "Speed          2",
+        "Skill          4"
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_A": "AT",
+    "_B": "JM",
+    "_S": "ST"
+  }
+}

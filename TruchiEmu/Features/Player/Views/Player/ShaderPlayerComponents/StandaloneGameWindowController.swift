@@ -73,6 +73,19 @@ private var firstFrameTimer: Timer?
     var hideToolbarTimer: Timer?
     var skipAutoSaveOnClose: Bool = false
     private var gameLoadedObserver: NSObjectProtocol?
+    var moveListOverlayView: NSHostingView<AnyView>?
+
+    var toolbarBottomInset: CGFloat {
+        guard let toolbar = toolbarView else { return 0 }
+        return toolbar.frame.maxY
+    }
+
+    @MainActor lazy var moveListViewModel: MoveListOverlayViewModel = {
+        guard let runner = self.runner else {
+            fatalError("runner must be set before accessing moveListViewModel")
+        }
+        return MoveListOverlayViewModel(runner: runner)
+    }()
 
     // Dismiss any active sheets and remove the SwiftUI toolbar from the view hierarchy.
     // Must be called before releasing the controller to prevent SwiftUI view graph teardown
@@ -85,6 +98,8 @@ private var firstFrameTimer: Timer?
         }
         toolbarView?.removeFromSuperview()
         toolbarView = nil
+        moveListOverlayView?.removeFromSuperview()
+        moveListOverlayView = nil
         loadingOverlayView?.removeFromSuperview()
         loadingOverlayView = nil
         errorOverlayView?.removeFromSuperview()
@@ -205,13 +220,13 @@ super.init(window: window)
         containerView.addSubview(hostingView)
         self.toolbarView = hostingView
         
-    // Position toolbar at bottom center
-    NSLayoutConstraint.activate([
-        hostingView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
-        hostingView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -8)
-    ])
+        // Position toolbar at bottom center
+        NSLayoutConstraint.activate([
+            hostingView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+            hostingView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -8)
+        ])
 
-    // Add SwiftUI loading overlay (covers entire window during game launch)
+        // Add SwiftUI loading overlay (covers entire window during game launch)
     let loadingView = SafeHostingView(rootView: AnyView(GameLoadingOverlay(
         windowController: self
     ).environment(SystemDatabaseWrapper.shared)))
@@ -368,10 +383,12 @@ super.init(window: window)
     currentGameROM = rom
     pendingSystemID = rom.systemID ?? "default"
     pendingROMForBezel = rom
-    window?.title = "TruchiEmu - " + rom.displayName
-    window?.orderFrontRegardless()
-    window?.makeKeyAndOrderFront(nil)
-    NSApp.activate(ignoringOtherApps: true)
+        window?.title = "TruchiEmu - " + rom.displayName
+        window?.orderFrontRegardless()
+        window?.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+
+        moveListViewModel.loadForGame(rom)
 
         // Proceed with launch (bezel is loaded after first frame is ready)
         GameLauncher.shared.launchPhase = .loadingCore
@@ -673,6 +690,63 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         cheatManagerSheetWindow = nil
         runner?.isPaused = false
         XPCBridgeAdapter.shared.setPaused(false)
+    }
+
+    @MainActor
+    func toggleMoveListOverlay() {
+        if moveListViewModel.isOverlayVisible || moveListViewModel.needsCharacterSelection {
+            moveListViewModel.deactivate()
+            moveListOverlayView?.removeFromSuperview()
+            moveListOverlayView = nil
+            if runner?.isPaused == true {
+                runner?.isPaused = false
+                XPCBridgeAdapter.shared.setPaused(false)
+            }
+            return
+        }
+
+        runner?.isPaused = true
+        XPCBridgeAdapter.shared.setPaused(true)
+
+        moveListViewModel.activate()
+        installMoveListOverlay()
+    }
+
+    @MainActor
+    func confirmPendingCharacter() {
+        moveListViewModel.confirmPendingCharacter()
+        if moveListViewModel.isOverlayVisible {
+            if runner?.isPaused == true {
+                runner?.isPaused = false
+                XPCBridgeAdapter.shared.setPaused(false)
+            }
+        }
+    }
+
+    private func installMoveListOverlay() {
+        guard moveListOverlayView == nil, let containerView = window?.contentView else { return }
+
+        let hostingView = SafeHostingView(rootView: AnyView(
+            MoveListOverlay(viewModel: moveListViewModel, windowController: self)
+                .environment(SystemDatabaseWrapper.shared)
+        ))
+        hostingView.translatesAutoresizingMaskIntoConstraints = false
+        hostingView.wantsLayer = true
+        hostingView.layer?.backgroundColor = .clear
+        // Insert below toolbar so toolbar stays interactive
+        if let toolbar = toolbarView {
+            containerView.addSubview(hostingView, positioned: .below, relativeTo: toolbar)
+        } else {
+            containerView.addSubview(hostingView, positioned: .above, relativeTo: nil)
+        }
+        self.moveListOverlayView = hostingView
+
+        NSLayoutConstraint.activate([
+            hostingView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            hostingView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            hostingView.topAnchor.constraint(equalTo: containerView.topAnchor),
+            hostingView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
+        ])
     }
     
     func windowWillClose(_ notification: Notification) {

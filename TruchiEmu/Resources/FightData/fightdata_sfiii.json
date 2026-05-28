@@ -1,0 +1,4570 @@
+{
+  "schemaVersion": 1,
+  "romIds": [
+    "sfiii",
+    "sfiiia",
+    "sfiiih",
+    "sfiiij",
+    "sfiiin",
+    "sfiiina",
+    "sfiiiu"
+  ],
+  "name": "Street Fighter III: New Generation",
+  "year": 1997,
+  "manufacturer": "Capcom",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "^E": "Weak Punch",
+    "^F": "Medium Punch",
+    "^G": "Strong Punch",
+    "^H": "Weak Kick",
+    "^I": "Medium Kick",
+    "^J": "Strong Kick",
+    "_S": "Start"
+  },
+  "controlGroups": {
+    "_P": [
+      "^E",
+      "^F",
+      "^G"
+    ],
+    "_K": [
+      "^H",
+      "^I",
+      "^J"
+    ]
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_*": "Super Arts",
+    "_`": "Target Combos"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "_6_6",
+      "parsedInput": {
+        "raw": "_6_6",
+        "directions": [
+          [
+            6,
+            6
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      },
+      "condition": "-"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4",
+      "parsedInput": {
+        "raw": "_4_4",
+        "directions": [
+          [
+            4,
+            4
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      },
+      "condition": "-"
+    },
+    {
+      "category": "_)",
+      "name": "High Jump",
+      "input": "_2_8",
+      "parsedInput": {
+        "raw": "_2_8",
+        "directions": [
+          [
+            2,
+            8
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      },
+      "condition": "-"
+    },
+    {
+      "category": "_)",
+      "name": "Leap Attack",
+      "input": "_2_2_+_P / _K",
+      "parsedInput": {
+        "raw": "_2_2_+_P / _K",
+        "directions": [
+          [
+            2,
+            2
+          ]
+        ],
+        "buttons": [
+          [
+            "_P"
+          ],
+          [
+            "_K"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      },
+      "condition": "-"
+    },
+    {
+      "category": "_)",
+      "name": "High Parry being hit",
+      "input": "_6",
+      "parsedInput": {
+        "raw": "_6",
+        "directions": [
+          [
+            6
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      },
+      "condition": "-"
+    },
+    {
+      "category": "_)",
+      "name": "Low Parry being hit",
+      "input": "_2",
+      "parsedInput": {
+        "raw": "_2",
+        "directions": [
+          [
+            2
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      },
+      "condition": "-"
+    },
+    {
+      "category": "_)",
+      "name": "Air Parry: Fall Backward",
+      "input": "_^ being hit _6",
+      "parsedInput": {
+        "raw": "_^ being hit _6",
+        "directions": [
+          [
+            6
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": true,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      },
+      "condition": "-"
+    },
+    {
+      "category": "_)",
+      "name": "Air Parry: Fall Forward",
+      "input": "_^ being hit _2",
+      "parsedInput": {
+        "raw": "_^ being hit _2",
+        "directions": [
+          [
+            2
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": true,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      },
+      "condition": "-"
+    },
+    {
+      "category": "_)",
+      "name": "Safe Roll knocked down",
+      "input": "_2",
+      "parsedInput": {
+        "raw": "_2",
+        "directions": [
+          [
+            2
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      },
+      "condition": "-"
+    }
+  ],
+  "characters": [
+    {
+      "name": "RYU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Seoi Nage",
+          "input": "_4 / _6_+^F / ^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^F / ^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ],
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_(",
+          "name": "Tomoe Nage",
+          "input": "_4 / _6_+^I / ^J",
+          "parsedInput": {
+            "raw": "_4 / _6_+^I / ^J",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^I"
+              ],
+              [
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_)",
+          "name": "Sakotsu Wari",
+          "input": "_6_+^F",
+          "parsedInput": {
+            "raw": "_6_+^F",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Hadou Ken",
+          "input": "_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "!"
+        },
+        {
+          "category": "_@",
+          "name": "Shouryuu Ken",
+          "input": "_6_2_3_+_P",
+          "parsedInput": {
+            "raw": "_6_2_3_+_P",
+            "directions": [
+              [
+                6,
+                2,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "!"
+        },
+        {
+          "category": "_@",
+          "name": "Tatsumaki Senpuu Kyaku",
+          "input": "_2_1_4_+_K",
+          "parsedInput": {
+            "raw": "_2_1_4_+_K",
+            "directions": [
+              [
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Joudan Sokutou Geri",
+          "input": "_4_1_2_3_6_+_K",
+          "parsedInput": {
+            "raw": "_4_1_2_3_6_+_K",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_*",
+          "name": "① Shinkuu Hadou Ken",
+          "input": "_2_3_6_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "② Shin Shouryuu Ken",
+          "input": "_2_3_6_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "③ Denjin Hadou Ken",
+          "input": "_2_3_6_2_3_6_+_P (_O)",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+_P (_O)",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "- far ^G# _! ^J#",
+        "- Super Art ①                Level 1 / 7% Smaller",
+        "- Super Art ②                Level 1 / 7% Bigger",
+        "- Super Art ③                Level 1 / 21% Smaller"
+      ],
+      "combos": [
+        "Target Combo",
+        "Super Bar: Max Level and Size"
+      ]
+    },
+    {
+      "name": "KEN MASTERS",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Seoi Nage",
+          "input": "_4 / _6_+^F / ^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^F / ^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ],
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_(",
+          "name": "Tsukami Hiza Geri",
+          "input": "_4 / _6_+^I",
+          "parsedInput": {
+            "raw": "_4 / _6_+^I",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^I"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_(",
+          "name": "Tomoe Nage",
+          "input": "_4 / _6_+^J",
+          "parsedInput": {
+            "raw": "_4 / _6_+^J",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_)",
+          "name": "Inazuma Kakato Wari",
+          "input": "_O^I",
+          "parsedInput": {
+            "raw": "_O^I",
+            "directions": [],
+            "buttons": [
+              [
+                "^I"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_)",
+          "name": "Inazuma Kakato Wari",
+          "input": "_6_+^I",
+          "parsedInput": {
+            "raw": "_6_+^I",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^I"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Hadou Ken",
+          "input": "_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "!"
+        },
+        {
+          "category": "_@",
+          "name": "Shouryuu Ken",
+          "input": "_6_2_3_+_P",
+          "parsedInput": {
+            "raw": "_6_2_3_+_P",
+            "directions": [
+              [
+                6,
+                2,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "!"
+        },
+        {
+          "category": "_@",
+          "name": "Tatsumaki Senpuu Kyaku",
+          "input": "_2_1_4_+_K",
+          "parsedInput": {
+            "raw": "_2_1_4_+_K",
+            "directions": [
+              [
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_*",
+          "name": "① Shouryuu Reppa",
+          "input": "_2_3_6_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "② Shinryuu Ken",
+          "input": "_2_3_6_2_3_6_+_K (^*)",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+_K (^*)",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": true,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "③ Shippuu Jinrai Kyaku",
+          "input": "_2_3_6_2_3_6_+_K",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+_K",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "- ^Fc _! ^Gc",
+        "- Super Art ①                Level 1 / 7% Smaller",
+        "- Super Art ②                Level 2 / Standard",
+        "- Super Art ③                Level 2 / 29% Smaller"
+      ],
+      "combos": [
+        "Target Combo",
+        "Super Bar: Max Level and Size"
+      ]
+    },
+    {
+      "name": "DUDLEY",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Liver Crusher",
+          "input": "_4 / _6_+^F",
+          "parsedInput": {
+            "raw": "_4 / _6_+^F",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_(",
+          "name": "Dynamite Throw",
+          "input": "_4 / _6_+^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_)",
+          "name": "Slipping Jab",
+          "input": "_6_+^E",
+          "parsedInput": {
+            "raw": "_6_+^E",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_)",
+          "name": "Step Straight",
+          "input": "_6_+^G",
+          "parsedInput": {
+            "raw": "_6_+^G",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "!"
+        },
+        {
+          "category": "_)",
+          "name": "Liver Blow",
+          "input": "_6_+^I",
+          "parsedInput": {
+            "raw": "_6_+^I",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^I"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_)",
+          "name": "Dart Shot",
+          "input": "_6_+^J",
+          "parsedInput": {
+            "raw": "_6_+^J",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Machine Gun Blow",
+          "input": "_4_1_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_4_1_2_3_6_+_P",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Jet Upper",
+          "input": "_6_2_3_+_P",
+          "parsedInput": {
+            "raw": "_6_2_3_+_P",
+            "directions": [
+              [
+                6,
+                2,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "!"
+        },
+        {
+          "category": "_@",
+          "name": "Ducking",
+          "input": "_4_1_2_3_6_+_K",
+          "parsedInput": {
+            "raw": "_4_1_2_3_6_+_K",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "!"
+        },
+        {
+          "category": "_@",
+          "name": "",
+          "input": "^!Ducking Straight                                              _P",
+          "parsedInput": {
+            "raw": "^!Ducking Straight                                              _P",
+            "directions": [],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "!"
+        },
+        {
+          "category": "_@",
+          "name": "",
+          "input": "^!Ducking Upper                                                 _K (\"!\" on 1st hit)",
+          "parsedInput": {
+            "raw": "^!Ducking Upper                                                 _K (\"!\" on 1st hit)",
+            "directions": [],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "!"
+        },
+        {
+          "category": "_@",
+          "name": "Cross Counter",
+          "input": "_6_3_2_1_4_+_P (reverse jump/high/Specials)",
+          "parsedInput": {
+            "raw": "_6_3_2_1_4_+_P (reverse jump/high/Specials)",
+            "directions": [
+              [
+                6,
+                3,
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Punch and Cross Counter",
+          "input": "_6_3_2_1_4_6_+_P (reverse jump/high/Specials)",
+          "parsedInput": {
+            "raw": "_6_3_2_1_4_6_+_P (reverse jump/high/Specials)",
+            "directions": [
+              [
+                6,
+                3,
+                2,
+                1,
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_*",
+          "name": "① Rocket Uppercut",
+          "input": "_2_3_6_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "② Rolling Thunder",
+          "input": "_2_3_6_2_3_6_+_P (^*)",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+_P (^*)",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": true,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "②",
+          "input": "^!Dash                                                            _6_+^U",
+          "parsedInput": {
+            "raw": "^!Dash                                                            _6_+^U",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^U"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "③ Corkscrew Blow",
+          "input": "_2_3_6_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "- ^Ec _! ^F! _! ^I!",
+        "- ^Fc _! ^I# _! ^G#",
+        "- ^Hc _! ^I# _! ^F! _! ^G##",
+        "- ^I# _! ^J# _! ^G##",
+        "- _6_+^E# _! ^Fc",
+        "- _6_+^I# _! ^I# _! ^G#",
+        "- _6_+^J# _! ^I!",
+        "- _2_+^Hc _! ^I!",
+        "- Super Art ①                Level 2 / 21% Smaller",
+        "- Super Art ②                Level 1 / Standard",
+        "- Super Art ③                Level 3 / 29% Smaller"
+      ],
+      "combos": [
+        "Target Combos",
+        "Super Bar: Max Level and Size"
+      ]
+    },
+    {
+      "name": "YUN LEE / YANG LEE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Monkey Flip",
+          "input": "_4 / _6_+^F / ^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^F / ^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ],
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_(",
+          "name": "Hiza Geri",
+          "input": "_4 / _6_+^I / ^J",
+          "parsedInput": {
+            "raw": "_4 / _6_+^I / ^J",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^I"
+              ],
+              [
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_)",
+          "name": "Senpuu Kyaku",
+          "input": "_6_+^I",
+          "parsedInput": {
+            "raw": "_6_+^I",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^I"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_)",
+          "name": "Koushu close",
+          "input": "_6_+^G",
+          "parsedInput": {
+            "raw": "_6_+^G",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_)",
+          "name": "Raigeki Shuu",
+          "input": "_^_3_+_K",
+          "parsedInput": {
+            "raw": "_^_3_+_K",
+            "directions": [
+              [
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Zesshou Hohou",
+          "input": "_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Senkyuutai",
+          "input": "_2_3_6_+_K",
+          "parsedInput": {
+            "raw": "_2_3_6_+_K",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Kobokushi",
+          "input": "_2_1_4_+_P",
+          "parsedInput": {
+            "raw": "_2_1_4_+_P",
+            "directions": [
+              [
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "!"
+        },
+        {
+          "category": "_@",
+          "name": "Fake Kobokushi",
+          "input": "_2_1_4_+^U",
+          "parsedInput": {
+            "raw": "_2_1_4_+^U",
+            "directions": [
+              [
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^U"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Zenpou Tenshin close",
+          "input": "_6_3_2_1_4_+_K",
+          "parsedInput": {
+            "raw": "_6_3_2_1_4_+_K",
+            "directions": [
+              [
+                6,
+                3,
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_*",
+          "name": "① Tenshin Senkyuutai",
+          "input": "_2_3_6_2_3_6_+_K",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+_K",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "② Sourai Rengeki",
+          "input": "_2_3_6_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "③ Gen'ei Jin",
+          "input": "_2_3_6_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "- ^Ec _! ^Fc _! ^G# _! _4_+^G!",
+        "- ^Ec _! ^H#",
+        "- ^Ec _! _2_+^Fc",
+        "- ^Fc _! ^Fc",
+        "- ^Fc _! ^G# _! _4_+^G!",
+        "- ^Fc _! _2_+^Fc",
+        "- _2_+^Ec _! _2_+^Fc",
+        "- jump forward ^E# _! _6_+^H#",
+        "- Super Art ①                Level 2 / Standard",
+        "- Super Art ②                Level 3 / 21% Smaller",
+        "- Super Art ③                Level 1 / 43% Smaller"
+      ],
+      "combos": [
+        "Target Combos",
+        "Super Bar: Max Level and Size"
+      ]
+    },
+    {
+      "name": "IBUKI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Yamitsudzura",
+          "input": "_4 / _6_+^F / ^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^F / ^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ],
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_(",
+          "name": "Tobizaru",
+          "input": "_^_4 / _6_+^F / ^G",
+          "parsedInput": {
+            "raw": "_^_4 / _6_+^F / ^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ],
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_)",
+          "name": "Rasen Chuu far",
+          "input": "^G",
+          "parsedInput": {
+            "raw": "^G",
+            "directions": [],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_)",
+          "name": "",
+          "input": "^!Oiura Ken                                                     ^G",
+          "parsedInput": {
+            "raw": "^!Oiura Ken                                                     ^G",
+            "directions": [],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_)",
+          "name": "Koube Kudaki",
+          "input": "_6_+^I",
+          "parsedInput": {
+            "raw": "_6_+^I",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^I"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_)",
+          "name": "Bonshou Geri",
+          "input": "_6_+^J",
+          "parsedInput": {
+            "raw": "_6_+^J",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_)",
+          "name": "You Men",
+          "input": "_4_+^F",
+          "parsedInput": {
+            "raw": "_4_+^F",
+            "directions": [
+              [
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Kunai",
+          "input": "_^_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_^_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "!"
+        },
+        {
+          "category": "_@",
+          "name": "Kubi Ori",
+          "input": "_2_3_6_+_K",
+          "parsedInput": {
+            "raw": "_2_3_6_+_K",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Kazekiri",
+          "input": "_6_2_3_+_K",
+          "parsedInput": {
+            "raw": "_6_2_3_+_K",
+            "directions": [
+              [
+                6,
+                2,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "!"
+        },
+        {
+          "category": "_@",
+          "name": "Hien",
+          "input": "_4_2_1_+_K (\"!\" on 2nd hit)",
+          "parsedInput": {
+            "raw": "_4_2_1_+_K (\"!\" on 2nd hit)",
+            "directions": [
+              [
+                4,
+                2,
+                1
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "!"
+        },
+        {
+          "category": "_@",
+          "name": "Raida close",
+          "input": "_6_3_2_1_4_+_P",
+          "parsedInput": {
+            "raw": "_6_3_2_1_4_+_P",
+            "directions": [
+              [
+                6,
+                3,
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Tsumuji",
+          "input": "_2_1_4_+_K (\"!\" on 1st hit)",
+          "parsedInput": {
+            "raw": "_2_1_4_+_K (\"!\" on 1st hit)",
+            "directions": [
+              [
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "!"
+        },
+        {
+          "category": "_@",
+          "name": "",
+          "input": "^!Medium Kick                                                   _K",
+          "parsedInput": {
+            "raw": "^!Medium Kick                                                   _K",
+            "directions": [],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "",
+          "input": "^!Low Kick                                                      _2_+_K",
+          "parsedInput": {
+            "raw": "^!Low Kick                                                      _2_+_K",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_*",
+          "name": "① Kasumi Suzaku",
+          "input": "_^_2_3_6_2_3_6_+_P (^*)",
+          "parsedInput": {
+            "raw": "_^_2_3_6_2_3_6_+_P (^*)",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": true,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "② Yoroi Doushi",
+          "input": "_2_3_6_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "③ Hashin Shou",
+          "input": "_2_3_6_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "- ^Ec _! ^Fc# _! _2_+^J# _! ^J#",
+        "- ^Fc# _! _2_+^J# _! ^J#",
+        "- ^Gc# _! _2_+^J# _! ^J#",
+        "- ^H# _! ^Ic _! ^J#",
+        "- _2_+^Fc _! _2_+^G#",
+        "- _2_+^J# _! ^Jj",
+        "- far ^E# _! ^F# _! _6_+^H#",
+        "- far ^I# _! _6_+^I#",
+        "- far _4_+^Fc# _! _2_+^J# _! ^J#",
+        "- _^^G# _! _6_+^I#",
+        "- jump forward ^E# _! _6_+^G#",
+        "- jump forward ^H# _! _6_+^I#",
+        "- Super Art ①                Level 2 / 36% Smaller",
+        "- Super Art ②                Level 1 / 14% Smaller",
+        "- Super Art ③                Level 2 / 43% Smaller"
+      ],
+      "combos": [
+        "Target Combos",
+        "Super Bar: Max Level and Size"
+      ]
+    },
+    {
+      "name": "ELENA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Leg Lift Throw",
+          "input": "_4 / _6_+^F / ^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^F / ^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ],
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_)",
+          "name": "Handstand Kick",
+          "input": "_6_+^F",
+          "parsedInput": {
+            "raw": "_6_+^F",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_)",
+          "name": "Sliding",
+          "input": "_3_+^J",
+          "parsedInput": {
+            "raw": "_3_+^J",
+            "directions": [
+              [
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Rhino Horn",
+          "input": "_4_1_2_3_6_+_K",
+          "parsedInput": {
+            "raw": "_4_1_2_3_6_+_K",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Mallet Smash",
+          "input": "_6_3_2_1_4_+_P",
+          "parsedInput": {
+            "raw": "_6_3_2_1_4_+_P",
+            "directions": [
+              [
+                6,
+                3,
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Scratch Wheel",
+          "input": "_6_2_3_+_K (\"!\" on 1st hit with ^I / ^J)",
+          "parsedInput": {
+            "raw": "_6_2_3_+_K (\"!\" on 1st hit with ^I / ^J)",
+            "directions": [
+              [
+                6,
+                2,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_K",
+                "^I"
+              ],
+              [
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "!"
+        },
+        {
+          "category": "_*",
+          "name": "① Spinning Beat",
+          "input": "_2_3_6_2_3_6_+_K",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+_K",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "② Brave Dance",
+          "input": "_2_3_6_2_3_6_+_K",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+_K",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "③ Healing",
+          "input": "_2_3_6_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "③",
+          "input": "^!Cancel                                                          ^W",
+          "parsedInput": {
+            "raw": "^!Cancel                                                          ^W",
+            "directions": [],
+            "buttons": [
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "- _^^E# _! ^I#",
+        "- Super Art ①                Level 2 / 43% Smaller",
+        "- Super Art ②                Level 1 / 14% Smaller",
+        "- Super Art ③                Level 1 / 7% Bigger"
+      ],
+      "combos": [
+        "Target Combo",
+        "Super Bar: Max Level and Size"
+      ]
+    },
+    {
+      "name": "NECRO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Shoulder Attack",
+          "input": "_4 / _6_+^F / ^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^F / ^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ],
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_(",
+          "name": "Frankensteiner",
+          "input": "_4 / _6_+^I / ^J",
+          "parsedInput": {
+            "raw": "_4 / _6_+^I / ^J",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^I"
+              ],
+              [
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_)",
+          "name": "Elbow",
+          "input": "_4_+^E / ^F",
+          "parsedInput": {
+            "raw": "_4_+^E / ^F",
+            "directions": [
+              [
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^E"
+              ],
+              [
+                "^F"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_)",
+          "name": "Knee Attack",
+          "input": "_4_+^I",
+          "parsedInput": {
+            "raw": "_4_+^I",
+            "directions": [
+              [
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^I"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_)",
+          "name": "Knee Missile",
+          "input": "_4_+^J",
+          "parsedInput": {
+            "raw": "_4_+^J",
+            "directions": [
+              [
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "!"
+        },
+        {
+          "category": "_)",
+          "name": "Necro Upper",
+          "input": "_1_+^G",
+          "parsedInput": {
+            "raw": "_1_+^G",
+            "directions": [
+              [
+                1
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_)",
+          "name": "Drill Kick",
+          "input": "_^_2_+^I / ^J",
+          "parsedInput": {
+            "raw": "_^_2_+^I / ^J",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "^I"
+              ],
+              [
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Tornado Hook",
+          "input": "_4_1_2_3_6_+_P (\"!\" on 2nd hit with ^E / ^F and 3rd hit with ^G)",
+          "parsedInput": {
+            "raw": "_4_1_2_3_6_+_P (\"!\" on 2nd hit with ^E / ^F and 3rd hit with ^G)",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P",
+                "^E"
+              ],
+              [
+                "^F",
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "!"
+        },
+        {
+          "category": "_@",
+          "name": "Denji Blast",
+          "input": "_6_2_3_+_P (^*)",
+          "parsedInput": {
+            "raw": "_6_2_3_+_P (^*)",
+            "directions": [
+              [
+                6,
+                2,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": true,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "!"
+        },
+        {
+          "category": "_@",
+          "name": "Snake Fang",
+          "input": "_4_1_2_3_6_+_K",
+          "parsedInput": {
+            "raw": "_4_1_2_3_6_+_K",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "German Suplex from behind",
+          "input": "_4_1_2_3_6_+_K",
+          "parsedInput": {
+            "raw": "_4_1_2_3_6_+_K",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Viper",
+          "input": "_2_1_4_+_P",
+          "parsedInput": {
+            "raw": "_2_1_4_+_P",
+            "directions": [
+              [
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Rising Cobra",
+          "input": "_2_1_4_+_K",
+          "parsedInput": {
+            "raw": "_2_1_4_+_K",
+            "directions": [
+              [
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_*",
+          "name": "① Magnetic Storm",
+          "input": "_2_3_6_2_3_6_+_P (^*)",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+_P (^*)",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": true,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "② Slam Dance close",
+          "input": "_2_3_6_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "③ Electric Snake",
+          "input": "_2_3_6_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "- ^Hc _! ^Fc",
+        "- Super Art ①                Level 2 / 14% Smaller",
+        "- Super Art ②                Level 1 / 14% Smaller",
+        "- Super Art ③                Level 2 / 43% Smaller"
+      ],
+      "combos": [
+        "Target Combo",
+        "Super Bar: Max Level and Size"
+      ]
+    },
+    {
+      "name": "ORO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Kubi-jime Kataguruma",
+          "input": "_4 / _6_+^F / ^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^F / ^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ],
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_(",
+          "name": "Tomoe Nage",
+          "input": "_4 / _6_+^I / ^J",
+          "parsedInput": {
+            "raw": "_4 / _6_+^I / ^J",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^I"
+              ],
+              [
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_(",
+          "name": "Kuuchuu Jigoku Guruma",
+          "input": "_^_4 / _6_+^G",
+          "parsedInput": {
+            "raw": "_^_4 / _6_+^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Nichirin Shou",
+          "input": "^4_6_+_P",
+          "parsedInput": {
+            "raw": "^4_6_+_P",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 4,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "!"
+        },
+        {
+          "category": "_@",
+          "name": "Oni Yanma",
+          "input": "^2_8_+_P",
+          "parsedInput": {
+            "raw": "^2_8_+_P",
+            "directions": [
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 2,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "!"
+        },
+        {
+          "category": "_@",
+          "name": "Niou Riki close",
+          "input": "_6_3_2_1_4_+_P",
+          "parsedInput": {
+            "raw": "_6_3_2_1_4_+_P",
+            "directions": [
+              [
+                6,
+                3,
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Jinchuu Watari",
+          "input": "_2_3_6_+_K",
+          "parsedInput": {
+            "raw": "_2_3_6_+_K",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Hitobashira Nobori",
+          "input": "_^_2_3_6_+_K",
+          "parsedInput": {
+            "raw": "_^_2_3_6_+_K",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_*",
+          "name": "① Kishin Riki",
+          "input": "_2_3_6_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "①",
+          "input": "^!Kishin Kubi-jime Kataguruma                                     close _P",
+          "parsedInput": {
+            "raw": "^!Kishin Kubi-jime Kataguruma                                     close _P",
+            "directions": [],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "①",
+          "input": "^!Kishin Kuuchuu Jigoku Guruma                                    _^ close _P",
+          "parsedInput": {
+            "raw": "^!Kishin Kuuchuu Jigoku Guruma                                    _^ close _P",
+            "directions": [],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "② Yagyou Dama",
+          "input": "_2_3_6_2_3_6_+_P / ^U",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+_P / ^U",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ],
+              [
+                "^U"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "③ Tengu Stone",
+          "input": "_2_3_6_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "- Super Art ①                Level 1 / Standard",
+        "- Super Art ②                Level 3 / 21% Smaller",
+        "- Super Art ③                Level 1 / 14% Smaller"
+      ],
+      "combos": [
+        "Super Bar: Max Level and Size"
+      ]
+    },
+    {
+      "name": "ALEX",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Body Slam",
+          "input": "_4 / _6_+^F / ^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^F / ^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ],
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_)",
+          "name": "High Chop",
+          "input": "_6_+^F",
+          "parsedInput": {
+            "raw": "_6_+^F",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_)",
+          "name": "Headbutt",
+          "input": "_4_+^G",
+          "parsedInput": {
+            "raw": "_4_+^G",
+            "directions": [
+              [
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_)",
+          "name": "Sleeper Hold from behind",
+          "input": "_4_+^G",
+          "parsedInput": {
+            "raw": "_4_+^G",
+            "directions": [
+              [
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_)",
+          "name": "Flying Cross Chop",
+          "input": "_^_2_+^G",
+          "parsedInput": {
+            "raw": "_^_2_+^G",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Flash Chop",
+          "input": "_2_3_6_+_P (\"!\" with ^F / ^G)",
+          "parsedInput": {
+            "raw": "_2_3_6_+_P (\"!\" with ^F / ^G)",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P",
+                "^F"
+              ],
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "!"
+        },
+        {
+          "category": "_@",
+          "name": "Powerbomb close",
+          "input": "_6_3_2_1_4_+_P",
+          "parsedInput": {
+            "raw": "_6_3_2_1_4_+_P",
+            "directions": [
+              [
+                6,
+                3,
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Power Backdrop from behind",
+          "input": "_6_3_2_1_4_+_P",
+          "parsedInput": {
+            "raw": "_6_3_2_1_4_+_P",
+            "directions": [
+              [
+                6,
+                3,
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Air Knee Smash",
+          "input": "_6_2_3_+_K",
+          "parsedInput": {
+            "raw": "_6_2_3_+_K",
+            "directions": [
+              [
+                6,
+                2,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Air Stampede",
+          "input": "^2_8_+_K",
+          "parsedInput": {
+            "raw": "^2_8_+_K",
+            "directions": [
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 2,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_*",
+          "name": "① Hyper Bomb close _x_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "② Boomerang Raid",
+          "input": "_2_3_6_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "③ Stun Gun Headbutt",
+          "input": "_2_3_6_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "- Super Art ①                Level 1 / 14% Bigger",
+        "- Super Art ②                Level 2 / 43% Smaller",
+        "- Super Art ③                Level 1 / 29% Smaller"
+      ],
+      "combos": [
+        "Super Bar: Max Level and Size"
+      ]
+    },
+    {
+      "name": "SEAN MATSUDA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Seoi Nage",
+          "input": "_4 / _6_+^F / ^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^F / ^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ],
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_(",
+          "name": "Tomoe Nage",
+          "input": "_4 / _6_+^I / ^J",
+          "parsedInput": {
+            "raw": "_4 / _6_+^I / ^J",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^I"
+              ],
+              [
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Sean Tackle",
+          "input": "_4_1_2_3_6_+_P (_O)",
+          "parsedInput": {
+            "raw": "_4_1_2_3_6_+_P (_O)",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Dragon Smash",
+          "input": "_6_2_3_+_P",
+          "parsedInput": {
+            "raw": "_6_2_3_+_P",
+            "directions": [
+              [
+                6,
+                2,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "!"
+        },
+        {
+          "category": "_@",
+          "name": "Tornado",
+          "input": "_2_1_4_+_K",
+          "parsedInput": {
+            "raw": "_2_1_4_+_K",
+            "directions": [
+              [
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Ryuubi Kyaku",
+          "input": "_2_3_6_+_K",
+          "parsedInput": {
+            "raw": "_2_3_6_+_K",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Zenpou Tenshin",
+          "input": "_2_1_4_+_P",
+          "parsedInput": {
+            "raw": "_2_1_4_+_P",
+            "directions": [
+              [
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_*",
+          "name": "① Hadou Burst",
+          "input": "_2_3_6_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "② Shouryuu Cannon",
+          "input": "_2_3_6_2_3_6_+_P (^*)",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+_P (^*)",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": true,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "③ Hyper Tornado",
+          "input": "_2_3_6_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "- ^Fc _! ^G#",
+        "- Super Art ①                Level 3 / 36% Smaller",
+        "- Super Art ②                Level 3 / 14% Smaller",
+        "- Super Art ③                Level 2 / Standard"
+      ],
+      "combos": [
+        "Target Combo",
+        "Super Bar: Max Level and Size"
+      ]
+    },
+    {
+      "name": "GILL",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Guilty Bomb",
+          "input": "_4 / _6_+^F / ^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^F / ^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ],
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_(",
+          "name": "Impact Claw",
+          "input": "_4 / _6_+^I / ^J",
+          "parsedInput": {
+            "raw": "_4 / _6_+^I / ^J",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^I"
+              ],
+              [
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_)",
+          "name": "Palm Upper",
+          "input": "_4_+^F",
+          "parsedInput": {
+            "raw": "_4_+^F",
+            "directions": [
+              [
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Pyro-kinesis on the left side",
+          "input": "_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Cryo-kinesis on the right side",
+          "input": "_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Cyber Lariat: Cryo Heat on the left side",
+          "input": "_6_2_3_+_P",
+          "parsedInput": {
+            "raw": "_6_2_3_+_P",
+            "directions": [
+              [
+                6,
+                2,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Cyber Lariat: Pyro Heat on the right side",
+          "input": "_6_2_3_+_P",
+          "parsedInput": {
+            "raw": "_6_2_3_+_P",
+            "directions": [
+              [
+                6,
+                2,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Moonsault Knee Drop",
+          "input": "_6_3_2_1_4_+_K",
+          "parsedInput": {
+            "raw": "_6_3_2_1_4_+_K",
+            "directions": [
+              [
+                6,
+                3,
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_@",
+          "name": "Psycho Headbutt",
+          "input": "_2_1_4_+_P",
+          "parsedInput": {
+            "raw": "_2_1_4_+_P",
+            "directions": [
+              [
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "-"
+        },
+        {
+          "category": "_*",
+          "name": "Ressurection lose a round"
+        }
+      ],
+      "notes": [
+        "- ^Ec _! ^F#",
+        "- Super Art                  Level 1 / 14% Bigger"
+      ],
+      "combos": [
+        "Target Combo",
+        "Super Bar: Max Level and Size"
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "^E": "LP",
+    "^F": "MP",
+    "^G": "HP",
+    "^H": "LK",
+    "^I": "MK",
+    "^J": "HK",
+    "_S": "ST"
+  }
+}

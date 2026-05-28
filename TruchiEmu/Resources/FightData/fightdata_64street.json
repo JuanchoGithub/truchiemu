@@ -1,0 +1,583 @@
+{
+  "schemaVersion": 1,
+  "romIds": [
+    "64street",
+    "64streetj",
+    "64streetja"
+  ],
+  "name": "64th. Street: A Detective Story",
+  "year": 1991,
+  "manufacturer": "Jaleco",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "_A": "Attack",
+    "_S": "Start"
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_*": "Desperation Moves",
+    "_#": "Tag Moves",
+    "_`": "Desperation Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Pick Up Object close to object",
+      "input": "_A",
+      "parsedInput": {
+        "raw": "_A",
+        "directions": [],
+        "buttons": [
+          [
+            "_A"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Pick Up Weapon close to weapon",
+      "input": "_A",
+      "parsedInput": {
+        "raw": "_A",
+        "directions": [],
+        "buttons": [
+          [
+            "_A"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    }
+  ],
+  "characters": [
+    {
+      "name": "RICK",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6",
+          "parsedInput": {
+            "raw": "_6",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Driving Knee",
+          "input": "_A",
+          "parsedInput": {
+            "raw": "_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Shoulder Throw",
+          "input": "_4 / _6_+_A",
+          "parsedInput": {
+            "raw": "_4 / _6_+_A",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Toss into Background",
+          "input": "_8_+_A",
+          "parsedInput": {
+            "raw": "_8_+_A",
+            "directions": [
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Jump Escape @J-button"
+        },
+        {
+          "category": "_)",
+          "name": "Gut Punches",
+          "input": "_A_A_A_A",
+          "parsedInput": {
+            "raw": "_A_A_A_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A",
+                "_A",
+                "_A",
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Burn Fist",
+          "input": "_6_+_A",
+          "parsedInput": {
+            "raw": "_6_+_A",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Axe Handle with low life",
+          "input": "_A_+@J-button",
+          "parsedInput": {
+            "raw": "_A_+@J-button",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Spiral Upper",
+          "input": "_A_+@J-button",
+          "parsedInput": {
+            "raw": "_A_+@J-button",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_#",
+          "name": "Split Chaos Grab Allen",
+          "input": "_A",
+          "parsedInput": {
+            "raw": "_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_#",
+          "name": "Jump Kick Toss Grab Allen",
+          "input": "_4 / _6_+_A",
+          "parsedInput": {
+            "raw": "_4 / _6_+_A",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "ALLEN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6",
+          "parsedInput": {
+            "raw": "_6",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Gut Punch",
+          "input": "_A",
+          "parsedInput": {
+            "raw": "_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Shoulder Throw",
+          "input": "_4 / _6_+_A",
+          "parsedInput": {
+            "raw": "_4 / _6_+_A",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Toss into Background",
+          "input": "_8_+_A",
+          "parsedInput": {
+            "raw": "_8_+_A",
+            "directions": [
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Jump Escape @J-button"
+        },
+        {
+          "category": "_)",
+          "name": "Backfist Combo",
+          "input": "_A_A_A_A",
+          "parsedInput": {
+            "raw": "_A_A_A_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A",
+                "_A",
+                "_A",
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Dash Tackle",
+          "input": "_6_+_A",
+          "parsedInput": {
+            "raw": "_6_+_A",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Back Kick with low life",
+          "input": "_A_+@J-button",
+          "parsedInput": {
+            "raw": "_A_+@J-button",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Chopper Kick",
+          "input": "_A_+@J-button",
+          "parsedInput": {
+            "raw": "_A_+@J-button",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_#",
+          "name": "Split Chaos Grab Rick",
+          "input": "_A",
+          "parsedInput": {
+            "raw": "_A",
+            "directions": [],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_#",
+          "name": "Hop Smash Toss in Front Grab Rick",
+          "input": "_4 / _6_+_A",
+          "parsedInput": {
+            "raw": "_4 / _6_+_A",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_A": "AT",
+    "_S": "ST"
+  }
+}

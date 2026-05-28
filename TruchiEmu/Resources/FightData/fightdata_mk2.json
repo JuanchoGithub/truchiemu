@@ -1,0 +1,1627 @@
+{
+  "schemaVersion": 1,
+  "romIds": [
+    "mk2",
+    "mk2r30",
+    "mk2r31e",
+    "mk2r32e",
+    "mk2r11",
+    "mk2r14",
+    "mk2r20",
+    "mk2r21"
+  ],
+  "name": "Mortal Kombat II",
+  "year": 1993,
+  "manufacturer": "Midway",
+  "credits": "by: Fabricio Coroquer (Created by: DrDaMour)",
+  "controls": {
+    "^G": "High Punch",
+    "^E": "Low Punch",
+    "_G": "Block",
+    "^J": "High Kick",
+    "^H": "Low Kick",
+    "_S": "Start"
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_`": "Babality"
+  },
+  "commonCommands": [
+    {
+      "category": "_(",
+      "name": "Throw close",
+      "input": "^E",
+      "parsedInput": {
+        "raw": "^E",
+        "directions": [],
+        "buttons": [
+          [
+            "^E"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Uppercut",
+      "input": "_2_+^G",
+      "parsedInput": {
+        "raw": "_2_+^G",
+        "directions": [
+          [
+            2
+          ]
+        ],
+        "buttons": [
+          [
+            "^G"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Sweep",
+      "input": "_4_+^H",
+      "parsedInput": {
+        "raw": "_4_+^H",
+        "directions": [
+          [
+            4
+          ]
+        ],
+        "buttons": [
+          [
+            "^H"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Roundhouse",
+      "input": "_4_+^J",
+      "parsedInput": {
+        "raw": "_4_+^J",
+        "directions": [
+          [
+            4
+          ]
+        ],
+        "buttons": [
+          [
+            "^J"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Avoid Throw when thrown",
+      "input": "^4",
+      "parsedInput": {
+        "raw": "^4",
+        "directions": [],
+        "buttons": [],
+        "charge": true,
+        "chargeDirection": 4,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    }
+  ],
+  "commonNotes": [
+    "Finishing Moves",
+    "- Stage Fatality: The Dead Pool                                          _O^E_+^H, _2_+^G"
+  ],
+  "characters": [
+    {
+      "name": "LIU KANG",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "High Fireball",
+          "input": "(_^)_6_6_+^G",
+          "parsedInput": {
+            "raw": "(_^)_6_6_+^G",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Low Fireball",
+          "input": "_6_6_+^E",
+          "parsedInput": {
+            "raw": "_6_6_+^E",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Flying Kick",
+          "input": "_6_6_+^J",
+          "parsedInput": {
+            "raw": "_6_6_+^J",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Bicycle Kick",
+          "input": "_O^H for 3 seconds",
+          "parsedInput": {
+            "raw": "_O^H for 3 seconds",
+            "directions": [],
+            "buttons": [
+              [
+                "^H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Fatality 1                                                             (anywhere) _6_9_8_7_4_1_2_3_6",
+        "- Fatality 2                                                             (close) _2_6_4_4_+^J",
+        "- Stage Fatality                                                         _4_6_6_+^H",
+        "- Friendship                                                             _6_4_4_4_+^H",
+        "- Babality                                                               _2_2_6_4_+^H"
+      ]
+    },
+    {
+      "name": "KUNG LAO",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Hat Throw",
+          "input": "_4_6_+^E",
+          "parsedInput": {
+            "raw": "_4_6_+^E",
+            "directions": [
+              [
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Control",
+          "input": "_2 / _8",
+          "parsedInput": {
+            "raw": "_2 / _8",
+            "directions": [
+              [
+                2
+              ],
+              [
+                8
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Spin Attack",
+          "input": "_8_8_+^H (^*)",
+          "parsedInput": {
+            "raw": "_8_8_+^H (^*)",
+            "directions": [
+              [
+                8,
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "^H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": true,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Teleport",
+          "input": "_2_8",
+          "parsedInput": {
+            "raw": "_2_8",
+            "directions": [
+              [
+                2,
+                8
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Torpedo Kick",
+          "input": "_^_2_+^J",
+          "parsedInput": {
+            "raw": "_^_2_+^J",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Fatality 1                                                             (sweep) _6_6_6_+^H",
+        "- Fatality 2                                                             (full screen) _O^E_4_6 (guide the hat to hit the neck)",
+        "- Stage Fatality                                                         _6_6_6_+^G",
+        "- Friendship                                                             _4_4_4_2_+^J",
+        "- Babality                                                               _4_4_6_6_+^J"
+      ]
+    },
+    {
+      "name": "JOHNNY CAGE",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "High Green Bolt",
+          "input": "_6_3_2_1_4_+^G",
+          "parsedInput": {
+            "raw": "_6_3_2_1_4_+^G",
+            "directions": [
+              [
+                6,
+                3,
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Low Green Bolt",
+          "input": "_4_1_2_3_6_+^E",
+          "parsedInput": {
+            "raw": "_4_1_2_3_6_+^E",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Shadow Uppercut",
+          "input": "_4_2_4_+^G",
+          "parsedInput": {
+            "raw": "_4_2_4_+^G",
+            "directions": [
+              [
+                4,
+                2,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Shadow Kick",
+          "input": "_4_6_+^H",
+          "parsedInput": {
+            "raw": "_4_6_+^H",
+            "directions": [
+              [
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Nut Punch",
+          "input": "^E_+_G",
+          "parsedInput": {
+            "raw": "^E_+_G",
+            "directions": [],
+            "buttons": [
+              [
+                "^E",
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Fatality 1                                                             (close) _2_2_6_6_+^E",
+        "- Fatality 2                                                             (close) _6_6_2_8",
+        "- Fatality 3                                                             (close) _6_6_2_8^2_+_O^E_+_G_+^H",
+        "- Stage Fatality                                                         _2_2_2_+^J",
+        "- Friendship                                                             _2_2_2_2_+^J",
+        "- Babality                                                               _4_4_4_+^J"
+      ]
+    },
+    {
+      "name": "REPTILE",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Acid Spit",
+          "input": "_6_6_+^G",
+          "parsedInput": {
+            "raw": "_6_6_+^G",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Forceball",
+          "input": "_4_4_+^G_+^E",
+          "parsedInput": {
+            "raw": "_4_4_+^G_+^E",
+            "directions": [
+              [
+                4,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^G",
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Slide",
+          "input": "_4_+^E_+_G_+^H",
+          "parsedInput": {
+            "raw": "_4_+^E_+_G_+^H",
+            "directions": [
+              [
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^E",
+                "_G",
+                "^H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Invisibility",
+          "input": "_8_8_2_+^G",
+          "parsedInput": {
+            "raw": "_8_8_2_+^G",
+            "directions": [
+              [
+                8,
+                8,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Fatality 1                                                             (jump) _4_4_2_+^E",
+        "- Fatality 2                                                             (close) _6_6_2_+^J (must be invisible)",
+        "- Stage Fatality                                                         _2_6_6_+_G",
+        "- Friendship                                                             _4_4_2_+^H",
+        "- Babality                                                               _2_4_4_+^H"
+      ]
+    },
+    {
+      "name": "SUB-ZERO",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Freeze",
+          "input": "_2_6_+^E",
+          "parsedInput": {
+            "raw": "_2_6_+^E",
+            "directions": [
+              [
+                2,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Ground Freeze",
+          "input": "_2_4_+^H",
+          "parsedInput": {
+            "raw": "_2_4_+^H",
+            "directions": [
+              [
+                2,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Slide",
+          "input": "_4_+^E_+_G_+^H",
+          "parsedInput": {
+            "raw": "_4_+^E_+_G_+^H",
+            "directions": [
+              [
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^E",
+                "_G",
+                "^H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Fatality 1                                                             (full screen) _O^E_4_4_2_6",
+        "- Fatality 2                                                             (sweep) _6_6_2_+^J, then (close) _6_2_6_6_+^G",
+        "- Stage Fatality                                                         _2_6_6_+_G",
+        "- Friendship                                                             _4_4_2_+^J",
+        "- Babality                                                               _2_4_4_+^J"
+      ]
+    },
+    {
+      "name": "SHANG TSUNG",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Single Flaming Skull",
+          "input": "_4_4_+^G",
+          "parsedInput": {
+            "raw": "_4_4_+^G",
+            "directions": [
+              [
+                4,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Double Flaming Skull",
+          "input": "_4_4_6_+^G",
+          "parsedInput": {
+            "raw": "_4_4_6_+^G",
+            "directions": [
+              [
+                4,
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Triple Flaming Skull",
+          "input": "_4_4_6_6_+^G",
+          "parsedInput": {
+            "raw": "_4_4_6_6_+^G",
+            "directions": [
+              [
+                4,
+                4,
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Morphs"
+        }
+      ],
+      "notes": [
+        "- Baraka                                                              _2_2_+^H",
+        "- Jax                                                                 _2_6_4_+^J",
+        "- Johnny Cage                                                         _4_4_2_+^E",
+        "- Kitana                                                              _G_G_G",
+        "- Kung Lao                                                            _4_2_4_+^J",
+        "- Liu Kang                                                            _4_6_6_+_G",
+        "- Mileena                                                             _O^G for 2 seconds",
+        "- Raiden                                                              _2_4_6_+^H",
+        "- Reptile                                                             _8_2_+^G",
+        "- Scorpion                                                            _8_8",
+        "- Sub-Zero                                                            _6_2_6_+^G",
+        "Finishing Moves",
+        "- Fatality 1                                                             (sweep) _O^J for 2 seconds",
+        "- Fatality 2                                                             (close) _8_2_8_+^H",
+        "- Fatality 3                                                             (sweep) _O^E for 20 seconds",
+        "- Stage Fatality                                                         _2_2_8_2 (The Pit II Stage only)",
+        "- Friendship                                                             _4_4_2_6_+^J",
+        "- Babality                                                               _4_6_2_+^J"
+      ]
+    },
+    {
+      "name": "KITANA",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Fan Throw",
+          "input": "(_^)_6_6_+^G_+^E",
+          "parsedInput": {
+            "raw": "(_^)_6_6_+^G_+^E",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^G",
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Fan Lift",
+          "input": "_4_4_4_+^G",
+          "parsedInput": {
+            "raw": "_4_4_4_+^G",
+            "directions": [
+              [
+                4,
+                4,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Square Wave Punch",
+          "input": "_6_3_2_1_4_+^G",
+          "parsedInput": {
+            "raw": "_6_3_2_1_4_+^G",
+            "directions": [
+              [
+                6,
+                3,
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Fan Swipe",
+          "input": "_4_+^G",
+          "parsedInput": {
+            "raw": "_4_+^G",
+            "directions": [
+              [
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Fatality 1                                                             (close) _O^H_6_6_2_6",
+        "- Fatality 2                                                             (close) _G_G_G^J",
+        "- Stage Fatality                                                         _6_2_6_+^J",
+        "- Friendship                                                             _2_2_2_8_+^H",
+        "- Babality                                                               _2_2_2_+^H"
+      ]
+    },
+    {
+      "name": "JAX",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Energy Wave",
+          "input": "_6_3_2_1_4_+^J",
+          "parsedInput": {
+            "raw": "_6_3_2_1_4_+^J",
+            "directions": [
+              [
+                6,
+                3,
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Ground Smash",
+          "input": "_O^H for 2 seconds",
+          "parsedInput": {
+            "raw": "_O^H for 2 seconds",
+            "directions": [],
+            "buttons": [
+              [
+                "^H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Gotcha Grab",
+          "input": "_6_6_+^E (^*)",
+          "parsedInput": {
+            "raw": "_6_6_+^E (^*)",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": true,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Quad Slam Throw",
+          "input": "^*^G",
+          "parsedInput": {
+            "raw": "^*^G",
+            "directions": [],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": true,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Backbreaker",
+          "input": "_^ close _G",
+          "parsedInput": {
+            "raw": "_^ close _G",
+            "directions": [],
+            "buttons": [
+              [
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Fatality 1                                                             (close) _O^E_6_6_6",
+        "- Fatality 2                                                             (sweep) _G_G_G_G^E",
+        "- Stage Fatality                                                         _8_8_2_+^H",
+        "- Friendship                                                             _2_2_8_8_+^H",
+        "- Babality                                                               _2_8_2_8_+^H"
+      ]
+    },
+    {
+      "name": "MILEENA",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Sai Throw",
+          "input": "(_^)_O^G for 2 seconds",
+          "parsedInput": {
+            "raw": "(_^)_O^G for 2 seconds",
+            "directions": [],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Teleport Kick",
+          "input": "_6_6_+^H",
+          "parsedInput": {
+            "raw": "_6_6_+^H",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Ground Roll",
+          "input": "_4_4_2_+^J",
+          "parsedInput": {
+            "raw": "_4_4_2_+^J",
+            "directions": [
+              [
+                4,
+                4,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Fatality 1                                                             (close) _6_4_6_+^E",
+        "- Fatality 2                                                             (close) _O^J for 2 seconds",
+        "- Stage Fatality                                                         _6_2_6_+^H",
+        "- Friendship                                                             _2_2_2_8_+^J",
+        "- Babality                                                               _2_2_2_+^J"
+      ]
+    },
+    {
+      "name": "BARAKA",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Blue Bolt",
+          "input": "_2_4_+^G",
+          "parsedInput": {
+            "raw": "_2_4_+^G",
+            "directions": [
+              [
+                2,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Blade Fury",
+          "input": "_4_4_4_+^E",
+          "parsedInput": {
+            "raw": "_4_4_4_+^E",
+            "directions": [
+              [
+                4,
+                4,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Blade Swipe",
+          "input": "_4_+^G",
+          "parsedInput": {
+            "raw": "_4_+^G",
+            "directions": [
+              [
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Double Kick",
+          "input": "^J^J",
+          "parsedInput": {
+            "raw": "^J^J",
+            "directions": [],
+            "buttons": [
+              [
+                "^J",
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Fatality 1                                                             (close) _4_4_4_4_+^G",
+        "- Fatality 2                                                             (close) _4_6_2_6_+^E",
+        "- Stage Fatality                                                         _6_6_2_+^J",
+        "- Friendship                                                             _8_6_6_+^J",
+        "- Babality                                                               _6_6_6_+^J"
+      ]
+    },
+    {
+      "name": "SCORPION",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Spear",
+          "input": "_4_4_+^E",
+          "parsedInput": {
+            "raw": "_4_4_+^E",
+            "directions": [
+              [
+                4,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Teleport Punch",
+          "input": "(_^)_2_4_+^G",
+          "parsedInput": {
+            "raw": "(_^)_2_4_+^G",
+            "directions": [
+              [
+                2,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Leg Grab",
+          "input": "_6_3_2_1_4_+^H",
+          "parsedInput": {
+            "raw": "_6_3_2_1_4_+^H",
+            "directions": [
+              [
+                6,
+                3,
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Air Throw",
+          "input": "_^ close _G",
+          "parsedInput": {
+            "raw": "_^ close _G",
+            "directions": [],
+            "buttons": [
+              [
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Fatality 1                                                             (sweep) _8_8_+^G",
+        "- Fatality 2                                                             (anywhere) _2_2_8_8_+^G",
+        "- Fatality 3                                                             (close) _O^G_2_6_6_6",
+        "- Stage Fatality                                                         _2_6_6_+_G",
+        "- Friendship                                                             _4_4_2_+^J",
+        "- Babality                                                               _2_4_4_+^J"
+      ]
+    },
+    {
+      "name": "RAIDEN",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Lightning",
+          "input": "_2_6_+^E",
+          "parsedInput": {
+            "raw": "_2_6_+^E",
+            "directions": [
+              [
+                2,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Superman",
+          "input": "(_^)_4_4_6",
+          "parsedInput": {
+            "raw": "(_^)_4_4_6",
+            "directions": [
+              [
+                4,
+                4,
+                6
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Teleport",
+          "input": "_2_8",
+          "parsedInput": {
+            "raw": "_2_8",
+            "directions": [
+              [
+                2,
+                8
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Electrocute close",
+          "input": "_O^G for 2 seconds (2P Game only)",
+          "parsedInput": {
+            "raw": "_O^G for 2 seconds (2P Game only)",
+            "directions": [],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Fatality 1                                                             (close) _O^H for 2 seconds, then ^*_G_+^H",
+        "- Fatality 2                                                             (close) _O^G for 7 seconds",
+        "- Stage Fatality                                                         _8_8_8_+^G",
+        "- Friendship                                                             _2_4_6_+^J",
+        "- Babality                                                               _2_2_8_+^J"
+      ]
+    }
+  ],
+  "cheatNotes": [
+    "_` Random Select (1P side)",
+    "- On the Character Select Screen, put the cursor on Liu Kang ^8 and press _S",
+    "_` Random Select (2P side)",
+    "- On the Character Select Screen, put the cursor on Reptile ^8 and press _S",
+    "_` Disable Throws",
+    "- On the vs. Screen ^2_+_O^G on both sides",
+    "- Only on a 2P Game",
+    "_` Fight Jade on Secret Stage \"?\"",
+    "- On Stage 11, win a round using only ^H",
+    "_` Fight Smoke",
+    "- On The Portal Stage",
+    "- Dan Forden must appear and say \"Toasty\" (usually appears after an Uppercut)",
+    "- Press _2_+_S",
+    "_` Fight Noob Saibot",
+    "- Win 50 matches in a row",
+    "_` Pong",
+    "- Fight 250 matches in a row",
+    "_` Show Longest Winning Streaks",
+    "- During the Attractive Mode press _2 on both sides",
+    "_` EJB Menu",
+    "- During the Attractive Mode press _G_G_G_G_G on 1P side, _G_G_G_G_G_G_G_G_G_G on 2P side, _G_G on 1P side, _G_G_G_G_G_G_G_G on 2P side, _G_G on 1P side",
+    "- Must be entered at a very fast speed"
+  ],
+  "controlAbbr": {
+    "^G": "HP",
+    "^E": "LP",
+    "_G": "BL",
+    "^J": "HK",
+    "^H": "LK",
+    "_S": "ST"
+  }
+}

@@ -18,11 +18,14 @@ struct SystemLabelData: Codable {
 class CoreButtonOverride {
     static let shared = CoreButtonOverride()
 
-    private var coreLabels: [String: [String: String]] = [:]
-    private var systemLabels: [String: [String: String]] = [:]
-    private var systemTurboButtons: [String: [String]] = [:]
-    private var systemCategories: [String: String] = [:]
-    private var coreOverrides: [String: [String: OverrideEntry]] = [:]
+    private var cachedCoreLabels: [String: [String: String]] = [:]
+    private var cachedSystemLabels: [String: [String: String]] = [:]
+    private var cachedSystemTurboButtons: [String: [String]] = [:]
+    private var cachedSystemCategories: [String: String] = [:]
+    private var cachedCoreOverrides: [String: [String: OverrideEntry]] = [:]
+    private var missingCoreLabels: Set<String> = []
+    private var missingSystemLabels: Set<String> = []
+    private var missingCoreOverrides: Set<String> = []
 
     private static let identityMap: [String: Int32] = [
         "b": 0, "y": 1, "select": 2, "start": 3,
@@ -40,87 +43,81 @@ class CoreButtonOverride {
         .rStickUp, .rStickDown, .rStickLeft, .rStickRight,
     ]
 
-    private init() {
-        load()
-    }
+    private init() {}
 
-    private func load() {
-        loadCoreLabels()
-        loadSystemLabels()
-        loadCoreOverrides()
-    }
+    private func loadCoreLabel(for key: String) -> [String: String]? {
+        let lower = key.lowercased()
+        if let cached = cachedCoreLabels[lower] { return cached }
+        if missingCoreLabels.contains(lower) { return nil }
 
-    private func loadCoreLabels() {
-        guard let resourcePath = Bundle.main.resourcePath,
-              let files = try? FileManager.default.contentsOfDirectory(atPath: resourcePath) else { return }
-
-        for filename in files where filename.hasPrefix("input_coreLabels_") && filename.hasSuffix(".json") {
-            let key = filename
-                .replacingOccurrences(of: "input_coreLabels_", with: "")
-                .replacingOccurrences(of: ".json", with: "")
-
-            let fileURL = URL(fileURLWithPath: resourcePath).appendingPathComponent(filename)
-            guard let data = try? Data(contentsOf: fileURL),
-                  let decoded = try? JSONDecoder().decode([String: LabelOnlyEntry].self, from: data) else { continue }
-
-            coreLabels[key] = decoded.mapValues { $0.label }
+        guard let url = Bundle.main.url(forResource: "input_coreLabels_\(lower)", withExtension: "json"),
+              let data = try? Data(contentsOf: url),
+              let decoded = try? JSONDecoder().decode([String: LabelOnlyEntry].self, from: data) else {
+            missingCoreLabels.insert(lower)
+            return nil
         }
+        let result = decoded.mapValues { $0.label }
+        cachedCoreLabels[lower] = result
+        return result
     }
 
-    private func loadSystemLabels() {
-        guard let resourcePath = Bundle.main.resourcePath,
-              let files = try? FileManager.default.contentsOfDirectory(atPath: resourcePath) else { return }
+    private func loadSystemLabel(for key: String) -> SystemLabelData? {
+        let lower = key.lowercased()
+        if cachedSystemLabels[lower] != nil { return nil }
+        if missingSystemLabels.contains(lower) { return nil }
 
-        for filename in files where filename.hasPrefix("input_systemLabels_") && filename.hasSuffix(".json") {
-            let key = filename
-                .replacingOccurrences(of: "input_systemLabels_", with: "")
-                .replacingOccurrences(of: ".json", with: "")
-
-            let fileURL = URL(fileURLWithPath: resourcePath).appendingPathComponent(filename)
-            guard let data = try? Data(contentsOf: fileURL),
-                  let decoded = try? JSONDecoder().decode(SystemLabelData.self, from: data) else { continue }
-
-            systemLabels[key] = decoded.buttons.mapValues { $0.label }
-            if let turbo = decoded.turboButtons {
-                systemTurboButtons[key] = turbo
-            }
-            if let cat = decoded.systemCategory {
-                systemCategories[key] = cat
-            }
+        guard let url = Bundle.main.url(forResource: "input_systemLabels_\(lower)", withExtension: "json"),
+              let data = try? Data(contentsOf: url),
+              let decoded = try? JSONDecoder().decode(SystemLabelData.self, from: data) else {
+            missingSystemLabels.insert(lower)
+            return nil
         }
+        cachedSystemLabels[lower] = decoded.buttons.mapValues { $0.label }
+        if let turbo = decoded.turboButtons {
+            cachedSystemTurboButtons[lower] = turbo
+        }
+        if let cat = decoded.systemCategory {
+            cachedSystemCategories[lower] = cat
+        }
+        return decoded
     }
 
-    private func loadCoreOverrides() {
-        guard let resourcePath = Bundle.main.resourcePath,
-              let files = try? FileManager.default.contentsOfDirectory(atPath: resourcePath) else { return }
+    private func ensureSystemLabelLoaded(_ key: String) {
+        let lower = key.lowercased()
+        if cachedSystemLabels[lower] != nil || missingSystemLabels.contains(lower) { return }
+        loadSystemLabel(for: lower)
+    }
 
-        for filename in files where filename.hasPrefix("input_coreOverrides_") && filename.hasSuffix(".json") {
-            let key = filename
-                .replacingOccurrences(of: "input_coreOverrides_", with: "")
-                .replacingOccurrences(of: ".json", with: "")
+    private func loadCoreOverride(for key: String) -> [String: OverrideEntry]? {
+        let lower = key.lowercased()
+        if let cached = cachedCoreOverrides[lower] { return cached }
+        if missingCoreOverrides.contains(lower) { return nil }
 
-            let fileURL = URL(fileURLWithPath: resourcePath).appendingPathComponent(filename)
-            guard let data = try? Data(contentsOf: fileURL),
-                  let decoded = try? JSONDecoder().decode([String: OverrideEntry].self, from: data) else { continue }
-
-            coreOverrides[key] = decoded
+        guard let url = Bundle.main.url(forResource: "input_coreOverrides_\(lower)", withExtension: "json"),
+              let data = try? Data(contentsOf: url),
+              let decoded = try? JSONDecoder().decode([String: OverrideEntry].self, from: data) else {
+            missingCoreOverrides.insert(lower)
+            return nil
         }
+        cachedCoreOverrides[lower] = decoded
+        return decoded
     }
 
     func label(for button: RetroButton, coreID: String?) -> String? {
         guard let coreID = coreID else { return nil }
-        return coreLabels[coreID.lowercased()]?[button.rawValue]
+        return loadCoreLabel(for: coreID)?[button.rawValue]
     }
 
     func label(for button: RetroButton, systemID: String?) -> String? {
         guard let systemID = systemID else { return nil }
-        return systemLabels[systemID.lowercased()]?[button.rawValue]
+        ensureSystemLabelLoaded(systemID)
+        return cachedSystemLabels[systemID.lowercased()]?[button.rawValue]
     }
 
     func retroID(for button: RetroButton, coreID: String) -> Int32? {
-        guard let core = coreOverrides[coreID.lowercased()],
-              let entry = core[button.rawValue],
-              let rid = entry.id else {
+        guard let core = loadCoreOverride(for: coreID),
+            let entry = core[button.rawValue],
+            let rid = entry.id else {
             return nil
         }
         return Int32(rid)
@@ -137,7 +134,7 @@ class CoreButtonOverride {
     func buttons(for systemID: String, coreID: String? = nil) -> [RetroButton] {
         let key = coreID?.lowercased() ?? SystemDatabase.system(forID: systemID)?.defaultCoreID?.lowercased()
 
-        if let key = key, let labels = coreLabels[key] {
+        if let key = key, let labels = loadCoreLabel(for: key) {
             var result: [RetroButton] = []
             for btnName in labels.keys {
                 if let btn = RetroButton(rawValue: btnName) {
@@ -145,16 +142,16 @@ class CoreButtonOverride {
                 }
             }
             if !result.isEmpty {
-                // Sort alphabetically by display name
-                return result.sorted { 
-                    $0.displayName(for: systemID, coreID: coreID) < 
-                    $1.displayName(for: systemID, coreID: coreID) 
+                return result.sorted {
+                    $0.displayName(for: systemID, coreID: coreID) <
+                    $1.displayName(for: systemID, coreID: coreID)
                 }
             }
         }
 
         let sysKey = systemID.lowercased()
-        if let labels = systemLabels[sysKey] {
+        ensureSystemLabelLoaded(sysKey)
+        if let labels = cachedSystemLabels[sysKey] {
             var result: [RetroButton] = []
             for btnName in labels.keys {
                 if let btn = RetroButton(rawValue: btnName) {
@@ -162,23 +159,22 @@ class CoreButtonOverride {
                 }
             }
             if !result.isEmpty {
-                // Sort alphabetically by display name  
-                return result.sorted { 
-                    $0.displayName(for: systemID, coreID: coreID) < 
-                    $1.displayName(for: systemID, coreID: coreID) 
+                return result.sorted {
+                    $0.displayName(for: systemID, coreID: coreID) <
+                    $1.displayName(for: systemID, coreID: coreID)
                 }
             }
         }
 
-        // Sort fallback defaultButtons alphabetically
-        return Self.defaultButtons.sorted { 
-            $0.displayName(for: systemID, coreID: coreID) < 
-            $1.displayName(for: systemID, coreID: coreID) 
+        return Self.defaultButtons.sorted {
+            $0.displayName(for: systemID, coreID: coreID) <
+            $1.displayName(for: systemID, coreID: coreID)
         }
     }
 
     func turboButtons(for systemID: String) -> [RetroButton] {
-        guard let turboNames = systemTurboButtons[systemID.lowercased()] else { return [] }
+        ensureSystemLabelLoaded(systemID)
+        guard let turboNames = cachedSystemTurboButtons[systemID.lowercased()] else { return [] }
         return turboNames.compactMap { name in
             if name == "a" { return RetroButton.turboA }
             if name == "b" { return RetroButton.turboB }
@@ -189,6 +185,7 @@ class CoreButtonOverride {
     }
 
     func systemCategory(for systemID: String) -> String? {
-        return systemCategories[systemID.lowercased()]
+        ensureSystemLabelLoaded(systemID)
+        return cachedSystemCategories[systemID.lowercased()]
     }
 }

@@ -1,0 +1,3352 @@
+{
+  "schemaVersion": 1,
+  "romIds": [
+    "suikoenb"
+  ],
+  "name": "Suiko Enbu",
+  "controls": {
+    "^E": "Weak Punch",
+    "^F": "Medium Punch",
+    "^G": "Strong Punch",
+    "^H": "Weak Kick",
+    "^I": "Medium Kick",
+    "^J": "Strong Kick",
+    "_S": "Start"
+  },
+  "controlGroups": {
+    "_P": [
+      "^E",
+      "^F",
+      "^G"
+    ],
+    "_K": [
+      "^H",
+      "^I",
+      "^J"
+    ]
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_`": "Weapon System"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "_6_6",
+      "parsedInput": {
+        "raw": "_6_6",
+        "directions": [
+          [
+            6,
+            6
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      },
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4",
+      "parsedInput": {
+        "raw": "_4_4",
+        "directions": [
+          [
+            4,
+            4
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      },
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Run Forward",
+      "input": "_6^6",
+      "parsedInput": {
+        "raw": "_6^6",
+        "directions": [
+          [
+            6
+          ]
+        ],
+        "buttons": [],
+        "charge": true,
+        "chargeDirection": 6,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      },
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Run Backward",
+      "input": "_4_4^4",
+      "parsedInput": {
+        "raw": "_4_4^4",
+        "directions": [
+          [
+            4,
+            4
+          ]
+        ],
+        "buttons": [],
+        "charge": true,
+        "chargeDirection": 4,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      },
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Low Jump",
+      "input": "_8^2",
+      "parsedInput": {
+        "raw": "_8^2",
+        "directions": [
+          [
+            8
+          ]
+        ],
+        "buttons": [],
+        "charge": true,
+        "chargeDirection": 2,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      },
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Projectile Hop jump on projectile, then",
+      "input": "_2",
+      "parsedInput": {
+        "raw": "_2",
+        "directions": [
+          [
+            2
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      },
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Throw Weapon",
+      "input": "^G_+^J",
+      "parsedInput": {
+        "raw": "^G_+^J",
+        "directions": [],
+        "buttons": [
+          [
+            "^G",
+            "^J"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      },
+      "condition": "W"
+    },
+    {
+      "category": "_)",
+      "name": "Taunt",
+      "input": "^E_+^H",
+      "parsedInput": {
+        "raw": "^E_+^H",
+        "directions": [],
+        "buttons": [
+          [
+            "^E",
+            "^H"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      },
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Fake Dizzy",
+      "input": "^F_+^I",
+      "parsedInput": {
+        "raw": "^F_+^I",
+        "directions": [],
+        "buttons": [
+          [
+            "^F",
+            "^I"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      },
+      "condition": "─"
+    }
+  ],
+  "characters": [
+    {
+      "name": "SHISHIN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Shoulder Throw",
+          "input": "_4 / _6_+^F / ^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^F / ^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ],
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "Projectile Hop",
+          "input": "_4 / _6_+^F / ^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^F / ^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ],
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "N"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Serpent Missile",
+          "input": "_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Flaming Serpent Sword",
+          "input": "_6_2_3_+_P",
+          "parsedInput": {
+            "raw": "_6_2_3_+_P",
+            "directions": [
+              [
+                6,
+                2,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Knee Kick",
+          "input": "_2_8_+_K",
+          "parsedInput": {
+            "raw": "_2_8_+_K",
+            "directions": [
+              [
+                2,
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Dashing Serpent Punch",
+          "input": "_2_1_4_+_P",
+          "parsedInput": {
+            "raw": "_2_1_4_+_P",
+            "directions": [
+              [
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "N"
+        }
+      ]
+    },
+    {
+      "name": "RINCHUU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Setup Impale",
+          "input": "_4 / _6_+^F / ^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^F / ^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ],
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "One Handed Throw",
+          "input": "_4 / _6_+^F / ^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^F / ^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ],
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "N"
+        },
+        {
+          "category": "_)",
+          "name": "Thrust Kick",
+          "input": "_6_+^J",
+          "parsedInput": {
+            "raw": "_6_+^J",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Invincible Rapid Fire",
+          "input": "^*_P",
+          "parsedInput": {
+            "raw": "^*_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": true,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Savage Panther Claw",
+          "input": "_4_1_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_4_1_2_3_6_+_P",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Typhoon Spear",
+          "input": "_6_2_3_+_K",
+          "parsedInput": {
+            "raw": "_6_2_3_+_K",
+            "directions": [
+              [
+                6,
+                2,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Typhoon Spear",
+          "input": "_2_3_6_+_K",
+          "parsedInput": {
+            "raw": "_2_3_6_+_K",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Cartwheel Kick",
+          "input": "_6_3_2_1_4_+_P",
+          "parsedInput": {
+            "raw": "_6_3_2_1_4_+_P",
+            "directions": [
+              [
+                6,
+                3,
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "KOSANJYOU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Frankensteiner",
+          "input": "_4 / _6_+^F / ^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^F / ^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ],
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "Changing Winds",
+          "input": "_4 / _6_+^F / ^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^F / ^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ],
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "N"
+        },
+        {
+          "category": "_(",
+          "name": "Earth Direct",
+          "input": "_^_4 / _6_+^F / ^G",
+          "parsedInput": {
+            "raw": "_^_4 / _6_+^F / ^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ],
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_6_+_P / _K",
+          "parsedInput": {
+            "raw": "_6_+_P / _K",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ],
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Flaming Jasmine Wave",
+          "input": "_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Typhoon Slasher",
+          "input": "_6_2_3_+_P",
+          "parsedInput": {
+            "raw": "_6_2_3_+_P",
+            "directions": [
+              [
+                6,
+                2,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Samsara Kick",
+          "input": "_2_3_6_+_K",
+          "parsedInput": {
+            "raw": "_2_3_6_+_K",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "TAISOU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Neckringer",
+          "input": "_4 / _6_+^F / ^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^F / ^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ],
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "Chest Chop",
+          "input": "_4 / _6_+^F / ^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^F / ^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ],
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "N"
+        },
+        {
+          "category": "_(",
+          "name": "Chest Stomp",
+          "input": "_^_4 / _6_+^F / ^G",
+          "parsedInput": {
+            "raw": "_^_4 / _6_+^F / ^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ],
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_6_+_P / _K",
+          "parsedInput": {
+            "raw": "_6_+_P / _K",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ],
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Flaming Ki Punch",
+          "input": "^1_6_+_P",
+          "parsedInput": {
+            "raw": "^1_6_+_P",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 1,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Ki Bomb",
+          "input": "_^_2_3_6_+_P (x5)",
+          "parsedInput": {
+            "raw": "_^_2_3_6_+_P (x5)",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Majestic Teleport Attack",
+          "input": "_6_2_3_+_P",
+          "parsedInput": {
+            "raw": "_6_2_3_+_P",
+            "directions": [
+              [
+                6,
+                2,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Teleport",
+          "input": "_6_3_2_1_4_+_K",
+          "parsedInput": {
+            "raw": "_6_3_2_1_4_+_K",
+            "directions": [
+              [
+                6,
+                3,
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "RIKI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Slice and Dice",
+          "input": "_4 / _6_+^F / ^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^F / ^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ],
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "Body Fling",
+          "input": "_4 / _6_+^F / ^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^F / ^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ],
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "N"
+        },
+        {
+          "category": "_@",
+          "name": "Mandarin Earth Splitter",
+          "input": "_2_1_4_+_P / ^W",
+          "parsedInput": {
+            "raw": "_2_1_4_+_P / ^W",
+            "directions": [
+              [
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ],
+              [
+                "^W"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Scorching Breath",
+          "input": "_6_2_3_+_P",
+          "parsedInput": {
+            "raw": "_6_2_3_+_P",
+            "directions": [
+              [
+                6,
+                2,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Black Death Blizzard",
+          "input": "_4_1_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_4_1_2_3_6_+_P",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        }
+      ]
+    },
+    {
+      "name": "ROCHINSHIN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Delayed Choke Slam",
+          "input": "_4 / _6_+^F / ^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^F / ^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ],
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "Smash and Uppercut",
+          "input": "_4 / _6_+^F / ^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^F / ^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ],
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "N"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Shadow Fist",
+          "input": "^1_6_+_P",
+          "parsedInput": {
+            "raw": "^1_6_+_P",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 1,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "",
+          "input": "^!Twin Fist (with ^F / ^G)                                      _2_3_6_+_P",
+          "parsedInput": {
+            "raw": "^!Twin Fist (with ^F / ^G)                                      _2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ],
+              [
+                "^G",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Manchurian Fang",
+          "input": "_4_1_2_3_6_+_P (_O)",
+          "parsedInput": {
+            "raw": "_4_1_2_3_6_+_P (_O)",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "",
+          "input": "^!Powered Up                                                    ^*_?",
+          "parsedInput": {
+            "raw": "^!Powered Up                                                    ^*_?",
+            "directions": [],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": true,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Silkworm Slash",
+          "input": "_^_6_4_6_+_P",
+          "parsedInput": {
+            "raw": "_^_6_4_6_+_P",
+            "directions": [
+              [
+                6,
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Freeze Ball",
+          "input": "_2_1_4_+_P",
+          "parsedInput": {
+            "raw": "_2_1_4_+_P",
+            "directions": [
+              [
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "N"
+        },
+        {
+          "category": "_@",
+          "name": "Low Freeze Ball",
+          "input": "_6_3_2_1_4_+_K",
+          "parsedInput": {
+            "raw": "_6_3_2_1_4_+_K",
+            "directions": [
+              [
+                6,
+                3,
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "N"
+        }
+      ]
+    },
+    {
+      "name": "KOUSONSYOU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Stomach Pummel",
+          "input": "_4 / _6_+^F",
+          "parsedInput": {
+            "raw": "_4 / _6_+^F",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "Hair Flip",
+          "input": "_4 / _6_+^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "Punch Wheel",
+          "input": "_4 / _6_+^F / ^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^F / ^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ],
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "N"
+        },
+        {
+          "category": "_)",
+          "name": "Spirit Double Backfist",
+          "input": "_6_+^G",
+          "parsedInput": {
+            "raw": "_6_+^G",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_6_+_P / _K",
+          "parsedInput": {
+            "raw": "_6_+_P / _K",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ],
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Cosmic Strike",
+          "input": "^*_P",
+          "parsedInput": {
+            "raw": "^*_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": true,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Earth Scorcher",
+          "input": "_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Low Earth Scorcher",
+          "input": "_2_3_6_+_K",
+          "parsedInput": {
+            "raw": "_2_3_6_+_K",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Meteor Strike",
+          "input": "_6_4_6_+_P",
+          "parsedInput": {
+            "raw": "_6_4_6_+_P",
+            "directions": [
+              [
+                6,
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Horrifying Hellraiser",
+          "input": "^4_6_+_P",
+          "parsedInput": {
+            "raw": "^4_6_+_P",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 4,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Hellraiser Slide",
+          "input": "^4_6_+_K",
+          "parsedInput": {
+            "raw": "^4_6_+_K",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 4,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Mongolian Bear Hug close",
+          "input": "_6_3_2_1_4_1_2_+_P",
+          "parsedInput": {
+            "raw": "_6_3_2_1_4_1_2_+_P",
+            "directions": [
+              [
+                6,
+                3,
+                2,
+                1,
+                4,
+                1,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        }
+      ]
+    },
+    {
+      "name": "BUSHOU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Beat Down",
+          "input": "_4 / _6_+^F",
+          "parsedInput": {
+            "raw": "_4 / _6_+^F",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Double Hook Suplex",
+          "input": "_4 / _6_+^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "D.D.T.",
+          "input": "_4 / _6_+^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "N"
+        },
+        {
+          "category": "_(",
+          "name": "Air Double Hook Suplex",
+          "input": "_^_4 / _6_+^F / ^G",
+          "parsedInput": {
+            "raw": "_^_4 / _6_+^F / ^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ],
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Reaching Tonfa Punch",
+          "input": "_6_+^G",
+          "parsedInput": {
+            "raw": "_6_+^G",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_)",
+          "name": "Reaching Fist",
+          "input": "_6_+^G",
+          "parsedInput": {
+            "raw": "_6_+^G",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "N"
+        },
+        {
+          "category": "_)",
+          "name": "Hop Knee",
+          "input": "_6_+^J",
+          "parsedInput": {
+            "raw": "_6_+^J",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Shredding Talon",
+          "input": "_2_1_4_+_K",
+          "parsedInput": {
+            "raw": "_2_1_4_+_K",
+            "directions": [
+              [
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Crushing Tiger Claw",
+          "input": "_6_2_3_+_P",
+          "parsedInput": {
+            "raw": "_6_2_3_+_P",
+            "directions": [
+              [
+                6,
+                2,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Doomsday Dragon close",
+          "input": "_6_3_2_1_4_1_2_+_P",
+          "parsedInput": {
+            "raw": "_6_3_2_1_4_1_2_+_P",
+            "directions": [
+              [
+                6,
+                3,
+                2,
+                1,
+                4,
+                1,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Rushing Dragon",
+          "input": "_2_1_4_+_P (x3)",
+          "parsedInput": {
+            "raw": "_2_1_4_+_P (x3)",
+            "directions": [
+              [
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "N"
+        },
+        {
+          "category": "_@",
+          "name": "Piledriver close",
+          "input": "_6_3_2_1_4_+_P",
+          "parsedInput": {
+            "raw": "_6_3_2_1_4_+_P",
+            "directions": [
+              [
+                6,
+                3,
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "N"
+        },
+        {
+          "category": "_@",
+          "name": "Axe Kick",
+          "input": "_6_3_2_1_4_6_3_2_1_4_+_K",
+          "parsedInput": {
+            "raw": "_6_3_2_1_4_6_3_2_1_4_+_K",
+            "directions": [
+              [
+                6,
+                3,
+                2,
+                1,
+                4,
+                6,
+                3,
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "N"
+        }
+      ]
+    },
+    {
+      "name": "GEN SHOUJI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Pinwheel Toss",
+          "input": "_4 / _6_+^F / ^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^F / ^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ],
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "Throat Kick",
+          "input": "_4 / _6_+^F / ^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^F / ^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ],
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "N"
+        },
+        {
+          "category": "_@",
+          "name": "Shao Lin Slash and Burn",
+          "input": "^4_6_+_P",
+          "parsedInput": {
+            "raw": "^4_6_+_P",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 4,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Skull Crusher",
+          "input": "_2_8_+_P",
+          "parsedInput": {
+            "raw": "_2_8_+_P",
+            "directions": [
+              [
+                2,
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Water Torture",
+          "input": "_4_1_2_3_6_+_O_K",
+          "parsedInput": {
+            "raw": "_4_1_2_3_6_+_O_K",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "",
+          "input": "^!Move                                                          _4 / _6",
+          "parsedInput": {
+            "raw": "^!Move                                                          _4 / _6",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "",
+          "input": "^!Water Claw                                                    ^E",
+          "parsedInput": {
+            "raw": "^!Water Claw                                                    ^E",
+            "directions": [],
+            "buttons": [
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "",
+          "input": "^!Water Spike                                                   ^F",
+          "parsedInput": {
+            "raw": "^!Water Spike                                                   ^F",
+            "directions": [],
+            "buttons": [
+              [
+                "^F"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "",
+          "input": "^!Water Cage                                                    ^G",
+          "parsedInput": {
+            "raw": "^!Water Cage                                                    ^G",
+            "directions": [],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "",
+          "input": "^!Skull Crusher                                                 _2_8_+_P",
+          "parsedInput": {
+            "raw": "^!Skull Crusher                                                 _2_8_+_P",
+            "directions": [
+              [
+                2,
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Shao Lin Crescent",
+          "input": "_6_2_3_+_K",
+          "parsedInput": {
+            "raw": "_6_2_3_+_K",
+            "directions": [
+              [
+                6,
+                2,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Water Summoning",
+          "input": "_O^T",
+          "parsedInput": {
+            "raw": "_O^T",
+            "directions": [],
+            "buttons": [
+              [
+                "^T"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "N"
+        }
+      ]
+    },
+    {
+      "name": "GEN SHOUGO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Head Bite",
+          "input": "_4 / _6_+^F / ^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^F / ^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ],
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Nunchaku Rage",
+          "input": "^*_P",
+          "parsedInput": {
+            "raw": "^*_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": true,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "",
+          "input": "^!Move                                                          _4 / _6",
+          "parsedInput": {
+            "raw": "^!Move                                                          _4 / _6",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Punishing One-Two",
+          "input": "_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Brilliant Storm",
+          "input": "_1_2_3_2_1_+_K",
+          "parsedInput": {
+            "raw": "_1_2_3_2_1_+_K",
+            "directions": [
+              [
+                1,
+                2,
+                3,
+                2,
+                1
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Phantom Cyclone Stinger",
+          "input": "_6_3_2_1_4_+_P",
+          "parsedInput": {
+            "raw": "_6_3_2_1_4_+_P",
+            "directions": [
+              [
+                6,
+                3,
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Mirage Roll",
+          "input": "_6_4_1_2_3_6_+_K",
+          "parsedInput": {
+            "raw": "_6_4_1_2_3_6_+_K",
+            "directions": [
+              [
+                6,
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "GEN SHOUSHICHI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throat Kick",
+          "input": "_4 / _6_+^F / ^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^F / ^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ],
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "Pinwheel Toss",
+          "input": "_4 / _6_+^F / ^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^F / ^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^F"
+              ],
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "N"
+        },
+        {
+          "category": "_@",
+          "name": "Nunchaku Rage",
+          "input": "^*_P",
+          "parsedInput": {
+            "raw": "^*_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": true,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Shao Lin Slash and Burn",
+          "input": "^4_6_+_P",
+          "parsedInput": {
+            "raw": "^4_6_+_P",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 4,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Phantom Cyclone Stinger",
+          "input": "_6_3_2_1_4_+_P",
+          "parsedInput": {
+            "raw": "_6_3_2_1_4_+_P",
+            "directions": [
+              [
+                6,
+                3,
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Shao Lin Crescent",
+          "input": "_6_2_3_+_K",
+          "parsedInput": {
+            "raw": "_6_2_3_+_K",
+            "directions": [
+              [
+                6,
+                2,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Mirage Roll",
+          "input": "_6_4_1_2_3_6_+_K",
+          "parsedInput": {
+            "raw": "_6_4_1_2_3_6_+_K",
+            "directions": [
+              [
+                6,
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Triple-Leg Deathtrap",
+          "input": "_2_1_4_+_K",
+          "parsedInput": {
+            "raw": "_2_1_4_+_K",
+            "directions": [
+              [
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "N"
+        }
+      ]
+    },
+    {
+      "name": "CHOUGAI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "One Handed Toss",
+          "input": "_4 / _6_+^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Inferno Gust",
+          "input": "_6_3_2_1_4_+_P",
+          "parsedInput": {
+            "raw": "_6_3_2_1_4_+_P",
+            "directions": [
+              [
+                6,
+                3,
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Grave Kick",
+          "input": "_2_3_6_+_K",
+          "parsedInput": {
+            "raw": "_2_3_6_+_K",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "TRANSFORMED lose a round",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "One Handed Toss",
+          "input": "_4 / _6_+^G",
+          "parsedInput": {
+            "raw": "_4 / _6_+^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Choking Spike",
+          "input": "_^_4 / _6_+^G",
+          "parsedInput": {
+            "raw": "_^_4 / _6_+^G",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Rock Headbutt",
+          "input": "_6_+^G",
+          "parsedInput": {
+            "raw": "_6_+^G",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Grave Kick",
+          "input": "_2_1_4_+_K",
+          "parsedInput": {
+            "raw": "_2_1_4_+_K",
+            "directions": [
+              [
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          },
+          "condition": "─"
+        }
+      ],
+      "notes": [
+        "TRANSFORMED"
+      ]
+    }
+  ],
+  "cheatNotes": [
+    "_` Color Select",
+    "- 1st Color, select the character with ^E",
+    "- 2nd Color, select the character with ^F",
+    "- 3rd Color, select the character with ^G",
+    "- 4th Color, select the character with ^H",
+    "- 5th Color, select the character with ^I",
+    "- 6th Color, select the character with ^J",
+    "- 7th Color, select the character with _S"
+  ],
+  "controlAbbr": {
+    "^E": "LP",
+    "^F": "MP",
+    "^G": "HP",
+    "^H": "LK",
+    "^I": "MK",
+    "^J": "HK",
+    "_S": "ST"
+  }
+}

@@ -1,0 +1,1293 @@
+{
+  "schemaVersion": 1,
+  "romIds": [
+    "tekken",
+    "tekkenac",
+    "tekkenb",
+    "tekkenjb"
+  ],
+  "name": "Tekken",
+  "year": 1994,
+  "manufacturer": "Namco",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "_S": "Start"
+  },
+  "categories": {
+    "_(": "Throws & Multipart Throws",
+    "_)": "Command Moves",
+    "_`": "Positions"
+  },
+  "commonCommands": [
+    {
+      "category": "_(",
+      "name": "Tackle run for 11 steps"
+    },
+    {
+      "category": "_)",
+      "name": "Run",
+      "input": "_6^6",
+      "parsedInput": {
+        "raw": "_6^6",
+        "directions": [
+          [
+            6
+          ]
+        ],
+        "buttons": [],
+        "charge": true,
+        "chargeDirection": 6,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4",
+      "parsedInput": {
+        "raw": "_4_4",
+        "directions": [
+          [
+            4,
+            4
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Crawl",
+      "input": "^3",
+      "parsedInput": {
+        "raw": "^3",
+        "directions": [],
+        "buttons": [],
+        "charge": true,
+        "chargeDirection": 3,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Low Jump",
+      "input": "_8",
+      "parsedInput": {
+        "raw": "_8",
+        "directions": [
+          [
+            8
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "High Jump",
+      "input": "^8",
+      "parsedInput": {
+        "raw": "^8",
+        "directions": [],
+        "buttons": [],
+        "charge": true,
+        "chargeDirection": 8,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Flying Cross Chop run for 12 steps _a_+_b"
+    },
+    {
+      "category": "_)",
+      "name": "Sliding Leg Sweep: FU-FA run for 12 steps _d"
+    },
+    {
+      "category": "_)",
+      "name": "Short Quick Pounce opponent knocked down",
+      "input": "_8_+_b",
+      "parsedInput": {
+        "raw": "_8_+_b",
+        "directions": [
+          [
+            8
+          ]
+        ],
+        "buttons": [
+          [
+            "_b"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Long Quick Pounce opponent knocked down",
+      "input": "^8_+_b",
+      "parsedInput": {
+        "raw": "^8_+_b",
+        "directions": [],
+        "buttons": [
+          [
+            "_b"
+          ]
+        ],
+        "charge": true,
+        "chargeDirection": 8,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Get Up",
+      "input": "_8",
+      "parsedInput": {
+        "raw": "_8",
+        "directions": [
+          [
+            8
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Roll-Get Up",
+      "input": "_4 / _6",
+      "parsedInput": {
+        "raw": "_4 / _6",
+        "directions": [
+          [
+            4
+          ],
+          [
+            6
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Cross Chop",
+      "input": "_6_+_a_+_b",
+      "parsedInput": {
+        "raw": "_6_+_a_+_b",
+        "directions": [
+          [
+            6
+          ]
+        ],
+        "buttons": [
+          [
+            "_a",
+            "_b"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": true,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Get Up-Left Kick _c"
+    },
+    {
+      "category": "_)",
+      "name": "Get Up-High Kick _d"
+    },
+    {
+      "category": "_)",
+      "name": "Double Pop Kick",
+      "input": "_4_+_c_+_d",
+      "parsedInput": {
+        "raw": "_4_+_c_+_d",
+        "directions": [
+          [
+            4
+          ]
+        ],
+        "buttons": [
+          [
+            "_c",
+            "_d"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Get Up",
+      "input": "_8",
+      "parsedInput": {
+        "raw": "_8",
+        "directions": [
+          [
+            8
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Roll-Get Up",
+      "input": "_4 / _6",
+      "parsedInput": {
+        "raw": "_4 / _6",
+        "directions": [
+          [
+            4
+          ],
+          [
+            6
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Cross Chop",
+      "input": "_6_+_a_+_b",
+      "parsedInput": {
+        "raw": "_6_+_a_+_b",
+        "directions": [
+          [
+            6
+          ]
+        ],
+        "buttons": [
+          [
+            "_a",
+            "_b"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": true,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Get Up-Left Kick _c"
+    },
+    {
+      "category": "_)",
+      "name": "Get Up-High Kick _d"
+    },
+    {
+      "category": "_)",
+      "name": "Get Up",
+      "input": "_8",
+      "parsedInput": {
+        "raw": "_8",
+        "directions": [
+          [
+            8
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Roll-Get Up",
+      "input": "_4 / _6",
+      "parsedInput": {
+        "raw": "_4 / _6",
+        "directions": [
+          [
+            4
+          ],
+          [
+            6
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Cross Chop",
+      "input": "_6_+_a_+_b",
+      "parsedInput": {
+        "raw": "_6_+_a_+_b",
+        "directions": [
+          [
+            6
+          ]
+        ],
+        "buttons": [
+          [
+            "_a",
+            "_b"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": true,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Get Up-Left Kick _c"
+    },
+    {
+      "category": "_)",
+      "name": "Get Up-High Kick _d"
+    },
+    {
+      "category": "_)",
+      "name": "Get Up",
+      "input": "_8",
+      "parsedInput": {
+        "raw": "_8",
+        "directions": [
+          [
+            8
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Roll-Get Up",
+      "input": "_4 / _6",
+      "parsedInput": {
+        "raw": "_4 / _6",
+        "directions": [
+          [
+            4
+          ],
+          [
+            6
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Cross Chop",
+      "input": "_6_+_a_+_b",
+      "parsedInput": {
+        "raw": "_6_+_a_+_b",
+        "directions": [
+          [
+            6
+          ]
+        ],
+        "buttons": [
+          [
+            "_a",
+            "_b"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": true,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Get Up-Left Kick _c"
+    },
+    {
+      "category": "_)",
+      "name": "Get Up-High Kick _d"
+    }
+  ],
+  "commonNotes": [
+    "FACE UP AND FEET TOWARDS (FU-FT)",
+    "FACE UP AND FEET AWAYS (FU-FA)",
+    "FACE DOWN AND FEET TOWARDS (FD-FT)",
+    "FACE DOWN AND FEET AWAYS (FD-FA)"
+  ],
+  "characters": [
+    {
+      "name": "KAZUYA MISHIMA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Bitch Kicks _a_+_c"
+        },
+        {
+          "category": "_(",
+          "name": "Shoulder Throw _b_+_d"
+        },
+        {
+          "category": "_(",
+          "name": "Stonehead",
+          "input": "_6_6_+_a_+_b",
+          "parsedInput": {
+            "raw": "_6_6_+_a_+_b",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_b"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Strings Moves",
+        "_a_a_b                                                                   hhm",
+        "_a_b_b                                                                   hhh",
+        "_b_b                                                                     hh",
+        "_6_+_b                                                                   h",
+        "_6_+_d                                                                   m",
+        "_6_6_+_b_a_b_b_c_d_d_a_b_a                                               hhhhmmLhmm",
+        "_6_6_+_c                                                                 m",
+        "_6_6_6_+_c                                                               m",
+        "_6_N_2_3_N_a                                                             m",
+        "_6_N_2_3_N_b                                                             m",
+        "_6_N_2_3_N_d                                                             m",
+        "_6_N_2^3_+_d_d                                                           Ll",
+        "^2_N_b                                                                   m",
+        "^2_N_d_d                                                                 mm",
+        "_3_+_a_b                                                                 mm",
+        "_9_+_b_+_d                                                               M",
+        "_9_+_d_d                                                                 hL"
+      ]
+    },
+    {
+      "name": "PAUL PHOENIX",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Shoulder Flip _a_+_c"
+        },
+        {
+          "category": "_(",
+          "name": "Foot Launch",
+          "input": "^4_+_a_+_c",
+          "parsedInput": {
+            "raw": "^4_+_a_+_c",
+            "directions": [],
+            "buttons": [
+              [
+                "_a",
+                "_c"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 4,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Arm Bar Rollover: FU-FT _b_+_d"
+        },
+        {
+          "category": "_(",
+          "name": "Death Push Away",
+          "input": "_6_6_+_a_+_b",
+          "parsedInput": {
+            "raw": "_6_6_+_a_+_b",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_b"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Strings Moves",
+        "_a_b_c_b_a_b_a_d_b_a                                                     hhmhmhhlmm",
+        "_b_c                                                                     hh",
+        "_b_2_+_c                                                                 hL",
+        "_6_6_+_c_d_d                                                             mmh",
+        "_6_6_+_c_d_6_+_d                                                         mmm",
+        "_6_6_+_c_d_2_+_d                                                         mmL",
+        "_6_6_+_d                                                                 m",
+        "_2_+_a_6_+_b                                                             mm",
+        "_2_+_b                                                                   M",
+        "_2_+_d_b                                                                 lm",
+        "_2_3_6_+_b                                                               m",
+        "^2_3_6_+_b                                                               m",
+        "_9_+_c_d                                                                 mm"
+      ]
+    },
+    {
+      "name": "MARSHALL LAW",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Atomic Drop _a_+_c"
+        },
+        {
+          "category": "_(",
+          "name": "Chastisement Punch _b_+_d"
+        },
+        {
+          "category": "_(",
+          "name": "Knee Lift",
+          "input": "_6_6_+_c_+_d",
+          "parsedInput": {
+            "raw": "_6_6_+_c_+_d",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_c",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Strings Moves",
+        "_a_a_a_a_a                                                               hhhhh",
+        "_a_b                                                                     hh",
+        "_b_b                                                                     hh",
+        "_c_c_c                                                                   hhh",
+        "_c_c_6_+_c                                                               hhm",
+        "_d_c_d                                                                   hhh",
+        "_d_8_+_c                                                                 hm",
+        "^6_+_b_b_b                                                               hmh",
+        "_6_6_6_+_c                                                               m",
+        "_2_+_c_c_c_c                                                             lhhh",
+        "_2_+_c_c_6_+_c                                                           lhm",
+        "^2_3_2_3_+_c                                                             L (FU-FA)",
+        "^2_8_+_d                                                                 m",
+        "^2^8_+_d                                                                 m",
+        "_1_+_a_+_b                                                               ! (_8_8 to cancel)",
+        "_3_+_a_b_b_a_c_c_c_d_c_d                                                 mhhhhlhhhm",
+        "_3_+_c                                                                   m"
+      ]
+    },
+    {
+      "name": "JACK",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Body Press _a_+_c"
+        },
+        {
+          "category": "_(",
+          "name": "Lift Slam _b_+_d"
+        },
+        {
+          "category": "_(",
+          "name": "Pyramid Driver",
+          "input": "_2_3_6_+_a",
+          "parsedInput": {
+            "raw": "_2_3_6_+_a",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Backbreaker",
+          "input": "_2_1_4_+_b",
+          "parsedInput": {
+            "raw": "_2_1_4_+_b",
+            "directions": [
+              [
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_b"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Piledriver",
+          "input": "_1_6_+_a_+_b",
+          "parsedInput": {
+            "raw": "_1_6_+_a_+_b",
+            "directions": [
+              [
+                1,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_b"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "SIT STANCE: SIT",
+          "input": "_2_+_c_+_d",
+          "parsedInput": {
+            "raw": "_2_+_c_+_d",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_c",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Strings Moves",
+        "_a_a_a                                                                   hhm",
+        "_b_a                                                                     hm",
+        "_6_6_+_a_+_b                                                             m",
+        "_4_1_2^3_+_b                                                             m",
+        "_4_1_2_3_6x3_N_a                                                         m",
+        "_4_1_2_3_6x5_+_a                                                         !",
+        "_2_+_b_a_a_a_b_a_b_a_a_+_b_a_+_b                                         lllmmmMmmm",
+        "^2_+_a_a_a_b_a                                                           llmmm",
+        "^2_3_+_a_b_a                                                             mmm",
+        "^2_N_a                                                                   m",
+        "^2_N_a_+_b_a_+_b                                                         mm",
+        "_1_+_a_a_a_3_+_b                                                         lllm",
+        "_3_+_a_+_b                                                               m",
+        "^3_+_a_b_a                                                               mmm",
+        "^3_+_b_a_b                                                               mmm",
+        "_9_+_c_+_d                                                               M (SIT)",
+        "far _a_+_c                                                               M (FD-FA)",
+        "FACE UP AND FEET TOWARDS (FU-FT)",
+        "Strings Moves",
+        "^2_+_a_+_b                                                               m (SIT)",
+        "SIT STANCE (SIT)",
+        "Strings Moves",
+        "_a_b_a_b                                                                 llll",
+        "_b_a_b_a                                                                 llll"
+      ]
+    },
+    {
+      "name": "NINA WILLIAMS",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Arm Turn _a_+_c"
+        },
+        {
+          "category": "_(",
+          "name": "Lifting Toss: BK _b_+_d"
+        },
+        {
+          "category": "_(",
+          "name": "Neck Throw",
+          "input": "^6_+_a_+_c",
+          "parsedInput": {
+            "raw": "^6_+_a_+_c",
+            "directions": [],
+            "buttons": [
+              [
+                "_a",
+                "_c"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 6,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Embracing Elbow",
+          "input": "_3_3_+_a",
+          "parsedInput": {
+            "raw": "_3_3_+_a",
+            "directions": [
+              [
+                3,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_a"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Palm Grab",
+          "input": "_2_3_6_+_a_+_b",
+          "parsedInput": {
+            "raw": "_2_3_6_+_a_+_b",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_b"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Arm Bar _c_d_c_a_+_b"
+        },
+        {
+          "category": "_(",
+          "name": "Standing Reverse Arm Lock _a_c_b_a"
+        },
+        {
+          "category": "_(",
+          "name": "Rear G-Tech _c_a_d_a_+_b_a_+_b"
+        },
+        {
+          "category": "_(",
+          "name": "Falling Reverse Arm Lock _b_a_c_d_a_+_b"
+        }
+      ],
+      "notes": [
+        "Strings Moves",
+        "_a_b_a_b_c_c_b_a_b_d                                                     hhhhhlhhhh",
+        "_a_b_c                                                                   hhh",
+        "_a_b_d                                                                   hhh",
+        "_a_b_2_+_c                                                               hhL",
+        "_b_c                                                                     hh",
+        "_b_d                                                                     hh",
+        "_b_2_+_c                                                                 hL",
+        "_6_6_+_a_+_b                                                             m",
+        "_6_6_+_d                                                                 M (FU-FT)",
+        "_6_6_6_+_c                                                               h (FU-FT)",
+        "_2_+_a_d                                                                 lm",
+        "_1_+_a_+_b                                                               ! (_8_8 to cancel)",
+        "_3_+_a_b_a_b_c_c_b_a_b_d                                                 mhhhhlhhhh",
+        "_3_+_a_b_c                                                               mhh",
+        "_3_+_a_b_d                                                               mhh",
+        "_3_+_a_b_2_+_c                                                           mhL",
+        "_3_+_c_a_b                                                               mhh",
+        "_3_+_c_b_a                                                               mhh",
+        "_3_+_c_b_c                                                               mhh",
+        "_3_+_c_b_d                                                               mhh",
+        "_3_+_c_b_2_+_c                                                           mhL",
+        "_3_+_c_c_c_a                                                             mhhh",
+        "_3_+_c_c_c_b                                                             mhhh",
+        "_3_+_c_c_c_d                                                             mhhh",
+        "_3_+_c_d                                                                 mh",
+        "_9_+_c                                                                   m",
+        "_9_+_d_c_d                                                               hLh"
+      ]
+    },
+    {
+      "name": "KING",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Knee Bash _a_+_c"
+        },
+        {
+          "category": "_(",
+          "name": "Suplex: FD-FA _b_+_d"
+        },
+        {
+          "category": "_(",
+          "name": "Spinning Swing",
+          "input": "_6_4_1_2_3_6_+_a",
+          "parsedInput": {
+            "raw": "_6_4_1_2_3_6_+_a",
+            "directions": [
+              [
+                6,
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Jaguar Driver",
+          "input": "_2_3_6_+_a",
+          "parsedInput": {
+            "raw": "_2_3_6_+_a",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Falling Headlock: FU-FA",
+          "input": "_1_1_+_a_+_b",
+          "parsedInput": {
+            "raw": "_1_1_+_a_+_b",
+            "directions": [
+              [
+                1,
+                1
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_b"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Tombstone Piledriver",
+          "input": "_1_6_+_a_+_b",
+          "parsedInput": {
+            "raw": "_1_6_+_a_+_b",
+            "directions": [
+              [
+                1,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_b"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Frankensteiner: BK",
+          "input": "_3_+_c_+_d",
+          "parsedInput": {
+            "raw": "_3_+_c_+_d",
+            "directions": [
+              [
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_c",
+                "_d"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Strings Moves",
+        "_a_b_a_a_b_d_d_d_a_c                                                     hhmmmLLLmm",
+        "_b_a                                                                     hm",
+        "_6_+_b_a_a_b_d_d_d_a_c                                                   hmmmLLLmm",
+        "_6_6_N_b                                                                 L",
+        "_6_6_+_a_+_b                                                             h/L",
+        "_6_6_+_b                                                                 m",
+        "_6_6_+_c_+_d                                                             m (FU-FT)",
+        "_6_6_+_d                                                                 m",
+        "_6_6_6_+_c_+_d                                                           h (FU-FT)",
+        "_2_+_a_b                                                                 lm",
+        "_2_3_+_b                                                                 m",
+        "^2_3_+_d_d_d                                                             LLL",
+        "_3_+_a                                                                   m",
+        "_3_+_b                                                                   m",
+        "_8_+_b_+_d                                                               M (FU-FA)",
+        "_9_+_a_+_b                                                               m",
+        "_9_+_c_+_d                                                               M",
+        "far _3_+_c_+_d                                                           M (FU-FT)",
+        "run for 12 steps _d_d_d                                                  LLL",
+        "on counter ^2_3_+_d_d_d_d_d                                              LLLLL"
+      ]
+    },
+    {
+      "name": "YOSHIMITSU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Jumping Body Slam _a_+_c"
+        },
+        {
+          "category": "_(",
+          "name": "Jaw Smash _b_+_d"
+        }
+      ],
+      "notes": [
+        "Strings Moves",
+        "_a_b_a_d_d_d_a_a_a_a                                                     hmmhhLm{!}{!}!",
+        "_b_c                                                                     hh",
+        "_b_2_+_c                                                                 hL",
+        "_c_d                                                                     hm",
+        "_d_d_d                                                                   hhh",
+        "_6_+_b                                                                   h",
+        "_6_6_+_c_+_d_a_+_b                                                       mh",
+        "_6_6_+_d                                                                 m",
+        "_4_+_a_a_a_a_a_a                                                         hhhhhh (FU-FT)",
+        "_4_4_+_a                                                                 !",
+        "^2_3_+_c                                                                 L",
+        "_1_+_a                                                                   {!}",
+        "^1_+_c_c_c_c_c_6_+_d                                                     Lllllm",
+        "_3_+_b                                                                   m",
+        "_3_+_d                                                                   m",
+        "_8_+_d                                                                   m",
+        "_9_+_c_+_d                                                               M"
+      ]
+    },
+    {
+      "name": "MICHELLE CHANG",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Waist Suplex _a_+_c"
+        },
+        {
+          "category": "_(",
+          "name": "Knee Suplex _b_+_d"
+        },
+        {
+          "category": "_(",
+          "name": "Punch-Spin-German Suplex _b_4_a_+_b"
+        }
+      ],
+      "notes": [
+        "Strings Moves",
+        "_a_a_a                                                                   hmm",
+        "_b_a_a_b_c_c_c_d_d_a                                                     hmmhlhmhLm",
+        "_b_4                                                                     h",
+        "_d_2_+_d_a                                                               hLm",
+        "_d_2_+_d_d                                                               hLh",
+        "_d_2_+_d_2_+_d                                                           hLL",
+        "_6_6_+_a_+_b                                                             m",
+        "_6_6_6_+_c                                                               m (FU-FT)",
+        "_4_4^4_+_a                                                               !",
+        "_2_+_d_a                                                                 Lm",
+        "_2_+_d_d                                                                 Lh",
+        "_2_+_d_2_+_d                                                             LL",
+        "^2_3_+_d_c                                                               Lh",
+        "^2_N_b_a_a                                                               mMm",
+        "^2_N_d                                                                   m",
+        "_3_+_a_a                                                                 mm",
+        "_3_+_b_a                                                                 m!",
+        "_3_+_c                                                                   m",
+        "_9_+_c_+_d                                                               M"
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_S": "ST"
+  }
+}

@@ -1,0 +1,454 @@
+{
+  "schemaVersion": 1,
+  "romIds": [
+    "holo"
+  ],
+  "name": "Holosseum",
+  "year": 1992,
+  "manufacturer": "Sega",
+  "credits": "by: Fabricio Coroquer (Created by: Minoplis)",
+  "controls": {
+    "_S": "Start"
+  },
+  "categories": {
+    "_@": "Special Moves"
+  },
+  "characters": [
+    {
+      "name": "SOMCHAY DOMPAYAGEN",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "High Speed Kick",
+          "input": "^*_a / _b",
+          "parsedInput": {
+            "raw": "^*_a / _b",
+            "directions": [],
+            "buttons": [
+              [
+                "_a"
+              ],
+              [
+                "_b"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": true,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Triple Spinning Roundhouse",
+          "input": "_2_1_4_+_b",
+          "parsedInput": {
+            "raw": "_2_1_4_+_b",
+            "directions": [
+              [
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_b"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Jumping Knee Bomb",
+          "input": "_6_3_2_1_+_b",
+          "parsedInput": {
+            "raw": "_6_3_2_1_+_b",
+            "directions": [
+              [
+                6,
+                3,
+                2,
+                1
+              ]
+            ],
+            "buttons": [
+              [
+                "_b"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Medula Slash",
+          "input": "^4_6_+_b",
+          "parsedInput": {
+            "raw": "^4_6_+_b",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_b"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 4,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "DAVE",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Liver Break",
+          "input": "^4_6_+_b",
+          "parsedInput": {
+            "raw": "^4_6_+_b",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_b"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 4,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Kakato Otoshi",
+          "input": "_2_1_4_+_b",
+          "parsedInput": {
+            "raw": "_2_1_4_+_b",
+            "directions": [
+              [
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_b"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Tripping Up",
+          "input": "_4_1_2_3_+_b",
+          "parsedInput": {
+            "raw": "_4_1_2_3_+_b",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_b"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "PROFESSOR CHEN",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Lightning Charge",
+          "input": "^1_6_+_b",
+          "parsedInput": {
+            "raw": "^1_6_+_b",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_b"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 1,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Dragon buster",
+          "input": "_2_3_6_+_b",
+          "parsedInput": {
+            "raw": "_2_3_6_+_b",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_b"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Deadly Headbutt",
+          "input": "_6_3_2_1_+_b",
+          "parsedInput": {
+            "raw": "_6_3_2_1_+_b",
+            "directions": [
+              [
+                6,
+                3,
+                2,
+                1
+              ]
+            ],
+            "buttons": [
+              [
+                "_b"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Drunk Monkey",
+          "input": "_4_1_2_3_+_b",
+          "parsedInput": {
+            "raw": "_4_1_2_3_+_b",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_b"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "JACK GARRISON",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Giant Swing",
+          "input": "_2_1_4_+_b",
+          "parsedInput": {
+            "raw": "_2_1_4_+_b",
+            "directions": [
+              [
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_b"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Leg Reaper",
+          "input": "^4_3_+_b",
+          "parsedInput": {
+            "raw": "^4_3_+_b",
+            "directions": [
+              [
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_b"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 4,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Neck Scissors",
+          "input": "_2_3_6_+_b",
+          "parsedInput": {
+            "raw": "_2_3_6_+_b",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_b"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Whirlwind Kick",
+          "input": "_3_2_1_+_b",
+          "parsedInput": {
+            "raw": "_3_2_1_+_b",
+            "directions": [
+              [
+                3,
+                2,
+                1
+              ]
+            ],
+            "buttons": [
+              [
+                "_b"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_S": "ST"
+  }
+}

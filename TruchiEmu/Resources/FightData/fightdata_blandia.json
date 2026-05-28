@@ -1,0 +1,697 @@
+{
+  "schemaVersion": 1,
+  "romIds": [
+    "blandia"
+  ],
+  "name": "Blandia",
+  "year": 1992,
+  "manufacturer": "Allumer",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "_S": "Start"
+  },
+  "categories": {
+    "_@": "Special Moves"
+  },
+  "characters": [
+    {
+      "name": "GURIANOS",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Charging Blade",
+          "input": "^4_6_+_a / _b / _c",
+          "parsedInput": {
+            "raw": "^4_6_+_a / _b / _c",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a"
+              ],
+              [
+                "_b"
+              ],
+              [
+                "_c"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 4,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Magic Ball",
+          "input": "_2_3_6_+_b",
+          "parsedInput": {
+            "raw": "_2_3_6_+_b",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_b"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Mighty Cut",
+          "input": "_4_1_2_3_6_+_c",
+          "parsedInput": {
+            "raw": "_4_1_2_3_6_+_c",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_c"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "DIOKLES",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Diokles Charge",
+          "input": "^4_6_+_a / _b / _c",
+          "parsedInput": {
+            "raw": "^4_6_+_a / _b / _c",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a"
+              ],
+              [
+                "_b"
+              ],
+              [
+                "_c"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 4,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Lava Rain",
+          "input": "_2_3_6_+_b",
+          "parsedInput": {
+            "raw": "_2_3_6_+_b",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_b"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Moonlight Slash",
+          "input": "_4_1_2_3_6_+_a",
+          "parsedInput": {
+            "raw": "_4_1_2_3_6_+_a",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "McGILL",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Lariat Blitz",
+          "input": "^4_6_+_a / _b / _c",
+          "parsedInput": {
+            "raw": "^4_6_+_a / _b / _c",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a"
+              ],
+              [
+                "_b"
+              ],
+              [
+                "_c"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 4,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Great Swing",
+          "input": "_2_3_6_+_b",
+          "parsedInput": {
+            "raw": "_2_3_6_+_b",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_b"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Hurricane Slash _a_+_b / _a_+_c / _b_+_c"
+        }
+      ]
+    },
+    {
+      "name": "IRRIANA",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Diving Slash",
+          "input": "^4_6_+_a / _b / _c",
+          "parsedInput": {
+            "raw": "^4_6_+_a / _b / _c",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a"
+              ],
+              [
+                "_b"
+              ],
+              [
+                "_c"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 4,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Backspin Slash",
+          "input": "_2_3_6_+_b",
+          "parsedInput": {
+            "raw": "_2_3_6_+_b",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_b"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Mega Nuke",
+          "input": "_O_a_+_b_+_c, release and press _2",
+          "parsedInput": {
+            "raw": "_O_a_+_b_+_c, release and press _2",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_b",
+                "_c"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "JURANE",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Spear Thrust",
+          "input": "^4_6_+_a / _b / _c",
+          "parsedInput": {
+            "raw": "^4_6_+_a / _b / _c",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a"
+              ],
+              [
+                "_b"
+              ],
+              [
+                "_c"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 4,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Elven Spear",
+          "input": "_2_1_4_+_b",
+          "parsedInput": {
+            "raw": "_2_1_4_+_b",
+            "directions": [
+              [
+                2,
+                1,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_b"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Elf Flame",
+          "input": "_2_3_6_+_c",
+          "parsedInput": {
+            "raw": "_2_3_6_+_c",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_c"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Elf Forcefeild close",
+          "input": "_6_+_b",
+          "parsedInput": {
+            "raw": "_6_+_b",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_b"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Hellfire Magic",
+          "input": "_O_a_+_c, release and press _8",
+          "parsedInput": {
+            "raw": "_O_a_+_c, release and press _8",
+            "directions": [
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_c"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Heavens Thunder",
+          "input": "_O_a_+_b_+_c, release and press _2",
+          "parsedInput": {
+            "raw": "_O_a_+_b_+_c, release and press _2",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_b",
+                "_c"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Fairy Confuse",
+          "input": "_O_a_+_c, release and press _6",
+          "parsedInput": {
+            "raw": "_O_a_+_c, release and press _6",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_c"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "RETSU.ZEN",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Vacuum Sword",
+          "input": "^4_6_+_a / _b / _c",
+          "parsedInput": {
+            "raw": "^4_6_+_a / _b / _c",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a"
+              ],
+              [
+                "_b"
+              ],
+              [
+                "_c"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 4,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Mizuki Slash",
+          "input": "_6_3_2_1_4_6_+_a",
+          "parsedInput": {
+            "raw": "_6_3_2_1_4_6_+_a",
+            "directions": [
+              [
+                6,
+                3,
+                2,
+                1,
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Poison Mist",
+          "input": "_O_a_+_b / _b_+_c",
+          "parsedInput": {
+            "raw": "_O_a_+_b / _b_+_c",
+            "directions": [],
+            "buttons": [
+              [
+                "_a",
+                "_b"
+              ],
+              [
+                "_b",
+                "_c"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Spirit Transform Attack",
+          "input": "_O_a_+_b_+_c, relase and press _6",
+          "parsedInput": {
+            "raw": "_O_a_+_b_+_c, relase and press _6",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_a",
+                "_b",
+                "_c"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_S": "ST"
+  }
+}

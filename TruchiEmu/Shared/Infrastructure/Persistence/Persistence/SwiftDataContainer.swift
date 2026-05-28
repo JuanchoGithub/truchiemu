@@ -91,7 +91,10 @@ final class SwiftDataContainer: ObservableObject {
         SettingsEntry.self,
         RAGameCacheEntry.self,
         // Notification history
-        NotificationEntry.self
+        NotificationEntry.self,
+        // Move list (favorites, overrides, custom moves, custom games)
+        MoveListEntry.self,
+        CustomGameDataEntry.self
         ])
 
         // --- NEW LOGIC START ---

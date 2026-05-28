@@ -677,3 +677,68 @@ final class NotificationEntry {
     }
 }
 
+// MARK: - Move List Entry (Favorites, Overrides, Hidden, Custom Moves)
+
+@Model
+final class MoveListEntry {
+    @Attribute(.unique) var compositeKey: String
+    var gameName: String
+    var characterName: String
+    var moveId: String
+    var isFavorite: Bool
+    var isHidden: Bool
+    var isOverride: Bool
+    var isCustom: Bool
+    var overrideJSON: String?
+    var customMoveJSON: String?
+
+    init(
+        compositeKey: String,
+        gameName: String,
+        characterName: String,
+        moveId: String,
+        isFavorite: Bool = false,
+        isHidden: Bool = false,
+        isOverride: Bool = false,
+        isCustom: Bool = false,
+        overrideJSON: String? = nil,
+        customMoveJSON: String? = nil
+    ) {
+        self.compositeKey = compositeKey
+        self.gameName = gameName
+        self.characterName = characterName
+        self.moveId = moveId
+        self.isFavorite = isFavorite
+        self.isHidden = isHidden
+        self.isOverride = isOverride
+        self.isCustom = isCustom
+        self.overrideJSON = overrideJSON
+        self.customMoveJSON = customMoveJSON
+    }
+}
+
+// MARK: - Custom Game Data Entry (User-created/imported games)
+
+@Model
+final class CustomGameDataEntry {
+    @Attribute(.unique) var gameName: String
+    var gameJSON: String
+    var isImported: Bool
+    var createdAt: Date
+    var modifiedAt: Date
+
+    init(
+        gameName: String,
+        gameJSON: String,
+        isImported: Bool = false,
+        createdAt: Date = Date(),
+        modifiedAt: Date = Date()
+    ) {
+        self.gameName = gameName
+        self.gameJSON = gameJSON
+        self.isImported = isImported
+        self.createdAt = createdAt
+        self.modifiedAt = modifiedAt
+    }
+}
+

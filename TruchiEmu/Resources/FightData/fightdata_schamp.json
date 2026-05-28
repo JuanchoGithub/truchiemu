@@ -1,0 +1,4987 @@
+{
+  "schemaVersion": 1,
+  "romIds": [
+    "schamp",
+    "sfight"
+  ],
+  "name": "Sonic Championship",
+  "year": 1996,
+  "manufacturer": "Sega",
+  "controls": {
+    "_B": "Barrier",
+    "_P": "Punch",
+    "_K": "Kick",
+    "_S": "Start"
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "_6_6",
+      "parsedInput": {
+        "raw": "_6_6",
+        "directions": [
+          [
+            6,
+            6
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Run",
+      "input": "_6^6",
+      "parsedInput": {
+        "raw": "_6^6",
+        "directions": [
+          [
+            6
+          ]
+        ],
+        "buttons": [],
+        "charge": true,
+        "chargeDirection": 6,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4",
+      "parsedInput": {
+        "raw": "_4_4",
+        "directions": [
+          [
+            4,
+            4
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Dodge",
+      "input": "_B_+_P_+_K",
+      "parsedInput": {
+        "raw": "_B_+_P_+_K",
+        "directions": [],
+        "buttons": [
+          [
+            "_B",
+            "_P",
+            "_K"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Dodge Attack",
+      "input": "_P / _K",
+      "parsedInput": {
+        "raw": "_P / _K",
+        "directions": [],
+        "buttons": [
+          [
+            "_P"
+          ],
+          [
+            "_K"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": true,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Dodge Forward",
+      "input": "_6_+_B_+_P_+_K",
+      "parsedInput": {
+        "raw": "_6_+_B_+_P_+_K",
+        "directions": [
+          [
+            6
+          ]
+        ],
+        "buttons": [
+          [
+            "_B",
+            "_P",
+            "_K"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Dash to back of Opponent close",
+      "input": "_B_+_P_+_K",
+      "parsedInput": {
+        "raw": "_B_+_P_+_K",
+        "directions": [],
+        "buttons": [
+          [
+            "_B",
+            "_P",
+            "_K"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Hyper Mode (1 Barrier)",
+      "input": "_4_+_P_+_K",
+      "parsedInput": {
+        "raw": "_4_+_P_+_K",
+        "directions": [
+          [
+            4
+          ]
+        ],
+        "buttons": [
+          [
+            "_P",
+            "_K"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Air Hyper Mode (1 Barrier)",
+      "input": "_^_P_+_K",
+      "parsedInput": {
+        "raw": "_^_P_+_K",
+        "directions": [],
+        "buttons": [
+          [
+            "_P",
+            "_K"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": true,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Roll Forward knocked down",
+      "input": "_6",
+      "parsedInput": {
+        "raw": "_6",
+        "directions": [
+          [
+            6
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Roll Backward knocked down",
+      "input": "_4",
+      "parsedInput": {
+        "raw": "_4",
+        "directions": [
+          [
+            4
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Side Roll knocked down",
+      "input": "_2 /_8",
+      "parsedInput": {
+        "raw": "_2 /_8",
+        "directions": [
+          [
+            2
+          ],
+          [
+            8
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Landing knocked down on air",
+      "input": "_B_+_P_+_K",
+      "parsedInput": {
+        "raw": "_B_+_P_+_K",
+        "directions": [],
+        "buttons": [
+          [
+            "_B",
+            "_P",
+            "_K"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    }
+  ],
+  "characters": [
+    {
+      "name": "SONIC THE HEDGEHOG",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Vaulting Spin Attack",
+          "input": "_B_+_P",
+          "parsedInput": {
+            "raw": "_B_+_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_B",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Opponent Related Throw",
+          "input": "_6_2_+_B_+_P",
+          "parsedInput": {
+            "raw": "_6_2_+_B_+_P",
+            "directions": [
+              [
+                6,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_B",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Circling Spin Dash",
+          "input": "_4_1_2_3_6_+_B_+_P",
+          "parsedInput": {
+            "raw": "_4_1_2_3_6_+_B_+_P",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_B",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Foot Stomp",
+          "input": "_2_2_+_B_+_K",
+          "parsedInput": {
+            "raw": "_2_2_+_B_+_K",
+            "directions": [
+              [
+                2,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_B",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "5 Punches Combo",
+          "input": "_P_P_P_P_P",
+          "parsedInput": {
+            "raw": "_P_P_P_P_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_P",
+                "_P",
+                "_P",
+                "_P",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "4 Punches Combo-Spin Attack",
+          "input": "_P_P_P_P_2_+_P",
+          "parsedInput": {
+            "raw": "_P_P_P_P_2_+_P",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_P",
+                "_P",
+                "_P",
+                "_P",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Punch Kick Combo",
+          "input": "_P_K",
+          "parsedInput": {
+            "raw": "_P_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_P",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "3 Kicks",
+          "input": "_K_K_K",
+          "parsedInput": {
+            "raw": "_K_K_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_K",
+                "_K",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Side Kick",
+          "input": "_B_+_K",
+          "parsedInput": {
+            "raw": "_B_+_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_B",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Squash Slap",
+          "input": "_6_+_P",
+          "parsedInput": {
+            "raw": "_6_+_P",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Mule Kick",
+          "input": "_6_6_+_K",
+          "parsedInput": {
+            "raw": "_6_6_+_K",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Wind-Up Punch",
+          "input": "_4_1_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_4_1_2_3_6_+_P",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Face Away From Opponent",
+          "input": "_2_+_P_+_K",
+          "parsedInput": {
+            "raw": "_2_+_P_+_K",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_P",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Spiral Spin Attack",
+          "input": "_2_2_+_P",
+          "parsedInput": {
+            "raw": "_2_2_+_P",
+            "directions": [
+              [
+                2,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Double Legged Sweep",
+          "input": "_1_+_K",
+          "parsedInput": {
+            "raw": "_1_+_K",
+            "directions": [
+              [
+                1
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Shove Uppercut-Jumping Slam",
+          "input": "_3_+_P_8_+_P",
+          "parsedInput": {
+            "raw": "_3_+_P_8_+_P",
+            "directions": [
+              [
+                3,
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_P",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "3 Side Kicks",
+          "input": "_3_+_K_K_K",
+          "parsedInput": {
+            "raw": "_3_+_K_K_K",
+            "directions": [
+              [
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_K",
+                "_K",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Swat Punch",
+          "input": "_8_+_P",
+          "parsedInput": {
+            "raw": "_8_+_P",
+            "directions": [
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Toe Kick-Scissor Kick",
+          "input": "_8_+_K_K_K",
+          "parsedInput": {
+            "raw": "_8_+_K_K_K",
+            "directions": [
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_K",
+                "_K",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Jumping Toe Kick",
+          "input": "_8_N_K",
+          "parsedInput": {
+            "raw": "_8_N_K",
+            "directions": [
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": true,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Super Spin Attack",
+          "input": "^8_+_P",
+          "parsedInput": {
+            "raw": "^8_+_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 8,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Stomp",
+          "input": "^8_+_K",
+          "parsedInput": {
+            "raw": "^8_+_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 8,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Mid-air Spin Attack",
+          "input": "^8_N_P",
+          "parsedInput": {
+            "raw": "^8_N_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 8,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": true,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Air Kick",
+          "input": "^8_N_K",
+          "parsedInput": {
+            "raw": "^8_N_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 8,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": true,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Ground Stomp opponent knocked down",
+          "input": "_2_+_K",
+          "parsedInput": {
+            "raw": "_2_+_K",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "KNUCKLES THE ECHIDNA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "3 Dodging Punches",
+          "input": "_B_+_P_P_P",
+          "parsedInput": {
+            "raw": "_B_+_P_P_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_B",
+                "_P",
+                "_P",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Opponent Related Throw",
+          "input": "_6_2_+_B_+_P",
+          "parsedInput": {
+            "raw": "_6_2_+_B_+_P",
+            "directions": [
+              [
+                6,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_B",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Foot Stomp",
+          "input": "_2_2_+_B_+_K",
+          "parsedInput": {
+            "raw": "_2_2_+_B_+_K",
+            "directions": [
+              [
+                2,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_B",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "2 Punches and Uppercut",
+          "input": "_P_P_P",
+          "parsedInput": {
+            "raw": "_P_P_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_P",
+                "_P",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Punch-Kick Combo",
+          "input": "_P_K",
+          "parsedInput": {
+            "raw": "_P_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_P",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Kunckles's Glide",
+          "input": "_P_+_K",
+          "parsedInput": {
+            "raw": "_P_+_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_P",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "3 Kicks",
+          "input": "_K_K_K",
+          "parsedInput": {
+            "raw": "_K_K_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_K",
+                "_K",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Side Kick",
+          "input": "_B_+_K",
+          "parsedInput": {
+            "raw": "_B_+_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_B",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Squash Slap",
+          "input": "_6_+_P",
+          "parsedInput": {
+            "raw": "_6_+_P",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Head-Butt",
+          "input": "_6_6_+_P",
+          "parsedInput": {
+            "raw": "_6_6_+_P",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Mule Kick",
+          "input": "_6_6_+_K",
+          "parsedInput": {
+            "raw": "_6_6_+_K",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Wind-Up Punch",
+          "input": "_4_1_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_4_1_2_3_6_+_P",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Uppercut",
+          "input": "_3_+_P",
+          "parsedInput": {
+            "raw": "_3_+_P",
+            "directions": [
+              [
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "3 Side Kicks",
+          "input": "_3_+_K_K_K",
+          "parsedInput": {
+            "raw": "_3_+_K_K_K",
+            "directions": [
+              [
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_K",
+                "_K",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Shouryuu Ken",
+          "input": "_3_3_+_P",
+          "parsedInput": {
+            "raw": "_3_3_+_P",
+            "directions": [
+              [
+                3,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Swat Punch",
+          "input": "_8_+_P",
+          "parsedInput": {
+            "raw": "_8_+_P",
+            "directions": [
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Toe Kick-Scissor Kick",
+          "input": "_8_+_K_K_K",
+          "parsedInput": {
+            "raw": "_8_+_K_K_K",
+            "directions": [
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_K",
+                "_K",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Jumping Toe-Kick",
+          "input": "_8_N_K",
+          "parsedInput": {
+            "raw": "_8_N_K",
+            "directions": [
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": true,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Diving Head-Butt",
+          "input": "^8_+_P",
+          "parsedInput": {
+            "raw": "^8_+_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 8,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Stomp",
+          "input": "^8_+_K",
+          "parsedInput": {
+            "raw": "^8_+_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 8,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Super Spin Attack",
+          "input": "^8_N_P",
+          "parsedInput": {
+            "raw": "^8_N_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 8,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": true,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Air Kick",
+          "input": "^8_N_K",
+          "parsedInput": {
+            "raw": "^8_N_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 8,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": true,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Ground Stomp opponent knocked down",
+          "input": "_2_+_K",
+          "parsedInput": {
+            "raw": "_2_+_K",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "\"TAILS\" MILES PROWER",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Flying Slam",
+          "input": "_B_+_P",
+          "parsedInput": {
+            "raw": "_B_+_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_B",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Opponent Related Throw",
+          "input": "_6_2_+_B_+_P",
+          "parsedInput": {
+            "raw": "_6_2_+_B_+_P",
+            "directions": [
+              [
+                6,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_B",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Flying Launch",
+          "input": "_4_6_+_B_+_P",
+          "parsedInput": {
+            "raw": "_4_6_+_B_+_P",
+            "directions": [
+              [
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_B",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Foot Stomp",
+          "input": "_2_2_+_B_+_K",
+          "parsedInput": {
+            "raw": "_2_2_+_B_+_K",
+            "directions": [
+              [
+                2,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_B",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "2 Punches and Lashing Punches",
+          "input": "_P_P_P",
+          "parsedInput": {
+            "raw": "_P_P_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_P",
+                "_P",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Punch-Kick Combo",
+          "input": "_P_K",
+          "parsedInput": {
+            "raw": "_P_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_P",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Flying Charge",
+          "input": "_P_+_K",
+          "parsedInput": {
+            "raw": "_P_+_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_P",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "3 Kicks",
+          "input": "_K_K_K",
+          "parsedInput": {
+            "raw": "_K_K_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_K",
+                "_K",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Squash Slap",
+          "input": "_6_+_P",
+          "parsedInput": {
+            "raw": "_6_+_P",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Mule Kick",
+          "input": "_6_6_+_K",
+          "parsedInput": {
+            "raw": "_6_6_+_K",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Charging Lashing Punches",
+          "input": "_4_1_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_4_1_2_3_6_+_P",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Face Away From Opponent",
+          "input": "_2_+_P_+_K",
+          "parsedInput": {
+            "raw": "_2_+_P_+_K",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_P",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Wind-up Uppercut",
+          "input": "_3_+_P",
+          "parsedInput": {
+            "raw": "_3_+_P",
+            "directions": [
+              [
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "3 Spinning Side Kicks",
+          "input": "_3_+_K_K_K",
+          "parsedInput": {
+            "raw": "_3_+_K_K_K",
+            "directions": [
+              [
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_K",
+                "_K",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Swat Punch",
+          "input": "_8_+_P",
+          "parsedInput": {
+            "raw": "_8_+_P",
+            "directions": [
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Toe Kick Scissor Kick",
+          "input": "_8_+_K_K_K",
+          "parsedInput": {
+            "raw": "_8_+_K_K_K",
+            "directions": [
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_K",
+                "_K",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Jumping Toe-Kick",
+          "input": "_8_N_K",
+          "parsedInput": {
+            "raw": "_8_N_K",
+            "directions": [
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": true,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Super Spin Attack",
+          "input": "^8_+_P",
+          "parsedInput": {
+            "raw": "^8_+_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 8,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Stomp",
+          "input": "^8_+_K",
+          "parsedInput": {
+            "raw": "^8_+_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 8,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Mid-air Super Spin Attack",
+          "input": "^8_N_P",
+          "parsedInput": {
+            "raw": "^8_N_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 8,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": true,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Air Kick",
+          "input": "^8_N_K",
+          "parsedInput": {
+            "raw": "^8_N_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 8,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": true,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Ground Stomp opponent knocked down",
+          "input": "_2_+_K",
+          "parsedInput": {
+            "raw": "_2_+_K",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "AMY ROSY THE RASCAL",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Head Vault",
+          "input": "_B_+_P",
+          "parsedInput": {
+            "raw": "_B_+_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_B",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Opponent Related Throw",
+          "input": "_6_2_+_B_+_P",
+          "parsedInput": {
+            "raw": "_6_2_+_B_+_P",
+            "directions": [
+              [
+                6,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_B",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "What's That?",
+          "input": "_4_1_2_3_6_+_B_+_P",
+          "parsedInput": {
+            "raw": "_4_1_2_3_6_+_B_+_P",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_B",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Foot Stomp",
+          "input": "_2_2_+_B_+_K",
+          "parsedInput": {
+            "raw": "_2_2_+_B_+_K",
+            "directions": [
+              [
+                2,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_B",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "3 Hammer Hits & Jumping Hammer",
+          "input": "_P_P_P_8_+_P",
+          "parsedInput": {
+            "raw": "_P_P_P_8_+_P",
+            "directions": [
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_P",
+                "_P",
+                "_P",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "3 Kicks",
+          "input": "_K_K_K",
+          "parsedInput": {
+            "raw": "_K_K_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_K",
+                "_K",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Mule Kick",
+          "input": "_B_+_K",
+          "parsedInput": {
+            "raw": "_B_+_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_B",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Spinning Hammer",
+          "input": "_6_+_P",
+          "parsedInput": {
+            "raw": "_6_+_P",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Kamikaze Slide",
+          "input": "_6_6_+_P",
+          "parsedInput": {
+            "raw": "_6_6_+_P",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Hip Attack",
+          "input": "_6_6_+_K",
+          "parsedInput": {
+            "raw": "_6_6_+_K",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Hammer Projectile",
+          "input": "_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_2_3_6_+_P",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Uppercut Hammer",
+          "input": "_3_+_P",
+          "parsedInput": {
+            "raw": "_3_+_P",
+            "directions": [
+              [
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "3 Spinning Sidekicks",
+          "input": "_3_+_K_K_K",
+          "parsedInput": {
+            "raw": "_3_+_K_K_K",
+            "directions": [
+              [
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_K",
+                "_K",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Jumping Vertical Hammer",
+          "input": "_8_+_P",
+          "parsedInput": {
+            "raw": "_8_+_P",
+            "directions": [
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Toe Kick-Scissor Kick",
+          "input": "_8_+_K_K_K",
+          "parsedInput": {
+            "raw": "_8_+_K_K_K",
+            "directions": [
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_K",
+                "_K",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Jumping Toe Kick",
+          "input": "_8_N_K",
+          "parsedInput": {
+            "raw": "_8_N_K",
+            "directions": [
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": true,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Diving Hammer",
+          "input": "^8_+_P",
+          "parsedInput": {
+            "raw": "^8_+_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 8,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Stomp",
+          "input": "^8_+_K",
+          "parsedInput": {
+            "raw": "^8_+_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 8,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Air Punch",
+          "input": "^8_N_P",
+          "parsedInput": {
+            "raw": "^8_N_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 8,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": true,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Air Kick",
+          "input": "^8_N_K",
+          "parsedInput": {
+            "raw": "^8_N_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 8,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": true,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Ground Stomp opponent knocked down",
+          "input": "_2_+_K",
+          "parsedInput": {
+            "raw": "_2_+_K",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "FANG THE SNIPER",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Back Toss",
+          "input": "_B_+_P",
+          "parsedInput": {
+            "raw": "_B_+_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_B",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Opponent Related Throw",
+          "input": "_6_2_+_B_+_P",
+          "parsedInput": {
+            "raw": "_6_2_+_B_+_P",
+            "directions": [
+              [
+                6,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_B",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Reverse Somersault Tail Toss",
+          "input": "_4_6_4_+_B_+_K",
+          "parsedInput": {
+            "raw": "_4_6_4_+_B_+_K",
+            "directions": [
+              [
+                4,
+                6,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_B",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Foot Stomp",
+          "input": "_2_2_+_B_+_K",
+          "parsedInput": {
+            "raw": "_2_2_+_B_+_K",
+            "directions": [
+              [
+                2,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_B",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "3 Shots-Random Charging Shots",
+          "input": "_P_P_P_6_+_P",
+          "parsedInput": {
+            "raw": "_P_P_P_6_+_P",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P",
+                "_P",
+                "_P",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "3 Kicks",
+          "input": "_K_K_K",
+          "parsedInput": {
+            "raw": "_K_K_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_K",
+                "_K",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Tail Slash",
+          "input": "_B_+_K",
+          "parsedInput": {
+            "raw": "_B_+_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_B",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Juggling Shots",
+          "input": "_6_+_P_P_P_P_P_P",
+          "parsedInput": {
+            "raw": "_6_+_P_P_P_P_P_P",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P",
+                "_P",
+                "_P",
+                "_P",
+                "_P",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Single Shot",
+          "input": "_6_6_+_P",
+          "parsedInput": {
+            "raw": "_6_6_+_P",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Tail Launch Kick",
+          "input": "_6_6_+_K",
+          "parsedInput": {
+            "raw": "_6_6_+_K",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Super Shot",
+          "input": "_4_6_6_+_P",
+          "parsedInput": {
+            "raw": "_4_6_6_+_P",
+            "directions": [
+              [
+                4,
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Random Charging Shots",
+          "input": "_4_1_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_4_1_2_3_6_+_P",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Shove Uppercut-Random Shots",
+          "input": "_3_+_P_8_+_P",
+          "parsedInput": {
+            "raw": "_3_+_P_8_+_P",
+            "directions": [
+              [
+                3,
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_P",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "3 Tail-Balancing Kicks",
+          "input": "_3_+_K_K_K",
+          "parsedInput": {
+            "raw": "_3_+_K_K_K",
+            "directions": [
+              [
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_K",
+                "_K",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Swat Punch",
+          "input": "_8_+_P",
+          "parsedInput": {
+            "raw": "_8_+_P",
+            "directions": [
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Toe Kick-Scissor Kick",
+          "input": "_8_+_K_K_K",
+          "parsedInput": {
+            "raw": "_8_+_K_K_K",
+            "directions": [
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_K",
+                "_K",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Jumping Toe Kick",
+          "input": "_8_N_K",
+          "parsedInput": {
+            "raw": "_8_N_K",
+            "directions": [
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": true,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Diving Head-butt",
+          "input": "^8_+_P",
+          "parsedInput": {
+            "raw": "^8_+_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 8,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Stomp",
+          "input": "^8_+_K",
+          "parsedInput": {
+            "raw": "^8_+_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 8,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Diagonal Air Gun-Shot",
+          "input": "^8_N_P",
+          "parsedInput": {
+            "raw": "^8_N_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 8,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": true,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Air Kick",
+          "input": "^8_N_K",
+          "parsedInput": {
+            "raw": "^8_N_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 8,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": true,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Ground Stomp opponent knocked down",
+          "input": "_2_+_K",
+          "parsedInput": {
+            "raw": "_2_+_K",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "ESPIO THE CHAMELEON",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Back Toss",
+          "input": "_B_+_P",
+          "parsedInput": {
+            "raw": "_B_+_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_B",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Opponent Related Throw",
+          "input": "_6_2_+_B_+_P",
+          "parsedInput": {
+            "raw": "_6_2_+_B_+_P",
+            "directions": [
+              [
+                6,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_B",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Gripping Tongue Slam",
+          "input": "_4_6_4_+_B_+_P",
+          "parsedInput": {
+            "raw": "_4_6_4_+_B_+_P",
+            "directions": [
+              [
+                4,
+                6,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_B",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Foot Stomp",
+          "input": "_2_2_+_B_+_K",
+          "parsedInput": {
+            "raw": "_2_2_+_B_+_K",
+            "directions": [
+              [
+                2,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_B",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Slap-Chop & Uppercut",
+          "input": "_P_P_P",
+          "parsedInput": {
+            "raw": "_P_P_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_P",
+                "_P",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Slap-Kick Combo",
+          "input": "_P_K",
+          "parsedInput": {
+            "raw": "_P_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_P",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "3 Kicks",
+          "input": "_K_K_K",
+          "parsedInput": {
+            "raw": "_K_K_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_K",
+                "_K",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Short Range Tongue Attack",
+          "input": "_6_+_P",
+          "parsedInput": {
+            "raw": "_6_+_P",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Head-Butt",
+          "input": "_6_6_+_P",
+          "parsedInput": {
+            "raw": "_6_6_+_P",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Side Kick",
+          "input": "_6_6_+_K",
+          "parsedInput": {
+            "raw": "_6_6_+_K",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Long Range Tongue Attack",
+          "input": "_4_1_2_3_6_+_P",
+          "parsedInput": {
+            "raw": "_4_1_2_3_6_+_P",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Overhead Chop",
+          "input": "_3_+_P",
+          "parsedInput": {
+            "raw": "_3_+_P",
+            "directions": [
+              [
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "3 Sidekicks",
+          "input": "_3_+_K_K_K",
+          "parsedInput": {
+            "raw": "_3_+_K_K_K",
+            "directions": [
+              [
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_K",
+                "_K",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Backhand Chop",
+          "input": "_3_3_+_P",
+          "parsedInput": {
+            "raw": "_3_3_+_P",
+            "directions": [
+              [
+                3,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Swat Punch",
+          "input": "_8_+_P",
+          "parsedInput": {
+            "raw": "_8_+_P",
+            "directions": [
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Toe Kick-Scissor Kick",
+          "input": "_8_+_K_K_K",
+          "parsedInput": {
+            "raw": "_8_+_K_K_K",
+            "directions": [
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_K",
+                "_K",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Jumping Toe Kick",
+          "input": "_8_N_K",
+          "parsedInput": {
+            "raw": "_8_N_K",
+            "directions": [
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": true,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Diving HeadButt",
+          "input": "^8_+_P",
+          "parsedInput": {
+            "raw": "^8_+_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 8,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Stomp",
+          "input": "^8_+_K",
+          "parsedInput": {
+            "raw": "^8_+_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 8,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Air Horizontal Spinning Attack",
+          "input": "^8_N_P",
+          "parsedInput": {
+            "raw": "^8_N_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 8,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": true,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Air Kick",
+          "input": "^8_N_K",
+          "parsedInput": {
+            "raw": "^8_N_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 8,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": true,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Ground Stomp opponent knocked down",
+          "input": "_2_+_K",
+          "parsedInput": {
+            "raw": "_2_+_K",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "BEAN THE DYNAMITE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Beak Pecking Smash",
+          "input": "_B_+_P",
+          "parsedInput": {
+            "raw": "_B_+_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_B",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Opponent Related Throw",
+          "input": "_6_4_+_B_+_P",
+          "parsedInput": {
+            "raw": "_6_4_+_B_+_P",
+            "directions": [
+              [
+                6,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_B",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Multiple Beak-Peck Combo",
+          "input": "_4_6_4_+_B_+_P",
+          "parsedInput": {
+            "raw": "_4_6_4_+_B_+_P",
+            "directions": [
+              [
+                4,
+                6,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_B",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Foot Stomp",
+          "input": "_2_2_+_B_+_K",
+          "parsedInput": {
+            "raw": "_2_2_+_B_+_K",
+            "directions": [
+              [
+                2,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_B",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "5 Bean Pecks Combo",
+          "input": "_P_P_P_P_P",
+          "parsedInput": {
+            "raw": "_P_P_P_P_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_P",
+                "_P",
+                "_P",
+                "_P",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "4 Beak-Peck Combo",
+          "input": "_P_P_P_P_6_+_P",
+          "parsedInput": {
+            "raw": "_P_P_P_P_6_+_P",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P",
+                "_P",
+                "_P",
+                "_P",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "3 Kicks",
+          "input": "_K_K_K",
+          "parsedInput": {
+            "raw": "_K_K_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_K",
+                "_K",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Side-kick",
+          "input": "_B_+_K",
+          "parsedInput": {
+            "raw": "_B_+_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_B",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Wind-Up Punch-3 Bombs",
+          "input": "_6_+_P_8 / _6_+_P",
+          "parsedInput": {
+            "raw": "_6_+_P_8 / _6_+_P",
+            "directions": [
+              [
+                6,
+                8
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ],
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "3 Lock-On Bombs",
+          "input": "_6_6_+_P",
+          "parsedInput": {
+            "raw": "_6_6_+_P",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Mule Kick",
+          "input": "_6_6_+_K",
+          "parsedInput": {
+            "raw": "_6_6_+_K",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Wind-Up Uppercut-3 Bombs",
+          "input": "_3_+_P_8 / _6_+_P",
+          "parsedInput": {
+            "raw": "_3_+_P_8 / _6_+_P",
+            "directions": [
+              [
+                3,
+                8
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ],
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "3 Sidekicks",
+          "input": "_3_+_K_K_K",
+          "parsedInput": {
+            "raw": "_3_+_K_K_K",
+            "directions": [
+              [
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_K",
+                "_K",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Swat Punch",
+          "input": "_8_+_P",
+          "parsedInput": {
+            "raw": "_8_+_P",
+            "directions": [
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Toe Kick-Scissor Kick",
+          "input": "_8_+_K_K_K",
+          "parsedInput": {
+            "raw": "_8_+_K_K_K",
+            "directions": [
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_K",
+                "_K",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Jumping Toe Kick",
+          "input": "_8_N_K",
+          "parsedInput": {
+            "raw": "_8_N_K",
+            "directions": [
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": true,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Beak Dive",
+          "input": "^8_+_P",
+          "parsedInput": {
+            "raw": "^8_+_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 8,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Stomp",
+          "input": "^8_+_K",
+          "parsedInput": {
+            "raw": "^8_+_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 8,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Air Bomb",
+          "input": "^8_N_P",
+          "parsedInput": {
+            "raw": "^8_N_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 8,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": true,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Air Kick",
+          "input": "^8_N_K",
+          "parsedInput": {
+            "raw": "^8_N_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 8,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": true,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Ground Stomp opponent knocked down",
+          "input": "_2_+_K",
+          "parsedInput": {
+            "raw": "_2_+_K",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "BARK THE POLERBEAR",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Overhead Swing Slam",
+          "input": "_B_+_P",
+          "parsedInput": {
+            "raw": "_B_+_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_B",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Tripping Head Smash",
+          "input": "_6_2_+_B_+_P",
+          "parsedInput": {
+            "raw": "_6_2_+_B_+_P",
+            "directions": [
+              [
+                6,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_B",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Multiple Head Smashes",
+          "input": "_4_6_4_+_B_+_P",
+          "parsedInput": {
+            "raw": "_4_6_4_+_B_+_P",
+            "directions": [
+              [
+                4,
+                6,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_B",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Overhead Giant Swing",
+          "input": "_4_1_2_3_6_+_B_+_P",
+          "parsedInput": {
+            "raw": "_4_1_2_3_6_+_B_+_P",
+            "directions": [
+              [
+                4,
+                1,
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_B",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Double Hammer Blow",
+          "input": "_2_2_+_B_+_P",
+          "parsedInput": {
+            "raw": "_2_2_+_B_+_P",
+            "directions": [
+              [
+                2,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_B",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_(",
+          "name": "Bowling-pin Throw",
+          "input": "_3_3_+_B_+_P",
+          "parsedInput": {
+            "raw": "_3_3_+_B_+_P",
+            "directions": [
+              [
+                3,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_B",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "2 Punches & Overhead Throw",
+          "input": "_P_P_P",
+          "parsedInput": {
+            "raw": "_P_P_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_P",
+                "_P",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "2 Punches-One-handed Thump",
+          "input": "_P_P_2_+_P",
+          "parsedInput": {
+            "raw": "_P_P_2_+_P",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_P",
+                "_P",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Spinning Lariat",
+          "input": "_P_+_K",
+          "parsedInput": {
+            "raw": "_P_+_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_P",
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Triple Squash Bash",
+          "input": "_6_+_P_P_P",
+          "parsedInput": {
+            "raw": "_6_+_P_P_P",
+            "directions": [
+              [
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P",
+                "_P",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Barrier & Straight Punch",
+          "input": "_4_+_P",
+          "parsedInput": {
+            "raw": "_4_+_P",
+            "directions": [
+              [
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Hook & Straight Punch",
+          "input": "_4_6_+_P_P",
+          "parsedInput": {
+            "raw": "_4_6_+_P_P",
+            "directions": [
+              [
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Low Punch & Sweep",
+          "input": "_2_3_6_+_P_P",
+          "parsedInput": {
+            "raw": "_2_3_6_+_P_P",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_P",
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Uppercut",
+          "input": "_3_+_P",
+          "parsedInput": {
+            "raw": "_3_+_P",
+            "directions": [
+              [
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Squatting Punches",
+          "input": "_3_3_+_P",
+          "parsedInput": {
+            "raw": "_3_3_+_P",
+            "directions": [
+              [
+                3,
+                3
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Swat Punch",
+          "input": "_8_+_P",
+          "parsedInput": {
+            "raw": "_8_+_P",
+            "directions": [
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Jumping Toe-Kick",
+          "input": "_8_+_K",
+          "parsedInput": {
+            "raw": "_8_+_K",
+            "directions": [
+              [
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Hammer Fist Pounce",
+          "input": "^8_+_P",
+          "parsedInput": {
+            "raw": "^8_+_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 8,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Hip Stomp",
+          "input": "^8_+_K",
+          "parsedInput": {
+            "raw": "^8_+_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 8,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Air Punch",
+          "input": "^8_N_P",
+          "parsedInput": {
+            "raw": "^8_N_P",
+            "directions": [],
+            "buttons": [
+              [
+                "_P"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 8,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": true,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Air Kick",
+          "input": "^8_N_K",
+          "parsedInput": {
+            "raw": "^8_N_K",
+            "directions": [],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": true,
+            "chargeDirection": 8,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": true,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Ground Stomp opponent knocked down",
+          "input": "_2_+_K",
+          "parsedInput": {
+            "raw": "_2_+_K",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "_K"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ]
+    }
+  ],
+  "cheatNotes": [
+    "_` Super Sonic",
+    "- With Sonic, reach on Metal Sonic without lose a round",
+    "- Defeat him in a 1st round, then, on 2nd round press _4_+_P_+_K"
+  ],
+  "controlAbbr": {
+    "_B": "BR",
+    "_P": "P",
+    "_K": "K",
+    "_S": "ST"
+  }
+}

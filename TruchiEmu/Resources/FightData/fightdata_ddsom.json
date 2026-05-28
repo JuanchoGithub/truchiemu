@@ -1,0 +1,1376 @@
+{
+  "schemaVersion": 1,
+  "romIds": [
+    "ddsom",
+    "ddsoma",
+    "ddsomar1",
+    "ddsomb",
+    "ddsomh",
+    "ddsomj",
+    "ddsomjr1",
+    "ddsomjr2",
+    "ddsomr1",
+    "ddsomr2",
+    "ddsomr3",
+    "ddsomu",
+    "ddsomur1"
+  ],
+  "name": "Dungeons & Dragons: Shadow Over Mystara",
+  "year": 1996,
+  "manufacturer": "Capcom",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "_A": "Attack",
+    "_B": "Jump",
+    "_C": "Select",
+    "_D": "Item",
+    "_S": "Start"
+  },
+  "categories": {
+    "_)": "Command Moves",
+    "_*": "Desperation Moves",
+    "_#": "Final Strike",
+    "_`": "Final Strike"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Run",
+      "input": "_6^6",
+      "parsedInput": {
+        "raw": "_6^6",
+        "directions": [
+          [
+            6
+          ]
+        ],
+        "buttons": [],
+        "charge": true,
+        "chargeDirection": 6,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Levitate with Boots of Levitation",
+      "input": "_B_B",
+      "parsedInput": {
+        "raw": "_B_B",
+        "directions": [],
+        "buttons": [
+          [
+            "_B",
+            "_B"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Cancel",
+      "input": "^2",
+      "parsedInput": {
+        "raw": "^2",
+        "directions": [],
+        "buttons": [],
+        "charge": true,
+        "chargeDirection": 2,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": true,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Crouch",
+      "input": "_2_+_B",
+      "parsedInput": {
+        "raw": "_2_+_B",
+        "directions": [
+          [
+            2
+          ]
+        ],
+        "buttons": [
+          [
+            "_B"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Normal Jump",
+      "input": "_B",
+      "parsedInput": {
+        "raw": "_B",
+        "directions": [],
+        "buttons": [
+          [
+            "_B"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Long Jump running",
+      "input": "_B",
+      "parsedInput": {
+        "raw": "_B",
+        "directions": [],
+        "buttons": [
+          [
+            "_B"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Multiple Attack",
+      "input": "^*_A",
+      "parsedInput": {
+        "raw": "^*_A",
+        "directions": [],
+        "buttons": [
+          [
+            "_A"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": true,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Slam Attack",
+      "input": "_6_+_A",
+      "parsedInput": {
+        "raw": "_6_+_A",
+        "directions": [
+          [
+            6
+          ]
+        ],
+        "buttons": [
+          [
+            "_A"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Sliding",
+      "input": "_2_3_6_+_B (_O)",
+      "parsedInput": {
+        "raw": "_2_3_6_+_B (_O)",
+        "directions": [
+          [
+            2,
+            3,
+            6
+          ]
+        ],
+        "buttons": [
+          [
+            "_B"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": true,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Block with Shield",
+      "input": "_O_A_4",
+      "parsedInput": {
+        "raw": "_O_A_4",
+        "directions": [
+          [
+            4
+          ]
+        ],
+        "buttons": [
+          [
+            "_A"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": true,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Counter Attack",
+      "input": "_6_+_A",
+      "parsedInput": {
+        "raw": "_6_+_A",
+        "directions": [
+          [
+            6
+          ]
+        ],
+        "buttons": [
+          [
+            "_A"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": true,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Air to Ground Attack",
+      "input": "_^_2_+_A",
+      "parsedInput": {
+        "raw": "_^_2_+_A",
+        "directions": [
+          [
+            2
+          ]
+        ],
+        "buttons": [
+          [
+            "_A"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": true,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Item Use",
+      "input": "_D",
+      "parsedInput": {
+        "raw": "_D",
+        "directions": [],
+        "buttons": [
+          [
+            "_D"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Strong Attack select \"Nothing\" on items",
+      "input": "_D",
+      "parsedInput": {
+        "raw": "_D",
+        "directions": [],
+        "buttons": [
+          [
+            "_D"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Select Item",
+      "input": "_C",
+      "parsedInput": {
+        "raw": "_C",
+        "directions": [],
+        "buttons": [
+          [
+            "_C"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Check Equipment",
+      "input": "_S",
+      "parsedInput": {
+        "raw": "_S",
+        "directions": [],
+        "buttons": [
+          [
+            "_S"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Pick Up Object close to object",
+      "input": "_A",
+      "parsedInput": {
+        "raw": "_A",
+        "directions": [],
+        "buttons": [
+          [
+            "_A"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Interact with Objects close to interactive object",
+      "input": "_A",
+      "parsedInput": {
+        "raw": "_A",
+        "directions": [],
+        "buttons": [
+          [
+            "_A"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    }
+  ],
+  "characters": [
+    {
+      "name": "FIGHTER",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Retreat",
+          "input": "_B_B",
+          "parsedInput": {
+            "raw": "_B_B",
+            "directions": [],
+            "buttons": [
+              [
+                "_B",
+                "_B"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Dashing Move",
+          "input": "_2_3_6_+_A",
+          "parsedInput": {
+            "raw": "_2_3_6_+_A",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Anti Air Move",
+          "input": "_2_8_+_A",
+          "parsedInput": {
+            "raw": "_2_8_+_A",
+            "directions": [
+              [
+                2,
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Mega Crush",
+          "input": "_A_+_B",
+          "parsedInput": {
+            "raw": "_A_+_B",
+            "directions": [],
+            "buttons": [
+              [
+                "_A",
+                "_B"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "CRASSUS / JARRED",
+        "Start Items:",
+        "- Weapon: Normal Sword LV1",
+        "- Side Weapon: Arrow x2",
+        "- Side Weapon: Shield",
+        "- Side Weapon: Dagger x2",
+        "- Side Weapon: Burning Oil x2",
+        "- Side Weapon: Throwing Hammer x1",
+        "- Shield: Normal Shield"
+      ]
+    },
+    {
+      "name": "CLERIC",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Retreat",
+          "input": "_B_B",
+          "parsedInput": {
+            "raw": "_B_B",
+            "directions": [],
+            "buttons": [
+              [
+                "_B",
+                "_B"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Dashing Move",
+          "input": "_2_3_6_+_A",
+          "parsedInput": {
+            "raw": "_2_3_6_+_A",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Anti Air Move",
+          "input": "_2_8_+_A",
+          "parsedInput": {
+            "raw": "_2_8_+_A",
+            "directions": [
+              [
+                2,
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Switch Between Circles of Items",
+          "input": "_C_B",
+          "parsedInput": {
+            "raw": "_C_B",
+            "directions": [],
+            "buttons": [
+              [
+                "_C",
+                "_B"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Undead (no Life needed)",
+          "input": "_A_+_B",
+          "parsedInput": {
+            "raw": "_A_+_B",
+            "directions": [],
+            "buttons": [
+              [
+                "_A",
+                "_B"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "GRELDON / MILES",
+        "Start Items:",
+        "- Weapon: Mace LV1",
+        "- Side Weapon: Throwing Hammer x2",
+        "- Side Weapon: Burning Oil x2"
+      ]
+    },
+    {
+      "name": "Spell",
+      "moves": [],
+      "notes": [
+        "Page 1: Bless x4"
+      ]
+    },
+    {
+      "name": "Spell",
+      "moves": [],
+      "notes": [
+        "Page 1: Cure Serious Wounds x3"
+      ]
+    },
+    {
+      "name": "Spell",
+      "moves": [],
+      "notes": [
+        "Page 1: Striking x4"
+      ]
+    },
+    {
+      "name": "Spell",
+      "moves": [],
+      "notes": [
+        "Page 2: Hold Person x4"
+      ]
+    },
+    {
+      "name": "Spell",
+      "moves": [],
+      "notes": [
+        "Page 2: Stick to Snakes x3 (1st outfit)"
+      ]
+    },
+    {
+      "name": "Spell",
+      "moves": [],
+      "notes": [
+        "Page 2: Continual Light x4",
+        "- Shield: Normal Shield"
+      ]
+    },
+    {
+      "name": "ELF",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Retreat",
+          "input": "_B_B",
+          "parsedInput": {
+            "raw": "_B_B",
+            "directions": [],
+            "buttons": [
+              [
+                "_B",
+                "_B"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Dashing Move",
+          "input": "_2_3_6_+_A",
+          "parsedInput": {
+            "raw": "_2_3_6_+_A",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Anti Air Move",
+          "input": "_2_8_+_A",
+          "parsedInput": {
+            "raw": "_2_8_+_A",
+            "directions": [
+              [
+                2,
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Switch Between Circles of Items",
+          "input": "_C_B",
+          "parsedInput": {
+            "raw": "_C_B",
+            "directions": [],
+            "buttons": [
+              [
+                "_C",
+                "_B"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Mega Crush",
+          "input": "_A_+_B",
+          "parsedInput": {
+            "raw": "_A_+_B",
+            "directions": [],
+            "buttons": [
+              [
+                "_A",
+                "_B"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "LUCIA / KAYLA",
+        "Start Items:",
+        "- Weapon: Short Sword LV1",
+        "- Side Weapon: Arrow ∞",
+        "- Side Weapon: Dagger x2",
+        "- Side Weapon: Burning Oil x2",
+        "- Side Weapon: Throwing Hammer x2"
+      ]
+    },
+    {
+      "name": "Spell",
+      "moves": [],
+      "notes": [
+        "Page 1: Magic Missile x4"
+      ]
+    },
+    {
+      "name": "Spell",
+      "moves": [],
+      "notes": [
+        "Page 1: Ice Storm x2"
+      ]
+    },
+    {
+      "name": "Spell",
+      "moves": [],
+      "notes": [
+        "Page 1: Lightning Bolt x2"
+      ]
+    },
+    {
+      "name": "Spell",
+      "moves": [],
+      "notes": [
+        "Page 1: Fireball x2"
+      ]
+    },
+    {
+      "name": "Spell",
+      "moves": [],
+      "notes": [
+        "Page 2: Invisibility x3"
+      ]
+    },
+    {
+      "name": "Spell",
+      "moves": [],
+      "notes": [
+        "Page 2: Polymorph Others x2"
+      ]
+    },
+    {
+      "name": "Spell",
+      "moves": [],
+      "notes": [
+        "Page 2: Haste x2",
+        "- Shield: Normal Shield"
+      ]
+    },
+    {
+      "name": "MAGIC USER",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Retreat",
+          "input": "_B_B",
+          "parsedInput": {
+            "raw": "_B_B",
+            "directions": [],
+            "buttons": [
+              [
+                "_B",
+                "_B"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Switch Between Circles of Items",
+          "input": "_C_B",
+          "parsedInput": {
+            "raw": "_C_B",
+            "directions": [],
+            "buttons": [
+              [
+                "_C",
+                "_B"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_#",
+          "name": "Final Strike",
+          "input": "_O_A_+_B_+_C with other characters and press _A_+_B_+_C with Magic User",
+          "parsedInput": {
+            "raw": "_O_A_+_B_+_C with other characters and press _A_+_B_+_C with Magic User",
+            "directions": [],
+            "buttons": [
+              [
+                "_A",
+                "_B",
+                "_C",
+                "_A",
+                "_B",
+                "_C"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "SYOUS / D'RAVEN",
+        "Start Items:",
+        "- Weapon: Staff of Striking",
+        "- Side Weapon: Burning Oil x3",
+        "- Side Weapon: Wand of Fire",
+        "- Side Weapon: Wand of Cold",
+        "- Side Weapon: Dagger x4"
+      ]
+    },
+    {
+      "name": "Spell",
+      "moves": [],
+      "notes": [
+        "Page 1: Fireball x4"
+      ]
+    },
+    {
+      "name": "Spell",
+      "moves": [],
+      "notes": [
+        "Page 1: Conjure Elemental x3 (1st outfit) / Cloud Kill x3 (2nd outfit)"
+      ]
+    },
+    {
+      "name": "Spell",
+      "moves": [],
+      "notes": [
+        "Page 1: Ice Storm x4"
+      ]
+    },
+    {
+      "name": "Spell",
+      "moves": [],
+      "notes": [
+        "Page 2: Magic Missile x5"
+      ]
+    },
+    {
+      "name": "Spell",
+      "moves": [],
+      "notes": [
+        "Page 2: Projected Image x2"
+      ]
+    },
+    {
+      "name": "Spell",
+      "moves": [],
+      "notes": [
+        "Page 2: Wall of Fire x4"
+      ]
+    },
+    {
+      "name": "Spell",
+      "moves": [],
+      "notes": [
+        "Page 2: Flesh to Stone x2"
+      ]
+    },
+    {
+      "name": "Spell",
+      "moves": [],
+      "notes": [
+        "Page 2: Lightning Bolt x4"
+      ]
+    },
+    {
+      "name": "THIEF",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "High Jump",
+          "input": "_B_B",
+          "parsedInput": {
+            "raw": "_B_B",
+            "directions": [],
+            "buttons": [
+              [
+                "_B",
+                "_B"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_B",
+          "parsedInput": {
+            "raw": "_B",
+            "directions": [],
+            "buttons": [
+              [
+                "_B"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Dashing Move",
+          "input": "_2_3_6_+_A",
+          "parsedInput": {
+            "raw": "_2_3_6_+_A",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Anti Air Move",
+          "input": "_2_8_+_A",
+          "parsedInput": {
+            "raw": "_2_8_+_A",
+            "directions": [
+              [
+                2,
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Mega Crush",
+          "input": "_A_+_B",
+          "parsedInput": {
+            "raw": "_A_+_B",
+            "directions": [],
+            "buttons": [
+              [
+                "_A",
+                "_B"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "MORIAH / SHANNON",
+        "Start Items:",
+        "- Wepon: Normal Sword LV1",
+        "- Side Weapon: Arrow x1",
+        "- Side Weapon: Sling ∞",
+        "- Side Weapon: Dagger x3",
+        "- Side Weapon: Burning Oil x3",
+        "- Side Weapon: Throwing Hammer x1",
+        "- Leg: Boots of Striding and Springing"
+      ]
+    },
+    {
+      "name": "DWARF",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Back Roll",
+          "input": "_B_B",
+          "parsedInput": {
+            "raw": "_B_B",
+            "directions": [],
+            "buttons": [
+              [
+                "_B",
+                "_B"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Dashing Move",
+          "input": "_2_3_6_+_A",
+          "parsedInput": {
+            "raw": "_2_3_6_+_A",
+            "directions": [
+              [
+                2,
+                3,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_)",
+          "name": "Anti Air Move",
+          "input": "_2_8_+_A",
+          "parsedInput": {
+            "raw": "_2_8_+_A",
+            "directions": [
+              [
+                2,
+                8
+              ]
+            ],
+            "buttons": [
+              [
+                "_A"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_*",
+          "name": "Mega Crush",
+          "input": "_A_+_B",
+          "parsedInput": {
+            "raw": "_A_+_B",
+            "directions": [],
+            "buttons": [
+              [
+                "_A",
+                "_B"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "DIMSDALE / HENDEL",
+        "Start Items:",
+        "- Weapon: Hand Axe LV1",
+        "- Side Weapon: Arrow x4",
+        "- Side Weapon: Silver Dagger x2",
+        "- Side Weapon: Dagger x4",
+        "- Side Weapon: Burning Oil x4",
+        "- Side Weapon: Throwing Hammer x4",
+        "- Shield: Normal Shield"
+      ]
+    }
+  ],
+  "cheatNotes": [
+    "_` Outfit Select",
+    "- 1st Outfit, select the character with _A / _B / _C / _D",
+    "- 2nd Outfit, select the character with _S",
+    "_` Character Name Bonus",
+    "- Value of the character:",
+    "0 = A / F / K",
+    "1 = B / G / L",
+    "2 = C / H / M",
+    "3 = D / I / N",
+    "4 = E / J / O",
+    "5 = 0 / 5",
+    "6 = 1 / 6",
+    "7 = 2 / 7 / ? / ! / (Greek Symbol) / - / I / II / III / (Space)",
+    "8 = 3 / 8",
+    "9 = 4 / 9",
+    "- The sum of all characters until reach a single digit will give a type below and give an item:",
+    "0 = Type A = Medal",
+    "1 = Type B = Boots of Speed",
+    "2 = Type C = Head Equipment: Battle Helmet (Fighter, Dwarf) / Cleric's Hat (Cleric) / Circlet (Elf) / Magical Hat (Magic User) / Hood (Thief)",
+    "3 = Type D = Ring of Protection",
+    "4 = Type E = Ring of Fire Resistance",
+    "5 = Type F = Ring of Spell Turning",
+    "6 = Type G = Gauntlets of Ogre Power",
+    "7 = Type H = Accessories: Anklet (Fighter, Dwarf) / Brooch (Cleric, Thief) / Earring (Elf) / Rod of Fire (Magic User)",
+    "8 = Type I = Accessories: Bracelet (Fighter, Cleric, Elf, Thief, Dwarf) / Rod of Cold (Magic User)",
+    "9 = Type J = Accessories: Orb (Fighter, Cleric, Thief, Dwarf) / Necklace (Elf) / Rod of Lightning (Magic User)"
+  ],
+  "controlAbbr": {
+    "_A": "AT",
+    "_B": "JM",
+    "_C": "SL",
+    "_D": "IT",
+    "_S": "ST"
+  }
+}

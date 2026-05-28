@@ -1,0 +1,3003 @@
+{
+  "schemaVersion": 1,
+  "romIds": [
+    "mk4",
+    "mk4a",
+    "mk4b"
+  ],
+  "name": "Mortal Kombat 4",
+  "year": 1997,
+  "manufacturer": "Midway",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "^G": "High Punch",
+    "^E": "Low Punch",
+    "_G": "Block",
+    "^J": "High Kick",
+    "^H": "Low Kick",
+    "_S": "Start"
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_#": "Draw Weapon Move (repeat to throw the weapon) (Throw weapon on version 2.1 only)",
+    "_@": "Special Moves",
+    "_`": "Fatality"
+  },
+  "commonCommands": [
+    {
+      "category": "_(",
+      "name": "Throw close",
+      "input": "^E",
+      "parsedInput": {
+        "raw": "^E",
+        "directions": [],
+        "buttons": [
+          [
+            "^E"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_(",
+      "name": "Break Move close",
+      "input": "^H",
+      "parsedInput": {
+        "raw": "^H",
+        "directions": [],
+        "buttons": [
+          [
+            "^H"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Uppercut",
+      "input": "_2_+^G",
+      "parsedInput": {
+        "raw": "_2_+^G",
+        "directions": [
+          [
+            2
+          ]
+        ],
+        "buttons": [
+          [
+            "^G"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Sweep",
+      "input": "_4_+^H",
+      "parsedInput": {
+        "raw": "_4_+^H",
+        "directions": [
+          [
+            4
+          ]
+        ],
+        "buttons": [
+          [
+            "^H"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Roundhouse",
+      "input": "_4_+^J",
+      "parsedInput": {
+        "raw": "_4_+^J",
+        "directions": [
+          [
+            4
+          ]
+        ],
+        "buttons": [
+          [
+            "^J"
+          ]
+        ],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Sidestep In @R-button @R-button (version 2.1 only)"
+    },
+    {
+      "category": "_)",
+      "name": "Sidestep Out",
+      "input": "^2_+@R-button @R-button (version 2.1 only)",
+      "parsedInput": {
+        "raw": "^2_+@R-button @R-button (version 2.1 only)",
+        "directions": [],
+        "buttons": [],
+        "charge": true,
+        "chargeDirection": 2,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Avoid Throw / Break Move when thrown",
+      "input": "^4",
+      "parsedInput": {
+        "raw": "^4",
+        "directions": [],
+        "buttons": [],
+        "charge": true,
+        "chargeDirection": 4,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Pick Up Object close to object",
+      "input": "_2_+@R-button (version 2.1 only)",
+      "parsedInput": {
+        "raw": "_2_+@R-button (version 2.1 only)",
+        "directions": [
+          [
+            2
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    },
+    {
+      "category": "_)",
+      "name": "Pick Up Weapon close to weapon",
+      "input": "_2_+@R-button",
+      "parsedInput": {
+        "raw": "_2_+@R-button",
+        "directions": [
+          [
+            2
+          ]
+        ],
+        "buttons": [],
+        "charge": false,
+        "chargeDirection": null,
+        "air": false,
+        "rapidPress": false,
+        "holdButton": false,
+        "followUp": false,
+        "neutral": false,
+        "motion360": false
+      }
+    }
+  ],
+  "commonNotes": [
+    "Kombos",
+    "3-hits (20%): ^G^J_2_+^J (juggle) (version 2.1 only)"
+  ],
+  "characters": [
+    {
+      "name": "KAI",
+      "moves": [
+        {
+          "category": "_#",
+          "name": "Nagimaki",
+          "input": "_2_4_+^E",
+          "parsedInput": {
+            "raw": "_2_4_+^E",
+            "directions": [
+              [
+                2,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Falling Fireball",
+          "input": "_4_4_+^G",
+          "parsedInput": {
+            "raw": "_4_4_+^G",
+            "directions": [
+              [
+                4,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Rising Fireball",
+          "input": "(_^)_6_6_+^E",
+          "parsedInput": {
+            "raw": "(_^)_6_6_+^E",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Air Fist",
+          "input": "_2_6_+^G (version 2.1 only)",
+          "parsedInput": {
+            "raw": "_2_6_+^G (version 2.1 only)",
+            "directions": [
+              [
+                2,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Handstand",
+          "input": "_G_+^H",
+          "parsedInput": {
+            "raw": "_G_+^H",
+            "directions": [],
+            "buttons": [
+              [
+                "_G",
+                "^H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Move",
+          "input": "_4 / _6",
+          "parsedInput": {
+            "raw": "_4 / _6",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Spin Kicks",
+          "input": "_O^E",
+          "parsedInput": {
+            "raw": "_O^E",
+            "directions": [],
+            "buttons": [
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Move",
+          "input": "_4 / _6",
+          "parsedInput": {
+            "raw": "_4 / _6",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Head Kick",
+          "input": "^J",
+          "parsedInput": {
+            "raw": "^J",
+            "directions": [],
+            "buttons": [
+              [
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Chest Kick",
+          "input": "^H",
+          "parsedInput": {
+            "raw": "^H",
+            "directions": [],
+            "buttons": [
+              [
+                "^H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Stand Up",
+          "input": "_G",
+          "parsedInput": {
+            "raw": "_G",
+            "directions": [],
+            "buttons": [
+              [
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Fatality 1                                                             (close) _8_6_8_4_+^J (version 2.1 only)",
+        "- Stage Fatality: The Prison                                             _6_6_2_+_G (version 2.1 only)"
+      ]
+    },
+    {
+      "name": "RAIDEN",
+      "moves": [
+        {
+          "category": "_#",
+          "name": "Warhammer",
+          "input": "_6_4_+^G",
+          "parsedInput": {
+            "raw": "_6_4_+^G",
+            "directions": [
+              [
+                6,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Lightning",
+          "input": "_2_4_+^E",
+          "parsedInput": {
+            "raw": "_2_4_+^E",
+            "directions": [
+              [
+                2,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Superman",
+          "input": "(_^)_6_6_+^H",
+          "parsedInput": {
+            "raw": "(_^)_6_6_+^H",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Teleport",
+          "input": "_2_8",
+          "parsedInput": {
+            "raw": "_2_8",
+            "directions": [
+              [
+                2,
+                8
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Fatality 1                                                             (close) _6_4_8_8_+^J (version 2.1 only)",
+        "- Stage Fatality: The Prison                                             _2_6_4_+_G"
+      ]
+    },
+    {
+      "name": "SHINNOK",
+      "moves": [
+        {
+          "category": "_#",
+          "name": "Nagimaki",
+          "input": "_4_6_+^E",
+          "parsedInput": {
+            "raw": "_4_6_+^E",
+            "directions": [
+              [
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Impersonations"
+        }
+      ],
+      "notes": [
+        "- Fujin                                                               _6_6_4_+^J",
+        "- Jarek                                                               _4_4_4_+^H",
+        "- Jax                                                                 _6_2_6_+^J (version 2.1 only)",
+        "- Johnny Cage                                                         _2_2_+^G (version 2.1 only)",
+        "- Kai                                                                 _6_6_6_+^H",
+        "- Liu Kang                                                            _4_4_6_+^J",
+        "- Quan Chi                                                            _6_4_6_+^H",
+        "- Raiden                                                              _2_6_6_+^G",
+        "- Reiko                                                               _4_4_4_+_G (version 2.1 only)",
+        "- Reptile                                                             _4_4_6_+_G",
+        "- Scorpion                                                            _6_4_+^E",
+        "- Sonya                                                               _6_2_6_+^G",
+        "- Sub-Zero                                                            _2_4_+^E",
+        "- Tanya                                                               _4_6_2_+_G",
+        "Finishing Moves",
+        "- Fatality 1                                                             (close) _6_4_6_2_+^G_+_G_+@R-button (version 1.0 only) (Must impersonate Sub-Zero)",
+        "- Fatality 1                                                             (close) _2_4_6_2_+@R-button (version 2.1 only)",
+        "- Stage Fatality: The Prison                                             _2_2_6_+^J (version 2.1 only)"
+      ]
+    },
+    {
+      "name": "LIU KANG",
+      "moves": [
+        {
+          "category": "_#",
+          "name": "Flamberge Sword",
+          "input": "_4_6_+^H",
+          "parsedInput": {
+            "raw": "_4_6_+^H",
+            "directions": [
+              [
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "High Fireball",
+          "input": "(_^)_6_6_+^G",
+          "parsedInput": {
+            "raw": "(_^)_6_6_+^G",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Low Fireball",
+          "input": "_6_6_+^E",
+          "parsedInput": {
+            "raw": "_6_6_+^E",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Flying Kick",
+          "input": "_6_6_+^J",
+          "parsedInput": {
+            "raw": "_6_6_+^J",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Bicycle Kick",
+          "input": "_6_6_+_H (version 1.0 only)",
+          "parsedInput": {
+            "raw": "_6_6_+_H (version 1.0 only)",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "_H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Bicycle Kick",
+          "input": "_O^H for 3 seconds (version 2.1 only)",
+          "parsedInput": {
+            "raw": "_O^H for 3 seconds (version 2.1 only)",
+            "directions": [],
+            "buttons": [
+              [
+                "^H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Fatality 1                                                             (sweep) _6_6_6_2_+_G_+^J_+^H (version 2.1 only)",
+        "- Stage Fatality: The Prison                                             _6_6_4_+^E"
+      ]
+    },
+    {
+      "name": "REPTILE",
+      "moves": [
+        {
+          "category": "_#",
+          "name": "Battle Axe",
+          "input": "_4_4_+^H",
+          "parsedInput": {
+            "raw": "_4_4_+^H",
+            "directions": [
+              [
+                4,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Acid Spit",
+          "input": "_2_6_+^G",
+          "parsedInput": {
+            "raw": "_2_6_+^G",
+            "directions": [
+              [
+                2,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Dashing Punch",
+          "input": "_4_6_+^E",
+          "parsedInput": {
+            "raw": "_4_6_+^E",
+            "directions": [
+              [
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Super Crawl",
+          "input": "_4_6_+^H (version 2.1 only)",
+          "parsedInput": {
+            "raw": "_4_6_+^H (version 2.1 only)",
+            "directions": [
+              [
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Invisibility",
+          "input": "_G_+^J",
+          "parsedInput": {
+            "raw": "_G_+^J",
+            "directions": [],
+            "buttons": [
+              [
+                "_G",
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Fatality 1                                                             (close) _O^G_+^E_+^J_+^H_8 (version 2.1 only)",
+        "- Stage Fatality: The Prison                                             _2_6_6_+^E (version 2.1 only)"
+      ]
+    },
+    {
+      "name": "SCORPION",
+      "moves": [
+        {
+          "category": "_#",
+          "name": "Claymore",
+          "input": "_6_6_+^J",
+          "parsedInput": {
+            "raw": "_6_6_+^J",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Spear",
+          "input": "_4_4_+^E",
+          "parsedInput": {
+            "raw": "_4_4_+^E",
+            "directions": [
+              [
+                4,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Teleport Punch",
+          "input": "(_^)_2_4_+^G",
+          "parsedInput": {
+            "raw": "(_^)_2_4_+^G",
+            "directions": [
+              [
+                2,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Breath Fire",
+          "input": "_2_6_+^E (version 2.1 only)",
+          "parsedInput": {
+            "raw": "_2_6_+^E (version 2.1 only)",
+            "directions": [
+              [
+                2,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Air Throw",
+          "input": "_^ close _G",
+          "parsedInput": {
+            "raw": "_^ close _G",
+            "directions": [],
+            "buttons": [
+              [
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Fatality 1                                                             (sweep) _4_6_6_4_+_G (version 2.1 only)",
+        "- Stage Fatality: The Prison                                             _6_2_2_+^H"
+      ]
+    },
+    {
+      "name": "JAX",
+      "moves": [
+        {
+          "category": "_#",
+          "name": "Spiked Club",
+          "input": "_2_6_+^G",
+          "parsedInput": {
+            "raw": "_2_6_+^G",
+            "directions": [
+              [
+                2,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Missile",
+          "input": "_2_6_+^E",
+          "parsedInput": {
+            "raw": "_2_6_+^E",
+            "directions": [
+              [
+                2,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Dashing Pound",
+          "input": "_2_4_+^E",
+          "parsedInput": {
+            "raw": "_2_4_+^E",
+            "directions": [
+              [
+                2,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Multi Slam: 1st Slam close",
+          "input": "^E",
+          "parsedInput": {
+            "raw": "^E",
+            "directions": [],
+            "buttons": [
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Multi Slam: 2nd Slam",
+          "input": "_O_G_+^J_+@R-button",
+          "parsedInput": {
+            "raw": "_O_G_+^J_+@R-button",
+            "directions": [],
+            "buttons": [
+              [
+                "_G",
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Multi Slam: 3rd Slam",
+          "input": "_O^G_+^E_+^H",
+          "parsedInput": {
+            "raw": "_O^G_+^E_+^H",
+            "directions": [],
+            "buttons": [
+              [
+                "^G",
+                "^E",
+                "^H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Multi Slam: 4th Slam",
+          "input": "_O^G_+_G_+^H",
+          "parsedInput": {
+            "raw": "_O^G_+_G_+^H",
+            "directions": [],
+            "buttons": [
+              [
+                "^G",
+                "_G",
+                "^H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Multi Slam: 5th Slam",
+          "input": "_O^G_+^E_+^J_+^H",
+          "parsedInput": {
+            "raw": "_O^G_+^E_+^J_+^H",
+            "directions": [],
+            "buttons": [
+              [
+                "^G",
+                "^E",
+                "^J",
+                "^H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Backbreaker",
+          "input": "_^ close _G",
+          "parsedInput": {
+            "raw": "_^ close _G",
+            "directions": [],
+            "buttons": [
+              [
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "(version 2.1 only)",
+        "Finishing Moves",
+        "- Fatality 1                                                             (close) _O^H for 5 seconds, _6_6_2_6",
+        "- Stage Fatality: The Prison                                             _6_6_4_+^H"
+      ]
+    },
+    {
+      "name": "REIKO",
+      "moves": [
+        {
+          "category": "_#",
+          "name": "Spiked Club",
+          "input": "_2_4_+^G",
+          "parsedInput": {
+            "raw": "_2_4_+^G",
+            "directions": [
+              [
+                2,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Shurikens",
+          "input": "_2_6_+^E",
+          "parsedInput": {
+            "raw": "_2_6_+^E",
+            "directions": [
+              [
+                2,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Spin Around",
+          "input": "_4_6_+^H",
+          "parsedInput": {
+            "raw": "_4_6_+^H",
+            "directions": [
+              [
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Flip Kick",
+          "input": "_4_2_6_+^J",
+          "parsedInput": {
+            "raw": "_4_2_6_+^J",
+            "directions": [
+              [
+                4,
+                2,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Teleport",
+          "input": "(_^)_2_8",
+          "parsedInput": {
+            "raw": "(_^)_2_8",
+            "directions": [
+              [
+                2,
+                8
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Air Punch",
+          "input": "^G / ^E",
+          "parsedInput": {
+            "raw": "^G / ^E",
+            "directions": [],
+            "buttons": [
+              [
+                "^G"
+              ],
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Front Kick",
+          "input": "^J / ^H",
+          "parsedInput": {
+            "raw": "^J / ^H",
+            "directions": [],
+            "buttons": [
+              [
+                "^J"
+              ],
+              [
+                "^H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Air Throw",
+          "input": "_G",
+          "parsedInput": {
+            "raw": "_G",
+            "directions": [],
+            "buttons": [
+              [
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "(version 2.1 only)",
+        "Finishing Moves",
+        "- Fatality 1                                                             (close) _6_2_6_+^E_+_G_+^J_+^H",
+        "- Stage Fatality: The Prison                                             _2_2_4_+^E"
+      ]
+    },
+    {
+      "name": "JOHNNY CAGE",
+      "moves": [
+        {
+          "category": "_#",
+          "name": "Claymore",
+          "input": "_6_2_6_+^H",
+          "parsedInput": {
+            "raw": "_6_2_6_+^H",
+            "directions": [
+              [
+                6,
+                2,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "High Green Bolt",
+          "input": "_2_6_+^G",
+          "parsedInput": {
+            "raw": "_2_6_+^G",
+            "directions": [
+              [
+                2,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Low Green Bolt",
+          "input": "_2_4_+^E",
+          "parsedInput": {
+            "raw": "_2_4_+^E",
+            "directions": [
+              [
+                2,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Shadow Uppercut",
+          "input": "_4_2_4_+^G",
+          "parsedInput": {
+            "raw": "_4_2_4_+^G",
+            "directions": [
+              [
+                4,
+                2,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Shadow Kick",
+          "input": "_4_6_+^H",
+          "parsedInput": {
+            "raw": "_4_6_+^H",
+            "directions": [
+              [
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Nut Punch",
+          "input": "_G_+^E",
+          "parsedInput": {
+            "raw": "_G_+^E",
+            "directions": [],
+            "buttons": [
+              [
+                "_G",
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "(version 2.1 only)",
+        "Finishing Moves",
+        "- Fatality 1                                                             (close) _6_4_2_2_+^J",
+        "- Stage Fatality: The Prison                                             _2_6_6_+^J"
+      ]
+    },
+    {
+      "name": "JAREK",
+      "moves": [
+        {
+          "category": "_#",
+          "name": "Warhammer",
+          "input": "_6_6_+^G (version 1.0 only)",
+          "parsedInput": {
+            "raw": "_6_6_+^G (version 1.0 only)",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_#",
+          "name": "Black Dragon Sword",
+          "input": "_6_6_+^G (version 2.1 only)",
+          "parsedInput": {
+            "raw": "_6_6_+^G (version 2.1 only)",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Knife Throw",
+          "input": "_2_4_+^E (version 2.1 only)",
+          "parsedInput": {
+            "raw": "_2_4_+^E (version 2.1 only)",
+            "directions": [
+              [
+                2,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Cannonball",
+          "input": "_4_6_+^H",
+          "parsedInput": {
+            "raw": "_4_6_+^H",
+            "directions": [
+              [
+                4,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Upward Cannonball",
+          "input": "_6_2_6_+^G (version 2.1 only)",
+          "parsedInput": {
+            "raw": "_6_2_6_+^G (version 2.1 only)",
+            "directions": [
+              [
+                6,
+                2,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Ground Shaker",
+          "input": "_4_2_4_+^J",
+          "parsedInput": {
+            "raw": "_4_2_4_+^J",
+            "directions": [
+              [
+                4,
+                2,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Fatality 1                                                             (close) _6_2_6_6_+^H (version 2.1 only)",
+        "- Stage Fatality: The Prison                                             _6_2_6_+^J (version 2.1 only)"
+      ]
+    },
+    {
+      "name": "TANYA",
+      "moves": [
+        {
+          "category": "_#",
+          "name": "Windblade",
+          "input": "_6_6_+^J (version 1.0 only)",
+          "parsedInput": {
+            "raw": "_6_6_+^J (version 1.0 only)",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_#",
+          "name": "Boomerang",
+          "input": "_6_6_+^J (version 2.1 only)",
+          "parsedInput": {
+            "raw": "_6_6_+^J (version 2.1 only)",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Fireball",
+          "input": "_2_6_+^G",
+          "parsedInput": {
+            "raw": "_2_6_+^G",
+            "directions": [
+              [
+                2,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Air Fireball",
+          "input": "_^_2_4_+^E",
+          "parsedInput": {
+            "raw": "_^_2_4_+^E",
+            "directions": [
+              [
+                2,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Split Kick",
+          "input": "_6_2_4_+^H",
+          "parsedInput": {
+            "raw": "_6_2_4_+^H",
+            "directions": [
+              [
+                6,
+                2,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Corkscrew Kick",
+          "input": "_6_6_+^H (version 2.1 only)",
+          "parsedInput": {
+            "raw": "_6_6_+^H (version 2.1 only)",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Fatality 1                                                             (close) _2_2_8_2_+^G_+_G (version 2.1 only)",
+        "- Stage Fatality: The Prison                                             _4_6_2_+^G (version 2.1 only)"
+      ]
+    },
+    {
+      "name": "FUJIN",
+      "moves": [
+        {
+          "category": "_#",
+          "name": "Crossbow",
+          "input": "_4_4_+^E",
+          "parsedInput": {
+            "raw": "_4_4_+^E",
+            "directions": [
+              [
+                4,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Whirlwind Spin Throw",
+          "input": "_6_2_+^E (_O)",
+          "parsedInput": {
+            "raw": "_6_2_+^E (_O)",
+            "directions": [
+              [
+                6,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": true,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Move",
+          "input": "_4 / _6",
+          "parsedInput": {
+            "raw": "_4 / _6",
+            "directions": [
+              [
+                4
+              ],
+              [
+                6
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Tornado Lift",
+          "input": "_6_2_6_+^G",
+          "parsedInput": {
+            "raw": "_6_2_6_+^G",
+            "directions": [
+              [
+                6,
+                2,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Slam",
+          "input": "_4_6_2_+^H",
+          "parsedInput": {
+            "raw": "_4_6_2_+^H",
+            "directions": [
+              [
+                4,
+                6,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "^H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Rising Knee",
+          "input": "_2_6_+^J",
+          "parsedInput": {
+            "raw": "_2_6_+^J",
+            "directions": [
+              [
+                2,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Dive Kick",
+          "input": "_^_2_+^H",
+          "parsedInput": {
+            "raw": "_^_2_+^H",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "^H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Fatality 1                                                             (sweep) _G_+@R-button _G_+@R-button _G_+@R-button _G_+@R-button (version 2.1 only)",
+        "- Stage Fatality: The Prison                                             _2_2_2_+^J (version 2.1 only)"
+      ]
+    },
+    {
+      "name": "SUB-ZERO",
+      "moves": [
+        {
+          "category": "_#",
+          "name": "Claymore",
+          "input": "_2_6_+^J (version 1.0 only)",
+          "parsedInput": {
+            "raw": "_2_6_+^J (version 1.0 only)",
+            "directions": [
+              [
+                2,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_#",
+          "name": "Ice Scepter",
+          "input": "_2_6_+^J (version 2.1 only)",
+          "parsedInput": {
+            "raw": "_2_6_+^J (version 2.1 only)",
+            "directions": [
+              [
+                2,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Freeze",
+          "input": "_2_6_+^E",
+          "parsedInput": {
+            "raw": "_2_6_+^E",
+            "directions": [
+              [
+                2,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Ice Clone",
+          "input": "(_^)_2_4_+^E",
+          "parsedInput": {
+            "raw": "(_^)_2_4_+^E",
+            "directions": [
+              [
+                2,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Slide",
+          "input": "^E_+_G_+^H",
+          "parsedInput": {
+            "raw": "^E_+_G_+^H",
+            "directions": [],
+            "buttons": [
+              [
+                "^E",
+                "_G",
+                "^H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Fatality 1                                                             (close) _6_4_6_2_+^G_+_G_+@R-button",
+        "- Stage Fatality: The Prison                                             _2_8_8_8_+^J (version 2.1 only)"
+      ]
+    },
+    {
+      "name": "QUAN CHI",
+      "moves": [
+        {
+          "category": "_#",
+          "name": "Spiked Club",
+          "input": "_2_4_+^J (version 1.0 only)",
+          "parsedInput": {
+            "raw": "_2_4_+^J (version 1.0 only)",
+            "directions": [
+              [
+                2,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_#",
+          "name": "Ghurka Knife",
+          "input": "_2_4_+^J (version 2.1 only)",
+          "parsedInput": {
+            "raw": "_2_4_+^J (version 2.1 only)",
+            "directions": [
+              [
+                2,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Flying Skull",
+          "input": "_6_6_+^E",
+          "parsedInput": {
+            "raw": "_6_6_+^E",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Teleport Stomp",
+          "input": "_6_2_+^H",
+          "parsedInput": {
+            "raw": "_6_2_+^H",
+            "directions": [
+              [
+                6,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "^H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Slide Kick",
+          "input": "_6_6_+^J (version 2.1 only)",
+          "parsedInput": {
+            "raw": "_6_6_+^J (version 2.1 only)",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Steal Weapon unarmed",
+          "input": "_6_4_+^G (steal weapon)",
+          "parsedInput": {
+            "raw": "_6_4_+^G (steal weapon)",
+            "directions": [
+              [
+                6,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Air Throw",
+          "input": "_^ close _G",
+          "parsedInput": {
+            "raw": "_^ close _G",
+            "directions": [],
+            "buttons": [
+              [
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Fatality 1                                                             (close) _O^H for 5 seconds, _6_2_6 (version 2.1 only)",
+        "- Stage Fatality: The Prison                                             _6_6_2_+^G (version 2.1 only)"
+      ]
+    },
+    {
+      "name": "SONYA",
+      "moves": [
+        {
+          "category": "_#",
+          "name": "Windblade",
+          "input": "_6_6_+^H",
+          "parsedInput": {
+            "raw": "_6_6_+^H",
+            "directions": [
+              [
+                6,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Force Wave",
+          "input": "_2_6_+^E",
+          "parsedInput": {
+            "raw": "_2_6_+^E",
+            "directions": [
+              [
+                2,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Square Wave Punch",
+          "input": "_6_4_+^G",
+          "parsedInput": {
+            "raw": "_6_4_+^G",
+            "directions": [
+              [
+                6,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Leg Grab",
+          "input": "_2_+^E_+_G",
+          "parsedInput": {
+            "raw": "_2_+^E_+_G",
+            "directions": [
+              [
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "^E",
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Bicycle Kick",
+          "input": "_4_4_2_+^J",
+          "parsedInput": {
+            "raw": "_4_4_2_+^J",
+            "directions": [
+              [
+                4,
+                4,
+                2
+              ]
+            ],
+            "buttons": [
+              [
+                "^J"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Cartwheel",
+          "input": "_4_2_6_+^H",
+          "parsedInput": {
+            "raw": "_4_2_6_+^H",
+            "directions": [
+              [
+                4,
+                2,
+                6
+              ]
+            ],
+            "buttons": [
+              [
+                "^H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Air Throw",
+          "input": "_^ close _G",
+          "parsedInput": {
+            "raw": "_^ close _G",
+            "directions": [],
+            "buttons": [
+              [
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Fatality 1                                                             (sweep) _2_2_2_8_+@R-button (version 2.1 only)",
+        "- Stage Fatality: The Prison                                             _2_4_4_+^J"
+      ]
+    },
+    {
+      "name": "NOOB SAIBOT",
+      "moves": [
+        {
+          "category": "_`",
+          "name": "Playable only with M.A.M.E Cheat."
+        },
+        {
+          "category": "_#",
+          "name": "Spiked Club",
+          "input": "_2_4_+^G",
+          "parsedInput": {
+            "raw": "_2_4_+^G",
+            "directions": [
+              [
+                2,
+                4
+              ]
+            ],
+            "buttons": [
+              [
+                "^G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Teleport",
+          "input": "(_^)_2_8",
+          "parsedInput": {
+            "raw": "(_^)_2_8",
+            "directions": [
+              [
+                2,
+                8
+              ]
+            ],
+            "buttons": [],
+            "charge": false,
+            "chargeDirection": null,
+            "air": true,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": false,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Air Punch",
+          "input": "^G / ^E",
+          "parsedInput": {
+            "raw": "^G / ^E",
+            "directions": [],
+            "buttons": [
+              [
+                "^G"
+              ],
+              [
+                "^E"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Air Kick",
+          "input": "^J / ^H",
+          "parsedInput": {
+            "raw": "^J / ^H",
+            "directions": [],
+            "buttons": [
+              [
+                "^J"
+              ],
+              [
+                "^H"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        },
+        {
+          "category": "_@",
+          "name": "Air Throw",
+          "input": "_G",
+          "parsedInput": {
+            "raw": "_G",
+            "directions": [],
+            "buttons": [
+              [
+                "_G"
+              ]
+            ],
+            "charge": false,
+            "chargeDirection": null,
+            "air": false,
+            "rapidPress": false,
+            "holdButton": false,
+            "followUp": true,
+            "neutral": false,
+            "motion360": false
+          }
+        }
+      ],
+      "notes": [
+        "(version 1.0 only)"
+      ]
+    }
+  ],
+  "cheatNotes": [
+    "_` 2nd Outfit",
+    "- On the Character Select Screen _O_S and press",
+    "- Kai                       ^G_+_G_+^H",
+    "- Raiden                    ^E_+_G_+^J",
+    "- Shinnok                   ^G_+^E_+_G",
+    "- Liu Kang                  _G_+^J_+^H",
+    "- Reptile                   ^E_+_G_+^H",
+    "- Scorpion                  ^G_+_G_+^J",
+    "- Jax                       ^E_+_G_+@R-button",
+    "- Reiko                     ^G_+^H_+@R-button",
+    "- Johnny Cage               ^E_+^H_+@R-button",
+    "- Jarek                     ^G_+^J_+@R-button",
+    "- Tanya                     ^E_+^J_+^H",
+    "- Fujin                     ^G_+^E_+^J",
+    "- Sub-Zero                  ^G_+_G_+@R-button",
+    "- Quan Chi                  ^G_+^J_+@R-button",
+    "- Sonya                     ^G_+^H_+@R-button",
+    "_` Meat",
+    "- Choose Group Mode and win with all 15 characters",
+    "- The next character to be chosen will be Meat",
+    "- Only on a 2P Game",
+    "_` Kombat Kodes",
+    "- On the vs. Screen, input a code below:",
+    "- Kode 12: 4 Player Randper Illegal                                     Removed from the game",
+    "- Only on a 2P Game",
+    "- The button layout is ^E_G^H for both side"
+  ],
+  "controlAbbr": {
+    "^G": "HP",
+    "^E": "LP",
+    "_G": "BL",
+    "^J": "HK",
+    "^H": "LK",
+    "_S": "ST"
+  }
+}

@@ -303,6 +303,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     @MainActor @Published var lastError: GameError?
     var romPath: String = ""
     private var analogButtonStates: [RetroButton: Float] = [:]
+    @MainActor @Published private(set) var currentInputState: [Int: Bool] = [:]
     
     // Expose saveManager for UI access
     var saveManager: SaveStateManager { _saveManager }
@@ -779,10 +780,18 @@ case "scummvm": runner = ScummVMRunner()
     }
 
     func setKeyState(retroID: Int, pressed: Bool) {
+        MainActor.assumeIsolated {
+            currentInputState[retroID] = pressed
+        }
         XPCBridgeAdapter.shared.setKeyState(retroID: retroID, pressed: pressed)
     }
 
     func setKeyState(retroID: Int, player: Int, pressed: Bool) {
+        if player == 0 {
+            MainActor.assumeIsolated {
+                currentInputState[retroID] = pressed
+            }
+        }
         XPCBridgeAdapter.shared.setKeyState(retroID: retroID, player: player, pressed: pressed)
     }
 

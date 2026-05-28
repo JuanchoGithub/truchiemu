@@ -94,12 +94,14 @@ struct GameOverlayToolbar: View {
                 .frame(height: 30)
                 .opacity(0.3)
 
-            ToolbarButton(
-                icon: "wand.and.stars",
-                label: loc.localized("toolbar.cheats")
-            ) {
-                windowController.showCheatManager()
-            }
+        ToolbarButton(
+            icon: "wand.and.stars",
+            label: loc.localized("toolbar.cheats")
+        ) {
+            windowController.showCheatManager()
+        }
+
+        MoveListToolbarButton(windowController: windowController)
 
             FullscreenButton(windowController: windowController)
 

@@ -159,9 +159,7 @@ final class LoggingSettingsViewModel: ObservableObject {
 
     private let loc = LocalizationManager.shared
 
-    init() {
-        refreshInfo()
-    }
+    init() {}
 
     func refreshInfo() {
         currentLogFilePath = LogManager.shared.currentLogURL.path

@@ -414,3 +414,31 @@ if let info = slotInfo(for: slot), info.exists, let timestamp = info.formattedDa
         }
     }
 }
+
+struct MoveListToolbarButton: View {
+    @ObservedObject var windowController: StandaloneGameWindowController
+    @ObservedObject private var loc = LocalizationManager.shared
+
+    private var isActive: Bool {
+        windowController.moveListViewModel.isOverlayVisible || windowController.moveListViewModel.needsCharacterSelection
+    }
+
+    var body: some View {
+        if windowController.moveListViewModel.hasGameData {
+            HoverButton(action: {
+                windowController.toggleMoveListOverlay()
+            }) {
+                VStack(spacing: 4) {
+                    Image(systemName: "list.bullet.rectangle")
+                        .font(.system(size: 16, weight: .semibold))
+                    Text(loc.localized("toolbar.moveList"))
+                        .font(.system(size: 10, weight: .medium))
+                        .lineLimit(1)
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+            }
+            .foregroundColor(isActive ? .green : .white)
+        }
+    }
+}
