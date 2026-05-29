@@ -1,0 +1,26 @@
+<svg width="48.0" height="48.0" viewBox="12.5 10.5 23.0 27.0" xmlns="http://www.w3.org/2000/svg"  >
+  <defs>
+    <linearGradient id="goldArcade" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fffde6" />
+      <stop offset="40%" stop-color="#fef08a" />
+      <stop offset="100%" stop-color="#ca8a04" />
+    </linearGradient>
+  </defs>
+  
+  <g>
+    <path d="M 14 13 L 19 13 L 19 22 L 28 13 L 34 13 L 23.5 24 L 34 37 L 28 37 L 19 26 L 19 37 L 14 37 Z" 
+          fill="#000000" opacity="0.3"/>
+
+    <path d="M 14 12 L 19 12 L 19 21 L 28 12 L 34 12 L 23.5 23 L 34 36 L 28 36 L 19 25 L 19 36 L 14 36 Z" 
+          fill="url(#goldArcade)" 
+          stroke="#0f172a" 
+          stroke-width="1.5" 
+          stroke-linejoin="miter"/>
+
+    <path d="M 15.5 13.5 L 15.5 34.5 M 29 13.5 L 22.5 20" 
+          stroke="#ffffff" 
+          stroke-width="0.75" 
+          stroke-linecap="round" 
+          opacity="0.5"/>
+  </g>
+</svg>

@@ -1,0 +1,44 @@
+<svg width="48.0" height="48.0" viewBox="12.6 9.1 26.3 26.7" xmlns="http://www.w3.org/2000/svg"  >
+  <defs>
+    <linearGradient id="goldArcade" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fffde6" />
+      <stop offset="40%" stop-color="#fef08a" />
+      <stop offset="100%" stop-color="#ca8a04" />
+    </linearGradient>
+    
+    <linearGradient id="steel" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#94a3b8" />
+      <stop offset="50%" stop-color="#f8fafc" />
+      <stop offset="100%" stop-color="#475569" />
+    </linearGradient>
+  </defs>
+  
+  <g transform="rotate(45 24 24)" stroke="#0f172a" stroke-width="1" stroke-linejoin="round" stroke-linecap="round">
+    
+    <path d="M 24 5 
+             L 26.5 8 
+             L 26.5 27 
+             L 21.5 27 
+             L 21.5 8 
+             Z" 
+          fill="url(#goldArcade)"/>
+          
+    <line x1="24" y1="5" x2="24" y2="27" stroke="#ca8a04" stroke-width="0.8"/>
+    
+    <path d="M 16 27 
+             C 20 27, 21 26, 24 28 
+             C 27 26, 28 27, 32 27 
+             L 30 30 
+             L 24 29 
+             L 18 30 
+             Z" 
+          fill="url(#steel)"/>
+          
+    <rect x="22.5" y="30" width="3" height="7" fill="#0f172a"/>
+    <line x1="22.5" y1="32" x2="25.5" y2="32" stroke="#334155" stroke-width="0.6"/>
+    <line x1="22.5" y1="34" x2="25.5" y2="34" stroke="#334155" stroke-width="0.6"/>
+    <line x1="22.5" y1="36" x2="25.5" y2="36" stroke="#334155" stroke-width="0.6"/>
+    
+    <circle cx="24" cy="38" r="1.8" fill="url(#steel)"/>
+  </g>
+</svg>

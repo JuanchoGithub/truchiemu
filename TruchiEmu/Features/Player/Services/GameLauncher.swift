@@ -139,6 +139,7 @@ class GameLauncher: ObservableObject {
         rom: ROM,
         coreID: String,
         slotToLoad: Int? = nil,
+        progressiveVersion: Int? = nil,
         library: ROMLibrary? = nil,
         shaderUniformOverrides: [String: Float] = [:],
         checkMAMEDeps: Bool = true,
@@ -260,7 +261,7 @@ class GameLauncher: ObservableObject {
         activeControllers[rom.id] = controller
 
         // Launch the game (window will be shown by controller when ready)
-        controller.launch(rom: rom, coreID: coreID, slotToLoad: slotToLoad, shaderUniformOverrides: config.shaderUniformOverrides)
+        controller.launch(rom: rom, coreID: coreID, slotToLoad: slotToLoad, progressiveVersion: progressiveVersion, shaderUniformOverrides: config.shaderUniformOverrides)
 
         // Cleanup
         isLaunching = false

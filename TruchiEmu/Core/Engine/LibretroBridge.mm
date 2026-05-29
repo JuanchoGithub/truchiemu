@@ -118,18 +118,33 @@ static int16_t input_state_stub(unsigned port, unsigned device, unsigned index, 
 }
 
 + (void)waitForCompletion {
-    if (g_bridgeCompletionSemaphore) {
-        if (dispatch_semaphore_wait(g_bridgeCompletionSemaphore, dispatch_time(DISPATCH_TIME_NOW, 0)) == 0) {
-            return;
-        }
-        dispatch_time_t mediumTimeout = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC));
-        long result = dispatch_semaphore_wait(g_bridgeCompletionSemaphore, mediumTimeout);
-        
-        if (result != 0) {
-            dispatch_time_t finalTimeout = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(4.0 * NSEC_PER_SEC));
-            dispatch_semaphore_wait(g_bridgeCompletionSemaphore, finalTimeout);
-        }
+	if (g_bridgeCompletionSemaphore) {
+		if (dispatch_semaphore_wait(g_bridgeCompletionSemaphore, dispatch_time(DISPATCH_TIME_NOW, 0)) == 0) {
+			return;
+		}
+		dispatch_time_t mediumTimeout = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC));
+		long result = dispatch_semaphore_wait(g_bridgeCompletionSemaphore, mediumTimeout);
+
+		if (result != 0) {
+			dispatch_time_t finalTimeout = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(4.0 * NSEC_PER_SEC));
+			dispatch_semaphore_wait(g_bridgeCompletionSemaphore, finalTimeout);
+		}
+	}
+}
+
++ (void)cleanupInstance {
+    if (g_instance) {
+        [g_instance cleanup];
     }
+    g_optValues = nil;
+    g_optDefinitions = nil;
+    g_optCategories = nil;
+    g_inputDescriptors = nil;
+    g_coreID = nil;
+    g_systemID = nil;
+    g_romFilename = nil;
+    g_shaderDir = nil;
+    g_bridgeCompletionSemaphore = nil;
 }
 
 + (void)saveState { if (g_instance) [g_instance saveState]; }

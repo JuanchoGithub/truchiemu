@@ -11,6 +11,10 @@ struct TrashActionPayload: Codable {
     let romJSON: String
 }
 
+struct SaveDeleteActionPayload: Codable {
+    let filePairs: [[String]]  // [[originalPath, tempUndoPath], ...]
+}
+
 private enum notificationLog {
     static func info(_ message: String) { LoggerService.info(category: "NotificationHistory", message) }
 }

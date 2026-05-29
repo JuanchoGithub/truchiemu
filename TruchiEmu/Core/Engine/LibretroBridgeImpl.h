@@ -44,8 +44,10 @@ typedef void (^VideoFrameCallback)(const void *data, int width, int height, int 
   AVAudioSourceNode *_audioSourceNode;
   AudioRingBuffer *_audioBuffer;
 
-  int16_t *_audioRenderScratch;
-  size_t _audioRenderScratchCapacity;
+    int16_t *_audioRenderScratch;
+    size_t _audioRenderScratchCapacity;
+    uint64_t _audioStartTimeMach;
+    BOOL _audioFadeInComplete;
 
   CGLContextObj _glContext;
   struct retro_hw_render_callback _hw_callback;
@@ -74,6 +76,7 @@ typedef void (^VideoFrameCallback)(const void *data, int width, int height, int 
 - (BOOL)loadDylib:(NSString *)path;
 - (BOOL)launchROM:(NSString *)romPath videoCallback:(VideoFrameCallback)cb;
 - (void)stop;
+- (void)cleanup;
 - (void)saveState;
 - (NSData *)serializeState;
 - (BOOL)unserializeState:(NSData *)data;

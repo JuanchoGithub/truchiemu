@@ -20,6 +20,8 @@
 	<string>8</string>
 	<key>XPCService</key>
 	<dict>
+		<key>ThrottleInterval</key>
+		<integer>1</integer>
 	</dict>
 </dict>
 </plist>

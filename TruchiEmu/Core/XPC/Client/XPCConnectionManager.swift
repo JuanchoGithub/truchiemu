@@ -198,35 +198,35 @@ final class XPCConnectionManager: ObservableObject {
 
     // MARK: - Watchdog
 
-    private func startWatchdog() {
-        stopWatchdog()
-        lastPingResponse = Date()
-        let timer = DispatchSource.makeTimerSource(queue: watchdogQueue)
-        timer.schedule(deadline: .now() + 1, repeating: .seconds(1), leeway: .milliseconds(500))
-        timer.setEventHandler { [weak self] in
-            self?.watchdogTick()
-        }
-        timer.resume()
-        watchdogTimer = timer
-    }
+	private func startWatchdog() {
+		stopWatchdog()
+		lastPingResponse = Date.distantPast
+		let timer = DispatchSource.makeTimerSource(queue: watchdogQueue)
+		timer.schedule(deadline: .now() + 1, repeating: .seconds(1), leeway: .milliseconds(500))
+		timer.setEventHandler { [weak self] in
+			self?.watchdogTick()
+		}
+		timer.resume()
+		watchdogTimer = timer
+	}
 
     private func stopWatchdog() {
         watchdogTimer?.cancel()
         watchdogTimer = nil
     }
 
-    private func watchdogTick() {
-        let elapsed = Date().timeIntervalSince(lastPingResponse)
-        if elapsed > 6 {
-            LoggerService.error(category: "XPC", "Watchdog: no ping response for \(Int(elapsed))s — killing service PID \(servicePID)")
-            killService()
-            return
-        }
-        remoteProxy?.ping { [weak self] in
-            self?.lastPingResponse = Date()
-            self?.captureServicePID()
-        }
-    }
+	private func watchdogTick() {
+		let elapsed = Date().timeIntervalSince(lastPingResponse)
+		if elapsed > 6 && lastPingResponse != .distantPast {
+			LoggerService.error(category: "XPC", "Watchdog: no ping response for \(Int(elapsed))s — killing service PID \(servicePID)")
+			killService()
+			return
+		}
+		remoteProxy?.ping { [weak self] in
+			self?.lastPingResponse = Date()
+			self?.captureServicePID()
+		}
+	}
 
     private func killService() {
         guard servicePID > 0 else { return }

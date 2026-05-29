@@ -14,11 +14,12 @@ struct SettingsView: View {
     enum Page: Hashable, Codable, RawRepresentable, Identifiable {
         
         var id: String { rawValue }
-        case general, library, cores, controllers, boxArt, display, cheats, bezels, retroAchievements, genre, logging, moveList, about
+        case general, saves, library, cores, controllers, boxArt, display, cheats, bezels, retroAchievements, genre, logging, moveList, about
         
         var rawValue: String {
             switch self {
             case .general: return "general"
+            case .saves: return "saves"
             case .library: return "library"
             case .cores: return "cores"
             case .controllers: return "controllers"
@@ -37,6 +38,7 @@ struct SettingsView: View {
         init?(rawValue: String) {
             switch rawValue {
             case "general": self = .general
+            case "saves": self = .saves
             case "library": self = .library
             case "cores": self = .cores
             case "controllers": self = .controllers
@@ -56,6 +58,7 @@ struct SettingsView: View {
         var icon: String {
             switch self {
             case .general: return "gearshape.fill"
+            case .saves: return "externaldrive.fill"
             case .library: return "book.fill"
             case .cores: return "cpu.fill"
             case .controllers: return "gamecontroller.fill"
@@ -74,6 +77,7 @@ struct SettingsView: View {
         var label: String {
             switch self {
             case .general: return LocalizationManager.shared.localized("settings.general")
+            case .saves: return LocalizationManager.shared.localized("settings.saves")
             case .library: return LocalizationManager.shared.localized("settings.library")
             case .cores: return LocalizationManager.shared.localized("settings.cores")
             case .controllers: return LocalizationManager.shared.localized("settings.controllers")
@@ -93,6 +97,8 @@ struct SettingsView: View {
             switch self {
             case .general:
                 return "general app application version build notifications settings preferences"
+            case .saves:
+                return "saves save states files auto progressive slots manager"
             case .library:
                 return "library folders roms games scan rescan hidden bios"
             case .cores:
@@ -129,12 +135,12 @@ struct SettingsView: View {
     
     static let allPages: [Page] = [
         .boxArt, .cheats, .controllers, .cores, .bezels, .display,
-        .general, .genre, .library, .logging, .moveList, .retroAchievements, .about
+        .general, .saves, .genre, .library, .logging, .moveList, .retroAchievements, .about
     ]
     
     private static let pageGroups: [PageGroup] = [
         PageGroup(id: "general", label: LocalizationManager.shared.localized("settingsGroup.general"), pages: [.general, .library]),
-        PageGroup(id: "systems", label: LocalizationManager.shared.localized("settingsGroup.systems"), pages: [.cores, .controllers]),
+        PageGroup(id: "systems", label: LocalizationManager.shared.localized("settingsGroup.systems"), pages: [.cores, .saves, .controllers]),
         PageGroup(id: "visuals", label: LocalizationManager.shared.localized("settingsGroup.visuals"), pages: [.boxArt, .display, .bezels, .cheats]),
         PageGroup(id: "advanced", label: LocalizationManager.shared.localized("settingsGroup.advanced"), pages: [.retroAchievements, .genre, .logging, .moveList, .about]),
     ]
@@ -389,6 +395,7 @@ struct SettingsView: View {
                 activePendingTintedSurfaces: $activePendingTintedSurfaces,
                 activePendingAppearanceMode: $activePendingAppearanceMode
             )
+            case .saves:       SavesSettingsView(searchText: $searchText)
             case .library:     LibrarySettingsView(searchText: $searchText)
             case .cores:       CoreSettingsView(searchText: $searchText)
             case .controllers: ControllerSettingsView(systemID: effectiveSystemID, searchText: $searchText)

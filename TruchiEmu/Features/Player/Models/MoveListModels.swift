@@ -133,6 +133,7 @@ struct ResolvedMove: Identifiable {
     let name: String
     let categoryLabel: String
     let notation: String
+    let tokens: [NotationToken]
     let inputDirections: [[Int]]
     let inputButtons: [[String]]
     let isAir: Bool
@@ -141,6 +142,44 @@ struct ResolvedMove: Identifiable {
     let matchCount: Int
     let totalSteps: Int
     let matchedStepCount: Int
+}
+
+enum MotionType: Equatable {
+    case quarterCircle(from: FightDataDirection)
+    case halfCircle(from: FightDataDirection)
+    case fullCircle(direction: FightDataDirection)
+}
+
+enum ButtonTokenType: Equatable {
+    case punch(strength: ButtonStrength)
+    case kick(strength: ButtonStrength)
+    case air
+    case grapple
+    case weapon(style: WeaponStyle)
+    case generic(label: String)
+}
+
+enum ButtonStrength: Equatable {
+    case low
+    case medium
+    case high
+}
+
+enum WeaponStyle: Equatable {
+    case sword
+    case axe
+}
+
+enum NotationToken: Equatable {
+    case direction(FightDataDirection)
+    case motion(MotionType)
+    case button(ButtonTokenType)
+    case separator
+    case wait
+    case air
+    case charge(FightDataDirection?)
+    case holdButton
+    case rapidPress
 }
 
 struct InputSequenceStep: Equatable {

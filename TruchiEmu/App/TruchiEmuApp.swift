@@ -144,6 +144,22 @@ LoggerService.debug(category: category, message)
             }
             return false
         }
+
+        historyManager.registerActionHandler(type: "undoSaveDelete") { entry in
+            guard let payload = entry.decodePayload(SaveDeleteActionPayload.self) else { return false }
+            var restored = false
+            for pair in payload.filePairs where pair.count == 2 {
+                let originalPath = pair[0]
+                let undoPath = pair[1]
+                let undoURL = URL(fileURLWithPath: undoPath)
+                let originalURL = URL(fileURLWithPath: originalPath)
+                if FileManager.default.fileExists(atPath: undoURL.path) {
+                    try? FileManager.default.moveItem(at: undoURL, to: originalURL)
+                    restored = true
+                }
+            }
+            return restored
+        }
     }
     
     var body: some Scene {

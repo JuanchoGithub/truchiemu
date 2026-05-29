@@ -1,0 +1,12 @@
+<svg width="48.0" height="48.0" viewBox="5.5 -2.5 37.0 45.0" xmlns="http://www.w3.org/2000/svg"  >
+  <defs>
+    <linearGradient id="goldArrow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a" />
+      <stop offset="100%" stop-color="#ca8a04" />
+    </linearGradient>
+  </defs>
+  <path d="M24 8A16 16 0 1 0 24.08 8" fill="none" stroke="#e2e8f0" stroke-width="4.5" stroke-linecap="round"/>
+  <g transform="translate(24, 8) rotate(90) scale(0.45) translate(-24, -24)">
+    <path d="M21 13h6v12h4l-7 8-7-8h4z" fill="url(#goldArrow)" stroke="#0f172a" stroke-width="1.5" stroke-linejoin="round"/>
+  </g>
+</svg>

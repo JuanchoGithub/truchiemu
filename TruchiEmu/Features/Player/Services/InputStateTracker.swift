@@ -17,6 +17,7 @@ class InputStateTracker: ObservableObject {
     private var lastDirectionStepTime: Date? = nil
     private var residualDirectionTimer: Task<Void, Never>? = nil
     private var pendingResidualDirection: FightDataDirection? = nil
+    private var chargeGeneration: UInt = 0
 
     private var inputTimeout: TimeInterval { AppSettings.getDouble("moveListInputTimeout", defaultValue: 1.0) }
     private var chargeThreshold: TimeInterval { AppSettings.getDouble("moveListChargeThreshold", defaultValue: 0.8) }
@@ -76,6 +77,7 @@ class InputStateTracker: ObservableObject {
         if currentDirection == nil, !inputSequence.isEmpty {
             directionHasGoneNeutral = true
             directionHoldStart = nil
+            chargeGeneration &+= 1
             chargeCheckTask?.cancel()
             chargeCheckTask = nil
             residualDirectionTimer?.cancel()
@@ -147,6 +149,7 @@ class InputStateTracker: ObservableObject {
             lastDirectionStepTime = Date()
         }
         if isDiagonalMerge || hasDirectionChange || isDirectionRepress || hasButtonPress {
+            chargeGeneration &+= 1
             chargeCheckTask?.cancel()
             chargeCheckTask = nil
             directionHoldStart = nil
@@ -171,6 +174,7 @@ class InputStateTracker: ObservableObject {
             self?.previousDirection = nil
             self?.directionHasGoneNeutral = false
             self?.directionHoldStart = nil
+            self?.chargeGeneration &+= 1
             self?.chargeCheckTask?.cancel()
             self?.chargeCheckTask = nil
             self?.lastDirectionStepTime = nil
@@ -178,16 +182,19 @@ class InputStateTracker: ObservableObject {
     }
 
     private func scheduleChargeCheck() {
+        chargeGeneration &+= 1
         chargeCheckTask?.cancel()
         let threshold = chargeThreshold
+        let gen = chargeGeneration
         chargeCheckTask = Task { [weak self] in
             try? await Task.sleep(nanoseconds: UInt64(threshold) * 1_000_000_000)
             guard !Task.isCancelled else { return }
-            self?.markLastDirectionAsCharge()
+            self?.markLastDirectionAsCharge(generation: gen)
         }
     }
 
-    private func markLastDirectionAsCharge() {
+    private func markLastDirectionAsCharge(generation: UInt) {
+        guard generation == chargeGeneration else { return }
         guard directionHoldStart != nil, let heldDir = lastDirection else { return }
         for i in stride(from: inputSequence.count - 1, through: 0, by: -1) {
             if inputSequence[i].buttons.isEmpty, inputSequence[i].direction == heldDir {
@@ -208,6 +215,7 @@ class InputStateTracker: ObservableObject {
         inputSequence.append(InputSequenceStep(direction: dir, buttons: []))
         lastDirectionStepTime = Date()
         directionHasGoneNeutral = false
+        chargeGeneration &+= 1
         chargeCheckTask?.cancel()
         chargeCheckTask = nil
         directionHoldStart = nil
@@ -227,6 +235,7 @@ class InputStateTracker: ObservableObject {
         previousDirection = nil
         directionHasGoneNeutral = false
         directionHoldStart = nil
+        chargeGeneration &+= 1
         chargeCheckTask?.cancel()
         chargeCheckTask = nil
         lastDirectionStepTime = nil

@@ -9,11 +9,16 @@ import Combine
 
 // Represents a single save state slot's metadata
 struct SlotInfo: Identifiable, Equatable {
-    let id: Int  // slot number (0-9, -1 for auto)
+    let id: Int // slot number (0-9, -1 for auto)
     let exists: Bool
     let fileSize: Int64?
     let modificationDate: Date?
-    
+    let progressiveVersion: Int?
+
+    static func == (lhs: SlotInfo, rhs: SlotInfo) -> Bool {
+        lhs.id == rhs.id && lhs.progressiveVersion == rhs.progressiveVersion
+    }
+
     // Computed: display slot name (or "Auto" for slot -1)
     var displayName: String {
         if id == -1 { return "Auto" }
@@ -127,24 +132,32 @@ return sysDir.appendingPathComponent(fileName)
     func slotInfo(gameName: String, systemID: String, slot: Int) -> SlotInfo {
         let path = statePath(gameName: gameName, systemID: systemID, slot: slot)
         let fm = FileManager.default
-        
+
         guard let attrs = try? fm.attributesOfItem(atPath: path.path) else {
-            return SlotInfo(id: slot, exists: false, fileSize: nil, modificationDate: nil)
+            return SlotInfo(id: slot, exists: false, fileSize: nil, modificationDate: nil, progressiveVersion: nil)
         }
-        
+
         return SlotInfo(
             id: slot,
             exists: true,
             fileSize: attrs[.size] as? Int64,
-            modificationDate: attrs[.modificationDate] as? Date
+            modificationDate: attrs[.modificationDate] as? Date,
+            progressiveVersion: nil
         )
     }
     
     // Returns info for all user slots (0-9) plus auto slot (-1)
+    // Uses progressive saves as the source of truth; marks slot as existing if any progressive version exists
     func allSlotInfo(gameName: String, systemID: String) -> [SlotInfo] {
-        // Slots -1 (auto), 0-9
         return (-1...9).map { slot in
-            slotInfo(gameName: gameName, systemID: systemID, slot: slot)
+            let versions = progressiveSlotVersions(gameName: gameName, systemID: systemID, slot: slot)
+            if !versions.isEmpty {
+                let newestVersion = versions.max() ?? 1
+                let info = progressiveSlotInfo(gameName: gameName, systemID: systemID, slot: slot, version: newestVersion)
+                return SlotInfo(id: slot, exists: true, fileSize: info.fileSize, modificationDate: info.modificationDate, progressiveVersion: nil)
+            }
+            // Fallback: check base file
+            return slotInfo(gameName: gameName, systemID: systemID, slot: slot)
         }
     }
     
@@ -175,6 +188,15 @@ return sysDir.appendingPathComponent(fileName)
         }
     }
     
+    // Deletes a slot AND all its progressive versions and thumbnails
+    func deleteSlotWithProgressives(gameName: String, systemID: String, slot: Int) throws {
+        try deleteState(gameName: gameName, systemID: systemID, slot: slot)
+        let versions = progressiveSlotVersions(gameName: gameName, systemID: systemID, slot: slot)
+        for v in versions {
+            try deleteProgressiveState(gameName: gameName, systemID: systemID, slot: slot, version: v)
+        }
+    }
+
     // Deletes all save states for a specific game
     func deleteAllStates(gameName: String, systemID: String) throws {
         let sysDir = systemDirectory(systemID: systemID)
@@ -311,7 +333,265 @@ return sysDir.appendingPathComponent(fileName)
         return safeGameStateName(s)
     }
     
-    // MARK: - Compression Utilities
+    // MARK: - Progressive Save Support
+
+// Returns the path for a progressive (versioned) save state
+func progressiveStatePath(gameName: String, systemID: String, slot: Int, version: Int) -> URL {
+    let sysDir = systemDirectory(systemID: systemID)
+    let safeName = safeGameStateName(gameName)
+    if slot == -1 {
+        return sysDir.appendingPathComponent("\(safeName).state.auto~\(version)")
+    } else {
+        return sysDir.appendingPathComponent("\(safeName).state\(slot)~\(version)")
+    }
+}
+
+func progressiveThumbnailPath(gameName: String, systemID: String, slot: Int, version: Int) -> URL {
+    progressiveStatePath(gameName: gameName, systemID: systemID, slot: slot, version: version).appendingPathExtension("png")
+}
+
+    // Rotates progressive versions and returns 1 (always the newest slot).
+    // Before saving, shifts: N → N+1 (e.g. 2→3, 1→2), deletes the oldest (slotCount).
+    // After rotation, versions 1=newest, 2=middle, 3=oldest, etc.
+    func rotateProgressiveVersions(gameName: String, systemID: String, slot: Int, slotCount: Int) -> Int {
+        let existing = progressiveSlotVersions(gameName: gameName, systemID: systemID, slot: slot)
+        if existing.isEmpty {
+            return 1
+        }
+
+        let fm = FileManager.default
+
+        // If not all slots filled yet, just use the next empty one
+        let nextEmptySlot = (1...slotCount).first { !existing.contains($0) }
+        if let next = nextEmptySlot {
+            return next
+        }
+
+        // All slots filled — rotate: delete highest, shift each remaining up by 1
+        // Delete the oldest (slotCount) and its thumbnail
+        let oldestState = progressiveStatePath(gameName: gameName, systemID: systemID, slot: slot, version: slotCount)
+        let oldestThumb = progressiveThumbnailPath(gameName: gameName, systemID: systemID, slot: slot, version: slotCount)
+        try? fm.removeItem(at: oldestState)
+        try? fm.removeItem(at: oldestThumb)
+
+        // Shift versions down from (slotCount-1) to 1, renaming each to version+1
+        for v in (1..<(slotCount)).reversed() {
+            let srcState = progressiveStatePath(gameName: gameName, systemID: systemID, slot: slot, version: v)
+            let dstState = progressiveStatePath(gameName: gameName, systemID: systemID, slot: slot, version: v + 1)
+            let srcThumb = progressiveThumbnailPath(gameName: gameName, systemID: systemID, slot: slot, version: v)
+            let dstThumb = progressiveThumbnailPath(gameName: gameName, systemID: systemID, slot: slot, version: v + 1)
+
+            if fm.fileExists(atPath: srcState.path) {
+                try? fm.moveItem(at: srcState, to: dstState)
+            }
+            if fm.fileExists(atPath: srcThumb.path) {
+                try? fm.moveItem(at: srcThumb, to: dstThumb)
+            }
+        }
+
+        return 1
+    }
+
+// Returns all existing progressive version numbers for a given slot
+func progressiveSlotVersions(gameName: String, systemID: String, slot: Int) -> [Int] {
+    let sysDir = systemDirectory(systemID: systemID)
+    let safeName = safeGameStateName(gameName)
+    let prefix: String
+    if slot == -1 {
+        prefix = "\(safeName).state.auto~"
+    } else {
+        prefix = "\(safeName).state\(slot)~"
+    }
+    guard let contents = try? FileManager.default.contentsOfDirectory(atPath: sysDir.path) else {
+        return []
+    }
+    return contents.compactMap { file in
+        guard file.hasPrefix(prefix) else { return nil }
+        let versionStr = file.dropFirst(prefix.count)
+        return Int(versionStr)
+    }.sorted()
+}
+
+// Slot info for a progressive version
+    func progressiveSlotInfo(gameName: String, systemID: String, slot: Int, version: Int) -> SlotInfo {
+        let path = progressiveStatePath(gameName: gameName, systemID: systemID, slot: slot, version: version)
+        let fm = FileManager.default
+        guard let attrs = try? fm.attributesOfItem(atPath: path.path) else {
+            return SlotInfo(id: slot, exists: false, fileSize: nil, modificationDate: nil, progressiveVersion: nil)
+        }
+        return SlotInfo(
+            id: slot,
+            exists: true,
+            fileSize: attrs[.size] as? Int64,
+            modificationDate: attrs[.modificationDate] as? Date,
+            progressiveVersion: version
+        )
+    }
+
+// Save a thumbnail for a progressive version
+func saveProgressiveThumbnail(image: NSImage, gameName: String, systemID: String, slot: Int, version: Int) {
+    let thumbURL = progressiveThumbnailPath(gameName: gameName, systemID: systemID, slot: slot, version: version)
+    let targetSize = NSSize(width: 320, height: 240)
+    let scaledImage = NSImage(size: targetSize)
+    scaledImage.lockFocus()
+    image.draw(
+        in: NSRect(origin: .zero, size: targetSize),
+        from: NSRect(origin: .zero, size: image.size),
+        operation: .copy,
+        fraction: 1.0
+    )
+    scaledImage.unlockFocus()
+    guard let cgImage = scaledImage.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
+        LoggerService.info(category: "SaveStateManager", "ERROR: Could not get CGImage for progressive thumbnail")
+        return
+    }
+    guard let destination = CGImageDestinationCreateWithURL(thumbURL as CFURL, "public.png" as CFString, 1, nil) else {
+        LoggerService.info(category: "SaveStateManager", "ERROR: Could not create CGImageDestination for progressive thumbnail")
+        return
+    }
+    CGImageDestinationAddImage(destination, cgImage, nil)
+    CGImageDestinationFinalize(destination)
+}
+
+// Load a progressive version thumbnail
+func loadProgressiveThumbnail(gameName: String, systemID: String, slot: Int, version: Int) -> NSImage? {
+    let thumbURL = progressiveThumbnailPath(gameName: gameName, systemID: systemID, slot: slot, version: version)
+    guard FileManager.default.fileExists(atPath: thumbURL.path) else { return nil }
+    return NSImage(contentsOf: thumbURL)
+}
+
+// Delete a progressive save state and its thumbnail
+func deleteProgressiveState(gameName: String, systemID: String, slot: Int, version: Int) throws {
+    let statePath = progressiveStatePath(gameName: gameName, systemID: systemID, slot: slot, version: version)
+    let thumbPath = progressiveThumbnailPath(gameName: gameName, systemID: systemID, slot: slot, version: version)
+    let fm = FileManager.default
+    if fm.fileExists(atPath: statePath.path) {
+        try fm.removeItem(at: statePath)
+    }
+    if fm.fileExists(atPath: thumbPath.path) {
+        try fm.removeItem(at: thumbPath)
+    }
+}
+
+// Returns all progressive versions for a game, grouped by slot
+func allProgressiveSlots(gameName: String, systemID: String) -> [Int: [SlotInfo]] {
+    var result: [Int: [SlotInfo]] = [:]
+    // Check slots -1 through 9
+    for slot in (-1...9) {
+        let versions = progressiveSlotVersions(gameName: gameName, systemID: systemID, slot: slot)
+        if !versions.isEmpty {
+            result[slot] = versions.map { progressiveSlotInfo(gameName: gameName, systemID: systemID, slot: slot, version: $0) }
+        }
+    }
+    return result
+}
+
+// MARK: - Save Discovery
+
+// Extract game name from a save state filename
+private func extractGameName(from stateFile: String) -> String {
+    let patterns = [
+        try! NSRegularExpression(pattern: "\\.state\\.auto~\\d+$"),
+        try! NSRegularExpression(pattern: "\\.state\\d+~\\d+$"),
+        try! NSRegularExpression(pattern: "\\.state\\d+$"),
+        try! NSRegularExpression(pattern: "\\.state$"),
+    ]
+    var name = stateFile
+    for pattern in patterns {
+        let range = NSRange(name.startIndex..<name.endIndex, in: name)
+        if let match = pattern.firstMatch(in: name, range: range) {
+            name = String(name[..<Range(match.range, in: name)!.lowerBound])
+            break
+        }
+    }
+    return name
+}
+
+// Returns all system directories that contain save states
+func systemsWithSaves() -> [String] {
+    guard let systemDirs = try? FileManager.default.contentsOfDirectory(
+        at: savesDirectory,
+        includingPropertiesForKeys: nil,
+        options: [.skipsHiddenFiles]
+    ) else { return [] }
+    return systemDirs
+        .filter { $0.hasDirectoryPath }
+        .map { $0.lastPathComponent }
+        .sorted()
+}
+
+// Returns all distinct game names that have saves in a given system
+func gamesWithSaves(inSystem systemID: String) -> [String] {
+    let sysDir = systemDirectory(systemID: systemID)
+    guard let files = try? FileManager.default.contentsOfDirectory(atPath: sysDir.path) else { return [] }
+    let stateFiles = files.filter { f in
+        guard !f.hasSuffix(".png") else { return false }
+        return f.contains(".state")
+    }
+    return Array(Set(stateFiles.map { extractGameName(from: $0) })).sorted()
+}
+
+// All save-related files for a given game in a system (state files + save files)
+func allFilesForGame(gameName: String, systemID: String) -> ([SlotInfo], [URL]) {
+    let sysDir = systemDirectory(systemID: systemID)
+    let safeName = safeGameStateName(gameName)
+
+    // Collect all state files including progressive versions
+    var stateSlots: [SlotInfo] = []
+    if let files = try? FileManager.default.contentsOfDirectory(atPath: sysDir.path) {
+        let stateFiles = files.filter { f in
+            guard !f.hasSuffix(".png") else { return false }
+            let base = f.hasSuffix(".state") || f.range(of: ".state") != nil
+            guard base else { return false }
+            return f == "\(safeName).state" || f.hasPrefix("\(safeName).state")
+        }
+        for file in stateFiles {
+            let fileURL = sysDir.appendingPathComponent(file)
+            if let attrs = try? FileManager.default.attributesOfItem(atPath: fileURL.path) {
+                let slot: Int
+                if file.hasSuffix(".state") {
+                    slot = -1
+                } else if let range = file.range(of: ".state") {
+                    let suffix = file[range.upperBound...]
+                    if suffix.hasPrefix("auto~") {
+                        slot = -1
+                    } else if let tildeRange = suffix.range(of: "~") {
+                        let digits = suffix[..<tildeRange.lowerBound]
+                        slot = Int(digits) ?? 0
+                    } else {
+                        slot = Int(suffix) ?? 0
+                    }
+                } else {
+                    slot = 0
+                }
+            stateSlots.append(SlotInfo(
+                id: slot,
+                exists: true,
+                fileSize: attrs[.size] as? Int64,
+                modificationDate: attrs[.modificationDate] as? Date,
+                progressiveVersion: nil
+            ))
+            }
+        }
+    }
+
+    // Collect SRAM save files
+    var saveFiles: [URL] = []
+    let savefilesDir = SaveDirectoryManager.shared.savefilesDirectory
+    if let files = try? FileManager.default.contentsOfDirectory(atPath: savefilesDir.path) {
+        let rawName = gameName  // SRAM files use the filename-based name
+        for file in files {
+            let baseName = (file as NSString).deletingPathExtension
+            if baseName == rawName || baseName.lowercased() == rawName.lowercased() {
+                saveFiles.append(savefilesDir.appendingPathComponent(file))
+            }
+        }
+    }
+
+    return (stateSlots, saveFiles)
+}
+
+// MARK: - Compression Utilities
     
     // Compressed save state format:
     // - Bytes 0-3: Magic header "TCS2" (TruChie State v2)

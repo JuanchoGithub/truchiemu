@@ -58,7 +58,9 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     @MainActor @Published var autoFullscreenEnabled: Bool = false
     private var isWaitingForFullscreenAnimation = false
     private var fullscreenOverlayView: NSView?
+    private var stateLoadOverlayView: NSView?
     private var pendingSlotToLoad: Int?
+    private var pendingProgressiveVersion: Int?
     private var pendingROMForState: ROM?
     @MainActor @Published var saveStatesDisabled: Bool = false
 @MainActor @Published var isLoading: Bool = false
@@ -100,6 +102,8 @@ private var firstFrameTimer: Timer?
         toolbarView = nil
         moveListOverlayView?.removeFromSuperview()
         moveListOverlayView = nil
+        stateLoadOverlayView?.removeFromSuperview()
+        stateLoadOverlayView = nil
         loadingOverlayView?.removeFromSuperview()
         loadingOverlayView = nil
         errorOverlayView?.removeFromSuperview()
@@ -288,8 +292,40 @@ super.init(window: window)
     func windowDidEnterFullScreen(_ notification: Notification) {
         guard isWaitingForFullscreenAnimation else { return }
         isWaitingForFullscreenAnimation = false
-        fullscreenOverlayView?.removeFromSuperview()
-        fullscreenOverlayView = nil
+
+        // Remove the state-load overlay that was added in onFirstFrameReady (if any),
+        // since we'll repurpose the fullscreen overlay as the new state-load overlay.
+        // Without this, the original overlay stays in the view hierarchy forever,
+        // covering the game and toolbar with a permanent black screen.
+        let existingStateOverlay = stateLoadOverlayView
+        stateLoadOverlayView = nil
+
+        // If a state will be loaded, repurpose the fullscreen overlay as the state-load overlay
+        // so the game stays hidden until the state is restored
+        let slotToLoad = pendingSlotToLoad
+        let willLoadState: Bool
+        if slotToLoad != nil {
+            willLoadState = true
+        } else {
+            let shouldAutoLoad = AppSettings.getBool("saveState_autoLoadOnStart", defaultValue: true)
+            if shouldAutoLoad && !isDolphinCore() {
+                willLoadState = true
+            } else {
+                willLoadState = false
+            }
+        }
+
+        if willLoadState {
+            existingStateOverlay?.removeFromSuperview()
+            stateLoadOverlayView = fullscreenOverlayView
+            fullscreenOverlayView = nil
+            runner?.isPaused = true
+            XPCBridgeAdapter.shared.setPaused(true)
+        } else {
+            existingStateOverlay?.removeFromSuperview()
+            fullscreenOverlayView?.removeFromSuperview()
+            fullscreenOverlayView = nil
+        }
 
         // Load bezel after fullscreen animation completes (prevents warped bezel during transition)
         Task { @MainActor in
@@ -297,8 +333,11 @@ super.init(window: window)
                 await self.loadBezelForGame(systemID: systemID, rom: romForBezel)
             }
             // Fullscreen animation complete — proceed with save state loading
-            if let slotToLoad = self.pendingSlotToLoad, let rom = self.pendingROMForState {
-                self.loadSaveStatesAfterLaunch(slotToLoad: slotToLoad, rom: rom)
+            if let rom = self.pendingROMForState {
+                self.loadSaveStatesAfterLaunch(slotToLoad: self.pendingSlotToLoad, rom: rom)
+            } else if willLoadState {
+                // State was expected but pendingROMForState is nil — reveal anyway
+                self.revealAfterStateLoad()
             }
         }
     }
@@ -359,7 +398,7 @@ super.init(window: window)
     
     // MARK: - Normal Launch
     
-    func launch(rom: ROM, coreID: String, slotToLoad: Int? = nil, shaderUniformOverrides: [String: Float] = [:]) {
+    func launch(rom: ROM, coreID: String, slotToLoad: Int? = nil, progressiveVersion: Int? = nil, shaderUniformOverrides: [String: Float] = [:]) {
         // Store shader uniforms for later use in _doLaunch
         self.pendingShaderUniforms = shaderUniformOverrides
         LoggerService.info(category: "GameLauncher", "launch() received \(shaderUniformOverrides.count) shader uniforms, key shellColorIndex=\(shaderUniformOverrides["shellColorIndex"] ?? -1)")
@@ -390,6 +429,9 @@ super.init(window: window)
 
         moveListViewModel.loadForGame(rom)
 
+        // Store progressive version for later use in loadSaveStatesAfterLaunch
+        pendingProgressiveVersion = progressiveVersion
+
         // Proceed with launch (bezel is loaded after first frame is ready)
         GameLauncher.shared.launchPhase = .loadingCore
         _doLaunch(rom: rom, coreID: coreID, slotToLoad: slotToLoad)
@@ -399,8 +441,9 @@ super.init(window: window)
     private var pendingShaderUniforms: [String: Float] = [:]
     
 private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
-    // Store ROM reference before launching (used by toolbar + cheat manager)
-    runner?.rom = rom
+
+        // Store ROM reference before launching (used by toolbar + cheat manager)
+        runner?.rom = rom
     runner?.romPath = rom.path.path
         
         // Unpause the metal view and start emulation
@@ -518,6 +561,37 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         isLoading = false
         GameLauncher.shared.launchPhase = .idle
 
+        // Determine if a state will be loaded (specific slot or auto-load enabled with saves)
+        let willLoadState: Bool
+        if slotToLoad != nil {
+            willLoadState = true
+        } else {
+            let shouldAutoLoad = AppSettings.getBool("saveState_autoLoadOnStart", defaultValue: true)
+            if shouldAutoLoad && !isDolphinCore() {
+                let systemID = rom.systemID ?? "default"
+                let gameName = rom.displayName
+                let allSlots = runner?.saveManager.allSlotInfo(gameName: gameName, systemID: systemID) ?? []
+                willLoadState = allSlots.contains { $0.exists }
+            } else {
+                willLoadState = false
+            }
+        }
+
+        if willLoadState {
+            // Add a black overlay to hide the game until the state is loaded
+            if let containerView = window?.contentView {
+                let overlay = NSView(frame: containerView.bounds)
+                overlay.wantsLayer = true
+                overlay.layer?.backgroundColor = NSColor.black.cgColor
+                overlay.autoresizingMask = [.width, .height]
+                containerView.addSubview(overlay, positioned: .above, relativeTo: nil)
+                stateLoadOverlayView = overlay
+            }
+            // Pause the runner so the game doesn't advance before state load
+            runner?.isPaused = true
+            XPCBridgeAdapter.shared.setPaused(true)
+        }
+
         // Remove loading overlay after fade-out animation completes
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
             self?.loadingOverlayView?.removeFromSuperview()
@@ -558,60 +632,115 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
 
     // Load save states after the window is ready (either immediately or after fullscreen animation).
     private func loadSaveStatesAfterLaunch(slotToLoad: Int?, rom: ROM) {
-        if let slotToLoad = slotToLoad {
-            // Wait for emulation to stabilize
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-                guard let self = self, let runner = self.runner else { return }
-                let systemID = rom.systemID ?? "default"
-                let stateURL = runner.saveManager.statePath(gameName: rom.displayName, systemID: systemID, slot: slotToLoad)
-                if FileManager.default.fileExists(atPath: stateURL.path) {
-                    LoggerService.info(category: "SaveState", "Found save state at: \(stateURL.path)")
-                    let success = runner.loadState(slot: slotToLoad)
-                    if success {
-                        runner.osdMessage = "Loaded Slot \(slotToLoad)"
-                        LoggerService.info(category: "SaveState", "Successfully loaded save state from slot \(slotToLoad)")
-                        Task {
-                            try? await Task.sleep(nanoseconds: 2_000_000_000)
-                            await MainActor.run { runner.osdMessage = nil }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            guard let self = self, let runner = self.runner else { return }
+            let systemID = rom.systemID ?? "default"
+            let gameName = rom.displayName
+
+            if let slotToLoad = slotToLoad {
+                // Load a specific slot
+                let progVersion = self.pendingProgressiveVersion
+                self.pendingProgressiveVersion = nil
+
+                if let progVersion = progVersion {
+                    let stateURL = runner.saveManager.progressiveStatePath(gameName: gameName, systemID: systemID, slot: slotToLoad, version: progVersion)
+                    if FileManager.default.fileExists(atPath: stateURL.path) {
+                        LoggerService.info(category: "SaveState", "Found progressive save #\(progVersion) at: \(stateURL.path)")
+                        let success = runner.loadState(from: stateURL)
+                        if success {
+                            LoggerService.info(category: "SaveState", "Successfully loaded save state from slot \(slotToLoad) v\(progVersion)")
+                        } else {
+                            LoggerService.debug(category: "SaveState", "Failed to load save state from slot \(slotToLoad) v\(progVersion)")
                         }
                     } else {
-                        LoggerService.debug(category: "SaveState", "Failed to load save state from slot \(slotToLoad)")
+                        LoggerService.debug(category: "SaveState", "No save state found at: \(stateURL.path)")
                     }
                 } else {
-                    LoggerService.debug(category: "SaveState", "No save state found at: \(stateURL.path)")
-                }
-            }
-        } else {
-            // Auto-load from slot -1 after launch completes (if enabled)
-            let shouldAutoLoad = AppSettings.getBool("saveState_autoLoadOnStart", defaultValue: true)
-            if shouldAutoLoad {
-                // Skip auto-load for Dolphin cores due to known serialization crash
-                if isDolphinCore() {
-                    LoggerService.info(category: "SaveState", "Auto-load disabled for Dolphin core (known crash issue)")
-                } else {
-                    // Wait for emulation to stabilize
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-                        guard let self = self, let runner = self.runner else { return }
-                        let systemID = rom.systemID ?? "default"
-                        let stateURL = runner.saveManager.statePath(gameName: rom.displayName, systemID: systemID, slot: -1)
-                        if FileManager.default.fileExists(atPath: stateURL.path) {
-                            LoggerService.info(category: "SaveState", "Found save state at: \(stateURL.path)")
-                            let success = runner.loadState(slot: -1)
-                            if success {
-                                runner.osdMessage = "Auto-loaded last session"
-                                LoggerService.info(category: "SaveState", "Successfully loaded auto-save state")
-                                Task {
-                                    try? await Task.sleep(nanoseconds: 2_000_000_000)
-                                    await MainActor.run { runner.osdMessage = nil }
-                                }
-                            } else {
-                                LoggerService.debug(category: "SaveState", "Failed to load auto-save state")
+                    let versions = runner.saveManager.progressiveSlotVersions(gameName: gameName, systemID: systemID, slot: slotToLoad)
+                    if !versions.isEmpty {
+                        var newestVersion = versions[0]
+                        var newestDate: Date? = nil
+                        for v in versions {
+                            let info = runner.saveManager.progressiveSlotInfo(gameName: gameName, systemID: systemID, slot: slotToLoad, version: v)
+                            if info.exists, let date = info.modificationDate, date > (newestDate ?? .distantPast) {
+                                newestDate = date
+                                newestVersion = v
                             }
+                        }
+                        let stateURL = runner.saveManager.progressiveStatePath(gameName: gameName, systemID: systemID, slot: slotToLoad, version: newestVersion)
+                        let success = runner.loadState(from: stateURL)
+                        if success {
+                            runner.osdMessage = "Loaded Slot \(slotToLoad) #\(newestVersion)"
+                            LoggerService.info(category: "SaveState", "Successfully loaded save state from slot \(slotToLoad) v\(newestVersion)")
                         } else {
-                            LoggerService.debug(category: "SaveState", "No save state found at: \(stateURL.path)")
+                            LoggerService.debug(category: "SaveState", "Failed to load save state from slot \(slotToLoad)")
                         }
                     }
                 }
+            } else {
+                // Auto-load: find the most recent save across all slots
+                let shouldAutoLoad = AppSettings.getBool("saveState_autoLoadOnStart", defaultValue: true)
+                if shouldAutoLoad {
+                    if self.isDolphinCore() {
+                        LoggerService.info(category: "SaveState", "Auto-load disabled for Dolphin core (known crash issue)")
+                    } else {
+                        var mostRecentURL: URL?
+                        var mostRecentDate: Date = .distantPast
+
+                        let allSlots = runner.saveManager.allSlotInfo(gameName: gameName, systemID: systemID)
+                        for slotInfo in allSlots {
+                            let versions = runner.saveManager.progressiveSlotVersions(gameName: gameName, systemID: systemID, slot: slotInfo.id)
+                            for v in versions {
+                                let info = runner.saveManager.progressiveSlotInfo(gameName: gameName, systemID: systemID, slot: slotInfo.id, version: v)
+                                if info.exists, let date = info.modificationDate, date > mostRecentDate {
+                                    mostRecentDate = date
+                                    mostRecentURL = runner.saveManager.progressiveStatePath(gameName: gameName, systemID: systemID, slot: slotInfo.id, version: v)
+                                }
+                            }
+                            // Fallback: check base file if no progressive versions
+                            if slotInfo.exists, let date = slotInfo.modificationDate, date > mostRecentDate {
+                                mostRecentDate = date
+                                mostRecentURL = runner.saveManager.statePath(gameName: gameName, systemID: systemID, slot: slotInfo.id)
+                            }
+                        }
+
+                        if let url = mostRecentURL {
+                            LoggerService.info(category: "SaveState", "Found most recent save at: \(url.path)")
+                            let success = runner.loadState(from: url)
+                            if success {
+                                runner.osdMessage = "Auto-loaded most recent save"
+                                LoggerService.info(category: "SaveState", "Successfully loaded most recent save")
+                            }
+                        } else {
+                            LoggerService.debug(category: "SaveState", "No save states found for auto-load")
+                        }
+                    }
+                }
+            }
+
+            // Reveal the game: remove black overlay and resume emulation
+            self.revealAfterStateLoad()
+        }
+    }
+
+    private func revealAfterStateLoad() {
+        // Resume emulation
+        runner?.isPaused = false
+        XPCBridgeAdapter.shared.setPaused(false)
+        metalView?.isPaused = false
+        metalView?.needsDisplay = true
+
+        // Fade out the state-load overlay and remove it from the view hierarchy.
+        // Must use a local reference — stateLoadOverlayView must not be cleared
+        // before the completion handler fires, otherwise removeFromSuperview
+        // never executes and the overlay blocks toolbar interactions permanently.
+        if let overlay = stateLoadOverlayView {
+            stateLoadOverlayView = nil
+            NSAnimationContext.runAnimationGroup { context in
+                context.duration = 0.3
+                overlay.animator().alphaValue = 0
+            } completionHandler: {
+                overlay.removeFromSuperview()
             }
         }
     }
@@ -702,6 +831,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
                 runner?.isPaused = false
                 XPCBridgeAdapter.shared.setPaused(false)
             }
+            scheduleHideToolbar()
             return
         }
 
@@ -710,6 +840,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
 
         moveListViewModel.activate()
         installMoveListOverlay()
+        hideToolbar()
     }
 
     @MainActor
@@ -750,9 +881,13 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
     }
     
     func windowWillClose(_ notification: Notification) {
+        XPCBridgeAdapter.shared.setPaused(true)
+
         isWaitingForFullscreenAnimation = false
         fullscreenOverlayView?.removeFromSuperview()
         fullscreenOverlayView = nil
+        stateLoadOverlayView?.removeFromSuperview()
+        stateLoadOverlayView = nil
         loadingOverlayView?.removeFromSuperview()
         loadingOverlayView = nil
         errorOverlayView?.removeFromSuperview()

@@ -34,17 +34,16 @@ return self;
 }
 
 - (void)setupAudioWithSampleRate:(double)sampleRate {
-  if (_audioEngine) {[_audioEngine stop];
-    _audioEngine = nil;
-  }
+    if (_audioEngine) {[_audioEngine stop]; _audioEngine = nil; }
 
-  _audioEngine = [[AVAudioEngine alloc] init];
-  AVAudioFormat *format = [[AVAudioFormat alloc] initWithCommonFormat:AVAudioPCMFormatFloat32 sampleRate:sampleRate channels:2 interleaved:NO];
+    _audioEngine = [[AVAudioEngine alloc] init];
+    AVAudioFormat *format = [[AVAudioFormat alloc] initWithCommonFormat:AVAudioPCMFormatFloat32 sampleRate:sampleRate channels:2 interleaved:NO];
 
-  _audioBuffer->clear();
+    _audioBuffer->clear();
+    _audioFadeInComplete = NO;
 
-  __unsafe_unretained LibretroBridgeImpl *weakSelf = self;
-  _audioSourceNode = [[AVAudioSourceNode alloc] initWithRenderBlock:^OSStatus(BOOL *_Nonnull silence, const AudioTimeStamp *_Nonnull timestamp, AVAudioFrameCount frameCount, AudioBufferList *_Nonnull outputData) {
+    __unsafe_unretained LibretroBridgeImpl *weakSelf = self;
+    _audioSourceNode = [[AVAudioSourceNode alloc] initWithRenderBlock:^OSStatus(BOOL *_Nonnull silence, const AudioTimeStamp *_Nonnull timestamp, AVAudioFrameCount frameCount, AudioBufferList *_Nonnull outputData) {
         LibretroBridgeImpl *strongSelf = weakSelf;
         if (!strongSelf || !strongSelf->_audioBuffer) return noErr;
 
@@ -54,19 +53,33 @@ return self;
         size_t toRead = std::min((size_t)frameCount * 2, strongSelf->_audioRenderScratchCapacity);
         size_t readCount = strongSelf->_audioBuffer->read(strongSelf->_audioRenderScratch, toRead);
 
+        float gain = 1.0f;
+        if (!strongSelf->_audioFadeInComplete) {
+            uint64_t now = mach_absolute_time();
+            static mach_timebase_info_data_t s_audioTb = {0, 0};
+            if (s_audioTb.denom == 0) mach_timebase_info(&s_audioTb);
+            double elapsedSec = (double)(now - strongSelf->_audioStartTimeMach) * s_audioTb.numer / s_audioTb.denom / 1e9;
+            if (elapsedSec < 0.5) {
+                gain = (float)(elapsedSec / 0.5);
+            } else {
+                strongSelf->_audioFadeInComplete = YES;
+            }
+        }
+
         for (size_t i = 0; i < frameCount; ++i) {
-          if (i * 2 + 1 < readCount) {
-            left[i] = (float)strongSelf->_audioRenderScratch[i * 2] / 32768.0f;
-            right[i] = (float)strongSelf->_audioRenderScratch[i * 2 + 1] / 32768.0f;
-          } else {
-            left[i] = 0;
-            right[i] = 0;
-          }
+            if (i * 2 + 1 < readCount) {
+                left[i] = (float)strongSelf->_audioRenderScratch[i * 2] / 32768.0f * gain;
+                right[i] = (float)strongSelf->_audioRenderScratch[i * 2 + 1] / 32768.0f * gain;
+            } else {
+                left[i] = 0;
+                right[i] = 0;
+            }
         }
         return noErr;
-      }];
+    }];
 
-  [_audioEngine attachNode:_audioSourceNode];[_audioEngine connect:_audioSourceNode to:_audioEngine.mainMixerNode format:format];
+    [_audioEngine attachNode:_audioSourceNode];
+    [_audioEngine connect:_audioSourceNode to:_audioEngine.mainMixerNode format:format];
 }
 
 - (BOOL)loadDylib:(NSString *)path {
@@ -243,10 +256,11 @@ return self;
   }
   [self setupAudioWithSampleRate:sampleRate];
 
-  err = nil;
-  [_audioEngine startAndReturnError:&err];
+    err = nil;
+    [_audioEngine startAndReturnError:&err];
+    _audioStartTimeMach = mach_absolute_time();
 
-  _saveStatePath =[romPath stringByAppendingString:@".state"];
+    _saveStatePath =[romPath stringByAppendingString:@".state"];
 
   // Notify Swift that game is loaded - it will handle SRAM loading
   if (g_gameLoadedCallback) {
@@ -336,13 +350,24 @@ shutdown:
       _hw_callback.context_destroy = NULL;
   }
 
-  if (didInit) {
-      @try {
-          if (_retro_unload_game) _retro_unload_game();
-      } @catch (...) {}
-  }
+	if (didInit) {
+		@try {
+			if (_retro_unload_game) _retro_unload_game();
+		} @catch (...) {}
+	}
 
-  if (_hwRenderEnabled && _hw_callback.context_destroy) {
+    _retainedRomData = nil;
+    _retainedRomPath = nil;
+
+    _videoCallback = nil;
+
+    if (_hwReadbackBuffer) {
+        free(_hwReadbackBuffer);
+		_hwReadbackBuffer = NULL;
+		_hwReadbackBufferSize = 0;
+	}
+
+	if (_hwRenderEnabled && _hw_callback.context_destroy) {
       @try {
           _hw_callback.context_destroy();
       } @catch (...) {}
@@ -358,6 +383,54 @@ shutdown:
   if (_hwRenderEnabled && _glContext) CGLSetCurrentContext(NULL);
   [_coreLock unlock];
 
+  if (_audioEngine) {
+      [_audioEngine stop];
+      _audioEngine = nil;
+      _audioSourceNode = nil;
+  }
+  if (_audioBuffer) {
+      delete _audioBuffer;
+      _audioBuffer = nil;
+  }
+  if (_audioRenderScratch) {
+      free(_audioRenderScratch);
+      _audioRenderScratch = NULL;
+      _audioRenderScratchCapacity = 0;
+  }
+  if (_glContext) {
+      CGLSetCurrentContext(_glContext);
+      if (_hw_callback.context_destroy) {
+          @try { _hw_callback.context_destroy(); } @catch (...) {}
+          _hw_callback.context_destroy = NULL;
+      }
+      if (_hwFBO) {
+          glDeleteFramebuffers(1, &_hwFBO);
+          _hwFBO = 0; g_hwFBO = 0;
+      }
+      if (_hwColorRB) {
+          glDeleteRenderbuffers(1, &_hwColorRB);
+          _hwColorRB = 0;
+      }
+      if (_hwDepthRB) {
+          glDeleteRenderbuffers(1, &_hwDepthRB);
+          _hwDepthRB = 0;
+      }
+      CGLSetCurrentContext(NULL);
+      CGLReleaseContext(_glContext);
+      _glContext = nil;
+  }
+  _videoCallback = nil;
+
+  if (_dlHandle) {
+      int rc = dlclose(_dlHandle);
+      if (rc != 0) {
+          bridge_log_printf(RETRO_LOG_WARN, "[Shutdown] dlclose(%p) returned %d — %s", _dlHandle, rc, dlerror() ?: "unknown");
+      } else {
+          bridge_log_printf(RETRO_LOG_INFO, "[Shutdown] dlclose(%p) succeeded — core dylib unmapped", _dlHandle);
+      }
+      _dlHandle = NULL;
+  }
+
   if (g_bridgeCompletionSemaphore) {
     dispatch_semaphore_signal(g_bridgeCompletionSemaphore);
   }
@@ -366,10 +439,76 @@ shutdown:
 }
 
 - (void)stop {
-  _running = NO;
-  // Reset keyboard callback to prevent dangling pointer crashes when core is unloaded
-  g_keyboard_callback_registered = NO;
-  g_keyboard_callback.callback = NULL;
+    _running = NO;
+    if (_audioEngine && [_audioEngine isRunning]) {
+        [_audioEngine stop];
+    }
+    g_keyboard_callback_registered = NO;
+    g_keyboard_callback.callback = NULL;
+}
+
+- (void)cleanup {
+	if (_audioEngine && [_audioEngine isRunning]) {
+		[_audioEngine stop];
+	}
+	_audioEngine = nil;
+	_audioSourceNode = nil;
+
+    if (_audioBuffer) {
+        delete _audioBuffer;
+        _audioBuffer = nil;
+    }
+
+    if (_audioRenderScratch) {
+        free(_audioRenderScratch);
+        _audioRenderScratch = NULL;
+        _audioRenderScratchCapacity = 0;
+    }
+
+	if (_glContext) {
+		CGLSetCurrentContext(_glContext);
+		if (_hw_callback.context_destroy) {
+			@try { _hw_callback.context_destroy(); } @catch (...) {}
+			_hw_callback.context_destroy = NULL;
+		}
+		if (_hwFBO) {
+			glDeleteFramebuffers(1, &_hwFBO);
+			_hwFBO = 0; g_hwFBO = 0;
+		}
+		if (_hwColorRB) {
+			glDeleteRenderbuffers(1, &_hwColorRB);
+			_hwColorRB = 0;
+		}
+		if (_hwDepthRB) {
+			glDeleteRenderbuffers(1, &_hwDepthRB);
+			_hwDepthRB = 0;
+		}
+		CGLSetCurrentContext(NULL);
+		CGLReleaseContext(_glContext);
+		_glContext = nil;
+	}
+
+	if (_hwReadbackBuffer) {
+		free(_hwReadbackBuffer);
+		_hwReadbackBuffer = NULL;
+		_hwReadbackBufferSize = 0;
+	}
+
+    _videoCallback = nil;
+
+    _retainedRomData = nil;
+    _retainedRomPath = nil;
+    _hwRenderEnabled = NO;
+
+    if (_dlHandle) {
+        int rc = dlclose(_dlHandle);
+        if (rc != 0) {
+            bridge_log_printf(RETRO_LOG_WARN, "[Cleanup] dlclose(%p) returned %d — %s", _dlHandle, rc, dlerror() ?: "unknown");
+        } else {
+            bridge_log_printf(RETRO_LOG_INFO, "[Cleanup] dlclose(%p) succeeded — core dylib unmapped", _dlHandle);
+        }
+        _dlHandle = NULL;
+    }
 }
 
 - (NSData *)serializeState {

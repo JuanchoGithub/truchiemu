@@ -20,6 +20,7 @@ struct GameDetailView: View {
     @State var crcHash: String? = nil
     @State var fileSize: String? = nil
     @State var slotInfoList: [SlotInfo] = []
+    @State var progressiveSlots: [Int: [SlotInfo]] = [:]
     @State var gameAchievements:[Achievement] = []
     @State var isAchievementsLoading = false
     @State var showImportCheatFile = false
@@ -337,6 +338,7 @@ struct GameDetailView: View {
         let gameName = currentROM.displayName
         let systemID = currentROM.systemID ?? ""
         slotInfoList = saveStateManager.allSlotInfo(gameName: gameName, systemID: systemID)
+        progressiveSlots = saveStateManager.allProgressiveSlots(gameName: gameName, systemID: systemID)
     }
 
     @MainActor
@@ -543,7 +545,7 @@ struct GameDetailView: View {
         library.updateROM(updated)
     }
 
-    func launchGame(slotToLoad: Int? = nil) {
+    func launchGame(slotToLoad: Int? = nil, progressiveVersion: Int? = nil) {
         guard !isLaunchingGame else { return }
         guard let sysID = currentROM.systemID, let system = SystemDatabase.system(forID: sysID) else {
             isLaunchingGame = false
@@ -570,7 +572,7 @@ struct GameDetailView: View {
         let freshROM = library.roms.first { $0.id == currentROM.id } ?? currentROM
         let currentShaderUniforms = freshROM.settings.shaderUniformOverrides
         Task {
-            await gameLauncher.launchGame(rom: freshROM, coreID: cid, slotToLoad: slotToLoad, library: library, shaderUniformOverrides: currentShaderUniforms) { _ in
+            await gameLauncher.launchGame(rom: freshROM, coreID: cid, slotToLoad: slotToLoad, progressiveVersion: progressiveVersion, library: library, shaderUniformOverrides: currentShaderUniforms) { _ in
                 self.isLaunchingGame = false
             }
         }

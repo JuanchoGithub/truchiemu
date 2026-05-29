@@ -40,34 +40,76 @@ final class CoreHostService: NSObject, NSXPCListenerDelegate {
         return true
     }
 
-	private func terminate() {
-		guard !isTerminating else { return }
-		isTerminating = true
-		activeImpl?.cleanupForExit()
-		activeImpl = nil
-		activeConnection?.invalidate()
-		activeConnection = nil
-		CFRunLoopStop(CFRunLoopGetMain())
-	}
+    private func terminate() {
+        guard !isTerminating else { return }
+        isTerminating = true
+        activeImpl?.cleanupForExit()
+        activeImpl = nil
+        activeConnection?.invalidate()
+        activeConnection = nil
+        LoggerService.info(category: "XPC-Service", "Exiting process after connection teardown")
+        exit(0)
+    }
 }
 
 class CoreHostImplementation: NSObject, CoreHostProtocol {
-    private var sharedMemory: UnsafeMutablePointer<XPCSharedMemory>?
-    private var videoSurface: IOSurface?
-    weak var clientProxy: CoreClientProtocol?
+	private var sharedMemory: UnsafeMutablePointer<XPCSharedMemory>?
+	private var videoSurface: IOSurface?
+	weak var clientProxy: CoreClientProtocol?
+	private var isRunning = false
+	private var hasStopped = false
+
+    private static func logMemoryFootprint(label: String) {
+        var info = task_basic_info()
+        var count = mach_msg_type_number_t(MemoryLayout<task_basic_info>.size / MemoryLayout<natural_t>.size)
+        let kerr = withUnsafeMutablePointer(to: &info) {
+            $0.withMemoryRebound(to: integer_t.self, capacity: Int(count)) {
+                task_info(mach_task_self_, task_flavor_t(TASK_BASIC_INFO), $0, &count)
+            }
+        }
+        guard kerr == KERN_SUCCESS else { return }
+        let mb = Double(info.resident_size) / 1024.0 / 1024.0
+
+        var vmInfo = task_vm_info()
+        var vmCount = mach_msg_type_number_t(MemoryLayout<task_vm_info>.size / MemoryLayout<natural_t>.size)
+        let vmKerr = withUnsafeMutablePointer(to: &vmInfo) {
+            $0.withMemoryRebound(to: integer_t.self, capacity: Int(vmCount)) {
+                task_info(mach_task_self_, task_flavor_t(TASK_VM_INFO), $0, &vmCount)
+            }
+        }
+        let footprintMB: Double
+        if vmKerr == KERN_SUCCESS {
+            footprintMB = Double(vmInfo.phys_footprint) / 1024.0 / 1024.0
+        } else {
+            footprintMB = -1
+        }
+
+        LoggerService.info(category: "XPC-Memory", "\(label): resident=\(String(format: "%.1f", mb))MB footprint=\(String(format: "%.1f", footprintMB))MB")
+    }
 
     override init() {
         super.init()
     }
 
-    func cleanupForExit() {
-        LibretroBridge.stop()
-        if let shm = sharedMemory {
-            munmap(shm, MemoryLayout<XPCSharedMemory>.size)
-            sharedMemory = nil
-        }
-        videoSurface = nil
-    }
+	func cleanupForExit() {
+		guard !hasStopped else {
+			if let shm = sharedMemory {
+				munmap(shm, MemoryLayout<XPCSharedMemory>.size)
+				sharedMemory = nil
+			}
+			videoSurface = nil
+			return
+		}
+		LibretroBridge.stop()
+		LibretroBridge.waitForCompletion()
+		LibretroBridge.cleanupInstance()
+		Self.logMemoryFootprint(label: "post-cleanup")
+		if let shm = sharedMemory {
+			munmap(shm, MemoryLayout<XPCSharedMemory>.size)
+			sharedMemory = nil
+		}
+		videoSurface = nil
+	}
 
     func launch(dylibPath: String,
                  romPath: String,
@@ -84,9 +126,11 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
         SaveDirectoryBridge.setSavePath(saveDirectory)
         SaveDirectoryBridge.setSystemPath(systemDirectory)
 
-        LibretroBridge.setLanguage(Int32(language))
-        LibretroBridge.setLogLevel(Int32(logLevel))
+		LibretroBridge.setLanguage(Int32(language))
+		LibretroBridge.setLogLevel(Int32(logLevel))
         LibretroBridge.setPaused(false)
+        isRunning = true
+        Self.logMemoryFootprint(label: "pre-launch")
 
         let weakProxy = clientProxy
         LibretroBridge.registerGameLoadedCallback { romPath in
@@ -99,15 +143,16 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
             self?.handleVideoFrame(data: data, width: Int(w), height: Int(h), pitch: Int(pitch), format: Int(format))
         }
 
-        LibretroBridge.launch(withDylibPath: dylibPath,
-                              romPath: romPath,
-                              shaderDir: shaderDir,
-                              videoCallback: videoCallback,
-                              coreID: coreID,
-                              systemID: systemID,
-                              romFilename: romFilename) { msg in
-            failureMsg = msg
-        }
+		LibretroBridge.launch(withDylibPath: dylibPath,
+							  romPath: romPath,
+							  shaderDir: shaderDir,
+							  videoCallback: videoCallback,
+							  coreID: coreID,
+							  systemID: systemID,
+							  romFilename: romFilename) { msg in
+			failureMsg = msg
+		}
+		Self.logMemoryFootprint(label: "post-launch")
 
         reply(failureMsg == nil, failureMsg)
     }
@@ -157,10 +202,15 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
         if let shm = sharedMemory { xpc_shm_store_frameReady(shm, 1) }
     }
 
-    func stop(reply: @escaping () -> Void) {
-        LibretroBridge.stop()
-        reply()
-    }
+	func stop(reply: @escaping () -> Void) {
+		isRunning = false
+		hasStopped = true
+		LibretroBridge.stop()
+		LibretroBridge.waitForCompletion()
+		LibretroBridge.cleanupInstance()
+		Self.logMemoryFootprint(label: "post-stop-cleanup")
+		reply()
+	}
 
     func setPaused(_ paused: Bool, reply: @escaping () -> Void) {
         LibretroBridge.setPaused(paused)

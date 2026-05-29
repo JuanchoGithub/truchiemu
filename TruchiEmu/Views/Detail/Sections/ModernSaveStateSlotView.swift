@@ -6,7 +6,7 @@ struct ModernSaveStateSlotView: View {
     @ObservedObject var saveStateManager: SaveStateManager
     @ObservedObject private var loc = LocalizationManager.shared
     var onDelete: () -> Void
-    var onLaunchSlot: (Int) -> Void = { _ in }
+    var onLaunchSlot: (Int, Int?) -> Void = { _, _ in }
     @State private var thumbnail: NSImage?
     @State private var showPlayButton = false
     @Environment(\.colorScheme) private var colorScheme
@@ -35,7 +35,7 @@ struct ModernSaveStateSlotView: View {
 
                 if slot.exists && showPlayButton {
                     Button {
-                        onLaunchSlot(slot.id)
+                        onLaunchSlot(slot.id, nil)
                     } label: {
                         ZStack {
                             Color.black.opacity(0.6)
@@ -56,7 +56,7 @@ struct ModernSaveStateSlotView: View {
                 }
             }
             .overlay(
-                RoundedRectangle(cornerRadius: 8)
+            RoundedRectangle(cornerRadius: 8)
                     .stroke(slot.exists ? AppColors.brandAccent.opacity(0.5) : Color.clear, lineWidth: 1.5)
             )
 
@@ -98,7 +98,7 @@ Text(slot.displayName)
                         withAnimation(.easeInOut(duration: 0.15)) {
                             showPlayButton = false
                         }
-                        onLaunchSlot(slot.id)
+                        onLaunchSlot(slot.id, nil)
                     }
                 }
         )
@@ -113,16 +113,16 @@ Text(slot.displayName)
         }
         .contextMenu {
             if slot.exists {
-                Button(action: {
-                    if slot.id >= 0 {
-                        try? saveStateManager.deleteState(
-                            gameName: rom.displayName,
-                            systemID: rom.systemID ?? "",
-                            slot: slot.id
-                        )
-                        onDelete()
-                    }
-                }) {
+            Button(action: {
+                if slot.id >= 0 {
+                    try? saveStateManager.deleteSlotWithProgressives(
+                        gameName: rom.displayName,
+                        systemID: rom.systemID ?? "",
+                        slot: slot.id
+                    )
+                    onDelete()
+                }
+            }) {
                     Label(loc.localized("saveState.delete"), systemImage: "trash")
                 }
             }

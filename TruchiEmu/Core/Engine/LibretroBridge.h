@@ -24,6 +24,7 @@ typedef void (^GameLoadedBlock)(const char *romPath);
 
 + (void)stop;
 + (void)waitForCompletion;
++ (void)cleanupInstance;
 + (void)saveState;
 + (void)setKeyState:(int)retroID pressed:(BOOL)pressed;
 + (void)setKeyState:(int)retroID player:(int)port pressed:(BOOL)pressed;

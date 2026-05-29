@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 
 struct MoveEditorView: View {
     @Environment(\.colorScheme) private var colorScheme
@@ -75,9 +76,9 @@ struct MoveEditorView: View {
         ("_@throw", "Throw"), ("_@move", "Movement"), ("_@taunt", "Taunt"),
     ]
 
-    private let dirMap: [Int: String] = [
-        1: "↙", 2: "↓", 3: "↘", 4: "←", 5: "●", 6: "→", 7: "↖", 8: "↑", 9: "↗"
-    ]
+    private func fightDataDirection(from intVal: Int) -> FightDataDirection? {
+        FightDataDirection(rawValue: intVal)
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.md) {
@@ -206,9 +207,13 @@ struct MoveEditorView: View {
                     HStack(spacing: spacing) {
                         ForEach(row, id: \.self) { dir in
                             Button(action: { addDirectionStep(dir) }) {
-                                Text(dirMap[dir] ?? "?")
-                                    .font(.system(size: 16, weight: .bold, design: .monospaced))
+                                Image("NotationDir\(dir)")
+                                    .renderingMode(.template)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .padding(dir == 5 ? 10 : 6)
                                     .frame(width: gridSize, height: gridSize)
+                                    .foregroundStyle(.white)
                                     .background(AppColors.cardBackground(colorScheme))
                                     .clipShape(RoundedRectangle(cornerRadius: AppRadius.xs))
                                     .overlay(
@@ -246,16 +251,11 @@ struct MoveEditorView: View {
             FlowLayout(spacing: AppSpacing.xs) {
                 ForEach(availableButtons) { btn in
                     Button(action: { addButtonStep(btn.key) }) {
-                        Text(btn.label)
-                            .font(.system(size: 12, weight: .semibold, design: .monospaced))
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 6)
-                            .background(AppColors.cardBackground(colorScheme))
-                            .clipShape(RoundedRectangle(cornerRadius: AppRadius.xs))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: AppRadius.xs)
-                                    .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
-                            )
+                        MoveNotationTokenView(
+                            token: .button(editorButtonTokenType(for: btn)),
+                            isHighlighted: true,
+                            compact: true
+                        )
                     }
                     .buttonStyle(.plain)
                     .contextMenu {
@@ -269,6 +269,34 @@ struct MoveEditorView: View {
                 }
             }
         }
+    }
+
+    private func editorButtonTokenType(for btn: EditorButton) -> ButtonTokenType {
+        let key = btn.key
+        if btn.label == "LP" || btn.label == "MP" || btn.label == "HP" || btn.label == "Punch" {
+            let strength: ButtonStrength = {
+                switch btn.label {
+                case "LP": return .low
+                case "MP": return .medium
+                case "HP": return .high
+                default: return .low
+                }
+            }()
+            return .punch(strength: strength)
+        }
+        if btn.label == "LK" || btn.label == "MK" || btn.label == "HK" || btn.label == "Kick" {
+            let strength: ButtonStrength = {
+                switch btn.label {
+                case "LK": return .low
+                case "MK": return .medium
+                case "HK": return .high
+                default: return .low
+                }
+            }()
+            return .kick(strength: strength)
+        }
+        if key == "_G" || btn.label == "Guard" { return .grapple }
+        return .generic(label: btn.label)
     }
 
     private var buttonCatalogContent: some View {
@@ -341,9 +369,13 @@ struct MoveEditorView: View {
                         .font(.system(size: 11))
                     ForEach([4, 6, 2, 8, 1, 3, 7, 9], id: \.self) { dir in
                         Button(action: { chargeDirection = dir }) {
-                            Text(dirMap[dir] ?? "?")
-                                .font(.system(size: 12, weight: .bold, design: .monospaced))
+                            Image("NotationDir\(dir)")
+                                .renderingMode(.template)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .padding(5)
                                 .frame(width: 28, height: 28)
+                                .foregroundStyle(chargeDirection == dir ? AppColors.brandAccent : .white)
                                 .background(chargeDirection == dir ? AppColors.brandAccent.opacity(0.2) : AppColors.cardBackground(colorScheme))
                                 .clipShape(RoundedRectangle(cornerRadius: AppRadius.xs))
                                 .overlay(
@@ -398,31 +430,22 @@ struct MoveEditorView: View {
 
     private func stepChip(step: EditorStep, index: Int) -> some View {
         let isSelected = selectedStepIndex == index
-        var label: String = ""
-        if let dir = step.direction, let arrow = dirMap[dir] {
-            label = step.isCharge ? "⏳\(arrow)" : arrow
-        }
-        if step.isNeutral { label = "●" }
-        if !step.buttons.isEmpty {
-            let btnLabels = step.buttons.map { key -> String in
-                availableButtons.first(where: { $0.key == key })?.label ?? key.replacingOccurrences(of: "^", with: "").replacingOccurrences(of: "_", with: "")
-            }
-            let joined = btnLabels.joined(separator: "+")
-            label = label.isEmpty ? joined : "\(label)+\(joined)"
-        }
-        if step.isRapid { label += "⚡" }
+        let tokens = buildStepTokens(step)
 
         return Button(action: { selectedStepIndex = isSelected ? nil : index }) {
-            Text(label.isEmpty ? "?" : label)
-                .font(.system(size: 13, weight: .medium, design: .monospaced))
-                .padding(.horizontal, 8)
-                .padding(.vertical, 6)
-                .background(isSelected ? AppColors.brandAccent.opacity(0.2) : AppColors.cardBackground(colorScheme))
-                .clipShape(RoundedRectangle(cornerRadius: AppRadius.xs))
-                .overlay(
-                    RoundedRectangle(cornerRadius: AppRadius.xs)
-                        .stroke(isSelected ? AppColors.brandAccent : AppColors.cardBorder(colorScheme), lineWidth: isSelected ? 2 : 1)
-                )
+            HStack(spacing: NotationMetrics.tokenSpacing) {
+                ForEach(Array(tokens.enumerated()), id: \.offset) { _, token in
+                    MoveNotationTokenView(token: token, isHighlighted: true, compact: true)
+                }
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 6)
+            .background(isSelected ? AppColors.brandAccent.opacity(0.2) : AppColors.cardBackground(colorScheme))
+            .clipShape(RoundedRectangle(cornerRadius: AppRadius.xs))
+            .overlay(
+                RoundedRectangle(cornerRadius: AppRadius.xs)
+                    .stroke(isSelected ? AppColors.brandAccent : AppColors.cardBorder(colorScheme), lineWidth: isSelected ? 2 : 1)
+            )
         }
         .buttonStyle(.plain)
         .contextMenu {
@@ -450,6 +473,24 @@ struct MoveEditorView: View {
                 Label(loc.localized("settings.moveList.editor.deleteStep"), systemImage: "trash")
             }
         }
+    }
+
+    private func buildStepTokens(_ step: EditorStep) -> [NotationToken] {
+        var tokens: [NotationToken] = []
+        if step.isNeutral {
+            tokens.append(.direction(.neutral))
+        } else if let dir = step.direction, let fdDir = fightDataDirection(from: dir) {
+            tokens.append(step.isCharge ? .charge(fdDir) : .direction(fdDir))
+        }
+        for (i, key) in step.buttons.enumerated() {
+            if i > 0 { tokens.append(.separator) }
+            let btn = availableButtons.first(where: { $0.key == key })
+            let label = btn?.label ?? key.replacingOccurrences(of: "^", with: "").replacingOccurrences(of: "_", with: "")
+            let mockBtn = EditorButton(key: key, label: label)
+            tokens.append(.button(editorButtonTokenType(for: mockBtn)))
+        }
+        if step.isRapid { tokens.append(.rapidPress) }
+        return tokens.isEmpty ? [.wait] : tokens
     }
 
     // MARK: - Action Buttons

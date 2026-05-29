@@ -1,0 +1,41 @@
+<svg width="48.0" height="48.0" viewBox="6.5 9.5 33.0 30.0" xmlns="http://www.w3.org/2000/svg"  >
+  <defs>
+    <linearGradient id="goldArcade" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fffde6" />
+      <stop offset="40%" stop-color="#fef08a" />
+      <stop offset="100%" stop-color="#ca8a04" />
+    </linearGradient>
+    
+    <linearGradient id="steel" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#94a3b8" />
+      <stop offset="50%" stop-color="#f8fafc" />
+      <stop offset="100%" stop-color="#475569" />
+    </linearGradient>
+  </defs>
+  
+  <g stroke="#0f172a" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round">
+    
+    <path d="M 10 38 L 16 32 M 8 36 L 13 31 M 12 40 L 17 35" stroke="#94a3b8" stroke-width="1" opacity="0.7"/>
+    
+    <path d="M 13 35 L 19 31 L 15 26 L 10 30 Z" fill="url(#steel)"/>
+    
+    <path d="M 17 29 
+             C 15 25, 14 22, 11 22 
+             C 9 22, 9 19, 12 19 
+             C 15 19, 17 22, 19 24 
+             C 19 20, 19 15, 21 11 
+             C 22 9, 24 9, 24 12
+             C 24 16, 23 20, 23 22
+             C 25 18, 27 14, 29 12
+             C 31 10, 32 12, 31 14
+             C 29 18, 27 21, 26 23
+             C 29 20, 32 17, 34 16
+             C 36 15, 37 17, 35 19
+             C 32 23, 29 25, 27 26
+             C 30 25, 34 24, 36 24
+             C 38 24, 38 27, 35 28
+             C 31 30, 26 31, 22 32 
+             Z" 
+          fill="url(#goldArcade)"/>          
+  </g>
+</svg>

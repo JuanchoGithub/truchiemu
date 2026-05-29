@@ -4,9 +4,6 @@ struct GeneralSettingsView: View {
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject var library: ROMLibrary
     @StateObject private var launchboxService = LaunchBoxGamesDBService.shared
-    @State private var autoSaveOnExit = false
-    @State private var autoLoadOnStart = false
-    @State private var compressSaveStates = true
     @State private var showHiddenGamesCategory: Bool = true
     @State private var launchboxEnabled: Bool = true
     @State private var showSyncConfirmation = false
@@ -177,32 +174,6 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
                 }
             }
 
-            // Save States Section
-            if !isSearching || matchesSearch("Save States auto save auto-load compress") {
-                Section(header: Label(loc.localized("settings.saveStates"), systemImage: "doc.badge.clock")) {
-                    Toggle(loc.localized("settings.autoSaveOnExit"), isOn: $autoSaveOnExit)
-                    Toggle(loc.localized("settings.autoLoadOnStart"), isOn: $autoLoadOnStart)
-                    Toggle(loc.localized("settings.compressSaveStates"), isOn: $compressSaveStates)
-
-                    LabeledContent(loc.localized("settings.saveStatesLocation")) {
-                        Text(SaveDirectoryManager.shared.statesDirectory.path)
-                            .font(.caption.monospaced())
-                            .textSelection(.enabled)
-                    }
-                }
-            }
-
-            // Save Files Section
-            if !isSearching || matchesSearch("Save Files SRAM") {
-                Section(header: Label(loc.localized("settings.saveFiles"), systemImage: "doc.on.doc")) {
-                    LabeledContent(loc.localized("settings.gameSavesLocation")) {
-                        Text(SaveDirectoryManager.shared.savefilesDirectory.path)
-                            .font(.caption.monospaced())
-                            .textSelection(.enabled)
-                    }
-                }
-            }
-
             // Hidden Games Section
             if !isSearching || matchesSearch("Hidden Games category sidebar") {
                 Section(header: Label(loc.localized("settings.hiddenGames"), systemImage: "eye.slash")) {
@@ -320,9 +291,6 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
         .onAppear {
             showHiddenGamesCategory = AppSettings.getBool("showHiddenGamesCategory", defaultValue: true)
             launchboxEnabled = launchboxService.isEnabled
-            autoSaveOnExit = AppSettings.getBool("saveState_autoSaveOnExit", defaultValue: false)
-            autoLoadOnStart = AppSettings.getBool("saveState_autoLoadOnStart", defaultValue: false)
-            compressSaveStates = AppSettings.getBool("saveState_compress", defaultValue: true)
             pendingTheme = themeManager.currentTheme
             pendingAppearanceMode = themeManager.appearanceMode
             pendingCustomColor = themeManager.customAccentColor
@@ -344,15 +312,6 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
         }
         .onChange(of: launchboxEnabled) { _, newValue in
             launchboxService.setEnabled(newValue)
-        }
-        .onChange(of: autoSaveOnExit) { _, newValue in
-            AppSettings.setBool("saveState_autoSaveOnExit", value: newValue)
-        }
-        .onChange(of: autoLoadOnStart) { _, newValue in
-            AppSettings.setBool("saveState_autoLoadOnStart", value: newValue)
-        }
-        .onChange(of: compressSaveStates) { _, newValue in
-            AppSettings.setBool("saveState_compress", value: newValue)
         }
         .onChange(of: pendingTheme) { _, _ in
             activePendingTheme = pendingTheme
@@ -509,7 +468,6 @@ private struct CustomThemeButton: View {
     private var hasMatchingSections: Bool {
         matchesSearch("Application Language localization") ||
         matchesSearch("Theme accent color appearance mode light dark gaming tinted surfaces toolbar") ||
-        matchesSearch("Save States auto save auto-load compress") ||
         matchesSearch("Hidden Games category sidebar") ||
         matchesSearch("LaunchBox GamesDB sync metadata description developer publisher genre players ESRB") ||
         matchesSearch("Application version build notifications")

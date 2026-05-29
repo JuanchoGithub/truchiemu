@@ -575,9 +575,19 @@ case "scummvm": runner = ScummVMRunner()
         AppSettings.getBool("saveState_compress", defaultValue: false)
     }
     
+    private var progressiveSlotCount: Int {
+        max(1, min(5, AppSettings.getInt("progressiveSaves_slotCount", defaultValue: 3)))
+    }
+
+    private func resolveSaveURL(slot: Int, gameName: String, systemID: String) -> (URL, Int?) {
+        let slotCount = progressiveSlotCount
+        let version = saveManager.rotateProgressiveVersions(gameName: gameName, systemID: systemID, slot: slot, slotCount: slotCount)
+        return (saveManager.progressiveStatePath(gameName: gameName, systemID: systemID, slot: slot, version: version), version)
+    }
+
     // Save the current emulator state to the specified slot
     @MainActor
-    func saveState(slot: Int) -> Bool {
+    func saveState(slot: Int, progressiveVersion: Int? = nil) -> Bool {
         guard supportsSaveStates else {
             let error = GameError.saveStateError(reason: "Core doesn't support save states")
             osdMessage = error.localizedDescription
@@ -600,7 +610,8 @@ case "scummvm": runner = ScummVMRunner()
         }
         
         let systemID = gameRom.systemID ?? "default"
-        let stateURL = saveManager.statePath(gameName: gameRom.displayName, systemID: systemID, slot: slot)
+        let (stateURL, version) = resolveSaveURL(slot: slot, gameName: gameRom.displayName, systemID: systemID)
+        let actualVersion = progressiveVersion ?? version
         
         do {
             // Apply compression if enabled
@@ -622,7 +633,13 @@ case "scummvm": runner = ScummVMRunner()
                 let nsImage = NSImageFromMTLTexture(frameTex)
                 if let nsImage = nsImage {
                     LoggerService.debug(category: "SaveState", "Captured thumbnail: \(nsImage.size.width)x\(nsImage.size.height)")
-                    saveManager.saveThumbnail(nsImage, gameName: gameRom.displayName, systemID: systemID, slot: slot)
+                    if let v = actualVersion {
+                        saveManager.saveThumbnail(nsImage, gameName: gameRom.displayName, systemID: systemID, slot: slot)
+                        // Also save thumbnail for progressive version
+                        saveManager.saveProgressiveThumbnail(image: nsImage, gameName: gameRom.displayName, systemID: systemID, slot: slot, version: v)
+                    } else {
+                        saveManager.saveThumbnail(nsImage, gameName: gameRom.displayName, systemID: systemID, slot: slot)
+                    }
                 } else {
                     LoggerService.error(category: "SaveState", "ERROR: NSImageFromMTLTexture returned nil")
                 }
@@ -630,7 +647,11 @@ case "scummvm": runner = ScummVMRunner()
                 LoggerService.debug(category: "SaveState", "WARNING: currentFrameTexture is nil, cannot capture thumbnail")
             }
             
-            osdMessage = "Saved \(slot == -1 ? "Auto" : "Slot \(slot)")"
+            if let v = actualVersion {
+                osdMessage = "Saved \(slot == -1 ? "Auto" : "Slot \(slot)") #\(v)"
+            } else {
+                osdMessage = "Saved \(slot == -1 ? "Auto" : "Slot \(slot)")"
+            }
             
             // Clear OSD after 2 seconds
             Task {
@@ -647,6 +668,52 @@ case "scummvm": runner = ScummVMRunner()
         }
     }
     
+    // Load an emulator state from a specific URL
+    @MainActor
+    func loadState(from url: URL) -> Bool {
+        guard supportsSaveStates else {
+            let error = GameError.loadStateError(reason: "Core doesn't support save states")
+            osdMessage = error.localizedDescription
+            self.lastError = error
+            return false
+        }
+
+        undoBuffer = XPCBridgeAdapter.shared.serializeState()
+
+        guard let fileData = try? Data(contentsOf: url) else {
+            let error = GameError.loadStateError(reason: "State file not found")
+            osdMessage = error.localizedDescription
+            self.lastError = error
+            return false
+        }
+
+        var actualData: Data
+        if let decompressed = SaveStateManager.decompressStateData(fileData) {
+            actualData = decompressed
+        } else {
+            let error = GameError.loadStateError(reason: "State incompatible or corrupted")
+            osdMessage = error.localizedDescription
+            self.lastError = error
+            return false
+        }
+
+        let success = XPCBridgeAdapter.shared.unserializeState(actualData)
+        if success {
+            osdMessage = "Loaded save state"
+
+            Task {
+                try? await Task.sleep(nanoseconds: 2_000_000_000)
+                await MainActor.run { self.osdMessage = nil }
+            }
+        } else {
+            let error = GameError.loadStateError(reason: "State incompatible or corrupted")
+            osdMessage = error.localizedDescription
+            self.lastError = error
+        }
+
+        return success
+    }
+
     // Load an emulator state from the specified slot
     @MainActor
     func loadState(slot: Int) -> Bool {
@@ -665,7 +732,25 @@ case "scummvm": runner = ScummVMRunner()
         }
         
         let systemID = gameRom.systemID ?? "default"
-        let stateURL = saveManager.statePath(gameName: gameRom.displayName, systemID: systemID, slot: slot)
+        let stateURL: URL
+
+        let versions = saveManager.progressiveSlotVersions(gameName: gameRom.displayName, systemID: systemID, slot: slot)
+        if !versions.isEmpty {
+            var newestVersion = versions[0]
+            var newestDate: Date? = nil
+            for v in versions {
+                let info = saveManager.progressiveSlotInfo(gameName: gameRom.displayName, systemID: systemID, slot: slot, version: v)
+                if info.exists {
+                    if let date = info.modificationDate, date > (newestDate ?? .distantPast) {
+                        newestDate = date
+                        newestVersion = v
+                    }
+                }
+            }
+            stateURL = saveManager.progressiveStatePath(gameName: gameRom.displayName, systemID: systemID, slot: slot, version: newestVersion)
+        } else {
+            stateURL = saveManager.statePath(gameName: gameRom.displayName, systemID: systemID, slot: slot)
+        }
         
         // Save current state as undo buffer before loading
         undoBuffer = XPCBridgeAdapter.shared.serializeState()

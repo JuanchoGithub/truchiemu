@@ -1,0 +1,26 @@
+<svg width="48.0" height="48.0" viewBox="3.0 3.0 42.0 43.0" xmlns="http://www.w3.org/2000/svg"  >
+  <defs>
+    <linearGradient id="btnBorder" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.6"/>
+    </linearGradient>
+    
+    <linearGradient id="btnBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#475569" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+
+  </defs>
+  
+
+  
+  <circle cx="24" cy="25" r="20" fill="#000000" opacity="0.4"/>
+  
+  <circle cx="24" cy="24" r="20" fill="url(#btnBorder)" stroke="#0f172a" stroke-width="1.5"/>
+  
+  <circle cx="24" cy="24" r="17.5" fill="url(#btnBg)"/>
+  
+  <circle cx="24" cy="24" r="16" fill="none" stroke="#ffffff" stroke-opacity="0.15" stroke-width="1"/>
+  
+  
+</svg>

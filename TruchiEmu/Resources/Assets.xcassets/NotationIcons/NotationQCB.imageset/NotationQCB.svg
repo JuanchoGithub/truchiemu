@@ -1,0 +1,21 @@
+<svg width="48.0" height="48.0" viewBox="-11.0 8.0 52.0 56.0" xmlns="http://www.w3.org/2000/svg"  >
+  <defs>
+    <linearGradient id="goldArrow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a" />
+      <stop offset="100%" stop-color="#ca8a04" />
+    </linearGradient>
+  </defs>
+
+  <path d="M 39 38 
+           A 24 24 0 0 0 15 14 
+           L 17 10 
+           L 9 17 
+           L 17 24 
+           L 15 20 
+           A 18 18 0 0 1 33 38 
+           Z" 
+        fill="url(#goldArrow)" 
+        stroke="#0f172a" 
+        stroke-width="1.5" 
+        stroke-linejoin="round"/>
+</svg>
