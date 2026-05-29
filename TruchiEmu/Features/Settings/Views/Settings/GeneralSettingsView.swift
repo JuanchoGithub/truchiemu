@@ -8,6 +8,7 @@ struct GeneralSettingsView: View {
     @State private var launchboxEnabled: Bool = true
     @State private var showSyncConfirmation = false
     @State private var lastSyncText: String = ""
+    @State private var autoCheckUpdates: Bool = true
 
     @State private var pendingTheme: AccentColorTheme = .samus
     @State private var pendingAppearanceMode: AppearanceMode = .automatic
@@ -249,24 +250,34 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
                         Text(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1")
                     }
 
-                    // Notifications Subsection
-                    if !isSearching || matchesSearch("Notifications system") {
-                        Section(header: Label(loc.localized("settings.notifications"), systemImage: "bell.badge")) {
-                            HStack {
-                                Text(loc.localized("settings.systemNotifications"))
-                                Spacer()
-                                Button(NotificationService.shared.isAuthorized ? loc.localized("settings.enabled") : loc.localized("settings.enable")) {
-                                    Task {
-                                        await NotificationService.shared.requestAuthorization()
-                                    }
-                                }
-                                .disabled(NotificationService.shared.isAuthorized)
-                                .buttonStyle(.bordered)
-                                .controlSize(.small)
-                            }
+        // Notifications Subsection
+        if !isSearching || matchesSearch("Notifications system") {
+            Section(header: Label(loc.localized("settings.notifications"), systemImage: "bell.badge")) {
+                HStack {
+                    Text(loc.localized("settings.systemNotifications"))
+                    Spacer()
+                    Button(NotificationService.shared.isAuthorized ? loc.localized("settings.enabled") : loc.localized("settings.enable")) {
+                        Task {
+                            await NotificationService.shared.requestAuthorization()
                         }
                     }
+                    .disabled(NotificationService.shared.isAuthorized)
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
                 }
+            }
+        }
+
+        // Updates Subsection
+        if !isSearching || matchesSearch("Updates automatic check new version") {
+            Section(header: Label(loc.localized("settings.updates"), systemImage: "arrow.triangle.2.circlepath")) {
+                Toggle(loc.localized("settings.autoCheckUpdates"), isOn: $autoCheckUpdates)
+                Text(loc.localized("settings.autoCheckUpdatesDescription"))
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+            }
+        }
+        }
             }
 
             // No results message
@@ -289,8 +300,9 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
         .formStyle(.grouped)
         .navigationTitle("General")
         .onAppear {
-            showHiddenGamesCategory = AppSettings.getBool("showHiddenGamesCategory", defaultValue: true)
-            launchboxEnabled = launchboxService.isEnabled
+        showHiddenGamesCategory = AppSettings.getBool("showHiddenGamesCategory", defaultValue: true)
+        launchboxEnabled = launchboxService.isEnabled
+        autoCheckUpdates = AppUpdateService.shared.autoCheckEnabled
             pendingTheme = themeManager.currentTheme
             pendingAppearanceMode = themeManager.appearanceMode
             pendingCustomColor = themeManager.customAccentColor
@@ -309,6 +321,9 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
         }
         .onChange(of: showHiddenGamesCategory) { _, newValue in
             AppSettings.setBool("showHiddenGamesCategory", value: newValue)
+        }
+        .onChange(of: autoCheckUpdates) { _, newValue in
+            AppUpdateService.shared.autoCheckEnabled = newValue
         }
         .onChange(of: launchboxEnabled) { _, newValue in
             launchboxService.setEnabled(newValue)
@@ -470,7 +485,8 @@ private struct CustomThemeButton: View {
         matchesSearch("Theme accent color appearance mode light dark gaming tinted surfaces toolbar") ||
         matchesSearch("Hidden Games category sidebar") ||
         matchesSearch("LaunchBox GamesDB sync metadata description developer publisher genre players ESRB") ||
-        matchesSearch("Application version build notifications")
+        matchesSearch("Application version build notifications") ||
+        matchesSearch("Updates automatic check new version")
     }
 
     private func languageDisplayName(for lang: String) -> String {

@@ -4,24 +4,127 @@ struct AboutView: View {
     @Environment(\.colorScheme) private var colorScheme
     @State private var expandedSections: Set<String> = []
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var updateService = AppUpdateService.shared
+    @State private var showChangelog = false
+    @State private var showWhatsNew = false
+    @State private var isCheckingUpdates = false
+    @State private var upToDateMessage: String?
+
+    private let checkForUpdatesFromMenu = NotificationCenter.default.publisher(for: .checkForUpdatesFromMenu)
+    private let showWhatsNewFromMenu = NotificationCenter.default.publisher(for: .showWhatsNewFromMenu)
+    private let showChangelogFromMenu = NotificationCenter.default.publisher(for: .showChangelogFromMenu)
     
     var body: some View {
 
         ScrollView {
     VStack(spacing: AppSpacing.xl3) {
         // App Identity
-        VStack(spacing: AppSpacing.lg) {
-                    Image(systemName: "arcade.stick")
-                        .font(.system(size: 60))
-                        .foregroundStyle(AppColors.brandAccent)
+            VStack(spacing: AppSpacing.lg) {
+                Image(nsImage: NSApp.applicationIconImage)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 96, height: 96)
                     Text(loc.localized("about.appName"))
                         .font(.largeTitle.weight(.bold))
     Text(loc.localized("about.tagline"))
       .foregroundStyle(AppColors.textSecondary(colorScheme))
+        }
+        .padding(.top, AppSpacing.xl2)
+
+        Divider()
+
+        // Version & Updates
+        VStack(alignment: .leading, spacing: AppSpacing.lg) {
+            HStack {
+                VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                    Text("TruchiEmu")
+                        .font(.subheadline.weight(.semibold))
+                    Text("v\(AppVersion.current) (Build \(AppVersion.build))")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
                 }
-                .padding(.top, AppSpacing.xl2)
-                
-                Divider()
+                Spacer()
+
+                HStack(spacing: AppSpacing.sm) {
+                    Button {
+                        showWhatsNew = true
+                    } label: {
+                        Label(loc.localized("update.whatsNew"), systemImage: "doc.text")
+                            .font(.caption)
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                    .popover(isPresented: $showWhatsNew) { WhatsNewView() }
+
+                    Button {
+                        showChangelog = true
+                    } label: {
+                        Label(loc.localized("update.changelog"), systemImage: "list.bullet.rectangle")
+                            .font(.caption)
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                    .popover(isPresented: $showChangelog) { ChangelogView() }
+
+        if isCheckingUpdates {
+            ProgressView()
+                .controlSize(.small)
+        } else {
+            Button {
+                Task {
+                    isCheckingUpdates = true
+                    upToDateMessage = nil
+                    let _ = await updateService.checkForUpdates()
+                    if !updateService.updateAvailable {
+                        let latest = updateService.allReleases.first?.version ?? "—"
+                        upToDateMessage = loc.localized("update.upToDate") + " " + loc.localized("update.currentLabel") + " v\(AppVersion.current), " + loc.localized("update.latestLabel") + " v\(latest)"
+                    }
+                    isCheckingUpdates = false
+                }
+            } label: {
+                Label(loc.localized("update.checkForUpdates"), systemImage: "arrow.triangle.2.circlepath")
+                    .font(.caption)
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.small)
+        }
+                }
+            }
+
+        if let release = updateService.latestRelease, updateService.updateAvailable {
+            UpdateAvailableView(release: release)
+        } else if let message = upToDateMessage {
+            HStack(spacing: AppSpacing.sm) {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundStyle(.green)
+                Text(message)
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+            }
+        } else if let lastCheck = updateService.lastCheckDate, !isCheckingUpdates {
+            Text(loc.localized("update.lastChecked") + " " + lastCheck.formatted(.relative(presentation: .named)))
+                .font(.caption2)
+                .foregroundStyle(AppColors.textTertiary(colorScheme))
+        } else if !isCheckingUpdates {
+            Link(destination: URL(string: "https://github.com/JuanchoGithub/truchiemu/releases")!) {
+                Label(loc.localized("update.checkManually"), systemImage: "safari")
+                    .font(.caption)
+            }
+        }
+
+        HStack(spacing: AppSpacing.lg) {
+            Link(destination: URL(string: "https://github.com/JuanchoGithub/truchiemu")!) {
+                Label(loc.localized("about.github"), systemImage: "link")
+                    .font(.caption)
+            }
+            Link(destination: URL(string: "https://juanchogithub.github.io/truchiemu")!) {
+                Label(loc.localized("about.documentation"), systemImage: "book")
+                    .font(.caption)
+            }
+        }
+        }
+
+        Divider()
                 
                 // Third-Party Dependencies
                 VStack(alignment: .leading, spacing: AppSpacing.xl) {
@@ -195,6 +298,24 @@ VStack(alignment: .leading, spacing: AppSpacing.md) {
         }
         .padding(AppSpacing.xl3)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .onReceive(checkForUpdatesFromMenu) { _ in
+            Task {
+                isCheckingUpdates = true
+                upToDateMessage = nil
+                let _ = await updateService.checkForUpdates()
+                if !updateService.updateAvailable {
+                    let latest = updateService.allReleases.first?.version ?? "—"
+                    upToDateMessage = loc.localized("update.upToDate") + " " + loc.localized("update.currentLabel") + " v\(AppVersion.current), " + loc.localized("update.latestLabel") + " v\(latest)"
+                }
+                isCheckingUpdates = false
+            }
+        }
+        .onReceive(showWhatsNewFromMenu) { _ in
+            showWhatsNew = true
+        }
+        .onReceive(showChangelogFromMenu) { _ in
+            showChangelog = true
+        }
     }
 }
 

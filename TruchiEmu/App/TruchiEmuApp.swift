@@ -17,6 +17,9 @@ extension Notification.Name {
     static let openAppSettings = Notification.Name("openAppSettings")
     static let openSettingsWindow = Notification.Name("openSettingsWindow")
     static let gameLoaded = Notification.Name("gameLoaded")
+    static let checkForUpdatesFromMenu = Notification.Name("checkForUpdatesFromMenu")
+    static let showWhatsNewFromMenu = Notification.Name("showWhatsNewFromMenu")
+    static let showChangelogFromMenu = Notification.Name("showChangelogFromMenu")
 }
 
 @main
@@ -91,6 +94,23 @@ LoggerService.debug(category: category, message)
         }
     }
 
+    private func checkForAppUpdates() {
+        Task { @MainActor in
+            guard AppUpdateService.shared.shouldAutoCheck() else { return }
+            if let release = await AppUpdateService.shared.checkForUpdates() {
+                NotificationHistoryManager.shared.post(
+                    icon: "arrow.down.circle.fill",
+                    title: loc.localized("update.availableTitle"),
+                    subtitle: loc.localized("update.availableSubtitle") + " \(release.version)",
+                    autoDismissDelay: 15,
+                    actionLabel: loc.localized("update.viewUpdate"),
+                    actionType: "viewUpdate",
+                    actionPayload: release.version
+                )
+            }
+        }
+    }
+
     private func registerNotificationActionHandlers() {
         let historyManager = NotificationHistoryManager.shared
         historyManager.library = library
@@ -160,6 +180,12 @@ LoggerService.debug(category: category, message)
             }
             return restored
         }
+
+        historyManager.registerActionHandler(type: "viewUpdate") { entry in
+            AppSettings.set("settings_selectedTab", value: "about")
+            NotificationCenter.default.post(name: .openAppSettings, object: nil)
+            return true
+        }
     }
     
     var body: some Scene {
@@ -176,6 +202,7 @@ LoggerService.debug(category: category, message)
         .onAppear {
             startMAMEVerificationIfNeeded()
             registerNotificationActionHandlers()
+            checkForAppUpdates()
         }
                 .onDisappear {
                     // Pause verification when leaving the app
@@ -187,16 +214,49 @@ LoggerService.debug(category: category, message)
         .commands {
             SidebarCommands()
             if !isCLILaunch {
-                CommandGroup(replacing: .newItem) {}
-                
-// Add Settings menu item to app menu using .appSettings placement
-                CommandGroup(after: .appTermination) {
-            Button(loc.localized("app.settings")) {
-                AppSettings.set("settings_selectedTab", value: "general")
-                NotificationCenter.default.post(name: .openAppSettings, object: nil)
-            }
-                    .keyboardShortcut(",", modifiers: .command)
+            CommandGroup(replacing: .newItem) {}
+
+            CommandGroup(replacing: .appInfo) {
+                Button(loc.localized("about.title")) {
+                    AppSettings.set("settings_selectedTab", value: "about")
+                    NotificationCenter.default.post(name: .openAppSettings, object: nil)
                 }
+            }
+
+            // Add Settings menu item to app menu using .appSettings placement
+            CommandGroup(after: .appTermination) {
+                Button(loc.localized("app.settings")) {
+                    AppSettings.set("settings_selectedTab", value: "general")
+                    NotificationCenter.default.post(name: .openAppSettings, object: nil)
+                }
+                .keyboardShortcut(",", modifiers: .command)
+
+                Divider()
+
+                Button(loc.localized("update.checkForUpdates")) {
+                    AppSettings.set("settings_selectedTab", value: "about")
+                    NotificationCenter.default.post(name: .openAppSettings, object: nil)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        NotificationCenter.default.post(name: .checkForUpdatesFromMenu, object: nil)
+                    }
+                }
+
+                Button(loc.localized("update.whatsNew")) {
+                    AppSettings.set("settings_selectedTab", value: "about")
+                    NotificationCenter.default.post(name: .openAppSettings, object: nil)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        NotificationCenter.default.post(name: .showWhatsNewFromMenu, object: nil)
+                    }
+                }
+
+                Button(loc.localized("update.changelog")) {
+                    AppSettings.set("settings_selectedTab", value: "about")
+                    NotificationCenter.default.post(name: .openAppSettings, object: nil)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        NotificationCenter.default.post(name: .showChangelogFromMenu, object: nil)
+                    }
+                }
+            }
                 
                 // Add to the default View menu (macOS provides Zoom, Enter Full Screen)
                 CommandGroup(after: .toolbar) {
@@ -425,6 +485,7 @@ private func languageDisplayName(for lang: String) -> String {
 struct ContentWithPrepopulationView: View {
     @State private var isPrepopulated: Bool
     @State private var isRunningPrepopulation = false
+    @State private var showInstallDrag = false
     @ObservedObject private var loc = LocalizationManager.shared
     
     @EnvironmentObject var library: ROMLibrary
@@ -432,6 +493,7 @@ struct ContentWithPrepopulationView: View {
     init() {
         // Check synchronously so we skip the loading view on subsequent launches
         _isPrepopulated = State(initialValue: AppSettings.getBool("dat_prepopulation_done_v1", defaultValue: false))
+        _showInstallDrag = State(initialValue: InstallDragView.shouldShow())
     }
     
     // Whether we need to show the loading view
@@ -441,7 +503,12 @@ struct ContentWithPrepopulationView: View {
     
     var body: some View {
         Group {
-            if !needsLoading {
+            if showInstallDrag {
+                InstallDragView()
+                    .onReceive(NotificationCenter.default.publisher(for: .installDragCompleted)) { _ in
+                        showInstallDrag = false
+                    }
+            } else if !needsLoading {
                 ContentView()
                     .environmentObject(library)
             } else {
