@@ -310,7 +310,6 @@ struct GameDetailView: View {
                     Image(systemName: "info.circle")
                         .font(.caption2)
                         .foregroundColor(AppColors.textTertiary(colorScheme))
-                        .opacity(0.4)
                         .help(section.helpText)
                 }
                 .padding(.horizontal, 10)

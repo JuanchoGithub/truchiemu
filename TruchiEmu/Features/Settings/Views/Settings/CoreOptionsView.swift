@@ -154,6 +154,7 @@ class CoreOptionsViewModel: ObservableObject {
         Task {
             isLoading = true
             loadingPhase = .resolvingCore
+            try? await Task.sleep(for: .milliseconds(150))
 
             var dylibPath: String? = nil
             if let core = CoreManager.shared.installedCores.first(where: { $0.id == id }) {
@@ -180,6 +181,7 @@ class CoreOptionsViewModel: ObservableObject {
             }
 
             loadingPhase = .readingDefinitions
+            try? await Task.sleep(for: .milliseconds(200))
 
             self.manager.setScope(systemID: self.systemID, gameFilename: self.gameFilename)
             if self.isSystemMode, let sysID = self.systemID {
@@ -189,7 +191,10 @@ class CoreOptionsViewModel: ObservableObject {
             }
 
             loadingPhase = .applyingOverrides
+            try? await Task.sleep(for: .milliseconds(200))
+
             loadingPhase = .preparingView
+            try? await Task.sleep(for: .milliseconds(150))
 
             self.isLoading = false
             self.loadingPhase = .idle
@@ -303,6 +308,7 @@ struct CoreOptionsView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var library: ROMLibrary
     @ObservedObject private var loc = LocalizationManager.shared
+    @State private var showSearchTips = false
 
     init(coreID: String, systemID: String? = nil, gameFilename: String? = nil) {
         self.initialID = coreID
@@ -326,9 +332,8 @@ struct CoreOptionsView: View {
                             .transition(.opacity)
                             .animation(.easeInOut(duration: 0.2), value: viewModel.loadingPhase.localizationKey)
 
-                        ProgressView()
-                            .progressViewStyle(.linear)
-                            .tint(AppColors.brandAccentSecondary)
+                        BouncingProgressBar()
+                            .frame(height: 8)
                     }
                     .frame(maxWidth: 280)
 
@@ -354,6 +359,31 @@ struct CoreOptionsView: View {
                                     .foregroundColor(AppColors.textSecondary(colorScheme))
                             }
                             .buttonStyle(.plain)
+                        }
+
+                        Button {
+                            showSearchTips.toggle()
+                        } label: {
+                            Image(systemName: "questionmark.circle")
+                                .foregroundColor(AppColors.textTertiary(colorScheme))
+                        }
+                        .buttonStyle(.plain)
+                        .help("Search tips")
+                        .popover(isPresented: $showSearchTips, arrowEdge: .trailing) {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Search Tips")
+                                    .font(.headline)
+                                Divider()
+                                HStack(spacing: 6) {
+                                    Text("is:modified")
+                                        .font(.system(.caption, design: .monospaced))
+                                        .foregroundColor(AppColors.brandAccent)
+                                    Text("- Show only modified options")
+                                        .font(.caption)
+                                }
+                            }
+                            .padding()
+                            .frame(width: 280)
                         }
                     }
                     .padding(AppSpacing.sm)
