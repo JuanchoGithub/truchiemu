@@ -12,7 +12,6 @@ struct GameCardView: View {
 
     @State private var isHovered = false
     @State private var isPressed = false
-    @State private var mouseLocation: CGPoint = .zero
     @State private var image: NSImage?
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var prefs = SystemPreferences.shared
@@ -71,15 +70,6 @@ struct GameCardView: View {
         isHiddenItem ? .gray : AppColors.textPrimary(colorScheme)
     }
 
-    private var parallaxRotation: (x: Double, y: Double) {
-        guard isHovered, mouseLocation != .zero else { return (0, 0) }
-        let cardWidth: CGFloat = 180
-        let cardHeight: CGFloat = 240
-        let nx = (mouseLocation.x - cardWidth / 2) / (cardWidth / 2)
-        let ny = (mouseLocation.y - cardHeight / 2) / (cardHeight / 2)
-        return (-ny * 2.5, nx * 2.5)
-    }
-
     var body: some View {
         Button(action: onTap) {
             cardContent
@@ -88,14 +78,6 @@ struct GameCardView: View {
         }
     .buttonStyle(.plain)
     .onHover { isHovered = $0 }
-    .onContinuousHover { phase in
-        switch phase {
-        case .active(let location):
-            mouseLocation = location
-        case .ended:
-            mouseLocation = .zero
-        }
-    }
     .simultaneousGesture(
             DragGesture(minimumDistance: 0)
                 .onChanged { _ in isPressed = true }
@@ -218,17 +200,6 @@ struct GameCardView: View {
             y: isSelected ? 0 : (isHovered ? 8 : 0)
         )
         .offset(y: isHovered ? -4 : 0)
-        .rotation3DEffect(
-            .degrees(parallaxRotation.y),
-            axis: (x: 0, y: 1, z: 0),
-            perspective: 0.3
-        )
-        .rotation3DEffect(
-            .degrees(parallaxRotation.x),
-            axis: (x: 1, y: 0, z: 0),
-            perspective: 0.3
-        )
-        .animation(.interpolatingSpring(stiffness: 200, damping: 20), value: mouseLocation)
     }
 
     private var artworkView: some View {
