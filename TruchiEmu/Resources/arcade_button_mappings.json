@@ -38,7 +38,7 @@
     },
     {
       "layout": "capcom6",
-      "systemID": "saturn",
+      "systemID": "32x",
       "mappings": [
         { "fightDataKey": "^E", "retroButton": "b" },
         { "fightDataKey": "^F", "retroButton": "a" },
@@ -50,7 +50,7 @@
     },
     {
       "layout": "capcom6",
-      "systemID": "32x",
+      "systemID": "saturn",
       "mappings": [
         { "fightDataKey": "^E", "retroButton": "b" },
         { "fightDataKey": "^F", "retroButton": "a" },
@@ -155,6 +155,62 @@
       ]
     },
     {
+      "layout": "capcom6",
+      "systemID": "gb",
+      "mappings": [
+        { "fightDataKey": "^E", "retroButton": "b" },
+        { "fightDataKey": "^H", "retroButton": "a" }
+      ]
+    },
+    {
+      "layout": "capcom6",
+      "systemID": "gbc",
+      "mappings": [
+        { "fightDataKey": "^E", "retroButton": "b" },
+        { "fightDataKey": "^H", "retroButton": "a" }
+      ]
+    },
+    {
+      "layout": "capcom6",
+      "systemID": "gamegear",
+      "mappings": [
+        { "fightDataKey": "^E", "retroButton": "a" },
+        { "fightDataKey": "^H", "retroButton": "b" }
+      ]
+    },
+    {
+      "layout": "capcom6",
+      "systemID": "sms",
+      "mappings": [
+        { "fightDataKey": "^E", "retroButton": "a" },
+        { "fightDataKey": "^H", "retroButton": "b" }
+      ]
+    },
+    {
+      "layout": "capcom6",
+      "systemID": "ngpc",
+      "mappings": [
+        { "fightDataKey": "^E", "retroButton": "b" },
+        { "fightDataKey": "^F", "retroButton": "y" },
+        { "fightDataKey": "^G", "retroButton": "l1" },
+        { "fightDataKey": "^H", "retroButton": "a" },
+        { "fightDataKey": "^I", "retroButton": "x" },
+        { "fightDataKey": "^J", "retroButton": "r1" }
+      ]
+    },
+    {
+      "layout": "capcom6",
+      "systemID": "lynx",
+      "mappings": [
+        { "fightDataKey": "^E", "retroButton": "b" },
+        { "fightDataKey": "^F", "retroButton": "a" },
+        { "fightDataKey": "^G", "retroButton": "l1" },
+        { "fightDataKey": "^H", "retroButton": "y" },
+        { "fightDataKey": "^I", "retroButton": "x" },
+        { "fightDataKey": "^J", "retroButton": "r1" }
+      ]
+    },
+    {
       "layout": "midway6",
       "systemID": "snes",
       "mappings": [
@@ -171,9 +227,9 @@
       "mappings": [
         { "fightDataKey": "^G", "retroButton": "y" },
         { "fightDataKey": "^E", "retroButton": "b" },
-        { "fightDataKey": "_G", "retroButton": "a" },
+        { "fightDataKey": "_G", "retroButton": "x" },
         { "fightDataKey": "^J", "retroButton": "c" },
-        { "fightDataKey": "^H", "retroButton": "x" }
+        { "fightDataKey": "^H", "retroButton": "a" }
       ]
     },
     {
@@ -182,9 +238,20 @@
       "mappings": [
         { "fightDataKey": "^G", "retroButton": "y" },
         { "fightDataKey": "^E", "retroButton": "b" },
-        { "fightDataKey": "_G", "retroButton": "a" },
+        { "fightDataKey": "_G", "retroButton": "x" },
         { "fightDataKey": "^J", "retroButton": "c" },
-        { "fightDataKey": "^H", "retroButton": "x" }
+        { "fightDataKey": "^H", "retroButton": "a" }
+      ]
+    },
+    {
+      "layout": "midway6",
+      "systemID": "32x",
+      "mappings": [
+        { "fightDataKey": "^G", "retroButton": "y" },
+        { "fightDataKey": "^E", "retroButton": "b" },
+        { "fightDataKey": "_G", "retroButton": "x" },
+        { "fightDataKey": "^J", "retroButton": "c" },
+        { "fightDataKey": "^H", "retroButton": "a" }
       ]
     },
     {
@@ -210,6 +277,71 @@
       ]
     },
     {
+      "layout": "midway6",
+      "systemID": "gb",
+      "mappings": [
+        { "fightDataKey": "^G", "retroButton": "b" },
+        { "fightDataKey": "^J", "retroButton": "a" }
+      ]
+    },
+    {
+      "layout": "midway6",
+      "systemID": "gbc",
+      "mappings": [
+        { "fightDataKey": "^G", "retroButton": "b" },
+        { "fightDataKey": "^J", "retroButton": "a" }
+      ]
+    },
+    {
+      "layout": "midway6",
+      "systemID": "gamegear",
+      "mappings": [
+        { "fightDataKey": "^G", "retroButton": "a" },
+        { "fightDataKey": "^J", "retroButton": "b" }
+      ]
+    },
+    {
+      "layout": "midway6",
+      "systemID": "sms",
+      "mappings": [
+        { "fightDataKey": "^G", "retroButton": "a" },
+        { "fightDataKey": "^J", "retroButton": "b" }
+      ]
+    },
+    {
+      "layout": "midway6",
+      "systemID": "gba",
+      "mappings": [
+        { "fightDataKey": "^G", "retroButton": "b" },
+        { "fightDataKey": "^E", "retroButton": "a" },
+        { "fightDataKey": "_G", "retroButton": "l1" },
+        { "fightDataKey": "^J", "retroButton": "y" },
+        { "fightDataKey": "^H", "retroButton": "x" }
+      ]
+    },
+    {
+      "layout": "midway6",
+      "systemID": "saturn",
+      "mappings": [
+        { "fightDataKey": "^G", "retroButton": "y" },
+        { "fightDataKey": "^E", "retroButton": "b" },
+        { "fightDataKey": "_G", "retroButton": "x" },
+        { "fightDataKey": "^J", "retroButton": "c" },
+        { "fightDataKey": "^H", "retroButton": "a" }
+      ]
+    },
+    {
+      "layout": "midway6",
+      "systemID": "ngpc",
+      "mappings": [
+        { "fightDataKey": "^G", "retroButton": "b" },
+        { "fightDataKey": "^E", "retroButton": "a" },
+        { "fightDataKey": "_G", "retroButton": "l1" },
+        { "fightDataKey": "^J", "retroButton": "y" },
+        { "fightDataKey": "^H", "retroButton": "x" }
+      ]
+    },
+    {
       "layout": "snk4",
       "systemID": "snes",
       "mappings": [
@@ -232,6 +364,16 @@
     {
       "layout": "snk4",
       "systemID": "megadrive",
+      "mappings": [
+        { "fightDataKey": "_A", "retroButton": "b" },
+        { "fightDataKey": "_B", "retroButton": "a" },
+        { "fightDataKey": "_C", "retroButton": "y" },
+        { "fightDataKey": "_D", "retroButton": "x" }
+      ]
+    },
+    {
+      "layout": "snk4",
+      "systemID": "32x",
       "mappings": [
         { "fightDataKey": "_A", "retroButton": "b" },
         { "fightDataKey": "_B", "retroButton": "a" },
@@ -261,12 +403,74 @@
     },
     {
       "layout": "snk4",
+      "systemID": "ps2",
+      "mappings": [
+        { "fightDataKey": "_A", "retroButton": "y" },
+        { "fightDataKey": "_B", "retroButton": "x" },
+        { "fightDataKey": "_C", "retroButton": "b" },
+        { "fightDataKey": "_D", "retroButton": "a" }
+      ]
+    },
+    {
+      "layout": "snk4",
       "systemID": "saturn",
       "mappings": [
         { "fightDataKey": "_A", "retroButton": "b" },
         { "fightDataKey": "_B", "retroButton": "a" },
         { "fightDataKey": "_C", "retroButton": "y" },
         { "fightDataKey": "_D", "retroButton": "x" }
+      ]
+    },
+    {
+      "layout": "snk4",
+      "systemID": "gb",
+      "mappings": [
+        { "fightDataKey": "_A", "retroButton": "b" },
+        { "fightDataKey": "_B", "retroButton": "a" }
+      ]
+    },
+    {
+      "layout": "snk4",
+      "systemID": "gbc",
+      "mappings": [
+        { "fightDataKey": "_A", "retroButton": "b" },
+        { "fightDataKey": "_B", "retroButton": "a" }
+      ]
+    },
+    {
+      "layout": "snk4",
+      "systemID": "gamegear",
+      "mappings": [
+        { "fightDataKey": "_A", "retroButton": "a" },
+        { "fightDataKey": "_B", "retroButton": "b" }
+      ]
+    },
+    {
+      "layout": "snk4",
+      "systemID": "sms",
+      "mappings": [
+        { "fightDataKey": "_A", "retroButton": "a" },
+        { "fightDataKey": "_B", "retroButton": "b" }
+      ]
+    },
+    {
+      "layout": "snk4",
+      "systemID": "ngpc",
+      "mappings": [
+        { "fightDataKey": "_A", "retroButton": "b" },
+        { "fightDataKey": "_B", "retroButton": "a" },
+        { "fightDataKey": "_C", "retroButton": "y" },
+        { "fightDataKey": "_D", "retroButton": "x" }
+      ]
+    },
+    {
+      "layout": "snk4",
+      "systemID": "gba",
+      "mappings": [
+        { "fightDataKey": "_A", "retroButton": "b" },
+        { "fightDataKey": "_B", "retroButton": "a" },
+        { "fightDataKey": "_C", "retroButton": "l1" },
+        { "fightDataKey": "_D", "retroButton": "r1" }
       ]
     },
     {
@@ -286,6 +490,27 @@
     {
       "layout": "capcom4",
       "systemID": "megadrive",
+      "mappings": [
+        { "fightDataKey": "_A", "retroButton": "b" }
+      ]
+    },
+    {
+      "layout": "capcom4",
+      "systemID": "gb",
+      "mappings": [
+        { "fightDataKey": "_A", "retroButton": "b" }
+      ]
+    },
+    {
+      "layout": "capcom4",
+      "systemID": "gbc",
+      "mappings": [
+        { "fightDataKey": "_A", "retroButton": "b" }
+      ]
+    },
+    {
+      "layout": "capcom4",
+      "systemID": "gba",
       "mappings": [
         { "fightDataKey": "_A", "retroButton": "b" }
       ]

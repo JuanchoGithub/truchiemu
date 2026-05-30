@@ -27,6 +27,7 @@ class InputStateTracker: ObservableObject {
 
     var arcadeLayout: ArcadeLayout = .capcom6
     var systemID: String = "snes"
+    var systemControlMappings: [String: [String: String]]? = nil
 
     private let retroIDToButton: [Int: RetroButton] = [
         0: .b, 1: .y, 2: .select, 3: .start,
@@ -90,7 +91,7 @@ class InputStateTracker: ObservableObject {
         var stepButtons = Set<String>()
         for button in newlyPressed {
             if !button.isDirectional, !button.isTurbo, button != .start, button != .select {
-                if let fdKey = ArcadeButtonMapper.shared.fightDataKey(for: button, layout: arcadeLayout, systemID: systemID) {
+                if let fdKey = ArcadeButtonMapper.shared.fightDataKey(for: button, layout: arcadeLayout, systemID: systemID, systemControlMappings: systemControlMappings) {
                     stepButtons.insert(fdKey)
                 } else {
                     stepButtons.insert(button.rawValue)
@@ -135,17 +136,25 @@ class InputStateTracker: ObservableObject {
             && withinMergeWindow
 
         if isDiagonalMerge, let dir = currentDirection, !inputSequence.isEmpty {
-            inputSequence[inputSequence.count - 1] = InputSequenceStep(direction: dir, buttons: [])
+            inputSequence[inputSequence.count - 1] = InputSequenceStep(direction: dir, buttons: stepButtons)
+            if hasButtonPress { lastDirectionStepTime = Date() }
         } else if hasDirectionChange || isDirectionRepress {
-            if let dir = currentDirection {
+            if hasButtonPress {
+                if let dir = currentDirection {
+                    inputSequence.append(InputSequenceStep(direction: dir, buttons: stepButtons))
+                    lastDirectionStepTime = Date()
+                }
+            } else if let dir = currentDirection {
                 inputSequence.append(InputSequenceStep(direction: dir, buttons: []))
                 lastDirectionStepTime = Date()
                 directionHasGoneNeutral = false
             }
-        }
-
-        if hasButtonPress {
-            inputSequence.append(InputSequenceStep(direction: currentDirection, buttons: stepButtons))
+        } else if hasButtonPress {
+            if let last = inputSequence.last, last.buttons.isEmpty, last.direction == currentDirection, !inputSequence.isEmpty {
+                inputSequence[inputSequence.count - 1] = InputSequenceStep(direction: currentDirection, buttons: stepButtons)
+            } else {
+                inputSequence.append(InputSequenceStep(direction: currentDirection, buttons: stepButtons))
+            }
             lastDirectionStepTime = Date()
         }
         if isDiagonalMerge || hasDirectionChange || isDirectionRepress || hasButtonPress {

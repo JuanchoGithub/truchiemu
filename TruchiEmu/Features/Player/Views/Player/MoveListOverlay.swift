@@ -276,21 +276,23 @@ struct MoveListOverlay: View {
         .padding(.vertical, 3)
     }
 
-    private var inputSequenceSection: some View {
+private var inputSequenceSection: some View {
         let hasContent = viewModel.hasActiveInput
         return HStack(spacing: NotationMetrics.tokenSpacing) {
             if hasContent {
-                ForEach(Array(viewModel.inputDirections.enumerated()), id: \.offset) { index, dir in
-                    if viewModel.inputDirectionCharges.count > index && viewModel.inputDirectionCharges[index] {
-                        MoveNotationTokenView(token: .charge(dir), isHighlighted: true, compact: true)
-                    } else {
-                        MoveNotationTokenView(token: .direction(dir), isHighlighted: true, compact: true)
-                    }
-                }
-                ForEach(Array(viewModel.inputButtons.enumerated()), id: \.offset) { _, btns in
-                    let btnTokens = buildInputButtonTokens(btns)
-                    ForEach(Array(btnTokens.enumerated()), id: \.offset) { i, token in
-                        MoveNotationTokenView(token: token, isHighlighted: true, compact: true)
+                ForEach(Array(viewModel.inputSteps.enumerated()), id: \.offset) { _, step in
+                    switch step {
+                    case .direction(let dir, let isCharge):
+                        if isCharge {
+                            MoveNotationTokenView(token: .charge(dir), isHighlighted: true, compact: true)
+                        } else {
+                            MoveNotationTokenView(token: .direction(dir), isHighlighted: true, compact: true)
+                        }
+                    case .buttons(let btns):
+                        let btnTokens = buildInputButtonTokens(btns)
+                        ForEach(Array(btnTokens.enumerated()), id: \.offset) { _, token in
+                            MoveNotationTokenView(token: token, isHighlighted: true, compact: true)
+                        }
                     }
                 }
             }
@@ -301,16 +303,16 @@ struct MoveListOverlay: View {
         .background(
             RoundedRectangle(cornerRadius: 6)
                 .fill(hasContent ? Color.black.opacity(0.6) : .clear)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 6)
-                        .stroke(hasContent ? AppColors.brandAccent.opacity(0.4) : .clear, lineWidth: 1)
-                )
+            .overlay(
+                RoundedRectangle(cornerRadius: 6)
+                    .stroke(hasContent ? AppColors.brandAccent.opacity(0.4) : .clear, lineWidth: 1)
+            )
         )
     }
 
     private var notesSection: some View {
         Group {
-            if viewModel.inputDirections.isEmpty && viewModel.inputButtons.isEmpty {
+            if viewModel.inputSteps.isEmpty {
                 if !viewModel.commonNotes.isEmpty {
                     VStack(alignment: .leading, spacing: 2) {
                         ForEach(viewModel.commonNotes, id: \.self) { note in

@@ -3616,5 +3616,25 @@
   ],
   "controlAbbr": {
     "_S": "TA"
+  },
+  "systemControlMappings": {
+    "psx": {
+      "x": "_b",
+      "y": "_c",
+      "a": "_e",
+      "b": "_f"
+    },
+    "ps2": {
+      "x": "_b",
+      "y": "_c",
+      "a": "_e",
+      "b": "_f"
+    },
+    "saturn": {
+      "b": "_b",
+      "a": "_c",
+      "y": "_e",
+      "x": "_f"
+    }
   }
 }

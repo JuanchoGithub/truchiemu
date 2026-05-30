@@ -8,6 +8,7 @@ class MoveListOverlayViewModel: ObservableObject {
     @Published private(set) var needsCharacterSelection: Bool = false
     @Published private(set) var hasGameData: Bool = false
     @Published private(set) var matchedMoveName: String? = nil
+    @Published private(set) var inputSteps: [InputDisplayStep] = []
     @Published private(set) var inputDirections: [FightDataDirection] = []
     @Published private(set) var inputDirectionCharges: [Bool] = []
     @Published private(set) var inputButtons: [Set<String>] = []
@@ -90,7 +91,8 @@ class MoveListOverlayViewModel: ObservableObject {
         inputStateTracker.clearSequence()
         filteredMoves = []
         moveSlotOrder.removeAll()
-        inputDirections = []
+        inputSteps = []
+    inputDirections = []
         inputDirectionCharges = []
         inputButtons = []
         matchedMoveName = nil
@@ -105,6 +107,7 @@ class MoveListOverlayViewModel: ObservableObject {
         inputStateTracker.systemID = systemID
         if let game = moveListService.currentGameData {
             inputStateTracker.arcadeLayout = ArcadeButtonMapper.shared.arcadeLayout(for: game)
+            inputStateTracker.systemControlMappings = game.systemControlMappings
         }
         updateFilteredMoves(for: inputStateTracker.inputSequence)
     }
@@ -190,7 +193,7 @@ class MoveListOverlayViewModel: ObservableObject {
     var maxDisplayMoves: Int { maxMovesToShow }
 
     var hasActiveInput: Bool {
-        !inputDirections.isEmpty || !inputButtons.isEmpty
+        !inputSteps.isEmpty
     }
 
     private func updateFilteredMoves(for sequence: [InputSequenceStep]) {
@@ -199,17 +202,22 @@ class MoveListOverlayViewModel: ObservableObject {
             return
         }
 
+        var steps: [InputDisplayStep] = []
         var directions: [FightDataDirection] = []
         var directionCharges: [Bool] = []
         var buttons: [Set<String>] = []
         for step in sequence {
-            if !step.buttons.isEmpty {
-                buttons.append(step.buttons)
-            } else if let dir = step.direction {
+            if let dir = step.direction {
+                steps.append(.direction(dir, isCharge: step.isCharge))
                 directions.append(dir)
                 directionCharges.append(step.isCharge)
             }
+            if !step.buttons.isEmpty {
+                steps.append(.buttons(step.buttons))
+                buttons.append(step.buttons)
+            }
         }
+        inputSteps = steps
         inputDirections = directions
         inputDirectionCharges = directionCharges
         inputButtons = buttons

@@ -15,6 +15,7 @@ struct FightDataGame: Codable {
     let commonNotes: [String]?
     let cheatNotes: [String]?
     let characters: [FightDataCharacter]
+    let systemControlMappings: [String: [String: String]]?
 }
 
 struct FightDataIndex: Codable {
@@ -190,4 +191,9 @@ struct InputSequenceStep: Equatable {
     static func == (lhs: InputSequenceStep, rhs: InputSequenceStep) -> Bool {
         lhs.direction == rhs.direction && lhs.buttons == rhs.buttons && lhs.isCharge == rhs.isCharge
     }
+}
+
+enum InputDisplayStep: Equatable {
+    case direction(FightDataDirection, isCharge: Bool)
+    case buttons(Set<String>)
 }

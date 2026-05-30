@@ -450,5 +450,47 @@
   ],
   "controlAbbr": {
     "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_a",
+      "b": "_b"
+    },
+    "genesis": {
+      "b": "_a",
+      "a": "_b"
+    },
+    "megadrive": {
+      "b": "_a",
+      "a": "_b"
+    },
+    "saturn": {
+      "b": "_a",
+      "a": "_b"
+    },
+    "psx": {
+      "y": "_a",
+      "b": "_b"
+    },
+    "ps2": {
+      "y": "_a",
+      "b": "_b"
+    },
+    "gba": {
+      "b": "_a",
+      "a": "_b"
+    },
+    "gb": {
+      "b": "_a",
+      "a": "_b"
+    },
+    "gbc": {
+      "b": "_a",
+      "a": "_b"
+    },
+    "ngpc": {
+      "b": "_a",
+      "a": "_b"
+    }
   }
 }

@@ -1860,5 +1860,31 @@
   ],
   "controlAbbr": {
     "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_a",
+      "x": "_b",
+      "b": "_c",
+      "a": "_d"
+    },
+    "genesis": {
+      "b": "_a",
+      "a": "_b",
+      "y": "_c",
+      "x": "_d"
+    },
+    "megadrive": {
+      "b": "_a",
+      "a": "_b",
+      "y": "_c",
+      "x": "_d"
+    },
+    "psx": {
+      "y": "_a",
+      "x": "_b",
+      "b": "_c",
+      "a": "_d"
+    }
   }
 }

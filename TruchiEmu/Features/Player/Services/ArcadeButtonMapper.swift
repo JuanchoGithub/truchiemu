@@ -27,15 +27,22 @@ class ArcadeButtonMapper {
     }
 
     private var cachedMappings: [String: [ArcadeLayout: [String: RetroButton]]] = [:]
+    private var originalKeys: [String: String] = [:]
 
     private init() {}
 
-    func retroButton(for fightDataKey: String, layout: ArcadeLayout, systemID: String) -> RetroButton? {
+    func retroButton(for fightDataKey: String, layout: ArcadeLayout, systemID: String, systemControlMappings: [String: [String: String]]? = nil) -> RetroButton? {
+        if let sysMap = systemControlMappings?[systemID.lowercased()] {
+            for (fdKey, btnRaw) in sysMap where normalizeKey(fdKey) == normalizeKey(fightDataKey) {
+                if let button = RetroButton(rawValue: btnRaw) { return button }
+            }
+        }
+
         let key = systemID.lowercased()
         ensureLoaded(for: key)
 
         guard let layoutMap = cachedMappings[key]?[layout],
-              let button = layoutMap[normalizeKey(fightDataKey)] else {
+            let button = layoutMap[normalizeKey(fightDataKey)] else {
             return fallbackMapping(fightDataKey: fightDataKey, layout: layout)
         }
         return button
@@ -69,23 +76,29 @@ class ArcadeButtonMapper {
         return .capcom6
     }
 
-    func translateButtonSet(_ fightDataKeys: Set<String>, layout: ArcadeLayout, systemID: String) -> Set<RetroButton> {
+    func translateButtonSet(_ fightDataKeys: Set<String>, layout: ArcadeLayout, systemID: String, systemControlMappings: [String: [String: String]]? = nil) -> Set<RetroButton> {
         var result = Set<RetroButton>()
         for key in fightDataKeys {
-            if let button = retroButton(for: key, layout: layout, systemID: systemID) {
+            if let button = retroButton(for: key, layout: layout, systemID: systemID, systemControlMappings: systemControlMappings) {
                 result.insert(button)
             }
         }
         return result
     }
 
-    func fightDataKey(for button: RetroButton, layout: ArcadeLayout, systemID: String) -> String? {
+    func fightDataKey(for button: RetroButton, layout: ArcadeLayout, systemID: String, systemControlMappings: [String: [String: String]]? = nil) -> String? {
+        if let sysMap = systemControlMappings?[systemID.lowercased()] {
+            for (fdKey, btnRaw) in sysMap where btnRaw == button.rawValue {
+                return fdKey
+            }
+        }
+
         let key = systemID.lowercased()
         ensureLoaded(for: key)
 
         if let layoutMap = cachedMappings[key]?[layout] {
-            for (fdKey, retroBtn) in layoutMap where retroBtn == button {
-                return fdKey
+            for (normalizedKey, retroBtn) in layoutMap where retroBtn == button {
+                return originalKeys[normalizedKey] ?? normalizedKey
             }
         }
 
@@ -96,34 +109,34 @@ class ArcadeButtonMapper {
         switch layout {
         case .capcom6:
             switch button {
-            case .y: return "e"
-            case .x: return "f"
-            case .r1: return "g"
-            case .b: return "h"
-            case .a: return "i"
-            case .r2: return "j"
+            case .y: return "^E"
+            case .x: return "^F"
+            case .r1: return "^G"
+            case .b: return "^H"
+            case .a: return "^I"
+            case .r2: return "^J"
             default: return nil
             }
         case .midway6:
             switch button {
-            case .y: return "g"
-            case .x: return "e"
-            case .l1: return "_g"
-            case .b: return "j"
-            case .a: return "h"
+            case .y: return "^G"
+            case .x: return "^E"
+            case .l1: return "_G"
+            case .b: return "^J"
+            case .a: return "^H"
             default: return nil
             }
         case .snk4:
             switch button {
-            case .y: return "a"
-            case .x: return "b"
-            case .b: return "c"
-            case .a: return "d"
+            case .y: return "_A"
+            case .x: return "_B"
+            case .b: return "_C"
+            case .a: return "_D"
             default: return nil
             }
         case .capcom4:
             switch button {
-            case .b: return "a"
+            case .b: return "_A"
             default: return nil
             }
         }
@@ -144,21 +157,23 @@ class ArcadeButtonMapper {
         }
 
         var result: [String: [ArcadeLayout: [String: RetroButton]]] = [:]
+        var origKeys: [String: String] = [:]
         for entry in file.mappings {
             let sysKey = entry.systemID.lowercased()
-            if result[sysKey] == nil {
-                result[sysKey] = [:]
-            }
+            if result[sysKey] == nil { result[sysKey] = [:] }
             var layoutMap: [String: RetroButton] = [:]
             for mapping in entry.mappings {
                 if let button = RetroButton(rawValue: mapping.retroButton) {
-                    layoutMap[normalizeKey(mapping.fightDataKey)] = button
+                    let normalized = normalizeKey(mapping.fightDataKey)
+                    layoutMap[normalized] = button
+                    origKeys[normalized] = mapping.fightDataKey
                 }
             }
             result[sysKey]?[entry.layout] = layoutMap
         }
 
         cachedMappings = result
+        originalKeys = origKeys
     }
 
     private func fallbackMapping(fightDataKey: String, layout: ArcadeLayout) -> RetroButton? {

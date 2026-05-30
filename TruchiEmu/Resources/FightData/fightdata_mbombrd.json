@@ -1326,5 +1326,22 @@
   "controlAbbr": {
     "_G": "GR",
     "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "b": "_G"
+    },
+    "genesis": {
+      "b": "_G"
+    },
+    "megadrive": {
+      "b": "_G"
+    },
+    "psx": {
+      "b": "_G"
+    },
+    "ps2": {
+      "b": "_G"
+    }
   }
 }
