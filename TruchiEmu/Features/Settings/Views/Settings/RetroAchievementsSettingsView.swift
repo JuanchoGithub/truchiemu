@@ -6,10 +6,12 @@ struct RetroAchievementsSettingsView: View {
 
     @ObservedObject private var raService = RetroAchievementsService.shared
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var raCacheCoordinator = RAGameCacheCoordinator.shared
     @EnvironmentObject private var library: ROMLibrary
     @Environment(\.colorScheme) private var colorScheme
     @State private var username = ""
     @State private var webApiKey = ""
+    @State private var password = ""
     @State private var loginError: String?
     @State private var isLoggingIn = false
     @State private var showApiKey = false
@@ -228,35 +230,41 @@ struct RetroAchievementsSettingsView: View {
                 .background(AppColors.cardBackgroundSubtle(colorScheme))
                 .cornerRadius(AppRadius.xl)
             } else {
-                // Login form
-                VStack(spacing: AppSpacing.lg) {
-                    TextField(loc.localized("retroAchievements.username"), text: $username)
-                        .textFieldStyle(.plain)
-                        .padding(6)
-.background(AppColors.cardBackgroundSubtle(colorScheme))
+            // Login form
+            VStack(spacing: AppSpacing.lg) {
+                TextField(loc.localized("retroAchievements.username"), text: $username)
+                    .textFieldStyle(.plain)
+                    .padding(6)
+                    .background(AppColors.cardBackgroundSubtle(colorScheme))
+                    .cornerRadius(6)
+                    .autocorrectionDisabled()
+
+                SecureField(loc.localized("retroAchievements.password"), text: $password)
+                    .textFieldStyle(.plain)
+                    .padding(6)
+                    .background(AppColors.cardBackgroundSubtle(colorScheme))
+                    .cornerRadius(6)
+
+                HStack {
+                    if showApiKey {
+                        TextField(loc.localized("retroAchievements.webApiKey"), text: $webApiKey)
+                            .textFieldStyle(.plain)
+                            .padding(6)
+                            .background(AppColors.cardBackgroundSubtle(colorScheme))
                             .cornerRadius(6)
                             .autocorrectionDisabled()
-
-                            HStack {
-                                if showApiKey {
-                                    TextField(loc.localized("retroAchievements.webApiKey"), text: $webApiKey)
-                                        .textFieldStyle(.plain)
-                                        .padding(6)
-                                        .background(AppColors.cardBackgroundSubtle(colorScheme))
-                                        .cornerRadius(6)
-                                        .autocorrectionDisabled()
-                                } else {
-                                    SecureField(loc.localized("retroAchievements.webApiKey"), text: $webApiKey)
-                                        .textFieldStyle(.plain)
-                                        .padding(6)
-                                        .background(AppColors.cardBackgroundSubtle(colorScheme))
-                                .cornerRadius(6)
-                        }
-                        Button(action: { showApiKey.toggle() }) {
-                            Image(systemName: showApiKey ? "eye.slash" : "eye")
-                        }
-                        .buttonStyle(.plain)
+                    } else {
+                        SecureField(loc.localized("retroAchievements.webApiKey"), text: $webApiKey)
+                            .textFieldStyle(.plain)
+                            .padding(6)
+                            .background(AppColors.cardBackgroundSubtle(colorScheme))
+                            .cornerRadius(6)
                     }
+                    Button(action: { showApiKey.toggle() }) {
+                        Image(systemName: showApiKey ? "eye.slash" : "eye")
+                    }
+                    .buttonStyle(.plain)
+                }
 
                     if let error = loginError {
                         Text(error)
@@ -273,7 +281,7 @@ struct RetroAchievementsSettingsView: View {
                         }
                     }
                     .buttonStyle(.borderedProminent)
-                    .disabled(isLoggingIn || username.isEmpty || webApiKey.isEmpty)
+                    .disabled(isLoggingIn || username.isEmpty || password.isEmpty || webApiKey.isEmpty)
                 }
                 .padding(AppSpacing.xl)
                 .background(AppColors.cardBackgroundSubtle(colorScheme))
@@ -380,7 +388,7 @@ struct RetroAchievementsSettingsView: View {
         .cornerRadius(AppRadius.xl)
     }
 
-    @ViewBuilder
+@ViewBuilder
     private var cacheSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -392,16 +400,16 @@ struct RetroAchievementsSettingsView: View {
                         .font(.headline)
                 }
                 Spacer()
-                if RAGameCacheCoordinator.shared.isActive {
+                if raCacheCoordinator.isActive {
                     ProgressView().controlSize(.small)
                 }
             }
 
             Text(loc.localized("retroAchievements.gameCacheDescription"))
-		.font(.caption)
-		.foregroundColor(AppColors.textSecondary(colorScheme))
+                .font(.caption)
+                .foregroundColor(AppColors.textSecondary(colorScheme))
 
-		HStack(spacing: AppSpacing.xl) {
+            HStack(spacing: AppSpacing.xl) {
                 Button(action: refreshConsoles) {
                     if isCacheRefreshing {
                         ProgressView()
@@ -411,7 +419,7 @@ struct RetroAchievementsSettingsView: View {
                     }
                 }
                 .buttonStyle(.bordered)
-                .disabled(RAGameCacheCoordinator.shared.isActive || isCacheRefreshing || !raService.isLoggedIn)
+                .disabled(raCacheCoordinator.isActive || isCacheRefreshing || !raService.isLoggedIn)
 
                 Button(action: refreshGames) {
                     if isCacheRefreshing {
@@ -422,7 +430,7 @@ struct RetroAchievementsSettingsView: View {
                     }
                 }
                 .buttonStyle(.bordered)
-                .disabled(RAGameCacheCoordinator.shared.isActive || isCacheRefreshing || !raService.isLoggedIn)
+                .disabled(raCacheCoordinator.isActive || isCacheRefreshing || !raService.isLoggedIn)
 
                 Button(action: matchAllGames) {
                     if isMatching {
@@ -433,26 +441,52 @@ struct RetroAchievementsSettingsView: View {
                     }
                 }
                 .buttonStyle(.bordered)
-                .disabled(RAGameCacheCoordinator.shared.isActive || isMatching || !raService.isLoggedIn || library.roms.isEmpty)
+                .disabled(raCacheCoordinator.isActive || isMatching || !raService.isLoggedIn || library.roms.isEmpty)
+            }
+
+            if raCacheCoordinator.isActive {
+                VStack(alignment: .leading, spacing: 6) {
+                    BouncingProgressBar()
+
+                    HStack {
+                        Text(raCacheCoordinator.statusLine)
+                            .font(.caption)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
+                            .lineLimit(2)
+                        Spacer()
+                        if raCacheCoordinator.totalSteps > 0 {
+                            Text("\(raCacheCoordinator.currentStep)/\(raCacheCoordinator.totalSteps)")
+                                .font(.caption)
+                                .foregroundColor(AppColors.textTertiary(colorScheme))
+                                .monospacedDigit()
+                        }
+                    }
+
+                    if raCacheCoordinator.progress > 0 {
+                        ProgressView(value: raCacheCoordinator.progress)
+                            .progressViewStyle(.linear)
+                    }
+                }
+                .padding(.top, 4)
             }
 
             if let status = matchingStatus {
-		Text(status)
-					.font(.caption)
-					.foregroundColor(AppColors.textSecondary(colorScheme))
+                Text(status)
+                    .font(.caption)
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
             }
 
             if let error = cacheRefreshError {
-		Text(error)
-					.font(.caption)
-					.foregroundColor(AppColors.error(colorScheme))
+                Text(error)
+                    .font(.caption)
+                    .foregroundColor(AppColors.error(colorScheme))
             }
 
             if let lastConsoleDate = AppSettings.get("ra_consoles_cache_date", type: Double.self) {
                 let date = Date(timeIntervalSince1970: lastConsoleDate)
-		Text(loc.localized("retroAchievements.systemsCached") + " " + date.formatted(date: .abbreviated, time: .shortened))
-					.font(.caption)
-					.foregroundColor(AppColors.textTertiary(colorScheme))
+                Text(loc.localized("retroAchievements.systemsCached") + " " + date.formatted(date: .abbreviated, time: .shortened))
+                    .font(.caption)
+                    .foregroundColor(AppColors.textTertiary(colorScheme))
             }
         }
         .padding()
@@ -563,15 +597,13 @@ struct RetroAchievementsSettingsView: View {
     private func login() {
         isLoggingIn = true
         loginError = nil
-        
+
         Task {
             do {
-                // Call the new service method
-                try await raService.loginWithWebApiKey(username: username, webApiKey: webApiKey)
+                try await raService.loginWithWebApiKey(username: username, webApiKey: webApiKey, password: password)
                 await MainActor.run {
                     isLoggingIn = false
-                    // We can leave the webApiKey in the field, or clear it if preferred.
-                    // Leaving it cleared for security is generally good practice.
+                    password = ""
                     webApiKey = ""
                 }
             } catch {

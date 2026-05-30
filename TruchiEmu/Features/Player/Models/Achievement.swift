@@ -13,6 +13,7 @@ struct Achievement: Identifiable, Codable, Hashable {
     var unlockDate: Date?
     var isHardcore: Bool
     var category: AchievementCategory
+    var trigger: String?     // rcheevos trigger definition (from MemAddr)
     
     var badgeURL: URL? {
         URL(string: "https://media.retroachievements.org/Badge/\(badgeName).png")
@@ -164,6 +165,7 @@ struct RAAchievementResponse: Codable {
     var DateAwarded: String?
     var DateAwardedHardcore: String?
     var Category: String?
+    var MemAddr: String?     // Trigger definition for rcheevos
 }
 
 // Response from the RA API for hash resolution.

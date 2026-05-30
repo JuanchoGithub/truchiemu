@@ -377,6 +377,8 @@ case RETRO_ENVIRONMENT_GET_RUMBLE_INTERFACE: {
   case RETRO_ENVIRONMENT_GET_AUDIO_VIDEO_ENABLE:
     if (data) *(int *)data = 3;
     return true;
+  case RETRO_ENVIRONMENT_SET_SUPPORT_ACHIEVEMENTS:
+    return true;
   default:
     return false;
   }

@@ -315,15 +315,15 @@ class CLIManager: ObservableObject {
         // CRITICAL FIX: Apply achievements, hardcore, and cheats settings via AppSettings
         // GameLauncher.LaunchConfig reads these from AppSettings, so we MUST set them here
         if options.achievementsEnabled {
-            AppSettings.setBool("achievements_enabled", value: false)
+            AppSettings.setBool("ra_enabled", value: true)
             LoggerService.debug(category: "CLI", "Achievements enabled")
         }
         if options.hardcoreMode {
-            AppSettings.setBool("hardcore_mode", value: false)
+            AppSettings.setBool("ra_hardcore", value: true)
             LoggerService.debug(category: "CLI", "Hardcore mode enabled")
         }
         if options.cheatsEnabled {
-            AppSettings.setBool("cheats_enabled", value: false)
+            AppSettings.setBool("cheats_enabled", value: true)
             LoggerService.debug(category: "CLI", "Cheats enabled")
         }
         

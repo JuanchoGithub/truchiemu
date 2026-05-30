@@ -9,7 +9,7 @@ struct AchievementToastView: View {
     let achievement: Achievement
     @Binding var isPresented: Bool
     
-    @State private var offset: CGFloat = 300
+    @State private var offset: CGFloat = -300
     @State private var opacity: Double = 0
     @State private var badgeImage: NSImage?
     @State private var showConfetti = false
@@ -130,7 +130,7 @@ struct AchievementToastView: View {
     
     private func dismiss() {
         withAnimation(.easeOut(duration: 0.25)) {
-            offset = 300
+            offset = -300
             opacity = 0
         }
         
@@ -181,16 +181,12 @@ class AchievementToastManager: ObservableObject {
 // An overlay that displays achievement toasts on top of other content.
 struct AchievementToastOverlay: View {
     @ObservedObject private var manager = AchievementToastManager.shared
-    
+
     var body: some View {
-        ZStack {
-            // Main content goes here (passed as child)
-        }
-        .overlay(
-            Group {
-                if let achievement = manager.currentAchievement, manager.isShowing {
-                    VStack {
-                        Spacer()
+        Group {
+            if let achievement = manager.currentAchievement, manager.isShowing {
+                HStack {
+                    VStack(alignment: .leading) {
                         AchievementToastView(
                             achievement: achievement,
                             isPresented: Binding(
@@ -198,12 +194,17 @@ struct AchievementToastOverlay: View {
                                 set: { if !$0 { manager.dismiss() } }
                             )
                         )
-                        .padding(.bottom, 20)
+                        .padding(.top, 20)
+                        .padding(.leading, 20)
+                        Spacer()
                     }
-                    .transition(.opacity)
+                    Spacer()
                 }
+                .transition(.opacity)
             }
-        )
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .allowsHitTesting(manager.isShowing)
     }
 }
 

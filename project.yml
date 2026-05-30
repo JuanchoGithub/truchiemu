@@ -11,6 +11,11 @@ schemes:
       targets:
         TruchiEmu: all
 
+packages:
+  rcheevos:
+    url: https://github.com/RetroAchievements/rcheevos
+    from: 12.3.0
+
 targets:
   TruchiEmu:
     type: application
@@ -20,6 +25,7 @@ targets:
     dependencies:
     - target: TruchiEmuCoreHost
       embed: true
+    - package: rcheevos
 
     frameworks:
     - SwiftData
@@ -30,8 +36,8 @@ targets:
         CFBundleName: TruchiEmu
         CFBundleDisplayName: TruchiEmu
         CFBundleIdentifier: com.TruchiEmu.app
-    CFBundleVersion: "8"
-    CFBundleShortVersionString: "0.8"
+        CFBundleVersion: "8"
+        CFBundleShortVersionString: "0.8"
         NSHumanReadableCopyright: "© 2026 TruchiEmu"
         NSPrincipalClass: NSApplication
         NSHighResolutionCapable: true
@@ -49,6 +55,7 @@ targets:
         PRODUCT_NAME: TruchiEmu
         PRODUCT_BUNDLE_IDENTIFIER: com.TruchiEmu.app
         SWIFT_OBJC_BRIDGING_HEADER: TruchiEmu/Core/Engine/TruchiEmu-Bridging-Header.h
+        HEADER_SEARCH_PATHS: "$(BUILD_DIR)/../../../SourcePackages/checkouts/rcheevos/include"
         CLANG_ENABLE_OBJC_ARC: YES
         GCC_C_LANGUAGE_STANDARD: gnu17
         CLANG_CXX_LANGUAGE_STANDARD: gnu++17
@@ -114,6 +121,8 @@ targets:
       - "internal/**"
       - "Runners/**"
       - "LibretroBridgeSwift.swift"
+      - "RcheevosRuntime.swift"
+      - "RcheevosWrapper.c"
       - "Hashing/**"
       - "CoreOverrideBridge.mm"
     - path: TruchiEmu/Services/CoreOverrideService.swift

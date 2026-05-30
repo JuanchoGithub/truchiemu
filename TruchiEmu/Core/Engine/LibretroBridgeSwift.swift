@@ -232,6 +232,24 @@ import Foundation
         LibretroBridge.resetAllOptionsToDefaults()
     }
 
+    // MARK: - Direct Memory Access
+
+    static func getMemoryData(type: UInt32, offset: Int, size: Int) -> Data? {
+        var memSize: size_t = 0
+        guard let ptr = LibretroBridge.getMemoryData(type, size: &memSize), memSize > 0 else {
+            return nil
+        }
+        guard offset < memSize else { return nil }
+        let available = min(size, Int(memSize) - offset)
+        return Data(bytes: ptr.advanced(by: offset), count: available)
+    }
+
+    static func getMemorySize(type: UInt32) -> Int {
+        var memSize: size_t = 0
+        LibretroBridge.getMemoryData(type, size: &memSize)
+        return Int(memSize)
+    }
+
     // MARK: - Save RAM (SRAM) Access
 
     static func getSaveRAMData() -> Data? {

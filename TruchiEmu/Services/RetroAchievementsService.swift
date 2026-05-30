@@ -60,6 +60,14 @@ class RetroAchievementsService: ObservableObject {
     // The user's personal Web API Key used to authenticate all REST requests
     private var webApiKey: String = ""
 
+    // Token from dorequest.php?r=login2 — required for patch fetch and other dorequest calls.
+    // Different from the Web API key (which uses y= param on REST endpoints).
+    private var loginToken: String?
+
+    private var pendingUnlocks: [(id: Int, hardcore: Bool)] = []
+    private var isProcessingUnlocks = false
+    private var lastUnlockTime: Date = .distantPast
+
     private var modelContext: ModelContext?
 
     /// Injected by the Coordinator/App to allow SwiftData access
@@ -78,9 +86,10 @@ class RetroAchievementsService: ObservableObject {
     private func loadSettings() {
         username = AppSettings.get("ra_username", type: String.self)
         let key = AppSettings.get("ra_web_api_key", type: String.self)
+        loginToken = AppSettings.get("ra_login_token", type: String.self)
         hardcoreMode = AppSettings.getBool("ra_hardcore", defaultValue: false)
         isEnabled = AppSettings.getBool("ra_enabled", defaultValue: false)
-        
+
         if let key = key, let username = username, !key.isEmpty {
             self.webApiKey = key
             Task { await validateCredentials(username: username, webApiKey: key) }
@@ -109,50 +118,121 @@ class RetroAchievementsService: ObservableObject {
     }
     
     // MARK: - Authentication
-    
-    /// Validates the user's Web API Key by attempting to fetch their user summary.
-    func loginWithWebApiKey(username: String, webApiKey: String) async throws {
-        // Temporarily set the key so the request wrapper can use it
+
+    /// Validates the user's Web API Key by attempting to fetch their user summary,
+    /// then exchanges the password for a login token via login2 (if not already cached).
+    func loginWithWebApiKey(username: String, webApiKey: String, password: String) async throws {
         self.webApiKey = webApiKey
-        
+
         do {
             guard let response = try await requestUserSummary(username: username) else {
                 throw RAError.loginFailed("Invalid Web API Key or Username.")
             }
-            
+
             await MainActor.run {
                 self.isLoggedIn = true
                 self.username = username
                 self.userInfo = response
                 self.saveSettings(username: username, webApiKey: webApiKey)
             }
-            
+
             LoggerService.info(category: "RetroAchievements", "Logged in successfully as \(username)")
-            
-            // Success - cache game list in background
+
+            if loginToken == nil && !password.isEmpty {
+                if let token = await fetchLoginTokenWithPassword(username: username, password: password) {
+                    await MainActor.run {
+                        self.loginToken = token
+                        AppSettings.set("ra_login_token", value: token)
+                    }
+                    LoggerService.info(category: "RetroAchievements", "Login token obtained and saved")
+                }
+            }
+
             Task { try? await fetchAndCacheGameList() }
-            
+
         } catch {
             await MainActor.run {
-                self.webApiKey = "" // Reset on failure
+                self.webApiKey = ""
+                self.loginToken = nil
                 self.isLoggedIn = false
             }
             LoggerService.error(category: "RetroAchievements", "Login failed: \(error.localizedDescription)")
             throw error
         }
     }
-    
-    // Validate stored credentials on app launch.
+
+    private func fetchLoginTokenWithPassword(username: String, password: String) async -> String? {
+        var cUrl: UnsafeMutablePointer<CChar>?
+        var cPostData: UnsafeMutablePointer<CChar>?
+        var cContentType: UnsafeMutablePointer<CChar>?
+
+        let initResult = username.withCString { usernamePtr in
+            password.withCString { passwordPtr in
+                rcheevos_api_init_login(usernamePtr, passwordPtr, &cUrl, &cPostData, &cContentType)
+            }
+        }
+
+        guard initResult == 0, let urlStr = cUrl else {
+            LoggerService.error(category: "RetroAchievements", "rcheevos failed to build login request: \(initResult)")
+            rcheevos_api_destroy_request_strings(cUrl, cPostData, cContentType)
+            return nil
+        }
+
+        let requestURL = String(cString: urlStr)
+        let postDataStr = cPostData.map { String(cString: $0) }
+        let contentTypeStr = cContentType.map { String(cString: $0) }
+        rcheevos_api_destroy_request_strings(cUrl, cPostData, cContentType)
+
+        LoggerService.debug(category: "RetroAchievements", "Login2 request URL: \(requestURL)")
+        LoggerService.debug(category: "RetroAchievements", "Login2 POST data: \(postDataStr ?? "nil")")
+
+        guard let url = URL(string: requestURL) else { return nil }
+
+        var request = URLRequest(url: url)
+        request.setValue("rcheevos/12.3.0 TruchiEmu/1.0.0", forHTTPHeaderField: "User-Agent")
+        if let postData = postDataStr, !postData.isEmpty {
+            request.httpMethod = "POST"
+            request.httpBody = postData.data(using: .utf8)
+            if let ct = contentTypeStr {
+                request.setValue(ct, forHTTPHeaderField: "Content-Type")
+            }
+        }
+
+        let data: Data
+        do {
+            (data, _) = try await URLSession.shared.data(for: request)
+        } catch {
+            LoggerService.error(category: "RetroAchievements", "Login2 network error: \(error.localizedDescription)")
+            return nil
+        }
+
+        var cToken: UnsafeMutablePointer<CChar>?
+        let jsonBody = String(data: data, encoding: .utf8) ?? ""
+        let result = jsonBody.withCString { bodyPtr in
+            rcheevos_api_process_login_response(bodyPtr, data.count, &cToken)
+        }
+
+        guard result == 0, let tokenPtr = cToken else {
+            LoggerService.error(category: "RetroAchievements", "Login2 response error: \(result)")
+            free(cToken)
+            return nil
+        }
+
+        let token = String(cString: tokenPtr)
+        free(cToken)
+        return token
+    }
+
     private func validateCredentials(username: String, webApiKey: String) async {
         guard isEnabled, !webApiKey.isEmpty else { return }
-        
+
         do {
-            try await loginWithWebApiKey(username: username, webApiKey: webApiKey)
+            try await loginWithWebApiKey(username: username, webApiKey: webApiKey, password: "")
         } catch {
             LoggerService.error(category: "RetroAchievements", "Token validation failed on launch.")
         }
     }
-    
+
     // MARK: - Game List Caching (New)
 
     /// Fetches the list of all supported consoles from RA and caches them.
@@ -181,8 +261,10 @@ class RetroAchievementsService: ObservableObject {
             }
         }
 
-        LoggerService.info(category: "RetroAchievements", "Fetching console list from RA...")
-        
+    LoggerService.info(category: "RetroAchievements", "Fetching console list from RA...")
+        let coordinator = RAGameCacheCoordinator.shared
+        coordinator.startFetchingConsoles()
+
         let url = URL(string: "\(apiBaseURL)/API_GetConsoleIDs.php")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
         components.queryItems = [
@@ -200,7 +282,8 @@ class RetroAchievementsService: ObservableObject {
         try? data.write(to: fileURL)
         
         LoggerService.info(category: "RetroAchievements", "Successfully cached \(consoles.count) consoles.")
-        
+        coordinator.finish()
+
         return results
     }
 
@@ -259,12 +342,17 @@ class RetroAchievementsService: ObservableObject {
         let userSystemIDs = Set(userRoms.compactMap { $0.systemID })
         let userRAConsoleIDs = Set(userSystemIDs.map { mapSystemIDToRAConsoleID($0) })
         
-        let filteredConsoles = consoles.filter { userRAConsoleIDs.contains($0.id) }
+    let filteredConsoles = consoles.filter { userRAConsoleIDs.contains($0.id) }
         LoggerService.info(category: "RetroAchievements", "Refreshing game lists for \(filteredConsoles.count) systems present in library (out of \(consoles.count) total RA consoles).")
-        
+
+        let coordinator = RAGameCacheCoordinator.shared
+        let totalConsoles = filteredConsoles.count
+
         // Uses listDataFolder for console-specific lists
-        
-        for console in filteredConsoles {
+        for (index, console) in filteredConsoles.enumerated() {
+            let step = index + 1
+            coordinator.startFetchingGames(consoleID: console.id, consoleName: console.name, step: step, total: totalConsoles)
+
             let safeName = console.name.replacingOccurrences(of: "/", with: "-").replacingOccurrences(of: " ", with: "_")
             let fileName = "\(console.id)_\(safeName).json"
             let fileURL = listDataFolder.appendingPathComponent(fileName)
@@ -304,12 +392,14 @@ class RetroAchievementsService: ObservableObject {
                 await importLocalJSONFile(fileURL)
                 
                 LoggerService.info(category: "RetroAchievements", "Successfully cached games for \(console.name)")
-            } catch {
-                LoggerService.error(category: "RetroAchievements", "Failed to fetch games for \(console.name): \(error.localizedDescription)")
+                } catch {
+                    LoggerService.error(category: "RetroAchievements", "Failed to fetch games for \(console.name): \(error.localizedDescription)")
+                }
+                coordinator.updateProgress(Double(step) / Double(totalConsoles), status: coordinator.statusLine)
             }
-        }
         
         LoggerService.info(category: "RetroAchievements", "Finished fetching games for all consoles.")
+        coordinator.finish()
     }
 
     /// Fetches the entire game list from RA and stores it locally.
@@ -582,13 +672,18 @@ class RetroAchievementsService: ObservableObject {
     /// Matches all games in the library using the local RA cache.
     func matchAllCachedGames(roms: [ROM]) async -> (matched: Int, total: Int) {
         var matchedCount = 0
-        
+        let coordinator = RAGameCacheCoordinator.shared
+        let totalRoms = roms.count
+
         // Ensure local cache is loaded into memory/SwiftData
         await importLocalRAGameCache()
-        
-        for rom in roms {
+
+        for (index, rom) in roms.enumerated() {
+            let step = index + 1
+            coordinator.startHashing(romName: rom.name, step: step, total: totalRoms)
+
             await syncROMWithRA(rom: rom)
-            
+
             // Check if it was matched
             if let context = modelContext {
                 let descriptor = FetchDescriptor<ROMEntry>(predicate: #Predicate { $0.id == rom.id })
@@ -596,8 +691,10 @@ class RetroAchievementsService: ObservableObject {
                     matchedCount += 1
                 }
             }
+            coordinator.updateHashingProgress(Double(step) / Double(totalRoms), romName: rom.name, step: step, total: totalRoms)
         }
-        
+
+        coordinator.finish()
         return (matchedCount, roms.count)
     }
 
@@ -904,7 +1001,8 @@ class RetroAchievementsService: ObservableObject {
                         DateFormatter.raDateFormatter.date(from: date)
                     },
                     isHardcore: achResponse.DateAwardedHardcore != nil,
-                    category: AchievementCategory(rawValue: achResponse.Category ?? "core") ?? .core
+                    category: AchievementCategory(rawValue: achResponse.Category ?? "core") ?? .core,
+                    trigger: achResponse.MemAddr
                 )
                 achievements.append(achievement)
             }
@@ -952,7 +1050,8 @@ class RetroAchievementsService: ObservableObject {
                 isUnlocked: entry.dateAwarded != nil,
                 unlockDate: entry.dateAwarded,
                 isHardcore: entry.dateAwardedHardcore != nil,
-                category: AchievementCategory(rawValue: entry.category) ?? .core
+                category: AchievementCategory(rawValue: entry.category) ?? .core,
+                trigger: entry.trigger
             )
         }
         
@@ -968,6 +1067,38 @@ class RetroAchievementsService: ObservableObject {
         return (gameInfo, gameCache.cachedAt)
     }
     
+    @MainActor
+    func loadCachedAchievements(gameID: Int, username: String) -> [Achievement]? {
+        let fileURL = gameDataFolder.appendingPathComponent("\(gameID).json")
+        guard let data = try? Data(contentsOf: fileURL) else { return nil }
+        let response = try? JSONDecoder().decode(RAGameResponse.self, from: data)
+        guard let achDict = response?.Achievements, !achDict.isEmpty else { return nil }
+
+        let patchTriggers = loadPatchDataFromDisk(gameID: gameID)
+
+        return achDict.values.map { ach in
+            let patchDef = patchTriggers?.achievements.first(where: { $0.id == ach.ID })?.definition
+            let trigger: String?
+            if let patchDef = patchDef, !patchDef.isEmpty {
+                trigger = patchDef
+            } else {
+                trigger = ach.MemAddr
+            }
+            return Achievement(
+                id: ach.ID,
+                title: ach.Title,
+                description: ach.Description,
+                points: ach.Points,
+                badgeName: ach.BadgeName,
+                isUnlocked: ach.DateAwarded != nil,
+                unlockDate: ach.DateAwarded.flatMap { DateFormatter.raDateFormatter.date(from: $0) },
+                isHardcore: ach.DateAwardedHardcore != nil,
+                category: AchievementCategory(rawValue: ach.Category ?? "core") ?? .core,
+                trigger: trigger
+            )
+        }
+    }
+
     @MainActor
     private func saveGameInfoToCache(gameInfo: RAGameInfo, username: String) async {
         guard let context = modelContext else { return }
@@ -1000,9 +1131,9 @@ class RetroAchievementsService: ObservableObject {
         // 2. Update/Create Achievement Entries
         for ach in gameInfo.achievements {
             let achID = ach.id
-            let achPredicate = #Predicate<RAAchievementCacheEntry> { $0.achievementId == achID && $0.username == username }
+            let achPredicate = #Predicate<RAAchievementCacheEntry> { $0.achievementId == achID }
             let achDescriptor = FetchDescriptor<RAAchievementCacheEntry>(predicate: achPredicate)
-            
+
             if let existingAch = try? context.fetch(achDescriptor).first {
                 existingAch.title = ach.title
                 existingAch.achDescription = ach.description
@@ -1010,7 +1141,9 @@ class RetroAchievementsService: ObservableObject {
                 existingAch.badgeName = ach.badgeName
                 existingAch.category = ach.category.rawValue
                 existingAch.dateAwarded = ach.unlockDate
-                existingAch.dateAwardedHardcore = ach.isHardcore ? ach.unlockDate : nil // Approximation
+                existingAch.dateAwardedHardcore = ach.isHardcore ? ach.unlockDate : nil
+                existingAch.username = username
+                existingAch.trigger = ach.trigger
                 existingAch.cachedAt = Date()
             } else {
                 let newAch = RAAchievementCacheEntry(
@@ -1024,51 +1157,158 @@ class RetroAchievementsService: ObservableObject {
                     dateAwarded: ach.unlockDate,
                     dateAwardedHardcore: ach.isHardcore ? ach.unlockDate : nil,
                     username: username,
+                    trigger: ach.trigger,
                     cachedAt: Date()
                 )
-                context.insert(newAch)
+            context.insert(newAch)
             }
         }
-        
-        try? context.save()
+
+        do {
+            try context.save()
+        } catch {
+            LoggerService.error(category: "RetroAchievements", "Failed to save achievement cache: \(error)")
+        }
     }
     
     // MARK: - Achievement Unlocking
-    
-    // Submit an achievement unlock.
-    func unlockAchievement(id: Int, hardcore: Bool) async throws {
-        guard isLoggedIn, let username = username, !webApiKey.isEmpty else { return }
-        
-        let url = URL(string: "\(apiBaseURL)/AwardAchievement.php")!
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        let body:[String: String] = [
-            "u": username,
-            "a": String(id),
-            "h": hardcore ? "1" : "0",
-            "y": webApiKey
-        ]
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
-        
-        let (_, response) = try await URLSession.shared.data(for: request)
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            throw RAError.networkError
+
+    func unlockAchievement(id: Int, hardcore: Bool) async {
+        guard isLoggedIn, let username = username, let token = loginToken else {
+            LoggerService.error(category: "RetroAchievements", "Unlock skipped — not logged in or missing login token")
+            return
         }
-        
-        LoggerService.info(category: "RetroAchievements", "Achievement \(id) unlocked (hardcore: \(hardcore))")
-        
-        // Update local state
-        await MainActor.run {
-            if let index = currentGame?.achievements.firstIndex(where: { $0.id == id }) {
-                currentGame?.achievements[index].isUnlocked = true
-                currentGame?.achievements[index].isHardcore = hardcore
-                currentGame?.achievements[index].unlockDate = Date()
+
+        pendingUnlocks.append((id: id, hardcore: hardcore))
+
+        guard !isProcessingUnlocks else { return }
+        isProcessingUnlocks = true
+
+        while !pendingUnlocks.isEmpty {
+            let batch = pendingUnlocks
+            pendingUnlocks.removeAll()
+
+            for unlock in batch {
+                let minInterval: TimeInterval = 1.5
+                let elapsed = Date().timeIntervalSince(lastUnlockTime)
+                if elapsed < minInterval {
+                    try? await Task.sleep(nanoseconds: UInt64((minInterval - elapsed) * 1_000_000_000))
+                }
+                lastUnlockTime = Date()
+
+                await performAwardRequest(id: unlock.id, hardcore: unlock.hardcore, username: username, token: token)
+            }
+        }
+
+        isProcessingUnlocks = false
+    }
+
+    private func performAwardRequest(id: Int, hardcore: Bool, username: String, token: String) async {
+        var cUrl: UnsafeMutablePointer<CChar>?
+        var cPostData: UnsafeMutablePointer<CChar>?
+        var cContentType: UnsafeMutablePointer<CChar>?
+
+        let initResult = username.withCString { usernamePtr in
+            token.withCString { tokenPtr in
+                rcheevos_api_init_award_achievement(usernamePtr, tokenPtr, UInt32(id), hardcore ? 1 : 0, &cUrl, &cPostData, &cContentType)
+            }
+        }
+
+        guard initResult == 0, let urlStr = cUrl else {
+            LoggerService.error(category: "RetroAchievements", "Failed to build award request for achievement \(id): \(initResult)")
+            rcheevos_api_destroy_request_strings(cUrl, cPostData, cContentType)
+            return
+        }
+
+        let requestURL = String(cString: urlStr)
+        let postDataStr = cPostData.map { String(cString: $0) }
+        let contentTypeStr = cContentType.map { String(cString: $0) }
+        rcheevos_api_destroy_request_strings(cUrl, cPostData, cContentType)
+
+        guard let url = URL(string: requestURL) else { return }
+
+        var request = URLRequest(url: url)
+        request.setValue("rcheevos/12.3.0 TruchiEmu/1.0.0", forHTTPHeaderField: "User-Agent")
+        if let postData = postDataStr, !postData.isEmpty {
+            var modifiedPost = postData
+            if !modifiedPost.contains("l=") {
+                modifiedPost += "&l=TruchiEmu/1.0.0"
+            }
+            request.httpMethod = "POST"
+            request.httpBody = modifiedPost.data(using: .utf8)
+            if let ct = contentTypeStr {
+                request.setValue(ct, forHTTPHeaderField: "Content-Type")
+            }
+        }
+
+        let data: Data
+        let response: URLResponse
+        do {
+            (data, response) = try await URLSession.shared.data(for: request)
+        } catch {
+            LoggerService.error(category: "RetroAchievements", "Award achievement \(id) network error: \(error.localizedDescription)")
+            return
+        }
+
+        let httpResponse = response as? HTTPURLResponse
+        let statusCode = httpResponse?.statusCode ?? -1
+        let responseBody = String(data: data, encoding: .utf8) ?? "(empty)"
+
+        var awardResponse = rcheevos_api_process_award_response(responseBody, data.count, Int32(statusCode))
+        defer { rcheevos_api_destroy_award_response(&awardResponse) }
+
+        if awardResponse.succeeded != 0 {
+            let isGenuinelyNew = awardResponse.new_player_score > 0 || awardResponse.new_player_score_softcore > 0
+            if isGenuinelyNew {
+                LoggerService.info(category: "RetroAchievements", "Achievement \(id) unlocked! Score: \(awardResponse.new_player_score), Remaining: \(awardResponse.achievements_remaining)")
+            } else {
+                LoggerService.info(category: "RetroAchievements", "Achievement \(id) already unlocked on server (re-award)")
+            }
+            await MainActor.run {
+                if let index = currentGame?.achievements.firstIndex(where: { $0.id == id }) {
+                    currentGame?.achievements[index].isUnlocked = true
+                    currentGame?.achievements[index].isHardcore = hardcore
+                    currentGame?.achievements[index].unlockDate = Date()
+                    if isGenuinelyNew {
+                        AchievementToastManager.shared.showAchievement(currentGame!.achievements[index])
+                    }
+                }
+            }
+            persistUnlockToCache(achievementId: id, hardcore: hardcore)
+        } else {
+            let errMsg = awardResponse.error_message.map { String(cString: $0) } ?? "unknown"
+            LoggerService.error(category: "RetroAchievements", "Award achievement \(id) failed: HTTP \(statusCode), body: \(responseBody), error: \(errMsg)")
+
+            if errMsg.contains("expired_token") || errMsg.contains("invalid_credentials") {
+                loginToken = nil
+                AppSettings.remove("ra_login_token")
+                LoggerService.error(category: "RetroAchievements", "Login token expired, cleared. Re-login required.")
             }
         }
     }
-    
+
+    private func persistUnlockToCache(achievementId: Int, hardcore: Bool) {
+        guard let gameID = currentGame?.id else { return }
+        let fileURL = gameDataFolder.appendingPathComponent("\(gameID).json")
+        guard var data = try? Data(contentsOf: fileURL),
+              var json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              var achievements = json["Achievements"] as? [String: Any] else { return }
+
+        let now = DateFormatter.raDateFormatter.string(from: Date())
+
+        for (key, value) in achievements {
+            guard var ach = value as? [String: Any], ach["ID"] as? Int == achievementId else { continue }
+            ach["DateAwarded"] = now
+            if hardcore { ach["DateAwardedHardcore"] = now }
+            achievements[key] = ach
+            break
+        }
+
+        json["Achievements"] = achievements
+        guard let updatedData = try? JSONSerialization.data(withJSONObject: json, options: [.sortedKeys]) else { return }
+        try? updatedData.write(to: fileURL)
+    }
+
     // MARK: - Leaderboards
     
     // Fetch leaderboards for a game.
@@ -1161,6 +1401,170 @@ class RetroAchievementsService: ObservableObject {
         }
     }
     
+    // MARK: - Patch Data (Unhashed Triggers)
+
+    private static let patchDataFolder: URL = {
+        let folder = baseFolder.appendingPathComponent("Patches", isDirectory: true)
+        try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        return folder
+    }()
+
+    private var patchDataFolder: URL { Self.patchDataFolder }
+
+    struct PatchAchievement: Codable {
+        let id: Int
+        let definition: String
+        let points: Int
+        let category: Int
+    }
+
+    struct PatchData: Codable {
+        let gameId: Int
+        let achievements: [PatchAchievement]
+        let richPresenceScript: String?
+        let fetchedAt: Date
+    }
+
+    private func fetchLoginToken() async -> String? {
+        if let existing = loginToken { return existing }
+        LoggerService.error(category: "RetroAchievements", "No login token available — re-login required")
+        return nil
+    }
+
+    func fetchPatchData(gameID: Int) async -> [Int: String]? {
+        guard isLoggedIn, let username = username else {
+            LoggerService.info(category: "RetroAchievements", "Cannot fetch patch data: not logged in")
+            return nil
+        }
+
+        guard let token = await fetchLoginToken() else {
+            LoggerService.error(category: "RetroAchievements", "Cannot fetch patch data: no login token")
+            return nil
+        }
+
+        let patchFileURL = patchDataFolder.appendingPathComponent("\(gameID).json")
+        if let existing = loadPatchDataFromDisk(gameID: gameID) {
+            if let fetchedAt = existing.fetchedAt as Date?,
+               Date().timeIntervalSince(fetchedAt) < 24 * 3600 {
+                LoggerService.info(category: "RetroAchievements", "Using cached patch data for game \(gameID)")
+                var result = [Int: String]()
+                for ach in existing.achievements {
+                    result[ach.id] = ach.definition
+                }
+                return result
+            }
+        }
+
+        var cUrl: UnsafeMutablePointer<CChar>?
+        var cPostData: UnsafeMutablePointer<CChar>?
+        var cContentType: UnsafeMutablePointer<CChar>?
+
+        let initResult = username.withCString { usernamePtr in
+            token.withCString { tokenPtr in
+                rcheevos_api_init_fetch_game_data(usernamePtr, tokenPtr, UInt32(gameID), &cUrl, &cPostData, &cContentType)
+            }
+        }
+
+        guard initResult == 0, let urlStr = cUrl else {
+            LoggerService.error(category: "RetroAchievements", "rcheevos failed to build patch request: \(initResult)")
+            rcheevos_api_destroy_request_strings(cUrl, cPostData, cContentType)
+            return nil
+        }
+
+        let requestURL = String(cString: urlStr)
+        let postDataStr = cPostData.map { String(cString: $0) }
+        let contentTypeStr = cContentType.map { String(cString: $0) }
+        rcheevos_api_destroy_request_strings(cUrl, cPostData, cContentType)
+        cUrl = nil; cPostData = nil; cContentType = nil
+
+        guard let url = URL(string: requestURL) else {
+            LoggerService.error(category: "RetroAchievements", "Invalid patch URL: \(requestURL)")
+            return nil
+        }
+
+        var request = URLRequest(url: url)
+        request.setValue("rcheevos/12.3.0 TruchiEmu/1.0.0", forHTTPHeaderField: "User-Agent")
+        if var postData = postDataStr, !postData.isEmpty {
+            postData += "&l=TruchiEmu/1.0.0"
+            request.httpMethod = "POST"
+            request.httpBody = postData.data(using: .utf8)
+            if let ct = contentTypeStr {
+                request.setValue(ct, forHTTPHeaderField: "Content-Type")
+            }
+        }
+
+        let (data, response): (Data, URLResponse?)
+        do {
+            (data, response) = try await URLSession.shared.data(for: request)
+        } catch {
+            LoggerService.error(category: "RetroAchievements", "Patch fetch network error: \(error.localizedDescription)")
+            return nil
+        }
+
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            LoggerService.error(category: "RetroAchievements", "Patch fetch HTTP error: \(response)")
+            return nil
+        }
+
+        let jsonBody = String(data: data, encoding: .utf8) ?? ""
+        var patchResponse = jsonBody.withCString { bodyPtr in
+            rcheevos_api_process_patch_response(bodyPtr, data.count)
+        }
+
+        guard patchResponse.succeeded != 0 else {
+            let errMsg = patchResponse.error_message.map { String(cString: $0) } ?? "unknown"
+            rcheevos_api_destroy_patch_response(&patchResponse)
+            if errMsg.contains("expired_token") || errMsg.contains("invalid_credentials") {
+                loginToken = nil
+                AppSettings.remove("ra_login_token")
+                LoggerService.error(category: "RetroAchievements", "Login token expired or invalid, cleared. Re-login required.")
+            }
+            LoggerService.error(category: "RetroAchievements", "Patch response error: \(errMsg)")
+            return nil
+        }
+
+        var triggers = [Int: String]()
+        var patchAchievements = [PatchAchievement]()
+        for i in 0..<patchResponse.num_achievements {
+            let ach = patchResponse.achievements![Int(i)]
+            if ach.id >= 101000000 { continue }
+            let def = ach.definition.map { String(cString: $0) } ?? ""
+            triggers[Int(ach.id)] = def
+            patchAchievements.append(PatchAchievement(
+                id: Int(ach.id),
+                definition: def,
+                points: Int(ach.points),
+                category: Int(ach.category)
+            ))
+        }
+
+        let richPresence = patchResponse.rich_presence_script.map { String(cString: $0) }
+        rcheevos_api_destroy_patch_response(&patchResponse)
+
+        let patchData = PatchData(
+            gameId: gameID,
+            achievements: patchAchievements,
+            richPresenceScript: richPresence,
+            fetchedAt: Date()
+        )
+        savePatchDataToDisk(patchData, gameID: gameID)
+
+        LoggerService.info(category: "RetroAchievements", "Fetched patch data for game \(gameID): \(triggers.count) achievement triggers")
+        return triggers
+    }
+
+    private func loadPatchDataFromDisk(gameID: Int) -> PatchData? {
+        let fileURL = patchDataFolder.appendingPathComponent("\(gameID).json")
+        guard let data = try? Data(contentsOf: fileURL) else { return nil }
+        return try? JSONDecoder().decode(PatchData.self, from: data)
+    }
+
+    private func savePatchDataToDisk(_ patchData: PatchData, gameID: Int) {
+        let fileURL = patchDataFolder.appendingPathComponent("\(gameID).json")
+        guard let data = try? JSONEncoder().encode(patchData) else { return }
+        try? data.write(to: fileURL, options: [.atomic])
+    }
+
     // MARK: - API Request Helpers
     
     private struct RARAGameListResponse: Decodable {

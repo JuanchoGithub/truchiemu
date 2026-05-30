@@ -91,7 +91,7 @@ class GameLauncher: ObservableObject {
             self.shaderPresetID = shaderPresetID ?? romShader
             
             // Resolve achievements
-            self.achievementsEnabled = achievementsEnabled ?? AppSettings.getBool("achievements_enabled", defaultValue: false)
+            self.achievementsEnabled = achievementsEnabled ?? AppSettings.getBool("ra_enabled", defaultValue: false)
             LoggerService.extreme(category: "GameLauncher", "Resolved achievements enabled: \(self.achievementsEnabled)")
             self.hardcoreMode = hardcoreMode ?? false
             LoggerService.extreme(category: "GameLauncher", "Resolved hardcore mode: \(self.hardcoreMode)")
@@ -253,6 +253,31 @@ class GameLauncher: ObservableObject {
         
         // Create runner and window controller
         let runner = EmulatorRunner.forSystem(systemID)
+
+        // Pre-load cached achievements for rcheevos memory detection
+        if config.achievementsEnabled {
+            if let raGameId = rom.raGameId, raGameId > 0 {
+                if let username = RetroAchievementsService.shared.username {
+                    if let patchTriggers = await RetroAchievementsService.shared.fetchPatchData(gameID: raGameId), !patchTriggers.isEmpty {
+                        LoggerService.info(category: "GameLauncher", "Got \(patchTriggers.count) unhashed triggers from patch API")
+                    } else {
+                        LoggerService.info(category: "GameLauncher", "No patch data available, will use cached MemAddr triggers")
+                    }
+                    if let achievements = RetroAchievementsService.shared.loadCachedAchievements(gameID: raGameId, username: username) {
+                        runner.rcheevosAchievements = achievements
+                        let withTriggers = achievements.filter { $0.trigger != nil && !$0.trigger!.isEmpty }
+                        LoggerService.info(category: "GameLauncher", "Loaded \(achievements.count) cached achievements (\(withTriggers.count) with triggers)")
+                    } else {
+                        LoggerService.info(category: "GameLauncher", "No cached achievements found for gameID=\(raGameId)")
+                    }
+                } else {
+                    LoggerService.info(category: "GameLauncher", "RA enabled but no username - skipping rcheevos")
+                }
+            } else {
+                LoggerService.info(category: "GameLauncher", "RA enabled but rom.raGameId=\(rom.raGameId as Any) - skipping rcheevos")
+            }
+        }
+
         let controller = StandaloneGameWindowController(runner: runner)
         controller.library = library
         controller.cheatsEnabled = config.cheatsEnabled
@@ -316,7 +341,7 @@ class GameLauncher: ObservableObject {
         AppSettings.setBool("saveState_autoSaveOnExit", value: config.autoSave)
         
         // 4. Apply achievements setting
-        AppSettings.setBool("achievements_enabled", value: config.achievementsEnabled)
+        AppSettings.setBool("ra_enabled", value: config.achievementsEnabled)
         
         // 5. Apply hardcore mode
         if config.hardcoreMode != HardcoreModeManager.shared.isHardcoreActive {

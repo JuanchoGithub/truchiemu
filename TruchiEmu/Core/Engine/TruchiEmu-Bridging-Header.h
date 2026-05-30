@@ -2,6 +2,8 @@
 #import "LibretroBridge.h"
 #import "XPCSharedMemory.h"
 
+#import "RcheevosWrapper.h"
+
 @class LibretroBridgeImpl;
 
 typedef void (*CoreLogCallback)(const char *message, int level);

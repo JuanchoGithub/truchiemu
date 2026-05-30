@@ -1,0 +1,15 @@
+{
+  "originHash" : "5ee9d1daeacdb22c0c7ef60eb858ff0064335ba431be9f6ff502012129e433a1",
+  "pins" : [
+    {
+      "identity" : "rcheevos",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/RetroAchievements/rcheevos",
+      "state" : {
+        "revision" : "e9ca3694c862b61235595176dac4b22677848c93",
+        "version" : "12.3.0"
+      }
+    }
+  ],
+  "version" : 3
+}

@@ -72,10 +72,11 @@ private var firstFrameTimer: Timer?
     var pendingROMForBezel: ROM?
     var onWindowWillClose: (() -> Void)?
     var toolbarView: NSHostingView<AnyView>?
-    var hideToolbarTimer: Timer?
+    var hideToolbarTimer: Timer? = nil
     var skipAutoSaveOnClose: Bool = false
     private var gameLoadedObserver: NSObjectProtocol?
     var moveListOverlayView: NSHostingView<AnyView>?
+    var achievementToastOverlayView: NSHostingView<AnyView>?
 
     var toolbarBottomInset: CGFloat {
         guard let toolbar = toolbarView else { return 0 }
@@ -104,6 +105,8 @@ private var firstFrameTimer: Timer?
         moveListOverlayView = nil
         stateLoadOverlayView?.removeFromSuperview()
         stateLoadOverlayView = nil
+        achievementToastOverlayView?.removeFromSuperview()
+        achievementToastOverlayView = nil
         loadingOverlayView?.removeFromSuperview()
         loadingOverlayView = nil
         errorOverlayView?.removeFromSuperview()
@@ -214,7 +217,25 @@ super.init(window: window)
         // Force update tracking areas
         containerView.updateTrackingAreas()
         
-        // Add SwiftUI overlay toolbar
+        // Add achievement toast overlay first (behind toolbar)
+        let toastOverlay = SafeHostingView(rootView: AnyView(
+            AchievementToastOverlay()
+                .environment(SystemDatabaseWrapper.shared)
+        ))
+        toastOverlay.translatesAutoresizingMaskIntoConstraints = false
+        toastOverlay.wantsLayer = true
+        toastOverlay.layer?.backgroundColor = .clear
+        containerView.addSubview(toastOverlay)
+        self.achievementToastOverlayView = toastOverlay
+
+        NSLayoutConstraint.activate([
+            toastOverlay.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            toastOverlay.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            toastOverlay.topAnchor.constraint(equalTo: containerView.topAnchor),
+            toastOverlay.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
+        ])
+
+        // Add SwiftUI overlay toolbar (on top of toast overlay so clicks are not intercepted)
         let hostingView = SafeHostingView(rootView: AnyView(GameOverlayToolbar(
             runner: runner,
             windowController: self
@@ -230,7 +251,7 @@ super.init(window: window)
             hostingView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -8)
         ])
 
-        // Add SwiftUI loading overlay (covers entire window during game launch)
+        // Add SwiftUI loading overlay (covers entire window during game launch, on top of everything)
     let loadingView = SafeHostingView(rootView: AnyView(GameLoadingOverlay(
         windowController: self
     ).environment(SystemDatabaseWrapper.shared)))
@@ -831,7 +852,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
                 runner?.isPaused = false
                 XPCBridgeAdapter.shared.setPaused(false)
             }
-            scheduleHideToolbar()
+            showToolbar()
             return
         }
 
@@ -840,7 +861,6 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
 
         moveListViewModel.activate()
         installMoveListOverlay()
-        hideToolbar()
     }
 
     @MainActor

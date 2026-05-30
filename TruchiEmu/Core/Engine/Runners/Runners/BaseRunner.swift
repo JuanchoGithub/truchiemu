@@ -315,6 +315,12 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     
     // Turbo button state tracking
     private var activeTurboButtons: Set<RetroButton> = []
+
+    // rcheevos achievement detection
+    var rcheevosAchievements: [Achievement]?
+    private var rcheevosRuntime: RcheevosRuntime?
+    private let rcheevosLock = NSLock()
+    private var _needsRcheevosReset = false
     
     static func forSystem(_ systemID: String?) -> EmulatorRunner {
         let runner: EmulatorRunner
@@ -378,8 +384,9 @@ case "scummvm": runner = ScummVMRunner()
 
         let rom = self.rom
         let dylibPath = self.findCoreLib(coreID: coreID) ?? coreID
+        let cachedAchievements = self.rcheevosAchievements ?? []
 
-        emulationQueue.async {
+        emulationQueue.async { [cachedAchievements] in
             XPCBridgeAdapter.shared.setLanguage(selectedLang)
             XPCBridgeAdapter.shared.setLogLevel(Int(selectedLogLevel))
 
@@ -391,6 +398,20 @@ case "scummvm": runner = ScummVMRunner()
             let romPath = rom.path.path
             let systemID = rom.systemID
 
+            // Set up rcheevos achievement detection
+            if !cachedAchievements.isEmpty {
+                let runtime = RcheevosRuntime()
+                runtime.loadGame(achievements: cachedAchievements)
+        runtime.onAchievementTriggered = { achievementId in
+            Task { @MainActor in
+                let hardcore = AppSettings.getBool("hardcore_mode_enabled", defaultValue: false)
+                await RetroAchievementsService.shared.unlockAchievement(id: achievementId, hardcore: hardcore)
+            }
+        }
+                self.rcheevosRuntime = runtime
+                LoggerService.info(category: "Runner", "rcheevos initialized with \(cachedAchievements.count) achievements")
+            }
+
             XPCBridgeAdapter.shared.launch(
                 dylibPath: dylibPath,
                 romPath: romPath,
@@ -398,8 +419,14 @@ case "scummvm": runner = ScummVMRunner()
                 systemID: systemID,
                 romFilename: rom.filenameWithoutExtension,
                 shaderDir: shaderDir,
-                videoCallback: { [weak self] data, width, height, pitch, format in
-                    self?.updateFrame(data: data, width: width, height: height, pitch: pitch, format: format)
+            videoCallback: { [weak self] data, width, height, pitch, format in
+                self?.updateFrame(data: data, width: width, height: height, pitch: pitch, format: format)
+                self?.rcheevosLock.lock()
+                let needsReset = self?._needsRcheevosReset ?? false
+                if needsReset { self?._needsRcheevosReset = false }
+                self?.rcheevosLock.unlock()
+                if needsReset { self?.rcheevosRuntime?.resetTriggers() }
+                self?.rcheevosRuntime?.processFrame()
                 },
                 onFailure: { [weak self] message in
                     Task { @MainActor in
@@ -421,6 +448,9 @@ case "scummvm": runner = ScummVMRunner()
         isRunning = false
 
         saveSRAMIfAvailable()
+
+        rcheevosRuntime?.deactivateAllAchievements()
+        rcheevosRuntime = nil
 
         XPCBridgeAdapter.shared.stop()
         XPCBridgeAdapter.shared.waitForCompletion()
@@ -700,6 +730,9 @@ case "scummvm": runner = ScummVMRunner()
         let success = XPCBridgeAdapter.shared.unserializeState(actualData)
         if success {
             osdMessage = "Loaded save state"
+            rcheevosLock.lock()
+            _needsRcheevosReset = true
+            rcheevosLock.unlock()
 
             Task {
                 try? await Task.sleep(nanoseconds: 2_000_000_000)
@@ -776,6 +809,9 @@ case "scummvm": runner = ScummVMRunner()
         let success = XPCBridgeAdapter.shared.unserializeState(actualData)
         if success {
             osdMessage = "Loaded \(slot == -1 ? "Auto" : "Slot \(slot)")"
+            rcheevosLock.lock()
+            _needsRcheevosReset = true
+            rcheevosLock.unlock()
             
             // Clear OSD after 2 seconds
             Task {

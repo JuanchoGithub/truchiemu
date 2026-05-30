@@ -13,6 +13,7 @@ final class RAAchievementCacheEntry {
     var dateAwarded: Date?
     var dateAwardedHardcore: Date?
     var username: String?
+    var trigger: String?
     var cachedAt: Date
 
     init(achievementId: Int, gameId: Int, title: String, description: String, points: Int, badgeName: String, category: String = "core", cachedAt: Date = Date()) {
@@ -29,7 +30,7 @@ final class RAAchievementCacheEntry {
         self.cachedAt = cachedAt
     }
     
-    init(achievementId: Int, gameId: Int, title: String, description: String, points: Int, badgeName: String, category: String = "core", dateAwarded: Date? = nil, dateAwardedHardcore: Date? = nil, username: String? = nil, cachedAt: Date = Date()) {
+    init(achievementId: Int, gameId: Int, title: String, description: String, points: Int, badgeName: String, category: String = "core", dateAwarded: Date? = nil, dateAwardedHardcore: Date? = nil, username: String? = nil, trigger: String? = nil, cachedAt: Date = Date()) {
         self.achievementId = achievementId
         self.gameId = gameId
         self.title = title
@@ -40,6 +41,7 @@ final class RAAchievementCacheEntry {
         self.dateAwarded = dateAwarded
         self.dateAwardedHardcore = dateAwardedHardcore
         self.username = username
+        self.trigger = trigger
         self.cachedAt = cachedAt
     }
 }

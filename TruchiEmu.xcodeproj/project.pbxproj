@@ -1012,6 +1012,7 @@
 		E952927EBAAC3AE769BF3003 /* fightdata_wh2.json in Resources */ = {isa = PBXBuildFile; fileRef = 6A31F66CF343DBA94D408DC1 /* fightdata_wh2.json */; };
 		E9E775DA61FD7613A74094C8 /* input_coreLabels_vircon32.json in Resources */ = {isa = PBXBuildFile; fileRef = E0DC3B1DB907C41823FBE25C /* input_coreLabels_vircon32.json */; };
 		EA4C269AEDD90FF203A43D9F /* CPS1.png in Resources */ = {isa = PBXBuildFile; fileRef = 9B9365CD6FC031FDA5FC4E59 /* CPS1.png */; };
+		EAA8BB735B42D56113CE8902 /* RcheevosRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE8AA314424647A2DC895F81 /* RcheevosRuntime.swift */; };
 		EAB2A834003B38A7AB415D9F /* LoggerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CC526A551953B4E9BB08C9 /* LoggerService.swift */; };
 		EADE7C31A1A6A97D7EF067FD /* input_systemLabels_32x.json in Resources */ = {isa = PBXBuildFile; fileRef = AD6938F8ED0978C59811FFE9 /* input_systemLabels_32x.json */; };
 		EAF127864B6CFFEBD06FA4A7 /* fightdata_kof2000.json in Resources */ = {isa = PBXBuildFile; fileRef = A316856DC2D245997166CE52 /* fightdata_kof2000.json */; };
@@ -1079,6 +1080,7 @@
 		F6C6FBCE05B3CD0E06B557BD /* CoreOverrideService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FF63BFF980BE337C49CF0B7 /* CoreOverrideService.swift */; };
 		F6DF42F2CF9B2A425B878D8C /* input_coreLabels_vba_next.json in Resources */ = {isa = PBXBuildFile; fileRef = 6AD752227BC38A71AA63B2DF /* input_coreLabels_vba_next.json */; };
 		F795BC067809176CEFAEEF29 /* AppUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA86D9AC75A19C8EEF18634 /* AppUpdateService.swift */; };
+		F7AE20F51D41E33FE6104234 /* rcheevos in Frameworks */ = {isa = PBXBuildFile; productRef = D2E9BF1074610561D0152456 /* rcheevos */; };
 		F7DBD8DCC04098B24D01934F /* input_coreLabels_beetle_pce_fast.json in Resources */ = {isa = PBXBuildFile; fileRef = B04C638107D90D3005000D2E /* input_coreLabels_beetle_pce_fast.json */; };
 		F86252ABEF42A7AFF9D1B5C0 /* input_coreLabels_sameduck.json in Resources */ = {isa = PBXBuildFile; fileRef = 96EB760EBFD3458D61CE11D8 /* input_coreLabels_sameduck.json */; };
 		F89B6B3F983F1DFB87676E68 /* SNK - Neo Geo Pocket.dat in Resources */ = {isa = PBXBuildFile; fileRef = 091B265D3E1B243C94402582 /* SNK - Neo Geo Pocket.dat */; };
@@ -1103,6 +1105,7 @@
 		FCEF9884E35FD07E00639CC1 /* LocalizationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89BADA4F0CDD4DF426F11D33 /* LocalizationManager.swift */; };
 		FD807D36F718BE5D4AFFB515 /* input_coreOverrides_holani.json in Resources */ = {isa = PBXBuildFile; fileRef = 651E25044870715094458874 /* input_coreOverrides_holani.json */; };
 		FDB561BB4DD761EA753FFA63 /* SidebarRowButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = AECA6A821D5AD2F2FBD719B3 /* SidebarRowButton.swift */; };
+		FDB673FBF6AA9921EDFA3337 /* RcheevosWrapper.c in Sources */ = {isa = PBXBuildFile; fileRef = C6A669A1E4230EBBC0D9A2F4 /* RcheevosWrapper.c */; };
 		FDB778A032CF47D79852300A /* MDMSU.png in Resources */ = {isa = PBXBuildFile; fileRef = FCAB65F47C4E26FC16B426CF /* MDMSU.png */; };
 		FDF44AF015BFE88B93BB0463 /* coverage_report.json in Resources */ = {isa = PBXBuildFile; fileRef = 2CEE89F75EC185FCEE9763C9 /* coverage_report.json */; };
 		FE3F6C0CB14E59B683D59FBA /* input_coreLabels_quicknes.json in Resources */ = {isa = PBXBuildFile; fileRef = 338C611AB1DC2750E81AF4DB /* input_coreLabels_quicknes.json */; };
@@ -1622,6 +1625,7 @@
 		6B1CC886E59DC123C478AE62 /* BezelBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelBackgroundView.swift; sourceTree = "<group>"; };
 		6B6CDE91A09406AE67921521 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		6B780B3BD2FF4782265A8B1F /* input_coreLabels_beetle_cygne.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_beetle_cygne.json; sourceTree = "<group>"; };
+		6BD6E0283998C75AE2DADDC4 /* RcheevosWrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RcheevosWrapper.h; sourceTree = "<group>"; };
 		6C4C61168B31EC18C33BE903 /* ResourceCacheRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceCacheRepository.swift; sourceTree = "<group>"; };
 		6C573244D57BD4CCBD762D0F /* EnvironmentDiagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentDiagnostics.swift; sourceTree = "<group>"; };
 		6C6B0BA0A81DA9E4BCBBA1EC /* atarist@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "atarist@132w.png"; sourceTree = "<group>"; };
@@ -2005,6 +2009,7 @@
 		C604EF864E31A2BD810A2345 /* jaguar-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "jaguar-cheats.zip"; sourceTree = "<group>"; };
 		C61A9A36D430D34E4C3ABDE0 /* GameLoadingOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLoadingOverlay.swift; sourceTree = "<group>"; };
 		C6390D2AB62AB2F0DFD55B70 /* PSPMINIS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PSPMINIS.png; sourceTree = "<group>"; };
+		C6A669A1E4230EBBC0D9A2F4 /* RcheevosWrapper.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = RcheevosWrapper.c; sourceTree = "<group>"; };
 		C6B902C8D11765B90604510E /* input_coreLabels_beetle_saturn.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_beetle_saturn.json; sourceTree = "<group>"; };
 		C6E39A1DA6685C2C22E7F0E9 /* UpdateAvailableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateAvailableView.swift; sourceTree = "<group>"; };
 		C72372490BF3D6F53F7ADEEC /* ShaderPresetPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderPresetPickerView.swift; sourceTree = "<group>"; };
@@ -2107,6 +2112,7 @@
 		DDE5213C921C511E7900AF33 /* input_coreOverrides_nestopia.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_nestopia.json; sourceTree = "<group>"; };
 		DDFFDFCC5969E427805C3248 /* arduboy@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arduboy@132w.png"; sourceTree = "<group>"; };
 		DE550E5F3E5C2B4AC358C4DB /* n64-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "n64-cheats.zip"; sourceTree = "<group>"; };
+		DE8AA314424647A2DC895F81 /* RcheevosRuntime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RcheevosRuntime.swift; sourceTree = "<group>"; };
 		DF2042329F720EF6B53E084E /* SaveDirectoriesSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveDirectoriesSection.swift; sourceTree = "<group>"; };
 		DF7DEE8C655EE9C9F76AEDD8 /* LUTRO.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LUTRO.png; sourceTree = "<group>"; };
 		DFB716FDB9E08D61BB411959 /* fightdata_svg.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_svg.json; sourceTree = "<group>"; };
@@ -2248,6 +2254,17 @@
 		FFE0102057205E260CD4B2EF /* fightdata_souledge.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_souledge.json; sourceTree = "<group>"; };
 		FFF57A3335D570884323C87E /* fightdata_ffreveng.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_ffreveng.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		07B159B797A958807EC15D46 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F7AE20F51D41E33FE6104234 /* rcheevos in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		008A5E8A211D8FBBD32F53AA /* BoxArt */ = {
@@ -3170,6 +3187,9 @@
 				C0F5DA53816F3DA50BB5CBF4 /* LibretroCallbacks.mm */,
 				9351B675335D9BA7F783E15B /* LibretroGlobals.h */,
 				AE2C09D3C56810B2B9CCD08F /* LibretroGlobals.mm */,
+				DE8AA314424647A2DC895F81 /* RcheevosRuntime.swift */,
+				C6A669A1E4230EBBC0D9A2F4 /* RcheevosWrapper.c */,
+				6BD6E0283998C75AE2DADDC4 /* RcheevosWrapper.h */,
 				120784B10F8B6A3BCD6618F9 /* SaveDirectoryBridge.h */,
 				512CBDD71A4FCF28803691E0 /* SaveDirectoryBridge.swift */,
 				F9E6973D2682AC9B98A71D5A /* TruchiEmu-Bridging-Header.h */,
@@ -4080,6 +4100,7 @@
 				4DC137320AE94339DFED2ECF /* Sources */,
 				388B8243FC2B8F04600164B9 /* Resources */,
 				D0FF5B24CA26FDA7D958B35D /* CopyFiles */,
+				07B159B797A958807EC15D46 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -4088,6 +4109,7 @@
 			);
 			name = TruchiEmu;
 			packageProductDependencies = (
+				D2E9BF1074610561D0152456 /* rcheevos */,
 			);
 			productName = TruchiEmu;
 			productReference = 823B1FD3E319074A9926700C /* TruchiEmu.app */;
@@ -4119,6 +4141,9 @@
 			);
 			mainGroup = 506758847A6693C7EC49B415;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				C54ED9FB72F98EE7C187B853 /* XCRemoteSwiftPackageReference "rcheevos" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = DFFF9FFBB78EA64551D01B64 /* Products */;
 			projectDirPath = "";
@@ -5201,6 +5226,8 @@
 				A34A0B9B6CA7EB7F06872311 /* ROMLibrary.swift in Sources */,
 				6541937F9DC60F8102F9A1E3 /* ROMRepository.swift in Sources */,
 				B2322506F68F6E94D30D8EA9 /* ROMScanner.swift in Sources */,
+				EAA8BB735B42D56113CE8902 /* RcheevosRuntime.swift in Sources */,
+				FDB673FBF6AA9921EDFA3337 /* RcheevosWrapper.c in Sources */,
 				28369A531757A82F734AA1E0 /* ResourceCacheInterceptor.swift in Sources */,
 				F2903EDB7DD894827E44208C /* ResourceCacheModels.swift in Sources */,
 				562FE8460EC832F3319BAB35 /* ResourceCacheRepository.swift in Sources */,
@@ -5283,6 +5310,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_HARDENED_RUNTIME = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
+				HEADER_SEARCH_PATHS = "$(BUILD_DIR)/../../../SourcePackages/checkouts/rcheevos/include";
 				INFOPLIST_FILE = TruchiEmu/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -5405,6 +5433,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_HARDENED_RUNTIME = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
+				HEADER_SEARCH_PATHS = "$(BUILD_DIR)/../../../SourcePackages/checkouts/rcheevos/include";
 				INFOPLIST_FILE = TruchiEmu/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -5538,6 +5567,25 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		C54ED9FB72F98EE7C187B853 /* XCRemoteSwiftPackageReference "rcheevos" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RetroAchievements/rcheevos";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.3.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		D2E9BF1074610561D0152456 /* rcheevos */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C54ED9FB72F98EE7C187B853 /* XCRemoteSwiftPackageReference "rcheevos" */;
+			productName = rcheevos;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 69FEF6B26942F132790063CD /* Project object */;
 }
