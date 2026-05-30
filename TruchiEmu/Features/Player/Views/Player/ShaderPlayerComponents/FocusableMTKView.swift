@@ -41,7 +41,7 @@ class FocusableMTKView: MTKView {
     }
 
     override func mouseMoved(with event: NSEvent) {
-        LoggerService.debug(category: "InputCapture", "Mouse moved: dx=\(event.deltaX), dy=\(event.deltaY), inCapture=\(InputCaptureManager.shared.isCapturing)")
+        // LoggerService.debug(category: "InputCapture", "Mouse moved: dx=\(event.deltaX), dy=\(event.deltaY), inCapture=\(InputCaptureManager.shared.isCapturing)")
         updateMouseDelta(with: event)
     }
 
@@ -163,7 +163,7 @@ class FocusableMTKView: MTKView {
                 }
             }
             
-            LoggerService.debug(category: "InputCapture", "DOS/ScummVM sending keyDown: retroKey=\(retroKey), modifiers=\(modifiers), character=\(characterValue)")
+            // LoggerService.debug(category: "InputCapture", "DOS/ScummVM sending keyDown: retroKey=\(retroKey), modifiers=\(modifiers), character=\(characterValue)")
             
             // Send properly mapped key event directly to core
             XPCBridgeAdapter.shared.dispatchKeyboardEvent(
@@ -173,7 +173,7 @@ class FocusableMTKView: MTKView {
                 down: true
             )
         } else {
-            LoggerService.debug(category: "InputCapture", "Mapped keyboard event for standard core: keyCode=\(event.keyCode)")
+            // LoggerService.debug(category: "InputCapture", "Mapped keyboard event for standard core: keyCode=\(event.keyCode)")
             // For standard cores, use the normal mapped path
             if let rid = runner?.mapKey(event.keyCode) {
                 runner?.setKeyState(retroID: rid, pressed: true)
@@ -184,12 +184,12 @@ class FocusableMTKView: MTKView {
     override func keyUp(with event: NSEvent) {
         // For DOS/ScummVM games, bypass ALL TruchiEmu keyboard handling and send properly mapped keys to DOSBOX
         if shouldCaptureInputForCurrentGame() {
-            LoggerService.debug(category: "InputCapture", "DOS/ScummVM keyUp event: keyCode=\(event.keyCode)")
+            // LoggerService.debug(category: "InputCapture", "DOS/ScummVM keyUp event: keyCode=\(event.keyCode)")
             
             // Convert Mac key code to libretro key code using the proper mapper
             let retroKey = RetroKeycodeMapper.retroKey(fromMacOS: event.keyCode)
             guard retroKey != 0 else { 
-                LoggerService.debug(category: "InputCapture", "Unmapped key for DOS/ScummVM: keyCode=\(event.keyCode)")
+                // LoggerService.debug(category: "InputCapture", "Unmapped key for DOS/ScummVM: keyCode=\(event.keyCode)")
                 return 
             }
             
@@ -212,7 +212,7 @@ class FocusableMTKView: MTKView {
             }
             
             // Send properly mapped key event directly to core
-            LoggerService.debug(category: "InputCapture", "DOS/ScummVM sending keyUp: retroKey=\(retroKey), modifiers=\(modifiers), character=\(characterValue)")
+            // LoggerService.debug(category: "InputCapture", "DOS/ScummVM sending keyUp: retroKey=\(retroKey), modifiers=\(modifiers), character=\(characterValue)")
             XPCBridgeAdapter.shared.dispatchKeyboardEvent(
                 keycode: retroKey,
                 character: characterValue,
@@ -220,7 +220,7 @@ class FocusableMTKView: MTKView {
                 down: false
             )
         } else {
-            LoggerService.debug(category: "InputCapture", "Mapped keyUp event for standard core: keyCode=\(event.keyCode)")
+            // LoggerService.debug(category: "InputCapture", "Mapped keyUp event for standard core: keyCode=\(event.keyCode)")
             // For standard cores, use the normal mapped path
             if let rid = runner?.mapKey(event.keyCode) {
                 runner?.setKeyState(retroID: rid, pressed: false)

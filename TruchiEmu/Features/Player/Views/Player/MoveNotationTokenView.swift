@@ -29,7 +29,7 @@ struct MoveNotationTokenRow: View {
 
                 MoveNotationTokenView(
                     token: token,
-                    isHighlighted: isHighlighted || matchedStepCount == 0,
+                    isHighlighted: isHighlighted && matchedStepCount > 0,
                     compact: compact
                 )
             }
