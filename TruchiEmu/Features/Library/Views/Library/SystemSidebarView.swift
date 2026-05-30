@@ -514,4 +514,9 @@ enum LibraryFilter: Hashable, Identifiable {
         case .mameNonGames: return "mame-non-games"
         }
     }
+    
+    var isSystemView: Bool {
+        if case .system = self { return true }
+        return false
+    }
 }

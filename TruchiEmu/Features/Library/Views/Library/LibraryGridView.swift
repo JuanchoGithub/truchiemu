@@ -623,6 +623,7 @@ viewModel.updateFilters(
           isSelected: isSelected,
           isMultiSelected: selectedROMs.contains(rom.id),
           zoomLevel: continuousZoom,
+          filter: filter,
           onTap: { handleTap(on: rom, at: index) },
           contextMenu: { contextMenu(for: rom) }
         )
@@ -732,7 +733,7 @@ viewModel.updateFilters(
         List(selection: $selectedROM) {
             ForEach(Array(viewModel.displayedROMs.enumerated()), id: \.element.id) { index, rom in
                 let isSelected = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
-                GameListRowView(rom: rom, isSelected: isSelected, zoomLevel: zoomLevel)
+                GameListRowView(rom: rom, isSelected: isSelected, zoomLevel: zoomLevel, filter: filter)
                     .tag(rom)
                     .contentShape(Rectangle())
 .onTapGesture {

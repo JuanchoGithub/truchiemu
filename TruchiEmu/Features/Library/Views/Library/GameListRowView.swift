@@ -7,6 +7,7 @@ struct GameListRowView: View {
     let rom: ROM
     let isSelected: Bool
     let zoomLevel: Double
+    let filter: LibraryFilter?
     @Environment(\.colorScheme) private var colorScheme
     @State private var thumb: NSImage?
     @State private var isHovered = false
@@ -82,8 +83,17 @@ struct GameListRowView: View {
             
             // Left side: game info
             VStack(alignment: .leading, spacing: 2) {
-                Text(rom.displayName)
-                    .font(.system(size: titleFontSize, weight: .semibold, design: .rounded))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(rom.displayName)
+                        .font(.system(size: titleFontSize, weight: .semibold, design: .rounded))
+                    
+                    if let systemID = rom.systemID, systemID != "unknown", !(filter?.isSystemView ?? false) {
+                        Text(systemID.uppercased())
+                            .font(.system(size: subtitleFontSize * 0.8, weight: .regular, design: .rounded))
+                            .foregroundColor(AppColors.textMuted(colorScheme))
+                            .lineLimit(1)
+                    }
+                }
                 
                 // System name
                 if let sys = SystemDatabase.system(forID: rom.systemID ?? "") {

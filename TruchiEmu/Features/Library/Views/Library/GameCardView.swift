@@ -7,6 +7,7 @@ struct GameCardView: View {
     let isSelected: Bool
     let isMultiSelected: Bool
     let zoomLevel: Double
+    let filter: LibraryFilter?
     let onTap: () -> Void
     var contextMenu: (() -> AnyView)?
 
@@ -143,12 +144,21 @@ struct GameCardView: View {
             }
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(rom.displayName)
-                    .font(.system(size: titleFontSize, weight: .semibold, design: .rounded))
-                    .lineLimit(2)
-                    .multilineTextAlignment(.leading)
-                    .foregroundColor(titleColor)
-                    .frame(minHeight: titleLineHeight * 2, alignment: .top)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(rom.displayName)
+                        .font(.system(size: titleFontSize, weight: .semibold, design: .rounded))
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+                        .foregroundColor(titleColor)
+                    
+                    if let systemID = rom.systemID, systemID != "unknown", let _ = SystemDatabase.system(forID: systemID), !(filter?.isSystemView ?? false) {
+                        Text(systemID.uppercased())
+                            .font(.system(size: titleFontSize * 0.7, weight: .regular, design: .rounded))
+                            .foregroundColor(AppColors.textMuted(colorScheme))
+                            .lineLimit(1)
+                    }
+                }
+                .frame(minHeight: titleLineHeight * 3, alignment: .top)
 
                 if isHiddenItem, let mameType = rom.mameRomType {
                     HStack(spacing: 4) {
