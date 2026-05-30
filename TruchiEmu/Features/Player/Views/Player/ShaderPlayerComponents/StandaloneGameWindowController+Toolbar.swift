@@ -11,15 +11,13 @@ extension StandaloneGameWindowController {
     }
 
     @MainActor
-    private func showToolbar() {
-        if !isToolbarVisible {
-            isToolbarVisible = true
-            toolbarView?.alphaValue = 0
-            NSAnimationContext.runAnimationGroup { context in
-                context.duration = 0.3
-                context.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-                toolbarView?.animator().alphaValue = 1
-            }
+    func showToolbar() {
+        toolbarView?.alphaValue = 0
+        isToolbarVisible = true
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = 0.3
+            context.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+            toolbarView?.animator().alphaValue = 1
         }
         scheduleHideToolbar()
     }
