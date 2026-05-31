@@ -368,30 +368,37 @@ struct MoveEntryRow: View {
                 compact: false
             )
 
-            VStack(alignment: .leading, spacing: 1) {
+        VStack(alignment: .leading, spacing: 1) {
+            if !move.name.isEmpty {
                 Text(move.name)
                     .font(.system(size: 9, weight: .semibold))
                     .foregroundColor(isMatched ? AppColors.brandAccent : .white)
-                HStack(spacing: 2) {
-                    if move.isAir {
-                        Text(verbatim: "AIR")
-                            .font(.system(size: 6, weight: .bold))
-                            .foregroundColor(.white.opacity(0.4))
-                    }
-                    if move.isCharge {
-                        Text(verbatim: "CHARGE")
-                            .font(.system(size: 6, weight: .bold))
-                            .foregroundColor(.yellow.opacity(0.6))
-                    }
-                    if move.isMotion360 {
-                        Text(verbatim: "360")
-                            .font(.system(size: 6, weight: .bold))
-                            .foregroundColor(.orange.opacity(0.6))
-                    }
-                    Text(move.categoryLabel)
-                        .font(.system(size: 6))
-                        .foregroundColor(.white.opacity(0.35))
+            }
+            HStack(spacing: 2) {
+                if move.isAir {
+                    Text(verbatim: "AIR")
+                        .font(.system(size: 6, weight: .bold))
+                        .foregroundColor(.white.opacity(0.4))
                 }
+                if move.isCharge {
+                    Text(verbatim: "CHARGE")
+                        .font(.system(size: 6, weight: .bold))
+                        .foregroundColor(.yellow.opacity(0.6))
+                }
+                if move.isMotion360 {
+                    Text(verbatim: "360")
+                        .font(.system(size: 6, weight: .bold))
+                        .foregroundColor(.orange.opacity(0.6))
+                }
+                if let cond = move.condition {
+                    Text(cond)
+                        .font(.system(size: 6))
+                        .foregroundColor(.white.opacity(0.45))
+                }
+                Text(move.categoryLabel)
+                    .font(.system(size: 6))
+                    .foregroundColor(.white.opacity(0.35))
+            }
             }
             .padding(.leading, 6)
         }

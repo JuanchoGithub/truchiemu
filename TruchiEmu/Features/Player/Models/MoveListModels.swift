@@ -14,6 +14,7 @@ struct FightDataGame: Codable {
     let commonCommands: [FightDataMove]?
     let commonNotes: [String]?
     let cheatNotes: [String]?
+    let howToPlayNotes: [String]?
     let characters: [FightDataCharacter]
     let systemControlMappings: [String: [String: String]]?
 }
@@ -42,36 +43,98 @@ struct FightDataCharacter: Codable, Identifiable {
     let combos: [String]?
 }
 
-struct ParsedInput: Codable {
-    let raw: String
-    let directions: [[Int]]
-    let buttons: [[String]]
-    let charge: Bool
-    let chargeDirection: Int?
-    let air: Bool
-    let rapidPress: Bool
-    let holdButton: Bool
-    let followUp: Bool
-    let neutral: Bool
-    let motion360: Bool
+struct FightDataMove: Codable, Identifiable {
+    var id: String { "\(category)_\(name ?? "")_\(input ?? "")" }
+    let category: String
+    let name: String?
+    let input: String?
+    let hitLevels: String?
+    let condition: String?
+
+    var hasInputData: Bool { input != nil && !input!.isEmpty }
 }
 
-struct FightDataMove: Codable, Identifiable {
-    var id: String { "\(category)_\(name)_\(input ?? "")" }
-    let category: String
-    let name: String
-    let input: String?
-    let parsedInput: ParsedInput?
+enum HitLevel: String, Equatable, CaseIterable {
+    case high = "h"
+    case mid = "m"
+    case low = "l"
+    case midCrouching = "M"
+    case lowCrouching = "L"
+    case ground = "g"
+    case unblockable = "!"
+    case none = "-"
 
-    var inputDirections: [[Int]] { parsedInput?.directions ?? [] }
-    var inputButtons: [[String]] { parsedInput?.buttons ?? [] }
-    var isAir: Bool { parsedInput?.air ?? false }
-    var isCharge: Bool { parsedInput?.charge ?? false }
-    var chargeDirectionValue: Int? { parsedInput?.chargeDirection }
-    var isMotion360: Bool { parsedInput?.motion360 ?? false }
-    var isRapidPress: Bool { parsedInput?.rapidPress ?? false }
-    var isHoldButton: Bool { parsedInput?.holdButton ?? false }
-    var hasInputData: Bool { input != nil || parsedInput != nil }
+    var color: String {
+        switch self {
+        case .high: return "red"
+        case .mid: return "blue"
+        case .low: return "green"
+        case .midCrouching: return "purple"
+        case .lowCrouching: return "teal"
+        case .ground: return "brown"
+        case .unblockable: return "orange"
+        case .none: return "gray"
+        }
+    }
+
+    var label: String {
+        switch self {
+        case .high: return "H"
+        case .mid: return "M"
+        case .low: return "L"
+        case .midCrouching: return "MC"
+        case .lowCrouching: return "LC"
+        case .ground: return "G"
+        case .unblockable: return "U"
+        case .none: return "-"
+        }
+    }
+
+    static func parse(_ string: String) -> [HitLevel] {
+        string.compactMap { HitLevel(rawValue: String($0)) }
+    }
+}
+
+struct ParsedStep: Equatable {
+    var direction: Int?
+    let buttons: [String]
+    let isCharge: Bool
+    let isHold: Bool
+    let isRelease: Bool
+
+    static func == (lhs: ParsedStep, rhs: ParsedStep) -> Bool {
+        lhs.direction == rhs.direction && lhs.buttons == rhs.buttons && lhs.isCharge == rhs.isCharge && lhs.isHold == rhs.isHold && lhs.isRelease == rhs.isRelease
+    }
+}
+
+struct ResolvedMove: Identifiable {
+    let id: String
+    let name: String
+    let categoryLabel: String
+    let notation: String
+    let tokens: [NotationToken]
+    let hitLevels: [HitLevel]
+    let condition: String?
+    let parsedSteps: [[ParsedStep]]
+    let isAir: Bool
+    let isCharge: Bool
+    let isMotion360: Bool
+    let matchCount: Int
+    let totalSteps: Int
+    let matchedStepCount: Int
+
+    var inputDirections: [[Int]] {
+        guard let first = parsedSteps.first else { return [] }
+        return first.compactMap { step in
+            if let dir = step.direction { return [dir] }
+            return nil
+        }
+    }
+
+    var inputButtons: [[String]] {
+        guard let first = parsedSteps.first else { return [] }
+        return first.filter { !$0.buttons.isEmpty }.map { $0.buttons }
+    }
 }
 
 enum FightDataDirection: Int, Codable, CaseIterable {
@@ -99,50 +162,32 @@ enum FightDataDirection: Int, Codable, CaseIterable {
         }
     }
 
-        static func fromRetroButtons(held: Set<RetroButton>) -> FightDataDirection? {
-            let hasUp = held.contains(.up)
-            let hasDown = held.contains(.down)
-            let hasLeft = held.contains(.left)
-            let hasRight = held.contains(.right)
+    static func fromRetroButtons(held: Set<RetroButton>) -> FightDataDirection? {
+        let hasUp = held.contains(.up)
+        let hasDown = held.contains(.down)
+        let hasLeft = held.contains(.left)
+        let hasRight = held.contains(.right)
+        if hasUp && hasRight { return .upRight }
+        if hasUp && hasLeft { return .upLeft }
+        if hasDown && hasRight { return .downRight }
+        if hasDown && hasLeft { return .downLeft }
+        if hasUp { return .up }
+        if hasDown { return .down }
+        if hasLeft { return .left }
+        if hasRight { return .right }
+        return nil
+    }
 
-            if hasUp && hasRight { return .upRight }
-            if hasUp && hasLeft { return .upLeft }
-            if hasDown && hasRight { return .downRight }
-            if hasDown && hasLeft { return .downLeft }
-            if hasUp { return .up }
-            if hasDown { return .down }
-            if hasLeft { return .left }
-            if hasRight { return .right }
-            return nil
+    func isSubdirection(of parent: FightDataDirection) -> Bool {
+        switch (self, parent) {
+        case (.up, .upRight), (.up, .upLeft),
+             (.down, .downRight), (.down, .downLeft),
+             (.left, .upLeft), (.left, .downLeft),
+             (.right, .upRight), (.right, .downRight):
+            return true
+        default: return false
         }
-
-        func isSubdirection(of parent: FightDataDirection) -> Bool {
-            switch (self, parent) {
-            case (.up, .upRight), (.up, .upLeft),
-                 (.down, .downRight), (.down, .downLeft),
-                 (.left, .upLeft), (.left, .downLeft),
-                 (.right, .upRight), (.right, .downRight):
-                return true
-            default:
-                return false
-            }
-        }
-}
-
-struct ResolvedMove: Identifiable {
-    let id: String
-    let name: String
-    let categoryLabel: String
-    let notation: String
-    let tokens: [NotationToken]
-    let inputDirections: [[Int]]
-    let inputButtons: [[String]]
-    let isAir: Bool
-    let isCharge: Bool
-    let isMotion360: Bool
-    let matchCount: Int
-    let totalSteps: Int
-    let matchedStepCount: Int
+    }
 }
 
 enum MotionType: Equatable {
@@ -181,6 +226,8 @@ enum NotationToken: Equatable {
     case charge(FightDataDirection?)
     case holdButton
     case rapidPress
+    case hitLevel(HitLevel)
+    case alternative
 }
 
 struct InputSequenceStep: Equatable {

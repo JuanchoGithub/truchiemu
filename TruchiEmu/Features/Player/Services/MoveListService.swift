@@ -103,12 +103,16 @@ class MoveListService: ObservableObject {
             .replacingOccurrences(of: "_", with: "")
     }
 
-    func resolveCategoryLabel(_ categoryKey: String) -> String {
-        if let label = categoryLabels[categoryKey] {
+    func resolveCategoryLabel(_ categoryKey: String, gameCategories: [String: String] = [:]) -> String {
+        let labels = gameCategories.isEmpty ? categoryLabels : gameCategories
+        if let label = labels[categoryKey] {
             return label
         }
-        return categoryKey
-            .replacingOccurrences(of: "_", with: "")
+        let stripped = categoryKey.replacingOccurrences(of: "_", with: "")
+        if let label = labels[stripped] {
+            return label
+        }
+        return stripped
     }
 
     private func applyGameData(_ game: FightDataGame) {

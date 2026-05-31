@@ -655,7 +655,6 @@ struct MoveDataMovesList: View {
     let characterName: String
     let isCustom: Bool
     @State private var fightDataGame: FightDataGame?
-    @State private var showMoveEditor = false
     @State private var editingMove: FightDataMove? = nil
     @State private var editingMoveIsCustom: Bool = false
     @State private var editingMoveId: String? = nil
@@ -724,7 +723,6 @@ struct MoveDataMovesList: View {
                                         editingMove = move
                                         editingMoveIsCustom = true
                                         editingMoveId = entry.moveId
-                                        showMoveEditor = true
                                     }
                                 } label: {
                                     Label(loc.localized("settings.moveList.editor.editMove"), systemImage: "pencil")
@@ -761,7 +759,6 @@ struct MoveDataMovesList: View {
                                     editingMove = move
                                     editingMoveIsCustom = true
                                     editingMoveId = entry.moveId
-                                    showMoveEditor = true
                                 }
                             } label: {
                                 Label(loc.localized("settings.moveList.editor.editMove"), systemImage: "pencil")
@@ -783,7 +780,7 @@ struct MoveDataMovesList: View {
                     let sortedCategories = grouped.keys.sorted()
 
                     ForEach(sortedCategories, id: \.self) { category in
-                        let catLabel = fightDataGame?.categories[category] ?? category.replacingOccurrences(of: "_@", with: "").replacingOccurrences(of: "_", with: "")
+                        let catLabel = MoveListService.shared.resolveCategoryLabel(category, gameCategories: fightDataGame?.categories ?? [:])
                         Section(catLabel) {
                             ForEach(grouped[category] ?? [], id: \.id) { move in
                                 moveRow(move: move)
@@ -799,10 +796,9 @@ struct MoveDataMovesList: View {
                 }
 
                 Button(action: {
-                    editingMove = nil
+                    editingMove = FightDataMove(category: "_@special", name: "", input: nil, hitLevels: nil, condition: nil)
                     editingMoveIsCustom = true
                     editingMoveId = nil
-                    showMoveEditor = true
                 }) {
                     Label(loc.localized("settings.moveList.editor.addMove"), systemImage: "plus.circle")
                         .font(.caption)
@@ -815,10 +811,9 @@ struct MoveDataMovesList: View {
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button(action: {
-                    editingMove = nil
+                    editingMove = FightDataMove(category: "_@special", name: "", input: nil, hitLevels: nil, condition: nil)
                     editingMoveIsCustom = true
                     editingMoveId = nil
-                    showMoveEditor = true
                 }) {
                     Image(systemName: "plus.circle")
                 }
@@ -828,32 +823,32 @@ struct MoveDataMovesList: View {
             storageService.loadIfNeeded()
             loadGameData()
         }
-        .sheet(isPresented: $showMoveEditor, onDismiss: {
-            editingMove = nil
+        .sheet(item: $editingMove, onDismiss: {
             editingMoveId = nil
-        }) {
-            MoveEditorView(
-                gameName: gameName,
-                characterName: characterName,
-                editingMove: editingMove,
-                isCustom: editingMoveIsCustom,
-        onSave: { move in
+            editingMoveIsCustom = false
+        }) { move in
+        MoveEditorView(
+            gameName: gameName,
+            characterName: characterName,
+            editingMove: move,
+            isCustom: editingMoveIsCustom,
+            gameCategories: fightDataGame?.categories ?? [:],
+            onSave: { savedMove in
             if let existingId = editingMoveId, editingMoveIsCustom {
-                if let jsonData = try? JSONEncoder().encode(move), let jsonString = String(data: jsonData, encoding: .utf8) {
+                if let jsonData = try? JSONEncoder().encode(savedMove), let jsonString = String(data: jsonData, encoding: .utf8) {
                     storageService.updateCustomMove(gameName: gameName, characterName: characterName, moveId: existingId, customMoveJSON: jsonString)
                 }
             } else if let existingId = editingMoveId, !editingMoveIsCustom {
-                if let jsonData = try? JSONEncoder().encode(move), let jsonString = String(data: jsonData, encoding: .utf8) {
+                if let jsonData = try? JSONEncoder().encode(savedMove), let jsonString = String(data: jsonData, encoding: .utf8) {
                     storageService.saveOverride(gameName: gameName, characterName: characterName, moveId: existingId, overrideJSON: jsonString)
                 }
             } else {
-                saveNewMove(move)
+                saveNewMove(savedMove)
             }
-            showMoveEditor = false
         },
                 onDelete: editingMoveIsCustom && editingMoveId != nil ? {
                     storageService.deleteCustomMove(gameName: gameName, characterName: characterName, moveId: editingMoveId!)
-                    showMoveEditor = false
+                    editingMove = nil
                 } : nil
             )
             .frame(minWidth: 550, minHeight: 550)
@@ -941,7 +936,6 @@ struct MoveDataMovesList: View {
                     editingMove = move
                     editingMoveIsCustom = false
                     editingMoveId = move.id
-                    showMoveEditor = true
                 } label: {
                     Label(loc.localized("settings.moveList.editor.editMove"), systemImage: "pencil")
                 }
@@ -980,7 +974,6 @@ struct MoveDataMovesList: View {
                 editingMove = move
                 editingMoveIsCustom = false
                 editingMoveId = move.id
-                showMoveEditor = true
             } label: {
                 Label(loc.localized("settings.moveList.editor.editMove"), systemImage: "pencil")
             }
@@ -990,14 +983,50 @@ struct MoveDataMovesList: View {
     @ViewBuilder
     private func moveRowContent(move: FightDataMove) -> some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(move.name)
+            Text(move.name ?? move.input ?? "")
                 .font(.system(size: 12, weight: .medium))
             if let input = move.input, !input.isEmpty {
-                Text(input)
-                    .font(.system(size: 11, design: .monospaced))
-                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                let allTokens = buildMoveNotationTokens(input)
+                if !allTokens.isEmpty {
+                    MoveNotationTokenRow(tokens: allTokens, compact: true)
+                }
             }
         }
+    }
+
+    private func buildMoveNotationTokens(_ input: String) -> [NotationToken] {
+        let sequences = InputParser.parse(input)
+        var tokens: [NotationToken] = []
+        for (idx, seq) in sequences.enumerated() {
+            if idx > 0 { tokens.append(.alternative) }
+            for step in seq {
+                if step.direction == 8 && step.buttons.isEmpty && !step.isCharge {
+                    tokens.append(.air)
+                    continue
+                }
+                if let dir = step.direction, let fdDir = FightDataDirection(rawValue: dir) {
+                    tokens.append(.direction(fdDir))
+                }
+                for (bi, btn) in step.buttons.enumerated() {
+                    if bi > 0 { tokens.append(.separator) }
+                    tokens.append(.button(buttonTokenType(for: btn)))
+                }
+            }
+        }
+        return tokens
+    }
+
+    private func buttonTokenType(for key: String) -> ButtonTokenType {
+        if key == "^E" || key == "^F" || key == "^G" || key == "_P" {
+            let strength: ButtonStrength = key == "^E" ? .low : key == "^F" ? .medium : key == "^G" ? .high : .low
+            return .punch(strength: strength)
+        }
+        if key == "^H" || key == "^I" || key == "^J" || key == "_K" {
+            let strength: ButtonStrength = key == "^H" ? .low : key == "^I" ? .medium : key == "^J" ? .high : .low
+            return .kick(strength: strength)
+        }
+        if key == "_G" { return .grapple }
+        return .generic(label: key.replacingOccurrences(of: "^", with: "").replacingOccurrences(of: "_", with: ""))
     }
 
     private func loadGameData() {

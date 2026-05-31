@@ -134,16 +134,26 @@ struct KeyboardMapping: Codable {
             base[.r1] = 14
 
         case "mame", "fba", "arcade":
-            base[.a] = 6
-            base[.b] = 7
-            base[.x] = 8
-            base[.y] = 9
-            base[.l1] = 12
-            base[.r1] = 14
-            base[.coin1] = 15
-            base[.start1] = 17
-            base[.coin2] = 16
-            base[.start2] = 32
+            base[.a] = 0      // A
+            base[.b] = 1      // S
+            base[.x] = 2      // D
+            base[.y] = 3      // F
+            base[.c] = 8      // C
+            base[.z] = 9      // V
+            base[.l1] = 7     // X
+            base[.r1] = 6     // Z
+            base[.l2] = 12    // Q
+            base[.r2] = 13    // W
+            base[.l3] = 57    // Caps Lock (Service)
+            base[.r3] = 48    // Tab (MAME UI)
+            base[.coin1] = 18  // 1
+            base[.start1] = 19 // 2
+            base[.coin2] = 20  // 3
+            base[.start2] = 21 // 4
+            base[.coin3] = 23  // 5
+            base[.start3] = 22 // 6
+            base[.coin4] = 26  // 7
+            base[.start4] = 28 // 8
 
         case "dos":
             base[.a] = 0

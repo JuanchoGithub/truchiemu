@@ -237,16 +237,15 @@ class MoveListOverlayViewModel: ObservableObject {
         if directions.isEmpty && buttons.isEmpty {
             moveSlotOrder.removeAll()
             allMoves.sort { moveRank($0, isFavorite: favoriteIds.contains($0.id), hasInput: false) > moveRank($1, isFavorite: favoriteIds.contains($1.id), hasInput: false) }
-            filteredMoves = allMoves.map { move in
-                ResolvedMove(
-                    id: move.id, name: move.name, categoryLabel: move.categoryLabel,
-                    notation: move.notation, tokens: move.tokens,
-                    inputDirections: move.inputDirections,
-                    inputButtons: move.inputButtons, isAir: move.isAir, isCharge: move.isCharge,
-                    isMotion360: move.isMotion360,
-                    matchCount: 0, totalSteps: move.totalSteps,
-                    matchedStepCount: 0
-                )
+        filteredMoves = allMoves.map { move in
+            ResolvedMove(
+                id: move.id, name: move.name, categoryLabel: move.categoryLabel,
+                notation: move.notation, tokens: move.tokens,
+                hitLevels: move.hitLevels, condition: move.condition,
+                parsedSteps: move.parsedSteps, isAir: move.isAir, isCharge: move.isCharge,
+                isMotion360: move.isMotion360,
+                matchCount: 0, totalSteps: move.totalSteps, matchedStepCount: 0
+            )
             }.prefix(maxMovesToShow).map { $0 }
             matchedMoveName = nil
             matchedDirectionCount = 0
@@ -300,15 +299,15 @@ class MoveListOverlayViewModel: ObservableObject {
         filteredMoves = moveSlotOrder.compactMap { id -> ResolvedMove? in
             guard let move = moveById[id] else { return nil }
             let mSteps = computeMoveMatchedSteps(move: move, directions: directions, buttons: buttons)
-        return ResolvedMove(
-            id: move.id, name: move.name, categoryLabel: move.categoryLabel,
-            notation: move.notation, tokens: move.tokens,
-            inputDirections: move.inputDirections,
-            inputButtons: move.inputButtons, isAir: move.isAir, isCharge: move.isCharge,
-            isMotion360: move.isMotion360,
-            matchCount: move.matchCount, totalSteps: move.totalSteps,
-            matchedStepCount: mSteps
-        )
+            return ResolvedMove(
+                id: move.id, name: move.name, categoryLabel: move.categoryLabel,
+                notation: move.notation, tokens: move.tokens,
+                hitLevels: move.hitLevels, condition: move.condition,
+                parsedSteps: move.parsedSteps, isAir: move.isAir, isCharge: move.isCharge,
+                isMotion360: move.isMotion360,
+                matchCount: move.matchCount, totalSteps: move.totalSteps,
+                matchedStepCount: mSteps
+            )
         }
     }
 
@@ -391,138 +390,78 @@ class MoveListOverlayViewModel: ObservableObject {
     }
 
     private func resolveMove(_ move: FightDataMove, categoryLabels: [String: String]) -> ResolvedMove {
-        let catLabel = categoryLabels[move.category] ?? move.category
+        let catLabel = moveListService.resolveCategoryLabel(move.category)
+        let parsedSteps = InputParser.parse(move.input ?? "")
         let tokens = buildTokens(for: move)
-        let notation = fallbackNotationString(for: move)
+        let notation = move.input?.replacingOccurrences(of: "_", with: "") ?? ""
+        let hl = move.hitLevels.map { HitLevel.parse($0) } ?? []
+
+        let isAir = parsedSteps.first?.first?.direction == 8 && parsedSteps.first?.first?.buttons.isEmpty == true
+        let isCharge = parsedSteps.first?.contains(where: { $0.isCharge }) ?? false
+        let isMotion360 = detectMotion360(parsedSteps)
+        let totalSteps = parsedSteps.first?.count ?? 0
 
         return ResolvedMove(
-            id: move.id, name: move.name, categoryLabel: catLabel,
+            id: move.id, name: move.name ?? move.input ?? "", categoryLabel: catLabel,
             notation: notation, tokens: tokens,
-            inputDirections: move.inputDirections,
-            inputButtons: move.inputButtons, isAir: move.isAir, isCharge: move.isCharge,
-            isMotion360: move.isMotion360,
-            matchCount: 0, totalSteps: move.inputDirections.count + move.inputButtons.count,
-            matchedStepCount: 0
+            hitLevels: hl, condition: move.condition,
+            parsedSteps: parsedSteps,
+            isAir: isAir, isCharge: isCharge, isMotion360: isMotion360,
+            matchCount: 0, totalSteps: totalSteps, matchedStepCount: 0
         )
     }
 
-    private func buildTokens(for move: FightDataMove) -> [NotationToken] {
-        if let pi = move.parsedInput, !pi.directions.isEmpty || !pi.buttons.isEmpty {
-            return buildTokensFromParsedInput(pi)
-        }
-        return buildTokensFromString(move.input ?? "")
+    private func detectMotion360(_ stepSequences: [[ParsedStep]]) -> Bool {
+        guard let steps = stepSequences.first else { return false }
+        let dirs = steps.compactMap { $0.direction }
+        return dirs.contains { ![5].contains($0) } && dirs.count >= 7
     }
 
-    private func buildTokensFromParsedInput(_ pi: ParsedInput) -> [NotationToken] {
+    private func buildTokens(for move: FightDataMove) -> [NotationToken] {
+        buildTokensFromString(move.input ?? "", hitLevels: move.hitLevels)
+    }
+
+    private func buildTokensFromString(_ input: String, hitLevels: String? = nil) -> [NotationToken] {
+        if input.isEmpty { return [] }
+
         var tokens: [NotationToken] = []
+        let parsedSequences = InputParser.parse(input)
+        let hitLevelList = hitLevels.map { HitLevel.parse($0) } ?? []
 
-        if pi.air { tokens.append(.air) }
+        for (seqIndex, sequence) in parsedSequences.enumerated() {
+            if seqIndex > 0 {
+                tokens.append(.alternative)
+            }
 
-        if pi.charge {
-            let chargeDir: FightDataDirection? = pi.chargeDirection.flatMap { FightDataDirection(rawValue: $0) }
-            tokens.append(.charge(chargeDir))
-        }
-
-        for dirStep in pi.directions {
-            if let motion = detectMotion(dirStep) {
-                tokens.append(.motion(motion))
-            } else if dirStep.count == 1, let dir = FightDataDirection(rawValue: dirStep[0]) {
-                tokens.append(.direction(dir))
-            } else {
-                for d in dirStep {
-                    if let dir = FightDataDirection(rawValue: d) {
+            for (stepIndex, step) in sequence.enumerated() {
+                if step.isCharge, let dirVal = step.direction, let dir = FightDataDirection(rawValue: dirVal) {
+                    tokens.append(.charge(dir))
+                } else if step.direction == 8 && step.buttons.isEmpty && tokens.isEmpty {
+                    tokens.append(.air)
+                } else if let dirVal = step.direction, let dir = FightDataDirection(rawValue: dirVal) {
+                    if step.direction != 8 || !tokens.isEmpty {
                         tokens.append(.direction(dir))
                     }
                 }
+
+                if !step.buttons.isEmpty {
+                    for (i, key) in step.buttons.enumerated() {
+                        if i > 0 { tokens.append(.separator) }
+                        tokens.append(mapButtonToToken(key))
+                    }
+                }
+
+                if step.isHold {
+                    tokens.append(.holdButton)
+                }
+
+                if seqIndex == 0, stepIndex < hitLevelList.count, hitLevelList[stepIndex] != .none {
+                    tokens.append(.hitLevel(hitLevelList[stepIndex]))
+                }
             }
-        }
-
-        for (stepIndex, btnStep) in pi.buttons.enumerated() {
-            let isLastButtonStep = stepIndex == pi.buttons.count - 1
-            let btnTokens = buildButtonTokens(btnStep, applyHold: isLastButtonStep && pi.holdButton)
-
-            for (i, btnToken) in btnTokens.enumerated() {
-                if i > 0 { tokens.append(.separator) }
-                tokens.append(btnToken)
-            }
-        }
-
-    if pi.rapidPress {
-        tokens.append(.rapidPress)
-    }
-
-    if pi.motion360 {
-        tokens.insert(.motion(.fullCircle(direction: .right)), at: pi.air ? 1 : 0)
-    }
-
-    if pi.neutral {
-            tokens.append(.wait)
         }
 
         return tokens
-    }
-
-    private func detectMotion(_ dirStep: [Int]) -> MotionType? {
-        let quarterCirclePatterns: [([Int], FightDataDirection)] = [
-            ([2, 3, 6], .down),
-            ([2, 1, 4], .down),
-            ([8, 9, 6], .up),
-            ([8, 7, 4], .up),
-        ]
-
-        let halfCirclePatterns: [([Int], FightDataDirection)] = [
-            ([4, 1, 2, 3, 6], .left),
-            ([6, 3, 2, 1, 4], .right),
-            ([4, 7, 8, 9, 6], .left),
-            ([6, 9, 8, 7, 4], .right),
-        ]
-
-        for (pattern, from) in quarterCirclePatterns where dirStep == pattern {
-            return .quarterCircle(from: from)
-        }
-
-        for (pattern, from) in halfCirclePatterns where dirStep == pattern {
-            return .halfCircle(from: from)
-        }
-
-        return nil
-    }
-
-    private func buildButtonTokens(_ btnStep: [String], applyHold: Bool) -> [NotationToken] {
-        guard !btnStep.isEmpty else { return [] }
-
-        if btnStep.count == 1 {
-            let token = mapButtonToToken(btnStep[0])
-            if applyHold {
-                switch token {
-                case .button:
-                    return [token, .holdButton]
-                default:
-                    return [token]
-                }
-            }
-            return [token]
-        }
-
-        let isPunchGroup = isAllSameGroup(btnStep, groupPrefix: "_P")
-        let isKickGroup = isAllSameGroup(btnStep, groupPrefix: "_K")
-
-        if isPunchGroup {
-            let strength = resolveGroupStrength(btnStep)
-            return applyHold ? [.button(.punch(strength: strength)), .holdButton] : [.button(.punch(strength: strength))]
-        }
-        if isKickGroup {
-            let strength = resolveGroupStrength(btnStep)
-            return applyHold ? [.button(.kick(strength: strength)), .holdButton] : [.button(.kick(strength: strength))]
-        }
-
-        var result: [NotationToken] = []
-        for (i, key) in btnStep.enumerated() {
-            if i > 0 { result.append(.separator) }
-            result.append(mapButtonToToken(key))
-        }
-        if applyHold { result.append(.holdButton) }
-        return result
     }
 
     private func mapButtonToToken(_ key: String) -> NotationToken {
@@ -575,160 +514,6 @@ class MoveListOverlayViewModel: ObservableObject {
         }
     }
 
-    private func resolveGroupStrength(_ keys: [String]) -> ButtonStrength {
-        if keys.count >= 3 { return .high }
-        if keys.count == 2 { return .medium }
-        return .low
-    }
-
-    private func isAllSameGroup(_ keys: [String], groupPrefix: String) -> Bool {
-        let controlGroups = moveListService.currentGameData?.controlGroups ?? [:]
-        guard let group = controlGroups[groupPrefix] else { return false }
-        return keys.allSatisfy { group.contains($0) }
-    }
-
-    private func buildTokensFromString(_ input: String) -> [NotationToken] {
-        var tokens: [NotationToken] = []
-        var remaining = input
-
-        remaining = remaining.replacingOccurrences(of: "_O", with: "⏳")
-        remaining = remaining.replacingOccurrences(of: "_^", with: "↑")
-
-        let dirMap: [String: FightDataDirection] = [
-            "_1": .downLeft, "_2": .down, "_3": .downRight,
-            "_4": .left, "_5": .neutral, "_6": .right,
-            "_7": .upLeft, "_8": .up, "_9": .upRight,
-        ]
-
-        let chargeDirMap: [String: FightDataDirection] = [
-            "^1": .downLeft, "^2": .down, "^3": .downRight,
-            "^4": .left, "^6": .right,
-            "^7": .upLeft, "^8": .up, "^9": .upRight,
-        ]
-
-        for (key, dir) in chargeDirMap.sorted(by: { $0.key.count > $1.key.count }) {
-            remaining = remaining.replacingOccurrences(of: key, with: "⏳\(dir.symbol)")
-        }
-
-        remaining = remaining.replacingOccurrences(of: "_+", with: "+")
-        remaining = remaining.replacingOccurrences(of: "_", with: "")
-
-        let abbr = moveListService.controlAbbreviations
-        let sortedAbbrKeys = abbr.keys.sorted(by: { $0.count > $1.count })
-
-        var i = remaining.startIndex
-        while i < remaining.endIndex {
-            let char = remaining[i]
-
-            if char == " " {
-                i = remaining.index(after: i)
-                continue
-            }
-
-            if char == "⏳" {
-                i = remaining.index(after: i)
-                if i < remaining.endIndex {
-                    let nextChar = remaining[i]
-                    let dirSymbols: [Character: FightDataDirection] = [
-                        "↙": .downLeft, "↓": .down, "↘": .downRight,
-                        "←": .left, "→": .right,
-                        "↖": .upLeft, "↑": .up, "↗": .upRight,
-                    ]
-                    if let dir = dirSymbols[nextChar] {
-                        tokens.append(.charge(dir))
-                        i = remaining.index(after: i)
-                        continue
-                    }
-                }
-                tokens.append(.holdButton)
-                continue
-            }
-
-            if char == "+" {
-                if let last = tokens.last, case .separator = last {} else {
-                    tokens.append(.separator)
-                }
-                i = remaining.index(after: i)
-                continue
-            }
-
-            if char == "⚡" {
-                tokens.append(.rapidPress)
-                i = remaining.index(after: i)
-                continue
-            }
-
-            if char == "↑" && !tokens.contains(where: { if case .direction = $0 { return true } else { return false } }) {
-                tokens.append(.air)
-                i = remaining.index(after: i)
-                continue
-            }
-
-            let dirSymbols: [Character: FightDataDirection] = [
-                "↙": .downLeft, "↓": .down, "↘": .downRight,
-                "←": .left, "●": .neutral, "→": .right,
-                "↖": .upLeft, "↑": .up, "↗": .upRight,
-            ]
-
-            if let dir = dirSymbols[char], char != "●" {
-                tokens.append(.direction(dir))
-                i = remaining.index(after: i)
-                continue
-            }
-
-            if char == "●" {
-                tokens.append(.wait)
-                i = remaining.index(after: i)
-                continue
-            }
-
-            var buttonBuf = ""
-            while i < remaining.endIndex {
-                let c = remaining[i]
-                if c == " " || c == "+" || c == "⏳" || dirSymbols[c] != nil || c == "⚡" { break }
-                buttonBuf.append(c)
-                i = remaining.index(after: i)
-            }
-
-            if !buttonBuf.isEmpty {
-                tokens.append(mapButtonToTokenByAbbr(buttonBuf, abbr: abbr))
-            }
-        }
-
-        return tokens
-    }
-
-    private func mapButtonToTokenByAbbr(_ label: String, abbr: [String: String]) -> NotationToken {
-        for (key, abbrLabel) in abbr where abbrLabel == label {
-            return mapButtonToToken(key)
-        }
-
-        let lower = label.lowercased()
-        if lower.contains("p") && lower.count <= 3 {
-            let hasPlus = label.hasSuffix("+")
-            let hasMinus = label.hasSuffix("-")
-            if hasPlus { return .button(.punch(strength: .high)) }
-            if hasMinus { return .button(.punch(strength: .low)) }
-            return .button(.punch(strength: .low))
-        }
-        if lower.contains("k") && lower.count <= 3 {
-            let hasPlus = label.hasSuffix("+")
-            let hasMinus = label.hasSuffix("-")
-            if hasPlus { return .button(.kick(strength: .high)) }
-            if hasMinus { return .button(.kick(strength: .low)) }
-            return .button(.kick(strength: .low))
-        }
-
-        return .button(.generic(label: label))
-    }
-
-    private func fallbackNotationString(for move: FightDataMove) -> String {
-        if let pi = move.parsedInput {
-            return pi.raw.replacingOccurrences(of: "_", with: "")
-        }
-        return move.input ?? ""
-    }
-
     private func recordAttempt(directions: [FightDataDirection], buttons: [Set<String>], character: FightDataCharacter) {
         let allMoves = collectAllMoves(for: character)
         let bestMatches = allMoves.filter { move in
@@ -751,9 +536,8 @@ class MoveListOverlayViewModel: ObservableObject {
             rank += 8
         }
 
-        if let firstDir = move.inputDirections.first,
-           let firstVal = firstDir.first,
-           let startingDir = FightDataDirection(rawValue: firstVal) {
+        if let firstDir = move.parsedSteps.first?.first?.direction,
+               let startingDir = FightDataDirection(rawValue: firstDir) {
             let dirAttempts = directionAttemptCounts[startingDir] ?? 0
             let totalDirAttempts = directionAttemptCounts.values.reduce(0, +)
             if totalDirAttempts > 0 {
@@ -773,7 +557,7 @@ class MoveListOverlayViewModel: ObservableObject {
     }
 
     private func matchesInputSequence(move: ResolvedMove, directions: [FightDataDirection], buttons: [Set<String>]) -> Bool {
-        guard !move.inputDirections.isEmpty else { return false }
+        guard let firstSequence = move.parsedSteps.first, !firstSequence.isEmpty else { return false }
 
         let moveDirInts = move.inputDirections
         var dirIndex = 0

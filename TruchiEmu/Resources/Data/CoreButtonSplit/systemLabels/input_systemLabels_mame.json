@@ -42,6 +42,18 @@
     "r2": {
       "label": "Button 8"
     },
+    "coin3": {
+      "label": "Coin 3"
+    },
+    "coin4": {
+      "label": "Coin 4"
+    },
+    "start3": {
+      "label": "Start 3"
+    },
+    "start4": {
+      "label": "Start 4"
+    },
     "l3": {
       "label": "Service"
     },

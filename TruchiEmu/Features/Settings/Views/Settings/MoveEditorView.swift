@@ -11,23 +11,60 @@ struct MoveEditorView: View {
     let characterName: String
     let editingMove: FightDataMove?
     let isCustom: Bool
+    let gameCategories: [String: String]
     let onSave: (FightDataMove) -> Void
     let onDelete: (() -> Void)?
 
-    @State private var moveName: String = ""
-    @State private var moveCategory: String = "_@special"
-    @State private var steps: [EditorStep] = []
+    @State private var moveName: String
+    @State private var moveCategory: String
+    @State private var steps: [EditorStep]
+    @State private var moveHitLevels: String
+    @State private var moveCondition: String
     @State private var selectedStepIndex: Int? = nil
     @State private var showCategoryPicker = false
     @State private var customCategoryText: String = ""
-    @State private var isChargeMove = false
-    @State private var chargeDirection: Int? = nil
-    @State private var isAirMove = false
-    @State private var isRapidPress = false
-    @State private var holdButton = false
 
     @State private var availableButtons: [EditorButton] = MoveEditorView.defaultCapcomButtons
     @State private var showButtonCatalog = false
+
+    init(
+        gameName: String,
+        characterName: String,
+        editingMove: FightDataMove?,
+        isCustom: Bool,
+        gameCategories: [String: String],
+        onSave: @escaping (FightDataMove) -> Void,
+        onDelete: (() -> Void)?
+    ) {
+        self.gameName = gameName
+        self.characterName = characterName
+        self.editingMove = editingMove
+        self.isCustom = isCustom
+        self.gameCategories = gameCategories
+        self.onSave = onSave
+        self.onDelete = onDelete
+
+        _moveName = State(initialValue: editingMove?.name ?? "")
+        _moveCategory = State(initialValue: editingMove?.category ?? "_@special")
+        _moveHitLevels = State(initialValue: editingMove?.hitLevels ?? "")
+        _moveCondition = State(initialValue: editingMove?.condition ?? "")
+
+        var preSteps: [EditorStep] = []
+        if let move = editingMove {
+            let parsed = InputParser.parse(move.input ?? "")
+            for (seqIdx, sequence) in parsed.enumerated() {
+                if seqIdx > 0 { preSteps.append(EditorStep(isBranch: true)) }
+                for step in sequence {
+                    var es = EditorStep()
+                    es.direction = step.direction
+                    es.buttons = step.buttons
+                    es.isCharge = step.isCharge
+                    preSteps.append(es)
+                }
+            }
+        }
+        _steps = State(initialValue: preSteps)
+    }
 
     private var editorTitle: String {
         "\(gameName) > \(characterName)"
@@ -40,8 +77,9 @@ struct MoveEditorView: View {
         var isCharge: Bool = false
         var isNeutral: Bool = false
         var isRapid: Bool = false
+        var isBranch: Bool = false
 
-        var isEmpty: Bool { direction == nil && buttons.isEmpty }
+        var isEmpty: Bool { direction == nil && buttons.isEmpty && !isBranch }
     }
 
     struct EditorButton: Identifiable {
@@ -81,30 +119,26 @@ struct MoveEditorView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: AppSpacing.md) {
+        VStack(spacing: AppSpacing.md) {
             Text(editorTitle)
                 .font(.system(size: 14, weight: .semibold))
                 .foregroundStyle(AppColors.textSecondary(colorScheme))
+
             moveInfoSection
             directionPadSection
             buttonPaletteSection
             modifierSection
+            compressedPreviewRow
+
             stepListSection
+                .frame(maxHeight: .infinity)
+
+            Divider()
             actionButtons
         }
         .padding(AppSpacing.lg)
-        .frame(minWidth: 500, minHeight: 500)
+        .frame(minWidth: 550, minHeight: 600)
         .onAppear {
-            if let move = editingMove {
-                moveName = move.name
-                moveCategory = move.category
-                loadMoveSteps(from: move)
-                isChargeMove = move.isCharge
-                chargeDirection = move.chargeDirectionValue
-                isAirMove = move.isAir
-                isRapidPress = move.isRapidPress
-                holdButton = move.isHoldButton
-            }
             loadSavedButtonPalette()
         }
     }
@@ -137,11 +171,23 @@ struct MoveEditorView: View {
     }
 
     private var categoryDisplayName: String {
+        if let gameLabel = gameCategories[moveCategory] {
+            return gameLabel
+        }
         if let standard = Self.standardCategories.first(where: { $0.key == moveCategory }) {
             return standard.label
         }
+        let stripped = moveCategory.replacingOccurrences(of: "_", with: "")
+        if let gameLabel = gameCategories[stripped] {
+            return gameLabel
+        }
         if moveCategory.hasPrefix("_@") { return String(moveCategory.dropFirst(2)) }
-        return moveCategory
+        return stripped
+    }
+
+    private var gameCategoryEntries: [(key: String, label: String)] {
+        gameCategories.map { (key: $0.key, label: $0.value) }
+            .sorted { $0.key < $1.key }
     }
 
     private var categoryPickerContent: some View {
@@ -150,6 +196,30 @@ struct MoveEditorView: View {
                 .font(.headline)
                 .padding(.horizontal)
                 .padding(.top, AppSpacing.sm)
+
+            if !gameCategoryEntries.isEmpty {
+                ForEach(gameCategoryEntries, id: \.key) { cat in
+                    Button(action: {
+                        moveCategory = cat.key
+                        showCategoryPicker = false
+                    }) {
+                        HStack {
+                            Text(cat.label)
+                                .font(.system(size: 13))
+                            if cat.key == moveCategory {
+                                Spacer()
+                                Image(systemName: "checkmark")
+                                    .foregroundStyle(AppColors.brandAccent)
+                            }
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.horizontal, AppSpacing.md)
+                    .padding(.vertical, AppSpacing.xs)
+                }
+
+                Divider()
+            }
 
             ForEach(Self.standardCategories, id: \.key) { cat in
                 Button(action: {
@@ -190,6 +260,131 @@ struct MoveEditorView: View {
             .padding(.bottom, AppSpacing.sm)
         }
         .frame(width: 250)
+    }
+
+    // MARK: - Compressed Preview
+
+    @ViewBuilder
+    private var compressedPreviewRow: some View {
+        let branches = splitStepsByBranches()
+        if !branches.isEmpty {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Preview")
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundStyle(AppColors.textTertiary(colorScheme))
+                ScrollView(.horizontal, showsIndicators: false) {
+                    if let (dirTokens, btnTokens) = detectCrossProduct(branches) {
+                        HStack(spacing: NotationMetrics.tokenSpacing) {
+                            Text("(").font(.system(size: 12, weight: .bold))
+                                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                            ForEach(Array(dirTokens.enumerated()), id: \.offset) { idx, tokens in
+                                if idx > 0 {
+                                    Text("|").font(.system(size: 12, weight: .bold))
+                                        .foregroundStyle(AppColors.textTertiary(colorScheme))
+                                }
+                                MoveNotationTokenRow(tokens: tokens, compact: true)
+                            }
+                            Text(")").font(.system(size: 12, weight: .bold))
+                                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                            Text("+").font(.system(size: 12, weight: .bold))
+                                .foregroundStyle(AppColors.textTertiary(colorScheme))
+                            Text("(").font(.system(size: 12, weight: .bold))
+                                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                            ForEach(Array(btnTokens.enumerated()), id: \.offset) { idx, tokens in
+                                if idx > 0 {
+                                    Text("|").font(.system(size: 12, weight: .bold))
+                                        .foregroundStyle(AppColors.textTertiary(colorScheme))
+                                }
+                                MoveNotationTokenRow(tokens: tokens, compact: true)
+                            }
+                            Text(")").font(.system(size: 12, weight: .bold))
+                                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                        }
+                        .padding(.vertical, 4)
+                    } else {
+                        HStack(spacing: NotationMetrics.tokenSpacing) {
+                            Text("(").font(.system(size: 12, weight: .bold))
+                                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                            ForEach(Array(branches.enumerated()), id: \.offset) { idx, indices in
+                                if idx > 0 {
+                                    Text("|").font(.system(size: 12, weight: .bold))
+                                        .foregroundStyle(AppColors.textTertiary(colorScheme))
+                                }
+                                branchTokensView(indices)
+                            }
+                            Text(")").font(.system(size: 12, weight: .bold))
+                                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                        }
+                        .padding(.vertical, 4)
+                    }
+                }
+            }
+            .padding(.vertical, 4)
+            .padding(.horizontal, 8)
+            .background(AppColors.cardBackground(colorScheme))
+            .clipShape(RoundedRectangle(cornerRadius: AppRadius.xs))
+            .overlay(
+                RoundedRectangle(cornerRadius: AppRadius.xs)
+                    .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
+            )
+        }
+    }
+
+    private func branchTokensView(_ indices: [Int]) -> some View {
+        var tokens: [NotationToken] = []
+        for stepIndex in indices {
+            tokens.append(contentsOf: buildStepTokens(steps[stepIndex]))
+        }
+        return MoveNotationTokenRow(tokens: tokens, compact: true)
+    }
+
+    private func detectCrossProduct(_ branches: [[Int]]) -> ([[NotationToken]], [[NotationToken]])? {
+        guard branches.count > 1 else { return nil }
+        let allSingle = branches.allSatisfy { indices -> Bool in
+            guard indices.count == 1 else { return false }
+            let step = steps[indices[0]]
+            return step.direction != nil && !step.buttons.isEmpty && !step.isCharge && !step.isNeutral
+        }
+        guard allSingle else { return nil }
+
+        var dirs: [Int] = []
+        var allBtns: [[String]] = []
+        for indices in branches {
+            let step = steps[indices[0]]
+            if let d = step.direction, !dirs.contains(d) { dirs.append(d) }
+            if !allBtns.contains(step.buttons) { allBtns.append(step.buttons) }
+        }
+
+        guard dirs.count * allBtns.count == branches.count else { return nil }
+
+        let dirTokens = dirs.compactMap { d -> [NotationToken]? in
+            guard let fd = FightDataDirection(rawValue: d) else { return nil }
+            return [.direction(fd)]
+        }
+        let btnTokens = allBtns.map { btns -> [NotationToken] in
+            var toks: [NotationToken] = []
+            for (i, k) in btns.enumerated() {
+                if i > 0 { toks.append(.separator) }
+                toks.append(.button(buttonTokenTypeFromKey(k)))
+            }
+            return toks
+        }
+
+        guard dirTokens.count == dirs.count else { return nil }
+        return (dirTokens, btnTokens)
+    }
+
+    private func buttonTokenTypeFromKey(_ key: String) -> ButtonTokenType {
+        if key == "^E" || key == "^F" || key == "^G" || key == "_P" {
+            let strength: ButtonStrength = key == "^E" ? .low : key == "^F" ? .medium : .high
+            return .punch(strength: strength)
+        }
+        if key == "^H" || key == "^I" || key == "^J" || key == "_K" {
+            let strength: ButtonStrength = key == "^H" ? .low : key == "^I" ? .medium : .high
+            return .kick(strength: strength)
+        }
+        if key == "_G" { return .grapple }
+        return .generic(label: key.replacingOccurrences(of: "^", with: "").replacingOccurrences(of: "_", with: ""))
     }
 
     // MARK: - Direction Pad
@@ -239,8 +434,13 @@ struct MoveEditorView: View {
                     .foregroundStyle(AppColors.textSecondary(colorScheme))
                 Spacer()
                 Button(action: { showButtonCatalog = true }) {
-                    Image(systemName: "plus.circle")
-                        .font(.caption)
+                    HStack(spacing: 4) {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.system(size: 14))
+                        Text("Add")
+                            .font(.caption)
+                    }
+                    .foregroundStyle(AppColors.brandAccent)
                 }
                 .buttonStyle(.plain)
                 .popover(isPresented: $showButtonCatalog) {
@@ -248,14 +448,19 @@ struct MoveEditorView: View {
                 }
             }
 
-            FlowLayout(spacing: AppSpacing.xs) {
+            FlowLayout(spacing: AppSpacing.sm) {
                 ForEach(availableButtons) { btn in
                     Button(action: { addButtonStep(btn.key) }) {
-                        MoveNotationTokenView(
-                            token: .button(editorButtonTokenType(for: btn)),
-                            isHighlighted: true,
-                            compact: true
-                        )
+                        VStack(spacing: 2) {
+                            MoveNotationTokenView(
+                                token: .button(editorButtonTokenType(for: btn)),
+                                isHighlighted: true,
+                                compact: true
+                            )
+                            Text(btn.label)
+                                .font(.system(size: 8, weight: .medium))
+                                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                        }
                     }
                     .buttonStyle(.plain)
                     .contextMenu {
@@ -306,33 +511,47 @@ struct MoveEditorView: View {
                 .padding()
 
             let currentKeys = Set(availableButtons.map(\.key))
-            FlowLayout(spacing: AppSpacing.xs) {
-                ForEach(Self.fullButtonCatalog, id: \.key) { catBtn in
-                    let inPalette = currentKeys.contains(catBtn.key)
-                    Button(action: {
-                        if inPalette {
-                            availableButtons.removeAll { $0.key == catBtn.key }
-                        } else {
-                            availableButtons.append(EditorButton(key: catBtn.key, label: catBtn.label))
+            ScrollView(.vertical) {
+                FlowLayout(spacing: AppSpacing.sm) {
+                    ForEach(Self.fullButtonCatalog, id: \.key) { catBtn in
+                        let inPalette = currentKeys.contains(catBtn.key)
+                        Button(action: {
+                            if inPalette {
+                                availableButtons.removeAll { $0.key == catBtn.key }
+                            } else {
+                                availableButtons.append(EditorButton(key: catBtn.key, label: catBtn.label))
+                            }
+                            saveButtonPalette()
+                        }) {
+                            VStack(spacing: 2) {
+                                MoveNotationTokenView(
+                                    token: .button(buttonTokenForCatalog(key: catBtn.key, label: catBtn.label)),
+                                    isHighlighted: true,
+                                    compact: true
+                                )
+                                Text(catBtn.label)
+                                    .font(.system(size: 9, weight: .medium))
+                            }
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 4)
+                            .background(inPalette ? AppColors.brandAccent.opacity(0.15) : Color.clear)
+                            .clipShape(RoundedRectangle(cornerRadius: AppRadius.xs))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: AppRadius.xs)
+                                    .stroke(inPalette ? AppColors.brandAccent : AppColors.cardBorder(colorScheme), lineWidth: inPalette ? 1.5 : 1)
+                            )
                         }
-                        saveButtonPalette()
-                    }) {
-                        HStack(spacing: 4) {
-                            Image(systemName: inPalette ? "checkmark.circle.fill" : "circle")
-                                .font(.caption)
-                                .foregroundStyle(inPalette ? AppColors.brandAccent : AppColors.textTertiary(colorScheme))
-                            Text(catBtn.label)
-                                .font(.system(size: 12))
-                        }
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
+                        .buttonStyle(.plain)
                     }
-                    .buttonStyle(.plain)
                 }
+                .padding()
             }
-            .padding()
         }
-        .frame(width: 280, height: 300)
+        .frame(width: 320, height: 360)
+    }
+
+    private func buttonTokenForCatalog(key: String, label: String) -> ButtonTokenType {
+        editorButtonTokenType(for: EditorButton(key: key, label: label))
     }
 
     // MARK: - Modifiers
@@ -343,49 +562,52 @@ struct MoveEditorView: View {
                 .font(.system(size: 12, weight: .semibold))
                 .foregroundStyle(AppColors.textSecondary(colorScheme))
 
-            HStack(spacing: AppSpacing.md) {
-                Toggle(isOn: $isAirMove) {
-                    Label("↑ Air", systemImage: "arrow.up")
-                        .font(.system(size: 12))
-                }
-                .toggleStyle(.checkbox)
-
-                Toggle(isOn: $isChargeMove) {
-                    Label("⏳ Charge", systemImage: "hourglass")
-                        .font(.system(size: 12))
-                }
-                .toggleStyle(.checkbox)
-
-                Toggle(isOn: $isRapidPress) {
-                    Label("⚡ Rapid", systemImage: "bolt")
-                        .font(.system(size: 12))
-                }
-                .toggleStyle(.checkbox)
-            }
-
-            if isChargeMove {
-                HStack(spacing: AppSpacing.xs) {
-                    Text(loc.localized("settings.moveList.editor.chargeDir"))
-                        .font(.system(size: 11))
-                    ForEach([4, 6, 2, 8, 1, 3, 7, 9], id: \.self) { dir in
-                        Button(action: { chargeDirection = dir }) {
-                            Image("NotationDir\(dir)")
-                                .renderingMode(.template)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .padding(5)
-                                .frame(width: 28, height: 28)
-                                .foregroundStyle(chargeDirection == dir ? AppColors.brandAccent : .white)
-                                .background(chargeDirection == dir ? AppColors.brandAccent.opacity(0.2) : AppColors.cardBackground(colorScheme))
-                                .clipShape(RoundedRectangle(cornerRadius: AppRadius.xs))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: AppRadius.xs)
-                                        .stroke(chargeDirection == dir ? AppColors.brandAccent : AppColors.cardBorder(colorScheme), lineWidth: chargeDirection == dir ? 2 : 1)
-                                )
-                        }
-                        .buttonStyle(.plain)
+            HStack(spacing: AppSpacing.sm) {
+                if let idx = selectedStepIndex, idx < steps.count {
+                    Toggle(isOn: Binding(
+                        get: { steps[idx].isCharge },
+                        set: { steps[idx].isCharge = $0 }
+                    )) {
+                        Label("⏳ Charge", systemImage: "hourglass")
+                            .font(.system(size: 11))
                     }
+                    .toggleStyle(.checkbox)
+                    .controlSize(.small)
+
+                    Toggle(isOn: Binding(
+                        get: { steps[idx].isNeutral },
+                        set: { steps[idx].isNeutral = $0 }
+                    )) {
+                        Label("N Neut", systemImage: "scope")
+                            .font(.system(size: 11))
+                    }
+                    .toggleStyle(.checkbox)
+                    .controlSize(.small)
+
+                    Toggle(isOn: Binding(
+                        get: { steps[idx].isRapid },
+                        set: { steps[idx].isRapid = $0 }
+                    )) {
+                        Label("⚡ Rapid", systemImage: "bolt")
+                            .font(.system(size: 11))
+                    }
+                    .toggleStyle(.checkbox)
+                    .controlSize(.small)
+                } else {
+                    Text(loc.localized("settings.moveList.editor.selectStepHint"))
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textTertiary(colorScheme))
                 }
+
+                Spacer(minLength: 4)
+
+                Button(action: { addBranchStep() }) {
+                    Image(systemName: "arrow.triangle.branch")
+                    Text(loc.localized("settings.moveList.editor.addBranch"))
+                }
+                .font(.system(size: 11))
+                .buttonStyle(.bordered)
+                .controlSize(.small)
             }
         }
     }
@@ -416,16 +638,43 @@ struct MoveEditorView: View {
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(AppSpacing.md)
             } else {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: AppSpacing.xs) {
-                        ForEach(Array(steps.enumerated()), id: \.element.id) { index, step in
-                            stepChip(step: step, index: index)
+                let branches = splitStepsByBranches()
+                ScrollView(.vertical, showsIndicators: true) {
+                    VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                        ForEach(Array(branches.enumerated()), id: \.offset) { branchIdx, branchIndices in
+                            if branchIdx > 0 {
+                                HStack {
+                                    Text("|").font(.system(size: 13, weight: .bold))
+                                        .foregroundStyle(AppColors.textTertiary(colorScheme))
+                                    Spacer()
+                                }
+                                .padding(.leading, 4)
+                            }
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: AppSpacing.xs) {
+                                    ForEach(branchIndices, id: \.self) { index in
+                                        stepChip(step: steps[index], index: index)
+                                    }
+                                }
+                                .padding(.horizontal, 2)
+                            }
                         }
                     }
-                    .padding(.horizontal, 2)
                 }
             }
         }
+    }
+
+    private func splitStepsByBranches() -> [[Int]] {
+        var branches: [[Int]] = [[]]
+        for (index, step) in steps.enumerated() {
+            if step.isBranch {
+                branches.append([])
+            } else {
+                branches[branches.count - 1].append(index)
+            }
+        }
+        return branches.filter { !$0.isEmpty }
     }
 
     private func stepChip(step: EditorStep, index: Int) -> some View {
@@ -476,6 +725,7 @@ struct MoveEditorView: View {
     }
 
     private func buildStepTokens(_ step: EditorStep) -> [NotationToken] {
+        if step.isBranch { return [.alternative] }
         var tokens: [NotationToken] = []
         if step.isNeutral {
             tokens.append(.direction(.neutral))
@@ -523,6 +773,15 @@ struct MoveEditorView: View {
         }
     }
 
+    private func addBranchStep() {
+        if let idx = selectedStepIndex, idx < steps.count {
+            steps.insert(EditorStep(isBranch: true), at: idx + 1)
+        } else {
+            steps.append(EditorStep(isBranch: true))
+        }
+        selectedStepIndex = nil
+    }
+
     private func addButtonStep(_ key: String) {
         if let idx = selectedStepIndex, idx < steps.count {
             if !steps[idx].buttons.contains(key) {
@@ -536,37 +795,16 @@ struct MoveEditorView: View {
     }
 
     private func saveMove() {
-        var directions: [[Int]] = []
-        var buttons: [[String]] = []
-
-        for step in steps {
-            var dirStep: [Int] = []
-            if let dir = step.direction { dirStep = [dir] }
-            else if step.isNeutral { dirStep = [5] }
-            directions.append(dirStep)
-            buttons.append(step.buttons)
-        }
-
         let rawInput = buildRawInput()
-        let parsed = ParsedInput(
-            raw: rawInput,
-            directions: directions,
-            buttons: buttons,
-            charge: isChargeMove,
-            chargeDirection: chargeDirection,
-            air: isAirMove,
-            rapidPress: isRapidPress,
-            holdButton: holdButton,
-            followUp: false,
-            neutral: false,
-            motion360: false
-        )
+        let hl = moveHitLevels.isEmpty ? nil : moveHitLevels
+        let cond = moveCondition.isEmpty ? nil : moveCondition
 
         let move = FightDataMove(
             category: moveCategory,
             name: moveName,
             input: rawInput,
-            parsedInput: parsed
+            hitLevels: hl,
+            condition: cond
         )
 
         onSave(move)
@@ -574,52 +812,36 @@ struct MoveEditorView: View {
     }
 
     private func buildRawInput() -> String {
-        var parts: [String] = []
-        if isAirMove { parts.append("_8") }
-        if isChargeMove, let cd = chargeDirection { parts.append("_O_\(cd)") }
+        var branches: [[String]] = [[]]
         for step in steps {
-            if let dir = step.direction {
-                var s = "_\(dir)"
-                if step.isCharge { s = "_O" + s }
+            if step.isBranch {
+                branches.append([])
+                continue
+            }
+            var current = branches[branches.count - 1]
+            if step.isNeutral {
+                current.append("_5")
+            } else if let dir = step.direction {
+                var s = "_"
+                if step.isCharge { s = "_O_" }
+                s += "\(dir)"
                 if !step.buttons.isEmpty {
                     let btns = step.buttons.map { $0.hasPrefix("^") ? $0 : "_\($0)" }.joined()
-                    s += btns
+                    s += "_+" + btns
                 }
-                parts.append(s)
-            } else if step.isNeutral {
-                parts.append("_5")
+                if step.isRapid { s += "_X" }
+                current.append(s)
             } else if !step.buttons.isEmpty {
                 let btns = step.buttons.map { $0.hasPrefix("^") ? $0 : "_\($0)" }.joined()
-                parts.append(btns)
+                var s = btns
+                if step.isRapid { s += "_X" }
+                current.append(s)
+            } else if step.isRapid {
+                current.append("_X")
             }
+            branches[branches.count - 1] = current
         }
-        if isRapidPress { parts.append("_X") }
-        return parts.joined(separator: " ")
-    }
-
-    private func loadMoveSteps(from move: FightDataMove) {
-        guard let pi = move.parsedInput else { return }
-        isAirMove = pi.air
-        isChargeMove = pi.charge
-        chargeDirection = pi.chargeDirection
-        isRapidPress = pi.rapidPress
-        holdButton = pi.holdButton
-
-        let dirCount = pi.directions.count
-        let btnCount = pi.buttons.count
-        let maxCount = max(dirCount, btnCount)
-
-        for i in 0..<maxCount {
-            var step = EditorStep()
-            if i < dirCount, let firstDir = pi.directions[i].first {
-                step.direction = firstDir
-                step.isCharge = pi.charge && pi.chargeDirection == firstDir
-            }
-            if i < btnCount {
-                step.buttons = pi.buttons[i]
-            }
-            steps.append(step)
-        }
+        return branches.map { $0.joined(separator: " ") }.joined(separator: " / ")
     }
 
     private func saveButtonPalette() {

@@ -416,117 +416,106 @@ def parse_howto_section(lines: list[str]) -> tuple[dict, list[str]]:
     return categories, notes
 
 
-def parse_input_notation(input_str: str) -> dict:
-    """
-    Parse command.dat input notation into structured data.
+NOTATION_START_RE = re.compile(
+    r'(?:_[0-9a-zA-Z\+\^#?!>]|'
+    r'\^[A-Za-z0-9\*!]|'
+    r'@\w+-button|'
+    r'\(_\^\))'
+)
 
-    Returns dict with:
-        raw: the original input string
-        directions: list of direction sequences (list of lists of ints)
-        buttons: list of button sequences (list of lists of strings)
-        charge: bool
-        chargeDirection: int or None
-        air: bool
-        rapidPress: bool
-        holdButton: bool
-        followUp: bool
-        neutral: bool (contains _N)
-        motion360: bool
-    """
-    result = {
-        "raw": input_str,
-        "directions": [],
-        "buttons": [],
-        "charge": False,
-        "chargeDirection": None,
-        "air": False,
-        "rapidPress": False,
-        "holdButton": False,
-        "followUp": False,
-        "neutral": False,
-        "motion360": False,
-    }
+NOTATION_TOKEN_RE = re.compile(
+    r'(?:_[0-9a-zA-Z]+[#]*[c]*[j]*[P]*|'
+    r'_[\+\^#?!>]|'
+    r'\^[A-Za-z0-9\*!][a-z]*|'
+    r'@\w+-button|'
+    r'\(_\^\)|'
+    r'[+/~]|'
+    r'\([^)]*\))'
+)
 
-    if not input_str or input_str.startswith("see "):
-        return result
+HIT_LEVEL_RE = re.compile(r'^([hmHMglGL!\-]+)\s*')
 
-    s = input_str.strip()
 
-    if s.startswith("^!"):
-        result["followUp"] = True
-        s = s[2:].strip()
+def find_notation_start(text: str) -> int | None:
+    for m in NOTATION_START_RE.finditer(text):
+        pos = m.start()
+        if pos == 0:
+            return 0
+        prev = text[pos - 1]
+        if prev in (" ", "/"):
+            return pos
+    return None
 
-    if "(_^)" in s:
-        result["air"] = True
-        s = s.replace("(_^)", "").strip()
 
-    if s.startswith("_^"):
-        result["air"] = True
-        s = s[2:].strip()
+def scan_notation_end(text: str, start: int) -> int:
+    pos = start
+    while pos < len(text):
+        m = NOTATION_TOKEN_RE.match(text, pos)
+        if m:
+            pos = m.end()
+            continue
+        if text[pos] == " ":
+            rest = text[pos + 1:]
+            if rest and (NOTATION_START_RE.match(rest) or rest[0] == "/"):
+                pos += 1
+                continue
+            break
+        break
+    return pos
 
-    if "^*" in s:
-        result["rapidPress"] = True
-        s = s.replace("^*", "").strip()
 
-    if "_O" in s:
-        result["holdButton"] = True
-        s = s.replace("_O", "").strip()
+def promote_note_to_move(note: str) -> dict | None:
+    stripped = note.strip()
+    if not stripped:
+        return None
 
-    if "_x" in s:
-        result["motion360"] = True
-        s = s.replace("_x", "").strip()
+    notation_pos = find_notation_start(stripped)
+    if notation_pos is None:
+        return None
 
-    if "_N" in s:
-        result["neutral"] = True
-        s = s.replace("_N", "").strip()
+    prefix = stripped[:notation_pos].strip().rstrip(":-").strip()
+    if prefix.startswith("-"):
+        prefix = prefix[1:].strip()
 
-    charge_match = re.search(r"\^([1-9])", s)
-    if charge_match:
-        result["charge"] = True
-        result["chargeDirection"] = int(charge_match.group(1))
+    notation_end = scan_notation_end(stripped, notation_pos)
+    input_str = stripped[notation_pos:notation_end].strip()
+    suffix = stripped[notation_end:].strip()
 
-    alternatives = re.split(r"\s*/\s*", s)
+    if not input_str:
+        return None
 
-    for alt in alternatives:
-        dirs = []
-        btns = []
+    hit_levels = None
+    condition = None
 
-        tokens = re.findall(r"_(\d|[A-Z])|\^([A-Z])", alt)
+    if suffix:
+        hl_match = HIT_LEVEL_RE.match(suffix)
+        if hl_match:
+            hit_levels = hl_match.group(1)
+            suffix = suffix[hl_match.end():].strip()
 
-        i = 0
-        while i < len(alt):
-            if alt[i] == "_":
-                i += 1
-                if i < len(alt):
-                    ch = alt[i]
-                    if ch.isdigit():
-                        dirs.append(int(ch))
-                    elif ch.isalpha():
-                        btns.append(f"_{ch}")
-                    i += 1
-            elif alt[i] == "^":
-                i += 1
-                if i < len(alt):
-                    ch = alt[i]
-                    if ch.isalpha():
-                        btns.append(f"^{ch}")
-                    elif ch.isdigit():
-                        pass
-                    i += 1
-            elif alt[i] in (" ", "+", "(", ")", "."):
-                i += 1
+        parens = re.findall(r"\(([^)]+)\)", suffix)
+        remaining = suffix
+        for p in parens:
+            remaining = remaining.replace(f"({p})", "").strip()
+        if parens:
+            if remaining:
+                condition = f"{remaining} {' '.join(parens)}"
             else:
-                i += 1
+                condition = " ".join(parens)
+        elif remaining:
+            condition = remaining
 
-        if dirs:
-            result["directions"].append(dirs)
-        if btns:
-            result["buttons"].append(btns)
+    move = {
+        "category": "_`",
+        "name": prefix,
+    }
+    move["input"] = input_str
+    if hit_levels:
+        move["hitLevels"] = hit_levels
+    if condition:
+        move["condition"] = condition
 
-    if not result["directions"] and not result["buttons"]:
-        pass
-
-    return result
+    return move
 
 
 def parse_move_line(line: str) -> dict | None:
@@ -545,9 +534,7 @@ def parse_move_line(line: str) -> dict | None:
     if category is None:
         return None
 
-    is_followup = False
     if stripped.startswith("^!"):
-        is_followup = True
         stripped = stripped[2:].strip()
 
     condition_match = re.match(r"^\(([^)]+)\)\s*", stripped)
@@ -556,27 +543,11 @@ def parse_move_line(line: str) -> dict | None:
         condition = condition_match.group(1)
         stripped = stripped[condition_match.end():]
 
-    first_input_pos = None
-    for i, ch in enumerate(stripped):
-        if ch == "_" and i + 1 < len(stripped) and stripped[i + 1] in "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ^+":
-            prev_char = stripped[i - 1] if i > 0 else " "
-            if prev_char in (" ", "/"):
-                first_input_pos = i
-                break
-        elif ch == "^" and i + 1 < len(stripped) and stripped[i + 1] in "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789*!":
-            prev_char = stripped[i - 1] if i > 0 else " "
-            if prev_char in (" ", "/"):
-                first_input_pos = i
-                break
-        elif ch == "(" and i + 2 < len(stripped) and stripped[i+1:i+3] == "_^":
-            prev_char = stripped[i - 1] if i > 0 else " "
-            if prev_char in (" ", "/"):
-                first_input_pos = i
-                break
-
-    if first_input_pos is not None:
-        name = stripped[:first_input_pos].strip()
-        input_str = stripped[first_input_pos:].strip()
+    notation_pos = find_notation_start(stripped)
+    if notation_pos is not None:
+        name = stripped[:notation_pos].strip()
+        notation_end = scan_notation_end(stripped, notation_pos)
+        input_str = stripped[notation_pos:notation_end].strip()
     else:
         name = stripped
         input_str = ""
@@ -585,16 +556,12 @@ def parse_move_line(line: str) -> dict | None:
     if not name and not input_str:
         return None
 
-    parsed_input = parse_input_notation(input_str)
-    parsed_input["followUp"] = is_followup
-
     move = {
         "category": category,
         "name": name,
     }
     if input_str:
         move["input"] = input_str
-        move["parsedInput"] = parsed_input
     if condition:
         move["condition"] = condition
 
@@ -603,9 +570,20 @@ def parse_move_line(line: str) -> dict | None:
 
 def _flush_character(character_name, character_moves, character_notes, character_combos, characters):
     if character_name:
-        entry = {"name": character_name, "moves": character_moves}
-        if character_notes:
-            entry["notes"] = character_notes
+        promoted_moves = []
+        remaining_notes = []
+        for note in character_notes:
+            promoted = promote_note_to_move(note)
+            if promoted:
+                promoted_moves.append(promoted)
+            else:
+                remaining_notes.append(note)
+
+        all_moves = character_moves + promoted_moves
+
+        entry = {"name": character_name, "moves": all_moves}
+        if remaining_notes:
+            entry["notes"] = remaining_notes
         if character_combos:
             entry["combos"] = character_combos
         characters.append(entry)
@@ -786,7 +764,11 @@ def parse_game_block(lines: list[str]) -> dict | None:
         else:
             s = line.strip()
             if s and not SECTION_RE.match(s) and not DASH_HEADER_RE.match(s):
-                common_notes.append(s)
+                promoted = promote_note_to_move(s)
+                if promoted:
+                    common_moves.append(promoted)
+                else:
+                    common_notes.append(s)
 
     cheat_notes = []
     for line in cheat_lines:
@@ -797,7 +779,7 @@ def parse_game_block(lines: list[str]) -> dict | None:
     characters = [c for c in characters if c.get("moves") or c.get("notes") or c.get("combos")]
 
     game = {
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "romIds": rom_ids,
         "parentRom": parent_rom,
         "name": title,
@@ -1045,7 +1027,7 @@ def process_command_dat(dat_path: str, output_dir: str, all_games: bool = False)
         })
 
     index = {
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "games": index_entries,
     }
     index_path = os.path.join(output_dir, "fightdata_index.json")

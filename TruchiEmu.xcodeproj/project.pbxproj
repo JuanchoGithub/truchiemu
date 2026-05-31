@@ -395,6 +395,7 @@
 		5BFC302A4FB924A0AEA3D581 /* openbor@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F067D5CF7451A5B6FDA1B25 /* openbor@132w.png */; };
 		5C0627601EA49FB4FC73596F /* SettingsSearchable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4A8575F7C5047FE660B2138 /* SettingsSearchable.swift */; };
 		5C15E6B7D2E89E337CB85B84 /* CRTFilter_multipass.metal in Sources */ = {isa = PBXBuildFile; fileRef = 62B4EE0802A69845537290E2 /* CRTFilter_multipass.metal */; };
+		5C21FC79918223E0B36912D2 /* InputParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD7F6272F74B473FA20B6E72 /* InputParser.swift */; };
 		5C2E43BBEBD925394CDA1892 /* Sega - Master System - Mark III.dat in Resources */ = {isa = PBXBuildFile; fileRef = A97A91DA0B2DA73F7E788D2F /* Sega - Master System - Mark III.dat */; };
 		5C98D9368A5DF24986844FA0 /* input_coreOverrides_beetle_psx_hw.json in Resources */ = {isa = PBXBuildFile; fileRef = BAF76CFDA91E86FDE9BEAD07 /* input_coreOverrides_beetle_psx_hw.json */; };
 		5CCA8A76C394B27D842BC125 /* input_systemLabels_wonderswan.json in Resources */ = {isa = PBXBuildFile; fileRef = 83F1EFBDD0AE4C0DBA2E5821 /* input_systemLabels_wonderswan.json */; };
@@ -2235,6 +2236,7 @@
 		FCAB65F47C4E26FC16B426CF /* MDMSU.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MDMSU.png; sourceTree = "<group>"; };
 		FD4DB03B3063C56536FCC7D2 /* input_coreLabels_pokemini.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_pokemini.json; sourceTree = "<group>"; };
 		FD4DF5D2F13617BDA825F6F3 /* CheatSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatSettingsView.swift; sourceTree = "<group>"; };
+		FD7F6272F74B473FA20B6E72 /* InputParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputParser.swift; sourceTree = "<group>"; };
 		FD940B054409FA9EB96E6AD1 /* tic@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tic@132w.png"; sourceTree = "<group>"; };
 		FD9A1772372E4EED4D48A027 /* PersistenceMigrationFlag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceMigrationFlag.swift; sourceTree = "<group>"; };
 		FDB4695E9E68A483C0D22E18 /* chailove-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "chailove-cheats.zip"; sourceTree = "<group>"; };
@@ -2612,6 +2614,7 @@
 			children = (
 				4EE1FAA370EEA90A7E3D3CC5 /* Achievement.swift */,
 				5641DF774B081BEE408A9052 /* Cheat.swift */,
+				FD7F6272F74B473FA20B6E72 /* InputParser.swift */,
 				D16D483A383752A639254DD5 /* MoveListModels.swift */,
 				8B2AEF2FFA96556BE1A55529 /* SavedShaderPreset.swift */,
 				BB105E50D82536CAF16A0A2F /* ShaderPreset.swift */,
@@ -5143,6 +5146,7 @@
 				2B2B0A84C8FA0EC3F94F0ADB /* InputCaptureManager.swift in Sources */,
 				21A571C012E0EEAB3DB1B142 /* InputDescriptorsManager.swift in Sources */,
 				31A2B97F6CD9CA68CAE74088 /* InputDeviceType.swift in Sources */,
+				5C21FC79918223E0B36912D2 /* InputParser.swift in Sources */,
 				99B049AB137B01676D6EA272 /* InputStateTracker.swift in Sources */,
 				2474F15C5856BC63F1735299 /* InstallDragView.swift in Sources */,
 				7ABCF7A060244B57A297019B /* KeyboardMapping.swift in Sources */,

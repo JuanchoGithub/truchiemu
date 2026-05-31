@@ -44,7 +44,7 @@ struct MoveNotationTokenRow: View {
             case .direction, .motion, .button:
                 map[tokenIdx] = stepIdx
                 stepIdx += 1
-            case .separator, .wait, .air, .charge, .holdButton, .rapidPress:
+            case .separator, .wait, .air, .charge, .holdButton, .rapidPress, .hitLevel, .alternative:
                 break
             }
         }

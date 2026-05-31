@@ -61,6 +61,10 @@ final class NotationTokenImageCache {
             return composeHold(highlighted: highlighted, compact: compact)
         case .rapidPress:
             return composeRapid(highlighted: highlighted, compact: compact)
+        case .hitLevel(let level):
+            return composeHitLevel(level, highlighted: highlighted, compact: compact)
+        case .alternative:
+            return composeAlternative(highlighted: highlighted, compact: compact)
         }
     }
 
@@ -180,11 +184,11 @@ final class NotationTokenImageCache {
                 if interior == "NotationLetterP" || interior == "NotationLetterK" {
                     drawImage(interior, in: interiorRect, alpha: interiorAlpha)
                 } else {
-                    drawTemplateImage(interior, color: .white.withAlphaComponent(interiorAlpha), in: interiorRect, context: ctx)
-                }
+            drawTemplateImage(interior, color: .white.withAlphaComponent(interiorAlpha), in: interiorRect, context: ctx)
             }
+        }
 
-            if let badge = badgeAsset {
+        if let badge = badgeAsset {
                 let offsetX = size - badgeSize * 0.7
                 let offsetY = size - badgeSize * 0.7
                 let badgeRect = NSRect(x: offsetX, y: offsetY, width: badgeSize, height: badgeSize)
@@ -215,7 +219,7 @@ final class NotationTokenImageCache {
             let fill: NSColor = highlighted ? NotationMetrics.weaponFillNS : NotationMetrics.weaponFillDimmedNS
             let asset = style == .sword ? "NotationSword" : "NotationAxe"
             return (fill, asset, highlighted ? 0.85 : 0.35, nil)
-        case .generic(let label):
+        case .generic(_):
             let fill: NSColor = NSColor(white: 1.0, alpha: highlighted ? 0.2 : 0.08)
             return (fill, nil, 0, nil)
         }
@@ -287,6 +291,63 @@ final class NotationTokenImageCache {
             drawTemplateImage("NotationRapid", color: color, in: NSRect(x: 0, y: 0, width: size, height: size), context: ctx)
         } ?? NSImage(size: NSSize(width: size, height: size))
     }
+
+    private func composeHitLevel(_ level: HitLevel, highlighted: Bool, compact: Bool) -> NSImage {
+        let size = sizeFor(compact, NotationMetrics.badgeSize)
+        let colors: [HitLevel: NSColor] = [
+            .high: .red, .mid: .blue, .low: .green,
+            .midCrouching: .purple, .lowCrouching: NSColor(red: 0, green: 0.5, blue: 0.5, alpha: 1),
+            .ground: .brown, .unblockable: .orange, .none: .gray,
+        ]
+        let color = (colors[level] ?? .gray).withAlphaComponent(highlighted ? 0.9 : 0.4)
+
+        return makeImage(width: size, height: size) { ctx in
+            let rect = NSRect(x: 0, y: 0, width: size, height: size)
+            ctx.cgContext.setFillColor(color.cgColor)
+            ctx.cgContext.fillEllipse(in: rect)
+
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.alignment = .center
+            let attrs: [NSAttributedString.Key: Any] = [
+                .font: NSFont.systemFont(ofSize: size * 0.45, weight: .bold),
+                .foregroundColor: NSColor.white.withAlphaComponent(highlighted ? 0.95 : 0.5),
+                .paragraphStyle: paragraphStyle,
+            ]
+            let str = NSAttributedString(string: level.label, attributes: attrs)
+            let textSize = str.size()
+            let textRect = NSRect(
+                x: (size - textSize.width) / 2,
+                y: (size - textSize.height) / 2,
+                width: textSize.width,
+                height: textSize.height
+            )
+            str.draw(in: textRect)
+        } ?? NSImage(size: NSSize(width: size, height: size))
+    }
+
+    private func composeAlternative(highlighted: Bool, compact: Bool) -> NSImage {
+        let size: CGFloat = compact ? 8 : 10
+        let color: NSColor = .white.withAlphaComponent(highlighted ? 0.4 : 0.2)
+
+        return makeImage(width: size, height: size * 1.6) { ctx in
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.alignment = .center
+            let attrs: [NSAttributedString.Key: Any] = [
+                .font: NSFont.systemFont(ofSize: size * 0.9, weight: .bold),
+                .foregroundColor: color,
+                .paragraphStyle: paragraphStyle,
+            ]
+            let str = NSAttributedString(string: "/", attributes: attrs)
+            let textSize = str.size()
+            let textRect = NSRect(
+                x: (size - textSize.width) / 2,
+                y: (size * 1.6 - textSize.height) / 2,
+                width: textSize.width,
+                height: textSize.height
+            )
+            str.draw(in: textRect)
+        } ?? NSImage(size: NSSize(width: size, height: size * 1.6))
+    }
 }
 
 extension NotationToken: CustomStringConvertible {
@@ -301,6 +362,8 @@ extension NotationToken: CustomStringConvertible {
         case .charge(let d): return "charge_\(d?.rawValue ?? 0)"
         case .holdButton: return "hold"
         case .rapidPress: return "rapid"
+        case .hitLevel(let l): return "hl_\(l.rawValue)"
+        case .alternative: return "alt"
         }
     }
 }

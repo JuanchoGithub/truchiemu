@@ -11,7 +11,7 @@ enum RetroButton: String, Codable, CaseIterable {
     case l1, l2, l3
     case r1, r2, r3
 
-    case coin1, coin2, start1, start2
+    case coin1, coin2, coin3, coin4, start1, start2, start3, start4
 
     case turboA, turboB
     case turboX, turboY
@@ -60,8 +60,12 @@ enum RetroButton: String, Codable, CaseIterable {
         case .r3:    return LocalizationManager.shared.localized("controller.button.r3")
         case .coin1: return LocalizationManager.shared.localized("controller.button.coin1")
         case .coin2: return LocalizationManager.shared.localized("controller.button.coin2")
-        case .start1:return LocalizationManager.shared.localized("controller.button.start1")
-        case .start2:return LocalizationManager.shared.localized("controller.button.start2")
+        case .coin3: return LocalizationManager.shared.localized("controller.button.coin3")
+        case .coin4: return LocalizationManager.shared.localized("controller.button.coin4")
+        case .start1: return LocalizationManager.shared.localized("controller.button.start1")
+        case .start2: return LocalizationManager.shared.localized("controller.button.start2")
+        case .start3: return LocalizationManager.shared.localized("controller.button.start3")
+        case .start4: return LocalizationManager.shared.localized("controller.button.start4")
         case .lStickUp: return LocalizationManager.shared.localized("controller.button.lStickUp")
         case .lStickDown: return LocalizationManager.shared.localized("controller.button.lStickDown")
         case .lStickLeft: return LocalizationManager.shared.localized("controller.button.lStickLeft")
@@ -127,6 +131,10 @@ enum RetroButton: String, Codable, CaseIterable {
         case .start1: return 3
         case .coin2: return 4
         case .start2: return 5
+        case .coin3: return 6
+        case .start3: return 7
+        case .coin4: return 8
+        case .start4: return 9
         default: return -1
         }
     }
