@@ -34,6 +34,11 @@ extern int g_turbo_fireButton[MAX_PLAYERS][32];
 extern struct retro_keyboard_callback g_keyboard_callback;
 extern BOOL g_keyboard_callback_registered;
 
+extern BOOL g_analog_as_mouse_enabled[MAX_PLAYERS];
+extern float g_analog_as_mouse_sensitivity[MAX_PLAYERS];
+extern float g_analog_as_mouse_deadzone[MAX_PLAYERS];
+extern int g_analog_as_mouse_stick_index[MAX_PLAYERS];
+
 #ifdef __cplusplus
 }
 #endif

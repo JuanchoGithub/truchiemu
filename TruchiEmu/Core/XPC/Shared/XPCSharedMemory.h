@@ -31,7 +31,9 @@ typedef struct {
     int16_t delta_y;
     int16_t wheel_delta;
     uint32_t buttons;
-    uint8_t _pad[4];
+    int16_t analog_mouse_delta_x;
+    int16_t analog_mouse_delta_y;
+    uint8_t _pad[0];
 } XPCMouseState;
 
 typedef struct {
@@ -56,6 +58,8 @@ typedef struct {
 
     XPCMouseState mouse;
     XPCPointerState pointer;
+
+    int16_t analog_mouse_config[MAX_PLAYERS][4]; // [p][0]=enabled, [1]=sensitivity*100, [2]=deadzone*100, [3]=stick_index
 
     bool isPaused;
     bool variablesUpdated;
@@ -205,6 +209,27 @@ static inline int xpc_shm_get_turbo_fireButton(XPCSharedMemory *shm, int player,
 
 static inline bool xpc_shm_get_keyboard_state(XPCSharedMemory *shm, int idx) {
     return (idx >= 0 && idx < XPC_KEYBOARD_STATE_COUNT) ? shm->keyboard_state[idx] : false;
+}
+
+static inline void xpc_shm_set_analog_mouse_config(XPCSharedMemory *shm, int player, bool enabled, float sensitivity, float deadzone, int stickIndex) {
+    if (player >= 0 && player < MAX_PLAYERS) {
+        shm->analog_mouse_config[player][0] = enabled ? 1 : 0;
+        shm->analog_mouse_config[player][1] = (int16_t)(sensitivity * 100.0f);
+        shm->analog_mouse_config[player][2] = (int16_t)(deadzone * 100.0f);
+        shm->analog_mouse_config[player][3] = (int16_t)stickIndex;
+    }
+}
+static inline bool xpc_shm_get_analog_mouse_enabled(XPCSharedMemory *shm, int player) {
+    return (player >= 0 && player < MAX_PLAYERS) ? (shm->analog_mouse_config[player][0] != 0) : false;
+}
+static inline float xpc_shm_get_analog_mouse_sensitivity(XPCSharedMemory *shm, int player) {
+    return (player >= 0 && player < MAX_PLAYERS) ? (float)shm->analog_mouse_config[player][1] / 100.0f : 1.0f;
+}
+static inline float xpc_shm_get_analog_mouse_deadzone(XPCSharedMemory *shm, int player) {
+    return (player >= 0 && player < MAX_PLAYERS) ? (float)shm->analog_mouse_config[player][2] / 100.0f : 0.15f;
+}
+static inline int xpc_shm_get_analog_mouse_stick_index(XPCSharedMemory *shm, int player) {
+    return (player >= 0 && player < MAX_PLAYERS) ? shm->analog_mouse_config[player][3] : 0;
 }
 
 static inline void xpc_shm_read_audio(XPCSharedMemory *shm, long idx, int16_t *out) {

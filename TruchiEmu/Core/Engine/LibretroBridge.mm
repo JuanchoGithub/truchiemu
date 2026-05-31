@@ -651,6 +651,37 @@ down:(BOOL)down {
     g_mouse_state.wheel_delta = 0;
 }
 
+#pragma mark - Analog as Mouse
+
++ (void)setAnalogAsMouseEnabled:(BOOL)enabled forPlayer:(int)player {
+    if (player >= 0 && player < MAX_PLAYERS) {
+        g_analog_as_mouse_enabled[player] = enabled;
+    }
+}
+
++ (void)setAnalogAsMouseSensitivity:(float)sensitivity forPlayer:(int)player {
+    if (player >= 0 && player < MAX_PLAYERS) {
+        g_analog_as_mouse_sensitivity[player] = sensitivity;
+    }
+}
+
++ (void)setAnalogAsMouseDeadzone:(float)deadzone forPlayer:(int)player {
+    if (player >= 0 && player < MAX_PLAYERS) {
+        g_analog_as_mouse_deadzone[player] = deadzone;
+    }
+}
+
++ (void)setAnalogAsMouseStick:(int)stickIndex forPlayer:(int)player {
+    if (player >= 0 && player < MAX_PLAYERS && stickIndex >= 0 && stickIndex < 2) {
+        g_analog_as_mouse_stick_index[player] = stickIndex;
+    }
+}
+
++ (void)setAnalogMouseDeltaX:(int16_t)dx Y:(int16_t)dy {
+    g_mouse_state.analog_mouse_delta_x = dx;
+    g_mouse_state.analog_mouse_delta_y = dy;
+}
+
 #pragma mark - Pointer Input
 
 + (void)setPointerX:(int16_t)x Y:(int16_t)y pressed:(BOOL)pressed {

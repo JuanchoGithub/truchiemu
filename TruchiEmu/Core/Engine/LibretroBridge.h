@@ -107,6 +107,13 @@ down:(BOOL)down;
 
 /* Pointer Input — for RETRO_DEVICE_POINTER (absolute coordinates) */
 + (void)setPointerX:(int16_t)x Y:(int16_t)y pressed:(BOOL)pressed;
+
+/* Analog as Mouse — converts analog stick to mouse movement in bridge_input_poll */
++ (void)setAnalogAsMouseEnabled:(BOOL)enabled forPlayer:(int)player;
++ (void)setAnalogAsMouseSensitivity:(float)sensitivity forPlayer:(int)player;
++ (void)setAnalogAsMouseDeadzone:(float)deadzone forPlayer:(int)player;
++ (void)setAnalogAsMouseStick:(int)stickIndex forPlayer:(int)player;
++ (void)setAnalogMouseDeltaX:(int16_t)dx Y:(int16_t)dy;
 @end
 
 NS_ASSUME_NONNULL_END

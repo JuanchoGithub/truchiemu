@@ -833,6 +833,7 @@
 		B9956186D1359CD6DA6EF05B /* fightdata_knckhead.json in Resources */ = {isa = PBXBuildFile; fileRef = 6482F8A8ADFB1B9B324BC043 /* fightdata_knckhead.json */; };
 		B99F0771CCACF4B87FF04FC5 /* Sega - Mega Drive - Genesis.dat in Resources */ = {isa = PBXBuildFile; fileRef = 7F93FF0CC02DE90C30470010 /* Sega - Mega Drive - Genesis.dat */; };
 		B9C5CFAF7A90431AA77F02C6 /* fightdata_jchan.json in Resources */ = {isa = PBXBuildFile; fileRef = 037D149BE1ADE5FB4FDC4054 /* fightdata_jchan.json */; };
+		BA41C9657722249E795D90F7 /* AnalogMouseSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 193ACA41987FBBE48BD98028 /* AnalogMouseSettingsView.swift */; };
 		BAFE65EA13C8BF0C4F90B918 /* SaveManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3BFA1246A6786356AD01A21 /* SaveManagerView.swift */; };
 		BB4CE2FFF63A6ACC6BA7134A /* input_coreOverrides_virtual_jaguar.json in Resources */ = {isa = PBXBuildFile; fileRef = 3459E3228FC584E29B93359B /* input_coreOverrides_virtual_jaguar.json */; };
 		BBFF679698D143C892C3BEAD /* input_coreLabels_doukutsu-rs.json in Resources */ = {isa = PBXBuildFile; fileRef = A178111F73BFF0F62C4D4D53 /* input_coreLabels_doukutsu-rs.json */; };
@@ -1229,6 +1230,7 @@
 		18973687527A0FA4A857468A /* input_coreLabels_bsnes_balanced.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_bsnes_balanced.json; sourceTree = "<group>"; };
 		1898126C5EF4999C1CE14CC2 /* input_coreLabels_snes9x_2005_plus.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_snes9x_2005_plus.json; sourceTree = "<group>"; };
 		18FB8DBEC0B88BDDE5768B78 /* mupen64plus_next_libretro_default.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = mupen64plus_next_libretro_default.json; sourceTree = "<group>"; };
+		193ACA41987FBBE48BD98028 /* AnalogMouseSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalogMouseSettingsView.swift; sourceTree = "<group>"; };
 		19BE5184F223C9FB5AAB7A18 /* DINOTHAWR.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = DINOTHAWR.png; sourceTree = "<group>"; };
 		1A3A05A8FA72F563D3261FE1 /* ChangelogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangelogView.swift; sourceTree = "<group>"; };
 		1A9E58263DA3E3D753B39562 /* GameDBRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDBRepository.swift; sourceTree = "<group>"; };
@@ -3778,6 +3780,7 @@
 			isa = PBXGroup;
 			children = (
 				EF63A8BB2AE99EA8E721D3E9 /* AboutView.swift */,
+				193ACA41987FBBE48BD98028 /* AnalogMouseSettingsView.swift */,
 				71020EB1CE64E1B4DD3514D7 /* BezelSettingsView.swift */,
 				A4F332DF631734D8EED42E6B /* BoxArtSettingsView.swift */,
 				1A3A05A8FA72F563D3261FE1 /* ChangelogView.swift */,
@@ -5037,6 +5040,7 @@
 				A9DD8337345315BE6B8E1D37 /* AchievementListView.swift in Sources */,
 				DAA7D00D03C90DDF0DD7D031 /* AchievementToastView.swift in Sources */,
 				151D372D28A505324152DBB2 /* AnalogDeadZone.swift in Sources */,
+				BA41C9657722249E795D90F7 /* AnalogMouseSettingsView.swift in Sources */,
 				8486017DB7D747C9E058F05D /* AppSettings.swift in Sources */,
 				F795BC067809176CEFAEEF29 /* AppUpdateService.swift in Sources */,
 				F2977433FDB56451CDF737CE /* AppearanceMode.swift in Sources */,

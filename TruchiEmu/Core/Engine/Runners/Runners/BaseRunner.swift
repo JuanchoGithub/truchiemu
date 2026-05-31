@@ -1111,14 +1111,14 @@ case "scummvm": runner = ScummVMRunner()
         }
     }
 
-    private func elementMatches(_ element: GCControllerElement, name: String) -> Bool {
+    func elementMatches(_ element: GCControllerElement, name: String) -> Bool {
         if element.localizedName == name { return true }
         if let sf = element.sfSymbolsName, sf == name { return true }
         if let unmapped = element.unmappedLocalizedName, unmapped == name { return true }
         return false
     }
 
-    private func updateGamepadButton(_ element: GCControllerElement, in mapping: ControllerGamepadMapping, player: Int = 0) {
+    func updateGamepadButton(_ element: GCControllerElement, in mapping: ControllerGamepadMapping, player: Int = 0) {
         for (btn, btnMapping) in mapping.buttons {
             guard elementMatches(element, name: btnMapping.gcElementName) else { continue }
             
@@ -1146,13 +1146,23 @@ case "scummvm": runner = ScummVMRunner()
                     }
                 }
                 
-                aggregatedAxisValue = AnalogDeadZone.default.apply(aggregatedAxisValue)
-                aggregatedAxisValue = max(-1.0, min(1.0, aggregatedAxisValue))
-                let retroValue = Int32(aggregatedAxisValue * 32767.0)
-                XPCBridgeAdapter.shared.setAnalogState(Int(info.index), id: Int(info.id), value: retroValue, player: player)
-            } 
-            
-            // 2. Handle Digital Joypad Buttons (ID 0 to 15)
+        aggregatedAxisValue = AnalogDeadZone.default.apply(aggregatedAxisValue)
+        aggregatedAxisValue = max(-1.0, min(1.0, aggregatedAxisValue))
+        let retroValue = Int32(aggregatedAxisValue * 32767.0)
+        XPCBridgeAdapter.shared.setAnalogState(Int(info.index), id: Int(info.id), value: retroValue, player: player)
+        }
+
+        // 1b. Handle Mouse Buttons — route to mouse button state instead of joypad
+        else if btn == .mouseLeft || btn == .mouseRight || btn == .mouseMiddle {
+            let buttonIndex = btn == .mouseLeft ? 0 : (btn == .mouseRight ? 1 : 2)
+            if let btnElement = element as? GCControllerButtonInput {
+                XPCBridgeAdapter.shared.setMouseButton(buttonIndex, pressed: btnElement.isPressed)
+            } else if let axisElement = element as? GCControllerAxisInput {
+                XPCBridgeAdapter.shared.setMouseButton(buttonIndex, pressed: abs(axisElement.value) > 0.5)
+            }
+        }
+
+        // 2. Handle Digital Joypad Buttons (ID 0 to 15)
         else if btn.retroID(for: self.systemID, coreID: self.activeCoreID) >= 0 {
             let retroID = Int(btn.retroID(for: self.systemID, coreID: self.activeCoreID))
                 

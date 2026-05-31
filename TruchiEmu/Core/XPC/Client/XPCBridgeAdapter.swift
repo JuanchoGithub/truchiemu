@@ -300,6 +300,31 @@ final class XPCBridgeAdapter {
         LoggerService.warning(category: "XPCBridgeAdapter", "setPointerPosition without shared memory — XPC proxy path not implemented for pointer input")
     }
 
+    func setAnalogMouseConfig(player: Int, enabled: Bool, sensitivity: Float, deadzone: Float, stickIndex: Int) {
+        if useSharedMemory, let shm = shmManager.sharedMemory {
+            xpc_shm_set_analog_mouse_config(shm, Int32(player), enabled, sensitivity, deadzone, Int32(stickIndex))
+            return
+        }
+        guard useXPC else {
+            LibretroBridgeSwift.setAnalogAsMouseEnabled(enabled, forPlayer: player)
+            LibretroBridgeSwift.setAnalogAsMouseSensitivity(sensitivity, forPlayer: player)
+            LibretroBridgeSwift.setAnalogAsMouseDeadzone(deadzone, forPlayer: player)
+            LibretroBridgeSwift.setAnalogAsMouseStick(stickIndex, forPlayer: player)
+            return
+        }
+        LoggerService.warning(category: "XPCBridgeAdapter", "setAnalogMouseConfig without shared memory — unsupported")
+    }
+
+    func setAnalogMouseDeltaX(_ dx: Int16, y dy: Int16) {
+        if useSharedMemory, let shm = shmManager.sharedMemory {
+            shm.pointee.mouse.analog_mouse_delta_x = dx
+            shm.pointee.mouse.analog_mouse_delta_y = dy
+            return
+        }
+        guard useXPC else { LibretroBridgeSwift.setAnalogMouseDeltaX(dx, y: dy); return }
+        LoggerService.warning(category: "XPCBridgeAdapter", "setAnalogMouseDelta without shared memory — unsupported")
+    }
+
     // MARK: - State / Settings (XPC async)
 
     func setPaused(_ paused: Bool) {

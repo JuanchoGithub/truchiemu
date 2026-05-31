@@ -14,7 +14,7 @@ struct SettingsView: View {
     enum Page: Hashable, Codable, RawRepresentable, Identifiable {
         
         var id: String { rawValue }
-        case general, saves, library, cores, controllers, boxArt, display, cheats, bezels, retroAchievements, genre, logging, moveList, about
+        case general, saves, library, cores, controllers, analogMouse, boxArt, display, cheats, bezels, retroAchievements, genre, logging, moveList, about
         
         var rawValue: String {
             switch self {
@@ -22,8 +22,9 @@ struct SettingsView: View {
             case .saves: return "saves"
             case .library: return "library"
             case .cores: return "cores"
-            case .controllers: return "controllers"
-            case .boxArt: return "boxArt"
+        case .controllers: return "controllers"
+        case .analogMouse: return "analogMouse"
+        case .boxArt: return "boxArt"
             case .display: return "display"
             case .cheats: return "cheats"
             case .bezels: return "bezels"
@@ -41,8 +42,9 @@ struct SettingsView: View {
             case "saves": self = .saves
             case "library": self = .library
             case "cores": self = .cores
-            case "controllers": self = .controllers
-            case "boxArt": self = .boxArt
+        case "controllers": self = .controllers
+        case "analogMouse": self = .analogMouse
+        case "boxArt": self = .boxArt
             case "display": self = .display
             case "cheats": self = .cheats
             case "bezels": self = .bezels
@@ -61,8 +63,9 @@ struct SettingsView: View {
             case .saves: return "externaldrive.fill"
             case .library: return "book.fill"
             case .cores: return "cpu.fill"
-            case .controllers: return "gamecontroller.fill"
-            case .boxArt: return "photo.stack.fill"
+        case .controllers: return "gamecontroller.fill"
+        case .analogMouse: return "computermouse.fill"
+        case .boxArt: return "photo.stack.fill"
             case .display: return "tv.fill"
             case .cheats: return "wand.and.stars"
             case .bezels: return "rectangle.on.rectangle"
@@ -80,8 +83,9 @@ struct SettingsView: View {
             case .saves: return LocalizationManager.shared.localized("settings.saves")
             case .library: return LocalizationManager.shared.localized("settings.library")
             case .cores: return LocalizationManager.shared.localized("settings.cores")
-            case .controllers: return LocalizationManager.shared.localized("settings.controllers")
-            case .boxArt: return LocalizationManager.shared.localized("settings.boxArt")
+        case .controllers: return LocalizationManager.shared.localized("settings.controllers")
+        case .analogMouse: return LocalizationManager.shared.localized("settings.analogMouse")
+        case .boxArt: return LocalizationManager.shared.localized("settings.boxArt")
             case .display: return LocalizationManager.shared.localized("settings.display")
             case .cheats: return LocalizationManager.shared.localized("settings.cheats")
             case .bezels: return LocalizationManager.shared.localized("settings.bezels")
@@ -103,9 +107,11 @@ struct SettingsView: View {
                 return "library folders roms games scan rescan hidden bios"
             case .cores:
                 return "cores emulator download update system"
-            case .controllers:
-                return "controllers gamepad keyboard mapping player buttons input"
-            case .boxArt:
+        case .controllers:
+            return "controllers gamepad keyboard mapping player buttons input"
+        case .analogMouse:
+            return "analog mouse stick controller sensitivity deadzone dos scummvm pointer cursor"
+        case .boxArt:
                 return "box art thumbnail images pictures cover"
             case .display:
                 return "display screen shader preset bezel"
@@ -134,13 +140,13 @@ struct SettingsView: View {
     }
     
     static let allPages: [Page] = [
-        .boxArt, .cheats, .controllers, .cores, .bezels, .display,
+        .analogMouse, .boxArt, .cheats, .controllers, .cores, .bezels, .display,
         .general, .saves, .genre, .library, .logging, .moveList, .retroAchievements, .about
     ]
-    
+
     private static let pageGroups: [PageGroup] = [
         PageGroup(id: "general", label: LocalizationManager.shared.localized("settingsGroup.general"), pages: [.general, .library]),
-        PageGroup(id: "systems", label: LocalizationManager.shared.localized("settingsGroup.systems"), pages: [.cores, .saves, .controllers]),
+        PageGroup(id: "systems", label: LocalizationManager.shared.localized("settingsGroup.systems"), pages: [.cores, .saves, .controllers, .analogMouse]),
         PageGroup(id: "visuals", label: LocalizationManager.shared.localized("settingsGroup.visuals"), pages: [.boxArt, .display, .bezels, .cheats]),
         PageGroup(id: "advanced", label: LocalizationManager.shared.localized("settingsGroup.advanced"), pages: [.retroAchievements, .genre, .logging, .moveList, .about]),
     ]
@@ -399,7 +405,8 @@ struct SettingsView: View {
             case .library:     LibrarySettingsView(searchText: $searchText)
             case .cores:       CoreSettingsView(searchText: $searchText)
             case .controllers: ControllerSettingsView(systemID: effectiveSystemID, searchText: $searchText)
-            case .boxArt:      BoxArtSettingsView(searchText: $searchText)
+            case .analogMouse: AnalogMouseSettingsView(searchText: $searchText)
+            case .boxArt: BoxArtSettingsView(searchText: $searchText)
             case .display:     DisplaySettingsView(searchText: $searchText)
             case .cheats:      CheatSettingsView(system: system, searchText: $searchText)
             case .bezels:     BezelSettingsView(system: system, searchText: $searchText)

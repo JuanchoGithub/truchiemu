@@ -60,6 +60,8 @@ typedef struct {
     int16_t delta_y;
     int16_t wheel_delta;
     uint32_t buttons;
+    int16_t analog_mouse_delta_x;
+    int16_t analog_mouse_delta_y;
 } MouseState;
 extern MouseState g_mouse_state;
 

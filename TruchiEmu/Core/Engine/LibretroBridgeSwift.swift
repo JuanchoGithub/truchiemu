@@ -196,6 +196,28 @@ import Foundation
         LibretroBridge.setPointerX(x, y: y, pressed: pressed)
     }
 
+    // MARK: - Analog as Mouse
+
+    static func setAnalogAsMouseEnabled(_ enabled: Bool, forPlayer player: Int = 0) {
+        LibretroBridge.setAnalogAsMouseEnabled(enabled, forPlayer: Int32(player))
+    }
+
+    static func setAnalogAsMouseSensitivity(_ sensitivity: Float, forPlayer player: Int = 0) {
+        LibretroBridge.setAnalogAsMouseSensitivity(sensitivity, forPlayer: Int32(player))
+    }
+
+    static func setAnalogAsMouseDeadzone(_ deadzone: Float, forPlayer player: Int = 0) {
+        LibretroBridge.setAnalogAsMouseDeadzone(deadzone, forPlayer: Int32(player))
+    }
+
+    static func setAnalogAsMouseStick(_ stickIndex: Int, forPlayer player: Int = 0) {
+        LibretroBridge.setAnalogAsMouseStick(Int32(stickIndex), forPlayer: Int32(player))
+    }
+
+    static func setAnalogMouseDeltaX(_ dx: Int16, y dy: Int16) {
+        LibretroBridge.setAnalogMouseDeltaX(dx, y: dy)
+    }
+
     // MARK: - Video / Geometry
     
     static func currentRotation() -> Int {

@@ -19,6 +19,11 @@ int g_turbo_fireButton[MAX_PLAYERS][32] = {0};
 struct retro_keyboard_callback g_keyboard_callback = {NULL};
 BOOL g_keyboard_callback_registered = NO;
 
+BOOL g_analog_as_mouse_enabled[MAX_PLAYERS] = {NO};
+float g_analog_as_mouse_sensitivity[MAX_PLAYERS] = {1.0f};
+float g_analog_as_mouse_deadzone[MAX_PLAYERS] = {0.15f};
+int g_analog_as_mouse_stick_index[MAX_PLAYERS] = {0};
+
 // Local struct definitions for interfaces not defined in libretro.h
 // These are used by the core to determine which features are supported
 struct retro_rumble_interface {
@@ -459,6 +464,9 @@ int16_t bridge_input_state(unsigned port, unsigned device, unsigned index, unsig
         if (device == RETRO_DEVICE_JOYPAD)
             return xpc_shm_get_input_state(g_xpc_shm, (int)port, id & 0x1F) ? 1 : 0;
         if (device == RETRO_DEVICE_ANALOG) {
+            if (xpc_shm_get_analog_mouse_enabled(g_xpc_shm, (int)port) && index < 2) {
+                return 0;
+            }
             if (index < 2 && id < 2) {
                 int16_t val = xpc_shm_get_analog_state(g_xpc_shm, (int)port, (int)index, (int)id);
                 if (val != 0) return val;
@@ -475,8 +483,8 @@ int16_t bridge_input_state(unsigned port, unsigned device, unsigned index, unsig
         }
         if (device == RETRO_DEVICE_MOUSE) {
             switch (id) {
-            case RETRO_DEVICE_ID_MOUSE_X: return g_xpc_shm->mouse.delta_x;
-            case RETRO_DEVICE_ID_MOUSE_Y: return g_xpc_shm->mouse.delta_y;
+            case RETRO_DEVICE_ID_MOUSE_X: return (int16_t)MAX(-32767, MIN(32767, (int32_t)g_xpc_shm->mouse.delta_x + g_xpc_shm->mouse.analog_mouse_delta_x));
+            case RETRO_DEVICE_ID_MOUSE_Y: return (int16_t)MAX(-32767, MIN(32767, (int32_t)g_xpc_shm->mouse.delta_y + g_xpc_shm->mouse.analog_mouse_delta_y));
             case RETRO_DEVICE_ID_MOUSE_LEFT: return (g_xpc_shm->mouse.buttons & 1) ? 1 : 0;
             case RETRO_DEVICE_ID_MOUSE_RIGHT: return (g_xpc_shm->mouse.buttons & 2) ? 1 : 0;
             case RETRO_DEVICE_ID_MOUSE_MIDDLE: return (g_xpc_shm->mouse.buttons & 4) ? 1 : 0;
@@ -507,6 +515,9 @@ int16_t bridge_input_state(unsigned port, unsigned device, unsigned index, unsig
     if (device == RETRO_DEVICE_JOYPAD)
         return g_input_state[port][id & 0x1F] ? 1 : 0;
     if (device == RETRO_DEVICE_ANALOG) {
+        if (g_analog_as_mouse_enabled[port] && index < 2) {
+            return 0;
+        }
         if (index < 2 && id < 2) {
             int16_t val = g_analog_state[port][index][id];
             if (val != 0)
@@ -534,8 +545,8 @@ int16_t bridge_input_state(unsigned port, unsigned device, unsigned index, unsig
     // RETRO_DEVICE_MOUSE - relative mouse movement + buttons
     if (device == RETRO_DEVICE_MOUSE) {
         switch (id) {
-        case RETRO_DEVICE_ID_MOUSE_X: return g_mouse_state.delta_x;
-        case RETRO_DEVICE_ID_MOUSE_Y: return g_mouse_state.delta_y;
+        case RETRO_DEVICE_ID_MOUSE_X: return (int16_t)MAX(-32767, MIN(32767, (int32_t)g_mouse_state.delta_x + g_mouse_state.analog_mouse_delta_x));
+        case RETRO_DEVICE_ID_MOUSE_Y: return (int16_t)MAX(-32767, MIN(32767, (int32_t)g_mouse_state.delta_y + g_mouse_state.analog_mouse_delta_y));
         case RETRO_DEVICE_ID_MOUSE_LEFT: return (g_mouse_state.buttons & 1) ? 1 : 0;
         case RETRO_DEVICE_ID_MOUSE_RIGHT: return (g_mouse_state.buttons & 2) ? 1 : 0;
         case RETRO_DEVICE_ID_MOUSE_MIDDLE: return (g_mouse_state.buttons & 4) ? 1 : 0;

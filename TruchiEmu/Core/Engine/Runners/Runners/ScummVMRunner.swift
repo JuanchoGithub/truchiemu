@@ -1,5 +1,6 @@
 import Foundation
 import MetalKit
+import GameController
 
 // MARK: - ScummVM Cache Manager (static, called from ROMLibrary)
 
@@ -47,7 +48,18 @@ enum ScummVMCacheManager {
 // 3. Generating a .scummvm hook file
 // 4. Passing the .scummvm file to the core instead of the ZIP
 class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
-    
+
+    private var analogMouseButtonLeft: String = "a"
+    private var analogMouseButtonDownRight: String = "b"
+    private var analogMouseButtonDownMiddle: String = "x"
+    private var analogMouseTimer: Timer?
+
+    override func stop() {
+        analogMouseTimer?.invalidate()
+        analogMouseTimer = nil
+        super.stop()
+    }
+
     // MARK: - Game ID Detection Patterns
     
 
@@ -311,6 +323,32 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
         return nil
     }
     
+    // MARK: - Analog Mouse Configuration
+
+    @MainActor
+    private func configureAnalogMouse() {
+        let sysID = "scummvm"
+        let enabled = AppSettings.getBool("analogMouse_enabled_\(sysID)", defaultValue: false)
+
+        if enabled {
+            let sensitivity = Float(AppSettings.getDouble("analogMouse_sensitivity_\(sysID)", defaultValue: 1.0))
+            let deadZone = Float(AppSettings.getDouble("analogMouse_deadZone_\(sysID)", defaultValue: 0.15))
+            let stickString = AppSettings.getString("analogMouse_stick_\(sysID)", defaultValue: "left") ?? "left"
+            let stickIndex = stickString == "right" ? 1 : 0
+
+            XPCBridgeAdapter.shared.setAnalogMouseConfig(player: 0, enabled: true, sensitivity: sensitivity, deadzone: deadZone, stickIndex: stickIndex)
+
+            analogMouseButtonLeft = AppSettings.getString("analogMouse_buttonLeft_\(sysID)", defaultValue: "a") ?? "a"
+            analogMouseButtonDownRight = AppSettings.getString("analogMouse_buttonRight_\(sysID)", defaultValue: "b") ?? "b"
+            analogMouseButtonDownMiddle = AppSettings.getString("analogMouse_buttonMiddle_\(sysID)", defaultValue: "x") ?? "x"
+
+            LoggerService.info(category: "ScummVM", "Analog mouse enabled: sensitivity=\(sensitivity), deadZone=\(deadZone), stick=\(stickString), left=\(analogMouseButtonLeft), right=\(analogMouseButtonDownRight), middle=\(analogMouseButtonDownMiddle)")
+        } else {
+            XPCBridgeAdapter.shared.setAnalogMouseConfig(player: 0, enabled: false, sensitivity: 1.0, deadzone: 0.15, stickIndex: 0)
+            LoggerService.debug(category: "ScummVM", "Analog mouse disabled")
+        }
+    }
+
     @MainActor
     override func launch(rom: ROM, coreID: String, shaderUniformOverrides: [String: Float] = [:]) {
     let romPath = rom.path
@@ -370,6 +408,83 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
         // Auto-start input capture for ScummVM games
         if let window = self.window, !InputCaptureManager.shared.isCapturing {
             InputCaptureManager.shared.startCapture(window: window)
+        }
+
+        configureAnalogMouse()
+    }
+
+    @MainActor
+    override func setupGamepadInput() {
+        super.setupGamepadInput()
+
+        guard AppSettings.getBool("analogMouse_enabled_scummvm", defaultValue: false) else { return }
+
+        let cs = ControllerService.shared
+        let sysID = "scummvm"
+        let sensitivity = Float(AppSettings.getDouble("analogMouse_sensitivity_\(sysID)", defaultValue: 1.0))
+        let deadZone = Float(AppSettings.getDouble("analogMouse_deadZone_\(sysID)", defaultValue: 0.15))
+        let stickString = AppSettings.getString("analogMouse_stick_\(sysID)", defaultValue: "left") ?? "left"
+
+        for player in cs.connectedControllers {
+            guard let controller = player.gcController,
+                  let extendedGamepad = controller.extendedGamepad else { continue }
+            let mapping = cs.mapping(for: controller.vendorName ?? "Unknown", systemID: sysID)
+            let ports = player.assignedPlayers.map { $0 - 1 }
+
+            let stick = stickString == "right" ? extendedGamepad.rightThumbstick : extendedGamepad.leftThumbstick
+            let secondaryStick = stickString == "right" ? extendedGamepad.leftThumbstick : extendedGamepad.rightThumbstick
+
+            analogMouseTimer = Timer.scheduledTimer(withTimeInterval: 1.0 / 60.0, repeats: true) { [weak self] _ in
+                guard self != nil else { return }
+                var xVal = stick.xAxis.value
+                var yVal = stick.yAxis.value
+                if fabsf(xVal) < deadZone { xVal = 0 }
+                if fabsf(yVal) < deadZone { yVal = 0 }
+                var dx = Int16(xVal * sensitivity * 8.0)
+                var dy = Int16(-yVal * sensitivity * 8.0)
+
+                let x2 = secondaryStick.xAxis.value
+                let y2 = secondaryStick.yAxis.value
+                if fabsf(x2) >= deadZone { dx += Int16(x2 * sensitivity * 8.0 * 0.2) }
+                if fabsf(y2) >= deadZone { dy += Int16(-y2 * sensitivity * 8.0 * 0.2) }
+
+                XPCBridgeAdapter.shared.setAnalogMouseDeltaX(dx, y: dy)
+            }
+
+            extendedGamepad.valueChangedHandler = { [weak self] _, element in
+                guard let self = self else { return }
+                for port in ports {
+                    self.handleScummVMButtons(element, in: mapping, player: port)
+                }
+            }
+        }
+    }
+
+    private func handleScummVMButtons(_ element: GCControllerElement, in mapping: ControllerGamepadMapping, player: Int) {
+        if let dpad = element as? GCControllerDirectionPad {
+            updateGamepadButton(dpad.up, in: mapping, player: player)
+            updateGamepadButton(dpad.down, in: mapping, player: player)
+            updateGamepadButton(dpad.left, in: mapping, player: player)
+            updateGamepadButton(dpad.right, in: mapping, player: player)
+            updateGamepadButton(dpad, in: mapping, player: player)
+        } else {
+            updateGamepadButton(element, in: mapping, player: player)
+        }
+
+        guard let btn = element as? GCControllerButtonInput else { return }
+        for (retroBtn, btnMapping) in mapping.buttons {
+            guard elementMatches(element, name: btnMapping.gcElementName) else { continue }
+            let raw = retroBtn.rawValue
+            if raw == analogMouseButtonLeft {
+                XPCBridgeAdapter.shared.setMouseButton(0, pressed: btn.isPressed)
+            }
+            if raw == analogMouseButtonDownRight {
+                XPCBridgeAdapter.shared.setMouseButton(1, pressed: btn.isPressed)
+            }
+            if raw == analogMouseButtonDownMiddle {
+                XPCBridgeAdapter.shared.setMouseButton(2, pressed: btn.isPressed)
+            }
+            break
         }
     }
 }
