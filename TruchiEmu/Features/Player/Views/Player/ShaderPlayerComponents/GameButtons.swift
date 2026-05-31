@@ -401,14 +401,16 @@ if let info = slotInfo(for: slot), info.exists, let timestamp = info.formattedDa
     
     private func slotInfo(for slot: Int) -> SlotInfo? {
         guard let rom = runner.rom else { return nil }
-        return runner.saveManager.slotInfo(gameName: rom.displayName, systemID: rom.systemID ?? "default", slot: slot)
+        let gameKey = "\(rom.displayName)__\(rom.id.uuidString.prefix(8))"
+        return runner.saveManager.slotInfo(gameName: gameKey, systemID: rom.systemID ?? "default", slot: slot)
     }
     
     private func loadThumbnails() {
         guard let rom = runner.rom else { return }
         let systemID = rom.systemID ?? "default"
+        let gameKey = "\(rom.displayName)__\(rom.id.uuidString.prefix(8))"
         for slot in -1...9 {
-            if let thumbnail = runner.saveManager.loadThumbnail(gameName: rom.displayName, systemID: systemID, slot: slot) {
+            if let thumbnail = runner.saveManager.loadThumbnail(gameName: gameKey, systemID: systemID, slot: slot) {
                 slotThumbnails[slot] = thumbnail
             }
         }

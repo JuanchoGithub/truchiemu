@@ -101,15 +101,9 @@ func statePath(gameName: String, systemID: String, slot: Int) -> URL {
 
     let fileName: String
     if slot == -1 {
-        // Auto-save (system only): just ".state" extension (no number)
-        fileName = "\(safeName).state"
-    } else if slot >= 0 && slot <= 9 {
-        // User slots 0-9: ".state0" through ".state9"
-        // Slot 0 is now a regular user slot, separate from auto-save
-        fileName = "\(safeName).state\(slot)"
+        fileName = "\(safeName)__autosave"
     } else {
-        // Fallback for any other slot number
-        fileName = "\(safeName).state\(slot)"
+        fileName = "\(safeName)__slot_\(slot)"
     }
 
 return sysDir.appendingPathComponent(fileName)
@@ -197,7 +191,6 @@ return sysDir.appendingPathComponent(fileName)
         }
     }
 
-    // Deletes all save states for a specific game
     func deleteAllStates(gameName: String, systemID: String) throws {
         let sysDir = systemDirectory(systemID: systemID)
         let safeName = safeGameStateName(gameName)
@@ -206,7 +199,7 @@ return sysDir.appendingPathComponent(fileName)
         let contents = try fm.contentsOfDirectory(atPath: sysDir.path)
         
         for item in contents {
-            if item.hasPrefix("\(safeName).state") {
+            if item.hasPrefix("\(safeName)__") {
                 let fileURL = sysDir.appendingPathComponent(item)
                 try fm.removeItem(at: fileURL)
             }
@@ -340,9 +333,9 @@ func progressiveStatePath(gameName: String, systemID: String, slot: Int, version
     let sysDir = systemDirectory(systemID: systemID)
     let safeName = safeGameStateName(gameName)
     if slot == -1 {
-        return sysDir.appendingPathComponent("\(safeName).state.auto~\(version)")
+        return sysDir.appendingPathComponent("\(safeName)__autosave__v\(version)")
     } else {
-        return sysDir.appendingPathComponent("\(safeName).state\(slot)~\(version)")
+        return sysDir.appendingPathComponent("\(safeName)__slot_\(slot)__v\(version)")
     }
 }
 
@@ -392,15 +385,14 @@ func progressiveThumbnailPath(gameName: String, systemID: String, slot: Int, ver
         return 1
     }
 
-// Returns all existing progressive version numbers for a given slot
 func progressiveSlotVersions(gameName: String, systemID: String, slot: Int) -> [Int] {
     let sysDir = systemDirectory(systemID: systemID)
     let safeName = safeGameStateName(gameName)
     let prefix: String
     if slot == -1 {
-        prefix = "\(safeName).state.auto~"
+        prefix = "\(safeName)__autosave__v"
     } else {
-        prefix = "\(safeName).state\(slot)~"
+        prefix = "\(safeName)__slot_\(slot)__v"
     }
     guard let contents = try? FileManager.default.contentsOfDirectory(atPath: sysDir.path) else {
         return []
@@ -491,10 +483,10 @@ func allProgressiveSlots(gameName: String, systemID: String) -> [Int: [SlotInfo]
 // Extract game name from a save state filename
 private func extractGameName(from stateFile: String) -> String {
     let patterns = [
-        try! NSRegularExpression(pattern: "\\.state\\.auto~\\d+$"),
-        try! NSRegularExpression(pattern: "\\.state\\d+~\\d+$"),
-        try! NSRegularExpression(pattern: "\\.state\\d+$"),
-        try! NSRegularExpression(pattern: "\\.state$"),
+        try! NSRegularExpression(pattern: "__autosave__v\\d+$"),
+        try! NSRegularExpression(pattern: "__slot_\\d+__v\\d+$"),
+        try! NSRegularExpression(pattern: "__slot_\\d+$"),
+        try! NSRegularExpression(pattern: "__autosave$"),
     ]
     var name = stateFile
     for pattern in patterns {
@@ -526,7 +518,7 @@ func gamesWithSaves(inSystem systemID: String) -> [String] {
     guard let files = try? FileManager.default.contentsOfDirectory(atPath: sysDir.path) else { return [] }
     let stateFiles = files.filter { f in
         guard !f.hasSuffix(".png") else { return false }
-        return f.contains(".state")
+        return f.contains("__autosave") || f.contains("__slot_")
     }
     return Array(Set(stateFiles.map { extractGameName(from: $0) })).sorted()
 }
@@ -541,36 +533,28 @@ func allFilesForGame(gameName: String, systemID: String) -> ([SlotInfo], [URL]) 
     if let files = try? FileManager.default.contentsOfDirectory(atPath: sysDir.path) {
         let stateFiles = files.filter { f in
             guard !f.hasSuffix(".png") else { return false }
-            let base = f.hasSuffix(".state") || f.range(of: ".state") != nil
-            guard base else { return false }
-            return f == "\(safeName).state" || f.hasPrefix("\(safeName).state")
+            return f.hasPrefix("\(safeName)__autosave") || f.hasPrefix("\(safeName)__slot_")
         }
         for file in stateFiles {
             let fileURL = sysDir.appendingPathComponent(file)
             if let attrs = try? FileManager.default.attributesOfItem(atPath: fileURL.path) {
                 let slot: Int
-                if file.hasSuffix(".state") {
+                if file.hasPrefix("\(safeName)__autosave") {
                     slot = -1
-                } else if let range = file.range(of: ".state") {
-                    let suffix = file[range.upperBound...]
-                    if suffix.hasPrefix("auto~") {
-                        slot = -1
-                    } else if let tildeRange = suffix.range(of: "~") {
-                        let digits = suffix[..<tildeRange.lowerBound]
-                        slot = Int(digits) ?? 0
-                    } else {
-                        slot = Int(suffix) ?? 0
-                    }
+                } else if let slotRange = file.range(of: "__slot_") {
+                    let afterSlot = file[slotRange.upperBound...]
+                    let digits = afterSlot.prefix(while: { $0.isNumber })
+                    slot = Int(digits) ?? 0
                 } else {
                     slot = 0
                 }
-            stateSlots.append(SlotInfo(
-                id: slot,
-                exists: true,
-                fileSize: attrs[.size] as? Int64,
-                modificationDate: attrs[.modificationDate] as? Date,
-                progressiveVersion: nil
-            ))
+                stateSlots.append(SlotInfo(
+                    id: slot,
+                    exists: true,
+                    fileSize: attrs[.size] as? Int64,
+                    modificationDate: attrs[.modificationDate] as? Date,
+                    progressiveVersion: nil
+                ))
             }
         }
     }

@@ -590,7 +590,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
             let shouldAutoLoad = AppSettings.getBool("saveState_autoLoadOnStart", defaultValue: true)
             if shouldAutoLoad && !isDolphinCore() {
                 let systemID = rom.systemID ?? "default"
-                let gameName = rom.displayName
+                let gameName = "\(rom.displayName)__\(rom.id.uuidString.prefix(8))"
                 let allSlots = runner?.saveManager.allSlotInfo(gameName: gameName, systemID: systemID) ?? []
                 willLoadState = allSlots.contains { $0.exists }
             } else {
@@ -656,7 +656,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
             guard let self = self, let runner = self.runner else { return }
             let systemID = rom.systemID ?? "default"
-            let gameName = rom.displayName
+            let gameName = "\(rom.displayName)__\(rom.id.uuidString.prefix(8))"
 
             if let slotToLoad = slotToLoad {
                 // Load a specific slot

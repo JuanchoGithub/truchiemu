@@ -640,7 +640,8 @@ case "scummvm": runner = ScummVMRunner()
         }
         
         let systemID = gameRom.systemID ?? "default"
-        let (stateURL, version) = resolveSaveURL(slot: slot, gameName: gameRom.displayName, systemID: systemID)
+        let gameKey = "\(gameRom.displayName)__\(gameRom.id.uuidString.prefix(8))"
+        let (stateURL, version) = resolveSaveURL(slot: slot, gameName: gameKey, systemID: systemID)
         let actualVersion = progressiveVersion ?? version
         
         do {
@@ -664,11 +665,11 @@ case "scummvm": runner = ScummVMRunner()
                 if let nsImage = nsImage {
                     LoggerService.debug(category: "SaveState", "Captured thumbnail: \(nsImage.size.width)x\(nsImage.size.height)")
                     if let v = actualVersion {
-                        saveManager.saveThumbnail(nsImage, gameName: gameRom.displayName, systemID: systemID, slot: slot)
+                        saveManager.saveThumbnail(nsImage, gameName: gameKey, systemID: systemID, slot: slot)
                         // Also save thumbnail for progressive version
-                        saveManager.saveProgressiveThumbnail(image: nsImage, gameName: gameRom.displayName, systemID: systemID, slot: slot, version: v)
+                        saveManager.saveProgressiveThumbnail(image: nsImage, gameName: gameKey, systemID: systemID, slot: slot, version: v)
                     } else {
-                        saveManager.saveThumbnail(nsImage, gameName: gameRom.displayName, systemID: systemID, slot: slot)
+                        saveManager.saveThumbnail(nsImage, gameName: gameKey, systemID: systemID, slot: slot)
                     }
                 } else {
                     LoggerService.error(category: "SaveState", "ERROR: NSImageFromMTLTexture returned nil")
@@ -765,14 +766,15 @@ case "scummvm": runner = ScummVMRunner()
         }
         
         let systemID = gameRom.systemID ?? "default"
+        let gameKey = "\(gameRom.displayName)__\(gameRom.id.uuidString.prefix(8))"
         let stateURL: URL
 
-        let versions = saveManager.progressiveSlotVersions(gameName: gameRom.displayName, systemID: systemID, slot: slot)
+        let versions = saveManager.progressiveSlotVersions(gameName: gameKey, systemID: systemID, slot: slot)
         if !versions.isEmpty {
             var newestVersion = versions[0]
             var newestDate: Date? = nil
             for v in versions {
-                let info = saveManager.progressiveSlotInfo(gameName: gameRom.displayName, systemID: systemID, slot: slot, version: v)
+                let info = saveManager.progressiveSlotInfo(gameName: gameKey, systemID: systemID, slot: slot, version: v)
                 if info.exists {
                     if let date = info.modificationDate, date > (newestDate ?? .distantPast) {
                         newestDate = date
@@ -780,9 +782,9 @@ case "scummvm": runner = ScummVMRunner()
                     }
                 }
             }
-            stateURL = saveManager.progressiveStatePath(gameName: gameRom.displayName, systemID: systemID, slot: slot, version: newestVersion)
+            stateURL = saveManager.progressiveStatePath(gameName: gameKey, systemID: systemID, slot: slot, version: newestVersion)
         } else {
-            stateURL = saveManager.statePath(gameName: gameRom.displayName, systemID: systemID, slot: slot)
+            stateURL = saveManager.statePath(gameName: gameKey, systemID: systemID, slot: slot)
         }
         
         // Save current state as undo buffer before loading

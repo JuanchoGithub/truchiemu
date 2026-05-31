@@ -6,6 +6,12 @@ private struct SaveManagerGame: Identifiable, Hashable {
     let systemID: String
     let gameName: String
     var id: String { "\(systemID)/\(gameName)" }
+    var displayName: String {
+        if let range = gameName.range(of: "__") {
+            return String(gameName[..<range.lowerBound])
+        }
+        return gameName
+    }
 }
 
 private struct SaveManagerSlot: Identifiable {
@@ -52,7 +58,7 @@ struct SaveManagerView: View {
         if searchText.isEmpty {
             return games
         }
-        return games.filter { $0.gameName.localizedLowercase.contains(searchText.lowercased()) }
+        return games.filter { $0.displayName.localizedLowercase.contains(searchText.lowercased()) }
     }
 
     var body: some View {
@@ -206,7 +212,7 @@ struct SaveManagerView: View {
                                 Image(systemName: systemIcon(for: game.systemID))
                                     .foregroundStyle(AppColors.brandAccent)
                                     .frame(width: 16)
-                                Text(game.gameName)
+                                Text(game.displayName)
                                     .font(.body)
                                     .lineLimit(1)
                             }
@@ -236,7 +242,7 @@ struct SaveManagerView: View {
                         .font(.title)
                         .foregroundStyle(AppColors.brandAccent)
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(game.gameName)
+                        Text(game.displayName)
                             .font(.title2)
                             .fontWeight(.semibold)
                         Text(game.systemID)
@@ -419,7 +425,7 @@ struct SaveManagerView: View {
 
         postDeleteNotification(
             title: loc.localized("pill.saveDeleted"),
-            subtitle: "\(game.systemID) › \(game.gameName) › \(slotDisplayName(for: slot)) (\(Int64(size).formattedByteSize))",
+            subtitle: "\(game.systemID) › \(game.displayName) › \(slotDisplayName(for: slot)) (\(Int64(size).formattedByteSize))",
             filePairs: filePairs
         )
         if let game = selectedGame { loadGameDetail(game) }
@@ -439,7 +445,7 @@ struct SaveManagerView: View {
             }
             postDeleteNotification(
                 title: loc.localized("pill.ramSaveDeleted"),
-                subtitle: "\(game.systemID) › \(game.gameName) › \(file.fileName) (\(file.fileSize.formattedByteSize))",
+                subtitle: "\(game.systemID) › \(game.displayName) › \(file.fileName) (\(file.fileSize.formattedByteSize))",
                 filePairs: filePairs
             )
             if let game = selectedGame { loadGameDetail(game) }
@@ -555,7 +561,7 @@ struct SaveManagerView: View {
         if let files = try? FileManager.default.contentsOfDirectory(atPath: savefilesDir.path) {
             for file in files where file.hasSuffix(".srm") || file.hasSuffix(".dsv") {
                 let name = (file as NSString).deletingPathExtension
-                if !discoveredGames.contains(where: { $0.gameName.lowercased() == name.lowercased() }) {
+                if !discoveredGames.contains(where: { $0.displayName.lowercased() == name.lowercased() }) {
                     discoveredGames.append(SaveManagerGame(systemID: "savefiles", gameName: name))
                 }
             }

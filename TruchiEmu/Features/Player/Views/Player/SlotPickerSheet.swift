@@ -140,12 +140,13 @@ Divider()
     }
     
     private func slotInfo(for slot: Int) -> SlotInfo? { slotInfoList.first { $0.id == slot } }
-    private func refreshSlotInfo() { guard let rom = runner.rom else { return }; slotInfoList = runner.saveManager.allSlotInfo(gameName: rom.displayName, systemID: rom.systemID ?? "default") }
+    private func refreshSlotInfo() { guard let rom = runner.rom else { return }; let gameKey = "\(rom.displayName)__\(rom.id.uuidString.prefix(8))"; slotInfoList = runner.saveManager.allSlotInfo(gameName: gameKey, systemID: rom.systemID ?? "default") }
     private func loadThumbnails() {
         guard let rom = runner.rom else { return }
         let systemID = rom.systemID ?? "default"
+        let gameKey = "\(rom.displayName)__\(rom.id.uuidString.prefix(8))"
         for slot in -1...9 {
-            if let thumbnail = runner.saveManager.loadThumbnail(gameName: rom.displayName, systemID: systemID, slot: slot) {
+            if let thumbnail = runner.saveManager.loadThumbnail(gameName: gameKey, systemID: systemID, slot: slot) {
                 slotThumbnails[slot] = thumbnail
             }
         }
@@ -155,7 +156,8 @@ Divider()
     private func deleteFromSlot(_ slot: Int) {
         guard let rom = runner.rom else { return }
         do {
-            try runner.saveManager.deleteState(gameName: rom.displayName, systemID: rom.systemID ?? "default", slot: slot)
+            let gameKey = "\(rom.displayName)__\(rom.id.uuidString.prefix(8))"
+            try runner.saveManager.deleteState(gameName: gameKey, systemID: rom.systemID ?? "default", slot: slot)
             slotThumbnails[slot] = nil; refreshSlotInfo()
         } catch { LoggerService.debug(category: "SaveState", "Error deleting state: \(error)") }
     }
