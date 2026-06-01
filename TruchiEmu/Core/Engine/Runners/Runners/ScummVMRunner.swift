@@ -328,7 +328,8 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
     @MainActor
     private func configureAnalogMouse() {
         let sysID = "scummvm"
-        let enabled = AppSettings.getBool("analogMouse_enabled_\(sysID)", defaultValue: false)
+        let systemDefault = AppSettings.getBool("analogMouse_enabled_\(sysID)", defaultValue: false)
+        let enabled = rom?.settings.analogMouseEnabled ?? systemDefault
 
         if enabled {
             let sensitivity = Float(AppSettings.getDouble("analogMouse_sensitivity_\(sysID)", defaultValue: 1.0))
@@ -417,7 +418,9 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
     override func setupGamepadInput() {
         super.setupGamepadInput()
 
-        guard AppSettings.getBool("analogMouse_enabled_scummvm", defaultValue: false) else { return }
+        let systemDefault = AppSettings.getBool("analogMouse_enabled_scummvm", defaultValue: false)
+        let analogMouseEnabled = rom?.settings.analogMouseEnabled ?? systemDefault
+        guard analogMouseEnabled else { return }
 
         let cs = ControllerService.shared
         let sysID = "scummvm"
@@ -427,9 +430,10 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
 
         for player in cs.connectedControllers {
             guard let controller = player.gcController,
-                  let extendedGamepad = controller.extendedGamepad else { continue }
+            let extendedGamepad = controller.extendedGamepad else { continue }
             let mapping = cs.mapping(for: controller.vendorName ?? "Unknown", systemID: sysID)
             let ports = player.assignedPlayers.map { $0 - 1 }
+            let dpad = extendedGamepad.dpad
 
             let stick = stickString == "right" ? extendedGamepad.rightThumbstick : extendedGamepad.leftThumbstick
             let secondaryStick = stickString == "right" ? extendedGamepad.leftThumbstick : extendedGamepad.rightThumbstick
@@ -454,34 +458,42 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
             extendedGamepad.valueChangedHandler = { [weak self] _, element in
                 guard let self = self else { return }
                 for port in ports {
-                    self.handleScummVMButtons(element, in: mapping, player: port)
+                    self.handleScummVMButtons(element, in: mapping, player: port, dpad: dpad)
                 }
             }
         }
     }
 
-    private func handleScummVMButtons(_ element: GCControllerElement, in mapping: ControllerGamepadMapping, player: Int) {
-        if let dpad = element as? GCControllerDirectionPad {
-            updateGamepadButton(dpad.up, in: mapping, player: player)
-            updateGamepadButton(dpad.down, in: mapping, player: player)
-            updateGamepadButton(dpad.left, in: mapping, player: player)
-            updateGamepadButton(dpad.right, in: mapping, player: player)
-            updateGamepadButton(dpad, in: mapping, player: player)
-        } else {
-            updateGamepadButton(element, in: mapping, player: player)
+    private func handleScummVMButtons(_ element: GCControllerElement, in mapping: ControllerGamepadMapping, player: Int, dpad: GCControllerDirectionPad) {
+        if let dirPad = element as? GCControllerDirectionPad {
+            if dirPad === dpad {
+                XPCBridgeAdapter.shared.dispatchKeyboardEvent(keycode: 273, character: 0, modifiers: 0, down: dpad.up.isPressed)
+                XPCBridgeAdapter.shared.dispatchKeyboardEvent(keycode: 274, character: 0, modifiers: 0, down: dpad.down.isPressed)
+                XPCBridgeAdapter.shared.dispatchKeyboardEvent(keycode: 275, character: 0, modifiers: 0, down: dpad.right.isPressed)
+                XPCBridgeAdapter.shared.dispatchKeyboardEvent(keycode: 276, character: 0, modifiers: 0, down: dpad.left.isPressed)
+            }
+            return
         }
 
         guard let btn = element as? GCControllerButtonInput else { return }
         for (retroBtn, btnMapping) in mapping.buttons {
             guard elementMatches(element, name: btnMapping.gcElementName) else { continue }
             let raw = retroBtn.rawValue
+
+            if retroBtn == .start {
+                XPCBridgeAdapter.shared.dispatchKeyboardEvent(keycode: 13, character: 13, modifiers: 0, down: btn.isPressed)
+                break
+            }
+            if retroBtn == .select {
+                XPCBridgeAdapter.shared.dispatchKeyboardEvent(keycode: 32, character: 32, modifiers: 0, down: btn.isPressed)
+                break
+            }
+
             if raw == analogMouseButtonLeft {
                 XPCBridgeAdapter.shared.setMouseButton(0, pressed: btn.isPressed)
-            }
-            if raw == analogMouseButtonDownRight {
+            } else if raw == analogMouseButtonDownRight {
                 XPCBridgeAdapter.shared.setMouseButton(1, pressed: btn.isPressed)
-            }
-            if raw == analogMouseButtonDownMiddle {
+            } else if raw == analogMouseButtonDownMiddle {
                 XPCBridgeAdapter.shared.setMouseButton(2, pressed: btn.isPressed)
             }
             break

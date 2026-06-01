@@ -132,6 +132,7 @@ struct GameDetailView: View {
         case .shader: shaderSection
         case .bezels: bezelsSection
         case .controls: controlsSection
+        case .analogMouse: analogMouseSection
         case .savedStates: savedStatesSection
         case .cheats: cheatsSection
         case .core: coreSection
@@ -255,7 +256,11 @@ struct GameDetailView: View {
     }
 
     var primarySections: [DetailSection] {
-        [.gameInfo, .shader, .bezels, .controls]
+        var sections: [DetailSection] = [.gameInfo, .shader, .bezels, .controls]
+        if let sysID = currentROM.systemID, sysID == "dos" || sysID == "scummvm" {
+            sections.append(.analogMouse)
+        }
+        return sections
     }
 
     var advancedSections: [DetailSection] {

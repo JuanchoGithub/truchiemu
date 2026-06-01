@@ -63,7 +63,8 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
     @MainActor
     private func configureAnalogMouse() {
         let sysID = "dos"
-        let enabled = AppSettings.getBool("analogMouse_enabled_\(sysID)", defaultValue: false)
+        let systemDefault = AppSettings.getBool("analogMouse_enabled_\(sysID)", defaultValue: false)
+        let enabled = rom?.settings.analogMouseEnabled ?? systemDefault
 
         isMouseMode = enabled
 
@@ -90,7 +91,16 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
 
     @MainActor func toggleMouseMode() {
         isMouseMode.toggle()
-        XPCBridgeAdapter.shared.setAnalogMouseConfig(player: 0, enabled: isMouseMode, sensitivity: 1.0, deadzone: 0.15, stickIndex: 0)
+        if isMouseMode {
+            let sysID = "dos"
+            let sensitivity = Float(AppSettings.getDouble("analogMouse_sensitivity_\(sysID)", defaultValue: 1.0))
+            let deadZone = Float(AppSettings.getDouble("analogMouse_deadZone_\(sysID)", defaultValue: 0.15))
+            let stickString = AppSettings.getString("analogMouse_stick_\(sysID)", defaultValue: "left") ?? "left"
+            let stickIndex = stickString == "right" ? 1 : 0
+            XPCBridgeAdapter.shared.setAnalogMouseConfig(player: 0, enabled: true, sensitivity: sensitivity, deadzone: deadZone, stickIndex: stickIndex)
+        } else {
+            XPCBridgeAdapter.shared.setAnalogMouseConfig(player: 0, enabled: false, sensitivity: 1.0, deadzone: 0.15, stickIndex: 0)
+        }
         LoggerService.debug(category: "DOSRunner", "Mouse mode: \(isMouseMode ? "ON" : "OFF")")
     }
 
@@ -101,7 +111,8 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
         super.setupGamepadInput()
 
         let sysID = "dos"
-        let analogMouseEnabled = AppSettings.getBool("analogMouse_enabled_\(sysID)", defaultValue: false)
+        let systemDefault = AppSettings.getBool("analogMouse_enabled_\(sysID)", defaultValue: false)
+        let analogMouseEnabled = rom?.settings.analogMouseEnabled ?? systemDefault
         guard analogMouseEnabled else { return }
 
         let cs = ControllerService.shared
@@ -111,9 +122,10 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
 
         for player in cs.connectedControllers {
             guard let controller = player.gcController,
-                  let extendedGamepad = controller.extendedGamepad else { continue }
+            let extendedGamepad = controller.extendedGamepad else { continue }
             let mapping = cs.mapping(for: controller.vendorName ?? "Unknown", systemID: sysID)
             let ports = player.assignedPlayers.map { $0 - 1 }
+            let dpad = extendedGamepad.dpad
 
             let stick = stickString == "right" ? extendedGamepad.rightThumbstick : extendedGamepad.leftThumbstick
             let secondaryStick = stickString == "right" ? extendedGamepad.leftThumbstick : extendedGamepad.rightThumbstick
@@ -138,47 +150,43 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
             extendedGamepad.valueChangedHandler = { [weak self] _, element in
                 guard let self = self else { return }
                 for port in ports {
-                    self.handleDOSButtons(element, in: mapping, player: port)
+                    self.handleDOSButtons(element, in: mapping, player: port, dpad: dpad)
                 }
             }
         }
     }
 
-    private func handleDOSButtons(_ element: GCControllerElement, in mapping: ControllerGamepadMapping, player: Int) {
-        if let dpad = element as? GCControllerDirectionPad {
-            updateGamepadButton(dpad.up, in: mapping, player: player)
-            updateGamepadButton(dpad.down, in: mapping, player: player)
-            updateGamepadButton(dpad.left, in: mapping, player: player)
-            updateGamepadButton(dpad.right, in: mapping, player: player)
-            updateGamepadButton(dpad, in: mapping, player: player)
-
-            setKeyState(retroID: 4, player: player, pressed: dpad.up.isPressed)
-            setKeyState(retroID: 5, player: player, pressed: dpad.down.isPressed)
-            setKeyState(retroID: 6, player: player, pressed: dpad.left.isPressed)
-            setKeyState(retroID: 7, player: player, pressed: dpad.right.isPressed)
-        } else {
-            updateGamepadButton(element, in: mapping, player: player)
+    private func handleDOSButtons(_ element: GCControllerElement, in mapping: ControllerGamepadMapping, player: Int, dpad: GCControllerDirectionPad) {
+        if let dirPad = element as? GCControllerDirectionPad {
+            if dirPad === dpad {
+                XPCBridgeAdapter.shared.dispatchKeyboardEvent(keycode: 273, character: 0, modifiers: 0, down: dpad.up.isPressed)
+                XPCBridgeAdapter.shared.dispatchKeyboardEvent(keycode: 274, character: 0, modifiers: 0, down: dpad.down.isPressed)
+                XPCBridgeAdapter.shared.dispatchKeyboardEvent(keycode: 275, character: 0, modifiers: 0, down: dpad.right.isPressed)
+                XPCBridgeAdapter.shared.dispatchKeyboardEvent(keycode: 276, character: 0, modifiers: 0, down: dpad.left.isPressed)
+            }
+            return
         }
 
         guard let btn = element as? GCControllerButtonInput else { return }
         for (retroBtn, btnMapping) in mapping.buttons {
             guard elementMatches(element, name: btnMapping.gcElementName) else { continue }
             let raw = retroBtn.rawValue
-            if raw == analogMouseButtonLeft {
-                XPCBridgeAdapter.shared.setMouseButton(0, pressed: btn.isPressed)
+
+            if retroBtn == .start {
+                XPCBridgeAdapter.shared.dispatchKeyboardEvent(keycode: 13, character: 13, modifiers: 0, down: btn.isPressed)
+                break
             }
-            if raw == analogMouseButtonDownRight {
-                XPCBridgeAdapter.shared.setMouseButton(1, pressed: btn.isPressed)
-            }
-            if raw == analogMouseButtonDownMiddle {
-                XPCBridgeAdapter.shared.setMouseButton(2, pressed: btn.isPressed)
+            if retroBtn == .select {
+                XPCBridgeAdapter.shared.dispatchKeyboardEvent(keycode: 32, character: 32, modifiers: 0, down: btn.isPressed)
+                break
             }
 
-            let name = btn.localizedName ?? ""
-            if name.contains("A") || name.contains("X") {
-                setKeyState(retroID: 13, player: player, pressed: btn.isPressed)
-            } else if name.contains("B") || name.contains("Circle") {
-                setKeyState(retroID: 44, player: player, pressed: btn.isPressed)
+            if raw == analogMouseButtonLeft {
+                XPCBridgeAdapter.shared.setMouseButton(0, pressed: btn.isPressed)
+            } else if raw == analogMouseButtonDownRight {
+                XPCBridgeAdapter.shared.setMouseButton(1, pressed: btn.isPressed)
+            } else if raw == analogMouseButtonDownMiddle {
+                XPCBridgeAdapter.shared.setMouseButton(2, pressed: btn.isPressed)
             }
             break
         }

@@ -378,6 +378,7 @@
 		56A325BB0A274D0C2CBCC7EE /* fightdata_xmvsf.json in Resources */ = {isa = PBXBuildFile; fileRef = 3AF1127D67BDBDFCF438209A /* fightdata_xmvsf.json */; };
 		5700DB6B00604296E718D6F7 /* input_systemLabels_music.json in Resources */ = {isa = PBXBuildFile; fileRef = 1AEDEDEAC70418CF23543150 /* input_systemLabels_music.json */; };
 		57533AEB750F78AD9C7CF4B7 /* fightdata_asurabus.json in Resources */ = {isa = PBXBuildFile; fileRef = EF4135ED85E866B1A29BCC2F /* fightdata_asurabus.json */; };
+		577236FCF8C8485864E8CA87 /* AnalogMouse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3307D4E5C3106806CF45492A /* AnalogMouse.swift */; };
 		57A76B538B9E081B2F89B30E /* fightdata_mk4.json in Resources */ = {isa = PBXBuildFile; fileRef = CD79FE3027533D9DCC5841EE /* fightdata_mk4.json */; };
 		57E965E876B3A6E63EA79202 /* fightdata_fatfursp.json in Resources */ = {isa = PBXBuildFile; fileRef = 4AF8F94E55706A1BF2F602CB /* fightdata_fatfursp.json */; };
 		58779C8A82535C6F940F6456 /* input_coreLabels_lowres_nx.json in Resources */ = {isa = PBXBuildFile; fileRef = B8B8DAC8DDF59912CD8CC6EA /* input_coreLabels_lowres_nx.json */; };
@@ -1372,6 +1373,7 @@
 		321625E5E8578C0DDF915565 /* Nintendo - Nintendo DS.dat */ = {isa = PBXFileReference; path = "Nintendo - Nintendo DS.dat"; sourceTree = "<group>"; };
 		3230EB435232A6B5AC4FBC1E /* ControllerSettingsViewGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerSettingsViewGroup.swift; sourceTree = "<group>"; };
 		329419E38C68F3AC2AE5C3D6 /* input_systemLabels_sms.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_sms.json; sourceTree = "<group>"; };
+		3307D4E5C3106806CF45492A /* AnalogMouse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalogMouse.swift; sourceTree = "<group>"; };
 		335FB3D776E0D41A27C64844 /* RetroAchievementsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroAchievementsSettingsView.swift; sourceTree = "<group>"; };
 		3366F2EFEA27DA071F3FD1E3 /* input_coreLabels_desmume.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_desmume.json; sourceTree = "<group>"; };
 		338C611AB1DC2750E81AF4DB /* input_coreLabels_quicknes.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_quicknes.json; sourceTree = "<group>"; };
@@ -2560,6 +2562,7 @@
 			isa = PBXGroup;
 			children = (
 				FA0A29E765851D2607353290 /* AchievementBadgeView.swift */,
+				3307D4E5C3106806CF45492A /* AnalogMouse.swift */,
 				58F6C2A68F840683B84E80DB /* Bezels.swift */,
 				277669A6BC99D1D9EB64F0F1 /* CheatComponents.swift */,
 				C9EA57166E8095A1A45761BB /* Cheats.swift */,
@@ -5072,6 +5075,7 @@
 				A9DD8337345315BE6B8E1D37 /* AchievementListView.swift in Sources */,
 				DAA7D00D03C90DDF0DD7D031 /* AchievementToastView.swift in Sources */,
 				151D372D28A505324152DBB2 /* AnalogDeadZone.swift in Sources */,
+				577236FCF8C8485864E8CA87 /* AnalogMouse.swift in Sources */,
 				BA41C9657722249E795D90F7 /* AnalogMouseSettingsView.swift in Sources */,
 				8486017DB7D747C9E058F05D /* AppSettings.swift in Sources */,
 				F795BC067809176CEFAEEF29 /* AppUpdateService.swift in Sources */,
