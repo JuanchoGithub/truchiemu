@@ -39,6 +39,9 @@ extern float g_analog_as_mouse_sensitivity[MAX_PLAYERS];
 extern float g_analog_as_mouse_deadzone[MAX_PLAYERS];
 extern int g_analog_as_mouse_stick_index[MAX_PLAYERS];
 
+typedef void (*FramePollCallback)(void);
+extern FramePollCallback g_frame_poll_callback;
+
 #ifdef __cplusplus
 }
 #endif

@@ -15,6 +15,7 @@ import Foundation
 
     func stop(reply: @escaping () -> Void)
     func setPaused(_ paused: Bool, reply: @escaping () -> Void)
+    func resetGame(reply: @escaping () -> Void)
     func setLanguage(_ language: Int, reply: @escaping () -> Void)
     func setLogLevel(_ level: Int, reply: @escaping () -> Void)
 

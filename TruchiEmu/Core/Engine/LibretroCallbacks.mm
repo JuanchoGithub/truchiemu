@@ -24,6 +24,8 @@ float g_analog_as_mouse_sensitivity[MAX_PLAYERS] = {1.0f};
 float g_analog_as_mouse_deadzone[MAX_PLAYERS] = {0.15f};
 int g_analog_as_mouse_stick_index[MAX_PLAYERS] = {0};
 
+FramePollCallback g_frame_poll_callback = NULL;
+
 // Local struct definitions for interfaces not defined in libretro.h
 // These are used by the core to determine which features are supported
 struct retro_rumble_interface {
@@ -454,7 +456,8 @@ static void bridge_handle_turbo(void) {
 }
 
 void bridge_input_poll(void) {
-    bridge_handle_turbo();
+if (g_frame_poll_callback) g_frame_poll_callback();
+bridge_handle_turbo();
 }
 
 int16_t bridge_input_state(unsigned port, unsigned device, unsigned index, unsigned id) {

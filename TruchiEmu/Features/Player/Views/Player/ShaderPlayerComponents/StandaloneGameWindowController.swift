@@ -77,6 +77,8 @@ private var firstFrameTimer: Timer?
     private var gameLoadedObserver: NSObjectProtocol?
     var moveListOverlayView: NSHostingView<AnyView>?
     var achievementToastOverlayView: NSHostingView<AnyView>?
+    var trainingModeOverlayView: NSHostingView<AnyView>?
+    @MainActor lazy var trainingModeViewModel = TrainingModeOverlayViewModel()
 
     var toolbarBottomInset: CGFloat {
         guard let toolbar = toolbarView else { return 0 }
@@ -107,6 +109,8 @@ private var firstFrameTimer: Timer?
         stateLoadOverlayView = nil
         achievementToastOverlayView?.removeFromSuperview()
         achievementToastOverlayView = nil
+        trainingModeOverlayView?.removeFromSuperview()
+        trainingModeOverlayView = nil
         loadingOverlayView?.removeFromSuperview()
         loadingOverlayView = nil
         errorOverlayView?.removeFromSuperview()
@@ -180,6 +184,7 @@ super.init(window: window)
         
         LoggerService.info(category: "Metal", "Setting up MetalView...")
         let mtkView = FocusableMTKView()
+        mtkView.windowController = self
         mtkView.device = MTLCreateSystemDefaultDevice()
         mtkView.colorPixelFormat = .bgra8Unorm
         mtkView.clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 0)  // Transparent clear color
@@ -449,6 +454,27 @@ super.init(window: window)
         NSApp.activate(ignoringOtherApps: true)
 
         moveListViewModel.loadForGame(rom)
+
+        let trainingManager = TrainingModeManager.shared
+        let systemID = rom.systemID ?? "default"
+        let trainingGameData = moveListViewModel.moveListService.currentGameData
+        let trainingLayout = trainingGameData.map { ArcadeButtonMapper.shared.arcadeLayout(for: $0) } ?? .capcom6
+        trainingManager.activate(for: trainingGameData, systemID: systemID, layout: trainingLayout)
+        if let runner = self.runner {
+            trainingManager.inputManager.attachToRunner(runner)
+            trainingManager.inputManager.onP1InputUpdate = { [weak self] buttons, frameIndex in
+                guard let self else { return }
+                let entry = TrainingModeOverlayViewModel.InputHistoryEntry(
+                    directions: buttons.filter { $0.isDirectional },
+                    buttons: buttons.filter { !$0.isDirectional },
+                    frameIndex: frameIndex
+                )
+                self.trainingModeViewModel.p1InputHistory.append(entry)
+                if self.trainingModeViewModel.p1InputHistory.count > TrainingModeOverlayViewModel.maxHistoryEntries {
+                    self.trainingModeViewModel.p1InputHistory.removeFirst()
+                }
+            }
+        }
 
         // Store progressive version for later use in loadSaveStatesAfterLaunch
         pendingProgressiveVersion = progressiveVersion
@@ -899,7 +925,65 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
             hostingView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
         ])
     }
-    
+
+    @MainActor
+    func toggleTrainingModeOverlay() {
+        let manager = TrainingModeManager.shared
+        if manager.isMenuVisible {
+            manager.toggleMenu()
+            trainingModeOverlayView?.removeFromSuperview()
+            trainingModeOverlayView = nil
+            return
+        }
+
+        manager.toggleMenu()
+        if manager.isMenuVisible {
+            installTrainingModeOverlay()
+        }
+    }
+
+    private func installTrainingModeOverlay() {
+        guard trainingModeOverlayView == nil, let containerView = window?.contentView else { return }
+
+        trainingModeViewModel.onCloseOverlay = { [weak self] in
+            guard let self else { return }
+            self.toggleTrainingModeOverlay()
+        }
+
+        trainingModeViewModel.onSelectCharacterAndShowMoves = { [weak self] in
+            guard let self else { return }
+            self.toggleTrainingModeOverlay()
+            if let character = MoveListService.shared.selectedCharacter {
+                self.moveListViewModel.confirmCharacter(character)
+                if self.moveListOverlayView == nil {
+                    self.installMoveListOverlay()
+                }
+            }
+        }
+
+        let hostingView = SafeHostingView(rootView: AnyView(
+            TrainingModeOverlay(viewModel: trainingModeViewModel)
+                .environment(SystemDatabaseWrapper.shared)
+        ))
+        hostingView.translatesAutoresizingMaskIntoConstraints = false
+        hostingView.wantsLayer = true
+        hostingView.layer?.backgroundColor = .clear
+
+        if let toolbar = toolbarView {
+            containerView.addSubview(hostingView, positioned: .below, relativeTo: toolbar)
+        } else {
+            containerView.addSubview(hostingView, positioned: .above, relativeTo: nil)
+        }
+        self.trainingModeOverlayView = hostingView
+
+        NSLayoutConstraint.activate([
+            hostingView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            hostingView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            hostingView.topAnchor.constraint(equalTo: containerView.topAnchor),
+            hostingView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
+        ])
+    }
+
     func windowWillClose(_ notification: Notification) {
         XPCBridgeAdapter.shared.setPaused(true)
 

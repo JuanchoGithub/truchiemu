@@ -108,9 +108,13 @@ import Foundation
         return paused
     }
 
-    // MARK: - Save States
-    
-    static func saveState() {
+// MARK: - Save States
+
+static func resetGame() {
+LibretroBridge.resetGame()
+}
+
+static func saveState() {
         let result: Void = LibretroBridge.saveState()
         LoggerService.debug(category: "LibretroBridge", "Saving state: \(result)")
         return result
@@ -134,9 +138,13 @@ import Foundation
         return size
     }
 
-    // MARK: - Input
-    
-    static func setKeyState(retroID: Int, pressed: Bool) {
+// MARK: - Input
+
+static func setFramePollCallback(_ callback: (@convention(c) () -> Void)?) {
+LibretroBridge.setFramePollCallback(callback)
+}
+
+static func setKeyState(retroID: Int, pressed: Bool) {
         LoggerService.extreme(category: "LibretroBridge", "Setting key state: \(retroID) = \(pressed)")
         LibretroBridge.setKeyState(Int32(retroID), pressed: pressed)
     }

@@ -10,6 +10,7 @@ class FocusableMTKView: MTKView {
 
     // Allow runner to be weak so we don't leak
     weak var runner: EmulatorRunner?
+    weak var windowController: StandaloneGameWindowController?
 
     // MARK: - Mouse Events
 
@@ -134,6 +135,28 @@ class FocusableMTKView: MTKView {
             }
         }
 
+        if let windowCtrl = windowController, windowCtrl.trainingModeViewModel.isTrainingEnabled {
+            switch event.keyCode {
+            case 100: // F8 - Training Instant Reset
+                Task { @MainActor in
+                    windowCtrl.trainingModeViewModel.performReset()
+                }
+                return
+            case 101: // F9 - Toggle Tape Recording
+                Task { @MainActor in
+                    windowCtrl.trainingModeViewModel.toggleRecording()
+                }
+                return
+            case 109: // F10 - Start Tape Playback
+                Task { @MainActor in
+                    TrainingModeManager.shared.startTapePlayback()
+                }
+                return
+            default:
+                break
+            }
+        }
+
         // For DOS/ScummVM games, bypass ALL TruchiEmu keyboard handling and send properly mapped keys to DOSBOX
         if shouldCaptureInputForCurrentGame() {
             LoggerService.debug(category: "InputCapture", "DOS/ScummVM keyDown event: keyCode=\(event.keyCode), characters='\(event.characters ?? "")', charactersIgnoringModifiers='\(event.charactersIgnoringModifiers ?? "")'")
@@ -175,8 +198,8 @@ class FocusableMTKView: MTKView {
         } else {
             // LoggerService.debug(category: "InputCapture", "Mapped keyboard event for standard core: keyCode=\(event.keyCode)")
             // For standard cores, use the normal mapped path
-            if let rid = runner?.mapKey(event.keyCode) {
-                runner?.setKeyState(retroID: rid, pressed: true)
+            if let mapped = runner?.mapKey(event.keyCode) {
+                runner?.setKeyState(retroID: mapped.retroID, player: mapped.player, pressed: true)
             }
         }
     }
@@ -222,8 +245,8 @@ class FocusableMTKView: MTKView {
         } else {
             // LoggerService.debug(category: "InputCapture", "Mapped keyUp event for standard core: keyCode=\(event.keyCode)")
             // For standard cores, use the normal mapped path
-            if let rid = runner?.mapKey(event.keyCode) {
-                runner?.setKeyState(retroID: rid, pressed: false)
+            if let mapped = runner?.mapKey(event.keyCode) {
+                runner?.setKeyState(retroID: mapped.retroID, player: mapped.player, pressed: false)
             }
         }
     }

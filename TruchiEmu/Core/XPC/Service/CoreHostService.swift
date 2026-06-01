@@ -220,6 +220,11 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
         reply()
     }
 
+    func resetGame(reply: @escaping () -> Void) {
+        LibretroBridge.resetGame()
+        reply()
+    }
+
     func isPaused(reply: @escaping (Bool) -> Void) {
         reply(LibretroBridge.isPaused())
     }

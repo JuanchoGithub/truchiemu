@@ -263,6 +263,7 @@ typedef bool (*fn_retro_unserialize)(const void *data, size_t size);
 typedef void (*fn_retro_cheat_set)(unsigned index, bool enabled,
                                    const char *code);
 typedef void (*fn_retro_cheat_reset)(void);
+typedef void (*fn_retro_reset)(void);
 typedef void *(*fn_retro_get_memory_data)(unsigned id);
 typedef size_t (*fn_retro_get_memory_size)(unsigned id);
 

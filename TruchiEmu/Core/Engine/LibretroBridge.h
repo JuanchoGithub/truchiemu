@@ -5,12 +5,14 @@ NS_ASSUME_NONNULL_BEGIN
 // Define a type for the callback
 typedef void (^CoreLoggerBlock)(const char *message, int level);
 typedef void (^GameLoadedBlock)(const char *romPath);
+typedef void (*FramePollCallbackType)(void);
 
 @interface LibretroBridge : NSObject
 
 // The function Swift will call
 + (void)registerCoreLogger:(CoreLoggerBlock)block;
 + (void)registerGameLoadedCallback:(GameLoadedBlock)block;
++ (void)setFramePollCallback:(nullable FramePollCallbackType)callback;
 
 + (void)launchWithDylibPath:(NSString *)dylibPath
                     romPath:(NSString *)romPath
@@ -73,6 +75,7 @@ typedef void (^GameLoadedBlock)(const char *romPath);
 /* Cheat Management */
 + (void)setCheatEnabled:(int)index code:(NSString *)code enabled:(BOOL)enabled;
 + (void)resetCheats;
++ (void)resetGame;
 + (void)applyCheats:
     (NSArray<NSDictionary *> *)cheats; // Array of {index, code, enabled}
 

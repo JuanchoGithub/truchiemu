@@ -112,8 +112,9 @@ return self;
   LOAD_SYM(retro_serialize)
   LOAD_SYM(retro_unserialize)
   LOAD_SYM(retro_cheat_set)
-  LOAD_SYM(retro_cheat_reset)
-  LOAD_SYM(retro_get_memory_data)
+LOAD_SYM(retro_cheat_reset)
+LOAD_SYM(retro_reset)
+LOAD_SYM(retro_get_memory_data)
   LOAD_SYM(retro_get_memory_size)
 #undef LOAD_SYM
   return YES;

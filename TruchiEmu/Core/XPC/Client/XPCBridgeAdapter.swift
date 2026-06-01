@@ -338,6 +338,14 @@ final class XPCBridgeAdapter {
         XPCConnectionManager.shared.remoteProxy?.setPaused(paused) {}
     }
 
+    func resetGame() {
+        guard useXPC else {
+            LibretroBridgeSwift.resetGame()
+            return
+        }
+        XPCConnectionManager.shared.remoteProxy?.resetGame {}
+    }
+
     func isPaused() -> Bool {
         if useSharedMemory, let shm = shmManager.sharedMemory {
             return shm.pointee.isPaused

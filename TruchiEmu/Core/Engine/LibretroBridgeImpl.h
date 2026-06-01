@@ -34,8 +34,9 @@ typedef void (^VideoFrameCallback)(const void *data, int width, int height, int 
   fn_retro_serialize _retro_serialize;
   fn_retro_unserialize _retro_unserialize;
   fn_retro_cheat_set _retro_cheat_set;
-  fn_retro_cheat_reset _retro_cheat_reset;
-  fn_retro_get_memory_data _retro_get_memory_data;
+fn_retro_cheat_reset _retro_cheat_reset;
+fn_retro_reset _retro_reset;
+fn_retro_get_memory_data _retro_get_memory_data;
   fn_retro_get_memory_size _retro_get_memory_size;
   
   BOOL _running;

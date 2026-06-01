@@ -444,3 +444,30 @@ struct MoveListToolbarButton: View {
         }
     }
 }
+
+struct FightTrainingToolbarButton: View {
+    @ObservedObject var windowController: StandaloneGameWindowController
+    @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var trainingManager = TrainingModeManager.shared
+
+    private var isActive: Bool {
+        trainingManager.isMenuVisible
+    }
+
+    var body: some View {
+        HoverButton(action: {
+            windowController.toggleTrainingModeOverlay()
+        }) {
+            VStack(spacing: 4) {
+                Image(systemName: "figure.martial.arts")
+                    .font(.system(size: 16, weight: .semibold))
+                Text(loc.localized("toolbar.fightTraining"))
+                    .font(.system(size: 10, weight: .medium))
+                    .lineLimit(1)
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+        }
+        .foregroundColor(isActive ? AppColors.brandAccent : .white)
+    }
+}

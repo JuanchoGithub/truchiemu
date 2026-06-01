@@ -1060,10 +1060,12 @@ case "scummvm": runner = ScummVMRunner()
         }
     }
 
-    func mapKey(_ keyCode: UInt16) -> Int? {
+    func mapKey(_ keyCode: UInt16) -> (retroID: Int, player: Int)? {
         for (button, code) in cachedKeyboardMapping.buttons {
             if code == keyCode {
-                return Int(button.retroID(for: self.systemID, coreID: self.activeCoreID))
+                let rid = Int(button.retroID(for: self.systemID, coreID: self.activeCoreID))
+                guard rid >= 0 else { return nil }
+                return (retroID: rid, player: button.playerIndex)
             }
         }
         return nil

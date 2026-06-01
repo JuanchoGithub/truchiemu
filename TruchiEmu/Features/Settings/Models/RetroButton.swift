@@ -129,13 +129,23 @@ enum RetroButton: String, Codable, CaseIterable {
             return 12
         case .coin1: return 2
         case .start1: return 3
-        case .coin2: return 4
-        case .start2: return 5
-        case .coin3: return 6
-        case .start3: return 7
-        case .coin4: return 8
-        case .start4: return 9
+        case .coin2: return 2
+        case .start2: return 3
+        case .coin3: return 2
+        case .start3: return 3
+        case .coin4: return 2
+        case .start4: return 3
         default: return -1
+        }
+    }
+
+    var playerIndex: Int {
+        switch self {
+        case .coin1, .start1: return 0
+        case .coin2, .start2: return 1
+        case .coin3, .start3: return 2
+        case .coin4, .start4: return 3
+        default: return 0
         }
     }
 

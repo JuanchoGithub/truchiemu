@@ -95,7 +95,7 @@ enum HitLevel: String, Equatable, CaseIterable {
     }
 }
 
-struct ParsedStep: Equatable {
+struct ParsedStep: Equatable, Codable {
     var direction: Int?
     let buttons: [String]
     let isCharge: Bool

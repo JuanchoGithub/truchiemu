@@ -251,7 +251,7 @@ class InputStateTracker: ObservableObject {
     }
 }
 
-private extension RetroButton {
+extension RetroButton {
     var isDirectional: Bool {
         switch self {
         case .up, .down, .left, .right,

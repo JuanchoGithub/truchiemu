@@ -101,7 +101,7 @@ struct GameOverlayToolbar: View {
             windowController.showCheatManager()
         }
 
-        MoveListToolbarButton(windowController: windowController)
+        FightTrainingToolbarButton(windowController: windowController)
 
             FullscreenButton(windowController: windowController)
 

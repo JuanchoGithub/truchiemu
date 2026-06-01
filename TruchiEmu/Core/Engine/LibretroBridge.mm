@@ -31,7 +31,11 @@ static int16_t input_state_stub(unsigned port, unsigned device, unsigned index, 
 }
 
 + (void)registerGameLoadedCallback:(GameLoadedBlock)block {
-    g_gameLoadedCallback = block;
+g_gameLoadedCallback = block;
+}
+
++ (void)setFramePollCallback:(FramePollCallbackType)callback {
+g_frame_poll_callback = callback;
 }
 
 + (void)launchWithDylibPath:(NSString *)dylibPath
@@ -448,10 +452,17 @@ static int16_t input_state_stub(unsigned port, unsigned device, unsigned index, 
 }
 
 + (void)resetCheats {
-    if (!g_instance || !g_instance->_retro_cheat_reset) return;
-    [g_instance->_coreLock lock];
-    g_instance->_retro_cheat_reset();
-    [g_instance->_coreLock unlock];
+if (!g_instance || !g_instance->_retro_cheat_reset) return;
+[g_instance->_coreLock lock];
+g_instance->_retro_cheat_reset();
+[g_instance->_coreLock unlock];
+}
+
++ (void)resetGame {
+if (!g_instance || !g_instance->_retro_reset) return;
+[g_instance->_coreLock lock];
+g_instance->_retro_reset();
+[g_instance->_coreLock unlock];
 }
 
 + (void)applyCheats:(NSArray<NSDictionary *> *)cheats {
