@@ -24,6 +24,14 @@ struct CoreSettingsView: View {
         return nil
     }
 
+    private var isSearching: Bool { !searchText.isEmpty }
+
+    private func matchesSearch(_ keywords: String) -> Bool {
+        if searchText.isEmpty { return true }
+        return keywords.localizedLowercase.fuzzyMatch(searchText) ||
+               keywords.localizedLowercase.contains(searchText.lowercased())
+    }
+
     var sortedSystems: [SystemInfo] {
         let _ = prefs.updateTrigger
 
@@ -62,67 +70,11 @@ struct CoreSettingsView: View {
         }
     }
 
-var body: some View {
-        VStack(spacing: 0) {
-            HStack {
-                HStack {
-                    Image(systemName: "magnifyingglass")
-                    .foregroundColor(AppColors.textSecondary(colorScheme))
-
-                    TextField(loc.localized("cores.searchSystemsCores"), text: $searchText)
-                    .textFieldStyle(.plain)
-                    .autocorrectionDisabled()
-
-                    if !searchText.isEmpty {
-                        Button(action: { searchText = "" }) {
-                            Image(systemName: "xmark.circle.fill")
-                            .foregroundColor(AppColors.textSecondary(colorScheme))
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-                .padding(AppSpacing.sm)
-                .background(AppColors.cardBackgroundSubtle(colorScheme))
-                .cornerRadius(AppRadius.md)
-                .frame(width: 250)
-
-                Spacer()
-
-                if coreManager.isFetchingCoreList {
-                    HStack(spacing: AppSpacing.md) {
-                        ProgressView()
-                        .controlSize(.small)
-                        Text(loc.localized("cores.fetchingCoreList"))
-                        .foregroundStyle(AppColors.textSecondary(colorScheme))
-                    }
-                } else {
-                    Button {
-                        Task { await coreManager.performFullSystemUpdate() }
-                    } label: {
-                        HStack {
-                            if coreManager.isFetchingCoreList || LibretroInfoManager.shared.isRefreshing {
-                                ProgressView().controlSize(.small)
-                                Text(loc.localized("cores.updatingSystemsCores"))
-                            } else {
-                                Image(systemName: "arrow.triangle.2.circlepath")
-                                Text(loc.localized("cores.checkForUpdates"))
-                            }
-                        }
-                    }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
-                    .disabled(coreManager.isFetchingCoreList || LibretroInfoManager.shared.isRefreshing)
-                }
-            }
-            .padding(.horizontal, AppSpacing.lg)
-            .padding(.vertical, AppSpacing.md)
-
-            Divider()
-
-            GeometryReader { geometry in
-                HStack(spacing: 0) {
-                    VStack(spacing: 0) {
-                        Text(loc.localized("cores.systems"))
+    var body: some View {
+        GeometryReader { geometry in
+            HStack(spacing: 0) {
+                VStack(spacing: 0) {
+                    Label(loc.localized("cores.systems"), systemImage: "cpu")
                         .font(.caption)
                         .fontWeight(.semibold)
                         .foregroundStyle(AppColors.textSecondary(colorScheme))
@@ -131,57 +83,94 @@ var body: some View {
                         .padding(.top, AppSpacing.sm)
                         .padding(.bottom, AppSpacing.xs)
 
-                        ScrollView {
-                            VStack(spacing: 0) {
-                                ForEach(sortedSystems) { sys in
-                                    Button {
-                                        selectedSystemID = sys.id
-                                    } label: {
-                                        SystemRowView(system: sys, isSelected: selectedSystemID == sys.id, coreManager: coreManager)
-                                    }
-                                    .buttonStyle(.plain)
+                    ScrollView {
+                        VStack(spacing: 0) {
+                            ForEach(sortedSystems) { sys in
+                                Button {
+                                    selectedSystemID = sys.id
+                                } label: {
+                                    SystemRowView(system: sys, isSelected: selectedSystemID == sys.id, coreManager: coreManager)
                                 }
+                                .buttonStyle(.plain)
                             }
-                            .padding(.horizontal, AppSpacing.xs)
                         }
-                        .scrollContentBackground(.hidden)
+                        .padding(.horizontal, AppSpacing.xs)
                     }
-                    .frame(width: systemsPanelWidth)
-
-                    DraggableDivider(width: $systemsPanelWidth)
-
-                    VStack(spacing: 0) {
-                        if let selectedSystem = selectedSystem {
-                            Text(selectedSystem.name)
-                            .font(.caption)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(AppColors.textSecondary(colorScheme))
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal, AppSpacing.lg)
-                            .padding(.vertical, AppSpacing.md)
-
-                            SystemCoresView(system: selectedSystem, coreManager: coreManager)
-                            .id(coreManager.installedCores.count + coreManager.availableCores.count)
-                        } else {
-                            ContentUnavailableView {
-                                Label { Text(loc.localized("cores.selectSystem")) } icon: { Image(systemName: "gamecontroller") }
-                            } description: {
-                                Text(loc.localized("cores.selectSystemDescription"))
-                            }
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        }
-                    }
-                    .frame(maxWidth: .infinity)
+                    .scrollContentBackground(.hidden)
                 }
+                .frame(width: systemsPanelWidth)
+
+                DraggableDivider(width: $systemsPanelWidth)
+
+                VStack(spacing: 0) {
+                    if let selectedSystem = selectedSystem {
+                        HStack {
+                            Text(selectedSystem.name)
+                                .font(.caption)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(AppColors.textSecondary(colorScheme))
+
+                            Spacer()
+
+                            if coreManager.isFetchingCoreList {
+                                HStack(spacing: AppSpacing.md) {
+                                    ProgressView()
+                                        .controlSize(.small)
+                                    Text(loc.localized("cores.fetchingCoreList"))
+                                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                        .font(.caption)
+                                }
+                            } else {
+                                Button {
+                                    Task { await coreManager.performFullSystemUpdate() }
+                                } label: {
+                                    HStack {
+                                        if coreManager.isFetchingCoreList || LibretroInfoManager.shared.isRefreshing {
+                                            ProgressView().controlSize(.small)
+                                            Text(loc.localized("cores.updatingSystemsCores"))
+                                        } else {
+                                            Image(systemName: "arrow.triangle.2.circlepath")
+                                            Text(loc.localized("cores.checkForUpdates"))
+                                        }
+                                    }
+                                }
+                                .buttonStyle(.bordered)
+                                .controlSize(.small)
+                                .disabled(coreManager.isFetchingCoreList || LibretroInfoManager.shared.isRefreshing)
+                            }
+                        }
+                        .padding(.horizontal, AppSpacing.lg)
+                        .padding(.vertical, AppSpacing.md)
+
+                        SystemCoresView(system: selectedSystem, coreManager: coreManager)
+                            .id(coreManager.installedCores.count + coreManager.availableCores.count)
+                    } else if isSearching && sortedSystems.isEmpty {
+                        ContentUnavailableView {
+                            Label(loc.localized("general.noMatchingSettings"), systemImage: "magnifyingglass")
+                        } description: {
+                            Text("\(loc.localized("general.noMatchingSettings")) \"\(searchText)\"")
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    } else {
+                        ContentUnavailableView {
+                            Label { Text(loc.localized("cores.selectSystem")) } icon: { Image(systemName: "gamecontroller") }
+                        } description: {
+                            Text(loc.localized("cores.selectSystemDescription"))
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    }
+                }
+                .frame(maxWidth: .infinity)
             }
         }
         .frame(maxHeight: .infinity)
         .clipped()
-.onAppear {
-                    if coreManager.availableCores.isEmpty && coreManager.shouldAutoFetchCores {
-                        Task { await coreManager.fetchAvailableCores() }
-                    }
-                }
+        .navigationTitle(loc.localized("settings.cores"))
+        .onAppear {
+            if coreManager.availableCores.isEmpty && coreManager.shouldAutoFetchCores {
+                Task { await coreManager.fetchAvailableCores() }
+            }
+        }
     }
 }
 
@@ -252,6 +241,7 @@ struct SystemRowView: View {
                     .padding(.leading, 2)
             }
         }
+        .contentShape(Rectangle())
     }
 }
 
@@ -339,7 +329,7 @@ struct InstalledCoresSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.md) {
-            Text(loc.localized("cores.installed"))
+            Label(loc.localized("cores.installed"), systemImage: "checkmark.circle.fill")
                 .font(.caption2)
                 .fontWeight(.semibold)
                 .foregroundColor(AppColors.textSecondary(colorScheme))
@@ -383,7 +373,7 @@ struct DownloadableCoresSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.md) {
-            Text(loc.localized("cores.availableForDownload"))
+            Label(loc.localized("cores.availableForDownload"), systemImage: "icloud.and.arrow.down")
                 .font(.caption2)
                 .fontWeight(.semibold)
                 .foregroundColor(AppColors.textSecondary(colorScheme))
