@@ -6,11 +6,14 @@ final class GenreManager: ObservableObject {
     static let shared = GenreManager()
 
     private let settingsKey = "genreMappings"
+    private let hiddenGenresKey = "hiddenGenreDisplayNames"
 
     @Published private(set) var mappings: [String: String] = [:]
+    @Published private(set) var hiddenGenres: Set<String> = []
 
     private init() {
         loadMappings()
+        loadHiddenGenres()
     }
 
     func effectiveDisplayName(for original: String?) -> String {
@@ -21,6 +24,10 @@ final class GenreManager: ObservableObject {
     func getAllDisplayGenres(from roms: [ROM]) -> [String] {
         let names = roms.compactMap { effectiveDisplayName(for: $0.metadata?.genre) }
         return Array(Set(names)).sorted()
+    }
+
+    func getVisibleDisplayGenres(from roms: [ROM]) -> [String] {
+        getAllDisplayGenres(from: roms).filter { !hiddenGenres.contains($0) }
     }
 
     var allMappings: [(original: String, display: String)] {
@@ -37,6 +44,24 @@ final class GenreManager: ObservableObject {
     func removeMapping(for original: String) {
         mappings.removeValue(forKey: original)
         saveMappings()
+    }
+
+    func isHidden(_ displayName: String) -> Bool {
+        hiddenGenres.contains(displayName)
+    }
+
+    func toggleHidden(_ displayName: String) {
+        if hiddenGenres.contains(displayName) {
+            hiddenGenres.remove(displayName)
+        } else {
+            hiddenGenres.insert(displayName)
+        }
+        saveHiddenGenres()
+    }
+
+    /// Group of display names that are hidden (for badge display)
+    var hiddenDisplayNames: [String] {
+        hiddenGenres.sorted()
     }
 
     private func loadMappings() {
@@ -60,5 +85,15 @@ final class GenreManager: ObservableObject {
 
     private func saveMappings() {
         AppSettings.set(settingsKey, value: mappings)
+    }
+
+    private func loadHiddenGenres() {
+        if let loaded: [String] = AppSettings.get(hiddenGenresKey, type: [String].self) {
+            hiddenGenres = Set(loaded)
+        }
+    }
+
+    private func saveHiddenGenres() {
+        AppSettings.set(hiddenGenresKey, value: Array(hiddenGenres))
     }
 }

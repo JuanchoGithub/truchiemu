@@ -8,12 +8,14 @@ struct GenrePickerView: View {
     @State private var searchText: String = ""
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var genreManager = GenreManager.shared
 
     private var filteredGenres: [String] {
+        let visible = allGenres.filter { !genreManager.isHidden($0) }
         if searchText.isEmpty {
-            return allGenres
+            return visible
         }
-        return allGenres.filter { $0.localizedCaseInsensitiveContains(searchText) }
+        return visible.filter { $0.localizedCaseInsensitiveContains(searchText) }
     }
 
     var body: some View {
