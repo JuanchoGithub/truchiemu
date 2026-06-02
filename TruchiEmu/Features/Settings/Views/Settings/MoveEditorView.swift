@@ -3,7 +3,6 @@ import AppKit
 
 struct MoveEditorView: View {
     @Environment(\.colorScheme) private var colorScheme
-    @Environment(\.dismiss) private var dismiss
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var storageService = MoveListStorageService.shared
 
@@ -14,6 +13,7 @@ struct MoveEditorView: View {
     let gameCategories: [String: String]
     let onSave: (FightDataMove) -> Void
     let onDelete: (() -> Void)?
+    let onBack: (() -> Void)?
 
     @State private var moveName: String
     @State private var moveCategory: String
@@ -34,7 +34,8 @@ struct MoveEditorView: View {
         isCustom: Bool,
         gameCategories: [String: String],
         onSave: @escaping (FightDataMove) -> Void,
-        onDelete: (() -> Void)?
+        onDelete: (() -> Void)?,
+        onBack: (() -> Void)? = nil
     ) {
         self.gameName = gameName
         self.characterName = characterName
@@ -43,6 +44,7 @@ struct MoveEditorView: View {
         self.gameCategories = gameCategories
         self.onSave = onSave
         self.onDelete = onDelete
+        self.onBack = onBack
 
         _moveName = State(initialValue: editingMove?.name ?? "")
         _moveCategory = State(initialValue: editingMove?.category ?? "_@special")
@@ -120,24 +122,55 @@ struct MoveEditorView: View {
 
     var body: some View {
         VStack(spacing: AppSpacing.md) {
-            Text(editorTitle)
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(AppColors.textSecondary(colorScheme))
+            HStack(spacing: 4) {
+                Button(action: { onBack?() }) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 13, weight: .semibold))
+                        Text(loc.localized("movelist.back"))
+                            .font(.system(size: 13))
+                    }
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(AppColors.brandAccent)
+                Spacer()
+                Text(editorTitle)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                Spacer()
+            }
 
             moveInfoSection
-            directionPadSection
-            buttonPaletteSection
+                .padding(AppSpacing.md)
+                .background(AppColors.cardBackground(colorScheme))
+                .clipShape(RoundedRectangle(cornerRadius: AppRadius.sm))
+
+            HStack(alignment: .top, spacing: AppSpacing.md) {
+                directionPadSection
+                    .padding(AppSpacing.md)
+                    .background(AppColors.cardBackground(colorScheme))
+                    .clipShape(RoundedRectangle(cornerRadius: AppRadius.sm))
+
+                buttonPaletteSection
+                    .padding(AppSpacing.md)
+                    .background(AppColors.cardBackground(colorScheme))
+                    .clipShape(RoundedRectangle(cornerRadius: AppRadius.sm))
+            }
+
             modifierSection
+
             compressedPreviewRow
 
             stepListSection
                 .frame(maxHeight: .infinity)
+                .padding(AppSpacing.md)
+                .background(AppColors.cardBackground(colorScheme))
+                .clipShape(RoundedRectangle(cornerRadius: AppRadius.sm))
 
             Divider()
             actionButtons
         }
         .padding(AppSpacing.lg)
-        .frame(minWidth: 550, minHeight: 600)
         .onAppear {
             loadSavedButtonPalette()
         }
@@ -391,7 +424,7 @@ struct MoveEditorView: View {
 
     private var directionPadSection: some View {
         VStack(alignment: .leading, spacing: AppSpacing.xs) {
-            Text(loc.localized("settings.moveList.editor.directions"))
+            Label(loc.localized("settings.moveList.editor.directions"), systemImage: "arrow.up.and.down.and.arrow.left.and.right")
                 .font(.system(size: 12, weight: .semibold))
                 .foregroundStyle(AppColors.textSecondary(colorScheme))
 
@@ -429,7 +462,7 @@ struct MoveEditorView: View {
     private var buttonPaletteSection: some View {
         VStack(alignment: .leading, spacing: AppSpacing.xs) {
             HStack {
-                Text(loc.localized("settings.moveList.editor.buttons"))
+                Label(loc.localized("settings.moveList.editor.buttons"), systemImage: "hand.point.up.fill")
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(AppColors.textSecondary(colorScheme))
                 Spacer()
@@ -558,7 +591,7 @@ struct MoveEditorView: View {
 
     private var modifierSection: some View {
         VStack(alignment: .leading, spacing: AppSpacing.xs) {
-            Text(loc.localized("settings.moveList.editor.modifiers"))
+            Label(loc.localized("settings.moveList.editor.modifiers"), systemImage: "gearshape.2")
                 .font(.system(size: 12, weight: .semibold))
                 .foregroundStyle(AppColors.textSecondary(colorScheme))
 
@@ -617,7 +650,7 @@ struct MoveEditorView: View {
     private var stepListSection: some View {
         VStack(alignment: .leading, spacing: AppSpacing.xs) {
             HStack {
-                Text(loc.localized("settings.moveList.editor.sequence"))
+                Label(loc.localized("settings.moveList.editor.sequence"), systemImage: "list.number")
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(AppColors.textSecondary(colorScheme))
                 Spacer()
@@ -753,7 +786,7 @@ struct MoveEditorView: View {
                     .foregroundStyle(.red)
             }
             Spacer()
-            Button(loc.localized("movelist.cancel")) { dismiss() }
+            Button(loc.localized("movelist.cancel")) { onBack?() }
                 .buttonStyle(.bordered)
             Button(loc.localized("settings.moveList.editor.save")) { saveMove() }
                 .buttonStyle(.borderedProminent)
@@ -808,7 +841,7 @@ struct MoveEditorView: View {
         )
 
         onSave(move)
-        dismiss()
+        onBack?()
     }
 
     private func buildRawInput() -> String {

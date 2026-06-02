@@ -98,6 +98,7 @@
 		126430C5084506DE1D08831F /* BoxArtSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4F332DF631734D8EED42E6B /* BoxArtSettingsView.swift */; };
 		12C9567A9783BE062829CCFC /* input_systemLabels_msx.json in Resources */ = {isa = PBXBuildFile; fileRef = BBC39C2D92C6F79A18376201 /* input_systemLabels_msx.json */; };
 		12F0820BBFC343E0BE929E16 /* input_coreLabels_xrick.json in Resources */ = {isa = PBXBuildFile; fileRef = 1DCC6B4FBF3F55FE4C182A34 /* input_coreLabels_xrick.json */; };
+		13267C7699DA0893F6EEC72E /* MoveDataCharactersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F5A2C5794BC778659FF41E /* MoveDataCharactersView.swift */; };
 		139F5308F944EC66EAB548BE /* MetalCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7617E35BCF8ABD715F148725 /* MetalCoordinator.swift */; };
 		13DB33EDA51711079ED63488 /* fightdata_vhunt2.json in Resources */ = {isa = PBXBuildFile; fileRef = 65C067FA21A2CFE61996BB6F /* fightdata_vhunt2.json */; };
 		140BF0CFF39BA12534FAE0CF /* BezelModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 827E55E978215F285D7F5800 /* BezelModels.swift */; };
@@ -452,6 +453,7 @@
 		6852E77C060E146CF3A2BCBF /* fbneo-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = FDC94D1A8BB34C7880EEE06B /* fbneo-cheats.zip */; };
 		68619EC313A850FF98755CF3 /* input_coreLabels_ffmpeg.json in Resources */ = {isa = PBXBuildFile; fileRef = 68782332EFE8C05AAE16BABF /* input_coreLabels_ffmpeg.json */; };
 		6866F085669F50BAF34180A4 /* fightdata_cybots.json in Resources */ = {isa = PBXBuildFile; fileRef = 4E6FEF69213377E31E412F81 /* fightdata_cybots.json */; };
+		689BB993F6CD71261D227249 /* MoveDataGamesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C0E8F85B2C2893C2F36FAB0 /* MoveDataGamesView.swift */; };
 		68B60F9D760E5E0809A0FF95 /* fightdata_bloodstm.json in Resources */ = {isa = PBXBuildFile; fileRef = 77B28CDDCE43182179E6F8EE /* fightdata_bloodstm.json */; };
 		68C918A9A778B9E1A015DBE6 /* input_systemLabels_arduboy.json in Resources */ = {isa = PBXBuildFile; fileRef = 99AD8BB70AB9D191C4438D49 /* input_systemLabels_arduboy.json */; };
 		68E1F6B1CBA2D8E8AE9B71DD /* fightdata_lastbld2.json in Resources */ = {isa = PBXBuildFile; fileRef = 65BC582864925AB3A4FC0ECE /* fightdata_lastbld2.json */; };
@@ -751,6 +753,7 @@
 		A5917D46BE3772B7057EBAF0 /* mupen64plus_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = 286915B3854F9B12D1840B8E /* mupen64plus_libretro_default.json */; };
 		A5A5700F7C1AA1D70851F6DE /* pcsx_rearmed_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = 5AE2907879D793D5504FE9FC /* pcsx_rearmed_libretro_default.json */; };
 		A5E261D1DE62A6A64ACA240E /* dolphin_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = A227DD8C889C0589D944D5B2 /* dolphin_libretro_default.json */; };
+		A636A60074D52DB1ED1F37DB /* MoveDataUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96619349B830F47B3655D652 /* MoveDataUtilities.swift */; };
 		A65710823C4D0A6B42F7EA87 /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8935D40F11BF986BE60A840 /* ThemeManager.swift */; };
 		A678CBDA96799531823BED45 /* input_systemLabels_psp.json in Resources */ = {isa = PBXBuildFile; fileRef = 2291C05C19886586122BCAC3 /* input_systemLabels_psp.json */; };
 		A6820B1684D14C3CED7A2B0F /* SEtBX.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 305854E346C89DB7F671CA96 /* SEtBX.jpg */; };
@@ -890,6 +893,7 @@
 		C68A4EDD056E972A77C5E2B1 /* fightdata_tkdensho.json in Resources */ = {isa = PBXBuildFile; fileRef = 8B671DBF7EFB14A6A1AF510D /* fightdata_tkdensho.json */; };
 		C6A0CB4679D181B87812E172 /* input_systemLabels_2048.json in Resources */ = {isa = PBXBuildFile; fileRef = 302B0A1EBB01D110481DB6DC /* input_systemLabels_2048.json */; };
 		C6F9D0C4BECBB033F5726AEB /* MoveNotationTokenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F33C63134E9A426481033364 /* MoveNotationTokenView.swift */; };
+		C6FF09C1D06E5019E40CEBFE /* MoveDataMovesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF06EA00C0D754AD424B236 /* MoveDataMovesView.swift */; };
 		C71348506B68F2C80CB3FF03 /* fbneo_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = 4555BA966B2B05587DE32CA1 /* fbneo_libretro_default.json */; };
 		C7B614C0D64568EA01CC5C75 /* TrainingModeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D832E76DC170355207B293CE /* TrainingModeManager.swift */; };
 		C7EB911EA85AD7A8D9DA113F /* DOS.png in Resources */ = {isa = PBXBuildFile; fileRef = 3E7338C371E12B371E8C32EE /* DOS.png */; };
@@ -980,6 +984,7 @@
 		DD58429E4400B7D8C6607E68 /* input_systemLabels_n64.json in Resources */ = {isa = PBXBuildFile; fileRef = C8B26D230952CE0ADCFFD5BF /* input_systemLabels_n64.json */; };
 		DD7A6F7A0C60AB198C195ADF /* fightdata_fatfury1.json in Resources */ = {isa = PBXBuildFile; fileRef = 2B6C405950B80529A3DAB81B /* fightdata_fatfury1.json */; };
 		DE5559D3DDAF0582E387F738 /* fightdata_samsh5sp.json in Resources */ = {isa = PBXBuildFile; fileRef = 936CC9F84C2CC958CCD03A2A /* fightdata_samsh5sp.json */; };
+		DE65A573AD4E1049F78D52F4 /* MoveListConfigSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 119DDA14AB6E978586E3E343 /* MoveListConfigSection.swift */; };
 		DE78A265FBC43C04D89A11A3 /* appIcon32.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 11DA3CCFB66270F6DF1983FB /* appIcon32.jpg */; };
 		DE83DABBDC582D8798348718 /* MoveListService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94757847430E98D2FD0C8BC /* MoveListService.swift */; };
 		DE90876021547B4D93C8B090 /* fightdata_rbff1.json in Resources */ = {isa = PBXBuildFile; fileRef = 70F8AFB2483C52D0E0A0D1A1 /* fightdata_rbff1.json */; };
@@ -1217,6 +1222,7 @@
 		11417D9821AF8E7D835C9025 /* TruchiEmuCoreHost.xpc */ = {isa = PBXFileReference; explicitFileType = "wrapper.xpc-service"; includeInIndex = 0; path = TruchiEmuCoreHost.xpc; sourceTree = BUILT_PRODUCTS_DIR; };
 		1153DDB5F84388EB68FCC5AF /* analyze_coverage.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = analyze_coverage.py; sourceTree = "<group>"; };
 		118C3C476FA18F110E167B39 /* input_coreOverrides_nxengine.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_nxengine.json; sourceTree = "<group>"; };
+		119DDA14AB6E978586E3E343 /* MoveListConfigSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveListConfigSection.swift; sourceTree = "<group>"; };
 		11DA3CCFB66270F6DF1983FB /* appIcon32.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon32.jpg; sourceTree = "<group>"; };
 		120784B10F8B6A3BCD6618F9 /* SaveDirectoryBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SaveDirectoryBridge.h; sourceTree = "<group>"; };
 		1243D5911A71789DFD45D8CA /* SaveDirectoryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveDirectoryManager.swift; sourceTree = "<group>"; };
@@ -1343,6 +1349,7 @@
 		2D56ED71DDB9C818FE8EE657 /* fightdata_arabianm.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_arabianm.json; sourceTree = "<group>"; };
 		2D6F92DA20EE106A194443EE /* fightdata_fatfurwa.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_fatfurwa.json; sourceTree = "<group>"; };
 		2DE7D61AD683C83AD4BE33A7 /* input_coreLabels_snes9x_2010.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_snes9x_2010.json; sourceTree = "<group>"; };
+		2DF06EA00C0D754AD424B236 /* MoveDataMovesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveDataMovesView.swift; sourceTree = "<group>"; };
 		2E0EE3D213A80F69382477E8 /* input_systemLabels_ti_83.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_ti_83.json; sourceTree = "<group>"; };
 		2E230D511858D1AC3B20502D /* DisplaySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplaySettingsView.swift; sourceTree = "<group>"; };
 		2E2B367F8D645EC91E7700D7 /* msx_fmsx-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "msx_fmsx-cheats.zip"; sourceTree = "<group>"; };
@@ -1661,6 +1668,7 @@
 		7071672F4855616C9D2564D6 /* ModernSectionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModernSectionCard.swift; sourceTree = "<group>"; };
 		70B077E4EEFEFF94C0EF6F75 /* poke@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "poke@132w.png"; sourceTree = "<group>"; };
 		70DC82C7E6FFA6CA65424CC3 /* dreamcast.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = dreamcast.zip; sourceTree = "<group>"; };
+		70F5A2C5794BC778659FF41E /* MoveDataCharactersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveDataCharactersView.swift; sourceTree = "<group>"; };
 		70F8AFB2483C52D0E0A0D1A1 /* fightdata_rbff1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_rbff1.json; sourceTree = "<group>"; };
 		71020EB1CE64E1B4DD3514D7 /* BezelSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelSettingsView.swift; sourceTree = "<group>"; };
 		719F002A9D487082ED007A6A /* fightdata_timekill.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_timekill.json; sourceTree = "<group>"; };
@@ -1816,6 +1824,7 @@
 		959697A919B91A825E7E7DD8 /* fightdata_sfa2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_sfa2.json; sourceTree = "<group>"; };
 		9636292A90DC6F0B1CBAE8D5 /* fightdata_jchan2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_jchan2.json; sourceTree = "<group>"; };
 		96544BE3AA856C3809F57F4C /* megaduck@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "megaduck@132w.png"; sourceTree = "<group>"; };
+		96619349B830F47B3655D652 /* MoveDataUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveDataUtilities.swift; sourceTree = "<group>"; };
 		96D83EE16FECF459999464E5 /* msx@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "msx@132w.png"; sourceTree = "<group>"; };
 		96E6003B8C8F290A61CA2030 /* fightdata_ssf2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_ssf2.json; sourceTree = "<group>"; };
 		96EB760EBFD3458D61CE11D8 /* input_coreLabels_sameduck.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_sameduck.json; sourceTree = "<group>"; };
@@ -1836,6 +1845,7 @@
 		9A53F0EBF42B897DC4DA810A /* pt.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = pt.json; sourceTree = "<group>"; };
 		9B06488DE005018FB65D9950 /* input_coreLabels_mesen-s.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "input_coreLabels_mesen-s.json"; sourceTree = "<group>"; };
 		9B9365CD6FC031FDA5FC4E59 /* CPS1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CPS1.png; sourceTree = "<group>"; };
+		9C0E8F85B2C2893C2F36FAB0 /* MoveDataGamesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveDataGamesView.swift; sourceTree = "<group>"; };
 		9C414D93A2ECA0F8D6F1A5F3 /* fightdata_wargods.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_wargods.json; sourceTree = "<group>"; };
 		9C5D64D2262E657B3F007C98 /* PSP.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = PSP.metal; sourceTree = "<group>"; };
 		9D0409EE4A71A70746BE08BB /* scummvm@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "scummvm@132w.png"; sourceTree = "<group>"; };
@@ -3821,7 +3831,12 @@
 				A6DA1A056535CC2F61A60BF4 /* InstallDragView.swift */,
 				207CA3D1269209D39D868D9B /* LibrarySettingsViewGroup.swift */,
 				FE784389751B61D2018470B8 /* LoggingSettingsView.swift */,
+				70F5A2C5794BC778659FF41E /* MoveDataCharactersView.swift */,
+				9C0E8F85B2C2893C2F36FAB0 /* MoveDataGamesView.swift */,
+				2DF06EA00C0D754AD424B236 /* MoveDataMovesView.swift */,
+				96619349B830F47B3655D652 /* MoveDataUtilities.swift */,
 				D49D5412E3B0292CF1A549EC /* MoveEditorView.swift */,
+				119DDA14AB6E978586E3E343 /* MoveListConfigSection.swift */,
 				3BC92E3E97A6564FD5EE72BC /* MoveListSettingsView.swift */,
 				335FB3D776E0D41A27C64844 /* RetroAchievementsSettingsView.swift */,
 				DF2042329F720EF6B53E084E /* SaveDirectoriesSection.swift */,
@@ -5232,8 +5247,13 @@
 				139F5308F944EC66EAB548BE /* MetalCoordinator.swift in Sources */,
 				114F352AC9144A444E87A3FF /* ModernSaveStateSlotView.swift in Sources */,
 				5B5B9D5378C64F28E2896612 /* ModernSectionCard.swift in Sources */,
+				13267C7699DA0893F6EEC72E /* MoveDataCharactersView.swift in Sources */,
+				689BB993F6CD71261D227249 /* MoveDataGamesView.swift in Sources */,
+				C6FF09C1D06E5019E40CEBFE /* MoveDataMovesView.swift in Sources */,
+				A636A60074D52DB1ED1F37DB /* MoveDataUtilities.swift in Sources */,
 				501683EA49AE6969BC984752 /* MoveEditorView.swift in Sources */,
 				713E44201EF84E7F455984C6 /* MoveListCharacterPicker.swift in Sources */,
+				DE65A573AD4E1049F78D52F4 /* MoveListConfigSection.swift in Sources */,
 				15300F8312E4D43A32A26757 /* MoveListModels.swift in Sources */,
 				791D4D875255FD88ED25BD66 /* MoveListOverlay.swift in Sources */,
 				938FB796AE66683C4E416FAF /* MoveListOverlayViewModel.swift in Sources */,

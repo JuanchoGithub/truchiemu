@@ -261,6 +261,7 @@ struct SettingsView: View {
 
             // Detail
             detailContent
+                .id(selectedPage)
                 .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
