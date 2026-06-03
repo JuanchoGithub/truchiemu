@@ -59,7 +59,7 @@ struct InputParser {
 
             if hasDir {
                 let dirOnly = seq.map { step -> ParsedStep in
-                    ParsedStep(direction: step.direction, buttons: [], isCharge: step.isCharge, isHold: step.isHold, isRelease: step.isRelease)
+                    ParsedStep(direction: step.direction, buttons: [], isCharge: step.isCharge, isHold: step.isHold, isRelease: step.isRelease, isRapid: false, isAirStep: step.isAirStep)
                 }
                 if !directionSequences.contains(dirOnly) {
                     directionSequences.append(dirOnly)
@@ -84,13 +84,15 @@ struct InputParser {
                 var newSeq = dirSeq
                 if !newSeq.isEmpty {
                     let last = newSeq[newSeq.count - 1]
-                    newSeq[newSeq.count - 1] = ParsedStep(
-                        direction: last.direction,
-                        buttons: btns,
-                        isCharge: last.isCharge,
-                        isHold: last.isHold,
-                        isRelease: last.isRelease
-                    )
+                newSeq[newSeq.count - 1] = ParsedStep(
+                    direction: last.direction,
+                    buttons: btns,
+                    isCharge: last.isCharge,
+                    isHold: last.isHold,
+                    isRelease: last.isRelease,
+                    isRapid: false,
+                    isAirStep: last.isAirStep
+                )
                 }
                 result.append(newSeq)
             }
@@ -107,6 +109,7 @@ struct InputParser {
         var isHold = false
         var isRelease = false
         var isAir = false
+        var isRapid = false
         var i = input.startIndex
 
         while i < input.endIndex {
@@ -125,12 +128,11 @@ struct InputParser {
                 continue
             }
 
-            if remaining.hasPrefix("_X") {
-                flushStep()
-                steps.append(ParsedStep(direction: nil, buttons: [], isCharge: false, isHold: false, isRelease: false))
-                i = input.index(i, offsetBy: 2)
-                continue
-            }
+        if remaining.hasPrefix("_X") {
+            isRapid = true
+            i = input.index(i, offsetBy: 2)
+            continue
+        }
 
             if remaining.hasPrefix("_(") {
                 let closeParen = input[i...].firstIndex(of: ")") ?? input.endIndex
@@ -203,7 +205,13 @@ struct InputParser {
             continue
         }
 
-        if remaining.hasPrefix("^") {
+            if remaining.hasPrefix("^*") {
+                isRapid = true
+                i = input.index(i, offsetBy: 2)
+                continue
+            }
+
+            if remaining.hasPrefix("^") {
                 let nextIdx = input.index(after: i)
                 if nextIdx < input.endIndex {
                     let twoChar = String(input[i..<input.index(after: nextIdx)])
@@ -215,7 +223,16 @@ struct InputParser {
                         continue
                     }
                 }
-                let endIdx = input[i...].firstIndex(where: { $0.isWhitespace || directionMap.keys.contains(where: { remaining.hasPrefix($0) }) }) ?? input.endIndex
+                let afterCaret = input.index(after: i)
+                var endIdx = input.index(after: afterCaret)
+                while endIdx < input.endIndex {
+                    let c = input[endIdx]
+                    if c.isLetter || c.isNumber || c == "#" {
+                        endIdx = input.index(after: endIdx)
+                    } else {
+                        break
+                    }
+                }
                 currentButtons.append(String(input[i..<endIdx]))
                 i = endIdx
                 continue
@@ -227,26 +244,29 @@ struct InputParser {
         flushStep()
 
         if isAir, !steps.isEmpty {
-            let airStep = ParsedStep(direction: 8, buttons: [], isCharge: false, isHold: false, isRelease: false)
+            let airStep = ParsedStep(direction: 8, buttons: [], isCharge: false, isHold: false, isRelease: false, isRapid: false, isAirStep: true)
             steps.insert(airStep, at: 0)
         }
 
         return steps
 
         func flushStep() {
-            if currentDirection != nil || !currentButtons.isEmpty || isCharge || isHold || isRelease {
-                steps.append(ParsedStep(
-                    direction: currentDirection,
-                    buttons: currentButtons,
-                    isCharge: isCharge,
-                    isHold: isHold,
-                    isRelease: isRelease
-                ))
+            if currentDirection != nil || !currentButtons.isEmpty || isCharge || isHold || isRelease || isRapid {
+            steps.append(ParsedStep(
+                direction: currentDirection,
+                buttons: currentButtons,
+                isCharge: isCharge,
+                isHold: isHold,
+                isRelease: isRelease,
+                isRapid: isRapid,
+                isAirStep: false
+            ))
                 currentDirection = nil
                 currentButtons = []
                 isCharge = false
                 isHold = false
                 isRelease = false
+                isRapid = false
             }
         }
     }

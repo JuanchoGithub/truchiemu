@@ -101,8 +101,20 @@ struct MoveDataCharactersView: View {
         Form {
             if let game = fightDataGame {
                 let sortedChars = game.characters.sorted(by: { $0.name.localizedStandardCompare($1.name) == .orderedAscending })
+                let commonMoves = game.commonCommands ?? []
 
                 Section {
+                    if !commonMoves.isEmpty {
+                        Button(action: { onSelectCharacter("__common__") }) {
+                            CommonMovesetRowView(
+                                moveCount: commonMoves.count,
+                                entries: storageService.getEntriesForGame(gameName: gameName, characterName: "__common__"),
+                                colorScheme: colorScheme
+                            )
+                        }
+                        .buttonStyle(.plain)
+                    }
+
                     ForEach(sortedChars) { character in
                         let charHidden = storageService.isCharacterHidden(gameName: gameName, characterName: character.name)
                         HStack(spacing: 0) {
@@ -360,6 +372,66 @@ private struct CharacterRowView: View {
         }
         .padding(.vertical, AppSpacing.xxs)
         .opacity(isHidden ? 0.5 : 1)
+        .contentShape(Rectangle())
+    }
+}
+
+private struct CommonMovesetRowView: View {
+    let moveCount: Int
+    let entries: [MoveListEntry]
+    let colorScheme: ColorScheme
+
+    var body: some View {
+        HStack(spacing: AppSpacing.lg) {
+            ZStack {
+                Circle()
+                    .fill(Color.teal.opacity(0.2))
+                    .frame(width: 28, height: 28)
+                Image(systemName: "person.2.crop.square")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(.teal)
+            }
+
+            VStack(alignment: .leading, spacing: AppSpacing.xxs) {
+                Text(LocalizationManager.shared.localized("settings.moveList.commonMoveset"))
+                    .font(.system(size: 13, weight: .medium))
+                Text(LocalizationManager.shared.localized("settings.moveList.commonMovesetDesc"))
+                    .font(.caption2)
+                    .foregroundStyle(AppColors.textTertiary(colorScheme))
+            }
+
+            Spacer()
+
+            HStack(spacing: AppSpacing.xs) {
+                let favCount = entries.filter(\.isFavorite).count
+                if favCount > 0 {
+                    Image(systemName: "star.fill")
+                        .font(.system(size: 9))
+                        .foregroundStyle(.yellow)
+                }
+                let customCount = entries.filter(\.isCustom).count
+                if customCount > 0 {
+                    Image(systemName: "plus.circle.fill")
+                        .font(.system(size: 9))
+                        .foregroundStyle(.green)
+                }
+                let overrideCount = entries.filter(\.isOverride).count
+                if overrideCount > 0 {
+                    Image(systemName: "pencil.circle.fill")
+                        .font(.system(size: 9))
+                        .foregroundStyle(AppColors.brandAccent)
+                }
+            }
+
+            Text("\(moveCount)")
+                .font(.caption2)
+                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(AppColors.cardBackground(colorScheme))
+                .clipShape(Capsule())
+        }
+        .padding(.vertical, AppSpacing.xxs)
         .contentShape(Rectangle())
     }
 }

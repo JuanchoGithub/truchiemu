@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="9 9 30 31" width="100%" height="100%">
+  <defs>
+    <!-- Degradado Dorado Premium para el Escudo -->
+    <linearGradient id="goldArcade" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fffde6" />
+      <stop offset="40%" stop-color="#fef08a" />
+      <stop offset="100%" stop-color="#ca8a04" />
+    </linearGradient>
+    
+    <!-- Degradado Metálico para el Marco del Escudo -->
+    <linearGradient id="steel" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#94a3b8" />
+      <stop offset="50%" stop-color="#f8fafc" />
+      <stop offset="100%" stop-color="#475569" />
+    </linearGradient>
+  </defs>
+  
+  <!-- ICONO DE DEFENSA: ESCUDO PESADO -->
+  <g stroke-linejoin="round" stroke-linecap="round">
+    
+    <!-- Aura de energía de bloqueo (Impact deflection) -->
+    <circle cx="24" cy="24" r="14" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.6"/>
+    <circle cx="24" cy="24" r="11" fill="none" stroke="#e0f2fe" stroke-width="0.5" opacity="0.4"/>
+    
+    <!-- Chispa de impacto de bloqueo (Arriba a la derecha) -->
+    <path d="M 33 11 L 34 14 L 37 15 L 34 16 L 33 19 L 32 16 L 29 15 L 32 14 Z" fill="#ffffff" opacity="0.8"/>
+    
+    <!-- Base del Escudo (Marco Exterior Acero) -->
+    <path d="M 13 13 Q 24 10 35 13 L 35 22 C 35 32, 28 36, 24 39 C 20 36, 13 32, 13 22 Z" 
+          fill="url(#steel)" 
+          stroke="#0f172a" 
+          stroke-width="1.5"/>
+          
+    <!-- Interior del Escudo (Cuerpo de Oro) -->
+    <path d="M 16 15 Q 24 12.5 32 15 L 32 21.5 C 32 30, 27.5 33.5, 24 36 C 20.5 33.5, 16 30, 16 21.5 Z" 
+          fill="url(#goldArcade)" 
+          stroke="#0f172a" 
+          stroke-width="1.2"/>
+          
+    <!-- Detalles de relieve del escudo (Líneas divisorias y remaches) -->
+    <line x1="24" y1="13" x2="24" y2="36" stroke="#ca8a04" stroke-width="1.5"/>
+    <line x1="16" y1="21" x2="32" y2="21" stroke="#ca8a04" stroke-width="1.5"/>
+    
+    <!-- Brillo en la parte superior de la hoja de oro para profundidad -->
+    <path d="M 17.5 16 Q 24 14 30.5 16" fill="none" stroke="#ffffff" stroke-width="1.5" opacity="0.4"/>
+
+    <!-- Umbo central (La pieza metálica del medio) -->
+    <circle cx="24" cy="24" r="4.5" fill="url(#steel)" stroke="#0f172a" stroke-width="1.2"/>
+    
+    <!-- Núcleo de energía brillante en el centro del escudo -->
+    <circle cx="24" cy="24" r="2" fill="#38bdf8"/>
+    <circle cx="24" cy="24" r="1" fill="#ffffff"/>
+  </g>
+</svg>

@@ -117,19 +117,22 @@ class MoveListOverlayViewModel: ObservableObject {
     }
 
     func toggleFavorite(moveId: String) {
-        guard let gameName = gameName, let charName = selectedCharacterName else { return }
+        guard let gameName = gameName else { return }
+        let charName = isCommonMoveId(moveId) ? "__common__" : (selectedCharacterName ?? "")
         storageService.toggleFavorite(gameName: gameName, characterName: charName, moveId: moveId)
         updateFilteredMoves(for: inputStateTracker.inputSequence)
     }
 
     func toggleHidden(moveId: String) {
-        guard let gameName = gameName, let charName = selectedCharacterName else { return }
+        guard let gameName = gameName else { return }
+        let charName = isCommonMoveId(moveId) ? "__common__" : (selectedCharacterName ?? "")
         storageService.toggleHidden(gameName: gameName, characterName: charName, moveId: moveId)
         updateFilteredMoves(for: inputStateTracker.inputSequence)
     }
 
     func isFavorite(moveId: String) -> Bool {
-        guard let gameName = gameName, let charName = selectedCharacterName else { return false }
+        guard let gameName = gameName else { return false }
+        let charName = isCommonMoveId(moveId) ? "__common__" : (selectedCharacterName ?? "")
         return storageService.isFavorite(gameName: gameName, characterName: charName, moveId: moveId)
     }
 
@@ -139,20 +142,28 @@ class MoveListOverlayViewModel: ObservableObject {
         let isKick = controlGroups["_K"]?.contains(fightDataKey) == true
 
         if isPunch {
-            let strength = resolveButtonStrength(fightDataKey, inGroup: controlGroups["_P"])
+            let strength = MoveNotationRenderer.resolveButtonStrength(fightDataKey, inGroup: controlGroups["_P"])
             return .punch(strength: strength)
         }
         if isKick {
-            let strength = resolveButtonStrength(fightDataKey, inGroup: controlGroups["_K"])
+            let strength = MoveNotationRenderer.resolveButtonStrength(fightDataKey, inGroup: controlGroups["_K"])
             return .kick(strength: strength)
+        }
+
+        let isWeapon = controlGroups["_W"]?.contains(fightDataKey) == true
+        if isWeapon {
+            return .weapon(style: .sword)
         }
 
         let controls = moveListService.currentGameData?.controls ?? [:]
         let label = (controls[fightDataKey] ?? "").lowercased()
-        if label.contains("throw") || label.contains("grapple") {
+        if label.contains("guard") || label.contains("block") {
+        return .block
+    }
+    if label.contains("throw") || label.contains("grapple") || label.contains("hold") || label.contains("grab") {
             return .grapple
         }
-        if label.contains("weapon") || label.contains("sword") {
+        if label.contains("weapon") || label.contains("sword") || label.contains("slash") {
             return .weapon(style: .sword)
         }
         if label.contains("axe") {
@@ -160,10 +171,23 @@ class MoveListOverlayViewModel: ObservableObject {
         }
 
         let abbr = moveListService.controlAbbreviations[fightDataKey] ?? fightDataKey
-        if label.contains("punch") || label.contains("p") {
+        if label.contains("punch") {
             return .punch(strength: .low)
         }
-        if label.contains("kick") || label.contains("k") {
+        if label.contains("kick") {
+            return .kick(strength: .low)
+        }
+
+    let cleanKey = fightDataKey.replacingOccurrences(of: "^", with: "").replacingOccurrences(of: "_", with: "")
+    if cleanKey == "G" { return .block }
+    if cleanKey == "a" || cleanKey == "b" {
+            return .weapon(style: .sword)
+        }
+
+        if abbr == "P" || abbr == "p" {
+            return .punch(strength: .low)
+        }
+        if abbr == "K" || abbr == "k" {
             return .kick(strength: .low)
         }
 
@@ -370,16 +394,31 @@ class MoveListOverlayViewModel: ObservableObject {
         }
 
         if let commonMoves = moveListService.currentGameData?.commonCommands {
+            let commonHiddenMoveIds = Set(storageService.getHidden(gameName: gameName, characterName: "__common__").map(\.moveId))
             for move in commonMoves where move.hasInputData {
-                if hiddenMoveIds.contains(move.id) { continue }
-                if storageService.getOverride(gameName: gameName, characterName: character.name, moveId: move.id) != nil { continue }
-                let resolved = resolveMove(move, categoryLabels: categoryLabels)
+                if commonHiddenMoveIds.contains(move.id) { continue }
+                let resolved: ResolvedMove
+                if let overrideEntry = storageService.getOverride(gameName: gameName, characterName: "__common__", moveId: move.id),
+                   let overrideData = overrideEntry.overrideJSON?.data(using: .utf8),
+                   let overrideMove = try? JSONDecoder().decode(FightDataMove.self, from: overrideData) {
+                    resolved = resolveMove(overrideMove, categoryLabels: categoryLabels)
+                } else {
+                    resolved = resolveMove(move, categoryLabels: categoryLabels)
+                }
                 moves.append(resolved)
             }
         }
 
         let customEntries = storageService.getCustomMoves(gameName: gameName, characterName: character.name)
         for entry in customEntries {
+            guard let data = entry.customMoveJSON?.data(using: .utf8),
+                  let move = try? JSONDecoder().decode(FightDataMove.self, from: data) else { continue }
+            let resolved = resolveMove(move, categoryLabels: categoryLabels)
+            moves.append(resolved)
+        }
+
+        let commonCustomEntries = storageService.getCustomMoves(gameName: gameName, characterName: "__common__")
+        for entry in commonCustomEntries {
             guard let data = entry.customMoveJSON?.data(using: .utf8),
                   let move = try? JSONDecoder().decode(FightDataMove.self, from: data) else { continue }
             let resolved = resolveMove(move, categoryLabels: categoryLabels)
@@ -396,7 +435,7 @@ class MoveListOverlayViewModel: ObservableObject {
         let notation = move.input?.replacingOccurrences(of: "_", with: "") ?? ""
         let hl = move.hitLevels.map { HitLevel.parse($0) } ?? []
 
-        let isAir = parsedSteps.first?.first?.direction == 8 && parsedSteps.first?.first?.buttons.isEmpty == true
+        let isAir = parsedSteps.first?.first?.isAirStep == true
         let isCharge = parsedSteps.first?.contains(where: { $0.isCharge }) ?? false
         let isMotion360 = detectMotion360(parsedSteps)
         let totalSteps = parsedSteps.first?.count ?? 0
@@ -422,96 +461,14 @@ class MoveListOverlayViewModel: ObservableObject {
     }
 
     private func buildTokensFromString(_ input: String, hitLevels: String? = nil) -> [NotationToken] {
-        if input.isEmpty { return [] }
-
-        var tokens: [NotationToken] = []
-        let parsedSequences = InputParser.parse(input)
-        let hitLevelList = hitLevels.map { HitLevel.parse($0) } ?? []
-
-        for (seqIndex, sequence) in parsedSequences.enumerated() {
-            if seqIndex > 0 {
-                tokens.append(.alternative)
-            }
-
-            for (stepIndex, step) in sequence.enumerated() {
-                if step.isCharge, let dirVal = step.direction, let dir = FightDataDirection(rawValue: dirVal) {
-                    tokens.append(.charge(dir))
-                } else if step.direction == 8 && step.buttons.isEmpty && tokens.isEmpty {
-                    tokens.append(.air)
-                } else if let dirVal = step.direction, let dir = FightDataDirection(rawValue: dirVal) {
-                    if step.direction != 8 || !tokens.isEmpty {
-                        tokens.append(.direction(dir))
-                    }
-                }
-
-                if !step.buttons.isEmpty {
-                    for (i, key) in step.buttons.enumerated() {
-                        if i > 0 { tokens.append(.separator) }
-                        tokens.append(mapButtonToToken(key))
-                    }
-                }
-
-                if step.isHold {
-                    tokens.append(.holdButton)
-                }
-
-                if seqIndex == 0, stepIndex < hitLevelList.count, hitLevelList[stepIndex] != .none {
-                    tokens.append(.hitLevel(hitLevelList[stepIndex]))
-                }
-            }
-        }
-
-        return tokens
-    }
-
-    private func mapButtonToToken(_ key: String) -> NotationToken {
-        let controlGroups = moveListService.currentGameData?.controlGroups ?? [:]
-        let controls = moveListService.currentGameData?.controls ?? [:]
-        let abbr = moveListService.controlAbbreviations
-        let label = controls[key] ?? abbr[key] ?? key
-
-        let isPunchGroupKey = controlGroups["_P"]?.contains(key) == true
-        let isKickGroupKey = controlGroups["_K"]?.contains(key) == true
-
-        if isPunchGroupKey {
-            let strength = resolveButtonStrength(key, inGroup: controlGroups["_P"])
-            return .button(.punch(strength: strength))
-        }
-        if isKickGroupKey {
-            let strength = resolveButtonStrength(key, inGroup: controlGroups["_K"])
-            return .button(.kick(strength: strength))
-        }
-
-        let lower = label.lowercased()
-        if lower.contains("throw") || lower.contains("grapple") {
-            return .button(.grapple)
-        }
-        if lower.contains("weapon") || lower.contains("sword") {
-            return .button(.weapon(style: .sword))
-        }
-        if lower.contains("axe") {
-            return .button(.weapon(style: .axe))
-        }
-
-        let abbrLabel = abbr[key] ?? key.replacingOccurrences(of: "^", with: "").replacingOccurrences(of: "_", with: "")
-        if lower.contains("punch") || lower.contains("p") {
-            return .button(.punch(strength: .low))
-        }
-        if lower.contains("kick") || lower.contains("k") {
-            return .button(.kick(strength: .low))
-        }
-
-        return .button(.generic(label: abbrLabel))
-    }
-
-    private func resolveButtonStrength(_ key: String, inGroup group: [String]?) -> ButtonStrength {
-        guard let group, let index = group.firstIndex(of: key) else { return .low }
-        switch index {
-        case 0: return .low
-        case 1: return .medium
-        case 2: return .high
-        default: return .low
-        }
+        let gameData = moveListService.currentGameData
+        return MoveNotationRenderer.renderSteps(
+            InputParser.parse(input),
+            hitLevels: hitLevels.map { HitLevel.parse($0) },
+            controls: gameData?.controls ?? [:],
+            controlAbbr: moveListService.controlAbbreviations,
+            controlGroups: gameData?.controlGroups ?? [:]
+        )
     }
 
     private func recordAttempt(directions: [FightDataDirection], buttons: [Set<String>], character: FightDataCharacter) {
@@ -667,5 +624,10 @@ class MoveListOverlayViewModel: ObservableObject {
 
     private func normalizeFightDataKey(_ key: String) -> String {
         key.lowercased().replacingOccurrences(of: "^", with: "")
+    }
+
+    private func isCommonMoveId(_ moveId: String) -> Bool {
+        guard let commonMoves = moveListService.currentGameData?.commonCommands else { return false }
+        return commonMoves.contains(where: { $0.id == moveId })
     }
 }

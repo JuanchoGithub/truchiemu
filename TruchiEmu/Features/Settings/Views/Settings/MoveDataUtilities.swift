@@ -13,26 +13,14 @@ func repairAndDecodeCustomGameJSON(_ jsonString: String) -> (game: FightDataGame
     return (game, didRepair ? repairedJson : jsonString)
 }
 
-func buildMoveNotationTokens(_ input: String) -> [NotationToken] {
+func buildMoveNotationTokens(_ input: String, game: FightDataGame? = nil) -> [NotationToken] {
     let sequences = InputParser.parse(input)
-    var tokens: [NotationToken] = []
-    for (idx, seq) in sequences.enumerated() {
-        if idx > 0 { tokens.append(.alternative) }
-        for step in seq {
-            if step.direction == 8 && step.buttons.isEmpty && !step.isCharge {
-                tokens.append(.air)
-                continue
-            }
-            if let dir = step.direction, let fdDir = FightDataDirection(rawValue: dir) {
-                tokens.append(.direction(fdDir))
-            }
-            for (bi, btn) in step.buttons.enumerated() {
-                if bi > 0 { tokens.append(.separator) }
-                tokens.append(.button(buttonTokenType(for: btn)))
-            }
-        }
-    }
-    return tokens
+    return MoveNotationRenderer.renderSteps(
+        sequences,
+        controls: game?.controls ?? [:],
+        controlAbbr: game?.controlAbbr ?? [:],
+        controlGroups: game?.controlGroups ?? [:]
+    )
 }
 
 func buttonTokenType(for key: String) -> ButtonTokenType {
@@ -44,6 +32,16 @@ func buttonTokenType(for key: String) -> ButtonTokenType {
         let strength: ButtonStrength = key == "^H" ? .low : key == "^I" ? .medium : key == "^J" ? .high : .low
         return .kick(strength: strength)
     }
-    if key == "_G" { return .grapple }
-    return .generic(label: key.replacingOccurrences(of: "^", with: "").replacingOccurrences(of: "_", with: ""))
+    if key == "_G" { return .block }
+    let clean = key.replacingOccurrences(of: "^", with: "").replacingOccurrences(of: "_", with: "")
+    if clean == "a" || clean == "b" {
+        return .weapon(style: .sword)
+    }
+    if clean == "P" || clean == "p" {
+        return .punch(strength: .low)
+    }
+    if clean == "K" || clean == "k" {
+        return .kick(strength: .low)
+    }
+    return .generic(label: clean)
 }

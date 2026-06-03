@@ -19,6 +19,7 @@ class MoveListStorageService: ObservableObject {
         guard !hasLoaded else { return }
         hasLoaded = true
         loadAll()
+        migrateCommonCommandEntries()
     }
 
     private func loadAll() {
@@ -28,6 +29,62 @@ class MoveListStorageService: ObservableObject {
 
         let gameDesc = FetchDescriptor<CustomGameDataEntry>(sortBy: [SortDescriptor(\.gameName)])
         customGames = (try? ctx.fetch(gameDesc)) ?? []
+    }
+
+    private func migrateCommonCommandEntries() {
+        let migrationKey = "movelist_common_migration_done"
+        if AppSettings.getBool(migrationKey, defaultValue: false) { return }
+
+        let gameNames = Set(moveEntries.map(\.gameName))
+        for gameName in gameNames {
+            let commonMoveIds: Set<String>
+            if let entry = MoveListService.shared.loadIndexEntries().first(where: { $0.name == gameName }),
+               let game = MoveListService.shared.loadGameByFile(entry.file),
+               let commons = game.commonCommands {
+                commonMoveIds = Set(commons.map(\.id))
+            } else if let customEntry = getCustomGame(name: gameName),
+                      let data = customEntry.gameJSON.data(using: .utf8),
+                      let game = try? JSONDecoder().decode(FightDataGame.self, from: data),
+                      let commons = game.commonCommands {
+                commonMoveIds = Set(commons.map(\.id))
+            } else {
+                continue
+            }
+
+            let entriesToMigrate = moveEntries.filter { entry in
+                entry.gameName == gameName &&
+                entry.characterName != "__common__" &&
+                commonMoveIds.contains(entry.moveId) &&
+                entry.moveId != "__char_hidden__"
+            }
+
+            for entry in entriesToMigrate {
+                let newKey = "\(gameName)::__common__::\(entry.moveId)"
+
+                if let existing = moveEntries.first(where: { $0.compositeKey == newKey }) {
+                    if entry.isFavorite { existing.isFavorite = true }
+                    if entry.isHidden { existing.isHidden = true }
+                    if entry.isOverride, let oj = entry.overrideJSON {
+                        existing.isOverride = true
+                        existing.overrideJSON = oj
+                    }
+                    if entry.isCustom, let cj = entry.customMoveJSON {
+                        existing.isCustom = true
+                        existing.customMoveJSON = cj
+                    }
+                    context.delete(entry)
+                    moveEntries.removeAll { $0.compositeKey == entry.compositeKey }
+                } else {
+                    entry.characterName = "__common__"
+                    entry.compositeKey = newKey
+                }
+            }
+        }
+
+        if !moveEntries.isEmpty || context.hasChanges {
+            try? context.save()
+        }
+        AppSettings.setBool(migrationKey, value: true)
     }
 
     // MARK: - MoveListEntry CRUD

@@ -15,8 +15,15 @@ struct MoveDataMovesView: View {
     @State private var fightDataGame: FightDataGame?
     @State private var showAddMoveSheet = false
 
+    private var isCommonMoveset: Bool { characterName == "__common__" }
+
     private var character: FightDataCharacter? {
-        fightDataGame?.characters.first(where: { $0.name == characterName })
+        guard !isCommonMoveset else { return nil }
+        return fightDataGame?.characters.first(where: { $0.name == characterName })
+    }
+
+    private var commonMoves: [FightDataMove] {
+        fightDataGame?.commonCommands ?? []
     }
 
     var body: some View {
@@ -38,7 +45,7 @@ struct MoveDataMovesView: View {
                 HStack(spacing: 4) {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 13, weight: .semibold))
-                    Text(characterName)
+                    Text(isCommonMoveset ? loc.localized("settings.moveList.commonMoveset") : characterName)
                         .font(.system(size: 13))
                 }
             }
@@ -78,7 +85,11 @@ struct MoveDataMovesView: View {
 
     private var contentList: some View {
         Form {
-            if let char = character {
+            if isCommonMoveset {
+                customMovesSectionCommon
+                commonBundledMovesSection
+                commonEmptyOrAddSection
+            } else if let char = character {
                 customMovesSection(char: char)
                 bundledMovesSection(char: char)
                 emptyOrAddSection(char: char)
@@ -86,6 +97,53 @@ struct MoveDataMovesView: View {
         }
         .scrollContentBackground(.hidden)
         .formStyle(.grouped)
+    }
+
+    @ViewBuilder
+    private var customMovesSectionCommon: some View {
+        let customEntries = storageService.getCustomMoves(gameName: gameName, characterName: characterName)
+        if !customEntries.isEmpty {
+            Section {
+                ForEach(customEntries, id: \.compositeKey) { entry in
+                    customMoveRow(entry: entry)
+                }
+            } header: {
+                Label(loc.localized("settings.moveList.custom"), systemImage: "plus.circle.fill")
+                    .foregroundStyle(.green)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var commonBundledMovesSection: some View {
+        let moves = commonMoves
+        if !moves.isEmpty {
+            let grouped = Dictionary(grouping: moves, by: { $0.category })
+            let sortedCategories = grouped.keys.sorted()
+
+            ForEach(sortedCategories, id: \.self) { category in
+                let catLabel = MoveListService.shared.resolveCategoryLabel(category, gameCategories: fightDataGame?.categories ?? [:])
+                Section {
+                    ForEach(grouped[category] ?? [], id: \.id) { move in
+                        bundledMoveRow(move: move)
+                    }
+                } header: {
+                    Label(catLabel, systemImage: "gamecontroller")
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var commonEmptyOrAddSection: some View {
+        if commonMoves.isEmpty && storageService.getCustomMoves(gameName: gameName, characterName: characterName).isEmpty {
+            Section {
+                ContentUnavailableView(
+                    label: { Label(loc.localized("settings.moveList.noMoves"), systemImage: "gamecontroller") },
+                    description: { Text(loc.localized("settings.moveList.addMovePrompt")) }
+                )
+            }
+        }
     }
 
     @ViewBuilder
@@ -120,7 +178,7 @@ struct MoveDataMovesView: View {
                     .foregroundStyle(.green)
 
                 if let move = decodeMove(entry.customMoveJSON) {
-                    MoveContent(move: move, colorScheme: colorScheme)
+                    MoveContent(move: move, game: fightDataGame, colorScheme: colorScheme)
                 } else {
                     Text(entry.moveId)
                         .font(.system(size: 12))
@@ -171,11 +229,11 @@ struct MoveDataMovesView: View {
 
         Button(action: { onSelectMove(move, false, move.id, fightDataGame?.categories ?? [:]) }) {
             HStack(spacing: AppSpacing.md) {
-                if let override = overrideEntry, let overridden = decodeMove(override.overrideJSON) {
-                    MoveContent(move: overridden, colorScheme: colorScheme)
-                } else {
-                    MoveContent(move: move, colorScheme: colorScheme)
-                }
+            if let override = overrideEntry, let overridden = decodeMove(override.overrideJSON) {
+                MoveContent(move: overridden, game: fightDataGame, colorScheme: colorScheme)
+            } else {
+                MoveContent(move: move, game: fightDataGame, colorScheme: colorScheme)
+            }
 
                 Spacer()
 
@@ -326,7 +384,12 @@ struct MoveDataMovesView: View {
     }
 
     private var duplicateMoveIds: Set<String> {
-        let bundledIds = character?.moves.map(\.id) ?? []
+        let bundledIds: [String]
+        if isCommonMoveset {
+            bundledIds = commonMoves.map(\.id)
+        } else {
+            bundledIds = character?.moves.map(\.id) ?? []
+        }
         let customIds = storageService.getCustomMoves(gameName: gameName, characterName: characterName).map(\.moveId)
         let allIds = bundledIds + customIds
         var counts: [String: Int] = [:]
@@ -366,20 +429,21 @@ struct MoveDataMovesView: View {
     }
 }
 
-private struct MoveContent: View {
-    let move: FightDataMove
-    let colorScheme: ColorScheme
+    private struct MoveContent: View {
+        let move: FightDataMove
+        let game: FightDataGame?
+        let colorScheme: ColorScheme
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(move.name ?? move.input ?? "")
-                .font(.system(size: 12, weight: .medium))
-            if let input = move.input, !input.isEmpty {
-                let tokens = buildMoveNotationTokens(input)
-                if !tokens.isEmpty {
-                    MoveNotationTokenRow(tokens: tokens, compact: true)
+        var body: some View {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(move.name ?? move.input ?? "")
+                    .font(.system(size: 12, weight: .medium))
+                if let input = move.input, !input.isEmpty {
+                    let tokens = buildMoveNotationTokens(input, game: game)
+                    if !tokens.isEmpty {
+                        MoveNotationTokenRow(tokens: tokens, compact: true)
+                    }
                 }
             }
         }
     }
-}

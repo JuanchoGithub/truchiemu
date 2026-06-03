@@ -9,6 +9,26 @@ enum NavLevel: Hashable {
     case editor(gameName: String, characterName: String, isCustom: Bool, moveId: String?, gameCategories: [String: String])
 }
 
+@MainActor private func loadFightDataGame(name: String, isCustom: Bool) -> FightDataGame? {
+    let storageService = MoveListStorageService.shared
+    if isCustom {
+        if let entry = storageService.getCustomGame(name: name),
+           let data = entry.gameJSON.data(using: .utf8),
+           let game = try? JSONDecoder().decode(FightDataGame.self, from: data) {
+            return game
+        }
+    }
+    if let customEntry = storageService.getCustomGame(name: name),
+       let data = customEntry.gameJSON.data(using: .utf8),
+       let game = try? JSONDecoder().decode(FightDataGame.self, from: data) {
+        return game
+    }
+    if let entry = MoveListService.shared.loadIndexEntries().first(where: { $0.name == name }) {
+        return MoveListService.shared.loadGameByFile(entry.file)
+    }
+    return nil
+}
+
 struct MoveListSettingsView: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
@@ -16,6 +36,7 @@ struct MoveListSettingsView: View {
     @Binding var searchText: String
     @State private var navLevel: NavLevel = .overview
     @State private var editorMove: FightDataMove?
+    @State private var editorGameData: FightDataGame?
 
     var body: some View {
         Group {
@@ -41,18 +62,20 @@ struct MoveListSettingsView: View {
                     characterName: characterName,
                     isCustom: isCustom,
                     onBack: { navLevel = .characters(gameName: gameName, isCustom: isCustom) },
-                    onSelectMove: { move, custom, moveId, categories in
-                        editorMove = move
-                        navLevel = .editor(gameName: gameName, characterName: characterName, isCustom: custom, moveId: moveId, gameCategories: categories)
+            onSelectMove: { move, custom, moveId, categories in
+                editorMove = move
+                editorGameData = loadFightDataGame(name: gameName, isCustom: custom)
+                navLevel = .editor(gameName: gameName, characterName: characterName, isCustom: custom, moveId: moveId, gameCategories: categories)
                     }
                 )
             case .editor(let gameName, let characterName, let isCustom, let moveId, let gameCategories):
-                MoveEditorView(
-                    gameName: gameName,
-                    characterName: characterName,
-                    editingMove: editorMove,
-                    isCustom: isCustom,
-                    gameCategories: gameCategories,
+            MoveEditorView(
+                gameName: gameName,
+                characterName: characterName,
+                editingMove: editorMove,
+                isCustom: isCustom,
+                gameCategories: gameCategories,
+                fightDataGame: editorGameData,
                     onSave: { savedMove in
                         saveMoveToStorage(gameName: gameName, characterName: characterName, isCustom: isCustom, moveId: moveId, move: savedMove)
                         navLevel = .moves(gameName: gameName, characterName: characterName, isCustom: isCustom)

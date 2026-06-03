@@ -5,12 +5,14 @@ struct MoveEditorView: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var storageService = MoveListStorageService.shared
+    private let moveListService = MoveListService.shared
 
     let gameName: String
     let characterName: String
     let editingMove: FightDataMove?
     let isCustom: Bool
     let gameCategories: [String: String]
+    let fightDataGame: FightDataGame?
     let onSave: (FightDataMove) -> Void
     let onDelete: (() -> Void)?
     let onBack: (() -> Void)?
@@ -26,6 +28,7 @@ struct MoveEditorView: View {
 
     @State private var availableButtons: [EditorButton] = MoveEditorView.defaultCapcomButtons
     @State private var showButtonCatalog = false
+    @State private var isAir = false
 
     init(
         gameName: String,
@@ -33,6 +36,7 @@ struct MoveEditorView: View {
         editingMove: FightDataMove?,
         isCustom: Bool,
         gameCategories: [String: String],
+        fightDataGame: FightDataGame? = nil,
         onSave: @escaping (FightDataMove) -> Void,
         onDelete: (() -> Void)?,
         onBack: (() -> Void)? = nil
@@ -42,6 +46,7 @@ struct MoveEditorView: View {
         self.editingMove = editingMove
         self.isCustom = isCustom
         self.gameCategories = gameCategories
+        self.fightDataGame = fightDataGame
         self.onSave = onSave
         self.onDelete = onDelete
         self.onBack = onBack
@@ -51,21 +56,28 @@ struct MoveEditorView: View {
         _moveHitLevels = State(initialValue: editingMove?.hitLevels ?? "")
         _moveCondition = State(initialValue: editingMove?.condition ?? "")
 
+        var detectedAir = false
         var preSteps: [EditorStep] = []
         if let move = editingMove {
             let parsed = InputParser.parse(move.input ?? "")
             for (seqIdx, sequence) in parsed.enumerated() {
                 if seqIdx > 0 { preSteps.append(EditorStep(isBranch: true)) }
-                for step in sequence {
-                    var es = EditorStep()
-                    es.direction = step.direction
-                    es.buttons = step.buttons
-                    es.isCharge = step.isCharge
-                    preSteps.append(es)
+            for step in sequence {
+                if step.isAirStep {
+                    detectedAir = true
+                    continue
+                }
+                        var es = EditorStep()
+                        es.direction = step.direction
+                        es.buttons = step.buttons
+                        es.isCharge = step.isCharge
+                        es.isRapid = step.isRapid
+                        preSteps.append(es)
                 }
             }
         }
         _steps = State(initialValue: preSteps)
+        _isAir = State(initialValue: detectedAir)
     }
 
     private var editorTitle: String {
@@ -365,6 +377,7 @@ struct MoveEditorView: View {
 
     private func branchTokensView(_ indices: [Int]) -> some View {
         var tokens: [NotationToken] = []
+        if isAir { tokens.append(.air) }
         for stepIndex in indices {
             tokens.append(contentsOf: buildStepTokens(steps[stepIndex]))
         }
@@ -416,7 +429,7 @@ struct MoveEditorView: View {
             let strength: ButtonStrength = key == "^H" ? .low : key == "^I" ? .medium : .high
             return .kick(strength: strength)
         }
-        if key == "_G" { return .grapple }
+        if key == "_G" { return .block }
         return .generic(label: key.replacingOccurrences(of: "^", with: "").replacingOccurrences(of: "_", with: ""))
     }
 
@@ -486,7 +499,7 @@ struct MoveEditorView: View {
                     Button(action: { addButtonStep(btn.key) }) {
                         VStack(spacing: 2) {
                             MoveNotationTokenView(
-                                token: .button(editorButtonTokenType(for: btn)),
+                                token: .button(buttonTokenForCatalog(key: btn.key, label: btn.label)),
                                 isHighlighted: true,
                                 compact: true
                             )
@@ -507,34 +520,6 @@ struct MoveEditorView: View {
                 }
             }
         }
-    }
-
-    private func editorButtonTokenType(for btn: EditorButton) -> ButtonTokenType {
-        let key = btn.key
-        if btn.label == "LP" || btn.label == "MP" || btn.label == "HP" || btn.label == "Punch" {
-            let strength: ButtonStrength = {
-                switch btn.label {
-                case "LP": return .low
-                case "MP": return .medium
-                case "HP": return .high
-                default: return .low
-                }
-            }()
-            return .punch(strength: strength)
-        }
-        if btn.label == "LK" || btn.label == "MK" || btn.label == "HK" || btn.label == "Kick" {
-            let strength: ButtonStrength = {
-                switch btn.label {
-                case "LK": return .low
-                case "MK": return .medium
-                case "HK": return .high
-                default: return .low
-                }
-            }()
-            return .kick(strength: strength)
-        }
-        if key == "_G" || btn.label == "Guard" { return .grapple }
-        return .generic(label: btn.label)
     }
 
     private var buttonCatalogContent: some View {
@@ -584,7 +569,16 @@ struct MoveEditorView: View {
     }
 
     private func buttonTokenForCatalog(key: String, label: String) -> ButtonTokenType {
-        editorButtonTokenType(for: EditorButton(key: key, label: label))
+        let cd = rendererControlData
+        if case .button(let type) = MoveNotationRenderer.mapButtonToToken(
+            key,
+            controls: cd.controls,
+            controlAbbr: cd.controlAbbr,
+            controlGroups: cd.controlGroups
+        ) {
+            return type
+        }
+        return .generic(label: label)
     }
 
     // MARK: - Modifiers
@@ -757,23 +751,29 @@ struct MoveEditorView: View {
         }
     }
 
+    private var rendererControlData: (controls: [String: String], controlAbbr: [String: String], controlGroups: [String: [String]]) {
+        let gd = fightDataGame ?? moveListService.currentGameData
+        return (
+            gd?.controls ?? [:],
+            gd?.controlAbbr ?? [:],
+            gd?.controlGroups ?? [:]
+        )
+    }
+
     private func buildStepTokens(_ step: EditorStep) -> [NotationToken] {
         if step.isBranch { return [.alternative] }
-        var tokens: [NotationToken] = []
-        if step.isNeutral {
-            tokens.append(.direction(.neutral))
-        } else if let dir = step.direction, let fdDir = fightDataDirection(from: dir) {
-            tokens.append(step.isCharge ? .charge(fdDir) : .direction(fdDir))
-        }
-        for (i, key) in step.buttons.enumerated() {
-            if i > 0 { tokens.append(.separator) }
-            let btn = availableButtons.first(where: { $0.key == key })
-            let label = btn?.label ?? key.replacingOccurrences(of: "^", with: "").replacingOccurrences(of: "_", with: "")
-            let mockBtn = EditorButton(key: key, label: label)
-            tokens.append(.button(editorButtonTokenType(for: mockBtn)))
-        }
-        if step.isRapid { tokens.append(.rapidPress) }
-        return tokens.isEmpty ? [.wait] : tokens
+        if step.isNeutral { return [.direction(.neutral)] }
+        let ps = ParsedStep(
+            direction: step.direction,
+            buttons: step.buttons,
+            isCharge: step.isCharge,
+            isHold: false,
+            isRelease: false,
+            isRapid: step.isRapid,
+            isAirStep: false
+        )
+        let cd = rendererControlData
+        return MoveNotationRenderer.renderSteps([[ps]], controls: cd.controls, controlAbbr: cd.controlAbbr, controlGroups: cd.controlGroups)
     }
 
     // MARK: - Action Buttons
@@ -859,22 +859,25 @@ struct MoveEditorView: View {
                 if step.isCharge { s = "_O_" }
                 s += "\(dir)"
                 if !step.buttons.isEmpty {
-                    let btns = step.buttons.map { $0.hasPrefix("^") ? $0 : "_\($0)" }.joined()
+                    let btns = step.buttons.map { $0.hasPrefix("^") || $0.hasPrefix("_") ? $0 : "_\($0)" }.joined()
                     s += "_+" + btns
                 }
-                if step.isRapid { s += "_X" }
+                if step.isRapid { s += "^*" }
                 current.append(s)
             } else if !step.buttons.isEmpty {
-                let btns = step.buttons.map { $0.hasPrefix("^") ? $0 : "_\($0)" }.joined()
+                let btns = step.buttons.map { $0.hasPrefix("^") || $0.hasPrefix("_") ? $0 : "_\($0)" }.joined()
                 var s = btns
-                if step.isRapid { s += "_X" }
+                if step.isRapid { s += "^*" }
                 current.append(s)
-            } else if step.isRapid {
-                current.append("_X")
+        } else if step.isRapid {
+            current.append("^*")
             }
             branches[branches.count - 1] = current
         }
-        return branches.map { $0.joined(separator: " ") }.joined(separator: " / ")
+        return branches.enumerated().map { idx, branch in
+            let prefix = idx == 0 && isAir ? "_^ " : ""
+            return prefix + branch.joined(separator: " ")
+        }.joined(separator: " / ")
     }
 
     private func saveButtonPalette() {

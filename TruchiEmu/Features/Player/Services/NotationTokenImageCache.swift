@@ -181,18 +181,45 @@ final class NotationTokenImageCache {
             if let interior = interiorAsset {
                 let inset = size * 0.15
                 let interiorRect = NSRect(x: inset, y: inset, width: size - inset * 2, height: size - inset * 2)
-                if interior == "NotationLetterP" || interior == "NotationLetterK" {
+                if interior == "NotationLetterP" || interior == "NotationLetterK" || interior == "NotationBlock" {
                     drawImage(interior, in: interiorRect, alpha: interiorAlpha)
                 } else {
             drawTemplateImage(interior, color: .white.withAlphaComponent(interiorAlpha), in: interiorRect, context: ctx)
             }
         }
 
-        if let badge = badgeAsset {
-                let offsetX = size - badgeSize * 0.7
-                let offsetY = size - badgeSize * 0.7
+            if let badge = badgeAsset {
+                let offsetX: CGFloat
+                let offsetY: CGFloat
+                if badge == "NotationBadgeMinus" {
+                    offsetX = size - badgeSize * 0.7
+                    offsetY = badgeSize * 0.1
+                } else {
+                    offsetX = size - badgeSize * 0.7
+                    offsetY = size - badgeSize * 0.7
+                }
                 let badgeRect = NSRect(x: offsetX, y: offsetY, width: badgeSize, height: badgeSize)
                 drawImage(badge, in: badgeRect)
+            }
+
+            if case .generic(let label) = btnType, !label.isEmpty {
+                let paragraphStyle = NSMutableParagraphStyle()
+                paragraphStyle.alignment = .center
+                let fontSize = label.count > 2 ? size * 0.25 : size * 0.35
+                let attrs: [NSAttributedString.Key: Any] = [
+                    .font: NSFont.systemFont(ofSize: fontSize, weight: .bold),
+                    .foregroundColor: NSColor.white.withAlphaComponent(highlighted ? 0.45 : 0.15),
+                    .paragraphStyle: paragraphStyle,
+                ]
+                let str = NSAttributedString(string: label, attributes: attrs)
+                let textSize = str.size()
+                let textRect = NSRect(
+                    x: (size - textSize.width) / 2,
+                    y: (size - textSize.height) / 2,
+                    width: textSize.width,
+                    height: textSize.height
+                )
+                str.draw(in: textRect)
             }
         } ?? NSImage(size: NSSize(width: size, height: size))
     }
@@ -202,7 +229,7 @@ final class NotationTokenImageCache {
         case .punch(let strength):
             let fill: NSColor = highlighted ? NotationMetrics.punchFillNS : NotationMetrics.punchFillDimmedNS
             let alpha: CGFloat = highlighted ? 0.85 : 0.35
-            let badge: String? = strength == .high ? "NotationBadgePlus" : nil
+            let badge: String? = strength == .high ? "NotationBadgePlus" : (strength == .low ? "NotationBadgeMinus" : nil)
             return (fill, "NotationLetterP", alpha, badge)
         case .kick(let strength):
             let fill: NSColor = highlighted ? NotationMetrics.kickFillNS : NotationMetrics.kickFillDimmedNS
@@ -215,6 +242,9 @@ final class NotationTokenImageCache {
         case .grapple:
             let fill: NSColor = highlighted ? NotationMetrics.grappleFillNS : NotationMetrics.grappleFillDimmedNS
             return (fill, "NotationHand", highlighted ? 0.85 : 0.35, nil)
+        case .block:
+            let fill: NSColor = highlighted ? NotationMetrics.blockFillNS : NotationMetrics.blockFillDimmedNS
+            return (fill, "NotationBlock", highlighted ? 0.85 : 0.35, nil)
         case .weapon(let style):
             let fill: NSColor = highlighted ? NotationMetrics.weaponFillNS : NotationMetrics.weaponFillDimmedNS
             let asset = style == .sword ? "NotationSword" : "NotationAxe"
@@ -385,6 +415,7 @@ extension ButtonTokenType {
         case .kick(let s): return "k_\(s.rawValue)"
         case .air: return "air"
         case .grapple: return "grap"
+        case .block: return "block"
         case .weapon(let w): return "wpn_\(w.rawValue)"
         case .generic(let l): return "gen_\(l)"
         }

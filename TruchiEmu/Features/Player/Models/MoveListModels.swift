@@ -101,9 +101,11 @@ struct ParsedStep: Equatable, Codable {
     let isCharge: Bool
     let isHold: Bool
     let isRelease: Bool
+    let isRapid: Bool
+    let isAirStep: Bool
 
     static func == (lhs: ParsedStep, rhs: ParsedStep) -> Bool {
-        lhs.direction == rhs.direction && lhs.buttons == rhs.buttons && lhs.isCharge == rhs.isCharge && lhs.isHold == rhs.isHold && lhs.isRelease == rhs.isRelease
+        lhs.direction == rhs.direction && lhs.buttons == rhs.buttons && lhs.isCharge == rhs.isCharge && lhs.isHold == rhs.isHold && lhs.isRelease == rhs.isRelease && lhs.isRapid == rhs.isRapid && lhs.isAirStep == rhs.isAirStep
     }
 }
 
@@ -201,6 +203,7 @@ enum ButtonTokenType: Equatable {
     case kick(strength: ButtonStrength)
     case air
     case grapple
+    case block
     case weapon(style: WeaponStyle)
     case generic(label: String)
 }
