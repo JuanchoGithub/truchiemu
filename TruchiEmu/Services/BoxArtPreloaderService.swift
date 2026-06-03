@@ -124,6 +124,20 @@ class BoxArtPreloaderService: ObservableObject {
         let tiffURL = Self.thumbnailCacheURL.appendingPathComponent("\(safeKey).tiff")
         return FileManager.default.fileExists(atPath: jpegURL.path) || FileManager.default.fileExists(atPath: tiffURL.path)
     }
+
+    nonisolated
+    static func deleteThumbnail(at url: URL) {
+        let key = url.path
+        let safeKey = key.replacingOccurrences(of: "/", with: "_").replacingOccurrences(of: ":", with: "_")
+        let jpegURL = Self.thumbnailCacheURL.appendingPathComponent("\(safeKey).jpg")
+        let tiffURL = Self.thumbnailCacheURL.appendingPathComponent("\(safeKey).tiff")
+        if FileManager.default.fileExists(atPath: jpegURL.path) {
+            try? FileManager.default.removeItem(at: jpegURL)
+        }
+        if FileManager.default.fileExists(atPath: tiffURL.path) {
+            try? FileManager.default.removeItem(at: tiffURL)
+        }
+    }
     
     // MARK: - Preload ROMs into Image Cache
     
@@ -203,8 +217,8 @@ class BoxArtPreloaderService: ObservableObject {
     // Invalidate a single image from the cache (scoped invalidation).
     // Call this instead of clear() when a single ROM's box art changes.
     func invalidateImage(for rom: ROM) {
-        // Remove full-res from cache
         let url = rom.boxArtLocalPath
+        Self.deleteThumbnail(at: url)
         Task {
             await ImageCache.shared.removeImage(for: url)
             await ImageCache.shared.removeThumbnail(for: url)

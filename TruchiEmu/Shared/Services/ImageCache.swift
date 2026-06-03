@@ -109,8 +109,11 @@ actor ImageCache {
 
     func removeImage(for url: URL) {
         let key = imageKey(url)
+        let fullKey = fullResKey(url)
         imageCache.removeObject(forKey: key as NSString)
+        imageCache.removeObject(forKey: fullKey as NSString)
         inFlight.removeValue(forKey: key)
+        inFlight.removeValue(forKey: fullKey)
     }
 
     // MARK: - Full Resolution API (zoom/fullscreen)

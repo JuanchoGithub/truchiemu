@@ -440,8 +440,10 @@ class LaunchBoxGamesDBService: ObservableObject {
 
             // Verify file is valid image
             if NSImage(contentsOf: tmpURL) != nil {
-                try FileManager.default.moveItem(at: tmpURL, to: localURL)
-                await ImageCache.shared.removeImage(for: localURL)
+        try FileManager.default.moveItem(at: tmpURL, to: localURL)
+            BoxArtPreloaderService.deleteThumbnail(at: localURL)
+            await ImageCache.shared.removeImage(for: localURL)
+            await ImageCache.shared.removeThumbnail(for: localURL)
                 LoggerService.info(category: "LaunchBoxDB", "downloadAndCache: successfully cached boxart for '\(rom.name)' at \(localURL.path)")
                 return localURL
             } else {
