@@ -8,21 +8,29 @@ title: Analog Mouse Support - TruchiEmu Documentation
     <h1>Analog Mouse Support</h1>
     
     <div class="feature-overview">
-        <p class="lead">TruchiEmu provides analog mouse and keyboard capture for DOS and ScummVM games, enabling classic point-and-click adventures and DOS titles with full mouse control and configurable sensitivity.</p>
+        <p class="lead">TruchiEmu lets you use your gamepad's analog sticks to control the mouse cursor in DOS and ScummVM games, with configurable buttons for mouse clicks and D-pad for keyboard inputs.</p>
     </div>
 
     <section id="service-explanation">
         <h2>Service Overview</h2>
-        <p>The analog mouse system captures physical mouse and keyboard input and translates it for DOS and ScummVM emulation cores. When a game window is active, the mouse is captured and decoupled from the system cursor, delivering raw delta movement directly to the emulated environment. Keyboard input is also routed through the capture layer to support adventure game hotkeys and text entry.</p>
+        <p>The analog mouse system translates your controller's thumbstick deflection into mouse cursor movement for point-and-click games in DOS and ScummVM. This lets you navigate menus, click on objects, and interact with game worlds using a gamepad instead of a physical mouse. The feature is configurable per system (DOS, ScummVM) and supports per-game overrides.</p>
+        
+        <h3>How It Works</h3>
+        <ul class="feature-list">
+            <li><strong>Analog Stick to Mouse:</strong> The primary analog stick (left or right, user-selectable) is sampled at 60fps and its deflection is translated into mouse delta values</li>
+            <li><strong>Secondary Stick for Fine Control:</strong> The secondary analog stick moves the mouse at 1/5 speed for precise cursor placement</li>
+            <li><strong>D-Pad as Keyboard:</strong> D-pad sends arrow key inputs (Up/Down/Left/Right), Start sends Enter, Select sends Space</li>
+            <li><strong>Configurable Button Mapping:</strong> Assign left click, right click, and middle click to any gamepad button (A, B, X, Y, L1, R1, L2, R2, L3, R3, Start, Select)</li>
+        </ul>
 
         <h3>Core Features</h3>
         <ul class="feature-list">
-            <li><strong>Full Mouse Capture:</strong> Mouse is captured within the game window with pointer hiding and raw delta tracking for precise cursor control</li>
-            <li><strong>Keyboard Input:</strong> Full keyboard input routing for DOS commands, ScummVM hotkeys, and text entry fields</li>
-            <li><strong>Sensitivity & Acceleration:</strong> Adjustable pointer speed and acceleration curves to match your preferred feel</li>
-            <li><strong>Per-Game Configuration:</strong> Save sensitivity and mapping settings on a per-game basis for different titles</li>
-            <li><strong>Automatic Detection:</strong> Mouse capture is automatically enabled when a DOS or ScummVM game is launched</li>
-            <li><strong>Escape to Release:</strong> Press Escape to release mouse capture, click inside the game window to re-capture</li>
+            <li><strong>Sensitivity Control:</strong> Adjust pointer speed from 0.1x to 5.0x to match your preferred feel</li>
+            <li><strong>Dead Zone Adjustment:</strong> Set the dead zone threshold (0.00–0.50) to eliminate stick drift</li>
+            <li><strong>Stick Selection:</strong> Choose which analog stick (left or right) controls the mouse</li>
+            <li><strong>Per-System Settings:</strong> Independent configuration for DOS and ScummVM</li>
+            <li><strong>Per-Game Override:</strong> Toggle analog mouse on or off for individual ROMs</li>
+            <li><strong>Live Visualizer:</strong> Real-time stick position display with dead zone overlay in settings</li>
         </ul>
 
         <p>For implementation details, see the <a href="{{ '/development.html' | relative_url }}">Developer Guide</a>.</p>
@@ -31,41 +39,58 @@ title: Analog Mouse Support - TruchiEmu Documentation
     <section id="step-by-step-guide">
         <h2>How to Use</h2>
         
-        <h3>Basic Usage</h3>
+        <h3>Basic Setup</h3>
         <ol class="setup-steps">
             <li>
-                <strong>Launch a DOS or ScummVM Game</strong>
-                <p>Mouse capture activates automatically when you launch a supported game. The system cursor is hidden and mouse movements are routed to the emulated environment.</p>
+                <strong>Open Analog Mouse Settings</strong>
+                <p>Go to <code>Settings → Analog Mouse</code> to configure system-level preferences for DOS and ScummVM.</p>
+            </li>
+            <li>
+                <strong>Enable the Feature</strong>
+                <p>Toggle analog mouse on for DOS, ScummVM, or both. The feature is disabled by default.</p>
             </li>
             <li>
                 <strong>Adjust Sensitivity</strong>
-                <p>Go to <code>Settings → Analog Mouse</code> and use the sensitivity slider to adjust pointer speed. Changes take effect immediately and can be tested in-game.</p>
+                <p>Use the sensitivity slider (0.1x–5.0x) to set how fast the cursor moves in response to stick deflection.</p>
             </li>
             <li>
-                <strong>Release Capture</strong>
-                <p>Press <code>Escape</code> to release the mouse cursor back to the system. Click inside the game window to re-capture the mouse.</p>
+                <strong>Set Dead Zone</strong>
+                <p>Adjust the dead zone to prevent unwanted cursor movement from stick drift. The live visualizer shows your current stick position relative to the dead zone.</p>
+            </li>
+            <li>
+                <strong>Choose Your Stick</strong>
+                <p>Select which analog stick (left or right) controls the mouse. The other stick provides fine control at reduced speed.</p>
+            </li>
+            <li>
+                <strong>Map Mouse Buttons</strong>
+                <p>Assign left click, right click, and middle click to your preferred gamepad buttons.</p>
             </li>
         </ol>
 
-        <h3>Per-Game Configuration</h3>
+        <h3>Per-Game Override</h3>
         <ol class="setup-steps">
             <li>
-                <strong>Open Game Settings</strong>
-                <p>While a game is running, access the game toolbar and select <code>Input → Analog Mouse Settings</code> to configure per-game overrides.</p>
+                <strong>Open Game Detail</strong>
+                <p>Select a DOS or ScummVM ROM in your library and open its detail view.</p>
             </li>
             <li>
-                <strong>Adjust Sensitivity</strong>
-                <p>Set the horizontal and vertical sensitivity independently. Some adventure games benefit from different X/Y ratios.</p>
+                <strong>Toggle Analog Mouse</strong>
+                <p>Use the Analog Mouse toggle to override the system default for this specific game.</p>
             </li>
             <li>
-                <strong>Enable Acceleration</strong>
-                <p>Toggle mouse acceleration for faster cursor movement at higher physical speeds. Disable for pixel-perfect precision in point-and-click adventures.</p>
-            </li>
-            <li>
-                <strong>Save Profile</strong>
-                <p>Your settings are automatically saved and restored the next time you launch the same game.</p>
+                <strong>Reset to Default</strong>
+                <p>Use the Reset button to clear the per-game override and revert to the system setting.</p>
             </li>
         </ol>
+
+        <h3>During Gameplay</h3>
+        <ul class="feature-list">
+            <li>The analog stick moves the cursor — push gently for precise movement, full deflection for quick navigation</li>
+            <li>The secondary stick offers 1/5 speed for pixel-perfect placement</li>
+            <li>D-pad sends arrow keys (useful for menu navigation in DOS games)</li>
+            <li>Start acts as Enter, Select acts as Space</li>
+            <li>Mapped buttons perform left/right/middle click actions</li>
+        </ul>
     </section>
 
     <section id="references">
@@ -74,7 +99,7 @@ title: Analog Mouse Support - TruchiEmu Documentation
         <div class="related-services">
             <div class="service-card">
                 <h3><a href="{{ '/features/controllers.html' | relative_url }}">Controller Support</a></h3>
-                <p>Configure gamepad bindings alongside mouse settings for hybrid input setups.</p>
+                <p>Configure gamepad bindings and profiles alongside analog mouse settings.</p>
             </div>
             
             <div class="service-card">

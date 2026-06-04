@@ -5,83 +5,107 @@ title: Suporte a Mouse Analógico - Documentação do TruchiEmu
 ---
 
 <div class="feature-docs">
-<h1>Suporte a Mouse Analógico</h1>
+    <h1>Suporte a Mouse Analógico</h1>
+    
+    <div class="feature-overview">
+        <p class="lead">O TruchiEmu permite usar os analógicos do seu controle para controlar o cursor do mouse em jogos DOS e ScummVM, com botões configuráveis para cliques e o direcional para entradas de teclado.</p>
+    </div>
 
-<div class="feature-overview">
-<p class="lead">O TruchiEmu oferece suporte completo a mouse analógico para sistemas DOS e ScummVM, com captura de mouse e teclado, sensibilidade ajustável e configurações por jogo.</p>
-</div>
+    <section id="service-explanation">
+        <h2>Visão Geral</h2>
+        <p>O sistema de mouse analógico traduz a deflexão do analógico do seu controle em movimento do cursor para jogos de apontar e clicar em DOS e ScummVM. Isso permite navegar por menus, clicar em objetos e interagir com mundos do jogo usando um controle em vez de um mouse físico. O recurso é configurável por sistema (DOS, ScummVM) e suporta substituições por jogo.</p>
+        
+        <h3>Como Funciona</h3>
+        <ul class="feature-list">
+            <li><strong>Analógico para Mouse:</strong> O analógico primário (esquerdo ou direito, selecionável pelo usuário) é amostrado a 60fps e sua deflexão é traduzida em valores delta do mouse</li>
+            <li><strong>Analógico Secundário para Controle Fino:</strong> O analógico secundário move o mouse a 1/5 da velocidade para posicionamento preciso</li>
+            <li><strong>Direcional como Teclado:</strong> O direcional envia teclas de seta (Cima/Baixo/Esquerda/Direita), Start envia Enter, Select envia Espaço</li>
+            <li><strong>Mapeamento de Botões Configurável:</strong> Atribua clique esquerdo, clique direito e clique do meio a qualquer botão do controle (A, B, X, Y, L1, R1, L2, R2, L3, R3, Start, Select)</li>
+        </ul>
 
-<section id="service-explanation">
-<h2>Visão Geral do Serviço</h2>
-<p>O sistema de suporte a mouse analógico no TruchiEmu permite controlar jogos clássicos de DOS e ScummVM com precisão de mouse moderno. O recurso de captura de mouse e teclado desacopla o cursor do sistema operacional, permitindo movimentos suaves e responsivos. Com sensibilidade e aceleração configuráveis, cada jogo pode ter seu perfil ideal de controle.</p>
+        <h3>Recursos Principais</h3>
+        <ul class="feature-list">
+            <li><strong>Controle de Sensibilidade:</strong> Ajuste a velocidade do ponteiro de 0.1x a 5.0x para corresponder à sua preferência</li>
+            <li><strong>Ajuste de Zona Morta:</strong> Defina o limite da zona morta (0.00–0.50) para eliminar drift do analógico</li>
+            <li><strong>Seleção de Analógico:</strong> Escolha qual analógico (esquerdo ou direito) controla o mouse</li>
+            <li><strong>Configurações por Sistema:</strong> Configuração independente para DOS e ScummVM</li>
+            <li><strong>Substituição por Jogo:</strong> Ative ou desative o mouse analógico para ROMs individuais</li>
+            <li><strong>Visualizador ao Vivo:</strong> Exibição em tempo real da posição do analógico com sobreposição de zona morta nas configurações</li>
+        </ul>
 
-<h3>Recursos Principais</h3>
-<ul class="feature-list">
-<li><strong>Captura Completa de Mouse:</strong> O cursor é ocultado e os movimentos do mouse são capturados diretamente pelo emulador, oferecendo controle preciso e sem bordas.</li>
-<li><strong>Entrada de Teclado:</strong> Teclas do teclado são mapeadas para ações do jogo simultaneamente à captura do mouse, suportando atalhos e comandos do sistema.</li>
-<li><strong>Sensibilidade e Aceleração:</strong> Ajuste fino da sensibilidade do mouse e curvas de aceleração para adaptar a resposta ao estilo de cada jogo.</li>
-<li><strong>Configuração por Jogo:</strong> Perfis individuais de mouse por jogo, permitindo configurações específicas para cada título sem interferir nos demais.</li>
-<li><strong>Detecção Automática:</strong> Reconhecimento automático de jogos que utilizam mouse DOS ou ScummVM, ativando a captura sem necessidade de configuração manual.</li>
-</ul>
-</section>
+        <p>Para detalhes de implementação, consulte o <a href="{{ '/pt/development.html' | relative_url }}">Guia do Desenvolvedor</a>.</p>
+    </section>
 
-<section id="step-by-step-guide">
-<h2>Como Usar</h2>
+    <section id="step-by-step-guide">
+        <h2>Como Usar</h2>
+        
+        <h3>Configuração Básica</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Abrir Configurações de Mouse Analógico</strong>
+                <p>Vá para <code>Configurações → Mouse Analógico</code> para configurar as preferências de sistema para DOS e ScummVM.</p>
+            </li>
+            <li>
+                <strong>Ativar o Recurso</strong>
+                <p>Ative o mouse analógico para DOS, ScummVM ou ambos. O recurso está desativado por padrão.</p>
+            </li>
+            <li>
+                <strong>Ajustar Sensibilidade</strong>
+                <p>Use o controle deslizante de sensibilidade (0.1x–5.0x) para definir a velocidade do cursor em resposta à deflexão do analógico.</p>
+            </li>
+            <li>
+                <strong>Definir Zona Morta</strong>
+                <p>Ajuste a zona morta para evitar movimento indesejado do cursor devido a drift do analógico. O visualizador ao vivo mostra a posição atual do analógico em relação à zona morta.</p>
+            </li>
+            <li>
+                <strong>Escolher seu Analógico</strong>
+                <p>Selecione qual analógico (esquerdo ou direito) controla o mouse. O outro analógico fornece controle fino em velocidade reduzida.</p>
+            </li>
+            <li>
+                <strong>Mapear Botões do Mouse</strong>
+                <p>Atribua clique esquerdo, clique direito e clique do meio aos botões do controle de sua preferência.</p>
+            </li>
+        </ol>
 
-<h3>Configuração Básica</h3>
-<ol class="setup-steps">
-<li>
-<strong>Ativar Captura</strong>
-<p>Ao iniciar um jogo compatível (DOS ou ScummVM), a captura de mouse é ativada automaticamente. Clique dentro da janela do jogo para capturar o mouse.</p>
-</li>
-<li>
-<strong>Liberar o Mouse</strong>
-<p>Pressione a tecla <code>Escape</code> para liberar o cursor do mouse da janela do jogo. Pressione <code>Escape</code> novamente ou clique na janela para recapturar.</p>
-</li>
-</ol>
+        <h3>Substituição por Jogo</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Abrir Detalhes do Jogo</strong>
+                <p>Selecione uma ROM de DOS ou ScummVM em sua biblioteca e abra sua visualização de detalhes.</p>
+            </li>
+            <li>
+                <strong>Ativar Mouse Analógico</strong>
+                <p>Use o interruptor de Mouse Analógico para substituir a configuração do sistema para este jogo específico.</p>
+            </li>
+            <li>
+                <strong>Restaurar Padrão</strong>
+                <p>Use o botão Restaurar para limpar a substituição por jogo e reverter para a configuração do sistema.</p>
+            </li>
+        </ol>
 
-<h3>Ajuste de Sensibilidade</h3>
-<ol class="setup-steps">
-<li>
-<strong>Acessar Configurações</strong>
-<p>Navegue até <code>Configurações → Controles → Mouse Analógico</code>.</p>
-</li>
-<li>
-<strong>Ajustar Sensibilidade</strong>
-<p>Use o controle deslizante de sensibilidade para definir a velocidade do cursor no jogo. Valores mais altos produzem movimentos mais rápidos.</p>
-</li>
-<li>
-<strong>Configurar Aceleração</strong>
-<p>Ative a aceleração para que movimentos rápidos do mouse resultem em deslocamentos proporcionais maiores no jogo.</p>
-</li>
-</ol>
+        <h3>Durante o Jogo</h3>
+        <ul class="feature-list">
+            <li>O analógico move o cursor — empurre suavemente para movimento preciso, deflexão total para navegação rápida</li>
+            <li>O analógico secundário oferece 1/5 da velocidade para posicionamento pixel-perfect</li>
+            <li>O direcional envia teclas de seta (útil para navegação de menus em jogos DOS)</li>
+            <li>Start age como Enter, Select age como Espaço</li>
+            <li>Os botões mapeados realizam ações de clique esquerdo/direito/meio</li>
+        </ul>
+    </section>
 
-<h3>Perfis por Jogo</h3>
-<ol class="setup-steps">
-<li>
-<strong>Abrir Configurações do Jogo</strong>
-<p>Na biblioteca, clique com o botão direito no jogo e selecione <code>Configurações do Jogo → Mouse</code>.</p>
-</li>
-<li>
-<strong>Salvar Perfil</strong>
-<p>Ajuste a sensibilidade e aceleração específicas para o jogo. As configurações são salvas automaticamente e aplicadas sempre que o jogo for iniciado.</p>
-</li>
-</ol>
-</section>
-
-<section id="references">
-<h2>Serviços Relacionados</h2>
-
-<div class="related-services">
-<div class="service-card">
-<h3><a href="{{ '/pt/features/controllers.html' | relative_url }}">Suporte a Controles</a></h3>
-<p>Configure gamepads e joysticks para complementar ou substituir o uso do mouse em jogos compatíveis.</p>
-</div>
-
-<div class="service-card">
-<h3><a href="{{ '/pt/features/library.html' | relative_url }}">Gerenciamento de Biblioteca</a></h3>
-<p>Organize e descubra jogos DOS e ScummVM compatíveis com o suporte a mouse analógico.</p>
-</div>
-</div>
-</section>
+    <section id="references">
+        <h2>Serviços Relacionados</h2>
+        
+        <div class="related-services">
+            <div class="service-card">
+                <h3><a href="{{ '/pt/features/controllers.html' | relative_url }}">Suporte a Controles</a></h3>
+                <p>Configure mapeamentos de controle e perfis junto com as configurações de mouse analógico.</p>
+            </div>
+            
+            <div class="service-card">
+                <h3><a href="{{ '/pt/features/library.html' | relative_url }}">Biblioteca de Jogos</a></h3>
+                <p>Navegue e inicie títulos DOS e ScummVM da sua biblioteca.</p>
+            </div>
+        </div>
+    </section>
 </div>

@@ -67,7 +67,7 @@ Every interaction is designed to be smooth and joyful. From polished transitions
 ## 🛠️ Key Features
 
 - **Multi-System Powerhouse**: One app, countless classics. Support for NES, SNES, N64, GBA, Genesis, DOS, ScummVM, and more.
-- **Analog Mouse Support**: Full mouse and keyboard capture for DOS and ScummVM games — play classic point-and-click adventures and DOS classics with precision.
+- **Analog Mouse Support**: Use your gamepad's analog sticks to control the mouse cursor in DOS and ScummVM games — with configurable buttons for clicks and D-pad for keyboard inputs.
 - **Fighting Game Features**: Training mode overlay with customizable practice settings and on-screen move list notation for fighting games.
 - **Seamless Library Management**: Organize your games into custom categories, manage genres, and enjoy a clutter-free experience.
 - **Advanced Save States**: Never lose your progress with intuitive, slot-based progressive save and load functionality.
