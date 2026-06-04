@@ -67,18 +67,21 @@ Every interaction is designed to be smooth and joyful. From polished transitions
 ## 🛠️ Key Features
 
 - **Multi-System Powerhouse**: One app, countless classics. Support for NES, SNES, N64, GBA, Genesis, DOS, ScummVM, and more.
-- **Seamless Library Management**: Organize your games into custom categories and enjoy a clutter-free experience.
-- **Advanced Save States**: Never lose your progress with intuitive, slot-based save and load functionality.
-- **Pro-Grade Controller Support**: Full gamepad mapping with per-system configurations for a true console feel.
-- **Customizable Visuals**: Fine-tune your experience with custom shaders and bezel support.
+- **Analog Mouse Support**: Full mouse and keyboard capture for DOS and ScummVM games — play classic point-and-click adventures and DOS classics with precision.
+- **Fighting Game Features**: Training mode overlay with customizable practice settings and on-screen move list notation for fighting games.
+- **Seamless Library Management**: Organize your games into custom categories, manage genres, and enjoy a clutter-free experience.
+- **Advanced Save States**: Never lose your progress with intuitive, slot-based progressive save and load functionality.
+- **Notification System**: In-game notification pills for game actions, controller connections, and system events with full history.
+- **Pro-Grade Controller Support**: Full gamepad mapping with per-system configurations, controller type icons, and customizable controls.
+- **Customizable Visuals**: Fine-tune your experience with custom shaders, bezel support, and gaming-inspired themes.
+- **Built-in Update Checker**: Automatic update checking and in-app changelog viewer to stay up to date.
 
 ---
 
 ## 🎮 Supported Systems
-Basically everything that LibRetro supports, should be supported by TruchiEmu.
-Some cores might be a little bit trickier (Dreamcast I hate you) than others, but most should work.
+TruchiEmu supports virtually every system with an available LibRetro core. This includes classic consoles (NES, SNES, N64, Genesis), handhelds (Game Boy, GBA, DS), disc-based systems (PS1, PS2, Saturn, Dreamcast), DOS, ScummVM point-and-click adventures, and arcade machines via MAME.
 
-In this initial version, DOSBOX and SCUMMVM do not capture the mouse/keyboard yet, so they work, but you cannot play yet.
+Some cores might be a little trickier (Dreamcast I hate you) than others, but most should work. DOS and ScummVM now feature full analog mouse and keyboard capture for a complete experience.
 
 ---
 

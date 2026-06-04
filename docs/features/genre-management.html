@@ -1,0 +1,77 @@
+---
+layout: default
+title: Genre Management - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <h1>Genre Management</h1>
+    
+    <div class="feature-overview">
+        <p class="lead">Organize your game library by genre with granular visibility controls, automatic genre detection from metadata, and fully localized genre names.</p>
+    </div>
+
+    <section id="service-explanation">
+        <h2>Service Overview</h2>
+        <p>The Genre Management system allows you to organize your game library by genre categories. Genres are automatically detected from game metadata during library scanning, and you can control which genres appear in the library sidebar and browse views. Genre names are fully localized and display in the current UI language. This system integrates with the library's category filtering to provide a complete organizational workflow.</p>
+
+        <h3>Core Features</h3>
+        <ul class="feature-list">
+            <li><strong>Show/Hide Genres:</strong> Toggle individual genres on or off to control which categories appear in your library</li>
+            <li><strong>Filter by Genre:</strong> Click any genre in the sidebar to filter the library to only games matching that category</li>
+            <li><strong>Automatic Detection:</strong> Genres are assigned automatically from metadata during the library scan and enrichment pipeline</li>
+            <li><strong>Localized Names:</strong> Genre display names are translated and shown in the current UI language</li>
+            <li><strong>Genre Groups:</strong> Related genres can be grouped under parent categories for cleaner organization</li>
+            <li><strong>Game Count:</strong> Each genre displays the number of games it contains for at-a-glance browsing</li>
+        </ul>
+
+        <p>For implementation details, see the <a href="{{ '/development.html' | relative_url }}">Developer Guide</a>.</p>
+    </section>
+
+    <section id="step-by-step-guide">
+        <h2>How to Use</h2>
+        
+        <h3>Managing Genres</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Open Genre Settings</strong>
+                <p>Navigate to <code>Settings → Library → Genre Management</code> to view all detected genres.</p>
+            </li>
+            <li>
+                <strong>Toggle Visibility</strong>
+                <p>Use the toggle switch next to each genre to show or hide it in the library sidebar. Hidden genres still apply to games but are not displayed as filter options.</p>
+            </li>
+            <li>
+                <strong>Reorder Genres</strong>
+                <p>Drag and drop genres to reorder them in the sidebar display.</p>
+            </li>
+        </ol>
+
+        <h3>Browsing by Genre</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Open Library</strong>
+                <p>Navigate to the Library view. The sidebar shows all visible genres.</p>
+            </li>
+            <li>
+                <strong>Select a Genre</strong>
+                <p>Click any genre in the sidebar to filter the library to show only games matching that genre.</p>
+            </li>
+            <li>
+                <strong>Clear Filter</strong>
+                <p>Click the active genre again or select "All Games" to remove the filter and show the full library.</p>
+            </li>
+        </ol>
+    </section>
+
+    <section id="references">
+        <h2>Related Services</h2>
+        
+        <div class="related-services">
+            <div class="service-card">
+                <h3><a href="{{ '/features/library.html' | relative_url }}">Library Management</a></h3>
+                <p>Genre filtering integrates directly with the library browsing experience.</p>
+            </div>
+        </div>
+    </section>
+</div>

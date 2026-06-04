@@ -1,0 +1,83 @@
+---
+layout: default
+title: Training Mode - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <h1>Training Mode</h1>
+    
+    <div class="feature-overview">
+        <p class="lead">TruchiEmu's Training Mode provides a dedicated practice overlay for fighting games with health regen, infinite meter, save state hotkeys, input display, and per-game profiles to help you level up your skills.</p>
+    </div>
+
+    <section id="service-explanation">
+        <h2>Service Overview</h2>
+        <p>The Training Mode system adds an on-screen overlay to fighting games with tools designed for practice and experimentation. It works by hooking into emulated memory addresses to manipulate game state in real-time, giving you full control over the training environment. Per-game profiles store the memory addresses and settings for each title, so everything works automatically once configured.</p>
+
+        <h3>Core Features</h3>
+        <ul class="feature-list">
+            <li><strong>Health Regen:</strong> Automatically restore both player and opponent health bars when they reach zero, keeping practice sessions uninterrupted</li>
+            <li><strong>Infinite Meter:</strong> Keep super, EX, and special meters maxed out for unlimited special move practice</li>
+            <li><strong>Save State Hotkeys:</strong> Bind one-button save and load hotkeys for instant reset to practice positions</li>
+            <li><strong>Input Display:</strong> On-screen visual showing your current directional and button inputs in real-time</li>
+            <li><strong>Per-Game Profiles:</strong> Memory addresses and settings are saved per game for automatic detection on launch</li>
+            <li><strong>Frame Data Display:</strong> View frame advantage, hitstun, and blockstun information during training sessions</li>
+        </ul>
+
+        <p>For implementation details, see the <a href="{{ '/development.html' | relative_url }}">Developer Guide</a>.</p>
+    </section>
+
+    <section id="step-by-step-guide">
+        <h2>How to Use</h2>
+        
+        <h3>Enabling Training Mode</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Launch a Fighting Game</strong>
+                <p>Start any supported fighting game from your library.</p>
+            </li>
+            <li>
+                <strong>Open Training Overlay</strong>
+                <p>From the game toolbar, click the Training Mode icon or press the configured hotkey to open the training overlay.</p>
+            </li>
+            <li>
+                <strong>Configure Settings</strong>
+                <p>Toggle health regen, infinite meter, input display, and other options. Settings are saved automatically for the current game.</p>
+            </li>
+        </ol>
+
+        <h3>Save State Hotkeys</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Set Hotkeys</strong>
+                <p>Go to <code>Settings → Controllers → Hotkeys</code> and assign buttons for Training Save and Training Load.</p>
+            </li>
+            <li>
+                <strong>Practice</strong>
+                <p>Use the save hotkey to capture your current position, then the load hotkey to instantly reset to that point after attempting a combo or setup.</p>
+            </li>
+        </ol>
+    </section>
+
+    <section id="references">
+        <h2>Related Services</h2>
+        
+        <div class="related-services">
+            <div class="service-card">
+                <h3><a href="{{ '/features/save-states.html' | relative_url }}">Save State System</a></h3>
+                <p>Training mode integrates with save states for one-button practice resets.</p>
+            </div>
+            
+            <div class="service-card">
+                <h3><a href="{{ '/features/move-lists.html' | relative_url }}">Move List Overlay</a></h3>
+                <p>View move notations alongside training tools for the complete practice setup.</p>
+            </div>
+            
+            <div class="service-card">
+                <h3><a href="{{ '/features/controllers.html' | relative_url }}">Controller Support</a></h3>
+                <p>Configure hotkeys and button mappings for training mode controls.</p>
+            </div>
+        </div>
+    </section>
+</div>

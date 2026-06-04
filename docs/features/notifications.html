@@ -1,0 +1,78 @@
+---
+layout: default
+title: Notification System - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <h1>Notification System</h1>
+    
+    <div class="feature-overview">
+        <p class="lead">TruchiEmu's notification system delivers non-intrusive in-game pills and maintains a history panel for controller connection alerts, achievement unlocks, save confirmations, and other important events.</p>
+    </div>
+
+    <section id="service-explanation">
+        <h2>Service Overview</h2>
+        <p>The notification system provides a consistent way to surface information to the user without interrupting gameplay. Notifications appear as small, auto-dismissing pills overlaid on the game window and are also recorded in a centralized history panel for later review. Messages are fully localized through the app's translation system, and notification types include controller events, game state changes, and system alerts.</p>
+
+        <h3>Core Features</h3>
+        <ul class="feature-list">
+            <li><strong>Non-Intrusive Pills:</strong> Small, rounded notifications appear briefly in the corner of the game window and auto-dismiss</li>
+            <li><strong>Controller Alerts:</strong> Notifications when a controller connects, disconnects, or has low battery</li>
+            <li><strong>Game Action Confirmations:</strong> Visual feedback for save state operations, screenshot captures, and other in-game actions</li>
+            <li><strong>Notification History:</strong> Browse a chronological list of all recent notifications from the menu bar icon</li>
+            <li><strong>Localized Messages:</strong> All notification text is fully translated and respects the current UI language</li>
+            <li><strong>Categorized Display:</strong> Notifications are color-coded by type: info, success, warning, and error</li>
+        </ul>
+
+        <p>For implementation details, see the <a href="{{ '/development.html' | relative_url }}">Developer Guide</a>.</p>
+    </section>
+
+    <section id="step-by-step-guide">
+        <h2>How to Use</h2>
+        
+        <h3>Automatic Notifications</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Connect a Controller</strong>
+                <p>When a controller is connected or disconnected, a notification pill appears in the game window showing the controller name and connection status.</p>
+            </li>
+            <li>
+                <strong>Perform Game Actions</strong>
+                <p>Save states, screenshots, and other actions trigger confirmation notifications. For example, saving a state shows "Save state saved to slot 3" briefly.</p>
+            </li>
+        </ol>
+
+        <h3>Notification History</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Open History Panel</strong>
+                <p>Click the bell icon in the menu bar or navigate to <code>View → Notification History</code> to open the history panel.</p>
+            </li>
+            <li>
+                <strong>Browse Past Notifications</strong>
+                <p>The history panel displays all recent notifications with timestamps, categorized by type. Click any entry to see details.</p>
+            </li>
+            <li>
+                <strong>Clear History</strong>
+                <p>Use the Clear button to dismiss all notifications from the history panel.</p>
+            </li>
+        </ol>
+    </section>
+
+    <section id="references">
+        <h2>Related Services</h2>
+        
+        <div class="related-services">
+            <div class="service-card">
+                <h3><a href="{{ '/features/controllers.html' | relative_url }}">Controller Support</a></h3>
+                <p>Controller connection and disconnection events trigger notification pills.</p>
+            </div>
+            
+            <div class="service-card">
+                <h3><a href="{{ '/features/achievements.html' | relative_url }}">RetroAchievements</a></h3>
+                <p>Achievement unlock events are displayed as notifications during gameplay.</p>
+            </div>
+        </div>
+    </section>
+</div>

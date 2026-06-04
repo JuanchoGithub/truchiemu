@@ -21,6 +21,12 @@ description: Resumen completo de las funciones de TruchiEmu incluyendo shaders, 
 <li><a href="#savestates">Funciones de Guardado</a></li>
 <li><a href="#themes">Temas y Apariencia</a></li>
 <li><a href="#bezels">Bezels y Enmarcado de Pantalla</a></li>
+<li><a href="#analog-mouse">Soporte de Ratón Analógico</a></li>
+<li><a href="#training-mode">Modo de Práctica</a></li>
+<li><a href="#move-lists">Superposición de Movimientos</a></li>
+<li><a href="#notifications">Sistema de Notificaciones</a></li>
+<li><a href="#genre-management">Gestión de Géneros</a></li>
+<li><a href="#updates">Verificador de Actualizaciones</a></li>
 <li><a href="#mame">Gestión Arcade (MAME)</a></li>
 </ul>
 </div>
@@ -566,6 +572,112 @@ description: Resumen completo de las funciones de TruchiEmu incluyendo shaders, 
 <li><strong>Ajuste Personalizable:</strong> Ajusta fino el posicionamiento y escalado de la pantalla para alinear perfectamente con tu bezel elegido.</li>
 </ul>
 <p><a href="{{ '/es/bezel-guide.html' | relative_url }}">Más información sobre bezels &rarr;</a></p>
+</div>
+</section>
+
+<section id="analog-mouse" class="content-section">
+<div class="container">
+<h2>Soporte de Ratón Analógico</h2>
+<p>TruchiEmu ahora incluye captura completa de ratón analógico y teclado para juegos de DOS y ScummVM, permitiéndote jugar clásicos de aventuras gráficas, DOS y simuladores inmersivos con precisión nativa.</p>
+
+<h3>Características Principales</h3>
+<ul class="feature-list">
+<li><strong>Captura Completa de Ratón:</strong> La entrada del ratón se captura y envía directamente al entorno DOS o ScummVM emulado</li>
+<li><strong>Entrada de Teclado:</strong> Soporte completo de teclado para juegos DOS, incluyendo mapeos de teclas para controles clásicos</li>
+<li><strong>Ajuste de Sensibilidad:</strong> Curvas de sensibilidad y aceleración del ratón personalizables por juego</li>
+<li><strong>Configuración por Juego:</strong> Guarda y restaura configuraciones de ratón para juegos individuales</li>
+<li><strong>Detección Automática:</strong> TruchiEmu activa automáticamente la captura de ratón al iniciar títulos de DOS o ScummVM</li>
+</ul>
+
+<p><a href="{{ '/es/features/analog-mouse.html' | relative_url }}">Más información sobre el Soporte de Ratón Analógico &rarr;</a></p>
+</div>
+</section>
+
+<section id="training-mode" class="content-section">
+<div class="container">
+<h2>Modo de Práctica</h2>
+<p>La práctica hace al maestro. La superposición del modo de práctica de TruchiEmu proporciona herramientas especializadas para jugadores de juegos de lucha para perfeccionar sus habilidades, aprender combos y dominar técnicas difíciles.</p>
+
+<h3>Características Principales</h3>
+<ul class="feature-list">
+<li><strong>Superposición de Práctica:</strong> Pantalla en juego que muestra barras de salud, historial de entrada y datos de frames</li>
+<li><strong>Configuración Personalizable:</strong> Configura regeneración de salud, medidor infinito y otras opciones específicas de entrenamiento</li>
+<li><strong>Teclas Rápidas de Guardado:</strong> Guarda y carga posiciones rápidamente para practicar escenarios específicos repetidamente</li>
+<li><strong>Visualización de Entrada:</strong> Visualización en tiempo real de tus entradas de control y secuencias de botones</li>
+<li><strong>Perfiles por Juego:</strong> Las configuraciones de entrenamiento se guardan por juego para acceso rápido</li>
+</ul>
+
+<p><a href="{{ '/es/features/training-mode.html' | relative_url }}">Más información sobre el Modo de Práctica &rarr;</a></p>
+</div>
+</section>
+
+<section id="move-lists" class="content-section">
+<div class="container">
+<h2>Superposición de Movimientos</h2>
+<p>Nunca olvides un movimiento especial otra vez. La superposición de movimientos muestra las notaciones de movimientos de juegos de lucha directamente en pantalla, ayudándote a aprender y ejecutar combos y movimientos especiales específicos de cada personaje durante el juego.</p>
+
+<h3>Características Principales</h3>
+<ul class="feature-list">
+<li><strong>Visualización en Pantalla:</strong> Las notaciones de movimientos se muestran como superposición durante el juego, categorizadas por tipo</li>
+<li><strong>Tokens Visuales:</strong> Las notaciones usan tokens visuales para entradas direccionales, combinaciones de botones y condiciones especiales</li>
+<li><strong>Conjuntos por Juego:</strong> Los movimientos se cargan automáticamente según el juego que se esté jugando</li>
+<li><strong>Movimientos Comunes:</strong> Plantillas de movimientos comunes predefinidas para juegos de lucha populares</li>
+<li><strong>Búsqueda y Filtro:</strong> Encuentra rápidamente movimientos específicos por nombre, tipo de entrada o personaje</li>
+</ul>
+
+<p><a href="{{ '/es/features/move-lists.html' | relative_url }}">Más información sobre la Superposición de Movimientos &rarr;</a></p>
+</div>
+</section>
+
+<section id="notifications" class="content-section">
+<div class="container">
+<h2>Sistema de Notificaciones</h2>
+<p>Mantente informado con el sistema de notificaciones integrado de TruchiEmu. Recibe alertas en tiempo real para acciones del juego, conexiones de control, logros y eventos del sistema sin interrumpir tu partida.</p>
+
+<h3>Características Principales</h3>
+<ul class="feature-list">
+<li><strong>Píldoras de Notificación:</strong> Notificaciones en forma de píldora no intrusivas que aparecen y desaparecen sin bloquear tu vista</li>
+<li><strong>Alertas de Control:</strong> Notificaciones visuales cuando los controles se conectan o desconectan</li>
+<li><strong>Acciones del Juego:</strong> Confirmaciones de estado guardado, captura de pantalla y otras acciones</li>
+<li><strong>Historial de Notificaciones:</strong> Panel completo de historial para revisar notificaciones pasadas</li>
+<li><strong>Mensajes Localizados:</strong> Texto de notificación completamente traducido a todos los idiomas soportados</li>
+</ul>
+
+<p><a href="{{ '/es/features/notifications.html' | relative_url }}">Más información sobre el Sistema de Notificaciones &rarr;</a></p>
+</div>
+</section>
+
+<section id="genre-management" class="content-section">
+<div class="container">
+<h2>Gestión de Géneros</h2>
+<p>Toma el control de cómo se organizan tus juegos con la gestión de géneros. Filtra, ordena y oculta géneros para mantener tu biblioteca enfocada en los tipos de juegos que amas.</p>
+
+<h3>Características Principales</h3>
+<ul class="feature-list">
+<li><strong>Controles de Visibilidad:</strong> Muestra u oculta géneros específicos en tu vista de biblioteca</li>
+<li><strong>Filtrado por Género:</strong> Filtra tu colección de juegos por uno o más géneros</li>
+<li><strong>Detección Automática:</strong> Los juegos se categorizan automáticamente por género durante el enriquecimiento de metadatos</li>
+<li><strong>Nombres Localizados:</strong> Los nombres de los géneros se traducen a tu idioma preferido</li>
+</ul>
+
+<p><a href="{{ '/es/features/genre-management.html' | relative_url }}">Más información sobre la Gestión de Géneros &rarr;</a></p>
+</div>
+</section>
+
+<section id="updates" class="content-section">
+<div class="container">
+<h2>Verificador de Actualizaciones</h2>
+<p>Mantente al día con las últimas versiones de TruchiEmu. El verificador de actualizaciones integrado comprueba automáticamente si hay nuevas versiones y te notifica cuando hay una actualización disponible.</p>
+
+<h3>Características Principales</h3>
+<ul class="feature-list">
+<li><strong>Verificaciones Automáticas:</strong> Comprobaciones periódicas en segundo plano de nuevas versiones de TruchiEmu</li>
+<li><strong>Registro de Cambios en la App:</strong> Ver notas de lanzamiento y registros de cambios directamente en la aplicación</li>
+<li><strong>Notificaciones de Actualización:</strong> Recibe notificaciones cuando hay una nueva versión disponible sin interrumpir tu sesión</li>
+<li><strong>Historial de Versiones:</strong> Navega por el historial completo de versiones con notas detalladas de lanzamiento</li>
+</ul>
+
+<p><a href="{{ '/es/features/updates.html' | relative_url }}">Más información sobre el Verificador de Actualizaciones &rarr;</a></p>
 </div>
 </section>
 

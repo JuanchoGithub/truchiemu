@@ -1,0 +1,73 @@
+---
+layout: default
+title: Soporte de Ratón Analógico - Documentación de TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <h1>Soporte de Ratón Analógico</h1>
+    
+    <div class="feature-overview">
+        <p class="lead">TruchiEmu ofrece captura completa de ratón y teclado para sistemas DOS, ScummVM y otros que requieren entrada de puntero analógico. El ratón se captura directamente en la ventana de juego con soporte para sensibilidad ajustable, aceleración y configuración independiente por juego.</p>
+    </div>
+
+    <section id="service-explanation">
+        <h2>Descripción General</h2>
+        <p>El sistema de ratón analógico de TruchiEmu captura el dispositivo de entrada directamente en la ventana del juego, proporcionando una experiencia fluida y precisa. Al iniciar un título compatible, el cursor del sistema se oculta automáticamente y los movimientos del ratón se traducen directamente a la entrada del emulador. El sistema soporta perfiles de sensibilidad y aceleración configurables individualmente para cada juego, permitiendo ajustar la respuesta del ratón según las necesidades específicas de cada título.</p>
+        
+        <h3>Características Principales</h3>
+        <ul class="feature-list">
+            <li><strong>Captura Completa de Ratón:</strong> El cursor se captura dentro de la ventana del juego, ocultando el cursor del sistema y traduciendo los movimientos directamente a la emulación. Compatible con monitores de alta frecuencia de actualización.</li>
+            <li><strong>Entrada de Teclado:</strong> El teclado también se captura simultáneamente, permitiendo jugar títulos DOS que requieren combinaciones de ratón y teclado sin necesidad de cambiar entre dispositivos.</li>
+            <li><strong>Sensibilidad y Aceleración:</strong> Ajustes independientes de sensibilidad horizontal y vertical, con curvas de aceleración seleccionables (lineal, suave, agresiva) para un control preciso del puntero.</li>
+            <li><strong>Configuración por Juego:</strong> Cada juego puede tener su propia configuración de ratón, incluyendo sensibilidad, aceleración y límites de movimiento, que se almacenan y restauran automáticamente.</li>
+            <li><strong>Detección Automática:</strong> El sistema detecta automáticamente si un título requiere entrada de ratón analógico y activa la captura sin intervención del usuario.</li>
+        </ul>
+    </section>
+
+    <section id="step-by-step-guide">
+        <h2>Cómo Usarlo</h2>
+        
+        <h3>Uso Básico</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Iniciar un Juego Compatible</strong>
+                <p>Al lanzar un juego DOS o ScummVM, TruchiEmu activa automáticamente la captura del ratón. El cursor del sistema desaparece y el ratón controla el puntero del juego.</p>
+            </li>
+            <li>
+                <strong>Liberar el Ratón</strong>
+                <p>Presiona la tecla <code>Escape</code> para liberar el ratón de la ventana de juego. El cursor del sistema vuelve a aparecer y puedes interactuar con otras aplicaciones. Presiona cualquier botón dentro de la ventana para recapturar el ratón.</p>
+            </li>
+        </ol>
+
+        <h3>Ajustar Sensibilidad</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Acceder a la Configuración</strong>
+                <p>Ve a <code>Configuración → Controles → Ratón Analógico</code> para abrir el panel de ajustes del ratón.</p>
+            </li>
+            <li>
+                <strong>Ajustar Parámetros</strong>
+                <p>Modifica los deslizadores de sensibilidad horizontal y vertical, y selecciona la curva de aceleración deseada. Los cambios se aplican en tiempo real para que puedas probar la configuración mientras juegas.</p>
+            </li>
+            <li>
+                <strong>Guardar Perfil</strong>
+                <p>Si deseas mantener la configuración para el juego actual, haz clic en <code>Guardar como Perfil</code>. El perfil se cargará automáticamente la próxima vez que inicies el mismo juego.</p>
+            </li>
+        </ol>
+    </section>
+
+    <section id="references">
+        <h2>Servicios Relacionados</h2>
+        <div class="related-services">
+            <a href="{{ '/es/features/controllers.html' | relative_url }}" class="related-service">
+                <h3>Controladores</h3>
+                <p>Configuración avanzada de gamepads y joysticks</p>
+            </a>
+            <a href="{{ '/es/features/library.html' | relative_url }}" class="related-service">
+                <h3>Biblioteca</h3>
+                <p>Gestiona tu colección de ROMs y juegos compatibles</p>
+            </a>
+        </div>
+    </section>
+</div>

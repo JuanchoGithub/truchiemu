@@ -1,0 +1,70 @@
+---
+layout: default
+title: Update Checker - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <h1>Update Checker</h1>
+    
+    <div class="feature-overview">
+        <p class="lead">TruchiEmu includes a built-in update checker that periodically checks for new versions in the background, displays in-app changelogs, and notifies you when updates are available.</p>
+    </div>
+
+    <section id="service-explanation">
+        <h2>Service Overview</h2>
+        <p>The Update Checker monitors GitHub releases for new versions of TruchiEmu. It performs periodic background checks without interrupting your workflow and displays a notification when a new version is available. The integrated changelog viewer lets you read release notes before deciding to update, and a version history panel shows all past releases. The checker respects your privacy by only connecting to GitHub's public API and performing checks at configurable intervals.</p>
+
+        <h3>Core Features</h3>
+        <ul class="feature-list">
+            <li><strong>Periodic Background Checks:</strong> Automatically checks for updates at configurable intervals without disrupting gameplay</li>
+            <li><strong>In-App Changelog:</strong> View detailed release notes for any available or past version directly in the app</li>
+            <li><strong>Update Notifications:</strong> A notification pill appears when a new version is detected, with a link to download</li>
+            <li><strong>Version History:</strong> Browse all past releases with dates, version numbers, and changelogs</li>
+            <li><strong>Manual Check:</strong> Trigger an immediate update check at any time from the app menu</li>
+            <li><strong>Current Version Display:</strong> See the currently installed version alongside the latest available version</li>
+        </ul>
+
+        <p>For implementation details, see the <a href="{{ '/development.html' | relative_url }}">Developer Guide</a>.</p>
+    </section>
+
+    <section id="step-by-step-guide">
+        <h2>How to Use</h2>
+        
+        <h3>Checking for Updates</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Manual Check</strong>
+                <p>Select <code>TruchiEmu → Check for Updates</code> from the menu bar to manually trigger an update check. The checker contacts GitHub and displays the result immediately.</p>
+            </li>
+            <li>
+                <strong>Automatic Check</strong>
+                <p>Updates are checked automatically on launch and periodically in the background. When a new version is found, a notification appears with update details.</p>
+            </li>
+        </ol>
+
+        <h3>Viewing the Changelog</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Open Updates Panel</strong>
+                <p>Navigate to <code>Settings → Updates</code> to open the update checker panel.</p>
+            </li>
+            <li>
+                <strong>View Changelog</strong>
+                <p>The panel shows the current version and latest available version. Click "View Changelog" to read release notes for the latest version.</p>
+            </li>
+            <li>
+                <strong>Version History</strong>
+                <p>Scroll down to see the full version history with release dates, version numbers, and changelogs for all past releases.</p>
+            </li>
+        </ol>
+    </section>
+
+    <section id="references">
+        <h2>Related Services</h2>
+        
+        <div class="related-services">
+            <p>The Update Checker is a standalone service with no direct dependencies on other features.</p>
+        </div>
+    </section>
+</div>

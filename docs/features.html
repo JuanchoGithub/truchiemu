@@ -21,6 +21,12 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
 				<li><a href="#savestates">Save Features</a></li>
 				<li><a href="#themes">Themes & Appearance</a></li>
 				<li><a href="#bezels">Bezels & Screen Framing</a></li>
+				<li><a href="#analog-mouse">Analog Mouse Support</a></li>
+				<li><a href="#training-mode">Training Mode</a></li>
+				<li><a href="#move-lists">Move List Overlay</a></li>
+				<li><a href="#notifications">Notification System</a></li>
+				<li><a href="#genre-management">Genre Management</a></li>
+				<li><a href="#updates">Update Checker</a></li>
 				<li><a href="#mame">Arcade Management (MAME)</a></li>
             </ul>
         </div>
@@ -566,6 +572,125 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
             <li><strong>Customizable Fit:</strong> Fine-tune the screen positioning and scaling to perfectly align with your chosen bezel.</li>
         </ul>
         <p><a href="{{ '/bezel-guide.html' | relative_url }}">Learn more about bezels &rarr;</a></p>
+    </div>
+</section>
+
+<section id="analog-mouse" class="content-section">
+    <div class="container">
+        <h2>Analog Mouse Support</h2>
+        <p>TruchiEmu now features full analog mouse and keyboard capture for DOS and ScummVM games, enabling you to play classic point-and-click adventures, DOS classics, and immersive sims with native-like precision.</p>
+
+        <div class="screenshot-frame">
+            <img src="{{ '/media/screenshots/analog-mouse-settings.png' | relative_url }}" alt="Analog Mouse Settings" class="screenshot lightbox-trigger">
+            <p class="screenshot-caption">Analog mouse settings with sensitivity, acceleration, and per-game configuration</p>
+        </div>
+
+        <h3>Key Features</h3>
+        <ul class="feature-list">
+            <li><strong>Full Mouse Capture:</strong> Mouse input is captured and sent directly to the emulated DOS or ScummVM environment</li>
+            <li><strong>Keyboard Input:</strong> Full keyboard support for DOS games, including key mappings for classic controls</li>
+            <li><strong>Sensitivity Adjustment:</strong> Customizable mouse sensitivity and acceleration curves per game</li>
+            <li><strong>Per-Game Config:</strong> Save and restore mouse settings for individual games</li>
+            <li><strong>Automatic Detection:</strong> TruchiEmu automatically enables mouse capture when launching DOS or ScummVM titles</li>
+        </ul>
+
+        <div class="info-box">
+            <p><strong>Comfort Tip:</strong> Adjust the mouse sensitivity in Settings → Analog Mouse to match your preferred play style. Higher sensitivity works well for slow-paced adventures, while lower sensitivity is better for precise point-and-click interactions.</p>
+        </div>
+
+        <p><a href="{{ '/features/analog-mouse.html' | relative_url }}">Learn more about Analog Mouse Support &rarr;</a></p>
+    </div>
+</section>
+
+<section id="training-mode" class="content-section">
+    <div class="container">
+        <h2>Training Mode</h2>
+        <p>Practice makes perfect. TruchiEmu's training mode overlay provides specialized tools for fighting game players to hone their skills, learn combos, and master difficult techniques.</p>
+
+        <h3>Key Features</h3>
+        <ul class="feature-list">
+            <li><strong>Training Overlay:</strong> On-screen display showing health bars, input history, and frame data</li>
+            <li><strong>Customizable Settings:</strong> Configure health regeneration, infinite meter, and other training-specific options</li>
+            <li><strong>Save State Hotkeys:</strong> Quick save and load positions to practice specific scenarios repeatedly</li>
+            <li><strong>Input Display:</strong> Real-time visualization of your controller inputs and button sequences</li>
+            <li><strong>Per-Game Profiles:</strong> Training configurations are saved per-game for quick access</li>
+        </ul>
+
+        <div class="info-box">
+            <p><strong>Pro Tip:</strong> Use training mode in combination with the Move List overlay to learn character-specific combos and special moves. Practice each section of a combo separately, then chain them together.</p>
+        </div>
+
+        <p><a href="{{ '/features/training-mode.html' | relative_url }}">Learn more about Training Mode &rarr;</a></p>
+    </div>
+</section>
+
+<section id="move-lists" class="content-section">
+    <div class="container">
+        <h2>Move List Overlay</h2>
+        <p>Never forget a special move again. The move list overlay displays fighting game move notations directly on screen, helping you learn and execute character-specific combos and special moves during gameplay.</p>
+
+        <h3>Key Features</h3>
+        <ul class="feature-list">
+            <li><strong>On-Screen Display:</strong> Move notations are shown as an overlay during gameplay, categorized by type</li>
+            <li><strong>Visual Tokens:</strong> Move notations use visual tokens for directional inputs, button combinations, and special conditions</li>
+            <li><strong>Per-Game Move Sets:</strong> Moves are automatically loaded based on the game being played</li>
+            <li><strong>Common Movesets:</strong> Pre-defined common moveset templates for popular fighting games</li>
+            <li><strong>Search & Filter:</strong> Quickly find specific moves by name, input type, or character</li>
+        </ul>
+
+        <p><a href="{{ '/features/move-lists.html' | relative_url }}">Learn more about Move List Overlay &rarr;</a></p>
+    </div>
+</section>
+
+<section id="notifications" class="content-section">
+    <div class="container">
+        <h2>Notification System</h2>
+        <p>Stay informed with TruchiEmu's built-in notification system. Get real-time alerts for game actions, controller connections, achievements, and system events without interrupting your gameplay.</p>
+
+        <h3>Key Features</h3>
+        <ul class="feature-list">
+            <li><strong>Notification Pills:</strong> Non-intrusive pill-style notifications that appear and fade without blocking your view</li>
+            <li><strong>Controller Alerts:</strong> Visual notifications when controllers connect or disconnect</li>
+            <li><strong>Game Actions:</strong> Save state, screenshot, and other action confirmations</li>
+            <li><strong>Notification History:</strong> Full history panel to review past notifications</li>
+            <li><strong>Localized Messages:</strong> Fully translated notification text for all supported languages</li>
+        </ul>
+
+        <p><a href="{{ '/features/notifications.html' | relative_url }}">Learn more about the Notification System &rarr;</a></p>
+    </div>
+</section>
+
+<section id="genre-management" class="content-section">
+    <div class="container">
+        <h2>Genre Management</h2>
+        <p>Take control of how your games are organized with genre management. Filter, sort, and hide genres to keep your library focused on the types of games you love.</p>
+
+        <h3>Key Features</h3>
+        <ul class="feature-list">
+            <li><strong>Visibility Controls:</strong> Show or hide specific genres in your library view</li>
+            <li><strong>Genre Filtering:</strong> Filter your game collection by one or more genres</li>
+            <li><strong>Automatic Genre Detection:</strong> Games are automatically categorized by genre during metadata enrichment</li>
+            <li><strong>Localized Genre Names:</strong> Genre names are translated into your preferred language</li>
+        </ul>
+
+        <p><a href="{{ '/features/genre-management.html' | relative_url }}">Learn more about Genre Management &rarr;</a></p>
+    </div>
+</section>
+
+<section id="updates" class="content-section">
+    <div class="container">
+        <h2>Update Checker</h2>
+        <p>Stay up to date with the latest TruchiEmu releases. The built-in update checker automatically checks for new versions and notifies you when an update is available.</p>
+
+        <h3>Key Features</h3>
+        <ul class="feature-list">
+            <li><strong>Automatic Checks:</strong> Periodic checks for new TruchiEmu releases in the background</li>
+            <li><strong>In-App Changelog:</strong> View release notes and changelogs directly within the app</li>
+            <li><strong>Update Notifications:</strong> Get notified when a new version is available without interrupting your session</li>
+            <li><strong>Version History:</strong> Browse the complete version history with detailed release notes</li>
+        </ul>
+
+        <p><a href="{{ '/features/updates.html' | relative_url }}">Learn more about the Update Checker &rarr;</a></p>
     </div>
 </section>
 

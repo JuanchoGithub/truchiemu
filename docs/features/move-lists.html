@@ -1,0 +1,79 @@
+---
+layout: default
+title: Move List Overlay - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <h1>Move List Overlay</h1>
+    
+    <div class="feature-overview">
+        <p class="lead">The Move List Overlay displays fighting game move notations on-screen during gameplay, with per-game move sets, visual tokens for directional inputs, and search functionality to quickly find any special move.</p>
+    </div>
+
+    <section id="service-explanation">
+        <h2>Service Overview</h2>
+        <p>The Move List Overlay provides a heads-up display of move notations while you play fighting games. Move sets are defined per game using a visual token system that maps to standard arcade notation. The overlay supports multiple characters, common move categories, and instant search, so you never have to alt-tab to look up a move again.</p>
+
+        <h3>Core Features</h3>
+        <ul class="feature-list">
+            <li><strong>Visual Tokens:</strong> Directional inputs are displayed as arcade-style arrows and button tokens for instant recognition</li>
+            <li><strong>Per-Game Move Sets:</strong> Move data is defined per game with character-specific move lists</li>
+            <li><strong>Common Movesets:</strong> Shared move categories like throws, target combos, and universal mechanics are grouped together</li>
+            <li><strong>Search & Filter:</strong> Type to search for any move by name, or filter by move type (specials, supers, normals, throws)</li>
+            <li><strong>On-Screen Display:</strong> Overlay appears within the game window without disrupting gameplay</li>
+            <li><strong>Character Selection:</strong> Switch between character move sets when using games with multiple fighters</li>
+        </ul>
+
+        <p>For implementation details, see the <a href="{{ '/development.html' | relative_url }}">Developer Guide</a>.</p>
+    </section>
+
+    <section id="step-by-step-guide">
+        <h2>How to Use</h2>
+        
+        <h3>Opening the Move List</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Launch a Fighting Game</strong>
+                <p>Start any supported fighting game from your library.</p>
+            </li>
+            <li>
+                <strong>Open Move List</strong>
+                <p>From the game toolbar, click the Move List icon or press the configured hotkey to open the overlay.</p>
+            </li>
+            <li>
+                <strong>Browse by Character</strong>
+                <p>If the game supports multiple characters, select the character you are playing from the dropdown at the top of the overlay.</p>
+            </li>
+            <li>
+                <strong>Search Moves</strong>
+                <p>Type in the search bar to filter moves by name. Results update in real-time as you type.</p>
+            </li>
+        </ol>
+
+        <h3>Move Notation Guide</h3>
+        <p>The overlay uses standard fighting game notation with visual arrow tokens:</p>
+        <ul class="feature-list">
+            <li><strong>Directionals:</strong> Arrow icons for quarter-circle, dragon punch, charge, and 360 motions</li>
+            <li><strong>Buttons:</strong> Labeled by the game's button names (LP, MP, HP, LK, MK, HK or A, B, C, X, Y, Z)</li>
+            <li><strong>Modifiers:</strong> Hold, tap, charge, and simultaneous button press indicators</li>
+            <li><strong>Categories:</strong> Special Moves, Super Arts, Target Combos, Throws, and Universal Mechanics</li>
+        </ul>
+    </section>
+
+    <section id="references">
+        <h2>Related Services</h2>
+        
+        <div class="related-services">
+            <div class="service-card">
+                <h3><a href="{{ '/features/training-mode.html' | relative_url }}">Training Mode</a></h3>
+                <p>Use the move list alongside training tools to practice combos and setups.</p>
+            </div>
+            
+            <div class="service-card">
+                <h3><a href="{{ '/features/controllers.html' | relative_url }}">Controller Support</a></h3>
+                <p>Ensure your button mappings match the move list notation for accurate practice.</p>
+            </div>
+        </div>
+    </section>
+</div>

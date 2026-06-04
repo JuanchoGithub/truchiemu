@@ -26,6 +26,7 @@ title: Save State System - TruchiEmu Documentation
             <li><strong>Instant Captures:</strong> Save and load at any point during gameplay</li>
             <li><strong>Slot Banking:</strong> Organize saves into multiple slots for different playthroughs</li>
             <li><strong>Automatic Naming:</strong> Save states are organized by game and timestamp</li>
+            <li><strong>Progressive Save States:</strong> Enhanced save state management with progressive slot banking for multiple playthroughs</li>
         </ul>
 
         <p>For implementation details, see the <a href="{{ '/development.html' | relative_url }}">Developer Guide</a>.</p>
@@ -38,7 +39,7 @@ title: Save State System - TruchiEmu Documentation
         <ol class="setup-steps">
             <li>
                 <strong>Save During Gameplay</strong>
-                <p>While playing a game, access the save state menu from the game window toolbar or use the configured keyboard shortcut to save to the current slot.</p>
+                <p>While playing a game, access the save state menu from the game window toolbar or use the configured keyboard shortcut to save to the current slot. Progressive save states automatically cycle through available slots for quick consecutive saves.</p>
             </li>
             <li>
                 <strong>Load a Save State</strong>

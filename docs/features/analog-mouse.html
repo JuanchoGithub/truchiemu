@@ -1,0 +1,86 @@
+---
+layout: default
+title: Analog Mouse Support - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <h1>Analog Mouse Support</h1>
+    
+    <div class="feature-overview">
+        <p class="lead">TruchiEmu provides analog mouse and keyboard capture for DOS and ScummVM games, enabling classic point-and-click adventures and DOS titles with full mouse control and configurable sensitivity.</p>
+    </div>
+
+    <section id="service-explanation">
+        <h2>Service Overview</h2>
+        <p>The analog mouse system captures physical mouse and keyboard input and translates it for DOS and ScummVM emulation cores. When a game window is active, the mouse is captured and decoupled from the system cursor, delivering raw delta movement directly to the emulated environment. Keyboard input is also routed through the capture layer to support adventure game hotkeys and text entry.</p>
+
+        <h3>Core Features</h3>
+        <ul class="feature-list">
+            <li><strong>Full Mouse Capture:</strong> Mouse is captured within the game window with pointer hiding and raw delta tracking for precise cursor control</li>
+            <li><strong>Keyboard Input:</strong> Full keyboard input routing for DOS commands, ScummVM hotkeys, and text entry fields</li>
+            <li><strong>Sensitivity & Acceleration:</strong> Adjustable pointer speed and acceleration curves to match your preferred feel</li>
+            <li><strong>Per-Game Configuration:</strong> Save sensitivity and mapping settings on a per-game basis for different titles</li>
+            <li><strong>Automatic Detection:</strong> Mouse capture is automatically enabled when a DOS or ScummVM game is launched</li>
+            <li><strong>Escape to Release:</strong> Press Escape to release mouse capture, click inside the game window to re-capture</li>
+        </ul>
+
+        <p>For implementation details, see the <a href="{{ '/development.html' | relative_url }}">Developer Guide</a>.</p>
+    </section>
+
+    <section id="step-by-step-guide">
+        <h2>How to Use</h2>
+        
+        <h3>Basic Usage</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Launch a DOS or ScummVM Game</strong>
+                <p>Mouse capture activates automatically when you launch a supported game. The system cursor is hidden and mouse movements are routed to the emulated environment.</p>
+            </li>
+            <li>
+                <strong>Adjust Sensitivity</strong>
+                <p>Go to <code>Settings → Analog Mouse</code> and use the sensitivity slider to adjust pointer speed. Changes take effect immediately and can be tested in-game.</p>
+            </li>
+            <li>
+                <strong>Release Capture</strong>
+                <p>Press <code>Escape</code> to release the mouse cursor back to the system. Click inside the game window to re-capture the mouse.</p>
+            </li>
+        </ol>
+
+        <h3>Per-Game Configuration</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Open Game Settings</strong>
+                <p>While a game is running, access the game toolbar and select <code>Input → Analog Mouse Settings</code> to configure per-game overrides.</p>
+            </li>
+            <li>
+                <strong>Adjust Sensitivity</strong>
+                <p>Set the horizontal and vertical sensitivity independently. Some adventure games benefit from different X/Y ratios.</p>
+            </li>
+            <li>
+                <strong>Enable Acceleration</strong>
+                <p>Toggle mouse acceleration for faster cursor movement at higher physical speeds. Disable for pixel-perfect precision in point-and-click adventures.</p>
+            </li>
+            <li>
+                <strong>Save Profile</strong>
+                <p>Your settings are automatically saved and restored the next time you launch the same game.</p>
+            </li>
+        </ol>
+    </section>
+
+    <section id="references">
+        <h2>Related Services</h2>
+        
+        <div class="related-services">
+            <div class="service-card">
+                <h3><a href="{{ '/features/controllers.html' | relative_url }}">Controller Support</a></h3>
+                <p>Configure gamepad bindings alongside mouse settings for hybrid input setups.</p>
+            </div>
+            
+            <div class="service-card">
+                <h3><a href="{{ '/features/library.html' | relative_url }}">Game Library</a></h3>
+                <p>Browse and launch DOS and ScummVM titles from your library.</p>
+            </div>
+        </div>
+    </section>
+</div>
