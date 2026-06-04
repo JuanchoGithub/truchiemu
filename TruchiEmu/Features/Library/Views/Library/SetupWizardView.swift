@@ -70,10 +70,10 @@ struct SetupWizardView: View {
             }
             .padding(.horizontal, 24)
 
-            Text(wizard.currentStep.title)
-                .font(.title2)
-                .fontWeight(.semibold)
-                .foregroundColor(.primary)
+        Text(loc.localized(wizard.currentStep.localizationKey))
+            .font(.title2)
+            .fontWeight(.semibold)
+            .foregroundColor(.primary)
         }
         .padding(.bottom, 8)
     }
@@ -184,6 +184,27 @@ extension SetupWizardView {
                 Text("wizard.welcomeDescription")
                     .foregroundColor(AppColors.textSecondary(colorScheme))
                     .multilineTextAlignment(.center)
+            }
+
+            VStack(alignment: .leading, spacing: 8) {
+                Label(loc.localized("wizard.selectLanguage"), systemImage: "globe")
+                    .font(.headline)
+
+                Text("wizard.languageDescription")
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
+                    .font(.callout)
+
+                Picker(loc.localized("settings.selectLanguage"), selection: Binding<String>(
+                    get: { loc.currentLanguage },
+                    set: { loc.setLanguage($0) })
+                ) {
+                    ForEach(loc.availableLanguages, id: \.self) { lang in
+                        Text("\(languageFlag(for: lang)) \(languageDisplayName(for: lang))")
+                            .tag(lang)
+                    }
+                }
+                .pickerStyle(.menu)
+                .padding(.leading, 4)
             }
 
             if !wizard.libraryFolders.isEmpty {
@@ -512,6 +533,28 @@ Image(systemName: "tray")
             if !library.roms.isEmpty {
                 Task { wizard.updateDetectedGames(from: library.roms) }
             }
+        }
+    }
+}
+
+// MARK: - Language Helpers
+
+extension SetupWizardView {
+    private func languageDisplayName(for lang: String) -> String {
+        switch lang.lowercased() {
+        case "en": return "English"
+        case "es": return "Español"
+        case "pt": return "Português"
+        default: return lang.uppercased()
+        }
+    }
+
+    private func languageFlag(for lang: String) -> String {
+        switch lang.lowercased() {
+        case "en": return "🇺🇸"
+        case "es": return "🇦🇷"
+        case "pt": return "🇧🇷"
+        default: return "🌐"
         }
     }
 }

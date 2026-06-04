@@ -184,6 +184,18 @@ final class AppSettingsCache {
 // MARK: - AppSettings Enum
 
 enum AppSettings {
+    private static var appVersion: String {
+        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.0.0"
+    }
+
+    static func isVersionMatch(_ key: String) -> Bool {
+        getString(key) == appVersion
+    }
+
+    static func markVersionCompleted(_ key: String) {
+        setString(key, value: appVersion)
+    }
+
     static func getBool(_ key: String, defaultValue: Bool) -> Bool {
         MainActor.assumeIsolated {
             AppSettingsCache.shared.getBool(key, defaultValue: defaultValue)

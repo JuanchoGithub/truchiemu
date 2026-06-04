@@ -530,6 +530,14 @@ struct ContentWithPrepopulationView: View {
   @Environment(\.openWindow) private var openWindow
     
     init() {
+        if !AppSettings.getBool("installDrag_version_migration_done", defaultValue: false) {
+            if AppSettings.getBool("installDragSkipped", defaultValue: false) {
+                AppSettings.markVersionCompleted("installDragSkipped_version")
+            }
+            AppSettings.remove("installDragSkipped")
+            AppSettings.setBool("installDrag_version_migration_done", value: true)
+        }
+
         // Check synchronously so we skip the loading view on subsequent launches
         _isPrepopulated = State(initialValue: AppSettings.getBool("dat_prepopulation_done_v1", defaultValue: false))
         _showInstallDrag = State(initialValue: InstallDragView.shouldShow())

@@ -37,6 +37,15 @@ final class SetupWizardState: ObservableObject {
             case .completion: return "checkmark.circle.fill"
             }
         }
+
+        var localizationKey: String {
+            switch self {
+            case .getStarted: return "wizard.step.getStarted"
+            case .lookAndFeel: return "wizard.step.lookAndFeel"
+            case .optionalFeatures: return "wizard.step.optionalFeatures"
+            case .completion: return "wizard.step.completion"
+            }
+        }
         
         // Whether this step can be skipped
         var canSkip: Bool {

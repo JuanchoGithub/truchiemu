@@ -122,8 +122,8 @@ struct InstallDragView: View {
                 try FileManager.default.copyItem(at: sourceURL, to: destURL)
 
                 DispatchQueue.main.async {
-                    AppSettings.setBool("installDragSkipped", value: true)
-                    let installedAppURL = destURL
+            AppSettings.markVersionCompleted("installDragSkipped_version")
+                let installedAppURL = destURL
                     let executableName = appName.replacingOccurrences(of: ".app", with: "")
                     let executableURL = installedAppURL.appendingPathComponent("Contents/MacOS/\(executableName)")
 
@@ -143,12 +143,12 @@ struct InstallDragView: View {
     }
 
     private func markInstallSkipped() {
-        AppSettings.setBool("installDragSkipped", value: true)
+        AppSettings.markVersionCompleted("installDragSkipped_version")
         NotificationCenter.default.post(name: .installDragCompleted, object: nil)
     }
 
     static func shouldShow() -> Bool {
-        if AppSettings.getBool("installDragSkipped", defaultValue: false) { return false }
+        if AppSettings.isVersionMatch("installDragSkipped_version") { return false }
         let bundlePath = Bundle.main.bundlePath
         if bundlePath.hasPrefix("/Applications/") { return false }
         if bundlePath.hasPrefix("/private/") { return false }
