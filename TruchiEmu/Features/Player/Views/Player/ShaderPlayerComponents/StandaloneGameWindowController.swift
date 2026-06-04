@@ -1004,6 +1004,9 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
 
         InputCaptureManager.shared.cleanup()
 
+        TrainingModeManager.shared.setEnabled(false)
+        TrainingModeManager.shared.inputManager.detachFromRunner()
+
         stopPlaytimeTracking()
 
         CursorAutoHideManager.shared.stopMonitoring()
