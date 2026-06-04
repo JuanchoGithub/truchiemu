@@ -651,20 +651,29 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
     // Show the window and handle save state loading.
     private func showWindowAndLoadSlot(slotToLoad: Int?, rom: ROM) {
         if autoFullscreenEnabled {
-            // Cover game content with a black overlay during the fullscreen animation
-            // to prevent visual artifacts from frames rendering mid-transition.
+            // Create a black overlay starting fully transparent so we can fade
+            // to black before the fullscreen animation, masking the warping effect.
             if let containerView = window?.contentView {
                 let overlay = NSView(frame: containerView.bounds)
                 overlay.wantsLayer = true
+                overlay.alphaValue = 0
                 overlay.layer?.backgroundColor = NSColor.black.cgColor
                 overlay.autoresizingMask = [.width, .height]
                 containerView.addSubview(overlay, positioned: .above, relativeTo: nil)
                 fullscreenOverlayView = overlay
             }
-            pendingSlotToLoad = slotToLoad
-            pendingROMForState = rom
-            isWaitingForFullscreenAnimation = true
-            toggleFullscreen()
+
+            NSAnimationContext.runAnimationGroup { context in
+                context.duration = 0.25
+                context.timingFunction = CAMediaTimingFunction(name: .easeOut)
+                self.fullscreenOverlayView?.animator().alphaValue = 1
+            } completionHandler: { [weak self] in
+                guard let self = self else { return }
+                self.pendingSlotToLoad = slotToLoad
+                self.pendingROMForState = rom
+                self.isWaitingForFullscreenAnimation = true
+                self.toggleFullscreen()
+            }
             return
         }
 

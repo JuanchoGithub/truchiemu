@@ -38,11 +38,23 @@ struct GameLaunchErrorOverlay: View {
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var themeManager = ThemeManager.shared
     @Environment(\.colorScheme) private var colorScheme
+    @State private var boxArtImage: NSImage?
 
     var body: some View {
         ZStack {
             Color.black
                 .ignoresSafeArea()
+
+            if let boxArt = boxArtImage {
+                Image(nsImage: boxArt)
+                    .resizable()
+                    .scaledToFill()
+                    .blur(radius: 10)
+                    .opacity(0.4)
+                    .ignoresSafeArea(.all)
+                Color.black.opacity(0.5)
+                    .ignoresSafeArea(.all)
+            }
 
             if let error = windowController.launchError {
                 VStack(spacing: 20) {
@@ -94,6 +106,16 @@ struct GameLaunchErrorOverlay: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .transition(.opacity)
             }
+        }
+        .task(id: windowController.currentGameROM?.id) {
+            guard let rom = windowController.currentGameROM else { return }
+            var artPath = rom.boxArtLocalPath
+            if !FileManager.default.fileExists(atPath: artPath.path) {
+                if let resolved = BoxArtService.shared.resolveLocalBoxArt(for: rom) {
+                    artPath = resolved
+                }
+            }
+            boxArtImage = await ImageCache.shared.thumbnail(for: artPath)
         }
         .animation(AppAnimations.smooth, value: windowController.launchError != nil)
     }

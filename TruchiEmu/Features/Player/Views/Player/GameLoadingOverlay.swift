@@ -6,11 +6,23 @@ struct GameLoadingOverlay: View {
     @ObservedObject private var themeManager = ThemeManager.shared
     @ObservedObject private var gameLauncher = GameLauncher.shared
     @Environment(\.colorScheme) private var colorScheme
+    @State private var boxArtImage: NSImage?
 
     var body: some View {
         ZStack {
             Color.black
-            .ignoresSafeArea()
+                .ignoresSafeArea()
+
+            if let boxArt = boxArtImage {
+                Image(nsImage: boxArt)
+                    .resizable()
+                    .scaledToFill()
+                    .blur(radius: 10)
+                    .opacity(0.4)
+                    .ignoresSafeArea(.all)
+                Color.black.opacity(0.5)
+                    .ignoresSafeArea(.all)
+            }
 
             if windowController.isLoading {
                 VStack(spacing: 20) {
@@ -44,6 +56,16 @@ struct GameLoadingOverlay: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .transition(.opacity)
             }
+        }
+        .task(id: windowController.currentGameROM?.id) {
+            guard let rom = windowController.currentGameROM else { return }
+            var artPath = rom.boxArtLocalPath
+            if !FileManager.default.fileExists(atPath: artPath.path) {
+                if let resolved = BoxArtService.shared.resolveLocalBoxArt(for: rom) {
+                    artPath = resolved
+                }
+            }
+            boxArtImage = await ImageCache.shared.thumbnail(for: artPath)
         }
         .animation(AppAnimations.smooth, value: windowController.isLoading)
     }
