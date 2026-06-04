@@ -3,10 +3,13 @@ import Combine
 
 @MainActor
 class TrainingModeOverlayViewModel: ObservableObject {
+    @Published var expandedCharacterId: String? = nil
     @Published var selectedTab: TrainingTab = .dummy
     @Published var p1InputHistory: [InputHistoryEntry] = []
     @Published var p2InputHistory: [InputHistoryEntry] = []
     @Published var activeCardInfo: String? = nil
+
+    private let storageService = MoveListStorageService.shared
 
     var fmdMonitorText: String? {
         let runner = manager.sequenceRunner
@@ -188,8 +191,64 @@ class TrainingModeOverlayViewModel: ObservableObject {
 
     var onSelectCharacterAndShowMoves: (() -> Void)?
 
+    private var gameName: String? { manager.currentGameData?.name }
+
+    func toggleExpandCharacter(_ character: FightDataCharacter) {
+        if expandedCharacterId == character.id {
+            expandedCharacterId = nil
+        } else {
+            expandedCharacterId = character.id
+        }
+    }
+
+    func sectionsForCharacter(_ character: FightDataCharacter) -> [String] {
+        var sections: [String] = []
+        let categoryKeys = Set(character.moves.map(\.category)).sorted()
+        sections.append(contentsOf: categoryKeys)
+        if let commonMoves = manager.currentGameData?.commonCommands, !commonMoves.isEmpty {
+            sections.append(MoveListStorageService.commonSectionKey)
+        }
+        return sections
+    }
+
+    func sectionLabel(_ section: String) -> String {
+        if section == MoveListStorageService.commonSectionKey {
+            return LocalizationManager.shared.localized("movelist.commonMoves")
+        }
+        let gameCategories = manager.currentGameData?.categories ?? [:]
+        return MoveListService.shared.resolveCategoryLabel(section, gameCategories: gameCategories)
+    }
+
+    func isSectionEnabled(characterName: String, section: String) -> Bool {
+        guard let gName = gameName else { return section != MoveListStorageService.commonSectionKey }
+        let hasEntry = storageService.hasSectionEntry(gameName: gName, characterName: characterName, section: section)
+        if hasEntry {
+            return !storageService.isSectionHidden(gameName: gName, characterName: characterName, section: section)
+        }
+        return section != MoveListStorageService.commonSectionKey
+    }
+
+    func toggleSection(characterName: String, section: String) {
+        guard let gName = gameName else { return }
+        storageService.toggleSectionHidden(gameName: gName, characterName: characterName, section: section)
+        objectWillChange.send()
+    }
+
+    func enableAllSections(characterName: String, sections: [String]) {
+        guard let gName = gameName else { return }
+        storageService.setAllSections(gameName: gName, characterName: characterName, sections: sections, hidden: false)
+        objectWillChange.send()
+    }
+
+    func disableAllSections(characterName: String, sections: [String]) {
+        guard let gName = gameName else { return }
+        storageService.setAllSections(gameName: gName, characterName: characterName, sections: sections, hidden: true)
+        objectWillChange.send()
+    }
+
     func selectCharacterAndShowMoves(_ character: FightDataCharacter) {
         MoveListService.shared.selectCharacter(character)
+        expandedCharacterId = nil
         onSelectCharacterAndShowMoves?()
     }
 

@@ -1124,36 +1124,7 @@ struct TrainingMovesTab: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 4) {
                     ForEach(game.characters, id: \.name) { character in
-                        Button {
-                            viewModel.selectCharacterAndShowMoves(character)
-                        } label: {
-                            HStack(spacing: 8) {
-                                Image(systemName: "person.fill")
-                                    .font(.system(size: 12))
-                                    .foregroundColor(AppColors.brandAccent)
-
-                                Text(character.name)
-                                    .font(.subheadline)
-                                    .fontWeight(.medium)
-                                    .foregroundColor(AppColors.textPrimary(colorScheme))
-
-                                Spacer()
-
-                                Text(verbatim: "\(character.moves.count)")
-                                    .font(.caption2)
-                                    .foregroundColor(AppColors.textTertiary(colorScheme))
-
-                                Image(systemName: "chevron.right")
-                                    .font(.system(size: 10, weight: .semibold))
-                                    .foregroundColor(AppColors.textTertiary(colorScheme))
-                            }
-                            .padding(.vertical, 10)
-                            .padding(.horizontal, 12)
-                            .contentShape(Rectangle())
-                        }
-                        .buttonStyle(.plain)
-                        .background(AppColors.cardBackground(colorScheme).opacity(0.3))
-                        .cornerRadius(6)
+                        characterRow(character)
                     }
                 }
             }
@@ -1169,5 +1140,150 @@ struct TrainingMovesTab: View {
             .frame(maxWidth: .infinity)
             .padding(.vertical, 24)
         }
+    }
+
+    @ViewBuilder
+    private func characterRow(_ character: FightDataCharacter) -> some View {
+        let isExpanded = viewModel.expandedCharacterId == character.id
+
+        VStack(spacing: 0) {
+            HStack(spacing: 8) {
+                Image(systemName: "person.fill")
+                    .font(.system(size: 12))
+                    .foregroundColor(AppColors.brandAccent)
+                    .onTapGesture {
+                        viewModel.selectCharacterAndShowMoves(character)
+                    }
+
+                Text(character.name)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(AppColors.textPrimary(colorScheme))
+                    .onTapGesture {
+                        viewModel.selectCharacterAndShowMoves(character)
+                    }
+
+                Spacer()
+
+                let sections = viewModel.sectionsForCharacter(character)
+                let enabledCount = sections.filter { viewModel.isSectionEnabled(characterName: character.name, section: $0) }.count
+                if enabledCount < sections.count {
+                    Text(verbatim: "\(enabledCount)/\(sections.count)")
+                        .font(.caption2)
+                        .foregroundColor(AppColors.textTertiary(colorScheme))
+                }
+
+                Button {
+                    withAnimation(.easeInOut(duration: 0.15)) {
+                        viewModel.toggleExpandCharacter(character)
+                    }
+                } label: {
+                    Text(loc.localized("movelist.set"))
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundColor(AppColors.brandAccent)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(AppColors.brandAccent.opacity(0.15))
+                        )
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(.vertical, 10)
+            .padding(.horizontal, 12)
+            .contentShape(Rectangle())
+            .background(AppColors.cardBackground(colorScheme).opacity(0.3))
+            .cornerRadius(6)
+
+            if isExpanded {
+                characterSectionsView(character)
+                    .padding(.leading, 20)
+                    .padding(.top, 2)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func characterSectionsView(_ character: FightDataCharacter) -> some View {
+        let sections = viewModel.sectionsForCharacter(character)
+
+        VStack(spacing: 0) {
+            ForEach(sections, id: \.self) { section in
+                let isEnabled = viewModel.isSectionEnabled(characterName: character.name, section: section)
+
+                HStack(spacing: 8) {
+                    Toggle(isOn: Binding(
+                        get: { isEnabled },
+                        set: { _ in
+                            viewModel.toggleSection(characterName: character.name, section: section)
+                        }
+                    )) {
+                        Text(viewModel.sectionLabel(section))
+                            .font(.system(size: 11, weight: .medium))
+                            .foregroundColor(isEnabled ? AppColors.textPrimary(colorScheme) : AppColors.textTertiary(colorScheme))
+                    }
+                    .toggleStyle(.switch)
+                    .controlSize(.mini)
+                    .tint(AppColors.brandAccent)
+
+                    Spacer()
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+            }
+
+            HStack(spacing: 8) {
+                Button {
+                    viewModel.enableAllSections(characterName: character.name, sections: sections)
+                } label: {
+                    Text(loc.localized("movelist.enableAll"))
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundColor(AppColors.brandAccent)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(AppColors.brandAccent.opacity(0.15))
+                        )
+                }
+                .buttonStyle(.plain)
+
+                Button {
+                    viewModel.disableAllSections(characterName: character.name, sections: sections)
+                } label: {
+                    Text(loc.localized("movelist.disableAll"))
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundColor(AppColors.textTertiary(colorScheme))
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(Color.white.opacity(0.06))
+                        )
+                }
+                .buttonStyle(.plain)
+
+                Spacer()
+
+                Button {
+                    viewModel.selectCharacterAndShowMoves(character)
+                } label: {
+                    Text(loc.localized("movelist.saveAndSelect"))
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(AppColors.brandAccent)
+                        )
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 6)
+        }
+        .padding(.vertical, 4)
     }
 }

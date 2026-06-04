@@ -909,6 +909,17 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         }
     }
 
+    @MainActor
+    func confirmAndShowOverlay(character: FightDataCharacter) {
+        moveListViewModel.confirmAndShowOverlay(character: character)
+        if moveListViewModel.isOverlayVisible {
+            if runner?.isPaused == true {
+                runner?.isPaused = false
+                XPCBridgeAdapter.shared.setPaused(false)
+            }
+        }
+    }
+
     private func installMoveListOverlay() {
         guard moveListOverlayView == nil, let containerView = window?.contentView else { return }
 

@@ -15,6 +15,7 @@ class MoveListOverlayViewModel: ObservableObject {
     @Published private(set) var pendingCharacter: FightDataCharacter? = nil
     @Published private(set) var matchedDirectionCount: Int = 0
     @Published private(set) var matchedButtonCount: Int = 0
+    @Published var expandedCharacterId: String? = nil
 
     let moveListService: MoveListService
     let inputStateTracker: InputStateTracker
@@ -69,6 +70,7 @@ class MoveListOverlayViewModel: ObservableObject {
         guard let character = pendingCharacter else { return }
         moveListService.selectCharacter(character)
         pendingCharacter = nil
+        expandedCharacterId = nil
         needsCharacterSelection = false
         isOverlayVisible = true
         updateFilteredMoves(for: inputStateTracker.inputSequence)
@@ -78,6 +80,7 @@ class MoveListOverlayViewModel: ObservableObject {
     func confirmCharacter(_ character: FightDataCharacter) {
         moveListService.selectCharacter(character)
         pendingCharacter = nil
+        expandedCharacterId = nil
         needsCharacterSelection = false
         isOverlayVisible = true
         updateFilteredMoves(for: inputStateTracker.inputSequence)
@@ -88,11 +91,12 @@ class MoveListOverlayViewModel: ObservableObject {
         isOverlayVisible = false
         needsCharacterSelection = false
         pendingCharacter = nil
+        expandedCharacterId = nil
         inputStateTracker.clearSequence()
         filteredMoves = []
         moveSlotOrder.removeAll()
         inputSteps = []
-    inputDirections = []
+        inputDirections = []
         inputDirectionCharges = []
         inputButtons = []
         matchedMoveName = nil
@@ -134,6 +138,78 @@ class MoveListOverlayViewModel: ObservableObject {
         guard let gameName = gameName else { return false }
         let charName = isCommonMoveId(moveId) ? "__common__" : (selectedCharacterName ?? "")
         return storageService.isFavorite(gameName: gameName, characterName: charName, moveId: moveId)
+    }
+
+    func toggleExpandCharacter(_ character: FightDataCharacter) {
+        if expandedCharacterId == character.id {
+            expandedCharacterId = nil
+        } else {
+            expandedCharacterId = character.id
+        }
+    }
+
+    func sectionsForCharacter(_ character: FightDataCharacter) -> [String] {
+        var sections: [String] = []
+        let categoryKeys = Set(character.moves.map(\.category)).sorted()
+        sections.append(contentsOf: categoryKeys)
+        if let commonMoves = moveListService.currentGameData?.commonCommands, !commonMoves.isEmpty {
+            sections.append(MoveListStorageService.commonSectionKey)
+        }
+        return sections
+    }
+
+    func sectionLabel(_ section: String) -> String {
+        if section == MoveListStorageService.commonSectionKey {
+            return LocalizationManager.shared.localized("movelist.commonMoves")
+        }
+        let gameCategories = moveListService.currentGameData?.categories ?? [:]
+        return moveListService.resolveCategoryLabel(section, gameCategories: gameCategories)
+    }
+
+    func isSectionEnabled(characterName: String, section: String) -> Bool {
+        guard let gName = gameName else { return section != MoveListStorageService.commonSectionKey }
+        let hasEntry = storageService.hasSectionEntry(gameName: gName, characterName: characterName, section: section)
+        if hasEntry {
+            return !storageService.isSectionHidden(gameName: gName, characterName: characterName, section: section)
+        }
+        return section != MoveListStorageService.commonSectionKey
+    }
+
+    func toggleSection(characterName: String, section: String) {
+        guard let gName = gameName else { return }
+        storageService.toggleSectionHidden(gameName: gName, characterName: characterName, section: section)
+        objectWillChange.send()
+        if moveListService.selectedCharacter?.name == characterName {
+            updateFilteredMoves(for: inputStateTracker.inputSequence)
+        }
+    }
+
+    func enableAllSections(characterName: String, sections: [String]) {
+        guard let gName = gameName else { return }
+        storageService.setAllSections(gameName: gName, characterName: characterName, sections: sections, hidden: false)
+        objectWillChange.send()
+        if moveListService.selectedCharacter?.name == characterName {
+            updateFilteredMoves(for: inputStateTracker.inputSequence)
+        }
+    }
+
+    func disableAllSections(characterName: String, sections: [String]) {
+        guard let gName = gameName else { return }
+        storageService.setAllSections(gameName: gName, characterName: characterName, sections: sections, hidden: true)
+        objectWillChange.send()
+        if moveListService.selectedCharacter?.name == characterName {
+            updateFilteredMoves(for: inputStateTracker.inputSequence)
+        }
+    }
+
+    func confirmAndShowOverlay(character: FightDataCharacter) {
+        moveListService.selectCharacter(character)
+        pendingCharacter = nil
+        expandedCharacterId = nil
+        needsCharacterSelection = false
+        isOverlayVisible = true
+        updateFilteredMoves(for: inputStateTracker.inputSequence)
+        NotationTokenImageCache.shared.prepareCache(moves: filteredMoves)
     }
 
 
@@ -324,8 +400,12 @@ class MoveListOverlayViewModel: ObservableObject {
         let categoryLabels = moveListService.categoryLabels
         let hiddenMoveIds = Set(storageService.getHidden(gameName: gameName, characterName: character.name).map(\.moveId))
 
+        let charSections = sectionsForCharacter(character)
+        let disabledSections = Set(charSections.filter { !isSectionEnabled(characterName: character.name, section: $0) })
+
         for move in character.moves where move.hasInputData {
             if hiddenMoveIds.contains(move.id) { continue }
+            if disabledSections.contains(move.category) { continue }
             let resolved: ResolvedMove
             if let overrideEntry = storageService.getOverride(gameName: gameName, characterName: character.name, moveId: move.id),
                let overrideData = overrideEntry.overrideJSON?.data(using: .utf8),
@@ -338,18 +418,21 @@ class MoveListOverlayViewModel: ObservableObject {
         }
 
         if let commonMoves = moveListService.currentGameData?.commonCommands {
-            let commonHiddenMoveIds = Set(storageService.getHidden(gameName: gameName, characterName: "__common__").map(\.moveId))
-            for move in commonMoves where move.hasInputData {
-                if commonHiddenMoveIds.contains(move.id) { continue }
-                let resolved: ResolvedMove
-                if let overrideEntry = storageService.getOverride(gameName: gameName, characterName: "__common__", moveId: move.id),
-                   let overrideData = overrideEntry.overrideJSON?.data(using: .utf8),
-                   let overrideMove = try? JSONDecoder().decode(FightDataMove.self, from: overrideData) {
-                    resolved = resolveMove(overrideMove, categoryLabels: categoryLabels)
-                } else {
-                    resolved = resolveMove(move, categoryLabels: categoryLabels)
+            let commonSectionEnabled = !disabledSections.contains(MoveListStorageService.commonSectionKey)
+            if commonSectionEnabled {
+                let commonHiddenMoveIds = Set(storageService.getHidden(gameName: gameName, characterName: "__common__").map(\.moveId))
+                for move in commonMoves where move.hasInputData {
+                    if commonHiddenMoveIds.contains(move.id) { continue }
+                    let resolved: ResolvedMove
+                    if let overrideEntry = storageService.getOverride(gameName: gameName, characterName: "__common__", moveId: move.id),
+                       let overrideData = overrideEntry.overrideJSON?.data(using: .utf8),
+                       let overrideMove = try? JSONDecoder().decode(FightDataMove.self, from: overrideData) {
+                        resolved = resolveMove(overrideMove, categoryLabels: categoryLabels)
+                    } else {
+                        resolved = resolveMove(move, categoryLabels: categoryLabels)
+                    }
+                    moves.append(resolved)
                 }
-                moves.append(resolved)
             }
         }
 
@@ -357,16 +440,20 @@ class MoveListOverlayViewModel: ObservableObject {
         for entry in customEntries {
             guard let data = entry.customMoveJSON?.data(using: .utf8),
                   let move = try? JSONDecoder().decode(FightDataMove.self, from: data) else { continue }
+            if disabledSections.contains(move.category) { continue }
             let resolved = resolveMove(move, categoryLabels: categoryLabels)
             moves.append(resolved)
         }
 
-        let commonCustomEntries = storageService.getCustomMoves(gameName: gameName, characterName: "__common__")
-        for entry in commonCustomEntries {
-            guard let data = entry.customMoveJSON?.data(using: .utf8),
-                  let move = try? JSONDecoder().decode(FightDataMove.self, from: data) else { continue }
-            let resolved = resolveMove(move, categoryLabels: categoryLabels)
-            moves.append(resolved)
+        let commonSectionEnabled = !disabledSections.contains(MoveListStorageService.commonSectionKey)
+        if commonSectionEnabled {
+            let commonCustomEntries = storageService.getCustomMoves(gameName: gameName, characterName: "__common__")
+            for entry in commonCustomEntries {
+                guard let data = entry.customMoveJSON?.data(using: .utf8),
+                      let move = try? JSONDecoder().decode(FightDataMove.self, from: data) else { continue }
+                let resolved = resolveMove(move, categoryLabels: categoryLabels)
+                moves.append(resolved)
+            }
         }
 
         return moves

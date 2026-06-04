@@ -30,42 +30,19 @@ struct MoveListOverlay: View {
                         .font(.headline)
                         .foregroundColor(.white)
                         .padding(.top, 16)
-                            .padding(.bottom, 8)
+                        .padding(.bottom, 8)
 
                     Divider()
 
                     ScrollView {
                         VStack(spacing: 0) {
                             ForEach(viewModel.characters) { character in
-                                Button(action: {
-                                    viewModel.selectPendingCharacter(character)
-                                }) {
-                                    HStack {
-                                        Text(character.name)
-                                            .font(.system(size: 13, weight: .medium))
-                                            .foregroundColor(viewModel.pendingCharacter?.id == character.id ? AppColors.brandAccent : .white)
-
-                                        Spacer()
-
-                                        if viewModel.pendingCharacter?.id == character.id {
-                                            Image(systemName: "checkmark")
-                                                .foregroundColor(AppColors.brandAccent)
-                                        }
-                                    }
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 10)
-                                    .contentShape(Rectangle())
-                                }
-                                .buttonStyle(.plain)
-
-                                if character.id != viewModel.characters.last?.id {
-                                    Divider().opacity(0.3)
-                                }
+                                characterRow(character)
                             }
                         }
                     }
                 }
-                .frame(width: 220)
+                .frame(width: 280)
 
                 Divider()
 
@@ -89,31 +66,149 @@ struct MoveListOverlay: View {
                         )
                 }
                 .buttonStyle(.plain)
-
-                Button(action: {
-                    windowController.confirmPendingCharacter()
-                }) {
-                    Text(loc.localized("movelist.ok"))
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundColor(viewModel.pendingCharacter != nil ? .white : .white.opacity(0.3))
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 10)
-                        .background(
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(viewModel.pendingCharacter != nil ? AppColors.brandAccent : AppColors.brandAccent.opacity(0.3))
-                        )
-                }
-                .buttonStyle(.plain)
-                .disabled(viewModel.pendingCharacter == nil)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
         }
-        .frame(width: 520, height: min(CGFloat(viewModel.characters.count) * 36 + 100, 300))
+        .frame(width: 580, height: min(CGFloat(viewModel.characters.count) * 36 + 120, 340))
         .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(color: .black.opacity(0.6), radius: 20, x: 0, y: 10)
         .padding(.bottom, windowController.toolbarBottomInset)
+    }
+
+    @ViewBuilder
+    private func characterRow(_ character: FightDataCharacter) -> some View {
+        let isExpanded = viewModel.expandedCharacterId == character.id
+
+        VStack(spacing: 0) {
+            HStack(spacing: 8) {
+                Text(character.name)
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundColor(.white)
+                    .onTapGesture {
+                        windowController.confirmAndShowOverlay(character: character)
+                    }
+
+                Spacer()
+
+                let sections = viewModel.sectionsForCharacter(character)
+                let enabledCount = sections.filter { viewModel.isSectionEnabled(characterName: character.name, section: $0) }.count
+                if enabledCount < sections.count {
+                    Text(verbatim: "\(enabledCount)/\(sections.count)")
+                        .font(.system(size: 9))
+                        .foregroundColor(.white.opacity(0.4))
+                }
+
+                Button(action: {
+                    withAnimation(.easeInOut(duration: 0.15)) {
+                        viewModel.toggleExpandCharacter(character)
+                    }
+                }) {
+                    Text(loc.localized("movelist.set"))
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundColor(AppColors.brandAccent)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(AppColors.brandAccent.opacity(0.15))
+                        )
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+
+            if isExpanded {
+                characterSectionsView(character)
+            }
+
+            Divider().opacity(0.3)
+        }
+    }
+
+    @ViewBuilder
+    private func characterSectionsView(_ character: FightDataCharacter) -> some View {
+        let sections = viewModel.sectionsForCharacter(character)
+
+        VStack(spacing: 0) {
+            ForEach(sections, id: \.self) { section in
+                let isEnabled = viewModel.isSectionEnabled(characterName: character.name, section: section)
+
+                HStack(spacing: 8) {
+                    Toggle(isOn: Binding(
+                        get: { isEnabled },
+                        set: { _ in
+                            viewModel.toggleSection(characterName: character.name, section: section)
+                        }
+                    )) {
+                        Text(viewModel.sectionLabel(section))
+                            .font(.system(size: 11, weight: .medium))
+                            .foregroundColor(isEnabled ? .white : .white.opacity(0.4))
+                    }
+                    .toggleStyle(.switch)
+                    .controlSize(.mini)
+                    .tint(AppColors.brandAccent)
+
+                    Spacer()
+                }
+                .padding(.horizontal, 28)
+                .padding(.vertical, 4)
+            }
+
+            HStack(spacing: 8) {
+                Button(action: {
+                    viewModel.enableAllSections(characterName: character.name, sections: sections)
+                }) {
+                    Text(loc.localized("movelist.enableAll"))
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundColor(AppColors.brandAccent)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(AppColors.brandAccent.opacity(0.15))
+                        )
+                }
+                .buttonStyle(.plain)
+
+                Button(action: {
+                    viewModel.disableAllSections(characterName: character.name, sections: sections)
+                }) {
+                    Text(loc.localized("movelist.disableAll"))
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundColor(.white.opacity(0.5))
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(Color.white.opacity(0.06))
+                        )
+                }
+                .buttonStyle(.plain)
+
+                Spacer()
+
+                Button(action: {
+                    windowController.confirmAndShowOverlay(character: character)
+                }) {
+                    Text(loc.localized("movelist.saveAndSelect"))
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(AppColors.brandAccent)
+                        )
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(.horizontal, 28)
+            .padding(.vertical, 4)
+        }
+        .padding(.bottom, 4)
     }
 
     private var notationLegendSidebar: some View {

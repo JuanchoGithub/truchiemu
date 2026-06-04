@@ -308,6 +308,70 @@ class MoveListStorageService: ObservableObject {
         return moveEntries.contains { $0.compositeKey == "\(gameName)::\(characterName)::__char_hidden__" && $0.isHidden }
     }
 
+    // MARK: - Section-level operations
+
+    static let sectionHiddenPrefix = "__section_hidden__"
+    static let commonSectionKey = "common"
+
+    func toggleSectionHidden(gameName: String, characterName: String, section: String) {
+        loadIfNeeded()
+        let sentinelMoveId = "\(Self.sectionHiddenPrefix)\(section)"
+        let key = "\(gameName)::\(characterName)::\(sentinelMoveId)"
+
+        if let existing = moveEntries.first(where: { $0.compositeKey == key }) {
+            existing.isHidden.toggle()
+            try? context.save()
+        } else {
+            let entry = MoveListEntry(compositeKey: key, gameName: gameName, characterName: characterName, moveId: sentinelMoveId, isHidden: true)
+            context.insert(entry)
+            try? context.save()
+            moveEntries.append(entry)
+        }
+    }
+
+    func isSectionHidden(gameName: String, characterName: String, section: String) -> Bool {
+        loadIfNeeded()
+        let sentinelMoveId = "\(Self.sectionHiddenPrefix)\(section)"
+        return moveEntries.contains { $0.compositeKey == "\(gameName)::\(characterName)::\(sentinelMoveId)" && $0.isHidden }
+    }
+
+    func hasSectionEntry(gameName: String, characterName: String, section: String) -> Bool {
+        loadIfNeeded()
+        let sentinelMoveId = "\(Self.sectionHiddenPrefix)\(section)"
+        return moveEntries.contains { $0.compositeKey == "\(gameName)::\(characterName)::\(sentinelMoveId)" }
+    }
+
+    func setAllSections(gameName: String, characterName: String, sections: [String], hidden: Bool) {
+        loadIfNeeded()
+        for section in sections {
+            let sentinelMoveId = "\(Self.sectionHiddenPrefix)\(section)"
+            let key = "\(gameName)::\(characterName)::\(sentinelMoveId)"
+
+            if let existing = moveEntries.first(where: { $0.compositeKey == key }) {
+                existing.isHidden = hidden
+            } else if hidden {
+                let entry = MoveListEntry(compositeKey: key, gameName: gameName, characterName: characterName, moveId: sentinelMoveId, isHidden: true)
+                context.insert(entry)
+                moveEntries.append(entry)
+            }
+        }
+        if !sections.isEmpty {
+            if !hidden {
+                let sentinelPrefix = Self.sectionHiddenPrefix
+                let entriesToRemove = moveEntries.filter { entry in
+                    entry.gameName == gameName && entry.characterName == characterName && entry.moveId.hasPrefix(sentinelPrefix)
+                }
+                for entry in entriesToRemove {
+                    context.delete(entry)
+                }
+                moveEntries.removeAll { entry in
+                    entry.gameName == gameName && entry.characterName == characterName && entry.moveId.hasPrefix(sentinelPrefix)
+                }
+            }
+            try? context.save()
+        }
+    }
+
     func updateCustomMove(gameName: String, characterName: String, moveId: String, customMoveJSON: String) {
         loadIfNeeded()
         let key = "\(gameName)::\(characterName)::\(moveId)"
