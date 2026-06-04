@@ -1043,6 +1043,13 @@
       "vhd",
       "zip"
     ],
+    "pathKeywords": [
+        "dos",
+        "dosbox",
+        "pc",
+        "msdos",
+        "ms-dos"
+    ],
     "emuIconName": "DOS",
     "defaultBoxType": "Vertical",
     "iconName": "desktopcomputer",
@@ -1061,6 +1068,10 @@
     "extensions": [
       "zip",
       "scummvm"
+    ],
+    "pathKeywords": [
+      "scummvm",
+      "scumm"
     ],
     "emuIconName": "SCUMMVM",
     "defaultBoxType": "Vertical",

@@ -463,7 +463,7 @@ struct InstalledCoreRowView: View {
                         titleVisibility: .visible
                     ) {
                         Button(loc.localized("cores.delete"), role: .destructive) { onDelete() }
-                        Button("Cancel", role: .cancel) {}
+                        Button(loc.localized("core.cancel"), role: .cancel) {}
                     } message: {
                         Text(loc.localized("cores.deleteConfirmation").replacingOccurrences(of: "{0}", with: core.displayName))
                     }
@@ -520,7 +520,7 @@ struct InstalledCoreRowView: View {
                         }
                     }
 
-                    Text("\(core.installedVersions.count) version\(core.installedVersions.count == 1 ? "" : "s") installed")
+                    Text(String(format: loc.localized("cores.versionsInstalled"), core.installedVersions.count))
                         .font(.caption)
                         .foregroundColor(AppColors.textSecondary(colorScheme))
                 }
