@@ -19,8 +19,9 @@ extension Notification.Name {
     static let gameLoaded = Notification.Name("gameLoaded")
     static let checkForUpdatesFromMenu = Notification.Name("checkForUpdatesFromMenu")
     static let showWhatsNewFromMenu = Notification.Name("showWhatsNewFromMenu")
-    static let showChangelogFromMenu = Notification.Name("showChangelogFromMenu")
-}
+static let showChangelogFromMenu = Notification.Name("showChangelogFromMenu")
+    static let openHelpWindow = Notification.Name("openHelpWindow")
+  }
 
 @main
 struct TruchiEmuApp: App {
@@ -79,11 +80,15 @@ LoggerService.debug(category: category, message)
         }.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
     }
     
-    // MARK: - MAME Verification
-    
-    private func startMAMEVerificationIfNeeded() {
-        // Only start verification for MAME system ROMs
-        // Check if there are pending verifications
+  // MARK: - MAME Verification
+
+  private func openHelpWindow() {
+    NotificationCenter.default.post(name: .openHelpWindow, object: nil)
+  }
+
+  private func startMAMEVerificationIfNeeded() {
+    // Only start verification for MAME system ROMs
+    // Check if there are pending verifications
         Task { @MainActor in
             MAMEVerificationService.shared.updatePendingCount()
             if MAMEVerificationService.shared.pendingCount > 0 {
@@ -188,29 +193,29 @@ LoggerService.debug(category: category, message)
         }
     }
     
-    var body: some Scene {
-        WindowGroup {
-        ContentWithPrepopulationView()
-            .tint(AppColors.brandAccentSecondary)
-            .environmentObject(library)
-            .environmentObject(categoryManager)
-            .environmentObject(coreManager)
-            .environmentObject(controllerService)
-            .environmentObject(LibraryAutomationCoordinator.shared)
-            .environmentObject(mameVerification)
-            .environment(systemDatabase)
+var body: some Scene {
+    WindowGroup {
+      ContentWithPrepopulationView()
+        .tint(AppColors.brandAccentSecondary)
+        .environmentObject(library)
+        .environmentObject(categoryManager)
+        .environmentObject(coreManager)
+        .environmentObject(controllerService)
+        .environmentObject(LibraryAutomationCoordinator.shared)
+        .environmentObject(mameVerification)
+        .environment(systemDatabase)
         .onAppear {
-            startMAMEVerificationIfNeeded()
-            registerNotificationActionHandlers()
-            checkForAppUpdates()
+          startMAMEVerificationIfNeeded()
+          registerNotificationActionHandlers()
+          checkForAppUpdates()
         }
-                .onDisappear {
-                    // Pause verification when leaving the app
-                    MAMEVerificationService.shared.pause()
-                }
+        .onDisappear {
+          // Pause verification when leaving the app
+          MAMEVerificationService.shared.pause()
         }
-        .windowStyle(.hiddenTitleBar)
-        .windowToolbarStyle(.unified(showsTitle: false))
+    }
+    .windowStyle(.hiddenTitleBar)
+    .windowToolbarStyle(.unified(showsTitle: false))
         .commands {
             SidebarCommands()
             if !isCLILaunch {
@@ -341,7 +346,35 @@ LoggerService.debug(category: category, message)
                     }
                 }
                 
-                // Library Menu (rename to something unique to avoid conflict with macOS default)
+                CommandGroup(replacing: .help) {
+        Button(loc.localized("help.menu.documentation")) {
+          if let url = URL(string: HelpContent.docsBaseURL) { NSWorkspace.shared.open(url) }
+        }
+        Button(loc.localized("help.menu.gettingStarted")) {
+          if let url = URL(string: "\(HelpContent.docsBaseURL)/getting-started.html") { NSWorkspace.shared.open(url) }
+        }
+        Button(loc.localized("help.menu.troubleshooting")) {
+          if let url = URL(string: "\(HelpContent.docsBaseURL)/troubleshooting.html") { NSWorkspace.shared.open(url) }
+        }
+        Button(loc.localized("help.menu.supportedSystems")) {
+          if let url = URL(string: "\(HelpContent.docsBaseURL)/systems.html") { NSWorkspace.shared.open(url) }
+        }
+
+        Divider()
+
+        Button(loc.localized("help.menu.keyboardShortcuts")) {
+          openHelpWindow()
+        }
+        .keyboardShortcut("/", modifiers: .command)
+
+        Divider()
+
+        Button(loc.localized("help.menu.github")) {
+          if let url = URL(string: "https://github.com/JuanchoGithub/truchiemu") { NSWorkspace.shared.open(url) }
+        }
+      }
+
+      // Library Menu (rename to something unique to avoid conflict with macOS default)
                 CommandMenu(loc.localized("app.games")) {
                     Button(loc.localized("app.addROMFolder")) {
                         NotificationCenter.default.post(name: .addROMFolder, object: nil)
@@ -445,19 +478,24 @@ LoggerService.debug(category: category, message)
             .environment(systemDatabase)
     }
 
-    WindowGroup(id: "core-options", for: String.self) { $coreID in
-        if let coreID = coreID {
-            CoreOptionsView(coreID: coreID)
-                .tint(AppColors.brandAccentSecondary)
-                .environmentObject(library)
-                .environmentObject(categoryManager)
-                .environmentObject(coreManager)
-                .environmentObject(controllerService)
-                .environment(systemDatabase)
-        }
+  WindowGroup(id: "core-options", for: String.self) { $coreID in
+      if let coreID = coreID {
+        CoreOptionsView(coreID: coreID)
+          .tint(AppColors.brandAccentSecondary)
+          .environmentObject(library)
+          .environmentObject(categoryManager)
+          .environmentObject(coreManager)
+          .environmentObject(controllerService)
+          .environment(systemDatabase)
+      }
     }
 
-    Settings {
+  WindowGroup(id: "help") {
+    HelpWindowView()
+      .tint(AppColors.brandAccentSecondary)
+  }
+
+  Settings {
         SettingsView()
             .tint(AppColors.brandAccentSecondary)
             .environmentObject(library)
@@ -484,12 +522,12 @@ private func languageDisplayName(for lang: String) -> String {
 // Checks the prepopulation flag synchronously to avoid showing the loading view
 // on subsequent launches.
 struct ContentWithPrepopulationView: View {
-    @State private var isPrepopulated: Bool
-    @State private var isRunningPrepopulation = false
-    @State private var showInstallDrag = false
-    @ObservedObject private var loc = LocalizationManager.shared
-    
-    @EnvironmentObject var library: ROMLibrary
+  @State private var isPrepopulated: Bool
+  @State private var isRunningPrepopulation = false
+  @State private var showInstallDrag = false
+  @ObservedObject private var loc = LocalizationManager.shared
+  @EnvironmentObject var library: ROMLibrary
+  @Environment(\.openWindow) private var openWindow
     
     init() {
         // Check synchronously so we skip the loading view on subsequent launches
@@ -518,11 +556,14 @@ struct ContentWithPrepopulationView: View {
                     .task {
                         await performInitialization()
                     }
-            }
-        }
+      }
     }
-    
-    private func performInitialization() async {
+    .onReceive(NotificationCenter.default.publisher(for: .openHelpWindow)) { _ in
+      openWindow(id: "help")
+    }
+  }
+
+  private func performInitialization() async {
         // Perform DAT pre-population if needed
         if !isPrepopulated {
             isRunningPrepopulation = true

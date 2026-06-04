@@ -14,7 +14,7 @@ struct SettingsView: View {
     enum Page: Hashable, Codable, RawRepresentable, Identifiable {
         
         var id: String { rawValue }
-        case general, saves, library, cores, controllers, analogMouse, boxArt, display, cheats, bezels, retroAchievements, genre, logging, moveList, about
+        case general, saves, library, cores, controllers, analogMouse, boxArt, display, cheats, bezels, retroAchievements, genre, logging, moveList, help, about
         
         var rawValue: String {
             switch self {
@@ -31,8 +31,9 @@ struct SettingsView: View {
             case .retroAchievements: return "retroAchievements"
             case .genre: return "genre"
             case .logging: return "logging"
-            case .moveList: return "moveList"
-            case .about: return "about"
+case .moveList: return "moveList"
+    case .help: return "help"
+    case .about: return "about"
             }
         }
         
@@ -51,8 +52,9 @@ struct SettingsView: View {
             case "retroAchievements": self = .retroAchievements
             case "genre": self = .genre
             case "logging": self = .logging
-            case "moveList": self = .moveList
-            case "about": self = .about
+case "moveList": self = .moveList
+    case "help": self = .help
+    case "about": self = .about
             default: return nil
             }
         }
@@ -72,8 +74,9 @@ struct SettingsView: View {
             case .retroAchievements: return "trophy.fill"
             case .genre: return "tag.fill"
             case .logging: return "doc.text.fill"
-            case .moveList: return "figure.martial.arts"
-            case .about: return "info.circle.fill"
+case .moveList: return "figure.martial.arts"
+    case .help: return "questionmark.circle.fill"
+    case .about: return "info.circle.fill"
             }
         }
         
@@ -92,8 +95,9 @@ struct SettingsView: View {
             case .retroAchievements: return LocalizationManager.shared.localized("settings.retroAchievements")
             case .genre: return LocalizationManager.shared.localized("settings.genre")
             case .logging: return LocalizationManager.shared.localized("settings.logging")
-            case .moveList: return LocalizationManager.shared.localized("settings.moveList")
-            case .about: return LocalizationManager.shared.localized("settings.about")
+case .moveList: return LocalizationManager.shared.localized("settings.moveList")
+    case .help: return LocalizationManager.shared.localized("settings.help")
+    case .about: return LocalizationManager.shared.localized("settings.about")
             }
         }
         
@@ -125,9 +129,11 @@ struct SettingsView: View {
                 return "genre genres tag categories merge rename"
             case .logging:
                 return "logging log debug console output"
-            case .moveList:
-                return "move list moves fighting combo frame data timing input"
-            case .about:
+case .moveList:
+      return "move list moves fighting combo frame data timing input"
+    case .help:
+      return "help keyboard shortcuts faq documentation troubleshooting resources"
+    case .about:
                 return "about info version truchie emu emulator"
             }
         }
@@ -140,15 +146,15 @@ struct SettingsView: View {
     }
     
     static let allPages: [Page] = [
-        .analogMouse, .boxArt, .cheats, .controllers, .cores, .bezels, .display,
-        .general, .saves, .genre, .library, .logging, .moveList, .retroAchievements, .about
+.analogMouse, .boxArt, .cheats, .controllers, .cores, .bezels, .display,
+    .general, .saves, .genre, .help, .library, .logging, .moveList, .retroAchievements, .about
     ]
 
     private static let pageGroups: [PageGroup] = [
         PageGroup(id: "general", label: LocalizationManager.shared.localized("settingsGroup.general"), pages: [.general, .library]),
         PageGroup(id: "systems", label: LocalizationManager.shared.localized("settingsGroup.systems"), pages: [.cores, .saves, .controllers, .analogMouse]),
         PageGroup(id: "visuals", label: LocalizationManager.shared.localized("settingsGroup.visuals"), pages: [.boxArt, .display, .bezels, .cheats]),
-        PageGroup(id: "advanced", label: LocalizationManager.shared.localized("settingsGroup.advanced"), pages: [.retroAchievements, .genre, .logging, .moveList, .about]),
+        PageGroup(id: "advanced", label: LocalizationManager.shared.localized("settingsGroup.advanced"), pages: [.retroAchievements, .genre, .logging, .moveList, .help, .about]),
     ]
     
     @State private var selectedPage: Page = .general
@@ -414,8 +420,9 @@ struct SettingsView: View {
             case .retroAchievements: RetroAchievementsSettingsView(searchText: $searchText, system: system)
             case .genre:       GenreSettingsView(searchText: $searchText)
             case .logging: LoggingSettingsView(searchText: $searchText)
-            case .moveList: MoveListSettingsView(searchText: $searchText)
-            case .about: AboutView()
+case .moveList: MoveListSettingsView(searchText: $searchText)
+    case .help: HelpSettingsView()
+    case .about: AboutView()
         }
         }
         .frame(minWidth: 550, minHeight: 420)
