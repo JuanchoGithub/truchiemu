@@ -20,6 +20,11 @@ class TrainingInputManager {
         self.manager = manager
     }
 
+    func detachFromRunner() {
+        cancellable?.cancel()
+        cancellable = nil
+    }
+
     func attachToRunner(_ runner: EmulatorRunner) {
         cancellable = runner.$currentInputState
             .receive(on: DispatchQueue.main)

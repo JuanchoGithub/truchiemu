@@ -65,8 +65,17 @@ final class NotationTokenImageCache {
             return composeHitLevel(level, highlighted: highlighted, compact: compact)
         case .alternative:
             return composeAlternative(highlighted: highlighted, compact: compact)
+        case .motion360:
+            return composeMotion360(highlighted: highlighted, compact: compact)
+        case .standClose:
+            return composeStandClose(highlighted: highlighted, compact: compact)
         }
     }
+
+    private let gradientInteriorAssets: Set<String> = [
+        "NotationLetterP", "NotationLetterK", "NotationBlock", "NotationHand",
+        "NotationSword", "NotationAxe"
+    ]
 
     private func sizeFor(_ compact: Bool, _ base: CGFloat) -> CGFloat {
         compact ? base * 0.75 : base
@@ -178,29 +187,30 @@ final class NotationTokenImageCache {
 
             drawFilledCircle(in: circleRect, color: fillColor, borderWidth: border, borderColor: .white.withAlphaComponent(highlighted ? 0.7 : 0.2), context: ctx)
 
-            if let interior = interiorAsset {
-                let inset = size * 0.15
-                let interiorRect = NSRect(x: inset, y: inset, width: size - inset * 2, height: size - inset * 2)
-                if interior == "NotationLetterP" || interior == "NotationLetterK" || interior == "NotationBlock" {
-                    drawImage(interior, in: interiorRect, alpha: interiorAlpha)
-                } else {
-            drawTemplateImage(interior, color: .white.withAlphaComponent(interiorAlpha), in: interiorRect, context: ctx)
+        if let interior = interiorAsset {
+            let inset = size * 0.15
+            let interiorRect = NSRect(x: inset, y: inset, width: size - inset * 2, height: size - inset * 2)
+            if gradientInteriorAssets.contains(interior) {
+                drawImage(interior, in: interiorRect, alpha: interiorAlpha)
+            } else {
+                drawTemplateImage(interior, color: .white.withAlphaComponent(interiorAlpha), in: interiorRect, context: ctx)
             }
         }
 
-            if let badge = badgeAsset {
-                let offsetX: CGFloat
-                let offsetY: CGFloat
-                if badge == "NotationBadgeMinus" {
-                    offsetX = size - badgeSize * 0.7
-                    offsetY = badgeSize * 0.1
-                } else {
-                    offsetX = size - badgeSize * 0.7
-                    offsetY = size - badgeSize * 0.7
-                }
-                let badgeRect = NSRect(x: offsetX, y: offsetY, width: badgeSize, height: badgeSize)
-                drawImage(badge, in: badgeRect)
+        if let badge = badgeAsset {
+            let offsetX: CGFloat
+            let offsetY: CGFloat
+            if badge == "NotationBadgeMinus" {
+                offsetX = size - badgeSize * 0.7
+                offsetY = badgeSize * 0.1
+            } else {
+                offsetX = size - badgeSize * 0.7
+                offsetY = size - badgeSize * 0.7
             }
+            let badgeRect = NSRect(x: offsetX, y: offsetY, width: badgeSize, height: badgeSize)
+            let badgeColor: NSColor = .white.withAlphaComponent(highlighted ? 0.7 : 0.3)
+            drawTemplateImage(badge, color: badgeColor, in: badgeRect, context: ctx)
+        }
 
             if case .generic(let label) = btnType, !label.isEmpty {
                 let paragraphStyle = NSMutableParagraphStyle()
@@ -228,12 +238,12 @@ final class NotationTokenImageCache {
         switch btnType {
         case .punch(let strength):
             let fill: NSColor = highlighted ? NotationMetrics.punchFillNS : NotationMetrics.punchFillDimmedNS
-            let alpha: CGFloat = highlighted ? 0.85 : 0.35
+            let alpha: CGFloat = highlighted ? 1.0 : 0.4
             let badge: String? = strength == .high ? "NotationBadgePlus" : (strength == .low ? "NotationBadgeMinus" : nil)
             return (fill, "NotationLetterP", alpha, badge)
         case .kick(let strength):
             let fill: NSColor = highlighted ? NotationMetrics.kickFillNS : NotationMetrics.kickFillDimmedNS
-            let alpha: CGFloat = highlighted ? 0.95 : 0.35
+            let alpha: CGFloat = highlighted ? 1.0 : 0.4
             let badge: String? = strength == .high ? "NotationBadgePlus" : (strength == .low ? "NotationBadgeMinus" : nil)
             return (fill, "NotationLetterK", alpha, badge)
         case .air:
@@ -241,14 +251,17 @@ final class NotationTokenImageCache {
             return (fill, "NotationWings", highlighted ? 0.85 : 0.35, nil)
         case .grapple:
             let fill: NSColor = highlighted ? NotationMetrics.grappleFillNS : NotationMetrics.grappleFillDimmedNS
-            return (fill, "NotationHand", highlighted ? 0.85 : 0.35, nil)
+            let alpha: CGFloat = highlighted ? 1.0 : 0.4
+            return (fill, "NotationHand", alpha, nil)
         case .block:
             let fill: NSColor = highlighted ? NotationMetrics.blockFillNS : NotationMetrics.blockFillDimmedNS
-            return (fill, "NotationBlock", highlighted ? 0.85 : 0.35, nil)
+            let alpha: CGFloat = highlighted ? 1.0 : 0.4
+            return (fill, "NotationBlock", alpha, nil)
         case .weapon(let style):
             let fill: NSColor = highlighted ? NotationMetrics.weaponFillNS : NotationMetrics.weaponFillDimmedNS
             let asset = style == .sword ? "NotationSword" : "NotationAxe"
-            return (fill, asset, highlighted ? 0.85 : 0.35, nil)
+            let alpha: CGFloat = highlighted ? 1.0 : 0.4
+            return (fill, asset, alpha, nil)
         case .generic(_):
             let fill: NSColor = NSColor(white: 1.0, alpha: highlighted ? 0.2 : 0.08)
             return (fill, nil, 0, nil)
@@ -257,7 +270,7 @@ final class NotationTokenImageCache {
 
     private func composeSeparator(highlighted: Bool, compact: Bool) -> NSImage {
         let size: CGFloat = compact ? 9 : 11
-        let color: NSColor = .white.withAlphaComponent(0.25)
+        let color: NSColor = .white.withAlphaComponent(highlighted ? 0.7 : 0.25)
 
         return makeImage(width: size, height: size) { ctx in
             drawTemplateImage("NotationPlus", color: color, in: NSRect(x: 0, y: 0, width: size, height: size), context: ctx)
@@ -276,10 +289,10 @@ final class NotationTokenImageCache {
 
     private func composeAir(highlighted: Bool, compact: Bool) -> NSImage {
         let size = sizeFor(compact, NotationMetrics.directionSize)
-        let color: NSColor = .cyan.withAlphaComponent(highlighted ? 0.7 : 0.3)
+        let alpha: CGFloat = highlighted ? 1.0 : 0.4
 
         return makeImage(width: size, height: size) { ctx in
-            drawTemplateImage("NotationAirArrow", color: color, in: NSRect(x: 0, y: 0, width: size, height: size), context: ctx)
+            drawImage("NotationAirArrow", in: NSRect(x: 0, y: 0, width: size, height: size), alpha: alpha)
         } ?? NSImage(size: NSSize(width: size, height: size))
     }
 
@@ -287,29 +300,28 @@ final class NotationTokenImageCache {
         let dirSize = sizeFor(compact, NotationMetrics.directionSize)
         let badgeSize = sizeFor(compact, NotationMetrics.badgeSize)
         let w = dirSize + badgeSize * 0.4
-        let h = dirSize + badgeSize * 0.4
+        let h = dirSize + badgeSize * 0.5
 
         return makeImage(width: w, height: h) { ctx in
-            let dirColor: NSColor = .yellow.withAlphaComponent(highlighted ? 0.7 : 0.3)
+            let drawAlpha: CGFloat = highlighted ? 1.0 : 0.4
             if let dir {
                 let assetName = "NotationDir\(dir.rawValue)"
-                drawTemplateImage(assetName, color: dirColor, in: NSRect(x: 0, y: badgeSize * 0.2, width: dirSize, height: dirSize), context: ctx)
+                drawImage(assetName, in: NSRect(x: 0, y: badgeSize * 0.2, width: dirSize, height: dirSize), alpha: drawAlpha)
             } else {
-                drawTemplateImage("NotationHold", color: dirColor, in: NSRect(x: 0, y: 0, width: dirSize, height: dirSize), context: ctx)
+                drawImage("NotationHold", in: NSRect(x: 0, y: 0, width: dirSize, height: dirSize), alpha: drawAlpha)
             }
 
-            let clockColor: NSColor = .white.withAlphaComponent(highlighted ? 0.9 : 0.4)
-            let clockRect = NSRect(x: dirSize - badgeSize * 0.6, y: dirSize - badgeSize * 0.2, width: badgeSize, height: badgeSize)
-            drawTemplateImage("NotationClock", color: clockColor, in: clockRect, context: ctx)
+            let clockRect = NSRect(x: dirSize - badgeSize * 0.6, y: dirSize - badgeSize * 0.5, width: badgeSize, height: badgeSize)
+            drawImage("NotationClock", in: clockRect, alpha: highlighted ? 1.0 : 0.6)
         } ?? NSImage(size: NSSize(width: w, height: h))
     }
 
     private func composeHold(highlighted: Bool, compact: Bool) -> NSImage {
         let size = sizeFor(compact, NotationMetrics.directionSize)
-        let color: NSColor = .yellow.withAlphaComponent(highlighted ? 0.7 : 0.3)
+        let alpha: CGFloat = highlighted ? 1.0 : 0.4
 
         return makeImage(width: size, height: size) { ctx in
-            drawTemplateImage("NotationHold", color: color, in: NSRect(x: 0, y: 0, width: size, height: size), context: ctx)
+            drawImage("NotationHold", in: NSRect(x: 0, y: 0, width: size, height: size), alpha: alpha)
         } ?? NSImage(size: NSSize(width: size, height: size))
     }
 
@@ -319,6 +331,24 @@ final class NotationTokenImageCache {
 
         return makeImage(width: size, height: size) { ctx in
             drawTemplateImage("NotationRapid", color: color, in: NSRect(x: 0, y: 0, width: size, height: size), context: ctx)
+        } ?? NSImage(size: NSSize(width: size, height: size))
+    }
+
+    private func composeMotion360(highlighted: Bool, compact: Bool) -> NSImage {
+        let size = sizeFor(compact, NotationMetrics.directionSize)
+        let alpha: CGFloat = highlighted ? 1.0 : 0.4
+
+        return makeImage(width: size, height: size) { ctx in
+            drawImage("Notation360CW", in: NSRect(x: 0, y: 0, width: size, height: size), alpha: alpha)
+        } ?? NSImage(size: NSSize(width: size, height: size))
+    }
+
+    private func composeStandClose(highlighted: Bool, compact: Bool) -> NSImage {
+        let size = sizeFor(compact, NotationMetrics.directionSize)
+        let alpha: CGFloat = highlighted ? 1.0 : 0.4
+
+        return makeImage(width: size, height: size) { ctx in
+            drawImage("NotationStandClose", in: NSRect(x: 0, y: 0, width: size, height: size), alpha: alpha)
         } ?? NSImage(size: NSSize(width: size, height: size))
     }
 
@@ -394,6 +424,8 @@ extension NotationToken: CustomStringConvertible {
         case .rapidPress: return "rapid"
         case .hitLevel(let l): return "hl_\(l.rawValue)"
         case .alternative: return "alt"
+        case .motion360: return "360"
+        case .standClose: return "close"
         }
     }
 }

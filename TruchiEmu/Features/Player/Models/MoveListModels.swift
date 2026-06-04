@@ -103,9 +103,36 @@ struct ParsedStep: Equatable, Codable {
     let isRelease: Bool
     let isRapid: Bool
     let isAirStep: Bool
+    let isMotion360: Bool
+    let isCloseRange: Bool
 
     static func == (lhs: ParsedStep, rhs: ParsedStep) -> Bool {
-        lhs.direction == rhs.direction && lhs.buttons == rhs.buttons && lhs.isCharge == rhs.isCharge && lhs.isHold == rhs.isHold && lhs.isRelease == rhs.isRelease && lhs.isRapid == rhs.isRapid && lhs.isAirStep == rhs.isAirStep
+        lhs.direction == rhs.direction && lhs.buttons == rhs.buttons && lhs.isCharge == rhs.isCharge && lhs.isHold == rhs.isHold && lhs.isRelease == rhs.isRelease && lhs.isRapid == rhs.isRapid && lhs.isAirStep == rhs.isAirStep && lhs.isMotion360 == rhs.isMotion360 && lhs.isCloseRange == rhs.isCloseRange
+    }
+
+    init(direction: Int? = nil, buttons: [String], isCharge: Bool, isHold: Bool, isRelease: Bool, isRapid: Bool, isAirStep: Bool, isMotion360: Bool = false, isCloseRange: Bool = false) {
+        self.direction = direction
+        self.buttons = buttons
+        self.isCharge = isCharge
+        self.isHold = isHold
+        self.isRelease = isRelease
+        self.isRapid = isRapid
+        self.isAirStep = isAirStep
+        self.isMotion360 = isMotion360
+        self.isCloseRange = isCloseRange
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        direction = try container.decodeIfPresent(Int.self, forKey: .direction)
+        buttons = try container.decode([String].self, forKey: .buttons)
+        isCharge = try container.decode(Bool.self, forKey: .isCharge)
+        isHold = try container.decode(Bool.self, forKey: .isHold)
+        isRelease = try container.decode(Bool.self, forKey: .isRelease)
+        isRapid = try container.decode(Bool.self, forKey: .isRapid)
+        isAirStep = try container.decode(Bool.self, forKey: .isAirStep)
+        isMotion360 = try container.decodeIfPresent(Bool.self, forKey: .isMotion360) ?? false
+        isCloseRange = try container.decodeIfPresent(Bool.self, forKey: .isCloseRange) ?? false
     }
 }
 
@@ -149,20 +176,6 @@ enum FightDataDirection: Int, Codable, CaseIterable {
     case downLeft = 1
     case left = 4
     case upLeft = 7
-
-    var symbol: String {
-        switch self {
-        case .neutral: return "●"
-        case .up: return "↑"
-        case .upRight: return "↗"
-        case .right: return "→"
-        case .downRight: return "↘"
-        case .down: return "↓"
-        case .downLeft: return "↙"
-        case .left: return "←"
-        case .upLeft: return "↖"
-        }
-    }
 
     static func fromRetroButtons(held: Set<RetroButton>) -> FightDataDirection? {
         let hasUp = held.contains(.up)
@@ -231,6 +244,8 @@ enum NotationToken: Equatable {
     case rapidPress
     case hitLevel(HitLevel)
     case alternative
+    case motion360
+    case standClose
 }
 
 struct InputSequenceStep: Equatable {

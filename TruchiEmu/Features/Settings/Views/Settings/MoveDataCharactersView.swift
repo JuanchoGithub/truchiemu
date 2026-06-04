@@ -387,7 +387,7 @@ private struct CommonMovesetRowView: View {
                 Circle()
                     .fill(Color.teal.opacity(0.2))
                     .frame(width: 28, height: 28)
-                Image(systemName: "person.2.crop.square")
+                Image(systemName: "person.2.fill")
                     .font(.system(size: 11, weight: .semibold))
                     .foregroundStyle(.teal)
             }

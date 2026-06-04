@@ -139,11 +139,11 @@ struct MoveListOverlay: View {
 
                     ForEach(buttonEntries, id: \.key) { key, a in
                         HStack(spacing: 3) {
-                            MoveNotationTokenView(
-                                token: .button(viewModel.resolveButtonTokenType(for: key)),
-                                isHighlighted: true,
-                                compact: true
-                            )
+                MoveNotationTokenView(
+                    token: .button(MoveNotationRenderer.resolveButtonType(key, gameData: viewModel.moveListService.currentGameData)),
+                    isHighlighted: true,
+                    compact: true
+                )
                             Text(labels[key] ?? "")
                                 .font(.system(size: 7))
                                 .foregroundColor(.white.opacity(0.5))
@@ -179,10 +179,18 @@ struct MoveListOverlay: View {
                         MoveNotationTokenView(token: .motion(.quarterCircle(from: .down)), isHighlighted: true, compact: true)
                         Text(verbatim: "= Quarter circle").font(.system(size: 7)).foregroundColor(.white.opacity(0.4))
                     }
-                    HStack(spacing: 3) {
-                        MoveNotationTokenView(token: .motion(.halfCircle(from: .left)), isHighlighted: true, compact: true)
-                        Text(verbatim: "= Half circle").font(.system(size: 7)).foregroundColor(.white.opacity(0.4))
-                    }
+                HStack(spacing: 3) {
+                    MoveNotationTokenView(token: .motion(.halfCircle(from: .left)), isHighlighted: true, compact: true)
+                    Text(verbatim: "= Half circle").font(.system(size: 7)).foregroundColor(.white.opacity(0.4))
+                }
+                HStack(spacing: 3) {
+                    MoveNotationTokenView(token: .motion360, isHighlighted: true, compact: true)
+                    Text(verbatim: "= 360 rotation").font(.system(size: 7)).foregroundColor(.white.opacity(0.4))
+                }
+                HStack(spacing: 3) {
+                    MoveNotationTokenView(token: .standClose, isHighlighted: true, compact: true)
+                    Text(verbatim: "= Close range").font(.system(size: 7)).foregroundColor(.white.opacity(0.4))
+                }
                 }
 
                 if !catEntries.isEmpty {
@@ -349,7 +357,7 @@ private var inputSequenceSection: some View {
         let sorted = buttons.sorted()
         for (i, key) in sorted.enumerated() {
             if i > 0 { tokens.append(.separator) }
-            tokens.append(.button(viewModel.resolveButtonTokenType(for: key)))
+            tokens.append(.button(MoveNotationRenderer.resolveButtonType(key, gameData: viewModel.moveListService.currentGameData)))
         }
         return tokens
     }
@@ -377,18 +385,13 @@ struct MoveEntryRow: View {
             HStack(spacing: 2) {
                 if move.isAir {
                     Text(verbatim: "AIR")
-                        .font(.system(size: 6, weight: .bold))
-                        .foregroundColor(.white.opacity(0.4))
+                    .font(.system(size: 6, weight: .bold))
+                    .foregroundColor(.white.opacity(0.4))
                 }
                 if move.isCharge {
                     Text(verbatim: "CHARGE")
-                        .font(.system(size: 6, weight: .bold))
-                        .foregroundColor(.yellow.opacity(0.6))
-                }
-                if move.isMotion360 {
-                    Text(verbatim: "360")
-                        .font(.system(size: 6, weight: .bold))
-                        .foregroundColor(.orange.opacity(0.6))
+                    .font(.system(size: 6, weight: .bold))
+                    .foregroundColor(.yellow.opacity(0.6))
                 }
                 if let cond = move.condition {
                     Text(cond)

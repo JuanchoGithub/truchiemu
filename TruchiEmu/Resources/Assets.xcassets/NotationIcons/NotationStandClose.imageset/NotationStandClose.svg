@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="9 12.5 30 25.5" width="100%" height="100%">
+  <defs>
+    <!-- Degradado Dorado Premium para las siluetas -->
+    <linearGradient id="goldArcade" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fffde6" />
+      <stop offset="40%" stop-color="#fef08a" />
+      <stop offset="100%" stop-color="#ca8a04" />
+    </linearGradient>
+  </defs>
+  
+  <!-- ICONO: "STAND CLOSE" (Stare-down de perfiles humanos) -->
+  <g>
+    <!-- PERFIL IZQUIERDO (Luchador 1) -->
+    <path d="M 15 13
+             C 18 13, 19.5 14.5, 20 16
+             L 19 17
+             L 21.5 18.5
+             L 20.5 19.5
+             L 20 20
+             L 21 21.5
+             C 19 22.5, 18 23, 18 25
+             C 19.5 27, 21 30, 21 33
+             L 10 33
+             C 10 28, 12 26, 13 23
+             C 12 18, 13 14, 15 13 Z"
+          fill="url(#goldArcade)" 
+          stroke="#0f172a" 
+          stroke-width="0.75" 
+          stroke-linejoin="round"/>
+          
+    <!-- PERFIL DERECHO (Luchador 2, reflejado perfectamente) -->
+    <path d="M 33 13
+             C 30 13, 28.5 14.5, 28 16
+             L 29 17
+             L 26.5 18.5
+             L 27.5 19.5
+             L 28 20
+             L 27 21.5
+             C 29 22.5, 30 23, 30 25
+             C 28.5 27, 27 30, 27 33
+             L 38 33
+             C 38 28, 36 26, 35 23
+             C 36 18, 35 14, 33 13 Z"
+          fill="url(#goldArcade)" 
+          stroke="#0f172a" 
+          stroke-width="0.75" 
+          stroke-linejoin="round"/>
+
+    <!-- Ojos brillantes de tensión -->
+    <circle cx="18" cy="16.5" r="0.7" fill="#ffffff" opacity="0.9"/>
+    <circle cx="30" cy="16.5" r="0.7" fill="#ffffff" opacity="0.9"/>
+    
+    <!-- Líneas sutiles de la mandíbula para dar volumen 3D al oro -->
+    <path d="M 18 25 C 18 23, 19.5 22.5, 21 21.5" fill="none" stroke="#ca8a04" stroke-width="0.5"/>
+    <path d="M 30 25 C 30 23, 28.5 22.5, 27 21.5" fill="none" stroke="#ca8a04" stroke-width="0.5"/>
+
+    <!-- Chispa de tensión visual exactamente entre ellos (Contacto cercano) -->
+    <path d="M 24 16.5 L 24.5 17.5 L 25.5 18 L 24.5 18.5 L 24 19.5 L 23.5 18.5 L 22.5 18 L 23.5 17.5 Z" fill="#ffffff" opacity="0.8"/>
+    
+    <!-- Suelo/Sombra sutil bajo los torsos -->
+    <path d="M 10 33.5 L 38 33.5" fill="none" stroke="#ffffff" stroke-width="0.5" opacity="0.2"/>
+  </g>
+  
+  <!-- Texto "STAND CLOSE" integrado en el diseño -->
+  <text x="24" y="37.5" font-family="Arial, sans-serif" font-weight="bold" font-size="2.8" fill="#fef08a" text-anchor="middle" letter-spacing="0.5" opacity="0.9">STAND CLOSE</text>
+</svg>

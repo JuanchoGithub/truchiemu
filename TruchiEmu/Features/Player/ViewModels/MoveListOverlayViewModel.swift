@@ -136,63 +136,7 @@ class MoveListOverlayViewModel: ObservableObject {
         return storageService.isFavorite(gameName: gameName, characterName: charName, moveId: moveId)
     }
 
-    func resolveButtonTokenType(for fightDataKey: String) -> ButtonTokenType {
-        let controlGroups = moveListService.currentGameData?.controlGroups ?? [:]
-        let isPunch = controlGroups["_P"]?.contains(fightDataKey) == true
-        let isKick = controlGroups["_K"]?.contains(fightDataKey) == true
 
-        if isPunch {
-            let strength = MoveNotationRenderer.resolveButtonStrength(fightDataKey, inGroup: controlGroups["_P"])
-            return .punch(strength: strength)
-        }
-        if isKick {
-            let strength = MoveNotationRenderer.resolveButtonStrength(fightDataKey, inGroup: controlGroups["_K"])
-            return .kick(strength: strength)
-        }
-
-        let isWeapon = controlGroups["_W"]?.contains(fightDataKey) == true
-        if isWeapon {
-            return .weapon(style: .sword)
-        }
-
-        let controls = moveListService.currentGameData?.controls ?? [:]
-        let label = (controls[fightDataKey] ?? "").lowercased()
-        if label.contains("guard") || label.contains("block") {
-        return .block
-    }
-    if label.contains("throw") || label.contains("grapple") || label.contains("hold") || label.contains("grab") {
-            return .grapple
-        }
-        if label.contains("weapon") || label.contains("sword") || label.contains("slash") {
-            return .weapon(style: .sword)
-        }
-        if label.contains("axe") {
-            return .weapon(style: .axe)
-        }
-
-        let abbr = moveListService.controlAbbreviations[fightDataKey] ?? fightDataKey
-        if label.contains("punch") {
-            return .punch(strength: .low)
-        }
-        if label.contains("kick") {
-            return .kick(strength: .low)
-        }
-
-    let cleanKey = fightDataKey.replacingOccurrences(of: "^", with: "").replacingOccurrences(of: "_", with: "")
-    if cleanKey == "G" { return .block }
-    if cleanKey == "a" || cleanKey == "b" {
-            return .weapon(style: .sword)
-        }
-
-        if abbr == "P" || abbr == "p" {
-            return .punch(strength: .low)
-        }
-        if abbr == "K" || abbr == "k" {
-            return .kick(strength: .low)
-        }
-
-        return .generic(label: abbr.replacingOccurrences(of: "^", with: "").replacingOccurrences(of: "_", with: ""))
-    }
 
     var gameName: String? {
         moveListService.currentGameData?.name
@@ -452,6 +396,7 @@ class MoveListOverlayViewModel: ObservableObject {
 
     private func detectMotion360(_ stepSequences: [[ParsedStep]]) -> Bool {
         guard let steps = stepSequences.first else { return false }
+        if steps.contains(where: { $0.isMotion360 }) { return true }
         let dirs = steps.compactMap { $0.direction }
         return dirs.contains { ![5].contains($0) } && dirs.count >= 7
     }

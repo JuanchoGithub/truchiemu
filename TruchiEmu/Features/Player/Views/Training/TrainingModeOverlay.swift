@@ -1002,71 +1002,53 @@ struct TrainingDisplayTab: View {
     }
 
     private func inputHistoryRow(_ entry: TrainingModeOverlayViewModel.InputHistoryEntry) -> some View {
-        HStack(spacing: 4) {
+        let dirTokens = retroButtonsToDirectionTokens(entry.directions)
+        let btnTokens = retroButtonsToButtonTokens(entry.buttons, manager: viewModel.manager)
+
+        return HStack(spacing: NotationMetrics.tokenSpacing) {
             Text("\(entry.frameIndex)")
                 .font(.system(size: 8, design: .monospaced))
                 .foregroundColor(AppColors.textTertiary(colorScheme))
                 .frame(width: 24, alignment: .trailing)
 
-            ForEach(Array(entry.directions.sorted(by: { $0.rawValue < $1.rawValue })), id: \.rawValue) { btn in
-                directionIcon(btn)
+            ForEach(Array(dirTokens.enumerated()), id: \.offset) { _, token in
+                MoveNotationTokenView(token: token, isHighlighted: true, compact: true)
             }
 
-            ForEach(Array(entry.buttons.sorted(by: { $0.rawValue < $1.rawValue })), id: \.rawValue) { btn in
-                buttonIcon(btn)
+            ForEach(Array(btnTokens.enumerated()), id: \.offset) { _, token in
+                MoveNotationTokenView(token: token, isHighlighted: true, compact: true)
             }
 
             Spacer()
         }
-        .frame(height: 16)
+        .frame(height: 18)
     }
 
-    private func directionIcon(_ button: RetroButton) -> some View {
-        Text(directionSymbol(button))
-            .font(.system(size: 10, weight: .bold, design: .monospaced))
-            .foregroundColor(AppColors.brandAccent)
-            .frame(width: 14, height: 14)
-            .background(AppColors.brandAccent.opacity(0.15))
-            .cornerRadius(3)
+    private func retroButtonsToDirectionTokens(_ buttons: Set<RetroButton>) -> [NotationToken] {
+        guard let dir = FightDataDirection.fromRetroButtons(held: buttons) else { return [] }
+        return [.direction(dir)]
     }
 
-    private func buttonIcon(_ button: RetroButton) -> some View {
-        Text(buttonSymbol(button))
-            .font(.system(size: 9, weight: .semibold, design: .monospaced))
-            .foregroundColor(.white)
-            .frame(width: 14, height: 14)
-            .background(AppColors.brandAccent.opacity(0.4))
-            .cornerRadius(3)
-    }
+    private func retroButtonsToButtonTokens(_ buttons: Set<RetroButton>, manager: TrainingModeManager) -> [NotationToken] {
+        let nonDirButtons = buttons.filter { !$0.isDirectional }
+        guard !nonDirButtons.isEmpty else { return [] }
 
-    private func directionSymbol(_ button: RetroButton) -> String {
-        switch button {
-        case .up: return "↑"
-        case .down: return "↓"
-        case .left: return "←"
-        case .right: return "→"
-        case .lStickUp: return "↑"
-        case .lStickDown: return "↓"
-        case .lStickLeft: return "←"
-        case .lStickRight: return "→"
-        default: return "?"
+        let gameData = manager.currentGameData
+        let layout = manager.currentArcadeLayout
+        let systemID = manager.currentSystemID
+        let sysCtrlMap = gameData?.systemControlMappings
+
+        var tokens: [NotationToken] = []
+        let sorted = nonDirButtons.sorted(by: { $0.rawValue < $1.rawValue })
+        for (i, btn) in sorted.enumerated() {
+            if i > 0 { tokens.append(.separator) }
+            if let fdKey = ArcadeButtonMapper.shared.fightDataKey(for: btn, layout: layout, systemID: systemID, systemControlMappings: sysCtrlMap) {
+                tokens.append(.button(MoveNotationRenderer.resolveButtonType(fdKey, gameData: gameData)))
+            } else {
+		tokens.append(.button(MoveNotationRenderer.resolveButtonType(btn.rawValue.lowercased(), gameData: gameData)))
+            }
         }
-    }
-
-    private func buttonSymbol(_ button: RetroButton) -> String {
-        switch button {
-        case .a: return "A"
-        case .b: return "B"
-        case .x: return "X"
-        case .y: return "Y"
-        case .l1: return "L"
-        case .r1: return "R"
-        case .l2: return "Z"
-        case .r2: return "W"
-        case .select: return "S"
-        case .start: return "St"
-        default: return "?"
-        }
+        return tokens
     }
 
     private var fmdMonitorSection: some View {

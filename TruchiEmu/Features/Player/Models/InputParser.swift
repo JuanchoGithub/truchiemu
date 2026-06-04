@@ -34,16 +34,22 @@ struct InputParser {
         let sequences = parts.map { parseAlternative($0) }
 
         var hasDirectionOnly = false
+        var hasMixed = false
+        var hasButtonsOnly = false
         var hasButtons = false
 
         for seq in sequences {
             let hasDir = seq.contains(where: { $0.direction != nil })
             let hasBtn = seq.contains(where: { !$0.buttons.isEmpty })
             if hasDir && !hasBtn { hasDirectionOnly = true }
+            if hasDir && hasBtn { hasMixed = true }
+            if hasBtn && !hasDir { hasButtonsOnly = true }
             if hasBtn { hasButtons = true }
         }
 
-        return hasDirectionOnly && hasButtons
+        if hasDirectionOnly && hasButtons { return true }
+        if hasMixed && hasButtonsOnly { return true }
+        return false
     }
 
     /// Expands direction sequences × button sets into all combinations.
@@ -59,7 +65,7 @@ struct InputParser {
 
             if hasDir {
                 let dirOnly = seq.map { step -> ParsedStep in
-                    ParsedStep(direction: step.direction, buttons: [], isCharge: step.isCharge, isHold: step.isHold, isRelease: step.isRelease, isRapid: false, isAirStep: step.isAirStep)
+                    ParsedStep(direction: step.direction, buttons: [], isCharge: step.isCharge, isHold: step.isHold, isRelease: step.isRelease, isRapid: false, isAirStep: step.isAirStep, isMotion360: false, isCloseRange: false)
                 }
                 if !directionSequences.contains(dirOnly) {
                     directionSequences.append(dirOnly)
@@ -91,7 +97,9 @@ struct InputParser {
                     isHold: last.isHold,
                     isRelease: last.isRelease,
                     isRapid: false,
-                    isAirStep: last.isAirStep
+                    isAirStep: last.isAirStep,
+                    isMotion360: false,
+                    isCloseRange: false
                 )
                 }
                 result.append(newSeq)
@@ -128,8 +136,23 @@ struct InputParser {
                 continue
             }
 
+            if remaining.hasPrefix("^!") {
+                let afterBang = input.index(i, offsetBy: 2)
+                guard let nextTok = input[afterBang...].firstIndex(where: { $0 == "_" || $0 == "/" }) else { return steps }
+                i = nextTok
+                continue
+            }
+
+        if remaining.hasPrefix("_x") && !remaining.hasPrefix("_X") {
+            flushStep()
+            steps.append(ParsedStep(direction: nil, buttons: [], isCharge: false, isHold: false, isRelease: false, isRapid: false, isAirStep: false, isMotion360: true, isCloseRange: false))
+            i = input.index(i, offsetBy: 2)
+            continue
+        }
+
         if remaining.hasPrefix("_X") {
-            isRapid = true
+            flushStep()
+            steps.append(ParsedStep(direction: nil, buttons: [], isCharge: false, isHold: false, isRelease: false, isRapid: false, isAirStep: false, isMotion360: false, isCloseRange: true))
             i = input.index(i, offsetBy: 2)
             continue
         }
@@ -244,7 +267,7 @@ struct InputParser {
         flushStep()
 
         if isAir, !steps.isEmpty {
-            let airStep = ParsedStep(direction: 8, buttons: [], isCharge: false, isHold: false, isRelease: false, isRapid: false, isAirStep: true)
+            let airStep = ParsedStep(direction: 8, buttons: [], isCharge: false, isHold: false, isRelease: false, isRapid: false, isAirStep: true, isMotion360: false, isCloseRange: false)
             steps.insert(airStep, at: 0)
         }
 
@@ -259,7 +282,9 @@ struct InputParser {
                 isHold: isHold,
                 isRelease: isRelease,
                 isRapid: isRapid,
-                isAirStep: false
+                isAirStep: false,
+                isMotion360: false,
+                isCloseRange: false
             ))
                 currentDirection = nil
                 currentButtons = []
