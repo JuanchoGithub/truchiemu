@@ -43,7 +43,6 @@
       "qd",
       "rom",
       "sfc",
-      "smc",
       "st",
       "swc",
       "unf",
@@ -219,14 +218,12 @@
       "dmg",
       "fig",
       "gb",
-      "gba",
       "gbc",
       "gbs",
       "gbz",
       "rom",
       "sfc",
       "sgb",
-      "smc",
       "swc"
     ],
     "emuIconName": "GB",
@@ -292,7 +289,6 @@
     "extensions": [
       "bin",
       "dsi",
-      "gba",
       "ids",
       "nds"
     ],

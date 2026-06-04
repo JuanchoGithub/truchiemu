@@ -733,9 +733,10 @@ viewModel.updateFilters(
         List(selection: $selectedROM) {
             ForEach(Array(viewModel.displayedROMs.enumerated()), id: \.element.id) { index, rom in
                 let isSelected = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
-                GameListRowView(rom: rom, isSelected: isSelected, zoomLevel: zoomLevel, filter: filter)
-                    .tag(rom)
-                    .contentShape(Rectangle())
+            GameListRowView(rom: rom, isSelected: isSelected, isEvenRow: index.isMultiple(of: 2), zoomLevel: zoomLevel, filter: filter)
+                .tag(rom)
+                .listRowBackground(Color.clear)
+                .contentShape(Rectangle())
 .onTapGesture {
                 handleListTap(on: rom, at: index)
             }
@@ -779,7 +780,9 @@ viewModel.updateFilters(
         }
             }
         }
-        .listStyle(.inset(alternatesRowBackgrounds: true))
+        .listStyle(.inset(alternatesRowBackgrounds: false))
+        .scrollContentBackground(.hidden)
+        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
         .gesture(
             MagnificationGesture()
                 .onChanged { value in

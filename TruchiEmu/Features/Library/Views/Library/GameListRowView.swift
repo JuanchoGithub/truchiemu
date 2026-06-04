@@ -6,6 +6,7 @@ import AppKit
 struct GameListRowView: View {
     let rom: ROM
     let isSelected: Bool
+    let isEvenRow: Bool
     let zoomLevel: Double
     let filter: LibraryFilter?
     @Environment(\.colorScheme) private var colorScheme
@@ -176,9 +177,13 @@ Text(sys.name)
         }
         .padding(.vertical, 4)
         .background(
+            Rectangle()
+            .fill(isEvenRow ? AppColors.cardBackground(colorScheme) : .clear)
+        )
+        .background(
             RoundedRectangle(cornerRadius: 8)
-                .fill(isSelected ? AppColors.accentBackground(colorScheme) :
-                      isHovered ? AppColors.brandAccentSecondary.opacity(0.04) : .clear)
+            .fill(isSelected ? AppColors.accentBackground(colorScheme) :
+                  isHovered ? AppColors.brandAccentSecondary.opacity(0.04) : .clear)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 8)
