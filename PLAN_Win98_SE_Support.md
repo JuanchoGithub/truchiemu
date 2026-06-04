@@ -17,7 +17,7 @@ Two-phase feature that lets TruchiEmu users install and use Windows 98 SE inside
 
 - `@Published var downloadPhase: Win98DownloadPhase` (idle/downloading/creatingZip/ready/installing/installed/error)
 - `@Published var downloadProgress: Double`
-- `@Published var oemKey: String` — the key to display/autotype
+- `@Published var oemKey: String` (the key to display/autotype)
 - `static let shared = Win98SetupManager()`
 
 **Key methods:**
@@ -86,7 +86,7 @@ static let installedImageName = "Windows 98.img" // Created by DOSBox Pure after
 
 5. Modify `launch()`:
    - After `super.launch()`, if `isWin98InstallMode`, set `showProductKeyBanner = true`
-   - For Phase 2 (normal Win32 game launch when Win98 is installed): DOSBox Pure auto-detects `Windows 98.img` in the system directory and adds "Run Installed Operating System" to its start menu — no special code needed from our side
+   - For Phase 2 (normal Win32 game launch when Win98 is installed): DOSBox Pure auto-detects `Windows 98.img` in the system directory and adds "Run Installed Operating System" to its start menu, no special code needed from our side
 
 ---
 
@@ -109,7 +109,7 @@ static let installedImageName = "Windows 98.img" // Created by DOSBox Pure after
 
 1. In `launchGame()`, before creating the runner for `systemID == "dos"`:
    - Check if Win98 is installed via `Win98SetupManager.shared.isWin98Installed()`
-   - If not installed, this is just a regular DOS game — proceed normally
+   - If not installed, this is just a regular DOS game, proceed normally
    - If the user explicitly triggers "Install Windows 98" from settings (Phase 1 entry point), call `Win98SetupManager.shared.downloadAndPrepareInstaller()` then launch the installer ZIP
 
 2. Add a Phase 1 launch path:
@@ -125,7 +125,7 @@ When `Windows 98.img` exists in the system directory:
 
 - DOSBox Pure automatically detects it and adds `[ Run Installed Operating System ]` to its start menu
 - When the user loads a Win32 game ZIP, this option appears at the top of DOSBox Pure's menu
-- No TruchiEmu code changes are needed for Phase 2 — it's DOSBox Pure's built-in behavior
+- No TruchiEmu code changes are needed for Phase 2. It's DOSBox Pure's built-in behavior
 
 The one useful addition: if `isWin98Installed` is true and a DOS game is launched, we could set `dosbox_pure_memory_size` to `64 MB` and `dosbox_pure_machine` to `SVGA` to ensure proper Win98 compatibility. This can be a simple check in `DOSRunner.configureCoreOptions()`.
 
@@ -150,10 +150,10 @@ Add to all translation files (`en.json`, `es.json`, etc.):
 
 ## Execution Order
 
-1. Create `Win98SetupManager.swift` — the core service
-2. Modify `DOSRunner.swift` — add Win98 install mode + core options
-3. Modify `GameOverlayToolbar.swift` — add product key banner with "Type Key" button
-4. Modify `GameLauncher.swift` — add Phase 1 launch path
+1. Create `Win98SetupManager.swift` (the core service)
+2. Modify `DOSRunner.swift` (add Win98 install mode + core options)
+3. Modify `GameOverlayToolbar.swift` (add product key banner with "Type Key" button)
+4. Modify `GameLauncher.swift` (add Phase 1 launch path)
 5. Add localization keys
 6. Run `xcodegen generate` to regenerate the project
 

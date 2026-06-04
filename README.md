@@ -37,7 +37,7 @@ Relive the golden age of gaming with advanced Metal-powered shaders. Whether you
 
 ### 🖌️ Gaming-Inspired Themes
 
-17 accent color themes named after gaming legends — Samus, Joker, Protoss, Kirby, and more. Each theme adapts its accent for both light and dark mode. Pick a built-in palette or choose any color with the Custom theme.
+17 accent color themes named after gaming legends, including Samus, Joker, Protoss, Kirby, and more. Each theme adapts its accent for both light and dark mode. Pick a built-in palette or choose any color with the Custom theme.
 
 <img width="1317" height="983" alt="image" src="https://github.com/user-attachments/assets/24000983-5181-41b1-9a29-fcdb3b314eea" />
 
@@ -45,7 +45,7 @@ Relive the golden age of gaming with advanced Metal-powered shaders. Whether you
 - **Tinted surfaces & accent toolbars**: Subtle theme blending across every window
 
 ### 🚀 Effortless Setup
-Getting started is a breeze. Our guided setup wizard walks you through your first launch, and our automated library services handle the heavy lifting—syncing metadata and downloading beautiful box art for your entire collection.
+Getting started is a breeze. Our guided setup wizard walks you through your first launch, and our automated library services handle the heavy lifting: syncing metadata and downloading beautiful box art for your entire collection.
 
 <img width="1012" height="644" alt="Every Libretro Core supported (not all tested), including core options" src="https://github.com/user-attachments/assets/ad5d22f4-812f-4794-abbf-254c26c8fa10" />
 
@@ -67,7 +67,7 @@ Every interaction is designed to be smooth and joyful. From polished transitions
 ## 🛠️ Key Features
 
 - **Multi-System Powerhouse**: One app, countless classics. Support for NES, SNES, N64, GBA, Genesis, DOS, ScummVM, and more.
-- **Analog Mouse Support**: Use your gamepad's analog sticks to control the mouse cursor in DOS and ScummVM games — with configurable buttons for clicks and D-pad for keyboard inputs.
+- **Analog Mouse Support**: Use your gamepad's analog sticks to control the mouse cursor in DOS and ScummVM games, with configurable buttons for clicks and D-pad for keyboard inputs.
 - **Fighting Game Features**: Training mode overlay with customizable practice settings and on-screen move list notation for fighting games.
 - **Seamless Library Management**: Organize your games into custom categories, manage genres, and enjoy a clutter-free experience.
 - **Advanced Save States**: Never lose your progress with intuitive, slot-based progressive save and load functionality.

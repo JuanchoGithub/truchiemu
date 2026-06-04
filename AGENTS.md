@@ -9,7 +9,7 @@ Behavioral guidelines and project-specific instructions for working on TruchiEmu
 The app uses a **JSON‑based UI localization system**:
 - Translation files in `Resources/Translations/`: `en.json`, `es.json`, `pt.json`
 - `LocalizationManager` loads all JSON files at launch, auto-detects device language, supports runtime changes via `setLanguage(_:)`
-- **IMPORTANT:** `setLanguage()` persists to `AppSettings.set("systemLanguage", value: lang)` — without this, language resets on next app launch
+- **IMPORTANT:** `setLanguage()` persists to `AppSettings.set("systemLanguage", value: lang)`. Without this, language resets on next app launch
 
 ### How to use localization in SwiftUI views
 
@@ -32,7 +32,7 @@ Text("settings.title") // Uses the Text extension, returns localized Text
 
 **Key pattern:** Always use `loc.localized("key")` for String arguments, `Text("key")` for Text arguments.
 
-**Footgun:** The `Text` extension overrides `init(_ localizationKey: String)`, which intercepts ALL `Text(String)` calls — not just localization keys. If you need a literal string in a Text view that isn't a localization key, use `Text(verbatim: "literal")` instead.
+**Footgun:** The `Text` extension overrides `init(_ localizationKey: String)`, which intercepts ALL `Text(String)` calls, not just localization keys. If you need a literal string in a Text view that isn't a localization key, use `Text(verbatim: "literal")` instead.
 
 ### Adding new translations
 
@@ -44,12 +44,12 @@ Text("settings.title") // Uses the Text extension, returns localized Text
 ### Common bug to avoid
 
 When adding a language picker that calls `setLanguage()`:
-- Ensure `setLanguage()` saves to `AppSettings` — otherwise the selection is lost when the view re-renders
+- Ensure `setLanguage()` saves to `AppSettings`, otherwise the selection is lost when the view re-renders
 - The picker binding must read from `loc.currentLanguage` to show the current selection
 
 ### Dual language system
 
-The codebase has **two separate language systems** — do not confuse them:
+The codebase has **two separate language systems**. Do not confuse them:
 
 | System | Class | Storage | Purpose |
 |---|---|---|---|
@@ -136,18 +136,18 @@ The following are excluded from the source build phase:
 
 ### Resource build phases
 
-- `TruchiEmu/Resources/` — included recursively (all resources auto-bundled)
-- `scripts/mame_lookup/` — included as resources (except `mame_unified.json`)
+- `TruchiEmu/Resources/`: includes all resources recursively (auto-bundled)
+- `scripts/mame_lookup/`: included as resources (except `mame_unified.json`)
 
 ## Architecture
 
 - **App entrypoint**: `TruchiEmu/App/TruchiEmuApp.swift` + `ContentView.swift`
-- **Emulation engine**: `TruchiEmu/Core/Engine/` — mixed Objective-C++/C with a Swift bridging header (`TruchiEmu-Bridging-Header.h`). Hosts libretro core integration.
+- **Emulation engine**: `TruchiEmu/Core/Engine/` (mixed Objective-C++/C with a Swift bridging header `TruchiEmu-Bridging-Header.h`). Hosts libretro core integration.
 - **Swift<->ObjC bridge**: `LibretroBridge.mm` / `LibretroBridgeSwift.swift` for calling libretro from Swift
 - **Data layer**: SwiftData models in `TruchiEmu/Core/Models/`
-- **Metal shaders**: `TruchiEmu/Core/Shaders/` — runtime shaders, excludes `slang/**`, `internal/**`, `all_shaders.metal` from build
+- **Metal shaders**: `TruchiEmu/Core/Shaders/` (runtime shaders, excludes `slang/**`, `internal/**`, `all_shaders.metal` from build)
 - **Save/state management**: `SaveDirectoryManager` and `SaveMigrationService` in `TruchiEmu/Services/`
-- **System-specific runners**: `TruchiEmu/Core/Engine/Runners/Runners/` — `EmulatorRunner` base class with subclasses: `NESRunner`, `SNESRunner`, `N64Runner`, `DOSRunner`, `ScummVMRunner`, `SaturnRunner`
+- **System-specific runners**: `TruchiEmu/Core/Engine/Runners/Runners/` with `EmulatorRunner` base class and subclasses: `NESRunner`, `SNESRunner`, `N64Runner`, `DOSRunner`, `ScummVMRunner`, `SaturnRunner`
 
 ### Feature module architecture
 
@@ -168,7 +168,7 @@ The following are excluded from the source build phase:
 |---|---|---|
 | `@MainActor` singleton `ObservableObject` | Most services/managers | Dominant pattern; access only from main thread |
 | Swift `actor` | `ImageCache`, `ROMScanner`, `ProgressTracker` | Concurrency-safe without `@MainActor` |
-| `nonisolated(unsafe)` | `ShaderParameterStore`, MAME lookup tables | Data accessed from non-MainActor threads (renderer, background loading) — do not add MainActor-only state |
+| `nonisolated(unsafe)` | `ShaderParameterStore`, MAME lookup tables | Data accessed from non-MainActor threads (renderer, background loading). Do not add MainActor-only state |
 | `@unchecked Sendable` | `EmulatorRunner`, `SaveStateManager` | Manually managed thread safety; rendering runs on dedicated queue |
 | `@Observable` | `SystemDatabaseWrapper` | **Only class using** modern Observation framework; everything else uses `ObservableObject` + `@Published` |
 | `NSHostingView<AnyView>` | Game toolbar, bezel selector | SwiftUI content embedded in AppKit windows |
@@ -247,7 +247,7 @@ Theme and appearance changes require `ThemeManager.relaunchApp()` (spawns new pr
 
 ### Theming considerations for new UI code
 
-**Always use `AppColors` semantic tokens — never hardcode colors.** `AppColors` (in `DesignSystem.swift`) provides light/dark-adaptive tokens that automatically blend the current theme's accent into surfaces, text, and borders.
+**Always use `AppColors` semantic tokens; never hardcode colors.** `AppColors` (in `DesignSystem.swift`) provides light/dark-adaptive tokens that automatically blend the current theme's accent into surfaces, text, and borders.
 
 | Token | Purpose | Example |
 |---|---|---|
@@ -279,18 +279,18 @@ AppColors.accentDarkForScheme(colorScheme)
 AppColors.accentSecondaryForScheme(colorScheme)
 ```
 
-**Light/dark mode resolution:** `AppColors.brandAccent` auto-resolves via `NSApp.effectiveAppearance` (not `@Environment \.colorScheme`). This works at runtime but NOT in previews — use `*ForScheme` variants for previews.
+**Light/dark mode resolution:** `AppColors.brandAccent` auto-resolves via `NSApp.effectiveAppearance` (not `@Environment \.colorScheme`). This works at runtime but NOT in previews, so use `*ForScheme` variants for previews.
 
-**Custom theme handling:** When `currentTheme == .custom`, `ThemeManager` derives all variants algorithmically from `customAccentColor` (dimmed at 84%, dark at 70%). Code using `AppColors` tokens automatically gets the correct derived colors — no special-casing needed.
+**Custom theme handling:** When `currentTheme == .custom`, `ThemeManager` derives all variants algorithmically from `customAccentColor` (dimmed at 84%, dark at 70%). Code using `AppColors` tokens automatically gets the correct derived colors, so no special-casing is needed.
 
 ## SwiftData & Persistence
 
 - **SwiftDataContainer** (`Shared/Infrastructure/Persistence/`): Singleton owning the `ModelContainer`; registers 20+ model types at init; store at `~/Library/Application Support/TruchiEmu/TruchiEmu.sqlite`
 - **Repository pattern**: Structured data access through repositories:
-  - `ROMRepository` — ROM CRUD, system queries, library folder management
-  - `GameDBRepository` — ROM identification DB lookups
-  - `CoreOptionsRepository` — Core option persistence with override hierarchy
-  - `ResourceCacheRepository` — HTTP cache with expiry/access tracking
+  - `ROMRepository`: ROM CRUD, system queries, library folder management
+  - `GameDBRepository`: ROM identification DB lookups
+  - `CoreOptionsRepository`: Core option persistence with override hierarchy
+  - `ResourceCacheRepository`: HTTP cache with expiry/access tracking
 - **AppSettings**: `enum` with static convenience methods (`get`/`set`/`remove`) wrapping `AppSettingsCache.shared` (in-memory `[String: Data]` dictionary backed by SwiftData `SettingsEntry`). Uses `MainActor.assumeIsolated`.
 - **Registered model types** (in `SwiftDataContainer`): `ROMEntry`, `ROMMetadataEntry`, `GameDBEntry`, `LibraryFolder`, `InstalledCore`, `AvailableCore`, `ControllerMapping`, `AchievementConfig`, `CheatStore`, `GameCategoryEntry`, `BezelPreferences`, `BoxArtPreferences`, `CoreOptionEntry`, `ShaderPresetEntry`, `ResourceCacheEntryModel`, `DATIngestionEntry`, `BoxArtResolutionEntry`, `MAMERomEntry`, `MAMEDatabaseInfo`, `MAMEVerificationRecord`, `SettingsEntry`, `RAGameCacheEntry`
 - **`PersistenceMigrationFlag`**: Tracks whether migration from old SQLite schema has completed.
@@ -301,30 +301,30 @@ AppColors.accentSecondaryForScheme(colorScheme)
 
 ALL launch paths (double-click, button, save state, CLI) go through `GameLauncher.shared.launch()`:
 
-1. **`GameLauncher.shared.launch()`** — Unified entry point
-2. **`LaunchConfig`** — Resolves all settings at launch time: core ID, shader preset (ROM > system > default), core options overrides, achievements/hardcore, cheats, auto-save/load, bezel
-3. **`EmulatorRunner.forSystem(_:)`** — Factory method returning system-specific subclass (`NESRunner`, `SNESRunner`, `N64Runner`, `DOSRunner`, `ScummVMRunner`, `SaturnRunner`, or base `EmulatorRunner`)
-4. **`EmulatorRunner.launch()`** — Finds core dylib, configures libretro bridge, starts emulation on dedicated `DispatchQueue` (qos: `.userInteractive`)
-5. **`StandaloneGameWindowController`** — NSWindowController owning game window; creates `FocusableMTKView`, manages input capture, bezels, toolbar auto-hide, playtime tracking, save state slot UI
-6. **`RunningGamesTracker`** — Registers running ROM; prevents double-launch with `UNUserNotificationCenter` alert
+1. **`GameLauncher.shared.launch()`**: Unified entry point
+2. **`LaunchConfig`**: Resolves all settings at launch time (core ID, shader preset, core options overrides, achievements/hardcore, cheats, auto-save/load, bezel)
+3. **`EmulatorRunner.forSystem(_:)`**: Factory method returning system-specific subclass (`NESRunner`, `SNESRunner`, `N64Runner`, `DOSRunner`, `ScummVMRunner`, `SaturnRunner`, or base `EmulatorRunner`)
+4. **`EmulatorRunner.launch()`**: Finds core dylib, configures libretro bridge, starts emulation on dedicated `DispatchQueue` (qos: `.userInteractive`)
+5. **`StandaloneGameWindowController`**: NSWindowController owning game window; creates `FocusableMTKView`, manages input capture, bezels, toolbar auto-hide, playtime tracking, save state slot UI
+6. **`RunningGamesTracker`**: Registers running ROM; prevents double-launch with `UNUserNotificationCenter` alert
 
 ### ROM Scanning Pipeline
 
-1. **`ROMScanner`** — Swift `actor`; scans directories, filters by extension, bulk MAME identification, throttled progress (50ms)
-2. **`ROMIdentifierService`** — CRC32 via zlib with `DispatchSemaphore(4)` for I/O throttling; hardware-accelerated hashing
-3. **`ROMIdentifier`** — Weighted scoring enum: magic headers (highest weight) > unique extensions > filename patterns > path context
-4. **`LibraryAutomationCoordinator`** — Post-scan pipeline: identify → enrich (LaunchBox metadata) → download art. Respects `RunningGamesTracker` to pause during gameplay. 2-second warm-up delay.
-5. **`MetadataSyncCoordinator`** — Background LaunchBox metadata sync; 1-at-a-time concurrency; respects `RunningGamesTracker`
+1. **`ROMScanner`**: Swift `actor`; scans directories, filters by extension, bulk MAME identification, throttled progress (50ms)
+2. **`ROMIdentifierService`**: CRC32 via zlib with `DispatchSemaphore(4)` for I/O throttling; hardware-accelerated hashing
+3. **`ROMIdentifier`**: Weighted scoring enum (magic headers > unique extensions > filename patterns > path context)
+4. **`LibraryAutomationCoordinator`**: Post-scan pipeline (identify, enrich with LaunchBox metadata, download art). Respects `RunningGamesTracker` to pause during gameplay. 2-second warm-up delay.
+5. **`MetadataSyncCoordinator`**: Background LaunchBox metadata sync; 1-at-a-time concurrency; respects `RunningGamesTracker`
 
 ## Core Options System
 
 - **`CoreOptionsManager`**: Parses options from cores via `LibretroBridgeSwift.loadCoreForOptions()`, stores definitions as JSON in `TruchiEmu/CoreOptionDefinitions/`, persists user overrides as `.cfg` files in `TruchiEmu/CoreOptions/`.
 - **Override hierarchy** (lower overridden by higher):
-  1. `coreDefault` — value from the libretro core itself
-  2. `appDefault` — app-wide default
-  3. `appSystemDefault` — app default for a specific system
-  4. `systemOverride` — user override for a system
-  5. `gameOverride` — user override for a specific game
+  1. `coreDefault`: value from the libretro core itself
+  2. `appDefault`: app-wide default
+  3. `appSystemDefault`: app default for a specific system
+  4. `systemOverride`: user override for a system
+  5. `gameOverride`: user override for a specific game
 - Each override layer stores `previousLayerValue` for restore.
 - **`CoreOptionVersion`**: Handles libretro option versioning with `_V1` suffix keys.
 - **`CoreOverrideService`**: Additional per-core/per-system override logic in `TruchiEmu/CoreOverrides/`.
@@ -339,7 +339,7 @@ ALL launch paths (double-click, button, save state, CLI) go through `GameLaunche
 
 ## RetroAchievements & Hardcore Mode
 
-- **`RetroAchievementsService`**: Full RA integration — auth (login/credentials), game identification (hash matching), achievement tracking/unlocking, rich presence polling, hardcore mode toggle, game data caching to disk.
+- **`RetroAchievementsService`**: Full RA integration with auth (login/credentials), game identification (hash matching), achievement tracking/unlocking, rich presence polling, hardcore mode toggle, game data caching to disk.
 - **`HardcoreModeManager`**: Singleton enforcing hardcore restrictions. When hardcore is active, the following are blocked:
   - Save states (check `attemptSaveState()` before allowing)
   - Rewind
@@ -358,12 +358,12 @@ ALL launch paths (double-click, button, save state, CLI) go through `GameLaunche
 ## CLI Support
 
 - **`CLIManager.shared`**: Parses CLI arguments at app startup.
-- **`CLILauncher`**: Routes to actions — headless ROM launch, version output, help text.
+- **`CLILauncher`**: Routes to actions including headless ROM launch, version output, help text.
 - Used for launching games directly from terminal: `TruchiEmu <rom-path>`
 
 ## Logging
 
-- **`LoggerService.shared`**: 4 log levels — `none`, `info`, `debug`, `extreme` (verbose). Async file-based logging via serial `DispatchQueue`. C-callable callback for routing libretro core logs to the same system.
+- **`LoggerService.shared`**: 4 log levels (`none`, `info`, `debug`, `extreme`). Async file-based logging via serial `DispatchQueue`. C-callable callback for routing libretro core logs to the same system.
 - **`LogManager.shared`**: Manages log file paths, storage, custom folder support.
 - **Usage**: `LoggerService.info("message")`, `LoggerService.debug("message")`, etc.
 - Many services use private enum wrappers (e.g., `ROMScannerLog`, `containerLog`) to route through `LoggerService` with category prefixes.
@@ -392,31 +392,31 @@ ALL launch paths (double-click, button, save state, CLI) go through `GameLaunche
 | `TruchiEmu/Shared/UI/` | ThemeManager, AccentColorTheme, AppearanceMode, DesignSystem, AppColors |
 | `TruchiEmu/Shared/Utilities/` | AppSettings enum, AppSettingsCache, utility extensions |
 | `TruchiEmu/Resources/` | Assets, Info.plist, entitlements, app icons, translations |
-| `TruchiEmu_Resources/` | Runtime-only resources (core_shaders, retroarch_images) — NOT in Xcode build |
-| `TruchiEmu/Library/` | Empty placeholder — excluded from build |
-| `scripts/` | Standalone Python tools (ROM lookup, DAT downloads) — not part of the app build |
+| `TruchiEmu_Resources/` | Runtime-only resources (core_shaders, retroarch_images), NOT in Xcode build |
+| `TruchiEmu/Library/` | Empty placeholder, excluded from build |
+| `scripts/` | Standalone Python tools (ROM lookup, DAT downloads), not part of the app build |
 
 ## Runtime vs Bundled Resources
 
-**`TruchiEmu_Resources/`** — Runtime-only resources (loaded at runtime, NOT in xcode project):
-- `core_shaders/` — Metal shaders loaded dynamically
-- `retroarch_images/` — system icons loaded at runtime
+**`TruchiEmu_Resources/`**: Runtime-only resources (loaded at runtime, NOT in xcode project):
+- `core_shaders/`: Metal shaders loaded dynamically
+- `retroarch_images/`: system icons loaded at runtime
 - These are loaded from bundle path (not bundled into Xcode target)
 
-**Bundled resources are flattened** — When app is built, all resources in `Resources/` are flattened to a single folder. Subdirectories are lost. Code fetching resources must use filenames only (e.g., `Bundle.main.path(forResource: "sega_101", ofType: "bin")`), not rely on folder paths.
+**Bundled resources are flattened**. When app is built, all resources in `Resources/` are flattened to a single folder. Subdirectories are lost. Code fetching resources must use filenames only (e.g., `Bundle.main.path(forResource: "sega_101", ofType: "bin")`), not rely on folder paths.
 
-**Unzipping bundled resources** — If a zip expects specific subfolders (e.g., cheats/cheats.zip contains folders), you must create those directories manually in the sandboxed app container. The flat bundle structure won't preserve the zip's internal folder hierarchy.
+**Unzipping bundled resources**. If a zip expects specific subfolders (e.g., cheats/cheats.zip contains folders), you must create those directories manually in the sandboxed app container. The flat bundle structure won't preserve the zip's internal folder hierarchy.
 
 ## Key Constraints
 
-- `build/` is gitignored — do not commit build artifacts
-- `.xcodeproj` is NOT in gitignore — it is committed and tracked
-- `xcuserdata/` and `*.xcuserdatad/` are gitignored — user-specific Xcode data excluded
-- Entitlements file is minimal/empty — no sandboxing initially; if adding capabilities, update entitlements
+- `build/` is gitignored. Do not commit build artifacts
+- `.xcodeproj` is NOT in gitignore. It is committed and tracked
+- `xcuserdata/` and `*.xcuserdatad/` are gitignored. User-specific Xcode data excluded
+- Entitlements file is minimal/empty. No sandboxing initially; if adding capabilities, update entitlements
 - C++ standard: **gnu17/gnu++17** (not LLVM default)
 - `NSAllowsArbitraryLoads: true` set in Info.plist for network access
-- No lint/typecheck tools configured — build the project with `xcodebuild` to verify changes
-- `TruchiEmu/Library/` is empty and excluded from build — do not add files there
+- No lint/typecheck tools configured. Build the project with `xcodebuild` to verify changes
+- `TruchiEmu/Library/` is empty and excluded from build. Do not add files there
 
 ## When Adding Source Files
 
