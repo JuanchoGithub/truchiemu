@@ -283,6 +283,9 @@ case .moveList:
                 syncWithStorage()
             }
         }
+        .onReceive(NotificationCenter.default.publisher(for: .openAppSettings)) { _ in
+            syncWithStorage()
+        }
         .onChange(of: selectedPage) { _, newValue in
             updateStorage()
         }
