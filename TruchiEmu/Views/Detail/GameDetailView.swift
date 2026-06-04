@@ -339,7 +339,7 @@ struct GameDetailView: View {
     }
 
     func loadSlotInfo() {
-        let gameName = currentROM.displayName
+        let gameName = "\(currentROM.displayName)__\(currentROM.id.uuidString.prefix(8))"
         let systemID = currentROM.systemID ?? ""
         slotInfoList = saveStateManager.allSlotInfo(gameName: gameName, systemID: systemID)
         progressiveSlots = saveStateManager.allProgressiveSlots(gameName: gameName, systemID: systemID)

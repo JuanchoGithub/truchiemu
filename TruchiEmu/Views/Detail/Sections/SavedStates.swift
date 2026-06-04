@@ -101,8 +101,19 @@ private struct ProgressiveSlotStackView: View {
         progressives.sorted { ($0.progressiveVersion ?? 0) < ($1.progressiveVersion ?? 0) }
     }
 
-    private var newestProgressive: SlotInfo {
-        progressives.max(by: { ($0.modificationDate ?? .distantPast) < ($1.modificationDate ?? .distantPast) }) ?? progressives[0]
+    private var stackedThumbnailView: some View {
+        let displayCount = min(sortedProgressives.count, 4)
+        let visible = Array(sortedProgressives.suffix(displayCount))
+        let offsetStep: CGFloat = 5
+
+        return ZStack(alignment: .topLeading) {
+            ForEach(Array(visible.enumerated()), id: \.offset) { index, prog in
+                if let v = prog.progressiveVersion {
+                    progressiveThumbnailView(for: prog, version: v, isLarge: true)
+                        .offset(x: CGFloat(index) * offsetStep, y: CGFloat(index) * (offsetStep * 0.75))
+                }
+            }
+        }
     }
 
     var body: some View {
@@ -130,8 +141,7 @@ private struct ProgressiveSlotStackView: View {
                     }
                 }
             } else {
-                let v = newestProgressive.progressiveVersion ?? 1
-                progressiveThumbnailView(for: newestProgressive, version: v, isLarge: true)
+                stackedThumbnailView
             }
         }
         .padding(6)
@@ -183,7 +193,7 @@ private struct ProgressiveSlotStackView: View {
 
     @ViewBuilder
     private func progressiveThumbnailView(for info: SlotInfo, version: Int, isLarge: Bool) -> some View {
-        let thumb = saveStateManager.loadProgressiveThumbnail(gameName: rom.displayName, systemID: rom.systemID ?? "", slot: slot.id, version: version)
+        let thumb = saveStateManager.loadProgressiveThumbnail(gameName: "\(rom.displayName)__\(rom.id.uuidString.prefix(8))", systemID: rom.systemID ?? "", slot: slot.id, version: version)
         ZStack {
             if let thumb = thumb {
                 Image(nsImage: thumb)

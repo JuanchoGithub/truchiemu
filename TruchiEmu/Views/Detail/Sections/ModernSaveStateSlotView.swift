@@ -130,7 +130,7 @@ Text(slot.displayName)
         .task {
             if slot.exists {
                 thumbnail = saveStateManager.loadThumbnail(
-                    gameName: rom.displayName,
+                    gameName: "\(rom.displayName)__\(rom.id.uuidString.prefix(8))",
                     systemID: rom.systemID ?? "",
                     slot: slot.id
                 )
