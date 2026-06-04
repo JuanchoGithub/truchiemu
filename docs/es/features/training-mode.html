@@ -8,20 +8,22 @@ title: Modo de Práctica - Documentación de TruchiEmu
     <h1>Modo de Práctica</h1>
     
     <div class="feature-overview">
-        <p class="lead">El Modo de Práctica de TruchiEmu proporciona herramientas avanzadas de entrenamiento para juegos de lucha, incluyendo regeneración de salud, medidor infinito, teclas rápidas para guardar/cargar estados y visualización detallada de entrada. Perfecciona tus combos y estrategias sin interrupciones.</p>
+        <p class="lead">El Modo de Práctica de TruchiEmu proporciona herramientas de automatización de P2 para juegos de lucha, permitiéndote controlar el dummy con postura configurable, guardia, técnica de despertar, acciones de reversal, programación de secuencias y grabación de entradas.</p>
     </div>
 
     <section id="service-explanation">
         <h2>Descripción General</h2>
-        <p>El Modo de Práctica está diseñado para ayudar a los jugadores a mejorar su técnica en juegos de lucha. Proporciona un conjunto de herramientas que eliminan las limitaciones del juego normal, permitiendo practicar combos, movimientos especiales y estrategias sin restricciones. Las configuraciones se guardan en perfiles por juego, por lo que puedes tener configuraciones de práctica diferentes para cada título.</p>
-        
+        <p>El sistema de Modo de Práctica añade una superposición en pantalla a los juegos de lucha con herramientas diseñadas para la práctica y experimentación. Funciona inyectando entradas automáticamente para el jugador 2, permitiéndote configurar el comportamiento del dummy para practicar escenarios específicos. El sistema se integra con la superposición de Lista de Movimientos para seleccionar movimientos de personajes y asignarlos a secuencias de entrenamiento.</p>
+
         <h3>Características Principales</h3>
         <ul class="feature-list">
-            <li><strong>Regeneración de Salud:</strong> Restaura automáticamente la salud de los personajes cuando alcanza un umbral configurable. Puedes elegir entre regeneración instantánea o gradual, y definir el porcentaje de salud en el que se activa.</li>
-            <li><strong>Medidor Infinito:</strong> Mantiene los medidores especiales (súper, EX, energía) siempre llenos o los congela en un nivel específico, permitiendo ejecutar movimientos especiales sin preocuparse por el consumo de recursos.</li>
-            <li><strong>Teclas Rápidas de Guardado:</strong> Asigna combinaciones de teclas para guardar y cargar estados de práctica instantáneamente. Perfecto para practicar secciones específicas de un combate sin tener que repetir toda la pelea.</li>
-            <li><strong>Visualización de Entrada:</strong> Muestra en pantalla las entradas del jugador y del oponente en tiempo real, incluyendo direcciones, botones y temporización. Ideal para analizar y corregir la ejecución de combos.</li>
-            <li><strong>Perfiles por Juego:</strong> Cada juego puede tener su propio perfil de práctica con todas las configuraciones personalizadas. Los perfiles se guardan automáticamente y se restauran al iniciar el juego.</li>
+            <li><strong>Control de Dummy:</strong> Configura el modo de control de P2 (espera, humano, guardia con postura, secuencia FMD), postura (parado, agachado, salto), guardia (sin bloqueo, bloqueo total, bloqueo aleatorio, bloqueo al primer golpe), técnica de despertar (ninguna, recuperación rápida, rodada hacia atrás) y acciones de reversal</li>
+            <li><strong>Programación de Secuencias:</strong> Construye una secuencia de cartas de datos de frames para que P2 las ejecute. Elige condiciones de activación (bucle continuo, al bloquear, al golpear), ajusta perfiles de frames (1–5 frames de tolerancia) y activa la auto-inversión de dirección</li>
+            <li><strong>Grabación de Entradas (Tape Deck):</strong> Graba las entradas de P1 en una de 4 ranuras y reprodúcelas como P2. Incluye cuenta atrás antes de grabar y gestión completa de ranuras</li>
+            <li><strong>Visualización de Entrada:</strong> Visualización en tiempo real de las entradas de P1 y P2 renderizadas como tokens de notación de movimientos con seguimiento de índice de frame</li>
+            <li><strong>Monitor FMD:</strong> Seguimiento en vivo de las secuencias de datos de frames activas, mostrando nombre del movimiento, progreso de frames y estado del disparador</li>
+            <li><strong>Posiciones de Reinicio:</strong> Reinicia P2 al inicio de la ronda, esquina izquierda, esquina derecha o un punto de guardado personalizado con soporte de teclas rápidas</li>
+            <li><strong>Integración de Lista de Movimientos:</strong> Navega por los personajes disponibles y sus movimientos directamente desde la superposición de entrenamiento, con enlace directo a la superposición de Lista de Movimientos</li>
         </ul>
     </section>
 
@@ -36,62 +38,73 @@ title: Modo de Práctica - Documentación de TruchiEmu
             </li>
             <li>
                 <strong>Abrir el Panel de Práctica</strong>
-                <p>Presiona <code>F2</code> o ve a <code>Emulación → Modo de Práctica</code> para abrir el panel de control de herramientas de entrenamiento.</p>
+                <p>Desde la barra de herramientas del juego, haz clic en el icono de Modo de Práctica o presiona la tecla rápida configurada para abrir el panel.</p>
             </li>
             <li>
-                <strong>Configurar Opciones</strong>
-                <p>Activa las funciones que desees: regeneración de salud, medidor infinito o visualización de entrada. Cada opción se puede ajustar de forma independiente.</p>
-            </li>
-        </ol>
-
-        <h3>Usar Visualización de Entrada</h3>
-        <ol class="setup-steps">
-            <li>
-                <strong>Activar la Visualización</strong>
-                <p>Marca la casilla <code>Mostrar Entrada</code> en el panel de práctica. Aparecerá una superposición en la esquina inferior de la pantalla mostrando las entradas actuales.</p>
+                <strong>Activar el Entrenamiento</strong>
+                <p>Haz clic en el botón <em>Activar Entrenamiento</em> en la parte superior del panel. El modo de práctica unirá automáticamente a P2 al juego.</p>
             </li>
             <li>
-                <strong>Interpretar la Visualización</strong>
-                <p>La visualización muestra las direcciones del joystick o teclas direccionales en un diagrama de flechas, y los botones presionados como iconos. El orden temporal se muestra de izquierda a derecha.</p>
-            </li>
-            <li>
-                <strong>Ajustar Posición</strong>
-                <p>Puedes arrastrar la visualización a cualquier posición de la pantalla o ajustar su tamaño desde el panel de configuración.</p>
+                <strong>Configurar el Comportamiento del Dummy</strong>
+                <p>Usa la pestaña Dummy para configurar el modo de control, postura, guardia, técnica de despertar y acción de reversal de P2. Los cambios se aplican inmediatamente.</p>
             </li>
         </ol>
 
-        <h3>Gestionar Perfiles</h3>
+        <h3>Programar Secuencias</h3>
         <ol class="setup-steps">
             <li>
-                <strong>Guardar Perfil</strong>
-                <p>En el panel de práctica, haz clic en <code>Guardar Perfil</code> después de ajustar tus opciones. El perfil se almacena vinculado al juego actual.</p>
+                <strong>Abrir la Pestaña de Secuencias</strong>
+                <p>Navega a la pestaña de Secuencias en el panel de práctica.</p>
             </li>
             <li>
-                <strong>Cargar Perfil</strong>
-                <p>Los perfiles se cargan automáticamente al iniciar un juego. También puedes cambiar entre perfiles manualmente desde el panel.</p>
+                <strong>Añadir Cartas</strong>
+                <p>Haz clic en el botón <em>+</em> para añadir movimientos FMD (desde la lista de movimientos), cartas de retardo (pausa por un número de frames) o bloques de cinta (reproducir una entrada grabada).</p>
             </li>
             <li>
-                <strong>Restablecer Valores</strong>
-                <p>Usa <code>Restablecer Perfil</code> para volver a la configuración predeterminada del juego.</p>
+                <strong>Configurar la Condición de Activación</strong>
+                <p>Elige cuándo se reproduce la secuencia: bucle continuo, al bloquear o al golpear.</p>
+            </li>
+            <li>
+                <strong>Ajustar el Perfil de Frames</strong>
+                <p>Configura la tolerancia de frames (1 = estricto, 5 = muy flexible) para controlar la precisión con la que P2 ejecuta la secuencia.</p>
+            </li>
+        </ol>
+
+        <h3>Grabar Entradas</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Seleccionar una Ranura de Cinta</strong>
+                <p>En la pestaña de Grabación, elige una de las 4 ranuras para grabar.</p>
+            </li>
+            <li>
+                <strong>Iniciar Grabación</strong>
+                <p>Presiona el botón de grabar. Aparecerá una cuenta atrás de 3 segundos, luego comenzará la grabación.</p>
+            </li>
+            <li>
+                <strong>Reproducir</strong>
+                <p>Asigna la cinta grabada a un bloque de cinta en la pestaña de Secuencias, o activa la reproducción mediante tecla rápida. P2 replicará tus entradas grabadas.</p>
             </li>
         </ol>
     </section>
 
     <section id="references">
         <h2>Servicios Relacionados</h2>
+        
         <div class="related-services">
-            <a href="{{ '/es/features/save-states.html' | relative_url }}" class="related-service">
-                <h3>Estados de Guardado</h3>
-                <p>Guarda y carga tu progreso en cualquier momento</p>
-            </a>
-            <a href="{{ '/es/features/move-lists.html' | relative_url }}" class="related-service">
-                <h3>Superposición de Movimientos</h3>
-                <p>Consulta la notación de movimientos en pantalla</p>
-            </a>
-            <a href="{{ '/es/features/controllers.html' | relative_url }}" class="related-service">
-                <h3>Controles</h3>
-                <p>Configuración avanzada de entrada y mapeo</p>
-            </a>
+            <div class="service-card">
+                <h3><a href="{{ '/es/features/move-lists.html' | relative_url }}">Superposición de Movimientos</a></h3>
+                <p>Los datos de movimientos de personajes alimentan directamente el modo de práctica para programación de secuencias y acciones de reversal.</p>
+            </div>
+            
+            <div class="service-card">
+                <h3><a href="{{ '/es/features/save-states.html' | relative_url }}">Estados de Guardado</a></h3>
+                <p>Las posiciones de reinicio personalizadas usan datos de estados guardados para restaurar P1 y P2 a escenarios de práctica específicos.</p>
+            </div>
+            
+            <div class="service-card">
+                <h3><a href="{{ '/es/features/controllers.html' | relative_url }}">Controles</a></h3>
+                <p>Configura teclas rápidas para los controles del modo de práctica como reinicio, grabación y reproducción.</p>
+            </div>
         </div>
     </section>
 </div>

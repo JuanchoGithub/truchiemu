@@ -5,88 +5,106 @@ title: Modo de Treinamento - Documentação do TruchiEmu
 ---
 
 <div class="feature-docs">
-<h1>Modo de Treinamento</h1>
+    <h1>Modo de Treinamento</h1>
+    
+    <div class="feature-overview">
+        <p class="lead">O Modo de Treinamento do TruchiEmu fornece ferramentas de automação de P2 para jogos de luta, permitindo controlar o dummy com postura configurável, guarda, técnica de acordar, ações de reversal, programação de sequências e gravação de entradas.</p>
+    </div>
 
-<div class="feature-overview">
-<p class="lead">O Modo de Treinamento do TruchiEmu oferece ferramentas especializadas para jogos de luta, incluindo regeneração de saúde, medidor infinito, teclas rápidas de save state e exibição de entrada em tempo real.</p>
-</div>
+    <section id="service-explanation">
+        <h2>Visão Geral do Serviço</h2>
+        <p>O sistema de Modo de Treinamento adiciona uma sobreposição na tela a jogos de luta com ferramentas projetadas para prática e experimentação. Funciona injetando entradas automaticamente para o jogador 2, permitindo configurar o comportamento do dummy para praticar cenários específicos. O sistema se integra com a sobreposição de Lista de Movimentos para selecionar movimentos de personagens e atribuí-los a sequências de treinamento.</p>
 
-<section id="service-explanation">
-<h2>Visão Geral do Serviço</h2>
-<p>O Modo de Treinamento foi projetado para jogadores que desejam aprimorar suas habilidades em jogos de luta. Ele oferece um conjunto de ferramentas que facilitam a prática de combos, defesa e movimentos especiais. Com recursos como regeneração automática de saúde e medidor infinito, você pode se concentrar no treinamento sem interrupções.</p>
+        <h3>Recursos Principais</h3>
+        <ul class="feature-list">
+            <li><strong>Controle de Dummy:</strong> Configure o modo de controle do P2 (espera, humano, guarda com postura, sequência FMD), postura (em pé, agachado, pulo), guarda (sem bloqueio, bloqueio total, bloqueio aleatório, bloqueio no primeiro golpe), técnica de acordar (nenhuma, recuperação rápida, rolamento para trás) e ações de reversal</li>
+            <li><strong>Programação de Sequências:</strong> Construa uma sequência de cartas de dados de frames para P2 executar. Escolha condições de ativação (loop contínuo, ao bloquear, ao acertar), ajuste perfis de frames (1–5 frames de tolerância) e ative a auto-inversão de direção</li>
+            <li><strong>Gravação de Entradas (Tape Deck):</strong> Grave as entradas do P1 em um de 4 slots e reproduza como P2. Inclui contagem regressiva antes de gravar e gerenciamento completo de slots</li>
+            <li><strong>Exibição de Entrada:</strong> Visualização em tempo real das entradas de P1 e P2 renderizadas como tokens de notação de movimentos com rastreamento de índice de frame</li>
+            <li><strong>Monitor FMD:</strong> Acompanhamento ao vivo das sequências de dados de frames ativas mostrando nome do movimento, progresso de frames e estado do gatilho</li>
+            <li><strong>Posições de Reinício:</strong> Reinicie P2 para o início da rodada, canto esquerdo, canto direito ou um ponto de salvamento personalizado com suporte a teclas rápidas</li>
+            <li><strong>Integração de Lista de Movimentos:</strong> Navegue pelos personagens disponíveis e seus movimentos diretamente da sobreposição de treinamento, com link direto para a sobreposição de Lista de Movimentos</li>
+        </ul>
+    </section>
 
-<h3>Recursos Principais</h3>
-<ul class="feature-list">
-<li><strong>Regeneração de Saúde:</strong> A saúde dos personagens é restaurada automaticamente após sofrer dano, permitindo prática contínua sem reiniciar a partida.</li>
-<li><strong>Medidor Infinito:</strong> Mantém o medidor de energia especial sempre cheio, possibilitando a execução repetida de movimentos especiais e combos.</li>
-<li><strong>Teclas Rápidas de Save State:</strong> Atalhos de teclado para salvar e carregar estados instantaneamente, perfeitos para praticar situações específicas.</li>
-<li><strong>Exibição de Entrada:</strong> Mostra na tela os comandos exatos que estão sendo executados, incluindo direcionais e botões, facilitando o aprendizado de combos.</li>
-<li><strong>Perfis por Jogo:</strong> Configurações de treinamento são salvas individualmente para cada jogo, preservando suas preferências de prática.</li>
-</ul>
-</section>
+    <section id="step-by-step-guide">
+        <h2>Como Usar</h2>
+        
+        <h3>Ativar o Modo de Treinamento</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Iniciar um Jogo de Luta</strong>
+                <p>Carregue qualquer jogo de luta compatível através da biblioteca do TruchiEmu.</p>
+            </li>
+            <li>
+                <strong>Abrir o Painel de Treinamento</strong>
+                <p>Na barra de ferramentas do jogo, clique no ícone do Modo de Treinamento ou pressione a tecla rápida configurada para abrir o painel.</p>
+            </li>
+            <li>
+                <strong>Ativar o Treinamento</strong>
+                <p>Clique no botão <em>Ativar Treinamento</em> no topo do painel. O modo de treinamento automaticamente juntará o P2 ao jogo.</p>
+            </li>
+            <li>
+                <strong>Configurar o Comportamento do Dummy</strong>
+                <p>Use a aba Dummy para configurar o modo de controle, postura, guarda, técnica de acordar e ação de reversal do P2. As alterações entram em vigor imediatamente.</p>
+            </li>
+        </ol>
 
-<section id="step-by-step-guide">
-<h2>Como Usar</h2>
+        <h3>Programar Sequências</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Abrir a Aba de Sequências</strong>
+                <p>Navegue até a aba de Sequências no painel de treinamento.</p>
+            </li>
+            <li>
+                <strong>Adicionar Cartas</strong>
+                <p>Clique no botão <em>+</em> para adicionar movimentos FMD (da lista de movimentos), cartas de atraso (pausa por um número de frames) ou blocos de fita (reproduzir uma entrada gravada).</p>
+            </li>
+            <li>
+                <strong>Configurar a Condição de Ativação</strong>
+                <p>Escolha quando a sequência é reproduzida: loop contínuo, ao bloquear ou ao acertar.</p>
+            </li>
+            <li>
+                <strong>Ajustar o Perfil de Frames</strong>
+                <p>Defina a tolerância de frames (1 = estrito, 5 = muito flexível) para controlar a precisão com que P2 executa a sequência.</p>
+            </li>
+        </ol>
 
-<h3>Ativar o Modo de Treinamento</h3>
-<ol class="setup-steps">
-<li>
-<strong>Iniciar um Jogo de Luta</strong>
-<p>Carregue qualquer jogo de luta compatível através da biblioteca do TruchiEmu.</p>
-</li>
-<li>
-<strong>Abrir o Menu de Treinamento</strong>
-<p>Pressione <code>F2</code> ou selecione <code>Ferramentas → Modo de Treinamento</code> na barra de menu durante o jogo.</p>
-</li>
-<li>
-<strong>Ativar Recursos</strong>
-<p>Marque as opções desejadas: regeneração de saúde, medidor infinito e exibição de entrada. As alterações entram em vigor imediatamente.</p>
-</li>
-</ol>
+        <h3>Gravar Entradas</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Selecionar um Slot de Fita</strong>
+                <p>Na aba de Gravação, escolha um dos 4 slots para gravar.</p>
+            </li>
+            <li>
+                <strong>Iniciar Gravação</strong>
+                <p>Pressione o botão de gravar. Uma contagem regressiva de 3 segundos aparecerá, então a gravação começa.</p>
+            </li>
+            <li>
+                <strong>Reproduzir</strong>
+                <p>Atribua a fita gravada a um bloco de fita na aba de Sequências, ou ative a reprodução via tecla rápida. P2 replicará suas entradas gravadas.</p>
+            </li>
+        </ol>
+    </section>
 
-<h3>Usando Save States no Treinamento</h3>
-<ol class="setup-steps">
-<li>
-<strong>Salvar Estado</strong>
-<p>Posicione os personagens em uma situação específica e pressione <code>Shift+F5</code> para salvar o estado atual.</p>
-</li>
-<li>
-<strong>Carregar Estado</strong>
-<p>Pressione <code>F5</code> para carregar o estado salvo instantaneamente, permitindo repetir a mesma situação quantas vezes desejar.</p>
-</li>
-</ol>
-
-<h3>Configurar Perfil por Jogo</h3>
-<ol class="setup-steps">
-<li>
-<strong>Acessar Preferências</strong>
-<p>Vá para <code>Configurações → Jogo → Modo de Treinamento</code> e selecione o jogo desejado na lista.</p>
-</li>
-<li>
-<strong>Personalizar Opções</strong>
-<p>Defina quais recursos de treinamento devem ser ativados por padrão ao iniciar cada jogo.</p>
-</li>
-</ol>
-</section>
-
-<section id="references">
-<h2>Serviços Relacionados</h2>
-
-<div class="related-services">
-<div class="service-card">
-<h3><a href="{{ '/pt/features/save-states.html' | relative_url }}">Estados de Salvamento</a></h3>
-<p>Save states são essenciais para o treinamento, permitindo salvar e carregar posições específicas instantaneamente.</p>
-</div>
-
-<div class="service-card">
-<h3><a href="{{ '/pt/features/move-lists.html' | relative_url }}">Sobreposição de Movimentos</a></h3>
-<p>Consulte a notação visual de movimentos enquanto treina para aprender combos e ataques especiais.</p>
-</div>
-
-<div class="service-card">
-<h3><a href="{{ '/pt/features/controllers.html' | relative_url }}">Suporte a Controles</a></h3>
-<p>Configure seu controle ou teclado para uma experiência de treinamento otimizada.</p>
-</div>
-</div>
-</section>
+    <section id="references">
+        <h2>Serviços Relacionados</h2>
+        
+        <div class="related-services">
+            <div class="service-card">
+                <h3><a href="{{ '/pt/features/move-lists.html' | relative_url }}">Sobreposição de Movimentos</a></h3>
+                <p>Os dados de movimentos dos personagens alimentam diretamente o modo de treinamento para programação de sequências e ações de reversal.</p>
+            </div>
+            
+            <div class="service-card">
+                <h3><a href="{{ '/pt/features/save-states.html' | relative_url }}">Estados de Salvamento</a></h3>
+                <p>As posições de reinício personalizadas usam dados de save states para restaurar P1 e P2 a cenários de treinamento específicos.</p>
+            </div>
+            
+            <div class="service-card">
+                <h3><a href="{{ '/pt/features/controllers.html' | relative_url }}">Suporte a Controles</a></h3>
+                <p>Configure teclas rápidas para os controles do modo de treinamento como reinício, gravação e reprodução.</p>
+            </div>
+        </div>
+    </section>
 </div>
