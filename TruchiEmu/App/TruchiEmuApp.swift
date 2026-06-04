@@ -223,14 +223,15 @@ LoggerService.debug(category: category, message)
                 }
             }
 
-            // Add Settings menu item to app menu using .appSettings placement
-            CommandGroup(after: .appTermination) {
+            CommandGroup(replacing: .appSettings) {
                 Button(loc.localized("app.settings")) {
                     AppSettings.set("settings_selectedTab", value: "general")
                     NotificationCenter.default.post(name: .openAppSettings, object: nil)
                 }
                 .keyboardShortcut(",", modifiers: .command)
+            }
 
+            CommandGroup(before: .appTermination) {
                 Divider()
 
                 Button(loc.localized("update.checkForUpdates")) {
