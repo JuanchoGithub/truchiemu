@@ -81,9 +81,13 @@ typedef void (*FramePollCallbackType)(void);
 
 /* Direct Memory Access for Cheats */
 + (nullable void *)getMemoryData:(unsigned)type
-size:(size_t *_Nullable)
-size; // type: RETRO_MEMORY_SYSTEM_RAM or
-// RETRO_MEMORY_SAVE_RAM
+                        size:(size_t *_Nullable)
+                          size; // type: RETRO_MEMORY_SYSTEM_RAM or
+                                // RETRO_MEMORY_SAVE_RAM
+
++ (nullable void *)getMemoryDataUnsafe:(unsigned)type
+                        size:(size_t *_Nullable)
+                          size; // Lock-free variant for use inside retro_run callbacks
 
 /* Save RAM Access - returns SAVE_RAM data as NSData for saving to disk */
 + (nullable NSData *)getSaveRAMData;

@@ -1044,6 +1044,10 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         }
         runner?.stop()
 
+        if RetroAchievementsService.shared.isEnabled {
+            RetroAchievementsService.shared.refreshGameCacheAfterGameStop()
+        }
+
         if let rom = trackedROM, accumulatedPlaytime > 0 {
             library?.recordPlaySession(rom, duration: accumulatedPlaytime)
         }

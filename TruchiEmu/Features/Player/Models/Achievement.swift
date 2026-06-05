@@ -164,8 +164,13 @@ struct RAAchievementResponse: Codable {
     var BadgeName: String
     var DateAwarded: String?
     var DateAwardedHardcore: String?
+    var DateEarned: String?
+    var DateEarnedHardcore: String?
     var Category: String?
-    var MemAddr: String?     // Trigger definition for rcheevos
+    var MemAddr: String?
+
+    var unlockedDate: String? { DateEarned ?? DateAwarded }
+    var unlockedDateHardcore: String? { DateEarnedHardcore ?? DateAwardedHardcore }
 }
 
 // Response from the RA API for hash resolution.

@@ -13,6 +13,13 @@ final class CoreClientDelegate: NSObject, CoreClientProtocol {
     var onCoreOptionsV1: (([[String: Any]]) -> Void)?
     var onCoreOptionsV2: (([[String: Any]], [[String: Any]]) -> Void)?
 
+    // rcheevos events forwarded from the XPC service. Wired by XPCBridgeAdapter.
+    var onRcheevosAchievementTriggered: ((Int) -> Void)?
+    var onRcheevosAchievementProgress: ((Int, Int) -> Void)?
+    var onRcheevosChallengeStarted: ((Int) -> Void)?
+    var onRcheevosChallengeCancelled: ((Int) -> Void)?
+    var onRcheevosRichPresence: ((String) -> Void)?
+
     private override init() { super.init() }
 
     func videoFrameAvailable(width: Int, height: Int, pitch: Int, format: Int) {
@@ -45,5 +52,25 @@ final class CoreClientDelegate: NSObject, CoreClientProtocol {
 
     func rotationChanged(rotation: Int) {
         onRotationChanged?(rotation)
+    }
+
+    func rcheevosAchievementTriggered(id: Int) {
+        onRcheevosAchievementTriggered?(id)
+    }
+
+    func rcheevosAchievementProgress(id: Int, value: Int) {
+        onRcheevosAchievementProgress?(id, value)
+    }
+
+    func rcheevosChallengeStarted(id: Int) {
+        onRcheevosChallengeStarted?(id)
+    }
+
+    func rcheevosChallengeCancelled(id: Int) {
+        onRcheevosChallengeCancelled?(id)
+    }
+
+    func rcheevosRichPresenceUpdate(message: String) {
+        onRcheevosRichPresence?(message)
     }
 }

@@ -489,6 +489,15 @@ g_instance->_retro_reset();
     return data;
 }
 
++ (void *)getMemoryDataUnsafe:(unsigned)type size:(size_t *)size {
+    if (!g_instance || !g_instance->_retro_get_memory_data) return NULL;
+    void *data = g_instance->_retro_get_memory_data(type);
+    if (size && g_instance->_retro_get_memory_size) {
+        *size = g_instance->_retro_get_memory_size(type);
+    }
+    return data;
+}
+
 + (void)writeMemoryByte:(uint32_t)address value:(uint8_t)value {
     if (!g_instance) return;
     [g_instance->_coreLock lock];

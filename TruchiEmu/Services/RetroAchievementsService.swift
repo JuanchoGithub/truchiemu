@@ -990,20 +990,20 @@ class RetroAchievementsService: ObservableObject {
         var achievements: [Achievement] = []
         if let achDict = response.Achievements {
             for (_, achResponse) in achDict {
-                let achievement = Achievement(
-                    id: achResponse.ID,
-                    title: achResponse.Title,
-                    description: achResponse.Description,
-                    points: achResponse.Points,
-                    badgeName: achResponse.BadgeName,
-                    isUnlocked: achResponse.DateAwarded != nil,
-                    unlockDate: achResponse.DateAwarded.flatMap { date in
-                        DateFormatter.raDateFormatter.date(from: date)
-                    },
-                    isHardcore: achResponse.DateAwardedHardcore != nil,
-                    category: AchievementCategory(rawValue: achResponse.Category ?? "core") ?? .core,
-                    trigger: achResponse.MemAddr
-                )
+            let achievement = Achievement(
+                id: achResponse.ID,
+                title: achResponse.Title,
+                description: achResponse.Description,
+                points: achResponse.Points,
+                badgeName: achResponse.BadgeName,
+                isUnlocked: achResponse.unlockedDate != nil,
+                unlockDate: achResponse.unlockedDate.flatMap { date in
+                    DateFormatter.raDateFormatter.date(from: date)
+                },
+                isHardcore: achResponse.unlockedDateHardcore != nil,
+                category: AchievementCategory(rawValue: achResponse.Category ?? "core") ?? .core,
+                trigger: achResponse.MemAddr
+            )
                 achievements.append(achievement)
             }
             RABadgeCacheService.shared.prefetchBadges(for: achievements)
@@ -1075,24 +1075,27 @@ class RetroAchievementsService: ObservableObject {
         guard let achDict = response?.Achievements, !achDict.isEmpty else { return nil }
 
         let patchTriggers = loadPatchDataFromDisk(gameID: gameID)
+        let patchHasData = (patchTriggers?.achievements.isEmpty == false)
 
         return achDict.values.map { ach in
             let patchDef = patchTriggers?.achievements.first(where: { $0.id == ach.ID })?.definition
-            let trigger: String?
-            if let patchDef = patchDef, !patchDef.isEmpty {
-                trigger = patchDef
-            } else {
-                trigger = ach.MemAddr
-            }
+            let hasPatch = (patchDef?.isEmpty == false)
+            let trigger: String? = hasPatch ? patchDef : ach.MemAddr
+            let source = hasPatch ? "patch" : "memaddr"
+            let unlocked = (ach.unlockedDate != nil)
+
+            let trigPreview = (trigger ?? "<nil>").prefix(80)
+            LoggerService.debug(category: "RetroAchievements", "RA ach id=\(ach.ID) source=\(source) unlocked=\(unlocked) trigger=\(trigPreview)")
+
             return Achievement(
                 id: ach.ID,
                 title: ach.Title,
                 description: ach.Description,
                 points: ach.Points,
                 badgeName: ach.BadgeName,
-                isUnlocked: ach.DateAwarded != nil,
-                unlockDate: ach.DateAwarded.flatMap { DateFormatter.raDateFormatter.date(from: $0) },
-                isHardcore: ach.DateAwardedHardcore != nil,
+                isUnlocked: unlocked,
+                unlockDate: ach.unlockedDate.flatMap { DateFormatter.raDateFormatter.date(from: $0) },
+                isHardcore: ach.unlockedDateHardcore != nil,
                 category: AchievementCategory(rawValue: ach.Category ?? "core") ?? .core,
                 trigger: trigger
             )
@@ -1140,8 +1143,10 @@ class RetroAchievementsService: ObservableObject {
                 existingAch.points = ach.points
                 existingAch.badgeName = ach.badgeName
                 existingAch.category = ach.category.rawValue
-                existingAch.dateAwarded = ach.unlockDate
-                existingAch.dateAwardedHardcore = ach.isHardcore ? ach.unlockDate : nil
+                if ach.unlockDate != nil {
+                    existingAch.dateAwarded = ach.unlockDate
+                    existingAch.dateAwardedHardcore = ach.isHardcore ? ach.unlockDate : nil
+                }
                 existingAch.username = username
                 existingAch.trigger = ach.trigger
                 existingAch.cachedAt = Date()
@@ -1299,7 +1304,11 @@ class RetroAchievementsService: ObservableObject {
         for (key, value) in achievements {
             guard var ach = value as? [String: Any], ach["ID"] as? Int == achievementId else { continue }
             ach["DateAwarded"] = now
-            if hardcore { ach["DateAwardedHardcore"] = now }
+            ach["DateEarned"] = now
+            if hardcore {
+                ach["DateAwardedHardcore"] = now
+                ach["DateEarnedHardcore"] = now
+            }
             achievements[key] = ach
             break
         }
@@ -1307,6 +1316,33 @@ class RetroAchievementsService: ObservableObject {
         json["Achievements"] = achievements
         guard let updatedData = try? JSONSerialization.data(withJSONObject: json, options: [.sortedKeys]) else { return }
         try? updatedData.write(to: fileURL)
+
+        updateSwiftDataCache(achievementId: achievementId, hardcore: hardcore)
+    }
+
+    private func updateSwiftDataCache(achievementId: Int, hardcore: Bool) {
+        guard let context = modelContext else { return }
+        let predicate = #Predicate<RAAchievementCacheEntry> { $0.achievementId == achievementId }
+        let descriptor = FetchDescriptor<RAAchievementCacheEntry>(predicate: predicate)
+        guard let entry = try? context.fetch(descriptor).first else { return }
+        entry.dateAwarded = Date()
+        if hardcore { entry.dateAwardedHardcore = Date() }
+        try? context.save()
+    }
+
+    @MainActor
+    func refreshGameCacheAfterGameStop() {
+        guard let gameID = currentGame?.id,
+              let username = username,
+              !webApiKey.isEmpty else { return }
+        Task {
+            do {
+                _ = try await fetchGameInfo(gameID: gameID, username: username, isUserInitiated: true)
+                LoggerService.info(category: "RetroAchievements", "Post-game cache refresh completed for game \(gameID)")
+            } catch {
+                LoggerService.debug(category: "RetroAchievements", "Post-game cache refresh failed: \(error.localizedDescription)")
+            }
+        }
     }
 
     // MARK: - Leaderboards
@@ -1559,6 +1595,10 @@ class RetroAchievementsService: ObservableObject {
         return try? JSONDecoder().decode(PatchData.self, from: data)
     }
 
+    func loadRichPresenceScript(gameID: Int) -> String? {
+        return loadPatchDataFromDisk(gameID: gameID)?.richPresenceScript
+    }
+
     private func savePatchDataToDisk(_ patchData: PatchData, gameID: Int) {
         let fileURL = patchDataFolder.appendingPathComponent("\(gameID).json")
         guard let data = try? JSONEncoder().encode(patchData) else { return }
@@ -1663,12 +1703,13 @@ class RetroAchievementsService: ObservableObject {
     }
     
     private func requestGameInfo(gameID: String, username: String) async throws -> (response: RAGameResponse?, rawData: Data?) {
-        let url = URL(string: "\(apiBaseURL)/API_GetGameExtended.php")!
+        let url = URL(string: "\(apiBaseURL)/API_GetGameInfoAndUserProgress.php")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
         components.queryItems = [
-            URLQueryItem(name: "i", value: gameID),
+            URLQueryItem(name: "g", value: gameID),
             URLQueryItem(name: "u", value: username),
-            URLQueryItem(name: "y", value: webApiKey)
+            URLQueryItem(name: "y", value: webApiKey),
+            URLQueryItem(name: "a", value: "1")
         ]
         
         let (data, _) = try await URLSession.shared.data(from: components.url!)

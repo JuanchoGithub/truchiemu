@@ -263,10 +263,11 @@ class GameLauncher: ObservableObject {
                     } else {
                         LoggerService.info(category: "GameLauncher", "No patch data available, will use cached MemAddr triggers")
                     }
-                    if let achievements = RetroAchievementsService.shared.loadCachedAchievements(gameID: raGameId, username: username) {
-                        runner.rcheevosAchievements = achievements
-                        let withTriggers = achievements.filter { $0.trigger != nil && !$0.trigger!.isEmpty }
-                        LoggerService.info(category: "GameLauncher", "Loaded \(achievements.count) cached achievements (\(withTriggers.count) with triggers)")
+            if let achievements = RetroAchievementsService.shared.loadCachedAchievements(gameID: raGameId, username: username) {
+                runner.rcheevosAchievements = achievements
+                runner.rcheevosRichPresenceScript = RetroAchievementsService.shared.loadRichPresenceScript(gameID: raGameId)
+                let withTriggers = achievements.filter { $0.trigger != nil && !$0.trigger!.isEmpty }
+                LoggerService.info(category: "GameLauncher", "Loaded \(achievements.count) cached achievements (\(withTriggers.count) with triggers)")
                     } else {
                         LoggerService.info(category: "GameLauncher", "No cached achievements found for gameID=\(raGameId)")
                     }

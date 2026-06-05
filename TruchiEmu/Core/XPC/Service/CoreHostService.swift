@@ -55,9 +55,17 @@ final class CoreHostService: NSObject, NSXPCListenerDelegate {
 class CoreHostImplementation: NSObject, CoreHostProtocol {
 	private var sharedMemory: UnsafeMutablePointer<XPCSharedMemory>?
 	private var videoSurface: IOSurface?
-	weak var clientProxy: CoreClientProtocol?
+    var clientProxy: CoreClientProtocol?
 	private var isRunning = false
 	private var hasStopped = false
+
+    // rcheevos lives here in the XPC service so its peek callback can read
+    // libretro memory through the same `g_instance` that the core uses.
+    private var rcheevosRuntime: RcheevosRuntime?
+    private var rcheevosSystemID: String?
+    private var rcheevosRuntimePtr: UnsafeMutableRawPointer?
+    private var pendingRcheevosTriggers: [RcheevosAchievementTrigger]?
+    private var pendingRichPresenceScript: String?
 
     private static func logMemoryFootprint(label: String) {
         var info = task_basic_info()
@@ -138,6 +146,41 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
             weakProxy?.gameLoaded(romPath: pathStr)
         }
 
+        // Spin up the rcheevos runtime here so its peek callback reads through
+        // the XPC service's `g_instance`. Triggers are loaded by the main app
+        // via `loadRcheevosAchievements` once it has them.
+        rcheevosSystemID = systemID
+        let runtime = RcheevosRuntime(systemID: systemID)
+        let weakProxy2 = clientProxy
+        runtime.onAchievementTriggered = { id in
+            weakProxy2?.rcheevosAchievementTriggered(id: id)
+        }
+        runtime.onAchievementProgress = { id, value in
+            weakProxy2?.rcheevosAchievementProgress(id: id, value: value)
+        }
+        runtime.onChallengeStarted = { id in
+            weakProxy2?.rcheevosChallengeStarted(id: id)
+        }
+        runtime.onChallengeCancelled = { id in
+            weakProxy2?.rcheevosChallengeCancelled(id: id)
+        }
+        runtime.onRichPresence = { message in
+            weakProxy2?.rcheevosRichPresenceUpdate(message: message)
+        }
+        rcheevosRuntime = runtime
+        rcheevosRuntimePtr = Unmanaged.passUnretained(runtime).toOpaque()
+
+        if let pending = pendingRcheevosTriggers {
+            runtime.loadGame(triggers: pending)
+            LoggerService.info(category: "XPC-Service", "Applied \(pending.count) stashed rcheevos triggers")
+            if let script = pendingRichPresenceScript {
+                runtime.activateRichPresence(script: script)
+                LoggerService.info(category: "XPC-Service", "Applied stashed rich presence script")
+            }
+            pendingRcheevosTriggers = nil
+            pendingRichPresenceScript = nil
+        }
+
         var failureMsg: String?
         let videoCallback: (UnsafeRawPointer?, Int32, Int32, Int32, Int32) -> Void = { [weak self] data, w, h, pitch, format in
             self?.handleVideoFrame(data: data, width: Int(w), height: Int(h), pitch: Int(pitch), format: Int(format))
@@ -158,6 +201,7 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
     }
 
     private var hasLoggedVideoFrame = false
+    private var hasLoggedRcheevosFrame = false
 
     private func handleVideoFrame(data: UnsafeRawPointer?, width: Int, height: Int, pitch: Int, format: Int) {
         if let shm = sharedMemory {
@@ -200,11 +244,28 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
             }
         }
         if let shm = sharedMemory { xpc_shm_store_frameReady(shm, 1) }
+
+        // Tick rcheevos once per delivered frame, after the IOSurface is updated.
+        // processFrame fires the event callback synchronously, which forwards to
+        // the main app via the XPC client proxy.
+        if let rt = rcheevosRuntime {
+            if !hasLoggedRcheevosFrame {
+                hasLoggedRcheevosFrame = true
+                LoggerService.info(category: "XPC-Service", "rcheevos runtime present, calling processFrame")
+            }
+            rt.processFrame()
+        } else if !hasLoggedRcheevosFrame {
+            hasLoggedRcheevosFrame = true
+            LoggerService.info(category: "XPC-Service", "rcheevos runtime is NIL in handleVideoFrame")
+        }
     }
 
 	func stop(reply: @escaping () -> Void) {
 		isRunning = false
 		hasStopped = true
+		rcheevosRuntime?.deactivateAllAchievements()
+		rcheevosRuntime = nil
+		rcheevosRuntimePtr = nil
 		LibretroBridge.stop()
 		LibretroBridge.waitForCompletion()
 		LibretroBridge.cleanupInstance()
@@ -510,6 +571,62 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
     func setIOSurfaceForVideo(_ surface: IOSurface?, reply: @escaping () -> Void) {
         videoSurface = surface
         LoggerService.info(category: "XPC-Service", "Received IOSurface: \(surface != nil ? "yes" : "nil")")
+        reply()
+    }
+
+    // MARK: - RetroAchievements (rcheevos)
+
+    func loadRcheevosAchievements(_ triggers: [[String: Any]], richPresenceScript: String?, reply: @escaping ([String: Any]?) -> Void) {
+        let entries: [RcheevosAchievementTrigger] = triggers.compactMap { dict in
+            guard let id = (dict["id"] as? NSNumber)?.uint32Value,
+                  let trigger = dict["trigger"] as? String else { return nil }
+            let title = (dict["title"] as? String) ?? ""
+            let rawUnlocked = dict["isUnlocked"]
+            let isUnlocked: Bool
+            if let b = rawUnlocked as? Bool {
+                isUnlocked = b
+            } else if let n = rawUnlocked as? NSNumber {
+                isUnlocked = n.boolValue
+            } else if let n = rawUnlocked as? Int {
+                isUnlocked = n != 0
+            } else {
+                isUnlocked = false
+                LoggerService.error(category: "XPC-Service", "rcheevos isUnlocked unexpected type: \(type(of: rawUnlocked)) val=\(rawUnlocked ?? "nil")")
+            }
+            return RcheevosAchievementTrigger(id: id, title: title, trigger: trigger, isUnlocked: isUnlocked)
+        }
+
+        let unlockedCount = entries.filter(\.isUnlocked).count
+        LoggerService.info(category: "XPC-Service", "Parsed \(entries.count) rcheevos triggers, \(unlockedCount) unlocked")
+
+        if let runtime = rcheevosRuntime {
+            runtime.loadGame(triggers: entries)
+            if let script = richPresenceScript {
+                runtime.activateRichPresence(script: script)
+            }
+            reply(["ok": true, "count": entries.count])
+        } else {
+            pendingRcheevosTriggers = entries
+            pendingRichPresenceScript = richPresenceScript
+            LoggerService.info(category: "XPC-Service", "Stashed \(entries.count) rcheevos triggers (runtime not ready)")
+            reply(["ok": true, "count": entries.count, "stashed": true])
+        }
+    }
+
+    func resetRcheevosTriggers(reply: @escaping () -> Void) {
+        rcheevosRuntime?.resetTriggers()
+        reply()
+    }
+
+    func deactivateRcheevosAchievement(id: Int, reply: @escaping () -> Void) {
+        rcheevosRuntime?.deactivateAchievement(id: UInt32(id))
+        reply()
+    }
+
+    func deactivateRcheevos(reply: @escaping () -> Void) {
+        rcheevosRuntime?.deactivateAllAchievements()
+        rcheevosRuntime = nil
+        rcheevosRuntimePtr = nil
         reply()
     }
 

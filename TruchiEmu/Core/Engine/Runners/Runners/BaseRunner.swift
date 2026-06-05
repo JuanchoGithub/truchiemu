@@ -316,9 +316,11 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     // Turbo button state tracking
     private var activeTurboButtons: Set<RetroButton> = []
 
-    // rcheevos achievement detection
+    // rcheevos achievement detection — the actual RcheevosRuntime lives in
+    // the XPC service (so its peek callback can read libretro memory). This
+    // runner just feeds triggers in and listens for events back.
     var rcheevosAchievements: [Achievement]?
-    private var rcheevosRuntime: RcheevosRuntime?
+    var rcheevosRichPresenceScript: String?
     private let rcheevosLock = NSLock()
     private var _needsRcheevosReset = false
     
@@ -398,18 +400,19 @@ case "scummvm": runner = ScummVMRunner()
             let romPath = rom.path.path
             let systemID = rom.systemID
 
-            // Set up rcheevos achievement detection
+            // Set up rcheevos achievement detection. The runtime lives in the
+            // XPC service; we just feed triggers in and listen for events.
             if !cachedAchievements.isEmpty {
-                let runtime = RcheevosRuntime()
-                runtime.loadGame(achievements: cachedAchievements)
-        runtime.onAchievementTriggered = { achievementId in
-            Task { @MainActor in
-                let hardcore = AppSettings.getBool("hardcore_mode_enabled", defaultValue: false)
-                await RetroAchievementsService.shared.unlockAchievement(id: achievementId, hardcore: hardcore)
-            }
-        }
-                self.rcheevosRuntime = runtime
-                LoggerService.info(category: "Runner", "rcheevos initialized with \(cachedAchievements.count) achievements")
+                let triggers = cachedAchievements.map { achievement in
+                    RcheevosAchievementTrigger(
+                        id: UInt32(achievement.id),
+                        title: achievement.title,
+                        trigger: achievement.trigger ?? "",
+                        isUnlocked: achievement.isUnlocked
+                    )
+                }
+                XPCBridgeAdapter.shared.loadRcheevosAchievements(triggers, richPresenceScript: self.rcheevosRichPresenceScript)
+                LoggerService.info(category: "Runner", "rcheevos loaded \(cachedAchievements.count) triggers for systemID=\(systemID ?? "default")")
             }
 
             XPCBridgeAdapter.shared.launch(
@@ -425,8 +428,7 @@ case "scummvm": runner = ScummVMRunner()
                 let needsReset = self?._needsRcheevosReset ?? false
                 if needsReset { self?._needsRcheevosReset = false }
                 self?.rcheevosLock.unlock()
-                if needsReset { self?.rcheevosRuntime?.resetTriggers() }
-                self?.rcheevosRuntime?.processFrame()
+                if needsReset { XPCBridgeAdapter.shared.resetRcheevosTriggers() }
                 },
                 onFailure: { [weak self] message in
                     Task { @MainActor in
@@ -436,6 +438,21 @@ case "scummvm": runner = ScummVMRunner()
                     }
                 }
             )
+        }
+
+        // Subscribe to rcheevos events from the XPC service for unlock handling.
+        XPCBridgeAdapter.shared.onRcheevosAchievementTriggered = { achievementId in
+            XPCBridgeAdapter.shared.deactivateRcheevosAchievement(id: achievementId)
+            Task { @MainActor in
+                let hardcore = AppSettings.getBool("hardcore_mode_enabled", defaultValue: false)
+                await RetroAchievementsService.shared.unlockAchievement(id: achievementId, hardcore: hardcore)
+            }
+        }
+        XPCBridgeAdapter.shared.onRcheevosRichPresence = { message in
+            Task { @MainActor in
+                guard let gameID = RetroAchievementsService.shared.currentGame?.id else { return }
+                await RetroAchievementsService.shared.updateRichPresence(gameID: gameID, message: message)
+            }
         }
     }
 
@@ -449,8 +466,12 @@ case "scummvm": runner = ScummVMRunner()
 
         saveSRAMIfAvailable()
 
-        rcheevosRuntime?.deactivateAllAchievements()
-        rcheevosRuntime = nil
+        XPCBridgeAdapter.shared.deactivateRcheevos()
+        XPCBridgeAdapter.shared.onRcheevosAchievementTriggered = nil
+        XPCBridgeAdapter.shared.onRcheevosAchievementProgress = nil
+        XPCBridgeAdapter.shared.onRcheevosChallengeStarted = nil
+        XPCBridgeAdapter.shared.onRcheevosChallengeCancelled = nil
+        XPCBridgeAdapter.shared.onRcheevosRichPresence = nil
 
         XPCBridgeAdapter.shared.stop()
         XPCBridgeAdapter.shared.waitForCompletion()

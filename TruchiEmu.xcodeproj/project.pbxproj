@@ -324,6 +324,7 @@
 		493F9E05A0DC71B0D4A4CA85 /* fightdata_aof3.json in Resources */ = {isa = PBXBuildFile; fileRef = 8294E100B10B15DC13B85232 /* fightdata_aof3.json */; };
 		4961AAFA6178F84713B2D7FC /* CPET.png in Resources */ = {isa = PBXBuildFile; fileRef = ACE37A7C1452E07BFBF3FE1F /* CPET.png */; };
 		497FF7B2E2F1E1B1A3B6141A /* ConfettiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FE5AC794E01A00A6401CA78 /* ConfettiView.swift */; };
+		49A82C18C949F5D5838AEA50 /* RcheevosWrapper.c in Sources */ = {isa = PBXBuildFile; fileRef = C6A669A1E4230EBBC0D9A2F4 /* RcheevosWrapper.c */; };
 		49C54B79CA96648E9B9F7069 /* BoxArtService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A96AAF72C7F18D45D235347 /* BoxArtService.swift */; };
 		49D2EEDF34D3968A17D6E64E /* CategoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A14A3003974DDDF09684961B /* CategoryManager.swift */; };
 		4A07DDB0761DFDC3155B6DDC /* input_coreOverrides_race.json in Resources */ = {isa = PBXBuildFile; fileRef = 9F857158D0C94BC7AE97A3B0 /* input_coreOverrides_race.json */; };
@@ -477,6 +478,7 @@
 		6B002A44A3B363BB17A9D337 /* fightdata_wof.json in Resources */ = {isa = PBXBuildFile; fileRef = D6A7D0325469C2991B746452 /* fightdata_wof.json */; };
 		6B246ACFE23D55E0330ED6D6 /* GW.png in Resources */ = {isa = PBXBuildFile; fileRef = 47C0E5F83D9F3C91BA7B9595 /* GW.png */; };
 		6B2CECDE2686DCECCFF5E34A /* Nintendo - Game Boy Color.dat in Resources */ = {isa = PBXBuildFile; fileRef = D7F0182BFC9A5EE471604C70 /* Nintendo - Game Boy Color.dat */; };
+		6B42F90980BF1D2F56DC53EC /* rcheevos in Frameworks */ = {isa = PBXBuildFile; productRef = EE0A5937A7A33AF8C414E16E /* rcheevos */; };
 		6B956B53378597C4A2BE1C8C /* atari800-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = F502D499AC8073224A06F944 /* atari800-cheats.zip */; };
 		6BD6BF15F314107230D2070E /* TI83.png in Resources */ = {isa = PBXBuildFile; fileRef = 8DEABF20B657D31D6DF07400 /* TI83.png */; };
 		6BDB6525F52667BF93E61A2D /* CoreDownloadSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 112A893BD9353D23D809A9EF /* CoreDownloadSheet.swift */; };
@@ -675,6 +677,7 @@
 		960863AA2329BE0FF6EEE4DF /* fightdata_sf2.json in Resources */ = {isa = PBXBuildFile; fileRef = C88C0C39CBAD9A8A15731EA5 /* fightdata_sf2.json */; };
 		962BFC364471A16EFFFA3091 /* CodableWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F842A74C8DC38EDF4C8010 /* CodableWrappers.swift */; };
 		963E5BB5553E1196E6B4BF1F /* atarilynx-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = AFA7F83CAB75DE3B88763E0C /* atarilynx-cheats.zip */; };
+		969EEC66C98A3CCBD21B86E1 /* RcheevosRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE8AA314424647A2DC895F81 /* RcheevosRuntime.swift */; };
 		96EA58D8D8ADB451D9BA913D /* nds-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 6E36E1CEE7FB7B06AF851909 /* nds-cheats.zip */; };
 		96FDDC01556CC2CB721FF3EC /* fightdata_samsho3.json in Resources */ = {isa = PBXBuildFile; fileRef = 6F930F474EB0DD02409D2E69 /* fightdata_samsho3.json */; };
 		970C82707C0A9DEE473877A3 /* SavedShaderPreset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B2AEF2FFA96556BE1A55529 /* SavedShaderPreset.swift */; };
@@ -2303,6 +2306,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				F7AE20F51D41E33FE6104234 /* rcheevos in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB34D6F5FBF0D5EC83428529 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6B42F90980BF1D2F56DC53EC /* rcheevos in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4176,6 +4187,7 @@
 			buildConfigurationList = 1A8EC0FC258605661DB51BF3 /* Build configuration list for PBXNativeTarget "TruchiEmuCoreHost" */;
 			buildPhases = (
 				08589319EDD37C1CC2BCADE8 /* Sources */,
+				BB34D6F5FBF0D5EC83428529 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -4183,6 +4195,7 @@
 			);
 			name = TruchiEmuCoreHost;
 			packageProductDependencies = (
+				EE0A5937A7A33AF8C414E16E /* rcheevos */,
 			);
 			productName = TruchiEmuCoreHost;
 			productReference = 11417D9821AF8E7D835C9025 /* TruchiEmuCoreHost.xpc */;
@@ -5110,6 +5123,8 @@
 				4F3969EB015D6B1606BBEE59 /* LibretroGlobals.mm in Sources */,
 				E77642038E0B1B138CE591BB /* LogManager.swift in Sources */,
 				08724A1C5294340425F2DA9A /* LoggerService.swift in Sources */,
+				969EEC66C98A3CCBD21B86E1 /* RcheevosRuntime.swift in Sources */,
+				49A82C18C949F5D5838AEA50 /* RcheevosWrapper.c in Sources */,
 				4F5D20FFA67634F67EDC299E /* SaveDirectoryBridge.swift in Sources */,
 				175914AA2909F5BE44E29AF4 /* main.swift in Sources */,
 			);
@@ -5426,7 +5441,6 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_HARDENED_RUNTIME = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
-				HEADER_SEARCH_PATHS = "$(BUILD_DIR)/../../../SourcePackages/checkouts/rcheevos/include";
 				INFOPLIST_FILE = TruchiEmu/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -5549,7 +5563,6 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_HARDENED_RUNTIME = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
-				HEADER_SEARCH_PATHS = "$(BUILD_DIR)/../../../SourcePackages/checkouts/rcheevos/include";
 				INFOPLIST_FILE = TruchiEmu/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -5697,6 +5710,11 @@
 
 /* Begin XCSwiftPackageProductDependency section */
 		D2E9BF1074610561D0152456 /* rcheevos */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C54ED9FB72F98EE7C187B853 /* XCRemoteSwiftPackageReference "rcheevos" */;
+			productName = rcheevos;
+		};
+		EE0A5937A7A33AF8C414E16E /* rcheevos */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C54ED9FB72F98EE7C187B853 /* XCRemoteSwiftPackageReference "rcheevos" */;
 			productName = rcheevos;

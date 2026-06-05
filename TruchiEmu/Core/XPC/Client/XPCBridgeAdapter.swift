@@ -99,16 +99,37 @@ final class XPCBridgeAdapter {
             guard let surface = self?.videoManager.createSurface(width: width, height: height, format: 1) else { return }
             XPCConnectionManager.shared.remoteProxy?.setIOSurfaceForVideo(surface) {}
         }
+        delegate.onRcheevosAchievementTriggered = { [weak self] id in
+            self?.onRcheevosAchievementTriggered?(id)
+        }
+        delegate.onRcheevosAchievementProgress = { [weak self] id, value in
+            self?.onRcheevosAchievementProgress?(id, value)
+        }
+        delegate.onRcheevosChallengeStarted = { [weak self] id in
+            self?.onRcheevosChallengeStarted?(id)
+        }
+        delegate.onRcheevosChallengeCancelled = { [weak self] id in
+            self?.onRcheevosChallengeCancelled?(id)
+        }
+        delegate.onRcheevosRichPresence = { [weak self] message in
+            self?.onRcheevosRichPresence?(message)
+        }
 
         proxy.launch(
-            dylibPath: dylibPath, romPath: romPath, coreID: coreID,
-            systemID: systemID, romFilename: romFilename, shaderDir: shaderDir,
-            saveDirectory: saveDir, systemDirectory: sysDir,
-            language: lang, logLevel: logLevel
+        dylibPath: dylibPath, romPath: romPath, coreID: coreID,
+        systemID: systemID, romFilename: romFilename, shaderDir: shaderDir,
+        saveDirectory: saveDir, systemDirectory: sysDir,
+        language: lang, logLevel: logLevel
         ) { success, errorMessage in
             if !success {
                 onFailure?(errorMessage ?? "Unknown error")
             }
+        }
+
+        if let pending = pendingRcheevosTriggers {
+            sendRcheevosTriggers(pending, richPresenceScript: pendingRichPresenceScript, proxy: proxy)
+            pendingRcheevosTriggers = nil
+            pendingRichPresenceScript = nil
         }
 
         if useSharedMemory {
@@ -174,6 +195,10 @@ final class XPCBridgeAdapter {
         delegate.onRotationChanged = nil
         delegate.onCoreOptionsV1 = nil
         delegate.onCoreOptionsV2 = nil
+        delegate.onRcheevosAchievementTriggered = nil
+        delegate.onRcheevosAchievementProgress = nil
+        delegate.onRcheevosChallengeStarted = nil
+        delegate.onRcheevosChallengeCancelled = nil
         gameLoadedHandler = nil
         hasLoggedPoll = false
     }
@@ -585,6 +610,105 @@ final class XPCBridgeAdapter {
             return
         }
         XPCConnectionManager.shared.remoteProxy?.setLogLevel(level) {}
+    }
+
+    // MARK: - RetroAchievements (rcheevos)
+
+    /// Public event callbacks. In XPC mode the XPC service's rcheevos runtime
+    /// fires these via `CoreClientDelegate`; in non-XPC mode the local runtime
+    /// fires them directly. The runner wires these to RetroAchievementsService.
+    var onRcheevosAchievementTriggered: ((Int) -> Void)?
+    var onRcheevosAchievementProgress: ((Int, Int) -> Void)?
+    var onRcheevosChallengeStarted: ((Int) -> Void)?
+    var onRcheevosChallengeCancelled: ((Int) -> Void)?
+    var onRcheevosRichPresence: ((String) -> Void)?
+
+/// Local rcheevos runtime for non-XPC mode (headless / option discovery).
+private var localRcheevosRuntime: RcheevosRuntime?
+private var pendingRcheevosTriggers: [RcheevosAchievementTrigger]?
+private var pendingRichPresenceScript: String?
+
+func loadRcheevosAchievements(_ triggers: [RcheevosAchievementTrigger], richPresenceScript: String? = nil) {
+    guard useXPC else {
+        let runtime = RcheevosRuntime()
+        wireLocalRcheevosCallbacks(runtime)
+        runtime.loadGame(triggers: triggers)
+        if let script = richPresenceScript {
+            runtime.activateRichPresence(script: script)
+        }
+        localRcheevosRuntime = runtime
+        return
+    }
+    guard let proxy = XPCConnectionManager.shared.remoteProxy else {
+        pendingRcheevosTriggers = triggers
+        pendingRichPresenceScript = richPresenceScript
+        LoggerService.info(category: "XPCBridgeAdapter", "Stashing \(triggers.count) rcheevos triggers (proxy not ready)")
+        return
+    }
+    sendRcheevosTriggers(triggers, richPresenceScript: richPresenceScript, proxy: proxy)
+}
+
+private func sendRcheevosTriggers(_ triggers: [RcheevosAchievementTrigger], richPresenceScript: String?, proxy: CoreHostProtocol) {
+    let dicts: [[String: Any]] = triggers.map { entry in
+        [
+            "id": Int(entry.id),
+            "title": entry.title,
+            "trigger": entry.trigger,
+            "isUnlocked": entry.isUnlocked,
+        ]
+    }
+    LoggerService.info(category: "XPCBridgeAdapter", "Sending \(dicts.count) rcheevos triggers to XPC service")
+    proxy.loadRcheevosAchievements(dicts, richPresenceScript: richPresenceScript) { reply in
+            if let reply = reply, let ok = reply["ok"] as? Bool, !ok {
+                let err = (reply["error"] as? String) ?? "unknown"
+                LoggerService.error(category: "XPCBridgeAdapter", "loadRcheevosAchievements failed: \(err)")
+            } else {
+                LoggerService.info(category: "XPCBridgeAdapter", "loadRcheevosAchievements reply: ok")
+            }
+        }
+    }
+
+    func resetRcheevosTriggers() {
+        guard useXPC else {
+            localRcheevosRuntime?.resetTriggers()
+            return
+        }
+        XPCConnectionManager.shared.remoteProxy?.resetRcheevosTriggers {}
+    }
+
+    func deactivateRcheevosAchievement(id: Int) {
+        guard useXPC else {
+            localRcheevosRuntime?.deactivateAchievement(id: UInt32(id))
+            return
+        }
+        XPCConnectionManager.shared.remoteProxy?.deactivateRcheevosAchievement(id: id) {}
+    }
+
+    func deactivateRcheevos() {
+        guard useXPC else {
+            localRcheevosRuntime?.deactivateAllAchievements()
+            localRcheevosRuntime = nil
+            return
+        }
+        XPCConnectionManager.shared.remoteProxy?.deactivateRcheevos {}
+    }
+
+    private func wireLocalRcheevosCallbacks(_ runtime: RcheevosRuntime) {
+        runtime.onAchievementTriggered = { [weak self] id in
+            self?.onRcheevosAchievementTriggered?(id)
+        }
+        runtime.onAchievementProgress = { [weak self] id, value in
+            self?.onRcheevosAchievementProgress?(id, value)
+        }
+        runtime.onChallengeStarted = { [weak self] id in
+            self?.onRcheevosChallengeStarted?(id)
+        }
+        runtime.onChallengeCancelled = { [weak self] id in
+            self?.onRcheevosChallengeCancelled?(id)
+        }
+        runtime.onRichPresence = { [weak self] message in
+            self?.onRcheevosRichPresence?(message)
+        }
     }
 }
 

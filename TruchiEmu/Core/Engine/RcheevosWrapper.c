@@ -68,7 +68,19 @@ return rc_runtime_deserialize_progress_sized((rc_runtime_t*)runtime, buffer, buf
 }
 
 const char* rcheevos_error_str(int error_code) {
-return rc_error_str(error_code);
+  return rc_error_str(error_code);
+}
+
+int rcheevos_activate_richpresence(RcheevosRuntimeRef runtime, const char* script) {
+  return rc_runtime_activate_richpresence((rc_runtime_t*)runtime, script, NULL, 0);
+}
+
+int rcheevos_get_richpresence(RcheevosRuntimeRef runtime, char* buffer, uint32_t buffer_size, RcheevosPeekCallback peek, void* userdata) {
+  return rc_runtime_get_richpresence((rc_runtime_t*)runtime, buffer, buffer_size, (rc_runtime_peek_t)peek, userdata, NULL);
+}
+
+void rcheevos_deactivate_achievement(RcheevosRuntimeRef runtime, uint32_t id) {
+  rc_runtime_deactivate_achievement((rc_runtime_t*)runtime, id);
 }
 
 // --- API layer: fetch game patch data ---

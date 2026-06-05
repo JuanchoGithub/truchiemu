@@ -67,6 +67,16 @@ import Foundation
     func setSharedMemoryName(_ name: String, reply: @escaping () -> Void)
     func setIOSurfaceForVideo(_ surface: IOSurface?, reply: @escaping () -> Void)
 
+    // RetroAchievements (rcheevos) — the rcheevos runtime lives in the XPC
+    // service so it can read libretro memory through the same `g_instance` that
+    // the core uses. Triggers are sent as dictionaries to keep the XPC protocol
+    // free of SwiftData dependencies. Each dict has keys: "id" (Int), "title"
+    // (String), "trigger" (String), "isUnlocked" (Bool).
+    func loadRcheevosAchievements(_ triggers: [[String: Any]], richPresenceScript: String?, reply: @escaping ([String: Any]?) -> Void)
+    func resetRcheevosTriggers(reply: @escaping () -> Void)
+    func deactivateRcheevosAchievement(id: Int, reply: @escaping () -> Void)
+    func deactivateRcheevos(reply: @escaping () -> Void)
+
     // Lightweight liveness check — used by the main app's watchdog timer.
     // Must respond immediately to prevent SIGKILL after 3s unresponsiveness.
     func ping(reply: @escaping () -> Void)

@@ -12,13 +12,26 @@ int value;
 char type;
 } RcheevosEvent;
 
-#define RCHEEVOS_EVENT_ACHIEVEMENT_TRIGGERED 0
-#define RCHEEVOS_EVENT_ACHIEVEMENT_PRIMED 1
-#define RCHEEVOS_EVENT_ACHIEVEMENT_UNPRIMED 2
-#define RCHEEVOS_EVENT_ACHIEVEMENT_PROGRESS_UPDATED 3
+#define RCHEEVOS_EVENT_ACHIEVEMENT_ACTIVATED 0
+#define RCHEEVOS_EVENT_ACHIEVEMENT_PAUSED 1
+#define RCHEEVOS_EVENT_ACHIEVEMENT_RESET 2
+#define RCHEEVOS_EVENT_ACHIEVEMENT_TRIGGERED 3
+#define RCHEEVOS_EVENT_ACHIEVEMENT_PRIMED 4
+#define RCHEEVOS_EVENT_ACHIEVEMENT_DISABLED 5
+#define RCHEEVOS_EVENT_ACHIEVEMENT_UNPRIMED 6
+#define RCHEEVOS_EVENT_ACHIEVEMENT_PROGRESS_UPDATED 7
 
 typedef uint32_t (*RcheevosPeekCallback)(uint32_t address, uint32_t num_bytes, void* userdata);
 typedef void (*RcheevosEventHandler)(const RcheevosEvent* event, void* userdata);
+
+// Wire-friendly achievement trigger descriptor. Strings are UTF-8, owned by the
+// caller and must remain valid for the duration of rcheevos_activate_achievement.
+typedef struct {
+    uint32_t id;
+    const char* title;
+    const char* trigger;
+    int is_unlocked;
+} RcheevosAchievementTrigger;
 
 RcheevosRuntimeRef rcheevos_create(void);
 void rcheevos_destroy(RcheevosRuntimeRef runtime);
@@ -29,6 +42,9 @@ uint32_t rcheevos_progress_size(RcheevosRuntimeRef runtime);
 int rcheevos_serialize_progress(RcheevosRuntimeRef runtime, uint8_t* buffer, uint32_t buffer_size);
 int rcheevos_deserialize_progress(RcheevosRuntimeRef runtime, const uint8_t* buffer, uint32_t buffer_size);
 const char* rcheevos_error_str(int error_code);
+int rcheevos_activate_richpresence(RcheevosRuntimeRef runtime, const char* script);
+int rcheevos_get_richpresence(RcheevosRuntimeRef runtime, char* buffer, uint32_t buffer_size, RcheevosPeekCallback peek, void* userdata);
+void rcheevos_deactivate_achievement(RcheevosRuntimeRef runtime, uint32_t id);
 
 // --- API layer: fetch game patch data (unhashed triggers) ---
 
