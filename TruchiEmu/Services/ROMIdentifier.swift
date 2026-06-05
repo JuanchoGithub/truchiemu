@@ -3,6 +3,23 @@ import Foundation
 // Shared ROM system identification utility that both ROMScanner and ROMLibrary use.
 // Uses a weighted scoring system to determine the most likely system based on 
 // Magic Headers, Unique Extensions, Filename Patterns, and Path Context.
+// MARK: - Data Extension for LE Integer Reading
+
+private extension Data {
+    func readLEUInt16(at offset: Int) -> UInt16 {
+        guard offset + 2 <= count else { return 0 }
+        return UInt16(self[offset]) | UInt16(self[offset + 1]) << 8
+    }
+
+    func readLEUInt32(at offset: Int) -> UInt32 {
+        guard offset + 4 <= count else { return 0 }
+        return UInt32(self[offset])
+            | UInt32(self[offset + 1]) << 8
+            | UInt32(self[offset + 2]) << 16
+            | UInt32(self[offset + 3]) << 24
+    }
+}
+
 enum ROMIdentifier {
 
     // MARK: - Private Properties
@@ -349,68 +366,291 @@ enum ROMIdentifier {
             return nil
         }
 
-        // Deep inspection of archive contents
-        //return fingerprintArchive(url: url)
-        return nil
+        return fingerprintArchive(url: url)
     }
 
     // MARK: - Content Fingerprinting
 
+    private static let distinctiveArchiveExtensions: [String: Set<String>] = [
+        "amiga": Set(["adf", "dms", "adz", "hdf", "hdz", "rp9", "slave", "uae", "lha", "info", "wrp", "nrg"]),
+        "commodore_64": Set(["d64", "d71", "d81", "d80", "d82", "t64", "prg", "p00", "crt", "g64", "g41", "x64", "d2m", "d4m", "d6z", "d7z", "d8z", "g4z", "g6z", "nbz", "tap", "vfl", "vsf", "x6z"]),
+        "commodore_vic20": Set(["20", "40", "60", "a0", "b0"]),
+        "commodore_c64_supercpu": Set(["lnx", "lyx"]),
+        "ngpc": Set(["ngp", "ngc", "ngpc", "npc"]),
+        "neogeo": Set(["neo"]),
+        "zx_spectrum": Set(["tzx", "z80", "scl", "szx", "trd", "dck", "rzx"]),
+        "atari_st": Set(["msa", "stx", "dim", "gem", "ide"]),
+        "pc_98": Set(["hdi", "nhd", "thd", "xdf", "98d", "d98", "fdd", "hdd", "hdn"]),
+        "cpc": Set(["cdt", "cpr"]),
+        "game_music": Set(["nsf", "nsfe", "spc", "vgm", "vgz", "gbs", "hes", "ay", "gym", "kss", "sap", "cdg"]),
+        "dreamcast": Set(["cdi", "gdi"]),
+        "saturn": Set(["toc"]),
+        "epochcv": Set(["bin777", "ptn777"]),
+        "mac68k": Set(["hvf"]),
+        "sharp_x1": Set(["dx1"]),
+        "dos": Set(["dosz"]),
+        "scummvm": Set(["scummvm"]),
+        "intellivision": Set(["int", "intv"])
+    ]
+
+    private static let scummVMDataExtensions: Set<String> = [
+        "sou", "lfl", "hex",
+        "flc", "flx", "san", "bun", "ws6",
+        "stk", "gdr",
+        "ald", "alg", "als",
+        "rsc", "dfw", "blk", "gme",
+        "pak", "tlk"
+    ]
+
+    private static let dosExecutableExtensions: Set<String> = [
+        "exe", "bat", "com"
+    ]
+
+    private static let scummVMResourceExtensions: Set<String> = [
+        "000", "001", "002", "003", "004", "005"
+    ]
+
+    private static let coktelVisionComboExtensions: Set<String> = [
+        "itk", "ltk", "ask"
+    ]
+
+    private static let teenAgentMarkerFiles: Set<String> = [
+        "varia.res", "unlogic.res", "mmm.res", "ons.res", "sdr.res"
+    ]
+
+    private static let scummVMSpecificFiles: Set<String> = [
+        "queen.1", "queen.tbl", "lgop2.prj", "touche.dat", "touche.sof"
+    ]
+
     private static func fingerprintArchive(url: URL) -> SystemInfo? {
         guard let files = peekInsideZipFiles(url: url) else { return nil }
-        
-        // 1. Scoring Registry
         var scores: [String: Int] = [:]
-        
-        let systemDB = SystemDatabase._loadSystems()
-        
-        // 2. Analyze files
-        for file in files {
-            let fileURL = URL(fileURLWithPath: file)
-            let ext = fileURL.pathExtension.lowercased()
-            
-            // --- System Extension/ID Scoring ---
-            for system in systemDB {
-                // Strong match: Specific unique extensions (e.g., .smc, .fds) get higher weight than generic ones (.bin)
-                if system.extensions.contains(ext) {
-                    let weight = (ext == "bin" || ext == "rom") ? 1 : 3
-                    scores[system.id, default: 0] += weight
-                }
-            }
-            
-            // --- ScummVM Structural Analysis ---
-            if["sou", "000", "001", "flac", "ogg"].contains(ext) {
-                scores["scummvm", default: 0] += 10
-            }
+
+        let fileEntries = files.filter { !$0.hasSuffix("/") }
+        let fileBasenameSet = Set(fileEntries.map { $0.lowercased().split(separator: "/").last.map(String.init) ?? "" })
+        let fileExts = fileEntries.map { URL(fileURLWithPath: $0).pathExtension.lowercased() }
+        let extSet = Set(fileExts)
+        let rootFiles = fileEntries.filter { !$0.contains("/") }
+        let rootExtSet = Set(rootFiles.map { URL(fileURLWithPath: $0).pathExtension.lowercased() })
+
+ // Tier 1: Distinctive archive extensions
+ for (systemID, distinctSet) in distinctiveArchiveExtensions {
+ let matches = distinctSet.intersection(extSet)
+ if !matches.isEmpty {
+ scores[systemID, default: 0] += matches.count * 15
+ }
+ }
+
+        // Tier 2: ScummVM extension-based detection
+
+        // 2a: Single unique ScummVM data extensions
+        let scummvmDataMatches = scummVMDataExtensions.intersection(extSet)
+        if !scummvmDataMatches.isEmpty {
+            scores["scummvm", default: 0] += scummvmDataMatches.count * 15
         }
-        
-        // 3. Structural Heuristics (The "Not just an extension" checks)
-        
-        // MAME: High file count + low extension diversity/common ROM extensions
-        let mameRelevantFiles = files.filter { 
-            let ext = URL(fileURLWithPath: $0).pathExtension.lowercased()
-            return ext == "bin" || ext == "rom" || ext.isEmpty
+
+        // 2b: Resource numbered files (root level only — avoids DOS level data like LEVEL001/COLOURS.000)
+        let rootResMatches = scummVMResourceExtensions.intersection(rootExtSet)
+        if !rootResMatches.isEmpty {
+            scores["scummvm", default: 0] += 15
         }
-        if mameRelevantFiles.count > 3 {
-            scores["mame", default: 0] += 8
+
+        // 2b-alt: RESOURCE.MAP + RESOURCE.NNN anywhere (SCI games in subdirs like "Castle of Dr. Brain/")
+        let hasResourceMap = fileBasenameSet.contains("resource.map")
+        let hasResourceNumbered = fileBasenameSet.contains { basename in
+            guard basename.hasPrefix("resource.") else { return false }
+            let ext = basename.suffix(from: basename.index(basename.startIndex, offsetBy: 9))
+            return scummVMResourceExtensions.contains(String(ext))
         }
-        
-        // ScummVM: Known indicator keywords
-        let scummvmGameIndicators = ["HE", "MI", "SAM", "DAY", "DIG", "COMI", "MONKEY"]
-        for file in files {
-            let name = URL(fileURLWithPath: file).deletingPathExtension().lastPathComponent.uppercased()
-            if scummvmGameIndicators.contains(where: { name.contains($0) }) {
-                scores["scummvm", default: 0] += 5
+        if hasResourceMap && hasResourceNumbered {
+            scores["scummvm", default: 0] += 15
+        }
+
+        // 2c: Coktel Vision combo (.itk/.ltk/.ask must co-occur with .stk)
+        let coktelComboMatches = coktelVisionComboExtensions.intersection(extSet)
+        if extSet.contains("stk") && !coktelComboMatches.isEmpty {
+            scores["scummvm", default: 0] += coktelComboMatches.count * 15 + 15
+        }
+
+        // 2d: MADS engine combo (.cnv + .tab both required)
+        if extSet.contains("cnv") && extSet.contains("tab") {
+            scores["scummvm", default: 0] += 30
+        }
+
+        // 2e: AGOS engine (many .vga files — Adventure Soft games have 100+)
+        let vgaCount = fileExts.filter { $0 == "vga" }.count
+        if vgaCount >= 10 {
+            scores["scummvm", default: 0] += 30
+        }
+
+        // Tier 3: ScummVM structural signatures
+
+        // 3a: AGI engine (Sierra old-style — OBJECT + WORDS.TOK)
+        if fileBasenameSet.contains("object") && fileBasenameSet.contains("words.tok") {
+            scores["scummvm", default: 0] += 30
+        }
+
+        // 3b: SCI engine (Sierra — RESOURCE.MAP + RESOURCE.CFG + RESOURCE.NNN)
+        let hasSCIConfig = fileBasenameSet.contains("resource.cfg")
+        if hasResourceMap && hasSCIConfig && hasResourceNumbered {
+            scores["scummvm", default: 0] += 30
+        }
+
+        // 3c: Delphine engine (VOL.CNF or DELPHINE.CFG)
+        if fileBasenameSet.contains("vol.cnf") || fileBasenameSet.contains("delphine.cfg") {
+            scores["scummvm", default: 0] += 30
+        }
+
+        // 3c-alt: Delphine alt pattern (VOL.N files + .PRC — Future Wars, Operation Stealth)
+        let hasVolNumbered = fileBasenameSet.contains { $0.range(of: "^vol\\.\\d+$", options: .regularExpression) != nil }
+        let hasPRC = fileBasenameSet.contains { $0.hasSuffix(".prc") }
+        if hasVolNumbered && hasPRC {
+            scores["scummvm", default: 0] += 30
+        }
+
+        // 3d: Tinsel engine — Discworld 1 (many .SCN + .MDI + .DIG)
+        let scnCount = fileExts.filter { $0 == "scn" }.count
+        if scnCount >= 20 && extSet.contains("mdi") && extSet.contains("dig") {
+            scores["scummvm", default: 0] += 30
+        }
+
+        // 3d-alt: Tinsel engine — Discworld 2 (many .SCN + .BMV + .CDP)
+        if scnCount >= 20 && extSet.contains("bmv") && extSet.contains("cdp") {
+            scores["scummvm", default: 0] += 30
+        }
+
+        // 3e: Personal Nightmare (many .OUT + .DBM)
+        let outCount = fileExts.filter { $0 == "out" }.count
+        if outCount >= 20 && extSet.contains("dbm") {
+            scores["scummvm", default: 0] += 30
+        }
+
+        // 3f: Lure of the Temptress (Disk1.vga, Disk2.vga — Revolution engine)
+        let hasDiskVGA = fileBasenameSet.contains { $0.range(of: "^disk\\d+\\.vga$", options: .regularExpression) != nil }
+        if hasDiskVGA {
+            scores["scummvm", default: 0] += 30
+        }
+
+        // 3g: TeenAgent (specific .RES filenames — avoids false positives from generic .res counts)
+        let teenAgentMatches = teenAgentMarkerFiles.intersection(fileBasenameSet)
+        if teenAgentMatches.count >= 2 {
+            scores["scummvm", default: 0] += 30
+        }
+
+        // 3h: AGOS file markers (GAMEPC/GAME32 + many .VGA)
+        if (fileBasenameSet.contains("gamepc") || fileBasenameSet.contains("game32")) && vgaCount >= 10 {
+            scores["scummvm", default: 0] += 15
+        }
+
+        // 3i: Specific ScummVM game files
+        let specificFileMatches = scummVMSpecificFiles.intersection(fileBasenameSet)
+        if !specificFileMatches.isEmpty {
+            scores["scummvm", default: 0] += 30
+        }
+
+        // Tier 4: DOS fallback (only when no ScummVM or other system signal)
+        let hasScummVMSignal = scores["scummvm", default: 0] > 0
+        let hasOtherSystemSignal = scores.keys.filter { $0 != "scummvm" && $0 != "dos" }.contains { scores[$0]! > 0 }
+        if !hasOtherSystemSignal && !hasScummVMSignal {
+            let dosMatches = dosExecutableExtensions.intersection(extSet)
+            if !dosMatches.isEmpty {
+                scores["dos", default: 0] += 15
             }
         }
 
-        // 4. Resolve Winner
-        // Sort by score descending and ensure we meet a minimum confidence threshold
-        if let bestMatch = scores.sorted(by: { $0.value > $1.value }).first, bestMatch.value >= 3 {
+        // Tier 5: .iso inside zip — likely DOS/PC game
+        if extSet.contains("iso") {
+            scores["dos", default: 0] += 15
+        }
+
+        // Tier 6: DOSBOX directory
+        let hasDOSBOXDir = files.contains { $0.lowercased().contains("dosbox") && $0.hasSuffix("/") }
+        if hasDOSBOXDir {
+            scores["dos", default: 0] += 20
+        }
+
+        // Tier 7: MAME heuristic
+        let mameRelevantCount = fileExts.filter { $0 == "bin" || $0 == "rom" || $0.isEmpty }.count
+        if mameRelevantCount > 3 {
+            scores["mame", default: 0] += 8
+        }
+
+        // Tier 8: ScummVM game code directory matching (fallback for weak signals)
+        let topNonScummVM = scores.filter { $0.key != "scummvm" }.values.max() ?? 0
+        let scummVMScore = scores["scummvm", default: 0]
+        if scummVMScore > 0 && scummVMScore >= topNonScummVM && scummVMScore < 30 {
+            if let gameCodes = loadScummVMGameCodes() {
+                let dirNames = extractDirectoryNames(from: files)
+                for dirName in dirNames {
+                    if gameCodes.contains(dirName) {
+                        scores["scummvm", default: 0] += 20
+                        LoggerService.debug(category: "ROMIdentifier", "ScummVM game code directory match: \(dirName)")
+                        break
+                    }
+                }
+            }
+        }
+
+        if let bestMatch = scores.sorted(by: { $0.value > $1.value }).first, bestMatch.value >= 15 {
+            LoggerService.debug(category: "ROMIdentifier", "Fingerprint winner: \(bestMatch.key) (\(bestMatch.value) pts) from \(files.count) files")
             return SystemDatabase.system(forID: bestMatch.key)
         }
-        
+
         return nil
+    }
+
+    private static func extractDirectoryNames(from files: [String]) -> [String] {
+        var dirNames = Set<String>()
+        for file in files {
+            let components = file.split(separator: "/", omittingEmptySubsequences: true)
+            for component in components.dropLast() {
+                let dir = String(component).lowercased()
+                if dir.count >= 4 && dir.allSatisfy({ $0.isLetter || $0.isNumber || $0 == "_" || $0 == "-" }) {
+                    dirNames.insert(dir.replacingOccurrences(of: "_", with: "").replacingOccurrences(of: "-", with: ""))
+                }
+            }
+        }
+        return Array(dirNames)
+    }
+
+    private static var _scummVMGameCodes: Set<String>?
+    private static let _scummVMGameCodesLock = NSLock()
+
+    private static func loadScummVMGameCodes() -> Set<String>? {
+        _scummVMGameCodesLock.lock()
+        defer { _scummVMGameCodesLock.unlock() }
+
+        if let cached = _scummVMGameCodes {
+            return cached
+        }
+
+        guard let datURL = Bundle.main.url(forResource: "ScummVM", withExtension: "dat", subdirectory: "Data/LibretroDats") else {
+            LoggerService.debug(category: "ROMIdentifier", "ScummVM.dat not found in bundle")
+            return nil
+        }
+
+        guard let content = try? String(contentsOf: datURL, encoding: .utf8) else {
+            LoggerService.debug(category: "ROMIdentifier", "Failed to read ScummVM.dat")
+            return nil
+        }
+
+        var codes = Set<String>()
+        let pattern = try? NSRegularExpression(pattern: "code\\s+\"([^\"]+)\"")
+        if let regex = pattern {
+            let range = NSRange(content.startIndex..., in: content)
+            for match in regex.matches(in: content, range: range) {
+                if let range = Range(match.range(at: 1), in: content) {
+                    let code = String(content[range]).lowercased()
+                    if code.count >= 4 {
+                        codes.insert(code)
+                    }
+                }
+            }
+        }
+
+        LoggerService.debug(category: "ROMIdentifier", "Loaded \(codes.count) ScummVM game codes (length >= 4)")
+        _scummVMGameCodes = codes
+        return codes
     }
 
     // MARK: - Fast Header Peeking
@@ -528,46 +768,95 @@ enum ROMIdentifier {
         guard let handle = try? FileHandle(forReadingFrom: url) else { return nil }
         defer { try? handle.close() }
 
+        guard let fileSize = try? handle.seekToEnd() else { return nil }
+        try? handle.seek(toOffset: 0)
+
+        // Try central directory first (lists all filenames without reading compressed data)
+        if let names = readZipCentralDirectory(handle: handle, fileSize: fileSize) {
+            return names.isEmpty ? nil : names
+        }
+
+        // Fallback: sequential local header scan (works for non-standard ZIPs)
+        try? handle.seek(toOffset: 0)
+        return readZipLocalHeaders(handle: handle)
+    }
+
+    private static func readZipCentralDirectory(handle: FileHandle, fileSize: UInt64) -> [String]? {
+        let eocdSearchSize: UInt64 = 65536
+        let readStart = fileSize > eocdSearchSize ? fileSize - eocdSearchSize : 0
+        let readLen = Int(fileSize - readStart)
+
+        try? handle.seek(toOffset: readStart)
+        guard let tailData = try? handle.read(upToCount: readLen), tailData.count >= 22 else { return nil }
+
+        // Find End of Central Directory record (EOCD signature: 0x06054b50)
+        let eocdSig: [UInt8] = [0x50, 0x4b, 0x05, 0x06]
+        guard let eocdRange = tailData.range(of: Data(eocdSig), options: .backwards) else { return nil }
+        let eocdRangeLower = eocdRange.lowerBound
+
+        guard eocdRangeLower + 22 <= tailData.count else { return nil }
+
+        let cdSize = tailData.readLEUInt32(at: eocdRangeLower + 12)
+        let cdOffset = tailData.readLEUInt32(at: eocdRangeLower + 16)
+        let numEntries = tailData.readLEUInt16(at: eocdRangeLower + 10)
+
+        guard cdSize > 0, cdOffset < fileSize, numEntries > 0 else { return nil }
+
+        try? handle.seek(toOffset: UInt64(cdOffset))
+        let readSize = min(Int(cdSize), 1_048_576)
+        guard let cdData = try? handle.read(upToCount: readSize) else { return nil }
+
+        var filenames: [String] = []
+        var offset = 0
+        let cdSig: UInt32 = 0x02014b50
+        let maxEntries = 200
+
+        while filenames.count < maxEntries {
+            guard offset + 46 <= cdData.count else { break }
+            let sig = cdData.readLEUInt32(at: offset)
+            guard sig == cdSig else { break }
+
+            let nameLen = Int(cdData.readLEUInt16(at: offset + 28))
+            let extraLen = Int(cdData.readLEUInt16(at: offset + 30))
+            let commentLen = Int(cdData.readLEUInt16(at: offset + 32))
+
+            guard offset + 46 + nameLen <= cdData.count else { break }
+            let nameData = cdData[offset + 46 ..< offset + 46 + nameLen]
+            if let name = String(data: nameData, encoding: .utf8) {
+                filenames.append(name)
+            }
+
+            offset += 46 + nameLen + extraLen + commentLen
+        }
+
+        return filenames
+    }
+
+    private static func readZipLocalHeaders(handle: FileHandle) -> [String]? {
+        try? handle.seek(toOffset: 0)
         guard let data = try? handle.read(upToCount: 65536), data.count >= 30 else { return nil }
-
-        func readLEUInt16(_ start: Int) -> UInt16? {
-            guard start + 2 <= data.count else { return nil }
-            var value: UInt16 = 0
-            for i in 0..<2 { value |= UInt16(data[start + i]) << (8 * i) }
-            return value
-        }
-
-        func readLEUInt32(_ start: Int) -> UInt32? {
-            guard start + 4 <= data.count else { return nil }
-            var value: UInt32 = 0
-            for i in 0..<4 { value |= UInt32(data[start + i]) << (8 * i) }
-            return value
-        }
 
         var filenames: [String] = []
         var offset = 0
         let localHeaderSig: UInt32 = 0x04034b50
-        let maxEntries = 50
+        let maxEntries = 200
 
         while filenames.count < maxEntries {
             guard offset + 30 <= data.count else { break }
-            guard let sig = readLEUInt32(offset), sig == localHeaderSig else { break }
+            let sig = data.readLEUInt32(at: offset)
+            guard sig == localHeaderSig else { break }
 
-            guard let fileNameLen = readLEUInt16(offset + 26),
-                  let extraLen = readLEUInt16(offset + 28),
-                  let compressedSize = readLEUInt32(offset + 18) else { break }
+            let fileNameLen = Int(data.readLEUInt16(at: offset + 26))
+            let extraLen = Int(data.readLEUInt16(at: offset + 28))
+            let compressedSize = Int(data.readLEUInt32(at: offset + 18))
 
-            let nameLen = Int(fileNameLen)
-            let extra = Int(extraLen)
-            let comp = Int(compressedSize)
-
-            guard offset + 30 + nameLen <= data.count else { break }
-            let nameData = data[offset + 30 ..< offset + 30 + nameLen]
-            if let name = String(data: nameData, encoding: .utf8), !name.hasSuffix("/") {
+            guard offset + 30 + fileNameLen <= data.count else { break }
+            let nameData = data[offset + 30 ..< offset + 30 + fileNameLen]
+            if let name = String(data: nameData, encoding: .utf8) {
                 filenames.append(name)
             }
 
-            let next = offset + 30 + nameLen + extra + comp
+            let next = offset + 30 + fileNameLen + extraLen + compressedSize
             guard next > offset else { break }
             offset = next
         }
