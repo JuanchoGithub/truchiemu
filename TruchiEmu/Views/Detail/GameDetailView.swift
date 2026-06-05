@@ -59,6 +59,7 @@ struct GameDetailView: View {
     @State var cheatSearchText: String = ""
     @State var showEnabledOnlyCheats: Bool = false
     @State var isLaunchingGame = false
+    @State var showSystemPicker: Bool = false
 
     // MARK: - RA Hash Comparison State
     @State var showRAHashComparison = false
@@ -252,6 +253,11 @@ struct GameDetailView: View {
         }
         .sheet(isPresented: $showBoxArtPicker) { BoxArtPickerView(rom: currentROM) }
         .sheet(isPresented: $showRAHashComparison) { raHashComparisonSheet
+        }
+        .sheet(isPresented: $showSystemPicker) {
+            SystemPickerView(roms: [currentROM], library: library) {
+                showSystemPicker = false
+            }
         }
     }
 

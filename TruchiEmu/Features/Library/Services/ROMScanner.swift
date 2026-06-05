@@ -127,7 +127,7 @@ actor ROMScanner {
             
             let name = url.deletingPathExtension().lastPathComponent
             let folder = url.deletingLastPathComponent()
-            var mameROM = ROM(id: UUID(), name: name, path: url, systemID: mameSystem?.id)
+            var mameROM = ROM(id: UUID(), name: name, path: url, systemID: mameSystem?.id, originalSystemID: mameSystem?.id)
             
             mameROM.metadata = xmlCache[folder]?[url.lastPathComponent]
             await applyMAMEIdentification(to: &mameROM, url: url)
@@ -203,7 +203,7 @@ actor ROMScanner {
         
         let system = await identifySystem(url: url, extension: ext)
         let name = url.deletingPathExtension().lastPathComponent
-        var rom = ROM(id: UUID(), name: name, path: url, systemID: system?.id)
+        var rom = ROM(id: UUID(), name: name, path: url, systemID: system?.id, originalSystemID: system?.id)
         
         if KnownBIOS.isKnownBios(filename: url.lastPathComponent) {
             rom.isBios = true

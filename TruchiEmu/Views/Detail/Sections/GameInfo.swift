@@ -38,10 +38,8 @@ extension GameDetailView {
     var gameMetadataCard: some View {
         ModernSectionCard(showHeader: false) {
             VStack(alignment: .leading, spacing: 0) {
-                if currentROM.systemID == "gb" || currentROM.systemID == "gbc" {
-                    gameSystemPicker
-                    Divider().overlay(AppColors.divider(colorScheme))
-                }
+                gameSystemPicker
+                Divider().overlay(AppColors.divider(colorScheme))
                 MetadataRow(label: loc.localized("gameInfo.fileName"), value: currentROM.path.lastPathComponent)
                 Divider().overlay(AppColors.divider(colorScheme))
                 MetadataRow(
@@ -83,19 +81,19 @@ extension GameDetailView {
         .fontWeight(.medium)
         .foregroundColor(AppColors.textPrimary(colorScheme))
       Spacer()
-      Picker(loc.localized("gameInfo.system"), selection: Binding(
-        get: { currentROM.systemID ?? "gb" },
-        set: { newID in
-          var updated = currentROM
-          updated.systemID = newID
-          library.updateROM(updated)
+      Button {
+        showSystemPicker = true
+      } label: {
+        HStack(spacing: 4) {
+          Text(systemName)
+            .font(.subheadline)
+            .foregroundColor(AppColors.textPrimary(colorScheme))
+          Image(systemName: "chevron.up.chevron.down")
+            .font(.caption2)
+            .foregroundColor(AppColors.textSecondary(colorScheme))
         }
-      )) {
-        Text(loc.localized("gameInfo.gameBoy")).tag("gb")
-        Text(loc.localized("gameInfo.gameBoyColor")).tag("gbc")
       }
-      .pickerStyle(.menu)
-      .labelsHidden()
+      .buttonStyle(.plain)
     }
     .padding(.vertical, AppSpacing.xs)
   }

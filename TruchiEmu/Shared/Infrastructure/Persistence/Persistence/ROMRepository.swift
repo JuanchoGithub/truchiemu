@@ -346,6 +346,7 @@ final class ROMRepository {
             name: entry.name,
             path: URL(fileURLWithPath: entry.path),
             systemID: entry.systemID,
+            originalSystemID: entry.originalSystemID,
             isFavorite: entry.isFavorite,
             lastPlayed: entry.lastPlayed,
             dateAdded: entry.dateAdded,
@@ -395,6 +396,7 @@ final class ROMRepository {
             name: rom.name,
             path: rom.path,
             systemID: rom.systemID,
+            originalSystemID: rom.originalSystemID,
             isFavorite: rom.isFavorite,
             lastPlayed: rom.lastPlayed,
             totalPlaytimeSeconds: rom.totalPlaytimeSeconds,
@@ -422,6 +424,7 @@ final class ROMRepository {
         if entry.name != rom.name { entry.name = rom.name }
         if entry.path != rom.path.path { entry.path = rom.path.path }
         if entry.systemID != rom.systemID { entry.systemID = rom.systemID }
+        if entry.originalSystemID == nil { entry.originalSystemID = rom.originalSystemID }
         if entry.isFavorite != rom.isFavorite { entry.isFavorite = rom.isFavorite }
         if entry.lastPlayed != rom.lastPlayed { entry.lastPlayed = rom.lastPlayed }
         if entry.dateAdded != rom.dateAdded { entry.dateAdded = rom.dateAdded }

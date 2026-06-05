@@ -9,6 +9,7 @@ final class ROMEntry {
     var name: String
     var path: String
     var systemID: String?
+    var originalSystemID: String?
     var hasBoxArt: Bool
     var isFavorite: Bool
     var lastPlayed: Date?
@@ -49,6 +50,7 @@ final class ROMEntry {
         name: String,
         path: URL,
         systemID: String? = nil,
+        originalSystemID: String? = nil,
         hasBoxArt: Bool = false,
         isFavorite: Bool = false,
         lastPlayed: Date? = nil,
@@ -77,6 +79,7 @@ final class ROMEntry {
         self.name = name
         self.path = path.path
         self.systemID = systemID
+        self.originalSystemID = originalSystemID
         self.hasBoxArt = hasBoxArt
         self.isFavorite = isFavorite
         self.lastPlayed = lastPlayed

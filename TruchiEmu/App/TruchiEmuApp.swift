@@ -186,6 +186,18 @@ LoggerService.debug(category: category, message)
             return restored
         }
 
+        historyManager.registerActionHandler(type: "undoSystemChange") { entry in
+            guard let payload = entry.decodePayload(SystemChangePayload.self),
+                  let lib = historyManager.library else { return false }
+            for change in payload.entries {
+                if let idx = lib.roms.firstIndex(where: { $0.id == change.romID }) {
+                    lib.roms[idx].systemID = change.oldSystemID
+                    lib.updateROM(lib.roms[idx])
+                }
+            }
+            return true
+        }
+
         historyManager.registerActionHandler(type: "viewUpdate") { entry in
             AppSettings.set("settings_selectedTab", value: "about")
             NotificationCenter.default.post(name: .openAppSettings, object: nil)

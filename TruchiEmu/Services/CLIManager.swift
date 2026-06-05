@@ -623,6 +623,7 @@ class CLIManager: ObservableObject {
             name: name,
             path: url,
             systemID: systemID,
+            originalSystemID: systemID,
             isFavorite: false,
             lastPlayed: nil,
             selectedCoreID: nil,

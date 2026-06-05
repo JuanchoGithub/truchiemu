@@ -5,6 +5,7 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
     var name: String
     var path: URL
     var systemID: String?
+    var originalSystemID: String?
     var hasBoxArt: Bool = false
     var isFavorite: Bool = false
     var lastPlayed: Date?

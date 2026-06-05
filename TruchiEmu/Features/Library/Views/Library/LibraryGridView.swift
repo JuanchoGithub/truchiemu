@@ -3,6 +3,11 @@ import AppKit
 
 // MARK: - Library Grid View
 
+struct SystemPickerItem: Identifiable {
+    let id = UUID()
+    let roms: [ROM]
+}
+
 struct LibraryGridView: View {
     @EnvironmentObject var coreManager: CoreManager
     @EnvironmentObject var controllerService: ControllerService
@@ -111,6 +116,9 @@ struct LibraryGridView: View {
     // Multi-select state
     @State private var selectedROMs: Set<UUID> = []
     @State private var lastSelectedIndex: Int? = nil
+
+    // System picker
+    @State private var systemPickerItem: SystemPickerItem?
     
     // Drag and drop
     @State private var draggedROMs: [ROM] = []
@@ -410,6 +418,11 @@ struct LibraryGridView: View {
     }
     .sheet(isPresented: $showNotificationCenterSheet) {
         NotificationCenterSheetView()
+    }
+    .sheet(item: $systemPickerItem, onDismiss: { systemPickerItem = nil }) { item in
+        SystemPickerView(roms: item.roms, library: library) {
+            systemPickerItem = nil
+        }
     }
     .onAppear {
             // Recompute columns from saved zoom level
@@ -1115,47 +1128,12 @@ viewModel.updateFilters(
                     Label(loc.localized("contextMenu.categories"), systemImage: "folder.badge.plus")
                 }
 
-                    let showGBMenu = ["gb", "gbc"].contains(rom.systemID)
-                    let showGCMenu = ["gc", "wii"].contains(rom.systemID)
-                    
-                    if showGBMenu || showGCMenu {
-                        Divider()
-                        Menu {
-                            if showGBMenu {
-                                Button {
-                                    var updated = rom
-                                    updated.systemID = "gb"
-                                    library.updateROM(updated)
-                                } label: {
-                                    Label(loc.localized("contextMenu.gameBoy"), systemImage: "gamecontroller")
-                                }
-                                Button {
-                                    var updated = rom
-                                    updated.systemID = "gbc"
-                                    library.updateROM(updated)
-                                } label: {
-                                    Label(loc.localized("contextMenu.gameBoyColor"), systemImage: "gamecontroller")
-                                }
-                            }
-                            if showGCMenu {
-                                Button {
-                                    var updated = rom
-                                    updated.systemID = "gc"
-                                    library.updateROM(updated)
-                                } label: {
-                                    Label(loc.localized("contextMenu.gameCube"), systemImage: "gamecontroller")
-                                }
-                                Button {
-                                    var updated = rom
-                                    updated.systemID = "wii"
-                                    library.updateROM(updated)
-                                } label: {
-                                    Label(loc.localized("contextMenu.wii"), systemImage: "gamecontroller")
-                                }
-                            }
-                        } label: {
-                            Label(loc.localized("contextMenu.system"), systemImage: "hifispeaker")
-                        }
+                    Divider()
+                    Button {
+                        let targetROMs = library.roms.filter { targetIDsSet.contains($0.id) }
+                        systemPickerItem = SystemPickerItem(roms: targetROMs)
+                    } label: {
+                        Label(loc.localized("contextMenu.moveToSystem"), systemImage: "arrow.triangle.swap")
                     }
                     
                     Divider()

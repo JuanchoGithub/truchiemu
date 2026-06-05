@@ -262,6 +262,7 @@
 		367438AF41A2E4277D7605FE /* input_coreOverrides_pd777.json in Resources */ = {isa = PBXBuildFile; fileRef = 06F8D392772FF18175464C4F /* input_coreOverrides_pd777.json */; };
 		3699BC8E1AF90F686AA00486 /* fightdata_sfz3ugd.json in Resources */ = {isa = PBXBuildFile; fileRef = 33D4B52F0853356C3AA57C59 /* fightdata_sfz3ugd.json */; };
 		36BCFA5CE92E1BA8EE9CD75C /* Nintendo - Nintendo Entertainment System.dat in Resources */ = {isa = PBXBuildFile; fileRef = 55A0C232023C7657365528C8 /* Nintendo - Nintendo Entertainment System.dat */; };
+		36D578BB6E05F95B2B13543C /* SystemPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B2F7AE141392E7AA767BF3 /* SystemPickerView.swift */; };
 		374324E43AD46F029502E45E /* appIcon1024.jpg in Resources */ = {isa = PBXBuildFile; fileRef = F20EF6C414682B78AE383860 /* appIcon1024.jpg */; };
 		377AAB6E43FC8DF2CB22024D /* TruchiEmu.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = B2667AB0DCBF48CAC505C84C /* TruchiEmu.entitlements */; };
 		378F817B232C785B2764C3C5 /* input_coreOverrides_mame.json in Resources */ = {isa = PBXBuildFile; fileRef = 57D2E2F6CB71E8188AA78090 /* input_coreOverrides_mame.json */; };
@@ -2109,6 +2110,7 @@
 		D503F9A21A5B9E67E09C0961 /* gearboy_libretro_default.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = gearboy_libretro_default.json; sourceTree = "<group>"; };
 		D55982DD468036597081950E /* input_coreLabels_holani.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_holani.json; sourceTree = "<group>"; };
 		D58ADFC9D5F59660DB53A581 /* PCECD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PCECD.png; sourceTree = "<group>"; };
+		D5B2F7AE141392E7AA767BF3 /* SystemPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemPickerView.swift; sourceTree = "<group>"; };
 		D5EA7A9B9DAF119BC3A9EAFB /* input_coreLabels_puae.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_puae.json; sourceTree = "<group>"; };
 		D6078CA03728BBBDB883C5EE /* fightdata_vf2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_vf2.json; sourceTree = "<group>"; };
 		D65DE717669D9B6378E63B06 /* Atari - Jaguar.dat */ = {isa = PBXFileReference; path = "Atari - Jaguar.dat"; sourceTree = "<group>"; };
@@ -3129,6 +3131,7 @@
 				6788E1B34FDC8AE5B0094B07 /* OnboardingView.swift */,
 				CBFE3A9E877C2D62FEDDB15E /* SetupWizardView.swift */,
 				AECA6A821D5AD2F2FBD719B3 /* SidebarRowButton.swift */,
+				D5B2F7AE141392E7AA767BF3 /* SystemPickerView.swift */,
 				74C4ECFC23ADA7A8A05EE298 /* SystemSidebarView.swift */,
 			);
 			path = Library;
@@ -5381,6 +5384,7 @@
 				9D2B2A115387F92D5EBA0310 /* SwiftDataModels.swift in Sources */,
 				D0439304429F0CDCB80B2E16 /* SystemDatabaseWrapper.swift in Sources */,
 				42756557E183E1F20047A790 /* SystemInfo.swift in Sources */,
+				36D578BB6E05F95B2B13543C /* SystemPickerView.swift in Sources */,
 				1226E683B4C6974386DAAC65 /* SystemSidebarView.swift in Sources */,
 				03186CB22B055CEA9CB16028 /* TapeDeck.swift in Sources */,
 				A65710823C4D0A6B42F7EA87 /* ThemeManager.swift in Sources */,
