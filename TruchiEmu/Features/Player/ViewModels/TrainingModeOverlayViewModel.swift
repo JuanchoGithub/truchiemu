@@ -4,7 +4,7 @@ import Combine
 @MainActor
 class TrainingModeOverlayViewModel: ObservableObject {
     @Published var expandedCharacterId: String? = nil
-    @Published var selectedTab: TrainingTab = .dummy
+    @Published var selectedTab: TrainingTab = .moves
     @Published var p1InputHistory: [InputHistoryEntry] = []
     @Published var p2InputHistory: [InputHistoryEntry] = []
     @Published var activeCardInfo: String? = nil

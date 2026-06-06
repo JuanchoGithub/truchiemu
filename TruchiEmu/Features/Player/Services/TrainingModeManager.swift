@@ -16,7 +16,7 @@ class TrainingModeManager: ObservableObject {
 
     var tapeRunnerFrameIndex: Int = 0
     var lastP1InputState: [Int: Bool] = [:]
-    var currentGameData: FightDataGame? = nil
+    @Published var currentGameData: FightDataGame? = nil
     var currentCharacterName: String? { MoveListService.shared.selectedCharacter?.name }
     var currentArcadeLayout: ArcadeLayout = .capcom6
     var currentSystemID: String = "" {
