@@ -171,6 +171,11 @@ enum RomHasher {
 
     // MARK: - GameCube
 
+    // Known limitation: RA's full spec also requires hashing each DOL segment
+    // (code and data) referenced in the apploader. Parsing the apploader bytecode
+    // to discover those segments is out of scope here, so this hashes the
+    // apploader code only. This is a reasonable approximation for single-DOL
+    // games (the common case) but will not match RA for multi-segment titles.
     private static func hashGameCube(url: URL) -> String? {
         guard let handle = try? FileHandle(forReadingFrom: url) else { return nil }
         defer { try? handle.close() }
@@ -355,8 +360,8 @@ enum RomHasher {
         let scanRange = 16 * 1024 * 1024
         guard let scanData = try? handle.read(upToCount: scanRange) else { return nil }
 
-        guard let sfoLbn = locateLBN(in: scanData, forLeafName: "PARAM.SFO;1") else { return nil }
-        guard let ebootLbn = locateLBN(in: scanData, forLeafName: "EBOOT.BIN;1") else { return nil }
+        guard let sfoLbn = ROMIdentifier.ISOScanner.locateLBN(in: scanData, forLeafName: "PARAM.SFO;1") else { return nil }
+        guard let ebootLbn = ROMIdentifier.ISOScanner.locateLBN(in: scanData, forLeafName: "EBOOT.BIN;1") else { return nil }
 
         try? handle.seek(toOffset: UInt64(sfoLbn) * 2048)
         guard let sfoData = try? handle.read(upToCount: 4096) else { return nil }
@@ -372,18 +377,6 @@ enum RomHasher {
         var buffer = sfoData
         buffer.append(ebootData)
         return md5Data(buffer)
-    }
-
-    // Searches `scanData` for an ISO9660 directory record whose leaf filename matches
-    // `leafName`, then returns the 4-byte little-endian LBN pointing to the file's data extent.
-    // The LBN sits 2 bytes into the directory record, while the identifier starts at byte 33
-    // of the record; the offset from identifier start to LBN start is therefore -31.
-    private static func locateLBN(in scanData: Data, forLeafName leafName: String) -> UInt32? {
-        guard let target = leafName.data(using: .ascii) else { return nil }
-        guard let range = scanData.range(of: target) else { return nil }
-        let lbnOffset = range.lowerBound - 31
-        guard lbnOffset > 0, lbnOffset + 4 <= scanData.count else { return nil }
-        return scanData.subdata(in: lbnOffset..<lbnOffset + 4).withUnsafeBytes { $0.load(as: UInt32.self) }
     }
 
     // MARK: - Dreamcast
@@ -447,23 +440,18 @@ enum RomHasher {
         let scanRange = 8 * 1024 * 1024
         guard let scanData = try? handle.read(upToCount: scanRange) else { return nil }
 
-        let launchMeName = "LaunchMe".data(using: .ascii)!
-        guard let range = scanData.range(of: launchMeName) else { return nil }
+        guard let lbn = ROMIdentifier.ISOScanner.locateLBN(in: scanData, forLeafName: "LaunchMe") else { return nil }
 
         var buffer = Data(sector0.prefix(132))
-
-        let lbnOffset = range.lowerBound - 10
-        guard lbnOffset > 0 else { return nil }
-
-        let lbn = scanData.subdata(in: lbnOffset..<lbnOffset + 4).withUnsafeBytes { $0.load(as: UInt32.self) }
         let launchMeOffset = UInt64(lbn) * 2048
 
         try? handle.seek(toOffset: launchMeOffset)
-        if let launchMeData = try? handle.read(upToCount: 128 * 1024 * 1024) {
-            buffer.append(launchMeData)
+        let bufferSize = 128 * 1024
+        while let chunk = try? handle.read(upToCount: bufferSize), !chunk.isEmpty {
+            buffer.append(chunk)
         }
 
-        return md5Data(buffer)
+        return buffer.isEmpty ? nil : md5Data(buffer)
     }
 
     // MARK: - Atari 7800
@@ -618,23 +606,27 @@ enum RomHasher {
         let scanRange = 16 * 1024 * 1024
         guard let scanData = try? handle.read(upToCount: scanRange) else { return nil }
 
-        let iplName = "IPL.TXT".data(using: .ascii)!
-        guard scanData.range(of: iplName) != nil else { return nil }
+        // Read IPL.TXT, parse out the .PRG file list, and concatenate their contents.
+        guard let iplLbn = ROMIdentifier.ISOScanner.locateLBN(in: scanData, forLeafName: "IPL.TXT;1") else { return nil }
+        try? handle.seek(toOffset: UInt64(iplLbn) * 2048)
+        guard let iplData = try? handle.read(upToCount: 4096),
+              let iplText = String(data: iplData, encoding: .ascii) else { return nil }
 
-        try? handle.seek(toOffset: 0)
+        let prgLeafNames = iplText
+            .components(separatedBy: .newlines)
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty && !$0.hasPrefix("//") }
+            .map { (($0 as NSString).lastPathComponent as String).uppercased() }
+            .filter { $0.hasSuffix(".PRG") }
+            .map { $0 + ";1" }
 
         var buffer = Data()
-        for entry in ["MAIN.BIN", "SAFETY.BIN"] {
-            let entryData = entry.data(using: .ascii)!
-            if let range = scanData.range(of: entryData) {
-                let lbnOffset = range.lowerBound - 10
-                if lbnOffset > 0 {
-                    let lbn = scanData.subdata(in: lbnOffset..<lbnOffset + 4).withUnsafeBytes { $0.load(as: UInt32.self) }
-                    try? handle.seek(toOffset: UInt64(lbn) * 2048)
-                    if let chunk = try? handle.read(upToCount: 2 * 1024 * 1024) {
-                        buffer.append(chunk)
-                    }
-                }
+        let readBufferSize = 128 * 1024
+        for leafName in prgLeafNames {
+            guard let lbn = ROMIdentifier.ISOScanner.locateLBN(in: scanData, forLeafName: leafName) else { continue }
+            try? handle.seek(toOffset: UInt64(lbn) * 2048)
+            while let chunk = try? handle.read(upToCount: readBufferSize), !chunk.isEmpty {
+                buffer.append(chunk)
             }
         }
 

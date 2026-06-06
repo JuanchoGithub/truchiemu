@@ -188,39 +188,34 @@ enum ROMIdentifier {
 
     // MARK: - ISO Scanning for CD-based Systems
     struct ISOScanner {
-        
+
+        // Searches `scanData` for an ISO9660 directory record whose leaf filename matches
+        // `leafName` and returns the 4-byte little-endian LBN pointing to the file's data extent.
+        // ISO9660 directory records put the LBN at byte 2 of the record, while the identifier
+        // (leaf filename) starts at byte 33 — so the offset from identifier start to LBN start
+        // is -31 regardless of filename length.
+        static func locateLBN(in scanData: Data, forLeafName leafName: String) -> UInt32? {
+            guard let target = leafName.data(using: .ascii) else { return nil }
+            guard let range = scanData.range(of: target) else { return nil }
+            let lbnOffset = range.lowerBound - 31
+            guard lbnOffset > 0, lbnOffset + 4 <= scanData.count else { return nil }
+            return scanData.subdata(in: lbnOffset..<lbnOffset + 4).withUnsafeBytes { $0.load(as: UInt32.self) }
+        }
+
         // Reads the ISO and attempts to locate and extract the content of "SYSTEM.CNF"
         static func extractSystemConfig(from url: URL) -> String? {
             guard let fileHandle = try? FileHandle(forReadingFrom: url) else { return nil }
             defer { try? fileHandle.close() }
-            
+
             // ISO9660 Directory Records start after the Primary Volume Descriptor.
             // For most PS1/PS2 images, we can scan the first 1MB for the "SYSTEM.CNF" filename.
             // It's a crude but highly effective "cheat" method.
             let scanRange = 1_024 * 1_024 // 1MB scan
             guard let data = try? fileHandle.read(upToCount: scanRange) else { return nil }
-            
-            let targetName = "SYSTEM.CNF;1".data(using: .ascii)!
-            
-            // Search for the filename string in the raw data
-            guard let range = data.range(of: targetName) else {
-                return nil
-            }
-            
-            // The Directory Record contains the Logical Block Number (LBN) 
-            // where the file starts. In ISO9660, the LBN is at a specific offset 
-            // relative to the filename.
-            let lbnOffset = range.lowerBound - 10
-            guard lbnOffset > 0 else { return nil }
-            
-            // Extract the 4-byte LBN (Little Endian)
-            let lbnData = data.subdata(in: lbnOffset..<lbnOffset+4)
-            let lbn = lbnData.withUnsafeBytes { $0.load(as: UInt32.self) }
-            
-            // The ISO9660 block size is 2048 bytes
+
+            guard let lbn = locateLBN(in: data, forLeafName: "SYSTEM.CNF;1") else { return nil }
+
             let fileOffset = UInt64(lbn) * 2048
-            
-            // Seek to that offset and read the file
             try? fileHandle.seek(toOffset: fileOffset)
             guard let fileData = try? fileHandle.read(upToCount: 2048) else { return nil }
             return String(data: fileData, encoding: .ascii)
@@ -260,18 +255,10 @@ enum ROMIdentifier {
         guard let data = try? fileHandle.read(upToCount: 500_000) else { return false }
         
         // 1. Search for the string "PARAM.SFO" in the directory records
-        let targetName = "PARAM.SFO".data(using: .ascii)!
-        guard let range = data.range(of: targetName) else {
+        guard let lbn = ISOScanner.locateLBN(in: data, forLeafName: "PARAM.SFO;1") else {
             return false
         }
-        
-        // 2. ISO9660 Directory record logic:
-        // The LBN (Logical Block Number) is located 10 bytes before the filename.
-        let lbnOffset = range.lowerBound - 10
-        guard lbnOffset > 0 && lbnOffset + 4 < data.count else { return false }
-        
-        let lbn = data.subdata(in: lbnOffset..<lbnOffset+4).withUnsafeBytes { $0.load(as: UInt32.self) }
-        
+
         // 3. Seek to the block (LBN * 2048) and verify the file starts with "\0PSF"
         let fileOffset = UInt64(lbn) * 2048
         try? fileHandle.seek(toOffset: fileOffset)
