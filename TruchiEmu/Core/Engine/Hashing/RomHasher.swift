@@ -350,32 +350,40 @@ enum RomHasher {
         guard let handle = try? FileHandle(forReadingFrom: url) else { return nil }
         defer { try? handle.close() }
 
-        let scanRange = 8 * 1024 * 1024
+        // ISO9660 directory records contain leaf filenames with version suffix (e.g. "PARAM.SFO;1"),
+        // not the full path. Scan the first 16MB to find the SFO and EBOOT directory entries.
+        let scanRange = 16 * 1024 * 1024
         guard let scanData = try? handle.read(upToCount: scanRange) else { return nil }
 
-        let sfoName = "PSP_GAME\\PARAMS.SFO".data(using: .ascii)!
-        guard let sfoRange = scanData.range(of: sfoName) else { return nil }
+        guard let sfoLbn = locateLBN(in: scanData, forLeafName: "PARAM.SFO;1") else { return nil }
+        guard let ebootLbn = locateLBN(in: scanData, forLeafName: "EBOOT.BIN;1") else { return nil }
 
-        let sfoLbnOffset = sfoRange.lowerBound - 10
-        let sfoLbn = scanData.subdata(in: sfoLbnOffset..<sfoLbnOffset + 4).withUnsafeBytes { $0.load(as: UInt32.self) }
-        let sfoOffset = UInt64(sfoLbn) * 2048
-
-        try? handle.seek(toOffset: sfoOffset)
+        try? handle.seek(toOffset: UInt64(sfoLbn) * 2048)
         guard let sfoData = try? handle.read(upToCount: 4096) else { return nil }
 
-        let ebootName = "PSP_GAME\\SYSDIR\\EBOOT.BIN".data(using: .ascii)!
-        guard let ebootRange = scanData.range(of: ebootName) else { return nil }
-
-        let ebootLbnOffset = ebootRange.lowerBound - 10
-        let ebootLbn = scanData.subdata(in: ebootLbnOffset..<ebootLbnOffset + 4).withUnsafeBytes { $0.load(as: UInt32.self) }
-        let ebootOffset = UInt64(ebootLbn) * 2048
-
-        try? handle.seek(toOffset: ebootOffset)
-        guard let ebootData = try? handle.read(upToCount: 128 * 1024 * 1024) else { return nil }
+        try? handle.seek(toOffset: UInt64(ebootLbn) * 2048)
+        var ebootData = Data()
+        let bufferSize = 128 * 1024
+        while let chunk = try? handle.read(upToCount: bufferSize), !chunk.isEmpty {
+            ebootData.append(chunk)
+        }
+        guard !ebootData.isEmpty else { return nil }
 
         var buffer = sfoData
         buffer.append(ebootData)
         return md5Data(buffer)
+    }
+
+    // Searches `scanData` for an ISO9660 directory record whose leaf filename matches
+    // `leafName`, then returns the 4-byte little-endian LBN pointing to the file's data extent.
+    // The LBN sits 2 bytes into the directory record, while the identifier starts at byte 33
+    // of the record; the offset from identifier start to LBN start is therefore -31.
+    private static func locateLBN(in scanData: Data, forLeafName leafName: String) -> UInt32? {
+        guard let target = leafName.data(using: .ascii) else { return nil }
+        guard let range = scanData.range(of: target) else { return nil }
+        let lbnOffset = range.lowerBound - 31
+        guard lbnOffset > 0, lbnOffset + 4 <= scanData.count else { return nil }
+        return scanData.subdata(in: lbnOffset..<lbnOffset + 4).withUnsafeBytes { $0.load(as: UInt32.self) }
     }
 
     // MARK: - Dreamcast
