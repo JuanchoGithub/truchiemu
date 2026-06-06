@@ -67,7 +67,6 @@ final class SetupWizardState: ObservableObject {
     @Published var achievementsEnabled: Bool = false
     @Published var achievementsUsername: String = ""
     @Published var achievementsPassword: String = ""
-    @Published var loggingEnabled: Bool = false
     @Published var selectedShaderPresetID: String = ""
     @Published var controllerDetected: Bool = false
     @Published var detectedControllerName: String = ""

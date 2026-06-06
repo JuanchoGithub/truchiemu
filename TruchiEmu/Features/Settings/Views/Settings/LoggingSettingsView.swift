@@ -1,12 +1,9 @@
 import SwiftUI
 import AppKit
 
-// MARK: - LoggingSettingsView
-
 struct LoggingSettingsView: View {
     @Environment(\.colorScheme) private var colorScheme
     @State private var selectedLevel: LogLevel = .none
-    @State private var coreLogLevel: CoreLogLevel = .warn
 
     @StateObject private var viewModel = LoggingSettingsViewModel()
 
@@ -29,7 +26,6 @@ struct LoggingSettingsView: View {
 
     var body: some View {
         Form {
-            // Log Level Section
             if !isSearching || matchesSearch("logging log debug console output level verbosity info extreme") {
                 Section {
                     Picker(loc.localized("logging.logLevel"), selection: $selectedLevel) {
@@ -47,23 +43,63 @@ struct LoggingSettingsView: View {
                 }
             }
 
-            // Core Logging Section
-            if !isSearching || matchesSearch("logging core libretro emulation debug") {
+            if !isSearching || matchesSearch("logging file folder location path size archive") {
                 Section {
-                    Picker(loc.localized("logging.coreLogLevel"), selection: $coreLogLevel) {
-                        ForEach(CoreLogLevel.allCases, id: \.self) { level in
-                            Text(level.name).tag(level)
+                    LabeledContent(loc.localized("logging.location")) {
+                        HStack(spacing: AppSpacing.sm) {
+                            Text(viewModel.currentLogFilePath)
+                                .font(.caption)
+                                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                .lineLimit(1)
+                                .truncationMode(.middle)
+                            Button(loc.localized("logging.showInFinder")) {
+                                viewModel.showLogInFinder()
+                            }
+                            .buttonStyle(.bordered)
+                            .controlSize(.small)
                         }
                     }
-                    .pickerStyle(.segmented)
 
-                    Text(loc.localized("logging.coreLoggingDescription"))
-                        .font(.caption)
-                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                    LabeledContent(loc.localized("logging.currentFile")) {
+                        Text(viewModel.currentLogFileSize)
+                            .font(.caption)
+                            .foregroundStyle(AppColors.textTertiary(colorScheme))
+                    }
 
-                    Divider()
-                        .padding(.vertical, AppSpacing.xs)
+                    LabeledContent(loc.localized("logging.totalLogSize")) {
+                        Text(viewModel.totalLogFileSize)
+                            .font(.caption)
+                            .foregroundStyle(AppColors.textTertiary(colorScheme))
+                    }
 
+                    if viewModel.hasCustomLogFolder {
+                        Text(loc.localized("logging.customLocationDescription"))
+                            .font(.caption)
+                            .foregroundStyle(AppColors.brandAccent)
+                    }
+
+                    HStack {
+                        Button(loc.localized("logging.changeLocation")) {
+                            viewModel.changeLogFolder()
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+
+                        if viewModel.hasCustomLogFolder {
+                            Button(loc.localized("logging.reset")) {
+                                viewModel.resetToDefaultFolder()
+                            }
+                            .buttonStyle(.bordered)
+                            .controlSize(.small)
+                        }
+                    }
+                } header: {
+                    Label { Text(loc.localized("logging.logFileLocation")) } icon: { Image(systemName: "folder") }
+                }
+            }
+
+            if !isSearching || matchesSearch("logging maintenance clear trim delete archive rotation size") {
+                Section {
                     LabeledContent(loc.localized("logging.maxFileSize")) {
                         Text(loc.localized("logging.fiveMB"))
                             .font(.caption)
@@ -81,12 +117,30 @@ struct LoggingSettingsView: View {
                             .font(.caption)
                             .foregroundStyle(AppColors.textTertiary(colorScheme))
                     }
+
+                    Divider()
+                        .padding(.vertical, AppSpacing.xs)
+
+                    HStack {
+                        Button(loc.localized("logging.trimOldEntries")) {
+                            viewModel.trimOldLogs()
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+
+                        Button(loc.localized("logging.clearAllLogs")) {
+                            viewModel.clearAllLogs()
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                    }
                 } header: {
                     Label { Text(loc.localized("logging.logMaintenance")) } icon: { Image(systemName: "trash") }
+                } footer: {
+                    Text(loc.localized("logging.maintenanceDescription"))
                 }
             }
 
-            // No results message
             if isSearching && !hasMatchingSections {
                 Section {
                     Text(loc.localized("logging.noMatchingSettings") + " \"\(searchText)\"")
@@ -103,25 +157,16 @@ struct LoggingSettingsView: View {
         .onAppear {
             let rawLevel = AppSettings.get("log_level", type: String.self) ?? "info"
             selectedLevel = LogLevel(rawValue: rawLevel) ?? .info
-
-            let rawCoreLevel = AppSettings.get("core_log_level", type: Int.self) ?? 1
-            coreLogLevel = CoreLogLevel(rawValue: rawCoreLevel) ?? .warn
-
             viewModel.refreshInfo()
         }
         .onChange(of: selectedLevel) { _, newValue in
             LoggerService.shared.setLevel(newValue)
             AppSettings.set("log_level", value: newValue.rawValue)
         }
-        .onChange(of: coreLogLevel) { _, newValue in
-            SystemPreferences.shared.coreLogLevel = newValue
-            AppSettings.set("core_log_level", value: newValue.rawValue)
-        }
     }
 
     private var hasMatchingSections: Bool {
         matchesSearch("logging log debug console output level verbosity info extreme") ||
-        matchesSearch("logging core libretro emulation debug") ||
         matchesSearch("logging file folder location path size archive") ||
         matchesSearch("logging maintenance clear trim delete archive rotation size")
     }
@@ -146,8 +191,6 @@ struct LoggingSettingsView: View {
         .font(.caption)
     }
 }
-
-// MARK: - ViewModel
 
 @MainActor
 final class LoggingSettingsViewModel: ObservableObject {

@@ -462,19 +462,6 @@ enum EmulatorLanguage: Int, CaseIterable, Identifiable {
     }
 }
 
-enum CoreLogLevel: Int, CaseIterable, Identifiable {
-    case info = 0, warn = 1, error = 2, none = 3
-    var id: Int { self.rawValue }
-    var name: String {
-        switch self {
-        case .info: return "All Logs"
-        case .warn: return "Warnings & Errors"
-        case .error: return "Errors Only"
-        case .none: return "No Logs"
-        }
-    }
-}
-
 class SystemPreferences: ObservableObject {
     static let shared = SystemPreferences()
     @Published var updateTrigger: Int = 0
@@ -482,7 +469,6 @@ class SystemPreferences: ObservableObject {
     private static let keyShowBiosFiles = "showBiosFiles"
     private static let keyShowHiddenMAMEFiles = "showHiddenMAMEFiles"
     private static let keySystemLanguage = "coreSystemLanguage"
-    private static let keyCoreLogLevel = "coreLogLevel"
     private static let keyApplyCheatsOnLaunch = "applyCheatsOnLaunch"
     private static let keyShowCheatNotifications = "showCheatNotifications"
     private static let keyBoxTypePrefix = "boxType_"
@@ -498,10 +484,6 @@ class SystemPreferences: ObservableObject {
 
     @Published var systemLanguage: EmulatorLanguage = .english {
         didSet { AppSettings.set(Self.keySystemLanguage, value: String(systemLanguage.rawValue)); updateTrigger += 1 }
-    }
-
-    @Published var coreLogLevel: CoreLogLevel = .warn {
-        didSet { AppSettings.set(Self.keyCoreLogLevel, value: String(coreLogLevel.rawValue)); updateTrigger += 1 }
     }
 
     func boxType(for systemID: String) -> BoxType {
@@ -538,8 +520,6 @@ class SystemPreferences: ObservableObject {
         self.showHiddenMAMEFiles = AppSettings.getBool(Self.keyShowHiddenMAMEFiles, defaultValue: false)
         let langRaw = Int(AppSettings.get(Self.keySystemLanguage, type: String.self) ?? "0") ?? 0
         self.systemLanguage = EmulatorLanguage(rawValue: langRaw) ?? .english
-        let logRaw = Int(AppSettings.get(Self.keyCoreLogLevel, type: String.self) ?? "0") ?? CoreLogLevel.warn.rawValue
-        self.coreLogLevel = CoreLogLevel(rawValue: logRaw) ?? .warn
         self.applyCheatsOnLaunch = AppSettings.getBool(Self.keyApplyCheatsOnLaunch, defaultValue: false)
         self.showCheatNotifications = AppSettings.getBool(Self.keyShowCheatNotifications, defaultValue: true)
     }

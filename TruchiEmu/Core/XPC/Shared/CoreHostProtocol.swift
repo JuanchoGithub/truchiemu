@@ -18,6 +18,7 @@ import Foundation
     func resetGame(reply: @escaping () -> Void)
     func setLanguage(_ language: Int, reply: @escaping () -> Void)
     func setLogLevel(_ level: Int, reply: @escaping () -> Void)
+    func setAppLogLevel(_ rawValue: String, reply: @escaping () -> Void)
 
     func serializeSize(reply: @escaping (Int) -> Void)
     func serializeState(reply: @escaping (Data?) -> Void)

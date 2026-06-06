@@ -300,6 +300,13 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
         reply()
     }
 
+    func setAppLogLevel(_ rawValue: String, reply: @escaping () -> Void) {
+        if let level = LogLevel(rawValue: rawValue) {
+            LoggerService.shared.setLevel(level)
+        }
+        reply()
+    }
+
     func serializeSize(reply: @escaping (Int) -> Void) {
         reply(Int(LibretroBridge.serializeSize()))
     }

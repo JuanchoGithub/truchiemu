@@ -130,7 +130,6 @@ Button(loc.localized("wizard.skip")) {
         library.hasCompletedOnboarding = true
         AppSettings.setBool("has_completed_onboarding", value: true)
 
-        AppSettings.setBool("logging_enabled", value: wizard.loggingEnabled)
         AppSettings.set("display_default_shader_preset", value: wizard.selectedShaderPresetID)
 
         for folder in wizard.libraryFolders {
@@ -424,20 +423,9 @@ Label(error, systemImage: "xmark.circle.fill")
                         .cornerRadius(8)
                     }
                 }
-                .padding(.leading, 36)
-            }
-
-            Divider()
-
-            // Logging
-            featureToggle(
-                title: loc.localized("wizard.loggingTitle"),
-                icon: "terminal",
-                description: loc.localized("wizard.loggingDescription"),
-                isOn: $wizard.loggingEnabled,
-                detail: loc.localized("wizard.loggingDetail")
-            )
+        .padding(.leading, 36)
         }
+    }
     }
 
     private func featureToggle(title: String, icon: String, description: String, isOn: Binding<Bool>, detail: String) -> some View {

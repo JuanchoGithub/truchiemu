@@ -72,7 +72,7 @@ final class XPCBridgeAdapter {
         let saveDir = SaveDirectoryBridge.libretroSaveDirectoryPath()
         let sysDir = SaveDirectoryBridge.libretroSystemDirectoryPath()
         let lang = SystemPreferences.shared.systemLanguage.rawValue
-        let logLevel = Int(SystemPreferences.shared.coreLogLevel.rawValue)
+        let logLevel = Int(LoggerService.shared.currentLevel.coreLogLevelValue)
 
         guard let proxy = XPCConnectionManager.shared.remoteProxy else {
             onFailure?("XPC service not connected")
@@ -610,6 +610,16 @@ final class XPCBridgeAdapter {
             return
         }
         XPCConnectionManager.shared.remoteProxy?.setLogLevel(level) {}
+    }
+
+    func setAppLogLevel(_ rawValue: String) {
+        guard useXPC else {
+            if let level = LogLevel(rawValue: rawValue) {
+                LoggerService.shared.setLevel(level)
+            }
+            return
+        }
+        XPCConnectionManager.shared.remoteProxy?.setAppLogLevel(rawValue) {}
     }
 
     // MARK: - RetroAchievements (rcheevos)

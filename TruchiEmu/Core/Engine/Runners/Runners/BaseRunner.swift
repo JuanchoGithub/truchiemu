@@ -365,7 +365,7 @@ case "scummvm": runner = ScummVMRunner()
         isRunning = true
         
         let selectedLang = SystemPreferences.shared.systemLanguage.rawValue
-        let selectedLogLevel = Int32(SystemPreferences.shared.coreLogLevel.rawValue)
+        let selectedLogLevel = LoggerService.shared.currentLevel.coreLogLevelValue
         
         // Track last loaded core so Options view knows which file to persist to
         AppSettings.set("lastLoadedCoreID", value: coreID)

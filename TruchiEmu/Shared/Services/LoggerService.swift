@@ -32,7 +32,7 @@ enum LogLevel: String, Codable, CaseIterable {
     case info = "info"
     case debug = "debug"
     case extreme = "extreme"
-    
+
     var description: String {
         switch self {
         case .none: return "No Logging"
@@ -41,17 +41,24 @@ enum LogLevel: String, Codable, CaseIterable {
         case .extreme: return "Extreme"
         }
     }
-    
+
     var shouldLogInfo: Bool { self == .info || self == .debug || self == .extreme }
     var shouldLogDebug: Bool { self == .debug || self == .extreme }
     var shouldLogExtreme: Bool { self == .extreme }
-    
+
     var label: String {
         switch self {
         case .none: return "NONE"
         case .info: return "INFO"
         case .debug: return "DEBUG"
         case .extreme: return "EXTREME"
+        }
+    }
+
+    var coreLogLevelValue: Int32 {
+        switch self {
+        case .none: return 3
+        default: return 0
         }
     }
 }
@@ -131,44 +138,49 @@ final class LoggerService: @unchecked Sendable {
     // MARK: - Setup File Logging
     
     private func setupFileLogging() {
-        // Setup must be synchronous to ensure file handle is ready before first log write
-        _setupFileLoggingSync()
+#if !XPC_SERVICE
+        let logURL = LogManager.shared.currentLogURL
+#else
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        let logURL = appSupport.appendingPathComponent("TruchiEmu/Logs/TruchiEmuCoreHost.log")
+#endif
+        _setupFileLoggingSync(logURL: logURL)
     }
     
-    private func _setupFileLoggingSync() {
-        // Close existing handle
+    private func _setupFileLoggingSync(logURL: URL? = nil) {
         logFileHandle?.closeFile()
         logFileHandle = nil
-        
-        // Use default log URL initially to avoid circular dependency
-        // (LogManager.currentLogURL would read AppSettings, which isn't ready yet)
-        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        let logDir = appSupport.appendingPathComponent("TruchiEmu/Logs")
-        let logURL = logDir.appendingPathComponent("TruchiEmu.log")
+
+        let resolvedURL: URL
+        if let logURL {
+            resolvedURL = logURL
+        } else if let cached = currentLogURL {
+            resolvedURL = cached
+        } else {
+            let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+            resolvedURL = appSupport.appendingPathComponent("TruchiEmu/Logs/TruchiEmu.log")
+        }
         
         let ts = ISO8601DateFormatter.string(from: Date(), timeZone: TimeZone.current)
-        
-        // Use os_log for setup messages so they go to system console, and also format for file
-        let tsMsg = "\(ts) [SETUP] [Logger] Setting up file logging at: \(logURL.path)"
+
+        let tsMsg = "\(ts) [SETUP] [Logger] Setting up file logging at: \(resolvedURL.path)"
         print(tsMsg)
-        
+
         do {
-            // Ensure directory exists
-            let directoryURL = logURL.deletingLastPathComponent()
+            let directoryURL = resolvedURL.deletingLastPathComponent()
             if !FileManager.default.fileExists(atPath: directoryURL.path) {
                 print("\(ts) [SETUP] [Logger] Creating directory: \(directoryURL.path)")
                 try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
             }
-            
-  // Open file for appending
-  if !FileManager.default.fileExists(atPath: logURL.path) {
-    print("\(ts) [SETUP] [Logger] Creating log file at: \(logURL.path)")
-    FileManager.default.createFile(atPath: logURL.path, contents: nil)
-  }
 
-  logFileHandle = try FileHandle(forWritingTo: logURL)
-  currentLogURL = logURL  // Cache the URL for thread-safe access
-  logFileHandle?.seekToEndOfFile()
+            if !FileManager.default.fileExists(atPath: resolvedURL.path) {
+                print("\(ts) [SETUP] [Logger] Creating log file at: \(resolvedURL.path)")
+                FileManager.default.createFile(atPath: resolvedURL.path, contents: nil)
+            }
+
+            logFileHandle = try FileHandle(forWritingTo: resolvedURL)
+            currentLogURL = resolvedURL
+            logFileHandle?.seekToEndOfFile()
 
   print("\(ts) [SETUP] [Logger] File handle opened successfully, log file ready")
             
@@ -188,19 +200,34 @@ final class LoggerService: @unchecked Sendable {
             
         } catch {
             print("\(ts) [SETUP] [ERROR] [Logger] ERROR setting up file logging: \(error.localizedDescription)")
-            print("\(ts) [SETUP] [ERROR] [Logger] Log URL: \(logURL.path)")
+            print("\(ts) [SETUP] [ERROR] [Logger] Log URL: \(resolvedURL.path)")
         }
     }
     
     // MARK: - Set Log Level
-    
+
     func setLevel(_ level: LogLevel) {
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }
             self.currentLevel = level
-            
-            // Update file logging
+
+            // Propagate to cores (in-process + XPC) — only available in main app target
+            #if !XPC_SERVICE
+            XPCBridgeAdapter.shared.setLogLevel(Int(level.coreLogLevelValue))
+            XPCBridgeAdapter.shared.setAppLogLevel(level.rawValue)
+            #endif
+
+            // Resolve log URL on main thread (LogManager uses AppSettings which requires MainActor)
+#if !XPC_SERVICE
+            let logURL = LogManager.shared.currentLogURL
+#else
+            let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+            let logURL = appSupport.appendingPathComponent("TruchiEmu/Logs/TruchiEmuCoreHost.log")
+#endif
+
+            // Reinitialize file handle on log queue (picks up custom log folder changes)
             self.logFileQueue.async { [weak self] in
+                self?._setupFileLoggingSync(logURL: logURL)
                 self?.writeToFile("// Log level changed to \(level.rawValue) at \(self?.dateFormatter.string(from: Date()) ?? "") //\n")
             }
         }
@@ -404,8 +431,8 @@ final class LoggerService: @unchecked Sendable {
       trimFileToRecentEntries(at: middleURL, maxLines: 500)
     }
     
-    // Re-open file logging
-    _setupFileLoggingSync()
+        // Re-open file logging
+        _setupFileLoggingSync(logURL: logURL)
   }
     
     // Trim a log file to keep only the most recent N lines.
@@ -469,20 +496,19 @@ final class LoggerService: @unchecked Sendable {
       try? FileManager.default.removeItem(at: logURL.appendingPathExtension("1"))
       try? FileManager.default.removeItem(at: logURL.appendingPathExtension("2"))
 
-      // Re-setup logging
-      self._setupFileLoggingSync()
+        // Re-setup logging
+        self._setupFileLoggingSync(logURL: logURL)
     }
   }
     
     // Get the current log file size in bytes.
     func currentLogFileSize() -> Int64 {
-        let logURL = LogManager.shared.currentLogURL
+        guard let logURL = currentLogURL else { return 0 }
         return (try? FileManager.default.attributesOfItem(atPath: logURL.path)[.size] as? Int64) ?? 0
     }
-    
-    // Get total size of all log files (current + rotated).
+
     func totalLogFileSize() -> Int64 {
-        let logURL = LogManager.shared.currentLogURL
+        guard let logURL = currentLogURL else { return 0 }
         var total: Int64 = 0
         for ext in ["", "1", "2"] {
             let url = ext.isEmpty ? logURL : logURL.appendingPathExtension(ext)
@@ -495,8 +521,8 @@ final class LoggerService: @unchecked Sendable {
     
     // Get age of the current log file.
     func currentLogFileAge() -> TimeInterval? {
-        let logURL = LogManager.shared.currentLogURL
-        guard let attrs = try? FileManager.default.attributesOfItem(atPath: logURL.path),
+        guard let logURL = currentLogURL,
+              let attrs = try? FileManager.default.attributesOfItem(atPath: logURL.path),
               let modDate = attrs[.modificationDate] as? Date else { return nil }
         return Date().timeIntervalSince(modDate)
     }
