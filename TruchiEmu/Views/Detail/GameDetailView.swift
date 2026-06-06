@@ -65,16 +65,18 @@ struct GameDetailView: View {
     @State var isLaunchingGame = false
     @State var showSystemPicker: Bool = false
 
-    // MARK: - RA Hash Comparison State
-    @State var showRAHashComparison = false
-    @State var raComparisonTitle: String = ""
-    @State var raComparisonHashes: [String] = []
-    @State var raComparisonCurrentHash: String = ""
-    @State var raComparisonMatchedHash: String?
-    @State var raComparisonRAGameId: Int?
-    @State var isFindingRAGame = false
-    @State var raComparisonError: String?
-    @State var raComparisonNameMatches: [RAHashComparisonContent.NameMatchItem] = []
+// MARK: - RA Hash Comparison State
+@State var showRAHashComparison = false
+@State var raComparisonTitle: String = ""
+@State var raComparisonHashes: [String] = []
+@State var raComparisonCurrentHash: String = ""
+@State var raComparisonMatchedHash: String?
+@State var raComparisonRAGameId: Int?
+@State var isFindingRAGame = false
+@State var raComparisonError: String?
+@State var raComparisonNameMatches: [RAHashComparisonContent.NameMatchItem] = []
+@State var raVerificationStatus: ManualActionStatus = .hidden
+@State var raVerificationAutoDismiss: Task<Void, Never>?
 
     var currentROM: ROM {
         library.roms.first { $0.id == rom.id } ?? rom
@@ -152,6 +154,7 @@ struct GameDetailView: View {
     var raHashComparisonSheet: some View {
         RAHashComparisonContent(
             gameTitle: raComparisonTitle,
+            systemName: systemName,
             hashes: raComparisonHashes,
             currentHash: raComparisonCurrentHash,
             matchedHash: raComparisonMatchedHash,
@@ -319,22 +322,16 @@ struct GameDetailView: View {
                     selectedSection = section
                 }
             } label: {
-                HStack(spacing: 10) {
-                    Image(systemName: section.sectionIcon)
-                        .font(.system(size: 15, weight: .medium))
-                        .frame(width: 20, height: 20)
-                        .foregroundColor(isSelected ? AppColors.brandAccent : AppColors.textSecondary(colorScheme))
-                    Text(section.localizedTitle)
-                        .lineLimit(1)
-                        .font(AppTypography.subheadline)
-                        .foregroundColor(isSelected ? AppColors.textPrimary(colorScheme) : AppColors.textSecondary(colorScheme))
-                        .fontWeight(isSelected ? .medium : .regular)
-                    Spacer()
-                    Image(systemName: "info.circle")
-                        .font(.caption2)
-                        .foregroundColor(AppColors.textTertiary(colorScheme))
-                        .help(section.helpText)
-                }
+            HStack(spacing: 10) {
+                Image(systemName: section.sectionIcon)
+                    .font(.system(size: 15, weight: .medium))
+                    .frame(width: 20, height: 20)
+                    .foregroundColor(isSelected ? AppColors.brandAccent : AppColors.textSecondary(colorScheme))
+                Text(section.localizedTitle)
+                    .font(AppTypography.subheadline)
+                    .foregroundColor(isSelected ? AppColors.textPrimary(colorScheme) : AppColors.textSecondary(colorScheme))
+                    .fontWeight(isSelected ? .medium : .regular)
+            }
                 .padding(.horizontal, 10)
                 .padding(.vertical, 7)
                 .contentShape(Rectangle())
@@ -412,6 +409,27 @@ struct GameDetailView: View {
     }
 
     @MainActor
+    func loadAchievementsAndReturnCount(raGameId: Int, force: Bool = false) async -> Int {
+        guard achievementsService.isEnabled, achievementsService.isLoggedIn else { return 0 }
+        isAchievementsLoading = true
+        gameAchievements = []
+        LoggerService.info(category: "GameDetailView", "loadAchievementsAndReturnCount: fetching for raGameId=\(raGameId) (force=\(force))")
+        do {
+            let gameInfo = try await achievementsService.fetchGameInfo(gameID: raGameId, username: achievementsService.username ?? "", isUserInitiated: true, force: force)
+            achievementsService.currentGame = gameInfo
+            gameAchievements = gameInfo.achievements
+            isAchievementsLoading = false
+            LoggerService.info(category: "GameDetailView", "loadAchievementsAndReturnCount: got \(gameInfo.achievements.count) achievements for '\(gameInfo.title)'")
+            return gameInfo.achievements.count
+        } catch {
+            LoggerService.error(category: "GameDetailView", "loadAchievementsAndReturnCount: fetch failed: \(error)")
+            gameAchievements = []
+            isAchievementsLoading = false
+            return 0
+        }
+    }
+
+    @MainActor
     func findInRA() {
         guard achievementsService.isEnabled else { return }
         guard achievementsService.isLoggedIn else { return }
@@ -420,12 +438,16 @@ struct GameDetailView: View {
         isFindingRAGame = true
         raComparisonError = nil
         raComparisonTitle = currentROM.displayName
+        raVerificationStatus = .working(loc.localized("achievement.loadingAchievements"))
 
         let raConsoleID = achievementsService.mapSystemIDToRAConsoleID(systemID)
+        let sysName = systemName
+
         guard raConsoleID > 0 else {
             raComparisonError = "This system is not supported by RetroAchievements"
             isFindingRAGame = false
             showRAHashComparison = true
+            raVerificationStatus = .hidden
             return
         }
 
@@ -440,6 +462,18 @@ struct GameDetailView: View {
                     raComparisonMatchedHash = nil
                     isFindingRAGame = false
                     showRAHashComparison = true
+                    raVerificationStatus = .hidden
+                    NotificationHistoryManager.shared.post(
+                        icon: "xmark.octagon",
+                        title: loc.localized("raHash.title"),
+                        subtitle: loc.localized("raHash.pillHashErrorSubtitle"),
+                        autoDismissDelay: nil
+                    )
+                    NotificationService.shared.sendNotification(
+                        title: loc.localized("raHash.title"),
+                        body: loc.localized("raHash.notificationHashError")
+                            .replacingOccurrences(of: "{title}", with: currentROM.displayName)
+                    )
                 }
                 return
             }
@@ -449,20 +483,69 @@ struct GameDetailView: View {
             }
 
             if let cachedGame = await achievementsService.findGameByHashLocally(consoleID: raConsoleID, hash: hash, isUserInitiated: true) {
-                raComparisonRAGameId = cachedGame.id
-                raComparisonTitle = cachedGame.title
-                raComparisonHashes = cachedGame.hashes
-                raComparisonMatchedHash = hash
+                // Hash matched a cached RA game. Persist the match so the trophy
+                // badge shows in the library, and fetch the game's full achievement
+                // data. The achievements section will display a "0 achievements"
+                // state if the server has none for this game.
+                let achievementCount = await loadAchievementsAndReturnCount(raGameId: cachedGame.id)
+
                 var updatedROM = currentROM
                 updatedROM.raGameId = cachedGame.id
                 updatedROM.raMatchStatus = "matched"
                 library.updateROM(updatedROM)
-                LoggerService.debug(category: "GameDetailView", "Persisted RA match: raGameId=\(cachedGame.id), title='\(cachedGame.title)'")
-                loadAchievements(raGameId: cachedGame.id)
+                LoggerService.debug(category: "GameDetailView", "Persisted RA match: raGameId=\(cachedGame.id), title='\(cachedGame.title)', achievements=\(achievementCount)")
 
                 await MainActor.run {
+                    raComparisonRAGameId = cachedGame.id
+                    raComparisonTitle = cachedGame.title
+                    raComparisonHashes = cachedGame.hashes
+                    raComparisonMatchedHash = hash
                     isFindingRAGame = false
-                    showRAHashComparison = true
+                    let raURL = "https://retroachievements.org/game/\(cachedGame.id)"
+                    if achievementCount > 0 {
+                        raVerificationStatus = .result(loc.localized("achievement.romVerified"), tone: .success)
+                        raVerificationAutoDismiss?.cancel()
+                        raVerificationAutoDismiss = Task { @MainActor in
+                            try? await Task.sleep(nanoseconds: 5_000_000_000)
+                            guard !Task.isCancelled else { return }
+                            raVerificationStatus = .hidden
+                        }
+                        NotificationHistoryManager.shared.post(
+                            icon: "trophy.fill",
+                            title: loc.localized("raHash.notificationMatchTitle"),
+                            subtitle: loc.localized("raHash.pillMatchSubtitle")
+                                .replacingOccurrences(of: "{title}", with: cachedGame.title)
+                                .replacingOccurrences(of: "{n}", with: "\(achievementCount)"),
+                            autoDismissDelay: nil,
+                            actionLabel: loc.localized("raHash.viewOnRetroAchievements"),
+                            actionType: "openURL",
+                            actionPayload: OpenURLActionPayload(url: raURL)
+                        )
+                    } else {
+                        raVerificationStatus = .result(loc.localized("achievement.romMatchedNoAchievements"), tone: .info)
+                        raVerificationAutoDismiss?.cancel()
+                        raVerificationAutoDismiss = Task { @MainActor in
+                            try? await Task.sleep(nanoseconds: 6_000_000_000)
+                            guard !Task.isCancelled else { return }
+                            raVerificationStatus = .hidden
+                        }
+                        NotificationHistoryManager.shared.post(
+                            icon: "trophy",
+                            title: loc.localized("raHash.pillZeroAchievementsTitle"),
+                            subtitle: loc.localized("raHash.pillZeroAchievementsSubtitle")
+                                .replacingOccurrences(of: "{title}", with: cachedGame.title),
+                            autoDismissDelay: nil,
+                            actionLabel: loc.localized("raHash.viewOnRetroAchievements"),
+                            actionType: "openURL",
+                            actionPayload: OpenURLActionPayload(url: raURL)
+                        )
+                    }
+                    NotificationService.shared.sendNotification(
+                        title: loc.localized("raHash.notificationMatchTitle"),
+                        body: loc.localized("raHash.notificationMatchBody")
+                            .replacingOccurrences(of: "{title}", with: cachedGame.title)
+                            .replacingOccurrences(of: "{system}", with: sysName)
+                    )
                 }
             } else {
                 let nameMatches = await achievementsService.findAllRAGamesByName(title: currentROM.displayName, consoleID: raConsoleID)
@@ -475,7 +558,48 @@ struct GameDetailView: View {
                     }
                     raComparisonNameMatches = nameMatches.map { RAHashComparisonContent.NameMatchItem(id: $0.id, title: $0.title, hashes: $0.hashes) }
                     isFindingRAGame = false
+                    raVerificationStatus = .hidden
                     showRAHashComparison = true
+
+                    if nameMatches.isEmpty {
+                        NotificationHistoryManager.shared.post(
+                            icon: "magnifyingglass",
+                            title: loc.localized("raHash.notificationNoMatchTitle"),
+                            subtitle: loc.localized("raHash.pillNotFoundSubtitle")
+                                .replacingOccurrences(of: "{title}", with: currentROM.displayName)
+                                .replacingOccurrences(of: "{system}", with: sysName),
+                            autoDismissDelay: nil,
+                            actionLabel: loc.localized("raHash.requestOnRA"),
+                            actionType: "openURL",
+                            actionPayload: OpenURLActionPayload(url: "https://retroachievements.org/viewtopic.php?t=15027")
+                        )
+                        NotificationService.shared.sendNotification(
+                            title: loc.localized("raHash.notificationNoMatchTitle"),
+                            body: loc.localized("raHash.notificationNoMatchBody")
+                                .replacingOccurrences(of: "{title}", with: currentROM.displayName)
+                                .replacingOccurrences(of: "{system}", with: sysName)
+                        )
+                    } else {
+                        let firstMatch = nameMatches.first
+                        let mismatchURL = firstMatch.map { "https://retroachievements.org/game/\($0.id)" } ?? ""
+                        NotificationHistoryManager.shared.post(
+                            icon: "exclamationmark.triangle",
+                            title: loc.localized("raHash.notificationMismatchTitle"),
+                            subtitle: loc.localized("raHash.pillMismatchSubtitle")
+                                .replacingOccurrences(of: "{title}", with: firstMatch?.title ?? currentROM.displayName)
+                                .replacingOccurrences(of: "{system}", with: sysName),
+                            autoDismissDelay: nil,
+                            actionLabel: loc.localized("raHash.viewOnRetroAchievements"),
+                            actionType: "openURL",
+                            actionPayload: OpenURLActionPayload(url: mismatchURL)
+                        )
+                        NotificationService.shared.sendNotification(
+                            title: loc.localized("raHash.notificationMismatchTitle"),
+                            body: loc.localized("raHash.notificationMismatchBody")
+                                .replacingOccurrences(of: "{title}", with: firstMatch?.title ?? currentROM.displayName)
+                                .replacingOccurrences(of: "{system}", with: sysName)
+                        )
+                    }
                 }
             }
         }

@@ -54,18 +54,43 @@ extension GameDetailView {
                     Divider().overlay(AppColors.divider(colorScheme))
                     MetadataRow(label: loc.localized("gameInfo.fileSize"), value: size)
                 }
-                if let crc = crcHash {
-                    Divider().overlay(AppColors.divider(colorScheme))
-                    MetadataRow(
-                        label: loc.localized("gameInfo.crc32"),
-                        value: crc,
-                        isMonospaced: true,
-                        copyAction: {
-                            NSPasteboard.general.clearContents()
-                            NSPasteboard.general.setString(crc, forType: .string)
-                        }
-                    )
+            if let crc = crcHash {
+                Divider().overlay(AppColors.divider(colorScheme))
+                MetadataRow(
+                    label: loc.localized("gameInfo.crc32"),
+                    value: crc,
+                    isMonospaced: true,
+                    copyAction: {
+                        NSPasteboard.general.clearContents()
+                        NSPasteboard.general.setString(crc, forType: .string)
+                    }
+                )
+            }
+            if achievementsService.isEnabled, currentROM.raMatchStatus == "matched" {
+                Divider().overlay(AppColors.divider(colorScheme))
+                HStack {
+                    Image(systemName: "trophy.fill").foregroundColor(AppColors.brandAccent).frame(width: 20)
+                    Text(loc.localized("gameInfo.retroAchievements"))
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(AppColors.textPrimary(colorScheme))
+                    Spacer()
+                    HStack(spacing: 4) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.caption2)
+                            .foregroundColor(AppColors.success(colorScheme))
+                        Text(loc.localized("gameInfo.raSupported"))
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(AppColors.success(colorScheme))
+                    }
+                    .padding(.horizontal, AppSpacing.sm)
+                    .padding(.vertical, AppSpacing.xxs)
+                    .background(AppColors.success(colorScheme).opacity(0.12))
+                    .cornerRadius(AppRadius.xs)
                 }
+                .padding(.vertical, AppSpacing.xs)
+            }
                 if let meta = currentROM.metadata {
                     gameMetadataRows(meta: meta)
                 }

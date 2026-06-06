@@ -16,8 +16,9 @@ struct GameCardView: View {
     @State private var image: NSImage?
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var prefs = SystemPreferences.shared
-    @ObservedObject var dragState = GameDragState.shared
+    @ObservedObject private var dragState = GameDragState.shared
     @ObservedObject private var boxArtService = BoxArtService.shared
+    @ObservedObject private var raService = RetroAchievementsService.shared
     @EnvironmentObject private var library: ROMLibrary
     @EnvironmentObject private var categoryManager: CategoryManager
 
@@ -125,13 +126,25 @@ struct GameCardView: View {
         VStack(alignment: .leading, spacing: 8) {
             ZStack(alignment: .topTrailing) {
                 artworkView
-                    .clipped()
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(Color.black.opacity(isHovered ? 0.08 : 0))
-                    )
-                    .grayscale(artworkGrayscale)
-                    .opacity(artworkOpacity)
+                .clipped()
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                    .fill(Color.black.opacity(isHovered ? 0.08 : 0))
+                )
+                .grayscale(artworkGrayscale)
+                .opacity(artworkOpacity)
+
+                if raService.isEnabled && rom.raMatchStatus == "matched" {
+                    Image(systemName: "trophy.fill")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundColor(.white)
+                    .padding(4)
+                    .background(AppColors.brandAccent.opacity(0.85))
+                    .clipShape(Circle())
+                    .shadow(color: .black.opacity(0.3), radius: 2)
+                    .padding(4)
+                    .transition(.scale.combined(with: .opacity))
+                }
 
                 if isMultiSelected {
                     Image(systemName: "checkmark.circle.fill")

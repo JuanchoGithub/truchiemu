@@ -396,6 +396,7 @@ LoggerService.info(category: "Shaders", "Updated shader for \(updatedROMIDs.coun
         case .hidden: return loc.localized("app.hiddenGames")
         case .mameNonGames: return loc.localized("app.hiddenMAMEFiles")
         case .lastAdded: return loc.localized("app.lastAdded")
+        case .retroAchievements: return loc.localized("library.retroAchievements")
 
         }
     }

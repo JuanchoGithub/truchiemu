@@ -3,6 +3,7 @@ import AppKit
 
 struct RAHashComparisonContent: View {
     let gameTitle: String
+    let systemName: String
     let hashes: [String]
     let currentHash: String
     let matchedHash: String?
@@ -21,7 +22,8 @@ struct RAHashComparisonContent: View {
     @Environment(\.colorScheme) var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
     @State private var showCopied = false
-    @State private var selectedMatchId: Int?
+
+    private var gameFoundByName: Bool { !nameMatches.isEmpty }
 
     var body: some View {
         NavigationStack {
@@ -30,31 +32,27 @@ struct RAHashComparisonContent: View {
                     loadingView
                 } else if let error = error {
                     errorView(error)
-                } else if hashes.isEmpty && nameMatches.isEmpty {
-                    emptyView
-                } else if matchedHash != nil {
-                    hashMatchView
+                } else if gameFoundByName {
+                    hashMismatchView
                 } else {
-                    noMatchView
+                    gameNotFoundView
                 }
             }
             .navigationTitle(loc.localized("raHash.title"))
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(loc.localized("raHash.done")) {
-                        dismiss()
-                    }
+                    Button(loc.localized("raHash.done")) { dismiss() }
                 }
             }
         }
-        .frame(width: 600, height: 500)
+        .frame(width: 600, height: 520)
     }
 
     private var loadingView: some View {
         VStack(spacing: 16) {
             ProgressView()
-        Text(loc.localized("raHash.searching"))
-            .foregroundColor(AppColors.textSecondary(colorScheme))
+            Text(loc.localized("raHash.searching"))
+                .foregroundColor(AppColors.textSecondary(colorScheme))
         }
     }
 
@@ -62,102 +60,42 @@ struct RAHashComparisonContent: View {
         VStack(spacing: 16) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: 40))
-            .foregroundColor(AppColors.warning(colorScheme))
+                .foregroundColor(AppColors.warning(colorScheme))
             Text(error)
-            .multilineTextAlignment(.center)
-            .foregroundColor(AppColors.textSecondary(colorScheme))
+                .multilineTextAlignment(.center)
+                .foregroundColor(AppColors.textSecondary(colorScheme))
         }
         .padding()
     }
 
-    private var emptyView: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "trophy.circle")
-                .font(.system(size: 40))
-                .foregroundColor(AppColors.textSecondary(colorScheme))
-            Text(loc.localized("raHash.noGameFound"))
-                .font(.headline)
-        Text(loc.localized("raHash.gameNotSupported"))
-            .foregroundColor(AppColors.textSecondary(colorScheme))
-        }
-        .padding()
-    }
+    // MARK: - Game Not Found (no name matches at all)
 
-    private var hashMatchView: some View {
+    private var gameNotFoundView: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(gameTitle)
-                        .font(.headline)
-                    if let raGameId = raGameId {
-                        Button {
-                            if let url = URL(string: "https://retroachievements.org/game/\(raGameId)") {
-                                NSWorkspace.shared.open(url)
-                            }
-                        } label: {
-                            Label(loc.localized("raHash.viewOnRetroAchievements"), systemImage: "arrow.up.forward.square")
-                                .font(.caption)
-                        }
-                        .buttonStyle(.link)
-                    }
-                }
-
-                Divider()
-
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(AppColors.success(colorScheme))
-                Text(loc.localized("raHash.hashMatchFound"))
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
-                    }
-            Text(loc.localized("raHash.romMatchesRA"))
-                .font(.caption)
-                .foregroundColor(AppColors.textSecondary(colorScheme))
-                }
-                .padding()
-                .background(AppColors.success(colorScheme).opacity(0.1))
-                .cornerRadius(8)
-
-                Divider()
-
-                VStack(alignment: .leading, spacing: 12) {
-                    Text(loc.localized("raHash.yourRomHash"))
-                        .font(.subheadline)
-                        .fontWeight(.medium)
-
-            Text(currentHash)
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(AppColors.success(colorScheme))
-                        .textSelection(.enabled)
-                }
-            }
-            .padding()
-        }
-    }
-
-    private var noMatchView: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Image(systemName: "exclamationmark.triangle.fill")
-                    .foregroundColor(AppColors.warning(colorScheme))
-                        Text(loc.localized("raHash.noMatchingRomFound"))
+                    HStack(spacing: 8) {
+                        Image(systemName: "questionmark.circle.fill")
+                            .font(.title3)
+                            .foregroundColor(AppColors.textMuted(colorScheme))
+                        Text(loc.localized("raHash.gameNotFoundTitle"))
                             .font(.headline)
                     }
-            Text(loc.localized("raHash.romHashMismatch"))
-                .font(.caption)
-                .foregroundColor(AppColors.textSecondary(colorScheme))
+                    Text(loc.localized("raHash.gameNotFoundExplanation")
+                        .replacingOccurrences(of: "{title}", with: gameTitle)
+                        .replacingOccurrences(of: "{system}", with: systemName))
+                        .font(.caption)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
+                        .fixedSize(horizontal: false, vertical: true)
                 }
-                .padding()
-                .background(AppColors.warning(colorScheme).opacity(0.1))
+                .padding(12)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(AppColors.cardBackgroundSubtle(colorScheme))
                 .cornerRadius(8)
 
                 Divider()
 
-                VStack(alignment: .leading, spacing: 12) {
+                VStack(alignment: .leading, spacing: 8) {
                     Text(loc.localized("raHash.yourRomHash"))
                         .font(.subheadline)
                         .fontWeight(.medium)
@@ -170,49 +108,130 @@ struct RAHashComparisonContent: View {
 
                 Divider()
 
-                if !nameMatches.isEmpty {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text(loc.localized("raHash.possibleMatches").replacingOccurrences(of: "{0}", with: "\(nameMatches.count)"))
-                            .font(.subheadline)
-                            .fontWeight(.medium)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(loc.localized("raHash.whatYouCanDo"))
+                        .font(.subheadline)
+                        .fontWeight(.medium)
 
-                Text(loc.localized("raHash.romFilenameMatched"))
-                    .font(.caption)
-                    .foregroundColor(AppColors.textSecondary(colorScheme))
-
-                        ScrollView {
-                            LazyVStack(alignment: .leading, spacing: 16) {
-                                ForEach(nameMatches) { match in
-                                    nameMatchCard(match)
-                                }
-                            }
-                        }
-                        .frame(maxHeight: 250)
-                    }
-                } else {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text(loc.localized("raHash.raSupportedHashes"))
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-
-                        ScrollView {
-                            LazyVStack(alignment: .leading, spacing: 4) {
-                                ForEach(hashes, id: \.self) { hash in
-                                    HStack {
-                                        Text(hash)
-                                            .font(.system(.caption, design: .monospaced))
-                                            .textSelection(.enabled)
-                                        if hash.lowercased() == currentHash.lowercased() {
-                                            Image(systemName: "checkmark")
-                .foregroundColor(AppColors.success(colorScheme))
-                                                .font(.caption)
-                                        }
+                    VStack(alignment: .leading, spacing: 10) {
+                        HStack(alignment: .top, spacing: 8) {
+                            Image(systemName: "1.circle.fill")
+                                .font(.caption)
+                                .foregroundColor(AppColors.brandAccent)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(loc.localized("raHash.requestNewGames"))
+                                    .font(.caption)
+                                    .fontWeight(.semibold)
+                                Text(loc.localized("raHash.requestNewGamesExplanation"))
+                                    .font(.caption2)
+                                    .foregroundColor(AppColors.textTertiary(colorScheme))
+                                    .fixedSize(horizontal: false, vertical: true)
+                                Button {
+                                    if let url = URL(string: "https://retroachievements.org/viewtopic.php?t=15027") {
+                                        NSWorkspace.shared.open(url)
                                     }
+                                } label: {
+                                    Label(loc.localized("raHash.requestNewGames"), systemImage: "arrow.up.forward.square")
+                                        .font(.caption)
                                 }
+                                .buttonStyle(.bordered)
+                                .controlSize(.small)
+                                .padding(.top, 2)
                             }
                         }
-                        .frame(maxHeight: 150)
+
+                        HStack(alignment: .top, spacing: 8) {
+                            Image(systemName: "2.circle.fill")
+                                .font(.caption)
+                                .foregroundColor(AppColors.brandAccent)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(loc.localized("raHash.checkDifferentRom"))
+                                    .font(.caption)
+                                    .fontWeight(.semibold)
+                                Text(loc.localized("raHash.checkDifferentRomExplanation"))
+                                    .font(.caption2)
+                                    .foregroundColor(AppColors.textTertiary(colorScheme))
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                        }
                     }
+                }
+            }
+            .padding()
+        }
+    }
+
+    // MARK: - Hash Mismatch (game found by name, but hash doesn't match)
+
+    private var hashMismatchView: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .font(.title3)
+                            .foregroundColor(AppColors.warning(colorScheme))
+                        Text(loc.localized("raHash.hashMismatchTitle"))
+                            .font(.headline)
+                    }
+                    Text(loc.localized("raHash.hashMismatchExplanation")
+                        .replacingOccurrences(of: "{title}", with: nameMatches.first?.title ?? gameTitle))
+                        .font(.caption)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .padding(12)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(AppColors.warning(colorScheme).opacity(0.08))
+                .cornerRadius(8)
+
+                Divider()
+
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(loc.localized("raHash.yourRomHash"))
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+
+                    Text(currentHash)
+                        .font(.system(.caption, design: .monospaced))
+                        .foregroundColor(AppColors.warning(colorScheme))
+                        .textSelection(.enabled)
+                }
+
+                Divider()
+
+                VStack(alignment: .leading, spacing: 12) {
+                    Text(loc.localized("raHash.possibleMatches")
+                        .replacingOccurrences(of: "{0}", with: "\(nameMatches.count)"))
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+
+                    Text(loc.localized("raHash.romFilenameMatched"))
+                        .font(.caption)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    ScrollView {
+                        LazyVStack(alignment: .leading, spacing: 12) {
+                            ForEach(nameMatches) { match in
+                                nameMatchCard(match)
+                            }
+                        }
+                    }
+                    .frame(maxHeight: 220)
+                }
+
+                Divider()
+
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(loc.localized("raHash.howToFindMatchingRom"))
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+
+                    Text(loc.localized("raHash.howToFindMatchingRomExplanation"))
+                        .font(.caption)
+                        .foregroundColor(AppColors.textTertiary(colorScheme))
+                        .fixedSize(horizontal: false, vertical: true)
                 }
 
                 Divider()
@@ -222,11 +241,10 @@ struct RAHashComparisonContent: View {
                     NSPasteboard.general.clearContents()
                     NSPasteboard.general.setString(text, forType: .string)
                     showCopied = true
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        showCopied = false
-                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) { showCopied = false }
                 } label: {
-                    Label(showCopied ? loc.localized("raHash.copiedToClipboard") : loc.localized("raHash.copyAllInfo"), systemImage: showCopied ? "checkmark.circle.fill" : "doc.on.doc")
+                    Label(showCopied ? loc.localized("raHash.copiedToClipboard") : loc.localized("raHash.copyAllInfo"),
+                          systemImage: showCopied ? "checkmark.circle.fill" : "doc.on.doc")
                         .font(.subheadline)
                 }
                 .buttonStyle(.borderedProminent)
@@ -249,18 +267,19 @@ struct RAHashComparisonContent: View {
                         NSWorkspace.shared.open(url)
                     }
                 } label: {
-                    Image(systemName: "arrow.up.forward.square")
+                    Label(loc.localized("raHash.viewOnRetroAchievements"), systemImage: "arrow.up.forward.square")
                         .font(.caption)
                 }
-                .buttonStyle(.link)
+                .buttonStyle(.bordered)
+                .controlSize(.small)
             }
 
-            Text(loc.localized("raHash.supportedHashes"))
+            Text(loc.localized("raHash.acceptedHashes"))
                 .font(.caption)
                 .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
 
             ForEach(match.hashes, id: \.self) { hash in
-                HStack {
+                HStack(spacing: 6) {
                     Text(hash)
                         .font(.system(.caption2, design: .monospaced))
                         .textSelection(.enabled)
@@ -273,7 +292,7 @@ struct RAHashComparisonContent: View {
             }
         }
         .padding(12)
-            .background(AppColors.cardBackgroundSubtle(colorScheme))
+        .background(AppColors.cardBackgroundSubtle(colorScheme))
         .cornerRadius(8)
     }
 
@@ -283,11 +302,12 @@ struct RAHashComparisonContent: View {
         text += "Your ROM hash (MD5): \(currentHash)\n\n"
 
         if !nameMatches.isEmpty {
-            text += "=== POSSIBLE MATCHES FOUND (\(nameMatches.count)) ===\n\n"
+            text += "=== MATCHING GAMES IN RA (\(nameMatches.count)) ===\n\n"
             for (index, match) in nameMatches.enumerated() {
                 text += "--- Match #\(index + 1): \(match.title) ---\n"
                 text += "RA Game ID: \(match.id)\n"
-                text += "Supported hashes:\n"
+                text += "RA Game Page: https://retroachievements.org/game/\(match.id)\n"
+                text += "Accepted hashes:\n"
                 for hash in match.hashes {
                     text += "  \(hash)\n"
                 }
@@ -295,27 +315,42 @@ struct RAHashComparisonContent: View {
             }
         }
 
-        text += "=== ACTION REQUIRED ===\n"
+        text += "=== WHAT THIS MEANS ===\n"
         text += "Your ROM's hash does not match any RA-supported version.\n"
-        text += "To earn achievements, you need to find a different ROM file that matches one of the hashes above.\n"
-        text += "Try searching Google for one of the hashes with the game title.\n"
+        text += "You likely have a different revision, region, or dump of the game.\n"
+        text += "To earn achievements, find a ROM whose hash matches one listed above.\n"
+        text += "No-Intro and Redump ROM sets contain verified dumps that match these hashes.\n"
         return text
     }
 }
 
-#Preview {
+#Preview("Hash Mismatch") {
     RAHashComparisonContent(
         gameTitle: "Super Mario World (USA)",
-        hashes: ["abc123def456", "def456abc789", "789xyz123"],
+        systemName: "SNES",
+        hashes: [],
         currentHash: "notmatchinghash",
         matchedHash: nil,
-        raGameId: 1234,
+        raGameId: nil,
         error: nil,
         isLoading: false,
         nameMatches: [
             RAHashComparisonContent.NameMatchItem(id: 1234, title: "Super Mario World (USA)", hashes: ["abc123def456", "def456abc789"]),
-            RAHashComparisonContent.NameMatchItem(id: 1235, title: "Super Mario World (Europe)", hashes: ["789xyz123", "aaa111bbb222"]),
-            RAHashComparisonContent.NameMatchItem(id: 1236, title: "Super Mario World (Japan)", hashes: ["ccc333ddd444"])
+            RAHashComparisonContent.NameMatchItem(id: 1235, title: "Super Mario World (Europe)", hashes: ["789xyz123", "aaa111bbb222"])
         ]
+    )
+}
+
+#Preview("Game Not Found") {
+    RAHashComparisonContent(
+        gameTitle: "Some Obscure Game",
+        systemName: "NES",
+        hashes: [],
+        currentHash: "abcdef123456",
+        matchedHash: nil,
+        raGameId: nil,
+        error: nil,
+        isLoading: false,
+        nameMatches: []
     )
 }

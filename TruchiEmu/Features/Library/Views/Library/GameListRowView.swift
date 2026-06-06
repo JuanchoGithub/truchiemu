@@ -14,6 +14,7 @@ struct GameListRowView: View {
     @State private var isHovered = false
     @EnvironmentObject var library: ROMLibrary
     @EnvironmentObject var categoryManager: CategoryManager
+    @ObservedObject private var raService = RetroAchievementsService.shared
     
     private var titleFontSize: CGFloat {
         12 + zoomLevel * 8
@@ -163,11 +164,18 @@ Text(sys.name)
             // Last played
             if let played = rom.lastPlayed {
                 Text(played, style: .relative)
-                    .font(.system(size: subtitleFontSize - 0.5))
-                    .foregroundColor(AppColors.textSecondaryNeutral(colorScheme).opacity(0.7))
-                }
-                
-                // Favorite indicator
+                .font(.system(size: subtitleFontSize - 0.5))
+                .foregroundColor(AppColors.textSecondaryNeutral(colorScheme).opacity(0.7))
+            }
+
+            // RetroAchievements compatible
+            if raService.isEnabled && rom.raMatchStatus == "matched" {
+                Image(systemName: "trophy.fill")
+                .foregroundColor(AppColors.brandAccent)
+                .font(.system(size: subtitleFontSize))
+            }
+
+            // Favorite indicator
                 if rom.isFavorite {
                     Image(systemName: "heart.fill")
                         .foregroundColor(.pink)

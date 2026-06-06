@@ -205,6 +205,13 @@ LoggerService.debug(category: category, message)
             NotificationCenter.default.post(name: .openAppSettings, object: nil)
             return true
         }
+
+        historyManager.registerActionHandler(type: "openURL") { entry in
+            guard let payload = entry.decodePayload(OpenURLActionPayload.self),
+                  let url = URL(string: payload.url) else { return false }
+            NSWorkspace.shared.open(url)
+            return true
+        }
     }
     
 var body: some Scene {
@@ -623,6 +630,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
         // Set up RetroAchievementsService with SwiftData context
         RetroAchievementsService.shared.setModelContext(SwiftDataContainer.shared.container.mainContext)
+
+        // Auto-request notification authorization on first launch so that
+        // background events (RA match/mismatch, hash errors, etc.) actually surface.
+        // The system only shows the prompt when authorization is .notDetermined,
+        // so this is a no-op for users who already accepted or declined.
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            guard settings.authorizationStatus == .notDetermined else { return }
+            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
+        }
 
         let args = ProcessInfo.processInfo.arguments
         if args.contains("--launch") {

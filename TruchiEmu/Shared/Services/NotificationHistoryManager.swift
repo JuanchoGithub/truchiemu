@@ -15,6 +15,10 @@ struct SaveDeleteActionPayload: Codable {
     let filePairs: [[String]]  // [[originalPath, tempUndoPath], ...]
 }
 
+struct OpenURLActionPayload: Codable {
+    let url: String
+}
+
 private enum notificationLog {
     static func info(_ message: String) { LoggerService.info(category: "NotificationHistory", message) }
 }

@@ -5,6 +5,7 @@ struct ModernSectionCard<Content: View>: View {
     let icon: String?
     var badge: String? = nil
     var showHeader: Bool = true
+    var headerTrailing: AnyView? = nil
     @ViewBuilder let content: Content
 
     @Environment(\.colorScheme) private var colorScheme
@@ -14,12 +15,14 @@ struct ModernSectionCard<Content: View>: View {
         icon: String? = nil,
         badge: String? = nil,
         showHeader: Bool = true,
+        headerTrailing: AnyView? = nil,
         @ViewBuilder content: () -> Content
     ) {
         self.title = title
         self.icon = icon
         self.badge = badge
         self.showHeader = showHeader
+        self.headerTrailing = headerTrailing
         self.content = content()
     }
 
@@ -49,6 +52,9 @@ struct ModernSectionCard<Content: View>: View {
                             .clipShape(Capsule())
                     }
                     Spacer()
+                    if let headerTrailing = headerTrailing {
+                        headerTrailing
+                    }
                 }
                 .padding(.bottom, AppSpacing.sm)
                 .overlay(alignment: .bottom) {

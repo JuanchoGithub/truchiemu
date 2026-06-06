@@ -7,6 +7,7 @@ struct SystemSidebarView: View {
     @Environment(SystemDatabaseWrapper.self) private var systemDatabase
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var raService = RetroAchievementsService.shared
     @Binding var selectedFilter: LibraryFilter
     @Binding var showCreateCategorySheet: Bool
     @Binding var editingCategory: GameCategory?
@@ -55,10 +56,17 @@ struct SystemSidebarView: View {
                     sidebarRow(icon: "heart.fill", label: loc.localized("app.favorites"), count: favCount, tint: .pink, filter: .favorites)
                 }
 
-                let recentCount = library.romCounts["recent"] ?? 0
-                sidebarRow(icon: "clock.fill", label: loc.localized("app.recent"), count: recentCount, tint: .orange, filter: .recent)
+        let recentCount = library.romCounts["recent"] ?? 0
+        sidebarRow(icon: "clock.fill", label: loc.localized("app.recent"), count: recentCount, tint: .orange, filter: .recent)
 
-                sectionHeader(
+        if raService.isEnabled {
+            let raCount = library.roms.filter { $0.raMatchStatus == "matched" }.count
+            if raCount > 0 {
+                sidebarRow(icon: "trophy.fill", label: loc.localized("library.retroAchievements"), count: raCount, tint: AppColors.brandAccent, filter: .retroAchievements)
+            }
+        }
+
+        sectionHeader(
                     title: loc.localized("app.categories"),
                     isExpanded: $categoriesSectionExpanded,
                     isHeaderHovered: $categoriesHeaderHovered,
@@ -501,7 +509,8 @@ enum LibraryFilter: Hashable, Identifiable {
     case category(String) // category ID
     case hidden
     case mameNonGames // MAME BIOS, device, mechanical, unknown
-    
+    case retroAchievements
+
     var id: String {
         switch self {
         case .all: return "all"
@@ -512,9 +521,10 @@ enum LibraryFilter: Hashable, Identifiable {
         case .category(let id): return "category-\(id)"
         case .hidden: return "hidden"
         case .mameNonGames: return "mame-non-games"
+        case .retroAchievements: return "retro-achievements"
         }
     }
-    
+
     var isSystemView: Bool {
         if case .system = self { return true }
         return false

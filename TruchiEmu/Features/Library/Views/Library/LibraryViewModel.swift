@@ -153,6 +153,8 @@ func updateFilters(filter: LibraryFilter, searchText: String, activeFilters: Set
             base = roms.filter { rom in
                 rom.systemID == "mame" && rom.mameRomType != "game"
             }
+        case .retroAchievements:
+            base = roms.filter { $0.raMatchStatus == "matched" && !$0.isHidden }
         }
         
         // 2. Active Filter Chips

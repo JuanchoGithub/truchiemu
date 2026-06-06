@@ -18,11 +18,12 @@ class RetroAchievementsService: ObservableObject {
     
     private func shouldFetch(cachedAt: Date?, isUserInitiated: Bool) -> Bool {
         guard let cachedAt = cachedAt else { return true }
-        
-        let thirtyDays: TimeInterval = 30 * 24 * 3600
+
         let twentyFourHours: TimeInterval = 24 * 3600
-        
-        let threshold = isUserInitiated ? twentyFourHours : thirtyDays
+        let oneHour: TimeInterval = 3600
+
+        // 24h for background fetches, 1h for user-initiated refreshes, always fetch when forced.
+        let threshold = isUserInitiated ? oneHour : twentyFourHours
         return Date().timeIntervalSince(cachedAt) >= threshold
     }
     @Published var currentGame: RAGameInfo?
@@ -405,26 +406,26 @@ class RetroAchievementsService: ObservableObject {
 
     /// Fetches the entire game list from RA and stores it locally.
     /// Should be called on first login or when requested via UI.
+    /// All heavy work (JSON parsing, SwiftData upserts) runs on a background context.
     func fetchAndCacheGameList(isUserInitiated: Bool = false) async throws {
-        guard isEnabled, isLoggedIn, let context = modelContext else {
-            throw RAError.networkError 
+        guard isEnabled, isLoggedIn else {
+            throw RAError.networkError
         }
 
-        // Check freshness of existing cache
+        guard let container = SwiftDataContainer.shared.container else { return }
+
+        let mainContext = container.mainContext
         let descriptor = FetchDescriptor<RAGameCacheEntry>()
-        if let firstEntry = try? context.fetch(descriptor).first {
+        if let firstEntry = try? mainContext.fetch(descriptor).first {
             if !shouldFetch(cachedAt: firstEntry.cachedAt, isUserInitiated: isUserInitiated) {
                 LoggerService.info(category: "RetroAchievements", "RA game cache is still fresh (cached at \(firstEntry.cachedAt)), skipping fetch.")
                 return
             }
         }
-        
+
         LoggerService.info(category: "RetroAchievements", "Fetching entire game list from RA (isUserInitiated=\(isUserInitiated))...")
 
-        // API endpoint: https://api-docs.retroachievements.org/v1/get-game-list.html
-        // Try to import local JSON files first, as they contain hashes
-        await importLocalRAGameCache()
-        
+        // 1. Fetch from API (network I/O — already async)
         let url = URL(string: "\(apiBaseURL)/API_GetGameList.php")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
         components.queryItems = [
@@ -433,102 +434,184 @@ class RetroAchievementsService: ObservableObject {
         ]
 
         let (data, _) = try await URLSession.shared.data(from: components.url!)
-        
-        // Decode the response (Expected format: Array of objects)
         let raGames = try JSONDecoder().decode([RARAGameListResponse].self, from: data)
 
-        // Transactional update to the local cache
-        try context.transaction {
-            // Clear old cache to ensure a clean, up-to-date list
-            try context.delete(model: RAGameCacheEntry.self)
+        // 2. Determine user's console IDs on main context, then read hash files off-thread
+        let romDescriptor = FetchDescriptor<ROMEntry>()
+        let userRoms = (try? mainContext.fetch(romDescriptor)) ?? []
+        let userSystemIDs = Set(userRoms.compactMap { $0.systemID })
+        let userRAConsoleIDs = Set(userSystemIDs.map { String(Self.systemIDToRAConsoleID($0)) })
+        let localHashes = await readLocalHashFiles(userRAConsoleIDs: userRAConsoleIDs)
 
-            for raGame in raGames {
-                let entry = RAGameCacheEntry(
-                    id: raGame.ID,
-                    title: raGame.Title,
-                    consoleID: raGame.ConsoleID,
-                    consoleName: raGame.ConsoleName
-                )
-                context.insert(entry)
+        // 3. Write everything to SwiftData on a background context
+        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+            DispatchQueue.global(qos: .userInitiated).async {
+                let bgContext = ModelContext(container)
+                do {
+                    try bgContext.transaction {
+                        try bgContext.delete(model: RAGameCacheEntry.self)
+
+                        for raGame in raGames {
+                            let entry = RAGameCacheEntry(
+                                id: raGame.ID,
+                                title: raGame.Title,
+                                consoleID: raGame.ConsoleID,
+                                consoleName: raGame.ConsoleName,
+                                hashes: localHashes[raGame.ID] ?? []
+                            )
+                            bgContext.insert(entry)
+                        }
+                    }
+                } catch {
+                    LoggerService.error(category: "RetroAchievements", "Background SwiftData transaction failed: \(error.localizedDescription)")
+                }
+                continuation.resume()
             }
         }
-        
-        LoggerService.info(category: "RetroAchievements", "Successfully cached \(raGames.count) games from RA.")
+
+        // 4. Sync main context with background changes
+        mainContext.processPendingChanges()
+
+        LoggerService.info(category: "RetroAchievements", "Successfully cached \(raGames.count) games from RA (\(localHashes.count) with hashes).")
     }
-    
-    /// Imports local JSON cache files generated by the UI (Settings -> Refresh Games)
-    /// These files contain the hashes needed for identification.
-    func importLocalRAGameCache() async {
-        guard let context = modelContext else { return }
-        LoggerService.info(category: "RetroAchievements", "Checking for local JSON cache in \(listDataFolder.path)")
-        
-        guard FileManager.default.fileExists(atPath: listDataFolder.path) else {
-            LoggerService.info(category: "RetroAchievements", "No local RA cache directory found.")
-            return
-        }
-        
+
+    /// Reads local JSON cache files and returns a dictionary mapping gameID -> [hashes].
+    /// Runs entirely off the main thread — no SwiftData, just file I/O + JSON decoding.
+    private nonisolated func readLocalHashFiles(userRAConsoleIDs: Set<String>) async -> [Int: [String]] {
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        let listFolder = appSupport.appendingPathComponent("TruchiEmu/RetroAchievements/Lists", isDirectory: true)
+
+        guard FileManager.default.fileExists(atPath: listFolder.path) else { return [:] }
+
+        let jsonFiles: [URL]
         do {
-            // Get user's consoles to avoid importing everything
-            let romDescriptor = FetchDescriptor<ROMEntry>()
-            let userRoms = (try? context.fetch(romDescriptor)) ?? []
-            let userSystemIDs = Set(userRoms.compactMap { $0.systemID })
-            let userRAConsoleIDs = Set(userSystemIDs.map { String(mapSystemIDToRAConsoleID($0)) })
-            
-            let jsonFiles = try FileManager.default.contentsOfDirectory(at: listDataFolder, includingPropertiesForKeys: nil)
+            jsonFiles = try FileManager.default.contentsOfDirectory(at: listFolder, includingPropertiesForKeys: nil)
                 .filter { url in
                     guard url.pathExtension == "json" else { return false }
                     let id = url.lastPathComponent.components(separatedBy: "_").first ?? ""
                     return userRAConsoleIDs.contains(id)
                 }
-            
-            LoggerService.info(category: "RetroAchievements", "Found \(jsonFiles.count) relevant JSON cache files for your library.")
-            
-            for fileURL in jsonFiles {
-                await importLocalJSONFile(fileURL)
-            }
         } catch {
-            LoggerService.error(category: "RetroAchievements", "Error importing local cache: \(error.localizedDescription)")
+            return [:]
+        }
+
+        LoggerService.info(category: "RetroAchievements", "Found \(jsonFiles.count) relevant JSON cache files for your library.")
+
+        var result: [Int: [String]] = [:]
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+
+        for fileURL in jsonFiles {
+            guard let data = try? Data(contentsOf: fileURL),
+                  let games = try? decoder.decode([GameJSON].self, from: data) else { continue }
+            var count = 0
+            for game in games {
+                if !game.hashes.isEmpty {
+                    result[game.id] = game.hashes
+                    count += 1
+                }
+            }
+            LoggerService.info(category: "RetroAchievements", "Read \(count) games with hashes from \(fileURL.lastPathComponent)")
+        }
+
+        return result
+    }
+
+    /// Pure mapping from system ID to RA console ID — no MainActor required.
+    private static let raConsoleIDMapping: [String: Int] = [
+        "nes": 7, "snes": 3, "genesis": 1, "megadrive": 1,
+        "gb": 4, "gba": 5, "gbc": 6, "n64": 2,
+        "pce": 8, "tg16": 8, "segacd": 9, "32x": 10,
+        "sms": 11, "psx": 12, "lynx": 13, "ngp": 14,
+        "gamegear": 15, "gamecube": 16
+    ]
+
+    private nonisolated static func systemIDToRAConsoleID(_ systemID: String) -> Int {
+        raConsoleIDMapping[systemID.lowercased()] ?? 0
+    }
+
+    /// Imports local JSON cache files using a background ModelContext.
+    /// Called by user-initiated flows (fetchAndCacheAllGames, matchAllCachedGames).
+    func importLocalRAGameCache() async {
+        guard let container = SwiftDataContainer.shared.container else { return }
+        let listFolder = listDataFolder
+
+        guard FileManager.default.fileExists(atPath: listFolder.path) else {
+            LoggerService.info(category: "RetroAchievements", "No local RA cache directory found.")
+            return
+        }
+
+        // Determine user's console IDs on main context (lightweight read)
+        let mainContext = container.mainContext
+        let romDescriptor = FetchDescriptor<ROMEntry>()
+        let userRoms = (try? mainContext.fetch(romDescriptor)) ?? []
+        let userSystemIDs = Set(userRoms.compactMap { $0.systemID })
+        let userRAConsoleIDs = Set(userSystemIDs.map { String(Self.systemIDToRAConsoleID($0)) })
+
+        let jsonFiles: [URL]
+        do {
+            jsonFiles = try FileManager.default.contentsOfDirectory(at: listFolder, includingPropertiesForKeys: nil)
+                .filter { url in
+                    guard url.pathExtension == "json" else { return false }
+                    let id = url.lastPathComponent.components(separatedBy: "_").first ?? ""
+                    return userRAConsoleIDs.contains(id)
+                }
+        } catch {
+            LoggerService.error(category: "RetroAchievements", "Error listing local cache: \(error.localizedDescription)")
+            return
+        }
+
+        LoggerService.info(category: "RetroAchievements", "Found \(jsonFiles.count) relevant JSON cache files for your library.")
+
+        for fileURL in jsonFiles {
+            await importLocalJSONFile(fileURL)
         }
     }
 
-    /// Helper to import a single console-specific JSON file into SwiftData
-    private func importLocalJSONFile(_ fileURL: URL) async {
-        guard let context = modelContext else { return }
-        
+    /// Imports a single console JSON file using a background ModelContext.
+    func importLocalJSONFile(_ fileURL: URL) async {
+        guard let container = SwiftDataContainer.shared.container else { return }
+
         do {
             let data = try Data(contentsOf: fileURL)
             let decoder = JSONDecoder()
             decoder.dateDecodingStrategy = .iso8601
-            
-            // Flexible decoding to handle both PascalCase (API) and camelCase/lowercase (Local Cache)
-            // Uses class-level GameJSON
-            
-            if let games = try? decoder.decode([GameJSON].self, from: data) {
-                for game in games {
-                    let gameID = game.id
-                    let fetchDescriptor = FetchDescriptor<RAGameCacheEntry>(
-                        predicate: #Predicate<RAGameCacheEntry> { $0.id == gameID }
-                    )
-                    
-                    if let existing = try? context.fetch(fetchDescriptor).first {
-                        existing.hashes = game.hashes
-                        existing.title = game.title
-                        existing.consoleID = game.consoleID
-                        existing.consoleName = game.consoleName
-                    } else {
-                        let entry = RAGameCacheEntry(
-                            id: game.id,
-                            title: game.title,
-                            consoleID: game.consoleID,
-                            consoleName: game.consoleName,
-                            hashes: game.hashes
+
+            guard let games = try? decoder.decode([GameJSON].self, from: data) else { return }
+
+            // Run upserts on a background context
+            await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+                DispatchQueue.global(qos: .userInitiated).async {
+                    let bgContext = ModelContext(container)
+                    for game in games {
+                        let gameID = game.id
+                        let fetchDescriptor = FetchDescriptor<RAGameCacheEntry>(
+                            predicate: #Predicate<RAGameCacheEntry> { $0.id == gameID }
                         )
-                        context.insert(entry)
+
+                        if let existing = try? bgContext.fetch(fetchDescriptor).first {
+                            existing.hashes = game.hashes
+                            existing.title = game.title
+                            existing.consoleID = game.consoleID
+                            existing.consoleName = game.consoleName
+                        } else {
+                            let entry = RAGameCacheEntry(
+                                id: game.id,
+                                title: game.title,
+                                consoleID: game.consoleID,
+                                consoleName: game.consoleName,
+                                hashes: game.hashes
+                            )
+                            bgContext.insert(entry)
+                        }
                     }
+                    try? bgContext.save()
+                    continuation.resume()
                 }
-                try? context.save()
-                LoggerService.info(category: "RetroAchievements", "Imported \(games.count) games from \(fileURL.lastPathComponent)")
             }
+
+            container.mainContext.processPendingChanges()
+            LoggerService.info(category: "RetroAchievements", "Imported \(games.count) games from \(fileURL.lastPathComponent)")
         } catch {
             LoggerService.error(category: "RetroAchievements", "Failed to import \(fileURL.lastPathComponent): \(error.localizedDescription)")
         }
@@ -605,7 +688,9 @@ class RetroAchievementsService: ObservableObject {
             
             do {
                 let gamesForConsole = try context.fetch(descriptor)
-                if let result = gamesForConsole.first(where: { $0.hashes.contains(lowerHash) }) {
+                if let result = gamesForConsole.first(where: { entry in
+                    entry.hashes.contains(where: { $0.caseInsensitiveCompare(lowerHash) == .orderedSame })
+                }) {
                     LoggerService.info(category: "RetroAchievements", "Local cache HIT for hash \(lowerHash): \(result.title) (ID: \(result.id))")
                     return (result.id, result.title, result.hashes)
                 }
@@ -620,29 +705,91 @@ class RetroAchievementsService: ObservableObject {
         return nil
     }
     
-    // Find all games by name - tries local cache first, then falls back to API  
+    // Find all games by name - tries local cache first, then falls back to API.
+    // Uses ROMIdentifierService-style normalization (article variants, tag stripping,
+    // roman/arabic variants) so "Addams Family, The" matches "The Addams Family".
     func findAllRAGamesByName(title: String, consoleID: Int) async -> [(id: Int, title: String, hashes: [String])] {
+        let queryKeys = Self.buildTitleSearchKeys(for: title)
+        guard !queryKeys.isEmpty else { return [] }
+
         // First try local cache
         if let context = modelContext {
             let predicate = #Predicate<RAGameCacheEntry> {
-                $0.title.localizedStandardContains(title) && $0.consoleID == consoleID
+                $0.consoleID == consoleID
             }
             let descriptor = FetchDescriptor<RAGameCacheEntry>(predicate: predicate)
-            
+
             if let results = try? context.fetch(descriptor) {
-                return results.map { ($0.id, $0.title, $0.hashes) }
+                let matches = results.compactMap { entry -> (Int, String, [String])? in
+                    Self.matchesTitleSearchKeys(queryKeys: queryKeys, candidate: entry.title) ?
+                    (entry.id, entry.title, entry.hashes) : nil
+                }
+                if !matches.isEmpty { return matches }
             }
         }
-        
-        // If not in cache, search via API
-        return await searchGamesByNameViaAPI(title: title, consoleID: consoleID)
+
+        // Fall back to API
+        return await searchGamesByNameViaAPI(title: title, consoleID: consoleID, queryKeys: queryKeys)
     }
-    
+
+    // Build a set of normalized search keys from a ROM title.
+    // Uses ROMIdentifierService's normalization helpers for robust matching.
+    static func buildTitleSearchKeys(for title: String) -> Set<String> {
+        var keys = Set<String>()
+
+        // Strip filename tags and parens (e.g. "Addams Family, The (USA).nes" -> "Addams Family, The")
+        let stem = LibretroThumbnailResolver.stripRomFilenameTags(title)
+        let stripped = LibretroThumbnailResolver.stripParenthesesForFuzzyMatch(stem)
+
+        // 1. Standard normalized form (lowercase, paren-stripped, whitespace-collapsed)
+        keys.insert(ROMIdentifierService.normalizedComparableTitle(stripped))
+
+        // 2. Aggressive normalized form (strips all punctuation, lowercased)
+        let aggressive = ROMIdentifierService.aggressivelyNormalizedTitle(stem)
+        if !aggressive.isEmpty { keys.insert(aggressive) }
+
+        // 3. Article variants ("The Addams Family" <-> "Addams Family, The")
+        for variant in ROMIdentifierService.articleVariants(of: stripped) {
+            keys.insert(ROMIdentifierService.normalizedComparableTitle(variant))
+            let aggr = ROMIdentifierService.aggressivelyNormalizedTitle(variant)
+            if !aggr.isEmpty { keys.insert(aggr) }
+        }
+
+        // 4. Roman/Arabic number variants ("Final Fantasy III" <-> "Final Fantasy 3")
+        for base in Array(keys) {
+            for variant in ROMIdentifierService.romanNumeralVariants(of: base) {
+                keys.insert(variant)
+            }
+        }
+
+        // Drop any blanks or overly-broad keys
+        return keys.filter { $0.count >= 2 }
+    }
+
+    // Returns true if the candidate RA title matches any of the search keys.
+    static func matchesTitleSearchKeys(queryKeys: Set<String>, candidate: String) -> Bool {
+        let stripped = LibretroThumbnailResolver.stripParenthesesForFuzzyMatch(candidate)
+        let normalized = ROMIdentifierService.normalizedComparableTitle(stripped)
+        if queryKeys.contains(normalized) { return true }
+
+        let aggressive = ROMIdentifierService.aggressivelyNormalizedTitle(candidate)
+        if !aggressive.isEmpty && queryKeys.contains(aggressive) { return true }
+
+        // Article variants of the candidate
+        for variant in ROMIdentifierService.articleVariants(of: stripped) {
+            if queryKeys.contains(ROMIdentifierService.normalizedComparableTitle(variant)) { return true }
+            let aggr = ROMIdentifierService.aggressivelyNormalizedTitle(variant)
+            if !aggr.isEmpty && queryKeys.contains(aggr) { return true }
+        }
+
+        return false
+    }
+
     // Search games by name via RA API
-    private func searchGamesByNameViaAPI(title: String, consoleID: Int) async -> [(id: Int, title: String, hashes: [String])] {
+    private func searchGamesByNameViaAPI(title: String, consoleID: Int, queryKeys: Set<String>) async -> [(id: Int, title: String, hashes: [String])] {
         guard let username = username, !webApiKey.isEmpty else { return [] }
-        
-        // Use the generic game list endpoint filtered by console and search term
+
+        // Use the generic game list endpoint filtered by console
         let url = URL(string: "\(apiBaseURL)/API_GetGameList.php")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
         components.queryItems = [
@@ -651,22 +798,21 @@ class RetroAchievementsService: ObservableObject {
             URLQueryItem(name: "i", value: String(consoleID)),
             URLQueryItem(name: "f", value: "1")
         ]
-        
+
         guard let (data, _) = try? await URLSession.shared.data(from: components.url!) else { return [] }
-        
-        // Parse the list and filter by title
+
+        // Parse the list and filter by title using robust normalization
         if let json = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]] {
-            let lowerTitle = title.lowercased()
             return json.compactMap { game in
                 guard let gameTitle = game["Title"] as? String,
-                      gameTitle.lowercased().contains(lowerTitle),
                       let idStr = game["ID"] as? String,
-                      let id = Int(idStr) else { return nil }
+                      let id = Int(idStr),
+                      Self.matchesTitleSearchKeys(queryKeys: queryKeys, candidate: gameTitle) else { return nil }
                 let hashes = game["Hashes"] as? [String] ?? []
                 return (id, gameTitle, hashes)
             }
         }
-        
+
         return []
     }
 
@@ -796,29 +942,7 @@ class RetroAchievementsService: ObservableObject {
 
     /// Helper to map Libretro/SystemDatabase IDs to RetroAchievements Console IDs
     func mapSystemIDToRAConsoleID(_ systemID: String) -> Int {
-        // Implementation will include a mapping dictionary (e.g., "nes" -> 1, "snes" -> 2, etc.)
-        // based on the RA API documentation.
-        let mapping: [String: Int] = [
-            "nes": 7,
-            "snes": 3,
-            "genesis": 1,
-            "megadrive": 1,
-            "gb": 4,
-            "gba": 5,
-            "gbc": 6,
-            "n64": 2,
-            "pce": 8,
-            "tg16": 8,
-            "segacd": 9,
-            "32x": 10,
-            "sms": 11,
-            "psx": 12,
-            "lynx": 13,
-            "ngp": 14,
-            "gamegear": 15,
-            "gamecube": 16
-        ]
-        return mapping[systemID.lowercased()] ?? 0
+        Self.systemIDToRAConsoleID(systemID)
     }
 
     // Identify a game by its hash and fetch achievement data.
@@ -962,9 +1086,11 @@ class RetroAchievementsService: ObservableObject {
     }
     
     // Fetch detailed game info including achievements.
-    func fetchGameInfo(gameID: Int, username: String, isUserInitiated: Bool = false) async throws -> RAGameInfo {
-        // 1. Try to load from cache first
-        if let cached = await loadGameInfoFromCache(gameID: gameID, username: username) {
+    // - isUserInitiated: loosens the cache TTL (1h instead of 24h).
+    // - force: skips the cache entirely and always hits the network.
+    func fetchGameInfo(gameID: Int, username: String, isUserInitiated: Bool = false, force: Bool = false) async throws -> RAGameInfo {
+        // 1. Try to load from cache first (skip if forced)
+        if !force, let cached = await loadGameInfoFromCache(gameID: gameID, username: username) {
             if !shouldFetch(cachedAt: cached.cachedAt, isUserInitiated: isUserInitiated) {
                 LoggerService.info(category: "RetroAchievements", "Using cached achievement info for game \(gameID) (cached at \(cached.cachedAt))")
 

@@ -116,10 +116,49 @@ extension GameDetailView {
         ModernSectionCard(
             title: loc.localized("gameDetail.achievements"),
             icon: "trophy",
-            badge: gameAchievements.isEmpty ? nil : "\(unlockedAchievementCount)/\(gameAchievements.count)"
-        ) {
-            VStack(alignment: .leading, spacing: 0) {
-                if isAchievementsLoading {
+            badge: gameAchievements.isEmpty ? nil : "\(unlockedAchievementCount)/\(gameAchievements.count)",
+            headerTrailing: viewOnRALinkAnyView
+    ) {
+        VStack(alignment: .leading, spacing: 0) {
+            if raVerificationStatus.isVisible {
+                HStack(spacing: AppSpacing.sm) {
+                    switch raVerificationStatus {
+                    case .working(let title):
+                        ProgressView().controlSize(.small)
+                        Text(title).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
+                    case .result(let message, let tone):
+                        Image(systemName: tone.iconName)
+                        .font(.caption)
+                        .foregroundColor(AppColors.success(colorScheme))
+                        Text(message)
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundColor(AppColors.success(colorScheme))
+                    default:
+                        EmptyView()
+                    }
+                    Spacer()
+                    if case .result = raVerificationStatus {
+                        Button {
+                            raVerificationStatus = .hidden
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                            .font(.caption2)
+                            .foregroundColor(AppColors.textMuted(colorScheme))
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.horizontal, AppSpacing.md)
+                .padding(.vertical, AppSpacing.sm)
+                .background(AppColors.success(colorScheme).opacity(0.08))
+                .cornerRadius(AppRadius.sm)
+                .padding(.bottom, AppSpacing.sm)
+
+                Divider().overlay(AppColors.divider(colorScheme))
+            }
+
+            if isAchievementsLoading {
                     HStack(spacing: AppSpacing.md) {
                         ProgressView().controlSize(.small)
                         Text(loc.localized("achievement.loadingAchievements")).font(.subheadline).foregroundColor(AppColors.textSecondary(colorScheme))
@@ -163,38 +202,62 @@ extension GameDetailView {
                         .controlSize(.small)
                     }
                     .padding(.vertical, AppSpacing.sm)
-                } else if let matchStatus = currentROM.raMatchStatus, matchStatus == "not_supported" {
-                    VStack(spacing: AppSpacing.sm) {
-                        Image(systemName: "trophy.circle").font(.system(size: 30)).foregroundColor(AppColors.textMuted(colorScheme))
-                        Text(loc.localized("achievement.noAchievements")).font(.subheadline).foregroundColor(AppColors.textSecondary(colorScheme))
-                        Text(loc.localized("achievement.gameNotSupported")).font(.caption).foregroundColor(AppColors.textTertiary(colorScheme))
-                        Button {
-                            findInRA()
-                        } label: {
-                            Label(loc.localized("achievement.searchRetroAchievements"), systemImage: "magnifyingglass")
-                                .font(.caption)
+        } else if let matchStatus = currentROM.raMatchStatus, matchStatus == "not_supported" {
+            VStack(spacing: AppSpacing.sm) {
+                Image(systemName: "trophy.circle").font(.system(size: 30)).foregroundColor(AppColors.textMuted(colorScheme))
+                Text(loc.localized("achievement.noAchievements")).font(.subheadline).foregroundColor(AppColors.textSecondary(colorScheme))
+                Text(loc.localized("achievement.gameNotSupported")).font(.caption).foregroundColor(AppColors.textTertiary(colorScheme))
+                Button {
+                    findInRA()
+                } label: {
+Label(loc.localized("achievement.searchRetroAchievements"), systemImage: "checkmark.shield")
+					.font(.caption)
+				}
+				.buttonStyle(.bordered)
+				.controlSize(.small)
+				.padding(.top, AppSpacing.xxs)
+			}
+			.frame(maxWidth: .infinity).padding(.vertical, AppSpacing.xl)
+		} else if gameAchievements.isEmpty {
+            if let raGameId = currentROM.raGameId, raGameId > 0, currentROM.raMatchStatus == "matched" {
+                // Hash matched a known RA game but the server has no achievements for it.
+                VStack(spacing: AppSpacing.sm) {
+                    Image(systemName: "trophy.circle").font(.system(size: 30)).foregroundColor(AppColors.textMuted(colorScheme))
+                    Text(loc.localized("achievement.gameMatchedNoAchievements")).font(.subheadline).foregroundColor(AppColors.textSecondary(colorScheme))
+                    Text(loc.localized("achievement.zeroAchievementsExplanation")).font(.caption).foregroundColor(AppColors.textMuted(colorScheme)).multilineTextAlignment(.center)
+                    Button {
+                        Task {
+                            if let raGameId = currentROM.raGameId, raGameId > 0 {
+                                isAchievementsLoading = true
+                                _ = await loadAchievementsAndReturnCount(raGameId: raGameId, force: true)
+                            }
                         }
-                        .buttonStyle(.bordered)
-                        .controlSize(.small)
-                        .padding(.top, AppSpacing.xxs)
+                    } label: {
+                        Label(loc.localized("achievement.checkForNewAchievements"), systemImage: "arrow.clockwise")
+                            .font(.caption)
                     }
-                    .frame(maxWidth: .infinity).padding(.vertical, AppSpacing.xl)
-                } else if gameAchievements.isEmpty {
-                    VStack(spacing: AppSpacing.sm) {
-                        Image(systemName: "trophy.circle").font(.system(size: 30)).foregroundColor(AppColors.textMuted(colorScheme))
-                        Text(loc.localized("achievement.noAchievementsAvailable")).font(.subheadline).foregroundColor(AppColors.textSecondary(colorScheme))
-                        Text(loc.localized("achievement.gameMayNotHaveRAData")).font(.caption).foregroundColor(AppColors.textMuted(colorScheme))
-                        Button {
-                            findInRA()
-                        } label: {
-                            Label(loc.localized("achievement.searchRetroAchievements"), systemImage: "magnifyingglass")
-                                .font(.caption)
-                        }
-                        .buttonStyle(.bordered)
-                        .controlSize(.small)
-                        .padding(.top, AppSpacing.xxs)
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                    .padding(.top, AppSpacing.xxs)
+                }
+                .frame(maxWidth: .infinity).padding(.vertical, AppSpacing.xl)
+            } else {
+                VStack(spacing: AppSpacing.sm) {
+                    Image(systemName: "trophy.circle").font(.system(size: 30)).foregroundColor(AppColors.textMuted(colorScheme))
+                    Text(loc.localized("achievement.noAchievementsAvailable")).font(.subheadline).foregroundColor(AppColors.textSecondary(colorScheme))
+                    Text(loc.localized("achievement.gameMayNotHaveRAData")).font(.caption).foregroundColor(AppColors.textMuted(colorScheme)).multilineTextAlignment(.center)
+                    Button {
+                        findInRA()
+                    } label: {
+                        Label(loc.localized("achievement.searchRetroAchievements"), systemImage: "checkmark.shield")
+                            .font(.caption)
                     }
-                    .frame(maxWidth: .infinity).padding(.vertical, AppSpacing.xl)
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                    .padding(.top, AppSpacing.xxs)
+                }
+                .frame(maxWidth: .infinity).padding(.vertical, AppSpacing.xl)
+            }
                 } else {
                     HStack(spacing: AppSpacing.xl2) {
                         VStack(alignment: .leading, spacing: AppSpacing.xxs) {
@@ -313,5 +376,31 @@ extension GameDetailView {
         } else {
             achievementViewMode = .grid
         }
+    }
+
+    @ViewBuilder
+    private var viewOnRALink: some View {
+        if let raGameId = currentROM.raGameId, raGameId > 0,
+           let url = URL(string: "https://retroachievements.org/game/\(raGameId)") {
+            Button {
+                NSWorkspace.shared.open(url)
+            } label: {
+                HStack(spacing: 3) {
+                    Text(loc.localized("raHash.viewOnRetroAchievements"))
+                    Image(systemName: "arrow.up.forward.square")
+                }
+                .font(.caption2)
+            }
+            .buttonStyle(.link)
+            .help(loc.localized("raHash.viewOnRetroAchievements"))
+        }
+    }
+
+    private var viewOnRALinkAnyView: AnyView? {
+        if let raGameId = currentROM.raGameId, raGameId > 0,
+           URL(string: "https://retroachievements.org/game/\(raGameId)") != nil {
+            return AnyView(viewOnRALink)
+        }
+        return nil
     }
 }
