@@ -25,6 +25,7 @@ struct GameDetailView: View {
 @State var gameAchievements:[Achievement] = []
 @State var isAchievementsLoading = false
 @State var expandedAchievementID: Int? = nil
+@State var expandedProgressiveSlotID: Int? = nil
 @State var achievementViewMode: AchievementViewMode = .grid
 @State var achievementGridWidth: CGFloat = 700
     @State var showImportCheatFile = false

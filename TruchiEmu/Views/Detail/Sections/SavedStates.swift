@@ -29,14 +29,46 @@ extension GameDetailView {
                                 slotView(for: autoSlot)
                                 Spacer()
                             }
+
+                            if expandedProgressiveSlotID == autoSlot.id {
+                                ProgressiveSaveStateExpandedView(
+                                    slot: autoSlot,
+                                    progressives: progressiveSlots[autoSlot.id] ?? [],
+                                    rom: currentROM,
+                                    saveStateManager: saveStateManager,
+                                    onDelete: { loadSlotInfo() },
+                                    onLaunchSlot: { slotId, progVersion in
+                                        launchGame(slotToLoad: slotId, progressiveVersion: progVersion)
+                                    }
+                                )
+                                .transition(.opacity)
+                            }
                         }
 
-                        LazyVGrid(
-                            columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 5),
-                            spacing: 12
-                        ) {
-                            ForEach(showUserSlots, id: \.id) { slot in
-                                slotView(for: slot)
+                        let columns = Array(repeating: GridItem(.flexible(), spacing: 12), count: 5)
+                        let chunkSize = 5
+                        ForEach(Array(stride(from: 0, to: showUserSlots.count, by: chunkSize)), id: \.self) { rowIndex in
+                            let chunk = Array(showUserSlots[rowIndex..<min(rowIndex + chunkSize, showUserSlots.count)])
+
+                            LazyVGrid(columns: columns, spacing: 12) {
+                                ForEach(chunk, id: \.id) { slot in
+                                    slotView(for: slot)
+                                }
+                            }
+
+                            if let expandedID = expandedProgressiveSlotID,
+                               let expandedSlot = chunk.first(where: { $0.id == expandedID }) {
+                                ProgressiveSaveStateExpandedView(
+                                    slot: expandedSlot,
+                                    progressives: progressiveSlots[expandedSlot.id] ?? [],
+                                    rom: currentROM,
+                                    saveStateManager: saveStateManager,
+                                    onDelete: { loadSlotInfo() },
+                                    onLaunchSlot: { slotId, progVersion in
+                                        launchGame(slotToLoad: slotId, progressiveVersion: progVersion)
+                                    }
+                                )
+                                .transition(.opacity)
                             }
                         }
                     }
@@ -70,7 +102,8 @@ extension GameDetailView {
                 onDelete: { loadSlotInfo() },
                 onLaunchSlot: { slotId, progVersion in
                     launchGame(slotToLoad: slotId, progressiveVersion: progVersion)
-                }
+                },
+                expandedSlotID: $expandedProgressiveSlotID
             )
         } else {
             ModernSaveStateSlotView(
@@ -93,9 +126,11 @@ private struct ProgressiveSlotStackView: View {
     @ObservedObject var saveStateManager: SaveStateManager
     var onDelete: () -> Void
     var onLaunchSlot: (Int, Int?) -> Void
+    @Binding var expandedSlotID: Int?
     @ObservedObject private var loc = LocalizationManager.shared
     @Environment(\.colorScheme) private var colorScheme
-    @State private var isExpanded = false
+
+    private var isExpanded: Bool { expandedSlotID == slot.id }
 
     private var sortedProgressives: [SlotInfo] {
         progressives.sorted { ($0.progressiveVersion ?? 0) < ($1.progressiveVersion ?? 0) }
@@ -109,8 +144,15 @@ private struct ProgressiveSlotStackView: View {
         return ZStack(alignment: .topLeading) {
             ForEach(Array(visible.enumerated()), id: \.offset) { index, prog in
                 if let v = prog.progressiveVersion {
-                    progressiveThumbnailView(for: prog, version: v, isLarge: true)
-                        .offset(x: CGFloat(index) * offsetStep, y: CGFloat(index) * (offsetStep * 0.75))
+                    ProgressiveThumbnailView(
+                        saveStateManager: saveStateManager,
+                        rom: rom,
+                        slotID: slot.id,
+                        version: v,
+                        isLarge: true,
+                        onDelete: onDelete
+                    )
+                    .offset(x: CGFloat(index) * offsetStep, y: CGFloat(index) * (offsetStep * 0.75))
                 }
             }
         }
@@ -132,47 +174,87 @@ private struct ProgressiveSlotStackView: View {
                     .foregroundColor(AppColors.textTertiary(colorScheme))
             }
 
-            if isExpanded {
-                VStack(spacing: 6) {
-                    ForEach(sortedProgressives, id: \.progressiveVersion) { prog in
-                        if let v = prog.progressiveVersion {
-                            progressiveRowView(for: prog, version: v)
-                        }
-                    }
-                }
-            } else {
-                stackedThumbnailView
-            }
+            stackedThumbnailView
         }
         .padding(6)
         .background(AppColors.cardBackgroundSubtle(colorScheme))
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .onTapGesture {
-            withAnimation(.easeInOut(duration: 0.15)) {
-                isExpanded.toggle()
+            withAnimation(.easeInOut(duration: 0.2)) {
+                expandedSlotID = isExpanded ? nil : slot.id
             }
         }
+    }
+}
+
+private struct ProgressiveSaveStateExpandedView: View {
+    let slot: SlotInfo
+    let progressives: [SlotInfo]
+    let rom: ROM
+    @ObservedObject var saveStateManager: SaveStateManager
+    var onDelete: () -> Void
+    var onLaunchSlot: (Int, Int?) -> Void
+    @ObservedObject private var loc = LocalizationManager.shared
+    @Environment(\.colorScheme) private var colorScheme
+
+    private var sortedProgressives: [SlotInfo] {
+        progressives.sorted { ($0.progressiveVersion ?? 0) < ($1.progressiveVersion ?? 0) }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 6) {
+                Text(slot.displayName)
+                    .font(.callout)
+                    .fontWeight(.semibold)
+                    .foregroundColor(AppColors.textPrimary(colorScheme))
+                Text("(\(progressives.count))")
+                    .font(.caption)
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
+                Spacer()
+            }
+
+            VStack(spacing: 6) {
+                ForEach(sortedProgressives, id: \.progressiveVersion) { prog in
+                    if let v = prog.progressiveVersion {
+                        progressiveRowView(for: prog, version: v)
+                    }
+                }
+            }
+        }
+        .padding(12)
+        .background(AppColors.cardBackground(colorScheme))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(AppColors.brandAccent.opacity(0.2), lineWidth: 1)
+        )
     }
 
     @ViewBuilder
     private func progressiveRowView(for info: SlotInfo, version: Int) -> some View {
-        HStack(spacing: 8) {
-            progressiveThumbnailView(for: info, version: version, isLarge: true)
+        HStack(spacing: 12) {
+            ProgressiveThumbnailView(
+                saveStateManager: saveStateManager,
+                rom: rom,
+                slotID: slot.id,
+                version: version,
+                isLarge: true,
+                onDelete: onDelete
+            )
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("#\(version)")
-                    .font(.system(size: 10, weight: .bold))
+                    .font(.system(size: 12, weight: .bold))
                     .foregroundColor(AppColors.textPrimary(colorScheme))
-
                 if let date = info.formattedDate {
                     Text(date)
-                        .font(.system(size: 8))
+                        .font(.system(size: 10))
                         .foregroundColor(AppColors.textTertiary(colorScheme))
                 }
-
                 if let size = info.fileSize {
                     Text(Int64(size).formattedByteSize)
-                        .font(.system(size: 8))
+                        .font(.system(size: 10))
                         .foregroundColor(AppColors.textTertiary(colorScheme))
                 }
             }
@@ -183,17 +265,29 @@ private struct ProgressiveSlotStackView: View {
                 onLaunchSlot(slot.id, version)
             } label: {
                 Image(systemName: "play.circle.fill")
-                    .font(.system(size: 18))
+                    .font(.system(size: 22))
                     .foregroundColor(AppColors.brandAccent)
             }
             .buttonStyle(.plain)
         }
         .padding(.vertical, 4)
     }
+}
 
-    @ViewBuilder
-    private func progressiveThumbnailView(for info: SlotInfo, version: Int, isLarge: Bool) -> some View {
-        let thumb = saveStateManager.loadProgressiveThumbnail(gameName: "\(rom.displayName)__\(rom.id.uuidString.prefix(8))", systemID: rom.systemID ?? "", slot: slot.id, version: version)
+private struct ProgressiveThumbnailView: View {
+    let saveStateManager: SaveStateManager
+    let rom: ROM
+    let slotID: Int
+    let version: Int
+    let isLarge: Bool
+    var onDelete: () -> Void
+    @Environment(\.colorScheme) private var colorScheme
+    @ObservedObject private var loc = LocalizationManager.shared
+
+    var body: some View {
+        let gameName = "\(rom.displayName)__\(rom.id.uuidString.prefix(8))"
+        let systemID = rom.systemID ?? ""
+        let thumb = saveStateManager.loadProgressiveThumbnail(gameName: gameName, systemID: systemID, slot: slotID, version: version)
         ZStack {
             if let thumb = thumb {
                 Image(nsImage: thumb)
@@ -230,7 +324,7 @@ private struct ProgressiveSlotStackView: View {
         )
         .contextMenu {
             Button(action: {
-                try? saveStateManager.deleteProgressiveState(gameName: rom.displayName, systemID: rom.systemID ?? "", slot: slot.id, version: version)
+                try? saveStateManager.deleteProgressiveState(gameName: rom.displayName, systemID: rom.systemID ?? "", slot: slotID, version: version)
                 onDelete()
             }) {
                 Label(loc.localized("saveState.delete"), systemImage: "trash")
