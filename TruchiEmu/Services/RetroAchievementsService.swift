@@ -986,7 +986,9 @@ class RetroAchievementsService: ObservableObject {
             LoggerService.info(category: "RetroAchievements", "Cached achievement info for game \(gameID) is stale or refresh requested, re-fetching...")
         }
 
-        let (response, rawData) = try await requestGameInfo(gameID: String(gameID), username: username)
+        // 2. Try network fetch, fall back to cache on failure
+        do {
+            let (response, rawData) = try await requestGameInfo(gameID: String(gameID), username: username)
         guard let response = response else {
             throw RAError.gameNotFound
         }
@@ -1042,9 +1044,32 @@ class RetroAchievementsService: ObservableObject {
             }
         }
 
-        await saveGameInfoToCache(gameInfo: gameInfo, username: username)
+            await saveGameInfoToCache(gameInfo: gameInfo, username: username)
 
-        return gameInfo
+            return gameInfo
+        } catch {
+            LoggerService.info(category: "RetroAchievements", "Network fetch failed for game \(gameID): \(error). Trying cache fallback...")
+            if let cached = await loadGameInfoFromCache(gameID: gameID, username: username) {
+                LoggerService.info(category: "RetroAchievements", "Using stale cache for game \(gameID) after network failure")
+                RABadgeCacheService.shared.prefetchBadges(for: cached.gameInfo.achievements)
+                return cached.gameInfo
+            }
+            if let diskAchievements = loadCachedAchievements(gameID: gameID, username: username) {
+                LoggerService.info(category: "RetroAchievements", "Using disk cache for game \(gameID) after network failure")
+                RABadgeCacheService.shared.prefetchBadges(for: diskAchievements)
+                let parentID = parentGameIDForCache(gameID: gameID)
+                return RAGameInfo(
+                    id: gameID,
+                    title: "",
+                    consoleName: "",
+                    consoleID: 0,
+                    achievements: diskAchievements,
+                    totalPoints: diskAchievements.reduce(0) { $0 + $1.points },
+                    parentGameID: parentID
+                )
+            }
+            throw error
+        }
     }
     
     @MainActor

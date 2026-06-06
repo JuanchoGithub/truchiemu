@@ -58,12 +58,17 @@ struct RetroAchievementsSettingsView: View {
                     cacheSection
                 }
 
-                // Hardcore Mode Section
-                if !isSearching || matchesSearch("hardcore mode") {
-                    hardcoreModeSection
-                }
-                
-                // Rich Presence Section
+// Hardcore Mode Section
+if !isSearching || matchesSearch("hardcore mode") {
+    hardcoreModeSection
+}
+
+// Display Section
+if !isSearching || matchesSearch("display view grid list achievements") {
+    displaySection
+}
+
+// Rich Presence Section
                 if !isSearching || matchesSearch("rich presence game active") {
                     richPresenceSection
                 }
@@ -88,6 +93,7 @@ struct RetroAchievementsSettingsView: View {
         matchesSearch("account username login logout connect api key") ||
         matchesSearch("refresh cache systems games data") ||
         matchesSearch("hardcore mode") ||
+        matchesSearch("display view grid list achievements") ||
         matchesSearch("rich presence game active") ||
         matchesSearch("about info")
     }
@@ -353,11 +359,58 @@ struct RetroAchievementsSettingsView: View {
         }
         .padding(AppSpacing.xl)
         .background(AppColors.cardBackgroundSubtle(colorScheme))
-        .cornerRadius(AppRadius.xl)
+.cornerRadius(AppRadius.xl)
+}
+
+@ViewBuilder
+private var displaySection: some View {
+    VStack(alignment: .leading, spacing: AppSpacing.lg) {
+        HStack {
+            if isSearching {
+                Text(loc.localized("achievement.display"))
+                    .font(.headline)
+            } else {
+                Label { Text(loc.localized("achievement.display")) } icon: { Image(systemName: "eye") }
+                    .font(.headline)
+            }
+        }
+
+        HStack {
+            Text(loc.localized("achievement.defaultViewMode"))
+                .font(.caption)
+                .foregroundColor(AppColors.textSecondary(colorScheme))
+            Spacer()
+            Picker(selection: Binding<AchievementViewMode>(
+                get: {
+                    if let raw = AppSettings.getString("achievementViewMode") {
+                        AchievementViewMode(rawValue: raw) ?? .grid
+                    } else { .grid }
+                },
+                set: { newMode in
+                    AppSettings.setString("achievementViewMode", value: newMode.rawValue)
+                }
+            )) {
+                ForEach(AchievementViewMode.allCases, id: \.self) { mode in
+                    Text(mode.localizedName).tag(mode)
+                }
+            } label: {
+                EmptyView()
+            }
+            .pickerStyle(.segmented)
+            .frame(width: 200)
+        }
+
+        Text(loc.localized("achievement.defaultViewModeDescription"))
+            .font(.caption)
+            .foregroundColor(AppColors.textTertiary(colorScheme))
     }
-    
-    @ViewBuilder
-    private var richPresenceSection: some View {
+    .padding(AppSpacing.xl)
+    .background(AppColors.cardBackgroundSubtle(colorScheme))
+    .cornerRadius(AppRadius.xl)
+}
+
+@ViewBuilder
+private var richPresenceSection: some View {
         VStack(alignment: .leading, spacing: AppSpacing.lg) {
             HStack {
                 if isSearching {

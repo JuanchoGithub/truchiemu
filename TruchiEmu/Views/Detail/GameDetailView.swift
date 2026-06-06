@@ -22,8 +22,11 @@ struct GameDetailView: View {
     @State var fileSize: String? = nil
     @State var slotInfoList: [SlotInfo] = []
     @State var progressiveSlots: [Int: [SlotInfo]] = [:]
-    @State var gameAchievements:[Achievement] = []
-    @State var isAchievementsLoading = false
+@State var gameAchievements:[Achievement] = []
+@State var isAchievementsLoading = false
+@State var expandedAchievementID: Int? = nil
+@State var achievementViewMode: AchievementViewMode = .grid
+@State var achievementGridWidth: CGFloat = 700
     @State var showImportCheatFile = false
     @State var gbColorizationEnabled: Bool = true
     @State var gbColorizationMode: String = "auto"
@@ -195,17 +198,18 @@ struct GameDetailView: View {
             }
             useCustomCore = currentROM.useCustomCore
             selectedCoreID = currentROM.selectedCoreID ?? sysPrefs.preferredCoreID(for: currentROM.systemID ?? "") ?? system?.defaultCoreID
-            loadGBColorizationSettings()
-        }
-        .onChange(of: currentROM.id) { _, _ in
-            clearManualStatus()
-            loadSlotInfo()
-            // Only load achievements if we're logged in and RA is enabled
-            if achievementsService.isLoggedIn && achievementsService.isEnabled {
-                loadAchievements()
-            }
-        }
-        .onChange(of: currentROM.lastPlayed) { _, _ in
+    loadGBColorizationSettings()
+    loadAchievementViewMode()
+  }
+  .onChange(of: currentROM.id) { _, _ in
+    clearManualStatus()
+    loadSlotInfo()
+    if achievementsService.isLoggedIn && achievementsService.isEnabled {
+      loadAchievements()
+    }
+    loadAchievementViewMode()
+  }
+  .onChange(of: currentROM.lastPlayed) { _, _ in
             // Refresh slot info when user returns from playing the game
             loadSlotInfo()
         }
@@ -236,9 +240,13 @@ struct GameDetailView: View {
             }
             crcHash = currentROM.crc32
         }
-        .onChange(of: currentROM.hasBoxArt) { _, _ in loadBoxArt() }
-        .onChange(of: currentROM.screenshotPaths) { _, _ in loadScreenshots() }
-        .onChange(of: library.bezelUpdateToken) { _, _ in Task { await loadCurrentBezelImage() } }
+.onChange(of: currentROM.hasBoxArt) { _, _ in loadBoxArt() }
+.onChange(of: currentROM.screenshotPaths) { _, _ in loadScreenshots() }
+.onChange(of: library.bezelUpdateToken) { _, _ in Task { await loadCurrentBezelImage() } }
+.onChange(of: achievementViewMode) { _, newValue in
+    AppSettings.setString(newValue.rawValue, value: newValue.rawValue)
+    AppSettings.setString("achievementViewMode_\(currentROM.id.uuidString)", value: newValue.rawValue)
+}
         .onChange(of: achievementsService.isLoggedIn) { _, _ in
             if achievementsService.isLoggedIn && achievementsService.isEnabled {
                 loadAchievements()
@@ -394,6 +402,10 @@ struct GameDetailView: View {
                 await MainActor.run {
                     gameAchievements = []
                     isAchievementsLoading = false
+                    NotificationService.shared.sendNotification(
+                        title: loc.localized("achievement.fetchErrorTitle"),
+                        body: loc.localized("achievement.fetchErrorBody")
+                    )
                 }
             }
         }
