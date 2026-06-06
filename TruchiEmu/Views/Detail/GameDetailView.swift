@@ -468,8 +468,7 @@ struct GameDetailView: View {
                         icon: "xmark.octagon",
                         title: loc.localized("raHash.title"),
                         subtitle: loc.localized("raHash.pillHashErrorSubtitle"),
-                        autoDismissDelay: nil
-                    )
+                        )
                     NotificationService.shared.sendNotification(
                         title: loc.localized("raHash.title"),
                         body: loc.localized("raHash.notificationHashError")
@@ -517,7 +516,6 @@ struct GameDetailView: View {
                             subtitle: loc.localized("raHash.pillMatchSubtitle")
                                 .replacingOccurrences(of: "{title}", with: cachedGame.title)
                                 .replacingOccurrences(of: "{n}", with: "\(achievementCount)"),
-                            autoDismissDelay: nil,
                             actionLabel: loc.localized("raHash.viewOnRetroAchievements"),
                             actionType: "openURL",
                             actionPayload: OpenURLActionPayload(url: raURL)
@@ -535,7 +533,6 @@ struct GameDetailView: View {
                             title: loc.localized("raHash.pillZeroAchievementsTitle"),
                             subtitle: loc.localized("raHash.pillZeroAchievementsSubtitle")
                                 .replacingOccurrences(of: "{title}", with: cachedGame.title),
-                            autoDismissDelay: nil,
                             actionLabel: loc.localized("raHash.viewOnRetroAchievements"),
                             actionType: "openURL",
                             actionPayload: OpenURLActionPayload(url: raURL)
@@ -569,7 +566,6 @@ struct GameDetailView: View {
                             subtitle: loc.localized("raHash.pillNotFoundSubtitle")
                                 .replacingOccurrences(of: "{title}", with: currentROM.displayName)
                                 .replacingOccurrences(of: "{system}", with: sysName),
-                            autoDismissDelay: nil,
                             actionLabel: loc.localized("raHash.requestOnRA"),
                             actionType: "openURL",
                             actionPayload: OpenURLActionPayload(url: "https://retroachievements.org/viewtopic.php?t=15027")
@@ -589,7 +585,6 @@ struct GameDetailView: View {
                             subtitle: loc.localized("raHash.pillMismatchSubtitle")
                                 .replacingOccurrences(of: "{title}", with: firstMatch?.title ?? currentROM.displayName)
                                 .replacingOccurrences(of: "{system}", with: sysName),
-                            autoDismissDelay: nil,
                             actionLabel: loc.localized("raHash.viewOnRetroAchievements"),
                             actionType: "openURL",
                             actionPayload: OpenURLActionPayload(url: mismatchURL)

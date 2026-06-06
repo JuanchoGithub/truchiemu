@@ -121,6 +121,10 @@ struct NotificationPill: View {
                 )
                 .shadow(color: .black.opacity(0.15), radius: 8, y: 4)
         )
+        .contentShape(Capsule())
+        .onTapGesture {
+            NotificationPillManager.shared.dismiss()
+        }
         .onAppear {
             startMessageRotation()
         }
