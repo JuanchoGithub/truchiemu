@@ -159,6 +159,7 @@
 		1FAE94BFDF65CF2154B39875 /* ws@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = F54FE75C7494DC94970ADDC0 /* ws@132w.png */; };
 		1FD9FD22B9145F459A110233 /* fightdata_kov.json in Resources */ = {isa = PBXBuildFile; fileRef = A793A00298090EE8A712F944 /* fightdata_kov.json */; };
 		200CE510F205AAD9599C098E /* atarist@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 6C6B0BA0A81DA9E4BCBBA1EC /* atarist@132w.png */; };
+		200E556F77878D242022783A /* CDImageParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBFDAA4D12430D6C4E31164D /* CDImageParser.swift */; };
 		2082B4CF543FB884F8E2733D /* input_coreLabels_mupen64plus.json in Resources */ = {isa = PBXBuildFile; fileRef = 20B274974EC3017DD61EE9B4 /* input_coreLabels_mupen64plus.json */; };
 		2093675B94C4153A1497D7BA /* input_systemLabels_genesis.json in Resources */ = {isa = PBXBuildFile; fileRef = A7600CDEC80018D914D43596 /* input_systemLabels_genesis.json */; };
 		20B43BA4078211AF12301CC6 /* mednafen_psx_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = 54DD8754D9035E5B78CD5178 /* mednafen_psx_libretro_default.json */; };
@@ -2275,6 +2276,7 @@
 		FA897462D8DF8DDA8C9792CB /* gw@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "gw@132w.png"; sourceTree = "<group>"; };
 		FAE59479082A912BBCECFEAA /* mame2000_libretro_default.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = mame2000_libretro_default.json; sourceTree = "<group>"; };
 		FB4F7ED2498E23BD3734F7B6 /* input_coreOverrides_handy.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_handy.json; sourceTree = "<group>"; };
+		FBFDAA4D12430D6C4E31164D /* CDImageParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CDImageParser.swift; sourceTree = "<group>"; };
 		FC4A009791FC6C0F1975F092 /* amstrad-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "amstrad-cheats.zip"; sourceTree = "<group>"; };
 		FCAB65F47C4E26FC16B426CF /* MDMSU.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MDMSU.png; sourceTree = "<group>"; };
 		FD4DB03B3063C56536FCC7D2 /* input_coreLabels_pokemini.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_pokemini.json; sourceTree = "<group>"; };
@@ -3151,6 +3153,7 @@
 		994AE121AC2997DDFCDDC992 /* Hashing */ = {
 			isa = PBXGroup;
 			children = (
+				FBFDAA4D12430D6C4E31164D /* CDImageParser.swift */,
 				72DFDF6462D09B051A7093FE /* RomHasher.swift */,
 			);
 			path = Hashing;
@@ -5168,6 +5171,7 @@
 				22FBDC836930C16AC02CBA03 /* BoxArtPreloaderService.swift in Sources */,
 				49C54B79CA96648E9B9F7069 /* BoxArtService.swift in Sources */,
 				126430C5084506DE1D08831F /* BoxArtSettingsView.swift in Sources */,
+				200E556F77878D242022783A /* CDImageParser.swift in Sources */,
 				89999BCF6C86749975156810 /* CLILauncher.swift in Sources */,
 				64452837E2BAEE24CE293F88 /* CLIManager.swift in Sources */,
 				EEFB801BD3A80132FB475EB6 /* CRTFilter.metal in Sources */,

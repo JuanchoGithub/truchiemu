@@ -5,66 +5,67 @@ enum RomHasher {
 
     static func hashRom(at path: String, systemID: String) -> String? {
         let url = URL(fileURLWithPath: path)
+        let resolvedURL = CDImageParser.resolve(url) ?? url
 
         switch systemID.lowercased() {
         case "nes":
-            return hashNES(url: url)
+            return hashNES(url: resolvedURL)
         case "snes", "snes-msu", "sufami", "satellaview":
-            return hashSNES(url: url)
+            return hashSNES(url: resolvedURL)
         case "n64":
-            return hashN64(url: url)
+            return hashN64(url: resolvedURL)
         case "gamecube", "wii":
-            return hashGameCube(url: url)
+            return hashGameCube(url: resolvedURL)
         case "nds":
-            return hashNDS(url: url)
+            return hashNDS(url: resolvedURL)
         case "gb", "gbc", "gba", "virtualboy", "pokemonmini":
-            return md5File(url: url)
+            return md5File(url: resolvedURL)
         case "fds":
-            return hashFDS(url: url)
+            return hashFDS(url: resolvedURL)
         case "psx", "ps1":
-            return hashPS1(url: url)
+            return hashPS1(url: resolvedURL)
         case "ps2":
-            return hashPS2(url: url)
+            return hashPS2(url: resolvedURL)
         case "psp":
-            return hashPSP(url: url)
+            return hashPSP(url: resolvedURL)
         case "dreamcast":
-            return hashDreamcast(url: url)
+            return hashDreamcast(url: resolvedURL)
         case "saturn":
-            return hashSaturn(url: url)
+            return hashSaturn(url: resolvedURL)
         case "genesis", "megadrive", "sms", "gamegear", "32x", "sg-1000":
-            return hashGenesis(url: url)
+            return hashGenesis(url: resolvedURL)
         case "mame", "arcade", "mess", "ume":
-            return hashMAME(url: url)
+            return hashMAME(url: resolvedURL)
         case "3do":
-            return hash3DO(url: url)
+            return hash3DO(url: resolvedURL)
         case "atari2600":
-            return md5File(url: url)
+            return md5File(url: resolvedURL)
         case "atari7800":
-            return hashAtari7800(url: url)
+            return hashAtari7800(url: resolvedURL)
         case "jaguar", "jaguarcd":
-            return md5File(url: url)
+            return md5File(url: resolvedURL)
         case "lynx":
-            return hashLynx(url: url)
+            return hashLynx(url: resolvedURL)
         case "pce", "tg16", "supergrafx":
-            return hashPCEngine(url: url)
+            return hashPCEngine(url: resolvedURL)
         case "pcecd", "tgcd":
-            return hashPCEngineCD(url: url)
+            return hashPCEngineCD(url: resolvedURL)
         case "pcfx":
-            return hashPCFX(url: url)
+            return hashPCFX(url: resolvedURL)
         case "amstradcpc", "apple2", "apple2GS", "msx", "msx2":
-            return md5File(url: url)
+            return md5File(url: resolvedURL)
         case "wonderswan", "wonderswancolor":
-            return md5File(url: url)
+            return md5File(url: resolvedURL)
         case "coleco", "intellivision", "channelF", "channelf", "vectrex", "odyssey2":
-            return md5File(url: url)
+            return md5File(url: resolvedURL)
         case "ngp", "ngpc":
-            return md5File(url: url)
+            return md5File(url: resolvedURL)
         case "neocd", "neocdz":
-            return hashNeoGeoCD(url: url)
+            return hashNeoGeoCD(url: resolvedURL)
         case "arduboy", "wasm4":
-            return hashNormalizedTextFile(url: url)
+            return hashNormalizedTextFile(url: resolvedURL)
         case "megaduck", "supervision":
-            return md5File(url: url)
+            return md5File(url: resolvedURL)
         default:
             return nil
         }

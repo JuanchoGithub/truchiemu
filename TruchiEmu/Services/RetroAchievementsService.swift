@@ -522,8 +522,19 @@ class RetroAchievementsService: ObservableObject {
         "nes": 7, "snes": 3, "genesis": 1, "megadrive": 1,
         "gb": 4, "gba": 5, "gbc": 6, "n64": 2,
         "pce": 8, "tg16": 8, "segacd": 9, "32x": 10,
-        "sms": 11, "psx": 12, "lynx": 13, "ngp": 14,
-        "gamegear": 15, "gamecube": 16
+        "sms": 11, "psx": 12, "lynx": 13, "ngp": 14, "ngpc": 14,
+        "gamegear": 15, "gamecube": 16, "wii": 16,
+        "jaguar": 17, "coleco": 18,
+        "ps2": 21, "odyssey2": 23, "msx": 23, "msx2": 23,
+        "pokemonmini": 24, "atari2600": 25, "vectrex": 26,
+        "wonderswan": 27, "wonderswancolor": 27, "virtualboy": 28,
+        "3do": 29, "channelf": 31, "channelF": 31,
+        "sg-1000": 33, "saturn": 39, "dreamcast": 40,
+        "psp": 41, "intellivision": 45, "supervision": 46,
+        "pcfx": 49, "pcecd": 50, "tgcd": 50, "atari7800": 51,
+        "neocd": 56, "neocdz": 56,
+        "amstradcpc": 65, "megaduck": 69, "arduboy": 71,
+        "wasm4": 72, "apple2": 73, "apple2GS": 74
     ]
 
     private nonisolated static func systemIDToRAConsoleID(_ systemID: String) -> Int {
