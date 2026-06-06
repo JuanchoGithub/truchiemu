@@ -583,12 +583,15 @@ enum RomHasher {
         guard let handle = try? FileHandle(forReadingFrom: url) else { return nil }
         defer { try? handle.close() }
 
+        let format = ROMIdentifier.ISOScanner.detectFormat(at: url)
+
+        try? handle.seek(toOffset: format.lbnToFileOffset(0))
         guard let sector0 = try? handle.read(upToCount: 2048), sector0.count >= 32 else { return nil }
 
         let marker = "PC-FX:Hu_CD-ROM".data(using: .ascii)!
         guard sector0.prefix(15).elementsEqual(marker) else { return nil }
 
-        try? handle.seek(toOffset: 2048)
+        try? handle.seek(toOffset: format.lbnToFileOffset(1))
         guard let sector1 = try? handle.read(upToCount: 128), sector1.count == 128 else { return nil }
 
         var buffer = Data(sector0.prefix(32))
@@ -597,7 +600,7 @@ enum RomHasher {
         let sectorIndex = sector1.subdata(in: 0x20..<0x24).withUnsafeBytes { $0.load(as: UInt32.self) }
         let sectorCount = sector1.subdata(in: 0x24..<0x28).withUnsafeBytes { $0.load(as: UInt32.self) }
 
-        try? handle.seek(toOffset: UInt64(sectorIndex) * 2048)
+        try? handle.seek(toOffset: format.lbnToFileOffset(sectorIndex))
         var remaining = Int(sectorCount)
         while remaining > 0 {
             let toRead = min(remaining, 64)

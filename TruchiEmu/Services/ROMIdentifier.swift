@@ -189,32 +189,37 @@ enum ROMIdentifier {
     // MARK: - ISO Scanning for CD-based Systems
     struct ISOScanner {
 
-        // CD images come in two sector layouts: cooked (.iso, 2048-byte user-data sectors)
-        // and raw (.bin ripped with the 12-byte sync + 4-byte header preserved, 2352-byte
-        // sectors with user data starting at offset 16). Discriminates by checking the first
-        // 12 bytes for the CD sync pattern (00 FF×10 00).
-        enum CDSectorFormat {
-            case cooked2048
-            case raw2352
+    // CD images come in three sector layouts:
+    //  • cooked (.iso) — 2048-byte user-data sectors, data at LBN * 2048
+    //  • raw Mode 1   — 2352-byte sectors, user data at LBN * 2352 + 16
+    //  • raw Mode 2   — 2352-byte sectors, 8-byte subheader before user data, so LBN * 2352 + 24
+    // Discriminates by checking the first 12 bytes for the CD sync pattern (00 FF×10 00)
+    // and byte 15 (the mode byte in the sector header).
+    enum CDSectorFormat {
+        case cooked2048
+        case raw2352Mode1
+        case raw2352Mode2
 
-            func lbnToFileOffset(_ lbn: UInt32) -> UInt64 {
-                switch self {
-                case .cooked2048: return UInt64(lbn) * 2048
-                case .raw2352:    return UInt64(lbn) * 2352 + 16
-                }
+        func lbnToFileOffset(_ lbn: UInt32) -> UInt64 {
+            switch self {
+            case .cooked2048:   return UInt64(lbn) * 2048
+            case .raw2352Mode1: return UInt64(lbn) * 2352 + 16
+            case .raw2352Mode2: return UInt64(lbn) * 2352 + 24
             }
         }
+    }
 
-        // Reads the first 16 bytes of the file and returns the detected sector format.
-        static func detectFormat(at url: URL) -> CDSectorFormat {
-            guard let handle = try? FileHandle(forReadingFrom: url) else { return .cooked2048 }
-            defer { try? handle.close() }
-            guard let header = try? handle.read(upToCount: 16), header.count == 16 else { return .cooked2048 }
-            let isRawCD = header[0] == 0x00 && header[1] == 0xFF && header[2] == 0xFF && header[3] == 0xFF &&
-                          header[4] == 0xFF && header[5] == 0xFF && header[6] == 0xFF && header[7] == 0xFF &&
-                          header[8] == 0xFF && header[9] == 0xFF && header[10] == 0xFF && header[11] == 0x00
-            return isRawCD ? .raw2352 : .cooked2048
-        }
+    static func detectFormat(at url: URL) -> CDSectorFormat {
+        guard let handle = try? FileHandle(forReadingFrom: url) else { return .cooked2048 }
+        defer { try? handle.close() }
+        guard let header = try? handle.read(upToCount: 16), header.count == 16 else { return .cooked2048 }
+        let isRawCD = header[0] == 0x00 && header[1] == 0xFF && header[2] == 0xFF && header[3] == 0xFF &&
+                      header[4] == 0xFF && header[5] == 0xFF && header[6] == 0xFF && header[7] == 0xFF &&
+                      header[8] == 0xFF && header[9] == 0xFF && header[10] == 0xFF && header[11] == 0x00
+        guard isRawCD else { return .cooked2048 }
+        // Byte 15 of a raw sector is the mode field from the 4-byte header (bytes 12–15).
+        return header[15] == 0x02 ? .raw2352Mode2 : .raw2352Mode1
+    }
 
         // Searches `scanData` for an ISO9660 directory record whose leaf filename matches
         // `leafName` and returns the 4-byte little-endian LBN pointing to the file's data extent.
