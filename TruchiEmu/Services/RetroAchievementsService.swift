@@ -869,7 +869,7 @@ class RetroAchievementsService: ObservableObject {
 
         // 1. Attempt identification via HASH FIRST (most reliable)
         let raConsoleID = mapSystemIDToRAConsoleID(systemID)
-        let romHash = rom.md5 ?? RomHasher.hashRom(at: rom.path.path, systemID: systemID) ?? rom.crc32
+        let romHash = rom.md5 ?? RomHasher.hashRom(at: rom.path.path, systemID: systemID)
         
         LoggerService.info(category: "RetroAchievements", "Syncing '\(rom.name)' - Generated Hash: \(romHash ?? "NONE") (RA ConsoleID: \(raConsoleID))")
         

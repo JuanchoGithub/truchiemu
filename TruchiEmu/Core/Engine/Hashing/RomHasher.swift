@@ -1,6 +1,5 @@
 import Foundation
 import CommonCrypto
-import zlib
 
 enum RomHasher {
 
@@ -98,30 +97,31 @@ enum RomHasher {
         return digest.map { String(format: "%02x", $0) }.joined()
     }
 
-    // MARK: - CRC32
-
-    private static func crc32Compute(url: URL, skipHeader: Bool = false) -> String? {
-        guard let handle = try? FileHandle(forReadingFrom: url) else { return nil }
-        defer { try? handle.close() }
-
-        if skipHeader {
-            try? handle.seek(toOffset: 16)
-        }
-
-        var crc: uLong = 0
-        let bufferSize = 128 * 1024
-        while let data = try? handle.read(upToCount: bufferSize), !data.isEmpty {
-            crc = data.withUnsafeBytes { buffer in
-                crc32(crc, buffer.baseAddress?.assumingMemoryBound(to: Bytef.self), uInt(buffer.count))
-            }
-        }
-        return String(format: "%08X", crc).uppercased()
-    }
-
     // MARK: - NES / Famicom
 
     private static func hashNES(url: URL) -> String? {
-        return crc32Compute(url: url, skipHeader: true)
+        guard let handle = try? FileHandle(forReadingFrom: url) else { return nil }
+        defer { try? handle.close() }
+
+        guard let header = try? handle.read(upToCount: 16), header.count >= 4 else {
+            return md5File(url: url)
+        }
+
+        // iNES magic: "NES\x1A"
+        let isINES = header[0] == 0x4E && header[1] == 0x45 && header[2] == 0x53 && header[3] == 0x1A
+        if isINES {
+            try? handle.seek(toOffset: 16)
+        } else {
+            try? handle.seek(toOffset: 0)
+        }
+
+        var context = CC_MD5_CTX()
+        CC_MD5_Init(&context)
+        let bufferSize = 128 * 1024
+        while let data = try? handle.read(upToCount: bufferSize), !data.isEmpty {
+            md5Update(context: &context, data: data)
+        }
+        return md5Final(context: &context)
     }
 
     // MARK: - SNES / Sufami Turbo / Satellaview
