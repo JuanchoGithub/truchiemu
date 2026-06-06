@@ -110,7 +110,9 @@ class BoxArtService: ObservableObject {
     // Lazily resolves local boxart for a single ROM on-demand.
     @MainActor
     func resolveLocalBoxArtIfNeeded(for rom: ROM, library: ROMLibrary) -> URL? {
-        if rom.hasBoxArt { return rom.boxArtLocalPath }
+        if rom.hasBoxArt, FileManager.default.fileExists(atPath: rom.boxArtLocalPath.path) {
+            return rom.boxArtLocalPath
+        }
 
         if let localURL = resolveLocalBoxArt(for: rom) {
             var updated = rom
