@@ -54,15 +54,17 @@ final class RAGameAchievementCache {
     var consoleName: String
     var consoleID: Int
     var totalPoints: Int
+    var parentGameID: Int?
     var cachedAt: Date
-    
-    init(gameId: Int, achievementCount: Int, title: String = "", consoleName: String = "", consoleID: Int = 0, totalPoints: Int = 0, cachedAt: Date = Date()) {
+
+    init(gameId: Int, achievementCount: Int, title: String = "", consoleName: String = "", consoleID: Int = 0, totalPoints: Int = 0, parentGameID: Int? = nil, cachedAt: Date = Date()) {
         self.gameId = gameId
         self.achievementCount = achievementCount
         self.title = title
         self.consoleName = consoleName
         self.consoleID = consoleID
         self.totalPoints = totalPoints
+        self.parentGameID = parentGameID
         self.cachedAt = cachedAt
     }
 }

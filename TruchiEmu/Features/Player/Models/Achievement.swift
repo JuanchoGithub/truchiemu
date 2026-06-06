@@ -34,13 +34,15 @@ struct Achievement: Identifiable, Codable, Hashable {
 
 // Achievement categories based on RetroAchievements.
 enum AchievementCategory: String, Codable, CaseIterable {
-    case core       // Core achievements (count towards score)
+    case core // Core achievements (count towards score)
+    case exclusive // Subset/exclusive achievements linked to a parent game
     case unofficial // Unofficial/test achievements
-    case event      // Event achievements
-    
+    case event // Event achievements
+
     var displayName: String {
         switch self {
         case .core: return "Core"
+        case .exclusive: return "Exclusive"
         case .unofficial: return "Unofficial"
         case .event: return "Event"
         }
@@ -59,7 +61,8 @@ struct RAGameInfo: Codable {
     var totalPoints: Int
     var playerScore: Int?
     var playerHardcoreScore: Int?
-    
+    var parentGameID: Int?
+
     var achievementCount: Int {
         achievements.count
     }
@@ -154,6 +157,7 @@ struct RAGameResponse: Codable {
     @SafeOptionalInt var NumAwardedToUserHardcore: Int?
     var Achievements: [String: RAAchievementResponse]?
     var Hashes: [String]?
+    @SafeOptionalInt var ParentGameID: Int?
 }
 
 struct RAAchievementResponse: Codable {
@@ -167,10 +171,32 @@ struct RAAchievementResponse: Codable {
     var DateEarned: String?
     var DateEarnedHardcore: String?
     var Category: String?
+    var achType: String?
     var MemAddr: String?
+
+    private enum CodingKeys: String, CodingKey {
+        case ID, Title, Description, Points, BadgeName
+        case DateAwarded, DateAwardedHardcore, DateEarned, DateEarnedHardcore
+        case Category, achType = "Type", MemAddr
+    }
 
     var unlockedDate: String? { DateEarned ?? DateAwarded }
     var unlockedDateHardcore: String? { DateEarnedHardcore ?? DateAwardedHardcore }
+
+    var resolvedCategory: AchievementCategory {
+        let raw = Category ?? achType ?? "core"
+        if let cat = AchievementCategory(rawValue: raw) {
+            return cat
+        }
+        switch raw {
+        case "progression", "win_condition", "missable":
+            return .core
+        case "exclusive":
+            return .exclusive
+        default:
+            return .core
+        }
+    }
 }
 
 // Response from the RA API for hash resolution.

@@ -448,12 +448,21 @@ case "scummvm": runner = ScummVMRunner()
                 await RetroAchievementsService.shared.unlockAchievement(id: achievementId, hardcore: hardcore)
             }
         }
-        XPCBridgeAdapter.shared.onRcheevosRichPresence = { message in
-            Task { @MainActor in
-                guard let gameID = RetroAchievementsService.shared.currentGame?.id else { return }
-                await RetroAchievementsService.shared.updateRichPresence(gameID: gameID, message: message)
-            }
+    XPCBridgeAdapter.shared.onRcheevosRichPresence = { message in
+        Task { @MainActor in
+            guard let game = RetroAchievementsService.shared.currentGame else { return }
+            let pingGameID = game.parentGameID ?? game.id
+            await RetroAchievementsService.shared.updateRichPresence(gameID: pingGameID, message: message)
         }
+    }
+
+    // Notify RA server that a session has started
+    if let game = RetroAchievementsService.shared.currentGame {
+        let sessionGameID = game.parentGameID ?? game.id
+        Task { @MainActor in
+            await RetroAchievementsService.shared.startSession(gameID: sessionGameID)
+        }
+    }
     }
 
     // MARK: - Pause State

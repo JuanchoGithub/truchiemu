@@ -51,10 +51,10 @@ struct AchievementToastView: View {
                 .font(.caption)
                 .foregroundColor(AppColors.textSecondary(colorScheme))
 
-                Text(achievement.title)
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .lineLimit(2)
+		Text(achievement.title)
+			.font(.headline)
+			.foregroundColor(.primary)
+			.lineLimit(2)
 
             Text("\(achievement.points) \(loc.localized("achievement.pointsLabel"))")
                 .font(.subheadline)
@@ -71,14 +71,20 @@ struct AchievementToastView: View {
             }
             .buttonStyle(.plain)
         }
-        .padding(16)
-        .frame(maxWidth: 380)
-        .background(AppDecorativeGradients.buttonPrimary)
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(AppColors.accentWarm.opacity(0.3), lineWidth: 1)
-        )
-        .cornerRadius(12)
+		.padding(16)
+		.frame(maxWidth: 380)
+		.background(
+			RoundedRectangle(cornerRadius: 12)
+				.fill(.regularMaterial)
+				.overlay(
+					RoundedRectangle(cornerRadius: 12)
+						.fill(AppColors.brandAccent.opacity(0.08))
+				)
+		)
+		.overlay(
+			RoundedRectangle(cornerRadius: 12)
+				.stroke(AppColors.brandAccent.opacity(0.3), lineWidth: 1)
+		)
         .shadow(color: .black.opacity(0.3), radius: 10, x: 0, y: 5)
         .shadow(color: AppColors.brandAccent.opacity(glowIntensity * 0.4), radius: 12 + glowIntensity * 8, x: 0, y: 0)
         .offset(y: offset)

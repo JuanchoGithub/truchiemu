@@ -254,30 +254,63 @@ class GameLauncher: ObservableObject {
         // Create runner and window controller
         let runner = EmulatorRunner.forSystem(systemID)
 
-        // Pre-load cached achievements for rcheevos memory detection
-        if config.achievementsEnabled {
-            if let raGameId = rom.raGameId, raGameId > 0 {
-                if let username = RetroAchievementsService.shared.username {
-                    if let patchTriggers = await RetroAchievementsService.shared.fetchPatchData(gameID: raGameId), !patchTriggers.isEmpty {
-                        LoggerService.info(category: "GameLauncher", "Got \(patchTriggers.count) unhashed triggers from patch API")
-                    } else {
-                        LoggerService.info(category: "GameLauncher", "No patch data available, will use cached MemAddr triggers")
-                    }
-            if let achievements = RetroAchievementsService.shared.loadCachedAchievements(gameID: raGameId, username: username) {
-                runner.rcheevosAchievements = achievements
-                runner.rcheevosRichPresenceScript = RetroAchievementsService.shared.loadRichPresenceScript(gameID: raGameId)
-                let withTriggers = achievements.filter { $0.trigger != nil && !$0.trigger!.isEmpty }
-                LoggerService.info(category: "GameLauncher", "Loaded \(achievements.count) cached achievements (\(withTriggers.count) with triggers)")
-                    } else {
-                        LoggerService.info(category: "GameLauncher", "No cached achievements found for gameID=\(raGameId)")
-                    }
+    // Pre-load cached achievements for rcheevos memory detection
+    if config.achievementsEnabled {
+        if let raGameId = rom.raGameId, raGameId > 0 {
+            if let username = RetroAchievementsService.shared.username {
+                if let patchTriggers = await RetroAchievementsService.shared.fetchPatchData(gameID: raGameId), !patchTriggers.isEmpty {
+                    LoggerService.info(category: "GameLauncher", "Got \(patchTriggers.count) unhashed triggers from patch API for game \(raGameId)")
                 } else {
-                    LoggerService.info(category: "GameLauncher", "RA enabled but no username - skipping rcheevos")
+                    LoggerService.info(category: "GameLauncher", "No patch data available for game \(raGameId), will use cached MemAddr triggers")
+                }
+
+                // Also fetch patch data for parent game (subset games need parent's
+                // unhashed triggers — the cached JSON has hashed MemAddr values)
+                if let parentID = RetroAchievementsService.shared.parentGameIDForCache(gameID: raGameId) {
+                    if let parentPatchTriggers = await RetroAchievementsService.shared.fetchPatchData(gameID: parentID), !parentPatchTriggers.isEmpty {
+                        LoggerService.info(category: "GameLauncher", "Got \(parentPatchTriggers.count) unhashed triggers from patch API for parent game \(parentID)")
+                    } else {
+                        LoggerService.info(category: "GameLauncher", "No patch data available for parent game \(parentID)")
+                    }
+                }
+
+                if let achievements = RetroAchievementsService.shared.loadCachedAchievements(gameID: raGameId, username: username) {
+                    runner.rcheevosAchievements = achievements
+                    runner.rcheevosRichPresenceScript = RetroAchievementsService.shared.loadRichPresenceScript(gameID: raGameId) ?? RetroAchievementsService.shared.loadRichPresenceScript(gameID: RetroAchievementsService.shared.parentGameIDForCache(gameID: raGameId) ?? 0)
+                    let withTriggers = achievements.filter { $0.trigger != nil && !$0.trigger!.isEmpty }
+                    LoggerService.info(category: "GameLauncher", "Loaded \(achievements.count) cached achievements (\(withTriggers.count) with triggers)")
+
+                    // Set currentGame with actual achievement data so unlock
+                    // notifications show correct title/badge/points
+                    RetroAchievementsService.shared.currentGame = RAGameInfo(
+                        id: raGameId,
+                        title: rom.displayName,
+                        consoleName: "",
+                        consoleID: 0,
+                        achievements: achievements,
+                        totalPoints: achievements.reduce(0) { $0 + $1.points },
+                        parentGameID: RetroAchievementsService.shared.parentGameIDForCache(gameID: raGameId)
+                    )
+                } else {
+                    LoggerService.info(category: "GameLauncher", "No cached achievements found for gameID=\(raGameId)")
+
+                    RetroAchievementsService.shared.currentGame = RAGameInfo(
+                        id: raGameId,
+                        title: rom.displayName,
+                        consoleName: "",
+                        consoleID: 0,
+                        achievements: [],
+                        totalPoints: 0,
+                        parentGameID: RetroAchievementsService.shared.parentGameIDForCache(gameID: raGameId)
+                    )
                 }
             } else {
-                LoggerService.info(category: "GameLauncher", "RA enabled but rom.raGameId=\(rom.raGameId as Any) - skipping rcheevos")
+                LoggerService.info(category: "GameLauncher", "RA enabled but no username - skipping rcheevos")
             }
+        } else {
+            LoggerService.info(category: "GameLauncher", "RA enabled but rom.raGameId=\(rom.raGameId as Any) - skipping rcheevos")
         }
+    }
 
         let controller = StandaloneGameWindowController(runner: runner)
         controller.library = library

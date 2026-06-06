@@ -17,6 +17,8 @@ struct AchievementListView: View {
         switch selectedTab {
         case .core:
             return game.achievements.filter { $0.category == .core }
+        case .exclusive:
+            return game.achievements.filter { $0.category == .exclusive }
         case .unofficial:
             return game.achievements.filter { $0.category == .unofficial }
         case .event:
@@ -237,25 +239,28 @@ struct AchievementRowView: View {
 
 enum AchievementTab: CaseIterable {
     case core
+    case exclusive
     case unofficial
     case event
     case unlocked
     case locked
-    
+
     var title: String {
         let loc = LocalizationManager.shared
         switch self {
         case .core: return loc.localized("achievement.core")
+        case .exclusive: return loc.localized("achievement.exclusive")
         case .unofficial: return loc.localized("achievement.unofficial")
         case .event: return loc.localized("achievement.events")
         case .unlocked: return loc.localized("achievement.unlocked")
         case .locked: return loc.localized("achievement.locked")
         }
     }
-    
+
     var icon: String {
         switch self {
         case .core: return "target"
+        case .exclusive: return "star.circle"
         case .unofficial: return "wrench"
         case .event: return "calendar"
         case .unlocked: return "trophy.fill"
