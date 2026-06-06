@@ -241,7 +241,7 @@ enum ROMIdentifier {
             guard let target = leafName.data(using: .ascii) else { return nil }
             guard let range = scanData.range(of: target) else { return nil }
             let lbnOffset = range.lowerBound - 31
-            let sizeOffset = range.lowerBound - 21
+            let sizeOffset = range.lowerBound - 23
             guard lbnOffset > 0, lbnOffset + 4 <= scanData.count,
                   sizeOffset > 0, sizeOffset + 4 <= scanData.count else { return nil }
             let lbn = scanData.subdata(in: lbnOffset..<lbnOffset + 4).withUnsafeBytes { $0.load(as: UInt32.self) }
@@ -306,7 +306,8 @@ enum ROMIdentifier {
         guard let data = try? fileHandle.read(upToCount: 500_000) else { return false }
         
         // 1. Search for the string "PARAM.SFO" in the directory records
-        guard let lbn = ISOScanner.locateLBN(in: data, forLeafName: "PARAM.SFO;1") else {
+        guard let lbn = ISOScanner.locateLBN(in: data, forLeafName: "PARAM.SFO;1")
+                ?? ISOScanner.locateLBN(in: data, forLeafName: "PARAM.SFO") else {
             return false
         }
 

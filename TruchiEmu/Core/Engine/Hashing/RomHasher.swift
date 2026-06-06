@@ -367,22 +367,31 @@ enum RomHasher {
 
         // ISO9660 directory records contain leaf filenames with version suffix (e.g. "PARAM.SFO;1"),
         // not the full path. Scan the first 16MB to find the SFO and EBOOT directory entries.
+        // PSP UMD images often omit the ";1" version suffix, so try both forms.
         let scanRange = 16 * 1024 * 1024
         guard let scanData = try? handle.read(upToCount: scanRange) else { return nil }
 
-        guard let sfoLbn = ROMIdentifier.ISOScanner.locateLBN(in: scanData, forLeafName: "PARAM.SFO;1") else { return nil }
-        guard let ebootLbn = ROMIdentifier.ISOScanner.locateLBN(in: scanData, forLeafName: "EBOOT.BIN;1") else { return nil }
+        guard let sfoInfo = ROMIdentifier.ISOScanner.locateLBNAndSize(in: scanData, forLeafName: "PARAM.SFO;1")
+                ?? ROMIdentifier.ISOScanner.locateLBNAndSize(in: scanData, forLeafName: "PARAM.SFO") else { return nil }
+        guard let ebootInfo = ROMIdentifier.ISOScanner.locateLBNAndSize(in: scanData, forLeafName: "EBOOT.BIN;1")
+                ?? ROMIdentifier.ISOScanner.locateLBNAndSize(in: scanData, forLeafName: "EBOOT.BIN") else { return nil }
 
         let format = ROMIdentifier.ISOScanner.detectFormat(at: url)
 
-        try? handle.seek(toOffset: format.lbnToFileOffset(sfoLbn))
-        guard let sfoData = try? handle.read(upToCount: 4096) else { return nil }
+        try? handle.seek(toOffset: format.lbnToFileOffset(sfoInfo.lbn))
+        let sfoReadSize = min(Int(sfoInfo.size), 4096)
+        guard let sfoData = try? handle.read(upToCount: sfoReadSize) else { return nil }
 
-        try? handle.seek(toOffset: format.lbnToFileOffset(ebootLbn))
+        try? handle.seek(toOffset: format.lbnToFileOffset(ebootInfo.lbn))
         var ebootData = Data()
+        var totalRead = 0
+        let ebootSize = Int(ebootInfo.size)
         let bufferSize = 128 * 1024
-        while let chunk = try? handle.read(upToCount: bufferSize), !chunk.isEmpty {
+        while totalRead < ebootSize,
+              let chunk = try? handle.read(upToCount: min(bufferSize, ebootSize - totalRead)),
+              !chunk.isEmpty {
             ebootData.append(chunk)
+            totalRead += chunk.count
         }
         guard !ebootData.isEmpty else { return nil }
 
