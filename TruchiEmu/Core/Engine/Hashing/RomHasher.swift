@@ -291,10 +291,7 @@ enum RomHasher {
         }
 
         let exeName: String
-        if let range = bootLine.range(of: "BOOT=") {
-            let after = String(bootLine[range.upperBound...])
-            exeName = after.components(separatedBy: ";").first?.trimmingCharacters(in: .whitespaces) ?? after
-        } else if let range = bootLine.range(of: "BOOT2=") {
+        if let range = bootLine.range(of: "BOOT2?\\s*=", options: .regularExpression) {
             let after = String(bootLine[range.upperBound...])
             exeName = after.components(separatedBy: ";").first?.trimmingCharacters(in: .whitespaces) ?? after
         } else {
@@ -314,7 +311,7 @@ enum RomHasher {
         }
 
         let exeName: String
-        if let range = bootLine.range(of: "BOOT2=") {
+        if let range = bootLine.range(of: "BOOT2\\s*=", options: .regularExpression) {
             let after = String(bootLine[range.upperBound...])
             exeName = after.components(separatedBy: ";").first?.trimmingCharacters(in: .whitespaces) ?? after
         } else {
@@ -332,18 +329,30 @@ enum RomHasher {
         let scanRange = 8 * 1024 * 1024
         guard let scanData = try? handle.read(upToCount: scanRange) else { return nil }
 
-        let targetName = ("\\" + exeName).data(using: .ascii) ?? exeName.data(using: .ascii)
-        guard let targetData = targetName,
-              let range = scanData.range(of: targetData) else { return nil }
+        // BOOT= paths look like "cdrom:\SLUS_006.45;1" — strip the drive prefix and version
+        // to get the leaf filename that actually appears in the ISO9660 directory records.
+        // exeName uses backslash separators, so split on "\" (NSString.lastPathComponent
+        // only handles "/" and would return the whole path).
+        let stripped = exeName.replacingOccurrences(of: ";1", with: "")
+        let leaf = stripped.split(separator: "\\").last.map(String.init) ?? stripped
+        let leafName = leaf.uppercased() + ";1"
+        guard let info = ROMIdentifier.ISOScanner.locateLBNAndSize(in: scanData, forLeafName: leafName) else { return nil }
+        let lbn = info.lbn
+        let exeSize = Int(info.size)
 
-        let lbnOffset = range.lowerBound - 10
-        guard lbnOffset > 0 else { return nil }
+        let format = ROMIdentifier.ISOScanner.detectFormat(at: url)
+        try? handle.seek(toOffset: format.lbnToFileOffset(lbn))
 
-        let lbn = scanData.subdata(in: lbnOffset..<lbnOffset + 4).withUnsafeBytes { $0.load(as: UInt32.self) }
-        let fileOffset = UInt64(lbn) * 2048
-
-        try? handle.seek(toOffset: fileOffset)
-        guard let exeData = try? handle.read(upToCount: 128 * 1024 * 1024) else { return nil }
+        var exeData = Data()
+        var totalRead = 0
+        let bufferSize = 128 * 1024
+        while totalRead < exeSize,
+              let chunk = try? handle.read(upToCount: min(bufferSize, exeSize - totalRead)),
+              !chunk.isEmpty {
+            exeData.append(chunk)
+            totalRead += chunk.count
+        }
+        guard !exeData.isEmpty else { return nil }
 
         var nameData = exeName.data(using: .ascii) ?? Data()
         nameData.append(exeData)
@@ -364,10 +373,12 @@ enum RomHasher {
         guard let sfoLbn = ROMIdentifier.ISOScanner.locateLBN(in: scanData, forLeafName: "PARAM.SFO;1") else { return nil }
         guard let ebootLbn = ROMIdentifier.ISOScanner.locateLBN(in: scanData, forLeafName: "EBOOT.BIN;1") else { return nil }
 
-        try? handle.seek(toOffset: UInt64(sfoLbn) * 2048)
+        let format = ROMIdentifier.ISOScanner.detectFormat(at: url)
+
+        try? handle.seek(toOffset: format.lbnToFileOffset(sfoLbn))
         guard let sfoData = try? handle.read(upToCount: 4096) else { return nil }
 
-        try? handle.seek(toOffset: UInt64(ebootLbn) * 2048)
+        try? handle.seek(toOffset: format.lbnToFileOffset(ebootLbn))
         var ebootData = Data()
         let bufferSize = 128 * 1024
         while let chunk = try? handle.read(upToCount: bufferSize), !chunk.isEmpty {
@@ -444,7 +455,7 @@ enum RomHasher {
         guard let lbn = ROMIdentifier.ISOScanner.locateLBN(in: scanData, forLeafName: "LaunchMe") else { return nil }
 
         var buffer = Data(sector0.prefix(132))
-        let launchMeOffset = UInt64(lbn) * 2048
+        let launchMeOffset = ROMIdentifier.ISOScanner.detectFormat(at: url).lbnToFileOffset(lbn)
 
         try? handle.seek(toOffset: launchMeOffset)
         let bufferSize = 128 * 1024
@@ -541,7 +552,8 @@ enum RomHasher {
         guard let handle = try? FileHandle(forReadingFrom: url) else { return nil }
         defer { try? handle.close() }
 
-        try? handle.seek(toOffset: 2048)
+        let format = ROMIdentifier.ISOScanner.detectFormat(at: url)
+        try? handle.seek(toOffset: format.lbnToFileOffset(1))
         guard let sector1 = try? handle.read(upToCount: 128), sector1.count == 128 else { return nil }
 
         let marker = "PC Engine CD-ROM SYSTEM".data(using: .ascii)!
@@ -552,7 +564,7 @@ enum RomHasher {
         let sectorIndex = UInt32(sector1[0]) | (UInt32(sector1[1]) << 8) | (UInt32(sector1[2]) << 16)
         let sectorCount = sector1[3]
 
-        try? handle.seek(toOffset: UInt64(sectorIndex) * 2048)
+        try? handle.seek(toOffset: format.lbnToFileOffset(sectorIndex))
         var remaining = Int(sectorCount)
         while remaining > 0 {
             let toRead = min(remaining, 64)
@@ -608,8 +620,9 @@ enum RomHasher {
         guard let scanData = try? handle.read(upToCount: scanRange) else { return nil }
 
         // Read IPL.TXT, parse out the .PRG file list, and concatenate their contents.
+        let format = ROMIdentifier.ISOScanner.detectFormat(at: url)
         guard let iplLbn = ROMIdentifier.ISOScanner.locateLBN(in: scanData, forLeafName: "IPL.TXT;1") else { return nil }
-        try? handle.seek(toOffset: UInt64(iplLbn) * 2048)
+        try? handle.seek(toOffset: format.lbnToFileOffset(iplLbn))
         guard let iplData = try? handle.read(upToCount: 4096),
               let iplText = String(data: iplData, encoding: .ascii) else { return nil }
 
@@ -625,7 +638,7 @@ enum RomHasher {
         let readBufferSize = 128 * 1024
         for leafName in prgLeafNames {
             guard let lbn = ROMIdentifier.ISOScanner.locateLBN(in: scanData, forLeafName: leafName) else { continue }
-            try? handle.seek(toOffset: UInt64(lbn) * 2048)
+            try? handle.seek(toOffset: format.lbnToFileOffset(lbn))
             while let chunk = try? handle.read(upToCount: readBufferSize), !chunk.isEmpty {
                 buffer.append(chunk)
             }

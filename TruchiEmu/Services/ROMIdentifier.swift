@@ -189,6 +189,33 @@ enum ROMIdentifier {
     // MARK: - ISO Scanning for CD-based Systems
     struct ISOScanner {
 
+        // CD images come in two sector layouts: cooked (.iso, 2048-byte user-data sectors)
+        // and raw (.bin ripped with the 12-byte sync + 4-byte header preserved, 2352-byte
+        // sectors with user data starting at offset 16). Discriminates by checking the first
+        // 12 bytes for the CD sync pattern (00 FF×10 00).
+        enum CDSectorFormat {
+            case cooked2048
+            case raw2352
+
+            func lbnToFileOffset(_ lbn: UInt32) -> UInt64 {
+                switch self {
+                case .cooked2048: return UInt64(lbn) * 2048
+                case .raw2352:    return UInt64(lbn) * 2352 + 16
+                }
+            }
+        }
+
+        // Reads the first 16 bytes of the file and returns the detected sector format.
+        static func detectFormat(at url: URL) -> CDSectorFormat {
+            guard let handle = try? FileHandle(forReadingFrom: url) else { return .cooked2048 }
+            defer { try? handle.close() }
+            guard let header = try? handle.read(upToCount: 16), header.count == 16 else { return .cooked2048 }
+            let isRawCD = header[0] == 0x00 && header[1] == 0xFF && header[2] == 0xFF && header[3] == 0xFF &&
+                          header[4] == 0xFF && header[5] == 0xFF && header[6] == 0xFF && header[7] == 0xFF &&
+                          header[8] == 0xFF && header[9] == 0xFF && header[10] == 0xFF && header[11] == 0x00
+            return isRawCD ? .raw2352 : .cooked2048
+        }
+
         // Searches `scanData` for an ISO9660 directory record whose leaf filename matches
         // `leafName` and returns the 4-byte little-endian LBN pointing to the file's data extent.
         // ISO9660 directory records put the LBN at byte 2 of the record, while the identifier
@@ -200,6 +227,21 @@ enum ROMIdentifier {
             let lbnOffset = range.lowerBound - 31
             guard lbnOffset > 0, lbnOffset + 4 <= scanData.count else { return nil }
             return scanData.subdata(in: lbnOffset..<lbnOffset + 4).withUnsafeBytes { $0.load(as: UInt32.self) }
+        }
+
+        // Like `locateLBN` but also returns the file's data length (32-bit little-endian) from
+        // the same directory record. Both values are read directly from the raw record, so the
+        // caller doesn't need to re-scan or guess file sizes.
+        static func locateLBNAndSize(in scanData: Data, forLeafName leafName: String) -> (lbn: UInt32, size: UInt32)? {
+            guard let target = leafName.data(using: .ascii) else { return nil }
+            guard let range = scanData.range(of: target) else { return nil }
+            let lbnOffset = range.lowerBound - 31
+            let sizeOffset = range.lowerBound - 21
+            guard lbnOffset > 0, lbnOffset + 4 <= scanData.count,
+                  sizeOffset > 0, sizeOffset + 4 <= scanData.count else { return nil }
+            let lbn = scanData.subdata(in: lbnOffset..<lbnOffset + 4).withUnsafeBytes { $0.load(as: UInt32.self) }
+            let size = scanData.subdata(in: sizeOffset..<sizeOffset + 4).withUnsafeBytes { $0.load(as: UInt32.self) }
+            return (lbn, size)
         }
 
         // Reads the ISO and attempts to locate and extract the content of "SYSTEM.CNF"
@@ -215,10 +257,14 @@ enum ROMIdentifier {
 
             guard let lbn = locateLBN(in: data, forLeafName: "SYSTEM.CNF;1") else { return nil }
 
-            let fileOffset = UInt64(lbn) * 2048
+            let format = detectFormat(at: url)
+            let fileOffset = format.lbnToFileOffset(lbn)
             try? fileHandle.seek(toOffset: fileOffset)
             guard let fileData = try? fileHandle.read(upToCount: 2048) else { return nil }
-            return String(data: fileData, encoding: .ascii)
+            // SYSTEM.CNF files start with a few bytes of binary header (file length
+            // fields), so we decode as ISO Latin 1 to preserve the BOOT= lines that
+            // follow — callers locate the BOOT= substring rather than parsing from byte 0.
+            return String(data: fileData, encoding: .isoLatin1)
         }
     }
 
@@ -259,8 +305,8 @@ enum ROMIdentifier {
             return false
         }
 
-        // 3. Seek to the block (LBN * 2048) and verify the file starts with "\0PSF"
-        let fileOffset = UInt64(lbn) * 2048
+        // 3. Seek to the block and verify the file starts with "\0PSF"
+        let fileOffset = ISOScanner.detectFormat(at: url).lbnToFileOffset(lbn)
         try? fileHandle.seek(toOffset: fileOffset)
         
         if let header = try? fileHandle.read(upToCount: 4) {
