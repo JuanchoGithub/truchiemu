@@ -20,7 +20,9 @@ extension Notification.Name {
     static let checkForUpdatesFromMenu = Notification.Name("checkForUpdatesFromMenu")
     static let showWhatsNewFromMenu = Notification.Name("showWhatsNewFromMenu")
 static let showChangelogFromMenu = Notification.Name("showChangelogFromMenu")
-    static let openHelpWindow = Notification.Name("openHelpWindow")
+	static let openHelpWindow = Notification.Name("openHelpWindow")
+	static let openGameAchievements = Notification.Name("openGameAchievements")
+	static let navigateToAchievements = Notification.Name("navigateToAchievements")
   }
 
 @main
@@ -578,9 +580,18 @@ struct ContentWithPrepopulationView: View {
                     }
       }
     }
-    .onReceive(NotificationCenter.default.publisher(for: .openHelpWindow)) { _ in
-      openWindow(id: "help")
-    }
+	.onReceive(NotificationCenter.default.publisher(for: .openHelpWindow)) { _ in
+			openWindow(id: "help")
+		}
+		.onReceive(NotificationCenter.default.publisher(for: .openGameAchievements)) { notification in
+			if let raGameId = notification.userInfo?["raGameId"] as? Int,
+			   let rom = library.roms.first(where: { $0.raGameId == raGameId }) {
+				openWindow(id: "game-info", value: rom.id)
+				DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+					NotificationCenter.default.post(name: .navigateToAchievements, object: nil, userInfo: ["raGameId": raGameId])
+				}
+			}
+		}
   }
 
   private func performInitialization() async {
@@ -637,14 +648,23 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     }
   }
 
-    // MARK: - UNUserNotificationCenterDelegate
+	// MARK: - UNUserNotificationCenterDelegate
 
-    func userNotificationCenter(_ center: UNUserNotificationCenter, 
-                                willPresent notification: UNNotification, 
-                                withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        // Allow the notification to show as a banner even when the app is in the foreground
-        completionHandler([.banner, .sound])
-    }
+	func userNotificationCenter(_ center: UNUserNotificationCenter,
+								willPresent notification: UNNotification,
+								withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+		completionHandler([.banner, .sound])
+	}
+
+	func userNotificationCenter(_ center: UNUserNotificationCenter,
+								didReceive response: UNNotificationResponse,
+								withCompletionHandler completionHandler: @escaping () -> Void) {
+		let userInfo = response.notification.request.content.userInfo
+		if let raGameId = userInfo["raGameId"] as? Int, raGameId > 0 {
+			NotificationCenter.default.post(name: .openGameAchievements, object: nil, userInfo: ["raGameId": raGameId])
+		}
+		completionHandler()
+	}
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         return isCLILaunch

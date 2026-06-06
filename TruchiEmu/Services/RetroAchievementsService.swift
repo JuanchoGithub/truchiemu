@@ -1328,53 +1328,80 @@ func loadCachedAchievements(gameID: Int, username: String) -> [Achievement]? {
             } else {
                 LoggerService.info(category: "RetroAchievements", "Achievement \(id) already unlocked on server (re-award)")
             }
-            await MainActor.run {
-                if let index = self.currentGame?.achievements.firstIndex(where: { $0.id == id }) {
-                    self.currentGame?.achievements[index].isUnlocked = true
-                    self.currentGame?.achievements[index].isHardcore = hardcore
-                    self.currentGame?.achievements[index].unlockDate = Date()
-                } else if var game = self.currentGame {
-                    let ach = Achievement(
-                        id: id, title: "Achievement \(id)", description: "",
-                        points: 0, badgeName: "", isUnlocked: true,
-                        unlockDate: Date(), isHardcore: hardcore,
-                        category: .core, trigger: nil
-                    )
-                    game.achievements.append(ach)
-                    self.currentGame = game
-                }
-                if wasLocallyUnlocked {
-                    let achievement = self.currentGame?.achievements.first(where: { $0.id == id })
-                    if let achievement = achievement {
-                        AchievementToastManager.shared.showAchievement(achievement)
+		await MainActor.run {
+			if let index = self.currentGame?.achievements.firstIndex(where: { $0.id == id }) {
+				self.currentGame?.achievements[index].isUnlocked = true
+				self.currentGame?.achievements[index].isHardcore = hardcore
+				self.currentGame?.achievements[index].unlockDate = Date()
+			} else if var game = self.currentGame {
+				let ach = Achievement(
+					id: id, title: "Achievement \(id)", description: "",
+					points: 0, badgeName: "", isUnlocked: true,
+					unlockDate: Date(), isHardcore: hardcore,
+					category: .core, trigger: nil
+				)
+				game.achievements.append(ach)
+				self.currentGame = game
+			}
+			if wasLocallyUnlocked {
+				let achievement = self.currentGame?.achievements.first(where: { $0.id == id })
+				if let achievement = achievement {
+					AchievementToastManager.shared.showAchievement(achievement)
 
-                        NotificationHistoryManager.shared.post(
-                            icon: "trophy.fill",
-                            title: achievement.title,
-                            subtitle: "\(achievement.points) points",
-                            autoDismissDelay: 5
-                        )
+					let gameTitle = self.currentGame?.title ?? ""
+					let systemName = self.currentGame?.consoleName ?? ""
 
-                        let unlockedLabel = LocalizationManager.shared.localized("achievement.unlockedLabel")
-                        let pointsLabel = LocalizationManager.shared.localized("achievement.pointsLabel")
-                        let body = "\(achievement.title) — \(achievement.points) \(pointsLabel)"
+					NotificationHistoryManager.shared.post(
+						icon: "trophy.fill",
+						title: achievement.title,
+						subtitle: "\(achievement.points) points — \(gameTitle)",
+						autoDismissDelay: 5
+					)
+				}
+			}
+		}
 
-                        if let localURL = RABadgeCacheService.shared.localURL(for: achievement.badgeName),
-                           let image = NSImage(contentsOf: localURL) {
-                            NotificationService.shared.sendNotification(
-                                title: unlockedLabel,
-                                body: body,
-                                image: image
-                            )
-                        } else {
-                            NotificationService.shared.sendNotification(
-                                title: unlockedLabel,
-                                body: body
-                            )
-                        }
-                    }
-                }
-            }
+		if wasLocallyUnlocked {
+			let badgeName = await MainActor.run { self.currentGame?.achievements.first(where: { $0.id == id })?.badgeName ?? "" }
+			let gameID = await MainActor.run { self.currentGame?.id ?? 0 }
+			let gameTitle = await MainActor.run { self.currentGame?.title ?? "" }
+			let systemName = await MainActor.run { self.currentGame?.consoleName ?? "" }
+			let achievementTitle = await MainActor.run { self.currentGame?.achievements.first(where: { $0.id == id })?.title ?? "" }
+			let achievementPoints = await MainActor.run { self.currentGame?.achievements.first(where: { $0.id == id })?.points ?? 0 }
+
+			if !badgeName.isEmpty && RABadgeCacheService.shared.localURL(for: badgeName) == nil {
+				await RABadgeCacheService.shared.ensureBadgeDownloaded(badgeName: badgeName)
+			}
+
+			let unlockedLabel = LocalizationManager.shared.localized("achievement.unlockedLabel")
+			let pointsLabel = LocalizationManager.shared.localized("achievement.pointsLabel")
+			let body: String
+			if !systemName.isEmpty {
+				body = "\(achievementTitle) — \(achievementPoints) \(pointsLabel)\n\(gameTitle) (\(systemName))"
+			} else {
+				body = "\(achievementTitle) — \(achievementPoints) \(pointsLabel)\n\(gameTitle)"
+			}
+
+			let userInfo: [String: Any] = ["raGameId": gameID]
+
+			await MainActor.run {
+				if let localURL = RABadgeCacheService.shared.localURL(for: badgeName),
+				   let image = NSImage(contentsOf: localURL) {
+					NotificationService.shared.sendNotification(
+						title: unlockedLabel,
+						body: body,
+						image: image,
+						userInfo: userInfo
+					)
+				} else {
+					NotificationService.shared.sendNotification(
+						title: unlockedLabel,
+						body: body,
+						userInfo: userInfo
+					)
+				}
+			}
+		}
             persistUnlockToCache(achievementId: id, hardcore: hardcore)
         } else {
             let errMsg = awardResponse.error_message.map { String(cString: $0) } ?? "unknown"

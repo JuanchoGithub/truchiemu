@@ -8,11 +8,12 @@ struct GameDetailView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.openWindow) var openWindow
-    var rom: ROM
+	var rom: ROM
+	var initialSection: DetailSection?
 
-    @StateObject var saveStateManager = SaveStateManager()
-    @StateObject var achievementsService = RetroAchievementsService.shared
-    @State var showBoxArtPicker = false
+	@StateObject var saveStateManager = SaveStateManager()
+	@StateObject var achievementsService = RetroAchievementsService.shared
+	@State var showBoxArtPicker = false
     @StateObject var gameLauncher = GameLauncher.shared
     @State var boxArtImage: NSImage? = nil
     @State var boxArtImageURL: URL? = nil
@@ -182,8 +183,11 @@ struct GameDetailView: View {
         }
         .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
         .animation(.easeInOut(duration: 0.2), value: manualActionStatus.isVisible)
-        .onAppear {
-            loadBoxArt()
+	.onAppear {
+		if let initial = initialSection {
+			selectedSection = initial
+		}
+		loadBoxArt()
             loadSlotInfo()
             // Only load achievements if we're logged in and RA is enabled
             if achievementsService.isLoggedIn && achievementsService.isEnabled {
