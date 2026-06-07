@@ -640,7 +640,13 @@ pre code {
   margin-top: 8px;
 }
 
-.hero-image img {
+.hero-screenshot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-image {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-xl);
   width: 100%;
