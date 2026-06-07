@@ -6,6 +6,14 @@ xcuserdata/
 *.xcuserdatad/
 *.xcuserstate
 
+# Jekyll build output
+docs/_site/
+
+# Xcode user-specific files
+xcuserdata/
+*.xcuserdatad/
+*.xcuserstate
+
 # Other common ignores
 build/
 .cline/
