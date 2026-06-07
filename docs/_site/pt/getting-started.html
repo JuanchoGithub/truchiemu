@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+
+
+<html lang="pt">
+<head>
+
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Primeiros Passos - Documentação do TruchiEmu</title>
+<meta name="description" content="Guia completo para configurar e usar o TruchiEmu no macOS">
+<link rel="canonical" href="https://juanchogithub.github.io/truchiemu/pt/getting-started">
+<meta name="generator" content="Jekyll 4.4.1">
+
+<!-- Open Graph -->
+  <meta property="og:title" content="Primeiros Passos">
+  <meta property="og:description" content="Guia completo para configurar e usar o TruchiEmu no macOS">
+<meta property="og:url" content="https://juanchogithub.github.io/truchiemu/pt/getting-started">
+<meta property="og:site_name" content="Documentação do TruchiEmu">
+<meta property="og:type" content="article">
+<meta property="og:image" content="https://juanchogithub.github.io/truchiemu/media/logo-icon.png">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Primeiros Passos">
+  <meta name="twitter:description" content="Guia completo para configurar e usar o TruchiEmu no macOS">
+<meta name="twitter:image" content="https://juanchogithub.github.io/truchiemu/media/logo-icon.png">
+
+<!-- RSS -->
+<link rel="alternate" type="application/rss+xml" href="/truchiemu/feed.xml">
+
+<!-- Styles -->
+<link rel="stylesheet" href="/truchiemu/assets/css/main.css">
+<script src="/truchiemu/assets/js/main.js"></script>
+
+</head>
+<body>
+
+
+
+
+<header class="site-header">
+<div class="container">
+<div class="header-content">
+<a href="/truchiemu/pt/" class="logo">
+<img src="/truchiemu/media/logo-icon.png" alt="TruchiEmu" width="32" height="32">
+<span>TruchiEmu</span>
+</a>
+
+<nav class="main-nav">
+<a href="/truchiemu/pt/getting-started.html" class="nav-link">Primeiros Passos</a>
+<a href="/truchiemu/pt/features.html" class="nav-link">Recursos</a>
+<a href="/truchiemu/pt/troubleshooting.html" class="nav-link">Solução de Problemas</a>
+<a href="/truchiemu/pt/development.html" class="nav-link">Desenvolvimento</a>
+</nav>
+
+<div class="header-actions">
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18">
+          <path d="M12 3v2m0 14v2m-8.485-.515l1.414-1.414m12.728-12.728l1.414-1.414M4.93 4.93l1.414 1.414m12.728 12.728l1.414 1.414M3 12h2m14 0h2m-9 4a4 4 0 100-8 4 4 0 000 8z"/>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18">
+          <path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+        </svg>
+      </button>
+      <div class="lang-switcher">
+        
+          <a href="/truchiemu/" class="lang-link">EN</a>
+          <a href="/truchiemu/es/" class="lang-link">ES</a>
+          <span class="lang-link lang-active">PT</span>
+        
+      </div>
+<a href="https://github.com/JuanchoGithub/truchiemu" class="btn btn-outline" target="_blank">
+GitHub
+</a>
+</div>
+</div>
+</div>
+</header>
+<div class="search-overlay" id="search-overlay">
+<div class="search-container">
+<input type="text" id="search-input" placeholder="Pesquisar documentação..." autofocus>
+<button id="search-close" class="search-close">&times;</button>
+<div id="search-results"></div>
+</div>
+</div>
+
+
+<div class="site-container">
+
+
+
+
+
+<aside class="sidebar">
+<div class="sidebar-section">
+<h3>Primeiros Passos</h3>
+<ul class="sidebar-nav">
+<li><a href="/truchiemu/pt/getting-started.html">Instalação</a></li>
+<li><a href="/truchiemu/pt/getting-started.html#quick-start">Início Rápido</a></li>
+<li><a href="/truchiemu/pt/getting-started.html#next-steps">Próximos Passos</a></li>
+</ul>
+</div>
+
+<div class="sidebar-section">
+<h3>Recursos Principais</h3>
+<ul class="sidebar-nav">
+<li><a href="/truchiemu/pt/features/shaders.html">Shaders</a></li>
+<li><a href="/truchiemu/pt/features/library.html">Biblioteca</a></li>
+<li><a href="/truchiemu/pt/features/achievements.html">Conquistas</a></li>
+<li><a href="/truchiemu/pt/features/save-states.html">Estados Salvos</a></li>
+<li><a href="/truchiemu/pt/features/controllers.html">Controles</a></li>
+<li><a href="/truchiemu/pt/features/cheats.html">Trapaças</a></li>
+<li><a href="/truchiemu/pt/features/themes.html">Temas e Aparência</a></li>
+<li><a href="/truchiemu/pt/features/analog-mouse.html">Mouse Analógico</a></li>
+<li><a href="/truchiemu/pt/features/training-mode.html">Modo de Treinamento</a></li>
+<li><a href="/truchiemu/pt/features/move-lists.html">Listas de Movimentos</a></li>
+<li><a href="/truchiemu/pt/features/notifications.html">Notificações</a></li>
+<li><a href="/truchiemu/pt/features/genre-management.html">Gerenciamento de Gêneros</a></li>
+<li><a href="/truchiemu/pt/features/updates.html">Verificador de Atualizações</a></li>
+</ul>
+</div>
+
+<div class="sidebar-section">
+<h3>Desenvolvimento</h3>
+<ul class="sidebar-nav">
+<li><a href="/truchiemu/pt/development.html">Arquitetura</a></li>
+<li><a href="/truchiemu/pt/dev/building.html">Compilação</a></li>
+<li><a href="/truchiemu/pt/dev/contributing.html">Contribuir</a></li>
+<li><a href="/truchiemu/pt/dreamcast-vmu-fix.html">Depuração de Saves VMU do Dreamcast</a></li>
+<li><a href="/truchiemu/pt/changelog.html">Registro de alterações</a></li>
+</ul>
+</div>
+
+<div class="sidebar-sticky-footer">
+<button id="search-toggle" class="btn btn-block">
+🔎 Buscar Docs
+</button>
+</div>
+</aside>
+
+
+
+<main class="main-content" id="content">
+<div class="content-wrapper">
+<section class="page-header">
+<div class="container">
+<h1>Primeiros Passos com o TruchiEmu</h1>
+<p class="lead">Tudo o que você precisa para começar a jogar jogos retro no macOS</p>
+</div>
+</section>
+
+<div class="download-cta">
+<h2>Baixar TruchiEmu</h2>
+<p>Obtenha a versão mais recente para macOS &mdash; sem necessidade de compilação.</p>
+<a id="download-latest-btn" href="https://github.com/JuanchoGithub/truchiemu/releases" class="btn btn-primary btn-lg" target="_blank">Baixar Versão Mais Recente</a>
+<p class="version-hint" id="download-version-hint">Buscando versão mais recente...</p>
+</div>
+
+<section id="quick-start" class="content-section">
+<div class="container">
+<h2>Escolha Seu Caminho</h2>
+
+<div class="path-chooser">
+<a href="#play-games" class="path-card">
+<span class="path-icon">🎮</span>
+<h3>Quero Jogar</h3>
+<p>Baixe, configure sua biblioteca e comece a jogar em minutos &mdash; sem necessidade de programar.</p>
+</a>
+<a href="#build-from-source" class="path-card">
+<span class="path-icon">🔧</span>
+<h3>Quero Compilar ou Contribuir</h3>
+<p>Clone o repositório, compile a partir do código-fonte e comece a desenvolver ou contribuir com o TruchiEmu.</p>
+</a>
+</div>
+</div>
+</section>
+
+<nav class="toc">
+<div class="container">
+<h3>Nesta Página</h3>
+<ul>
+<li><a href="#quick-start">Escolha Seu Caminho</a></li>
+<li><a href="#play-games">Início Rápido: Jogar</a></li>
+<li><a href="#setup-wizard">Assistente de Configuração</a></li>
+<li><a href="#adding-games">Adicionar e Gerenciar Jogos</a></li>
+<li><a href="#library-organization">Organização da Biblioteca</a></li>
+<li><a href="#basic-controls">Controles e Entrada</a></li>
+<li><a href="#save-states">Save States</a></li>
+<li><a href="#personalizing">Personalizar o TruchiEmu</a></li>
+<li><a href="#build-from-source">Compilando a Partir do Código-Fonte</a></li>
+<li><a href="#next-steps">Próximos Passos</a></li>
+</ul>
+</div>
+</nav>
+
+<section id="play-games" class="content-section">
+<div class="container">
+<h2>Início Rápido: Jogar</h2>
+
+<ol class="quick-steps">
+<li>
+<strong>Baixe e Inicie o TruchiEmu</strong>
+<p>Baixe a versão mais recente no link acima, mova para sua pasta de Aplicativos e execute-o. O assistente de configuração aparecerá no primeiro lançamento.</p>
+</li>
+<li>
+<strong>Adicione Suas Pastas de ROMs</strong>
+<p>Quando o assistente aparecer, clique no botão de pasta para selecionar o diretório que contém suas ROMs. Você pode adicionar várias pastas &mdash; o TruchiEmu as escaneia recursivamente. Você também pode adicionar pastas depois pela barra de ferramentas da biblioteca (botão <code>folder.badge.plus</code>) ou com <code>Shift+Cmd+O</code>.</p>
+</li>
+<li>
+<strong>Aguarde o Escaneamento</strong>
+<p>O TruchiEmu identifica automaticamente seus jogos usando hashing CRC32 e bancos de dados DAT, baixa capas e enriquece os metadados. Um indicador de progresso mostra o status do escaneamento.</p>
+</li>
+<li>
+<strong>Duplo Clique para Jogar</h2>
+<p>Qualquer jogo na sua biblioteca pode ser iniciado com um duplo clique. Na primeira vez que você jogar um jogo de um determinado sistema, o TruchiEmu apresentará uma folha de seleção de core onde você pode baixar o core do emulador necessário &mdash; depois disso, ele inicia instantaneamente.</p>
+</li>
+</ol>
+
+<div class="info-box">
+<p><strong>Dica:</strong> O TruchiEmu usa a API libretro, portanto suporta virtualmente qualquer sistema que tenha um core libretro disponível &mdash; desde clássicos de 8 bits até consoles 3D e fliperamas. Consulte a página de <a href="/truchiemu/pt/systems.html">Sistemas Suportados</a> para detalhes.</p>
+</div>
+</div>
+</section>
+
+<section id="setup-wizard" class="content-section">
+<div class="container">
+<h2>Assistente de Configuração</h2>
+<p>No primeiro lançamento, o TruchiEmu guia você por um assistente de configuração de 4 passos:</p>
+
+<div class="step-box">
+<div class="step">
+<h4>Passo 1 &mdash; Idioma e Pastas de ROMs</h4>
+<p>Escolha o idioma da interface (inglês, espanhol ou português) e adicione uma ou mais pastas de ROMs. As pastas são escaneadas recursivamente. Você pode pular isso e adicionar pastas depois.</p>
+</div>
+<div class="step">
+<h4>Passo 2 &mdash; Aparência e Estilo</h4>
+<p>Opcionalmente baixe bezels (molduras decorativas de tela) e escolha um preset de shader padrão. Shaders adicionam linhas de varredura CRT, efeitos LCD, desfoque composto ou escalonamento limpo &mdash; você pode alterar a qualquer momento.</p>
+</div>
+<div class="step">
+<h4>Passo 3 &mdash; Recursos Opcionais</h4>
+<p>Ative o download de arquivos de cheats (do banco de dados libretro) e opcionalmente habilite RetroAchievements com suas credenciais de conta. <em>Nota: O login do RetroAchievements está atualmente em desenvolvimento e pode não estar funcional.</em></p>
+</div>
+<div class="step">
+<h4>Passo 4 &mdash; Tudo Pronto!</h4>
+<p>Se você adicionou pastas de ROMs, verá um indicador de progresso do escaneamento. Quando concluído, clique em &ldquo;Entrar na Biblioteca&rdquo; para começar a jogar. Os downloads em segundo plano de bezels e cheats continuarão automaticamente.</p>
+</div>
+</div>
+</div>
+</section>
+
+<section id="adding-games" class="content-section">
+<div class="container">
+<h2>Adicionar e Gerenciar Jogos</h2>
+
+<h3>Importando Jogos</h3>
+<p>O TruchiEmu usa <strong>escaneamento baseado em pastas</strong> &mdash; adicione um diretório e o aplicativo encontra todas as ROMs compatíveis dentro dele. Há várias formas de adicionar pastas:</p>
+<ul class="feature-list">
+<li><strong>Assistente de Configuração:</strong> Adicione pastas durante a configuração inicial</li>
+<li><strong>Barra de Ferramentas da Biblioteca:</strong> Clique no botão <code>folder.badge.plus</code> no topo da sua biblioteca</li>
+<li><strong>Barra de Menu:</strong> Jogos &rarr; Adicionar Pasta de ROMs (<code>Shift+Cmd+O</code>)</li>
+<li><strong>Configurações:</strong> Navegue até Configurações &rarr; Biblioteca &rarr; Pastas da Biblioteca e clique em &ldquo;Adicionar Pasta&rdquo;</li>
+<li><strong>Biblioteca Vazia:</strong> Um botão destacado &ldquo;Adicionar Pasta de ROMs&rdquo; aparece quando sua biblioteca está vazia</li>
+</ul>
+
+<h3>Como o Escaneamento Funciona</h3>
+<p>Quando você adiciona uma pasta, o TruchiEmu a escaneia recursivamente e identifica jogos usando <strong>hashing CRC32</strong> contra bancos de dados DAT &mdash; não apenas extensões de arquivo. Isso significa que suas ROMs são identificadas com precisão independentemente do nome do arquivo. Após a identificação, o aplicativo automaticamente:</p>
+<ul class="feature-list">
+<li>Baixa capas do CDN Libretro (com fontes opcionais LaunchBox e ScreenScraper)</li>
+<li>Enriquece os metadados (gênero, número de jogadores, editora)</li>
+<li>Filtra arquivos de BIOS e recursos do sistema para que apenas jogos jogáveis apareçam</li>
+</ul>
+
+<h3>Reescaneamento e Manutenção</h3>
+<p>Se você adicionar novas ROMs a uma pasta existente, reescaneie para detectá-las:</p>
+<ul class="feature-list">
+<li><strong>Reescaneamento Completo:</strong> Configurações &rarr; Biblioteca &rarr; Manutenção &rarr; &ldquo;Reescaneamento Completo da Biblioteca&rdquo;, ou use <code>Shift+Cmd+R</code></li>
+<li><strong>Atualização por Pasta:</strong> Em Configurações &rarr; Biblioteca, cada pasta tem um botão &ldquo;Atualizar&rdquo;</li>
+<li><strong>Atualização por Sistema:</strong> Clique com o botão direito em um sistema na barra lateral e escolha &ldquo;Atualizar&rdquo;</li>
+<li><strong>Reconstruir:</strong> Para uma limpeza mais profunda, cada pasta tem uma opção &ldquo;Reconstruir&rdquo; com múltiplas estratégias</li>
+</ul>
+
+<h3>Manipulação de Formatos de Arquivo</h3>
+<div class="format-grid">
+<div class="format-category">
+<h4>ROMs Compactadas</h4>
+<p>Para sistemas de fliperama como MAME, <code>.zip</code> é o formato principal esperado e é tratado nativamente pela biblioteca.</p>
+</div>
+<div class="format-category">
+<h4>Imagens de Disco</h4>
+<p>Quando um arquivo <code>.cue</code> é detectado, o TruchiEmu o prioriza e oculta automaticamente os arquivos <code>.bin</code> associados da biblioteca para evitar entradas duplicadas.</p>
+</div>
+<div class="format-category">
+<h4>Filtragem da Biblioteca</h4>
+<p>O aplicativo filtra automaticamente arquivos de BIOS do sistema e recursos de metadados, exibindo apenas entradas de jogos jogáveis.</p>
+</div>
+</div>
+
+<div class="warning-box">
+<p><strong>Aviso Legal:</strong> O TruchiEmu não fornece ROMs. Por favor, use cópias de segurança obtidas legalmente de jogos que você possui.</p>
+</div>
+</div>
+</section>
+
+<section id="library-organization" class="content-section">
+<div class="container">
+<h2>Organização da Biblioteca</h2>
+<p>O TruchiEmu oferece várias formas de navegar e organizar sua coleção de jogos:</p>
+
+<h3>Navegação pela Barra Lateral</h3>
+<ul class="feature-list">
+<li><strong>Todos os Jogos:</strong> Toda sua biblioteca de um golpe</li>
+<li><strong>Favoritos:</strong> Jogos que você marcou (clique direito &rarr; &ldquo;Adicionar aos Favoritos&rdquo;)</li>
+<li><strong>Recentes:</strong> Jogos que você jogou recentemente</li>
+<li><strong>Por Sistema:</strong> Navegue por console (NES, SNES, GBA, Genesis, etc.)</li>
+<li><strong>Categorias:</strong> Grupos personalizados que você cria com nomes, ícones e cores personalizados</li>
+<li><strong>Jogos Ocultos:</strong> Jogos que você ocultou da visualização principal (clique direito &rarr; &ldquo;Ocultar Jogo&rdquo;)</li>
+</ul>
+
+<h3>Modos de Visualização</h3>
+<p>Alterne entre visualização em <strong>Grade</strong> e <strong>Lista</strong> usando o controle segmentado na barra de ferramentas. No modo grade, um controle deslizante ajusta o tamanho dos cartões e a quantidade de colunas.</p>
+
+<h3>Pesquisa e Filtros</h3>
+<ul class="feature-list">
+<li><strong>Pesquisa:</strong> Digite no campo de pesquisa (ou pressione <code>Cmd+F</code>) &mdash; suporta pesquisa com múltiplos termos (todos devem corresponder)</li>
+<li><strong>Filtros Rápidos:</strong> &ldquo;Sem Capa&rdquo;, &ldquo;Nunca Jogado&rdquo;, &ldquo;Não Identificado&rdquo;, &ldquo;Multijogador&rdquo;, &ldquo;Gênero&rdquo;</li>
+<li><strong>Ordenar:</strong> &ldquo;Último Jogado&rdquo;, &ldquo;Último Adicionado&rdquo; e &ldquo;Alfabética&rdquo; (padrão) &mdash; chips de ordenação aparecem na barra de filtros</li>
+</ul>
+
+<h3>Seções Adicionais da Barra Lateral</h3>
+<ul class="feature-list">
+<li><strong>Retro Achievements:</strong> Acompanhe conquistas do RetroAchievements</li>
+<li><strong>Arquivos MAME Ocultos:</strong> Acesse recursos de sistema MAME que estão ocultos da biblioteca principal</li>
+</ul>
+
+<h3>Categorias</h3>
+<p>Crie categorias personalizadas pela barra lateral &mdash; dê a elas um nome, ícone (dos SF Symbols) e cor. Adicione jogos a categorias arrastando e soltando ou pelo menu de contexto com clique direito.</p>
+</div>
+</section>
+
+<section id="basic-controls" class="content-section">
+<div class="container">
+<h2>Controles e Entrada</h2>
+
+<h3>Padrões de Teclado para Jogabilidade</h3>
+<table class="controls-table">
+<thead>
+<tr>
+<th>Tecla</th>
+<th>Ação</th>
+<th>Observações</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Teclas de Seta</td>
+<td>D-Pad / Entrada Direcional</td>
+<td>Padrão para todos os sistemas</td>
+</tr>
+<tr>
+<td>Z, X, C, V</td>
+<td>Botões de Ação (A, B, X, Y)</td>
+<td>Layout padrão; varia por sistema (ex.: NES=Z/X turbo, Arcade=A/S/D/F)</td>
+</tr>
+<tr>
+<td>Enter</td>
+<td>Start / Pausa</td>
+<td>Navegação de menu</td>
+</tr>
+<tr>
+<td>Tab</td>
+<td>Select / Voltar</td>
+<td>Botão de menu secundário</td>
+</tr>
+</tbody>
+</table>
+
+<h3>Atalhos de Teclado Durante o Jogo</h3>
+<table class="controls-table">
+<thead>
+<tr>
+<th>Tecla</th>
+<th>Ação</th>
+<th>Detalhes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>F5</code></td>
+<td>Salvamento Rápido</td>
+<td>Salva no slot atual</td>
+</tr>
+<tr>
+<td><code>F7</code></td>
+<td>Carregamento Rápido</td>
+<td>Carrega do slot atual</td>
+</tr>
+<tr>
+<td><code>F6</code></td>
+<td>Próximo Slot</td>
+<td>Avança para o próximo slot (9 &rarr; 0)</td>
+</tr>
+<tr>
+<td><code>F4</code></td>
+<td>Slot Anterior</td>
+<td>Volta para o slot anterior (0 &rarr; 9)</td>
+</tr>
+<tr>
+<td><code>Cmd+Z</code></td>
+<td>Desfazer Carregamento de Estado</td>
+<td>Restaura o estado anterior ao último carregamento</td>
+</tr>
+<tr>
+<td><code>F8</code></td>
+<td>Reinício do Modo Treino</td>
+<td>Reinício instantâneo (requer Modo Treino ativo)</td>
+</tr>
+<tr>
+<td><code>F9</code></td>
+<td>Ativar/Desativar Gravação</td>
+<td>Grava sequências de entrada para treinamento (requer Modo Treino ativo)</td>
+</tr>
+<tr>
+<td><code>F10</code></td>
+<td>Reproduzir Gravação</td>
+<td>Reproduz as sequências gravadas (requer Modo Treino ativo)</td>
+</tr>
+<tr>
+<td><code>Cmd+F10</code></td>
+<td>Captura de Entrada</td>
+<td>Captura teclado/mouse para jogos DOS/ScummVM</td>
+</tr>
+</tbody>
+</table>
+
+<h3>Suporte a Controles</h3>
+<p>O TruchiEmu detecta automaticamente os controles quando conectados via USB ou Bluetooth e os atribui ao próximo slot de jogador disponível (até 4 jogadores). Uma notificação aparece ao conectar.</p>
+<ul class="feature-list">
+<li><strong>Controles Xbox:</strong> Xbox One e Series X|S</li>
+<li><strong>Controles PlayStation:</strong> DualShock 4 e DualSense (PS5)</li>
+<li><strong>USB Genérico:</strong> Controles MFi e HID funcionam imediatamente</li>
+</ul>
+
+<div class="tip-box">
+<p><strong>Dica de Controle:</strong> O TruchiEmu usa mapeamentos padrão por sistema que correspondem ao layout do hardware original. NES tem mapeamento de 2 botões, SNES de 4 botões, N64 mapeia os botões C para o stick direito, e Arcade mapeia botões de ficha/início. Todos os padrões podem ser personalizados em Configurações &rarr; Controles.</p>
+</div>
+
+<h3>Personalizar Controles</h3>
+<p>Abra <strong>Configurações &rarr; Controles</strong> para remapear qualquer botão. As configurações de controle incluem:</p>
+<ul class="feature-list">
+<li><strong>Seletor de Sistema:</strong> Configure mapeamentos por sistema ou defina um &ldquo;Padrão Global&rdquo;</li>
+<li><strong>Slots de Jogador:</strong> Atribua controles a P1&ndash;P4</li>
+<li><strong>Remapeamento de Gamepad:</strong> Clique em um nome de botão, depois pressione um botão físico no seu controle para atribuí-lo</li>
+<li><strong>Remapeamento de Teclado:</strong> Clique em um nome de botão, depois pressione uma tecla para reatribuir</li>
+<li><strong>Perfis:</strong> Salve e carregue configurações de mapeamento nomeadas (gamepads apenas)</li>
+</ul>
+
+<div class="info-box">
+<p><strong>DOS e ScummVM:</strong> Para estes sistemas, toda a entrada do teclado é passada diretamente ao core como eventos de tecla bruta &mdash; permitindo interação completa com o teclado (digitação no DOS, point-and-click no ScummVM). Pressione <code>Cmd+F10</code> para capturar o mouse nestes jogos.</p>
+</div>
+</div>
+</section>
+
+<section id="save-states" class="content-section">
+<div class="container">
+<h2>Save States</h2>
+<p>O TruchiEmu oferece gerenciamento flexível de save states com 11 slots, versionamento progressivo e opções de auto-salvamento/carregamento.</p>
+
+<h3>Slots</h3>
+<p>Existem <strong>11 slots de salvamento</strong>: um slot Auto (slot -1) mais os slots 0 a 9. Cada slot pode armazenar até <strong>5 versões progressivas</strong> (padrão: 3), dando a você múltiplos instantâneos por slot.</p>
+
+<h3>Salvar e Carregar</h3>
+<div class="step-box">
+<div class="step">
+<h4>Durante o Jogo</h4>
+<ul>
+<li><strong>Teclado:</strong> <code>F5</code> para salvar, <code>F7</code> para carregar, <code>F6</code>/<code>F4</code> para trocar de slot, <code>Cmd+Z</code> para desfazer um carregamento</li>
+<li><strong>Barra de Ferramentas Sobreposta:</strong> Botões Salvar e Carregar na parte inferior da janela do jogo, mais um seletor de slot para escolher entre os 11 slots</li>
+<li><strong>Painel de Seleção de Slots:</strong> Visualização em grade completa com botões Salvar/Carregar/Excluir por slot, miniaturas, marcas de tempo e tamanhos de arquivo</li>
+</ul>
+</div>
+<div class="step">
+<h4>Antes de Iniciar</h4>
+<ul>
+<li><strong>Visualização de Detalhes do Jogo:</strong> A seção &ldquo;Estados Salvos&rdquo; mostra todos os slots como uma grade visual. Dê um duplo clique em qualquer miniatura de slot para iniciar o jogo diretamente naquele save state.</li>
+<li><strong>CLI:</strong> Use <code>--slot &lt;número&gt;</code> para iniciar em um save state específico pela linha de comando</li>
+</ul>
+</div>
+</div>
+
+<h3>Auto-Salvamento e Auto-Carregamento</h3>
+<table class="controls-table">
+<thead>
+<tr>
+<th>Configuração</th>
+<th>Padrão</th>
+<th>Comportamento</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Auto-Salvar ao Sair</td>
+<td>Desativado</td>
+<td>Salva no slot Auto quando você fecha a janela do jogo</td>
+</tr>
+<tr>
+<td>Auto-Carregar ao Iniciar</td>
+<td>Configurável</td>
+<td>Carrega o save state mais recente de todos os slots ao iniciar um jogo</td>
+</tr>
+</tbody>
+</table>
+<p>Ambas as configurações podem ser alteradas em <strong>Configurações &rarr; Salvamentos</strong>.</p>
+
+<h3>Save States vs. Salvamentos por Bateria</h3>
+<div class="comparison-table">
+<div class="comparison-column">
+<h4>Save States</h4>
+<ul>
+<li>Instantâneo da memória do emulador</li>
+<li>O slot Auto (slot -1) é apenas de carregamento &mdash; não pode salvar ou excluir manualmente</li>
+<li>Versionamento progressivo (até 5 por slot)</li>
+<li>Desfazer carregamento com <code>Cmd+Z</code></li>
+<li>Compressão LZ4 opcional</li>
+</ul>
+</div>
+<div class="comparison-column">
+<h4>Salvamentos por Bateria</h4>
+<ul>
+<li>Funciona como o hardware original</li>
+<li>Compatível com dados de salvamento de cartuchos reais</li>
+<li>Tratado automaticamente pelo core do jogo</li>
+<li>Armazenados em <code>~/Library/Application Support/TruchiEmu/saves/savefiles/</code></li>
+<li>Sem intervenção do usuário necessária</li>
+</ul>
+</div>
+</div>
+
+<div class="warning-box">
+<p><strong>Restrições:</strong> Save states estão desativados para cores Dolphin (problema conhecido de falha). Quando o Modo Hardcore do RetroAchievements está ativo, save states, rebobinamento, câmera lenta e cheats são bloqueados.</p>
+</div>
+</div>
+</section>
+
+<section id="personalizing" class="content-section">
+<div class="container">
+<h2>Personalizar o TruchiEmu</h2>
+
+<h3>Temas e Aparência</h3>
+<p>O TruchiEmu vem com <strong>17 temas de cor de destaque</strong> &mdash; de Samus a Doom &mdash; além da capacidade de escolher qualquer cor personalizada. Configure-os em <strong>Configurações &rarr; Geral</strong>:</p>
+<ul class="feature-list">
+<li><strong>Modo de Aparência:</strong> Claro, Escuro ou Automático (segue o sistema)</li>
+<li><strong>Grade de Temas:</strong> 7 temas padrão (Samus, Chocobo, Protoss, Joker, Geralt, Mega Man, Custom) e 10 temas de gaming (Mario, Luigi, Sonic, Half-Life, Kratos, Kirby, Zelda, Pikachu, Doom, Master Chief)</li>
+<li><strong>Cor Personalizada:</strong> Escolha qualquer cor com o seletor de cores do sistema quando &ldquo;Custom&rdquo; está selecionado</li>
+<li><strong>Destaque da Barra de Ferramentas:</strong> Ative/desative ícones da barra de ferramentas com cor de destaque</li>
+<li><strong>Superfícies Tintadas:</strong> Ative/desative o tinte de destaque nos fundos de janela/barra lateral/barra de ferramentas</li>
+</ul>
+
+<div class="info-box">
+<p><strong>Nota:</strong> Mudanças de tema e aparência requerem um reinício do aplicativo para surtirem efeito completamente. Um cartão de pré-visualização mostra como o tema ficará antes de aplicá-lo. Ao pressionar &ldquo;Aplicar Tema&rdquo;, um diálogo de confirmação oferece &ldquo;Reiniciar Agora&rdquo; ou &ldquo;Mais Tarde&rdquo;.</p>
+</div>
+
+<h3>Shaders</h3>
+<p>O TruchiEmu inclui <strong>14 shaders Metal integrados</strong> em 5 categorias, mais suporte para presets personalizados:</p>
+<ul class="feature-list">
+<li><strong>Simulação CRT:</strong> CRT Lottes, CRT Classic, Lite CRT, CRT Multipass &mdash; linhas de varredura autênticas, brilho de fósforo e curvatura</li>
+<li><strong>LCD de Portátil:</strong> 8b Game Boy, 8b Game Boy Color, GBA Advanced LCD, PSP Advanced LCD, NDS Advanced LCD, 3DS Advanced LCD, Dot Matrix LCD</li>
+<li><strong>Suavização:</strong> Sharp Bilinear, Smooth Upscale (ScaleFX) &mdash; escalonamento dirigido por bordas</li>
+<li><strong>Composto:</strong> Desfoque composto/VHS para efeitos autênticos de sinal analógico</li>
+<li><strong>Presets Personalizados:</strong> Crie e salve seus próprios presets <code>.truchishader</code>; também inclui uma opção de passthrough &ldquo;Sem Shader&rdquo;</li>
+</ul>
+<p>Shaders podem ser alterados em tempo real durante o jogo &mdash; sem necessidade de reiniciar. Consulte o <a href="/truchiemu/pt/features/shaders.html">Guia de Shaders</a> para detalhes completos.</p>
+
+<h3>Bezels</h3>
+<p>Bezels são molduras decorativas que emolduram a tela do jogo com ilustrações específicas do sistema. O TruchiEmu pode baixar e corresponder automaticamente bezels para seus jogos. Configure bezels nas configurações de shaders/bezels, ou opte por eles durante o assistente de configuração. Consulte o <a href="/truchiemu/pt/bezel-guide.html">Guia de Bezels</a> para detalhes.</p>
+</div>
+</section>
+
+<section id="build-from-source" class="content-section">
+<div class="container">
+<h2>Compilando a Partir do Código-Fonte</h2>
+<p>Se você quer contribuir com o TruchiEmu ou compilá-lo você mesmo, siga estes passos.</p>
+
+<div class="info-box">
+<h3>Pré-requisitos</h3>
+<p><strong>macOS 14.0+</strong> (Sonoma) com <strong>Swift 5.9+</strong> e uma <strong>GPU compatível com Metal</strong></p>
+</div>
+
+<div class="code-box">
+<h4>1. Instalar Ferramentas de Compilação</h4>
+<pre><code>brew install xcodegen</code></pre>
+<p>Certifique-se também de que o Xcode e as Command Line Tools estejam instalados: <code>xcode-select --install</code></p>
+</div>
+
+<div class="code-box">
+<h4>2. Clonar e Gerar o Projeto</h4>
+<pre><code>git clone https://github.com/JuanchoGithub/truchiemu.git
+cd truchiemu
+xcodegen generate</code></pre>
+</div>
+
+<div class="code-box">
+<h4>3. Compilar o Aplicativo</h4>
+<pre><code># Método CLI:
+xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug build</code></pre>
+<p>Alternativamente: Execute <code>open TruchiEmu.xcodeproj</code> e pressione <strong>Cmd+B</strong>.</p>
+</div>
+
+<div class="info-box">
+<p><strong>Nota:</strong> Se você modificar o <code>project.yml</code>, deve executar <code>xcodegen generate</code> novamente para atualizar o projeto Xcode. No entanto, novos arquivos fonte sob <code>TruchiEmu/</code> são incluídos automaticamente via caminhos recursivos &mdash; não é necessário editar o <code>project.yml</code> para esses.</p>
+</div>
+
+<p>Para mais detalhes sobre o processo de compilação, arquitetura do projeto e diretrizes de contribuição, consulte o <a href="/truchiemu/pt/development.html">Guia do Desenvolvedor</a> e o <a href="/truchiemu/pt/dev/building.html">Guia de Compilação</a>.</p>
+</div>
+</section>
+
+<section id="next-steps" class="content-section">
+<div class="container">
+<h2>Próximos Passos</h2>
+<div class="next-steps-grid">
+<div class="next-step-card">
+<h4>Shaders</h4>
+<p>Configure filtros CRT, LCD e escalonamento para visuais autênticos.</p>
+<a href="/truchiemu/pt/features/shaders.html" class="btn btn-primary">Guia de Shaders</a>
+</div>
+<div class="next-step-card">
+<h4>Conquistas</h4>
+<p>Vincule sua conta RetroAchievements e ganhe troféus.</p>
+<a href="/truchiemu/pt/features/achievements.html" class="btn btn-primary">Conquistas</a>
+</div>
+<div class="next-step-card">
+<h4>Controles</h4>
+<p>Personalize mapeamentos por sistema e perfis de controle.</p>
+<a href="/truchiemu/pt/features/controllers.html" class="btn btn-primary">Guia de Controles</a>
+</div>
+<div class="next-step-card">
+<h4>Temas</h4>
+<p>Escolha uma cor de destaque inspirada em jogos ou crie a sua.</p>
+<a href="/truchiemu/pt/features/themes.html" class="btn btn-primary">Temas</a>
+</div>
+<div class="next-step-card">
+<h4>Cheats</h4>
+<p>Baixe e aplique códigos de cheat do banco de dados libretro.</p>
+<a href="/truchiemu/pt/features/cheats.html" class="btn btn-primary">Cheats</a>
+</div>
+<div class="next-step-card">
+<h4>Contribuir</h4>
+<p>Ajude a melhorar o TruchiEmu contribuindo com o código-fonte.</p>
+<a href="/truchiemu/pt/dev/contributing.html" class="btn btn-primary">Contribuir</a>
+</div>
+</div>
+</div>
+</section>
+
+</div>
+
+
+</main>
+</div>
+
+
+
+
+
+<footer class="site-footer">
+<div class="container">
+<div class="footer-content">
+<div class="footer-section">
+<h4>TruchiEmu</h4>
+<p>Documentação completa para o emulador definitivo de jogos retro no macOS</p>
+<div class="social-links">
+<a href="https://github.com/JuanchoGithub/truchiemu" target="_blank" aria-label="GitHub">
+GitHub
+</a>
+</div>
+</div>
+
+<div class="footer-section">
+<h4>Recursos</h4>
+<ul>
+<li><a href="/truchiemu/pt/getting-started.html">Primeiros Passos</a></li>
+<li><a href="/truchiemu/pt/features.html">Recursos</a></li>
+<li><a href="/truchiemu/pt/troubleshooting.html">Solução de Problemas</a></li>
+<li><a href="/truchiemu/pt/development.html">Desenvolvimento</a></li>
+</ul>
+</div>
+
+<div class="footer-section">
+<h4>Sistemas Suportados</h4>
+<ul>
+<li><a href="/truchiemu/pt/systems/nes.html">NES</a></li>
+<li><a href="/truchiemu/pt/systems/snes.html">SNES</a></li>
+<li><a href="/truchiemu/pt/systems/n64.html">N64</a></li>
+<li><a href="/truchiemu/pt/systems/gba.html">GBA</a></li>
+<li><a href="/truchiemu/pt/systems.html">Todos os Sistemas &rarr;</a></li>
+</ul>
+</div>
+
+<div class="footer-section">
+<h4>Projeto</h4>
+<ul>
+<li><a href="https://github.com/JuanchoGithub/truchiemu/releases" target="_blank">Downloads</a></li>
+<li><a href="https://github.com/JuanchoGithub/truchiemu/issues" target="_blank">Problemas</a></li>
+<li><a href="/truchiemu/pt/development.html">Contribuir</a></li>
+<li><a href="/truchiemu/pt/license.html">Licença</a></li>
+</ul>
+</div>
+</div>
+
+<div class="footer-bottom">
+<p>&copy; 2026 TruchiEmu Team. Built with Jekyll on GitHub Pages.</p>
+<p class="tiny-text">MIT License. Thanks to LibRetro and countless open-source contributors.</p>
+</div>
+</div>
+</footer>
+
+
+<div class="lightbox-overlay" id="lightbox">
+<button class="lightbox-close" id="lightbox-close" aria-label="Close">&times;</button>
+<img class="lightbox-image" id="lightbox-image" alt="">
+</div>
+</body>
+</html>

@@ -25,7 +25,7 @@ title: Integracion con RetroAchievements - Documentacion de TruchiEmu
 <ul class="feature-list">
 <li><strong>Desbloqueo en Tiempo Real:</strong> Los logros se detectan y desbloquean durante el juego</li>
 <li><strong>Rich Presence:</strong> Comparte tu juego y actividad actual con la comunidad de RetroAchievements</li>
-<li><strong>Modo Hardcore:</strong> Gana logros sin save states, rebobinado ni cheats para maximo prestigio</li>
+<li><strong>Modo Hardcore:</strong> Gana logros sin save states, rebobinado, cámara lenta ni cheats para maximo prestigio (desactivado por defecto)</li>
 </ul>
 
 <p>Para detalles de implementacion, consulta la <a href="{{ '/es/development.html' | relative_url }}">Guia del Desarrollador</a>.</p>
@@ -43,20 +43,20 @@ title: Integracion con RetroAchievements - Documentacion de TruchiEmu
 </li>
 <li>
 <strong>Configura las Credenciales en TruchiEmu</strong>
-<p>En TruchiEmu, ve a <code>Settings → Achievements → Account</code> e ingresa tu nombre de usuario y API key de RetroAchievements. Genera tu API key desde el sitio web de RetroAchievements en Account Settings.</p>
+<p>En TruchiEmu, ve a <code>Settings → Achievements → Account</code> e ingresa tu nombre de usuario, contraseña y Web API key de RetroAchievements. Genera tu Web API key desde el sitio web de RetroAchievements en <a href="https://retroachievements.org/controlpanel.php">Settings (Control Panel)</a>.</p>
 <img src="{{ '/media/screenshots/ra-credentials.png' | relative_url }}" alt="Configuracion de Credenciales RA">
 </li>
 <li>
-<strong>Prueba la Conexion</strong>
-<p>Haz clic en "Test Connection" para verificar que tus credenciales funcionen correctamente. Deberias ver un mensaje de exito con tus estadisticas actuales.</p>
+<strong>Conectar</strong>
+<p>Haz clic en "Conectar" para verificar que tus credenciales funcionen correctamente. Deberias ver un indicador verde "Conectado" con tus estadisticas actuales.</p>
 </li>
 <li>
 <strong>Habilita la Deteccion de Logros</strong>
-<p>Activa "Enable Achievement Detection" en el panel principal de configuracion de Achievements.</p>
+<p>Activa el interruptor "RetroAchievements" en el panel principal de configuracion de Achievements.</p>
 </li>
 <li>
 <strong>Configura Rich Presence</strong>
-<p>Habilita "Show Rich Presence" para compartir tu actividad de juego con Discord y la comunidad de RA. Personaliza el formato del mensaje en el campo de texto proporcionado.</p>
+<p>Habilita "Show Rich Presence" para compartir automáticamente tu actividad de juego con la comunidad de RetroAchievements. El mensaje de estado se genera automáticamente basándose en tu juego y progreso actual.</p>
 </li>
 </ol>
 
@@ -94,12 +94,12 @@ title: Integracion con RetroAchievements - Documentacion de TruchiEmu
 </div>
 <div class="troubleshooting-item">
 <h3>Rich Presence No Funciona</h3>
-<p><strong>Sintoma:</strong> Discord o el perfil de RA no muestra el estado actual del juego.</p>
-<p><strong>Solucion:</strong> Habilita rich presence en la configuracion. Verifica que no estes en Modo Hardcore (algunas plataformas desactivan rich presence por integridad competitiva). Comprueba la conexion de Discord en la configuracion de Privacidad de macOS.</p>
+<p><strong>Sintoma:</strong> El perfil de RA no muestra el estado actual del juego.</p>
+<p><strong>Solucion:</strong> Habilita rich presence en la configuracion. Verifica tu conexion a internet y que tus credenciales de RA sean validas.</p>
 </div>
 <div class="troubleshooting-item">
 <h3>Restricciones del Modo Hardcore</h3>
-<p><strong>Sintoma:</strong> No puedes usar save states ni rebobinado despues de habilitar el Modo Hardcore.</p>
+<p><strong>Sintoma:</strong> No puedes usar save states, rebobinado ni cámara lenta despues de habilitar el Modo Hardcore.</p>
 <p><strong>Solucion:</strong> Este es el comportamiento esperado. El Modo Hardcore desactiva estas funciones por equidad competitiva. Desactiva el Modo Hardcore para restaurar la funcionalidad.</p>
 </div>
 </div>

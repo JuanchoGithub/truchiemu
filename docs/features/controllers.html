@@ -9,12 +9,12 @@ title: Controller Support - TruchiEmu Documentation
     
     <div class="feature-overview">
         <img src="{{ '/media/features/controllers-hero.png' | relative_url }}" alt="Controller Support Overview" class="hero-image lightbox-trigger">
-        <p class="lead">TruchiEmu provides comprehensive controller support with automatic mapping, per-game configurations, advanced deadzone calibration, and macro recording. Experience authentic gameplay with any controller from classic gamepads to modern arcade sticks, with full button remapping and turbo functionality.</p>
+        <p class="lead">TruchiEmu provides comprehensive controller support with automatic mapping, per-game configurations, and advanced deadzone calibration. Experience authentic gameplay with any controller from classic gamepads to modern arcade sticks, with full button remapping and turbo functionality.</p>
     </div>
 
     <section id="service-explanation">
         <h2>Service Overview</h2>
-        <p>The controller system in TruchiEmu offers native support for HID-compatible controllers with intelligent auto-mapping based on the connected device. Our advanced input processing includes individual deadzone calibration per-controller and professional remapping tools.</p>
+        <p>The controller system in TruchiEmu offers native support for any macOS Game Controller framework-compatible controller with intelligent auto-mapping based on the connected device. Our advanced input processing includes per-controller-type deadzone calibration and professional remapping tools.</p>
         
         <div class="architecture-diagram">
             <img src="{{ '/media/features/controller-architecture.png' | relative_url }}" alt="Controller Architecture">
@@ -23,12 +23,12 @@ title: Controller Support - TruchiEmu Documentation
 
         <h3>Core Features</h3>
         <ul class="feature-list">
-            <li><strong>Auto-Discovery:</strong> Instant recognition of USB and Bluetooth controllers</li>
-            <li><strong>Smart Mapping:</strong> Automatic button mapping based on controller type and game system</li>
-            <li><strong>Per-Controller Profiles:</strong> Individual settings for each connected controller</li>
-            <li><strong>Advanced Calibration:</strong> Per-axis deadzone, sensitivity, and response curve adjustment</li>
-            <li><strong>Hotkey Support:</strong> Map controller buttons to emulator functions</li>
-            <li><strong>Analog Mouse Support:</strong> Use gamepad analog sticks to control the mouse cursor in DOS and ScummVM games, with configurable buttons for clicks and D-pad for keyboard inputs</li>
+<li><strong>Auto-Discovery:</strong> Instant recognition of USB and Bluetooth controllers</li>
+<li><strong>Smart Mapping:</strong> Automatic button mapping based on controller type and game system</li>
+<li><strong>Per-Controller-Type Mapping:</strong> Button mappings stored per controller vendor name and per system</li>
+<li><strong>Analog Mouse Mode:</strong> Deadzone and sensitivity adjustment for gamepad-as-mouse in DOS and ScummVM games</li>
+<li><strong>Keyboard Shortcuts:</strong> System keyboard shortcuts for input capture, save states, and more</li>
+<li><strong>Analog Mouse Support:</strong> Use gamepad analog sticks to control the mouse cursor in DOS and ScummVM games, with configurable buttons for clicks and D-pad for keyboard inputs</li>
         </ul>
     </section>
 
@@ -47,11 +47,11 @@ title: Controller Support - TruchiEmu Documentation
         <ol class="setup-steps">
             <li>
                 <strong>Custom Button Mapping</strong>
-                <p>Go to <code>Settings → Controllers → Button Mapping</code> and select your controller. Click any button and press the desired input to remap. Save as profile for reuse.</p>
+                <p>Go to <strong>Settings → Controllers</strong>, select your controller and system, then click any button in the mapping list to remap. Save and load named mapping configurations for reuse (gamepads only).</p>
             </li>
             <li>
                 <strong>Controller Type Icons</strong>
-                <p>TruchiEmu displays visual controller type icons in the toolbar and settings, making it easy to identify Xbox, PlayStation, Nintendo, and 8Bitdo controllers at a glance.</p>
+                <p>TruchiEmu displays visual controller type icons in the toolbar and settings, making it easy to identify Xbox, DualShock 4, DualSense, MFi, and Arcade Stick controllers at a glance. Other controllers display a generic HID icon.</p>
             </li>
         </ol>
     </section>

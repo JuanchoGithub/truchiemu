@@ -30,7 +30,7 @@ description: Problemas comuns e soluções para o TruchiEmu - guias de solução
 
 <h3>O Aplicativo Fecha ao Iniciar</h3>
 <p><strong>Sintoma:</strong> O TruchiEmu fecha imediatamente após ser iniciado.</p>
-<p><strong>Solução:</strong> Verifique se sua versão do macOS é 14.0 (Sonoma) ou posterior. Use a ferramenta integrada de <strong>Diagnóstico de Ambiente</strong> nas Configurações para verificar problemas de compatibilidade de hardware. Se o aplicativo não abrir de todo, tente excluir o arquivo de preferências em <code>~/Library/Preferences/com.truchiemu.plist</code>.</p>
+<p><strong>Solução:</strong> Verifique se sua versão do macOS é 14.0 (Sonoma) ou posterior. Se o aplicativo não abrir de todo, tente excluir o arquivo de preferências em <code>~/Library/Preferences/com.truchiemu.plist</code>.</p>
 
 <h3>Dependências Ausentes</h3>
 <p><strong>Sintoma:</strong> Mensagens de erro sobre bibliotecas ou frameworks ausentes ao compilar a partir do código-fonte.</p>
@@ -47,18 +47,16 @@ description: Problemas comuns e soluções para o TruchiEmu - guias de solução
 <li>Reduza a complexidade do shader ou use o shader Passthrough</li>
 <li>Reduza a escala de resolução interna (para sistemas 3D como N64, PSP)</li>
 <li>Aumente o buffer de áudio para 128-256ms</li>
-<li>Ative o salto de quadros (máximo de 1-2 quadros)</li>
 <li>Feche outros aplicativos para liberar recursos do sistema</li>
-<li>Para N64: tente um plugin de gráficos diferente (GLideN64 vs Angrylion)</li>
 </ol>
 
 <h3>Áudio com Estalos ou Chiados</h3>
 <p><strong>Sintoma:</strong> Áudio distorcido, especialmente durante transições de cena ou sequências de áudio complexas.</p>
-<p><strong>Solução:</strong> Aumente o tamanho do buffer de áudio em Configurações > Áudio. Tente 128ms ou 256ms. Desative "Reduzir Latência de Áudio" se estiver ativado. Para jogos com DSP pesado (Pilotwings, Super Mario Kart), use o core snes9x com correção de áudio ativada.</p>
+<p><strong>Solução:</strong> Aumente o tamanho do buffer de áudio em Configurações > Áudio. Tente 128ms ou 256ms. Desative "Reduzir Latência de Áudio" se estiver ativado. Para jogos com DSP pesado (Pilotwings, Super Mario Kart), use o core snes9x.</p>
 
 <h3>Alto Uso de CPU</h3>
 <p><strong>Sintoma:</strong> O TruchiEmu usa CPU excessiva mesmo quando inativo ou em jogos simples.</p>
-<p><strong>Solução:</strong> Desative a renderização em threads se estiver ativada em sistemas de núcleo único. Use cores de emulação mais leves (fceumm em vez de mesen para NES, snes9x em vez de bsnes para SNES). Desative o recurso de rewind se não for necessário. Reduza os quadros de runahead para 0 ou 1.</p>
+<p><strong>Solução:</strong> Desative a renderização em threads se estiver ativada em sistemas de núcleo único. Use cores de emulação mais leves (snes9x em vez de bsnes para SNES). Desative o recurso de rewind se não for necessário.</p>
 </section>
 
 <section id="controllers">
@@ -70,7 +68,7 @@ description: Problemas comuns e soluções para o TruchiEmu - guias de solução
 
 <h3>Atraso de Entrada</h3>
 <p><strong>Sintoma:</strong> Atraso entre pressionar um botão e a ação aparecer na tela.</p>
-<p><strong>Solução:</strong> Use uma conexão com cabo em vez de Bluetooth. Reduza o tamanho do buffer de áudio. Desative o V-Sync ou ative "Hard GPU Sync" com 0-1 quadros. Reduza o runahead para 1-2 quadros para entrada mais responsiva.</p>
+<p><strong>Solução:</strong> Use uma conexão com cabo em vez de Bluetooth. Reduza o tamanho do buffer de áudio. Desative o V-Sync.</p>
 
 <h3>Mapeamento de Botões Incorreto</h3>
 <p><strong>Sintoma:</strong> Os botões não correspondem ao layout esperado.</p>
@@ -78,7 +76,7 @@ description: Problemas comuns e soluções para o TruchiEmu - guias de solução
 
 <h3>Desvio do Analógico</h3>
 <p><strong>Sintoma:</strong> O personagem se move sem tocar o controle.</p>
-<p><strong>Solução:</strong> Aumente a deadzone para 15-20% nas configurações de calibração do controle. Execute o assistente de calibração para detectar a posição central. Limpe os analógicos do controle com ar comprimido.</p>
+<p><strong>Solução:</strong> Aumente a deadzone para 15-20% nas configurações de calibração do controle. Limpe os analógicos do controle com ar comprimido.</p>
 </section>
 
 <section id="shaders">
@@ -90,11 +88,11 @@ description: Problemas comuns e soluções para o TruchiEmu - guias de solução
 
 <h3>Nenhum Efeito Visível</h3>
 <p><strong>Sintoma:</strong> O shader está selecionado mas nenhuma mudança visual é perceptível.</p>
-<p><strong>Solução:</strong> Alguns shaders têm efeitos sutis. Verifique os controles de intensidade do shader nas configurações. Tente um shader mais notável como o CRT-Royale para verificar se o sistema funciona.</p>
+<p><strong>Solução:</strong> Alguns shaders têm efeitos sutis. Verifique os controles de intensidade do shader nas configurações. Tente um shader mais notável como o CRT Lottes para verificar se o sistema funciona.</p>
 
 <h3>Impacto no Desempenho do Shader</h3>
 <p><strong>Sintoma:</strong> A taxa de quadros cai com shaders complexos ativados.</p>
-<p><strong>Solução:</strong> Use shaders mais simples (Lite CRT em vez de CRT Multipass, ScaleFX em vez de xBRZ). Reduza a complexidade da cadeia de shaders. Considere usar configurações de shader por jogo para usar shaders leves em jogos exigentes.</p>
+<p><strong>Solução:</strong> Use shaders mais simples (Lite CRT em vez de CRT Multipass, Sharp Bilinear em vez de CRT Lottes). Reduza a complexidade da cadeia de shaders. Considere usar configurações de shader por jogo para usar shaders leves em jogos exigentes.</p>
 </section>
 
 <section id="roms">
@@ -122,11 +120,7 @@ description: Problemas comuns e soluções para o TruchiEmu - guias de solução
 
 <h3>Save States Não Carregam</h3>
 <p><strong>Sintoma:</strong> O save state aparece no navegador mas falha ao carregar.</p>
-<p><strong>Solução:</strong> Certifique-se de que está usando a mesma versão do core que criou o salvamento. Save states não são compatíveis entre cores diferentes. Verifique se o arquivo de salvamento não está corrompido verificando seu checksum.</p>
-
-<h3>Conflitos de Sincronização em Nuvem</h3>
-<p><strong>Sintoma:</strong> Mensagens de erro sobre save states conflitantes entre dispositivos.</p>
-<p><strong>Solução:</strong> Revise as configurações de resolução de conflitos nas preferências de Save State. Resolva conflitos manualmente no painel de sincronização. Use bancos de slots diferentes para dispositivos diferentes.</p>
+<p><strong>Solução:</strong> Certifique-se de que está usando a mesma versão do core que criou o salvamento. Save states não são compatíveis entre cores diferentes. Verifique se o arquivo de salvamento não está corrompido verificando seu checksum. Se o Modo Hardcore estiver ativado, o carregamento de save states será bloqueado — desative o Modo Hardcore nas Configurações > Conquistas para permitir o carregamento.</p>
 </section>
 
 <section id="bugs">

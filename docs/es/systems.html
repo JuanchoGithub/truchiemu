@@ -26,10 +26,10 @@ description: Entendiendo cómo TruchiEmu gestiona la compatibilidad de sistemas 
 <section id="universal-support" class="content-section">
 <div class="container">
 <h2>Soporte Universal</h2>
-<p>TruchiEmu está construido sobre la API de <strong>libretro</strong>, lo que significa que no solo soporta un puñado de consolas—soporta todo sistema que tenga un core de libretro disponible.</p>
+<p>TruchiEmu está construido sobre la API de <strong>libretro</strong>, lo que significa que soporta una amplia gama de sistemas de gaming retro. Seis sistemas — NES, SNES, N64, DOS, ScummVM y Saturn — tienen runners dedicados con optimizaciones específicas por sistema. La mayoría de los otros cores de libretro funcionan con el runner predeterminado, aunque algunos pueden requerir BIOS o configuración manual.</p>
 
 <div class="info-box">
-<p><strong>La Regla General:</strong> Si existe un core de libretro para un sistema de gaming, TruchiEmu puede ejecutarlo. Esto incluye todo desde las primeras consolas de 8 bits hasta sistemas 3D más complejos y máquinas arcade.</p>
+<p><strong>La Regla General:</strong> Si existe un core de libretro para un sistema de gaming, TruchiEmu probablemente puede ejecutarlo. Esto incluye todo desde las primeras consolas de 8 bits hasta sistemas 3D más complejos y máquinas arcade. No todos los cores son igualmente compatibles — los sistemas con runners dedicados generalmente ofrecen la mejor experiencia.</p>
 </div>
 </div>
 </section>
@@ -42,13 +42,13 @@ description: Entendiendo cómo TruchiEmu gestiona la compatibilidad de sistemas 
 <h3>El Descargador de Cores</h3>
 <p>No necesitas buscar archivos de core en internet. Usa el Descargador de Cores integrado para:</p>
 <ul class="feature-list">
-<li><strong>Descubrir:</strong> Explora una lista completa de cores disponibles categorizados por sistema.</li>
+<li><strong>Descubrir:</strong> Explora una lista completa de cores disponibles. Tras la descarga, TruchiEmu asigna automáticamente cada core a sus sistemas compatibles.</li>
 <li><strong>Instalar:</strong> Instalación con un clic que gestiona la ubicación y configuración automáticamente.</li>
 <li><strong>Actualizar:</strong> Mantén tus motores de emulación al día con las últimas mejoras de la comunidad.</li>
 </ul>
 
 <h3>Elegir el Core Correcto</h3>
-<p>Algunos sistemas tienen múltiples cores disponibles. Puedes cambiar entre ellos en los detalles del juego o configuración del sistema para encontrar el mejor ajuste para tus necesidades:</p>
+<p>Algunos sistemas tienen múltiples cores disponibles, desde emuladores precisos por ciclos que priorizan la fidelidad hasta cores más rápidos optimizados para rendimiento. Puedes cambiar entre ellos en los detalles del juego o configuración del sistema para encontrar el mejor ajuste para tu hardware y preferencias:</p>
 <div class="comparison-table">
 <div class="comparison-column">
 <h4>Cores de Precisión</h4>
@@ -68,12 +68,12 @@ description: Entendiendo cómo TruchiEmu gestiona la compatibilidad de sistemas 
 <p>Muchas consolas requieren un archivo BIOS (Basic Input/Output System) para arrancar. TruchiEmu elimina el dolor de cabeza de buscar BIOS manualmente.</p>
 
 <div class="success-box">
-<h3>✅ BIOS Pre-Incluidas</h3>
-<p>TruchiEmu viene pre-empaquetado con archivos BIOS de sistema esenciales para las consolas más populares, asegurando una experiencia "conectar y jugar" justo después de la instalación.</p>
+<h3>BIOS Pre-Incluidas</h3>
+<p>TruchiEmu viene pre-empaquetado con archivos BIOS para la Sega Saturn (<code>sega_101.bin</code> y <code>mpr-17933.bin</code>), asegurando que estos sistemas funcionen justo después de la instalación. Para otros sistemas que requieren archivos BIOS (como PlayStation, 3DO y Dreamcast), necesitarás proporcionar los tuyos propios.</p>
 </div>
 
 <h3>BIOS Personalizada</h3>
-<p>Si tienes archivos BIOS de regiones específicas o necesitas actualizar un archivo de sistema, puedes colocarlos en la carpeta <code>System/</code> dentro de tu directorio de guardado activo. TruchiEmu priorizará tus archivos personalizados sobre las versiones incluidas.</p>
+<p>Si tienes archivos BIOS de regiones específicas o necesitas actualizar un archivo de sistema, puedes colocarlos en <code>~/Library/Application Support/TruchiEmu/System/</code>. TruchiEmu priorizará tus archivos personalizados sobre las versiones incluidas.</p>
 </div>
 </section>
 
@@ -84,7 +84,7 @@ description: Entendiendo cómo TruchiEmu gestiona la compatibilidad de sistemas 
 <ul class="feature-list">
 <li><strong>Sobreescrituras de Core:</strong> Establece un core específico para un juego específico si el predeterminado no rinde bien.</li>
 <li><strong>Verificación de BIOS:</strong> Si un juego no arranca, asegúrate de que tu directorio de sistema esté correctamente mapeado en Configuración.</li>
-<li><strong>Aceleración por Hardware:</strong> Asegúrate de que Metal esté habilitado en tu configuración de pantalla para el mejor rendimiento en Apple Silicon.</li>
+<li><strong>Aceleración por Hardware:</strong> TruchiEmu usa Metal para renderizado acelerado por hardware en todos los Mac. Asegúrate de que tus controladores gráficos estén actualizados para el mejor rendimiento en Apple Silicon.</li>
 </ul>
 </div>
 </section>

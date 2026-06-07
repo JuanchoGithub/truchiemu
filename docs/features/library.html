@@ -14,7 +14,7 @@ title: Library Management - TruchiEmu Documentation
 
     <section id="service-explanation">
         <h2>Service Overview</h2>
-        <p>The Library Management service helps organize and discover your game collection. It identifies games, fetches metadata from LaunchBox, downloads artwork, and groups titles by system.</p>
+        <p>The Library Management service helps organize and discover your game collection. It identifies games using libretro DAT databases, then enriches metadata from multiple sources including LibretroMetadataLibrary, Progetto-SNAPS, and LaunchBox GamesDB. It downloads box art and groups titles by system.</p>
         
         <div class="architecture-diagram">
             <img src="{{ '/media/features/library-architecture.png' | relative_url }}" alt="Library Architecture">
@@ -22,13 +22,15 @@ title: Library Management - TruchiEmu Documentation
         </div>
 
         <h3>Core Features</h3>
-        <ul class="feature-list">
-            <li><strong>Automatic Game Detection:</strong> ROM identification using CRC32 hash matching and header analysis</li>
-            <li><strong>Metadata Scraping:</strong> Pulls game info, descriptions, release dates, and developer information</li>
-            <li><strong>Artwork Management:</strong> Automatic download of box art, screenshots, and fan art</li>
-            <li><strong>System Categorization:</strong> Groups games by original console/system</li>
-            <li><strong>Achievement Detection:</strong> Identifies games with RetroAchievements support</li>
-        </ul>
+<ul class="feature-list">
+<li><strong>Automatic Game Detection:</strong> ROM system identification using weighted scoring of magic headers, file extensions, filename patterns, and path context, followed by CRC32-based game matching against libretro DAT databases</li>
+<li><strong>Metadata Enrichment:</strong> Game info sourced from multiple providers: local games.xml, libretro DAT databases, LibretroMetadataLibrary, Progetto-SNAPS, and LaunchBox GamesDB</li>
+<li><strong>Artwork Management:</strong> Automatic download of box art from Libretro Thumbnails CDN, with optional fallback to ScreenScraper and LaunchBox GamesDB</li>
+<li><strong>Library Organization:</strong> Games organized by system, favorites, recently played, last added, hidden games, custom categories, and RetroAchievements. Filter chips and genre filtering provide additional refinement.</li>
+<li><strong>Grid and List Views:</strong> Switch between card-based grid and compact list views</li>
+<li><strong>Search and Filters:</strong> Multi-term search, filter chips (no box art, never played, unidentified, multiplayer), genre filtering, and sort options</li>
+<li><strong>RetroAchievements Integration:</strong> Games matched with RetroAchievements are flagged in the library and filterable via the RetroAchievements view</li>
+</ul>
 
         <p>For implementation details, see the <a href="{{ '/development.html' | relative_url }}">Developer Guide</a>.</p>
     </section>
@@ -38,19 +40,15 @@ title: Library Management - TruchiEmu Documentation
         
         <h3>Initial Library Setup</h3>
         <ol class="setup-steps">
-            <li>
-                <strong>Add ROM Directories</strong>
-                <p>Navigate to <code>Settings → Library → ROM Directories</code> and click "Add Directory". Select folders containing your game ROMs. TruchiEmu supports recursive scanning of subdirectories.</p>
-                <img src="{{ '/media/screenshots/library-directories.png' | relative_url }}" alt="ROM Directories Configuration">
-            </li>
-                <li>
-                    <strong>Initial Scan Configuration</strong>
-                    <p>Configure scan options: file extensions to include (nes, smc, gb, gba, etc.), exclude patterns for beta/prototype versions, and maximum file size limits for known bad dumps.</p>
-                </li>
-                <li>
-                    <strong>Start Library Scan</strong>
-                    <p>Click "Scan for New ROMs" in the main Library view. The scanner will calculate hashes, identify games, and fetch metadata.</p>
-                </li>
+<li>
+<strong>Add ROM Directories</strong>
+<p>Add ROM directories from the Library sidebar (button <code>folder.badge.plus</code>) or the initial onboarding wizard. TruchiEmu supports recursive scanning of subdirectories.</p>
+<img src="{{ '/media/screenshots/library-directories.png' | relative_url }}" alt="ROM Directories Configuration">
+</li>
+<li>
+<strong>Start Library Scan</strong>
+<p>Initiate a scan from the Library view. The scanner identifies ROM systems, then automatically runs post-scan automation: CRC32-based game identification, metadata enrichment, and box art downloads. No manual scan configuration is needed &mdash; scanning automatically filters non-ROM file types and identifies systems by extension and file headers.</p>
+</li>
             </ol>
     </section>
 
@@ -60,12 +58,12 @@ title: Library Management - TruchiEmu Documentation
         <div class="related-services">
             <div class="service-card">
                 <h3><a href="{{ '/features/save-states.html' | relative_url }}">Save State System</a></h3>
-                <p>Save states are organized and accessible from within the game library view.</p>
+                <p>Save states can be viewed and managed from the game detail view.</p>
             </div>
             
             <div class="service-card">
                 <h3><a href="{{ '/features/achievements.html' | relative_url }}">RetroAchievements</a></h3>
-                <p>Achievement progress is displayed in your game library views.</p>
+                <p>Games with RetroAchievements support are flagged in the library and can be filtered via the RetroAchievements view.</p>
             </div>
         </div>
     </section>

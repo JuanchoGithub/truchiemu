@@ -14,7 +14,7 @@ title: Gestión de Biblioteca - Documentación de TruchiEmu
 
 <section id="service-explanation">
 <h2>Panorama del Servicio</h2>
-<p>El servicio de Gestión de Biblioteca ayuda a organizar y descubrir tu colección de juegos. Identifica juegos, obtiene metadatos de LaunchBox, descarga ilustraciones y agrupa títulos por sistema.</p>
+<p>El servicio de Gestión de Biblioteca ayuda a organizar y descubrir tu colección de juegos. Identifica juegos usando bases de datos DAT de libretro, luego enriquece los metadatos desde múltiples fuentes incluyendo LibretroMetadataLibrary, Progetto-SNAPS y LaunchBox GamesDB, descarga ilustraciones y agrupa títulos por sistema.</p>
 
 <div class="architecture-diagram">
 <img src="{{ '/media/features/library-architecture.png' | relative_url }}" alt="Arquitectura de Biblioteca">
@@ -23,11 +23,13 @@ title: Gestión de Biblioteca - Documentación de TruchiEmu
 
 <h3>Funciones Clave</h3>
 <ul class="feature-list">
-<li><strong>Detección Automática de Juegos:</strong> Identificación de ROMs usando coincidencia de hash CRC32 y análisis de cabeceras</li>
-<li><strong>Extracción de Metadatos:</strong> Obtiene información del juego, descripciones, fechas de lanzamiento e información del desarrollador</li>
-<li><strong>Gestión de Ilustraciones:</strong> Descarga automática de carátulas, capturas de pantalla y fan art</li>
-<li><strong>Categorización por Sistema:</strong> Agrupa juegos por consola/sistema original</li>
-<li><strong>Detección de Logros:</strong> Identifica juegos con soporte de RetroAchievements</li>
+<li><strong>Detección Automática de Juegos:</strong> Identificación de sistema de ROMs usando puntuación ponderada de encabezados mágicos, extensiones de archivo, patrones de nombre de archivo y contexto de ruta, seguido de coincidencia de juegos basada en CRC32 contra bases de datos DAT de libretro</li>
+<li><strong>Enriquecimiento de Metadatos:</strong> Información de juegos desde múltiples proveedores: games.xml local, bases de datos DAT de libretro, LibretroMetadataLibrary, Progetto-SNAPS y LaunchBox GamesDB</li>
+<li><strong>Gestión de Ilustraciones:</strong> Box art desde el CDN de Libretro Thumbnails, con fallback opcional a ScreenScraper y LaunchBox GamesDB</li>
+<li><strong>Organización de Biblioteca:</strong> Juegos organizados por sistema, favoritos, reproducidos recientemente, añadidos recientemente, juegos ocultos, categorías personalizadas y RetroAchievements. Chips de filtro y filtrado por género proporcionan refinamiento adicional.</li>
+<li><strong>Integración RetroAchievements:</strong> Los juegos con soporte de RetroAchievements están marcados en la biblioteca y se pueden filtrar en la vista de RetroAchievements</li>
+<li><strong>Vistas de Cuadrícula y Lista:</strong> Alterna entre vista de cuadrícula basada en tarjetas y vista de lista compacta</li>
+<li><strong>Búsqueda y Filtros:</strong> Búsqueda de múltiples términos, chips de filtro (sin box art, nunca jugado, no identificado, multijugador), filtrado por género y opciones de ordenación</li>
 </ul>
 
 <p>Para detalles de implementación, consulta la <a href="{{ '/es/development.html' | relative_url }}">Guía del Desarrollador</a>.</p>
@@ -40,16 +42,12 @@ title: Gestión de Biblioteca - Documentación de TruchiEmu
 <ol class="setup-steps">
 <li>
 <strong>Agregar Directorios de ROMs</strong>
-<p>Navega a <code>Configuración → Biblioteca → Directorios de ROMs</code> y haz clic en "Agregar Directorio". Selecciona carpetas que contengan tus ROMs de juegos. TruchiEmu soporta escaneo recursivo de subdirectorios.</p>
+<p>Añade directorios de ROMs desde la barra lateral de la Biblioteca o el asistente de configuración inicial. TruchiEmu soporta escaneo recursivo de subdirectorios.</p>
 <img src="{{ '/media/screenshots/library-directories.png' | relative_url }}" alt="Configuración de Directorios de ROMs">
 </li>
 <li>
-<strong>Configuración del Escaneo Inicial</strong>
-<p>Configura las opciones de escaneo: extensiones de archivo a incluir (nes, smc, gb, gba, etc.), patrones de exclusión para versiones beta/prototipo y límites de tamaño máximo de archivo para volcados malos conocidos.</p>
-</li>
-<li>
 <strong>Iniciar Escaneo de Biblioteca</strong>
-<p>Haz clic en "Escanear Nuevas ROMs" en la vista principal de Biblioteca. El escáner calculará hashes, identificará juegos y obtendrá metadatos.</p>
+<p>Haz clic en "Escanear Nuevas ROMs" en la vista principal de Biblioteca. El escáner calculará hashes, identificará juegos y obtendrá metadatos. Después del escaneo, el pipeline de automatización identifica ROMs, enriquece metadatos y descarga ilustraciones automáticamente.</p>
 </li>
 </ol>
 </section>
@@ -60,12 +58,12 @@ title: Gestión de Biblioteca - Documentación de TruchiEmu
 <div class="related-services">
 <div class="service-card">
 <h3><a href="{{ '/es/features/save-states.html' | relative_url }}">Sistema de Estados de Guardado</a></h3>
-<p>Los estados de guardado están organizados y accesibles desde la vista de la biblioteca de juegos.</p>
+<p>Los estados de guardado se pueden ver y gestionar desde la vista de detalles del juego.</p>
 </div>
 
 <div class="service-card">
 <h3><a href="{{ '/es/features/achievements.html' | relative_url }}">RetroAchievements</a></h3>
-<p>El progreso de logros se muestra en las vistas de tu biblioteca de juegos.</p>
+<p>Los juegos con soporte de RetroAchievements están marcados en la biblioteca y se pueden filtrar en la vista de RetroAchievements.</p>
 </div>
 </div>
 </section>

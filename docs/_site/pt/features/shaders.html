@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+
+
+<html lang="pt">
+<head>
+
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema de Shaders - Documentação do TruchiEmu - Documentação do TruchiEmu</title>
+<meta name="description" content="Documentação completa para o emulador definitivo de jogos retro no macOS">
+<link rel="canonical" href="https://juanchogithub.github.io/truchiemu/pt/features/shaders">
+<meta name="generator" content="Jekyll 4.4.1">
+
+<!-- Open Graph -->
+  <meta property="og:title" content="Sistema de Shaders - Documentação do TruchiEmu">
+  <meta property="og:description" content="Documentação completa para o emulador definitivo de jogos retro no macOS">
+<meta property="og:url" content="https://juanchogithub.github.io/truchiemu/pt/features/shaders">
+<meta property="og:site_name" content="Documentação do TruchiEmu">
+<meta property="og:type" content="article">
+<meta property="og:image" content="https://juanchogithub.github.io/truchiemu/media/logo-icon.png">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Sistema de Shaders - Documentação do TruchiEmu">
+  <meta name="twitter:description" content="Documentação completa para o emulador definitivo de jogos retro no macOS">
+<meta name="twitter:image" content="https://juanchogithub.github.io/truchiemu/media/logo-icon.png">
+
+<!-- RSS -->
+<link rel="alternate" type="application/rss+xml" href="/truchiemu/feed.xml">
+
+<!-- Styles -->
+<link rel="stylesheet" href="/truchiemu/assets/css/main.css">
+<script src="/truchiemu/assets/js/main.js"></script>
+
+</head>
+<body>
+
+
+
+
+<header class="site-header">
+<div class="container">
+<div class="header-content">
+<a href="/truchiemu/pt/" class="logo">
+<img src="/truchiemu/media/logo-icon.png" alt="TruchiEmu" width="32" height="32">
+<span>TruchiEmu</span>
+</a>
+
+<nav class="main-nav">
+<a href="/truchiemu/pt/getting-started.html" class="nav-link">Primeiros Passos</a>
+<a href="/truchiemu/pt/features.html" class="nav-link">Recursos</a>
+<a href="/truchiemu/pt/troubleshooting.html" class="nav-link">Solução de Problemas</a>
+<a href="/truchiemu/pt/development.html" class="nav-link">Desenvolvimento</a>
+</nav>
+
+<div class="header-actions">
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18">
+          <path d="M12 3v2m0 14v2m-8.485-.515l1.414-1.414m12.728-12.728l1.414-1.414M4.93 4.93l1.414 1.414m12.728 12.728l1.414 1.414M3 12h2m14 0h2m-9 4a4 4 0 100-8 4 4 0 000 8z"/>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18">
+          <path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+        </svg>
+      </button>
+      <div class="lang-switcher">
+        
+          <a href="/truchiemu/" class="lang-link">EN</a>
+          <a href="/truchiemu/es/" class="lang-link">ES</a>
+          <span class="lang-link lang-active">PT</span>
+        
+      </div>
+<a href="https://github.com/JuanchoGithub/truchiemu" class="btn btn-outline" target="_blank">
+GitHub
+</a>
+</div>
+</div>
+</div>
+</header>
+<div class="search-overlay" id="search-overlay">
+<div class="search-container">
+<input type="text" id="search-input" placeholder="Pesquisar documentação..." autofocus>
+<button id="search-close" class="search-close">&times;</button>
+<div id="search-results"></div>
+</div>
+</div>
+
+
+<div class="site-container">
+
+
+
+
+
+<aside class="sidebar">
+<div class="sidebar-section">
+<h3>Primeiros Passos</h3>
+<ul class="sidebar-nav">
+<li><a href="/truchiemu/pt/getting-started.html">Instalação</a></li>
+<li><a href="/truchiemu/pt/getting-started.html#quick-start">Início Rápido</a></li>
+<li><a href="/truchiemu/pt/getting-started.html#next-steps">Próximos Passos</a></li>
+</ul>
+</div>
+
+<div class="sidebar-section">
+<h3>Recursos Principais</h3>
+<ul class="sidebar-nav">
+<li><a href="/truchiemu/pt/features/shaders.html">Shaders</a></li>
+<li><a href="/truchiemu/pt/features/library.html">Biblioteca</a></li>
+<li><a href="/truchiemu/pt/features/achievements.html">Conquistas</a></li>
+<li><a href="/truchiemu/pt/features/save-states.html">Estados Salvos</a></li>
+<li><a href="/truchiemu/pt/features/controllers.html">Controles</a></li>
+<li><a href="/truchiemu/pt/features/cheats.html">Trapaças</a></li>
+<li><a href="/truchiemu/pt/features/themes.html">Temas e Aparência</a></li>
+<li><a href="/truchiemu/pt/features/analog-mouse.html">Mouse Analógico</a></li>
+<li><a href="/truchiemu/pt/features/training-mode.html">Modo de Treinamento</a></li>
+<li><a href="/truchiemu/pt/features/move-lists.html">Listas de Movimentos</a></li>
+<li><a href="/truchiemu/pt/features/notifications.html">Notificações</a></li>
+<li><a href="/truchiemu/pt/features/genre-management.html">Gerenciamento de Gêneros</a></li>
+<li><a href="/truchiemu/pt/features/updates.html">Verificador de Atualizações</a></li>
+</ul>
+</div>
+
+<div class="sidebar-section">
+<h3>Desenvolvimento</h3>
+<ul class="sidebar-nav">
+<li><a href="/truchiemu/pt/development.html">Arquitetura</a></li>
+<li><a href="/truchiemu/pt/dev/building.html">Compilação</a></li>
+<li><a href="/truchiemu/pt/dev/contributing.html">Contribuir</a></li>
+<li><a href="/truchiemu/pt/dreamcast-vmu-fix.html">Depuração de Saves VMU do Dreamcast</a></li>
+<li><a href="/truchiemu/pt/changelog.html">Registro de alterações</a></li>
+</ul>
+</div>
+
+<div class="sidebar-sticky-footer">
+<button id="search-toggle" class="btn btn-block">
+🔎 Buscar Docs
+</button>
+</div>
+</aside>
+
+
+
+<main class="main-content" id="content">
+<div class="content-wrapper">
+<div class="feature-docs">
+<h1>Sistema de Shaders</h1>
+
+<div class="feature-overview">
+<img src="/truchiemu/media/features/shaders-hero.png" alt="Visão Geral do Sistema de Shaders" class="hero-image lightbox-trigger">
+<p class="lead">O sistema avançado de shaders do TruchiEmu transforma sua experiência de retro gaming com melhorias visuais em tempo real, simulação CRT e efeitos modernos de pós-processamento. Construído sobre o framework Metal da Apple, nosso pipeline de shaders entrega renderização pixel-perfect com zero custo de desempenho.</p>
+</div>
+
+<section id="service-explanation">
+<h2>Visão Geral do Serviço</h2>
+<p>O sistema de shaders no TruchiEmu aproveita shaders Metal personalizados para fornecer melhorias visuais em tempo real para jogos emulados. Diferente dos filtros tradicionais de emulador, nossos shaders rodam diretamente na GPU, garantindo desempenho suave a 60fps mesmo em efeitos complexos como simulação CRT e algoritmos de escala.</p>
+
+<div class="architecture-diagram">
+<img src="/truchiemu/media/features/shader-architecture.png" alt="Arquitetura de Shaders">
+<p class="caption">Pipeline de processamento de shaders do core de emulação através do Metal até a exibição</p>
+</div>
+
+<h3>Recursos Principais</h3>
+<ul class="feature-list">
+<li><strong>Processamento em Tempo Real:</strong> Todos os shaders executam na GPU com latência sub-milissegundo</li>
+<li><strong>Simulação CRT:</strong> Efeitos autênticos de brilho de fósforo, scanlines e curvatura (CRT Lottes, CRT Classic, Lite CRT, CRT Multipass)</li>
+<li><strong>Simulação LCD:</strong> Displays de portáteis fiéis à época para Game Boy, GBA, PSP, NDS, 3DS e Dot Matrix</li>
+<li><strong>Algoritmos de Escala:</strong> Sharp Bilinear e Smooth Upscale (ScaleFX) com preservação de proporção</li>
+<li><strong>Melhoria de Cores:</strong> Melhoria de cor, correção de matriz de gamut e controles de tinte por preset</li>
+<li><strong>Otimização de Desempenho:</strong> Shaders leves (Lite CRT, Sharp Bilinear) disponíveis para hardware menos potente</li>
+<li><strong>Presets Personalizados:</strong> Salve, exporte e importe seus próprios presets <code>.truchishader</code> com parâmetros ajustados</li>
+<li><strong>Recomendações por Sistema:</strong> Cada preset tem associações de sistema recomendadas exibidas na interface</li>
+</ul>
+
+<h3>Nota sobre Desempenho</h3>
+<p>Todos os shaders rodam diretamente na GPU usando o framework Metal da Apple, garantindo desempenho suave a 60fps mesmo com efeitos complexos. Shaders Passthrough e de escala básica têm impacto mínimo; simulações CRT e LCD usam mais recursos de GPU. A maioria dos Macs modernos pode executar qualquer shader na velocidade máxima.</p>
+</section>
+
+<section id="step-by-step-guide">
+<h2>Guia de Configuração Passo a Passo</h2>
+
+<h3>Configuração Básica de Shaders</h3>
+<ol class="setup-steps">
+<li>
+<strong>Acesse as Configurações de Shaders</strong>
+<p>Abra o Editor de Shaders pela barra de ferramentas da janela de jogo, ou escolha um preset rápido em <code>Configurações → Vídeo → Shaders</code>. O editor completo é um painel flutuante com busca, abas de categorias, controles deslizantes de parâmetros, e opções de salvamento/exportação.</p>
+<img src="/truchiemu/media/screenshots/shader-settings.png" alt="Painel de Configurações de Shaders">
+</li>
+<li>
+<strong>Selecione um Preset</strong>
+<p>Escolha entre 14 presets integrados organizados por categoria:</p>
+<ul>
+<li><strong>CRT:</strong> CRT Lottes, CRT Classic, Lite CRT, CRT Multipass</li>
+<li><strong>LCD:</strong> 8b Game Boy, 8b Game Boy Color, GBA (Advanced LCD), PSP (Advanced LCD), NDS (Advanced LCD), 3DS (Advanced LCD), Dot Matrix LCD</li>
+<li><strong>Suavização:</strong> Sharp Bilinear, Smooth Upscale (ScaleFX)</li>
+<li><strong>Personalizado:</strong> Sem Shader (passthrough)</li>
+</ul>
+<p>Cada preset inclui parâmetros de shader pré-configurados otimizados para diferentes tipos de tela.</p>
+</li>
+<li>
+<strong>Ajuste os Parâmetros do Shader</strong>
+<p>Use os controles deslizantes de parâmetros para ajustar os efeitos em tempo real. As mudanças são aplicadas imediatamente sem necessidade de reinicialização.</p>
+<img src="/truchiemu/media/screenshots/shader-picker.png" alt="Controles de Parâmetros de Shaders">
+</li>
+</ol>
+</section>
+
+</div>
+</div>
+
+
+</main>
+</div>
+
+
+
+
+
+<footer class="site-footer">
+<div class="container">
+<div class="footer-content">
+<div class="footer-section">
+<h4>TruchiEmu</h4>
+<p>Documentação completa para o emulador definitivo de jogos retro no macOS</p>
+<div class="social-links">
+<a href="https://github.com/JuanchoGithub/truchiemu" target="_blank" aria-label="GitHub">
+GitHub
+</a>
+</div>
+</div>
+
+<div class="footer-section">
+<h4>Recursos</h4>
+<ul>
+<li><a href="/truchiemu/pt/getting-started.html">Primeiros Passos</a></li>
+<li><a href="/truchiemu/pt/features.html">Recursos</a></li>
+<li><a href="/truchiemu/pt/troubleshooting.html">Solução de Problemas</a></li>
+<li><a href="/truchiemu/pt/development.html">Desenvolvimento</a></li>
+</ul>
+</div>
+
+<div class="footer-section">
+<h4>Sistemas Suportados</h4>
+<ul>
+<li><a href="/truchiemu/pt/systems/nes.html">NES</a></li>
+<li><a href="/truchiemu/pt/systems/snes.html">SNES</a></li>
+<li><a href="/truchiemu/pt/systems/n64.html">N64</a></li>
+<li><a href="/truchiemu/pt/systems/gba.html">GBA</a></li>
+<li><a href="/truchiemu/pt/systems.html">Todos os Sistemas &rarr;</a></li>
+</ul>
+</div>
+
+<div class="footer-section">
+<h4>Projeto</h4>
+<ul>
+<li><a href="https://github.com/JuanchoGithub/truchiemu/releases" target="_blank">Downloads</a></li>
+<li><a href="https://github.com/JuanchoGithub/truchiemu/issues" target="_blank">Problemas</a></li>
+<li><a href="/truchiemu/pt/development.html">Contribuir</a></li>
+<li><a href="/truchiemu/pt/license.html">Licença</a></li>
+</ul>
+</div>
+</div>
+
+<div class="footer-bottom">
+<p>&copy; 2026 TruchiEmu Team. Built with Jekyll on GitHub Pages.</p>
+<p class="tiny-text">MIT License. Thanks to LibRetro and countless open-source contributors.</p>
+</div>
+</div>
+</footer>
+
+
+<div class="lightbox-overlay" id="lightbox">
+<button class="lightbox-close" id="lightbox-close" aria-label="Close">&times;</button>
+<img class="lightbox-image" id="lightbox-image" alt="">
+</div>
+</body>
+</html>

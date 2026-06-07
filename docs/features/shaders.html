@@ -22,11 +22,14 @@ title: Shader System - TruchiEmu Documentation
 
         <h3>Core Features</h3>
         <ul class="feature-list">
-            <li><strong>Real-time Processing:</strong> All shaders execute on the GPU with sub-millisecond latency</li>
-            <li><strong>CRT Simulation:</strong> Authentic phosphor glow, scanlines, and curvature effects</li>
-            <li><strong>Scaling Algorithms:</strong> xBRZ, HQx, and custom integer scaling with aspect ratio preservation</li>
-            <li><strong>Color Enhancement:</strong> LUT support, color correction, and HDR tone mapping</li>
-            <li><strong>Performance Optimization:</strong> Automatic fallback to simpler shaders on lower-end hardware</li>
+<li><strong>Real-time Processing:</strong> All shaders execute on the GPU with sub-millisecond latency</li>
+<li><strong>CRT Simulation:</strong> Authentic phosphor glow, scanlines, and curvature effects (CRT Lottes, CRT Classic, Lite CRT, CRT Multipass)</li>
+<li><strong>LCD Simulation:</strong> Period-accurate handheld displays for Game Boy, GBA, PSP, NDS, 3DS, and Dot Matrix</li>
+<li><strong>Scaling Algorithms:</strong> Sharp Bilinear and Smooth Upscale (ScaleFX) with aspect ratio preservation</li>
+<li><strong>Color Enhancement:</strong> Color boost, gamut matrix correction, and tint controls per preset</li>
+<li><strong>Performance Optimization:</strong> Lightweight shaders (Lite CRT, Sharp Bilinear) available for lower-end hardware</li>
+<li><strong>Custom Presets:</strong> Save, export, and import your own <code>.truchishader</code> presets with tweaked parameters</li>
+<li><strong>System Recommendations:</strong> Each preset has recommended system associations surfaced in the UI</li>
         </ul>
 
         <h3>Performance Note</h3>
@@ -38,14 +41,21 @@ title: Shader System - TruchiEmu Documentation
         
         <h3>Basic Shader Setup</h3>
         <ol class="setup-steps">
-            <li>
-                <strong>Access Shader Settings</strong>
-                <p>Navigate to <code>Settings → Video → Shaders</code> in the TruchiEmu menu bar. The shader panel will display available presets and custom shaders.</p>
-                <img src="{{ '/media/screenshots/shader-settings.png' | relative_url }}" alt="Shader Settings Panel">
-            </li>
-            <li>
-                <strong>Select a Preset</strong>
-                <p>Choose from built-in presets like "CRT-Consumer", "LCD-Sharp", or "Original Pixel". Each preset includes pre-configured shader combinations optimized for different display types.</p>
+<li>
+<strong>Access Shader Settings</strong>
+<p>Open the Shader Editor from the game window toolbar, or choose a quick preset in <code>Settings → Video → Shaders</code>. The full shader editor is a floating panel with search, category tabs, parameter sliders, and save/export.</p>
+<img src="{{ '/media/screenshots/shader-settings.png' | relative_url }}" alt="Shader Settings Panel">
+</li>
+<li>
+<strong>Select a Preset</strong>
+<p>Choose from 14 built-in presets organized by category:</p>
+<ul>
+<li><strong>CRT:</strong> CRT Lottes, CRT Classic, Lite CRT, CRT Multipass</li>
+<li><strong>LCD:</strong> 8b Game Boy, 8b Game Boy Color, GBA (Advanced LCD), PSP (Advanced LCD), NDS (Advanced LCD), 3DS (Advanced LCD), Dot Matrix LCD</li>
+<li><strong>Smoothing:</strong> Sharp Bilinear, Smooth Upscale (ScaleFX)</li>
+<li><strong>Custom:</strong> No Shader (passthrough)</li>
+</ul>
+<p>Each preset includes pre-configured shader parameters optimized for different display types.</p>
             </li>
                 <li>
                     <strong>Adjust Shader Parameters</strong>

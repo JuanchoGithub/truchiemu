@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+<head>
+
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cheat System - TruchiEmu Documentation - TruchiEmu Documentation</title>
+<meta name="description" content="Complete documentation for the ultimate macOS retro gaming emulator">
+<link rel="canonical" href="https://juanchogithub.github.io/truchiemu/features/cheats">
+<meta name="generator" content="Jekyll 4.4.1">
+
+<!-- Open Graph -->
+  <meta property="og:title" content="Cheat System - TruchiEmu Documentation">
+  <meta property="og:description" content="Complete documentation for the ultimate macOS retro gaming emulator">
+<meta property="og:url" content="https://juanchogithub.github.io/truchiemu/features/cheats">
+<meta property="og:site_name" content="TruchiEmu Documentation">
+<meta property="og:type" content="article">
+<meta property="og:image" content="https://juanchogithub.github.io/truchiemu/media/logo-icon.png">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Cheat System - TruchiEmu Documentation">
+  <meta name="twitter:description" content="Complete documentation for the ultimate macOS retro gaming emulator">
+<meta name="twitter:image" content="https://juanchogithub.github.io/truchiemu/media/logo-icon.png">
+
+<!-- RSS -->
+<link rel="alternate" type="application/rss+xml" href="/truchiemu/feed.xml">
+
+<!-- Styles -->
+<link rel="stylesheet" href="/truchiemu/assets/css/main.css">
+<script src="/truchiemu/assets/js/main.js"></script>
+
+</head>
+<body>
+
+
+
+
+<header class="site-header">
+<div class="container">
+<div class="header-content">
+<a href="/truchiemu/" class="logo">
+<img src="/truchiemu/media/logo-icon.png" alt="TruchiEmu" width="32" height="32">
+<span>TruchiEmu</span>
+</a>
+
+<nav class="main-nav">
+<a href="/truchiemu/getting-started.html" class="nav-link">Getting Started</a>
+<a href="/truchiemu/features.html" class="nav-link">Features</a>
+<a href="/truchiemu/troubleshooting.html" class="nav-link">Troubleshooting</a>
+<a href="/truchiemu/development.html" class="nav-link">Development</a>
+</nav>
+
+<div class="header-actions">
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18">
+          <path d="M12 3v2m0 14v2m-8.485-.515l1.414-1.414m12.728-12.728l1.414-1.414M4.93 4.93l1.414 1.414m12.728 12.728l1.414 1.414M3 12h2m14 0h2m-9 4a4 4 0 100-8 4 4 0 000 8z"/>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18">
+          <path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+        </svg>
+      </button>
+      <div class="lang-switcher">
+        
+          <span class="lang-link lang-active">EN</span>
+          <a href="/truchiemu/es/" class="lang-link">ES</a>
+          <a href="/truchiemu/pt/" class="lang-link">PT</a>
+        
+      </div>
+<a href="https://github.com/JuanchoGithub/truchiemu" class="btn btn-outline" target="_blank">
+GitHub
+</a>
+</div>
+</div>
+</div>
+</header>
+<div class="search-overlay" id="search-overlay">
+<div class="search-container">
+<input type="text" id="search-input" placeholder="Search documentation..." autofocus>
+<button id="search-close" class="search-close">&times;</button>
+<div id="search-results"></div>
+</div>
+</div>
+
+
+<div class="site-container">
+
+
+
+
+
+<aside class="sidebar">
+<div class="sidebar-section">
+<h3>Getting Started</h3>
+<ul class="sidebar-nav">
+<li><a href="/truchiemu/getting-started.html">Installation</a></li>
+<li><a href="/truchiemu/getting-started.html#quick-start">Quick Start</a></li>
+<li><a href="/truchiemu/getting-started.html#next-steps">Next Steps</a></li>
+</ul>
+</div>
+
+<div class="sidebar-section">
+<h3>Core Features</h3>
+<ul class="sidebar-nav">
+<li><a href="/truchiemu/features/shaders.html">Shaders</a></li>
+<li><a href="/truchiemu/features/library.html">Library Management</a></li>
+<li><a href="/truchiemu/features/achievements.html">Achievements</a></li>
+<li><a href="/truchiemu/features/save-states.html">Save States</a></li>
+<li><a href="/truchiemu/features/controllers.html">Controllers</a></li>
+<li><a href="/truchiemu/features/cheats.html">Cheats</a></li>
+<li><a href="/truchiemu/features/themes.html">Themes & Appearance</a></li>
+<li><a href="/truchiemu/features/analog-mouse.html">Analog Mouse</a></li>
+<li><a href="/truchiemu/features/training-mode.html">Training Mode</a></li>
+<li><a href="/truchiemu/features/move-lists.html">Move Lists</a></li>
+<li><a href="/truchiemu/features/notifications.html">Notifications</a></li>
+<li><a href="/truchiemu/features/genre-management.html">Genre Management</a></li>
+<li><a href="/truchiemu/features/updates.html">Update Checker</a></li>
+</ul>
+</div>
+
+<div class="sidebar-section">
+<h3>Development</h3>
+<ul class="sidebar-nav">
+<li><a href="/truchiemu/development.html">Architecture</a></li>
+<li><a href="/truchiemu/dev/building.html">Building</a></li>
+<li><a href="/truchiemu/dev/contributing.html">Contributing</a></li>
+<li><a href="/truchiemu/dreamcast-vmu-fix.html">Debugging Dreamcast VMU Saves</a></li>
+<li><a href="/truchiemu/changelog.html">Changelog</a></li>
+</ul>
+</div>
+
+<div class="sidebar-sticky-footer">
+<button id="search-toggle" class="btn btn-block">
+🔎 Search Docs
+</button>
+</div>
+</aside>
+
+
+
+<main class="main-content" id="content">
+<div class="content-wrapper">
+<div class="feature-docs">
+    <h1>Cheat System</h1>
+
+    <section id="service-explanation">
+        <h2>Service Overview</h2>
+        <p>The cheat system allows you to manage and activate cheat codes for your games. It supports standard cheat code formats and integrates with Libretro cores to apply modifications in real-time.</p>
+        
+        <div class="architecture-diagram">
+            <img src="/truchiemu/media/features/cheat-architecture.png" alt="Cheat System Architecture">
+            <p class="caption">Cheat system pipeline from code parsing to memory injection</p>
+        </div>
+
+        <h3>Core Features</h3>
+        <ul class="feature-list">
+<li><strong>Multi-Format Support:</strong> Game Genie, Pro Action Replay, GameShark, and raw hex codes</li>
+<li><strong>Cheat Database:</strong> Download pre-made cheat collections from the <a href="https://github.com/libretro/libretro-database/tree/master/cht">libretro-database GitHub repository</a></li>
+<li><strong>Auto-Discovery:</strong> Cheats are automatically discovered and loaded based on the ROM. Previously enabled cheats retain their state; new cheats default to disabled.</li>
+<li><strong>Custom Cheat Entry:</strong> Manually add your own codes and descriptions</li>
+        </ul>
+
+        <h3>Supported Cheat Formats</h3>
+        <p>TruchiEmu supports multiple cheat code formats: Game Genie (6-8 character alphanumeric codes), Pro Action Replay (hexadecimal codes with addresses), GameShark (various formats by system), and raw memory codes for advanced users. Each format is automatically detected and parsed correctly.</p>
+
+        <p>For implementation details, see the <a href="/truchiemu/development.html">Developer Guide</a>.</p>
+    </section>
+
+    <section id="step-by-step-guide">
+        <h2>Step-by-Step Configuration Guide</h2>
+        
+        <h3>Basic Cheat Usage</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Access Cheat Menu</strong>
+                <p>Open the cheat menu by selecting <code>Tools → Cheats</code> or pressing <code>Cmd+Shift+C</code>. The cheat management window displays available cheats for the current game.</p>
+                <img src="/truchiemu/media/screenshots/cheat-menu.png" alt="Cheat Menu Interface">
+            </li>
+            <li>
+                <strong>Browse Cheat Database</strong>
+                <p>Use the search bar to find specific cheats or browse by category. Categories include Gameplay (infinite lives, health), Items & Equipment (weapons, power-ups), Debug & Testing (level select), and Custom Codes.</p>
+            </li>
+            <li>
+                <strong>Enable Cheats</strong>
+                <p>Check the box next to any cheat to activate it immediately. Enabled cheats show a green indicator. Multiple cheats can be active simultaneously.</p>
+            </li>
+            <li>
+                <strong>Test in Game</strong>
+                <p>Return to your game and verify the cheat works as expected. Some cheats require specific conditions (e.g., must be at title screen, requires reset).</p>
+                <img src="/truchiemu/media/screenshots/cheat-enabled.png" alt="Cheat Enabled Warning">
+            </li>
+            <li>
+                <strong>Save Cheat Configuration</strong>
+                <p>Cheat selections are saved automatically whenever you toggle a cheat. They persist across app launches &mdash; next time you load the game, previously enabled cheats will automatically reactivate.</p>
+            </li>
+        </ol>
+
+        <h3>Manual Cheat Entry</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Add New Cheat</strong>
+                <p>In the cheat menu, click "Add Cheat" and enter a descriptive name. Select the cheat format (Game Genie, Action Replay, etc.) from the dropdown.</p>
+            </li>
+            <li>
+                <strong>Enter Cheat Code</strong>
+                <p>Type or paste the cheat code into the code field. TruchiEmu automatically detects the format (Game Genie, Action Replay, GameShark, or raw hex) and parses it correctly.</p>
+                <img src="/truchiemu/media/screenshots/cheat-entry.png" alt="Cheat Code Entry">
+            </li>
+            <li>
+                <strong>Description and Notes</strong>
+                <p>Add a description explaining what the cheat does and any special conditions. This helps organize large cheat collections.</p>
+            </li>
+            <li>
+                <strong>Test and Refine</strong>
+                <p>Enable the cheat and test in game. If it doesn't work, verify the code format and ensure it matches your game version and region.</p>
+            </li>
+        </ol>
+    </section>
+
+
+
+    <section id="troubleshooting">
+        <h2>Troubleshooting</h2>
+        
+        <div class="troubleshooting-grid">
+            <div class="troubleshooting-item">
+                <h3>Cheat Not Working</h3>
+                <p><strong>Symptom:</strong> Cheat enabled but has no effect in game.</p>
+                <p><strong>Solution:</strong> Verify cheat matches your game version and region. Some cheats only work at title screen or require game reset. Check if cheats are disabled in RetroAchievements Hardcore mode.</p>
+            </div>
+            <div class="troubleshooting-item">
+                <h3>Game Crashes with Cheats</h3>
+                <p><strong>Symptom:</strong> Game crashes when specific cheats are enabled.</p>
+                <p><strong>Solution:</strong> Disable conflicting cheats. Some cheats modify critical memory addresses that cause instability. Try enabling cheats one at a time to identify the problematic code.</p>
+            </div>
+            <div class="troubleshooting-item">
+                <h3>Cheat Database Not Loading</h3>
+                <p><strong>Symptom:</strong> Cheat database shows no cheats for supported games.</p>
+                <p><strong>Solution:</strong> Re-download cheats from the cheat settings or system-specific cheat download options. Check internet connection for database download. Cheat downloads use a hybrid strategy: bundled cheat zips shipped with the app are extracted first for instant availability, then only missing files are downloaded from the libretro repository.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="references">
+        <h2>Related Services</h2>
+        
+        <div class="related-services">
+            <div class="service-card">
+                <h3><a href="/truchiemu/features/achievements.html">RetroAchievements</a></h3>
+                <p>Cheats are automatically disabled in Hardcore mode to maintain achievement integrity.</p>
+            </div>
+            
+            <div class="service-card">
+                <h3><a href="/truchiemu/features/save-states.html">Save State System</a></h3>
+                <p>Combine cheat codes with save states to test specific game scenarios.</p>
+            </div>
+        </div>
+    </section>
+</div>
+</div>
+
+
+</main>
+</div>
+
+
+
+
+
+<footer class="site-footer">
+<div class="container">
+<div class="footer-content">
+<div class="footer-section">
+<h4>TruchiEmu</h4>
+<p>Complete documentation for the ultimate macOS retro gaming emulator</p>
+<div class="social-links">
+<a href="https://github.com/JuanchoGithub/truchiemu" target="_blank" aria-label="GitHub">
+GitHub
+</a>
+</div>
+</div>
+
+<div class="footer-section">
+<h4>Resources</h4>
+<ul>
+<li><a href="/truchiemu/getting-started.html">Getting Started</a></li>
+<li><a href="/truchiemu/features.html">Features</a></li>
+<li><a href="/truchiemu/troubleshooting.html">Troubleshooting</a></li>
+<li><a href="/truchiemu/development.html">Development</a></li>
+</ul>
+</div>
+
+<div class="footer-section">
+<h4>Supported Systems</h4>
+<ul>
+<li><a href="/truchiemu/systems/nes.html">NES</a></li>
+<li><a href="/truchiemu/systems/snes.html">SNES</a></li>
+<li><a href="/truchiemu/systems/n64.html">N64</a></li>
+<li><a href="/truchiemu/systems/gba.html">GBA</a></li>
+<li><a href="/truchiemu/systems.html">All Systems &rarr;</a></li>
+</ul>
+</div>
+
+<div class="footer-section">
+<h4>Project</h4>
+<ul>
+<li><a href="https://github.com/JuanchoGithub/truchiemu/releases" target="_blank">Downloads</a></li>
+<li><a href="https://github.com/JuanchoGithub/truchiemu/issues" target="_blank">Issues</a></li>
+<li><a href="/truchiemu/development.html">Contribute</a></li>
+<li><a href="/truchiemu/license.html">License</a></li>
+</ul>
+</div>
+</div>
+
+<div class="footer-bottom">
+<p>&copy; 2026 TruchiEmu Team. Built with Jekyll on GitHub Pages.</p>
+<p class="tiny-text">MIT License. Thanks to LibRetro and countless open-source contributors.</p>
+</div>
+</div>
+</footer>
+
+
+<div class="lightbox-overlay" id="lightbox">
+<button class="lightbox-close" id="lightbox-close" aria-label="Close">&times;</button>
+<img class="lightbox-image" id="lightbox-image" alt="">
+</div>
+</body>
+</html>

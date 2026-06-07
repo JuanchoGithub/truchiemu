@@ -14,7 +14,7 @@ title: Gerenciamento de Biblioteca - Documentação do TruchiEmu
 
 <section id="service-explanation">
 <h2>Visão Geral do Serviço</h2>
-<p>O serviço de Gerenciamento de Biblioteca ajuda a organizar e descobrir sua coleção de jogos. Ele identifica jogos, busca metadados do LaunchBox, baixa capas e agrupa títulos por sistema.</p>
+<p>O serviço de Gerenciamento de Biblioteca ajuda a organizar e descobrir sua coleção de jogos. Ele identifica jogos usando bancos de dados DAT do libretro, depois enriquece os metadados de múltiplas fontes incluindo LibretroMetadataLibrary, Progetto-SNAPS e LaunchBox GamesDB, baixa capas e agrupa títulos por sistema.</p>
 
 <div class="architecture-diagram">
 <img src="{{ '/media/features/library-architecture.png' | relative_url }}" alt="Arquitetura da Biblioteca">
@@ -23,11 +23,13 @@ title: Gerenciamento de Biblioteca - Documentação do TruchiEmu
 
 <h3>Recursos Principais</h3>
 <ul class="feature-list">
-<li><strong>Detecção Automática de Jogos:</strong> Identificação de ROMs usando correspondência de hash CRC32 e análise de cabeçalho</li>
-<li><strong>Coleta de Metadados:</strong> Obtém informações de jogos, descrições, datas de lançamento e informações do desenvolvedor</li>
-<li><strong>Gerenciamento de Capas:</strong> Download automático de capas, capturas de tela e arte de fãs</li>
-<li><strong>Categorização por Sistema:</strong> Agrupa jogos por console/sistema original</li>
-<li><strong>Detecção de Conquistas:</strong> Identifica jogos com suporte a RetroAchievements</li>
+<li><strong>Detecção Automática de Jogos:</strong> Identificação de sistema de ROMs usando pontuação ponderada de cabeçalhos mágicos, extensões de arquivo, padrões de nome de arquivo e contexto de caminho, seguido de correspondência de jogos baseada em CRC32 contra bancos de dados DAT do libretro</li>
+<li><strong>Enriquecimento de Metadados:</strong> Informações de jogos de múltiplos provedores: games.xml local, bancos de dados DAT do libretro, LibretroMetadataLibrary, Progetto-SNAPS e LaunchBox GamesDB</li>
+<li><strong>Gerenciamento de Capas:</strong> Box art do CDN de Libretro Thumbnails, com fallback opcional para ScreenScraper e LaunchBox GamesDB</li>
+<li><strong>Organização de Biblioteca:</strong> Jogos organizados por sistema, favoritos, jogados recentemente, adicionados recentemente, jogos ocultos, categorias personalizadas e RetroAchievements. Chips de filtro e filtragem por gênero proporcionam refinamento adicional.</li>
+<li><strong>Integração RetroAchievements:</strong> Jogos com suporte a RetroAchievements são marcados na biblioteca e podem ser filtrados na vista de RetroAchievements</li>
+<li><strong>Vistas de Grade e Lista:</strong> Alterne entre vista de grade baseada em cards e vista de lista compacta</li>
+<li><strong>Busca e Filtros:</strong> Busca de múltiplos termos, chips de filtro (sem box art, nunca jogado, não identificado, multijogador), filtragem por gênero e opções de ordenação</li>
 </ul>
 
 <p>Para detalhes de implementação, consulte o <a href="{{ '/pt/development.html' | relative_url }}">Guia do Desenvolvedor</a>.</p>
@@ -40,16 +42,12 @@ title: Gerenciamento de Biblioteca - Documentação do TruchiEmu
 <ol class="setup-steps">
 <li>
 <strong>Adicionar Diretórios de ROMs</strong>
-<p>Navegue até <code>Configurações → Biblioteca → Diretórios de ROMs</code> e clique em "Adicionar Diretório". Selecione pastas contendo suas ROMs de jogos. O TruchiEmu suporta verificação recursiva de subdiretórios.</p>
+<p>Adicione diretórios de ROMs pela barra lateral da Biblioteca ou pelo assistente de configuração inicial. O TruchiEmu suporta verificação recursiva de subdiretórios.</p>
 <img src="{{ '/media/screenshots/library-directories.png' | relative_url }}" alt="Configuração de Diretórios de ROMs">
 </li>
 <li>
-<strong>Configuração de Verificação Inicial</strong>
-<p>Configure as opções de verificação: extensões de arquivo a incluir (nes, smc, gb, gba, etc.), padrões para excluir versões beta/protótipo e limites máximos de tamanho de arquivo para dumps ruins conhecidos.</p>
-</li>
-<li>
 <strong>Iniciar Verificação da Biblioteca</strong>
-<p>Clique em "Verificar Novas ROMs" na visualização principal da Biblioteca. O verificador calculará hashes, identificará jogos e buscará metadados.</p>
+<p>Clique em "Verificar Novas ROMs" na visualização principal da Biblioteca. O verificador calculará hashes, identificará jogos e buscará metadados. Após a verificação, o pipeline de automação identifica ROMs, enriquece metadados e baixa capas automaticamente.</p>
 </li>
 </ol>
 </section>
@@ -60,12 +58,12 @@ title: Gerenciamento de Biblioteca - Documentação do TruchiEmu
 <div class="related-services">
 <div class="service-card">
 <h3><a href="{{ '/pt/features/save-states.html' | relative_url }}">Sistema de Save States</a></h3>
-<p>Save states são organizados e acessíveis a partir da visualização da biblioteca de jogos.</p>
+<p>Save states podem ser vistos e gerenciados na vista de detalhes do jogo.</p>
 </div>
 
 <div class="service-card">
 <h3><a href="{{ '/pt/features/achievements.html' | relative_url }}">RetroAchievements</a></h3>
-<p>O progresso de conquistas é exibido nas visualizações da sua biblioteca de jogos.</p>
+<p>Jogos com suporte a RetroAchievements são marcados na biblioteca e podem ser filtrados na vista de RetroAchievements.</p>
 </div>
 </div>
 </section>

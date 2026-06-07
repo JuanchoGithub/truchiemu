@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+
+
+<html lang="es">
+<head>
+
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solución de Problemas - Documentación de TruchiEmu</title>
+<meta name="description" content="Problemas comunes y soluciones para TruchiEmu - guías de solución de problemas de instalación, rendimiento, controladores, shaders y estados de guardado">
+<link rel="canonical" href="https://juanchogithub.github.io/truchiemu/es/troubleshooting">
+<meta name="generator" content="Jekyll 4.4.1">
+
+<!-- Open Graph -->
+  <meta property="og:title" content="Solución de Problemas">
+  <meta property="og:description" content="Problemas comunes y soluciones para TruchiEmu - guías de solución de problemas de instalación, rendimiento, controladores, shaders y estados de guardado">
+<meta property="og:url" content="https://juanchogithub.github.io/truchiemu/es/troubleshooting">
+<meta property="og:site_name" content="Documentación de TruchiEmu">
+<meta property="og:type" content="article">
+<meta property="og:image" content="https://juanchogithub.github.io/truchiemu/media/logo-icon.png">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Solución de Problemas">
+  <meta name="twitter:description" content="Problemas comunes y soluciones para TruchiEmu - guías de solución de problemas de instalación, rendimiento, controladores, shaders y estados de guardado">
+<meta name="twitter:image" content="https://juanchogithub.github.io/truchiemu/media/logo-icon.png">
+
+<!-- RSS -->
+<link rel="alternate" type="application/rss+xml" href="/truchiemu/feed.xml">
+
+<!-- Styles -->
+<link rel="stylesheet" href="/truchiemu/assets/css/main.css">
+<script src="/truchiemu/assets/js/main.js"></script>
+
+</head>
+<body>
+
+
+
+
+<header class="site-header">
+<div class="container">
+<div class="header-content">
+<a href="/truchiemu/es/" class="logo">
+<img src="/truchiemu/media/logo-icon.png" alt="TruchiEmu" width="32" height="32">
+<span>TruchiEmu</span>
+</a>
+
+<nav class="main-nav">
+<a href="/truchiemu/es/getting-started.html" class="nav-link">Primeros Pasos</a>
+<a href="/truchiemu/es/features.html" class="nav-link">Características</a>
+<a href="/truchiemu/es/troubleshooting.html" class="nav-link">Solución de Problemas</a>
+<a href="/truchiemu/es/development.html" class="nav-link">Desarrollo</a>
+</nav>
+
+<div class="header-actions">
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18">
+          <path d="M12 3v2m0 14v2m-8.485-.515l1.414-1.414m12.728-12.728l1.414-1.414M4.93 4.93l1.414 1.414m12.728 12.728l1.414 1.414M3 12h2m14 0h2m-9 4a4 4 0 100-8 4 4 0 000 8z"/>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18">
+          <path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+        </svg>
+      </button>
+      <div class="lang-switcher">
+        
+          <a href="/truchiemu/" class="lang-link">EN</a>
+          <span class="lang-link lang-active">ES</span>
+          <a href="/truchiemu/pt/" class="lang-link">PT</a>
+        
+      </div>
+<a href="https://github.com/JuanchoGithub/truchiemu" class="btn btn-outline" target="_blank">
+GitHub
+</a>
+</div>
+</div>
+</div>
+</header>
+<div class="search-overlay" id="search-overlay">
+<div class="search-container">
+<input type="text" id="search-input" placeholder="Buscar en la documentación..." autofocus>
+<button id="search-close" class="search-close">&times;</button>
+<div id="search-results"></div>
+</div>
+</div>
+
+
+<div class="site-container">
+
+
+
+
+
+<aside class="sidebar">
+<div class="sidebar-section">
+<h3>Primeros Pasos</h3>
+<ul class="sidebar-nav">
+<li><a href="/truchiemu/es/getting-started.html">Instalación</a></li>
+<li><a href="/truchiemu/es/getting-started.html#quick-start">Inicio Rápido</a></li>
+<li><a href="/truchiemu/es/getting-started.html#next-steps">Siguientes Pasos</a></li>
+</ul>
+</div>
+
+<div class="sidebar-section">
+<h3>Características Principales</h3>
+<ul class="sidebar-nav">
+<li><a href="/truchiemu/es/features/shaders.html">Shaders</a></li>
+<li><a href="/truchiemu/es/features/library.html">Biblioteca</a></li>
+<li><a href="/truchiemu/es/features/achievements.html">Logros</a></li>
+<li><a href="/truchiemu/es/features/save-states.html">Estados Guardados</a></li>
+<li><a href="/truchiemu/es/features/controllers.html">Controles</a></li>
+<li><a href="/truchiemu/es/features/cheats.html">Trucos</a></li>
+<li><a href="/truchiemu/es/features/themes.html">Temas y Apariencia</a></li>
+<li><a href="/truchiemu/es/features/analog-mouse.html">Ratón Analógico</a></li>
+<li><a href="/truchiemu/es/features/training-mode.html">Modo de Práctica</a></li>
+<li><a href="/truchiemu/es/features/move-lists.html">Listas de Movimientos</a></li>
+<li><a href="/truchiemu/es/features/notifications.html">Notificaciones</a></li>
+<li><a href="/truchiemu/es/features/genre-management.html">Gestión de Géneros</a></li>
+<li><a href="/truchiemu/es/features/updates.html">Verificador de Actualizaciones</a></li>
+</ul>
+</div>
+
+<div class="sidebar-section">
+<h3>Desarrollo</h3>
+<ul class="sidebar-nav">
+<li><a href="/truchiemu/es/development.html">Arquitectura</a></li>
+<li><a href="/truchiemu/es/dev/building.html">Compilación</a></li>
+<li><a href="/truchiemu/es/dev/contributing.html">Contribuir</a></li>
+<li><a href="/truchiemu/es/dreamcast-vmu-fix.html">Depuración de Guardados VMU de Dreamcast</a></li>
+<li><a href="/truchiemu/es/changelog.html">Registro de cambios</a></li>
+</ul>
+</div>
+
+<div class="sidebar-sticky-footer">
+<button id="search-toggle" class="btn btn-block">
+🔎 Buscar Docs
+</button>
+</div>
+</aside>
+
+
+
+<main class="main-content" id="content">
+<div class="content-wrapper">
+<div class="feature-docs">
+<h1>Solución de Problemas</h1>
+
+<div class="feature-overview">
+<p class="lead">¿Tienes problemas con TruchiEmu? Esta guía cubre problemas comunes y sus soluciones para instalación, rendimiento, controladores, shaders y más.</p>
+</div>
+
+<section id="getting-help">
+<h2>Obtener Ayuda</h2>
+<p>Antes de contactar al soporte, prueba estos pasos:</p>
+<ul>
+<li>Consulta la guía de <a href="/truchiemu/es/getting-started.html">Primeros Pasos</a> para lo básico de configuración</li>
+<li>Busca en <a href="https://github.com/JuanchoGithub/truchiemu/issues">GitHub Issues</a> problemas conocidos</li>
+<li>Pregunta a la comunidad en <a href="https://github.com/JuanchoGithub/truchiemu/discussions">GitHub Discussions</a></li>
+</ul>
+</section>
+
+<section id="installation">
+<h2>Problemas de Instalación</h2>
+
+<h3>La App No Se Abre</h3>
+<p><strong>Síntoma:</strong> TruchiEmu rebota en el dock pero no se inicia, o muestra "TruchiEmu no puede abrirse porque es de un desarrollador no identificado."</p>
+<p><strong>Solución:</strong> macOS puede bloquear apps que no están notarizadas por Apple. Haz clic derecho (o Ctrl+clic) en la app y selecciona "Abrir" desde el menú contextual, luego haz clic en "Abrir" en el diálogo. Alternativamente, ve a Configuración del Sistema > Privacidad y Seguridad y busca un mensaje sobre TruchiEmu siendo bloqueado.</p>
+
+<h3>La App Se Cuelga al Iniciar</h3>
+<p><strong>Síntoma:</strong> TruchiEmu se cuelga inmediatamente después de iniciarse.</p>
+<p><strong>Solución:</strong> Verifica que tu versión de macOS sea 14.0 (Sonoma) o posterior. Si la app no se abre en absoluto, intenta eliminar el archivo de preferencias en <code>~/Library/Preferences/com.truchiemu.plist</code>.</p>
+
+<h3>Dependencias Faltantes</h3>
+<p><strong>Síntoma:</strong> Mensajes de error sobre librerías o frameworks faltantes al compilar desde el código fuente.</p>
+<p><strong>Solución:</strong> Asegúrate de que las Herramientas de Línea de Comandos de Xcode estén instaladas (<code>xcode-select --install</code>). Instala las dependencias requeridas con Homebrew: <code>brew install cmake xcodegen</code>.</p>
+</section>
+
+<section id="performance">
+<h2>Problemas de Rendimiento</h2>
+
+<h3>Baja Tasa de Fotogramas / Tartamudeo</h3>
+<p><strong>Síntoma:</strong> Los juegos funcionan por debajo de la velocidad completa o tienen tartamudeos frecuentes.</p>
+<p><strong>Solución:</strong> Prueba estos pasos en orden:</p>
+<ol>
+<li>Reduce la complejidad del shader o usa el shader Passthrough</li>
+<li>Baja la escala de resolución interna (para sistemas 3D como N64, PSP)</li>
+<li>Aumenta el búfer de audio a 128-256ms</li>
+<li>Cierra otras aplicaciones para liberar recursos del sistema</li>
+</ol>
+
+<h3>Crujidos o Pops de Audio</h3>
+<p><strong>Síntoma:</strong> Audio distorsionado, especialmente durante transiciones de escena o secuencias de audio complejas.</p>
+<p><strong>Solución:</strong> Aumenta el tamaño del búfer de audio en Configuración > Audio. Prueba 128ms o 256ms. Desactiva "Reducir Latencia de Audio" si está habilitado.</p>
+
+<h3>Alto Uso de CPU</h3>
+<p><strong>Síntoma:</strong> TruchiEmu usa excesiva CPU incluso cuando está inactivo o en juegos simples.</p>
+<p><strong>Solución:</strong> Desactiva el renderizado por hilos si está habilitado en sistemas de un solo núcleo. Usa cores de emulación más ligeros (snes9x en lugar de bsnes para SNES). Desactiva la función de rebobinado si no la necesitas.</p>
+</section>
+
+<section id="controllers">
+<h2>Problemas de Controladores</h2>
+
+<h3>Controlador No Detectado</h3>
+<p><strong>Síntoma:</strong> Controlador conectado pero no reconocido por TruchiEmu.</p>
+<p><strong>Solución:</strong> Verifica Configuración del Sistema de macOS > Privacidad y Seguridad > Bluetooth (para inalámbricos). Asegúrate de que el controlador esté emparejado antes de iniciar TruchiEmu. Para controladores Xbox, prueba primero una conexión USB por cable. Reinicia TruchiEmu con el controlador conectado.</p>
+
+<h3>Retardo de Entrada</h3>
+<p><strong>Síntoma:</strong> Retardo entre presionar un botón y la acción que aparece en pantalla.</p>
+<p><strong>Solución:</strong> Usa una conexión por cable en lugar de Bluetooth. Reduce el tamaño del búfer de audio. Desactiva V-Sync.</p>
+
+<h3>Mapeo de Botones Incorrecto</h3>
+<p><strong>Síntoma:</strong> Los botones no coinciden con la configuración esperada.</p>
+<p><strong>Solución:</strong> Abre Configuración > Controladores > Mapeo de Botones y remapea los botones según sea necesario. Guárdalo como perfil para reutilización. Verifica si hay una anulación por core o por juego activa.</p>
+
+<h3>Deriva del Stick Analógico</h3>
+<p><strong>Síntoma:</strong> El personaje se mueve sin tocar el controlador.</p>
+<p><strong>Solución:</strong> Aumenta la zona muerta al 15-20% en la configuración de calibración del controlador. Limpia los sticks del controlador con aire comprimido.</p>
+</section>
+
+<section id="shaders">
+<h2>Problemas de Shaders</h2>
+
+<h3>Fallos de Compilación de Shaders</h3>
+<p><strong>Síntoma:</strong> "Error del compilador Metal" al seleccionar un shader.</p>
+<p><strong>Solución:</strong> Actualiza macOS a la última versión para las funciones Metal más recientes. Verifica que tu GPU soporte el conjunto de funciones Metal requerido (requiere macOS 14+).</p>
+
+<h3>Sin Efecto Visible</h3>
+<p><strong>Síntoma:</strong> El shader está seleccionado pero no se aprecia cambio visual.</p>
+<p><strong>Solución:</strong> Algunos shaders tienen efectos sutiles. Revisa los controles deslizantes de intensidad del shader en la configuración. Prueba un shader más notorio como CRT Lottes para verificar que el sistema funciona.</p>
+
+<h3>Impacto en el Rendimiento del Shader</h3>
+<p><strong>Síntoma:</strong> La tasa de fotogramas cae con shaders complejos habilitados.</p>
+<p><strong>Solución:</strong> Usa shaders más simples (Lite CRT en lugar de CRT Multipass, Sharp Bilinear en lugar de Smooth Upscale). Reduce la complejidad de la cadena de shaders. Considera usar configuraciones de shader por juego para usar shaders ligeros en juegos exigentes.</p>
+</section>
+
+<section id="roms">
+<h2>Problemas de Carga de ROMs</h2>
+
+<h3>ROM No Reconocida</h3>
+<p><strong>Síntoma:</strong> El juego aparece como "Desconocido" o no aparece en la biblioteca.</p>
+<p><strong>Solución:</strong> Verifica que el tipo de archivo ROM sea soportado por el sistema destino. Comprueba que la extensión del archivo esté en la lista permitida. Prueba un volcado diferente de ROM desde una fuente verificada. Identifica manualmente el juego mediante clic derecho > Identificar Juego.</p>
+
+<h3>El Juego No Inicia</h3>
+<p><strong>Síntoma:</strong> El juego aparece en la biblioteca pero se cuelga al iniciar.</p>
+<p><strong>Solución:</strong> Asegúrate de tener el core correcto instalado para el sistema. Verifica si el juego requiere archivos BIOS (PlayStation, Saturn, Neo Geo). Prueba un core de emulación diferente. Verifica que la ROM no esté corrupta.</p>
+
+<h3>Sistema Incorrecto Detectado</h3>
+<p><strong>Síntoma:</strong> El juego se inicia con el core de emulación equivocado.</p>
+<p><strong>Solución:</strong> Haz clic derecho en el juego y selecciona "Editar Metadatos," luego corrige la asignación del sistema. También puedes establecer cores predeterminados por sistema en Configuración > Cores.</p>
+</section>
+
+<section id="saves">
+<h2>Problemas de Estados de Guardado</h2>
+
+<h3>Los Juegos de Dreamcast No Pueden Guardar</h3>
+<p><strong>Síntoma:</strong> Los juegos de Dreamcast no reconocen ninguna tarjeta de memoria (VMU). Los guardados fallan silenciosamente sin mensaje de error.</p>
+<p><strong>Solución:</strong> Esto típicamente es causado por opciones del core Flycast mal configuradas o archivos VMU faltantes/corruptos. Asegúrate de que <code>CoreOverrides.json</code> use <code>"VMU"</code> (no <code>"Visual Memory"</code>) para las opciones de slot del puerto de dispositivo. Consulta <a href="/truchiemu/es/dreamcast-vmu-fix.html">Depuración de Guardados VMU de Dreamcast</a> — análisis técnico sobre cómo corregir la detección VMU de Flycast.</p>
+
+<h3>Los Estados de Guardado No Cargan</h3>
+<p><strong>Síntoma:</strong> El estado de guardado aparece en el navegador pero falla al cargar.</p>
+<p><strong>Solución:</strong> Asegúrate de estar usando la misma versión del core que creó el guardado. Los estados de guardado no son compatibles entre diferentes cores. Verifica que el archivo de guardado no esté corrupto comprobando su checksum. Nota: si el Modo Hardcore está activivo, la carga de estados de guardado estará bloqueada.</p>
+
+</section>
+
+<section id="bugs">
+<h2>Reportar Errores</h2>
+<p>Al reportar problemas en GitHub, por favor incluye:</p>
+<ul>
+<li>Tu versión de macOS y hardware (Apple Silicon o Intel)</li>
+<li>Número de versión de TruchiEmu</li>
+<li>El core de emulación y el juego que estabas usando</li>
+<li>Pasos para reproducir el problema</li>
+<li>Cualquier mensaje de error o registro de cuelgues</li>
+<li>Capturas de pantalla o grabaciones de pantalla si aplica</li>
+</ul>
+<p>Los registros de cuelgues se pueden encontrar en: <code>~/Library/Logs/DiagnosticReports/</code></p>
+</section>
+</div>
+
+</div>
+
+
+</main>
+</div>
+
+
+
+
+
+<footer class="site-footer">
+<div class="container">
+<div class="footer-content">
+<div class="footer-section">
+<h4>TruchiEmu</h4>
+<p>Documentación completa para el emulador definitivo de juegos retro en macOS</p>
+<div class="social-links">
+<a href="https://github.com/JuanchoGithub/truchiemu" target="_blank" aria-label="GitHub">
+GitHub
+</a>
+</div>
+</div>
+
+<div class="footer-section">
+<h4>Recursos</h4>
+<ul>
+<li><a href="/truchiemu/es/getting-started.html">Primeros Pasos</a></li>
+<li><a href="/truchiemu/es/features.html">Características</a></li>
+<li><a href="/truchiemu/es/troubleshooting.html">Solución de Problemas</a></li>
+<li><a href="/truchiemu/es/development.html">Desarrollo</a></li>
+</ul>
+</div>
+
+<div class="footer-section">
+<h4>Sistemas Compatibles</h4>
+<ul>
+<li><a href="/truchiemu/es/systems/nes.html">NES</a></li>
+<li><a href="/truchiemu/es/systems/snes.html">SNES</a></li>
+<li><a href="/truchiemu/es/systems/n64.html">N64</a></li>
+<li><a href="/truchiemu/es/systems/gba.html">GBA</a></li>
+<li><a href="/truchiemu/es/systems.html">Todos los Sistemas &rarr;</a></li>
+</ul>
+</div>
+
+<div class="footer-section">
+<h4>Proyecto</h4>
+<ul>
+<li><a href="https://github.com/JuanchoGithub/truchiemu/releases" target="_blank">Descargas</a></li>
+<li><a href="https://github.com/JuanchoGithub/truchiemu/issues" target="_blank">Problemas</a></li>
+<li><a href="/truchiemu/es/development.html">Contribuir</a></li>
+<li><a href="/truchiemu/es/license.html">Licencia</a></li>
+</ul>
+</div>
+</div>
+
+<div class="footer-bottom">
+<p>&copy; 2026 TruchiEmu Team. Built with Jekyll on GitHub Pages.</p>
+<p class="tiny-text">MIT License. Thanks to LibRetro and countless open-source contributors.</p>
+</div>
+</div>
+</footer>
+
+
+<div class="lightbox-overlay" id="lightbox">
+<button class="lightbox-close" id="lightbox-close" aria-label="Close">&times;</button>
+<img class="lightbox-image" id="lightbox-image" alt="">
+</div>
+</body>
+</html>

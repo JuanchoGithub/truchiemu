@@ -35,7 +35,7 @@ description: Visão geral abrangente dos recursos do TruchiEmu, incluindo shader
 <section id="shaders" class="content-section">
 <div class="container">
 <h2>Coleção de Shaders</h2>
-<p>Transforme sua experiência de jogo com nossa coleção curada de 11 shaders Metal de alta qualidade. Cada shader é otimizado para macOS e projetado para melhorar ou reproduzir autenticamente os visuais clássicos dos jogos.</p>
+<p>Transforme sua experiência de jogo com nossa coleção curada de 14 shaders Metal de alta qualidade. Cada shader é otimizado para macOS e projetado para melhorar ou reproduzir autenticamente os visuais clássicos dos jogos.</p>
 
 <div class="screenshot-frame">
 <img src="{{ '/media/screenshots/shader-picker.png' | relative_url }}" alt="Interface do Seletor de Shaders" class="screenshot lightbox-trigger">
@@ -73,16 +73,16 @@ description: Visão geral abrangente dos recursos do TruchiEmu, incluindo shader
 
 <div class="shader-card">
 <div class="shader-image">
-<img src="{{ '/media/features/sharp-bilinear.png' | relative_url }}" alt="Shader Sharp Bilinear">
+<img src="{{ '/media/features/sharp-bilinear.png' | relative_url }}" alt="Shader Smooth Upscale">
 </div>
-<h3>Sharp Bilinear</h3>
-<p class="shader-description">Combina filtragem bilinear com detecção de bordas para criar gradientes suaves enquanto mantém as bordas importantes nítidas. Perfeito para jogos com arte mista de sprites e fundos.</p>
+<h3>Smooth Upscale</h3>
+<p class="shader-description">Escala suave de alta qualidade que proporciona uma imagem limpa e uniforme, removendo artefatos de pixels enquanto mantém a nitidez geral. Alternativa mais leve ao Scale Smooth.</p>
 <div class="shader-specs">
-<span class="spec-tag">Preservação de Bordas</span>
-<span class="spec-tag">Adaptativo</span>
-<span class="spec-tag">Equilibrado</span>
+<span class="spec-tag">Suavização</span>
+<span class="spec-tag">Leve</span>
+<span class="spec-tag">Universal</span>
 </div>
-<p><strong>Caso de Uso:</strong> RPGs com fundos detalhados, estilos de arte mistos</p>
+<p><strong>Caso de Uso:</strong> Jogos em geral, escalonamento suave em monitores modernos</p>
 </div>
 
 <div class="shader-card">
@@ -131,7 +131,7 @@ description: Visão geral abrangente dos recursos do TruchiEmu, incluindo shader
 <div class="shader-image">
 <img src="{{ '/media/features/gba-shader.png' | relative_url }}" alt="Shader Dot Matrix">
 </div>
-<h3>Dot Matrix</h3>
+<h3>Dot Matrix LCD</h3>
 <p class="shader-description">Simula a tela de matriz de pontos distintiva de sistemas portáteis clássicos como o Game Boy. Apresenta o padrão de grade característico e o arranjo de subpixels.</p>
 <div class="shader-specs">
 <span class="spec-tag">Portátil</span>
@@ -145,7 +145,7 @@ description: Visão geral abrangente dos recursos do TruchiEmu, incluindo shader
 <div class="shader-image">
 <img src="{{ '/media/features/original-game-boy.png' | relative_url }}" alt="Tela Original do Game Boy">
 </div>
-<h3>Tela Original do Game Boy</h3>
+<h3>Tela de Game Boy Original</h3>
 <p class="shader-description">Simulação fiel do LCD do Game Boy DMG (Dot Matrix Game) com a icônica tela monocromática com tom esverdeado, persistência de pixels e desfoque de movimento característico.</p>
 <div class="shader-specs">
 <span class="spec-tag">Game Boy</span>
@@ -157,9 +157,9 @@ description: Visão geral abrangente dos recursos do TruchiEmu, incluindo shader
 
 <div class="shader-card">
 <div class="shader-image">
-<img src="{{ '/media/features/gbc-shader.png' | relative_url }}" alt="Shader Game Boy Color">
+<img src="{{ '/media/features/gbc-shader.png' | relative_url }}" alt="Shader 8b Game Boy Color">
 </div>
-<h3>Game Boy Color</h3>
+<h3>8b Game Boy Color</h3>
 <p class="shader-description">Reprodução precisa do LCD do Game Boy Color com a paleta de cores correta, arranjo de pixels e características de retroiluminação do hardware original.</p>
 <div class="shader-specs">
 <span class="spec-tag">Colorido</span>
@@ -171,9 +171,9 @@ description: Visão geral abrangente dos recursos do TruchiEmu, incluindo shader
 
 <div class="shader-card">
 <div class="shader-image">
-<img src="{{ '/media/features/gba-shader.png' | relative_url }}" alt="Shader Game Boy Advance">
+<img src="{{ '/media/features/gba-shader.png' | relative_url }}" alt="Shader GBA Advanced LCD">
 </div>
-<h3>Game Boy Advance</h3>
+<h3>GBA Advanced LCD</h3>
 <p class="shader-description">Simulação LCD fiel do Game Boy Advance com a temperatura de cor distinta, estrutura de pixels e características de movimento da tela do GBA.</p>
 <div class="shader-specs">
 <span class="spec-tag">GBA</span>
@@ -185,9 +185,65 @@ description: Visão geral abrangente dos recursos do TruchiEmu, incluindo shader
 
 <div class="shader-card">
 <div class="shader-image">
-<img src="{{ '/media/features/crt-classic.png' | relative_url }}" alt="Shader CRT Filter">
+<img src="{{ '/media/features/psp-shader.png' | relative_url }}" alt="Shader PSP Advanced LCD">
 </div>
-<h3>CRT Filter</h3>
+<h3>PSP Advanced LCD</h3>
+<p class="shader-description">Simulação LCD do PlayStation Portable com subpixel distinto e características de resposta da tela do hardware PSP original.</p>
+<div class="shader-specs">
+<span class="spec-tag">PSP</span>
+<span class="spec-tag">Portátil</span>
+<span class="spec-tag">Autêntico</span>
+</div>
+<p><strong>Caso de Uso:</strong> Jogos de PSP, experiência autêntica de tela portátil</p>
+</div>
+
+<div class="shader-card">
+<div class="shader-image">
+<img src="{{ '/media/features/nds-shader.png' | relative_url }}" alt="Shader NDS Advanced LCD">
+</div>
+<h3>NDS Advanced LCD</h3>
+<p class="shader-description">Simulação LCD do Nintendo DS com as características de visualização distinctivas do hardware DS original.</p>
+<div class="shader-specs">
+<span class="spec-tag">NDS</span>
+<span class="spec-tag">Portátil</span>
+<span class="spec-tag">Autêntico</span>
+</div>
+<p><strong>Caso de Uso:</strong> Jogos de Nintendo DS, experiência autêntica de tela</p>
+</div>
+
+<div class="shader-card">
+<div class="shader-image">
+<img src="{{ '/media/features/3ds-shader.png' | relative_url }}" alt="Shader 3DS Advanced LCD">
+</div>
+<h3>3DS Advanced LCD</h3>
+<p class="shader-description">Simulação LCD do Nintendo 3DS com as características de visualização do hardware 3DS original.</p>
+<div class="shader-specs">
+<span class="spec-tag">3DS</span>
+<span class="spec-tag">Portátil</span>
+<span class="spec-tag">Autêntico</span>
+</div>
+<p><strong>Caso de Uso:</strong> Jogos de Nintendo 3DS, experiência autêntica de tela</p>
+</div>
+
+<div class="shader-card">
+<div class="shader-image">
+<img src="{{ '/media/features/original-game-boy.png' | relative_url }}" alt="Shader 8b Game Boy">
+</div>
+<h3>8b Game Boy</h3>
+<p class="shader-description">Simulação fiel do LCD do Game Boy DMG com a icônica tela monocromática com tom esverdeado, padrão de grade de pixels e desfoque de movimento característico.</p>
+<div class="shader-specs">
+<span class="spec-tag">Game Boy</span>
+<span class="spec-tag">Monocromático</span>
+<span class="spec-tag">Autêntico</span>
+</div>
+<p><strong>Caso de Uso:</strong> Jogos do Game Boy original, pura nostalgia, reprodução autêntica</p>
+</div>
+
+<div class="shader-card">
+<div class="shader-image">
+<img src="{{ '/media/features/crt-classic.png' | relative_url }}" alt="Shader CRT Classic">
+</div>
+<h3>CRT Classic</h3>
 <p class="shader-description">Uma simulação CRT equilibrada que fornece scanlines clássicas e um sutil brilho de fósforo. Otimizada para alto desempenho em todos os sistemas.</p>
 <div class="shader-specs">
 <span class="spec-tag">Equilibrado</span>
@@ -237,19 +293,19 @@ description: Visão geral abrangente dos recursos do TruchiEmu, incluindo shader
 </tr>
 <tr>
 <td>Game Boy</td>
-<td>LCD DMG</td>
-<td>Dot Matrix, Passthrough</td>
+<td>Tela de Game Boy Original</td>
+<td>8b Game Boy Color, Dot Matrix LCD, Passthrough</td>
 <td>Verdadeira experiência portátil</td>
 </tr>
 <tr>
 <td>Game Boy Advance</td>
-<td>Game Boy Advance</td>
+<td>GBA Advanced LCD</td>
 <td>Scale Smooth, Sharp Bilinear</td>
 <td>Tela autêntica de GBA</td>
 </tr>
 <tr>
 <td>Jogos Portáteis</td>
-<td>Dot Matrix</td>
+<td>Dot Matrix LCD</td>
 <td>Scale Smooth</td>
 <td>Simulação de padrão de grade</td>
 </tr>
@@ -278,7 +334,7 @@ description: Visão geral abrangente dos recursos do TruchiEmu, incluindo shader
 <ul class="feature-list">
 <li><strong>Detecção Inteligente:</strong> Identifica automaticamente jogos a partir de hashes de arquivos ROM</li>
 <li><strong>Busca de Metadados:</strong> Baixa descrições de jogos, datas de lançamento e detalhes</li>
-<li><strong>Capas:</strong> Baixa automaticamente capas de alta qualidade e capturas de tela</li>
+<li><strong>Capas:</strong> Baixa automaticamente capas de alta qualidade para sua biblioteca</li>
 <li><strong>Categorização por Sistema:</strong> Agrupa jogos por console/sistema original</li>
 <li><strong>Detecção de Conquistas:</strong> Identifica jogos com suporte a RetroAchievements</li>
 </ul>
@@ -327,8 +383,8 @@ description: Visão geral abrangente dos recursos do TruchiEmu, incluindo shader
 <td>Biblioteca limpa sem duplicatas</td>
 </tr>
 <tr>
-<td>Gerenciamento de BIOS</td>
-<td>Valida e separa arquivos de BIOS necessários das ROMs de jogos</td>
+<td>Detecção de BIOS</td>
+<td>Detecta arquivos de BIOS necessários separando-os das ROMs de jogos</td>
 <td>Emulação adequada do sistema sem desordem</td>
 </tr>
 <tr>
@@ -401,10 +457,10 @@ description: Visão geral abrangente dos recursos do TruchiEmu, incluindo shader
 </div>
 <div class="step">
 <h4>Passo 2: Vincule sua Conta no TruchiEmu</h4>
-<p>Navegue até Configurações → Conquistas e insira seu nome de usuário e chave de API do RetroAchievements.</p>
+<p>Navegue até Configurações → Conquistas e insira seu nome de usuário, senha e chave de API do RetroAchievements.</p>
 </div>
 <div class="step">
-<h4>Passo 3: Teste a Conexão</h4>
+<h4>Passo 3: Conectar</h4>
 <p>Use o botão "Conectar" para verificar suas credenciais e sincronizar seu perfil.</p>
 </div>
 <div class="step">
@@ -459,7 +515,7 @@ description: Visão geral abrangente dos recursos do TruchiEmu, incluindo shader
 <ul class="feature-list">
 <li><strong>Rich Presence:</strong> Atualiza automaticamente seu perfil para mostrar aos amigos qual jogo você está jogando atualmente</li>
 <li><strong>Rankings:</strong> Envie e compare pontuações e tempos nos rankings globais</li>
-<li><strong>Modo Hardcore:</strong> Opção de rastrear conquistas sem o uso de save states para uma experiência purista</li>
+<li><strong>Modo Hardcore:</strong> Opção de rastrear conquistas sem o uso de save states, rewind, câmera lenta e cheats para uma experiência purista</li>
 </ul>
 
 <div class="info-box">
@@ -468,7 +524,7 @@ description: Visão geral abrangente dos recursos do TruchiEmu, incluindo shader
 <li>Certifique-se de usar arquivos ROM verificados que correspondam aos hashes do banco de dados RetroAchievements.</li>
 <li>Verifique as listas de conquistas no site do RA para planejar sua abordagem para troféus difíceis.</li>
 <li>Junte-se à comunidade RetroAchievements para acompanhar seu progresso contra outros jogadores.</li>
-<li><strong>Modo Hardcore:</strong> Ative o Modo Hardcore nas configurações para desabilitar save states, o que é necessário para ganhar conquistas do nível Hardcore.</li>
+<li><strong>Modo Hardcore:</strong> Ative o Modo Hardcore nas configurações para desabilitar save states, rewind, câmera lenta e cheats, o que é necessário para ganhar conquistas do nível Hardcore.</li>
 </ul>
 </div>
 
@@ -537,16 +593,16 @@ description: Visão geral abrangente dos recursos do TruchiEmu, incluindo shader
 <section id="themes" class="content-section">
 <div class="container">
 <h2>Temas e Aparência</h2>
-<p>Personalize o TruchiEmu com 17 temas de cores de destaque inspirados em lendas dos jogos&mdash;de Samus a Doom&mdash;além de cores personalizadas, modos de aparência claro/escuro e superfícies coloridas.</p>
+<p>Personalize o TruchiEmu com 16 temas de cores de destaque inspirados em lendas dos jogos&mdash;de Samus a Doom&mdash;além de cores personalizadas, modos de aparência claro/escuro e superfícies coloridas.</p>
 
 <div class="screenshot-frame">
-<img src="{{ '/media/features/themes-showcase.png' | relative_url }}" alt="Todos os 17 Temas do TruchiEmu" class="screenshot lightbox-trigger">
-<p class="screenshot-caption">Todos os 17 temas de cores de destaque inspirados em jogos no TruchiEmu</p>
+<img src="{{ '/media/features/themes-showcase.png' | relative_url }}" alt="Temas de Cores de Destaque do TruchiEmu" class="screenshot lightbox-trigger">
+<p class="screenshot-caption">Os 16 temas curados de cores de destaque inspirados em jogos no TruchiEmu, mais a opção de cor personalizada</p>
 </div>
 
 <h3>O Que Você Pode Personalizar</h3>
 <ul class="feature-list">
-<li><strong>17 Temas Nomeados:</strong> Paletas de destaque curadas organizadas nas categorias Padrão (Samus, Chocobo, Protoss, Joker, Geralt, Mega Man, Custom) e Gaming (Mario, Luigi, Sonic, Half-Life, Kratos, Kirby, Zelda, Pikachu, Doom, Master Chief)</li>
+<li><strong>16 Temas Curados + 1 Personalizado:</strong> Paletas de destaque curadas organizadas nas categorias Padrão (Samus, Chocobo, Protoss, Joker, Geralt, Mega Man) e Gaming (Mario, Luigi, Sonic, Half-Life, Kratos, Kirby, Zelda, Pikachu, Doom, Master Chief), mais a opção de cor personalizada via Seletor de Cores</li>
 <li><strong>Modo de Aparência:</strong> Claro, Escuro ou Automático&mdash;siga sua preferência do sistema ou substitua por aplicativo</li>
 <li><strong>Cores Personalizadas:</strong> Escolha qualquer cor como destaque com o Seletor de Cores integrado</li>
 <li><strong>Superfícies Coloridas:</strong> Coloração sutil da cor de destaque nos fundos de janela, barra lateral e barra de ferramentas</li>
@@ -567,9 +623,8 @@ description: Visão geral abrangente dos recursos do TruchiEmu, incluindo shader
 <p class="screenshot-caption">Navegue e baixe bezels de alta qualidade adaptados ao seu sistema</p>
 </div>
 <ul class="feature-list">
-<li><strong>Mapeamento Automático:</strong> Bezels são sugeridos automaticamente com base no core do emulador atual e na resolução do jogo.</li>
+<li><strong>Cascata de Resolução:</strong> Bezels são selecionados automaticamente seguindo uma cascata de prioridade: usuário → correspondência exata → correspondência limpa → correspondência difusa → nenhum bezel.</li>
 <li><strong>Navegador de Bezels:</strong> Downloader integrado para encontrar e aplicar bordas criadas pela comunidade.</li>
-<li><strong>Ajuste Personalizável:</strong> Ajuste fino do posicionamento e escala da tela para alinhar perfeitamente com o bezel escolhido.</li>
 </ul>
 <p><a href="{{ '/pt/bezel-guide.html' | relative_url }}">Saiba mais sobre bezels &rarr;</a></p>
 </div>

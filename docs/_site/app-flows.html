@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TruchiEmu — App Architecture Flows</title>
+  <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://unpkg.com/lucide-static@latest/font/lucide.css" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-card: #1a1a24;
+      --bg-card-hover: #222230;
+      --border: rgba(255,255,255,0.05);
+      --text-primary: #f0f0f5;
+      --text-secondary: #8a8a99;
+      --accent: #6366f1;
+      --accent-light: #818cf8;
+      --accent-glow: rgba(99,102,241,0.3);
+      --flow-app: #6366f1;
+      --flow-core: #f59e0b;
+      --flow-features: #10b981;
+      --flow-services: #ec4899;
+      --flow-views: #06b6d4;
+      --flow-shared: #8b5cf6;
+      --success: #22c55e;
+      --pulse: rgba(99,102,241,0.15);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .header {
+      text-align: center;
+      padding: 40px 20px 20px;
+      border-bottom: 1px solid var(--border);
+      background: radial-gradient(ellipse at top, var(--bg-secondary), transparent);
+    }
+    .header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    .header p {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: row;
+      max-width: 1920px;
+      margin: 0 auto;
+      min-height: calc(100vh - 160px);
+      padding: 20px;
+      gap: 20px;
+    }
+
+    .sidebar {
+      width: 340px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: sticky;
+      top: 20px;
+      height: fit-content;
+    }
+
+    .search-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .search-box input {
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      outline: none;
+      width: 100%;
+    }
+    .search-box input::placeholder { color: var(--text-secondary); }
+
+    .sidebar-group {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .sidebar-group-header {
+      padding: 12px 16px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      letter-spacing: 0.6px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.015);
+    }
+
+    .sidebar-list {
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-height: 250px;
+      overflow-y: auto;
+    }
+    .sidebar-list::-webkit-scrollbar { width: 4px; }
+    .sidebar-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background 200ms, transform 100ms;
+      border: 1px solid transparent;
+    }
+    .sidebar-item:hover { background: var(--bg-card-hover); }
+    .sidebar-item.active {
+      background: var(--bg-card-hover);
+      border-color: rgba(255,255,255,0.06);
+    }
+    .sidebar-item .swatch {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .sidebar-item .name {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Controls */
+    .controls {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .btn {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      color: var(--text-primary);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 200ms;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-weight: 500;
+    }
+    .btn:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.1); }
+    .btn:active { transform: scale(0.96); }
+    .btn.primary { background: var(--accent); border-color: var(--accent); color: white; }
+    .btn.primary:hover { background: var(--accent-light); border-color: var(--accent-light); }
+    .btn.full { grid-column: 1 / -1; }
+
+    /* Legend */
+    .legend {
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    /* Main canvas area */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .canvas-container {
+      flex: 1;
+      min-height: 400px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    #flowCanvas { width: 100%; height: 100%; display: block; }
+
+    .flow-overlay {
+      position: absolute;
+      top: 12px;
+      left: 16px;
+      right: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+    .flow-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      background: rgba(10,10,15,0.8);
+      backdrop-filter: blur(8px);
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .flow-progress {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      background: rgba(10,10,15,0.8);
+      backdrop-filter: blur(8px);
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    .info-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      min-height: 120px;
+    }
+    .info-panel h2 {
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      letter-spacing: 0.6px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .info-content {
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: var(--text-secondary);
+    }
+    .info-content strong { color: var(--text-primary); }
+
+    /* Step detail */
+    .step-detail {
+      display: none;
+      animation: fadeIn 300ms ease;
+    }
+    .step-detail.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Tooltip */
+    .canvas-tooltip {
+      position: absolute;
+      background: var(--bg-card-hover);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      max-width: 280px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 200ms;
+      z-index: 100;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    .canvas-tooltip.visible { opacity: 1; }
+    .canvas-tooltip h3 {
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .canvas-tooltip p {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* Toast */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .toast {
+      background: var(--bg-card-hover);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 20px;
+      font-size: 0.82rem;
+      color: var(--text-primary);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: slideUp 300ms ease;
+    }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .toast.toast-success { border-color: var(--success); }
+    .toast .icon { font-size: 1rem; }
+
+    /* Controls hint */
+    .controls-hint {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      padding: 10px 16px;
+      background: rgba(255,255,255,0.02);
+      border-radius: 8px;
+      margin-top: 6px;
+      text-align: center;
+    }
+
+    @media (max-width: 1024px) {
+      .container { flex-direction: column; }
+      .sidebar { width: 100%; position: static; }
+    }
+  </style>
+</head>
+<body>
+<div class="header">
+  <h1>TruchiEmu — Architecture Flows</h1>
+  <p>Interactive visualization of package and component architecture. Select a workflow to see how modules communicate.</p>
+</div>
+
+<div class="container">
+  <aside class="sidebar">
+    <div class="search-box">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="searchInput" type="text" placeholder="Search flows..." />
+    </div>
+
+    <div class="controls">
+      <button class="btn" onclick="prevFlow()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left"><path d="m15 18-6-6 6-6"/></svg>
+        Previous
+      </button>
+      <button class="btn primary" onclick="nextFlow()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right"><path d="m9 18 6-6-6-6"/></svg>
+        Next
+      </button>
+      <button class="btn full" onclick="toggleAutoPlay()" id="autoBtn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-play"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <span id="autoText">Auto-play</span>
+      </button>
+    </div>
+
+    <div class="sidebar-group">
+      <div class="sidebar-group-header">Workflows</div>
+      <div class="sidebar-list" id="workflowsList"></div>
+      <div class="controls-hint">Click a flow to visualize it</div>
+    </div>
+
+    <div class="sidebar-group">
+      <div class="sidebar-group-header">Packages (Nodes)</div>
+      <div class="legend" id="legend"></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="canvas-container">
+      <canvas id="flowCanvas"></canvas>
+      <div class="flow-overlay">
+        <div class="flow-title" id="flowTitle">Select a workflow</div>
+        <div class="flow-progress" id="flowProgress">Step 0 of 0</div>
+      </div>
+      <div class="canvas-tooltip" id="tooltip"></div>
+    </div>
+
+    <div class="info-panel">
+      <div class="info-content" id="infoContent">
+        <p>Click a workflow in the left sidebar to view the description and communication steps between packages.</p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+  /* --- data --- */
+  const packages = [
+    { id: 'app', name: 'App', color: '#6366f1', type: 'app_layer' },
+    { id: 'core', name: 'Core', bold: true, color: '#f59e0b', type: 'engine_layer' },
+    { id: 'features', name: 'Features', color: '#10b981', type: 'feature_layer', sub:['library','player','mame','settings'] },
+    { id: 'services', name: 'Services', color: '#ec4899', type: 'service_layer' },
+    { id: 'views', name: 'Views', color: '#06b6d4', type: 'view_layer' },
+    { id: 'shared', name: 'Shared', color: '#8b5cf6', type: 'infrastructure_layer' },
+  ];
+
+  const palette = {
+    app: '#6366f1',
+    core: '#f59e0b',
+    features: '#10b981',
+    services: '#ec4899',
+    views: '#06b6d4',
+    shared: '#8b5cf6',
+  };
+
+  let data = {
+    metadata: { project: "TruchiEmu", version: "1.0", generated_at: "2026-05-12", description: "Application packages, components, and workflow flows for TruchiEmu." },
+    packages: [
+      { id: "app", name: "App", description: "Application entrypoint and window management.", files: ["TruchiEmuApp.swift"], type: "app_layer" },
+      { id: "core", name: "Core", description: "Emulation engine and core systems.", files: ["LibretroBridgeSwift.swift"], type: "engine_layer" },
+      { id: "features", name: "Features", description: "Feature modules: Library, Player, MAME, Settings.", files: [], type: "feature_layer", subpackages: ["library","player","mame","settings"] },
+      { id: "services", name: "Services", description: "Shared business logic services.", files: [], type: "service_layer" },
+      { id: "views", name: "Views", description: "Reusable UI components and detail views.", files: [], type: "view_layer" },
+      { id: "shared", name: "Shared", description: "Cross-cutting utilities and infrastructure.", files: [], type: "infrastructure_layer" }
+    ],
+    workflows: [
+      {
+        id: "launch_rom", name: "Launch a Game from Library",
+        description: "User selects a ROM. The platform is identified, the libretro core is loaded, and the game engine is presented.",
+        steps: [
+          { from: "features:library", to: "features:library", action: "User selects a ROM from the list." },
+          { from: "features:library", to: "services:ROMIdentifierService", action: "Platform identified by ROM hash." },
+          { from: "services:ROMIdentifierService", to: "features:player", action: "Player view launched." },
+          { from: "features:player", to: "core", action: "Libretro core initialized and ROM loaded." },
+          { from: "core", to: "services:SaveStateManager", action: "Save states initialized." },
+          { from: "core", to: "services:ShaderPresetStorageService", action: "Shader preset applied." },
+          { from: "features:player", to: "services:RetroAchievementsService", action: "RetroAchievements initialized." },
+          { from: "services:SaveDirectoryManager", to: "core", action: "Save path mapping configured." }
+        ]
+      },
+      {
+        id: "save_load_state", name: "Save/Load State",
+        description: "The user saves or loads a game state.",
+        steps: [
+          { from: "features:player", to: "core", action: "User triggers save/load shortcut." },
+          { from: "core", to: "services:SaveStateManager", action: "Serializes/deserializes core state." },
+          { from: "services:SaveStateManager", to: "services:SaveDirectoryManager", action: "Target path determined." },
+          { from: "services:SaveDirectoryManager", to: "features:player", action: "Result notified to UI." }
+        ]
+      },
+      {
+        id: "cheats", name: "Apply Cheats",
+        description: "The user activates a cheat. It is downloaded and applied to the core.",
+        steps: [
+          { from: "features:player", to: "services:CheatAutoLoader", action: "Requests cheat list." },
+          { from: "services:CheatAutoLoader", to: "services:CheatDownloadService", action: "Downloads cheat database." },
+          { from: "services:CheatAutoLoader", to: "services:CheatParser", action: "Parses cheat files." },
+          { from: "services:CheatAutoLoader", to: "features:player", action: "Displays cheats in UI." },
+          { from: "features:player", to: "core", action: "User activates a cheat; applied to core." }
+        ]
+      },
+      {
+        id: "retroachievements", name: "Unlock RetroAchievement",
+        description: "The user earns an achievement. It is verified and a notification is shown.",
+        steps: [
+          { from: "core", to: "services:RetroAchievementsService", action: "Core reports achievement progress." },
+          { from: "services:RetroAchievementsService", to: "services:RAGameCacheCoordinator", action: "Checks if cached." },
+          { from: "services:RetroAchievementsService", to: "services:NotificationService", action: "Notifies unlock to UI." },
+          { from: "services:RetroAchievementsService", to: "services:RABadgeCacheService", action: "Caches achievement icon." },
+          { from: "services:NotificationService", to: "features:player", action: "Displays notification on screen." }
+        ]
+      },
+      {
+        id: "configure_shaders", name: "Configure Shaders & Screen Filters",
+        description: "User adjusts CRT/LCD shaders during gameplay.",
+        steps: [
+          { from: "features:player", to: "core", action: "Renderer initializes Metal." },
+          { from: "core", to: "services:ShaderPresetStorageService", action: "Loads shader preset." },
+          { from: "services:ShaderPresetStorageService", to: "features:player", action: "Applies shader in real-time." },
+          { from: "features:player", to: "core", action: "Adjusts parameters from UI." }
+        ]
+      },
+      {
+        id: "download_core", name: "Download & Install a Libretro Core",
+        description: "User downloads a core for a platform.",
+        steps: [
+          { from: "features:settings", to: "views:core_download", action: "Opens download screen." },
+          { from: "views:core_download", to: "services:CoreManager", action: "Requests core download." },
+          { from: "services:CoreManager", to: "services:CLIManager", action: "Download process." },
+          { from: "services:CLIManager", to: "views:core_download", action: "Reports progress in UI." },
+          { from: "services:CoreManager", to: "features:settings", action: "Registers core in app." }
+        ]
+      },
+      {
+        id: "mame_import", name: "Import MAME ROMs",
+        description: "User imports MAME ROMs. Dependencies are verified and validated.",
+        steps: [
+          { from: "features:library", to: "features:mame", action: "Imports MAME ROM." },
+          { from: "features:mame", to: "services:MAMEDependencyService", action: "Verifies dependencies." },
+          { from: "features:mame", to: "services:MAMEVerificationService", action: "Validates against mame_unified.json." },
+          { from: "features:mame", to: "services:MAMEImportService", action: "Adds ROM to library." },
+          { from: "services:MAMEImportService", to: "features:library", action: "Updates game list." }
+        ]
+      },
+      {
+        id: "boxart_sync", name: "Sync Box Art",
+        description: "Automatic synchronization of cover art images.",
+        steps: [
+          { from: "features:settings", to: "services:BoxArtService", action: "Activates sync." },
+          { from: "services:BoxArtService", to: "services:LaunchBoxGamesDBService", action: "Queries LaunchBox." },
+          { from: "services:BoxArtService", to: "services:LibretroThumbnailManifestService", action: "Gets Libretro manifest." },
+          { from: "services:LibretroThumbnailManifestService", to: "services:LibretroThumbnailResolver", action: "Resolves exact URL." },
+          { from: "services:BoxArtService", to: "services:ProgettoSnapsService", action: "Fallback to ProgettoSnaps." },
+          { from: "services:BoxArtService", to: "shared:ImageCache", action: "Stores in local cache." },
+          { from: "shared:ImageCache", to: "features:library", action: "Displays covers in UI." }
+        ]
+      },
+      {
+        id: "setup_wizard", name: "Initial Setup Wizard",
+        description: "First-run setup assistant.",
+        steps: [
+          { from: "app", to: "services:SetupWizardState", action: "Detects first launch." },
+          { from: "services:SetupWizardState", to: "features:library", action: "Shows Setup Wizard." },
+          { from: "features:library", to: "services:DATPrepopulationService", action: "Pre-populates database." },
+          { from: "features:library", to: "services:CoreManager", action: "Downloads recommended cores." },
+          { from: "services:CoreManager", to: "features:settings", action: "Configures core directories." }
+        ]
+      },
+      {
+        id: "controls_mapping", name: "Configure Controller Mapping",
+        description: "User configures button mapping.",
+        steps: [
+          { from: "features:settings", to: "services:ControllerService", action: "Opens controller section." },
+          { from: "services:ControllerService", to: "services:CoreOverrideService", action: "Loads core config." },
+          { from: "services:ControllerService", to: "shared:AppSettings", action: "Saves preferences." },
+          { from: "features:settings", to: "core", action: "Sends mappings to core in real-time." }
+        ]
+      }
+    ]
+  };
+  let currentFlow = null;
+  let currentStep = 0;
+  let isAutoPlaying = false;
+  let autoInterval = null;
+  let nodes = [];
+  let edges = [];
+
+  const canvas = document.getElementById('flowCanvas');
+  const ctx = canvas.getContext('2d');
+  let dpr = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1;
+  let animFrame;
+  let animTime = 0;
+  let hoverNode = null;
+
+  /* --- data (embedded) --- */
+  // data object is already defined above with all packages and workflows
+  data.packagesMap = new Map(data.packages.map(p => [p.id, p]));
+
+  function init() {
+    buildSidebar();
+    buildLegend();
+    resizeCanvas();
+    window.addEventListener('resize', () => { resizeCanvas(); draw(); });
+    canvas.addEventListener('mousemove', onPointerMove);
+    canvas.addEventListener('click', onPointerClick);
+    // Auto select first flow
+    if (data.workflows.length) selectFlow(data.workflows[0].id);
+  }
+
+  function resolvePackageId(stepFromTo) {
+    let id = stepFromTo.split(':')[0];
+    const sub = stepFromTo.split(':')[1];
+    if (id === 'features' && sub) return `features:${sub}`;
+    return id;
+  }
+
+  function colorFor(id) {
+    const key = id.split(':')[0];
+    return palette[key] || '#999';
+  }
+
+  function nameFor(id) {
+    const [key, sub] = id.split(':');
+    const p = data.packagesMap.get(key);
+    if (!p) return id;
+    if (sub && p.subpackages) return sub.charAt(0).toUpperCase() + sub.slice(1);
+    return p.name;
+  }
+
+  /* --- sidebar --- */
+  function buildSidebar() {
+    const container = document.getElementById('workflowsList');
+    container.innerHTML = '';
+    data.workflows.forEach((flow, idx) => {
+      const div = document.createElement('div');
+      div.className = 'sidebar-item';
+      div.innerHTML = `<span class="swatch" style="background:${randomAccent(idx)}"></span><span class="name">${flow.name}</span>`;
+      div.dataset.flowId = flow.id;
+      div.onclick = () => selectFlow(flow.id);
+      container.appendChild(div);
+    });
+  }
+
+  function buildLegend() {
+    const box = document.getElementById('legend');
+    box.innerHTML = data.packages.map(p => {
+      const label = p.subpackages ? `${p.name} (${p.subpackages.join(', ')})` : p.name;
+      return `<div class="sidebar-item"><span class="swatch" style="background:${p.color}"></span><span class="name">${label}</span></div>`;
+    }).join('');
+  }
+
+  function randomAccent(seed) {
+    const colors = ['#6366f1','#f59e0b','#10b981','#ec4899','#06b6d4','#8b5cf6'];
+    return colors[seed % colors.length];
+  }
+
+  /* --- flow selection --- */
+  function selectFlow(id) {
+    currentFlow = data.workflows.find(f => f.id === id);
+    currentStep = 0;
+    if (!currentFlow) return;
+
+    // Update sidebar active
+    document.querySelectorAll('.sidebar-item').forEach(el => el.classList.toggle('active', el.dataset.flowId === id));
+    document.getElementById('flowTitle').textContent = currentFlow.name;
+    document.getElementById('flowProgress').textContent = `Preparing visualization...`;
+
+    // Build nodes for current flow
+    buildFlowNodes(currentFlow.steps);
+    draw();
+    infoPanelForFlow(currentFlow);
+    showToast(`Flow loaded: ${currentFlow.name}`, 'success');
+  }
+
+  function prevFlow() {
+    if (!currentFlow) return;
+    const idx = data.workflows.indexOf(currentFlow);
+    selectFlow(data.workflows[(idx - 1 + data.workflows.length) % data.workflows.length].id);
+  }
+  function nextFlow() {
+    if (!currentFlow) return;
+    const idx = data.workflows.indexOf(currentFlow);
+    selectFlow(data.workflows[(idx + 1) % data.workflows.length].id);
+  }
+
+  /* --- canvas --- */
+  function resizeCanvas() {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    canvas.style.width = rect.width + 'px';
+    canvas.style.height = rect.height + 'px';
+    ctx.scale(dpr, dpr);
+  }
+
+  function buildFlowNodes(steps) {
+    // Distinct package ids, preserve order
+    const seen = new Set();
+    const order = [];
+    steps.forEach(s => {
+      const id = resolvePackageId(s.from);
+      if (!seen.has(id)) { seen.add(id); order.push(id); }
+      const to = resolvePackageId(s.to);
+      if (!seen.has(to)) { seen.add(to); order.push(to); }
+    });
+
+    const cols = Math.ceil(Math.sqrt(order.length)) || 1;
+    const rows = Math.ceil(order.length / cols) || 1;
+    const r = canvas.getBoundingClientRect();
+    const w = r.width / cols;
+    const h = r.height / rows;
+
+    nodes = order.map((id, i) => {
+      const col = i % cols;
+      const row = Math.floor(i / cols);
+      return {
+        id,
+        name: nameFor(id),
+        x: (col + 0.5) * w,
+        y: (row + 0.5) * h,
+        radius: 80,
+        color: colorFor(id),
+      };
+    });
+
+    edges = steps.map((s, idx) => {
+      const fromNode = nodes.find(n => n.id === resolvePackageId(s.from));
+      const toNode = nodes.find(n => n.id === resolvePackageId(s.to));
+      return { from: fromNode, to: toNode, step: idx, action: s.action };
+    }).filter(e => e.from && e.to);
+  }
+
+  function draw() {
+    const r = canvas.getBoundingClientRect();
+    ctx.clearRect(0, 0, r.width, r.height);
+
+    drawConnections(r);
+    drawNodes(r);
+  }
+
+  function drawConnections(r) {
+    edges.forEach(edge => {
+      const isActive = currentStep === edge.step;
+      const isPast = currentStep > edge.step;
+
+      ctx.beginPath();
+      ctx.moveTo(edge.from.x, edge.from.y);
+      const midX = (edge.from.x + edge.to.x) / 2;
+      const midY = (edge.from.y + edge.to.y) / 2 - 20;
+      ctx.quadraticCurveTo(midX, midY, edge.to.x, edge.to.y);
+
+      ctx.strokeStyle = isActive ? '#fff' : (isPast ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.04)');
+      ctx.lineWidth = isActive ? 3 : 1.5;
+      ctx.stroke();
+
+      if (isActive) {
+        // Animate pulse along the curve
+        const t = (animTime * 0.002) % 1;
+        const ex = (1-t)*(1-t)*edge.from.x + 2*(1-t)*t*midX + t*t*edge.to.x;
+        const ey = (1-t)*(1-t)*edge.from.y + 2*(1-t)*t*midY + t*t*edge.to.y;
+        ctx.beginPath();
+        ctx.arc(ex, ey, 6, 0, Math.PI * 2);
+        ctx.fillStyle = '#fff';
+        ctx.fill();
+      }
+
+      // Edge label at mid
+      if (isActive || isPast) {
+        ctx.fillStyle = isActive ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)';
+        ctx.font = isActive ? '600 11px -apple-system, sans-serif' : '11px -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(truncate(edge.action, 40), midX, midY - 6);
+      }
+    });
+  }
+
+  function drawNodes(r) {
+    const activeIds = new Set();
+    if (currentFlow && currentFlow.steps[currentStep]) {
+      activeIds.add(resolvePackageId(currentFlow.steps[currentStep].from));
+      activeIds.add(resolvePackageId(currentFlow.steps[currentStep].to));
+    }
+
+    nodes.forEach(node => {
+      const isActive = activeIds.has(node.id);
+      const isHover = hoverNode === node.id;
+
+      // Glow
+      if (isActive || isHover) {
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, node.radius + (isActive ? 8 : 4), 0, Math.PI * 2);
+        ctx.fillStyle = isActive ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.04)';
+        ctx.fill();
+      }
+
+      // Node
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+      ctx.fillStyle = node.color + '33';
+      ctx.fill();
+      ctx.strokeStyle = node.color;
+      ctx.lineWidth = isActive ? 3 : 1.5;
+      ctx.stroke();
+
+      // Label
+      ctx.fillStyle = (isActive || isHover) ? '#fff' : 'rgba(255,255,255,0.6)';
+      ctx.font = isActive ? '700 14px -apple-system, sans-serif' : '600 13px -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(node.name, node.x, node.y);
+    });
+  }
+
+  function truncate(str, max) {
+    return str.length > max ? str.slice(0, max) + '...' : str;
+  }
+
+  function onPointerMove(e) {
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX - rect.left);
+    const y = (e.clientY - rect.top);
+    hoverNode = null;
+    nodes.forEach(n => {
+      const dx = x - n.x;
+      const dy = y - n.y;
+      if (dx*dx + dy*dy < n.radius*n.radius) hoverNode = n.id;
+    });
+    draw();
+
+    // Tooltip
+    const tt = document.getElementById('tooltip');
+    if (hoverNode) {
+      const p = data.packagesMap.get(hoverNode.split(':')[0]);
+      tt.innerHTML = `<h3 style="color:${colorFor(hoverNode)}">${nameFor(hoverNode)}</h3><p>${p ? p.description : ''}</p>`;
+      tt.style.left = (x + 20) + 'px';
+      tt.style.top = (y + 20) + 'px';
+      tt.classList.add('visible');
+    } else {
+      tt.classList.remove('visible');
+    }
+  }
+
+  function onPointerClick(e) {
+    if (hoverNode) {
+      showToast(`Package: ${nameFor(hoverNode)}`, 'info');
+    }
+  }
+
+  /* --- info panel --- */
+  function infoPanelForFlow(flow) {
+    const el = document.getElementById('infoContent');
+    let html = `<h2>Description</h2><p>${flow.description}</p>`;
+    html += `<h2>Steps</h2>`;
+    html += `<ol style="margin: 0 0 0 20px; padding: 0;">`;
+    flow.steps.forEach((s, i) => {
+      const fromName = nameFor(resolvePackageId(s.from));
+      const toName = nameFor(resolvePackageId(s.to));
+      html += `<li style="margin-bottom: 8px; opacity: ${i === currentStep ? 1 : 0.6}; transition: opacity 300ms;"><strong>${fromName}</strong> → <strong>${toName}</strong>: ${s.action}</li>`;
+    });
+    html += `</ol>`;
+    el.innerHTML = html;
+  }
+
+  /* --- autoplay --- */
+  function toggleAutoPlay() {
+    isAutoPlaying = !isAutoPlaying;
+    document.getElementById('autoText').textContent = isAutoPlaying ? 'Pause' : 'Auto-play';
+    if (isAutoPlaying) {
+      advanceStep();
+      autoInterval = setInterval(advanceStep, 2500);
+    } else {
+      clearInterval(autoInterval);
+    }
+  }
+
+  function advanceStep() {
+    if (!currentFlow) return;
+    const total = currentFlow.steps.length || 1;
+    currentStep = (currentStep + 1) % total;
+    document.getElementById('flowProgress').textContent = `Step ${currentStep + 1} of ${total}`;
+    infoPanelForFlow(currentFlow);
+    draw();
+  }
+
+  /* --- search --- */
+  document.getElementById('searchInput').addEventListener('input', (e) => {
+    const v = e.target.value.toLowerCase();
+    document.querySelectorAll('.sidebar-item').forEach(el => {
+      const text = el.querySelector('.name').textContent.toLowerCase();
+      el.style.display = text.includes(v) ? '' : 'none';
+    });
+  });
+
+  /* --- toast --- */
+  function showToast(msg, type) {
+    const container = document.getElementById('toastContainer');
+    const el = document.createElement('div');
+    el.className = `toast toast-${type}`;
+    el.innerHTML = `<span class="icon">${type === 'success' ? '✓' : type === 'info' ? 'ⓘ' : '!'}</span><span>${msg}</span>`;
+    container.appendChild(el);
+    setTimeout(() => el.remove(), 3000);
+  }
+
+  /* --- loop --- */
+  function loop() {
+    animTime += 16;
+    if (isAutoPlaying || currentFlow) draw();
+    requestAnimationFrame(loop);
+  }
+  loop();
+
+  /* --- kickoff --- */
+  init();
+</script>
+</body>
+</html>

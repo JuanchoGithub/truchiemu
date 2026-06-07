@@ -35,7 +35,7 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
 <section id="shaders" class="content-section">
     <div class="container">
         <h2>Shader Collection</h2>
-        <p>Transform your gaming experience with our curated collection of 11 high-quality Metal shaders. Each shader is optimized for macOS and designed to enhance or authentically reproduce classic gaming visuals.</p>
+        <p>Transform your gaming experience with our curated collection of 14 high-quality Metal shaders. Each shader is optimized for macOS and designed to enhance or authentically reproduce classic gaming visuals.</p>
 
         <div class="screenshot-frame">
             <img src="{{ '/media/screenshots/shader-picker.png' | relative_url }}" alt="Shader Picker Interface" class="screenshot lightbox-trigger">
@@ -47,28 +47,28 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
                 <div class="shader-image">
                     <img src="{{ '/media/features/passthrough.png' | relative_url }}" alt="Passthrough Shader">
                 </div>
-                <h3>Passthrough</h3>
-                <p class="shader-description">The default shader that renders pixels exactly as the original hardware intended. Perfect for purists who want unfiltered, authentic visuals with sharp pixel edges.</p>
-                <div class="shader-specs">
-                    <span class="spec-tag">No Processing</span>
-                    <span class="spec-tag">Sharp Pixels</span>
-                    <span class="spec-tag">Low CPU</span>
-                </div>
-                <p><strong>Use Case:</strong> Development, pixel-perfect reproduction, speedrunning</p>
+<h3>Passthrough</h3>
+<p class="shader-description">No post-processing. Integer-scaled raw pixels rendered exactly as the original hardware intended. Perfect for purists who want unfiltered, authentic visuals with sharp pixel edges.</p>
+<div class="shader-specs">
+<span class="spec-tag">No Processing</span>
+<span class="spec-tag">Sharp Pixels</span>
+<span class="spec-tag">Low GPU</span>
+</div>
+<p><strong>Use Case:</strong> Development, pixel-perfect reproduction, speedrunning</p>
             </div>
 
             <div class="shader-card">
                 <div class="shader-image">
                     <img src="{{ '/media/features/scale-smooth.png' | relative_url }}" alt="Smooth Scale Shader">
                 </div>
-                <h3>Scale Smooth</h3>
-                <p class="shader-description">High-quality bicubic scaling that smooths pixel edges while preserving detail. Ideal for modern displays where raw pixels appear too blocky.</p>
-                <div class="shader-specs">
-                    <span class="spec-tag">Smoothing</span>
-                    <span class="spec-tag">Bicubic</span>
-                    <span class="spec-tag">Universal</span>
-                </div>
-                <p><strong>Use Case:</strong> General gaming, modern displays, reduced pixelation</p>
+<h3>Smooth Upscale</h3>
+<p class="shader-description">High-quality pixel art upscaler that smooths edges while maintaining detail. Ideal for modern displays where raw pixels appear too blocky.</p>
+<div class="shader-specs">
+<span class="spec-tag">Smoothing</span>
+<span class="spec-tag">Edge-Directed</span>
+<span class="spec-tag">Universal</span>
+</div>
+<p><strong>Use Case:</strong> General gaming, modern displays, reduced pixelation</p>
             </div>
 
             <div class="shader-card">
@@ -131,70 +131,112 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
                 <div class="shader-image">
                     <img src="{{ '/media/features/gba-shader.png' | relative_url }}" alt="Dot Matrix Shader">
                 </div>
-                <h3>Dot Matrix</h3>
-                <p class="shader-description">Simulates the distinctive dot matrix display of classic handheld systems like the Game Boy. Features the characteristic grid pattern and subpixel arrangement.</p>
-                <div class="shader-specs">
-                    <span class="spec-tag">Handheld</span>
-                    <span class="spec-tag">Grid Pattern</span>
-                    <span class="spec-tag">Nostalgic</span>
-                </div>
-                <p><strong>Use Case:</strong> Game Boy games, handheld emulation, authentic portable体验</p>
-            </div>
+<h3>8b Game Boy</h3>
+<p class="shader-description">High-fidelity Game Boy DMG simulation with a customizable bezel, dynamic lighting, grid pattern, and the characteristic monochrome display feel.</p>
+<div class="shader-specs">
+<span class="spec-tag">Game Boy</span>
+<span class="spec-tag">Dynamic Light</span>
+<span class="spec-tag">Authentic</span>
+</div>
+<p><strong>Use Case:</strong> Game Boy games, authentic portable experience</p>
+</div>
 
-            <div class="shader-card">
-                <div class="shader-image">
-                    <img src="{{ '/media/features/original-game-boy.png' | relative_url }}" alt="Original Game Boy Screen">
-                </div>
-                <h3>Original Game Boy Screen</h3>
-                <p class="shader-description">Faithful Game Boy DMG (Dot Matrix Game) LCD simulation with the iconic green-tinted monochrome display, pixel persistence, and characteristic motion blur.</p>
-                <div class="shader-specs">
-                    <span class="spec-tag">Game Boy</span>
-                    <span class="spec-tag">Monochrome</span>
-                    <span class="spec-tag">Authentic</span>
-                </div>
-                <p><strong>Use Case:</strong> Original Game Boy games, pure nostalgia, authentic reproduction</p>
-            </div>
-
-            <div class="shader-card">
-                <div class="shader-image">
-                    <img src="{{ '/media/features/gbc-shader.png' | relative_url }}" alt="Game Boy Color Shader">
-                </div>
-                <h3>Game Boy Color</h3>
-                <p class="shader-description">Accurate Game Boy Color LCD reproduction with the correct color palette, pixel arrangement, and backlight characteristics of the original hardware.</p>
-                <div class="shader-specs">
-                    <span class="spec-tag">Color</span>
-                    <span class="spec-tag">Handheld</span>
-                    <span class="spec-tag">Accurate</span>
-                </div>
-                <p><strong>Use Case:</strong> Game Boy Color games, accurate color representation</p>
+<div class="shader-card">
+<div class="shader-image">
+<img src="{{ '/media/features/gbc-shader.png' | relative_url }}" alt="8b Game Boy Color Shader">
+</div>
+<h3>8b Game Boy Color</h3>
+<p class="shader-description">Game Boy Color LCD simulation with temporal feedback, ghosting, iridescent effects, and customizable shell colors (Berry, Grape, Onyx, Glacier, and more).</p>
+<div class="shader-specs">
+<span class="spec-tag">Color</span>
+<span class="spec-tag">Ghosting</span>
+<span class="spec-tag">Shell Colors</span>
+</div>
+<p><strong>Use Case:</strong> Game Boy Color games, accurate color representation</p>
             </div>
 
             <div class="shader-card">
                 <div class="shader-image">
                     <img src="{{ '/media/features/gba-shader.png' | relative_url }}" alt="Game Boy Advance Shader">
                 </div>
-                <h3>Game Boy Advance</h3>
-                <p class="shader-description">True-to-life Game Boy Advance LCD simulation with the distinctive color temperature, pixel structure, and motion characteristics of the GBA screen.</p>
-                <div class="shader-specs">
-                    <span class="spec-tag">GBA</span>
-                    <span class="spec-tag">Backlit</span>
-                    <span class="spec-tag">Portable</span>
-                </div>
-                <p><strong>Use Case:</strong> GBA games, accurate portable gaming experience</p>
-            </div>
+<h3>GBA (Advanced LCD)</h3>
+<p class="shader-description">Advanced Game Boy Advance LCD simulation with ghosting, grid pattern, metallic reflections, and configurable light position.</p>
+<div class="shader-specs">
+<span class="spec-tag">GBA</span>
+<span class="spec-tag">Ghosting</span>
+<span class="spec-tag">Reflections</span>
+</div>
+<p><strong>Use Case:</strong> GBA games, accurate portable gaming experience</p>
+</div>
 
-            <div class="shader-card">
-                <div class="shader-image">
-                    <img src="{{ '/media/features/crt-classic.png' | relative_url }}" alt="CRT Filter Shader">
-                </div>
-                <h3>CRT Filter</h3>
-                <p class="shader-description">A balanced CRT simulation providing classic scanlines and a subtle phosphor glow. Optimized for high performance across all systems.</p>
-                <div class="shader-specs">
-                    <span class="spec-tag">Balanced</span>
-                    <span class="spec-tag">Scanlines</span>
-                    <span class="spec-tag">Fast</span>
-                </div>
-                <p><strong>Use Case:</strong> General retro gaming, consistent look across multiple systems</p>
+<div class="shader-card">
+<div class="shader-image">
+<img src="{{ '/media/features/crt-classic.png' | relative_url }}" alt="CRT Classic Shader">
+</div>
+<h3>CRT Classic</h3>
+<p class="shader-description">Classic CRT scanlines with barrel distortion, vignette, chromatic aberration, phosphor masking, and color bleed. Highly customizable with over 20 parameters.</p>
+<div class="shader-specs">
+<span class="spec-tag">Balanced</span>
+<span class="spec-tag">Scanlines</span>
+<span class="spec-tag">Customizable</span>
+</div>
+<p><strong>Use Case:</strong> General retro gaming, consistent look across multiple systems</p>
+</div>
+
+<div class="shader-card">
+<div class="shader-image">
+<img src="{{ '/media/features/gba-shader.png' | relative_url }}" alt="Dot Matrix LCD Shader">
+</div>
+<h3>Dot Matrix LCD</h3>
+<p class="shader-description">High-quality metallic dot-matrix LCD simulation for Game Boy systems, with dot opacity, metallic intensity, and specular highlights.</p>
+<div class="shader-specs">
+<span class="spec-tag">Handheld</span>
+<span class="spec-tag">Metallic</span>
+<span class="spec-tag">Dot Matrix</span>
+</div>
+<p><strong>Use Case:</strong> Game Boy, Game Gear, Master System games</p>
+</div>
+
+<div class="shader-card">
+<div class="shader-image">
+<img src="{{ '/media/features/crt-multipass.png' | relative_url }}" alt="PSP Advanced LCD Shader">
+</div>
+<h3>PSP (Advanced LCD)</h3>
+<p class="shader-description">PSP LCD simulation with warm color gamut, ghosting, subtle pixel grid, and configurable gamut matrix for accurate color reproduction.</p>
+<div class="shader-specs">
+<span class="spec-tag">PSP</span>
+<span class="spec-tag">Warm Gamut</span>
+<span class="spec-tag">Ghosting</span>
+</div>
+<p><strong>Use Case:</strong> PSP games, authentic portable LCD experience</p>
+</div>
+
+<div class="shader-card">
+<div class="shader-image">
+<img src="{{ '/media/features/crt-multipass.png' | relative_url }}" alt="NDS Advanced LCD Shader">
+</div>
+<h3>NDS (Advanced LCD)</h3>
+<p class="shader-description">Nintendo DS LCD simulation with washed-out color gamut, light ghosting, and visible pixel grid.</p>
+<div class="shader-specs">
+<span class="spec-tag">NDS</span>
+<span class="spec-tag">Washed-Out</span>
+<span class="spec-tag">Light Ghosting</span>
+</div>
+<p><strong>Use Case:</strong> Nintendo DS games, authentic dual-screen LCD feel</p>
+</div>
+
+<div class="shader-card">
+<div class="shader-image">
+<img src="{{ '/media/features/crt-multipass.png' | relative_url }}" alt="3DS Advanced LCD Shader">
+</div>
+<h3>3DS (Advanced LCD)</h3>
+<p class="shader-description">3DS LCD simulation with accurate color, no ghosting, and subtle pixel grid.</p>
+<div class="shader-specs">
+<span class="spec-tag">3DS</span>
+<span class="spec-tag">Accurate Color</span>
+<span class="spec-tag">No Ghosting</span>
+</div>
+<p><strong>Use Case:</strong> 3DS games, clean portable display</p>
             </div>
         </div>
 
@@ -209,58 +251,76 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
         </ul>
 
         <div class="info-box">
-            <p><strong>Performance Impact:</strong> Passthrough, Scale Smooth, and Vignette have minimal performance impact. CRT shaders and LCD simulations use more GPU resources. Most modern Macs can run any shader at full speed.</p>
+            <p><strong>Performance Impact:</strong> Passthrough and Smooth Upscale have minimal performance impact. CRT shaders (Multipass, Lottes, Classic) and LCD simulations use more GPU resources. Most modern Macs can run any shader at full speed.</p>
         </div>
 
         <h3>Recommended Shader Pairings</h3>
-        <table class="recommendation-table">
-            <thead>
-                <tr>
-                    <th>System Type</th>
-                    <th>Primary Shader</th>
-                    <th>Secondary Options</th>
-                    <th>Use Case</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>8-bit Consoles</td>
-                    <td>CRT Multipass</td>
-                    <td>Lite CRT, CRT Lottes</td>
-                    <td>Classic TV experience</td>
-                </tr>
-                <tr>
-                    <td>16-bit Consoles</td>
-                    <td>CRT Lottes</td>
-                    <td>Sharp Bilinear, CRT Multipass</td>
-                    <td>Authentic arcade/TV feel</td>
-                </tr>
-                <tr>
-                    <td>Game Boy</td>
-                    <td>LCD DMG</td>
-                    <td>Dot Matrix, Passthrough</td>
-                    <td>True portable experience</td>
-                </tr>
-                <tr>
-                    <td>Game Boy Advance</td>
-                    <td>Game Boy Advance</td>
-                    <td>Scale Smooth, Sharp Bilinear</td>
-                    <td>Authentic GBA screen</td>
-                </tr>
-                <tr>
-                    <td>Handheld Games</td>
-                    <td>Dot Matrix</td>
-                    <td>Scale Smooth</td>
-                    <td>Grid pattern simulation</td>
-                </tr>
-                <tr>
-                    <td>Modern Displays</td>
-                    <td>Scale Smooth</td>
-                    <td>Sharp Bilinear, Passthrough</td>
-                    <td>Clean, modern look</td>
-                </tr>
-            </tbody>
-        </table>
+<table class="recommendation-table">
+<thead>
+<tr>
+<th>System Type</th>
+<th>Primary Shader</th>
+<th>Secondary Options</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8-bit Consoles</td>
+<td>CRT Multipass</td>
+<td>Lite CRT, CRT Lottes</td>
+<td>Classic TV experience</td>
+</tr>
+<tr>
+<td>16-bit Consoles</td>
+<td>CRT Lottes</td>
+<td>Sharp Bilinear, CRT Classic</td>
+<td>Authentic arcade/TV feel</td>
+</tr>
+<tr>
+<td>Game Boy</td>
+<td>8b Game Boy</td>
+<td>Dot Matrix LCD, Passthrough</td>
+<td>True portable experience</td>
+</tr>
+<tr>
+<td>Game Boy Color</td>
+<td>8b Game Boy Color</td>
+<td>Dot Matrix LCD, Passthrough</td>
+<td>Authentic GBC screen</td>
+</tr>
+<tr>
+<td>Game Boy Advance</td>
+<td>GBA (Advanced LCD)</td>
+<td>Smooth Upscale, Sharp Bilinear</td>
+<td>Authentic GBA screen</td>
+</tr>
+<tr>
+<td>PSP</td>
+<td>PSP (Advanced LCD)</td>
+<td>Smooth Upscale, Passthrough</td>
+<td>Authentic PSP display</td>
+</tr>
+<tr>
+<td>NDS</td>
+<td>NDS (Advanced LCD)</td>
+<td>Smooth Upscale, Passthrough</td>
+<td>Authentic DS display</td>
+</tr>
+<tr>
+<td>3DS</td>
+<td>3DS (Advanced LCD)</td>
+<td>Smooth Upscale, Passthrough</td>
+<td>Clean portable display</td>
+</tr>
+<tr>
+<td>Modern Displays</td>
+<td>Smooth Upscale</td>
+<td>Sharp Bilinear, Passthrough</td>
+<td>Clean, modern look</td>
+</tr>
+</tbody>
+</table>
     </div>
 </section>
 
@@ -278,7 +338,7 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
         <ul class="feature-list">
             <li><strong>Smart Detection:</strong> Automatically identifies games from ROM file hashes</li>
             <li><strong>Metadata Fetching:</strong> Downloads game descriptions, release dates, and details</li>
-            <li><strong>Cover Art:</strong> Automatically downloads high-quality box art and screenshots</li>
+            <li><strong>Cover Art:</strong> Automatically downloads high-quality box art from multiple sources (ScreenScraper, Libretro CDN)</li>
             <li><strong>System Categorization:</strong> Groups games by original console/system</li>
             <li><strong>Achievement Detection:</strong> Identifies games with RetroAchievements support</li>
         </ul>
@@ -326,11 +386,11 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
                     <td>Identifies and prevents duplicate ROM entries during scans</td>
                     <td>Clean library without duplicates</td>
                 </tr>
-                <tr>
-                    <td>BIOS Management</td>
-                    <td>Validates and separates required BIOS files from game ROMs</td>
-                    <td>Proper system emulation without clutter</td>
-                </tr>
+<tr>
+<td>BIOS Detection</td>
+<td>Detects and bundles required BIOS files (e.g., Saturn) with the core download</td>
+<td>Proper system emulation without manual setup</td>
+</tr>
                 <tr>
                     <td>Region Detection</td>
                     <td>Identifies game region (USA, Europe, Japan) during identification</td>
@@ -399,14 +459,14 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
                 <h4>Step 1: Create RetroAchievements Account</h4>
                 <p>Visit <a href="https://retroachievements.org/" target="_blank">RetroAchievements.org</a> and create a free account.</p>
             </div>
-            <div class="step">
-                <h4>Step 2: Link Account in TruchiEmu</h4>
-                <p>Navigate to Settings → Achievements and enter your RetroAchievements username and API key.</p>
-            </div>
-            <div class="step">
-                <h4>Step 3: Test Connection</h4>
-                <p>Use the "Connect" button to verify your credentials and sync your profile.</p>
-            </div>
+<div class="step">
+<h4>Step 2: Link Account in TruchiEmu</h4>
+<p>Navigate to Settings → Achievements and enter your RetroAchievements username, password, and Web API key.</p>
+</div>
+<div class="step">
+<h4>Step 3: Connect</h4>
+<p>Use the "Connect" button to verify your credentials and sync your profile. A green "Connected" indicator confirms success.</p>
+</div>
             <div class="step">
                 <h4>Step 4: Play Supported Games</h4>
                 <p>Launch any game with achievement support. Your progress will be synced to your global profile.</p>
@@ -459,16 +519,16 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
         <ul class="feature-list">
             <li><strong>Rich Presence:</strong> Automatically updates your profile to show friends which game you are currently playing</li>
             <li><strong>Leaderboards:</strong> Submit and compare high scores and times on global leaderboards</li>
-            <li><strong>Hardcore Mode:</strong> Option to track achievements without the use of save states for a purist experience</li>
+            <li><strong>Hardcore Mode:</strong> Option to disable save states, rewind, slow motion, and cheats for a purist experience, required for earning Hardcore-tier achievements</li>
         </ul>
         
         <div class="info-box">
             <p><strong>💡 Achievement Tips:</strong></p>
             <ul>
-                <li>Ensure you are using verified ROM files that match the RetroAchievements database hashes.</li>
-                <li>Check the achievement lists on the RA website to plan your approach for difficult trophies.</li>
-                <li>Join the RetroAchievements community to track your progress against other players.</li>
-                <li><strong>Hardcore Mode:</strong> Enable Hardcore Mode via settings to disable save states, which is required for earning Hardcore-tier achievements.</li>
+<li>Ensure you are using verified ROM files that match the RetroAchievements database hashes.</li>
+<li>Check the achievement lists on the RA website to plan your approach for difficult trophies.</li>
+<li>Join the RetroAchievements community to track your progress against other players.</li>
+<li><strong>Hardcore Mode:</strong> Enable Hardcore Mode via settings to block save states, rewind, slow motion, and cheats, which is required for earning Hardcore-tier achievements.</li>
             </ul>
         </div>
         
@@ -537,16 +597,16 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
 <section id="themes" class="content-section">
 <div class="container">
 <h2>Themes & Appearance</h2>
-<p>Make TruchiEmu yours with 17 accent color themes inspired by gaming legends&mdash;from Samus to Doom&mdash;plus custom colors, light/dark appearance modes, and tinted surfaces.</p>
+<p>Make TruchiEmu yours with 16 curated accent color themes plus custom colors — inspired by gaming legends from Samus to Doom — plus light/dark appearance modes and tinted surfaces.</p>
 
 <div class="screenshot-frame">
 <img src="{{ '/media/features/themes-showcase.png' | relative_url }}" alt="All 17 TruchiEmu Themes" class="screenshot lightbox-trigger">
-<p class="screenshot-caption">All 17 gaming-inspired accent color themes in TruchiEmu</p>
+<p class="screenshot-caption">All 17 TruchiEmu themes (16 curated + 1 custom)</p>
 </div>
 
 <h3>What You Can Customize</h3>
 <ul class="feature-list">
-<li><strong>17 Named Themes:</strong> Curated accent palettes organized into Standard (Samus, Chocobo, Protoss, Joker, Geralt, Mega Man, Custom) and Gaming (Mario, Luigi, Sonic, Half-Life, Kratos, Kirby, Zelda, Pikachu, Doom, Master Chief) categories</li>
+<li><strong>16 Curated + 1 Custom:</strong> Accent palettes organized into Standard (Samus, Chocobo, Protoss, Joker, Geralt, Mega Man, Custom) and Gaming (Mario, Luigi, Sonic, Half-Life, Kratos, Kirby, Zelda, Pikachu, Doom, Master Chief) categories</li>
 <li><strong>Appearance Mode:</strong> Light, Dark, or Automatic&mdash;follow your system preference or override it per-app</li>
 <li><strong>Custom Colors:</strong> Pick any color as your accent with the built-in Color Picker</li>
 <li><strong>Tinted Surfaces:</strong> Subtle accent color tinting on window, sidebar, and toolbar backgrounds</li>
@@ -567,9 +627,9 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
             <p class="screenshot-caption">Browse and download high-quality bezels tailored to your system</p>
         </div>
         <ul class="feature-list">
-            <li><strong>Automatic Mapping:</strong> Bezels are automatically suggested based on the current emulator core and game resolution.</li>
-            <li><strong>Bezel Browser:</strong> Integrated downloader to find and apply community-created borders.</li>
-            <li><strong>Customizable Fit:</strong> Fine-tune the screen positioning and scaling to perfectly align with your chosen bezel.</li>
+<li><strong>Automatic Mapping:</strong> Bezels are automatically matched based on the game name, following a resolution cascade (user override → exact match → cleaned name → fuzzy match → no bezel).</li>
+<li><strong>Bezel Browser:</strong> Integrated downloader to find and apply community-created borders.</li>
+<li><strong>Custom Import:</strong> Import your own bezel images for any game.</li>
         </ul>
         <p><a href="{{ '/bezel-guide.html' | relative_url }}">Learn more about bezels &rarr;</a></p>
     </div>

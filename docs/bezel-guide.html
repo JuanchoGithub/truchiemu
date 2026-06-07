@@ -46,7 +46,7 @@ description: How to use and customize bezels to enhance your retro gaming visual
             </div>
             <div class="step">
                 <h4>2. Browse Assets</h4>
-                <p>Explore the available bezels. You can filter by system or search for specific themes.</p>
+                <p>Explore the available bezels organized by system, or search for specific games.</p>
             </div>
             <div class="step">
                 <h4>3. Apply & Download</h4>
@@ -58,34 +58,25 @@ description: How to use and customize bezels to enhance your retro gaming visual
 
 <section id="automatic-mapping" class="content-section">
     <div class="container">
-        <h2>Automatic Mapping</h2>
-        <p>To save you time, TruchiEmu uses an intelligent mapping system. When you launch a game, the app automatically suggests bezels that match:</p>
-        <ul class="feature-list">
-            <li><strong>System Type:</strong> A NES game will suggest NES-themed bezels.</li>
-            <li><strong>Aspect Ratio:</strong> The bezel chosen will match the internal resolution of the core.</li>
-            <li><strong>Game Theme:</strong> In some cases, specific bezels are mapped to specific titles for maximum immersion.</li>
-        </ul>
+<h2>Automatic Mapping</h2>
+<p>To save you time, TruchiEmu uses a name-based resolution cascade. When you launch a game, the app automatically finds a matching bezel through this priority order:</p>
+<ul class="feature-list">
+<li><strong>User-Selected Bezel:</strong> If you've manually chosen a bezel for this game (unless auto-match is preferred)</li>
+<li><strong>Exact Game Name Match:</strong> Searches local bezel files for an exact match against the game name</li>
+<li><strong>Cleaned Name Match:</strong> Matches with region and revision suffixes removed (e.g., "Super Mario World (USA)" matches "Super Mario World")</li>
+<li><strong>Fuzzy Match:</strong> Normalized comparison against the cached bezel repository manifest</li>
+<li><strong>No Bezel:</strong> If no match is found, the game runs without a bezel overlay</li>
+</ul>
+
+<div class="info-box">
+<p>You can disable bezels for any game by selecting "None" as the bezel option. You can also import custom bezel images from your own files &mdash; imported bezels take priority in the resolution cascade. Bezels are fetched from a community-maintained GitHub repository; if a bezel isn't cached locally, TruchiEmu downloads it on-demand.</p>
+</div>
     </div>
 </section>
 
 <section id="customization" class="content-section">
-    <div class="container">
-        <h2>Fine-Tuning Your Fit</h2>
-        <p>Because every monitor and resolution is different, TruchiEmu provides tools to ensure your game window fits the bezel perfectly.</p>
-        
-        <div class="feature-grid">
-            <div class="feature-card">
-                <h4>Positioning</h4>
-                <p>Adjust the X and Y offset of the game screen to center it exactly within the bezel art.</p>
-            </div>
-            <div class="feature-card">
-                <h4>Scaling</h4>
-                <p>Scale the game window up or down to ensure it doesn't overlap the bezel edges or leave unwanted gaps.</p>
-            </div>
-            <div class="feature-card">
-                <h4>Real-time Preview</h4>
-                <p>All adjustments are reflected instantly, allowing you to pixel-perfect your setup.</p>
-            </div>
-        </div>
-    </div>
+<div class="container">
+<h2>Bezel Fit</h2>
+<p>Bezel fit is handled automatically. Horizontal bezels assume a 4:3 game area and vertical bezels assume 3:4. The aspect ratio is inferred from the bezel image itself &mdash; it is not used as a selection criterion.</p>
+</div>
 </section>

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+
+
+<html lang="es">
+<head>
+
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TruchiEmu - El emulador definitivo de gaming retro para macOS - Documentación de TruchiEmu</title>
+<meta name="description" content="La experiencia definitiva de gaming retro, hermosamente rediseñada para macOS con shaders Metal, RetroAchievements e interfaz nativa SwiftUI.">
+<link rel="canonical" href="https://juanchogithub.github.io/truchiemu/es/">
+<meta name="generator" content="Jekyll 4.4.1">
+
+<!-- Open Graph -->
+  <meta property="og:title" content="TruchiEmu - El emulador definitivo de gaming retro para macOS">
+  <meta property="og:description" content="La experiencia definitiva de gaming retro, hermosamente rediseñada para macOS con shaders Metal, RetroAchievements e interfaz nativa SwiftUI.">
+<meta property="og:url" content="https://juanchogithub.github.io/truchiemu/es/">
+<meta property="og:site_name" content="Documentación de TruchiEmu">
+<meta property="og:type" content="article">
+<meta property="og:image" content="https://juanchogithub.github.io/truchiemu/media/logo-icon.png">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="TruchiEmu - El emulador definitivo de gaming retro para macOS">
+  <meta name="twitter:description" content="La experiencia definitiva de gaming retro, hermosamente rediseñada para macOS con shaders Metal, RetroAchievements e interfaz nativa SwiftUI.">
+<meta name="twitter:image" content="https://juanchogithub.github.io/truchiemu/media/logo-icon.png">
+
+<!-- RSS -->
+<link rel="alternate" type="application/rss+xml" href="/truchiemu/feed.xml">
+
+<!-- Styles -->
+<link rel="stylesheet" href="/truchiemu/assets/css/main.css">
+<script src="/truchiemu/assets/js/main.js"></script>
+
+</head>
+<body>
+
+
+
+
+<header class="site-header">
+<div class="container">
+<div class="header-content">
+<a href="/truchiemu/es/" class="logo">
+<img src="/truchiemu/media/logo-icon.png" alt="TruchiEmu" width="32" height="32">
+<span>TruchiEmu</span>
+</a>
+
+<nav class="main-nav">
+<a href="/truchiemu/es/getting-started.html" class="nav-link">Primeros Pasos</a>
+<a href="/truchiemu/es/features.html" class="nav-link">Características</a>
+<a href="/truchiemu/es/troubleshooting.html" class="nav-link">Solución de Problemas</a>
+<a href="/truchiemu/es/development.html" class="nav-link">Desarrollo</a>
+</nav>
+
+<div class="header-actions">
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18">
+          <path d="M12 3v2m0 14v2m-8.485-.515l1.414-1.414m12.728-12.728l1.414-1.414M4.93 4.93l1.414 1.414m12.728 12.728l1.414 1.414M3 12h2m14 0h2m-9 4a4 4 0 100-8 4 4 0 000 8z"/>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18">
+          <path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+        </svg>
+      </button>
+      <div class="lang-switcher">
+        
+          <a href="/truchiemu/" class="lang-link">EN</a>
+          <span class="lang-link lang-active">ES</span>
+          <a href="/truchiemu/pt/" class="lang-link">PT</a>
+        
+      </div>
+<a href="https://github.com/JuanchoGithub/truchiemu" class="btn btn-outline" target="_blank">
+GitHub
+</a>
+</div>
+</div>
+</div>
+</header>
+<div class="search-overlay" id="search-overlay">
+<div class="search-container">
+<input type="text" id="search-input" placeholder="Buscar en la documentación..." autofocus>
+<button id="search-close" class="search-close">&times;</button>
+<div id="search-results"></div>
+</div>
+</div>
+
+
+<div class="site-container">
+
+
+
+
+
+<aside class="sidebar">
+<div class="sidebar-section">
+<h3>Primeros Pasos</h3>
+<ul class="sidebar-nav">
+<li><a href="/truchiemu/es/getting-started.html">Instalación</a></li>
+<li><a href="/truchiemu/es/getting-started.html#quick-start">Inicio Rápido</a></li>
+<li><a href="/truchiemu/es/getting-started.html#next-steps">Siguientes Pasos</a></li>
+</ul>
+</div>
+
+<div class="sidebar-section">
+<h3>Características Principales</h3>
+<ul class="sidebar-nav">
+<li><a href="/truchiemu/es/features/shaders.html">Shaders</a></li>
+<li><a href="/truchiemu/es/features/library.html">Biblioteca</a></li>
+<li><a href="/truchiemu/es/features/achievements.html">Logros</a></li>
+<li><a href="/truchiemu/es/features/save-states.html">Estados Guardados</a></li>
+<li><a href="/truchiemu/es/features/controllers.html">Controles</a></li>
+<li><a href="/truchiemu/es/features/cheats.html">Trucos</a></li>
+<li><a href="/truchiemu/es/features/themes.html">Temas y Apariencia</a></li>
+<li><a href="/truchiemu/es/features/analog-mouse.html">Ratón Analógico</a></li>
+<li><a href="/truchiemu/es/features/training-mode.html">Modo de Práctica</a></li>
+<li><a href="/truchiemu/es/features/move-lists.html">Listas de Movimientos</a></li>
+<li><a href="/truchiemu/es/features/notifications.html">Notificaciones</a></li>
+<li><a href="/truchiemu/es/features/genre-management.html">Gestión de Géneros</a></li>
+<li><a href="/truchiemu/es/features/updates.html">Verificador de Actualizaciones</a></li>
+</ul>
+</div>
+
+<div class="sidebar-section">
+<h3>Desarrollo</h3>
+<ul class="sidebar-nav">
+<li><a href="/truchiemu/es/development.html">Arquitectura</a></li>
+<li><a href="/truchiemu/es/dev/building.html">Compilación</a></li>
+<li><a href="/truchiemu/es/dev/contributing.html">Contribuir</a></li>
+<li><a href="/truchiemu/es/dreamcast-vmu-fix.html">Depuración de Guardados VMU de Dreamcast</a></li>
+<li><a href="/truchiemu/es/changelog.html">Registro de cambios</a></li>
+</ul>
+</div>
+
+<div class="sidebar-sticky-footer">
+<button id="search-toggle" class="btn btn-block">
+🔎 Buscar Docs
+</button>
+</div>
+</aside>
+
+
+
+<main class="main-content" id="content">
+<div class="content-wrapper">
+<div class="hero">
+<div class="container">
+<div class="hero-content">
+<img src="/truchiemu/media/logo-icon.png" alt="TruchiEmu" class="hero-logo">
+<h1>TruchiEmu</h1>
+<p class="hero-tagline">
+La experiencia definitiva de gaming retro, hermosamente rediseñada para macOS
+</p>
+<div class="hero-actions">
+<a href="/truchiemu/es/getting-started.html" class="btn btn-primary btn-lg">
+                Comenzar
+                </a>
+                <a href="/truchiemu/es/features.html" class="btn btn-secondary btn-lg">
+                Explorar Funciones
+                </a>
+</div>
+</div>
+
+<div class="hero-image">
+<img src="/truchiemu/media/hero-banner.jpg" alt="TruchiEmu en acción con efectos de shader" loading="lazy">
+</div>
+</div>
+</div>
+
+<!-- Features Grid -->
+<section class="section features-preview">
+<div class="container">
+<h2 class="section-title">¿Por qué TruchiEmu?</h2>
+<p class="section-subtitle">
+Un emulador moderno y nativo para macOS con funciones profesionales y visuales impresionantes.
+</p>
+
+<div class="features-grid">
+<div class="feature-card">
+<div class="feature-icon">🎮</div>
+<h3>Soporte Universal de Sistemas</h3>
+<p>Impulsado por libretro, TruchiEmu soporta prácticamente todo sistema de gaming con un core disponible, desde clásicos de 8 bits hasta consolas 3D complejas y máquinas arcade.</p>
+</div>
+
+
+<div class="feature-card">
+<div class="feature-icon">🎨</div>
+<h3>Interfaz Nativa Elegante</h3>
+<p>100% nativa macOS SwiftUI con animaciones fluidas, soporte para modo oscuro y una experiencia de usuario pulida que se siente como en casa en tu Mac.</p>
+</div>
+
+<div class="feature-card">
+<div class="feature-icon">🔮</div>
+<h3>Shaders Profesionales</h3>
+<p>14 shaders Metal integrados incluyendo CRT auténtico (Lottes, LiteCRT, Multipass), efectos LCD de portátiles (GB, GBC, GBA, PSP, NDS, 3DS) y filtros de escalado limpio.</p>
+</div>
+
+<div class="feature-card">
+<div class="feature-icon">🏆</div>
+<h3>RetroAchievements</h3>
+<p>Gana trofeos y compite en tablas de clasificación con integración completa de RetroAchievements, incluyendo modo hardcore para el desafío definitivo.</p>
+</div>
+
+<div class="feature-card">
+<div class="feature-icon">💾</div>
+<h3>Gestión de Estados de Guardado</h3>
+<p>Estados de guardado basados en slots intuitivos con gestión automática de guardados y herramientas de migración para actualizaciones sin interrupciones.</p>
+</div>
+
+<div class="feature-card">
+<div class="feature-icon">🎮</div>
+<h3>Soporte de Controladores</h3>
+<p>Soporte completo de gamepad con mapeo de controlador por sistema, presets de controladores populares (Xbox, PlayStation, MFi, Arcade Stick) y controles personalizables.</p>
+</div>
+
+<div class="feature-card">
+<div class="feature-icon">🖌️</div>
+<h3>Temas y Apariencia</h3>
+<p>16 temas de color acentuado seleccionados e inspirados en gaming&mdash;desde Samus hasta Doom&mdash;más selector de color personalizado, modos de apariencia claro/oscuro y superficies tintadas.</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Screenshot Carousel -->
+<section class="section screenshot-preview">
+<div class="container">
+<h2 class="section-title">Míralo en Acción</h2>
+<div class="carousel">
+<div class="carousel-item">
+<img src="/truchiemu/media/screenshots/library-grid.png" alt="Vista de Cuadrícula de Biblioteca">
+<h4>Explora Tu Colección</h4>
+<p>Biblioteca visualmente rica con carátulas y metadatos automáticos.</p>
+</div>
+
+<div class="carousel-item">
+<img src="/truchiemu/media/screenshots/game-detail.png" alt="Vista de Detalle del Juego">
+<h4>Detalles del Juego</h4>
+<p>Información completa para cada juego con opciones de juego.</p>
+</div>
+
+<div class="carousel-item">
+<img src="/truchiemu/media/screenshots/shader-picker.png" alt="Selector de Shaders">
+<h4>Selector de Shaders</h4>
+<p>Vista previa y personalización de shaders en tiempo real.</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Quick Stats -->
+<section class="section stats-preview">
+<div class="container">
+<div class="stats-grid">
+<div class="stat-item">
+<span class="stat-number">∞</span>
+<span class="stat-label">Sistemas Soportados</span>
+</div>
+
+<div class="stat-item">
+<span class="stat-number">14</span>
+<span class="stat-label">Presets de Shaders</span>
+</div>
+<div class="stat-item">
+<span class="stat-number">16+</span>
+<span class="stat-label">Temas de Color</span>
+</div>
+<div class="stat-item">
+<span class="stat-number">100%</span>
+<span class="stat-label">Nativo macOS</span>
+</div>
+<div class="stat-item">
+<span class="stat-number">1.0</span>
+<span class="stat-label">Versión de Lanzamiento</span>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Call to Action -->
+<section class="section cta-section">
+<div class="container">
+<h2>¿Listo para Jugar?</h2>
+<p>Comienza tu aventura de gaming retro en minutos con la configuración sin esfuerzo de TruchiEmu.</p>
+<div class="cta-actions">
+<a href="/truchiemu/es/getting-started.html" class="btn btn-primary btn-lg">
+                Comenzar Ahora
+                </a>
+                <a href="/truchiemu/es/features/shaders.html" class="btn btn-secondary btn-lg">
+                Aprende Sobre Shaders
+                </a>
+</div>
+</div>
+</section>
+
+</div>
+
+
+</main>
+</div>
+
+
+
+
+
+<footer class="site-footer">
+<div class="container">
+<div class="footer-content">
+<div class="footer-section">
+<h4>TruchiEmu</h4>
+<p>Documentación completa para el emulador definitivo de juegos retro en macOS</p>
+<div class="social-links">
+<a href="https://github.com/JuanchoGithub/truchiemu" target="_blank" aria-label="GitHub">
+GitHub
+</a>
+</div>
+</div>
+
+<div class="footer-section">
+<h4>Recursos</h4>
+<ul>
+<li><a href="/truchiemu/es/getting-started.html">Primeros Pasos</a></li>
+<li><a href="/truchiemu/es/features.html">Características</a></li>
+<li><a href="/truchiemu/es/troubleshooting.html">Solución de Problemas</a></li>
+<li><a href="/truchiemu/es/development.html">Desarrollo</a></li>
+</ul>
+</div>
+
+<div class="footer-section">
+<h4>Sistemas Compatibles</h4>
+<ul>
+<li><a href="/truchiemu/es/systems/nes.html">NES</a></li>
+<li><a href="/truchiemu/es/systems/snes.html">SNES</a></li>
+<li><a href="/truchiemu/es/systems/n64.html">N64</a></li>
+<li><a href="/truchiemu/es/systems/gba.html">GBA</a></li>
+<li><a href="/truchiemu/es/systems.html">Todos los Sistemas &rarr;</a></li>
+</ul>
+</div>
+
+<div class="footer-section">
+<h4>Proyecto</h4>
+<ul>
+<li><a href="https://github.com/JuanchoGithub/truchiemu/releases" target="_blank">Descargas</a></li>
+<li><a href="https://github.com/JuanchoGithub/truchiemu/issues" target="_blank">Problemas</a></li>
+<li><a href="/truchiemu/es/development.html">Contribuir</a></li>
+<li><a href="/truchiemu/es/license.html">Licencia</a></li>
+</ul>
+</div>
+</div>
+
+<div class="footer-bottom">
+<p>&copy; 2026 TruchiEmu Team. Built with Jekyll on GitHub Pages.</p>
+<p class="tiny-text">MIT License. Thanks to LibRetro and countless open-source contributors.</p>
+</div>
+</div>
+</footer>
+
+
+<div class="lightbox-overlay" id="lightbox">
+<button class="lightbox-close" id="lightbox-close" aria-label="Close">&times;</button>
+<img class="lightbox-image" id="lightbox-image" alt="">
+</div>
+</body>
+</html>

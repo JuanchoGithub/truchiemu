@@ -18,10 +18,10 @@ title: Cheat System - TruchiEmu Documentation
 
         <h3>Core Features</h3>
         <ul class="feature-list">
-            <li><strong>Multi-Format Support:</strong> Game Genie, Pro Action Replay, GameShark, and standard .cht files</li>
-            <li><strong>Cheat Database:</strong> Download pre-made cheat collections from the Libretro community database</li>
-            <li><strong>Auto-Activation:</strong> Cheats are automatically discovered and applied based on the loaded ROM</li>
-            <li><strong>Custom Cheat Entry:</strong> Manually add your own codes and descriptions</li>
+<li><strong>Multi-Format Support:</strong> Game Genie, Pro Action Replay, GameShark, and raw hex codes</li>
+<li><strong>Cheat Database:</strong> Download pre-made cheat collections from the <a href="https://github.com/libretro/libretro-database/tree/master/cht">libretro-database GitHub repository</a></li>
+<li><strong>Auto-Discovery:</strong> Cheats are automatically discovered and loaded based on the ROM. Previously enabled cheats retain their state; new cheats default to disabled.</li>
+<li><strong>Custom Cheat Entry:</strong> Manually add your own codes and descriptions</li>
         </ul>
 
         <h3>Supported Cheat Formats</h3>
@@ -42,7 +42,7 @@ title: Cheat System - TruchiEmu Documentation
             </li>
             <li>
                 <strong>Browse Cheat Database</strong>
-                <p>Use the search bar to find specific cheats or browse by category. Popular categories include Infinite Lives, Infinite Health, Level Select, Power-Ups, and Unlockables.</p>
+                <p>Use the search bar to find specific cheats or browse by category. Categories include Gameplay (infinite lives, health), Items & Equipment (weapons, power-ups), Debug & Testing (level select), and Custom Codes.</p>
             </li>
             <li>
                 <strong>Enable Cheats</strong>
@@ -55,7 +55,7 @@ title: Cheat System - TruchiEmu Documentation
             </li>
             <li>
                 <strong>Save Cheat Configuration</strong>
-                <p>Your cheat selections are automatically saved when you close the menu. Next time you load the game, previously enabled cheats will automatically reactivate.</p>
+                <p>Cheat selections are saved automatically whenever you toggle a cheat. They persist across app launches &mdash; next time you load the game, previously enabled cheats will automatically reactivate.</p>
             </li>
         </ol>
 
@@ -67,7 +67,7 @@ title: Cheat System - TruchiEmu Documentation
             </li>
             <li>
                 <strong>Enter Cheat Code</strong>
-                <p>Type or paste the cheat code into the code field. TruchiEmu validates codes in real-time and shows a green checkmark for valid formats.</p>
+                <p>Type or paste the cheat code into the code field. TruchiEmu automatically detects the format (Game Genie, Action Replay, GameShark, or raw hex) and parses it correctly.</p>
                 <img src="{{ '/media/screenshots/cheat-entry.png' | relative_url }}" alt="Cheat Code Entry">
             </li>
             <li>
@@ -100,7 +100,7 @@ title: Cheat System - TruchiEmu Documentation
             <div class="troubleshooting-item">
                 <h3>Cheat Database Not Loading</h3>
                 <p><strong>Symptom:</strong> Cheat database shows no cheats for supported games.</p>
-                <p><strong>Solution:</strong> Update cheat database from <code>Tools → Update Cheat Database</code>. Check internet connection for database download. Verify ROM hash matches known good dumps in database.</p>
+                <p><strong>Solution:</strong> Re-download cheats from the cheat settings or system-specific cheat download options. Check internet connection for database download. Cheat downloads use a hybrid strategy: bundled cheat zips shipped with the app are extracted first for instant availability, then only missing files are downloaded from the libretro repository.</p>
             </div>
         </div>
     </section>

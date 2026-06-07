@@ -18,9 +18,10 @@ title: Sistema de Cheats - Documentação do TruchiEmu
 
 <h3>Recursos Principais</h3>
 <ul class="feature-list">
-<li><strong>Suporte Multi-Formato:</strong> Game Genie, Pro Action Replay, GameShark e arquivos .cht padrão</li>
-<li><strong>Banco de Dados de Cheats:</strong> Baixe coleções de cheats pré-feitas do banco de dados da comunidade Libretro</li>
-<li><strong>Auto-Ativação:</strong> Cheats são descobertos e aplicados automaticamente com base na ROM carregada</li>
+<li><strong>Suporte Multi-Formato:</strong> Game Genie, Pro Action Replay, GameShark e códigos hex brutos</li>
+<li><strong>Banco de Dados de Cheats:</strong> Baixe coleções de cheats pré-feitas do <a href="https://github.com/libretro/libretro-database/tree/master/cht">repositório libretro-database no GitHub</a></li>
+<li><strong>Estratégia de Download Híbrida:</strong> Cheats são baixados por sistema com fallback para download individual de ROMs quando arquivos por sistema não estão disponíveis</li>
+<li><strong>Auto-Descoberta:</strong> Cheats são descobertos e carregados automaticamente com base na ROM carregada. Cheats ativados anteriormente mantêm seu estado; novos cheats são desativados por padrão.</li>
 <li><strong>Entrada Manual de Cheats:</strong> Adicione manualmente seus próprios códigos e descrições</li>
 </ul>
 
@@ -42,7 +43,7 @@ title: Sistema de Cheats - Documentação do TruchiEmu
 </li>
 <li>
 <strong>Navegue pelo Banco de Dados de Cheats</strong>
-<p>Use a barra de pesquisa para encontrar cheats específicos ou navegue por categoria. Categorias populares incluem Vidas Infinitas, Saúde Infinita, Seleção de Fase, Power-Ups e Desbloqueáveis.</p>
+<p>Use a barra de pesquisa para encontrar cheats específicos ou navegue por categoria. Categorias incluem Jogabilidade (vidas infinitas, saúde), Itens e Equipamentos (armas, power-ups), Depuração e Testes (seleção de fase) e Códigos Personalizados.</p>
 </li>
 <li>
 <strong>Ative Cheats</strong>
@@ -55,7 +56,7 @@ title: Sistema de Cheats - Documentação do TruchiEmu
 </li>
 <li>
 <strong>Salve a Configuração de Cheats</strong>
-<p>Suas seleções de cheats são salvas automaticamente ao fechar o menu. Na próxima vez que carregar o jogo, cheats ativados anteriormente serão reativados automaticamente.</p>
+<p>Suas seleções de cheats são salvas automaticamente ao ativar/desativar um cheat. Na próxima vez que carregar o jogo, cheats ativados anteriormente serão reativados automaticamente.</p>
 </li>
 </ol>
 
@@ -67,7 +68,7 @@ title: Sistema de Cheats - Documentação do TruchiEmu
 </li>
 <li>
 <strong>Digite o Código de Cheat</strong>
-<p>Digite ou cole o código de cheat no campo de código. O TruchiEmu valida os códigos em tempo real e mostra um sinal de verificação verde para formatos válidos.</p>
+<p>Digite ou cole o código de cheat no campo de código. O TruchiEmu detecta o formato automaticamente e analisa o código corretamente.</p>
 <img src="{{ '/media/screenshots/cheat-entry.png' | relative_url }}" alt="Entrada de Código de Cheat">
 </li>
 <li>
@@ -100,7 +101,7 @@ title: Sistema de Cheats - Documentação do TruchiEmu
 <div class="troubleshooting-item">
 <h3>Banco de Dados de Cheats Não Carrega</h3>
 <p><strong>Sintoma:</strong> O banco de dados de cheats não mostra cheats para jogos suportados.</p>
-<p><strong>Solução:</strong> Atualize o banco de dados de cheats em <code>Ferramentas → Atualizar Banco de Dados de Cheats</code>. Verifique a conexão com a internet para o download do banco de dados. Verifique se o hash da ROM corresponde a dumps bons conhecidos no banco de dados.</p>
+<p><strong>Solução:</strong> Re-baixe o banco de dados de cheats a partir das Configurações. Verifique a conexão com a internet para o download do banco de dados. Verifique se o hash da ROM corresponde a dumps bons conhecidos no banco de dados.</p>
 </div>
 </div>
 </section>

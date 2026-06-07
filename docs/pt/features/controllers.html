@@ -9,12 +9,12 @@ title: Suporte a Controles - Documentação do TruchiEmu
 
 <div class="feature-overview">
 <img src="{{ '/media/features/controllers-hero.png' | relative_url }}" alt="Visão Geral do Suporte a Controles" class="hero-image lightbox-trigger">
-<p class="lead">O TruchiEmu oferece suporte abrangente a controles com mapeamento automático, configurações por jogo, calibração avançada de deadzone e gravação de macros. Experimente gameplay autêntico com qualquer controle, de gamepads clássicos a joysticks de fliperada modernos, com remapeamento completo de botões e funcionalidade turbo.</p>
+<p class="lead">O TruchiEmu oferece suporte abrangente a controles com mapeamento automático, configurações por jogo e calibração avançada de deadzone. Experimente gameplay autêntico com qualquer controle, de gamepads clássicos a joysticks de fliperada modernos, com remapeamento completo de botões e funcionalidade turbo.</p>
 </div>
 
 <section id="service-explanation">
 <h2>Visão Geral do Serviço</h2>
-<p>O sistema de controles no TruchiEmu oferece suporte nativo para controles compatíveis com HID com auto-mapeamento inteligente baseado no dispositivo conectado. Nosso processamento avançado de entrada inclui calibração de deadzone individual por controle e ferramentas profissionais de remapeamento.</p>
+<p>O sistema de controles no TruchiEmu oferece suporte nativo para controles compatível com o framework Game Controller do macOS com auto-mapeamento inteligente baseado no dispositivo conectado. Nosso processamento avançado de entrada inclui calibração de zona morta por tipo de controlador e ferramentas profissionais de remapeamento.</p>
 
 <div class="architecture-diagram">
 <img src="{{ '/media/features/controller-architecture.png' | relative_url }}" alt="Arquitetura de Controles">
@@ -25,9 +25,9 @@ title: Suporte a Controles - Documentação do TruchiEmu
 <ul class="feature-list">
 <li><strong>Auto-Descoberta:</strong> Reconhecimento instantâneo de controles USB e Bluetooth</li>
 <li><strong>Mapeamento Inteligente:</strong> Mapeamento automático de botões com base no tipo de controle e sistema de jogo</li>
-<li><strong>Perfis por Controle:</strong> Configurações individuais para cada controle conectado</li>
-<li><strong>Calibração Avançada:</strong> Ajuste de deadzone por eixo, sensibilidade e curva de resposta</li>
-<li><strong>Suporte a Hotkeys:</strong> Mapeie botões do controle para funções do emulador</li>
+<li><strong>Mapeamento por Tipo de Controlador:</strong> Mapeamentos de botões armazenados por nome de fabricante do controlador e por sistema</li>
+<li><strong>Modo Mouse Analógico:</strong> Ajuste de zona morta e sensibilidade para usar gamepad como mouse em jogos DOS e ScummVM</li>
+<li><strong>Atalhos de Teclado:</strong> Atalhos de teclado do sistema para captura de entrada, save states e mais</li>
 </ul>
 </section>
 
@@ -46,7 +46,11 @@ title: Suporte a Controles - Documentação do TruchiEmu
 <ol class="setup-steps">
 <li>
 <strong>Mapeamento Personalizado de Botões</strong>
-<p>Vá para <code>Configurações → Controles → Mapeamento de Botões</code> e selecione seu controle. Clique em qualquer botão e pressione a entrada desejada para remapear. Salve como perfil para reutilização.</p>
+<p>Vá para <strong>Configurações → Controladores</strong>, selecione seu controlador e sistema, depois clique em qualquer botão na lista de mapeamento para remapear. Salve e carregue configurações de mapeamento nomeadas para reutilização (gamepads apenas).</p>
+</li>
+<li>
+<strong>Ícones de Tipo de Controlador</strong>
+<p>O TruchiEmu exibe ícones visuais de tipo de controlador na barra de ferramentas e configurações, facilitando a identificação de controladores Xbox, DualShock 4, DualSense, MFi e Arcade Stick. Outros controladores exibem um ícone HID genérico.</p>
 </li>
 </ol>
 </section>

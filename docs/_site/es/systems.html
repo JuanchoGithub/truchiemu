@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+
+
+<html lang="es">
+<head>
+
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistemas Soportados y Cores - Documentación de TruchiEmu</title>
+<meta name="description" content="Entendiendo cómo TruchiEmu gestiona la compatibilidad de sistemas y los cores de libretro.">
+<link rel="canonical" href="https://juanchogithub.github.io/truchiemu/es/systems">
+<meta name="generator" content="Jekyll 4.4.1">
+
+<!-- Open Graph -->
+  <meta property="og:title" content="Sistemas Soportados y Cores">
+  <meta property="og:description" content="Entendiendo cómo TruchiEmu gestiona la compatibilidad de sistemas y los cores de libretro.">
+<meta property="og:url" content="https://juanchogithub.github.io/truchiemu/es/systems">
+<meta property="og:site_name" content="Documentación de TruchiEmu">
+<meta property="og:type" content="article">
+<meta property="og:image" content="https://juanchogithub.github.io/truchiemu/media/logo-icon.png">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Sistemas Soportados y Cores">
+  <meta name="twitter:description" content="Entendiendo cómo TruchiEmu gestiona la compatibilidad de sistemas y los cores de libretro.">
+<meta name="twitter:image" content="https://juanchogithub.github.io/truchiemu/media/logo-icon.png">
+
+<!-- RSS -->
+<link rel="alternate" type="application/rss+xml" href="/truchiemu/feed.xml">
+
+<!-- Styles -->
+<link rel="stylesheet" href="/truchiemu/assets/css/main.css">
+<script src="/truchiemu/assets/js/main.js"></script>
+
+</head>
+<body>
+
+
+
+
+<header class="site-header">
+<div class="container">
+<div class="header-content">
+<a href="/truchiemu/es/" class="logo">
+<img src="/truchiemu/media/logo-icon.png" alt="TruchiEmu" width="32" height="32">
+<span>TruchiEmu</span>
+</a>
+
+<nav class="main-nav">
+<a href="/truchiemu/es/getting-started.html" class="nav-link">Primeros Pasos</a>
+<a href="/truchiemu/es/features.html" class="nav-link">Características</a>
+<a href="/truchiemu/es/troubleshooting.html" class="nav-link">Solución de Problemas</a>
+<a href="/truchiemu/es/development.html" class="nav-link">Desarrollo</a>
+</nav>
+
+<div class="header-actions">
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18">
+          <path d="M12 3v2m0 14v2m-8.485-.515l1.414-1.414m12.728-12.728l1.414-1.414M4.93 4.93l1.414 1.414m12.728 12.728l1.414 1.414M3 12h2m14 0h2m-9 4a4 4 0 100-8 4 4 0 000 8z"/>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18">
+          <path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+        </svg>
+      </button>
+      <div class="lang-switcher">
+        
+          <a href="/truchiemu/" class="lang-link">EN</a>
+          <span class="lang-link lang-active">ES</span>
+          <a href="/truchiemu/pt/" class="lang-link">PT</a>
+        
+      </div>
+<a href="https://github.com/JuanchoGithub/truchiemu" class="btn btn-outline" target="_blank">
+GitHub
+</a>
+</div>
+</div>
+</div>
+</header>
+<div class="search-overlay" id="search-overlay">
+<div class="search-container">
+<input type="text" id="search-input" placeholder="Buscar en la documentación..." autofocus>
+<button id="search-close" class="search-close">&times;</button>
+<div id="search-results"></div>
+</div>
+</div>
+
+
+<div class="site-container">
+
+
+
+
+
+<aside class="sidebar">
+<div class="sidebar-section">
+<h3>Primeros Pasos</h3>
+<ul class="sidebar-nav">
+<li><a href="/truchiemu/es/getting-started.html">Instalación</a></li>
+<li><a href="/truchiemu/es/getting-started.html#quick-start">Inicio Rápido</a></li>
+<li><a href="/truchiemu/es/getting-started.html#next-steps">Siguientes Pasos</a></li>
+</ul>
+</div>
+
+<div class="sidebar-section">
+<h3>Características Principales</h3>
+<ul class="sidebar-nav">
+<li><a href="/truchiemu/es/features/shaders.html">Shaders</a></li>
+<li><a href="/truchiemu/es/features/library.html">Biblioteca</a></li>
+<li><a href="/truchiemu/es/features/achievements.html">Logros</a></li>
+<li><a href="/truchiemu/es/features/save-states.html">Estados Guardados</a></li>
+<li><a href="/truchiemu/es/features/controllers.html">Controles</a></li>
+<li><a href="/truchiemu/es/features/cheats.html">Trucos</a></li>
+<li><a href="/truchiemu/es/features/themes.html">Temas y Apariencia</a></li>
+<li><a href="/truchiemu/es/features/analog-mouse.html">Ratón Analógico</a></li>
+<li><a href="/truchiemu/es/features/training-mode.html">Modo de Práctica</a></li>
+<li><a href="/truchiemu/es/features/move-lists.html">Listas de Movimientos</a></li>
+<li><a href="/truchiemu/es/features/notifications.html">Notificaciones</a></li>
+<li><a href="/truchiemu/es/features/genre-management.html">Gestión de Géneros</a></li>
+<li><a href="/truchiemu/es/features/updates.html">Verificador de Actualizaciones</a></li>
+</ul>
+</div>
+
+<div class="sidebar-section">
+<h3>Desarrollo</h3>
+<ul class="sidebar-nav">
+<li><a href="/truchiemu/es/development.html">Arquitectura</a></li>
+<li><a href="/truchiemu/es/dev/building.html">Compilación</a></li>
+<li><a href="/truchiemu/es/dev/contributing.html">Contribuir</a></li>
+<li><a href="/truchiemu/es/dreamcast-vmu-fix.html">Depuración de Guardados VMU de Dreamcast</a></li>
+<li><a href="/truchiemu/es/changelog.html">Registro de cambios</a></li>
+</ul>
+</div>
+
+<div class="sidebar-sticky-footer">
+<button id="search-toggle" class="btn btn-block">
+🔎 Buscar Docs
+</button>
+</div>
+</aside>
+
+
+
+<main class="main-content" id="content">
+<div class="content-wrapper">
+<section class="page-header">
+<div class="container">
+<h1>Sistemas y Compatibilidad</h1>
+<p class="lead">Soporte universal a través del poder de libretro</p>
+</div>
+</section>
+
+<nav class="toc">
+<div class="container">
+<h3>En Esta Página</h3>
+<ul>
+<li><a href="#universal-support">Soporte Universal</a></li>
+<li><a href="#core-management">Gestión de Cores</a></li>
+<li><a href="#bios-files">BIOS y Archivos de Sistema</a></li>
+<li><a href="#optimization">Consejos de Optimización</a></li>
+</ul>
+</div>
+</nav>
+
+<section id="universal-support" class="content-section">
+<div class="container">
+<h2>Soporte Universal</h2>
+<p>TruchiEmu está construido sobre la API de <strong>libretro</strong>, lo que significa que soporta una amplia gama de sistemas de gaming retro. Seis sistemas — NES, SNES, N64, DOS, ScummVM y Saturn — tienen runners dedicados con optimizaciones específicas por sistema. La mayoría de los otros cores de libretro funcionan con el runner predeterminado, aunque algunos pueden requerir BIOS o configuración manual.</p>
+
+<div class="info-box">
+<p><strong>La Regla General:</strong> Si existe un core de libretro para un sistema de gaming, TruchiEmu probablemente puede ejecutarlo. Esto incluye todo desde las primeras consolas de 8 bits hasta sistemas 3D más complejos y máquinas arcade. No todos los cores son igualmente compatibles — los sistemas con runners dedicados generalmente ofrecen la mejor experiencia.</p>
+</div>
+</div>
+</section>
+
+<section id="core-management" class="content-section">
+<div class="container">
+<h2>Gestión de Cores</h2>
+<p>Los cores son los motores de emulación que hacen el trabajo pesado. TruchiEmu facilita la gestión de estos motores sin salir de la aplicación.</p>
+
+<h3>El Descargador de Cores</h3>
+<p>No necesitas buscar archivos de core en internet. Usa el Descargador de Cores integrado para:</p>
+<ul class="feature-list">
+<li><strong>Descubrir:</strong> Explora una lista completa de cores disponibles. Tras la descarga, TruchiEmu asigna automáticamente cada core a sus sistemas compatibles.</li>
+<li><strong>Instalar:</strong> Instalación con un clic que gestiona la ubicación y configuración automáticamente.</li>
+<li><strong>Actualizar:</strong> Mantén tus motores de emulación al día con las últimas mejoras de la comunidad.</li>
+</ul>
+
+<h3>Elegir el Core Correcto</h3>
+<p>Algunos sistemas tienen múltiples cores disponibles, desde emuladores precisos por ciclos que priorizan la fidelidad hasta cores más rápidos optimizados para rendimiento. Puedes cambiar entre ellos en los detalles del juego o configuración del sistema para encontrar el mejor ajuste para tu hardware y preferencias:</p>
+<div class="comparison-table">
+<div class="comparison-column">
+<h4>Cores de Precisión</h4>
+<p>Priorizan emulación precisa por ciclos. Mejores para preservación y Macs de gama alta.</p>
+</div>
+<div class="comparison-column">
+<h4>Cores de Rendimiento</h4>
+<p>Priorizan velocidad y eficiencia. Mejores para hardware antiguo o títulos extremadamente exigentes.</p>
+</div>
+</div>
+</div>
+</section>
+
+<section id="bios-files" class="content-section">
+<div class="container">
+<h2>BIOS y Archivos de Sistema</h2>
+<p>Muchas consolas requieren un archivo BIOS (Basic Input/Output System) para arrancar. TruchiEmu elimina el dolor de cabeza de buscar BIOS manualmente.</p>
+
+<div class="success-box">
+<h3>BIOS Pre-Incluidas</h3>
+<p>TruchiEmu viene pre-empaquetado con archivos BIOS para la Sega Saturn (<code>sega_101.bin</code> y <code>mpr-17933.bin</code>), asegurando que estos sistemas funcionen justo después de la instalación. Para otros sistemas que requieren archivos BIOS (como PlayStation, 3DO y Dreamcast), necesitarás proporcionar los tuyos propios.</p>
+</div>
+
+<h3>BIOS Personalizada</h3>
+<p>Si tienes archivos BIOS de regiones específicas o necesitas actualizar un archivo de sistema, puedes colocarlos en <code>~/Library/Application Support/TruchiEmu/System/</code>. TruchiEmu priorizará tus archivos personalizados sobre las versiones incluidas.</p>
+</div>
+</section>
+
+<section id="optimization" class="content-section">
+<div class="container">
+<h2>Consejos de Optimización</h2>
+<p>Para sacar el máximo provecho de tu experiencia de emulación, considera estos ajustes:</p>
+<ul class="feature-list">
+<li><strong>Sobreescrituras de Core:</strong> Establece un core específico para un juego específico si el predeterminado no rinde bien.</li>
+<li><strong>Verificación de BIOS:</strong> Si un juego no arranca, asegúrate de que tu directorio de sistema esté correctamente mapeado en Configuración.</li>
+<li><strong>Aceleración por Hardware:</strong> TruchiEmu usa Metal para renderizado acelerado por hardware en todos los Mac. Asegúrate de que tus controladores gráficos estén actualizados para el mejor rendimiento en Apple Silicon.</li>
+</ul>
+</div>
+</section>
+
+</div>
+
+
+</main>
+</div>
+
+
+
+
+
+<footer class="site-footer">
+<div class="container">
+<div class="footer-content">
+<div class="footer-section">
+<h4>TruchiEmu</h4>
+<p>Documentación completa para el emulador definitivo de juegos retro en macOS</p>
+<div class="social-links">
+<a href="https://github.com/JuanchoGithub/truchiemu" target="_blank" aria-label="GitHub">
+GitHub
+</a>
+</div>
+</div>
+
+<div class="footer-section">
+<h4>Recursos</h4>
+<ul>
+<li><a href="/truchiemu/es/getting-started.html">Primeros Pasos</a></li>
+<li><a href="/truchiemu/es/features.html">Características</a></li>
+<li><a href="/truchiemu/es/troubleshooting.html">Solución de Problemas</a></li>
+<li><a href="/truchiemu/es/development.html">Desarrollo</a></li>
+</ul>
+</div>
+
+<div class="footer-section">
+<h4>Sistemas Compatibles</h4>
+<ul>
+<li><a href="/truchiemu/es/systems/nes.html">NES</a></li>
+<li><a href="/truchiemu/es/systems/snes.html">SNES</a></li>
+<li><a href="/truchiemu/es/systems/n64.html">N64</a></li>
+<li><a href="/truchiemu/es/systems/gba.html">GBA</a></li>
+<li><a href="/truchiemu/es/systems.html">Todos los Sistemas &rarr;</a></li>
+</ul>
+</div>
+
+<div class="footer-section">
+<h4>Proyecto</h4>
+<ul>
+<li><a href="https://github.com/JuanchoGithub/truchiemu/releases" target="_blank">Descargas</a></li>
+<li><a href="https://github.com/JuanchoGithub/truchiemu/issues" target="_blank">Problemas</a></li>
+<li><a href="/truchiemu/es/development.html">Contribuir</a></li>
+<li><a href="/truchiemu/es/license.html">Licencia</a></li>
+</ul>
+</div>
+</div>
+
+<div class="footer-bottom">
+<p>&copy; 2026 TruchiEmu Team. Built with Jekyll on GitHub Pages.</p>
+<p class="tiny-text">MIT License. Thanks to LibRetro and countless open-source contributors.</p>
+</div>
+</div>
+</footer>
+
+
+<div class="lightbox-overlay" id="lightbox">
+<button class="lightbox-close" id="lightbox-close" aria-label="Close">&times;</button>
+<img class="lightbox-image" id="lightbox-image" alt="">
+</div>
+</body>
+</html>

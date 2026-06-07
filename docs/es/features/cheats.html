@@ -18,10 +18,11 @@ title: Sistema de Trucos - Documentación de TruchiEmu
 
 <h3>Funciones Clave</h3>
 <ul class="feature-list">
-<li><strong>Soporte Multi-Formato:</strong> Game Genie, Pro Action Replay, GameShark y archivos .cht estándar</li>
-<li><strong>Base de Datos de Trucos:</strong> Descarga colecciones de trucos pre-hechas desde la base de datos de la comunidad Libretro</li>
-<li><strong>Auto-Activación:</strong> Los trucos se descubren y aplican automáticamente basados en la ROM cargada</li>
+<li><strong>Soporte Multi-Formato:</strong> Game Genie, Pro Action Replay, GameShark y códigos hex sin procesar</li>
+<li><strong>Base de Datos de Trucos:</strong> Descarga colecciones de trucos pre-hechas desde el <a href="https://github.com/libretro/libretro-database/tree/master/cht">repositorio GitHub de Libretro</a></li>
+<li><strong>Auto-Discovery:</strong> Los trucos se descubren y cargan automáticamente basados en la ROM cargada. Los trucos previamente habilitados conservan su estado; los nuevos aparecen deshabilitados por defecto</li>
 <li><strong>Entrada de Trucos Personalizados:</strong> Agrega manualmente tus propios códigos y descripciones</li>
+<li><strong>Estrategia de Descarga Híbrida:</strong> Los archivos .cht se descargan por sistema según sea necesario, con caché local para acceso sin conexión</li>
 </ul>
 
 <h3>Formatos de Trucos Soportados</h3>
@@ -42,7 +43,7 @@ title: Sistema de Trucos - Documentación de TruchiEmu
 </li>
 <li>
 <strong>Explorar la Base de Datos de Trucos</strong>
-<p>Usa la barra de búsqueda para encontrar trucos específicos o explora por categoría. Categorías populares incluyen Vidas Infinitas, Salud Infinita, Selección de Nivel, Power-Ups y Desbloqueables.</p>
+<p>Usa la barra de búsqueda para encontrar trucos específicos o explora por categoría. Categorías populares incluyen Jugabilidad (vidas infinitas, salud), Objetos y Equipamiento (armas, power-ups), Depuración y Pruebas (selección de nivel) y Códigos Personalizados.</p>
 </li>
 <li>
 <strong>Habilitar Trucos</strong>
@@ -55,7 +56,7 @@ title: Sistema de Trucos - Documentación de TruchiEmu
 </li>
 <li>
 <strong>Guardar Configuración de Trucos</strong>
-<p>Tus selecciones de trucos se guardan automáticamente cuando cierras el menú. La próxima vez que cargues el juego, los trucos previamente habilitados se reactivarán automáticamente.</p>
+<p>Tus selecciones de trucos se guardan automáticamente al activar/desactivar un cheat. La próxima vez que cargues el juego, los trucos previamente habilitados se reactivarán automáticamente.</p>
 </li>
 </ol>
 
@@ -67,7 +68,7 @@ title: Sistema de Trucos - Documentación de TruchiEmu
 </li>
 <li>
 <strong>Ingresar Código de Truco</strong>
-<p>Escribe o pega el código del truco en el campo de código. TruchiEmu valida los códigos en tiempo real y muestra una marca de verificación verde para formatos válidos.</p>
+<p>Escribe o pega el código del truco en el campo de código. TruchiEmu detecta automáticamente el formato y lo analiza correctamente.</p>
 <img src="{{ '/media/screenshots/cheat-entry.png' | relative_url }}" alt="Entrada de Código de Truco">
 </li>
 <li>
@@ -99,7 +100,7 @@ title: Sistema de Trucos - Documentación de TruchiEmu
 <div class="troubleshooting-item">
 <h3>Base de Datos de Trucos No Carga</h3>
 <p><strong>Síntoma:</strong> La base de datos de trucos no muestra trucos para juegos soportados.</p>
-<p><strong>Solución:</strong> Actualiza la base de datos de trucos desde <code>Herramientas → Actualizar Base de Datos de Trucos</code>. Verifica la conexión a internet para la descarga de la base de datos. Verifica que el hash de la ROM coincida con volcados buenos conocidos en la base de datos.</p>
+<p><strong>Solución:</strong> Re-descarga la base de datos de trucos desde la configuración. Verifica la conexión a internet para la descarga de la base de datos. Verifica que el hash de la ROM coincida con volcados buenos conocidos en la base de datos.</p>
 </div>
 </div>
 </section>

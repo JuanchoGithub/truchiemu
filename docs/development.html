@@ -143,39 +143,11 @@ xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug b
             </tbody>
         </table>
 
-        <h3>Core Configuration Profiles</h3>
-        <div class="config-examples">
-            <div class="config-example">
-                <h4>Performance Mode</h4>
-                <p>Lower accuracy, higher speed — ideal for lower-end hardware or fast-paced action games.</p>
-                <ul>
-                    <li>Reduced audio latency</li>
-                    <li>Frame skipping if needed</li>
-                    <li>Lower internal resolution</li>
-                </ul>
-            </div>
-            <div class="config-example">
-                <h4>Balanced Mode</h4>
-                <p>Good balance of accuracy and performance — suitable for most users.</p>
-                <ul>
-                    <li>Standard settings</li>
-                    <li>Most accurate defaults</li>
-                    <li>Automatic frame delay</li>
-                </ul>
-            </div>
-            <div class="config-example">
-                <h4>Accuracy Mode</h4>
-                <p>Cycle-accurate emulation — best for preservation, development, and high-end hardware.</p>
-                <ul>
-                    <li>Cycle-accurate emulation</li>
-                    <li>High-resolution rendering</li>
-                    <li>Perfect synchronization</li>
-                </ul>
-            </div>
-        </div>
+<h3>Core Options</h3>
+  <p>Each core exposes configurable options (video, audio, system-specific settings) parsed by <code>CoreOptionsManager</code>. Users can set overrides at multiple levels with increasing priority: core default → app default → app system default → system override → game override. Override values are persisted as <code>.cfg</code> files in <code>TruchiEmu/CoreOptions/</code>. See the <a href="{{ '/features/cheats.html' | relative_url }}">Core Options</a> documentation for the full override hierarchy.</p>
 
-        <h3>Core Management</h3>
-        <p>The integrated Core Downloader provides one-click install, update, and rollback for all cores. Per-core options include bias configuration (accuracy vs. speed), video and audio settings, and saveable configuration profiles. The Swift ↔ ObjC bridge for core communication lives in <code>LibretroBridge.mm</code> / <code>LibretroBridgeSwift.swift</code>.</p>
+  <h3>Core Management</h3>
+  <p>The integrated Core Downloader provides one-click install and update for all cores. Core options can be configured per-core, per-system, and per-game. The Swift ↔ ObjC bridge for core communication lives in <code>LibretroBridge.mm</code> / <code>LibretroBridgeSwift.swift</code>.</p>
 
         <h3>Swift ↔ ObjC Bridge</h3>
         <p>The emulation engine is written in Objective-C++/C for direct libretro API access. Swift code communicates with it through <code>LibretroBridge.mm</code> / <code>LibretroBridgeSwift.swift</code>, with symbols exposed through <code>TruchiEmu-Bridging-Header.h</code>.</p>
@@ -196,16 +168,15 @@ xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug b
 
         <h3>Key Components</h3>
         <ul class="feature-list">
-            <li><strong>Shader Compiler:</strong> Runtime compilation of <code>.metal</code> shader files with error handling and fallback</li>
-            <li><strong>Parameter System:</strong> Real-time adjustment of shader uniforms via SwiftUI controls</li>
-            <li><strong>Fallback System:</strong> Automatic degradation to simpler shaders if compilation fails on the target GPU</li>
+<li><strong>Shader Compiler:</strong> Runtime compilation of <code>.metal</code> shader files with error handling</li>
+<li><strong>Parameter System:</strong> Real-time adjustment of shader uniforms via SwiftUI controls</li>
         </ul>
 
         <h3>Shader Files</h3>
         <p>Metal shaders live in <code>TruchiEmu/Core/Shaders/</code>. The <code>slang/</code>, <code>internal/</code>, and <code>all_shaders.metal</code> directories are excluded from the Xcode build — these are runtime-loaded resources from <code>TruchiEmu_Resources/core_shaders/</code>.</p>
 
         <h3>Performance Characteristics</h3>
-        <p>Passthrough, Scale Smooth, and Vignette have minimal GPU impact. CRT shaders (Multipass, Lottes) and LCD simulations use more GPU resources. The system auto-selects fallbacks on lower-end hardware.</p>
+        <p>Passthrough, Scale Smooth, and Vignette have minimal GPU impact. CRT shaders (Multipass, Lottes) and LCD simulations use more GPU resources.</p>
     </div>
 </section>
 
@@ -226,7 +197,7 @@ xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug b
         </div>
 
         <ul class="feature-list">
-            <li><strong>AccentColorTheme</strong> — Enum with 17 cases (plus <code>.custom</code>). Each defines accent, dimmed (84%), dark (70%), and secondary colors for light and dark modes. Includes a <code>migratedRawValue()</code> system for renamed themes.</li>
+            <li><strong>AccentColorTheme</strong> — Enum with 16 curated cases plus <code>.custom</code> (17 total). Each defines accent, dimmed (84%), dark (70%), and secondary colors for light and dark modes. Includes a <code>migratedRawValue()</code> system for renamed themes.</li>
             <li><strong>ThemeManager</strong> — Singleton <code>@MainActor ObservableObject</code> that owns current theme, appearance mode, custom accent color, toolbar accent toggle, and tinted surfaces toggle. Persists all state via <code>AppSettings</code> (SwiftData).</li>
             <li><strong>AppColors</strong> — Static semantic color tokens in <code>DesignSystem.swift</code> that views consume. Auto-resolves via <code>NSApp.effectiveAppearance</code>. Preview-safe <code>*ForScheme</code> variants available.</li>
             <li><strong>App Restart</strong> — Theme changes call <code>ThemeManager.relaunchApp()</code>, spawning a new process and terminating the current one. The settings UI enforces this with confirmation dialogs and unsaved-change interception.</li>
@@ -249,27 +220,26 @@ xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug b
 
 <section id="cli" class="content-section">
     <div class="container">
-        <h2>CLI Reference</h2>
-        <p>TruchiEmu provides a command-line interface for power users to launch games and manage the application externally. Handled by <code>CLIManager</code> and <code>CLILauncher</code> in the Services layer.</p>
+  <h2>CLI Reference</h2>
+  <p>TruchiEmu provides a command-line interface for launching games directly from the terminal. Handled by <code>CLIManager</code> and <code>CLILauncher</code> in the Services layer.</p>
 
-        <div class="code-box">
-            <h4>Launch a ROM</h4>
-            <pre><code>./TruchiEmu --launch "/path/to/game.nes"</code></pre>
-        </div>
-        <p>The CLI supports integration with macOS Shortcuts, third-party launchers, and automation workflows.</p>
+  <div class="code-box">
+  <h4>Launch a ROM</h4>
+  <pre><code>./TruchiEmu "/path/to/game.nes"</code></pre>
+  </div>
     </div>
 </section>
 
 <section id="testing" class="content-section">
     <div class="container">
-        <h2>Testing & QA</h2>
-        <p>Tests live in <code>TruchiEmuTests/</code> and cover critical services: ROM identification, DAT prepopulation, LaunchBox database integration, and more.</p>
-
-        <div class="code-box">
-            <h4>Run Tests via CLI</h4>
-            <pre><code>xcodebuild test -scheme TruchiEmuTests -destination 'platform=macOS'</code></pre>
-        </div>
-        <p>The test target links the SwiftData framework. Some tests require network access for remote API calls.</p>
+  <h2>Testing & QA</h2>
+  <p>No test target currently exists in the project. When adding tests:</p>
+  <ol>
+  <li>Create a test target in <code>project.yml</code> and run <code>xcodegen generate</code></li>
+  <li>Add test files under <code>TruchiEmuTests/</code></li>
+  <li>Link the <code>SwiftData</code> framework in the test target</li>
+  <li>Some tests may require network access (LaunchBox, thumbnail services)</li>
+  </ol>
     </div>
 </section>
 

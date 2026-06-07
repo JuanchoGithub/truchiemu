@@ -14,7 +14,7 @@ title: Save State System - TruchiEmu Documentation
 
     <section id="service-explanation">
         <h2>Service Overview</h2>
-        <p>The Save State system captures the complete emulator state (RAM, CPU registers, GPU state) so you can save and restore gameplay at any moment. Save states are managed through the game window interface.</p>
+        <p>The Save State system captures the emulator's internal state (RAM, CPU registers, and core-specific data) so you can save and restore gameplay at any moment. Not all cores support save states. Save states are managed through the game window interface.</p>
         
         <div class="architecture-diagram">
             <img src="{{ '/media/features/save-state-architecture.png' | relative_url }}" alt="Save State Architecture">
@@ -22,12 +22,17 @@ title: Save State System - TruchiEmu Documentation
         </div>
 
         <h3>Core Features</h3>
-        <ul class="feature-list">
-            <li><strong>Instant Captures:</strong> Save and load at any point during gameplay</li>
-            <li><strong>Slot Banking:</strong> Organize saves into multiple slots for different playthroughs</li>
-            <li><strong>Automatic Naming:</strong> Save states are organized by game and timestamp</li>
-            <li><strong>Progressive Save States:</strong> Enhanced save state management with progressive slot banking for multiple playthroughs</li>
-        </ul>
+<ul class="feature-list">
+<li><strong>Instant Captures:</strong> Save and load at any point during gameplay</li>
+<li><strong>Slot Banking:</strong> 10 numbered save slots (0&ndash;9) plus an auto-save slot (load-only)</li>
+<li><strong>Automatic Naming:</strong> Save states are organized by game and timestamp</li>
+<li><strong>Thumbnail Previews:</strong> Each save state captures a 320&times;240 PNG screenshot for visual browsing</li>
+<li><strong>Progressive Save States:</strong> When enabled, each slot maintains a rotating history of up to 5 versions (default: 3). Disabled by default.</li>
+<li><strong>LZ4 Compression:</strong> Save states can be compressed using LZ4 (enabled by default). Compressed files use a TCS2 magic header.</li>
+<li><strong>Undo Load:</strong> After loading a save state, press <code>Cmd+Z</code> to undo and return to the state before the load</li>
+<li><strong>Auto-Save on Exit:</strong> Saves to the auto-save slot when closing a game (disabled by default)</li>
+<li><strong>Auto-Load on Start:</strong> Loads the auto-save slot on game launch (disabled by default)</li>
+</ul>
 
         <p>For implementation details, see the <a href="{{ '/development.html' | relative_url }}">Developer Guide</a>.</p>
     </section>
@@ -60,7 +65,7 @@ title: Save State System - TruchiEmu Documentation
         <div class="related-services">
             <div class="service-card">
                 <h3><a href="{{ '/features/achievements.html' | relative_url }}">RetroAchievements</a></h3>
-                <p>Understand how save state usage affects achievement eligibility in Hardcore mode.</p>
+                <p>When RetroAchievements Hardcore Mode is active, save states, rewind, slow motion, and cheats are completely blocked.</p>
             </div>
             
             <div class="service-card">
@@ -70,7 +75,7 @@ title: Save State System - TruchiEmu Documentation
             
             <div class="service-card">
                 <h3><a href="{{ '/features/library.html' | relative_url }}">Game Library</a></h3>
-                <p>Save states are accessible from within the game library view.</p>
+                <p>Save states can be viewed and managed from the game detail view, accessible by selecting a game in the library.</p>
             </div>
         </div>
     </section>

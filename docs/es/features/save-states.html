@@ -14,7 +14,7 @@ title: Sistema de Estados de Guardado - Documentación de TruchiEmu
 
 <section id="service-explanation">
 <h2>Panorama del Servicio</h2>
-<p>El sistema de Estados de Guardado captura el estado completo del emulador (RAM, registros de CPU, estado de GPU) para que puedas guardar y restaurar el juego en cualquier momento. Los estados de guardado se gestionan a través de la interfaz de la ventana del juego.</p>
+<p>El sistema de Estados de Guardado captura el estado interno del emulador (RAM, registros de CPU y datos específicos del core). No todos los cores soportan save states. Los estados de guardado se gestionan a través de la interfaz de la ventana del juego.</p>
 
 <div class="architecture-diagram">
 <img src="{{ '/media/features/save-state-architecture.png' | relative_url }}" alt="Arquitectura de Estados de Guardado">
@@ -24,7 +24,13 @@ title: Sistema de Estados de Guardado - Documentación de TruchiEmu
 <h3>Funciones Clave</h3>
 <ul class="feature-list">
 <li><strong>Capturas Instantáneas:</strong> Guarda y carga en cualquier punto durante el juego</li>
-<li><strong>Banca de Slots:</strong> Organiza guardados en múltiples slots para diferentes partidas</li>
+<li><strong>Banca de Slots:</strong> 10 slots numerados (0–9) más un slot de auto-guardado (solo carga)</li>
+<li><strong>Previsualizaciones en Miniatura:</strong> Cada save state captura una captura de pantalla PNG de 320×240 para navegación visual</li>
+<li><strong>Estados de Guardado Progresivos:</strong> Cuando está habilitado, cada slot mantiene un historial rotativo de hasta 5 versiones (predeterminado: 3). Desactivado por defecto.</li>
+<li><strong>Compresión LZ4:</strong> Los save states pueden comprimirse usando LZ4 (activado por defecto). Los archivos comprimidos usan un encabezado mágico TCS2.</li>
+<li><strong>Deshacer Carga:</strong> Después de cargar un save state, presiona <code>Cmd+Z</code> para deshacer y volver al estado anterior a la carga</li>
+<li><strong>Auto-Guardar al Salir:</strong> Guarda en el slot de auto-guardado al cerrar un juego (desactivado por defecto)</li>
+<li><strong>Auto-Cargar al Iniciar:</strong> Carga el slot de auto-guardado al lanzar un juego (desactivado por defecto)</li>
 <li><strong>Nombrado Automático:</strong> Los estados de guardado se organizan por juego y marca de tiempo</li>
 </ul>
 
@@ -59,7 +65,7 @@ title: Sistema de Estados de Guardado - Documentación de TruchiEmu
 <div class="related-services">
 <div class="service-card">
 <h3><a href="{{ '/es/features/achievements.html' | relative_url }}">RetroAchievements</a></h3>
-<p>Entiende cómo el uso de estados de guardado afecta la elegibilidad de logros en el modo Hardcore.</p>
+<p>En el modo Hardcore, los save states, rebobinado, cámara lenta y cheats están completamente bloqueados.</p>
 </div>
 
 <div class="service-card">
@@ -69,7 +75,7 @@ title: Sistema de Estados de Guardado - Documentación de TruchiEmu
 
 <div class="service-card">
 <h3><a href="{{ '/es/features/library.html' | relative_url }}">Biblioteca de Juegos</a></h3>
-<p>Los estados de guardado son accesibles desde la vista de la biblioteca de juegos.</p>
+<p>Los estados de guardado se pueden ver y gestionar desde la vista de detalles del juego, accesible seleccionando un juego en la biblioteca.</p>
 </div>
 </div>
 </section>

@@ -405,7 +405,7 @@ description: Interactive visualization of application packages, components, and 
       <canvas id="flowCanvas"></canvas>
       <div class="flow-overlay">
         <div class="flow-title" id="flowTitle">Select a workflow</div>
-        <div class="flow-progress" id="flowProgress">Paso 0 de 0</div>
+        <div class="flow-progress" id="flowProgress">Step 0 of 0</div>
       </div>
       <div class="canvas-tooltip" id="tooltip"></div>
     </div>
@@ -559,7 +559,7 @@ description: Interactive visualization of application packages, components, and 
         steps: [
           { from: "features:settings", to: "services:ControllerService", action: "Opens controller section." },
           { from: "services:ControllerService", to: "services:CoreOverrideService", action: "Loads core config." },
-          { from: "services:ControllerService", to: "shared:SettingsRepository", action: "Saves preferences." },
+          { from: "services:ControllerService", to: "shared:AppSettings", action: "Saves preferences." },
           { from: "features:settings", to: "core", action: "Sends mappings to core in real-time." }
         ]
       }

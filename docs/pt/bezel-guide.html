@@ -46,7 +46,7 @@ description: Como usar e personalizar bezels para melhorar os visuais do seu ret
 </div>
 <div class="step">
 <h4>2. Navegue pelos Recursos</h4>
-<p>Explore os bezels disponíveis. Você pode filtrar por sistema ou pesquisar por temas específicos.</p>
+<p>Explore os bezels disponíveis. Os bezels estão organizados por sistema, e você pode pesquisar por temas específicos.</p>
 </div>
 <div class="step">
 <h4>3. Aplique e Baixe</h4>
@@ -59,11 +59,13 @@ description: Como usar e personalizar bezels para melhorar os visuais do seu ret
 <section id="automatic-mapping" class="content-section">
 <div class="container">
 <h2>Mapeamento Automático</h2>
-<p>Para economizar seu tempo, o TruchiEmu usa um sistema de mapeamento inteligente. Ao iniciar um jogo, o aplicativo sugere automaticamente bezels que correspondem a:</p>
+<p>Para economizar seu tempo, o TruchiEmu usa uma cascata de resolução por nome para encontrar o bezel mais adequado automaticamente. Ao iniciar um jogo, o sistema tenta cada nível em sequência:</p>
 <ul class="feature-list">
-<li><strong>Tipo de Sistema:</strong> Um jogo de NES sugerirá bezels com tema de NES.</li>
-<li><strong>Proporção de Tela:</strong> O bezel escolhido corresponderá à resolução interna do core.</li>
-<li><strong>Tema do Jogo:</strong> Em alguns casos, bezels específicos são mapeados a títulos específicos para máxima imersão.</li>
+<li><strong>Bezel Selecionado pelo Usuário:</strong> Se você definiu manualmente um bezel para este jogo, ele é sempre usado primeiro.</li>
+<li><strong>Correspondência Exata de Nome:</strong> O sistema busca um bezel cujo nome de arquivo corresponda exatamente ao nome da ROM.</li>
+<li><strong>Nome Limpo:</strong> Se não houver correspondência exata, o sistema remove caracteres especiais e sufixos do nome da ROM e tenta novamente.</li>
+<li><strong>Correspondência Aproximada:</strong> Uma busca fuzzy tenta encontrar o melhor bezel com base em similaridade parcial do nome.</li>
+<li><strong>Sem Bezel:</strong> Se nenhuma correspondência for encontrada, o jogo é exibido sem bezel.</li>
 </ul>
 </div>
 </section>
@@ -71,21 +73,18 @@ description: Como usar e personalizar bezels para melhorar os visuais do seu ret
 <section id="customization" class="content-section">
 <div class="container">
 <h2>Ajustando Seu Enquadramento</h2>
-<p>Como cada monitor e resolução é diferente, o TruchiEmu oferece ferramentas para garantir que sua janela de jogo se encaixe perfeitamente ao bezel.</p>
+<p>O TruchiEmu ajusta automaticamente a área do jogo para se encaixar no bezel selecionado. Bezels são projetados para proporções de tela padrão (4:3 para sistemas horizontais, 3:4 para sistemas verticais) e o enquadramento é calculado automaticamente para melhor ajuste.</p>
 
-<div class="feature-grid">
-<div class="feature-card">
-<h4>Posicionamento</h4>
-<p>Ajuste o deslocamento X e Y da tela do jogo para centralizá-la exatamente dentro da arte do bezel.</p>
+<div class="info-box">
+<p><strong>Opção "Nenhum":</strong> Selecione "Nenhum" a qualquer momento para desativar bezels e exibir o jogo em tela cheia sem moldura.</p>
 </div>
-<div class="feature-card">
-<h4>Escala</h4>
-<p>Aumente ou diminua a janela do jogo para garantir que ela não se sobreponha às bordas do bezel ou deixe espaços indesejados.</p>
+
+<div class="info-box">
+<p><strong>Bezels Personalizados:</strong> Importe seus próprios arquivos de imagem de bezel para usar molduras personalizadas que não estão na coleção integrada.</p>
 </div>
-<div class="feature-card">
-<h4>Visualização em Tempo Real</h4>
-<p>Todos os ajustes são refletidos instantaneamente, permitindo que você aperfeiçoe sua configuração pixel a pixel.</p>
-</div>
+
+<div class="info-box">
+<p><strong>Fonte de Download:</strong> Bezels adicionais podem ser baixados do <a href="https://github.com/libretro/bezel-project">repositório Bezel Project no GitHub</a>.</p>
 </div>
 </div>
 </section>

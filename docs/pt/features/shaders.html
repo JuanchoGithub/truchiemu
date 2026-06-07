@@ -23,10 +23,13 @@ title: Sistema de Shaders - Documentação do TruchiEmu
 <h3>Recursos Principais</h3>
 <ul class="feature-list">
 <li><strong>Processamento em Tempo Real:</strong> Todos os shaders executam na GPU com latência sub-milissegundo</li>
-<li><strong>Simulação CRT:</strong> Efeitos autênticos de brilho de fósforo, scanlines e curvatura</li>
-<li><strong>Algoritmos de Escala:</strong> xBRZ, HQx e escala inteira personalizada com preservação de proporção</li>
-<li><strong>Melhoria de Cores:</strong> Suporte a LUT, correção de cores e mapeamento de tom HDR</li>
-<li><strong>Otimização de Desempenho:</strong> Fallback automático para shaders mais simples em hardware menos potente</li>
+<li><strong>Simulação CRT:</strong> Efeitos autênticos de brilho de fósforo, scanlines e curvatura (CRT Lottes, CRT Classic, Lite CRT, CRT Multipass)</li>
+<li><strong>Simulação LCD:</strong> Displays de portáteis fiéis à época para Game Boy, GBA, PSP, NDS, 3DS e Dot Matrix</li>
+<li><strong>Algoritmos de Escala:</strong> Sharp Bilinear e Smooth Upscale (ScaleFX) com preservação de proporção</li>
+<li><strong>Melhoria de Cores:</strong> Melhoria de cor, correção de matriz de gamut e controles de tinte por preset</li>
+<li><strong>Otimização de Desempenho:</strong> Shaders leves (Lite CRT, Sharp Bilinear) disponíveis para hardware menos potente</li>
+<li><strong>Presets Personalizados:</strong> Salve, exporte e importe seus próprios presets <code>.truchishader</code> com parâmetros ajustados</li>
+<li><strong>Recomendações por Sistema:</strong> Cada preset tem associações de sistema recomendadas exibidas na interface</li>
 </ul>
 
 <h3>Nota sobre Desempenho</h3>
@@ -40,12 +43,19 @@ title: Sistema de Shaders - Documentação do TruchiEmu
 <ol class="setup-steps">
 <li>
 <strong>Acesse as Configurações de Shaders</strong>
-<p>Navegue até <code>Configurações → Vídeo → Shaders</code> na barra de menu do TruchiEmu. O painel de shaders exibirá presets disponíveis e shaders personalizados.</p>
+<p>Abra o Editor de Shaders pela barra de ferramentas da janela de jogo, ou escolha um preset rápido em <code>Configurações → Vídeo → Shaders</code>. O editor completo é um painel flutuante com busca, abas de categorias, controles deslizantes de parâmetros, e opções de salvamento/exportação.</p>
 <img src="{{ '/media/screenshots/shader-settings.png' | relative_url }}" alt="Painel de Configurações de Shaders">
 </li>
 <li>
 <strong>Selecione um Preset</strong>
-<p>Escolha entre presets integrados como "CRT-Consumer", "LCD-Sharp" ou "Original Pixel". Cada preset inclui combinações de shaders pré-configuradas otimizadas para diferentes tipos de tela.</p>
+<p>Escolha entre 14 presets integrados organizados por categoria:</p>
+<ul>
+<li><strong>CRT:</strong> CRT Lottes, CRT Classic, Lite CRT, CRT Multipass</li>
+<li><strong>LCD:</strong> 8b Game Boy, 8b Game Boy Color, GBA (Advanced LCD), PSP (Advanced LCD), NDS (Advanced LCD), 3DS (Advanced LCD), Dot Matrix LCD</li>
+<li><strong>Suavização:</strong> Sharp Bilinear, Smooth Upscale (ScaleFX)</li>
+<li><strong>Personalizado:</strong> Sem Shader (passthrough)</li>
+</ul>
+<p>Cada preset inclui parâmetros de shader pré-configurados otimizados para diferentes tipos de tela.</p>
 </li>
 <li>
 <strong>Ajuste os Parâmetros do Shader</strong>

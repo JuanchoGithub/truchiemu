@@ -31,7 +31,7 @@ description: Common issues and solutions for TruchiEmu - installation, performan
 
         <h3>App Crashes on Launch</h3>
         <p><strong>Symptom:</strong> TruchiEmu crashes immediately after launching.</p>
-        <p><strong>Solution:</strong> Verify your macOS version is 14.0 (Sonoma) or later. Use the built-in <strong>Environment Diagnostics</strong> tool in Settings to check for hardware compatibility issues. If the app won't open at all, try deleting the preferences file at <code>~/Library/Preferences/com.truchiemu.plist</code>.</p>
+        <p><strong>Solution:</strong> Verify your macOS version is 14.0 (Sonoma) or later. If the app won't open at all, try deleting the preferences file at <code>~/Library/Preferences/com.truchiemu.plist</code>.</p>
 
         <h3>Missing Dependencies</h3>
         <p><strong>Symptom:</strong> Error messages about missing libraries or frameworks when building from source.</p>
@@ -41,25 +41,24 @@ description: Common issues and solutions for TruchiEmu - installation, performan
     <section id="performance">
         <h2>Performance Issues</h2>
 
-        <h3>Low Frame Rate / Stuttering</h3>
-        <p><strong>Symptom:</strong> Games run below full speed or have frequent stutters.</p>
-        <p><strong>Solution:</strong> Try these steps in order:</p>
-        <ol>
-            <li>Reduce shader complexity or use Passthrough shader</li>
-            <li>Lower internal resolution scaling (for 3D systems like N64, PSP)</li>
-            <li>Increase audio buffer to 128-256ms</li>
-            <li>Enable frame skipping (1-2 frames max)</li>
-            <li>Close other applications to free system resources</li>
-            <li>For N64: try a different graphics plugin (GLideN64 vs Angrylion)</li>
-        </ol>
+<h3>Low Frame Rate / Stuttering</h3>
+<p><strong>Symptom:</strong> Games run below full speed or have frequent stutters.</p>
+<p><strong>Solution:</strong> Try these steps in order:</p>
+<ol>
+<li>Reduce shader complexity or use Passthrough shader</li>
+<li>Lower internal resolution scaling (for 3D systems like N64)</li>
+<li>Increase audio buffer in core options</li>
+<li>Close other applications to free system resources</li>
+<li>Try a different core for the system (e.g., snes9x instead of bsnes for SNES)</li>
+</ol>
 
-        <h3>Audio Crackling or Popping</h3>
-        <p><strong>Symptom:</strong> Distorted audio, especially during scene transitions or complex audio sequences.</p>
-        <p><strong>Solution:</strong> Increase audio buffer size in Settings > Audio. Try 128ms or 256ms. Disable "Reduce Audio Latency" if enabled. For DSP-heavy games (Pilotwings, Super Mario Kart), use snes9x core with audio fix enabled.</p>
+<h3>Audio Crackling or Popping</h3>
+<p><strong>Symptom:</strong> Distorted audio, especially during scene transitions or complex audio sequences.</p>
+<p><strong>Solution:</strong> Increase audio buffer size in core options. Try a different core for the system. Disable rewind feature if enabled, as it can cause audio stuttering.</p>
 
-        <h3>High CPU Usage</h3>
-        <p><strong>Symptom:</strong> TruchiEmu uses excessive CPU even when idle or on simple games.</p>
-        <p><strong>Solution:</strong> Disable threaded rendering if enabled on single-core systems. Use lighter emulation cores (fceumm instead of mesen for NES, snes9x instead of bsnes for SNES). Disable rewind feature if not needed. Reduce runahead frames to 0 or 1.</p>
+<h3>High CPU Usage</h3>
+<p><strong>Symptom:</strong> TruchiEmu uses excessive CPU even when idle or on simple games.</p>
+<p><strong>Solution:</strong> Use lighter emulation cores (snes9x instead of bsnes for SNES). Disable rewind feature if not needed. Check that a demanding shader (CRT Multipass, CRT Lottes) is not active when not needed.</p>
     </section>
 
     <section id="controllers">
@@ -69,17 +68,17 @@ description: Common issues and solutions for TruchiEmu - installation, performan
         <p><strong>Symptom:</strong> Controller connected but not recognized by TruchiEmu.</p>
         <p><strong>Solution:</strong> Check macOS System Settings > Privacy & Security > Bluetooth (for wireless). Ensure the controller is paired before launching TruchiEmu. For Xbox controllers, try a wired USB connection first. Restart TruchiEmu with the controller connected.</p>
 
-        <h3>Input Lag</h3>
-        <p><strong>Symptom:</strong> Delay between pressing a button and the action appearing on screen.</p>
-        <p><strong>Solution:</strong> Use a wired connection instead of Bluetooth. Reduce audio buffer size. Disable V-Sync or enable "Hard GPU Sync" with 0-1 frames. Reduce runahead to 1-2 frames for responsive input.</p>
+<h3>Input Lag</h3>
+<p><strong>Symptom:</strong> Delay between pressing a button and the action appearing on screen.</p>
+<p><strong>Solution:</strong> Use a wired connection instead of Bluetooth. Reduce audio buffer in core options. Disable V-Sync if applicable in core options.</p>
 
         <h3>Wrong Button Mapping</h3>
         <p><strong>Symptom:</strong> Buttons don't match the expected layout.</p>
         <p><strong>Solution:</strong> Open Settings > Controllers > Button Mapping and remap buttons as needed. Save as a profile for reuse. Check if a per-core or per-game override is active.</p>
 
-        <h3>Analog Stick Drift</h3>
-        <p><strong>Symptom:</strong> Character moves without touching the controller.</p>
-        <p><strong>Solution:</strong> Increase deadzone to 15-20% in controller calibration settings. Run the calibration wizard to detect center position. Clean controller sticks with compressed air.</p>
+<h3>Analog Stick Drift</h3>
+<p><strong>Symptom:</strong> Character moves without touching the controller.</p>
+<p><strong>Solution:</strong> Increase the deadzone in controller settings. TruchiEmu uses a single radial deadzone — raising it will filter out small unintended movements. Clean controller sticks with compressed air.</p>
     </section>
 
     <section id="shaders">
@@ -89,13 +88,13 @@ description: Common issues and solutions for TruchiEmu - installation, performan
         <p><strong>Symptom:</strong> "Metal compiler error" when selecting a shader.</p>
         <p><strong>Solution:</strong> Update macOS to the latest version for newest Metal features. Verify your GPU supports the required Metal feature set (requires macOS 14+).</p>
 
-        <h3>No Visible Effect</h3>
-        <p><strong>Symptom:</strong> Shader is selected but no visual change is visible.</p>
-        <p><strong>Solution:</strong> Some shaders have subtle effects. Check shader intensity sliders in settings. Try a more noticeable shader like CRT-Royale to verify the system works.</p>
+<h3>No Visible Effect</h3>
+<p><strong>Symptom:</strong> Shader is selected but no visual change is visible.</p>
+<p><strong>Solution:</strong> Some shaders have subtle effects. Try adjusting shader parameters (intensity, scanline strength) in the shader settings. Try a more noticeable shader like CRT Lottes to verify the system works.</p>
 
-        <h3>Shader Performance Impact</h3>
-        <p><strong>Symptom:</strong> Frame rate drops with complex shaders enabled.</p>
-        <p><strong>Solution:</strong> Use simpler shaders (Lite CRT instead of CRT Multipass, ScaleFX instead of xBRZ). Reduce shader chain complexity. Consider using per-game shader settings to use light shaders for demanding games.</p>
+<h3>Shader Performance Impact</h3>
+<p><strong>Symptom:</strong> Frame rate drops with complex shaders enabled.</p>
+<p><strong>Solution:</strong> Use simpler shaders (Lite CRT instead of CRT Multipass, Scale Smooth instead of CRT Lottes). Consider using per-game shader settings to use lighter shaders for demanding games.</p>
     </section>
 
     <section id="roms">
@@ -121,14 +120,10 @@ description: Common issues and solutions for TruchiEmu - installation, performan
   <p><strong>Symptom:</strong> Dreamcast games don't recognize any memory card (VMU). Saves fail silently with no error message.</p>
   <p><strong>Solution:</strong> This is typically caused by misconfigured Flycast core options or missing/corrupted VMU files. Ensure <code>CoreOverrides.json</code> uses <code>"VMU"</code> (not <code>"Visual Memory"</code>) for device port slot options. See <a href="{{ '/dreamcast-vmu-fix.html' | relative_url }}">Debugging Dreamcast VMU Saves</a> — technical deep-dive on fixing Flycast VMU detection.</p>
 
-  <h3>Save States Won't Load</h3>
-        <p><strong>Symptom:</strong> Save state appears in browser but fails to load.</p>
-        <p><strong>Solution:</strong> Ensure you're using the same core version that created the save. Save states are not compatible across different cores. Check that the save file isn't corrupted by verifying its checksum.</p>
-
-        <h3>Cloud Sync Conflicts</h3>
-        <p><strong>Symptom:</strong> Error messages about conflicting save states across devices.</p>
-        <p><strong>Solution:</strong> Review conflict resolution settings in Save State preferences. Manually resolve conflicts in the sync dashboard. Use different slot banks for different devices.</p>
-    </section>
+<h3>Save States Won't Load</h3>
+<p><strong>Symptom:</strong> Save state appears in browser but fails to load.</p>
+<p><strong>Solution:</strong> Ensure you're using the same core version that created the save. Save states are not compatible across different cores. If you have Hardcore Mode active in RetroAchievements, save state loading is blocked — disable Hardcore Mode first.</p>
+</section>
 
     <section id="bugs">
         <h2>Reporting Bugs</h2>

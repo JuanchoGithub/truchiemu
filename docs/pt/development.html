@@ -143,39 +143,8 @@ xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug b
 </tbody>
 </table>
 
-<h3>Perfis de Configuração de Cores</h3>
-<div class="config-examples">
-<div class="config-example">
-<h4>Modo de Desempenho</h4>
-<p>Menor precisão, maior velocidade — ideal para hardware menos potente ou jogos de ação rápidos.</p>
-<ul>
-<li>Latência de áudio reduzida</li>
-<li>Salto de quadros se necessário</li>
-<li>Resolução interna mais baixa</li>
-</ul>
-</div>
-<div class="config-example">
-<h4>Modo Equilibrado</h4>
-<p>Bom equilíbrio entre precisão e desempenho — adequado para a maioria dos usuários.</p>
-<ul>
-<li>Configurações padrão</li>
-<li>Padrões mais precisos</li>
-<li>Atraso de quadro automático</li>
-</ul>
-</div>
-<div class="config-example">
-<h4>Modo de Precisão</h4>
-<p>Emulação precisa por ciclo — melhor para preservação, desenvolvimento e hardware de alto desempenho.</p>
-<ul>
-<li>Emulação precisa por ciclo</li>
-<li>Renderização em alta resolução</li>
-<li>Sincronização perfeita</li>
-</ul>
-</div>
-</div>
-
 <h3>Gerenciamento de Cores</h3>
-<p>O Core Downloader integrado oferece instalação, atualização e reversão com um clique para todos os cores. As opções por core incluem configuração de viés (precisão vs. velocidade), configurações de vídeo e áudio, e perfis de configuração salváveis. A bridge Swift ↔ ObjC para comunicação de cores reside em <code>LibretroBridge.mm</code> / <code>LibretroBridgeSwift.swift</code>.</p>
+<p>O Core Downloader integrado oferece instalação, atualização e reversão com um clique para todos os cores. As opções por core incluem configurações de vídeo e áudio, e perfis de configuração salváveis. A bridge Swift ↔ ObjC para comunicação de cores reside em <code>LibretroBridge.mm</code> / <code>LibretroBridgeSwift.swift</code>.</p>
 
 <h3>Bridge Swift ↔ ObjC</h3>
 <p>O motor de emulação é escrito em Objective-C++/C para acesso direto à API libretro. O código Swift se comunica com ele através de <code>LibretroBridge.mm</code> / <code>LibretroBridgeSwift.swift</code>, com símbolos expostos através do <code>TruchiEmu-Bridging-Header.h</code>.</p>
@@ -196,9 +165,8 @@ xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug b
 
 <h3>Componentes Principais</h3>
 <ul class="feature-list">
-<li><strong>Compilador de Shaders:</strong> Compilação em tempo de execução de arquivos shader <code>.metal</code> com tratamento de erros e fallback</li>
+<li><strong>Compilador de Shaders:</strong> Compilação em tempo de execução de arquivos shader <code>.metal</code> com tratamento de erros</li>
 <li><strong>Sistema de Parâmetros:</strong> Ajuste em tempo real de uniforms de shaders via controles SwiftUI</li>
-<li><strong>Sistema de Fallback:</strong> Degradação automática para shaders mais simples se a compilação falhar na GPU alvo</li>
 </ul>
 
 <h3>Arquivos de Shaders</h3>
@@ -226,7 +194,7 @@ xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug b
 </div>
 
 <ul class="feature-list">
-<li><strong>AccentColorTheme</strong> — Enum com 17 casos (mais <code>.custom</code>). Cada um define cores de destaque, dimmed (84%), dark (70%) e secundárias para os modos claro e escuro. Inclui um sistema <code>migratedRawValue()</code> para temas renomeados.</li>
+<li><strong>AccentColorTheme</strong> — Enum com 16 casos curados (mais <code>.custom</code> para cor personalizada). Cada um define cores de destaque, dimmed (84%), dark (70%) e secundárias para os modos claro e escuro. Inclui um sistema <code>migratedRawValue()</code> para temas renomeados.</li>
 <li><strong>ThemeManager</strong> — Singleton <code>@MainActor ObservableObject</code> que possui o tema atual, modo de aparência, cor de destaque personalizada, alternância de destaque na barra de ferramentas e alternância de superfícies coloridas. Persiste todo o estado via <code>AppSettings</code> (SwiftData).</li>
 <li><strong>AppColors</strong> — Tokens de cores semânticas estáticas em <code>DesignSystem.swift</code> que as views consomem. Auto-resolve via <code>NSApp.effectiveAppearance</code>. Variantes <code>*ForScheme</code> seguras para preview disponíveis.</li>
 <li><strong>Reinicialização do Aplicativo</strong> — Mudanças de tema chamam <code>ThemeManager.relaunchApp()</code>, gerando um novo processo e terminando o atual. A interface de configurações impõe isso com diálogos de confirmação e interceptação de mudanças não salvas.</li>
@@ -254,22 +222,22 @@ xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug b
 
 <div class="code-box">
 <h4>Iniciar uma ROM</h4>
-<pre><code>./TruchiEmu --launch "/path/to/game.nes"</code></pre>
+<pre><code>./TruchiEmu "/path/to/game.nes"</code></pre>
 </div>
-<p>A CLI suporta integração com Atalhos do macOS, launchers de terceiros e fluxos de trabalho de automação.</p>
+<p>A CLI suporta integração com launchers de terceiros e fluxos de trabalho de automação.</p>
 </div>
 </section>
 
 <section id="testing" class="content-section">
 <div class="container">
 <h2>Testes e QA</h2>
-<p>Os testes ficam em <code>TruchiEmuTests/</code> e cobrem serviços críticos: identificação de ROMs, pré-população de DATs, integração com banco de dados LaunchBox e mais.</p>
-
-<div class="code-box">
-<h4>Executar Testes via CLI</h4>
-<pre><code>xcodebuild test -scheme TruchiEmuTests -destination 'platform=macOS'</code></pre>
-</div>
-<p>O alvo de testes vincula o framework SwiftData. Alguns testes requerem acesso à rede para chamadas de API remotas.</p>
+<p>Não existe um alvo de testes atualmente no projeto. Quando testes forem adicionados:</p>
+<ul class="feature-list">
+<li>Crie um alvo de testes no <code>project.yml</code> e execute <code>xcodegen generate</code></li>
+<li>Adicione arquivos de teste em <code>TruchiEmuTests/</code></li>
+<li>Vincule o framework SwiftData no alvo de testes</li>
+<li>Alguns testes podem requerer acesso à rede para chamadas de API remotas</li>
+</ul>
 </div>
 </section>
 

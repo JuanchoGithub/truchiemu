@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+
+
+<html lang="es">
+<head>
+
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Funciones - Documentación de TruchiEmu</title>
+<meta name="description" content="Resumen completo de las funciones de TruchiEmu incluyendo shaders, logros, gestión de biblioteca y capacidades avanzadas de emulación">
+<link rel="canonical" href="https://juanchogithub.github.io/truchiemu/es/features">
+<meta name="generator" content="Jekyll 4.4.1">
+
+<!-- Open Graph -->
+  <meta property="og:title" content="Funciones">
+  <meta property="og:description" content="Resumen completo de las funciones de TruchiEmu incluyendo shaders, logros, gestión de biblioteca y capacidades avanzadas de emulación">
+<meta property="og:url" content="https://juanchogithub.github.io/truchiemu/es/features">
+<meta property="og:site_name" content="Documentación de TruchiEmu">
+<meta property="og:type" content="article">
+<meta property="og:image" content="https://juanchogithub.github.io/truchiemu/media/logo-icon.png">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Funciones">
+  <meta name="twitter:description" content="Resumen completo de las funciones de TruchiEmu incluyendo shaders, logros, gestión de biblioteca y capacidades avanzadas de emulación">
+<meta name="twitter:image" content="https://juanchogithub.github.io/truchiemu/media/logo-icon.png">
+
+<!-- RSS -->
+<link rel="alternate" type="application/rss+xml" href="/truchiemu/feed.xml">
+
+<!-- Styles -->
+<link rel="stylesheet" href="/truchiemu/assets/css/main.css">
+<script src="/truchiemu/assets/js/main.js"></script>
+
+</head>
+<body>
+
+
+
+
+<header class="site-header">
+<div class="container">
+<div class="header-content">
+<a href="/truchiemu/es/" class="logo">
+<img src="/truchiemu/media/logo-icon.png" alt="TruchiEmu" width="32" height="32">
+<span>TruchiEmu</span>
+</a>
+
+<nav class="main-nav">
+<a href="/truchiemu/es/getting-started.html" class="nav-link">Primeros Pasos</a>
+<a href="/truchiemu/es/features.html" class="nav-link">Características</a>
+<a href="/truchiemu/es/troubleshooting.html" class="nav-link">Solución de Problemas</a>
+<a href="/truchiemu/es/development.html" class="nav-link">Desarrollo</a>
+</nav>
+
+<div class="header-actions">
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18">
+          <path d="M12 3v2m0 14v2m-8.485-.515l1.414-1.414m12.728-12.728l1.414-1.414M4.93 4.93l1.414 1.414m12.728 12.728l1.414 1.414M3 12h2m14 0h2m-9 4a4 4 0 100-8 4 4 0 000 8z"/>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18">
+          <path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+        </svg>
+      </button>
+      <div class="lang-switcher">
+        
+          <a href="/truchiemu/" class="lang-link">EN</a>
+          <span class="lang-link lang-active">ES</span>
+          <a href="/truchiemu/pt/" class="lang-link">PT</a>
+        
+      </div>
+<a href="https://github.com/JuanchoGithub/truchiemu" class="btn btn-outline" target="_blank">
+GitHub
+</a>
+</div>
+</div>
+</div>
+</header>
+<div class="search-overlay" id="search-overlay">
+<div class="search-container">
+<input type="text" id="search-input" placeholder="Buscar en la documentación..." autofocus>
+<button id="search-close" class="search-close">&times;</button>
+<div id="search-results"></div>
+</div>
+</div>
+
+
+<div class="site-container">
+
+
+
+
+
+<aside class="sidebar">
+<div class="sidebar-section">
+<h3>Primeros Pasos</h3>
+<ul class="sidebar-nav">
+<li><a href="/truchiemu/es/getting-started.html">Instalación</a></li>
+<li><a href="/truchiemu/es/getting-started.html#quick-start">Inicio Rápido</a></li>
+<li><a href="/truchiemu/es/getting-started.html#next-steps">Siguientes Pasos</a></li>
+</ul>
+</div>
+
+<div class="sidebar-section">
+<h3>Características Principales</h3>
+<ul class="sidebar-nav">
+<li><a href="/truchiemu/es/features/shaders.html">Shaders</a></li>
+<li><a href="/truchiemu/es/features/library.html">Biblioteca</a></li>
+<li><a href="/truchiemu/es/features/achievements.html">Logros</a></li>
+<li><a href="/truchiemu/es/features/save-states.html">Estados Guardados</a></li>
+<li><a href="/truchiemu/es/features/controllers.html">Controles</a></li>
+<li><a href="/truchiemu/es/features/cheats.html">Trucos</a></li>
+<li><a href="/truchiemu/es/features/themes.html">Temas y Apariencia</a></li>
+<li><a href="/truchiemu/es/features/analog-mouse.html">Ratón Analógico</a></li>
+<li><a href="/truchiemu/es/features/training-mode.html">Modo de Práctica</a></li>
+<li><a href="/truchiemu/es/features/move-lists.html">Listas de Movimientos</a></li>
+<li><a href="/truchiemu/es/features/notifications.html">Notificaciones</a></li>
+<li><a href="/truchiemu/es/features/genre-management.html">Gestión de Géneros</a></li>
+<li><a href="/truchiemu/es/features/updates.html">Verificador de Actualizaciones</a></li>
+</ul>
+</div>
+
+<div class="sidebar-section">
+<h3>Desarrollo</h3>
+<ul class="sidebar-nav">
+<li><a href="/truchiemu/es/development.html">Arquitectura</a></li>
+<li><a href="/truchiemu/es/dev/building.html">Compilación</a></li>
+<li><a href="/truchiemu/es/dev/contributing.html">Contribuir</a></li>
+<li><a href="/truchiemu/es/dreamcast-vmu-fix.html">Depuración de Guardados VMU de Dreamcast</a></li>
+<li><a href="/truchiemu/es/changelog.html">Registro de cambios</a></li>
+</ul>
+</div>
+
+<div class="sidebar-sticky-footer">
+<button id="search-toggle" class="btn btn-block">
+🔎 Buscar Docs
+</button>
+</div>
+</aside>
+
+
+
+<main class="main-content" id="content">
+<div class="content-wrapper">
+<section class="page-header">
+<div class="container">
+<h1>Funciones de TruchiEmu</h1>
+<p class="lead">Descubre las potentes funciones que hacen de TruchiEmu la experiencia de emulación por excelencia en macOS</p>
+</div>
+</section>
+
+<nav class="toc">
+<div class="container">
+<h3>En Esta Página</h3>
+<ul>
+<li><a href="#shaders">Colección de Shaders</a></li>
+<li><a href="#library">Gestión de Biblioteca</a></li>
+<li><a href="#achievements">Logros</a></li>
+<li><a href="#savestates">Funciones de Guardado</a></li>
+<li><a href="#themes">Temas y Apariencia</a></li>
+<li><a href="#bezels">Bezels y Enmarcado de Pantalla</a></li>
+<li><a href="#analog-mouse">Soporte de Ratón Analógico</a></li>
+<li><a href="#training-mode">Modo de Práctica</a></li>
+<li><a href="#move-lists">Superposición de Movimientos</a></li>
+<li><a href="#notifications">Sistema de Notificaciones</a></li>
+<li><a href="#genre-management">Gestión de Géneros</a></li>
+<li><a href="#updates">Verificador de Actualizaciones</a></li>
+<li><a href="#mame">Gestión Arcade (MAME)</a></li>
+</ul>
+</div>
+</nav>
+
+<section id="shaders" class="content-section">
+<div class="container">
+<h2>Colección de Shaders</h2>
+<p>Transforma tu experiencia de juego con nuestra colección curada de 14 shaders Metal de alta calidad. Cada shader está optimizado para macOS y diseñado para mejorar o reproducir auténticamente los visuales clásicos de gaming.</p>
+
+<div class="screenshot-frame">
+<img src="/truchiemu/media/screenshots/shader-picker.png" alt="Interfaz del Selector de Shaders" class="screenshot lightbox-trigger">
+<p class="screenshot-caption">La interfaz del selector de shaders permite vista previa y ajuste en tiempo real</p>
+</div>
+
+<div class="shader-grid">
+<div class="shader-card">
+<div class="shader-image">
+<img src="/truchiemu/media/features/passthrough.png" alt="Shader Passthrough">
+</div>
+<h3>Passthrough</h3>
+<p class="shader-description">El shader predeterminado que renderiza los píxeles exactamente como el hardware original lo pretendía. Perfecto para puristas que desean visuales auténticos sin filtrar con bordes de píxeles nítidos.</p>
+<div class="shader-specs">
+<span class="spec-tag">Sin Procesamiento</span>
+<span class="spec-tag">Píxeles Nítidos</span>
+<span class="spec-tag">Bajo CPU</span>
+</div>
+<p><strong>Caso de Uso:</strong> Desarrollo, reproducción pixel-perfect, speedrunning</p>
+</div>
+
+<div class="shader-card">
+<div class="shader-image">
+<img src="/truchiemu/media/features/scale-smooth.png" alt="Shader Smooth Upscale">
+</div>
+<h3>Smooth Upscale</h3>
+<p class="shader-description">Escalado bicúbico de alta calidad que suaviza los bordes de los píxeles preservando los detalles. Ideal para pantallas modernas donde los píxeles crudos aparecen demasiado bloqueados.</p>
+<div class="shader-specs">
+<span class="spec-tag">Suavizado</span>
+<span class="spec-tag">Bicúbico</span>
+<span class="spec-tag">Universal</span>
+</div>
+<p><strong>Caso de Uso:</strong> Juego general, pantallas modernas, menor pixelación</p>
+</div>
+
+<div class="shader-card">
+<div class="shader-image">
+<img src="/truchiemu/media/features/sharp-bilinear.png" alt="Shader Sharp Bilinear">
+</div>
+<h3>Sharp Bilinear</h3>
+<p class="shader-description">Combina filtrado bilineal con detección de bordes para crear gradientes suaves manteniendo los bordes importantes nítidos. Perfecto para juegos con arte mixto de sprites y fondos.</p>
+<div class="shader-specs">
+<span class="spec-tag">Preserva Bordes</span>
+<span class="spec-tag">Adaptativo</span>
+<span class="spec-tag">Equilibrado</span>
+</div>
+<p><strong>Caso de Uso:</strong> RPGs con fondos detallados, estilos de arte mixtos</p>
+</div>
+
+<div class="shader-card">
+<div class="shader-image">
+<img src="/truchiemu/media/features/crt-multipass.png" alt="Shader CRT Multipass">
+</div>
+<h3>CRT Multipass</h3>
+<p class="shader-description">Simulación CRT multipasada con brillo de fósforo, líneas de escaneo y curvatura. Nuestra recreación CRT más auténtica para usuarios que buscan la verdadera experiencia retro.</p>
+<div class="shader-specs">
+<span class="spec-tag">Multipasada</span>
+<span class="spec-tag">Auténtico</span>
+<span class="spec-tag">Pesado</span>
+</div>
+<p><strong>Caso de Uso:</strong> Experiencia retro auténtica, entusiastas del CRT, nostalgia</p>
+</div>
+
+<div class="shader-card">
+<div class="shader-image">
+<img src="/truchiemu/media/features/lite-crt.png" alt="Shader Lite CRT">
+</div>
+<h3>Lite CRT</h3>
+<p class="shader-description">Simulación CRT ligera que añade líneas de escaneo sutiles y efectos de fósforo sin el coste de rendimiento del renderizado multipasado completo.</p>
+<div class="shader-specs">
+<span class="spec-tag">Líneas de Escaneo</span>
+<span class="spec-tag">Ligero</span>
+<span class="spec-tag">Rendimiento</span>
+</div>
+<p><strong>Caso de Uso:</strong> Estética CRT en hardware de menor potencia, efecto sutil</p>
+</div>
+
+<div class="shader-card">
+<div class="shader-image">
+<img src="/truchiemu/media/features/crt-lottes.png" alt="Shader CRT Lottes">
+</div>
+<h3>CRT Lottes</h3>
+<p class="shader-description">Simulación CRT avanzada usando el algoritmo de Lottes con efectos de máscara, curvatura y bloom. Crea la apariencia de monitor CRT más realista disponible.</p>
+<div class="shader-specs">
+<span class="spec-tag">Máscara de Fósforo</span>
+<span class="spec-tag">Bloom</span>
+<span class="spec-tag">Premium</span>
+</div>
+<p><strong>Caso de Uso:</strong> Simulación CRT profesional, creación de contenido, preservación</p>
+</div>
+
+<div class="shader-card">
+<div class="shader-image">
+<img src="/truchiemu/media/features/gba-shader.png" alt="Shader 8b Game Boy">
+</div>
+<h3>8b Game Boy</h3>
+<p class="shader-description">Simula la distintiva pantalla de matriz de puntos de sistemas portátiles clásicos como el Game Boy. Presenta el patrón de cuadrícula característico y la disposición de subpíxeles.</p>
+<div class="shader-specs">
+<span class="spec-tag">Portátil</span>
+<span class="spec-tag">Patrón de Cuadrícula</span>
+<span class="spec-tag">Nostálgico</span>
+</div>
+<p><strong>Caso de Uso:</strong> Juegos de Game Boy, emulación portátil, experiencia portátil auténtica</p>
+</div>
+
+<div class="shader-card">
+<div class="shader-image">
+<img src="/truchiemu/media/features/original-game-boy.png" alt="Pantalla de Game Boy Original">
+</div>
+<h3>Pantalla de Game Boy Original</h3>
+<p class="shader-description">Fiel simulación LCD del Game Boy DMG (Dot Matrix Game) con la icónica pantalla monocromática con tinte verde, persistencia de píxeles y el característico desenfoque de movimiento.</p>
+<div class="shader-specs">
+<span class="spec-tag">Game Boy</span>
+<span class="spec-tag">Monocromático</span>
+<span class="spec-tag">Auténtico</span>
+</div>
+<p><strong>Caso de Uso:</strong> Juegos de Game Boy original, pura nostalgia, reproducción auténtica</p>
+</div>
+
+<div class="shader-card">
+<div class="shader-image">
+<img src="/truchiemu/media/features/gbc-shader.png" alt="Shader 8b Game Boy Color">
+</div>
+<h3>8b Game Boy Color</h3>
+<p class="shader-description">Reproducción precisa del LCD del Game Boy Color con la paleta de colores correcta, disposición de píxeles y características de retroiluminación del hardware original.</p>
+<div class="shader-specs">
+<span class="spec-tag">Color</span>
+<span class="spec-tag">Portátil</span>
+<span class="spec-tag">Preciso</span>
+</div>
+<p><strong>Caso de Uso:</strong> Juegos de Game Boy Color, representación precisa de color</p>
+</div>
+
+<div class="shader-card">
+<div class="shader-image">
+<img src="/truchiemu/media/features/gba-shader.png" alt="Shader GBA Advanced LCD">
+</div>
+<h3>GBA Advanced LCD</h3>
+<p class="shader-description">Simulación LCD fiel al Game Boy Advance con la temperatura de color distintiva, estructura de píxeles y características de movimiento de la pantalla GBA.</p>
+<div class="shader-specs">
+<span class="spec-tag">GBA</span>
+<span class="spec-tag">Retroiluminado</span>
+<span class="spec-tag">Portátil</span>
+</div>
+<p><strong>Caso de Uso:</strong> Juegos de GBA, experiencia de juego portátil precisa</p>
+</div>
+
+<div class="shader-card">
+<div class="shader-image">
+<img src="/truchiemu/media/features/crt-classic.png" alt="Shader CRT Classic">
+</div>
+<h3>CRT Classic</h3>
+<p class="shader-description">Una simulación CRT equilibrada que proporciona líneas de escaneo clásicas y un sutil brillo de fósforo. Optimizada para alto rendimiento en todos los sistemas.</p>
+<div class="shader-specs">
+<span class="spec-tag">Equilibrado</span>
+<span class="spec-tag">Líneas de Escaneo</span>
+<span class="spec-tag">Rápido</span>
+</div>
+<p><strong>Caso de Uso:</strong> Juego retro general, aspecto consistente entre múltiples sistemas</p>
+</div>
+</div>
+
+<h3>Personalización de Shaders</h3>
+<p>Cada shader incluye parámetros ajustables para afinar el efecto:</p>
+<ul class="feature-list">
+<li><strong>Controles de Intensidad:</strong> Ajusta la fuerza de cada efecto</li>
+<li><strong>Presets de Parámetros:</strong> Configuraciones rápidas para diferentes tipos de pantalla</li>
+<li><strong>Vista Previa en Tiempo Real:</strong> Ve los cambios instantáneamente mientras ajustas</li>
+<li><strong>Configuración por Juego:</strong> Guarda preferencias de shader para juegos individuales</li>
+<li><strong>Predeterminados Globales:</strong> Establece preferencias de shader para todo el sistema</li>
+</ul>
+
+<div class="info-box">
+<p><strong>Impacto en el Rendimiento:</strong> Passthrough, Smooth Upscale y Vignette tienen un impacto mínimo en el rendimiento. Los shaders CRT y simulaciones LCD usan más recursos de GPU. La mayoría de los Mac modernos pueden ejecutar cualquier shader a velocidad completa.</p>
+</div>
+
+<h3>Combinaciones de Shaders Recomendadas</h3>
+<table class="recommendation-table">
+<thead>
+<tr>
+<th>Tipo de Sistema</th>
+<th>Shader Principal</th>
+<th>Opciones Secundarias</th>
+<th>Caso de Uso</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Consolas de 8 bits</td>
+<td>CRT Multipass</td>
+<td>Lite CRT, CRT Lottes</td>
+<td>Experiencia clásica de TV</td>
+</tr>
+<tr>
+<td>Consolas de 16 bits</td>
+<td>CRT Lottes</td>
+<td>Sharp Bilinear, CRT Multipass</td>
+<td>Sensación auténtica de arcade/TV</td>
+</tr>
+<tr>
+<td>Game Boy</td>
+<td>Pantalla de Game Boy Original</td>
+<td>8b Game Boy, Dot Matrix LCD, Passthrough</td>
+<td>Verdadera experiencia portátil</td>
+</tr>
+<tr>
+<td>Game Boy Advance</td>
+<td>GBA Advanced LCD</td>
+<td>Smooth Upscale, Sharp Bilinear</td>
+<td>Pantalla GBA auténtica</td>
+</tr>
+<tr>
+<td>Juegos Portátiles</td>
+<td>Dot Matrix LCD</td>
+<td>Smooth Upscale</td>
+<td>Simulación de patrón de cuadrícula</td>
+</tr>
+<tr>
+<td>Pantallas Modernas</td>
+<td>Smooth Upscale</td>
+<td>Sharp Bilinear, Passthrough</td>
+<td>Aspecto limpio y moderno</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section id="library" class="content-section">
+<div class="container">
+<h2>Gestión de Biblioteca</h2>
+<p>Organiza tu colección de juegos con potentes funciones de gestión de biblioteca diseñadas para coleccionistas serios y jugadores casuales por igual.</p>
+
+<div class="screenshot-frame">
+<img src="/truchiemu/media/screenshots/library-grid.png" alt="Interfaz de Cuadrícula de Biblioteca" class="screenshot lightbox-trigger">
+<p class="screenshot-caption">Tus juegos se organizan automáticamente con carátulas y metadatos</p>
+</div>
+
+<h3>Organización Automática</h3>
+<ul class="feature-list">
+<li><strong>Detección Inteligente:</strong> Identifica automáticamente juegos a partir de hashes de archivos ROM</li>
+<li><strong>Obtención de Metadatos:</strong> Descarga descripciones de juegos, fechas de lanzamiento y detalles</li>
+<li><strong>Carátulas:</strong> Descarga automáticamente carátulas de alta calidad</li>
+<li><strong>Categorización por Sistema:</strong> Agrupa juegos por consola/sistema original</li>
+<li><strong>Detección de Logros:</strong> Identifica juegos con soporte de RetroAchievements</li>
+</ul>
+
+<div class="view-mode">
+<h4>📊 Vista de Cuadrícula</h4>
+<p>Cuadrícula visual con miniaturas de carátulas. Perfecta para explorar colecciones grandes.</p>
+<ul>
+<li>Tamaño de cuadrícula ajustable mediante control deslizante de zoom</li>
+<li>Ordenar por nombre, último jugado o último agregado</li>
+<li>Búsqueda rápida y filtrado</li>
+</ul>
+</div>
+
+<div class="view-mode">
+<h4>📋 Vista de Lista</h4>
+<p>Lista detallada con metadatos y estadísticas. Ideal para ordenar y organizar.</p>
+<ul>
+<li>Visualización compacta para bibliotecas grandes</li>
+<li>Indicadores rápidos de estado</li>
+</ul>
+</div>
+</div>
+
+<h3>Colecciones y Listas de Reproducción</h3>
+<p>Organiza tus juegos con categorías personalizadas y filtros integrados:</p>
+<ul class="feature-list">
+<li><strong>Colecciones Manuales:</strong> Crea categorías personalizadas para agrupar tus juegos favoritos</li>
+<li><strong>Favoritos:</strong> Acceso rápido a tus títulos imprescindibles mediante el filtro de favoritos</li>
+<li><strong>Jugados Recientemente:</strong> Rastrea y muestra automáticamente tus sesiones más recientes</li>
+</ul>
+
+<h3>Funciones Avanzadas de Biblioteca</h3>
+<table class="feature-table">
+<thead>
+<tr>
+<th>Función</th>
+<th>Descripción</th>
+<th>Beneficio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Detección de Duplicados</td>
+<td>Identifica y previene entradas ROM duplicadas durante los escaneos</td>
+<td>Biblioteca limpia sin duplicados</td>
+</tr>
+<tr>
+<td>Detección de BIOS</td>
+<td>Detecta archivos BIOS requeridos para sistemas que los necesitan</td>
+<td>Emulación de sistema adecuada</td>
+</tr>
+<tr>
+<td>Detección de Región</td>
+<td>Identifica la región del juego (USA, Europa, Japón) durante la identificación</td>
+<td>Ordenar y filtrar por región</td>
+</tr>
+<tr>
+<td>Verificación de ROMs</td>
+<td>Valida ROMs contra bases de datos DAT de No-Intro/Libretro usando CRC32</td>
+<td>Asegura que tengas volcados verificados</td>
+</tr>
+<tr>
+<td>Seguimiento de Sesiones</td>
+<td>Registra el tiempo total de juego y la fecha de última partida para cada juego</td>
+<td>Rastrea tu progreso y actividad de juego</td>
+</tr>
+</tbody>
+</table>
+
+<h3>Búsqueda y Filtrado</h3>
+<p>Encuentra juegos al instante con potentes capacidades de búsqueda:</p>
+<ul class="feature-list">
+<li><strong>Búsqueda de Texto:</strong> Busca por nombre de juego o metadatos</li>
+<li><strong>Filtro de Sistema:</strong> Muestra solo juegos de consolas específicas</li>
+<li><strong>Soporte de Logros:</strong> Muestra juegos con RetroAchievements</li>
+<li><strong>Estado de Juego:</strong> Filtra por favoritos o jugados recientemente</li>
+</ul>
+
+<h3>Importar y Exportar</h3>
+<div class="import-export">
+<div class="import-section">
+<h4>Opciones de Importación</h4>
+<ul>
+<li>Agregar carpetas de biblioteca incluyendo todas las subcarpetas</li>
+<li>Escaneo recursivo automático de directorios de ROMs</li>
+<li>Soporte de arrastrar y soltar para la gestión de biblioteca</li>
+</ul>
+</div>
+<div class="export-section">
+<h4>Opciones de Exportación</h4>
+<ul>
+<li>Exportación automática de metadatos a games.xml</li>
+<li>Copia de seguridad de metadatos de biblioteca para portabilidad</li>
+</ul>
+</div>
+</div>
+
+<div class="tip-box">
+<p><strong>💡 Consejo de Organización:</strong> Usa las categorías personalizadas para agrupar juegos por género o proyecto, y aprovecha el filtro de favoritos para tu rotación actual de juegos.</p>
+</div>
+</div>
+</section>
+
+<section id="achievements" class="content-section">
+<div class="container">
+<h2>Integración con RetroAchievements</h2>
+<p>¡Gana logros mientras juegas clásicos! TruchiEmu se integra perfectamente con RetroAchievements.org para añadir caza de logros moderna al gaming retro.</p>
+
+<div class="screenshot-frame">
+<img src="/truchiemu/media/screenshots/achievements-list.png" alt="Interfaz de Logros" class="screenshot lightbox-trigger">
+<p class="screenshot-caption">Rastrea tu progreso y compárate con amigos en la tabla de clasificación global</p>
+</div>
+
+<h3>Comenzando con los Logros</h3>
+<div class="setup-steps">
+<div class="step">
+<h4>Paso 1: Crear una Cuenta en RetroAchievements</h4>
+<p>Visita <a href="https://retroachievements.org/" target="_blank">RetroAchievements.org</a> y crea una cuenta gratuita.</p>
+</div>
+<div class="step">
+<h4>Paso 2: Vincular Cuenta en TruchiEmu</h4>
+<p>Navega a Configuración → Logros e ingresa tu nombre de usuario, contraseña y clave API de RetroAchievements.</p>
+</div>
+<div class="step">
+<h4>Paso 3: Conectar</h4>
+<p>Usa el botón "Conectar" para verificar tus credenciales y sincronizar tu perfil.</p>
+</div>
+<div class="step">
+<h4>Paso 4: Jugar Juegos Soportados</h4>
+<p>Inicia cualquier juego con soporte de logros. Tu progreso se sincronizará con tu perfil global.</p>
+</div>
+</div>
+
+<h3>Tipos de Logros</h3>
+<p>TruchiEmu soporta la variedad de tipos de logros definidos por la comunidad de RetroAchievements, incluyendo hitos de progreso, desafíos basados en habilidad y objetivos de completista.</p>
+
+<h3>Sistemas Soportados</h3>
+<p>El soporte de RetroAchievements varía según el sistema. TruchiEmu proporciona mapeo para todas las consolas principales, incluyendo:</p>
+<table class="systems-table">
+<thead>
+<tr>
+<th>Sistema</th>
+<th>Soporte de Logros</th>
+<th>Juegos Soportados</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NES / SNES</td>
+<td>✅ Soporte Completo</td>
+<td>1,000+ juegos</td>
+</tr>
+<tr>
+<td>Game Boy / Color / Advance</td>
+<td>✅ Soporte Completo</td>
+<td>1,000+ juegos</td>
+</tr>
+<tr>
+<td>Genesis / Mega Drive</td>
+<td>✅ Soporte Completo</td>
+<td>500+ juegos</td>
+</tr>
+<tr>
+<td>Nintendo 64 / PS1</td>
+<td>✅ Limitado / Experimental</td>
+<td>100+ juegos</td>
+</tr>
+<tr>
+<td>PC Engine / TurboGrafx</td>
+<td>✅ Soporte Completo</td>
+<td>300+ juegos</td>
+</tr>
+</tbody>
+</table>
+
+<h3>Funciones de Integración</h3>
+<ul class="feature-list">
+<li><strong>Presencia Enriquecida:</strong> Actualiza automáticamente tu perfil para mostrar a tus amigos qué juego estás jugando actualmente</li>
+<li><strong>Tablas de Clasificación:</strong> Envía y compara puntuaciones y tiempos en tablas de clasificación globales</li>
+<li><strong>Modo Hardcore:</strong> Bloquea estados de guardado, rebobinado, cámara lenta y trucos para una experiencia purista. Requerido para ganar logros de nivel Hardcore.</li>
+</ul>
+
+<div class="info-box">
+<p><strong>💡 Consejos sobre Logros:</strong></p>
+<ul>
+<li>Asegúrate de usar archivos ROM verificados que coincidan con los hashes de la base de datos de RetroAchievements.</li>
+<li>Revisa las listas de logros en el sitio web de RA para planificar tu enfoque para trofeos difíciles.</li>
+<li>Únete a la comunidad de RetroAchievements para rastrear tu progreso contra otros jugadores.</li>
+<li><strong>Modo Hardcore:</strong> Habilita el Modo Hardcore desde la configuración para desactivar los estados de guardado, rebobinado, cámara lenta y trucos, lo cual es requerido para ganar logros de nivel Hardcore.</li>
+</ul>
+</div>
+
+<div class="warning-box">
+<p><strong>⚠️ Importante:</strong> Los logros solo funcionan con archivos ROM verificados que coincidan con los hashes de la base de datos de RetroAchievements. Usa volcados verificados de No-Intro para la mejor compatibilidad.</p>
+</div>
+</div>
+</section>
+
+<section id="cores" class="content-section">
+<div class="container">
+<h2>Cores de Emulación</h2>
+<p>TruchiEmu está impulsado por <strong>libretro</strong>, una API de emulación universal. Cada sistema funciona en un core dedicado — piensa en ellos como motores de plug-in. Los cores se descargan, actualizan y configuran automáticamente a través del Descargador de Cores integrado.</p>
+<p>Para una referencia completa sobre qué cores impulsan cada sistema, ajuste de rendimiento y la arquitectura técnica, consulta la <a href="/truchiemu/es/development.html">Guía del Desarrollador</a>.</p>
+</div>
+</section>
+
+<section id="savestates" class="content-section">
+<div class="container">
+<h2>Funciones de Estados de Guardado</h2>
+<p>Los estados de guardado te permiten capturar y restaurar tu posición exacta en un juego al instante, proporcionando una red de seguridad moderna para el gaming retro.</p>
+
+<div class="save-features">
+<div class="save-feature">
+<h4>📸 Estados de Guardado Visuales</h4>
+<ul>
+<li>Captura automática de miniaturas para cada slot de guardado</li>
+<li>Navegador visual de cuadrícula para selección rápida de estados</li>
+<li>Hasta 10 slots de guardado por juego</li>
+<li>Marcas de tiempo para cada estado capturado</li>
+</ul>
+</div>
+
+<div class="save-feature">
+<h4>📦 Almacenamiento Optimizado</h4>
+<ul>
+<li>Compresión LZ4 para todos los archivos de estado</li>
+<li>Cabecera TCS2 personalizada para integridad de estados</li>
+<li>Bajo uso de disco para bibliotecas grandes</li>
+<li>Velocidades rápidas de carga/guardado</li>
+</ul>
+</div>
+
+<div class="save-feature">
+<h4>🔋 Soporte de Guardado de Batería</h4>
+<ul>
+<li>Almacenamiento dedicado para guardados de batería tradicionales</li>
+<li>Compatibilidad con archivos de guardado de hardware original</li>
+<li>Gestión automática por los cores de emulación</li>
+<li>Separados de los archivos de estados de guardado</li>
+</ul>
+</div>
+</div>
+
+<h3>Administrador de Estados de Guardado</h3>
+<p>El navegador de estados de guardado integrado proporciona una forma visual de gestionar tu progreso:</p>
+<ul class="feature-list">
+<li><strong>Cuadrícula de Miniaturas:</strong> Navega tus posiciones guardadas visualmente mediante vistas previas de 320x240</li>
+<li><strong>Gestión de Slots:</strong> Acceso fácil a los slots 0 al 9</li>
+<li><strong>Metadatos:</strong> Ve exactamente cuándo se creó cada estado</li>
+<li><strong>Rutas Automatizadas:</strong> Estructura de carpetas consistente para fácil copia de seguridad y migración</li>
+</ul>
+</div>
+</section>
+
+<section id="themes" class="content-section">
+<div class="container">
+<h2>Temas y Apariencia</h2>
+<p>Haz TruchiEmu tuyo con 16 temas de color acentuado curados inspirados en leyendas del gaming&mdash;desde Samus hasta Doom&mdash;más un tema personalizado, modos de apariencia claro/oscuro y superficies tintadas.</p>
+
+<div class="screenshot-frame">
+<img src="/truchiemu/media/features/themes-showcase.png" alt="Temas de TruchiEmu" class="screenshot lightbox-trigger">
+<p class="screenshot-caption">Los 16 temas de color acentuado curados inspirados en gaming en TruchiEmu</p>
+</div>
+
+<h3>Lo Que Puedes Personalizar</h3>
+<ul class="feature-list">
+<li><strong>16 Temas Curados + 1 Personalizado:</strong> Paletas de acento curadas organizadas en categorías Estándar (Samus, Chocobo, Protoss, Joker, Geralt, Mega Man) y Gaming (Mario, Luigi, Sonic, Half-Life, Kratos, Kirby, Zelda, Pikachu, Doom, Master Chief), más un tema personalizado con color libre</li>
+<li><strong>Modo de Apariencia:</strong> Claro, Oscuro o Automático&mdash;sigue tu preferencia del sistema o anúlalo por aplicación</li>
+<li><strong>Colores Personalizados:</strong> Elige cualquier color como acento con el Selector de Color integrado</li>
+<li><strong>Superficies Tintadas:</strong> Tinte sutil del color acentuado en fondos de ventana, barra lateral y barra de herramientas</li>
+<li><strong>Acento en Barra de Herramientas:</strong> Opcionalmente colorea los iconos de la barra de herramientas con el color acentuado en lugar de los predeterminados del sistema</li>
+<li><strong>Adaptaciones por Modo:</strong> Muchos temas ajustan automáticamente su acento para mejor contraste en modo claro vs. oscuro</li>
+</ul>
+
+<p><a href="/truchiemu/es/features/themes.html">Más información sobre Temas y Apariencia &rarr;</a></p>
+</div>
+</section>
+
+<section id="bezels" class="content-section">
+<div class="container">
+<h2>Bezels y Enmarcado de Pantalla</h2>
+<p>Mejora tu inmersión con bezels personalizados que enmarcan la pantalla de tu juego, perfectos para llenar el espacio vacío en pantallas modernas de aspecto amplio.</p>
+<div class="screenshot-frame">
+<img src="/truchiemu/media/screenshots/bezel-browser.png" alt="Interfaz del Navegador de Bezels" class="screenshot lightbox-trigger">
+<p class="screenshot-caption">Explora y descarga bezels de alta calidad adaptados a tu sistema</p>
+</div>
+<ul class="feature-list">
+<li><strong>Mapeo Automático:</strong> Los bezels se sugieren automáticamente mediante una cascada de resolución: usuario → coincidencia exacta → coincidencia limpia → coincidencia difusa → ninguno.</li>
+<li><strong>Navegador de Bezels:</strong> Descargador integrado para encontrar y aplicar bordes creados por la comunidad.</li>
+</ul>
+<p><a href="/truchiemu/es/bezel-guide.html">Más información sobre bezels &rarr;</a></p>
+</div>
+</section>
+
+<section id="analog-mouse" class="content-section">
+<div class="container">
+<h2>Soporte de Ratón Analógico</h2>
+<p>TruchiEmu te permite usar los joysticks analógicos de tu mando para controlar el cursor del ratón en juegos de DOS y ScummVM, con botones configurables para clics y la cruceta para entradas de teclado.</p>
+
+<h3>Características Principales</h3>
+<ul class="feature-list">
+<li><strong>Joystick a Ratón:</strong> El joystick analógico principal (izquierdo o derecho) controla el cursor a 60fps con sensibilidad configurable</li>
+<li><strong>Joystick Secundario para Control Fino:</strong> El joystick secundario mueve el ratón a 1/5 de velocidad para colocación precisa</li>
+<li><strong>Cruceta como Teclado:</strong> La cruceta envía teclas de flecha, Start envía Enter, Select envía Espacio</li>
+<li><strong>Asignación de Botones Configurable:</strong> Asigna clic izquierdo, derecho y central a cualquier botón del mando</li>
+<li><strong>Por Sistema y por Juego:</strong> Configuración independiente para DOS y ScummVM, con anulaciones por juego</li>
+</ul>
+
+<p><a href="/truchiemu/es/features/analog-mouse.html">Más información sobre el Soporte de Ratón Analógico &rarr;</a></p>
+</div>
+</section>
+
+<section id="training-mode" class="content-section">
+<div class="container">
+<h2>Modo de Práctica</h2>
+<p>La superposición del modo de práctica de TruchiEmu proporciona herramientas de automatización de P2 para juegos de lucha, permitiéndote controlar el dummy para practicar combos, defensa y setups.</p>
+
+<h3>Características Principales</h3>
+<ul class="feature-list">
+<li><strong>Control de Dummy:</strong> Configura la postura, guardia, técnica de despertar y acciones de reversal de P2 para práctica realista</li>
+<li><strong>Programación de Secuencias:</strong> Construye secuencias de datos de frames para que P2 las ejecute con disparadores configurables</li>
+<li><strong>Grabación de Entradas:</strong> Graba entradas de P1 mediante tape deck y reprodúcelas como P2 con múltiples ranuras</li>
+<li><strong>Visualización de Entrada:</strong> Visualización en tiempo real de las entradas de P1 y P2 con tokens de notación de movimientos</li>
+<li><strong>Integración de Movimientos:</strong> Navega por los movimientos del personaje y vincúlalos a secuencias de entrenamiento directamente desde la superposición</li>
+</ul>
+
+<p><a href="/truchiemu/es/features/training-mode.html">Más información sobre el Modo de Práctica &rarr;</a></p>
+</div>
+</section>
+
+<section id="move-lists" class="content-section">
+<div class="container">
+<h2>Superposición de Movimientos</h2>
+<p>Nunca olvides un movimiento especial otra vez. La superposición de movimientos muestra las notaciones de movimientos de juegos de lucha directamente en pantalla, ayudándote a aprender y ejecutar combos y movimientos especiales específicos de cada personaje durante el juego.</p>
+
+<h3>Características Principales</h3>
+<ul class="feature-list">
+<li><strong>Visualización en Pantalla:</strong> Las notaciones de movimientos se muestran como superposición durante el juego, categorizadas por tipo</li>
+<li><strong>Tokens Visuales:</strong> Las notaciones usan tokens visuales para entradas direccionales, combinaciones de botones y condiciones especiales</li>
+<li><strong>Conjuntos por Juego:</strong> Los movimientos se cargan automáticamente según el juego que se esté jugando</li>
+<li><strong>Movimientos Comunes:</strong> Plantillas de movimientos comunes predefinidas para juegos de lucha populares</li>
+<li><strong>Búsqueda y Filtro:</strong> Encuentra rápidamente movimientos específicos por nombre, tipo de entrada o personaje</li>
+</ul>
+
+<p><a href="/truchiemu/es/features/move-lists.html">Más información sobre la Superposición de Movimientos &rarr;</a></p>
+</div>
+</section>
+
+<section id="notifications" class="content-section">
+<div class="container">
+<h2>Sistema de Notificaciones</h2>
+<p>Mantente informado con el sistema de notificaciones integrado de TruchiEmu. Recibe alertas en tiempo real para acciones del juego, conexiones de control, logros y eventos del sistema sin interrumpir tu partida.</p>
+
+<h3>Características Principales</h3>
+<ul class="feature-list">
+<li><strong>Píldoras de Notificación:</strong> Notificaciones en forma de píldora no intrusivas que aparecen y desaparecen sin bloquear tu vista</li>
+<li><strong>Alertas de Control:</strong> Notificaciones visuales cuando los controles se conectan o desconectan</li>
+<li><strong>Acciones del Juego:</strong> Confirmaciones de estado guardado, captura de pantalla y otras acciones</li>
+<li><strong>Historial de Notificaciones:</strong> Panel completo de historial para revisar notificaciones pasadas</li>
+<li><strong>Mensajes Localizados:</strong> Texto de notificación completamente traducido a todos los idiomas soportados</li>
+</ul>
+
+<p><a href="/truchiemu/es/features/notifications.html">Más información sobre el Sistema de Notificaciones &rarr;</a></p>
+</div>
+</section>
+
+<section id="genre-management" class="content-section">
+<div class="container">
+<h2>Gestión de Géneros</h2>
+<p>Toma el control de cómo se organizan tus juegos con la gestión de géneros. Filtra, ordena y oculta géneros para mantener tu biblioteca enfocada en los tipos de juegos que amas.</p>
+
+<h3>Características Principales</h3>
+<ul class="feature-list">
+<li><strong>Controles de Visibilidad:</strong> Muestra u oculta géneros específicos en tu vista de biblioteca</li>
+<li><strong>Filtrado por Género:</strong> Filtra tu colección de juegos por uno o más géneros</li>
+<li><strong>Detección Automática:</strong> Los juegos se categorizan automáticamente por género durante el enriquecimiento de metadatos</li>
+<li><strong>Nombres Localizados:</strong> Los nombres de los géneros se traducen a tu idioma preferido</li>
+</ul>
+
+<p><a href="/truchiemu/es/features/genre-management.html">Más información sobre la Gestión de Géneros &rarr;</a></p>
+</div>
+</section>
+
+<section id="updates" class="content-section">
+<div class="container">
+<h2>Verificador de Actualizaciones</h2>
+<p>Mantente al día con las últimas versiones de TruchiEmu. El verificador de actualizaciones integrado comprueba automáticamente si hay nuevas versiones y te notifica cuando hay una actualización disponible.</p>
+
+<h3>Características Principales</h3>
+<ul class="feature-list">
+<li><strong>Verificaciones Automáticas:</strong> Comprobaciones periódicas en segundo plano de nuevas versiones de TruchiEmu</li>
+<li><strong>Registro de Cambios en la App:</strong> Ver notas de lanzamiento y registros de cambios directamente en la aplicación</li>
+<li><strong>Notificaciones de Actualización:</strong> Recibe notificaciones cuando hay una nueva versión disponible sin interrumpir tu sesión</li>
+<li><strong>Historial de Versiones:</strong> Navega por el historial completo de versiones con notas detalladas de lanzamiento</li>
+</ul>
+
+<p><a href="/truchiemu/es/features/updates.html">Más información sobre el Verificador de Actualizaciones &rarr;</a></p>
+</div>
+</section>
+
+<section id="mame" class="content-section">
+<div class="container">
+<h2>Gestión Arcade Profesional (MAME)</h2>
+<p>La emulación arcade puede ser compleja. TruchiEmu simplifica el proceso con herramientas especializadas para la gestión de ROMs de MAME.</p>
+<div class="feature-grid">
+<div class="feature-card">
+<h4>Verificación de ROMs</h4>
+<p>Verifica automáticamente la integridad de las ROMs contra bases de datos oficiales usando hashes CRC32 para asegurar reproducción sin corrupción.</p>
+</div>
+<div class="feature-card">
+<h4>Seguimiento de Dependencias</h4>
+<p>Detección inteligente de relaciones de ROMs padre e hijo. TruchiEmu te alerta si falta una ROM padre requerida antes de que intentes iniciar un juego.</p>
+</div>
+<div class="feature-card">
+<h4>Automatización de Metadatos</h4>
+<p>Se integra con LaunchBox Games DB y archivos DAT para poblar automáticamente descripciones de juegos, fechas de lanzamiento y géneros.</p>
+</div>
+</div>
+</div>
+</section>
+
+</div>
+
+
+</main>
+</div>
+
+
+
+
+
+<footer class="site-footer">
+<div class="container">
+<div class="footer-content">
+<div class="footer-section">
+<h4>TruchiEmu</h4>
+<p>Documentación completa para el emulador definitivo de juegos retro en macOS</p>
+<div class="social-links">
+<a href="https://github.com/JuanchoGithub/truchiemu" target="_blank" aria-label="GitHub">
+GitHub
+</a>
+</div>
+</div>
+
+<div class="footer-section">
+<h4>Recursos</h4>
+<ul>
+<li><a href="/truchiemu/es/getting-started.html">Primeros Pasos</a></li>
+<li><a href="/truchiemu/es/features.html">Características</a></li>
+<li><a href="/truchiemu/es/troubleshooting.html">Solución de Problemas</a></li>
+<li><a href="/truchiemu/es/development.html">Desarrollo</a></li>
+</ul>
+</div>
+
+<div class="footer-section">
+<h4>Sistemas Compatibles</h4>
+<ul>
+<li><a href="/truchiemu/es/systems/nes.html">NES</a></li>
+<li><a href="/truchiemu/es/systems/snes.html">SNES</a></li>
+<li><a href="/truchiemu/es/systems/n64.html">N64</a></li>
+<li><a href="/truchiemu/es/systems/gba.html">GBA</a></li>
+<li><a href="/truchiemu/es/systems.html">Todos los Sistemas &rarr;</a></li>
+</ul>
+</div>
+
+<div class="footer-section">
+<h4>Proyecto</h4>
+<ul>
+<li><a href="https://github.com/JuanchoGithub/truchiemu/releases" target="_blank">Descargas</a></li>
+<li><a href="https://github.com/JuanchoGithub/truchiemu/issues" target="_blank">Problemas</a></li>
+<li><a href="/truchiemu/es/development.html">Contribuir</a></li>
+<li><a href="/truchiemu/es/license.html">Licencia</a></li>
+</ul>
+</div>
+</div>
+
+<div class="footer-bottom">
+<p>&copy; 2026 TruchiEmu Team. Built with Jekyll on GitHub Pages.</p>
+<p class="tiny-text">MIT License. Thanks to LibRetro and countless open-source contributors.</p>
+</div>
+</div>
+</footer>
+
+
+<div class="lightbox-overlay" id="lightbox">
+<button class="lightbox-close" id="lightbox-close" aria-label="Close">&times;</button>
+<img class="lightbox-image" id="lightbox-image" alt="">
+</div>
+</body>
+</html>

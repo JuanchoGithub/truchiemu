@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+
+
+<html lang="pt">
+<head>
+
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Suporte a Mouse Analógico - Documentação do TruchiEmu - Documentação do TruchiEmu</title>
+<meta name="description" content="Documentação completa para o emulador definitivo de jogos retro no macOS">
+<link rel="canonical" href="https://juanchogithub.github.io/truchiemu/pt/features/analog-mouse">
+<meta name="generator" content="Jekyll 4.4.1">
+
+<!-- Open Graph -->
+  <meta property="og:title" content="Suporte a Mouse Analógico - Documentação do TruchiEmu">
+  <meta property="og:description" content="Documentação completa para o emulador definitivo de jogos retro no macOS">
+<meta property="og:url" content="https://juanchogithub.github.io/truchiemu/pt/features/analog-mouse">
+<meta property="og:site_name" content="Documentação do TruchiEmu">
+<meta property="og:type" content="article">
+<meta property="og:image" content="https://juanchogithub.github.io/truchiemu/media/logo-icon.png">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Suporte a Mouse Analógico - Documentação do TruchiEmu">
+  <meta name="twitter:description" content="Documentação completa para o emulador definitivo de jogos retro no macOS">
+<meta name="twitter:image" content="https://juanchogithub.github.io/truchiemu/media/logo-icon.png">
+
+<!-- RSS -->
+<link rel="alternate" type="application/rss+xml" href="/truchiemu/feed.xml">
+
+<!-- Styles -->
+<link rel="stylesheet" href="/truchiemu/assets/css/main.css">
+<script src="/truchiemu/assets/js/main.js"></script>
+
+</head>
+<body>
+
+
+
+
+<header class="site-header">
+<div class="container">
+<div class="header-content">
+<a href="/truchiemu/pt/" class="logo">
+<img src="/truchiemu/media/logo-icon.png" alt="TruchiEmu" width="32" height="32">
+<span>TruchiEmu</span>
+</a>
+
+<nav class="main-nav">
+<a href="/truchiemu/pt/getting-started.html" class="nav-link">Primeiros Passos</a>
+<a href="/truchiemu/pt/features.html" class="nav-link">Recursos</a>
+<a href="/truchiemu/pt/troubleshooting.html" class="nav-link">Solução de Problemas</a>
+<a href="/truchiemu/pt/development.html" class="nav-link">Desenvolvimento</a>
+</nav>
+
+<div class="header-actions">
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18">
+          <path d="M12 3v2m0 14v2m-8.485-.515l1.414-1.414m12.728-12.728l1.414-1.414M4.93 4.93l1.414 1.414m12.728 12.728l1.414 1.414M3 12h2m14 0h2m-9 4a4 4 0 100-8 4 4 0 000 8z"/>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18">
+          <path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+        </svg>
+      </button>
+      <div class="lang-switcher">
+        
+          <a href="/truchiemu/" class="lang-link">EN</a>
+          <a href="/truchiemu/es/" class="lang-link">ES</a>
+          <span class="lang-link lang-active">PT</span>
+        
+      </div>
+<a href="https://github.com/JuanchoGithub/truchiemu" class="btn btn-outline" target="_blank">
+GitHub
+</a>
+</div>
+</div>
+</div>
+</header>
+<div class="search-overlay" id="search-overlay">
+<div class="search-container">
+<input type="text" id="search-input" placeholder="Pesquisar documentação..." autofocus>
+<button id="search-close" class="search-close">&times;</button>
+<div id="search-results"></div>
+</div>
+</div>
+
+
+<div class="site-container">
+
+
+
+
+
+<aside class="sidebar">
+<div class="sidebar-section">
+<h3>Primeiros Passos</h3>
+<ul class="sidebar-nav">
+<li><a href="/truchiemu/pt/getting-started.html">Instalação</a></li>
+<li><a href="/truchiemu/pt/getting-started.html#quick-start">Início Rápido</a></li>
+<li><a href="/truchiemu/pt/getting-started.html#next-steps">Próximos Passos</a></li>
+</ul>
+</div>
+
+<div class="sidebar-section">
+<h3>Recursos Principais</h3>
+<ul class="sidebar-nav">
+<li><a href="/truchiemu/pt/features/shaders.html">Shaders</a></li>
+<li><a href="/truchiemu/pt/features/library.html">Biblioteca</a></li>
+<li><a href="/truchiemu/pt/features/achievements.html">Conquistas</a></li>
+<li><a href="/truchiemu/pt/features/save-states.html">Estados Salvos</a></li>
+<li><a href="/truchiemu/pt/features/controllers.html">Controles</a></li>
+<li><a href="/truchiemu/pt/features/cheats.html">Trapaças</a></li>
+<li><a href="/truchiemu/pt/features/themes.html">Temas e Aparência</a></li>
+<li><a href="/truchiemu/pt/features/analog-mouse.html">Mouse Analógico</a></li>
+<li><a href="/truchiemu/pt/features/training-mode.html">Modo de Treinamento</a></li>
+<li><a href="/truchiemu/pt/features/move-lists.html">Listas de Movimentos</a></li>
+<li><a href="/truchiemu/pt/features/notifications.html">Notificações</a></li>
+<li><a href="/truchiemu/pt/features/genre-management.html">Gerenciamento de Gêneros</a></li>
+<li><a href="/truchiemu/pt/features/updates.html">Verificador de Atualizações</a></li>
+</ul>
+</div>
+
+<div class="sidebar-section">
+<h3>Desenvolvimento</h3>
+<ul class="sidebar-nav">
+<li><a href="/truchiemu/pt/development.html">Arquitetura</a></li>
+<li><a href="/truchiemu/pt/dev/building.html">Compilação</a></li>
+<li><a href="/truchiemu/pt/dev/contributing.html">Contribuir</a></li>
+<li><a href="/truchiemu/pt/dreamcast-vmu-fix.html">Depuração de Saves VMU do Dreamcast</a></li>
+<li><a href="/truchiemu/pt/changelog.html">Registro de alterações</a></li>
+</ul>
+</div>
+
+<div class="sidebar-sticky-footer">
+<button id="search-toggle" class="btn btn-block">
+🔎 Buscar Docs
+</button>
+</div>
+</aside>
+
+
+
+<main class="main-content" id="content">
+<div class="content-wrapper">
+<div class="feature-docs">
+    <h1>Suporte a Mouse Analógico</h1>
+    
+    <div class="feature-overview">
+        <p class="lead">O TruchiEmu permite usar os analógicos do seu controle para controlar o cursor do mouse em jogos DOS e ScummVM, com botões configuráveis para cliques e o direcional para entradas de teclado.</p>
+    </div>
+
+    <section id="service-explanation">
+        <h2>Visão Geral</h2>
+        <p>O sistema de mouse analógico traduz a deflexão do analógico do seu controle em movimento do cursor para jogos de apontar e clicar em DOS e ScummVM. Isso permite navegar por menus, clicar em objetos e interagir com mundos do jogo usando um controle em vez de um mouse físico. O recurso é configurável por sistema (DOS, ScummVM) e suporta substituições por jogo.</p>
+        
+        <h3>Como Funciona</h3>
+        <ul class="feature-list">
+            <li><strong>Analógico para Mouse:</strong> O analógico primário (esquerdo ou direito, selecionável pelo usuário) é amostrado a 60fps e sua deflexão é traduzida em valores delta do mouse</li>
+            <li><strong>Analógico Secundário para Controle Fino:</strong> O analógico secundário move o mouse a 1/5 da velocidade para posicionamento preciso</li>
+            <li><strong>Direcional como Teclado:</strong> O direcional envia teclas de seta (Cima/Baixo/Esquerda/Direita), Start envia Enter, Select envia Espaço</li>
+            <li><strong>Mapeamento de Botões Configurável:</strong> Atribua clique esquerdo, clique direito e clique do meio a qualquer botão do controle (A, B, X, Y, L1, R1, L2, R2, L3, R3, Start, Select)</li>
+        </ul>
+
+        <h3>Recursos Principais</h3>
+        <ul class="feature-list">
+            <li><strong>Controle de Sensibilidade:</strong> Ajuste a velocidade do ponteiro de 0.1x a 5.0x para corresponder à sua preferência</li>
+            <li><strong>Ajuste de Zona Morta:</strong> Defina o limite da zona morta (0.00–0.50) para eliminar drift do analógico</li>
+            <li><strong>Seleção de Analógico:</strong> Escolha qual analógico (esquerdo ou direito) controla o mouse</li>
+            <li><strong>Configurações por Sistema:</strong> Configuração independente para DOS e ScummVM</li>
+            <li><strong>Substituição por Jogo:</strong> Ative ou desative o mouse analógico para ROMs individuais</li>
+            <li><strong>Visualizador ao Vivo:</strong> Exibição em tempo real da posição do analógico com sobreposição de zona morta nas configurações</li>
+        </ul>
+
+        <p>Para detalhes de implementação, consulte o <a href="/truchiemu/pt/development.html">Guia do Desenvolvedor</a>.</p>
+    </section>
+
+    <section id="step-by-step-guide">
+        <h2>Como Usar</h2>
+        
+        <h3>Configuração Básica</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Abrir Configurações de Mouse Analógico</strong>
+                <p>Vá para <code>Configurações → Mouse Analógico</code> para configurar as preferências de sistema para DOS e ScummVM.</p>
+            </li>
+            <li>
+                <strong>Ativar o Recurso</strong>
+                <p>Ative o mouse analógico para DOS, ScummVM ou ambos. O recurso está desativado por padrão.</p>
+            </li>
+            <li>
+                <strong>Ajustar Sensibilidade</strong>
+                <p>Use o controle deslizante de sensibilidade (0.1x–5.0x) para definir a velocidade do cursor em resposta à deflexão do analógico.</p>
+            </li>
+            <li>
+                <strong>Definir Zona Morta</strong>
+                <p>Ajuste a zona morta para evitar movimento indesejado do cursor devido a drift do analógico. O visualizador ao vivo mostra a posição atual do analógico em relação à zona morta.</p>
+            </li>
+            <li>
+                <strong>Escolher seu Analógico</strong>
+                <p>Selecione qual analógico (esquerdo ou direito) controla o mouse. O outro analógico fornece controle fino em velocidade reduzida.</p>
+            </li>
+            <li>
+                <strong>Mapear Botões do Mouse</strong>
+                <p>Atribua clique esquerdo, clique direito e clique do meio aos botões do controle de sua preferência.</p>
+            </li>
+        </ol>
+
+        <h3>Substituição por Jogo</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Abrir Detalhes do Jogo</strong>
+                <p>Selecione uma ROM de DOS ou ScummVM em sua biblioteca e abra sua visualização de detalhes.</p>
+            </li>
+            <li>
+                <strong>Ativar Mouse Analógico</strong>
+                <p>Use o interruptor de Mouse Analógico para substituir a configuração do sistema para este jogo específico.</p>
+            </li>
+            <li>
+                <strong>Restaurar Padrão</strong>
+                <p>Use o botão Restaurar para limpar a substituição por jogo e reverter para a configuração do sistema.</p>
+            </li>
+        </ol>
+
+        <h3>Durante o Jogo</h3>
+        <ul class="feature-list">
+            <li>O analógico move o cursor — empurre suavemente para movimento preciso, deflexão total para navegação rápida</li>
+            <li>O analógico secundário oferece 1/5 da velocidade para posicionamento pixel-perfect</li>
+            <li>O direcional envia teclas de seta (útil para navegação de menus em jogos DOS)</li>
+            <li>Start age como Enter, Select age como Espaço</li>
+            <li>Os botões mapeados realizam ações de clique esquerdo/direito/meio</li>
+        </ul>
+    </section>
+
+    <section id="references">
+        <h2>Serviços Relacionados</h2>
+        
+        <div class="related-services">
+            <div class="service-card">
+                <h3><a href="/truchiemu/pt/features/controllers.html">Suporte a Controles</a></h3>
+                <p>Configure mapeamentos de controle e perfis junto com as configurações de mouse analógico.</p>
+            </div>
+            
+            <div class="service-card">
+                <h3><a href="/truchiemu/pt/features/library.html">Biblioteca de Jogos</a></h3>
+                <p>Navegue e inicie títulos DOS e ScummVM da sua biblioteca.</p>
+            </div>
+        </div>
+    </section>
+</div>
+
+</div>
+
+
+</main>
+</div>
+
+
+
+
+
+<footer class="site-footer">
+<div class="container">
+<div class="footer-content">
+<div class="footer-section">
+<h4>TruchiEmu</h4>
+<p>Documentação completa para o emulador definitivo de jogos retro no macOS</p>
+<div class="social-links">
+<a href="https://github.com/JuanchoGithub/truchiemu" target="_blank" aria-label="GitHub">
+GitHub
+</a>
+</div>
+</div>
+
+<div class="footer-section">
+<h4>Recursos</h4>
+<ul>
+<li><a href="/truchiemu/pt/getting-started.html">Primeiros Passos</a></li>
+<li><a href="/truchiemu/pt/features.html">Recursos</a></li>
+<li><a href="/truchiemu/pt/troubleshooting.html">Solução de Problemas</a></li>
+<li><a href="/truchiemu/pt/development.html">Desenvolvimento</a></li>
+</ul>
+</div>
+
+<div class="footer-section">
+<h4>Sistemas Suportados</h4>
+<ul>
+<li><a href="/truchiemu/pt/systems/nes.html">NES</a></li>
+<li><a href="/truchiemu/pt/systems/snes.html">SNES</a></li>
+<li><a href="/truchiemu/pt/systems/n64.html">N64</a></li>
+<li><a href="/truchiemu/pt/systems/gba.html">GBA</a></li>
+<li><a href="/truchiemu/pt/systems.html">Todos os Sistemas &rarr;</a></li>
+</ul>
+</div>
+
+<div class="footer-section">
+<h4>Projeto</h4>
+<ul>
+<li><a href="https://github.com/JuanchoGithub/truchiemu/releases" target="_blank">Downloads</a></li>
+<li><a href="https://github.com/JuanchoGithub/truchiemu/issues" target="_blank">Problemas</a></li>
+<li><a href="/truchiemu/pt/development.html">Contribuir</a></li>
+<li><a href="/truchiemu/pt/license.html">Licença</a></li>
+</ul>
+</div>
+</div>
+
+<div class="footer-bottom">
+<p>&copy; 2026 TruchiEmu Team. Built with Jekyll on GitHub Pages.</p>
+<p class="tiny-text">MIT License. Thanks to LibRetro and countless open-source contributors.</p>
+</div>
+</div>
+</footer>
+
+
+<div class="lightbox-overlay" id="lightbox">
+<button class="lightbox-close" id="lightbox-close" aria-label="Close">&times;</button>
+<img class="lightbox-image" id="lightbox-image" alt="">
+</div>
+</body>
+</html>
