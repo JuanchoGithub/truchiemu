@@ -69,7 +69,15 @@ description: Entendiendo cómo TruchiEmu gestiona la compatibilidad de sistemas 
 
 <div class="success-box">
 <h3>BIOS Pre-Incluidas</h3>
-<p>TruchiEmu viene pre-empaquetado con archivos BIOS para la Sega Saturn (<code>sega_101.bin</code> y <code>mpr-17933.bin</code>), asegurando que estos sistemas funcionen justo después de la instalación. Para otros sistemas que requieren archivos BIOS (como PlayStation, 3DO y Dreamcast), necesitarás proporcionar los tuyos propios.</p>
+        <p>TruchiEmu viene pre-empaquetado con archivos BIOS y de sistema para varias consolas, asegurando que funcionen justo después de la instalación:</p>
+        <ul>
+            <li><strong>Sega Saturn</strong> — <code>sega_101.bin</code> y <code>mpr-17933.bin</code></li>
+            <li><strong>Dreamcast</strong> — <code>dc_boot.bin</code>, <code>dc_flash.bin</code> y archivos VMU</li>
+            <li><strong>Atari Jaguar</strong> — BIOS de Jaguar y Jaguar CD</li>
+            <li><strong>PSP</strong> — Archivos de sistema de PPSSPP</li>
+            <li><strong>GameCube/Wii</strong> — Archivos de sistema de Dolphin (se descargan automáticamente al primer uso)</li>
+        </ul>
+        <p>PlayStation no requiere un archivo BIOS — el core Beetle PSX está configurado para omitir la secuencia de arranque de la BIOS. Para sistemas como 3DO y ciertos juegos arcade MAME que requieren archivos BIOS no incluidos con TruchiEmu, necesitarás proporcionar los tuyos propios.</p>
 </div>
 
 <h3>BIOS Personalizada</h3>

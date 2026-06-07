@@ -703,6 +703,7 @@
 		9B3B828960D33C81D8E6AF17 /* sufami@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = E3E2B860B54481BF16012387 /* sufami@132w.png */; };
 		9B45568FA08D6E7049F6B62A /* input_coreLabels_beetle_bsnes.json in Resources */ = {isa = PBXBuildFile; fileRef = 5A6FF56C23A80B7D68EA5193 /* input_coreLabels_beetle_bsnes.json */; };
 		9B66E771DDAFE8430109DCF8 /* fightdata_kizuna.json in Resources */ = {isa = PBXBuildFile; fileRef = 3F06DE9467D9C3C67A9AF659 /* fightdata_kizuna.json */; };
+		9B925803A17E7F9D43679470 /* JaguarBIOSService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B57968ED5BE5EC0BF7BE93EB /* JaguarBIOSService.swift */; };
 		9BA88DAC28728BC3B9FEF862 /* segacd@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 7E3EFA7FF680E96BA5E3719A /* segacd@132w.png */; };
 		9C326B88CFB1F6410DFFB954 /* fightdata_ts2.json in Resources */ = {isa = PBXBuildFile; fileRef = AF3CADF1ABA18B787DBEA3B2 /* fightdata_ts2.json */; };
 		9C4953DA8A9873CAA8622D6B /* gg-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = EB3C2FF168A6FB90476E49BC /* gg-cheats.zip */; };
@@ -1983,6 +1984,7 @@
 		B503E784CCAA10E87FCC8664 /* input_coreLabels_pd777.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_pd777.json; sourceTree = "<group>"; };
 		B5307A2424529A50C5E6BF26 /* SavesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavesSettingsView.swift; sourceTree = "<group>"; };
 		B54516F131621A68EEC7EBC0 /* MAMEDependencyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEDependencyService.swift; sourceTree = "<group>"; };
+		B57968ED5BE5EC0BF7BE93EB /* JaguarBIOSService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JaguarBIOSService.swift; sourceTree = "<group>"; };
 		B58F4D64F1E5008E97CEB40F /* ArcadeButtonMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArcadeButtonMapper.swift; sourceTree = "<group>"; };
 		B5B1D330F958A092AFBD96F0 /* MEGADUCK.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MEGADUCK.png; sourceTree = "<group>"; };
 		B5CA00A8090C98179839D7C0 /* NEOCD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NEOCD.png; sourceTree = "<group>"; };
@@ -3176,6 +3178,7 @@
 				02AF500782AB016FB6164846 /* DreamcastBIOSService.swift */,
 				EB775F5E7D4CB3DFCACA89A5 /* GameDragState.swift */,
 				8BA1C0AA362D511F3CD87919 /* HardcoreModeManager.swift */,
+				B57968ED5BE5EC0BF7BE93EB /* JaguarBIOSService.swift */,
 				51CC71BA94F2F723F61276A2 /* LaunchBoxGamesDBService.swift */,
 				553202E8BACC113D608625E6 /* LibretroRDBParser.swift */,
 				352DC36DB12EA05E9995055B /* LibretroThumbnailManifestService.swift */,
@@ -5266,6 +5269,7 @@
 				5C21FC79918223E0B36912D2 /* InputParser.swift in Sources */,
 				99B049AB137B01676D6EA272 /* InputStateTracker.swift in Sources */,
 				2474F15C5856BC63F1735299 /* InstallDragView.swift in Sources */,
+				9B925803A17E7F9D43679470 /* JaguarBIOSService.swift in Sources */,
 				7ABCF7A060244B57A297019B /* KeyboardMapping.swift in Sources */,
 				D1987AB001C52B7301D88FF8 /* LaunchBoxGameMetadata.swift in Sources */,
 				C18E5BE81E68BF2BD3405575 /* LaunchBoxGamesDBService.swift in Sources */,

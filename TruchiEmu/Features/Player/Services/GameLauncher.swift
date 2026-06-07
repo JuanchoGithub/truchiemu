@@ -220,6 +220,10 @@ func launchGame(
             DreamcastBIOSService.shared.ensureExtracted()
         }
 
+        if coreID.lowercased().contains("virtualjaguar") {
+            JaguarBIOSService.shared.ensureExtracted()
+        }
+
         isLaunching = true
         currentLaunchROM = rom
         launchPhase = .preparingConfig
