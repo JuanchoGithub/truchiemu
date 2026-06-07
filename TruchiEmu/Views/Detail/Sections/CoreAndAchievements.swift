@@ -258,32 +258,37 @@ Label(loc.localized("achievement.searchRetroAchievements"), systemImage: "checkm
                 }
                 .frame(maxWidth: .infinity).padding(.vertical, AppSpacing.xl)
             }
-                } else {
-                    HStack(spacing: AppSpacing.xl2) {
-                        VStack(alignment: .leading, spacing: AppSpacing.xxs) {
-                            Text("\(unlockedAchievementCount)/\(gameAchievements.count)").font(.title2).fontWeight(.bold).foregroundColor(AppColors.textPrimary(colorScheme))
-                            Text(loc.localized("achievement.achievements")).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
-                        }
-                        VStack(alignment: .leading, spacing: AppSpacing.xxs) {
-                            Text("\(earnedPoints)/\(totalAchievementPoints)").font(.title2).fontWeight(.bold).foregroundColor(AppColors.textPrimary(colorScheme))
-                            Text(loc.localized("achievement.points")).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
-                        }
-                        Spacer()
-                        let progress = gameAchievements.isEmpty ? 0.0 : Double(unlockedAchievementCount) / Double(gameAchievements.count)
-                        ProgressView(value: progress).frame(width: 100)
+ } else {
+ HStack(spacing: AppSpacing.xl2) {
+ VStack(alignment: .leading, spacing: AppSpacing.xxs) {
+ Text("\(unlockedAchievementCount)/\(gameAchievements.count)").font(.title2).fontWeight(.bold).foregroundColor(AppColors.textPrimary(colorScheme))
+ Text(loc.localized("achievement.achievements")).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
+ }
+ VStack(alignment: .leading, spacing: AppSpacing.xxs) {
+ Text("\(earnedPoints)/\(totalAchievementPoints)").font(.title2).fontWeight(.bold).foregroundColor(AppColors.textPrimary(colorScheme))
+ Text(loc.localized("achievement.points")).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
+ }
+ Spacer()
+ let progress = gameAchievements.isEmpty ? 0.0 : Double(unlockedAchievementCount) / Double(gameAchievements.count)
+ ProgressView(value: progress).frame(width: 100)
 
-                        Picker(selection: $achievementViewMode) {
-                            ForEach(AchievementViewMode.allCases, id: \.self) { mode in
-                                Image(systemName: mode.icon).tag(mode)
-                            }
-                        } label: {
-                            EmptyView()
-                        }
-                        .pickerStyle(.segmented)
-                        .frame(width: 80)
-                    }.padding(.vertical, AppSpacing.xs)
+ Picker(selection: $achievementViewMode) {
+ ForEach(AchievementViewMode.allCases, id: \.self) { mode in
+ Image(systemName: mode.icon).tag(mode)
+ }
+ } label: {
+ EmptyView()
+ }
+ .pickerStyle(.segmented)
+ .frame(width: 80)
+ }.padding(.vertical, AppSpacing.xs)
+ .onAppear {
+ if !gameAchievements.isEmpty {
+ RABadgeCacheService.shared.prefetchBadges(for: gameAchievements)
+ }
+ }
 
-                    Divider().overlay(AppColors.divider(colorScheme))
+ Divider().overlay(AppColors.divider(colorScheme))
 
                     if achievementViewMode == .grid {
                         achievementGridView

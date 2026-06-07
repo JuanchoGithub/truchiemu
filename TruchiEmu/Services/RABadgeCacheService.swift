@@ -65,8 +65,8 @@ class RABadgeCacheService: ObservableObject {
     }
     
     /// Downloads all missing badges for a list of achievements with rate limiting (2 hits/sec).
-    func prefetchBadges(for achievements: [Achievement]) {
-        LoggerService.info(category: "RABadgeCache", "Prefetching badges for \(achievements.count) achievements...")
+ func prefetchBadges(for achievements: [Achievement]) {
+ LoggerService.info(category: "RABadgeCache", "Prefetching badges for \(achievements.count) achievements...")
         Task {
             var downloadCount = 0
             for achievement in achievements {

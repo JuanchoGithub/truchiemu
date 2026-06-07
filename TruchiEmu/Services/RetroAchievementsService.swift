@@ -1103,9 +1103,7 @@ class RetroAchievementsService: ObservableObject {
         // 1. Try to load from cache first (skip if forced)
         if !force, let cached = await loadGameInfoFromCache(gameID: gameID, username: username) {
             if !shouldFetch(cachedAt: cached.cachedAt, isUserInitiated: isUserInitiated) {
-                LoggerService.info(category: "RetroAchievements", "Using cached achievement info for game \(gameID) (cached at \(cached.cachedAt))")
-
-                RABadgeCacheService.shared.prefetchBadges(for: cached.gameInfo.achievements)
+ LoggerService.info(category: "RetroAchievements", "Using cached achievement info for game \(gameID) (cached at \(cached.cachedAt))")
 
                 var result = cached.gameInfo
                 if let parentID = result.parentGameID {
@@ -1154,9 +1152,8 @@ class RetroAchievementsService: ObservableObject {
                     trigger: achResponse.MemAddr
                 )
                 achievements.append(achievement)
-            }
-            RABadgeCacheService.shared.prefetchBadges(for: achievements)
-        }
+ }
+ }
 
         let parentGameID = response.ParentGameID
 
@@ -1187,13 +1184,11 @@ class RetroAchievementsService: ObservableObject {
         } catch {
             LoggerService.info(category: "RetroAchievements", "Network fetch failed for game \(gameID): \(error). Trying cache fallback...")
             if let cached = await loadGameInfoFromCache(gameID: gameID, username: username) {
-                LoggerService.info(category: "RetroAchievements", "Using stale cache for game \(gameID) after network failure")
-                RABadgeCacheService.shared.prefetchBadges(for: cached.gameInfo.achievements)
-                return cached.gameInfo
+ LoggerService.info(category: "RetroAchievements", "Using stale cache for game \(gameID) after network failure")
+ return cached.gameInfo
             }
             if let diskAchievements = loadCachedAchievements(gameID: gameID, username: username) {
-                LoggerService.info(category: "RetroAchievements", "Using disk cache for game \(gameID) after network failure")
-                RABadgeCacheService.shared.prefetchBadges(for: diskAchievements)
+ LoggerService.info(category: "RetroAchievements", "Using disk cache for game \(gameID) after network failure")
                 let parentID = parentGameIDForCache(gameID: gameID)
                 return RAGameInfo(
                     id: gameID,
@@ -1633,13 +1628,19 @@ func refreshGameCacheAfterGameStop() {
           !webApiKey.isEmpty else { return }
     let gameID = game.id
     Task {
-        do {
-            _ = try await fetchGameInfo(gameID: gameID, username: username, isUserInitiated: true)
-            LoggerService.info(category: "RetroAchievements", "Post-game cache refresh completed for game \(gameID)")
-            if let parentID = game.parentGameID, parentID > 0 {
-                _ = try await fetchGameInfo(gameID: parentID, username: username, isUserInitiated: true)
-                LoggerService.info(category: "RetroAchievements", "Post-game cache refresh completed for parent game \(parentID)")
-            }
+ do {
+ let refreshedInfo = try await fetchGameInfo(gameID: gameID, username: username, isUserInitiated: true)
+ LoggerService.info(category: "RetroAchievements", "Post-game cache refresh completed for game \(gameID)")
+ if !refreshedInfo.achievements.isEmpty {
+ RABadgeCacheService.shared.prefetchBadges(for: refreshedInfo.achievements)
+ }
+ if let parentID = game.parentGameID, parentID > 0 {
+ let parentInfo = try await fetchGameInfo(gameID: parentID, username: username, isUserInitiated: true)
+ LoggerService.info(category: "RetroAchievements", "Post-game cache refresh completed for parent game \(parentID)")
+ if !parentInfo.achievements.isEmpty {
+ RABadgeCacheService.shared.prefetchBadges(for: parentInfo.achievements)
+ }
+ }
         } catch {
             LoggerService.debug(category: "RetroAchievements", "Post-game cache refresh failed: \(error.localizedDescription)")
         }

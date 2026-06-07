@@ -159,6 +159,11 @@ struct AchievementListView: View {
             }
         }
         .navigationTitle(loc.localized("achievement.achievementsTitle"))
+ .onAppear {
+ if let game = raService.currentGame, !game.achievements.isEmpty {
+ RABadgeCacheService.shared.prefetchBadges(for: game.achievements)
+ }
+ }
     }
 
     @ViewBuilder
