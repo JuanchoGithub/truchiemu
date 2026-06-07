@@ -1,141 +1,29 @@
 ---
 layout: default
 title: Troubleshooting
-description: Common issues and solutions for TruchiEmu - installation, performance, controller, shader, and save state troubleshooting guides
+description: How to get help with TruchiEmu
 ---
 
 <div class="feature-docs">
     <h1>Troubleshooting</h1>
 
     <div class="feature-overview">
-        <p class="lead">Having issues with TruchiEmu? This guide covers common problems and their solutions for installation, performance, controllers, shaders, and more.</p>
+        <p class="lead">Most issues can be diagnosed from the logs. If you need further help, check GitHub Issues.</p>
     </div>
 
-    <section id="getting-help">
-        <h2>Getting Help</h2>
-        <p>Before contacting support, try these steps:</p>
+    <section id="logs">
+        <h2>Check the Logs</h2>
+        <p>TruchiEmu writes detailed logs to help diagnose problems:</p>
         <ul>
-<li>Check the <a href="{{ '/getting-started.html' | relative_url }}">Getting Started</a> guide for setup basics</li>
-<li>Search <a href="https://github.com/JuanchoGithub/truchiemu/issues">GitHub Issues</a> for known problems</li>
-
-            <li>Ask the community on <a href="https://github.com/JuanchoGithub/truchiemu/discussions">GitHub Discussions</a></li>
+            <li><strong>App Logs:</strong> <code>~/Library/Logs/TruchiEmu/</code> &mdash; general application and emulation logs</li>
+            <li><strong>Crash Reports:</strong> <code>~/Library/Logs/DiagnosticReports/</code> &mdash; system crash logs</li>
         </ul>
+        <p>Enable verbose logging in Settings &rarr; Advanced &rarr; Log Level to capture more detail.</p>
     </section>
 
-    <section id="installation">
-        <h2>Installation Issues</h2>
-
-        <h3>App Won't Open</h3>
-        <p><strong>Symptom:</strong> TruchiEmu bounces in the dock but doesn't launch, or shows "TruchiEmu cannot be opened because it is from an unidentified developer."</p>
-        <p><strong>Solution:</strong> macOS may block apps not notarized by Apple. Right-click (or Ctrl-click) the app and select "Open" from the context menu, then click "Open" in the dialog. Alternatively, go to System Settings > Privacy & Security and look for a message about TruchiEmu being blocked.</p>
-
-        <h3>App Crashes on Launch</h3>
-        <p><strong>Symptom:</strong> TruchiEmu crashes immediately after launching.</p>
-        <p><strong>Solution:</strong> Verify your macOS version is 14.0 (Sonoma) or later. If the app won't open at all, try deleting the preferences file at <code>~/Library/Preferences/com.truchiemu.plist</code>.</p>
-
-        <h3>Missing Dependencies</h3>
-        <p><strong>Symptom:</strong> Error messages about missing libraries or frameworks when building from source.</p>
-        <p><strong>Solution:</strong> Ensure Xcode Command Line Tools are installed (<code>xcode-select --install</code>). Install required dependencies with Homebrew: <code>brew install cmake xcodegen</code>.</p>
-    </section>
-
-    <section id="performance">
-        <h2>Performance Issues</h2>
-
-<h3>Low Frame Rate / Stuttering</h3>
-<p><strong>Symptom:</strong> Games run below full speed or have frequent stutters.</p>
-<p><strong>Solution:</strong> Try these steps in order:</p>
-<ol>
-<li>Reduce shader complexity or use Passthrough shader</li>
-<li>Lower internal resolution scaling (for 3D systems like N64)</li>
-<li>Increase audio buffer in core options</li>
-<li>Close other applications to free system resources</li>
-<li>Try a different core for the system (e.g., snes9x instead of bsnes for SNES)</li>
-</ol>
-
-<h3>Audio Crackling or Popping</h3>
-<p><strong>Symptom:</strong> Distorted audio, especially during scene transitions or complex audio sequences.</p>
-<p><strong>Solution:</strong> Increase audio buffer size in core options. Try a different core for the system. Disable rewind feature if enabled, as it can cause audio stuttering.</p>
-
-<h3>High CPU Usage</h3>
-<p><strong>Symptom:</strong> TruchiEmu uses excessive CPU even when idle or on simple games.</p>
-<p><strong>Solution:</strong> Use lighter emulation cores (snes9x instead of bsnes for SNES). Disable rewind feature if not needed. Check that a demanding shader (CRT Multipass, CRT Lottes) is not active when not needed.</p>
-    </section>
-
-    <section id="controllers">
-        <h2>Controller Issues</h2>
-
-        <h3>Controller Not Detected</h3>
-        <p><strong>Symptom:</strong> Controller connected but not recognized by TruchiEmu.</p>
-        <p><strong>Solution:</strong> Check macOS System Settings > Privacy & Security > Bluetooth (for wireless). Ensure the controller is paired before launching TruchiEmu. For Xbox controllers, try a wired USB connection first. Restart TruchiEmu with the controller connected.</p>
-
-<h3>Input Lag</h3>
-<p><strong>Symptom:</strong> Delay between pressing a button and the action appearing on screen.</p>
-<p><strong>Solution:</strong> Use a wired connection instead of Bluetooth. Reduce audio buffer in core options. Disable V-Sync if applicable in core options.</p>
-
-        <h3>Wrong Button Mapping</h3>
-        <p><strong>Symptom:</strong> Buttons don't match the expected layout.</p>
-        <p><strong>Solution:</strong> Open Settings > Controllers > Button Mapping and remap buttons as needed. Save as a profile for reuse. Check if a per-core or per-game override is active.</p>
-
-<h3>Analog Stick Drift</h3>
-<p><strong>Symptom:</strong> Character moves without touching the controller.</p>
-<p><strong>Solution:</strong> Increase the deadzone in controller settings. TruchiEmu uses a single radial deadzone  raising it will filter out small unintended movements. Clean controller sticks with compressed air.</p>
-    </section>
-
-    <section id="shaders">
-        <h2>Shader Issues</h2>
-
-        <h3>Shader Compilation Failures</h3>
-        <p><strong>Symptom:</strong> "Metal compiler error" when selecting a shader.</p>
-        <p><strong>Solution:</strong> Update macOS to the latest version for newest Metal features. Verify your GPU supports the required Metal feature set (requires macOS 14+).</p>
-
-<h3>No Visible Effect</h3>
-<p><strong>Symptom:</strong> Shader is selected but no visual change is visible.</p>
-<p><strong>Solution:</strong> Some shaders have subtle effects. Try adjusting shader parameters (intensity, scanline strength) in the shader settings. Try a more noticeable shader like CRT Lottes to verify the system works.</p>
-
-<h3>Shader Performance Impact</h3>
-<p><strong>Symptom:</strong> Frame rate drops with complex shaders enabled.</p>
-<p><strong>Solution:</strong> Use simpler shaders (Lite CRT instead of CRT Multipass, Scale Smooth instead of CRT Lottes). Consider using per-game shader settings to use lighter shaders for demanding games.</p>
-    </section>
-
-    <section id="roms">
-        <h2>ROM Loading Issues</h2>
-
-        <h3>ROM Not Recognized</h3>
-        <p><strong>Symptom:</strong> Game shows as "Unknown" or doesn't appear in library.</p>
-        <p><strong>Solution:</strong> Verify the ROM file type is supported by the target system. Check that the file extension is in the allowed list. Try a different ROM dump from a verified source. Manually identify the game via right-click > Identify Game.</p>
-
-        <h3>Game Won't Launch</h3>
-        <p><strong>Symptom:</strong> Game appears in library but crashes on launch.</p>
-        <p><strong>Solution:</strong> Ensure you have the correct core installed for the system. Check if the game requires BIOS files (PlayStation, Saturn, Neo Geo). Try a different emulation core. Verify the ROM is not corrupted.</p>
-
-        <h3>Wrong System Detected</h3>
-        <p><strong>Symptom:</strong> Game launches with wrong emulator core.</p>
-        <p><strong>Solution:</strong> Right-click the game and select "Edit Metadata," then correct the system assignment. You can also set per-system default cores in Settings > Cores.</p>
-    </section>
-
-<section id="saves">
-  <h2>Save State Issues</h2>
-
-  <h3>Dreamcast Games Can't Save</h3>
-  <p><strong>Symptom:</strong> Dreamcast games don't recognize any memory card (VMU). Saves fail silently with no error message.</p>
-  <p><strong>Solution:</strong> This is typically caused by misconfigured Flycast core options or missing/corrupted VMU files. Ensure <code>CoreOverrides.json</code> uses <code>"VMU"</code> (not <code>"Visual Memory"</code>) for device port slot options. See <a href="{{ '/dreamcast-vmu-fix.html' | relative_url }}">Debugging Dreamcast VMU Saves</a>  technical deep-dive on fixing Flycast VMU detection.</p>
-
-<h3>Save States Won't Load</h3>
-<p><strong>Symptom:</strong> Save state appears in browser but fails to load.</p>
-<p><strong>Solution:</strong> Ensure you're using the same core version that created the save. Save states are not compatible across different cores. If you have Hardcore Mode active in RetroAchievements, save state loading is blocked  disable Hardcore Mode first.</p>
-</section>
-
-    <section id="bugs">
-        <h2>Reporting Bugs</h2>
-        <p>When reporting issues on GitHub, please include:</p>
-        <ul>
-            <li>Your macOS version and hardware (Apple Silicon or Intel)</li>
-            <li>TruchiEmu version number</li>
-            <li>The emulation core and game you were using</li>
-            <li>Steps to reproduce the problem</li>
-            <li>Any error messages or crash logs</li>
-            <li>Screenshots or screen recordings if applicable</li>
-        </ul>
-        <p>Crash logs can be found in: <code>~/Library/Logs/DiagnosticReports/</code></p>
+    <section id="github">
+        <h2>GitHub Issues</h2>
+        <p>Search existing issues or file a new one at <a href="https://github.com/JuanchoGithub/truchiemu/issues">github.com/JuanchoGithub/truchiemu/issues</a>.</p>
+        <p>When filing a bug report, include your macOS version, TruchiEmu version, and relevant log output.</p>
     </section>
 </div>

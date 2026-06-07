@@ -1,140 +1,29 @@
 ---
 layout: default
 title: Solución de Problemas
-description: Problemas comunes y soluciones para TruchiEmu - guías de solución de problemas de instalación, rendimiento, controladores, shaders y estados de guardado
+description: Cómo obtener ayuda con TruchiEmu
 ---
 
 <div class="feature-docs">
-<h1>Solución de Problemas</h1>
+    <h1>Solución de Problemas</h1>
 
-<div class="feature-overview">
-<p class="lead">¿Tienes problemas con TruchiEmu? Esta guía cubre problemas comunes y sus soluciones para instalación, rendimiento, controladores, shaders y más.</p>
-</div>
+    <div class="feature-overview">
+        <p class="lead">La mayoría de los problemas se pueden diagnosticar desde los registros. Si necesitas más ayuda, consulta los Issues de GitHub.</p>
+    </div>
 
-<section id="getting-help">
-<h2>Obtener Ayuda</h2>
-<p>Antes de contactar al soporte, prueba estos pasos:</p>
-<ul>
-<li>Consulta la guía de <a href="{{ '/es/getting-started.html' | relative_url }}">Primeros Pasos</a> para lo básico de configuración</li>
-<li>Busca en <a href="https://github.com/JuanchoGithub/truchiemu/issues">GitHub Issues</a> problemas conocidos</li>
-<li>Pregunta a la comunidad en <a href="https://github.com/JuanchoGithub/truchiemu/discussions">GitHub Discussions</a></li>
-</ul>
-</section>
+    <section id="logs">
+        <h2>Revisa los Registros</h2>
+        <p>TruchiEmu escribe registros detallados para ayudar a diagnosticar problemas:</p>
+        <ul>
+            <li><strong>Registros de la App:</strong> <code>~/Library/Logs/TruchiEmu/</code> &mdash; registros generales de la aplicación y emulación</li>
+            <li><strong>Reportes de Crash:</strong> <code>~/Library/Logs/DiagnosticReports/</code> &mdash; registros de fallos del sistema</li>
+        </ul>
+        <p>Activa el registro verbose en Configuración &rarr; Avanzado &rarr; Nivel de Registro para capturar más detalles.</p>
+    </section>
 
-<section id="installation">
-<h2>Problemas de Instalación</h2>
-
-<h3>La App No Se Abre</h3>
-<p><strong>Síntoma:</strong> TruchiEmu rebota en el dock pero no se inicia, o muestra "TruchiEmu no puede abrirse porque es de un desarrollador no identificado."</p>
-<p><strong>Solución:</strong> macOS puede bloquear apps que no están notarizadas por Apple. Haz clic derecho (o Ctrl+clic) en la app y selecciona "Abrir" desde el menú contextual, luego haz clic en "Abrir" en el diálogo. Alternativamente, ve a Configuración del Sistema > Privacidad y Seguridad y busca un mensaje sobre TruchiEmu siendo bloqueado.</p>
-
-<h3>La App Se Cuelga al Iniciar</h3>
-<p><strong>Síntoma:</strong> TruchiEmu se cuelga inmediatamente después de iniciarse.</p>
-<p><strong>Solución:</strong> Verifica que tu versión de macOS sea 14.0 (Sonoma) o posterior. Si la app no se abre en absoluto, intenta eliminar el archivo de preferencias en <code>~/Library/Preferences/com.truchiemu.plist</code>.</p>
-
-<h3>Dependencias Faltantes</h3>
-<p><strong>Síntoma:</strong> Mensajes de error sobre librerías o frameworks faltantes al compilar desde el código fuente.</p>
-<p><strong>Solución:</strong> Asegúrate de que las Herramientas de Línea de Comandos de Xcode estén instaladas (<code>xcode-select --install</code>). Instala las dependencias requeridas con Homebrew: <code>brew install cmake xcodegen</code>.</p>
-</section>
-
-<section id="performance">
-<h2>Problemas de Rendimiento</h2>
-
-<h3>Baja Tasa de Fotogramas / Tartamudeo</h3>
-<p><strong>Síntoma:</strong> Los juegos funcionan por debajo de la velocidad completa o tienen tartamudeos frecuentes.</p>
-<p><strong>Solución:</strong> Prueba estos pasos en orden:</p>
-<ol>
-<li>Reduce la complejidad del shader o usa el shader Passthrough</li>
-<li>Baja la escala de resolución interna (para sistemas 3D como N64, PSP)</li>
-<li>Aumenta el búfer de audio a 128-256ms</li>
-<li>Cierra otras aplicaciones para liberar recursos del sistema</li>
-</ol>
-
-<h3>Crujidos o Pops de Audio</h3>
-<p><strong>Síntoma:</strong> Audio distorsionado, especialmente durante transiciones de escena o secuencias de audio complejas.</p>
-<p><strong>Solución:</strong> Aumenta el tamaño del búfer de audio en Configuración > Audio. Prueba 128ms o 256ms. Desactiva "Reducir Latencia de Audio" si está habilitado.</p>
-
-<h3>Alto Uso de CPU</h3>
-<p><strong>Síntoma:</strong> TruchiEmu usa excesiva CPU incluso cuando está inactivo o en juegos simples.</p>
-<p><strong>Solución:</strong> Desactiva el renderizado por hilos si está habilitado en sistemas de un solo núcleo. Usa cores de emulación más ligeros (snes9x en lugar de bsnes para SNES). Desactiva la función de rebobinado si no la necesitas.</p>
-</section>
-
-<section id="controllers">
-<h2>Problemas de Controladores</h2>
-
-<h3>Controlador No Detectado</h3>
-<p><strong>Síntoma:</strong> Controlador conectado pero no reconocido por TruchiEmu.</p>
-<p><strong>Solución:</strong> Verifica Configuración del Sistema de macOS > Privacidad y Seguridad > Bluetooth (para inalámbricos). Asegúrate de que el controlador esté emparejado antes de iniciar TruchiEmu. Para controladores Xbox, prueba primero una conexión USB por cable. Reinicia TruchiEmu con el controlador conectado.</p>
-
-<h3>Retardo de Entrada</h3>
-<p><strong>Síntoma:</strong> Retardo entre presionar un botón y la acción que aparece en pantalla.</p>
-<p><strong>Solución:</strong> Usa una conexión por cable en lugar de Bluetooth. Reduce el tamaño del búfer de audio. Desactiva V-Sync.</p>
-
-<h3>Mapeo de Botones Incorrecto</h3>
-<p><strong>Síntoma:</strong> Los botones no coinciden con la configuración esperada.</p>
-<p><strong>Solución:</strong> Abre Configuración > Controladores > Mapeo de Botones y remapea los botones según sea necesario. Guárdalo como perfil para reutilización. Verifica si hay una anulación por core o por juego activa.</p>
-
-<h3>Deriva del Stick Analógico</h3>
-<p><strong>Síntoma:</strong> El personaje se mueve sin tocar el controlador.</p>
-<p><strong>Solución:</strong> Aumenta la zona muerta al 15-20% en la configuración de calibración del controlador. Limpia los sticks del controlador con aire comprimido.</p>
-</section>
-
-<section id="shaders">
-<h2>Problemas de Shaders</h2>
-
-<h3>Fallos de Compilación de Shaders</h3>
-<p><strong>Síntoma:</strong> "Error del compilador Metal" al seleccionar un shader.</p>
-<p><strong>Solución:</strong> Actualiza macOS a la última versión para las funciones Metal más recientes. Verifica que tu GPU soporte el conjunto de funciones Metal requerido (requiere macOS 14+).</p>
-
-<h3>Sin Efecto Visible</h3>
-<p><strong>Síntoma:</strong> El shader está seleccionado pero no se aprecia cambio visual.</p>
-<p><strong>Solución:</strong> Algunos shaders tienen efectos sutiles. Revisa los controles deslizantes de intensidad del shader en la configuración. Prueba un shader más notorio como CRT Lottes para verificar que el sistema funciona.</p>
-
-<h3>Impacto en el Rendimiento del Shader</h3>
-<p><strong>Síntoma:</strong> La tasa de fotogramas cae con shaders complejos habilitados.</p>
-<p><strong>Solución:</strong> Usa shaders más simples (Lite CRT en lugar de CRT Multipass, Sharp Bilinear en lugar de Smooth Upscale). Reduce la complejidad de la cadena de shaders. Considera usar configuraciones de shader por juego para usar shaders ligeros en juegos exigentes.</p>
-</section>
-
-<section id="roms">
-<h2>Problemas de Carga de ROMs</h2>
-
-<h3>ROM No Reconocida</h3>
-<p><strong>Síntoma:</strong> El juego aparece como "Desconocido" o no aparece en la biblioteca.</p>
-<p><strong>Solución:</strong> Verifica que el tipo de archivo ROM sea soportado por el sistema destino. Comprueba que la extensión del archivo esté en la lista permitida. Prueba un volcado diferente de ROM desde una fuente verificada. Identifica manualmente el juego mediante clic derecho > Identificar Juego.</p>
-
-<h3>El Juego No Inicia</h3>
-<p><strong>Síntoma:</strong> El juego aparece en la biblioteca pero se cuelga al iniciar.</p>
-<p><strong>Solución:</strong> Asegúrate de tener el core correcto instalado para el sistema. Verifica si el juego requiere archivos BIOS (PlayStation, Saturn, Neo Geo). Prueba un core de emulación diferente. Verifica que la ROM no esté corrupta.</p>
-
-<h3>Sistema Incorrecto Detectado</h3>
-<p><strong>Síntoma:</strong> El juego se inicia con el core de emulación equivocado.</p>
-<p><strong>Solución:</strong> Haz clic derecho en el juego y selecciona "Editar Metadatos," luego corrige la asignación del sistema. También puedes establecer cores predeterminados por sistema en Configuración > Cores.</p>
-</section>
-
-<section id="saves">
-<h2>Problemas de Estados de Guardado</h2>
-
-<h3>Los Juegos de Dreamcast No Pueden Guardar</h3>
-<p><strong>Síntoma:</strong> Los juegos de Dreamcast no reconocen ninguna tarjeta de memoria (VMU). Los guardados fallan silenciosamente sin mensaje de error.</p>
-<p><strong>Solución:</strong> Esto típicamente es causado por opciones del core Flycast mal configuradas o archivos VMU faltantes/corruptos. Asegúrate de que <code>CoreOverrides.json</code> use <code>"VMU"</code> (no <code>"Visual Memory"</code>) para las opciones de slot del puerto de dispositivo. Consulta <a href="{{ '/es/dreamcast-vmu-fix.html' | relative_url }}">Depuración de Guardados VMU de Dreamcast</a>  análisis técnico sobre cómo corregir la detección VMU de Flycast.</p>
-
-<h3>Los Estados de Guardado No Cargan</h3>
-<p><strong>Síntoma:</strong> El estado de guardado aparece en el navegador pero falla al cargar.</p>
-<p><strong>Solución:</strong> Asegúrate de estar usando la misma versión del core que creó el guardado. Los estados de guardado no son compatibles entre diferentes cores. Verifica que el archivo de guardado no esté corrupto comprobando su checksum. Nota: si el Modo Hardcore está activivo, la carga de estados de guardado estará bloqueada.</p>
-
-</section>
-
-<section id="bugs">
-<h2>Reportar Errores</h2>
-<p>Al reportar problemas en GitHub, por favor incluye:</p>
-<ul>
-<li>Tu versión de macOS y hardware (Apple Silicon o Intel)</li>
-<li>Número de versión de TruchiEmu</li>
-<li>El core de emulación y el juego que estabas usando</li>
-<li>Pasos para reproducir el problema</li>
-<li>Cualquier mensaje de error o registro de cuelgues</li>
-<li>Capturas de pantalla o grabaciones de pantalla si aplica</li>
-</ul>
-<p>Los registros de cuelgues se pueden encontrar en: <code>~/Library/Logs/DiagnosticReports/</code></p>
-</section>
+    <section id="github">
+        <h2>Issues de GitHub</h2>
+        <p>Busca issues existentes o reporta uno nuevo en <a href="https://github.com/JuanchoGithub/truchiemu/issues">github.com/JuanchoGithub/truchiemu/issues</a>.</p>
+        <p>Al reportar un bug, incluye tu versión de macOS, la versión de TruchiEmu y el contenido relevante de los registros.</p>
+    </section>
 </div>
