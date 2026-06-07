@@ -147,33 +147,24 @@ GitHub
     <h1>Save State System</h1>
     
     <div class="feature-overview">
-        <img src="/truchiemu/media/features/save-states-hero.png" alt="Save State System Overview" class="hero-image lightbox-trigger">
         <p class="lead">TruchiEmu's save state system captures and restores emulator state at any point, with an organized slot-based interface and visual management.</p>
     </div>
 
     <section id="service-explanation">
-        <h2>Service Overview</h2>
-        <p>The Save State system captures the emulator's internal state (RAM, CPU registers, and core-specific data) so you can save and restore gameplay at any moment. Not all cores support save states. Save states are managed through the game window interface.</p>
-        
-        <div class="architecture-diagram">
-            <img src="/truchiemu/media/features/save-state-architecture.png" alt="Save State Architecture">
-            <p class="caption">Save state capture and restore pipeline with thumbnail generation and backup</p>
-        </div>
+        <h2>Overview</h2>
+        <p>Save States let you snapshot the game at any moment and reload it later — perfect for retrying a tough section, parking a game for later, or experimenting without consequences. Each game gets its own bank of 10 numbered slots plus an auto-save slot. Most cores support this; a few don't.</p>
 
-        <h3>Core Features</h3>
+        <h3>What You Get</h3>
 <ul class="feature-list">
-<li><strong>Instant Captures:</strong> Save and load at any point during gameplay</li>
-<li><strong>Slot Banking:</strong> 10 numbered save slots (0&ndash;9) plus an auto-save slot (load-only)</li>
-<li><strong>Automatic Naming:</strong> Save states are organized by game and timestamp</li>
-<li><strong>Thumbnail Previews:</strong> Each save state captures a 320&times;240 PNG screenshot for visual browsing</li>
-<li><strong>Progressive Save States:</strong> When enabled, each slot maintains a rotating history of up to 5 versions (default: 3). Disabled by default.</li>
-<li><strong>LZ4 Compression:</strong> Save states can be compressed using LZ4 (enabled by default). Compressed files use a TCS2 magic header.</li>
-<li><strong>Undo Load:</strong> After loading a save state, press <code>Cmd+Z</code> to undo and return to the state before the load</li>
-<li><strong>Auto-Save on Exit:</strong> Saves to the auto-save slot when closing a game (disabled by default)</li>
-<li><strong>Auto-Load on Start:</strong> Loads the auto-save slot on game launch (disabled by default)</li>
+<li><strong>10 Save Slots:</strong> Numbered 0–9, plus an auto-save slot you can load from but not write to directly</li>
+<li><strong>Instant Capture:</strong> Save and load at any point, mid-level, mid-fight, wherever you are</li>
+<li><strong>Thumbnail Previews:</strong> Each save captures a small screenshot, so you can see which one you want before loading</li>
+<li><strong>Auto-Organized:</strong> Save states are grouped per game and labeled with a timestamp</li>
+<li><strong>Undo Load:</strong> Hit <code>Cmd+Z</code> right after a load to jump back to where you were — handy if you picked the wrong slot</li>
+<li><strong>Progressive Save States:</strong> Optionally let each slot keep a rotating history (up to 5 versions) so an old save is never truly overwritten</li>
+<li><strong>Auto-Save on Exit:</strong> Optionally drop into the auto-save slot when you close a game</li>
+<li><strong>Auto-Load on Start:</strong> Optionally pick up right where you left off when you launch a game</li>
 </ul>
-
-        <p>For implementation details, see the <a href="/truchiemu/development.html">Developer Guide</a>.</p>
     </section>
 
     <section id="step-by-step-guide">
@@ -199,7 +190,7 @@ GitHub
     </section>
 
     <section id="references">
-        <h2>Related Services</h2>
+        <h2>Related Features</h2>
         
         <div class="related-services">
             <div class="service-card">

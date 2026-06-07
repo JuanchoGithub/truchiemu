@@ -8,27 +8,21 @@ title: Integracion con RetroAchievements - Documentacion de TruchiEmu
 <h1>Integracion con RetroAchievements</h1>
 
 <div class="feature-overview">
-<img src="{{ '/media/features/achievements-hero.png' | relative_url }}" alt="Vista general de RetroAchievements" class="hero-image lightbox-trigger">
 <p class="lead">TruchiEmu se integra con RetroAchievements.org para rastrear y desbloquear logros en juegos clasicos.</p>
 </div>
 
 <section id="service-explanation">
-<h2>Vista General del Servicio</h2>
-<p>El servicio de RetroAchievements se conecta a RetroAchievements.org para rastrear y desbloquear logros durante el juego. Se integra con el core de Libretro para detectar condiciones de logros en tiempo real.</p>
+<h2>Descripción General</h2>
+<p>RetroAchievements convierte los juegos clásicos en un reto de completista. Inicia sesión con tu cuenta de RetroAchievements.org y TruchiEmu rastreará tu progreso, desbloqueará logros a medida que los consigas y compartirá lo que estás jugando con la comunidad. Hay un Modo Hardcore disponible para los puristas que buscan la partida válida para las clasificaciones.</p>
 
-<div class="architecture-diagram">
-<img src="{{ '/media/features/achievements-architecture.png' | relative_url }}" alt="Arquitectura de Logros">
-<p class="caption">Pipeline de deteccion de logros desde la memoria del juego hasta la sincronizacion con RetroAchievements.org</p>
-</div>
-
-<h3>Caracteristicas Principales</h3>
+<h3>Lo Que Consigues</h3>
 <ul class="feature-list">
-<li><strong>Desbloqueo en Tiempo Real:</strong> Los logros se detectan y desbloquean durante el juego</li>
-<li><strong>Rich Presence:</strong> Comparte tu juego y actividad actual con la comunidad de RetroAchievements</li>
-<li><strong>Modo Hardcore:</strong> Gana logros sin save states, rebobinado, cámara lenta ni cheats para maximo prestigio (desactivado por defecto)</li>
+<li><strong>Seguimiento de Logros:</strong> Desbloquea trofeos por hazañas dentro del juego: vence al jefe sin morir, encuentra el secreto, maximiza el combo, etc.</li>
+<li><strong>Rich Presence:</strong> Tu juego y actividad actuales se comparten automáticamente con la comunidad de RetroAchievements</li>
+<li><strong>Modo Hardcore:</strong> Gana logros como cuentan las clasificaciones: sin save states, sin rebobinados, sin cámara lenta, sin trucos. Desactivado por defecto; actívalo desde el panel de Achievements</li>
+<li><strong>Notificaciones en el Juego:</strong> Los desbloqueos de logros aparecen como una píldora en la ventana del juego para que no te los pierdas</li>
+<li><strong>Perfil y Lista de Juegos:</strong> Tus logros desbloqueados se sincronizan con tu perfil de RetroAchievements.org</li>
 </ul>
-
-<p>Para detalles de implementacion, consulta la <a href="{{ '/es/development.html' | relative_url }}">Guia del Desarrollador</a>.</p>
 </section>
 
 <section id="step-by-step-guide">
@@ -106,7 +100,7 @@ title: Integracion con RetroAchievements - Documentacion de TruchiEmu
 </section>
 
 <section id="references">
-<h2>Servicios Relacionados</h2>
+<h2>Funciones Relacionadas</h2>
 
 <div class="related-services">
 <div class="service-card">

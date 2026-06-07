@@ -8,31 +8,23 @@ title: Gerenciamento de Biblioteca - Documentação do TruchiEmu
 <h1>Gerenciamento de Biblioteca</h1>
 
 <div class="feature-overview">
-<img src="{{ '/media/features/library-hero.png' | relative_url }}" alt="Visão Geral do Gerenciamento de Biblioteca" class="hero-image lightbox-trigger">
-<p class="lead">O sistema de gerenciamento de biblioteca do TruchiEmu organiza sua coleção de jogos com enriquecimento de metadados, download de capas e categorização por sistema.</p>
+<p class="lead">A Biblioteca é onde seus jogos ficam. Aponte o TruchiEmu para suas pastas de ROMs e ele faz o resto: descobre a qual sistema cada arquivo pertence, identifica o jogo, obtém o título e a descrição, e baixa a capa. Navegue por sistema, favoritos, jogados recentemente, ou qualquer uma das categorias personalizadas que você criou.</p>
 </div>
 
 <section id="service-explanation">
-<h2>Visão Geral do Serviço</h2>
-<p>O serviço de Gerenciamento de Biblioteca ajuda a organizar e descobrir sua coleção de jogos. Ele identifica jogos usando bancos de dados DAT do libretro, depois enriquece os metadados de múltiplas fontes incluindo LibretroMetadataLibrary, Progetto-SNAPS e LaunchBox GamesDB, baixa capas e agrupa títulos por sistema.</p>
+<h2>Visão Geral</h2>
+<p>A Biblioteca é onde seus jogos ficam. Aponte o TruchiEmu para suas pastas de ROMs e ele faz o resto: descobre a qual sistema cada arquivo pertence, identifica o jogo, obtém o título e a descrição, e baixa a capa. Navegue por sistema, favoritos, jogados recentemente, ou qualquer uma das categorias personalizadas que você criou.</p>
 
-<div class="architecture-diagram">
-<img src="{{ '/media/features/library-architecture.png' | relative_url }}" alt="Arquitetura da Biblioteca">
-<p class="caption">Fluxo de dados da biblioteca desde a verificação de ROMs até o enriquecimento de metadados e exibição na interface</p>
-</div>
-
-<h3>Recursos Principais</h3>
+<h3>O que Ele Faz Por Você</h3>
 <ul class="feature-list">
-<li><strong>Detecção Automática de Jogos:</strong> Identificação de sistema de ROMs usando pontuação ponderada de cabeçalhos mágicos, extensões de arquivo, padrões de nome de arquivo e contexto de caminho, seguido de correspondência de jogos baseada em CRC32 contra bancos de dados DAT do libretro</li>
-<li><strong>Enriquecimento de Metadados:</strong> Informações de jogos de múltiplos provedores: games.xml local, bancos de dados DAT do libretro, LibretroMetadataLibrary, Progetto-SNAPS e LaunchBox GamesDB</li>
-<li><strong>Gerenciamento de Capas:</strong> Box art do CDN de Libretro Thumbnails, com fallback opcional para ScreenScraper e LaunchBox GamesDB</li>
-<li><strong>Organização de Biblioteca:</strong> Jogos organizados por sistema, favoritos, jogados recentemente, adicionados recentemente, jogos ocultos, categorias personalizadas e RetroAchievements. Chips de filtro e filtragem por gênero proporcionam refinamento adicional.</li>
-<li><strong>Integração RetroAchievements:</strong> Jogos com suporte a RetroAchievements são marcados na biblioteca e podem ser filtrados na vista de RetroAchievements</li>
-<li><strong>Vistas de Grade e Lista:</strong> Alterne entre vista de grade baseada em cards e vista de lista compacta</li>
-<li><strong>Busca e Filtros:</strong> Busca de múltiplos termos, chips de filtro (sem box art, nunca jogado, não identificado, multijogador), filtragem por gênero e opções de ordenação</li>
+<li><strong>Identificação Automática:</strong> Cada ROM é reconhecida e correspondida a um título real de jogo — sem necessidade de entrada manual</li>
+<li><strong>Capas:</strong> A arte da capa é baixada automaticamente para cada jogo que conseguir encontrar</li>
+<li><strong>Metadados:</strong> Informações do jogo, descrições e gêneros são obtidos de bancos de dados da comunidade</li>
+<li><strong>Organização do Seu Jeito:</strong> Navegue por sistema, favoritos, jogados recentemente, últimos adicionados, categorias personalizadas ou RetroAchievements</li>
+<li><strong>Grade ou Lista:</strong> Alterne entre a grade com capas e uma vista de lista compacta</li>
+<li><strong>Busca & Filtros:</strong> Busca de múltiplos termos mais chips de filtro rápido para "sem capa", "nunca jogado", "multijogador" e mais</li>
+<li><strong>Ciente de RetroAchievements:</strong> Jogos com conquistas são marcados para que você possa filtrar apenas esses</li>
 </ul>
-
-<p>Para detalhes de implementação, consulte o <a href="{{ '/pt/development.html' | relative_url }}">Guia do Desenvolvedor</a>.</p>
 </section>
 
 <section id="step-by-step-guide">
@@ -53,7 +45,7 @@ title: Gerenciamento de Biblioteca - Documentação do TruchiEmu
 </section>
 
 <section id="references">
-<h2>Serviços Relacionados</h2>
+<h2>Recursos Relacionados</h2>
 
 <div class="related-services">
 <div class="service-card">

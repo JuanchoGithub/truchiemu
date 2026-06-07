@@ -147,33 +147,25 @@ GitHub
     <h1>Shader System</h1>
     
     <div class="feature-overview">
-        <img src="/truchiemu/media/features/shaders-hero.png" alt="Shader System Overview" class="hero-image lightbox-trigger">
         <p class="lead">TruchiEmu's advanced shader system transforms your retro gaming experience with real-time visual enhancements, CRT simulation, and modern post-processing effects. Built on Apple's Metal framework, our shader pipeline delivers pixel-perfect rendering with zero performance overhead.</p>
     </div>
 
     <section id="service-explanation">
-        <h2>Service Overview</h2>
-        <p>The shader system in TruchiEmu leverages custom Metal shaders to provide real-time visual enhancements for emulated games. Unlike traditional emulator filters, our shaders run directly on the GPU, ensuring smooth 60fps performance even on complex effects like CRT simulation and scaling algorithms.</p>
-        
-        <div class="architecture-diagram">
-            <img src="/truchiemu/media/features/shader-architecture.png" alt="Shader Architecture">
-            <p class="caption">Shader processing pipeline from emulation core through Metal to display</p>
-        </div>
+        <h2>Overview</h2>
+        <p>Shaders let you re-skin what hits the screen — turn flat pixels into a warm CRT glow, or a period-accurate Game Boy LCD, or a clean modern upscale. Everything runs on the GPU so the cost is tiny, and you can tweak parameters live without restarting the game.</p>
 
-        <h3>Core Features</h3>
+        <h3>What's in the Library</h3>
         <ul class="feature-list">
-<li><strong>Real-time Processing:</strong> All shaders execute on the GPU with sub-millisecond latency</li>
-<li><strong>CRT Simulation:</strong> Authentic phosphor glow, scanlines, and curvature effects (CRT Lottes, CRT Classic, Lite CRT, CRT Multipass)</li>
-<li><strong>LCD Simulation:</strong> Period-accurate handheld displays for Game Boy, GBA, PSP, NDS, 3DS, and Dot Matrix</li>
-<li><strong>Scaling Algorithms:</strong> Sharp Bilinear and Smooth Upscale (ScaleFX) with aspect ratio preservation</li>
-<li><strong>Color Enhancement:</strong> Color boost, gamut matrix correction, and tint controls per preset</li>
-<li><strong>Performance Optimization:</strong> Lightweight shaders (Lite CRT, Sharp Bilinear) available for lower-end hardware</li>
-<li><strong>Custom Presets:</strong> Save, export, and import your own <code>.truchishader</code> presets with tweaked parameters</li>
-<li><strong>System Recommendations:</strong> Each preset has recommended system associations surfaced in the UI</li>
-        </ul>
+<li><strong>14 Built-in Presets:</strong> Organized into CRT, LCD, Smoothing, and Custom categories</li>
+<li><strong>CRT Effects:</strong> CRT Lottes, CRT Classic, Lite CRT, CRT Multipass — phosphor glow, scanlines, curvature, and barrel distortion</li>
+<li><strong>Handheld LCD Effects:</strong> 8b Game Boy, 8b Game Boy Color, GBA (Advanced LCD), PSP (Advanced LCD), NDS (Advanced LCD), 3DS (Advanced LCD), Dot Matrix LCD</li>
+<li><strong>Clean Upscalers:</strong> Sharp Bilinear and Smooth Upscale for a modern, unfiltered look</li>
+<li><strong>Color Controls:</strong> Color boost, gamut matrix correction, and tint sliders per preset</li>
+<li><strong>Custom Presets:</strong> Save your own tweaked parameters as a <code>.truchishader</code> file you can export and re-import</li>
+</ul>
 
-        <h3>Performance Note</h3>
-        <p>All shaders run directly on the GPU using Apple's Metal framework, ensuring smooth 60fps performance even with complex effects. Passthrough and basic scaling shaders have minimal impact; CRT and LCD simulations use more GPU resources. Most modern Macs can run any shader at full speed.</p>
+        <h3>Performance</h3>
+        <p>Shaders run on the GPU via Metal. Passthrough and the basic scalers are effectively free; CRT and LCD simulations use more GPU time but stay at 60fps on any modern Mac. If a particular preset feels heavy on your hardware, try Lite CRT or Sharp Bilinear as lighter alternatives.</p>
     </section>
 
     <section id="step-by-step-guide">

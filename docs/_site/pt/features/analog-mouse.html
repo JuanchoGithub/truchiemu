@@ -152,27 +152,25 @@ GitHub
 
     <section id="service-explanation">
         <h2>Visão Geral</h2>
-        <p>O sistema de mouse analógico traduz a deflexão do analógico do seu controle em movimento do cursor para jogos de apontar e clicar em DOS e ScummVM. Isso permite navegar por menus, clicar em objetos e interagir com mundos do jogo usando um controle em vez de um mouse físico. O recurso é configurável por sistema (DOS, ScummVM) e suporta substituições por jogo.</p>
+        <p>O Suporte a Mouse Analógico permite jogar aventuras de apontar e clicar de DOS e ScummVM com um controle em vez de um mouse. O analógico esquerdo move o cursor, o direito faz o ajuste fino, o direcional envia as setas do teclado, e você pode mapear ações de clique para qualquer botão frontal. As configurações podem ser ajustadas por sistema e substituídas por jogo.</p>
         
         <h3>Como Funciona</h3>
         <ul class="feature-list">
-            <li><strong>Analógico para Mouse:</strong> O analógico primário (esquerdo ou direito, selecionável pelo usuário) é amostrado a 60fps e sua deflexão é traduzida em valores delta do mouse</li>
-            <li><strong>Analógico Secundário para Controle Fino:</strong> O analógico secundário move o mouse a 1/5 da velocidade para posicionamento preciso</li>
-            <li><strong>Direcional como Teclado:</strong> O direcional envia teclas de seta (Cima/Baixo/Esquerda/Direita), Start envia Enter, Select envia Espaço</li>
-            <li><strong>Mapeamento de Botões Configurável:</strong> Atribua clique esquerdo, clique direito e clique do meio a qualquer botão do controle (A, B, X, Y, L1, R1, L2, R2, L3, R3, Start, Select)</li>
+            <li><strong>Analógico para Mouse:</strong> O analógico primário (esquerdo ou direito, à sua escolha) move o cursor de acordo com o quanto você o empurra</li>
+            <li><strong>Analógico Secundário para Controle Fino:</strong> O outro analógico move o cursor a 1/5 da velocidade para posicionamento preciso</li>
+            <li><strong>Direcional como Teclado:</strong> O direcional envia as setas, Start envia Enter, Select envia Espaço — útil para navegar por menus em jogos DOS</li>
+            <li><strong>Mapeamento de Botões Configurável:</strong> Atribua clique esquerdo, direito e do meio a qualquer botão frontal ou gatilho (A, B, X, Y, L1, R1, L2, R2, L3, R3, Start, Select)</li>
         </ul>
 
-        <h3>Recursos Principais</h3>
+        <h3>Opções de Ajuste</h3>
         <ul class="feature-list">
-            <li><strong>Controle de Sensibilidade:</strong> Ajuste a velocidade do ponteiro de 0.1x a 5.0x para corresponder à sua preferência</li>
-            <li><strong>Ajuste de Zona Morta:</strong> Defina o limite da zona morta (0.00–0.50) para eliminar drift do analógico</li>
-            <li><strong>Seleção de Analógico:</strong> Escolha qual analógico (esquerdo ou direito) controla o mouse</li>
-            <li><strong>Configurações por Sistema:</strong> Configuração independente para DOS e ScummVM</li>
-            <li><strong>Substituição por Jogo:</strong> Ative ou desative o mouse analógico para ROMs individuais</li>
-            <li><strong>Visualizador ao Vivo:</strong> Exibição em tempo real da posição do analógico com sobreposição de zona morta nas configurações</li>
+            <li><strong>Sensibilidade:</strong> Ajuste a velocidade do ponteiro de 0.1x a 5.0x para casar com a sua preferência</li>
+            <li><strong>Zona Morta:</strong> Defina um limite (0.00–0.50) para filtrar o drift do analógico</li>
+            <li><strong>Seleção de Analógico:</strong> Escolha qual analógico controla o mouse</li>
+            <li><strong>Configurações por Sistema:</strong> Configure DOS e ScummVM de forma independente</li>
+            <li><strong>Substituição por Jogo:</strong> Ative ou desative o mouse analógico para um jogo específico sem alterar o padrão do sistema</li>
+            <li><strong>Visualizador ao Vivo:</strong> Veja a posição do analógico e a zona morta em tempo real enquanto ajusta</li>
         </ul>
-
-        <p>Para detalhes de implementação, consulte o <a href="/truchiemu/pt/development.html">Guia do Desenvolvedor</a>.</p>
     </section>
 
     <section id="step-by-step-guide">
@@ -233,7 +231,7 @@ GitHub
     </section>
 
     <section id="references">
-        <h2>Serviços Relacionados</h2>
+        <h2>Recursos Relacionados</h2>
         
         <div class="related-services">
             <div class="service-card">

@@ -147,33 +147,24 @@ GitHub
 <h1>Sistema de Save States</h1>
 
 <div class="feature-overview">
-<img src="/truchiemu/media/features/save-states-hero.png" alt="Visão Geral do Sistema de Save States" class="hero-image lightbox-trigger">
 <p class="lead">O sistema de save states do TruchiEmu captura e restaura o estado do emulador a qualquer momento, com uma interface organizada baseada em slots e gerenciamento visual.</p>
 </div>
 
 <section id="service-explanation">
-<h2>Visão Geral do Serviço</h2>
-<p>O sistema de Save States captura o estado interno do emulador (RAM, registradores de CPU e dados específicos do core). Nem todos os cores suportam save states. Os save states são gerenciados através da interface da janela do jogo.</p>
+<h2>Visão Geral</h2>
+<p>Save States permitem capturar o jogo a qualquer momento e recarregá-lo depois — perfeito para tentar de novo uma seção difícil, deixar um jogo parado para mais tarde, ou experimentar sem consequências. Cada jogo tem seu próprio banco de 10 slots numerados mais um slot de auto-save. A maioria dos cores suporta isso; alguns não.</p>
 
-<div class="architecture-diagram">
-<img src="/truchiemu/media/features/save-state-architecture.png" alt="Arquitetura de Save States">
-<p class="caption">Pipeline de captura e restauração de save states com geração de miniaturas e backup</p>
-</div>
-
-<h3>Recursos Principais</h3>
+<h3>Funcionalidades</h3>
 <ul class="feature-list">
-<li><strong>Capturas Instantâneas:</strong> Salve e carregue a qualquer momento durante o gameplay</li>
-<li><strong>Banca de Slots:</strong> 10 slots numerados (0–9) mais um slot de auto-salvamento (somente carga)</li>
-<li><strong>Pré-visualizações em Miniatura:</strong> Cada save state captura uma captura de tela PNG de 320×240</li>
-<li><strong>Save States Progressivos:</strong> Quando habilitado, cada slot mantém um histórico rotativo de até 5 versões (padrão: 3). Desativado por padrão.</li>
-<li><strong>Compressão LZ4:</strong> Save states podem ser comprimidos usando LZ4 (ativado por padrão). Arquivos comprimidos usam um cabeçalho mágico TCS2.</li>
-<li><strong>Desfazer Carga:</strong> Após carregar um save state, pressione <code>Cmd+Z</code> para desfazer e retornar ao estado anterior à carga</li>
-<li><strong>Auto-Salvar ao Sair:</strong> Salva no slot de auto-salvamento ao fechar um jogo (desativado por padrão)</li>
-<li><strong>Auto-Carregar ao Iniciar:</strong> Carrega o slot de auto-salvamento ao lançar um jogo (desativado por padrão)</li>
-<li><strong>Nomenclatura Automática:</strong> Save states são organizados por jogo e marca de data/hora</li>
+<li><strong>10 Slots de Salvamento:</strong> Numerados de 0 a 9, mais um slot de auto-save que você pode carregar mas não escrever diretamente</li>
+<li><strong>Captura Instantânea:</strong> Salve e carregue a qualquer momento, no meio de uma fase, no meio de uma luta, onde quer que você esteja</li>
+<li><strong>Pré-visualizações em Miniatura:</strong> Cada save captura uma pequena screenshot, para você ver qual quer antes de carregar</li>
+<li><strong>Organização Automática:</strong> Save states são agrupados por jogo e rotulados com data/hora</li>
+<li><strong>Desfazer Carga:</strong> Aperte <code>Cmd+Z</code> logo após uma carga para voltar de onde você estava — útil se você escolheu o slot errado</li>
+<li><strong>Save States Progressivos:</strong> Opcionalmente, deixe cada slot manter um histórico rotativo (até 5 versões) para que um save antigo nunca seja realmente sobrescrito</li>
+<li><strong>Auto-Salvar ao Sair:</strong> Opcionalmente, grave no slot de auto-save ao fechar um jogo</li>
+<li><strong>Auto-Carregar ao Iniciar:</strong> Opcionalmente, continue de onde parou ao iniciar um jogo</li>
 </ul>
-
-<p>Para detalhes de implementação, consulte o <a href="/truchiemu/pt/development.html">Guia do Desenvolvedor</a>.</p>
 </section>
 
 <section id="step-by-step-guide">
@@ -199,7 +190,7 @@ GitHub
 </section>
 
 <section id="references">
-<h2>Serviços Relacionados</h2>
+<h2>Recursos Relacionados</h2>
 
 <div class="related-services">
 <div class="service-card">

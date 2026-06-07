@@ -147,26 +147,20 @@ GitHub
     <h1>Cheat System</h1>
 
     <section id="service-explanation">
-        <h2>Service Overview</h2>
-        <p>The cheat system allows you to manage and activate cheat codes for your games. It supports standard cheat code formats and integrates with Libretro cores to apply modifications in real-time.</p>
-        
-        <div class="architecture-diagram">
-            <img src="/truchiemu/media/features/cheat-architecture.png" alt="Cheat System Architecture">
-            <p class="caption">Cheat system pipeline from code parsing to memory injection</p>
-        </div>
+        <h2>Overview</h2>
+        <p>TruchiEmu comes with a built-in library of cheat codes for thousands of games. When you load a ROM, any known cheats appear in the Cheats panel — pick which ones you want, and they're applied live. You can also enter your own codes if the ones you want aren't in the library yet.</p>
 
-        <h3>Core Features</h3>
+        <h3>What You Get</h3>
         <ul class="feature-list">
-<li><strong>Multi-Format Support:</strong> Game Genie, Pro Action Replay, GameShark, and raw hex codes</li>
-<li><strong>Cheat Database:</strong> Download pre-made cheat collections from the <a href="https://github.com/libretro/libretro-database/tree/master/cht">libretro-database GitHub repository</a></li>
-<li><strong>Auto-Discovery:</strong> Cheats are automatically discovered and loaded based on the ROM. Previously enabled cheats retain their state; new cheats default to disabled.</li>
-<li><strong>Custom Cheat Entry:</strong> Manually add your own codes and descriptions</li>
-        </ul>
+<li><strong>Built-in Cheat Library:</strong> Pre-made cheat collections for thousands of games, pulled from the <a href="https://github.com/libretro/libretro-database/tree/master/cht">libretro-database</a></li>
+<li><strong>Auto-Discovery:</strong> Cheats for the current game appear in the panel automatically when you load a ROM</li>
+<li><strong>Live Toggle:</strong> Turn cheats on and off without restarting the game</li>
+<li><strong>State Persistence:</strong> Once you enable a cheat, it stays enabled for that game until you turn it off</li>
+<li><strong>Your Own Codes:</strong> Manually add Game Genie, Pro Action Replay, GameShark, or raw hex codes for cheats not in the library</li>
+</ul>
 
-        <h3>Supported Cheat Formats</h3>
-        <p>TruchiEmu supports multiple cheat code formats: Game Genie (6-8 character alphanumeric codes), Pro Action Replay (hexadecimal codes with addresses), GameShark (various formats by system), and raw memory codes for advanced users. Each format is automatically detected and parsed correctly.</p>
-
-        <p>For implementation details, see the <a href="/truchiemu/development.html">Developer Guide</a>.</p>
+        <h3>Supported Code Formats</h3>
+        <p>TruchiEmu reads Game Genie (6–8 character alphanumeric codes), Pro Action Replay (hex codes with addresses), GameShark (format varies by system), and raw memory codes. You don't need to specify which format — TruchiEmu figures it out from the code itself.</p>
     </section>
 
     <section id="step-by-step-guide">
@@ -245,7 +239,7 @@ GitHub
     </section>
 
     <section id="references">
-        <h2>Related Services</h2>
+        <h2>Related Features</h2>
         
         <div class="related-services">
             <div class="service-card">

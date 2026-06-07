@@ -147,33 +147,24 @@ GitHub
 <h1>Sistema de Estados de Guardado</h1>
 
 <div class="feature-overview">
-<img src="/truchiemu/media/features/save-states-hero.png" alt="Panorama del Sistema de Estados de Guardado" class="hero-image lightbox-trigger">
 <p class="lead">El sistema de estados de guardado de TruchiEmu captura y restaura el estado del emulador en cualquier punto, con una interfaz basada en slots organizada y gestión visual.</p>
 </div>
 
 <section id="service-explanation">
-<h2>Panorama del Servicio</h2>
-<p>El sistema de Estados de Guardado captura el estado interno del emulador (RAM, registros de CPU y datos específicos del core). No todos los cores soportan save states. Los estados de guardado se gestionan a través de la interfaz de la ventana del juego.</p>
+<h2>Descripción General</h2>
+<p>Los Estados de Guardado te permiten capturar el juego en cualquier momento y recargarlo más tarde: perfecto para reintentar una sección difícil, aparcar un juego para después o experimentar sin consecuencias. Cada juego tiene su propio banco de 10 slots numerados más un slot de auto-guardado. La mayoría de los cores lo soportan; unos pocos no.</p>
 
-<div class="architecture-diagram">
-<img src="/truchiemu/media/features/save-state-architecture.png" alt="Arquitectura de Estados de Guardado">
-<p class="caption">Pipeline de captura y restauración de estados de guardado con generación de miniaturas y copia de seguridad</p>
-</div>
-
-<h3>Funciones Clave</h3>
+<h3>Qué Hay Disponible</h3>
 <ul class="feature-list">
-<li><strong>Capturas Instantáneas:</strong> Guarda y carga en cualquier punto durante el juego</li>
-<li><strong>Banca de Slots:</strong> 10 slots numerados (0–9) más un slot de auto-guardado (solo carga)</li>
-<li><strong>Previsualizaciones en Miniatura:</strong> Cada save state captura una captura de pantalla PNG de 320×240 para navegación visual</li>
-<li><strong>Estados de Guardado Progresivos:</strong> Cuando está habilitado, cada slot mantiene un historial rotativo de hasta 5 versiones (predeterminado: 3). Desactivado por defecto.</li>
-<li><strong>Compresión LZ4:</strong> Los save states pueden comprimirse usando LZ4 (activado por defecto). Los archivos comprimidos usan un encabezado mágico TCS2.</li>
-<li><strong>Deshacer Carga:</strong> Después de cargar un save state, presiona <code>Cmd+Z</code> para deshacer y volver al estado anterior a la carga</li>
-<li><strong>Auto-Guardar al Salir:</strong> Guarda en el slot de auto-guardado al cerrar un juego (desactivado por defecto)</li>
-<li><strong>Auto-Cargar al Iniciar:</strong> Carga el slot de auto-guardado al lanzar un juego (desactivado por defecto)</li>
-<li><strong>Nombrado Automático:</strong> Los estados de guardado se organizan por juego y marca de tiempo</li>
+<li><strong>10 Slots de Guardado:</strong> Numerados del 0 al 9, más un slot de auto-guardado que puedes cargar pero no escribir directamente</li>
+<li><strong>Captura Instantánea:</strong> Guarda y carga en cualquier punto, en medio del nivel, en medio de un combate, donde sea que estés</li>
+<li><strong>Vistas Previas en Miniatura:</strong> Cada guardado captura una pequeña captura de pantalla, para que puedas ver cuál quieres antes de cargar</li>
+<li><strong>Auto-Organizado:</strong> Los estados de guardado se agrupan por juego y se etiquetan con una marca de tiempo</li>
+<li><strong>Deshacer Carga:</strong> Pulsa <code>Cmd+Z</code> justo después de una carga para volver a donde estabas: útil si elegiste el slot equivocado</li>
+<li><strong>Estados de Guardado Progresivos:</strong> Opcionalmente permite que cada slot mantenga un historial rotativo (hasta 5 versiones) para que un guardado antiguo nunca se sobrescriba del todo</li>
+<li><strong>Auto-Guardar al Salir:</strong> Opcionalmente cae en el slot de auto-guardado cuando cierras un juego</li>
+<li><strong>Auto-Cargar al Iniciar:</strong> Opcionalmente retoma justo donde lo dejaste cuando lanzas un juego</li>
 </ul>
-
-<p>Para detalles de implementación, consulta la <a href="/truchiemu/es/development.html">Guía del Desarrollador</a>.</p>
 </section>
 
 <section id="step-by-step-guide">
@@ -199,7 +190,7 @@ GitHub
 </section>
 
 <section id="references">
-<h2>Servicios Relacionados</h2>
+<h2>Funciones Relacionadas</h2>
 
 <div class="related-services">
 <div class="service-card">

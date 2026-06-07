@@ -13,15 +13,21 @@ title: Sistema de Notificaciones - Documentación de TruchiEmu
 
     <section id="service-explanation">
         <h2>Descripción General</h2>
-        <p>El sistema de notificaciones de TruchiEmu está diseñado para ofrecer retroalimentación inmediata al usuario de forma elegante y no intrusiva. Las notificaciones aparecen como pequeñas píldoras animadas en la esquina de la pantalla, con diferentes estilos según el tipo de mensaje: informativo, éxito, advertencia o error. Cada notificación se desvanece automáticamente tras unos segundos, y el historial completo está disponible para consultar mensajes anteriores. Todos los mensajes están localizados al idioma actual de la aplicación.</p>
-        
-        <h3>Características Principales</h3>
+        <p>TruchiEmu te muestra lo que está pasando sin estorbar. Pequeñas píldoras de notificación aparecen brevemente en la esquina cuando algo importa (se conecta un mando, se captura un estado, se desbloquea un logro) y luego desaparecen discretamente. El icono de campana en la barra de herramientas de la biblioteca guarda un historial completo de notificaciones recientes por si te perdiste alguna.</p>
+
+        <h3>Qué Se Notifica</h3>
         <ul class="feature-list">
-            <li><strong>Píldoras No Intrusivas:</strong> Las notificaciones aparecen como pequeñas burbujas redondeadas en la esquina superior derecha de la pantalla. No bloquean la interacción con la aplicación y se desvanecen suavemente tras la duración configurada.</li>
-            <li><strong>Alertas de Control:</strong> Notificaciones automáticas cuando se conecta o desconecta un controlador, mostrando el nombre del dispositivo y el perfil de mapeo asignado.</li>
-            <li><strong>Confirmaciones de Acciones:</strong> Retroalimentación visual inmediata al guardar estados, capturar pantallas, cambiar configuraciones o completar acciones del sistema.</li>
-            <li><strong>Historial de Notificaciones:</strong> Accede al historial completo de notificaciones desde el icono de campana en la barra de herramientas de la biblioteca para revisar mensajes que hayas podido perder. El historial muestra la fecha, hora y tipo de cada notificación.</li>
-            <li><strong>Mensajes Localizados:</strong> Todas las notificaciones se muestran en el idioma configurado en la aplicación, con soporte completo para todos los idiomas disponibles.</li>
+            <li><strong>Eventos del Mando:</strong> Conexión, desconexión y avisos de batería baja</li>
+            <li><strong>Acciones del Juego:</strong> Estado guardado, captura de pantalla y otras confirmaciones para que sepas que una tecla rápida funcionó</li>
+            <li><strong>Alertas del Sistema:</strong> Comprobaciones en segundo plano como actualizaciones y descargas de núcleos</li>
+        </ul>
+
+        <h3>Cómo Se Ven</h3>
+        <ul class="feature-list">
+            <li><strong>Píldoras en la Esquina:</strong> Notificaciones redondeadas y codificadas por color que aparecen brevemente y se descartan solas</li>
+            <li><strong>Codificación por Color:</strong> Los tipos de información, éxito, advertencia y error tienen su propio color para distinguirlos de un vistazo</li>
+            <li><strong>Texto Localizado:</strong> Los mensajes de notificación siguen el idioma de tu interfaz</li>
+            <li><strong>Historial Completo:</strong> Haz clic en el icono de campana en la barra de herramientas de la biblioteca para ver todo lo que se ha disparado recientemente, con marcas de tiempo</li>
         </ul>
     </section>
 
@@ -74,7 +80,7 @@ title: Sistema de Notificaciones - Documentación de TruchiEmu
     </section>
 
     <section id="references">
-        <h2>Servicios Relacionados</h2>
+        <h2>Funciones Relacionadas</h2>
         <div class="related-services">
             <a href="{{ '/es/features/controllers.html' | relative_url }}" class="related-service">
                 <h3>Controles</h3>

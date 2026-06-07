@@ -8,31 +8,23 @@ title: Library Management - TruchiEmu Documentation
     <h1>Library Management</h1>
     
     <div class="feature-overview">
-        <img src="{{ '/media/features/library-hero.png' | relative_url }}" alt="Library Management Overview" class="hero-image lightbox-trigger">
         <p class="lead">TruchiEmu's library management system organizes your game collection with metadata enrichment, artwork downloads, and system-based categorization.</p>
     </div>
 
     <section id="service-explanation">
-        <h2>Service Overview</h2>
-        <p>The Library Management service helps organize and discover your game collection. It identifies games using libretro DAT databases, then enriches metadata from multiple sources including LibretroMetadataLibrary, Progetto-SNAPS, and LaunchBox GamesDB. It downloads box art and groups titles by system.</p>
-        
-        <div class="architecture-diagram">
-            <img src="{{ '/media/features/library-architecture.png' | relative_url }}" alt="Library Architecture">
-            <p class="caption">Library data flow from ROM scanning to metadata enrichment and UI display</p>
-        </div>
+        <h2>Overview</h2>
+        <p>The Library is where your games live. Point TruchiEmu at your ROM folders and it does the rest: it figures out which system each file belongs to, identifies the game, pulls in a title and description, and grabs the box art. Browse by system, favorite, recently played, or any of the saved categories you've made.</p>
 
-        <h3>Core Features</h3>
+        <h3>What It Does For You</h3>
 <ul class="feature-list">
-<li><strong>Automatic Game Detection:</strong> ROM system identification using weighted scoring of magic headers, file extensions, filename patterns, and path context, followed by CRC32-based game matching against libretro DAT databases</li>
-<li><strong>Metadata Enrichment:</strong> Game info sourced from multiple providers: local games.xml, libretro DAT databases, LibretroMetadataLibrary, Progetto-SNAPS, and LaunchBox GamesDB</li>
-<li><strong>Artwork Management:</strong> Automatic download of box art from Libretro Thumbnails CDN, with optional fallback to ScreenScraper and LaunchBox GamesDB</li>
-<li><strong>Library Organization:</strong> Games organized by system, favorites, recently played, last added, hidden games, custom categories, and RetroAchievements. Filter chips and genre filtering provide additional refinement.</li>
-<li><strong>Grid and List Views:</strong> Switch between card-based grid and compact list views</li>
-<li><strong>Search and Filters:</strong> Multi-term search, filter chips (no box art, never played, unidentified, multiplayer), genre filtering, and sort options</li>
-<li><strong>RetroAchievements Integration:</strong> Games matched with RetroAchievements are flagged in the library and filterable via the RetroAchievements view</li>
+<li><strong>Automatic Identification:</strong> Each ROM is recognized and matched to a real game title — no manual entry needed</li>
+<li><strong>Box Art:</strong> Cover art is downloaded automatically for every game it can find</li>
+<li><strong>Metadata:</strong> Game info, descriptions, and genres are pulled in from community databases</li>
+<li><strong>Organized Your Way:</strong> Browse by system, favorites, recently played, last added, custom categories, or RetroAchievements</li>
+<li><strong>Grid or List:</strong> Switch between the cover-art grid and a compact list view</li>
+<li><strong>Search & Filters:</strong> Multi-term search plus quick filter chips for "no box art", "never played", "multiplayer", and more</li>
+<li><strong>RetroAchievements Aware:</strong> Games with achievements are flagged so you can filter to just those</li>
 </ul>
-
-        <p>For implementation details, see the <a href="{{ '/development.html' | relative_url }}">Developer Guide</a>.</p>
     </section>
 
     <section id="step-by-step-guide">
@@ -53,7 +45,7 @@ title: Library Management - TruchiEmu Documentation
     </section>
 
     <section id="references">
-        <h2>Related Services</h2>
+        <h2>Related Features</h2>
         
         <div class="related-services">
             <div class="service-card">

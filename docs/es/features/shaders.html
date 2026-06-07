@@ -7,33 +7,25 @@ title: Sistema de Shaders - Documentación de TruchiEmu
 <h1>Sistema de Shaders</h1>
 
 <div class="feature-overview">
-<img src="{{ '/media/features/shaders-hero.png' | relative_url }}" alt="Panorama del Sistema de Shaders" class="hero-image lightbox-trigger">
 <p class="lead">El sistema avanzado de shaders de TruchiEmu transforma tu experiencia de gaming retro con mejoras visuales en tiempo real, simulación CRT y efectos de post-procesamiento modernos. Construido sobre el framework Metal de Apple, nuestro pipeline de shaders ofrece renderizado pixel-perfect con cero sobrecarga de rendimiento.</p>
 </div>
 
 <section id="service-explanation">
-<h2>Panorama del Servicio</h2>
-<p>El sistema de shaders en TruchiEmu aprovecha shaders Metal personalizados para proporcionar mejoras visuales en tiempo real para juegos emulados. A diferencia de los filtros tradicionales de emulador, nuestros shaders se ejecutan directamente en la GPU, asegurando un rendimiento fluido a 60fps incluso en efectos complejos como simulación CRT y algoritmos de escalado.</p>
+<h2>Descripción General</h2>
+<p>Los shaders te permiten redefinir lo que llega a la pantalla: convierte píxeles planos en un cálido resplandor CRT, una pantalla LCD de Game Boy fiel a la época, o un escalado moderno y limpio. Todo se ejecuta en la GPU así que el coste es mínimo, y puedes ajustar los parámetros en vivo sin reiniciar el juego.</p>
 
-<div class="architecture-diagram">
-<img src="{{ '/media/features/shader-architecture.png' | relative_url }}" alt="Arquitectura de Shaders">
-<p class="caption">Pipeline de procesamiento de shaders desde el core de emulación a través de Metal hasta la pantalla</p>
-</div>
-
-<h3>Funciones Clave</h3>
+<h3>Lo Que Incluye la Biblioteca</h3>
 <ul class="feature-list">
-<li><strong>Procesamiento en Tiempo Real:</strong> Todos los shaders se ejecutan en la GPU con latencia sub-milisegundo</li>
-<li><strong>Simulación CRT:</strong> Brillo de fósforo auténtico, líneas de escaneo y efectos de curvatura (CRT Lottes, CRT Classic, Lite CRT, CRT Multipass)</li>
-<li><strong>Simulación LCD:</strong> Pantallas de portátil fieles a la época para Game Boy, GBA, PSP, NDS, 3DS y Dot Matrix</li>
-<li><strong>Algoritmos de Escalado:</strong> Sharp Bilinear y Smooth Upscale (ScaleFX) con preservación de relación de aspecto</li>
-<li><strong>Mejora de Color:</strong> Mejora de color, corrección de matriz de gamut y controles de tinte por preset</li>
-<li><strong>Optimización de Rendimiento:</strong> Shaders ligeros (Lite CRT, Sharp Bilinear) disponibles para hardware de menor potencia</li>
-<li><strong>Presets Personalizados:</strong> Guarda, exporta e importa tus propios presets <code>.truchishader</code> con parámetros ajustados</li>
-<li><strong>Recomendaciones por Sistema:</strong> Cada preset tiene asociaciones de sistema recomendadas mostradas en la interfaz</li>
+<li><strong>14 Presets Integrados:</strong> Organizados en categorías CRT, LCD, Suavizado y Personalizado</li>
+<li><strong>Efectos CRT:</strong> CRT Lottes, CRT Classic, Lite CRT, CRT Multipass: brillo de fósforo, líneas de escaneo, curvatura y distorsión de barril</li>
+<li><strong>Efectos LCD Portátil:</strong> 8b Game Boy, 8b Game Boy Color, GBA (LCD Avanzada), PSP (LCD Avanzada), NDS (LCD Avanzada), 3DS (LCD Avanzada), Dot Matrix LCD</li>
+<li><strong>Escaladores Limpios:</strong> Sharp Bilinear y Smooth Upscale para un look moderno y sin filtrar</li>
+<li><strong>Controles de Color:</strong> Realce de color, corrección de matriz de gamut y controles deslizantes de tinte por preset</li>
+<li><strong>Presets Personalizados:</strong> Guarda tus propios parámetros ajustados como un archivo <code>.truchishader</code> que puedes exportar y reimportar</li>
 </ul>
 
-<h3>Nota de Rendimiento</h3>
-<p>Todos los shaders se ejecutan directamente en la GPU usando el framework Metal de Apple, asegurando un rendimiento fluido a 60fps incluso con efectos complejos. Passthrough y los shaders de escalado básico tienen un impacto mínimo; las simulaciones CRT y LCD usan más recursos de GPU. La mayoría de los Mac modernos pueden ejecutar cualquier shader a velocidad completa.</p>
+<h3>Rendimiento</h3>
+<p>Los shaders se ejecutan en la GPU mediante Metal. El passthrough y los escaladores básicos son prácticamente gratuitos; las simulaciones CRT y LCD usan más tiempo de GPU pero se mantienen a 60fps en cualquier Mac moderno. Si un preset específico se siente pesado en tu hardware, prueba con Lite CRT o Sharp Bilinear como alternativas más ligeras.</p>
 </section>
 
 <section id="step-by-step-guide">

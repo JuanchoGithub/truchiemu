@@ -12,28 +12,26 @@ title: Analog Mouse Support - TruchiEmu Documentation
     </div>
 
     <section id="service-explanation">
-        <h2>Service Overview</h2>
-        <p>The analog mouse system translates your controller's thumbstick deflection into mouse cursor movement for point-and-click games in DOS and ScummVM. This lets you navigate menus, click on objects, and interact with game worlds using a gamepad instead of a physical mouse. The feature is configurable per system (DOS, ScummVM) and supports per-game overrides.</p>
-        
+        <h2>Overview</h2>
+        <p>Analog Mouse Support lets you play DOS and ScummVM point-and-click adventures with a gamepad instead of a mouse. The left stick moves the cursor, the right stick does fine adjustment, the D-pad sends arrow keys, and you can map click actions to any face button. Settings can be tuned per system and overridden per game.</p>
+
         <h3>How It Works</h3>
         <ul class="feature-list">
-            <li><strong>Analog Stick to Mouse:</strong> The primary analog stick (left or right, user-selectable) is sampled at 60fps and its deflection is translated into mouse delta values</li>
-            <li><strong>Secondary Stick for Fine Control:</strong> The secondary analog stick moves the mouse at 1/5 speed for precise cursor placement</li>
-            <li><strong>D-Pad as Keyboard:</strong> D-pad sends arrow key inputs (Up/Down/Left/Right), Start sends Enter, Select sends Space</li>
-            <li><strong>Configurable Button Mapping:</strong> Assign left click, right click, and middle click to any gamepad button (A, B, X, Y, L1, R1, L2, R2, L3, R3, Start, Select)</li>
+            <li><strong>Analog Stick to Mouse:</strong> The primary analog stick (left or right, your choice) moves the cursor based on how far you push it</li>
+            <li><strong>Secondary Stick for Fine Control:</strong> The other stick moves the cursor at 1/5 speed for precise placement</li>
+            <li><strong>D-Pad as Keyboard:</strong> D-pad sends arrow keys, Start sends Enter, Select sends Space — handy for menu navigation in DOS games</li>
+            <li><strong>Configurable Button Mapping:</strong> Assign left, right, and middle click to any face or shoulder button (A, B, X, Y, L1, R1, L2, R2, L3, R3, Start, Select)</li>
         </ul>
 
-        <h3>Core Features</h3>
+        <h3>Tuning Options</h3>
         <ul class="feature-list">
-            <li><strong>Sensitivity Control:</strong> Adjust pointer speed from 0.1x to 5.0x to match your preferred feel</li>
-            <li><strong>Dead Zone Adjustment:</strong> Set the dead zone threshold (0.00–0.50) to eliminate stick drift</li>
-            <li><strong>Stick Selection:</strong> Choose which analog stick (left or right) controls the mouse</li>
-            <li><strong>Per-System Settings:</strong> Independent configuration for DOS and ScummVM</li>
-            <li><strong>Per-Game Override:</strong> Toggle analog mouse on or off for individual ROMs</li>
-            <li><strong>Live Visualizer:</strong> Real-time stick position display with dead zone overlay in settings</li>
+            <li><strong>Sensitivity:</strong> Adjust pointer speed from 0.1x to 5.0x to match your preferred feel</li>
+            <li><strong>Dead Zone:</strong> Set a threshold (0.00–0.50) to filter out stick drift</li>
+            <li><strong>Stick Selection:</strong> Choose which analog stick controls the mouse</li>
+            <li><strong>Per-System Settings:</strong> Configure DOS and ScummVM independently</li>
+            <li><strong>Per-Game Override:</strong> Enable or disable analog mouse for an individual game without changing the system default</li>
+            <li><strong>Live Visualizer:</strong> See your stick position and dead zone in real time while you adjust</li>
         </ul>
-
-        <p>For implementation details, see the <a href="{{ '/development.html' | relative_url }}">Developer Guide</a>.</p>
     </section>
 
     <section id="step-by-step-guide">
@@ -94,7 +92,7 @@ title: Analog Mouse Support - TruchiEmu Documentation
     </section>
 
     <section id="references">
-        <h2>Related Services</h2>
+        <h2>Related Features</h2>
         
         <div class="related-services">
             <div class="service-card">

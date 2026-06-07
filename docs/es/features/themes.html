@@ -8,7 +8,6 @@ description: Personaliza TruchiEmu con 16 temas de color de acento inspirados en
 <h1>Temas y Apariencia</h1>
 
 <div class="feature-overview">
-<img src="{{ '/media/features/themes-showcase.png' | relative_url }}" alt="Los temas de TruchiEmu" class="hero-image lightbox-trigger">
 <p class="lead">Haz que TruchiEmu sea tuyo con 16 temas de color de acento inspirados en leyendas de los videojuegos&mdash;desde Samus hasta Doom&mdash;más un tema personalizado, modos de apariencia clara/oscura, superficies tintadas e iconos de barra de herramientas con color de acento.</p>
 </div>
 
@@ -25,32 +24,18 @@ description: Personaliza TruchiEmu con 16 temas de color de acento inspirados en
 </nav>
 
 <section id="service-explanation">
-<h2>Descripción del Servicio</h2>
-<p>El sistema de temas de TruchiEmu es un motor de temas de color de acento que transforma toda la interfaz de la aplicación. Cada tema define un acento primario, una variante atenuada, una variante oscura y un acento secundario complementario&mdash;con muchos temas que también ofrecen adaptaciones distintas para los modos claro y oscuro, para lograr un contraste óptimo en ambas apariencias.</p>
+<h2>Descripción General</h2>
+<p>El sistema de temas de TruchiEmu pinta toda la aplicación alrededor de un único color de acento. Elige uno de los 16 temas con nombre — cada uno combinado con un ícono de los videojuegos — o crea el tuyo con un selector de color. Claro, oscuro, o sigue al sistema, y elige cuánta tinta aparece en las barras de herramientas y laterales.</p>
 
-<div class="theme-architecture">
-<p style="text-align:center; font-size:0.8125rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:12px;">Pipeline de Temas</p>
-<div class="pipeline">
-<span class="step">AccentColorTheme</span>
-<span class="arrow">&rarr;</span>
-<span class="step">ThemeManager</span>
-<span class="arrow">&rarr;</span>
-<span class="step">AppColors</span>
-<span class="arrow">&rarr;</span>
-<span class="step">Vistas de SwiftUI</span>
-</div>
-</div>
-
-<h3>Características Principales</h3>
+<h3>Lo Que Obtienes</h3>
 <ul class="feature-list">
-<li><strong>16 Temas Curados + 1 Personalizado:</strong> Paletas de acento seleccionadas y nombradas en honor a personajes y franquicias icónicos de los videojuegos, organizadas en categorías Estándar y Gaming, más un tema con color de acento personalizado</li>
-<li><strong>Modo de Apariencia:</strong> Claro, Oscuro o Automático&mdash;sigue tu preferencia del sistema o la anula por aplicación</li>
-<li><strong>Colores Personalizados:</strong> Elige cualquier color como acento con el selector de color integrado</li>
-<li><strong>Acento en la Barra de Herramientas:</strong> Opcionalmente, colorea los iconos de la barra de herramientas con el color de acento en lugar de los valores predeterminados del sistema</li>
-<li><strong>Superficies Tintadas:</strong> Aplica un sutil tintado de color de acento a los fondos de ventana, barra lateral y barra de herramientas</li>
-<li><strong>Adaptaciones por Modo:</strong> Muchos temas ajustan automáticamente su acento para un mejor contraste en modo claro vs. oscuro</li>
+<li><strong>16 Temas Curados + 1 Personalizado:</strong> Paletas con nombres de personajes y franquicias icónicas de los videojuegos, organizadas en categorías Estándar y Gaming, más un tema Personalizado que puedes ajustar a cualquier color</li>
+<li><strong>Modo de Apariencia:</strong> Claro, Oscuro o Automático: sigue la preferencia de tu sistema o anúlala para la aplicación</li>
+<li><strong>Colores Personalizados:</strong> Elige cualquier color como acento con el selector integrado</li>
+<li><strong>Acento en la Barra de Herramientas:</strong> Opcionalmente colorea los iconos de la barra con el acento en lugar del valor predeterminado del sistema</li>
+<li><strong>Superficies Tintadas:</strong> Aplica un tintado sutil del acento a los fondos de ventana, barra lateral y barra de herramientas</li>
+<li><strong>Adaptaciones por Modo:</strong> Muchos temas ajustan su acento para un mejor contraste en modo claro vs. oscuro</li>
 </ul>
-<p>De los 16 temas curados, 9 tienen adaptaciones específicas para modo claro y 8 tienen adaptaciones para modo oscuro, asegurando un contraste óptimo en cada apariencia.</p>
 
 <h3>Cómo Toman Efecto los Cambios de Tema</h3>
 <p>Cuando aplicas un nuevo tema, TruchiEmu guarda tu preferencia y reinicia la aplicación para asegurar que cada ventana refleje el cambio. La interfaz te protege de perder cambios no guardados con diálogos de confirmación.</p>
@@ -380,7 +365,7 @@ description: Personaliza TruchiEmu con 16 temas de color de acento inspirados en
 </section>
 
 <section id="references">
-<h2>Servicios Relacionados</h2>
+<h2>Funciones Relacionadas</h2>
 
 <div class="related-services">
 <div class="service-card">
@@ -391,11 +376,6 @@ description: Personaliza TruchiEmu con 16 temas de color de acento inspirados en
 <div class="service-card">
 <h3><a href="{{ '/es/features/shaders.html' | relative_url }}">Sistema de Shaders</a></h3>
 <p>Mientras los shaders transforman los gráficos del juego, los temas transforman la interfaz de la aplicación en sí. Juntos, te dan control total sobre el aspecto y la sensación de TruchiEmu.</p>
-</div>
-
-<div class="service-card">
-<h3><a href="{{ '/es/development.html' | relative_url }}">Guía del Desarrollador</a></h3>
-<p>Aprende cómo funciona el sistema de temas internamente&mdash;el pipeline de ThemeManager, las propiedades estáticas de AppColors y cómo agregar nuevos temas al código.</p>
 </div>
 </div>
 </section>

@@ -147,27 +147,20 @@ GitHub
 <h1>Sistema de Cheats</h1>
 
 <section id="service-explanation">
-<h2>Visão Geral do Serviço</h2>
-<p>O sistema de cheats permite gerenciar e ativar códigos de cheat para seus jogos. Ele suporta formatos padrão de códigos de cheat e integra-se com cores Libretro para aplicar modificações em tempo real.</p>
+<h2>Visão Geral</h2>
+<p>O TruchiEmu vem com uma biblioteca integrada de códigos de cheat para milhares de jogos. Ao carregar uma ROM, quaisquer cheats conhecidos aparecem no painel de Cheats — escolha quais você quer, e eles são aplicados ao vivo. Você também pode inserir seus próprios códigos se os que você quer ainda não estão na biblioteca.</p>
 
-<div class="architecture-diagram">
-<img src="/truchiemu/media/features/cheat-architecture.png" alt="Arquitetura do Sistema de Cheats">
-<p class="caption">Pipeline do sistema de cheats desde a análise de códigos até a injeção de memória</p>
-</div>
-
-<h3>Recursos Principais</h3>
+<h3>O que Você Obtém</h3>
 <ul class="feature-list">
-<li><strong>Suporte Multi-Formato:</strong> Game Genie, Pro Action Replay, GameShark e códigos hex brutos</li>
-<li><strong>Banco de Dados de Cheats:</strong> Baixe coleções de cheats pré-feitas do <a href="https://github.com/libretro/libretro-database/tree/master/cht">repositório libretro-database no GitHub</a></li>
-<li><strong>Estratégia de Download Híbrida:</strong> Cheats são baixados por sistema com fallback para download individual de ROMs quando arquivos por sistema não estão disponíveis</li>
-<li><strong>Auto-Descoberta:</strong> Cheats são descobertos e carregados automaticamente com base na ROM carregada. Cheats ativados anteriormente mantêm seu estado; novos cheats são desativados por padrão.</li>
-<li><strong>Entrada Manual de Cheats:</strong> Adicione manualmente seus próprios códigos e descrições</li>
+<li><strong>Biblioteca de Cheats Integrada:</strong> Coleções de cheats pré-feitas para milhares de jogos, obtidas do <a href="https://github.com/libretro/libretro-database/tree/master/cht">libretro-database</a></li>
+<li><strong>Descoberta Automática:</strong> Cheats para o jogo atual aparecem no painel automaticamente ao carregar uma ROM</li>
+<li><strong>Ativação ao Vivo:</strong> Ligue e desligue cheats sem reiniciar o jogo</li>
+<li><strong>Persistência de Estado:</strong> Uma vez que você ativa um cheat, ele permanece ativado para esse jogo até você desligá-lo</li>
+<li><strong>Seus Próprios Códigos:</strong> Adicione manualmente códigos Game Genie, Pro Action Replay, GameShark ou hex brutos para cheats que não estão na biblioteca</li>
 </ul>
 
-<h3>Formatos de Cheat Suportados</h3>
-<p>O TruchiEmu suporta múltiplos formatos de códigos de cheat: Game Genie (códigos alfanuméricos de 6-8 caracteres), Pro Action Replay (códigos hexadecimais com endereços), GameShark (vários formatos por sistema) e códigos de memória brutos para usuários avançados. Cada formato é detectado e analisado automaticamente de forma correta.</p>
-
-<p>Para detalhes de implementação, consulte o <a href="/truchiemu/pt/development.html">Guia do Desenvolvedor</a>.</p>
+<h3>Formatos de Código Suportados</h3>
+<p>O TruchiEmu lê Game Genie (códigos alfanuméricos de 6 a 8 caracteres), Pro Action Replay (códigos hexadecimais com endereços), GameShark (formato varia por sistema) e códigos de memória brutos. Você não precisa especificar o formato — o TruchiEmu descobre isso a partir do próprio código.</p>
 </section>
 
 <section id="step-by-step-guide">
@@ -246,7 +239,7 @@ GitHub
 </section>
 
 <section id="references">
-<h2>Serviços Relacionados</h2>
+<h2>Recursos Relacionados</h2>
 
 <div class="related-services">
 <div class="service-card">

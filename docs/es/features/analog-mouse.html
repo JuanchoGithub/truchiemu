@@ -13,27 +13,25 @@ title: Soporte de Ratón Analógico - Documentación de TruchiEmu
 
     <section id="service-explanation">
         <h2>Descripción General</h2>
-        <p>El sistema de ratón analógico traduce la desviación del joystick de tu mando en movimiento del cursor para juegos de apuntar y hacer clic en DOS y ScummVM. Esto te permite navegar menús, hacer clic en objetos e interactuar con mundos de juego usando un mando en lugar de un ratón físico. La función es configurable por sistema (DOS, ScummVM) y soporta anulaciones por juego.</p>
-        
+        <p>El Soporte de Ratón Analógico te permite jugar aventuras point-and-click de DOS y ScummVM con un mando en lugar de un ratón. El stick izquierdo mueve el cursor, el derecho hace ajuste fino, la cruceta envía flechas y puedes asignar acciones de clic a cualquier botón frontal. Los ajustes se pueden configurar por sistema y anular por juego.</p>
+
         <h3>Cómo Funciona</h3>
         <ul class="feature-list">
-            <li><strong>Joystick a Ratón:</strong> El joystick analógico principal (izquierdo o derecho, seleccionable por el usuario) se muestrea a 60fps y su desviación se traduce en valores delta del ratón</li>
-            <li><strong>Joystick Secundario para Control Fino:</strong> El joystick analógico secundario mueve el ratón a 1/5 de velocidad para colocación precisa del cursor</li>
-            <li><strong>Cruceta como Teclado:</strong> La cruceta envía entradas de teclas de flecha (Arriba/Abajo/Izquierda/Derecha), Start envía Enter, Select envía Espacio</li>
-            <li><strong>Asignación de Botones Configurable:</strong> Asigna clic izquierdo, clic derecho y clic central a cualquier botón del mando (A, B, X, Y, L1, R1, L2, R2, L3, R3, Start, Select)</li>
+            <li><strong>Stick Analógico a Ratón:</strong> El stick analógico principal (izquierdo o derecho, tú eliges) mueve el cursor según lo lejos que lo empujes</li>
+            <li><strong>Stick Secundario para Control Fino:</strong> El otro stick mueve el cursor a 1/5 de velocidad para una colocación precisa</li>
+            <li><strong>Cruceta como Teclado:</strong> La cruceta envía flechas, Start envía Enter, Select envía Espacio — útil para navegar menús en juegos DOS</li>
+            <li><strong>Asignación de Botones Configurable:</strong> Asigna clic izquierdo, derecho y central a cualquier botón frontal o de hombro (A, B, X, Y, L1, R1, L2, R2, L3, R3, Start, Select)</li>
         </ul>
 
-        <h3>Características Principales</h3>
+        <h3>Opciones de Ajuste</h3>
         <ul class="feature-list">
-            <li><strong>Control de Sensibilidad:</strong> Ajusta la velocidad del puntero de 0.1x a 5.0x para adaptarlo a tu preferencia</li>
-            <li><strong>Ajuste de Zona Muerta:</strong> Configura el umbral de zona muerta (0.00–0.50) para eliminar la deriva del joystick</li>
-            <li><strong>Selección de Joystick:</strong> Elige qué joystick analógico (izquierdo o derecho) controla el ratón</li>
-            <li><strong>Configuración por Sistema:</strong> Configuración independiente para DOS y ScummVM</li>
-            <li><strong>Anulación por Juego:</strong> Activa o desactiva el ratón analógico para ROMs individuales</li>
-            <li><strong>Visualizador en Vivo:</strong> Visualización en tiempo real de la posición del joystick con superposición de zona muerta en ajustes</li>
+            <li><strong>Sensibilidad:</strong> Ajusta la velocidad del puntero de 0.1x a 5.0x para adaptarla a tu preferencia</li>
+            <li><strong>Zona Muerta:</strong> Define un umbral (0.00–0.50) para filtrar la deriva del stick</li>
+            <li><strong>Selección de Stick:</strong> Elige qué stick analógico controla el ratón</li>
+            <li><strong>Configuración por Sistema:</strong> Configura DOS y ScummVM de forma independiente</li>
+            <li><strong>Anulación por Juego:</strong> Activa o desactiva el ratón analógico para un juego individual sin cambiar el valor por defecto del sistema</li>
+            <li><strong>Visualizador en Vivo:</strong> Ve la posición de tu stick y la zona muerta en tiempo real mientras ajustas</li>
         </ul>
-
-        <p>Para detalles de implementación, consulta la <a href="{{ '/es/development.html' | relative_url }}">Guía del Desarrollador</a>.</p>
     </section>
 
     <section id="step-by-step-guide">
@@ -94,7 +92,7 @@ title: Soporte de Ratón Analógico - Documentación de TruchiEmu
     </section>
 
     <section id="references">
-        <h2>Servicios Relacionados</h2>
+        <h2>Funciones Relacionadas</h2>
         
         <div class="related-services">
             <div class="service-card">

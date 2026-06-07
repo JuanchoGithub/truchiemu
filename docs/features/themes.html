@@ -1,15 +1,14 @@
 ---
 layout: default
 title: Themes & Appearance - TruchiEmu Documentation
-description: Customize TruchiEmu with 17 gaming-inspired accent color themes, light and dark appearance modes, custom colors, and tinted surfaces.
+description: Customize TruchiEmu with 16 gaming-inspired accent color themes, light and dark appearance modes, custom colors, and tinted surfaces.
 ---
 
 <div class="feature-docs">
 <h1>Themes & Appearance</h1>
 
 <div class="feature-overview">
-<img src="{{ '/media/features/themes-showcase.png' | relative_url }}" alt="All 17 TruchiEmu Themes" class="hero-image lightbox-trigger">
-<p class="lead">Make TruchiEmu yours with 17 accent color themes inspired by gaming legends&mdash;from Samus to Doom&mdash;plus custom colors, light/dark appearance modes, tinted surfaces, and accent-colored toolbar icons.</p>
+<p class="lead">Make TruchiEmu yours with 16 accent color themes inspired by gaming legends&mdash;from Samus to Doom&mdash;plus custom colors, light/dark appearance modes, tinted surfaces, and accent-colored toolbar icons.</p>
 </div>
 
 <nav class="toc">
@@ -25,30 +24,17 @@ description: Customize TruchiEmu with 17 gaming-inspired accent color themes, li
 </nav>
 
 <section id="service-explanation">
-<h2>Service Overview</h2>
-<p>TruchiEmu's theme system is an accent color theming engine that transforms the entire app interface. Each theme defines a primary accent, a dimmed variant, a dark variant, and a complementary secondary accent&mdash;with many themes also offering distinct light and dark mode adaptations for optimal contrast in both appearances.</p>
+<h2>Overview</h2>
+<p>TruchiEmu's theme system paints the whole app around a single accent color. Pick one of 16 named themes — each color-matched to a gaming icon — or roll your own with a color picker. Light, dark, or follow the system, and choose how much tint shows up in toolbars and sidebars.</p>
 
-<div class="theme-architecture">
-<p style="text-align:center; font-size:0.8125rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:12px;">Theme Pipeline</p>
-<div class="pipeline">
-<span class="step">AccentColorTheme</span>
-<span class="arrow">&rarr;</span>
-<span class="step">ThemeManager</span>
-<span class="arrow">&rarr;</span>
-<span class="step">AppColors</span>
-<span class="arrow">&rarr;</span>
-<span class="step">SwiftUI Views</span>
-</div>
-</div>
-
-<h3>Core Features</h3>
+<h3>What You Get</h3>
 <ul class="feature-list">
-<li><strong>16 Curated + 1 Custom Theme:</strong> Accent palettes named after iconic gaming characters and franchises, organized into Standard and Gaming categories, plus a fully customizable Custom theme</li>
-<li><strong>Appearance Mode:</strong> Light, Dark, or Automatic&mdash;follows your system preference or overrides it per-app</li>
+<li><strong>16 Curated + 1 Custom Theme:</strong> Palettes named after iconic gaming characters and franchises, organized into Standard and Gaming categories, plus a Custom theme you can tweak to any color</li>
+<li><strong>Appearance Mode:</strong> Light, Dark, or Automatic — follow your system preference or override it per app</li>
 <li><strong>Custom Colors:</strong> Pick any color as your accent with the built-in Color Picker</li>
-<li><strong>Toolbar Accent:</strong> Optionally color toolbar icons with the accent color instead of system defaults</li>
-<li><strong>Tinted Surfaces:</strong> Apply a subtle accent color tint to window, sidebar, and toolbar backgrounds</li>
-<li><strong>Per-Mode Adaptations:</strong> Many themes automatically adjust their accent for better contrast in light vs. dark mode</li>
+<li><strong>Toolbar Accent:</strong> Optionally color toolbar icons with the accent instead of the system default</li>
+<li><strong>Tinted Surfaces:</strong> Apply a subtle accent tint to window, sidebar, and toolbar backgrounds</li>
+<li><strong>Per-Mode Adaptations:</strong> Many themes adjust their accent for better contrast in light vs. dark mode</li>
 </ul>
 
                     <h3>How Theme Changes Take Effect</h3>
@@ -379,7 +365,7 @@ description: Customize TruchiEmu with 17 gaming-inspired accent color themes, li
 </section>
 
 <section id="references">
-<h2>Related Services</h2>
+<h2>Related Features</h2>
 
 <div class="related-services">
 <div class="service-card">
@@ -390,11 +376,6 @@ description: Customize TruchiEmu with 17 gaming-inspired accent color themes, li
 <div class="service-card">
 <h3><a href="{{ '/features/shaders.html' | relative_url }}">Shader System</a></h3>
 <p>While shaders transform in-game visuals, themes transform the app interface itself. Together, they give you full control over how TruchiEmu looks and feels.</p>
-</div>
-
-<div class="service-card">
-<h3><a href="{{ '/development.html' | relative_url }}">Developer Guide</a></h3>
-<p>Learn how the theme system works under the hood&mdash;the ThemeManager pipeline, AppColors statics, and how to add new themes to the codebase.</p>
 </div>
 </div>
 </section>

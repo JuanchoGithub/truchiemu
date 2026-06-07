@@ -144,70 +144,61 @@ GitHub
 <main class="main-content" id="content">
 <div class="content-wrapper">
 <div class="feature-docs">
-<h1>Gestión de Biblioteca</h1>
+    <h1>Library Management</h1>
+    
+    <div class="feature-overview">
+        <p class="lead">TruchiEmu's library management system organizes your game collection with metadata enrichment, artwork downloads, and system-based categorization.</p>
+    </div>
 
-<div class="feature-overview">
-<img src="/truchiemu/media/features/library-hero.png" alt="Panorama de Gestión de Biblioteca" class="hero-image lightbox-trigger">
-<p class="lead">El sistema de gestión de biblioteca de TruchiEmu organiza tu colección de juegos con enriquecimiento de metadatos, descargas de ilustraciones y categorización basada en sistemas.</p>
-</div>
+    <section id="service-explanation">
+        <h2>Overview</h2>
+        <p>The Library is where your games live. Point TruchiEmu at your ROM folders and it does the rest: it figures out which system each file belongs to, identifies the game, pulls in a title and description, and grabs the box art. Browse by system, favorite, recently played, or any of the saved categories you've made.</p>
 
-<section id="service-explanation">
-<h2>Panorama del Servicio</h2>
-<p>El servicio de Gestión de Biblioteca ayuda a organizar y descubrir tu colección de juegos. Identifica juegos usando bases de datos DAT de libretro, luego enriquece los metadatos desde múltiples fuentes incluyendo LibretroMetadataLibrary, Progetto-SNAPS y LaunchBox GamesDB, descarga ilustraciones y agrupa títulos por sistema.</p>
-
-<div class="architecture-diagram">
-<img src="/truchiemu/media/features/library-architecture.png" alt="Arquitectura de Biblioteca">
-<p class="caption">Flujo de datos de la biblioteca desde escaneo de ROMs hasta enriquecimiento de metadatos y visualización en la UI</p>
-</div>
-
-<h3>Funciones Clave</h3>
+        <h3>What It Does For You</h3>
 <ul class="feature-list">
-<li><strong>Detección Automática de Juegos:</strong> Identificación de sistema de ROMs usando puntuación ponderada de encabezados mágicos, extensiones de archivo, patrones de nombre de archivo y contexto de ruta, seguido de coincidencia de juegos basada en CRC32 contra bases de datos DAT de libretro</li>
-<li><strong>Enriquecimiento de Metadatos:</strong> Información de juegos desde múltiples proveedores: games.xml local, bases de datos DAT de libretro, LibretroMetadataLibrary, Progetto-SNAPS y LaunchBox GamesDB</li>
-<li><strong>Gestión de Ilustraciones:</strong> Box art desde el CDN de Libretro Thumbnails, con fallback opcional a ScreenScraper y LaunchBox GamesDB</li>
-<li><strong>Organización de Biblioteca:</strong> Juegos organizados por sistema, favoritos, reproducidos recientemente, añadidos recientemente, juegos ocultos, categorías personalizadas y RetroAchievements. Chips de filtro y filtrado por género proporcionan refinamiento adicional.</li>
-<li><strong>Integración RetroAchievements:</strong> Los juegos con soporte de RetroAchievements están marcados en la biblioteca y se pueden filtrar en la vista de RetroAchievements</li>
-<li><strong>Vistas de Cuadrícula y Lista:</strong> Alterna entre vista de cuadrícula basada en tarjetas y vista de lista compacta</li>
-<li><strong>Búsqueda y Filtros:</strong> Búsqueda de múltiples términos, chips de filtro (sin box art, nunca jugado, no identificado, multijugador), filtrado por género y opciones de ordenación</li>
+<li><strong>Automatic Identification:</strong> Each ROM is recognized and matched to a real game title — no manual entry needed</li>
+<li><strong>Box Art:</strong> Cover art is downloaded automatically for every game it can find</li>
+<li><strong>Metadata:</strong> Game info, descriptions, and genres are pulled in from community databases</li>
+<li><strong>Organized Your Way:</strong> Browse by system, favorites, recently played, last added, custom categories, or RetroAchievements</li>
+<li><strong>Grid or List:</strong> Switch between the cover-art grid and a compact list view</li>
+<li><strong>Search & Filters:</strong> Multi-term search plus quick filter chips for "no box art", "never played", "multiplayer", and more</li>
+<li><strong>RetroAchievements Aware:</strong> Games with achievements are flagged so you can filter to just those</li>
 </ul>
+    </section>
 
-<p>Para detalles de implementación, consulta la <a href="/truchiemu/es/development.html">Guía del Desarrollador</a>.</p>
-</section>
-
-<section id="step-by-step-guide">
-<h2>Guía de Configuración Paso a Paso</h2>
-
-<h3>Configuración Inicial de la Biblioteca</h3>
-<ol class="setup-steps">
+    <section id="step-by-step-guide">
+        <h2>Step-by-Step Configuration Guide</h2>
+        
+        <h3>Initial Library Setup</h3>
+        <ol class="setup-steps">
 <li>
-<strong>Agregar Directorios de ROMs</strong>
-<p>Añade directorios de ROMs desde la barra lateral de la Biblioteca o el asistente de configuración inicial. TruchiEmu soporta escaneo recursivo de subdirectorios.</p>
-<img src="/truchiemu/media/screenshots/library-directories.png" alt="Configuración de Directorios de ROMs">
+<strong>Add ROM Directories</strong>
+<p>Add ROM directories from the Library sidebar (button <code>folder.badge.plus</code>) or the initial onboarding wizard. TruchiEmu supports recursive scanning of subdirectories.</p>
+<img src="/truchiemu/media/screenshots/library-directories.png" alt="ROM Directories Configuration">
 </li>
 <li>
-<strong>Iniciar Escaneo de Biblioteca</strong>
-<p>Haz clic en "Escanear Nuevas ROMs" en la vista principal de Biblioteca. El escáner calculará hashes, identificará juegos y obtendrá metadatos. Después del escaneo, el pipeline de automatización identifica ROMs, enriquece metadatos y descarga ilustraciones automáticamente.</p>
+<strong>Start Library Scan</strong>
+<p>Initiate a scan from the Library view. The scanner identifies ROM systems, then automatically runs post-scan automation: CRC32-based game identification, metadata enrichment, and box art downloads. No manual scan configuration is needed &mdash; scanning automatically filters non-ROM file types and identifies systems by extension and file headers.</p>
 </li>
-</ol>
-</section>
+            </ol>
+    </section>
 
-<section id="references">
-<h2>Servicios Relacionados</h2>
-
-<div class="related-services">
-<div class="service-card">
-<h3><a href="/truchiemu/es/features/save-states.html">Sistema de Estados de Guardado</a></h3>
-<p>Los estados de guardado se pueden ver y gestionar desde la vista de detalles del juego.</p>
+    <section id="references">
+        <h2>Related Features</h2>
+        
+        <div class="related-services">
+            <div class="service-card">
+                <h3><a href="/truchiemu/features/save-states.html">Save State System</a></h3>
+                <p>Save states can be viewed and managed from the game detail view.</p>
+            </div>
+            
+            <div class="service-card">
+                <h3><a href="/truchiemu/features/achievements.html">RetroAchievements</a></h3>
+                <p>Games with RetroAchievements support are flagged in the library and can be filtered via the RetroAchievements view.</p>
+            </div>
+        </div>
+    </section>
 </div>
-
-<div class="service-card">
-<h3><a href="/truchiemu/es/features/achievements.html">RetroAchievements</a></h3>
-<p>Los juegos con soporte de RetroAchievements están marcados en la biblioteca y se pueden filtrar en la vista de RetroAchievements.</p>
-</div>
-</div>
-</section>
-</div>
-
 </div>
 
 
