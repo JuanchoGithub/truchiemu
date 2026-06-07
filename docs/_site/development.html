@@ -146,7 +146,7 @@ GitHub
 <section class="page-header">
     <div class="container">
         <h1>Developer Guide</h1>
-        <p class="lead">A technical reference for contributors — architecture, emulation cores, build pipeline, and deep dives</p>
+        <p class="lead">A technical reference for contributors  architecture, emulation cores, build pipeline, and deep dives</p>
     </div>
 </section>
 
@@ -218,27 +218,27 @@ xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug b
         <div class="feature-grid">
             <div class="feature-card">
                 <h3>App Layer</h3>
-                <p><code>TruchiEmu/App/</code> — Application entrypoint, window management, and ContentView.</p>
+                <p><code>TruchiEmu/App/</code>  Application entrypoint, window management, and ContentView.</p>
             </div>
             <div class="feature-card">
                 <h3>Core Engine</h3>
-                <p><code>TruchiEmu/Core/Engine/</code> — Mixed Objective-C++ and C. Interfaces with libretro via a bridging header.</p>
+                <p><code>TruchiEmu/Core/Engine/</code>  Mixed Objective-C++ and C. Interfaces with libretro via a bridging header.</p>
             </div>
             <div class="feature-card">
                 <h3>SwiftUI Layer</h3>
-                <p><code>TruchiEmu/Views/</code> and <code>TruchiEmu/Features/</code> — All user interaction and visual presentation.</p>
+                <p><code>TruchiEmu/Views/</code> and <code>TruchiEmu/Features/</code>  All user interaction and visual presentation.</p>
             </div>
             <div class="feature-card">
                 <h3>Services Layer</h3>
-                <p><code>TruchiEmu/Services/</code> — Business logic: save directories, ROM identification, API integrations.</p>
+                <p><code>TruchiEmu/Services/</code>  Business logic: save directories, ROM identification, API integrations.</p>
             </div>
             <div class="feature-card">
                 <h3>Data Layer</h3>
-                <p><code>TruchiEmu/Core/Models/</code> — SwiftData models for game library, settings, and persistence.</p>
+                <p><code>TruchiEmu/Core/Models/</code>  SwiftData models for game library, settings, and persistence.</p>
             </div>
             <div class="feature-card">
                 <h3>Shared Utilities</h3>
-                <p><code>TruchiEmu/Shared/</code> — Cross-cutting code: theme manager, design tokens, image cache.</p>
+                <p><code>TruchiEmu/Shared/</code>  Cross-cutting code: theme manager, design tokens, image cache.</p>
             </div>
         </div>
     </div>
@@ -309,7 +309,7 @@ xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug b
         </ul>
 
         <h3>Shader Files</h3>
-        <p>Metal shaders live in <code>TruchiEmu/Core/Shaders/</code>. The <code>slang/</code>, <code>internal/</code>, and <code>all_shaders.metal</code> directories are excluded from the Xcode build — these are runtime-loaded resources from <code>TruchiEmu_Resources/core_shaders/</code>.</p>
+        <p>Metal shaders live in <code>TruchiEmu/Core/Shaders/</code>. The <code>slang/</code>, <code>internal/</code>, and <code>all_shaders.metal</code> directories are excluded from the Xcode build  these are runtime-loaded resources from <code>TruchiEmu_Resources/core_shaders/</code>.</p>
 
         <h3>Performance Characteristics</h3>
         <p>Passthrough, Scale Smooth, and Vignette have minimal GPU impact. CRT shaders (Multipass, Lottes) and LCD simulations use more GPU resources.</p>
@@ -333,10 +333,10 @@ xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug b
         </div>
 
         <ul class="feature-list">
-            <li><strong>AccentColorTheme</strong> — Enum with 16 curated cases plus <code>.custom</code> (17 total). Each defines accent, dimmed (84%), dark (70%), and secondary colors for light and dark modes. Includes a <code>migratedRawValue()</code> system for renamed themes.</li>
-            <li><strong>ThemeManager</strong> — Singleton <code>@MainActor ObservableObject</code> that owns current theme, appearance mode, custom accent color, toolbar accent toggle, and tinted surfaces toggle. Persists all state via <code>AppSettings</code> (SwiftData).</li>
-            <li><strong>AppColors</strong> — Static semantic color tokens in <code>DesignSystem.swift</code> that views consume. Auto-resolves via <code>NSApp.effectiveAppearance</code>. Preview-safe <code>*ForScheme</code> variants available.</li>
-            <li><strong>App Restart</strong> — Theme changes call <code>ThemeManager.relaunchApp()</code>, spawning a new process and terminating the current one. The settings UI enforces this with confirmation dialogs and unsaved-change interception.</li>
+            <li><strong>AccentColorTheme</strong>  Enum with 16 curated cases plus <code>.custom</code> (17 total). Each defines accent, dimmed (84%), dark (70%), and secondary colors for light and dark modes. Includes a <code>migratedRawValue()</code> system for renamed themes.</li>
+            <li><strong>ThemeManager</strong>  Singleton <code>@MainActor ObservableObject</code> that owns current theme, appearance mode, custom accent color, toolbar accent toggle, and tinted surfaces toggle. Persists all state via <code>AppSettings</code> (SwiftData).</li>
+            <li><strong>AppColors</strong>  Static semantic color tokens in <code>DesignSystem.swift</code> that views consume. Auto-resolves via <code>NSApp.effectiveAppearance</code>. Preview-safe <code>*ForScheme</code> variants available.</li>
+            <li><strong>App Restart</strong>  Theme changes call <code>ThemeManager.relaunchApp()</code>, spawning a new process and terminating the current one. The settings UI enforces this with confirmation dialogs and unsaved-change interception.</li>
         </ul>
 
         <h3>Adding a New Theme</h3>
@@ -350,7 +350,7 @@ xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug b
         </ol>
 
         <h3>Theming Conventions</h3>
-        <p>All views must use <code>AppColors</code> semantic tokens — never hardcode color values. Tokens automatically blend the current theme's accent into surfaces, text, and borders. Check <code>ThemeManager.shared.toolbarAccentEnabled</code> and <code>tintedSurfacesEnabled</code> when applying accent colors to icons and background surfaces.</p>
+        <p>All views must use <code>AppColors</code> semantic tokens  never hardcode color values. Tokens automatically blend the current theme's accent into surfaces, text, and borders. Check <code>ThemeManager.shared.toolbarAccentEnabled</code> and <code>tintedSurfacesEnabled</code> when applying accent colors to icons and background surfaces.</p>
     </div>
 </section>
 
