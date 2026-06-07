@@ -234,7 +234,7 @@
     "database": [
       "Nintendo - Game Boy"
     ],
-    "defaultShaderPresetID": "builtin-dot-matrix"
+    "defaultShaderPresetID": "builtin-8b-gameboy"
   },
   {
     "year": "1998",
@@ -258,7 +258,7 @@
     "database": [
       "Nintendo - Game Boy Color"
     ],
-    "defaultShaderPresetID": "builtin-dot-matrix"
+    "defaultShaderPresetID": "builtin-8b-gameboy-color"
   },
   {
     "year": "2004",
@@ -389,7 +389,7 @@
     ],
     "pathKeywords": [
       "sms",
-      "mastersystem", 
+      "mastersystem",
       "master system",
       "sega master system"
     ],
@@ -1044,11 +1044,11 @@
       "zip"
     ],
     "pathKeywords": [
-        "dos",
-        "dosbox",
-        "pc",
-        "msdos",
-        "ms-dos"
+      "dos",
+      "dosbox",
+      "pc",
+      "msdos",
+      "ms-dos"
     ],
     "emuIconName": "DOS",
     "defaultBoxType": "Vertical",
