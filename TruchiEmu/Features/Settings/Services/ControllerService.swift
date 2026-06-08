@@ -302,6 +302,11 @@ class ControllerService: ObservableObject {
         saveMappings()
     }
 
+    func deadzone(for vendorName: String, systemID: String) -> (left: Float, right: Float) {
+        let m = mapping(for: vendorName, systemID: systemID)
+        return (left: m.leftStickDeadzone, right: m.rightStickDeadzone)
+    }
+
     func mapping(for vendorName: String, systemID: String, gameID: String? = nil) -> ControllerGamepadMapping {
         if let gid = gameID, let profile = GameMappingStorage.shared.load(for: gid),
            let overrides = profile.gamepadOverrides {

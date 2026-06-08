@@ -516,9 +516,122 @@ struct DraggableDivider: View {
     }
 }
 
+// MARK: - Deadzone Sliders Section
+struct DeadzoneSlidersSection: View {
+    @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject var controllerService: ControllerService
+    let systemID: String
+    let selectedControllerId: UUID
+    @ObservedObject private var loc = LocalizationManager.shared
+
+    private var currentMapping: ControllerGamepadMapping {
+        guard let player = controllerService.connectedControllers.first(where: { $0.id == selectedControllerId }),
+              let vendorName = player.gcController?.vendorName else {
+            return ControllerGamepadMapping.defaults(for: "Unknown", systemID: systemID)
+        }
+        return controllerService.mapping(for: vendorName, systemID: systemID)
+    }
+
+    var body: some View {
+        VStack(spacing: 4) {
+            DeadzoneSliderRow(
+                label: loc.localized("controllers.deadzoneLeft"),
+                value: Double(currentMapping.leftStickDeadzone),
+                defaultValue: 0.15,
+                onValueChanged: { newVal in
+                    updateDeadzone(left: Float(newVal), right: nil)
+                }
+            )
+            DeadzoneSliderRow(
+                label: loc.localized("controllers.deadzoneRight"),
+                value: Double(currentMapping.rightStickDeadzone),
+                defaultValue: 0.15,
+                onValueChanged: { newVal in
+                    updateDeadzone(left: nil, right: Float(newVal))
+                }
+            )
+        }
+        .padding(.horizontal, 6)
+    }
+
+    private func updateDeadzone(left: Float?, right: Float?) {
+        guard let player = controllerService.connectedControllers.first(where: { $0.id == selectedControllerId }),
+              let vendorName = player.gcController?.vendorName else { return }
+        var mapping = controllerService.mapping(for: vendorName, systemID: systemID)
+        if let left { mapping.leftStickDeadzone = left }
+        if let right { mapping.rightStickDeadzone = right }
+        controllerService.updateMapping(for: vendorName, systemID: systemID, mapping: mapping)
+    }
+}
+
+private struct DeadzoneSliderRow: View {
+    @Environment(\.colorScheme) private var colorScheme
+    let label: String
+    let value: Double
+    let defaultValue: Double
+    let onValueChanged: (Double) -> Void
+
+    var body: some View {
+        VStack(spacing: 2) {
+            HStack {
+                Text(label)
+                    .font(.system(size: 9))
+                Spacer()
+                Text(String(format: "%.2f", value))
+                    .font(.system(size: 9, design: .monospaced))
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                Button {
+                    onValueChanged(defaultValue)
+                } label: {
+                    Image(systemName: "arrow.counterclockwise")
+                        .font(.system(size: 8))
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(value != defaultValue ? AppColors.brandAccent : AppColors.textSecondary(colorScheme).opacity(0.3))
+                .disabled(value == defaultValue)
+            }
+            Slider(value: .init(
+                get: { value },
+                set: { onValueChanged($0) }
+            ), in: 0.0...0.50, step: 0.01)
+            .controlSize(.mini)
+        }
+    }
+}
+
+struct ControllerDeadzoneSliders: View {
+    @Environment(\.colorScheme) private var colorScheme
+    @Binding var mapping: ControllerGamepadMapping
+    let systemID: String
+    @ObservedObject private var loc = LocalizationManager.shared
+
+    var body: some View {
+        VStack(spacing: 4) {
+            DeadzoneSliderRow(
+                label: loc.localized("controllers.deadzoneLeft"),
+                value: Double(mapping.leftStickDeadzone),
+                defaultValue: 0.15,
+                onValueChanged: { newVal in
+                    mapping.leftStickDeadzone = Float(newVal)
+                }
+            )
+            DeadzoneSliderRow(
+                label: loc.localized("controllers.deadzoneRight"),
+                value: Double(mapping.rightStickDeadzone),
+                defaultValue: 0.15,
+                onValueChanged: { newVal in
+                    mapping.rightStickDeadzone = Float(newVal)
+                }
+            )
+        }
+        .padding(.horizontal, 6)
+    }
+}
+
 // MARK: - Controller Left Panel (icon + sticks)
 struct ControllerLeftPanel: View {
     @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject var controllerService: ControllerService
     let systemID: String
     let width: CGFloat
     let selectedControllerId: UUID
@@ -526,10 +639,15 @@ struct ControllerLeftPanel: View {
     var body: some View {
         VStack(spacing: 4) {
             ControllerIconView(systemID: systemID)
+                .frame(maxHeight: 60)
 
             Divider()
 
             StickVisualizerView(systemID: systemID, selectedControllerId: selectedControllerId)
+
+            Divider()
+
+            DeadzoneSlidersSection(systemID: systemID, selectedControllerId: selectedControllerId)
         }
         .frame(width: width)
         .frame(maxHeight: .infinity, alignment: .top)
@@ -548,6 +666,14 @@ struct StickVisualizerView: View {
     @EnvironmentObject var controllerService: ControllerService
     @ObservedObject private var loc = LocalizationManager.shared
 
+    private var currentMapping: ControllerGamepadMapping {
+        guard let player = controllerService.connectedControllers.first(where: { $0.id == selectedControllerId }),
+              let vendorName = player.gcController?.vendorName else {
+            return ControllerGamepadMapping.defaults(for: "Unknown", systemID: systemID)
+        }
+        return controllerService.mapping(for: vendorName, systemID: systemID)
+    }
+
     var body: some View {
         VStack(spacing: 6) {
             Text(loc.localized("controllers.sticks"))
@@ -555,8 +681,8 @@ struct StickVisualizerView: View {
                 .fontWeight(.semibold)
                 .foregroundColor(AppColors.textSecondary(colorScheme))
             HStack(spacing: 12) {
-                CompactStickView(x: lX, y: lY, label: "L")
-                CompactStickView(x: rX, y: rY, label: "R")
+                CompactStickView(x: lX, y: lY, label: "L", deadZone: Double(currentMapping.leftStickDeadzone))
+                CompactStickView(x: rX, y: rY, label: "R", deadZone: Double(currentMapping.rightStickDeadzone))
             }
         }
         .onAppear { monitorSelectedController() }
@@ -728,6 +854,7 @@ struct ControllerMappingDetail: View {
         HStack(spacing: 0) {
             VStack(spacing: 8) {
                 ControllerIconView(systemID: systemID)
+                    .frame(maxHeight: 60)
                 Divider().padding(.horizontal, 12)
                 VStack(spacing: 8) {
                     Text(loc.localized("controllers.sticks"))
@@ -735,15 +862,17 @@ struct ControllerMappingDetail: View {
                         .fontWeight(.semibold)
                         .foregroundColor(AppColors.textSecondary(colorScheme))
                     HStack(spacing: 8) {
-                        CompactStickView(x: lStickState.x, y: lStickState.y, label: "L")
-                        CompactStickView(x: rStickState.x, y: rStickState.y, label: "R")
+                        CompactStickView(x: lStickState.x, y: lStickState.y, label: "L", deadZone: Double(mapping.leftStickDeadzone))
+                        CompactStickView(x: rStickState.x, y: rStickState.y, label: "R", deadZone: Double(mapping.rightStickDeadzone))
                     }
                 }
                 .padding(.bottom, 8)
-                Spacer()
+                Divider()
+                ControllerDeadzoneSliders(mapping: $mapping, systemID: systemID)
             }
-            .frame(width: 160)
+            .frame(width: 180)
             .padding(.vertical, 8)
+        .padding(.vertical, 8)
 
             Divider()
 
@@ -787,6 +916,8 @@ struct ControllerMappingDetail: View {
         }
         .onAppear { startStickVisualizer() }
         .onDisappear { stopListening() }
+        .onChange(of: mapping.leftStickDeadzone) { _, _ in saveMapping() }
+        .onChange(of: mapping.rightStickDeadzone) { _, _ in saveMapping() }
     }
 
     private func startListeningForButton(_ btn: RetroButton) {
@@ -888,6 +1019,7 @@ struct CompactStickView: View {
     let x: Double
     let y: Double
     let label: String
+    var deadZone: Double = 0.15
 
     var body: some View {
         VStack(spacing: 6) {
@@ -899,14 +1031,19 @@ struct CompactStickView: View {
                     .stroke(AppColors.divider(colorScheme).opacity(0.3), lineWidth: 1)
                     .frame(width: 80, height: 80)
 
+                Circle()
+                    .fill(AppColors.textSecondary(colorScheme).opacity(0.15))
+                    .stroke(AppColors.textSecondary(colorScheme).opacity(0.4), lineWidth: 1.5)
+                    .frame(width: CGFloat(deadZone * 2 * 40), height: CGFloat(deadZone * 2 * 40))
+
                 Rectangle().fill(AppColors.divider(colorScheme).opacity(0.1)).frame(width: 80, height: 1)
                 Rectangle().fill(AppColors.divider(colorScheme).opacity(0.1)).frame(width: 1, height: 80)
 
                 Circle()
                     .fill(AppColors.brandAccent)
-                    .frame(width: 16, height: 16)
+                    .frame(width: 3, height: 3)
                     .offset(x: CGFloat(x * 34), y: CGFloat(y * -34))
-                    .shadow(color: AppColors.brandAccent.opacity(0.4), radius: 5)
+                    .shadow(color: AppColors.brandAccent.opacity(0.4), radius: 2)
             }
             .clipShape(Circle())
 
@@ -926,17 +1063,24 @@ struct StickTesterView: View {
     let x: Double
     let y: Double
     let label: String
+    var deadZone: Double = 0.15
 
     var body: some View {
         VStack(spacing: 8) {
             ZStack {
                 Circle().fill(AppColors.divider(colorScheme).opacity(0.3)).frame(width: 100, height: 100)
                 Circle().stroke(AppColors.divider(colorScheme).opacity(0.3), lineWidth: 1).frame(width: 100, height: 100)
+
+                Circle()
+                    .fill(AppColors.textSecondary(colorScheme).opacity(0.15))
+                    .stroke(AppColors.textSecondary(colorScheme).opacity(0.4), lineWidth: 1.5)
+                    .frame(width: CGFloat(deadZone * 2 * 48), height: CGFloat(deadZone * 2 * 48))
+
                 Rectangle().fill(AppColors.divider(colorScheme).opacity(0.1)).frame(width: 100, height: 1)
                 Rectangle().fill(AppColors.divider(colorScheme).opacity(0.1)).frame(width: 1, height: 100)
-                Circle().fill(AppColors.brandAccent).frame(width: 14, height: 14)
+                Circle().fill(AppColors.brandAccent).frame(width: 3, height: 3)
                     .offset(x: CGFloat(x * 43), y: CGFloat(y * -43))
-                    .shadow(color: AppColors.brandAccent.opacity(0.4), radius: 6)
+                    .shadow(color: AppColors.brandAccent.opacity(0.4), radius: 2)
             }
             .clipShape(Circle())
 

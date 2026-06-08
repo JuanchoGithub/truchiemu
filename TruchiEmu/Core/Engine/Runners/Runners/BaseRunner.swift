@@ -1178,7 +1178,8 @@ case "scummvm": runner = ScummVMRunner()
                     }
                 }
                 
-        aggregatedAxisValue = AnalogDeadZone.default.apply(aggregatedAxisValue)
+            let deadzone = info.index == 0 ? mapping.leftStickDeadzone : mapping.rightStickDeadzone
+            aggregatedAxisValue = AnalogDeadZone(radial: deadzone, anti: 0.0).apply(aggregatedAxisValue)
         aggregatedAxisValue = max(-1.0, min(1.0, aggregatedAxisValue))
         let retroValue = Int32(aggregatedAxisValue * 32767.0)
         XPCBridgeAdapter.shared.setAnalogState(Int(info.index), id: Int(info.id), value: retroValue, player: player)
