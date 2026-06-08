@@ -32,6 +32,25 @@ struct GameOverlayToolbar: View {
                 }
             }
 
+            if let toast = captureManager.lastEscapeToastMessage {
+                VStack {
+                    Text(verbatim: toast)
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundColor(.white.opacity(0.9))
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color.black.opacity(0.8))
+                        )
+                        .transition(.opacity)
+                        .offset(y: -70)
+
+                    Spacer()
+                }
+            }
+
             VStack {
                 Spacer()
                 toolbarContent
@@ -101,9 +120,11 @@ struct GameOverlayToolbar: View {
             windowController.showCheatManager()
         }
 
-        FightTrainingToolbarButton(windowController: windowController)
+FightTrainingToolbarButton(windowController: windowController)
 
-            FullscreenButton(windowController: windowController)
+GameGuideToolbarButton(windowController: windowController)
+
+FullscreenButton(windowController: windowController)
 
             AutoFullscreenButton(windowController: windowController)
         }

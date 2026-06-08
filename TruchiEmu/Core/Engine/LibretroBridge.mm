@@ -671,6 +671,12 @@ down:(BOOL)down {
     g_mouse_state.wheel_delta = 0;
 }
 
++ (void)setAbsoluteMousePositionX:(int16_t)x Y:(int16_t)y override:(BOOL)override {
+    g_mouse_state.absolute_position_override = override;
+    g_mouse_state.absolute_x = x;
+    g_mouse_state.absolute_y = y;
+}
+
 #pragma mark - Analog as Mouse
 
 + (void)setAnalogAsMouseEnabled:(BOOL)enabled forPlayer:(int)player {

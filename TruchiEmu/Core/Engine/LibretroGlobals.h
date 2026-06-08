@@ -62,6 +62,9 @@ typedef struct {
     uint32_t buttons;
     int16_t analog_mouse_delta_x;
     int16_t analog_mouse_delta_y;
+    bool absolute_position_override;
+    int16_t absolute_x;
+    int16_t absolute_y;
 } MouseState;
 extern MouseState g_mouse_state;
 

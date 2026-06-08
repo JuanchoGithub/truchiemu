@@ -200,6 +200,10 @@ static func setKeyState(retroID: Int, pressed: Bool) {
         LibretroBridge.resetMouseDeltas()
     }
 
+    static func setAbsoluteMousePosition(_ x: Int16, y: Int16, override: Bool) {
+        LibretroBridge.setAbsoluteMousePositionX(x, y: y, override: override)
+    }
+
     static func setPointerPosition(_ x: Int16, y: Int16, pressed: Bool) {
         LibretroBridge.setPointerX(x, y: y, pressed: pressed)
     }

@@ -33,7 +33,10 @@ typedef struct {
     uint32_t buttons;
     int16_t analog_mouse_delta_x;
     int16_t analog_mouse_delta_y;
-    uint8_t _pad[0];
+    bool absolute_position_override;
+    int16_t absolute_x;
+    int16_t absolute_y;
+    uint8_t _pad[3];
 } XPCMouseState;
 
 typedef struct {

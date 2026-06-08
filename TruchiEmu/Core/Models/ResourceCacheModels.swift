@@ -58,6 +58,7 @@ enum ResourceType: String, Codable, Sendable {
     case libretroDatFile  // Downloaded libretro-database .dat files for system identification
     case headCheck        // HEAD request results (cached 200/404)
     case thumbnailManifest // libretro-thumbnails directory listing (Git tree)
+    case gameGuide // UHS hint pages and GameFAQs walkthrough text
 }
 
 // MARK: - Cache Expiry Policy
@@ -150,6 +151,10 @@ struct ResourceCacheEntry: Equatable, Sendable {
     static func makeLaunchBoxSearchKey(platform: String, query: String) -> String {
         let sanitizedQuery = query.replacingOccurrences(of: " ", with: "_")
         return "launchbox_search_\(platform)_\(sanitizedQuery)"
+    }
+
+    static func makeGameGuideKey(source: String, identifier: String) -> String {
+        return "gameguide_\(source)_\(identifier)"
     }
 }
 

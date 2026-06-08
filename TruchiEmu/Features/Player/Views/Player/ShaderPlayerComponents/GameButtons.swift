@@ -441,7 +441,35 @@ struct FightTrainingToolbarButton: View {
                 .padding(.horizontal, 10)
                 .padding(.vertical, 6)
             }
-            .foregroundColor(isActive ? AppColors.brandAccent : .white)
-        }
-    }
+.foregroundColor(isActive ? AppColors.brandAccent : .white)
+}
+}
+}
+
+struct GameGuideToolbarButton: View {
+@ObservedObject var windowController: StandaloneGameWindowController
+@ObservedObject private var loc = LocalizationManager.shared
+
+private var isActive: Bool {
+windowController.gameGuideViewModel.isSidebarVisible
+}
+
+var body: some View {
+if windowController.gameGuideViewModel.hasGuideData {
+HoverButton(action: {
+windowController.toggleGuideSidebar()
+}) {
+VStack(spacing: 4) {
+Image(systemName: "book")
+.font(.system(size: 16, weight: .semibold))
+Text(loc.localized("toolbar.gameGuide"))
+.font(.system(size: 10, weight: .medium))
+.lineLimit(1)
+}
+.padding(.horizontal, 10)
+.padding(.vertical, 6)
+}
+.foregroundColor(isActive ? AppColors.brandAccent : .white)
+}
+}
 }

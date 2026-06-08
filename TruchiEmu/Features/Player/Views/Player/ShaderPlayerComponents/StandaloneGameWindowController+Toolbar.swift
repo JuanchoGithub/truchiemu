@@ -7,11 +7,14 @@ extension StandaloneGameWindowController {
 
     @MainActor
     func onMouseActivity() {
+        guard !InputCaptureManager.shared.isCapturing else { return }
         showToolbar()
     }
 
     @MainActor
     func showToolbar() {
+        guard !InputCaptureManager.shared.isCapturing else { return }
+        toolbarView?.isHidden = false
         toolbarView?.alphaValue = 0
         isToolbarVisible = true
         NSAnimationContext.runAnimationGroup { context in
@@ -41,8 +44,24 @@ extension StandaloneGameWindowController {
             } completionHandler: { [weak self] in
                 Task { @MainActor [weak self] in
                     self?.isToolbarVisible = false
+                    self?.toolbarView?.isHidden = true
                 }
             }
         }
+    }
+
+    @MainActor
+    func hideToolbarImmediateForCapture() {
+        hideToolbarTimer?.invalidate()
+        hideToolbarTimer = nil
+        toolbarView?.isHidden = true
+        toolbarView?.alphaValue = 0
+        isToolbarVisible = false
+    }
+
+    @MainActor
+    func showToolbarAfterCapture() {
+        toolbarView?.isHidden = false
+        showToolbar()
     }
 }

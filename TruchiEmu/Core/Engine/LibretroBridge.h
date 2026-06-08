@@ -111,6 +111,7 @@ down:(BOOL)down;
 + (void)setMouseButton:(int)button pressed:(BOOL)pressed;
 + (void)addMouseWheelDelta:(int16_t)delta;
 + (void)resetMouseDeltas;
++ (void)setAbsoluteMousePositionX:(int16_t)x Y:(int16_t)y override:(BOOL)override;
 
 /* Pointer Input — for RETRO_DEVICE_POINTER (absolute coordinates) */
 + (void)setPointerX:(int16_t)x Y:(int16_t)y pressed:(BOOL)pressed;

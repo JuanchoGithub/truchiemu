@@ -314,6 +314,17 @@ final class XPCBridgeAdapter {
         LoggerService.warning(category: "XPCBridgeAdapter", "resetMouseDeltas without shared memory — XPC proxy path not implemented for mouse input")
     }
 
+    func setAbsoluteMousePosition(_ x: Int16, y: Int16, override: Bool) {
+        if useSharedMemory, let shm = shmManager.sharedMemory {
+            shm.pointee.mouse.absolute_position_override = override
+            shm.pointee.mouse.absolute_x = x
+            shm.pointee.mouse.absolute_y = y
+            return
+        }
+        guard useXPC else { LibretroBridgeSwift.setAbsoluteMousePosition(x, y: y, override: override); return }
+        LoggerService.warning(category: "XPCBridgeAdapter", "setAbsoluteMousePosition without shared memory — XPC proxy path not implemented")
+    }
+
     func setPointerPosition(_ x: Int16, y: Int16, pressed: Bool) {
         if useSharedMemory, let shm = shmManager.sharedMemory {
             shm.pointee.pointer.pointer_x = x

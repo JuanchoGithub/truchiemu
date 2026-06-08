@@ -24,6 +24,11 @@ class InputCaptureManager: NSObject, ObservableObject {
     // Fullscreen state for menu bar hiding
     private var wasInFullscreen: Bool = false
 
+    // ESC triple-press escape detection
+    private var escapePressTimestamps: [TimeInterval] = []
+    private let escapeTripleWindow: TimeInterval = 1.0
+    @Published private(set) var lastEscapeToastMessage: String? = nil
+
     // MARK: - Accessibility Permissions
 
     var hasAccessibilityPermissions: Bool {
@@ -77,6 +82,8 @@ class InputCaptureManager: NSObject, ObservableObject {
 
         // Post notification for UI to show capture indicator
         NotificationCenter.default.post(name: .inputCaptureStateChanged, object: nil, userInfo: ["isCapturing": true])
+
+        showEscapeToast(captured: true)
 
         LoggerService.info(category: "InputCapture", "Input capture started")
     }
@@ -172,17 +179,60 @@ class InputCaptureManager: NSObject, ObservableObject {
             }
             localEventMonitors.append(handle)
         }
+
+        let escapeHandle = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+            guard let self = self, self.isCapturing else { return event }
+            if event.keyCode == 53 {
+                self.handleEscapePress()
+                return nil
+            }
+            if event.modifierFlags.contains(.command) && event.keyCode == 46 {
+                self.stopCapture(reason: "Cmd-M shortcut")
+                self.showEscapeToast(captured: false)
+                return nil
+            }
+            return event
+        }
+        localEventMonitors.append(escapeHandle)
+    }
+
+    private func handleEscapePress() {
+        let now = Date().timeIntervalSince1970
+        escapePressTimestamps.append(now)
+        escapePressTimestamps = escapePressTimestamps.filter { now - $0 < escapeTripleWindow }
+
+        if escapePressTimestamps.count >= 3 {
+            escapePressTimestamps.removeAll()
+            stopCapture(reason: "ESC×3 escape combo")
+            showEscapeToast(captured: false)
+        }
+    }
+
+    private func showEscapeToast(captured: Bool) {
+        let loc = LocalizationManager.shared
+        if captured {
+            lastEscapeToastMessage = loc.localized("input.escapeToast.captured")
+        } else {
+            lastEscapeToastMessage = loc.localized("input.escapeToast.released")
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [weak self] in
+            self?.lastEscapeToastMessage = nil
+        }
     }
     
     private func handleMouseEvent(_ event: NSEvent) {
         guard let window = capturedWindow else { return }
-        
-        LoggerService.debug(category: "InputCapture", "Handling mouse event: type=\(event.type), location=\(event.locationInWindow)")
-        
-        // Convert to window coordinates and send directly
+
+        if event.type == .leftMouseDown || event.type == .rightMouseDown || event.type == .otherMouseDown {
+            if isClickOnGuideSidebar(event, in: window) {
+                stopCapture(reason: "Click on guide sidebar")
+                showEscapeToast(captured: false)
+                return
+            }
+        }
+
         let windowLocation = event.locationInWindow
-        
-        // Create a new event with the same properties
+
         if let newEvent = NSEvent.mouseEvent(
             with: event.type,
             location: windowLocation,
@@ -198,6 +248,22 @@ class InputCaptureManager: NSObject, ObservableObject {
         }
     }
     
+    private func isClickOnGuideSidebar(_ event: NSEvent, in window: NSWindow) -> Bool {
+        guard let contentView = window.contentView else { return false }
+        let clickInWindow = event.locationInWindow
+        for view in contentView.subviews {
+            if view.responds(to: Selector(("consumesMouseEventsInFrame"))) {
+                if let consumes = view.value(forKey: "consumesMouseEventsInFrame") as? Bool, consumes {
+                    let clickInView = view.convert(clickInWindow, from: nil)
+                    if view.bounds.contains(clickInView) {
+                        return true
+                    }
+                }
+            }
+        }
+        return false
+    }
+
     private func forwardMouseEvent(_ event: NSEvent) {
         guard let window = capturedWindow else { return }
         

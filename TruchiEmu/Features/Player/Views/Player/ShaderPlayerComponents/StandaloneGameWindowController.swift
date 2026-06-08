@@ -10,9 +10,37 @@ import Combine
 // Prevents use-after-free in SwiftUI's ItemSheetPresentationModifier.destroy during
 // the vulnerable window between crash detection and window cleanup.
 class SafeHostingView<Content: View>: NSHostingView<Content> {
+    @objc var consumesMouseEventsInFrame = false
+
     override func layout() {
         guard !XPCConnectionManager.isShuttingDown else { return }
         super.layout()
+    }
+
+    override func hitTest(_ point: NSPoint) -> NSView? {
+        if consumesMouseEventsInFrame, bounds.contains(point) {
+            if let hitView = super.hitTest(point) {
+                return hitView
+            }
+            return self
+        }
+        return super.hitTest(point)
+    }
+
+    override func mouseDown(with event: NSEvent) {
+        if consumesMouseEventsInFrame {
+            super.mouseDown(with: event)
+            return
+        }
+        super.mouseDown(with: event)
+    }
+
+    override func rightMouseDown(with event: NSEvent) {
+        if consumesMouseEventsInFrame {
+            super.rightMouseDown(with: event)
+            return
+        }
+        super.rightMouseDown(with: event)
     }
 }
 
@@ -75,9 +103,10 @@ private var firstFrameTimer: Timer?
     var hideToolbarTimer: Timer? = nil
     var skipAutoSaveOnClose: Bool = false
     private var gameLoadedObserver: NSObjectProtocol?
-    var moveListOverlayView: NSHostingView<AnyView>?
-    var achievementToastOverlayView: NSHostingView<AnyView>?
-    var trainingModeOverlayView: NSHostingView<AnyView>?
+var moveListOverlayView: NSHostingView<AnyView>?
+var achievementToastOverlayView: NSHostingView<AnyView>?
+var trainingModeOverlayView: NSHostingView<AnyView>?
+var guideSidebarView: NSHostingView<AnyView>?
     @MainActor lazy var trainingModeViewModel = TrainingModeOverlayViewModel()
 
     var toolbarBottomInset: CGFloat {
@@ -85,12 +114,14 @@ private var firstFrameTimer: Timer?
         return toolbar.frame.maxY
     }
 
-    @MainActor lazy var moveListViewModel: MoveListOverlayViewModel = {
-        guard let runner = self.runner else {
-            fatalError("runner must be set before accessing moveListViewModel")
-        }
-        return MoveListOverlayViewModel(runner: runner)
-    }()
+@MainActor lazy var moveListViewModel: MoveListOverlayViewModel = {
+guard let runner = self.runner else {
+fatalError("runner must be set before accessing moveListViewModel")
+}
+return MoveListOverlayViewModel(runner: runner)
+}()
+
+@MainActor lazy var gameGuideViewModel = GameGuideViewModel()
 
     // Dismiss any active sheets and remove the SwiftUI toolbar from the view hierarchy.
     // Must be called before releasing the controller to prevent SwiftUI view graph teardown
@@ -109,8 +140,10 @@ private var firstFrameTimer: Timer?
         stateLoadOverlayView = nil
         achievementToastOverlayView?.removeFromSuperview()
         achievementToastOverlayView = nil
-        trainingModeOverlayView?.removeFromSuperview()
-        trainingModeOverlayView = nil
+trainingModeOverlayView?.removeFromSuperview()
+trainingModeOverlayView = nil
+guideSidebarView?.removeFromSuperview()
+guideSidebarView = nil
         loadingOverlayView?.removeFromSuperview()
         loadingOverlayView = nil
         errorOverlayView?.removeFromSuperview()
@@ -301,10 +334,18 @@ super.init(window: window)
             self?.onWindowMoved()
         }
         
-  // Initially hide toolbar after 2 seconds
-  DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
-    self?.hideToolbar()
-  }
+        // Initially hide toolbar after 2 seconds
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
+            self?.hideToolbar()
+        }
+
+        // Observe input capture state changes to hide/show toolbar and sidebar
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleInputCaptureStateChanged),
+            name: .inputCaptureStateChanged,
+            object: nil
+        )
 
   // Start cursor auto-hide after initial setup delay
   DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
@@ -368,18 +409,32 @@ super.init(window: window)
         }
     }
 
-  @objc private func windowDidChangeScreen() {
-    DispatchQueue.main.async { [weak self] in
-      let isFullscreen = self?.window?.styleMask.contains(.fullScreen) ?? false
-      self?.isFullscreen = isFullscreen
-      
-      // Update cursor auto-hide fullscreen state
-      CursorAutoHideManager.shared.updateFullscreenState(isFullscreen: isFullscreen)
-      
-      // Rescale bezel for new screen
-      self?.onWindowMoved()
+    @objc private func windowDidChangeScreen() {
+        DispatchQueue.main.async { [weak self] in
+            let isFullscreen = self?.window?.styleMask.contains(.fullScreen) ?? false
+            self?.isFullscreen = isFullscreen
+
+            // Update cursor auto-hide fullscreen state
+            CursorAutoHideManager.shared.updateFullscreenState(isFullscreen: isFullscreen)
+
+            // Rescale bezel for new screen
+            self?.onWindowMoved()
+        }
     }
-  }
+
+    @objc private func handleInputCaptureStateChanged(_ notification: Notification) {
+        let isCapturing = notification.userInfo?["isCapturing"] as? Bool ?? false
+        if isCapturing {
+            hideToolbarImmediateForCapture()
+            if gameGuideViewModel.isSidebarVisible {
+                gameGuideViewModel.deactivate()
+                guideSidebarView?.removeFromSuperview()
+                guideSidebarView = nil
+            }
+        } else {
+            showToolbarAfterCapture()
+        }
+    }
     
     // Toggle macOS native fullscreen mode
     @MainActor
@@ -454,6 +509,7 @@ super.init(window: window)
         NSApp.activate(ignoringOtherApps: true)
 
         moveListViewModel.loadForGame(rom)
+gameGuideViewModel.loadForGame(rom)
 
         let trainingManager = TrainingModeManager.shared
         let systemID = rom.systemID ?? "default"
@@ -994,15 +1050,62 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         } else {
             containerView.addSubview(hostingView, positioned: .above, relativeTo: nil)
         }
-        self.trainingModeOverlayView = hostingView
+self.trainingModeOverlayView = hostingView
 
-        NSLayoutConstraint.activate([
-            hostingView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
-            hostingView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
-            hostingView.topAnchor.constraint(equalTo: containerView.topAnchor),
-            hostingView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
-        ])
+NSLayoutConstraint.activate([
+hostingView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+hostingView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+hostingView.topAnchor.constraint(equalTo: containerView.topAnchor),
+hostingView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
+])
+}
+
+    @MainActor
+    func toggleGuideSidebar() {
+        if gameGuideViewModel.isSidebarVisible {
+            gameGuideViewModel.deactivate()
+            guideSidebarView?.removeFromSuperview()
+            guideSidebarView = nil
+            // Re-start capture for DOS/ScummVM games when sidebar closes
+            if let window = window, !InputCaptureManager.shared.isCapturing {
+                if let mtkView = metalView, mtkView.shouldCaptureInputForCurrentGame() {
+                    InputCaptureManager.shared.startCapture(window: window)
+                }
+            }
+            return
+        }
+        if InputCaptureManager.shared.isCapturing {
+            InputCaptureManager.shared.stopCapture(reason: "Guide sidebar opened")
+        }
+        gameGuideViewModel.activate()
+        installGuideSidebar()
     }
+
+    private func installGuideSidebar() {
+        guard guideSidebarView == nil, let containerView = window?.contentView else { return }
+
+        let hostingView = SafeHostingView(rootView: AnyView(
+            GameGuideSidebar(viewModel: gameGuideViewModel, windowController: self)
+        ))
+        hostingView.translatesAutoresizingMaskIntoConstraints = false
+        hostingView.wantsLayer = true
+        hostingView.layer?.backgroundColor = .clear
+        hostingView.consumesMouseEventsInFrame = true
+
+if let toolbar = toolbarView {
+containerView.addSubview(hostingView, positioned: .below, relativeTo: toolbar)
+} else {
+containerView.addSubview(hostingView, positioned: .above, relativeTo: nil)
+}
+self.guideSidebarView = hostingView
+
+NSLayoutConstraint.activate([
+hostingView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+hostingView.topAnchor.constraint(equalTo: containerView.topAnchor),
+hostingView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
+hostingView.widthAnchor.constraint(equalToConstant: 320)
+])
+}
 
     func windowWillClose(_ notification: Notification) {
         XPCBridgeAdapter.shared.setPaused(true)
@@ -1120,13 +1223,19 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
                     return nil
                 }
             }
-            if event.modifierFlags.contains(.command) && event.keyCode == 109 {
-                if let window = self?.window {
-                    InputCaptureManager.shared.handleToggleHotkey(window: window)
-                }
+        if HotkeyConfigManager.shared.matches(.toggleInputCapture, event: event) {
+            if let window = self?.window {
+                InputCaptureManager.shared.handleToggleHotkey(window: window)
+            }
+            return nil
+        }
+        if event.modifierFlags.contains(.command) && event.keyCode == 9 {
+            if let self, self.gameGuideViewModel.hasGuideData {
+                self.toggleGuideSidebar()
                 return nil
             }
-            return event
+        }
+        return event
         }
     }
 }

@@ -6,26 +6,31 @@ class FocusableMTKView: MTKView {
     override var acceptsFirstResponder: Bool { true }
     override var isOpaque: Bool { false }
 
-
-
-    // Allow runner to be weak so we don't leak
     weak var runner: EmulatorRunner?
     weak var windowController: StandaloneGameWindowController?
+
+    override func updateTrackingAreas() {
+        super.updateTrackingAreas()
+        for trackingArea in self.trackingAreas {
+            removeTrackingArea(trackingArea)
+        }
+        let options: NSTrackingArea.Options = [.mouseMoved, .activeAlways, .inVisibleRect]
+        let trackingArea = NSTrackingArea(rect: bounds, options: options, owner: self, userInfo: nil)
+        addTrackingArea(trackingArea)
+    }
 
     // MARK: - Mouse Events
 
     override func mouseDown(with event: NSEvent) {
         self.window?.makeFirstResponder(self)
 
-        // Auto-start input capture for DOS/ScummVM games on first click
         if let window = self.window, !InputCaptureManager.shared.isCapturing {
-            if shouldCaptureInputForCurrentGame() {
+            let sidebarOpen = windowController?.gameGuideViewModel.isSidebarVisible == true
+            if shouldCaptureInputForCurrentGame() && !sidebarOpen {
                 InputCaptureManager.shared.startCapture(window: window)
-                LoggerService.info(category: "InputCapture", "Started capture for DOS/ScummVM game")
             }
         }
 
-        LoggerService.debug(category: "InputCapture", "Mouse down: button=0, inCapture=\(InputCaptureManager.shared.isCapturing)")
         XPCBridgeAdapter.shared.setMouseButton(0, pressed: true)
     }
 
@@ -55,18 +60,18 @@ class FocusableMTKView: MTKView {
     }
 
     private func updateMouseDelta(with event: NSEvent) {
-        // Use raw NSEvent deltas instead of window coordinates.
-        // event.deltaX/deltaY give hardware-level mouse movement that
-        // doesn't clamp at window/screen edges — critical when the
-        // cursor is hidden and captured for DOS/ScummVM games.
-        let dx = Int16(clamping: Int(event.deltaX))
-        let dy = Int16(clamping: Int(event.deltaY))  // macOS Y is already inverted for libretro
+        let isCaptured = InputCaptureManager.shared.isCapturing
+        let isDOSOrScummVM = shouldCaptureInputForCurrentGame()
 
-        if dx != 0 || dy != 0 {
-            XPCBridgeAdapter.shared.addMouseDelta(dx, y: dy)
+        if isCaptured || isDOSOrScummVM {
+            let dx = Int16(clamping: Int(event.deltaX))
+            let dy = Int16(clamping: Int(event.deltaY))
+
+            if dx != 0 || dy != 0 {
+                XPCBridgeAdapter.shared.addMouseDelta(dx, y: dy)
+            }
         }
 
-        // Update pointer position for RETRO_DEVICE_POINTER
         updatePointerPosition(event)
     }
 
@@ -100,61 +105,57 @@ class FocusableMTKView: MTKView {
     // MARK: - Keyboard Events
 
     override func keyDown(with event: NSEvent) {
-        // Save state hotkeys - these are handled specially, not sent to core
-        if event.modifierFlags.isEmpty || event.modifierFlags.contains(.command) {
-            switch event.keyCode {
-            case 96: // F5 - Quick Save
-                Task { @MainActor in
-                    _ = runner?.saveState(slot: runner!.currentSlot)
-                }
+        let hotkeys = HotkeyConfigManager.shared
+
+        if hotkeys.matches(.saveState, event: event) {
+            Task { @MainActor in _ = runner?.saveState(slot: runner!.currentSlot) }
+            return
+        }
+        if hotkeys.matches(.loadState, event: event) {
+            Task { @MainActor in _ = runner?.loadState(slot: runner!.currentSlot) }
+            return
+        }
+        if hotkeys.matches(.undoLoadState, event: event) {
+            Task { @MainActor in _ = runner?.undoLoadState() }
+            return
+        }
+        if hotkeys.matches(.slotNext, event: event) {
+            Task { @MainActor in runner?.nextSlot() }
+            return
+        }
+        if hotkeys.matches(.slotPrev, event: event) {
+            Task { @MainActor in runner?.previousSlot() }
+            return
+        }
+        for slot in 0...9 {
+            let action: HotkeyAction = [.slot0, .slot1, .slot2, .slot3, .slot4, .slot5, .slot6, .slot7, .slot8, .slot9][slot]
+            if hotkeys.matches(action, event: event) {
+                Task { @MainActor in runner?.currentSlot = slot }
                 return
-            case 98: // F7 - Quick Load
-                Task { @MainActor in
-                    _ = runner?.loadState(slot: runner!.currentSlot)
-                }
-                return
-            case 97: // F6 - Slot +1
-                Task { @MainActor in
-                    runner?.nextSlot()
-                }
-                return
-            case 95: // F4 - Slot -1
-                Task { @MainActor in
-                    runner?.previousSlot()
-                }
-                return
-            case 6: // Z key (for Cmd+Z Undo)
-                if event.modifierFlags.contains(.command) {
-                    Task { @MainActor in
-                        _ = runner?.undoLoadState()
-                    }
-                    return
-                }
-            default:
-                break
             }
         }
 
         if let windowCtrl = windowController, windowCtrl.trainingModeViewModel.isTrainingEnabled {
-            switch event.keyCode {
-            case 100: // F8 - Training Instant Reset
-                Task { @MainActor in
-                    windowCtrl.trainingModeViewModel.performReset()
-                }
+            if hotkeys.matches(.trainingReset, event: event) {
+                Task { @MainActor in windowCtrl.trainingModeViewModel.performReset() }
                 return
-            case 101: // F9 - Toggle Tape Recording
-                Task { @MainActor in
-                    windowCtrl.trainingModeViewModel.toggleRecording()
-                }
-                return
-            case 109: // F10 - Start Tape Playback
-                Task { @MainActor in
-                    TrainingModeManager.shared.startTapePlayback()
-                }
-                return
-            default:
-                break
             }
+            if hotkeys.matches(.trainingToggleRecording, event: event) {
+                Task { @MainActor in windowCtrl.trainingModeViewModel.toggleRecording() }
+                return
+            }
+            if hotkeys.matches(.trainingStartPlayback, event: event) {
+                Task { @MainActor in TrainingModeManager.shared.startTapePlayback() }
+                return
+            }
+        }
+
+        if hotkeys.matches(.toggleTrainingMode, event: event) {
+            if let windowCtrl = windowController {
+                let newValue = !windowCtrl.trainingModeViewModel.isTrainingEnabled
+                Task { @MainActor in TrainingModeManager.shared.setEnabled(newValue) }
+            }
+            return
         }
 
         // For DOS/ScummVM games, bypass ALL TruchiEmu keyboard handling and send properly mapped keys to DOSBOX
@@ -275,7 +276,7 @@ class FocusableMTKView: MTKView {
     // MARK: - Input Capture Helpers
 
     /// Returns true if the current game should use full input capture (DOS/ScummVM)
-    private func shouldCaptureInputForCurrentGame() -> Bool {
+    func shouldCaptureInputForCurrentGame() -> Bool {
         guard let runner = runner else { return false }
         let systemID = runner.systemID.lowercased()
         return systemID == "dos" || systemID == "scummvm"
@@ -287,13 +288,14 @@ class FocusableMTKView: MTKView {
         if InputCaptureManager.shared.isCapturing && !shouldCaptureInputForCurrentGame() {
             InputCaptureManager.shared.stopCapture(reason: "Runner changed")
         }
-        
+
         // Update window reference in runner
         runner?.window = self.window
-        
-        // Auto-start input capture for DOS/ScummVM games
+
+        // Auto-start input capture for DOS/ScummVM games (unless sidebar is open)
         if let window = self.window, !InputCaptureManager.shared.isCapturing {
-            if shouldCaptureInputForCurrentGame() {
+            let sidebarOpen = windowController?.gameGuideViewModel.isSidebarVisible == true
+            if shouldCaptureInputForCurrentGame() && !sidebarOpen {
                 InputCaptureManager.shared.startCapture(window: window)
             }
         }

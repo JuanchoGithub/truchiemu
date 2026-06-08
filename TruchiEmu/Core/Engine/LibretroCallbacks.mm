@@ -484,10 +484,14 @@ int16_t bridge_input_state(unsigned port, unsigned device, unsigned index, unsig
             if (id < 512) return xpc_shm_get_keyboard_state(g_xpc_shm, id) ? 1 : 0;
             return 0;
         }
-        if (device == RETRO_DEVICE_MOUSE) {
-            switch (id) {
-            case RETRO_DEVICE_ID_MOUSE_X: return (int16_t)MAX(-32767, MIN(32767, (int32_t)g_xpc_shm->mouse.delta_x + g_xpc_shm->mouse.analog_mouse_delta_x));
-            case RETRO_DEVICE_ID_MOUSE_Y: return (int16_t)MAX(-32767, MIN(32767, (int32_t)g_xpc_shm->mouse.delta_y + g_xpc_shm->mouse.analog_mouse_delta_y));
+    if (device == RETRO_DEVICE_MOUSE) {
+        switch (id) {
+        case RETRO_DEVICE_ID_MOUSE_X:
+            if (g_xpc_shm->mouse.absolute_position_override) return g_xpc_shm->mouse.absolute_x;
+            return (int16_t)MAX(-32767, MIN(32767, (int32_t)g_xpc_shm->mouse.delta_x + g_xpc_shm->mouse.analog_mouse_delta_x));
+        case RETRO_DEVICE_ID_MOUSE_Y:
+            if (g_xpc_shm->mouse.absolute_position_override) return g_xpc_shm->mouse.absolute_y;
+            return (int16_t)MAX(-32767, MIN(32767, (int32_t)g_xpc_shm->mouse.delta_y + g_xpc_shm->mouse.analog_mouse_delta_y));
             case RETRO_DEVICE_ID_MOUSE_LEFT: return (g_xpc_shm->mouse.buttons & 1) ? 1 : 0;
             case RETRO_DEVICE_ID_MOUSE_RIGHT: return (g_xpc_shm->mouse.buttons & 2) ? 1 : 0;
             case RETRO_DEVICE_ID_MOUSE_MIDDLE: return (g_xpc_shm->mouse.buttons & 4) ? 1 : 0;
@@ -545,11 +549,15 @@ int16_t bridge_input_state(unsigned port, unsigned device, unsigned index, unsig
         return 0;
     }
 
-    // RETRO_DEVICE_MOUSE - relative mouse movement + buttons
+    // RETRO_DEVICE_MOUSE - relative mouse movement + buttons (or absolute when override active)
     if (device == RETRO_DEVICE_MOUSE) {
         switch (id) {
-        case RETRO_DEVICE_ID_MOUSE_X: return (int16_t)MAX(-32767, MIN(32767, (int32_t)g_mouse_state.delta_x + g_mouse_state.analog_mouse_delta_x));
-        case RETRO_DEVICE_ID_MOUSE_Y: return (int16_t)MAX(-32767, MIN(32767, (int32_t)g_mouse_state.delta_y + g_mouse_state.analog_mouse_delta_y));
+        case RETRO_DEVICE_ID_MOUSE_X:
+            if (g_mouse_state.absolute_position_override) return g_mouse_state.absolute_x;
+            return (int16_t)MAX(-32767, MIN(32767, (int32_t)g_mouse_state.delta_x + g_mouse_state.analog_mouse_delta_x));
+        case RETRO_DEVICE_ID_MOUSE_Y:
+            if (g_mouse_state.absolute_position_override) return g_mouse_state.absolute_y;
+            return (int16_t)MAX(-32767, MIN(32767, (int32_t)g_mouse_state.delta_y + g_mouse_state.analog_mouse_delta_y));
         case RETRO_DEVICE_ID_MOUSE_LEFT: return (g_mouse_state.buttons & 1) ? 1 : 0;
         case RETRO_DEVICE_ID_MOUSE_RIGHT: return (g_mouse_state.buttons & 2) ? 1 : 0;
         case RETRO_DEVICE_ID_MOUSE_MIDDLE: return (g_mouse_state.buttons & 4) ? 1 : 0;
