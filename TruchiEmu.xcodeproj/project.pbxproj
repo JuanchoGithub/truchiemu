@@ -1000,6 +1000,7 @@
 		DCD12CEBA7F2C2CDA39B26D0 /* Nintendo - Nintendo 64.dat in Resources */ = {isa = PBXBuildFile; fileRef = 20E3F1E2894944E8BAF2B432 /* Nintendo - Nintendo 64.dat */; };
 		DD58429E4400B7D8C6607E68 /* input_systemLabels_n64.json in Resources */ = {isa = PBXBuildFile; fileRef = C8B26D230952CE0ADCFFD5BF /* input_systemLabels_n64.json */; };
 		DD7A6F7A0C60AB198C195ADF /* fightdata_fatfury1.json in Resources */ = {isa = PBXBuildFile; fileRef = 2B6C405950B80529A3DAB81B /* fightdata_fatfury1.json */; };
+		DE29E5DDC33BE3F03B33B621 /* EscapeToastOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8433AB2853AB9C980368AE4 /* EscapeToastOverlay.swift */; };
 		DE5559D3DDAF0582E387F738 /* fightdata_samsh5sp.json in Resources */ = {isa = PBXBuildFile; fileRef = 936CC9F84C2CC958CCD03A2A /* fightdata_samsh5sp.json */; };
 		DE65A573AD4E1049F78D52F4 /* MoveListConfigSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 119DDA14AB6E978586E3E343 /* MoveListConfigSection.swift */; };
 		DE78A265FBC43C04D89A11A3 /* appIcon32.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 11DA3CCFB66270F6DF1983FB /* appIcon32.jpg */; };
@@ -2281,6 +2282,7 @@
 		F7913A46643B16EB13FFCB6E /* input_coreLabels_mgba.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_mgba.json; sourceTree = "<group>"; };
 		F840A09480B7BD45951DD050 /* cps2@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cps2@132w.png"; sourceTree = "<group>"; };
 		F84249DEACE74441114A7544 /* input_coreLabels_fmsx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_fmsx.json; sourceTree = "<group>"; };
+		F8433AB2853AB9C980368AE4 /* EscapeToastOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EscapeToastOverlay.swift; sourceTree = "<group>"; };
 		F848CCCB2287EEEAB2CB7C6D /* input_coreOverrides_2048.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_2048.json; sourceTree = "<group>"; };
 		F85405AF2804CF2BF04FAD6D /* CheatManagerViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatManagerViews.swift; sourceTree = "<group>"; };
 		F8AEDBF02AB7BFEEBFD3B243 /* fightdata_svc.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_svc.json; sourceTree = "<group>"; };
@@ -3349,6 +3351,7 @@
 			children = (
 				49752400CFFA2B7BC928B21C /* BezelView.swift */,
 				F85405AF2804CF2BF04FAD6D /* CheatManagerViews.swift */,
+				F8433AB2853AB9C980368AE4 /* EscapeToastOverlay.swift */,
 				D72F01C1BA52B012F84B9E9F /* FocusableMTKView.swift */,
 				1BDA4A65586BED9B2CD71EFF /* GameButtons.swift */,
 				A44B26B8EE68C310F60A6D4E /* GameContainerView.swift */,
@@ -5258,6 +5261,7 @@
 				5283D5F00AED8BC54D66A48F /* DragPreviewStack.swift in Sources */,
 				C25037436138043A3C12B4C7 /* DreamcastBIOSService.swift in Sources */,
 				A25031037FC355CB33AC84F3 /* EnvironmentDiagnostics.swift in Sources */,
+				DE29E5DDC33BE3F03B33B621 /* EscapeToastOverlay.swift in Sources */,
 				10A813FD9AC06B780E931816 /* FilterChipView.swift in Sources */,
 				92800B5A7288EC0F30C67F0B /* FocusableMTKView.swift in Sources */,
 				C5AB2A1C3ECF952779306356 /* FrameExpander.swift in Sources */,

@@ -105,6 +105,7 @@ private var firstFrameTimer: Timer?
     private var gameLoadedObserver: NSObjectProtocol?
 var moveListOverlayView: NSHostingView<AnyView>?
 var achievementToastOverlayView: NSHostingView<AnyView>?
+var escapeToastOverlayView: SafeHostingView<AnyView>?
 var trainingModeOverlayView: NSHostingView<AnyView>?
 var guideSidebarView: NSHostingView<AnyView>?
     @MainActor lazy var trainingModeViewModel = TrainingModeOverlayViewModel()
@@ -140,7 +141,9 @@ return MoveListOverlayViewModel(runner: runner)
         stateLoadOverlayView = nil
         achievementToastOverlayView?.removeFromSuperview()
         achievementToastOverlayView = nil
-trainingModeOverlayView?.removeFromSuperview()
+        escapeToastOverlayView?.removeFromSuperview()
+        escapeToastOverlayView = nil
+        trainingModeOverlayView?.removeFromSuperview()
 trainingModeOverlayView = nil
 guideSidebarView?.removeFromSuperview()
 guideSidebarView = nil
@@ -287,6 +290,22 @@ super.init(window: window)
         NSLayoutConstraint.activate([
             hostingView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
             hostingView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -8)
+        ])
+
+        // Separate full-size overlay for escape toast (passes through clicks to game below)
+        let escapeToastView = SafeHostingView(rootView: AnyView(EscapeToastOverlay()))
+        escapeToastView.translatesAutoresizingMaskIntoConstraints = false
+        escapeToastView.wantsLayer = true
+        escapeToastView.consumesMouseEventsInFrame = false
+        escapeToastView.layer?.backgroundColor = NSColor.clear.cgColor
+        containerView.addSubview(escapeToastView)
+        self.escapeToastOverlayView = escapeToastView
+
+        NSLayoutConstraint.activate([
+            escapeToastView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            escapeToastView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            escapeToastView.topAnchor.constraint(equalTo: containerView.topAnchor),
+            escapeToastView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
         ])
 
         // Add SwiftUI loading overlay (covers entire window during game launch, on top of everything)

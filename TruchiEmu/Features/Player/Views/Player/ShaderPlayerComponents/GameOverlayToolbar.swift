@@ -3,54 +3,12 @@ import SwiftUI
 struct GameOverlayToolbar: View {
     @ObservedObject var runner: EmulatorRunner
     @ObservedObject var windowController: StandaloneGameWindowController
-    @ObservedObject var captureManager = InputCaptureManager.shared
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var themeManager = ThemeManager.shared
     @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         ZStack {
-            if captureManager.isCapturing {
-                VStack {
-                    HStack(spacing: 8) {
-                        Image(systemName: "lock.fill")
-                            .foregroundColor(.white.opacity(0.9))
-                        Text(loc.localized("toolbar.inputCaptured"))
-                            .font(.caption)
-                            .fontWeight(.medium)
-                            .foregroundColor(.white.opacity(0.9))
-                    }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .background(
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(Color.black.opacity(0.8))
-                    )
-                    .offset(y: -100)
-
-                    Spacer()
-                }
-            }
-
-            if let toast = captureManager.lastEscapeToastMessage {
-                VStack {
-                    Text(verbatim: toast)
-                        .font(.caption)
-                        .fontWeight(.medium)
-                        .foregroundColor(.white.opacity(0.9))
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                        .background(
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.black.opacity(0.8))
-                        )
-                        .transition(.opacity)
-                        .offset(y: -70)
-
-                    Spacer()
-                }
-            }
-
             VStack {
                 Spacer()
                 toolbarContent

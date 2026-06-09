@@ -28,6 +28,7 @@ class InputCaptureManager: NSObject, ObservableObject {
     private var escapePressTimestamps: [TimeInterval] = []
     private let escapeTripleWindow: TimeInterval = 1.0
     @Published private(set) var lastEscapeToastMessage: String? = nil
+    @Published private(set) var captureStartTime: Date? = nil
 
     // MARK: - Accessibility Permissions
 
@@ -47,6 +48,7 @@ class InputCaptureManager: NSObject, ObservableObject {
 
         capturedWindow = window
         isCapturing = true
+        captureStartTime = Date()
 
         LoggerService.info(category: "InputCapture", "!!! DEBUG: STARTING CAPTURE WITH NEW VERSION !!!")
 
@@ -94,6 +96,7 @@ class InputCaptureManager: NSObject, ObservableObject {
         guard isCapturing else { return }
 
         isCapturing = false
+        captureStartTime = nil
 
         // Show the cursor again
         NSCursor.unhide()
