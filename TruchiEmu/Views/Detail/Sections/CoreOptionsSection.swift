@@ -227,11 +227,15 @@ extension GameDetailView {
         let coreID = activeCoreID else { return }
         let gameFilename = currentROM.filenameWithoutExtension
         let coreBaseID = coreID.replacingOccurrences(of: "_libretro", with: "")
+        let ext = currentROM.path.pathExtension.lowercased()
         if coreBaseID.contains("gambatte") {
             let colorization = CoreOptionsManager.shared.resolveEffectiveValue(for: "gambatte_gb_colorization", coreID: coreID, systemID: sysID, gameFilename: gameFilename)
-            if colorization.value == "disabled" {
+            if colorization.value.isEmpty {
+                if ext == "gbc" { gbColorizationEnabled = true; gbColorizationMode = "gbc" }
+                else { gbColorizationEnabled = false }
+            } else if colorization.value == "disabled" {
                 gbColorizationEnabled = false
-            } else if !colorization.value.isEmpty {
+            } else {
                 gbColorizationEnabled = true
                 gbColorizationMode = colorization.value
             }
@@ -249,7 +253,10 @@ extension GameDetailView {
             }
         } else if coreBaseID.contains("mgba") {
             let model = CoreOptionsManager.shared.resolveEffectiveValue(for: "mgba_gb_model", coreID: coreID, systemID: sysID, gameFilename: gameFilename)
-            if !model.value.isEmpty {
+            if model.value.isEmpty {
+                if ext == "gbc" { gbColorizationEnabled = true; gbColorizationMode = "gbc" }
+                else { gbColorizationEnabled = false }
+            } else {
                 switch model.value {
                 case "Game Boy": gbColorizationEnabled = false
                 case "Autodetect": gbColorizationEnabled = true; gbColorizationMode = "auto"
@@ -264,7 +271,10 @@ extension GameDetailView {
             }
         } else if coreBaseID.contains("sameboy") {
             let model = CoreOptionsManager.shared.resolveEffectiveValue(for: "sameboy_model", coreID: coreID, systemID: sysID, gameFilename: gameFilename)
-            if !model.value.isEmpty {
+            if model.value.isEmpty {
+                if ext == "gbc" { gbColorizationEnabled = true; gbColorizationMode = "gbc" }
+                else { gbColorizationEnabled = false }
+            } else {
                 switch model.value {
                 case "Game Boy": gbColorizationEnabled = false
                 case "Auto": gbColorizationEnabled = true; gbColorizationMode = "auto"
@@ -281,7 +291,10 @@ extension GameDetailView {
             }
         } else if coreBaseID.contains("gearboy") {
             let colorization = CoreOptionsManager.shared.resolveEffectiveValue(for: "gearboy_colorization", coreID: coreID, systemID: sysID, gameFilename: gameFilename)
-        if !colorization.value.isEmpty {
+        if colorization.value.isEmpty {
+            if ext == "gbc" { gbColorizationEnabled = true; gbColorizationMode = "gbc" }
+            else { gbColorizationEnabled = false }
+        } else {
             gbColorizationEnabled = (colorization.value == "enabled")
         }
     }

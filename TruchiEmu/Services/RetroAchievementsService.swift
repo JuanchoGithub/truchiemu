@@ -880,6 +880,9 @@ class RetroAchievementsService: ObservableObject {
 
         // 1. Attempt identification via HASH FIRST (most reliable)
         let raConsoleID = mapSystemIDToRAConsoleID(systemID)
+        let isGBFamily = systemID == "gb" || systemID == "gbc"
+        let altConsoleID: Int? = isGBFamily ? (raConsoleID == 4 ? 6 : 4) : nil
+        var matchedOnAltConsole = false
         let romHash = rom.md5 ?? RomHasher.hashRom(at: rom.path.path, systemID: systemID)
         
         LoggerService.info(category: "RetroAchievements", "Syncing '\(rom.name)' - Generated Hash: \(romHash ?? "NONE") (RA ConsoleID: \(raConsoleID))")
@@ -897,6 +900,18 @@ class RetroAchievementsService: ObservableObject {
                 try? context.save()
                 return
             }
+            // Try alternate console for GB/GBC duality
+            if let altID = altConsoleID {
+                if let result = await findGameByHashLocally(consoleID: altID, hash: romHash) {
+                    LoggerService.info(category: "RetroAchievements", "Hash MATCH found on alternate console for \(rom.name): \(result.title) (ID: \(result.id))")
+                    romEntry.raGameId = result.id
+                    romEntry.raMatchStatus = "matched"
+                    matchedOnAltConsole = true
+                    try? context.save()
+                    postGBGBCCrossMatchNotification(rom: rom, systemID: systemID, altConsoleID: altID)
+                    return
+                }
+            }
         }
 
         // 2. Fallback to NAME-based identification
@@ -912,6 +927,18 @@ class RetroAchievementsService: ObservableObject {
                     } else {
                         romEntry.raMatchStatus = "mismatch:\(romHash)"
                         romEntry.raGameId = result.id // Update to the correct ID if local hash points elsewhere
+                    }
+                } else if let altID = altConsoleID {
+                    // Try alternate console for GB/GBC duality
+                    if let result = await findGameByHashLocally(consoleID: altID, hash: romHash) {
+                        if result.id == raGameId {
+                            romEntry.raMatchStatus = "matched"
+                            matchedOnAltConsole = true
+                        } else {
+                            romEntry.raMatchStatus = "mismatch:\(romHash)"
+                            romEntry.raGameId = result.id
+                            matchedOnAltConsole = true
+                        }
                     }
                 } else {
                     /*
@@ -936,10 +963,22 @@ class RetroAchievementsService: ObservableObject {
                 if let result = await findGameByHashLocally(consoleID: raConsoleID, hash: romHash) {
                     romEntry.raGameId = result.id
                     romEntry.raMatchStatus = "matched"
+                } else if let altID = altConsoleID {
+                    if let result = await findGameByHashLocally(consoleID: altID, hash: romHash) {
+                        romEntry.raGameId = result.id
+                        romEntry.raMatchStatus = "matched"
+                        matchedOnAltConsole = true
+                    } else {
+                        romEntry.raMatchStatus = "not_supported"
+                    }
                 } else {
                     romEntry.raMatchStatus = "not_supported"
                 }
             }
+        }
+        
+        if matchedOnAltConsole {
+            postGBGBCCrossMatchNotification(rom: rom, systemID: systemID, altConsoleID: altConsoleID ?? 0)
         }
         
         // Persist computed MD5 if we have it
@@ -954,6 +993,17 @@ class RetroAchievementsService: ObservableObject {
     /// Helper to map Libretro/SystemDatabase IDs to RetroAchievements Console IDs
     func mapSystemIDToRAConsoleID(_ systemID: String) -> Int {
         Self.systemIDToRAConsoleID(systemID)
+    }
+
+    private func postGBGBCCrossMatchNotification(rom: ROM, systemID: String, altConsoleID: Int) {
+        let sysName = systemID == "gb" ? "Game Boy" : "Game Boy Color"
+        let altName = altConsoleID == 6 ? "Game Boy Color" : "Game Boy"
+        NotificationHistoryManager.shared.post(
+            icon: "trophy.fill",
+            title: "\(rom.name) matched to \(altName)",
+            subtitle: "Set as \(sysName) but matched to RA's \(altName)",
+            autoDismissDelay: 8
+        )
     }
 
     // Identify a game by its hash and fetch achievement data.
