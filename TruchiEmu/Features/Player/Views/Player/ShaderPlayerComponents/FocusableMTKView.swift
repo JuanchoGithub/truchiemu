@@ -6,6 +6,8 @@ class FocusableMTKView: MTKView {
     override var acceptsFirstResponder: Bool { true }
     override var isOpaque: Bool { false }
 
+    private static let slotActions: [HotkeyAction] = [.slot0, .slot1, .slot2, .slot3, .slot4, .slot5, .slot6, .slot7, .slot8, .slot9]
+
     weak var runner: EmulatorRunner?
     weak var windowController: StandaloneGameWindowController?
 
@@ -128,8 +130,7 @@ class FocusableMTKView: MTKView {
             return
         }
         for slot in 0...9 {
-            let action: HotkeyAction = [.slot0, .slot1, .slot2, .slot3, .slot4, .slot5, .slot6, .slot7, .slot8, .slot9][slot]
-            if hotkeys.matches(action, event: event) {
+            if hotkeys.matches(Self.slotActions[slot], event: event) {
                 Task { @MainActor in runner?.currentSlot = slot }
                 return
             }
@@ -152,8 +153,7 @@ class FocusableMTKView: MTKView {
 
         if hotkeys.matches(.toggleTrainingMode, event: event) {
             if let windowCtrl = windowController {
-                let newValue = !windowCtrl.trainingModeViewModel.isTrainingEnabled
-                Task { @MainActor in TrainingModeManager.shared.setEnabled(newValue) }
+                Task { @MainActor in TrainingModeManager.shared.setEnabled(!windowCtrl.trainingModeViewModel.isTrainingEnabled) }
             }
             return
         }

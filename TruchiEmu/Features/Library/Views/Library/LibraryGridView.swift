@@ -556,8 +556,12 @@ viewModel.updateFilters(
         // when its specific hasBoxArt changes.
         // MARK: - Keyboard Shortcuts
         // Cmd+F focuses search field
+        .background {
+            Button("") { focusedField = .search }
+                .keyboardShortcut(KeyEquivalent("f"), modifiers: .command)
+                .hidden()
+        }
         .onReceive(NotificationCenter.default.publisher(for: NSWindow.didBecomeKeyNotification)) { _ in }
-        .keyboardShortcut(KeyEquivalent("f"), modifiers: .command)
         // Note: Delete key handling via onKeyPress requires macOS 14+
         // For macOS 13, users can use context menu or confirm delete action
     }

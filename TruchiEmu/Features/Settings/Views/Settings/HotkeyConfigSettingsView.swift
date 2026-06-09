@@ -19,93 +19,86 @@ struct HotkeyConfigSettingsView: View {
 
     private func matchesSearch(_ keywords: String) -> Bool {
         if searchText.isEmpty { return true }
-        return keywords.localizedLowercase.fuzzyMatch(searchText) || keywords.localizedLowercase.contains(searchText.lowercased())
+        return keywords.localizedLowercase.fuzzyMatch(searchText) ||
+               keywords.localizedLowercase.contains(searchText.lowercased())
     }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: AppSpacing.xl3) {
-                if !isSearching || matchesSearch("hotkeys keyboard shortcuts save load slot undo training input capture") {
-                    generalSection
-                    slotSection
-                    trainingSection
-                    resetSection
+        Form {
+            if !isSearching || matchesSearch("hotkeys keyboard shortcuts save load slot undo training input capture") {
+                Section(header: Label(loc.localized("hotkeys.general"), systemImage: "keyboard")) {
+                    hotkeyRow(.saveState)
+                    hotkeyRow(.loadState)
+                    hotkeyRow(.undoLoadState)
+                    hotkeyRow(.slotNext)
+                    hotkeyRow(.slotPrev)
+                    hotkeyRow(.toggleInputCapture)
                 }
             }
-            .padding(AppSpacing.xl3)
-        }
-    }
 
-    private var generalSection: some View {
-        SettingsSectionCard(loc.localized("hotkeys.general"), icon: "keyboard") {
-            VStack(alignment: .leading, spacing: AppSpacing.sm) {
-                hotkeyRow(.saveState)
-                hotkeyRow(.loadState)
-                hotkeyRow(.undoLoadState)
-                hotkeyRow(.slotNext)
-                hotkeyRow(.slotPrev)
-                hotkeyRow(.toggleInputCapture)
+            if !isSearching || matchesSearch("slots 0-9 slot") {
+                Section(header: Label(loc.localized("hotkeys.slots"), systemImage: "square.grid.3x3")) {
+                    ForEach(slotActions, id: \.self) { action in
+                        hotkeyRow(action)
+                    }
+                }
             }
-        }
-    }
 
-    private var slotSection: some View {
-        SettingsSectionCard(loc.localized("hotkeys.slots"), icon: "square.grid.3x3") {
-            VStack(alignment: .leading, spacing: AppSpacing.sm) {
-                ForEach(slotActions, id: \.self) { action in
-                    hotkeyRow(action)
+            if !isSearching || matchesSearch("training mode reset recording playback tape") {
+                Section(header: Label(loc.localized("hotkeys.training"), systemImage: "figure.martial.arts")) {
+                    hotkeyRow(.toggleTrainingMode)
+                    hotkeyRow(.trainingReset)
+                    hotkeyRow(.trainingToggleRecording)
+                    hotkeyRow(.trainingStartPlayback)
+                }
+            }
+
+            if !isSearching || matchesSearch("reset defaults restore") {
+                Section(header: Label(loc.localized("hotkeys.reset"), systemImage: "arrow.counterclockwise")) {
+                    Text(loc.localized("hotkeys.resetDescription"))
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+
+                    Button(loc.localized("hotkeys.resetToDefaults")) {
+                        hotkeyManager.resetToDefaults()
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                }
+            }
+
+            if isSearching && !hasMatchingSections {
+                Section {
+                    Text("\(loc.localized("general.noMatchingSettings")) \"\(searchText)\"")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.vertical, AppSpacing.xl2)
                 }
             }
         }
+        .scrollContentBackground(.hidden)
+        .formStyle(.grouped)
+        .navigationTitle(loc.localized("settings.hotkeys"))
     }
 
-    private var trainingSection: some View {
-        SettingsSectionCard(loc.localized("hotkeys.training"), icon: "figure.martial.arts") {
-            VStack(alignment: .leading, spacing: AppSpacing.sm) {
-                hotkeyRow(.toggleTrainingMode)
-                hotkeyRow(.trainingReset)
-                hotkeyRow(.trainingToggleRecording)
-                hotkeyRow(.trainingStartPlayback)
-            }
-        }
-    }
-
-    private var resetSection: some View {
-        SettingsSectionCard(loc.localized("hotkeys.reset"), icon: "arrow.counterclockwise") {
-            VStack(alignment: .leading, spacing: AppSpacing.md) {
-                Text(loc.localized("hotkeys.resetDescription"))
-                    .font(.callout)
-                    .foregroundStyle(AppColors.textSecondary(colorScheme))
-
-                Button {
-                    hotkeyManager.resetToDefaults()
-                } label: {
-                    Label(loc.localized("hotkeys.resetToDefaults"), systemImage: "arrow.counterclockwise")
-                        .font(.callout)
-                }
-                .buttonStyle(.bordered)
-            }
-        }
+    private var hasMatchingSections: Bool {
+        matchesSearch("hotkeys keyboard shortcuts save load slot undo training input capture") ||
+        matchesSearch("slots 0-9 slot") ||
+        matchesSearch("training mode reset recording playback tape") ||
+        matchesSearch("reset defaults restore")
     }
 
     private var slotActions: [HotkeyAction] {
         [.slot0, .slot1, .slot2, .slot3, .slot4, .slot5, .slot6, .slot7, .slot8, .slot9]
     }
 
+    @ViewBuilder
     private func hotkeyRow(_ action: HotkeyAction) -> some View {
         let cfg = hotkeyManager.config[action] ?? .unbound
 
-        return HStack(spacing: AppSpacing.lg) {
-            Text(loc.localized(action.localizationKey))
-                .font(.callout)
-                .frame(maxWidth: .infinity, alignment: .leading)
-
-            HStack(spacing: AppSpacing.sm) {
-                Text(loc.localized("hotkeys.primary"))
-                    .font(.caption2)
-                    .foregroundStyle(AppColors.textTertiary(colorScheme))
-                    .frame(width: 50, alignment: .trailing)
-
+        LabeledContent(loc.localized(action.localizationKey)) {
+            HStack(spacing: AppSpacing.xs) {
                 HotkeyCaptureButton(
                     binding: cfg.primary,
                     isListening: listeningAction == action && listeningSlot == .primary,
@@ -122,11 +115,6 @@ struct HotkeyConfigSettingsView: View {
                         hotkeyManager.update(action, primary: .none)
                     }
                 )
-
-                Text(loc.localized("hotkeys.secondary"))
-                    .font(.caption2)
-                    .foregroundStyle(AppColors.textTertiary(colorScheme))
-                    .frame(width: 60, alignment: .trailing)
 
                 HotkeyCaptureButton(
                     binding: cfg.secondary,
@@ -146,7 +134,6 @@ struct HotkeyConfigSettingsView: View {
                 )
             }
         }
-        .padding(.vertical, AppSpacing.xs)
     }
 
     private func conflicts(for binding: HotkeyBinding, excluding action: HotkeyAction) -> [(HotkeyAction, HotkeyBinding)] {

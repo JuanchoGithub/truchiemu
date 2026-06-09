@@ -249,14 +249,6 @@ var body: some Scene {
                 }
             }
 
-            CommandGroup(replacing: .appSettings) {
-                Button(loc.localized("app.settings")) {
-                    AppSettings.set("settings_selectedTab", value: "general")
-                    NotificationCenter.default.post(name: .openAppSettings, object: nil)
-                }
-                .keyboardShortcut(",", modifiers: .command)
-            }
-
             CommandGroup(before: .appTermination) {
                 Divider()
 
