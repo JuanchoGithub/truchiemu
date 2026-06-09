@@ -207,9 +207,8 @@ xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug b
             <li>Define accent, accentDimmed, accentDark, secondaryAccent (and optional light/dark variants)</li>
             <li>Add icon asset to <code>Assets.xcassets/ThemeIcons/</code></li>
             <li>Add localization keys: <code>settings.theme.&lt;name&gt;</code> to all language JSON files</li>
-            <li>If renaming, add migration mapping in <code>migratedRawValue()</code></li>
-            <li>Set <code>isGaming = true/false</code> for category placement</li>
-        </ol>
+<li>If renaming, add migration mapping in <code>migratedRawValue()</code></li>
+</ol>
 
         <h3>Theming Conventions</h3>
         <p>All views must use <code>AppColors</code> semantic tokens  never hardcode color values. Tokens automatically blend the current theme's accent into surfaces, text, and borders. Check <code>ThemeManager.shared.toolbarAccentEnabled</code> and <code>tintedSurfacesEnabled</code> when applying accent colors to icons and background surfaces.</p>

@@ -256,21 +256,6 @@ enum AccentColorTheme: String, CaseIterable, Codable {
         return self == .custom
     }
 
-    var isGaming: Bool {
-        switch self {
-        case .mario, .luigi, .sonic, .halfLife, .kratos, .kirby, .zelda, .pikachu, .doom, .masterChief:
-            return true
-        default:
-            return false
-        }
-    }
-
-    var categoryName: String {
-        let loc = LocalizationManager.shared
-        if isGaming { return loc.localized("settings.theme.category.gaming") }
-        return loc.localized("settings.theme.category.standard")
-    }
-
     static func dimmedColor(from accent: Color) -> Color {
         guard let nsColor = NSColor(accent).usingColorSpace(.sRGB) else { return accent }
         return Color(.sRGB, red: nsColor.redComponent * 0.84,

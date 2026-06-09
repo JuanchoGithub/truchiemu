@@ -238,12 +238,6 @@ Theme and appearance changes require `ThemeManager.relaunchApp()` (spawns new pr
 3. Add icon asset to `Assets.xcassets/ThemeIcons/Theme<Name>.imageset/` (PNG + SVG)
 4. Add localization keys to ALL language JSON files: `settings.theme.<name>` (display name)
 5. If renaming an existing theme, add a migration mapping in `migratedRawValue()`
-6. Set `isGaming = true` if the theme belongs in the Gaming category
-
-### Theme categories
-
-- **Standard** (`isGaming == false`): Samus, Chocobo, Protoss, Joker, Geralt, Mega Man, Custom
-- **Gaming** (`isGaming == true`): Mario, Luigi, Sonic, Half-Life, Kratos, Kirby, Zelda, Pikachu, Doom, Master Chief
 
 ### Theming considerations for new UI code
 
