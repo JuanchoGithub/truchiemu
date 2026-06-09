@@ -15,7 +15,7 @@ Home page is being mantained from the repo itself, and it is here: https://juanc
 Download and install from my releases page: https://github.com/JuanchoGithub/truchiemu/releases
 
 # Support
-- You can support TruchiEmu by subscribint to my [Patreon here](https://www.patreon.com/16201897/join)
+- You can support TruchiEmu by subscribing to my [Patreon here](https://www.patreon.com/16201897/join)
 - O si estas en Argentina o LATAM, [![Invitame un café en cafecito.app](https://cdn.cafecito.app/imgs/buttons/button_1.svg)](https://cafecito.app/truchisoft)
 
 # TruchiEmu
