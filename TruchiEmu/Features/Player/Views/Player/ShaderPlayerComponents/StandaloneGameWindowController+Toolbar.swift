@@ -8,12 +8,22 @@ extension StandaloneGameWindowController {
     @MainActor
     func onMouseActivity() {
         guard !InputCaptureManager.shared.isCapturing else { return }
-        showToolbar()
+        if isToolbarVisible {
+            scheduleHideToolbar()
+        } else {
+            showToolbar()
+        }
     }
 
     @MainActor
     func showToolbar() {
         guard !InputCaptureManager.shared.isCapturing else { return }
+
+        if isToolbarVisible {
+            scheduleHideToolbar()
+            return
+        }
+
         toolbarView?.isHidden = false
         toolbarView?.alphaValue = 0
         isToolbarVisible = true

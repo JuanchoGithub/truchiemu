@@ -26,26 +26,45 @@ class FocusableMTKView: MTKView {
     override func mouseDown(with event: NSEvent) {
         self.window?.makeFirstResponder(self)
 
+        if let toolbarView = windowController?.toolbarView,
+           !toolbarView.isHidden,
+           toolbarView.window == self.window {
+            let clickLocation = event.locationInWindow
+            let toolbarFrame = toolbarView.frame
+            if toolbarFrame.contains(clickLocation) {
+                return
+            }
+        }
+
         if let window = self.window, !InputCaptureManager.shared.isCapturing {
             let sidebarOpen = windowController?.gameGuideViewModel.isSidebarVisible == true
             if shouldCaptureInputForCurrentGame() && !sidebarOpen {
                 InputCaptureManager.shared.startCapture(window: window)
+                return
             }
         }
 
-        XPCBridgeAdapter.shared.setMouseButton(0, pressed: true)
+        if InputCaptureManager.shared.isCapturing {
+            XPCBridgeAdapter.shared.setMouseButton(0, pressed: true)
+        }
     }
 
     override func mouseUp(with event: NSEvent) {
-        XPCBridgeAdapter.shared.setMouseButton(0, pressed: false)
+        if InputCaptureManager.shared.isCapturing {
+            XPCBridgeAdapter.shared.setMouseButton(0, pressed: false)
+        }
     }
 
     override func rightMouseDown(with event: NSEvent) {
-        XPCBridgeAdapter.shared.setMouseButton(1, pressed: true)
+        if InputCaptureManager.shared.isCapturing {
+            XPCBridgeAdapter.shared.setMouseButton(1, pressed: true)
+        }
     }
 
     override func rightMouseUp(with event: NSEvent) {
-        XPCBridgeAdapter.shared.setMouseButton(1, pressed: false)
+        if InputCaptureManager.shared.isCapturing {
+            XPCBridgeAdapter.shared.setMouseButton(1, pressed: false)
+        }
     }
 
     override func mouseMoved(with event: NSEvent) {
@@ -62,10 +81,7 @@ class FocusableMTKView: MTKView {
     }
 
     private func updateMouseDelta(with event: NSEvent) {
-        let isCaptured = InputCaptureManager.shared.isCapturing
-        let isDOSOrScummVM = shouldCaptureInputForCurrentGame()
-
-        if isCaptured || isDOSOrScummVM {
+        if InputCaptureManager.shared.isCapturing {
             let dx = Int16(clamping: Int(event.deltaX))
             let dy = Int16(clamping: Int(event.deltaY))
 
@@ -78,7 +94,7 @@ class FocusableMTKView: MTKView {
     }
 
     override func scrollWheel(with event: NSEvent) {
-        // macOS scroll wheel sends discrete steps, normalize to match libretro expectations
+        guard InputCaptureManager.shared.isCapturing else { return }
         let delta = Int16(event.scrollingDeltaY * 120) // 120 per "notch"
         if delta != 0 {
             XPCBridgeAdapter.shared.addMouseWheelDelta(delta)
@@ -88,6 +104,8 @@ class FocusableMTKView: MTKView {
     // MARK: - Pointer Position
 
     private func updatePointerPosition(_ event: NSEvent) {
+        guard InputCaptureManager.shared.isCapturing else { return }
+
         let location = event.locationInWindow
         let size = self.bounds.size
 

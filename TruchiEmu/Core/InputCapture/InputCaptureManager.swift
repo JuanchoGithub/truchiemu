@@ -255,8 +255,8 @@ class InputCaptureManager: NSObject, ObservableObject {
         guard let contentView = window.contentView else { return false }
         let clickInWindow = event.locationInWindow
         for view in contentView.subviews {
-            if view.responds(to: Selector(("consumesMouseEventsInFrame"))) {
-                if let consumes = view.value(forKey: "consumesMouseEventsInFrame") as? Bool, consumes {
+            if view.responds(to: Selector(("isPassThroughOverlay"))) {
+                if let isPassThrough = view.value(forKey: "isPassThroughOverlay") as? Bool, !isPassThrough {
                     let clickInView = view.convert(clickInWindow, from: nil)
                     if view.bounds.contains(clickInView) {
                         return true

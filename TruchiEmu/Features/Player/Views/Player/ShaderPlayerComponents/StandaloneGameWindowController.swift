@@ -10,38 +10,23 @@ import Combine
 // Prevents use-after-free in SwiftUI's ItemSheetPresentationModifier.destroy during
 // the vulnerable window between crash detection and window cleanup.
 class SafeHostingView<Content: View>: NSHostingView<Content> {
-    @objc var consumesMouseEventsInFrame = false
+@objc var isPassThroughOverlay = false
 
-    override func layout() {
-        guard !XPCConnectionManager.isShuttingDown else { return }
-        super.layout()
-    }
+override func layout() {
+    guard !XPCConnectionManager.isShuttingDown else { return }
+    super.layout()
+}
 
-    override func hitTest(_ point: NSPoint) -> NSView? {
-        if consumesMouseEventsInFrame, bounds.contains(point) {
-            if let hitView = super.hitTest(point) {
-                return hitView
-            }
-            return self
-        }
-        return super.hitTest(point)
+override func hitTest(_ point: NSPoint) -> NSView? {
+    if isPassThroughOverlay {
+        return nil
     }
+    return super.hitTest(point)
+}
 
-    override func mouseDown(with event: NSEvent) {
-        if consumesMouseEventsInFrame {
-            super.mouseDown(with: event)
-            return
-        }
-        super.mouseDown(with: event)
-    }
-
-    override func rightMouseDown(with event: NSEvent) {
-        if consumesMouseEventsInFrame {
-            super.rightMouseDown(with: event)
-            return
-        }
-        super.rightMouseDown(with: event)
-    }
+override func acceptsFirstMouse(for event: NSEvent?) -> Bool {
+    return !isPassThroughOverlay
+}
 }
 
 
@@ -266,6 +251,7 @@ super.init(window: window)
         toastOverlay.translatesAutoresizingMaskIntoConstraints = false
         toastOverlay.wantsLayer = true
         toastOverlay.layer?.backgroundColor = .clear
+        toastOverlay.isPassThroughOverlay = true
         containerView.addSubview(toastOverlay)
         self.achievementToastOverlayView = toastOverlay
 
@@ -296,9 +282,9 @@ super.init(window: window)
         let escapeToastView = SafeHostingView(rootView: AnyView(EscapeToastOverlay()))
         escapeToastView.translatesAutoresizingMaskIntoConstraints = false
         escapeToastView.wantsLayer = true
-        escapeToastView.consumesMouseEventsInFrame = false
+        escapeToastView.isPassThroughOverlay = true
         escapeToastView.layer?.backgroundColor = NSColor.clear.cgColor
-        containerView.addSubview(escapeToastView)
+        containerView.addSubview(escapeToastView, positioned: .below, relativeTo: hostingView)
         self.escapeToastOverlayView = escapeToastView
 
         NSLayoutConstraint.activate([
@@ -1122,7 +1108,6 @@ hostingView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
             GameGuideSidebar(viewModel: gameGuideViewModel, windowController: self)
         ))
         hostingView.translatesAutoresizingMaskIntoConstraints = false
-        hostingView.consumesMouseEventsInFrame = true
 
 if let toolbar = toolbarView {
 containerView.addSubview(hostingView, positioned: .below, relativeTo: toolbar)
