@@ -273,14 +273,17 @@ struct ControllerSettingsView: View {
             }
         }
         }
-        .onAppear {
-            if let saved = AppSettings.getString("controller_selectedSystemID") {
-                selectedSystemID = saved
-            }
-            selectedControllerId = controllerService.connectedControllers.first?.id
-            loadSavedConfigs()
-        }
-        .onChange(of: controllerService.connectedControllers.map(\.id)) { _, newIds in
+ .onAppear {
+ if let saved = AppSettings.getString("controller_selectedSystemID") {
+ selectedSystemID = saved
+ }
+ applyPendingControllerSelection()
+ loadSavedConfigs()
+ }
+ .onReceive(NotificationCenter.default.publisher(for: .openAppSettings)) { _ in
+ applyPendingControllerSelection()
+ }
+ .onChange(of: controllerService.connectedControllers.map(\.id)) { _, newIds in
             guard let currentId = selectedControllerId else {
                 selectedControllerId = newIds.first
                 return
@@ -299,6 +302,17 @@ struct ControllerSettingsView: View {
             return controllerService.connectedControllers.first(where: { $0.id == id })
         }
         return controllerService.connectedControllers.first
+    }
+
+    private func applyPendingControllerSelection() {
+        if let pendingId = AppSettings.getString("pending_settings_controller_id"),
+           let uuid = UUID(uuidString: pendingId),
+           controllerService.connectedControllers.contains(where: { $0.id == uuid }) {
+            selectedControllerId = uuid
+            AppSettings.remove("pending_settings_controller_id")
+        } else if selectedControllerId == nil {
+            selectedControllerId = controllerService.connectedControllers.first?.id
+        }
     }
 
     // MARK: - Keyboard mapping content (inline, no tab)

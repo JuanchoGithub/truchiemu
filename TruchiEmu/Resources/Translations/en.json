@@ -1621,6 +1621,8 @@
   "settings.moveList.deleteCharacterPrompt": "Delete {name} and all its moves?",
   "settings.moveList.editor.addFromScratch": "Add from Scratch",
 "settings.help": "Help",
+"help.title": "Help",
+"help.noMatchingSettings": "No matching settings for",
 "help.shortcuts": "Keyboard Shortcuts",
 "help.faq": "FAQ",
 "help.quickStart": "Quick Start",

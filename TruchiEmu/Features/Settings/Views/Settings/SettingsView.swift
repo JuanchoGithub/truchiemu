@@ -435,7 +435,7 @@ struct SettingsView: View {
             case .logging: LoggingSettingsView(searchText: $searchText)
         case .moveList: MoveListSettingsView(searchText: $searchText)
         case .hotkeys: HotkeyConfigSettingsView(searchText: $searchText)
-        case .help: HelpSettingsView()
+        case .help: HelpSettingsView(searchText: $searchText)
     case .about: AboutView()
         }
         }

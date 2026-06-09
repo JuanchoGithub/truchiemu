@@ -1613,6 +1613,8 @@
   "settings.moveList.deleteCharacterPrompt": "¿Eliminar {name} y todos sus movimientos?",
   "settings.moveList.editor.addFromScratch": "Añadir desde cero",
 "settings.help": "Ayuda",
+"help.title": "Ayuda",
+"help.noMatchingSettings": "No hay configuraciones que coincidan con",
 "help.shortcuts": "Atajos de Teclado",
 "help.faq": "Preguntas Frecuentes",
 "help.quickStart": "Inicio Rápido",

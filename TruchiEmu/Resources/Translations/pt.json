@@ -1619,6 +1619,8 @@
   "settings.moveList.deleteCharacterPrompt": "Excluir {name} e todos os seus movimentos?",
   "settings.moveList.editor.addFromScratch": "Adicionar do zero",
 "settings.help": "Ajuda",
+"help.title": "Ajuda",
+"help.noMatchingSettings": "Nenhuma configuração correspondente a",
 "help.shortcuts": "Atalhos de Teclado",
 "help.faq": "Perguntas Frequentes",
 "help.quickStart": "Início Rápido",

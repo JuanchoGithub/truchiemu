@@ -251,18 +251,38 @@ actor ROMScanner {
             }
         }
         
-        for url in containerURLs {
-            let ext = url.pathExtension.lowercased()
-            let system = await identifySystem(url: url, extension: ext)
-            // If it's a disk-based system OR we know it's a container, ignore its references
-            if system?.isDiskBased == true || containerExts.contains(ext) {
-                for ref in getReferencedFiles(in: url) {
-                    ignoredURLs.insert(ref.standardized.path)
-                }
+    // Build a map of container URL → referenced data file paths for deduplication
+    var containerRefs: [URL: Set<String>] = [:]
+    for url in containerURLs {
+        let ext = url.pathExtension.lowercased()
+        let system = await identifySystem(url: url, extension: ext)
+        if system?.isDiskBased == true || containerExts.contains(ext) {
+            let refs = Set(getReferencedFiles(in: url).map { $0.standardized.path })
+            for ref in refs {
+                ignoredURLs.insert(ref)
+            }
+            if !refs.isEmpty {
+                containerRefs[url] = refs
             }
         }
-        
-        return ignoredURLs
+    }
+
+    // When .cue and .gdi in the same folder reference the same data files, keep only .cue
+    let cueFiles = containerURLs.filter { $0.pathExtension.lowercased() == "cue" }
+    let gdiFiles = containerURLs.filter { $0.pathExtension.lowercased() == "gdi" }
+    for cueURL in cueFiles {
+        guard let cueRefs = containerRefs[cueURL] else { continue }
+        for gdiURL in gdiFiles {
+            guard gdiURL.deletingLastPathComponent() == cueURL.deletingLastPathComponent(),
+                  let gdiRefs = containerRefs[gdiURL],
+                  cueRefs == gdiRefs else { continue }
+            ignoredURLs.insert(gdiURL.standardized.path)
+            ROMScannerLog.debug("Dedup: ignoring \(gdiURL.lastPathComponent) — same data files as \(cueURL.lastPathComponent)")
+            break
+        }
+    }
+
+    return ignoredURLs
     }
 
     // MARK: - MAME ROM Identification
@@ -335,10 +355,25 @@ actor ROMScanner {
         guard let files = try? fm.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil, options: .skipsHiddenFiles) else { return[] }
         let containerExts = Set(["cue", "m3u", "gdi", "ccd", "toc", "mds"])
         var ignored = Set<String>()
+        var containerRefs: [URL: Set<String>] = [:]
         for file in files {
             let ext = file.pathExtension.lowercased()
             if containerExts.contains(ext) {
-                for ref in getReferencedFiles(in: file) { ignored.insert(ref.standardized.path) }
+                let refs = getReferencedFiles(in: file).map { $0.standardized.path }
+                for ref in refs { ignored.insert(ref) }
+                if !refs.isEmpty {
+                    containerRefs[file] = Set(refs)
+                }
+            }
+        }
+        let cueFiles = files.filter { $0.pathExtension.lowercased() == "cue" }
+        let gdiFiles = files.filter { $0.pathExtension.lowercased() == "gdi" }
+        for cueURL in cueFiles {
+            guard let cueRefs = containerRefs[cueURL] else { continue }
+            for gdiURL in gdiFiles {
+                guard let gdiRefs = containerRefs[gdiURL], cueRefs == gdiRefs else { continue }
+                ignored.insert(gdiURL.standardized.path)
+                break
             }
         }
         return ignored

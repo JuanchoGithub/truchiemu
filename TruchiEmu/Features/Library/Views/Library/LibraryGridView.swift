@@ -48,30 +48,43 @@ struct LibraryGridView: View {
         ))
     }
 
-    @ViewBuilder
-    private var inputDeviceButtons: some View {
-        Button(action: { controllerService.activePlayerIndex = 0 }) {
-            Label(loc.localized("toolbar.keyboard"), systemImage: "keyboard")
-        }
-    ForEach(controllerService.connectedControllers, id: \.id) { player in
-        Button(action: { controllerService.activePlayerIndex = player.primaryPlayer }) {
-                Label(player.name, systemImage: "gamecontroller")
-            }
-        }
-        Divider()
-        Button {
-            if case .system(let system) = filter {
-                AppSettings.set("pending_settings_system_id", value: system.id)
-                AppSettings.set("pending_settings_page", value: SettingsView.Page.controllers.rawValue)
-                NotificationCenter.default.post(name: .openAppSettings, object: nil)
-            } else {
-                AppSettings.set("settings_selectedTab", value: "controllers")
-                NotificationCenter.default.post(name: .openAppSettings, object: nil)
-            }
-        } label: {
-            Label(loc.localized("toolbar.configure"), systemImage: "gear")
-        }
-    }
+ @ViewBuilder
+ private var inputDeviceButtons: some View {
+ let hasControllers = controllerService.connectedControllers.contains(where: { !$0.isKeyboard })
+ Button {
+ openControllerSettings(selecting: ControllerService.keyboardId)
+ } label: {
+ Label(loc.localized("toolbar.keyboard"), systemImage: "keyboard")
+ }
+ ForEach(controllerService.connectedControllers, id: \.id) { player in
+ if !player.isKeyboard {
+ Button {
+ openControllerSettings(selecting: player.id)
+ } label: {
+ Label(player.name, systemImage: "gamecontroller")
+ }
+ }
+ }
+ if hasControllers {
+ Divider()
+ Button {
+ openControllerSettings(selecting: nil)
+ } label: {
+ Label(loc.localized("toolbar.configure"), systemImage: "gear")
+ }
+ }
+ }
+
+ private func openControllerSettings(selecting controllerId: UUID?) {
+ if case .system(let system) = filter {
+ AppSettings.set("pending_settings_system_id", value: system.id)
+ }
+ AppSettings.set("pending_settings_page", value: SettingsView.Page.controllers.rawValue)
+ if let id = controllerId {
+ AppSettings.set("pending_settings_controller_id", value: id.uuidString)
+ }
+ NotificationCenter.default.post(name: .openAppSettings, object: nil)
+ }
 
     @ViewBuilder
     private var languageButtons: some View {
@@ -353,9 +366,15 @@ struct LibraryGridView: View {
                         languageButtons
                     }
         } label: {
-                HStack(spacing: 4) {
-                    Image(systemName: controllerService.connectedControllers.isEmpty ? "keyboard" : "gamecontroller")
-                    Text(prefs.systemLanguage.flagEmoji)
+ HStack(spacing: 4) {
+ let hasControllers = controllerService.connectedControllers.contains(where: { !$0.isKeyboard })
+ if hasControllers {
+ Image(systemName: "keyboard")
+ Image(systemName: "gamecontroller")
+ } else {
+ Image(systemName: "keyboard")
+ }
+ Text(prefs.systemLanguage.flagEmoji)
                 }
             }
         .help(loc.localized("toolbar.inputDeviceAndLanguage"))
