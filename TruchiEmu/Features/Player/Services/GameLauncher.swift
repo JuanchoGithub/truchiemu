@@ -262,40 +262,89 @@ func launchGame(
 
  // Auto-detect RA game if achievements enabled but no match yet
  if config.achievementsEnabled, (rom.raGameId == nil || rom.raGameId ?? 0 == 0) {
- await RetroAchievementsService.shared.syncROMWithRA(rom: rom)
+     // Skip RA sync if system is not supported by RetroAchievements
+     let raConsoleID = RetroAchievementsService.shared.mapSystemIDToRAConsoleID(systemID)
+     if raConsoleID > 0 {
+         let previousMatchStatus = rom.raMatchStatus
 
- let context = SwiftDataContainer.shared.mainContext
- let descriptor = FetchDescriptor<ROMEntry>(predicate: #Predicate<ROMEntry> { $0.id == rom.id })
- if let entry = try? context.fetch(descriptor).first {
- let updatedRAGameId = entry.raGameId
- let updatedRAMatchStatus = entry.raMatchStatus
- rom.raGameId = updatedRAGameId
- rom.raMatchStatus = updatedRAMatchStatus
- if let updatedId = updatedRAGameId, updatedId > 0 {
- var updated = rom
- library?.updateROM(updated)
- LoggerService.info(category: "GameLauncher", "Auto-detected RA game: \(rom.displayName) → raGameId=\(updatedId)")
- } else {
- let loc = LocalizationManager.shared
- NotificationHistoryManager.shared.post(
- icon: "magnifyingglass",
- title: loc.localized("raHash.notificationNoMatchTitle"),
- subtitle: loc.localized("raHash.pillNotFoundSubtitle")
- .replacingOccurrences(of: "{title}", with: rom.displayName)
- .replacingOccurrences(of: "{system}", with: systemID),
- actionLabel: loc.localized("raHash.requestOnRA"),
- actionType: "openURL",
- actionPayload: OpenURLActionPayload(url: "https://retroachievements.org/viewtopic.php?t=15027")
- )
- NotificationService.shared.sendNotification(
- title: loc.localized("raHash.notificationNoMatchTitle"),
- body: loc.localized("raHash.notificationNoMatchBody")
- .replacingOccurrences(of: "{title}", with: rom.displayName)
- .replacingOccurrences(of: "{system}", with: systemID)
- )
- LoggerService.info(category: "GameLauncher", "RA auto-detect: \(rom.displayName) not found in RA database")
- }
- }
+         await RetroAchievementsService.shared.syncROMWithRA(rom: rom)
+
+         let context = SwiftDataContainer.shared.mainContext
+         let descriptor = FetchDescriptor<ROMEntry>(predicate: #Predicate<ROMEntry> { $0.id == rom.id })
+         if let entry = try? context.fetch(descriptor).first {
+             let updatedRAGameId = entry.raGameId
+             let updatedRAMatchStatus = entry.raMatchStatus
+             rom.raGameId = updatedRAGameId
+             rom.raMatchStatus = updatedRAMatchStatus
+
+             let loc = LocalizationManager.shared
+
+             if let updatedId = updatedRAGameId, updatedId > 0 {
+                 var updated = rom
+                 library?.updateROM(updated)
+                 LoggerService.info(category: "GameLauncher", "Auto-detected RA game: \(rom.displayName) → raGameId=\(updatedId)")
+
+                 // Notify on first successful match (transition from failure)
+                 if let prev = previousMatchStatus, prev != "matched" {
+                     NotificationHistoryManager.shared.post(
+                         icon: "trophy",
+                         title: loc.localized("raHash.notificationMatchTitle"),
+                         subtitle: loc.localized("raHash.notificationMatchBody")
+                             .replacingOccurrences(of: "{title}", with: rom.displayName)
+                             .replacingOccurrences(of: "{system}", with: systemID)
+                     )
+                     NotificationService.shared.sendNotification(
+                         title: loc.localized("raHash.notificationMatchTitle"),
+                         body: loc.localized("raHash.notificationMatchBody")
+                             .replacingOccurrences(of: "{title}", with: rom.displayName)
+                             .replacingOccurrences(of: "{system}", with: systemID)
+                     )
+                     LoggerService.info(category: "GameLauncher", "RA auto-detect: \(rom.displayName) matched successfully")
+                 }
+             } else if let matchStatus = updatedRAMatchStatus, matchStatus != previousMatchStatus {
+                 // Only notify on status changes to avoid duplicate notifications
+                 if matchStatus == "not_supported" {
+                     NotificationHistoryManager.shared.post(
+                         icon: "magnifyingglass",
+                         title: loc.localized("raHash.notificationNoMatchTitle"),
+                         subtitle: loc.localized("raHash.pillNotFoundSubtitle")
+                             .replacingOccurrences(of: "{title}", with: rom.displayName)
+                             .replacingOccurrences(of: "{system}", with: systemID),
+                         actionLabel: loc.localized("raHash.requestOnRA"),
+                         actionType: "openURL",
+                         actionPayload: OpenURLActionPayload(url: "https://retroachievements.org/viewtopic.php?t=15027")
+                     )
+                     NotificationService.shared.sendNotification(
+                         title: loc.localized("raHash.notificationNoMatchTitle"),
+                         body: loc.localized("raHash.notificationNoMatchBody")
+                             .replacingOccurrences(of: "{title}", with: rom.displayName)
+                             .replacingOccurrences(of: "{system}", with: systemID)
+                     )
+                     LoggerService.info(category: "GameLauncher", "RA auto-detect: \(rom.displayName) not found in RA database")
+                 } else if matchStatus.hasPrefix("mismatch") {
+                     NotificationHistoryManager.shared.post(
+                         icon: "exclamationmark.triangle",
+                         title: loc.localized("raHash.notificationMismatchTitle"),
+                         subtitle: loc.localized("raHash.pillMismatchSubtitle")
+                             .replacingOccurrences(of: "{title}", with: rom.displayName)
+                             .replacingOccurrences(of: "{system}", with: systemID),
+                         actionLabel: loc.localized("raHash.viewOnRetroAchievements"),
+                         actionType: "openURL",
+                         actionPayload: OpenURLActionPayload(url: "https://retroachievements.org/game/\(updatedRAGameId ?? 0)")
+                     )
+                     NotificationService.shared.sendNotification(
+                         title: loc.localized("raHash.notificationMismatchTitle"),
+                         body: loc.localized("raHash.notificationMismatchBody")
+                             .replacingOccurrences(of: "{title}", with: rom.displayName)
+                             .replacingOccurrences(of: "{system}", with: systemID)
+                     )
+                     LoggerService.info(category: "GameLauncher", "RA auto-detect: \(rom.displayName) hash mismatch in RA database")
+                 }
+             }
+         }
+     } else {
+         LoggerService.debug(category: "GameLauncher", "Skipping RA auto-detect: \(systemID) not supported by RA")
+     }
  }
 
  // Pre-load cached achievements for rcheevos memory detection
