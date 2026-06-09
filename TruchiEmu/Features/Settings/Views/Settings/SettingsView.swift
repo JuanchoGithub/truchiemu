@@ -10,6 +10,7 @@ struct SettingsView: View {
     @EnvironmentObject var controllerService: ControllerService
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
+    @State private var hoveredPage: Page? = nil
     
     enum Page: Hashable, Codable, RawRepresentable, Identifiable {
         
@@ -278,7 +279,7 @@ struct SettingsView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .environment(SystemDatabaseWrapper.shared)
-        .frame(minWidth: 750, minHeight: 500)
+        .frame(minWidth: 680, minHeight: 400)
         .onAppear {
             if system != nil {
                 // Only sync if no initialPage was provided
@@ -343,6 +344,7 @@ struct SettingsView: View {
     
     private func sidebarItem(for page: Page) -> some View {
         let isSelected = selectedPage == page
+        let isHovered = hoveredPage == page
 
         return Button {
             if coreManager.isDownloadingCore && page != .cores {
@@ -382,7 +384,8 @@ struct SettingsView: View {
             .padding(.horizontal, 10)
             .background(
                 RoundedRectangle(cornerRadius: 6)
-                    .fill(isSelected ? AppColors.accentBackground(colorScheme) : .clear)
+                    .fill(isSelected ? AppColors.accentBackground(colorScheme) : 
+                          (isHovered ? AppColors.cardBackgroundSubtle(colorScheme) : .clear))
             )
             .overlay(alignment: .leading) {
                 if isSelected {
@@ -395,6 +398,7 @@ struct SettingsView: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .onHover { hoveredPage = $0 ? page : nil }
     }
     
     // MARK: - Detail Content
@@ -435,7 +439,7 @@ struct SettingsView: View {
     case .about: AboutView()
         }
         }
-        .frame(minWidth: 550, minHeight: 420)
+        .frame(minWidth: 450, minHeight: 350)
 
         if coreManager.isDownloadingCore {
             CoreDownloadStatusBar(coreManager: coreManager)

@@ -44,13 +44,19 @@ struct NotificationCenterSheetView: View {
             .navigationTitle(loc.localized("notifications.title"))
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(loc.localized("app.cancel")) { dismiss() }
+                    Button(loc.localized("app.close")) { dismiss() }
                 }
                 ToolbarItem(placement: .primaryAction) {
                     if historyManager.unreadCount > 0 {
                         Button(loc.localized("notifications.markAllRead")) {
                             withAnimation(AppAnimations.quick) {
                                 historyManager.markAllAsRead()
+                            }
+                        }
+                    } else if !historyManager.entries.isEmpty {
+                        Button(loc.localized("notifications.dismissAll")) {
+                            withAnimation(AppAnimations.quick) {
+                                historyManager.dismissAll()
                             }
                         }
                     }

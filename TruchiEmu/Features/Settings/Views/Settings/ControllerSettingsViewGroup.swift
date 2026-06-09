@@ -113,7 +113,8 @@ struct ControllerSettingsView: View {
     }
 
     var body: some View {
-        VStack(spacing: 12) {
+        ScrollView {
+            VStack(spacing: 12) {
             if !filteredSystemsForDisplay.isEmpty {
                 HStack(spacing: 12) {
                     Picker(loc.localized("controllers.system"), selection: $selectedSystemID) {
@@ -270,6 +271,7 @@ struct ControllerSettingsView: View {
                     .frame(maxHeight: .infinity, alignment: .top)
                 }
             }
+        }
         }
         .onAppear {
             if let saved = AppSettings.getString("controller_selectedSystemID") {

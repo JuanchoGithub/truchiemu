@@ -354,7 +354,7 @@ struct LibraryGridView: View {
                     }
         } label: {
                 HStack(spacing: 4) {
-                    Image(systemName: controllerService.activePlayerIndex == 0 ? "keyboard" : "gamecontroller")
+                    Image(systemName: controllerService.connectedControllers.isEmpty ? "keyboard" : "gamecontroller")
                     Text(prefs.systemLanguage.flagEmoji)
                 }
             }
@@ -406,8 +406,6 @@ struct LibraryGridView: View {
                 Label(loc.localized("app.settings"), systemImage: "gearshape")
                     .labelStyle(.titleAndIcon)
             }
-            .buttonStyle(.borderless)
-            .frame(width: 80)
             .padding(.horizontal, 4)
             .help(loc.localized("app.settings"))
             .foregroundStyle(ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .primary)

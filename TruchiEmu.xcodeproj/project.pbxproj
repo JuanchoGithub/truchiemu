@@ -573,6 +573,7 @@
 		7BEC71E9DE2C0DC36C53A654 /* CoreClientProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5F6194C027F95EB23ED33A /* CoreClientProtocol.swift */; };
 		7CBE0543D38F1C08D7B6CABF /* mame2003_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = 69528A74D5634D3F9B6396F4 /* mame2003_libretro_default.json */; };
 		7D029F63CAFD018D93F3FD8E /* input_systemLabels_gamegear.json in Resources */ = {isa = PBXBuildFile; fileRef = C8068AB52E3C18DAAE29F47B /* input_systemLabels_gamegear.json */; };
+		7E0AE511450BD2A5FE2820A5 /* CoreOptionsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E07C31C568B8140ACE5C6ABD /* CoreOptionsSection.swift */; };
 		7E1281194B7150DB55497A7A /* CheatManagerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7442198CF891F84CE81220FA /* CheatManagerService.swift */; };
 		7E1C3785C6F25E705635A60B /* gearboy_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = D503F9A21A5B9E67E09C0961 /* gearboy_libretro_default.json */; };
 		7F2F80091C48339E573A016D /* fightdata_kbash.json in Resources */ = {isa = PBXBuildFile; fileRef = BA1C6E7ABF7218A2B1BF591B /* fightdata_kbash.json */; };
@@ -2174,6 +2175,7 @@
 		DF7DEE8C655EE9C9F76AEDD8 /* LUTRO.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LUTRO.png; sourceTree = "<group>"; };
 		DFB716FDB9E08D61BB411959 /* fightdata_svg.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_svg.json; sourceTree = "<group>"; };
 		E059451BADA7D67E5C1FB483 /* VMAC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VMAC.png; sourceTree = "<group>"; };
+		E07C31C568B8140ACE5C6ABD /* CoreOptionsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreOptionsSection.swift; sourceTree = "<group>"; };
 		E0BE913BF5456D0DC371C05A /* fightdata_kov2p.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_kov2p.json; sourceTree = "<group>"; };
 		E0DC3B1DB907C41823FBE25C /* input_coreLabels_vircon32.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_vircon32.json; sourceTree = "<group>"; };
 		E11C74001CE85E9C96E0269D /* NotificationPopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPopoverView.swift; sourceTree = "<group>"; };
@@ -2627,6 +2629,7 @@
 				C9EA57166E8095A1A45761BB /* Cheats.swift */,
 				8B36EBC921BB6DCAEA0437A4 /* Controls.swift */,
 				154CCFA03FA2B0980BA39F0C /* CoreAndAchievements.swift */,
+				E07C31C568B8140ACE5C6ABD /* CoreOptionsSection.swift */,
 				5695FD5B1A94518DB9D69637 /* CoreVersionPickerView.swift */,
 				A75E11DE818FADB9C12751AD /* DetailBoxArtComponents.swift */,
 				5C0861586830102C1E785A85 /* DetailSection.swift */,
@@ -5237,6 +5240,7 @@
 				18F648B9ABBD542F67F8578A /* CoreOption.swift in Sources */,
 				C0BF7D965A680A168FACC3BB /* CoreOptionsManager.swift in Sources */,
 				5466B0616CBA6DB6470AD055 /* CoreOptionsRepository.swift in Sources */,
+				7E0AE511450BD2A5FE2820A5 /* CoreOptionsSection.swift in Sources */,
 				263F6B73A64FEF6EE14E43A0 /* CoreOptionsView.swift in Sources */,
 				6FDA4EA2B500E084E4CC26F9 /* CoreOverrideBridge.mm in Sources */,
 				32B782F66C580947F60779DB /* CoreOverrideService.swift in Sources */,

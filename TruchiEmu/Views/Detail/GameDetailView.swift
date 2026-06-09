@@ -43,6 +43,7 @@ struct GameDetailView: View {
 
     @State var shaderWindowSettings: ShaderWindowSettings?
     @State var selectedSection: DetailSection = .gameInfo
+    @State var hoveredSection: DetailSection? = nil
     @State var bezelSelectorWindowController: BezelSelectorWindowController?
     @State var localTitle: String = ""
     @State var gameDescription: String? = nil
@@ -141,6 +142,7 @@ struct GameDetailView: View {
         case .bezels: bezelsSection
         case .controls: controlsSection
         case .analogMouse: analogMouseSection
+        case .coreOptions: coreOptionsSection
         case .savedStates: savedStatesSection
         case .cheats: cheatsSection
         case .core: coreSection
@@ -278,7 +280,11 @@ struct GameDetailView: View {
     }
 
     var primarySections: [DetailSection] {
-        var sections: [DetailSection] = [.gameInfo, .shader, .bezels, .controls]
+        var sections: [DetailSection] = [.gameInfo]
+        if currentROM.systemID == "gb" || currentROM.systemID == "gbc" {
+            sections.append(.coreOptions)
+        }
+        sections.append(contentsOf: [.shader, .bezels, .controls])
         if let sysID = currentROM.systemID, sysID == "dos" || sysID == "scummvm" {
             sections.append(.analogMouse)
         }
@@ -300,7 +306,7 @@ struct GameDetailView: View {
             Divider()
                 .overlay(AppColors.divider(colorScheme))
                 .padding(.vertical, 4)
-                .padding(.horizontal, 10)
+                .padding(.horizontal, 6)
 
             ForEach(advancedSections, id: \.self) { section in
                 sidebarItem(for: section)
@@ -310,12 +316,14 @@ struct GameDetailView: View {
         }
         .frame(width: 160)
         .padding(.vertical, 12)
-        .padding(.horizontal, 8)
+        .padding(.leading, 8)
+        .padding(.trailing, 4)
         .background(AppColors.sidebarBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
     }
 
     func sidebarItem(for section: DetailSection) -> some View {
         let isSelected = selectedSection == section
+        let isHovered = hoveredSection == section
 
         return AnyView(
             Button {
@@ -332,8 +340,11 @@ struct GameDetailView: View {
                     .font(AppTypography.subheadline)
                     .foregroundColor(isSelected ? AppColors.textPrimary(colorScheme) : AppColors.textSecondary(colorScheme))
                     .fontWeight(isSelected ? .medium : .regular)
+                Spacer()
             }
-                .padding(.horizontal, 10)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.leading, 10)
+                .padding(.trailing, 6)
                 .padding(.vertical, 7)
                 .contentShape(Rectangle())
             }
@@ -341,7 +352,8 @@ struct GameDetailView: View {
             .help(section.helpText)
             .background(
                 RoundedRectangle(cornerRadius: 6)
-                    .fill(isSelected ? AppColors.accentBackground(colorScheme) : .clear)
+                    .fill(isSelected ? AppColors.accentBackground(colorScheme) : 
+                          (isHovered ? AppColors.cardBackgroundSubtle(colorScheme) : .clear))
             )
             .overlay(alignment: .leading) {
                 if isSelected {
@@ -351,6 +363,7 @@ struct GameDetailView: View {
                         .padding(.leading, 2)
                 }
             }
+            .onHover { hoveredSection = $0 ? section : nil }
         )
     }
 

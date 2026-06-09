@@ -128,6 +128,16 @@ class NotificationHistoryManager: ObservableObject {
         updateUnreadCount()
     }
 
+    func dismissAllRead() {
+        let context = SwiftDataContainer.shared.mainContext
+        for entry in entries where entry.isRead {
+            context.delete(entry)
+        }
+        try? context.save()
+        entries.removeAll { $0.isRead }
+        updateUnreadCount()
+    }
+
     func dismissAll() {
         let context = SwiftDataContainer.shared.mainContext
         for entry in entries {

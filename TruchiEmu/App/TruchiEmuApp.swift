@@ -517,6 +517,7 @@ var body: some Scene {
             .environmentObject(controllerService)
             .environment(systemDatabase)
     }
+    .windowResizability(.contentMinSize)
     }
 }
 
