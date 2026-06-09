@@ -3,14 +3,6 @@ import Foundation
 import SwiftUI
 import GameController
 
-// DOS-specific emulator runner using DOSBox-Pure.
-//
-// DOSBox-Pure is designed to work with ZIP files directly, providing:
-// - Automatic C: drive mounting from ZIP contents
-// - Built-in "Start Menu" for selecting executables
-// - Game controller auto-mapping (arrows, space, ctrl, alt)
-// - Mouse mode support for point-and-click adventures
-// - Save state support via Libretro API
 class DOSRunner: EmulatorRunner, @unchecked Sendable {
 
     // MARK: - DOS-Specific Configuration
@@ -20,11 +12,6 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
     }
 
     @MainActor @Published var isMouseMode: Bool = false
-
-    private var analogMouseButtonLeft: String = "a"
-    private var analogMouseButtonDownRight: String = "b"
-    private var analogMouseButtonDownMiddle: String = "x"
-    private var analogMouseTimer: Timer?
 
     override func stop() {
         analogMouseTimer?.invalidate()
@@ -63,13 +50,13 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
     @MainActor
     private func configureAnalogMouse() {
         let sysID = "dos"
-        let systemDefault = AppSettings.getBool("analogMouse_enabled_\(sysID)", defaultValue: false)
+        let systemDefault = AppSettings.getBool("analogMouse_enabled_\(sysID)", defaultValue: true)
         let enabled = rom?.settings.analogMouseEnabled ?? systemDefault
 
         isMouseMode = enabled
 
         if enabled {
-            let sensitivity = Float(AppSettings.getDouble("analogMouse_sensitivity_\(sysID)", defaultValue: 1.0))
+            let sensitivity = Float(AppSettings.getDouble("analogMouse_sensitivity_\(sysID)", defaultValue: 0.8))
             let deadZone = Float(AppSettings.getDouble("analogMouse_deadZone_\(sysID)", defaultValue: 0.15))
             let stickString = AppSettings.getString("analogMouse_stick_\(sysID)", defaultValue: "left") ?? "left"
             let stickIndex = stickString == "right" ? 1 : 0
@@ -82,7 +69,7 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
 
             LoggerService.info(category: "DOSRunner", "Analog mouse enabled: sensitivity=\(sensitivity), deadZone=\(deadZone), stick=\(stickString), left=\(analogMouseButtonLeft), right=\(analogMouseButtonDownRight), middle=\(analogMouseButtonDownMiddle)")
         } else {
-            XPCBridgeAdapter.shared.setAnalogMouseConfig(player: 0, enabled: false, sensitivity: 1.0, deadzone: 0.15, stickIndex: 0)
+            XPCBridgeAdapter.shared.setAnalogMouseConfig(player: 0, enabled: false, sensitivity: 0.8, deadzone: 0.15, stickIndex: 0)
             LoggerService.debug(category: "DOSRunner", "Analog mouse disabled")
         }
     }
@@ -93,13 +80,13 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
         isMouseMode.toggle()
         if isMouseMode {
             let sysID = "dos"
-            let sensitivity = Float(AppSettings.getDouble("analogMouse_sensitivity_\(sysID)", defaultValue: 1.0))
+            let sensitivity = Float(AppSettings.getDouble("analogMouse_sensitivity_\(sysID)", defaultValue: 0.8))
             let deadZone = Float(AppSettings.getDouble("analogMouse_deadZone_\(sysID)", defaultValue: 0.15))
             let stickString = AppSettings.getString("analogMouse_stick_\(sysID)", defaultValue: "left") ?? "left"
             let stickIndex = stickString == "right" ? 1 : 0
             XPCBridgeAdapter.shared.setAnalogMouseConfig(player: 0, enabled: true, sensitivity: sensitivity, deadzone: deadZone, stickIndex: stickIndex)
         } else {
-            XPCBridgeAdapter.shared.setAnalogMouseConfig(player: 0, enabled: false, sensitivity: 1.0, deadzone: 0.15, stickIndex: 0)
+            XPCBridgeAdapter.shared.setAnalogMouseConfig(player: 0, enabled: false, sensitivity: 0.8, deadzone: 0.15, stickIndex: 0)
         }
         LoggerService.debug(category: "DOSRunner", "Mouse mode: \(isMouseMode ? "ON" : "OFF")")
     }
@@ -111,44 +98,49 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
         super.setupGamepadInput()
 
         let sysID = "dos"
-        let systemDefault = AppSettings.getBool("analogMouse_enabled_\(sysID)", defaultValue: false)
+        let systemDefault = AppSettings.getBool("analogMouse_enabled_\(sysID)", defaultValue: true)
         let analogMouseEnabled = rom?.settings.analogMouseEnabled ?? systemDefault
         guard analogMouseEnabled else { return }
 
         let cs = ControllerService.shared
-        let sensitivity = Float(AppSettings.getDouble("analogMouse_sensitivity_\(sysID)", defaultValue: 1.0))
+        let sensitivity = Float(AppSettings.getDouble("analogMouse_sensitivity_\(sysID)", defaultValue: 0.8))
         let deadZone = Float(AppSettings.getDouble("analogMouse_deadZone_\(sysID)", defaultValue: 0.15))
         let stickString = AppSettings.getString("analogMouse_stick_\(sysID)", defaultValue: "left") ?? "left"
 
         for player in cs.connectedControllers {
             guard let controller = player.gcController,
-            let extendedGamepad = controller.extendedGamepad else { continue }
+                  let extendedGamepad = controller.extendedGamepad else { continue }
             let mapping = cs.mapping(for: controller.vendorName ?? "Unknown", systemID: sysID)
             let ports = player.assignedPlayers.map { $0 - 1 }
             let dpad = extendedGamepad.dpad
 
-            let stick = stickString == "right" ? extendedGamepad.rightThumbstick : extendedGamepad.leftThumbstick
+            let primaryStick = stickString == "right" ? extendedGamepad.rightThumbstick : extendedGamepad.leftThumbstick
             let secondaryStick = stickString == "right" ? extendedGamepad.leftThumbstick : extendedGamepad.rightThumbstick
 
-            analogMouseTimer = Timer.scheduledTimer(withTimeInterval: 1.0 / 60.0, repeats: true) { [weak self] _ in
-                guard self != nil else { return }
-                var xVal = stick.xAxis.value
-                var yVal = stick.yAxis.value
-                if fabsf(xVal) < deadZone { xVal = 0 }
-                if fabsf(yVal) < deadZone { yVal = 0 }
-                var dx = Int16(xVal * sensitivity * 8.0)
-                var dy = Int16(-yVal * sensitivity * 8.0)
-
-                let x2 = secondaryStick.xAxis.value
-                let y2 = secondaryStick.yAxis.value
-                if fabsf(x2) >= deadZone { dx += Int16(x2 * sensitivity * 8.0 * 0.2) }
-                if fabsf(y2) >= deadZone { dy += Int16(-y2 * sensitivity * 8.0 * 0.2) }
-
-                XPCBridgeAdapter.shared.setAnalogMouseDeltaX(dx, y: dy)
-            }
+            setupAnalogMouseTimer(primaryStick: primaryStick, secondaryStick: secondaryStick,
+                                  sensitivity: sensitivity, deadZone: deadZone)
 
             extendedGamepad.valueChangedHandler = { [weak self] _, element in
                 guard let self = self else { return }
+                if GameGuideViewModel.isGuideSidebarOpen,
+                   let btn = element as? GCControllerButtonInput {
+                    LoggerService.debug(category: "DOSRunner", "Sidebar button: element=\(element.localizedName) isPressed=\(btn.isPressed) btnA=\(btn === extendedGamepad.buttonA) btnB=\(btn === extendedGamepad.buttonB)")
+                    if btn === extendedGamepad.buttonA {
+                        LoggerService.info(category: "DOSRunner", "A button → left click down=\(btn.isPressed)")
+                        self.postMacMouseClick(button: .left, down: btn.isPressed)
+                        return
+                    }
+                    if btn === extendedGamepad.buttonB {
+                        LoggerService.info(category: "DOSRunner", "B button → right click down=\(btn.isPressed)")
+                        self.postMacMouseClick(button: .right, down: btn.isPressed)
+                        return
+                    }
+                    if btn === extendedGamepad.buttonX || btn === extendedGamepad.buttonY {
+                        LoggerService.info(category: "DOSRunner", "X/Y button → left click down=\(btn.isPressed)")
+                        self.postMacMouseClick(button: .left, down: btn.isPressed)
+                        return
+                    }
+                }
                 for port in ports {
                     self.handleDOSButtons(element, in: mapping, player: port, dpad: dpad)
                 }
@@ -172,6 +164,11 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
             guard elementMatches(element, name: btnMapping.gcElementName) else { continue }
             let raw = retroBtn.rawValue
 
+            if retroBtn == .r3 || retroBtn == .l3 {
+                handleGuideToggleButton(retroBtn: retroBtn, pressed: btn.isPressed, systemID: "dos")
+                break
+            }
+
             if retroBtn == .start {
                 XPCBridgeAdapter.shared.dispatchKeyboardEvent(keycode: 13, character: 13, modifiers: 0, down: btn.isPressed)
                 break
@@ -181,13 +178,7 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
                 break
             }
 
-            if raw == analogMouseButtonLeft {
-                XPCBridgeAdapter.shared.setMouseButton(0, pressed: btn.isPressed)
-            } else if raw == analogMouseButtonDownRight {
-                XPCBridgeAdapter.shared.setMouseButton(1, pressed: btn.isPressed)
-            } else if raw == analogMouseButtonDownMiddle {
-                XPCBridgeAdapter.shared.setMouseButton(2, pressed: btn.isPressed)
-            }
+            handleAnalogMouseButton(raw, pressed: btn.isPressed)
             break
         }
     }

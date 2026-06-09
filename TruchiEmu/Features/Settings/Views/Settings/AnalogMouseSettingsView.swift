@@ -11,10 +11,10 @@ struct AnalogMouseSettingsView: View {
 
     @State private var selectedSystemID: String = AppSettings.getString("analogMouse_selectedSystem", defaultValue: "dos") ?? "dos"
 
-    @State private var systemEnabledDOS: Bool = false
-    @State private var systemEnabledScummVM: Bool = false
+    @State private var systemEnabledDOS: Bool = true
+    @State private var systemEnabledScummVM: Bool = true
 
-    @State private var sensitivity: Double = 1.0
+    @State private var sensitivity: Double = 0.8
     @State private var deadZone: Double = 0.15
     @State private var stick: String = "left"
     @State private var buttonLeft: String = "a"
@@ -154,15 +154,15 @@ struct AnalogMouseSettingsView: View {
                     }
                 }
                 Button {
-                    sensitivity = 1.0
-                    AppSettings.setDouble("analogMouse_sensitivity_\(selectedSystemID)", value: 1.0)
+            sensitivity = 0.8
+            AppSettings.setDouble("analogMouse_sensitivity_\(selectedSystemID)", value: 0.8)
                 } label: {
                     Image(systemName: "arrow.counterclockwise")
                         .font(.caption)
                 }
                 .buttonStyle(.plain)
-                .foregroundStyle(sensitivity != 1.0 ? AppColors.brandAccent : AppColors.textSecondary(colorScheme).opacity(0.3))
-                .disabled(sensitivity == 1.0)
+        .foregroundStyle(sensitivity != 0.8 ? AppColors.brandAccent : AppColors.textSecondary(colorScheme).opacity(0.3))
+        .disabled(sensitivity == 0.8)
                 .help("Reset to default")
                 .padding(.leading, 4)
             }
@@ -309,13 +309,13 @@ struct AnalogMouseSettingsView: View {
     }
 
     private func loadAllSystems() {
-        systemEnabledDOS = AppSettings.getBool("analogMouse_enabled_dos", defaultValue: false)
-        systemEnabledScummVM = AppSettings.getBool("analogMouse_enabled_scummvm", defaultValue: false)
+        systemEnabledDOS = AppSettings.getBool("analogMouse_enabled_dos", defaultValue: true)
+        systemEnabledScummVM = AppSettings.getBool("analogMouse_enabled_scummvm", defaultValue: true)
         loadSettings(for: selectedSystemID)
     }
 
     private func loadSettings(for sys: String) {
-        sensitivity = AppSettings.getDouble("analogMouse_sensitivity_\(sys)", defaultValue: 1.0)
+        sensitivity = AppSettings.getDouble("analogMouse_sensitivity_\(sys)", defaultValue: 0.8)
         deadZone = AppSettings.getDouble("analogMouse_deadZone_\(sys)", defaultValue: 0.15)
         stick = AppSettings.getString("analogMouse_stick_\(sys)", defaultValue: "left") ?? "left"
         buttonLeft = AppSettings.getString("analogMouse_buttonLeft_\(sys)", defaultValue: "a") ?? "a"

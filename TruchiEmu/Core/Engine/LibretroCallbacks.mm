@@ -19,8 +19,8 @@ int g_turbo_fireButton[MAX_PLAYERS][32] = {0};
 struct retro_keyboard_callback g_keyboard_callback = {NULL};
 BOOL g_keyboard_callback_registered = NO;
 
-BOOL g_analog_as_mouse_enabled[MAX_PLAYERS] = {NO};
-float g_analog_as_mouse_sensitivity[MAX_PLAYERS] = {1.0f};
+BOOL g_analog_as_mouse_enabled[MAX_PLAYERS] = {YES};
+float g_analog_as_mouse_sensitivity[MAX_PLAYERS] = {0.8f};
 float g_analog_as_mouse_deadzone[MAX_PLAYERS] = {0.15f};
 int g_analog_as_mouse_stick_index[MAX_PLAYERS] = {0};
 

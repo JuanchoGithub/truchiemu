@@ -347,6 +347,14 @@ super.init(window: window)
             object: nil
         )
 
+        // Observe R3 guide toggle from controller
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleToggleGuideSidebar),
+            name: .toggleGuideSidebar,
+            object: nil
+        )
+
   // Start cursor auto-hide after initial setup delay
   DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
     let isFullscreen = self?.window?.styleMask.contains(.fullScreen) ?? false
@@ -431,8 +439,15 @@ super.init(window: window)
                 guideSidebarView?.removeFromSuperview()
                 guideSidebarView = nil
             }
-        } else {
-            showToolbarAfterCapture()
+    } else {
+        showToolbarAfterCapture()
+    }
+    }
+
+    @objc private func handleToggleGuideSidebar() {
+        DispatchQueue.main.async { [weak self] in
+            guard let self, self.gameGuideViewModel.hasGuideData else { return }
+            self.toggleGuideSidebar()
         }
     }
     
@@ -1088,8 +1103,6 @@ hostingView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
             GameGuideSidebar(viewModel: gameGuideViewModel, windowController: self)
         ))
         hostingView.translatesAutoresizingMaskIntoConstraints = false
-        hostingView.wantsLayer = true
-        hostingView.layer?.backgroundColor = .clear
         hostingView.consumesMouseEventsInFrame = true
 
 if let toolbar = toolbarView {

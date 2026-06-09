@@ -226,7 +226,7 @@ static inline bool xpc_shm_get_analog_mouse_enabled(XPCSharedMemory *shm, int pl
     return (player >= 0 && player < MAX_PLAYERS) ? (shm->analog_mouse_config[player][0] != 0) : false;
 }
 static inline float xpc_shm_get_analog_mouse_sensitivity(XPCSharedMemory *shm, int player) {
-    return (player >= 0 && player < MAX_PLAYERS) ? (float)shm->analog_mouse_config[player][1] / 100.0f : 1.0f;
+    return (player >= 0 && player < MAX_PLAYERS) ? (float)shm->analog_mouse_config[player][1] / 100.0f : 0.8f;
 }
 static inline float xpc_shm_get_analog_mouse_deadzone(XPCSharedMemory *shm, int player) {
     return (player >= 0 && player < MAX_PLAYERS) ? (float)shm->analog_mouse_config[player][2] / 100.0f : 0.15f;

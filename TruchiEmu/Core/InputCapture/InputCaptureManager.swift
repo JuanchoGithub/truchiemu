@@ -316,4 +316,7 @@ class InputCaptureManager: NSObject, ObservableObject {
 
 extension Notification.Name {
     static let inputCaptureStateChanged = Notification.Name("InputCaptureStateChanged")
+    static let toggleGuideSidebar = Notification.Name("ToggleGuideSidebar")
+    static let guideControllerSelect = Notification.Name("GuideControllerSelect")
+    static let guideControllerBack = Notification.Name("GuideControllerBack")
 }

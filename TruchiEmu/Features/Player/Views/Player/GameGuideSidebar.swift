@@ -135,22 +135,37 @@ struct GameGuideSidebar: View {
     }
 
     private var topicListView: some View {
-        ScrollView {
-            LazyVStack(spacing: 0) {
-                if viewModel.guideSource == .gamefaqs {
-                    ForEach(viewModel.gamefaqsFAQs) { faq in
-                        faqRow(faq)
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(spacing: 0) {
+                    if viewModel.guideSource == .gamefaqs {
+                        ForEach(Array(viewModel.gamefaqsFAQs.enumerated()), id: \.element.id) { index, faq in
+                            faqRow(faq, isSelected: viewModel.controllerSelectedIndex == index)
+                        }
+                    } else {
+                        ForEach(Array(viewModel.currentTopics.enumerated()), id: \.element.id) { index, node in
+                            topicRow(node, isSelected: viewModel.controllerSelectedIndex == index)
+                        }
                     }
-                } else {
-                    ForEach(viewModel.currentTopics) { node in
-                        topicRow(node)
+                }
+            }
+            .onChange(of: viewModel.controllerSelectedIndex) { _, newIndex in
+                if let idx = newIndex {
+                    let scrollID: Int
+                    if viewModel.guideSource == .gamefaqs {
+                        scrollID = idx < viewModel.gamefaqsFAQs.count ? viewModel.gamefaqsFAQs[idx].id : idx
+                    } else {
+                        scrollID = idx < viewModel.currentTopics.count ? viewModel.currentTopics[idx].id : idx
+                    }
+                    withAnimation(.easeInOut(duration: 0.15)) {
+                        proxy.scrollTo(scrollID, anchor: .center)
                     }
                 }
             }
         }
     }
 
-    private func topicRow(_ node: GuideNode) -> some View {
+    private func topicRow(_ node: GuideNode, isSelected: Bool = false) -> some View {
         Button(action: { viewModel.navigateToNode(node) }) {
             HStack(spacing: 8) {
                 if case .topic = node {
@@ -176,9 +191,10 @@ struct GameGuideSidebar: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .background(isSelected ? AppColors.brandAccent.opacity(0.15) : Color.clear)
     }
 
-    private func faqRow(_ faq: GameFAQsFAQEntry) -> some View {
+    private func faqRow(_ faq: GameFAQsFAQEntry, isSelected: Bool = false) -> some View {
         Button(action: { viewModel.loadGameFAQsFAQText(faq) }) {
             HStack(spacing: 8) {
                 Image(systemName: "doc.text")
@@ -198,40 +214,59 @@ struct GameGuideSidebar: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .background(isSelected ? AppColors.brandAccent.opacity(0.15) : Color.clear)
     }
 
     private func questionView(_ question: GuideQuestion) -> some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 12) {
-                ForEach(viewModel.revealedHints(for: question)) { hint in
-                    hintView(hint)
-                }
-
-                if viewModel.hasMoreHints(for: question) {
-                    HStack(spacing: 8) {
-                        Button(action: { viewModel.revealNextHint() }) {
-                            Text(loc.localized("guide.showNextHint"))
-                                .font(.system(size: 12, weight: .medium))
-                                .foregroundColor(AppColors.brandAccent)
-                        }
-                        .buttonStyle(.plain)
-
-                        Button(action: { viewModel.revealAllHints() }) {
-                            Text(loc.localized("guide.revealAll"))
-                                .font(.system(size: 11))
-                                .foregroundColor(.white.opacity(0.4))
-                        }
-                        .buttonStyle(.plain)
+        ScrollViewReader { proxy in
+            ScrollView {
+                VStack(alignment: .leading, spacing: 12) {
+                    ForEach(viewModel.revealedHints(for: question)) { hint in
+                        hintView(hint)
                     }
-                    .padding(.horizontal, 12)
-                } else if !question.hints.isEmpty {
-                    Text(loc.localized("guide.noMoreHints"))
-                        .font(.system(size: 11))
-                        .foregroundColor(.white.opacity(0.3))
-                        .padding(.horizontal, 12)
+
+                    if viewModel.hasMoreHints(for: question) {
+                        HStack(spacing: 8) {
+                            Button(action: { viewModel.revealNextHint() }) {
+                                Text(loc.localized("guide.showNextHint"))
+                                    .font(.system(size: 12, weight: .medium))
+                                    .foregroundColor(AppColors.brandAccent)
+                            }
+                            .buttonStyle(.plain)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .contentShape(Rectangle())
+                            .background(viewModel.controllerSelectedIndex == 0 ? AppColors.brandAccent.opacity(0.15) : Color.clear)
+                            .id(0)
+
+                            Button(action: { viewModel.revealAllHints() }) {
+                                Text(loc.localized("guide.revealAll"))
+                                    .font(.system(size: 11))
+                                    .foregroundColor(.white.opacity(0.4))
+                            }
+                            .buttonStyle(.plain)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .contentShape(Rectangle())
+                            .background(viewModel.controllerSelectedIndex == 1 ? AppColors.brandAccent.opacity(0.15) : Color.clear)
+                            .id(1)
+                        }
+                    } else if !question.hints.isEmpty {
+                        Text(loc.localized("guide.noMoreHints"))
+                            .font(.system(size: 11))
+                            .foregroundColor(.white.opacity(0.3))
+                            .padding(.horizontal, 12)
+                    }
+                }
+                .padding(.vertical, 8)
+            }
+            .onChange(of: viewModel.controllerSelectedIndex) { _, newIndex in
+                if let idx = newIndex {
+                    withAnimation(.easeInOut(duration: 0.15)) {
+                        proxy.scrollTo(idx, anchor: .center)
+                    }
                 }
             }
-            .padding(.vertical, 8)
         }
     }
 

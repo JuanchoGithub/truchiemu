@@ -247,17 +247,24 @@ extension GameGuideService {
         guard let linkPattern = try? NSRegularExpression(pattern: #"<a\s+href="/uhsweb/hints/\#(escapedSlug)/(\d+)(?:\.php)?"[^>]*>(.*?)</a>"#) else {
             return GuideTopic(title: subtitle, nodeID: nodeID, children: [])
         }
-        let linkMatches = linkPattern.matches(in: html, range: fullRange)
 
-        for match in linkMatches {
-            guard let childNodeIDRange = Range(match.range(at: 1), in: html),
-                  let childTitleRange = Range(match.range(at: 2), in: html),
-                  let childNodeID = Int(html[childNodeIDRange]) else { continue }
-            let title = String(html[childTitleRange])
-                .replacingOccurrences(of: "&amp;", with: "&")
-                .trimmingCharacters(in: .whitespacesAndNewlines)
-            if title == "Up One Level" { continue }
-            children.append(.topic(GuideTopic(title: title, nodeID: childNodeID)))
+        // Only parse links within the subject list (<ul class="subject">) to avoid sidebar navigation siblings
+        if let subjectPattern = try? NSRegularExpression(pattern: #"<ul\s+class="subject">\s*(.*?)\s*</ul>"#, options: .dotMatchesLineSeparators),
+           let subjectMatch = subjectPattern.firstMatch(in: html, range: fullRange),
+           let subjectRange = Range(subjectMatch.range(at: 1), in: html) {
+            let subjectHTML = String(html[subjectRange])
+            let subjectFullRange = NSRange(subjectHTML.startIndex..., in: subjectHTML)
+            let linkMatches = linkPattern.matches(in: subjectHTML, range: subjectFullRange)
+            for match in linkMatches {
+                guard let childNodeIDRange = Range(match.range(at: 1), in: subjectHTML),
+                      let childTitleRange = Range(match.range(at: 2), in: subjectHTML),
+                      let childNodeID = Int(subjectHTML[childNodeIDRange]) else { continue }
+                let title = String(subjectHTML[childTitleRange])
+                    .replacingOccurrences(of: "&amp;", with: "&")
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                if title == "Up One Level" { continue }
+                children.append(.topic(GuideTopic(title: title, nodeID: childNodeID)))
+            }
         }
 
         return GuideTopic(title: subtitle, nodeID: nodeID, children: children)

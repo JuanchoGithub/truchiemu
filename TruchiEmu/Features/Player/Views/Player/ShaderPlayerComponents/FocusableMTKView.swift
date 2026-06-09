@@ -291,6 +291,8 @@ class FocusableMTKView: MTKView {
 
         // Update window reference in runner
         runner?.window = self.window
+                runner?.gameWindow = self.window
+                LoggerService.info(category: "FocusableMTKView", "updateRunner: set gameWindow=\(String(describing: self.window))")
 
         // Auto-start input capture for DOS/ScummVM games (unless sidebar is open)
         if let window = self.window, !InputCaptureManager.shared.isCapturing {

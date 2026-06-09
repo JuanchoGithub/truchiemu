@@ -2,7 +2,7 @@ import SwiftUI
 
 extension GameDetailView {
     private var systemAnalogMouseDefault: Bool {
-        AppSettings.getBool("analogMouse_enabled_\(currentROM.systemID ?? "")", defaultValue: false)
+        AppSettings.getBool("analogMouse_enabled_\(currentROM.systemID ?? "")", defaultValue: true)
     }
 
     private var isAnalogMouseCustomized: Bool {
