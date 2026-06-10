@@ -225,14 +225,15 @@ onSystemAction: system != nil ? { sys, action, targetID in
         let count = categoryManager.gamesInCategory(categoryID: category.id, fromROMs: library.roms).count
         let isSelected = selectedFilter.id == LibraryFilter.category(category.id).id
         
-        CategoryRowButton(
-            category: category,
-            count: count,
-            isSelected: isSelected,
-            selectedFilter: $selectedFilter,
-            handleDropOnCategory: handleDropOnCategory,
-            showEditCategorySheet: showEditCategorySheet
-        )
+		CategoryRowButton(
+			category: category,
+			count: count,
+			isSelected: isSelected,
+			selectedFilter: $selectedFilter,
+			handleDropOnCategory: handleDropOnCategory,
+			showEditCategorySheet: showEditCategorySheet,
+			onDeleteCategory: { id in categoryManager.deleteCategory(id: id) }
+		)
     }
     
     private func handleDropOnCategory(items: [NSItemProvider], categoryID: String) -> Bool {

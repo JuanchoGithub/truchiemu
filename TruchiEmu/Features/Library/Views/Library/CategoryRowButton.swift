@@ -6,8 +6,9 @@ struct CategoryRowButton: View {
     let count: Int
     let isSelected: Bool
     @Binding var selectedFilter: LibraryFilter
-    let handleDropOnCategory: ([NSItemProvider], String) -> Bool
-    let showEditCategorySheet: (GameCategory) -> Void
+	let handleDropOnCategory: ([NSItemProvider], String) -> Bool
+	let showEditCategorySheet: (GameCategory) -> Void
+	let onDeleteCategory: (String) -> Void
 
     @State private var isHovered = false
     @State private var isDropTarget = false
@@ -68,9 +69,9 @@ struct CategoryRowButton: View {
             } label: {
                 Label(loc.localized("contextMenu.editCategory"), systemImage: "pencil")
             }
-            Button(role: .destructive) {
-                // Deletion handled via tag-based List selection
-            } label: {
+		Button(role: .destructive) {
+				onDeleteCategory(category.id)
+			} label: {
                 Label(loc.localized("contextMenu.deleteCategory"), systemImage: "trash")
             }
         }
