@@ -27,7 +27,7 @@ enum AccentColorTheme: String, CaseIterable, Codable {
         } else if let theme = AccentColorTheme(rawValue: rawValue) {
             self = theme
         } else {
-            self = .samus
+            self = .megaMan
         }
     }
 

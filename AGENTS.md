@@ -221,7 +221,7 @@ The following are excluded from the source build phase:
 
 | Key | Type | Default | Purpose |
 |---|---|---|---|
-| `accentTheme` | `AccentColorTheme` raw value | `.samus` | Current theme |
+| `accentTheme` | `AccentColorTheme` raw value | `.megaMan` | Current theme |
 | `customAccentColor` | `Data` (NSKeyedArchiver) | Samus teal | Custom accent when theme is `.custom` |
 | `appearanceMode` | `AppearanceMode` raw value | `.automatic` | Light/Dark/Auto |
 | `toolbarAccent` | `Bool` | `true` | Accent-colored toolbar icons |

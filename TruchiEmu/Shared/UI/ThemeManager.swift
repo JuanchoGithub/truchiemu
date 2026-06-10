@@ -71,7 +71,7 @@ import AppKit
     }
 
     init() {
-        self.currentTheme = AppSettings.get("accentTheme", type: AccentColorTheme.self) ?? .samus
+        self.currentTheme = AppSettings.get("accentTheme", type: AccentColorTheme.self) ?? .megaMan
         self.toolbarAccentEnabled = AppSettings.getBool("toolbarAccent", defaultValue: true)
         self.tintedSurfacesEnabled = AppSettings.getBool("tintedSurfaces", defaultValue: true)
         self.appearanceMode = AppSettings.get("appearanceMode", type: AppearanceMode.self) ?? .automatic
@@ -80,7 +80,7 @@ import AppKit
            let nsColor = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSColor.self, from: data) {
             self.customAccentColor = Color(nsColor)
         } else {
-            self.customAccentColor = Color(.sRGB, red: 0.031, green: 0.569, blue: 0.698)
+            self.customAccentColor = Color(.sRGB, red: 0.012, green: 0.412, blue: 0.631, opacity: 1.0)
         }
 
         AppColors.brandAccentLight = accentLightMode
@@ -95,8 +95,11 @@ import AppKit
 
     }
     
+    private var appearanceObservation: Any?
+
     func applySavedAppearance() {
         applyNSAppAppearance(appearanceMode)
+        startObservingSystemAppearance()
     }
 
     func applyTheme(_ theme: AccentColorTheme, customColor: Color? = nil) {
@@ -138,6 +141,7 @@ import AppKit
         }
         appearanceMode = mode
         applyNSAppAppearance(mode)
+        startObservingSystemAppearance()
     }
 
     func applyNSAppAppearance(_ mode: AppearanceMode) {
@@ -147,7 +151,28 @@ import AppKit
         case .dark:
             NSApp.appearance = NSAppearance(named: .darkAqua)
         case .automatic:
-            NSApp.appearance = nil
+            NSApp.appearance = resolvedSystemAppearance()
+        }
+    }
+
+    private static func currentSystemIsDark() -> Bool {
+        NSApp.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+    }
+
+    private func resolvedSystemAppearance() -> NSAppearance? {
+        Self.currentSystemIsDark()
+            ? NSAppearance(named: .darkAqua)
+            : NSAppearance(named: .aqua)
+    }
+
+    private func startObservingSystemAppearance() {
+        appearanceObservation = nil
+        guard appearanceMode == .automatic else { return }
+        appearanceObservation = NSApp.observe(\.effectiveAppearance, options: [.new]) { [weak self] _, _ in
+            MainActor.assumeIsolated {
+                guard let self, self.appearanceMode == .automatic else { return }
+                NSApp.appearance = self.resolvedSystemAppearance()
+            }
         }
     }
 

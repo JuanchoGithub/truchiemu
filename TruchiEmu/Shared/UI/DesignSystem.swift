@@ -56,20 +56,20 @@ struct AppColors {
     }
 
     /// Stored light-mode accent (set by ThemeManager)
-    static var brandAccentLight: Color = Color(.sRGB, red: 0.031, green: 0.569, blue: 0.698, opacity: 1.0)
-    static var brandAccentDimmed: Color = Color(.sRGB, red: 0.024, green: 0.478, blue: 0.588, opacity: 1.0)
-    static var brandAccentDark: Color = Color(.sRGB, red: 0.016, green: 0.333, blue: 0.408, opacity: 1.0)
+    static var brandAccentLight: Color = Color(.sRGB, red: 0.012, green: 0.412, blue: 0.631, opacity: 1.0)
+    static var brandAccentDimmed: Color = Color(.sRGB, red: 0.010, green: 0.345, blue: 0.529, opacity: 1.0)
+    static var brandAccentDark: Color = Color(.sRGB, red: 0.008, green: 0.271, blue: 0.416, opacity: 1.0)
     static var brandAccentSecondary: Color {
         isDarkMode ? brandAccentSecondaryDarkMode : brandAccentSecondaryLight
     }
 
-    static var brandAccentSecondaryLight: Color = Color(.sRGB, red: 0.020, green: 0.588, blue: 0.412, opacity: 1.0)
+    static var brandAccentSecondaryLight: Color = Color(.sRGB, red: 0.039, green: 0.702, blue: 0.890, opacity: 1.0)
 
     // Dark-mode variants (set by ThemeManager for themes that differ between light/dark)
-    static var brandAccentDarkMode: Color = Color(.sRGB, red: 0.031, green: 0.569, blue: 0.698, opacity: 1.0)
-    static var brandAccentDimmedDarkMode: Color = Color(.sRGB, red: 0.024, green: 0.478, blue: 0.588, opacity: 1.0)
-    static var brandAccentDarkDarkMode: Color = Color(.sRGB, red: 0.016, green: 0.333, blue: 0.408, opacity: 1.0)
-    static var brandAccentSecondaryDarkMode: Color = Color(.sRGB, red: 0.020, green: 0.588, blue: 0.412, opacity: 1.0)
+    static var brandAccentDarkMode: Color = Color(.sRGB, red: 0.150, green: 0.650, blue: 0.850, opacity: 1.0)
+    static var brandAccentDimmedDarkMode: Color = Color(.sRGB, red: 0.126, green: 0.546, blue: 0.714, opacity: 1.0)
+    static var brandAccentDarkDarkMode: Color = Color(.sRGB, red: 0.105, green: 0.455, blue: 0.595, opacity: 1.0)
+    static var brandAccentSecondaryDarkMode: Color = Color(.sRGB, red: 0.039, green: 0.702, blue: 0.890, opacity: 1.0)
 
     private static var isDarkMode: Bool {
         NSApp.effectiveAppearance.name == .darkAqua
