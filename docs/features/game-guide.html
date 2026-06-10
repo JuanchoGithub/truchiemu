@@ -1,0 +1,202 @@
+---
+layout: default
+title: Game Guide - TruchiEmu Documentation
+---
+
+<div class="feature-docs">
+<h1>Game Guide</h1>
+
+<section id="overview">
+<h2>Overview</h2>
+<p>Stuck on a puzzle? TruchiEmu's built-in Game Guide sidebar brings hints and walkthroughs right into your game window, so you never have to alt-tab away from the action. The guide automatically appears for adventure and point-and-click games, pulling content from two trusted sources.</p>
+
+<h3>What You Get</h3>
+<ul class="feature-list">
+<li><strong>Automatic Detection:</strong> Adventure and point-and-click games are automatically identified by genre metadata or system (ScummVM games always qualify)</li>
+<li><strong>Progressive Hints (UHS):</strong> Spoiler-free hints that reveal one at a time &mdash; get just enough help without ruining the puzzle</li>
+<li><strong>Full Walkthroughs (GameFAQs):</strong> Complete text walkthroughs as a fallback when UHS hints aren't available for your game</li>
+<li><strong>Gamepad Navigation:</strong> Browse the guide with your controller &mdash; analog sticks scroll, A/B buttons navigate, and the same R3/L3 toggle that opens the sidebar closes it</li>
+<li><strong>387+ Game Mappings:</strong> Pre-matched UHS guides for classic adventures including Monkey Island, Broken Sword, Grim Fandango, Day of the Tentacle, and hundreds more</li>
+</ul>
+</section>
+
+<section id="how-it-works">
+<h2>How It Works</h2>
+
+<h3>Opening the Guide</h3>
+<p>When you launch an adventure game, the guide button appears in the game toolbar. You can open the guide sidebar in three ways:</p>
+<ul class="feature-list">
+<li><strong>Toolbar Button:</strong> Click the guide icon in the game window toolbar</li>
+<li><strong>Keyboard Shortcut:</strong> Press <code>Cmd+J</code> to toggle the sidebar</li>
+<li><strong>Controller Toggle:</strong> Press R3 or L3 (the non-primary analog stick button) to open/close the sidebar</li>
+</ul>
+
+<h3>Guide Sources</h3>
+<p>TruchiEmu uses two guide sources, tried in order:</p>
+
+<div class="feature-grid">
+<div class="feature-card">
+<h4>UHS Hints <span class="spec-tag">Primary</span></h4>
+<p>The <a href="https://www.uhs-hints.com" target="_blank">Universal Hint System</a> provides progressive, spoiler-free hints. Questions are organized into chapters, and each question reveals hints one at a time &mdash; from a gentle nudge to the full answer.</p>
+</div>
+<div class="feature-card">
+<h4>GameFAQs Walkthroughs <span class="spec-tag">Fallback</span></h4>
+<p>When no UHS guide is available, TruchiEmu searches <a href="https://gamefaqs.gamespot.com" target="_blank">GameFAQs</a> for text walkthroughs. Browse the available FAQ list and read full walkthroughs in-game.</p>
+</div>
+</div>
+
+<h3>Game Matching</h3>
+<p>TruchiEmu uses multiple strategies to find the right guide for your game:</p>
+<ul class="feature-list">
+<li><strong>ScummVM Game ID:</strong> For ScummVM games, the internal game ID (e.g., <code>tentacle</code>, <code>monkey</code>, <code>sword1</code>) is matched against a curated database of 387+ UHS guide mappings</li>
+<li><strong>Title Matching:</strong> For DOS and other systems, the game title is fuzzy-matched against known UHS guide titles, including alternate titles and common name variations</li>
+<li><strong>Genre Detection:</strong> Games with "Adventure" or "Point & Click" in their genre metadata automatically get the GameFAQs fallback even without a UHS mapping</li>
+</ul>
+</section>
+
+<section id="using-the-guide">
+<h2>Using the Guide</h2>
+
+<h3>Progressive Hints (UHS)</h3>
+<ol class="setup-steps">
+<li>
+<strong>Browse Chapters</strong>
+<p>When you open the guide, you'll see a list of chapters and topics. Navigate with your mouse, keyboard, or controller.</p>
+</li>
+<li>
+<strong>Select a Question</strong>
+<p>Tap a question to see its hints. Questions are marked with a question mark icon; topics with a folder icon.</p>
+</li>
+<li>
+<strong>Reveal Hints One at a Time</strong>
+<p>Click <strong>"Show Next Hint"</strong> to reveal the next hint. Each hint gives you progressively more help. Use <strong>"Reveal All"</strong> if you want the full answer immediately.</p>
+</li>
+<li>
+<strong>Navigate Back</strong>
+<p>Use the back button or <code>Esc</code> to return to the chapter list. The breadcrumb trail keeps track of where you are.</p>
+</li>
+</ol>
+
+<h3>GameFAQs Walkthroughs</h3>
+<ol class="setup-steps">
+<li>
+<strong>Browse FAQ List</strong>
+<p>When UHS hints aren't available, you'll see a list of GameFAQs walkthroughs for your game.</p>
+</li>
+<li>
+<strong>Read a Walkthrough</strong>
+<p>Select a FAQ to read its full text content. The text is displayed in a monospaced font with text selection enabled for copying.</p>
+</li>
+</ol>
+
+<h3>Controller Navigation</h3>
+<p>When the guide sidebar is open, your controller input is automatically redirected:</p>
+<ul class="feature-list">
+<li><strong>Analog Sticks:</strong> Move the cursor to navigate the sidebar. The primary stick moves at full speed, the secondary at reduced speed</li>
+<li><strong>A Button:</strong> Acts as left click (select items, reveal hints)</li>
+<li><strong>B Button:</strong> Acts as right click</li>
+<li><strong>R3/L3:</strong> Toggle the sidebar open/closed</li>
+<li><strong>Scrolling:</strong> Move the stick past the dead zone to scroll through the guide list</li>
+</ul>
+
+<div class="info-box">
+<p><strong>Input Capture:</strong> When the guide sidebar opens for DOS or ScummVM games, keyboard and mouse capture is automatically released so you can interact with the sidebar. When you close the sidebar, capture resumes automatically.</p>
+</div>
+</section>
+
+<section id="supported-games">
+<h2>Supported Games</h2>
+<p>The Game Guide feature works with any adventure or point-and-click game in your library. Over 387 classic adventures have pre-matched UHS hint guides, including:</p>
+
+<table class="systems-table">
+<thead>
+<tr>
+<th>Series</th>
+<th>Games with UHS Guides</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Monkey Island</td>
+<td>The Secret of Monkey Island, LeChuck's Revenge, Curse, Escape, Tales</td>
+</tr>
+<tr>
+<td>Broken Sword</td>
+<td>Shadow of the Templars, The Smoking Mirror, The Sleeping Dragon</td>
+</tr>
+<tr>
+<td>King's Quest</td>
+<td>Quest for the Crown through The Mask of Eternity</td>
+</tr>
+<tr>
+<td>Space Quest</td>
+<td>The Sarien Encounter through The Pitch</td>
+</tr>
+<tr>
+<td>Quest for Glory</td>
+<td>So You Want to Be a Hero through Dragon Fire</td>
+</tr>
+<tr>
+<td>Sam &amp; Max</td>
+<td>Hit the Road</td>
+</tr>
+<tr>
+<td>Day of the Tentacle</td>
+<td>Full UHS guide</td>
+</tr>
+<tr>
+<td>Grim Fandango</td>
+<td>Full UHS guide</td>
+</tr>
+<tr>
+<td>Full Throttle</td>
+<td>Full UHS guide</td>
+</tr>
+<tr>
+<td>The Longest Journey</td>
+<td>Full UHS guide</td>
+</tr>
+</tbody>
+</table>
+
+<p>Games without a UHS mapping will automatically search GameFAQs for available walkthroughs.</p>
+</section>
+
+<section id="troubleshooting">
+<h2>Troubleshooting</h2>
+
+<div class="troubleshooting-grid">
+<div class="troubleshooting-item">
+<h3>Guide Button Not Appearing</h3>
+<p><strong>Symptom:</strong> The guide toolbar button is missing for a game.</p>
+<p><strong>Solution:</strong> The guide only appears for adventure and point-and-click games. Ensure the game's genre metadata contains "Adventure" or "Point & Click". ScummVM games always show the guide button. For DOS games, try refreshing metadata to pull the correct genre.</p>
+</div>
+<div class="troubleshooting-item">
+<h3>Wrong Game Matched</h3>
+<p><strong>Symptom:</strong> The guide shows hints for a different game.</p>
+<p><strong>Solution:</strong> Title matching uses fuzzy logic and may occasionally match the wrong entry. This is most common with games that share similar names. The UHS fallback button lets you search GameFAQs for the correct guide.</p>
+</div>
+<div class="troubleshooting-item">
+<h3>UHS Hints Not Loading</h3>
+<p><strong>Symptom:</strong> The guide shows a loading spinner but never finishes.</p>
+<p><strong>Solution:</strong> UHS hints require an internet connection for the first load. Check your connection and try again. Previously loaded guides are cached locally for offline access. If UHS fails, use the "Search GameFAQs" button as a fallback.</p>
+</div>
+</div>
+</section>
+
+<section id="references">
+<h2>Related Features</h2>
+
+<div class="related-services">
+<div class="service-card">
+<h3><a href="{{ '/features/analog-mouse.html' | relative_url }}">Analog Mouse Support</a></h3>
+<p>Use your gamepad's analog stick as a mouse in DOS and ScummVM games &mdash; the perfect companion for point-and-click adventures.</p>
+</div>
+
+<div class="service-card">
+<h3><a href="{{ '/features/cheats.html' | relative_url }}">Cheat System</a></h3>
+<p>Combine the game guide with cheats for a more relaxed adventure experience.</p>
+</div>
+</div>
+</section>
+</div>

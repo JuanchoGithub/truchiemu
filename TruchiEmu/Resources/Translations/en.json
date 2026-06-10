@@ -1678,6 +1678,7 @@
     "help.shortcut.undoLoadState": "Undo Load State",
     "help.shortcut.selectSlot": "Select Save Slot",
     "help.shortcut.toggleInputCapture": "Toggle Input Capture",
+"help.shortcut.toggleGameGuide": "Toggle Game Guide",
     "help.shortcut.toggleTrainingMode": "Toggle Training Mode",
     "help.shortcut.trainingReset": "Training Instant Reset",
     "settings.hotkeys": "Hotkeys",

@@ -1670,6 +1670,7 @@
     "help.shortcut.undoLoadState": "Deshacer Carga de Estado",
     "help.shortcut.selectSlot": "Seleccionar Ranura de Guardado",
     "help.shortcut.toggleInputCapture": "Alternar Captura de Entrada",
+"help.shortcut.toggleGameGuide": "Alternar Guía de Juegos",
     "help.shortcut.toggleTrainingMode": "Alternar Modo Entrenamiento",
     "help.shortcut.trainingReset": "Reinicio Instantáneo de Entrenamiento",
     "settings.hotkeys": "Atajos",

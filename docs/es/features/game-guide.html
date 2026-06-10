@@ -1,0 +1,202 @@
+---
+layout: default
+title: Guía de Juegos - Documentación de TruchiEmu
+---
+
+<div class="feature-docs">
+<h1>Guía de Juegos</h1>
+
+<section id="overview">
+<h2>Descripción General</h2>
+<p>¿Atascado en un acertijo? La barra lateral de Guía de Juegos integrada de TruchiEmu trae pistas y soluciones directamente a tu ventana de juego, para que nunca tengas que cambiar de aplicación. La guía aparece automáticamente para juegos de aventura y point-and-click, obteniendo contenido de dos fuentes confiables.</p>
+
+<h3>Qué Obtienes</h3>
+<ul class="feature-list">
+<li><strong>Detección Automática:</strong> Los juegos de aventura y point-and-click se identifican automáticamente por su metadato de género o sistema (los juegos de ScummVM siempre califican)</li>
+<li><strong>Pistas Progresivas (UHS):</strong> Pistas sin spoilers que se revelan una a la vez &mdash; obtén solo la ayuda necesaria sin arruinar el acertijo</li>
+<li><strong>Soluciones Completas (GameFAQs):</strong> Soluciones de texto completas como alternativa cuando no hay pistas UHS disponibles para tu juego</li>
+<li><strong>Navegación con Mando:</strong> Navega la guía con tu control &mdash; los joysticks desplazan, los botones A/B navegan, y el mismo botón R3/L3 que abre la barra lateral la cierra</li>
+<li><strong>387+ Asignaciones de Juegos:</strong> Guías UHS pre-asignadas para aventuras clásicas incluyendo Monkey Island, Broken Sword, Grim Fandango, Day of the Tentacle, y cientos más</li>
+</ul>
+</section>
+
+<section id="how-it-works">
+<h2>Cómo Funciona</h2>
+
+<h3>Abrir la Guía</h3>
+<p>Cuando inicias un juego de aventura, el botón de guía aparece en la barra de herramientas. Puedes abrir la barra lateral de la guía de tres formas:</p>
+<ul class="feature-list">
+<li><strong>Botón de la Barra de Herramientas:</strong> Haz clic en el ícono de guía en la barra de herramientas de la ventana de juego</li>
+<li><strong>Atajo de Teclado:</strong> Presiona <code>Cmd+J</code> para alternar la barra lateral</li>
+<li><strong>Alternar con Mando:</strong> Presiona R3 o L3 (el botón del joystick no primario) para abrir/cerrar la barra lateral</li>
+</ul>
+
+<h3>Fuentes de la Guía</h3>
+<p>TruchiEmu usa dos fuentes de guías, probadas en orden:</p>
+
+<div class="feature-grid">
+<div class="feature-card">
+<h4>Pistas UHS <span class="spec-tag">Principal</span></h4>
+<p>El <a href="https://www.uhs-hints.com" target="_blank">Universal Hint System</a> proporciona pistas progresivas sin spoilers. Las preguntas están organizadas en capítulos, y cada pregunta revela pistas una a la vez &mdash; desde una suave sugerencia hasta la respuesta completa.</p>
+</div>
+<div class="feature-card">
+<h4>Soluciones de GameFAQs <span class="spec-tag">Alternativa</span></h4>
+<p>Cuando no hay guía UHS disponible, TruchiEmu busca soluciones de texto en <a href="https://gamefaqs.gamespot.com" target="_blank">GameFAQs</a>. Navega la lista de FAQs disponibles y lee soluciones completas dentro del juego.</p>
+</div>
+</div>
+
+<h3>Asignación de Juegos</h3>
+<p>TruchiEmu usa múltiples estrategias para encontrar la guía correcta para tu juego:</p>
+<ul class="feature-list">
+<li><strong>ID de Juego ScummVM:</strong> Para juegos de ScummVM, el ID interno del juego (ej. <code>tentacle</code>, <code>monkey</code>, <code>sword1</code>) se compara con una base de datos curada de más de 387 asignaciones de guías UHS</li>
+<li><strong>Comparación de Título:</strong> Para DOS y otros sistemas, el título del juego se compara de forma difusa contra los títulos de guías UHS conocidos, incluyendo títulos alternativos y variaciones comunes de nombre</li>
+<li><strong>Detección de Género:</strong> Los juegos con "Adventure" o "Point & Click" en sus metadatos de género obtienen automáticamente la alternativa de GameFAQs incluso sin asignación UHS</li>
+</ul>
+</section>
+
+<section id="using-the-guide">
+<h2>Usando la Guía</h2>
+
+<h3>Pistas Progresivas (UHS)</h3>
+<ol class="setup-steps">
+<li>
+<strong>Navega los Capítulos</strong>
+<p>Cuando abras la guía, verás una lista de capítulos y temas. Navega con tu ratón, teclado o mando.</p>
+</li>
+<li>
+<strong>Selecciona una Pregunta</strong>
+<p>Toca una pregunta para ver sus pistas. Las preguntas están marcadas con un ícono de interrogación; los temas con un ícono de carpeta.</p>
+</li>
+<li>
+<strong>Revela Pistas Una a Una</strong>
+<p>Haz clic en <strong>"Mostrar siguiente pista"</strong> para revelar la siguiente pista. Cada pista te da progresivamente más ayuda. Usa <strong>"Revelar todo"</strong> si quieres la respuesta completa inmediatamente.</p>
+</li>
+<li>
+<strong>Navega Hacia Atrás</strong>
+<p>Usa el botón de retroceso o <code>Esc</code> para volver a la lista de capítulos. El rastreo de navegación mantiene registro de dónde estás.</p>
+</li>
+</ol>
+
+<h3>Soluciones de GameFAQs</h3>
+<ol class="setup-steps">
+<li>
+<strong>Navega la Lista de FAQs</strong>
+<p>Cuando no hay pistas UHS disponibles, verás una lista de soluciones de GameFAQs para tu juego.</p>
+</li>
+<li>
+<strong>Lee una Solución</strong>
+<p>Selecciona un FAQ para leer su contenido de texto completo. El texto se muestra en fuente monoespaciada con selección de texto habilitada para copiar.</p>
+</li>
+</ol>
+
+<h3>Navegación con Mando</h3>
+<p>Cuando la barra lateral de la guía está abierta, la entrada de tu control se redirige automáticamente:</p>
+<ul class="feature-list">
+<li><strong>Joysticks Analógicos:</strong> Mueve el cursor para navegar la barra lateral. El joystick primario se mueve a velocidad completa, el secundario a velocidad reducida</li>
+<li><strong>Botón A:</strong> Funciona como clic izquierdo (seleccionar elementos, revelar pistas)</li>
+<li><strong>Botón B:</strong> Funciona como clic derecho</li>
+<li><strong>R3/L3:</strong> Alternar la barra lateral abierta/cerrada</li>
+<li><strong>Desplazamiento:</strong> Mueve el joystick más allá de la zona muerta para desplazarte por la lista de la guía</li>
+</ul>
+
+<div class="info-box">
+<p><strong>Captura de Entrada:</strong> Cuando la barra lateral de la guía se abre para juegos de DOS o ScummVM, la captura de teclado y ratón se libera automáticamente para que puedas interactuar con la barra lateral. Al cerrar la barra lateral, la captura se reanuda automáticamente.</p>
+</div>
+</section>
+
+<section id="supported-games">
+<h2>Juegos Compatibles</h2>
+<p>La función de Guía de Juegos funciona con cualquier juego de aventura o point-and-click en tu biblioteca. Más de 387 aventuras clásicas tienen guías de pistas UHS pre-asignadas, incluyendo:</p>
+
+<table class="systems-table">
+<thead>
+<tr>
+<th>Serie</th>
+<th>Juegos con Guías UHS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Monkey Island</td>
+<td>The Secret of Monkey Island, LeChuck's Revenge, Curse, Escape, Tales</td>
+</tr>
+<tr>
+<td>Broken Sword</td>
+<td>Shadow of the Templars, The Smoking Mirror, The Sleeping Dragon</td>
+</tr>
+<tr>
+<td>King's Quest</td>
+<td>Quest for the Crown hasta The Mask of Eternity</td>
+</tr>
+<tr>
+<td>Space Quest</td>
+<td>The Sarien Encounter hasta The Pitch</td>
+</tr>
+<tr>
+<td>Quest for Glory</td>
+<td>So You Want to Be a Hero hasta Dragon Fire</td>
+</tr>
+<tr>
+<td>Sam &amp; Max</td>
+<td>Hit the Road</td>
+</tr>
+<tr>
+<td>Day of the Tentacle</td>
+<td>Guía UHS completa</td>
+</tr>
+<tr>
+<td>Grim Fandango</td>
+<td>Guía UHS completa</td>
+</tr>
+<tr>
+<td>Full Throttle</td>
+<td>Guía UHS completa</td>
+</tr>
+<tr>
+<td>The Longest Journey</td>
+<td>Guía UHS completa</td>
+</tr>
+</tbody>
+</table>
+
+<p>Los juegos sin asignación UHS buscarán automáticamente en GameFAQs las soluciones disponibles.</p>
+</section>
+
+<section id="troubleshooting">
+<h2>Solución de Problemas</h2>
+
+<div class="troubleshooting-grid">
+<div class="troubleshooting-item">
+<h3>Botón de Guía No Aparece</h3>
+<p><strong>Síntoma:</strong> El botón de guía falta en la barra de herramientas para un juego.</p>
+<p><strong>Solución:</strong> La guía solo aparece para juegos de aventura y point-and-click. Asegúrate de que los metadatos de género del juego contengan "Adventure" o "Point & Click". Los juegos de ScummVM siempre muestran el botón de guía. Para juegos de DOS, intenta actualizar los metadatos para obtener el género correcto.</p>
+</div>
+<div class="troubleshooting-item">
+<h3>Juego Incorrecto Asignado</h3>
+<p><strong>Síntoma:</strong> La guía muestra pistas para un juego diferente.</p>
+<p><strong>Solución:</strong> La comparación de títulos usa lógica difusa y ocasionalmente puede asignar la entrada incorrecta. Esto es más común con juegos que comparten nombres similares. El botón de alternativa UHS te permite buscar en GameFAQs la guía correcta.</p>
+</div>
+<div class="troubleshooting-item">
+<h3>Pistas UHS No Cargan</h3>
+<p><strong>Síntoma:</strong> La guía muestra un indicador de carga pero nunca termina.</p>
+<p><strong>Solución:</strong> Las pistas UHS requieren conexión a internet para la primera carga. Verifica tu conexión e intenta de nuevo. Las guías cargadas previamente se almacenan en caché localmente para acceso sin conexión. Si UHS falla, usa el botón "Buscar en GameFAQs" como alternativa.</p>
+</div>
+</div>
+</section>
+
+<section id="references">
+<h2>Funciones Relacionadas</h2>
+
+<div class="related-services">
+<div class="service-card">
+<h3><a href="{{ '/es/features/analog-mouse.html' | relative_url }}">Soporte de Ratón Analógico</a></h3>
+<p>Usa el joystick de tu mando como ratón en juegos de DOS y ScummVM &mdash; el compañero perfecto para aventuras point-and-click.</p>
+</div>
+
+<div class="service-card">
+<h3><a href="{{ '/es/features/cheats.html' | relative_url }}">Sistema de Trucos</a></h3>
+<p>Combina la guía de juegos con trucos para una experiencia de aventura más relajada.</p>
+</div>
+</div>
+</section>
+</div>

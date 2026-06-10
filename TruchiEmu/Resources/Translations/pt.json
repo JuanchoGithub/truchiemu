@@ -1676,6 +1676,7 @@
     "help.shortcut.undoLoadState": "Desfazer Carregamento de Estado",
     "help.shortcut.selectSlot": "Selecionar Slot de Save",
     "help.shortcut.toggleInputCapture": "Alternar Captura de Entrada",
+"help.shortcut.toggleGameGuide": "Alternar Guia de Jogos",
     "help.shortcut.toggleTrainingMode": "Alternar Modo de Treinamento",
     "help.shortcut.trainingReset": "Reinício Instantâneo do Treinamento",
     "settings.hotkeys": "Atalhos",
