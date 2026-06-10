@@ -527,6 +527,7 @@ private struct ThemePreviewCard: View {
     let accentSecondary: Color
     let mode: AppearanceMode
     let tinted: Bool
+    @Environment(\.colorScheme) private var colorScheme
 
     private var isDarkPreview: Bool {
         switch mode {
@@ -585,7 +586,7 @@ private struct ThemePreviewCard: View {
                 VStack(spacing: AppSpacing.sm) {
                     RoundedRectangle(cornerRadius: AppRadius.sm)
                         .fill(accentSecondary)
-                        .overlay(Text("Primary").foregroundStyle(.white).font(.caption.weight(.medium)))
+                        .overlay(Text("Primary").foregroundStyle(AppColors.textOnAccent(for: accentSecondary, colorScheme: colorScheme)).font(.caption.weight(.medium)))
                         .frame(height: 28)
 
                     RoundedRectangle(cornerRadius: AppRadius.sm)

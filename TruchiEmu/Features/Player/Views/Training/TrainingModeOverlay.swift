@@ -45,9 +45,9 @@ struct TrainingModeOverlay: View {
                         .fontWeight(.semibold)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
-                        .background(AppColors.brandAccent.opacity(0.8))
-                        .cornerRadius(6)
-                        .foregroundColor(.white)
+.background(AppColors.brandAccent.opacity(0.8))
+                    .cornerRadius(6)
+                    .foregroundColor(AppColors.textOnAccent(colorScheme))
                 }
                 .buttonStyle(.plain)
             }
@@ -60,9 +60,9 @@ struct TrainingModeOverlay: View {
                         .fontWeight(.semibold)
                         .padding(.horizontal, 10)
                         .padding(.vertical, 4)
-                        .background(viewModel.isTrainingEnabled ? Color.red.opacity(0.8) : AppColors.brandAccent.opacity(0.8))
-                        .cornerRadius(6)
-                        .foregroundColor(.white)
+.background(viewModel.isTrainingEnabled ? Color.red.opacity(0.8) : AppColors.brandAccent.opacity(0.8))
+                    .cornerRadius(6)
+                    .foregroundColor(viewModel.isTrainingEnabled ? .white : AppColors.textOnAccent(colorScheme))
                 }
                 .buttonStyle(.plain)
 
@@ -1271,7 +1271,7 @@ struct TrainingMovesTab: View {
                 } label: {
                     Text(loc.localized("movelist.saveAndSelect"))
                         .font(.system(size: 9, weight: .semibold))
-                        .foregroundColor(.white)
+                        .foregroundColor(AppColors.textOnAccent(colorScheme))
                         .padding(.horizontal, 8)
                         .padding(.vertical, 3)
                         .background(

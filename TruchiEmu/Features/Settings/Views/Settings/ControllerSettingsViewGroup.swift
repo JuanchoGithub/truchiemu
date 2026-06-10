@@ -72,7 +72,7 @@ private struct PlayerSlotToggle: View {
             Text("P\(slot)")
                 .font(.caption)
                 .fontWeight(isAssigned ? .bold : .regular)
-                .foregroundColor(isAssigned ? .white : AppColors.textTertiary(colorScheme))
+                .foregroundColor(isAssigned ? AppColors.textOnAccent(colorScheme) : AppColors.textTertiary(colorScheme))
                 .frame(width: 28, height: 22)
                 .background(isAssigned ? AppColors.brandAccent : AppColors.cardBackgroundSubtle(colorScheme))
                 .cornerRadius(4)

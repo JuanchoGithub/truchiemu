@@ -132,25 +132,46 @@ struct AppColors {
     }
 
     static func textSecondary(_ colorScheme: ColorScheme) -> Color {
-        tintedText(base: colorScheme == .dark ? .oklch(0.68, 0.02, 55) : .oklch(0.42, 0.02, 55), colorScheme: colorScheme)
+        tintedText(base: colorScheme == .dark ? .oklch(0.75, 0.02, 55) : .oklch(0.42, 0.02, 55), colorScheme: colorScheme)
     }
 
     static func textTertiary(_ colorScheme: ColorScheme) -> Color {
-        tintedText(base: colorScheme == .dark ? .oklch(0.60, 0.02, 55) : .oklch(0.50, 0.02, 55), colorScheme: colorScheme)
+        tintedText(base: colorScheme == .dark ? .oklch(0.68, 0.02, 55) : .oklch(0.50, 0.02, 55), colorScheme: colorScheme)
     }
 
     static func textMuted(_ colorScheme: ColorScheme) -> Color {
-        tintedText(base: colorScheme == .dark ? .oklch(0.50, 0.01, 55) : .oklch(0.48, 0.01, 55), colorScheme: colorScheme)
+        tintedText(base: colorScheme == .dark ? .oklch(0.62, 0.01, 55) : .oklch(0.48, 0.01, 55), colorScheme: colorScheme)
     }
 
     static func textOnAccent(_ colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark
-        ? .oklch(0.97, 0.005, 55)
-        : .oklch(0.98, 0.005, 55)
+        let accent = accentForScheme(colorScheme)
+        return textColorOnBackground(accent, colorScheme: colorScheme)
+    }
+
+    static func textOnAccent(for accent: Color, colorScheme: ColorScheme) -> Color {
+        return textColorOnBackground(accent, colorScheme: colorScheme)
+    }
+
+    private static func textColorOnBackground(_ bg: Color, colorScheme: ColorScheme) -> Color {
+        guard let nsColor = NSColor(bg).usingColorSpace(.sRGB) else {
+            return colorScheme == .dark
+                ? .oklch(0.97, 0.005, 55)
+                : .oklch(0.98, 0.005, 55)
+        }
+        let r = nsColor.redComponent
+        let g = nsColor.greenComponent
+        let b = nsColor.blueComponent
+        let linR = r <= 0.04045 ? r / 12.92 : pow((r + 0.055) / 1.055, 2.4)
+        let linG = g <= 0.04045 ? g / 12.92 : pow((g + 0.055) / 1.055, 2.4)
+        let linB = b <= 0.04045 ? b / 12.92 : pow((b + 0.055) / 1.055, 2.4)
+        let luminance = 0.2126 * linR + 0.7152 * linG + 0.0722 * linB
+        return luminance > 0.35
+            ? .oklch(0.18, 0.02, 55)
+            : (colorScheme == .dark ? .oklch(0.97, 0.005, 55) : .oklch(0.98, 0.005, 55))
     }
 
     static func textSecondaryNeutral(_ colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark ? .oklch(0.68, 0.00, 55) : .oklch(0.42, 0.00, 55)
+        colorScheme == .dark ? .oklch(0.75, 0.00, 55) : .oklch(0.42, 0.00, 55)
     }
 
     static func textPrimaryNeutral(_ colorScheme: ColorScheme) -> Color {
@@ -547,7 +568,7 @@ enum AppPillStyle {
     func foregroundColor(_ colorScheme: ColorScheme) -> Color {
         switch self {
         case .primary:
-            return .white
+            return AppColors.textOnAccent(colorScheme)
         case .secondary:
             return AppColors.textSecondary(colorScheme)
         case .success:
@@ -848,7 +869,7 @@ struct AppPrimaryButtonStyle: ButtonStyle {
     
     func makeBody(configuration: Configuration) -> some View {
         let resolvedAccent = accent ?? AppColors.accentSecondaryForScheme(colorScheme)
-        let resolvedForeground = foreground ?? .white
+        let resolvedForeground = foreground ?? AppColors.textOnAccent(for: resolvedAccent, colorScheme: colorScheme)
         return configuration.label
             .fontWeight(.semibold)
             .foregroundColor(resolvedForeground)
@@ -1080,7 +1101,7 @@ struct AppChip: View, Identifiable {
             }
             .padding(.horizontal, AppSpacing.md)
             .padding(.vertical, AppSpacing.sm)
-            .foregroundColor(isSelected ? .white : AppColors.textSecondary(colorScheme))
+            .foregroundColor(isSelected ? AppColors.textOnAccent(for: resolvedAccent, colorScheme: colorScheme) : AppColors.textSecondary(colorScheme))
             .background(
                 Capsule()
                     .fill(isSelected ? resolvedAccent.opacity(0.85) : AppColors.cardBackgroundSubtle(colorScheme))

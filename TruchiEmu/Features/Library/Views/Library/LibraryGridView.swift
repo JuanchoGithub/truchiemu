@@ -387,12 +387,12 @@ struct LibraryGridView: View {
                 ZStack(alignment: .topTrailing) {
                     Image(systemName: "bell")
                     if notificationHistory.unreadCount > 0 {
-                        Text("\(notificationHistory.unreadCount)")
-                            .font(.system(size: 9, weight: .bold))
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 4)
-                            .padding(.vertical, 1)
-                            .background(AppColors.brandAccent)
+                    Text("\(notificationHistory.unreadCount)")
+                    .font(.system(size: 9, weight: .bold))
+                    .foregroundColor(AppColors.textOnAccent(colorScheme))
+                    .padding(.horizontal, 4)
+                    .padding(.vertical, 1)
+                    .background(AppColors.brandAccent)
                             .clipShape(Capsule())
                             .offset(x: 8, y: -8)
                     }
@@ -1444,7 +1444,7 @@ private func removeROMFromLibrary(_ rom: ROM) {
                                 .font(.system(size: 10))
                         }
                     }
-                    .foregroundColor(selectedGenres.isEmpty ? .secondary : .white)
+                    .foregroundColor(selectedGenres.isEmpty ? .secondary : AppColors.textOnAccent(colorScheme))
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
                     .frame(minHeight: 30)

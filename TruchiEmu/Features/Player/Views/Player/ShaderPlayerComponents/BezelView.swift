@@ -26,6 +26,7 @@ enum BezelStyle: String, Codable, CaseIterable {
 
 struct BezelView: View {
     let style: BezelStyle
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         ZStack {
@@ -65,7 +66,7 @@ struct BezelView: View {
                     .overlay(
                         Text("TRUCHIEMU")
                             .font(.system(size: 28, weight: .black, design: .rounded))
-                            .foregroundColor(.white)
+                            .foregroundColor(AppColors.textOnAccent(colorScheme))
                             .tracking(12)
                     )
                 Spacer()

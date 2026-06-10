@@ -87,7 +87,7 @@ extension GameDetailView {
                 Image(systemName: "play.fill").font(.title3)
                 Text(loc.localized("header.play")).font(.headline).fontWeight(.semibold)
             }
-            .foregroundColor(.white)
+            .foregroundColor(AppColors.textOnAccent(colorScheme))
             .frame(maxWidth: .infinity)
             .padding(.vertical, 14)
             .padding(.horizontal, 28)

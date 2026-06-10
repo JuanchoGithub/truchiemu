@@ -21,7 +21,7 @@ struct AccentSegmentedControl<T: Hashable>: View {
                 } label: {
                     Image(systemName: option.icon)
                         .font(.system(size: 12))
-                        .foregroundStyle(selection == option.tag ? .white : .primary)
+                        .foregroundStyle(selection == option.tag ? AppColors.textOnAccent(for: resolvedAccent, colorScheme: colorScheme) : .primary)
                         .frame(maxWidth: .infinity, minHeight: 24)
                         .contentShape(Rectangle())
                         .background(

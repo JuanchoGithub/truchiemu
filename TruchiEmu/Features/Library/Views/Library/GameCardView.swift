@@ -137,7 +137,7 @@ struct GameCardView: View {
                 if raService.isEnabled && rom.raMatchStatus == "matched" {
                     Image(systemName: "trophy.fill")
                     .font(.system(size: 10, weight: .bold))
-                    .foregroundColor(.white)
+                    .foregroundColor(AppColors.textOnAccent(for: AppColors.brandAccent.opacity(0.85), colorScheme: colorScheme))
                     .padding(4)
                     .background(AppColors.brandAccent.opacity(0.85))
                     .clipShape(Circle())

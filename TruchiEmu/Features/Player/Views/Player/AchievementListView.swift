@@ -100,7 +100,7 @@ struct AchievementListView: View {
                                     .padding(.horizontal, 12)
                                     .padding(.vertical, 6)
                                     .background(selectedTab == tab ? AppColors.brandAccent : AppColors.cardBackground(colorScheme))
-                                    .foregroundColor(selectedTab == tab ? .white : .primary)
+                                    .foregroundColor(selectedTab == tab ? AppColors.textOnAccent(colorScheme) : .primary)
                                     .cornerRadius(8)
                             }
                         }

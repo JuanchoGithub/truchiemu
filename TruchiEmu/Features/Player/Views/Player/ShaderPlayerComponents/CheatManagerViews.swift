@@ -78,7 +78,7 @@ struct CheatManagerViewWrapper: View {
                              .padding(.horizontal, 12)
                              .padding(.vertical, 6)
                               .background(selectedCategory == nil ? AppColors.brandAccent : AppColors.cardBackground(colorScheme))
-                              .foregroundColor(selectedCategory == nil ? .white : .primary)
+                              .foregroundColor(selectedCategory == nil ? AppColors.textOnAccent(colorScheme) : .primary)
                               .cornerRadius(8)
                       }
                      
@@ -89,7 +89,7 @@ struct CheatManagerViewWrapper: View {
                                  .padding(.horizontal, 12)
                                  .padding(.vertical, 6)
                                  .background(selectedCategory == category ? AppColors.brandAccent : AppColors.cardBackground(colorScheme))
-                                .foregroundColor(selectedCategory == category ? .white : .primary)
+                                .foregroundColor(selectedCategory == category ? AppColors.textOnAccent(colorScheme) : .primary)
                                 .cornerRadius(8)
                         }
                     }

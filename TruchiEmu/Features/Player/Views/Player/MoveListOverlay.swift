@@ -193,15 +193,15 @@ struct MoveListOverlay: View {
                 Button(action: {
                     windowController.confirmAndShowOverlay(character: character)
                 }) {
-                    Text(loc.localized("movelist.saveAndSelect"))
-                        .font(.system(size: 9, weight: .semibold))
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 3)
-                        .background(
-                            RoundedRectangle(cornerRadius: 4)
-                                .fill(AppColors.brandAccent)
-                        )
+Text(loc.localized("movelist.saveAndSelect"))
+                    .font(.system(size: 9, weight: .semibold))
+                    .foregroundColor(AppColors.textOnAccent(colorScheme))
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(AppColors.brandAccent)
+                    )
                 }
                 .buttonStyle(.plain)
             }
