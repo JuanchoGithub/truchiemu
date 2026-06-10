@@ -307,6 +307,16 @@ applyShaderOverrides(systemID: data.systemID, shaderID: data.newShaderPresetID, 
         .onReceive(NotificationCenter.default.publisher(for: .openAppSettings)) { _ in
             openSettings()
         }
+        .onReceive(NotificationCenter.default.publisher(for: .closeAppSettings)) { _ in
+            if let window = NSApp.windows.first(where: { $0.identifier?.rawValue == "com_apple_SwiftUI_Settings_window" }) {
+                window.close()
+            }
+        }
+        .onChange(of: library.isScanning) { _, isScanning in
+            if !isScanning && !library.lastAddedROMs.isEmpty {
+                selectedFilter = .all
+            }
+        }
 // Set ideal window size so the window doesn't start stretched larger than needed
 .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
 .frame(minWidth: 1000, idealWidth: 1200, minHeight: 650, idealHeight: 750)

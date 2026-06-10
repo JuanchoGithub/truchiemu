@@ -154,6 +154,7 @@ private func addLibraryFolder() {
         panel.prompt = "Add Folder"
         if panel.runModal() == .OK, let url = panel.url {
             library.addPrimaryFolder(url: url)
+            NotificationCenter.default.post(name: .closeAppSettings, object: nil)
         }
     }
 }
@@ -228,6 +229,7 @@ struct LibraryFoldersSection: View {
         panel.prompt = "Add Folder"
         if panel.runModal() == .OK, let url = panel.url {
             library.addPrimaryFolder(url: url)
+            NotificationCenter.default.post(name: .closeAppSettings, object: nil)
         }
     }
 }

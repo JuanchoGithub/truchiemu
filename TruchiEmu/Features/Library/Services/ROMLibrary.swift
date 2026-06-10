@@ -333,6 +333,7 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
         isScanning = true
         scanProgress = 0
         scanCancellationToken.reset()
+        lastAddedROMs = []
         
         // 1. Scan the folder
         let scanner = ROMScanner()
@@ -776,7 +777,9 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
         saveSingleLibraryFolderBookmark(folder)
 
         // Trigger an incremental scan for ONLY this folder
-        if scanAfter { 
+        if scanAfter {
+            isScanning = true
+            scanProgress = 0
             Task { 
                 await scanROMs(in: url, runAutomationAfter: true) 
             } 

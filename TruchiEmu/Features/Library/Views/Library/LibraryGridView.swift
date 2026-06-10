@@ -19,7 +19,7 @@ struct LibraryGridView: View {
     @Binding var searchText: String
 
     // These are now passed in via init to allow ViewModel initialization
-    let library: ROMLibrary
+    @ObservedObject var library: ROMLibrary
     let categoryManager: CategoryManager
     @StateObject private var viewModel: LibraryViewModel
 
