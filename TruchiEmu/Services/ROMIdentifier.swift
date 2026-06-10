@@ -105,9 +105,9 @@ enum ROMIdentifier {
             currentBestScore = candidates.values.max() ?? 0
         }
 
-        // 3. Magic Headers (Expensive I/O: 100 pts)
-        if currentBestScore < 90 {
-            let ambiguousSystems = cachedSystems.filter { system in 
+        // 3. Magic Headers (Cheap I/O: 100 pts — always check for ambiguous extensions)
+        if ambiguousExtensions.contains(extLower) {
+            let ambiguousSystems = cachedSystems.filter { system in
                 system.extensions.contains { normalize(extension: $0) == extLower }
             }
             if !ambiguousSystems.isEmpty {
@@ -147,6 +147,14 @@ enum ROMIdentifier {
         }
     }
 
+        // 6. CRC-based Disambiguation (Heavy I/O: read entire file + DAT lookup)
+        // For ambiguous extensions with competing candidates within striking distance,
+        // compute CRC32 and check candidate systems' DAT databases.
+        if let crcMatch = await identifyByCRC(url: url, extLower: extLower, candidates: candidates) {
+            candidates[crcMatch, default: 0] += 150
+            LoggerService.debug(category: "ROMIdentifier", "CRC disambiguation for \(filename): \(crcMatch) matched")
+            currentBestScore = candidates.values.max() ?? 0
+        }
 
         // --- FINAL DECISION ---
         var sortedCandidates = candidates.sorted { $0.value > $1.value }
@@ -992,5 +1000,40 @@ enum ROMIdentifier {
         }
 
         return referenced
+    }
+
+    // MARK: - CRC-based System Disambiguation
+
+    private static func identifyByCRC(url: URL, extLower: String, candidates: [String: Int]) async -> String? {
+        let sorted = candidates.filter { $0.value > 0 }.sorted { $0.value > $1.value }
+        guard sorted.count >= 2 else { return nil }
+
+        let topScore = sorted[0].value
+        let secondScore = sorted[1].value
+
+        // If the gap is already wider than a magic header match, CRC won't change the outcome
+        guard topScore - secondScore < 100 else { return nil }
+
+        // Only for reasonably-sized files (cartridge-sized, not CD images)
+        let resourceValues = try? url.resourceValues(forKeys: [.fileSizeKey])
+        guard let fileSize = resourceValues?.fileSize, fileSize > 0, fileSize <= 50_000_000 else {
+            return nil
+        }
+
+        // Compute CRC32 of the entire file
+        guard let crc = CRC32.compute(url: url) else { return nil }
+
+        // Check the CRC against each candidate system's DAT database
+        for (systemID, _) in sorted {
+            guard let system = cachedSystems.first(where: { $0.id == systemID }) else { continue }
+            let db = await LibretroDatabaseLibrary.shared.fetchAndLoadDat(for: system)
+            guard !db.isEmpty else { continue }
+            if db[crc] != nil {
+                LoggerService.debug(category: "ROMIdentifier", "CRC match: \(url.lastPathComponent) → \(systemID) (CRC: \(crc))")
+                return systemID
+            }
+        }
+
+        return nil
     }
 }

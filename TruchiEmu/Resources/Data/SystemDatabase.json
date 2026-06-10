@@ -27,22 +27,16 @@
     "displayInUI": true,
     "name": "Nintendo Entertainment System",
     "extensions": [
-      "bin",
       "bml",
       "bs",
       "bsx",
       "dx2",
       "fds",
       "fig",
-      "gb",
-      "gbc",
-      "gd3",
-      "gd7",
       "nes",
       "nsf",
       "qd",
       "rom",
-      "sfc",
       "st",
       "swc",
       "unf",
@@ -87,10 +81,6 @@
       "bsx",
       "dx2",
       "fig",
-      "gb",
-      "gbc",
-      "gd3",
-      "gd7",
       "rom",
       "sfc",
       "smc",
@@ -118,7 +108,6 @@
     "displayInUI": true,
     "name": "Nintendo 64",
     "extensions": [
-      "bin",
       "n64",
       "ndd",
       "u1",
@@ -163,14 +152,9 @@
     "name": "Game Boy Advance",
     "extensions": [
       "agb",
-      "bin",
       "cgb",
-      "dmg",
-      "gb",
       "gba",
-      "gbc",
-      "gbz",
-      "sgb"
+      "gbz"
     ],
     "emuIconName": "GBA",
     "defaultBoxType": "Box",
@@ -212,17 +196,12 @@
     "name": "Game Boy",
     "extensions": [
       "agb",
-      "bin",
       "bs",
       "cgb",
-      "dmg",
       "fig",
       "gb",
-      "gbc",
       "gbs",
       "gbz",
-      "rom",
-      "sfc",
       "sgb",
       "swc"
     ],
@@ -287,7 +266,6 @@
     "displayInUI": true,
     "name": "Nintendo DS",
     "extensions": [
-      "bin",
       "dsi",
       "ids",
       "nds"
@@ -340,7 +318,6 @@
       "68k",
       "bin",
       "chd",
-      "cue",
       "gen",
       "iso",
       "md",
@@ -374,9 +351,7 @@
     "displayInUI": true,
     "name": "Sega Master System",
     "extensions": [
-      "bin",
       "bms",
-      "rom",
       "sms"
     ],
     "emuIconName": "MS",
@@ -573,7 +548,6 @@
       "dump",
       "ecm",
       "elf",
-      "exe",
       "gz",
       "img",
       "iso",
@@ -825,6 +799,12 @@
   {
     "year": "1986",
     "id": "atari7800",
+    "magicHeaders": [
+      {
+        "offset": 0,
+        "bytes": "01 41 54 41 52 49 37 38"
+      }
+    ],
     "sortOrder": 42,
     "displayInUI": true,
     "name": "Atari 7800",
@@ -1088,7 +1068,6 @@
     "id": "amiga",
     "name": "Commodore Amiga",
     "extensions": [
-      "/",
       "7z",
       "adf",
       "adz",
@@ -1491,7 +1470,6 @@
     "id": "commodore_64",
     "name": "C64",
     "extensions": [
-      "/",
       "bin",
       "cmd",
       "crt",
@@ -2964,7 +2942,12 @@
       "nintendo gamecube",
       "cube"
     ],
-    "magicHeaders": [],
+    "magicHeaders": [
+      {
+        "offset": 28,
+        "bytes": "C2 33 9F 3D"
+      }
+    ],
     "filenamePatterns": [
       "(?i)\\(disc\\s?\\d+\\)"
     ],
@@ -2997,7 +2980,12 @@
       "wii",
       "nintendo wii"
     ],
-    "magicHeaders": [],
+    "magicHeaders": [
+      {
+        "offset": 24,
+        "bytes": "5D 1C 9E A3"
+      }
+    ],
     "filenamePatterns": [
       "(?i)\\(disc\\s?\\d+\\)"
     ],
