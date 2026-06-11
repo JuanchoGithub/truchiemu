@@ -37,8 +37,8 @@ final class ROMEntry {
     // Relationships
     // Note: inverse relationships with @Relationship can cause circular reference issues
     // Using forward-only relationships to avoid Swift macro expansion bugs
+    var mameRomType: String?
     @Relationship(deleteRule: .cascade) var metadata: ROMMetadataEntry?
-    // var identificationResults: [GameDBEntry] = []  // Temporarily disabled due to circular ref
 
     // Computed properties
     var displayName: String {
@@ -66,6 +66,7 @@ final class ROMEntry {
         category: String = "game",
         crc32: String? = nil,
         md5: String? = nil,
+        mameRomType: String? = nil,
         thumbnailLookupSystemID: String? = nil,
         screenshotPathsJSON: String? = nil,
         settingsJSON: String? = nil,
@@ -94,6 +95,7 @@ final class ROMEntry {
         self.dateAdded = dateAdded
         self.category = category
         self.crc32 = crc32
+        self.mameRomType = mameRomType
         self.md5 = md5
         self.thumbnailLookupSystemID = thumbnailLookupSystemID
         self.screenshotPathsJSON = screenshotPathsJSON

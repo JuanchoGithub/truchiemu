@@ -11,12 +11,31 @@ final class SystemDatabaseWrapper {
         }
     }
 
+    var mergeGBGBC: Bool = true {
+        didSet {
+            AppSettings.setBool("mergeGBGBC", value: mergeGBGBC)
+            SystemPreferences.shared.updateTrigger += 1
+        }
+    }
+    var mergeMameFBA: Bool = true {
+        didSet {
+            AppSettings.setBool("mergeMameFBA", value: mergeMameFBA)
+            SystemPreferences.shared.updateTrigger += 1
+        }
+    }
+
     var systemsForDisplay: [SystemInfo] {
-        systems.filter { $0.displayInUI }
+        systems.filter { system in
+            if system.id == "gbc" { return !mergeGBGBC }
+            if system.id == "fba" { return !mergeMameFBA }
+            return system.displayInUI
+        }
     }
 
     init() {
         self.systems = SystemDatabase._loadSystems()
+        self.mergeGBGBC = AppSettings.getBool("mergeGBGBC", defaultValue: true)
+        self.mergeMameFBA = AppSettings.getBool("mergeMameFBA", defaultValue: true)
     }
 
     func system(forID id: String) -> SystemInfo? {

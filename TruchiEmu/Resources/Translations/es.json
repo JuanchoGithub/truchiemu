@@ -1703,5 +1703,9 @@
     "hotkeys.action.trainingReset": "Reinicio Instantáneo de Entrenamiento",
     "hotkeys.action.trainingToggleRecording": "Alternar Grabación de Cinta",
     "hotkeys.action.trainingStartPlayback": "Iniciar Reproducción de Cinta",
-    "hotkeys.action.toggleTrainingMode": "Alternar Modo Entrenamiento"
+    "hotkeys.action.toggleTrainingMode": "Alternar Modo Entrenamiento",
+    "settings.mergeGBGBC": "Mantener Game Boy y Game Boy Color como un solo sistema",
+    "settings.mergeGBGBCDescription": "Cuando está activado, las ROMs de Game Boy y Game Boy Color aparecen juntas como \"Game Boy\" en la barra lateral.",
+    "settings.mergeMameFBA": "Mantener MAME y FinalBurn Neo como un solo sistema",
+    "settings.mergeMameFBADescription": "Cuando está activado, las ROMs de MAME y FBNeo aparecen juntas como \"Arcade (MAME / FBNeo)\" en la barra lateral."
 }

@@ -779,6 +779,7 @@ struct LibretroDatGame {
 actor LibretroDatabaseLibrary {
     static let shared = LibretroDatabaseLibrary()
     private static let gbFamilyCacheKey = "gb+gbc"
+    private static let arcadeFamilyCacheKey = "mame+fba"
     
     // Database cache
     private var databases: [String: [String: GameInfo]] = [:]
@@ -787,6 +788,7 @@ actor LibretroDatabaseLibrary {
     private static let mameRdbBasenames = ["mame", "mame2003", "mame2010", "mame2016", "mame2023"]
 
     private static func isGbFamily(_ systemID: String) -> Bool { systemID == "gb" || systemID == "gbc" }
+    private static func isArcadeFamily(_ systemID: String) -> Bool { systemID == "mame" || systemID == "fba" }
 
     private static func tagGameInfo(_ info: GameInfo, thumbnailLookupSystemID: String) -> GameInfo {
         GameInfo(name: info.name, year: info.year, publisher: info.publisher, developer: info.developer, genre: info.genre, crc: info.crc, thumbnailLookupSystemID: thumbnailLookupSystemID, players: info.players)
@@ -875,7 +877,8 @@ actor LibretroDatabaseLibrary {
 
     private func fetchAndLoadDat(forSystemID systemID: String) async -> [String: GameInfo] {
         if let db = databases[systemID] { return db }
-        if systemID == "gb" || systemID == "gbc" { if let merged = databases[LibretroDatabaseLibrary.gbFamilyCacheKey] { return merged } }
+        if Self.isGbFamily(systemID) { if let merged = databases[Self.gbFamilyCacheKey] { return merged } }
+        if Self.isArcadeFamily(systemID) { if let merged = databases[Self.arcadeFamilyCacheKey] { return merged } }
         return [:]
     }
 
@@ -893,6 +896,21 @@ actor LibretroDatabaseLibrary {
             for (crc, info) in secondary { if merged[crc] != nil { overlap += 1 } else { merged[crc] = Self.tagGameInfo(info, thumbnailLookupSystemID: partner.id) } }
             LoggerService.debug(category: "LibretroDB", "Merged GB+GBC → \(merged.count) unique CRCs (\(overlap) overlapping)")
             databases[Self.gbFamilyCacheKey] = merged; databases["gb"] = merged; databases["gbc"] = merged
+            return merged
+        }
+        if Self.isArcadeFamily(system.id) {
+            if let merged = databases[Self.arcadeFamilyCacheKey] { LoggerService.debug(category: "LibretroDB", "Cache hit: merged MAME+FBA (\(merged.count) CRC entries)"); return merged }
+            let partnerID = system.id == "mame" ? "fba" : "mame"
+            guard let partner = SystemDatabase.system(forID: partnerID) else { LoggerService.libretroDBError("Arcade family merge failed — missing partner system \(partnerID)"); return await loadSingleSystemDatabase(for: system) }
+            let primary = await loadSingleSystemDatabase(for: system); LoggerService.debug(category: "LibretroDB", "Primary \(system.id) → \(primary.count) CRC entries")
+            let secondary = await loadSingleSystemDatabase(for: partner); LoggerService.debug(category: "LibretroDB", "Partner \(partnerID) → \(secondary.count) CRC entries")
+            var merged: [String: GameInfo] = [:]
+            // MAME (primary) entries go in first, so they win on CRC overlap
+            for (crc, info) in primary { merged[crc] = Self.tagGameInfo(info, thumbnailLookupSystemID: system.id) }
+            var overlap = 0
+            for (crc, info) in secondary { if merged[crc] != nil { overlap += 1 } else { merged[crc] = Self.tagGameInfo(info, thumbnailLookupSystemID: partner.id) } }
+            LoggerService.debug(category: "LibretroDB", "Merged MAME+FBA → \(merged.count) unique CRCs (\(overlap) overlapping)")
+            databases[Self.arcadeFamilyCacheKey] = merged; databases["mame"] = merged; databases["fba"] = merged
             return merged
         }
         if let db = databases[system.id] { LoggerService.debug(category: "LibretroDB", "Cache hit: \(system.id) (\(db.count) CRC entries)"); return db }
@@ -1031,8 +1049,10 @@ private struct MetadataCache: Codable {
 actor LibretroMetadataLibrary {
     static let shared = LibretroMetadataLibrary()
     private static let gbFamilyCacheKey = "gb+gbc"
+    private static let arcadeFamilyCacheKey = "mame+fba"
 
     private static func isGbFamily(_ systemID: String) -> Bool { systemID == "gb" || systemID == "gbc" }
+    private static func isArcadeFamily(_ systemID: String) -> Bool { systemID == "mame" || systemID == "fba" }
 
     private var databases: [String: [String: GameMetadataSupplement]] = [:]
 
@@ -1131,6 +1151,9 @@ actor LibretroMetadataLibrary {
         if Self.isGbFamily(systemID) {
             if let merged = databases[Self.gbFamilyCacheKey] { return merged[key] }
         }
+        if Self.isArcadeFamily(systemID) {
+            if let merged = databases[Self.arcadeFamilyCacheKey] { return merged[key] }
+        }
         return databases[systemID]?[key]
     }
 
@@ -1181,6 +1204,20 @@ actor LibretroMetadataLibrary {
             databases[Self.gbFamilyCacheKey] = merged
             databases["gb"] = merged
             databases["gbc"] = merged
+            return
+        }
+        if Self.isArcadeFamily(system.id) {
+            if databases[Self.arcadeFamilyCacheKey] != nil { return }
+            let partnerID = system.id == "mame" ? "fba" : "mame"
+            guard let partner = SystemDatabase.system(forID: partnerID) else { return }
+            let primary = await fetchAndCacheDat(for: system)
+            let secondary = await fetchAndCacheDat(for: partner)
+            var merged: [String: GameMetadataSupplement] = [:]
+            for (crc, entry) in primary { merged[crc] = entry }
+            for (crc, entry) in secondary { if merged[crc] == nil { merged[crc] = entry } }
+            databases[Self.arcadeFamilyCacheKey] = merged
+            databases["mame"] = merged
+            databases["fba"] = merged
             return
         }
         if databases[system.id] != nil { return }
@@ -1356,6 +1393,13 @@ private func fetchAndCacheDat(for system: SystemInfo) async -> [String: GameMeta
                 return
             }
             LoggerService.libretroMeta("Loading metadata for \(systemID) (GB family)...")
+            await loadMetadataDat(for: system)
+        } else if Self.isArcadeFamily(systemID) {
+            if databases[Self.arcadeFamilyCacheKey] != nil {
+                LoggerService.libretroMeta("Cache hit: \(systemID) (Arcade family merged)")
+                return
+            }
+            LoggerService.libretroMeta("Loading metadata for \(systemID) (Arcade family)...")
             await loadMetadataDat(for: system)
         } else if databases[systemID] != nil {
             LoggerService.libretroMeta("Cache hit: \(systemID)")

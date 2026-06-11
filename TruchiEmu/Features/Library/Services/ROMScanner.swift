@@ -58,13 +58,19 @@ actor ROMScanner {
         for url in urls {
             if url.pathExtension.lowercased() == "zip" {
                 let shortName = url.deletingPathExtension().lastPathComponent.lowercased()
+                let strippedName = MAMEUnifiedService.stripDuplicateSuffix(shortName)
 
-                if MAMEUnifiedService.shared.lookup(shortName: shortName) != nil {
-                    if MAMEUnifiedService.shared.isRunnable(shortName: shortName)
-                        && !MAMEUnifiedService.shared.isBIOS(shortName: shortName) {
+                // Try original name first, then stripped (for macOS duplicate suffixes)
+                for nameToTry in [shortName, strippedName] where !nameToTry.isEmpty {
+                    guard MAMEUnifiedService.shared.lookup(shortName: nameToTry) != nil else { continue }
+                    if MAMEUnifiedService.shared.isRunnable(shortName: nameToTry)
+                        && !MAMEUnifiedService.shared.isBIOS(shortName: nameToTry) {
                         playableMameURLs.insert(url)
+                        break
                     }
-                } else {
+                }
+                
+                if !playableMameURLs.contains(url) {
                     remainingURLs.append(url)
                 }
             } else {
@@ -201,9 +207,11 @@ actor ROMScanner {
         // Ignore specific PS1 BIOS files
         if filename == "scph5500.bin" || filename == "scph5501.bin" || filename == "scph5502.bin" { return nil }
         
-        let system = await identifySystem(url: url, extension: ext)
+        guard let system = await identifySystem(url: url, extension: ext) else {
+            return nil
+        }
         let name = url.deletingPathExtension().lastPathComponent
-        var rom = ROM(id: UUID(), name: name, path: url, systemID: system?.id, originalSystemID: system?.id)
+        var rom = ROM(id: UUID(), name: name, path: url, systemID: system.id, originalSystemID: system.id)
         
         if KnownBIOS.isKnownBios(filename: url.lastPathComponent) {
             rom.isBios = true
@@ -211,7 +219,7 @@ actor ROMScanner {
             rom.category = "bios"
         }
         
-        if system?.id == "mame" {
+        if system.id == "mame" {
             await applyMAMEIdentification(to: &rom, url: url)
             if rom.mameRomType == nil { return nil }
         }

@@ -433,6 +433,12 @@
   {
     "year": "1998",
     "id": "dreamcast",
+    "magicHeaders": [
+      {
+        "offset": 0,
+        "bytes": "SEGA SEGAKATANA"
+      }
+    ],
     "sortOrder": 14,
     "displayInUI": true,
     "name": "Sega Dreamcast",
@@ -492,6 +498,12 @@
   {
     "year": "1993",
     "id": "3do",
+    "magicHeaders": [
+      {
+        "offset": 0,
+        "bytes": "CD-ROM"
+      }
+    ],
     "sortOrder": 16,
     "displayInUI": true,
     "name": "3DO",
@@ -720,6 +732,13 @@
   {
     "sortOrder": 30,
     "id": "mame",
+    "pathKeywords": [
+      "mame",
+      "arcade",
+      "fba",
+      "fbneo",
+      "finalburn"
+    ],
     "displayInUI": true,
     "name": "Arcade (MAME)",
     "coreReportedAspectRatio": 1.3333333730697632,
@@ -740,7 +759,7 @@
   {
     "sortOrder": 31,
     "id": "fba",
-    "displayInUI": true,
+    "displayInUI": false,
     "name": "Arcade (FinalBurn Neo)",
     "extensions": [
       "zip",
@@ -2468,6 +2487,12 @@
     "database": [
       "Microsoft - Xbox"
     ],
+    "magicHeaders": [
+      {
+        "offset": 0,
+        "bytes": "MICROSOFT*XBOX*MEDIA"
+      }
+    ],
     "defaultShaderPresetID": "builtin-none"
   },
   {
@@ -2502,6 +2527,12 @@
     "manufacturer": "Philips",
     "database": [
       "Philips - CD-i"
+    ],
+    "magicHeaders": [
+      {
+        "offset": 0,
+        "bytes": "CD-RTOS"
+      }
     ],
     "defaultShaderPresetID": "builtin-crt-classic"
   },
@@ -3689,7 +3720,12 @@
       "pc engine cd",
       "turbografx cd"
     ],
-    "magicHeaders": [],
+    "magicHeaders": [
+      {
+        "offset": 0,
+        "bytes": "PC Engine CD-ROM SYSTEM"
+      }
+    ],
     "filenamePatterns": [],
     "extensions": [
       "cue",

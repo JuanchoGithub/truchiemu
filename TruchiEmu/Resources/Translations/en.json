@@ -1711,5 +1711,9 @@
     "hotkeys.action.trainingReset": "Training Instant Reset",
     "hotkeys.action.trainingToggleRecording": "Toggle Tape Recording",
     "hotkeys.action.trainingStartPlayback": "Start Tape Playback",
-    "hotkeys.action.toggleTrainingMode": "Toggle Training Mode"
+    "hotkeys.action.toggleTrainingMode": "Toggle Training Mode",
+    "settings.mergeGBGBC": "Keep Game Boy and Game Boy Color as a single system",
+    "settings.mergeGBGBCDescription": "When enabled, Game Boy and Game Boy Color ROMs appear together as \"Game Boy\" in the sidebar.",
+    "settings.mergeMameFBA": "Keep MAME and FinalBurn Neo as a single system",
+    "settings.mergeMameFBADescription": "When enabled, MAME and FBNeo ROMs appear together as \"Arcade (MAME / FBNeo)\" in the sidebar."
 }

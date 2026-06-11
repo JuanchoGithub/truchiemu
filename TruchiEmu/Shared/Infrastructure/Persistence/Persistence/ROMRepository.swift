@@ -341,7 +341,7 @@ final class ROMRepository {
             return try? decoder.decode(ROMSettings.self, from: Data($0.utf8))
         }
 
-        return ROM(
+        var rom = ROM(
             id: entry.id,
             name: entry.name,
             path: URL(fileURLWithPath: entry.path),
@@ -368,6 +368,8 @@ final class ROMRepository {
             enrichmentAttempted: entry.enrichmentAttempted,
             enrichmentFailed: entry.enrichmentFailed
         )
+        rom.mameRomType = entry.mameRomType
+        return rom
     }
 
     private static let sharedEncoder: JSONEncoder = {
@@ -410,6 +412,7 @@ final class ROMRepository {
             dateAdded: rom.dateAdded,
             category: rom.category,
             crc32: rom.crc32,
+            mameRomType: rom.mameRomType,
             thumbnailLookupSystemID: rom.thumbnailLookupSystemID,
             screenshotPathsJSON: screenshotPathsJSON,
             settingsJSON: settingsJSON,
@@ -435,6 +438,7 @@ final class ROMRepository {
         if entry.useCustomCore != rom.useCustomCore { entry.useCustomCore = rom.useCustomCore }
         if entry.isBios != rom.isBios { entry.isBios = rom.isBios }
         if entry.isHidden != rom.isHidden { entry.isHidden = rom.isHidden }
+        if entry.mameRomType != rom.mameRomType { entry.mameRomType = rom.mameRomType }
         if entry.category != rom.category { entry.category = rom.category }
         if entry.crc32 != rom.crc32 { entry.crc32 = rom.crc32 }
         if entry.thumbnailLookupSystemID != rom.thumbnailLookupSystemID { entry.thumbnailLookupSystemID = rom.thumbnailLookupSystemID }

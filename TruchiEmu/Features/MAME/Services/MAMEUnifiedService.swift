@@ -24,6 +24,10 @@ final class MAMEUnifiedService: ObservableObject {
     nonisolated(unsafe) private var allBIOSShortNames: Set<String> = []
     // Set of unplayable short names (not runnable in any core)
     nonisolated(unsafe) private var unplayableShortNames: Set<String> = []
+    // Set of FBNeo romset names (valid ZIP filenames for FBNeo core)
+    nonisolated(unsafe) private var fbneoRomsetNames: Set<String> = []
+    // Set of MAME shortnames that are runnable (for arcade filename validation)
+    nonisolated(unsafe) private var allMAMEShortNames: Set<String> = []
     
     private var loadingTask: Task<Void, Never>?
     
@@ -118,8 +122,7 @@ final class MAMEUnifiedService: ObservableObject {
         }
         
         // Perform heavy decoding on a background thread
-        // FIX 1: Added a second[String: MAMEUnifiedEntry] to the Result signature for the Master table
-        let result = await Task.detached(priority: .userInitiated) { () -> Result<(MAMEUnifiedDatabase, [String: MAMEUnifiedEntry],[String: MAMEUnifiedEntry], Set<String>, Set<String>, Set<String>), Error> in
+        let result = await Task.detached(priority: .userInitiated) { () -> Result<(MAMEUnifiedDatabase, [String: MAMEUnifiedEntry],[String: MAMEUnifiedEntry], Set<String>, Set<String>, Set<String>, Set<String>), Error> in
             do {
                 let data = try Data(contentsOf: url)
                 let decoder = JSONDecoder()
@@ -130,6 +133,7 @@ final class MAMEUnifiedService: ObservableObject {
                 var allBIOSShortNames: Set<String> = []
                 var allRunnableShortNames: Set<String> = []
                 var unplayableShortNames: Set<String> = []
+                var allMAMEShortNames: Set<String> = []
 
                 for (shortName, entry) in db.games {
                     let lowerName = shortName.lowercased()
@@ -138,10 +142,11 @@ final class MAMEUnifiedService: ObservableObject {
                     newMasterLookup[lowerName] = entry 
                     
                     // 2. Sort into our specific lists
-            if entry.isBIOS || KnownBIOS.mameFiles.contains(lowerName) {
-                allBIOSShortNames.insert(lowerName)
+                    if entry.isBIOS || KnownBIOS.mameFiles.contains(lowerName) {
+                        allBIOSShortNames.insert(lowerName)
                     } else if entry.isRunnableInAnyCore {
-                        allRunnableShortNames.insert(lowerName)                        
+                        allRunnableShortNames.insert(lowerName)
+                        allMAMEShortNames.insert(lowerName)
                         // ONLY playable games are allowed in this dictionary!
                         newLookupTable[lowerName] = entry 
                         
@@ -149,16 +154,14 @@ final class MAMEUnifiedService: ObservableObject {
                         unplayableShortNames.insert(lowerName)
                     }
                 }
-                // FIX 1: Return newMasterLookup in the success tuple
-                return .success((db, newMasterLookup, newLookupTable, allBIOSShortNames, allRunnableShortNames, unplayableShortNames))
+                return .success((db, newMasterLookup, newLookupTable, allBIOSShortNames, allRunnableShortNames, unplayableShortNames, allMAMEShortNames))
             } catch {
                 return .failure(error)
             }
         }.value
 
         switch result {
-        // FIX 1: Unpack 'master' and assign it to self.masterLookupTable
-        case .success(let (db, master, lookup, bios, runnable, unplayable)):
+        case .success(let (db, master, lookup, bios, runnable, unplayable, mameShortNames)):
             LoggerService.info(category: "MAMEUnifiedService",
                                "Opened file \(String(describing: jsonURL))")
             await MainActor.run {
@@ -171,6 +174,7 @@ final class MAMEUnifiedService: ObservableObject {
             self.allBIOSShortNames = bios
             self.allRunnableShortNames = runnable
             self.unplayableShortNames = unplayable
+            self.allMAMEShortNames = mameShortNames
             
             LoggerService.debug(category: "MAMEUnifiedService",
                 "Loaded \(db.metadata.totalEntries) entries " +
@@ -178,14 +182,142 @@ final class MAMEUnifiedService: ObservableObject {
                 "\(db.metadata.entriesNotInAnyCore) not in any core)"
             )
             
+            // Best-effort: load FBNeo romset names
+            await loadFBNeoRomsets()
+            
         case .failure(let error):
             LoggerService.error(category: "MAMEUnifiedService", "Failed to decode unified JSON: \(error.localizedDescription)"
             )
         }
     }
 
-    // MARK: - Query Methods
-    
+    // MARK: - FBNeo Romset Loading
+
+    // Loads FBNeo romset names from the cached DAT file.
+    // This is a best-effort load — if the DAT doesn't exist, we just have an empty set.
+    nonisolated private func loadFBNeoRomsets() async {
+        // Try to find the FBNeo DAT file in known locations
+        var datURL: URL?
+        
+        // 1. App Support cache
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+        if let appSup = appSupport {
+            let cachedURL = appSup.appendingPathComponent("TruchiEmu/Dats/FBNeo - Arcade Games.dat")
+            if FileManager.default.fileExists(atPath: cachedURL.path) {
+                datURL = cachedURL
+            }
+        }
+        
+        // 2. Bundle resources
+        if datURL == nil {
+            if let bundleURL = Bundle.main.url(forResource: "FBNeo - Arcade Games", withExtension: "dat") {
+                datURL = bundleURL
+            } else if let bundleURL = Bundle.main.url(forResource: "FBNeo - Arcade Games", withExtension: "dat", subdirectory: "Data/LibretroDats") {
+                datURL = bundleURL
+            }
+        }
+        
+        // 3. Development paths
+        if datURL == nil {
+            let devPaths = [
+                "TruchiEmu/Resources/Data/FBNeo - Arcade Games.dat",
+                "FBNeo - Arcade Games.dat"
+            ]
+            for path in devPaths {
+                let devURL = URL(fileURLWithPath: path)
+                if FileManager.default.fileExists(atPath: devURL.path) {
+                    datURL = devURL
+                    break
+                }
+                let homeURL = URL(fileURLWithPath: NSHomeDirectory())
+                    .appendingPathComponent("gitrepos/truchiemu/\(path)")
+                if FileManager.default.fileExists(atPath: homeURL.path) {
+                    datURL = homeURL
+                    break
+                }
+            }
+        }
+        
+        guard let url = datURL else {
+            LoggerService.debug(category: "MAMEUnifiedService", "FBNeo DAT not found — romset names unavailable")
+            return
+        }
+        
+        guard let content = try? String(contentsOf: url, encoding: .utf8) else {
+            LoggerService.debug(category: "MAMEUnifiedService", "FBNeo DAT exists but unreadable: \(url.path)")
+            return
+        }
+        
+        var romsetNames = Set<String>()
+        let lines = content.components(separatedBy: .newlines)
+        var inGameBlock = false
+        
+        for line in lines {
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            if trimmed.hasPrefix("game (") || trimmed.hasPrefix("machine (") {
+                inGameBlock = true
+            } else if trimmed == ")" && inGameBlock {
+                inGameBlock = false
+            } else if inGameBlock && trimmed.hasPrefix("name ") {
+                // Extract the name within quotes, e.g., name "sf2"
+                if let start = trimmed.firstIndex(of: "\""), let end = trimmed[trimmed.index(after: start)...].firstIndex(of: "\"") {
+                    let romsetName = String(trimmed[trimmed.index(after: start)..<end]).lowercased()
+                    if !romsetName.isEmpty {
+                        romsetNames.insert(romsetName)
+                    }
+                }
+            }
+        }
+        
+        self.fbneoRomsetNames = romsetNames
+        LoggerService.debug(category: "MAMEUnifiedService", "Loaded \(romsetNames.count) FBNeo romset names from \(url.lastPathComponent)")
+    }
+
+    // MARK: - Arcade Romset Name Validation
+
+    // Strip macOS duplicate suffix like " (1)", " (2)" from a filename stem.
+    nonisolated static func stripDuplicateSuffix(_ name: String) -> String {
+        // Matches " (1)", " (2)", etc. at the very end of the string
+        if let range = name.range(of: "\\s*\\(\\d+\\)$", options: .regularExpression) {
+            return String(name[..<range.lowerBound])
+        }
+        return name
+    }
+
+    // Checks if a short name (ZIP stem) matches any known arcade romset name (MAME or FBNeo).
+    nonisolated func isValidArcadeRomsetName(_ shortName: String) -> Bool {
+        let lower = shortName.lowercased()
+        let stripped = Self.stripDuplicateSuffix(lower)
+        // Check original and stripped
+        return allMAMEShortNames.contains(lower) || allMAMEShortNames.contains(stripped) ||
+               fbneoRomsetNames.contains(lower) || fbneoRomsetNames.contains(stripped)
+    }
+
+    // Checks if a short name is a MAME romset (runnable game, not BIOS).
+    nonisolated func isMAMERomsetName(_ shortName: String) -> Bool {
+        let lower = shortName.lowercased()
+        let stripped = Self.stripDuplicateSuffix(lower)
+        return allMAMEShortNames.contains(lower) || allMAMEShortNames.contains(stripped)
+    }
+
+    // Checks if a short name is a FBNeo-only romset (NOT in MAME runnable list).
+    nonisolated func isFBNeoOnlyRomsetName(_ shortName: String) -> Bool {
+        let lower = shortName.lowercased()
+        let stripped = Self.stripDuplicateSuffix(lower)
+        let inFBNeo = fbneoRomsetNames.contains(lower) || fbneoRomsetNames.contains(stripped)
+        let inMAME = allMAMEShortNames.contains(lower) || allMAMEShortNames.contains(stripped)
+        return inFBNeo && !inMAME
+    }
+
+    // Checks if a short name is in BOTH MAME and FBNeo romsets.
+    nonisolated func isSharedArcadeRomsetName(_ shortName: String) -> Bool {
+        let lower = shortName.lowercased()
+        let stripped = Self.stripDuplicateSuffix(lower)
+        let inFBNeo = fbneoRomsetNames.contains(lower) || fbneoRomsetNames.contains(stripped)
+        let inMAME = allMAMEShortNames.contains(lower) || allMAMEShortNames.contains(stripped)
+        return inFBNeo && inMAME
+    }
+
     // Look up a game by its short name (ZIP filename without extension).
     nonisolated func lookup(shortName: String) -> MAMEUnifiedEntry? {
         masterLookupTable[shortName.lowercased()]

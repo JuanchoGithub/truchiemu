@@ -98,10 +98,15 @@ enum ROMIdentifier {
 
         var currentBestScore = candidates.values.max() ?? 0
 
-        // 2. MAME Lookup (Potentially slow I/O: 90 pts)
+        // 2. MAME & FBNeo Lookup (Potentially slow I/O: 90 pts each)
         // Only perform if we don't have a very strong candidate from metadata matching
         if currentBestScore < 90 && extLower == "zip" {
             scoreByMAME(url: url, candidates: &candidates)
+            if candidates.isEmpty {
+                LoggerService.debug(category: "ROMIdentifier", "Dropping \(filename): known MAME BIOS/unplayable entry")
+                return nil
+            }
+            scoreByFBNeo(url: url, candidates: &candidates)
             currentBestScore = candidates.values.max() ?? 0
         }
 
@@ -133,13 +138,25 @@ enum ROMIdentifier {
     // 5. CD-based System Detection (Expensive I/O: 70-100 pts)
     if currentBestScore < 90 && ["bin", "iso", "img", "cue", "chd"].contains(extLower) {
         if extLower == "cue" || extLower == "m3u" {
-            // For container files, we don't scan for SYSTEM.CNF.
-            // Instead, we rely on the fact that these extensions are primarily used for disk-based systems.
-            // We'll trigger a boost for common disc-based systems.
-            let discSystems = ["psx", "ps1", "ps2", "saturn", "dreamcast", "3do", "psp"]
-            for sysID in discSystems {
-                if cachedSystems.contains(where: { $0.id == sysID }) {
-                    candidates[sysID, default: 0] += 50 // Significant boost to suggest a disc-based system
+            // Resolve referenced data files to perform content-based disc detection.
+            // Some systems (e.g. PC Engine CD) embed the data track after audio tracks,
+            // so iterate all referenced files until a positive identification is made.
+            var detectedSystem: String?
+            for dataFile in getReferencedFiles(in: url) {
+                guard (try? dataFile.checkResourceIsReachable()) == true else { continue }
+                detectedSystem = identifyDiscSystem(url: dataFile, candidates: &candidates)
+                if detectedSystem != nil { break }
+            }
+            if detectedSystem == nil {
+                // Generic disc boost for systems without positive boot-sector markers.
+                // Systems with magic headers (Saturn, Dreamcast, 3DO, etc.) are now
+                // positively identified above — skip them here to avoid false positives.
+                let discExtensions = Set(["bin", "iso", "img", "cue", "chd"])
+                for system in cachedSystems {
+                    if system.extensions.contains(where: { discExtensions.contains($0) }),
+                       system.magicHeaders.isEmpty {
+                        candidates[system.id, default: 0] += 50
+                    }
                 }
             }
         } else {
@@ -170,6 +187,32 @@ enum ROMIdentifier {
             // Log only the winner and top 3 candidates to avoid massive string concatenation overhead
             let topCandidates = sortedCandidates.prefix(3).map { "\($0.key): \($0.value)" }.joined(separator: ", ")
             LoggerService.debug(category: "ROMIdentifier", "Winner for \(filename) is \(winner.key). Top candidates:[\(topCandidates)]")
+            
+            // Reject zips with no signal beyond ambiguous extension matching (40 pts)
+            // This prevents unidentifiable .zip files (not in MAME/FBNeo DB, no archive fingerprint,
+            // no path keywords, no CRC match) from leaking to random zip-accepting systems
+            if extLower == "zip" && winner.value <= 40 {
+                LoggerService.debug(category: "ROMIdentifier", "Dropping \(filename): no reliable identification signal for this zip file")
+                return nil
+            }
+            
+            // Arcade validation: if winner is mame or fba, validate the filename against known romset names
+            if winner.key == "mame" || winner.key == "fba" {
+                let shortName = url.deletingPathExtension().lastPathComponent.lowercased()
+                let service = MAMEUnifiedService.shared
+                
+                if !service.isValidArcadeRomsetName(shortName) {
+                    LoggerService.debug(category: "ROMIdentifier", "Dropping \(filename): winner is \(winner.key) but '\(shortName)' is not a valid arcade romset name")
+                    return nil
+                }
+                
+                // Disambiguation: if FBNeo won but the filename is also in MAME, prefer MAME
+                if winner.key == "fba" && service.isMAMERomsetName(shortName) {
+                    LoggerService.debug(category: "ROMIdentifier", "Reassigning \(filename) from fba to mame: filename matches both MAME and FBNeo romsets")
+                    return cachedSystems.first { $0.id == "mame" } ?? SystemDatabase.system(forID: "mame")
+                }
+            }
+            
             return cachedSystems.first { $0.id == winner.key } ?? SystemDatabase.system(forID: winner.key)
         } else {
             let topCandidates = sortedCandidates.prefix(3).map { "\($0.key): \($0.value)" }.joined(separator: ", ")
@@ -283,24 +326,73 @@ enum ROMIdentifier {
 
     static func identifyDiscSystem(url: URL, candidates: inout [String: Int]) -> String? {
         LoggerService.extreme(category: "ROMIdentifier", "Attempting disc-based system identification for \(url.lastPathComponent)")
-        guard let config = ISOScanner.extractSystemConfig(from: url) else {
-            // If SYSTEM.CNF is missing, check for PARAM.SFO (PSP)
-            if hasPSPParameterFile(url: url) { 
-                candidates["psp", default: 0] += 100
-                return "psp" 
+
+        // 1. ISO 9660-based systems: PS1/PS2 via SYSTEM.CNF
+        if let config = ISOScanner.extractSystemConfig(from: url) {
+            if config.contains("BOOT2") {
+                candidates["ps2", default: 0] += 100
+                return "ps2"
+            } else if config.contains("BOOT") {
+                candidates["ps1", default: 0] += 70
+                candidates["psx", default: 0] += 70
+                return "psx"
             }
             return nil
         }
-        
-        // hardcoded for PS1 and PS2
-        if config.contains("BOOT2") {
-            candidates["ps2", default: 0] += 100
-            return "ps2"
-        } else if config.contains("BOOT") {
-            candidates["ps1", default: 0] += 70
-            candidates["psx", default: 0] += 70
-            return "psx"
+
+        // 2. PSP via PARAM.SFO
+        if hasPSPParameterFile(url: url) {
+            candidates["psp", default: 0] += 100
+            return "psp"
         }
+
+        // 3. Non-ISO9660 disc systems — scan boot sector for known markers
+        return identifyDiscSystemByBootSector(url: url, candidates: &candidates)
+    }
+
+    private static func identifyDiscSystemByBootSector(url: URL, candidates: inout [String: Int]) -> String? {
+        guard let handle = try? FileHandle(forReadingFrom: url) else { return nil }
+        defer { try? handle.close() }
+        guard let bootData = try? handle.read(upToCount: 128 * 1024) else { return nil }
+
+        let discExtensions = Set(["bin", "iso", "img", "cue", "chd"])
+
+        var bestMatch: String?
+        var bestSpecificity = 0
+
+        for system in cachedSystems {
+            guard !system.magicHeaders.isEmpty,
+                  system.extensions.contains(where: { discExtensions.contains($0) })
+            else { continue }
+
+            for magicHeader in system.magicHeaders {
+                guard let bytes = magicHeader.bytes, !bytes.isEmpty else { continue }
+                let expectedData = parseHeaderBytes(bytes, url.lastPathComponent)
+                if expectedData.isEmpty { continue }
+
+                guard bootData.range(of: expectedData) != nil else { continue }
+
+                // 3DO uses a proprietary CD-ROM filesystem without ISO 9660.
+                // "CD-ROM" alone is not unique, so verify CD001 (ISO 9660) is absent.
+                if system.id == "3do" {
+                    if bootData.range(of: "CD001".data(using: .ascii)!) != nil {
+                        continue
+                    }
+                }
+
+                let specificity = expectedData.count
+                if specificity > bestSpecificity {
+                    bestSpecificity = specificity
+                    bestMatch = system.id
+                }
+            }
+        }
+
+        if let bestMatch {
+            candidates[bestMatch, default: 0] += 100
+            return bestMatch
+        }
+
         return nil
     }
 
@@ -382,11 +474,36 @@ enum ROMIdentifier {
 
     private static func scoreByMAME(url: URL, candidates: inout [String: Int]) {
         let shortName = url.deletingPathExtension().lastPathComponent.lowercased()
-        LoggerService.debug(category: "ROMIdentifier", "Performing MAME lookup for \(url.lastPathComponent) with short name: \(shortName)")
-        if let mameEntry = MAMEUnifiedService.shared.lookup(shortName: shortName), 
-           mameEntry.isRunnableInAnyCore && !mameEntry.isBIOS {
+        let strippedName = MAMEUnifiedService.stripDuplicateSuffix(shortName)
+        LoggerService.debug(category: "ROMIdentifier", "Performing MAME lookup for \(url.lastPathComponent) with short name: \(shortName) (stripped: \(strippedName))")
+        
+        // Try original name first, then stripped (for macOS duplicate suffixes like "sf2 (1)")
+        guard let matchName = MAMEUnifiedService.shared.lookup(shortName: shortName) != nil ? shortName :
+                (strippedName != shortName && MAMEUnifiedService.shared.lookup(shortName: strippedName) != nil ? strippedName : nil),
+              let mameEntry = MAMEUnifiedService.shared.lookup(shortName: matchName) else {
+            return // Not in MAME database at all → let other systems compete
+        }
+        
+        if mameEntry.isRunnableInAnyCore && !mameEntry.isBIOS {
             candidates["mame", default: 0] += 90
             LoggerService.debug(category: "ROMIdentifier", "MAME lookup match for \(url.lastPathComponent): \(mameEntry.shortName)")
+        } else {
+            candidates.removeAll(keepingCapacity: true)
+            LoggerService.debug(category: "ROMIdentifier", "Dropping \(url.lastPathComponent): known MAME entry (\(mameEntry.isBIOS ? "BIOS" : "unplayable")) — not a playable game")
+        }
+    }
+
+    private static func scoreByFBNeo(url: URL, candidates: inout [String: Int]) {
+        let shortName = url.deletingPathExtension().lastPathComponent.lowercased()
+        let strippedName = MAMEUnifiedService.stripDuplicateSuffix(shortName)
+        LoggerService.debug(category: "ROMIdentifier", "Performing FBNeo lookup for \(url.lastPathComponent) with short name: \(shortName) (stripped: \(strippedName))")
+        
+        let isFBNeo = MAMEUnifiedService.shared.isFBNeoOnlyRomsetName(shortName) ||
+                      (strippedName != shortName && MAMEUnifiedService.shared.isFBNeoOnlyRomsetName(strippedName))
+        
+        if isFBNeo {
+            candidates["fba", default: 0] += 90
+            LoggerService.debug(category: "ROMIdentifier", "FBNeo lookup match for \(url.lastPathComponent)")
         }
     }
 

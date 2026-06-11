@@ -278,12 +278,21 @@ class SystemDatabase {
         return appDir.appendingPathComponent("SystemDatabase.json")
     }()
 
+    private static let bundleFingerprintKey = "systemDBBundleFingerprint"
+
+    private static func fingerprint(_ data: Data) -> String {
+        let sum = data.reduce(UInt64(0)) { $0 &+ UInt64($1) }
+        return "\(data.count).\(sum)"
+    }
+
     static func _loadSystems() -> [SystemInfo] {
         // 1. Load the BASE systems from the App Bundle (Source of Truth for hardcoded data)
         var bundledSystems: [String: SystemInfo] = [:]
+        var bundleFingerprint = ""
         if let bundleURL = Bundle.main.url(forResource: "SystemDatabase", withExtension: "json") {
             do {
                 let data = try Data(contentsOf: bundleURL)
+                bundleFingerprint = fingerprint(data)
                 let parsedBundle = try JSONDecoder().decode([SystemInfo].self, from: data)
                 for sys in parsedBundle {
                     bundledSystems[sys.id] = sys
@@ -302,10 +311,20 @@ class SystemDatabase {
             LoggerService.error(category: "SystemDatabase", "🚨 FILE NOT FOUND: SystemDatabase.json is NOT in the App Bundle!, path: \(cacheURL)")
         }
 
+        // Detect bundle update — discard cache if bundled JSON changed
+        let lastFingerprint = UserDefaults.standard.string(forKey: Self.bundleFingerprintKey) ?? ""
+        let bundleChanged = !bundleFingerprint.isEmpty && bundleFingerprint != lastFingerprint
+        if !bundleFingerprint.isEmpty {
+            UserDefaults.standard.set(bundleFingerprint, forKey: Self.bundleFingerprintKey)
+        }
+
         // 2. Load the CACHED systems (Libretro discoveries, user preferences)
         var cachedSystems: [String: SystemInfo] = [:]
-        if let data = try? Data(contentsOf: cacheURL),
-        let parsedCache = try? JSONDecoder().decode([SystemInfo].self, from: data) {
+        if bundleChanged {
+            LoggerService.debug(category: "SystemDatabase", "Bundle fingerprint changed — discarding stale cache")
+            try? FileManager.default.removeItem(at: cacheURL)
+        } else if let data = try? Data(contentsOf: cacheURL),
+                  let parsedCache = try? JSONDecoder().decode([SystemInfo].self, from: data) {
             for sys in parsedCache {
                 cachedSystems[sys.id] = sys
             }
@@ -374,11 +393,22 @@ class SystemDatabase {
         SystemDatabaseWrapper.shared.systems = updatedSystems
     }
 
-    static var systemsForDisplay: [SystemInfo] { systems.filter { $0.displayInUI } }
+    static var systemsForDisplay: [SystemInfo] {
+        let mergeGBGBC = AppSettings.getBool("mergeGBGBC", defaultValue: true)
+        let mergeMameFBA = AppSettings.getBool("mergeMameFBA", defaultValue: true)
+        return systems.filter { system in
+            if system.id == "gbc" { return !mergeGBGBC }
+            if system.id == "fba" { return !mergeMameFBA }
+            return system.displayInUI
+        }
+    }
 
     static func allInternalIDs(forDisplayID id: String) -> [String] {
+        let mergeGBGBC = AppSettings.getBool("mergeGBGBC", defaultValue: true)
+        let mergeMameFBA = AppSettings.getBool("mergeMameFBA", defaultValue: true)
         switch id {
-        case "gb", "gbc": return ["gb", "gbc"]
+        case "gb", "gbc": return mergeGBGBC ? ["gb", "gbc"] : [id]
+        case "mame", "fba": return mergeMameFBA ? ["mame", "fba"] : [id]
         default: return [id]
         }
     }
@@ -388,22 +418,36 @@ class SystemDatabase {
     }
 
     static func multiSystemGroups() -> [String: [String]] {
-        return [
-            "gb": ["gb", "gbc"],
-            "gbc": ["gb", "gbc"],
-        ]
+        let mergeGBGBC = AppSettings.getBool("mergeGBGBC", defaultValue: true)
+        let mergeMameFBA = AppSettings.getBool("mergeMameFBA", defaultValue: true)
+        var groups: [String: [String]] = [:]
+        if mergeGBGBC {
+            groups["gb"] = ["gb", "gbc"]
+            groups["gbc"] = ["gb", "gbc"]
+        }
+        if mergeMameFBA {
+            groups["mame"] = ["mame", "fba"]
+            groups["fba"] = ["mame", "fba"]
+        }
+        return groups
     }
 
     static func displaySystem(forInternalID id: String) -> SystemInfo? {
+        let mergeGBGBC = AppSettings.getBool("mergeGBGBC", defaultValue: true)
+        let mergeMameFBA = AppSettings.getBool("mergeMameFBA", defaultValue: true)
         switch id {
-        case "gbc": return systems.first { $0.id == "gb" }
+        case "gbc": return mergeGBGBC ? systems.first { $0.id == "gb" } : systems.first { $0.id == "gbc" }
+        case "fba": return mergeMameFBA ? systems.first { $0.id == "mame" } : systems.first { $0.id == "fba" }
         default: return systems.first { $0.id == id }
         }
     }
 
     static func systemName(forInternalID id: String) -> String {
+        let mergeGBGBC = AppSettings.getBool("mergeGBGBC", defaultValue: true)
+        let mergeMameFBA = AppSettings.getBool("mergeMameFBA", defaultValue: true)
         switch id {
-        case "gb", "gbc": return "Game Boy"
+        case "gb", "gbc": return mergeGBGBC ? "Game Boy" : system(forID: id)?.name ?? id
+        case "mame", "fba": return mergeMameFBA ? "Arcade (MAME / FBNeo)" : system(forID: id)?.name ?? id
         default: return system(forID: id)?.name ?? id
         }
     }

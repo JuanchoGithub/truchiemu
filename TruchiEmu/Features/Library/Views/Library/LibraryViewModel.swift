@@ -53,6 +53,13 @@ var sortByLastPlayed: Bool = false
                 self?.refreshData()
             }
             .store(in: &cancellables)
+
+        // Observe preference changes (merge toggles, etc.)
+        SystemPreferences.shared.$updateTrigger
+            .sink { [weak self] _ in
+                self?.refreshData()
+            }
+            .store(in: &cancellables)
     }
     
 func updateFilters(filter: LibraryFilter, searchText: String, activeFilters: Set<String>, sortByLastPlayed: Bool, sortByLastAdded: Bool, selectedGenres: Set<String> = []) {

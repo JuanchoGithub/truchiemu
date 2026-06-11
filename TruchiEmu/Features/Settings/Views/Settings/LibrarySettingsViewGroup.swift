@@ -40,7 +40,7 @@ private enum LibrarySection: CaseIterable, Identifiable {
   var searchKeywords: String {
     switch self {
     case .displayOptions:
-      return "display options show bios files hidden mame game list sidebar"
+      return "display options show bios files hidden mame game list sidebar merge gbc gb fbneo"
     case .libraryFolders:
       return "library folders roms games scan rescan primary folder subfolders add folder refresh rebuild"
     case .saveDirectories:
@@ -104,11 +104,27 @@ var body: some View {
                          .font(.caption)
                          .foregroundStyle(AppColors.textSecondary(colorScheme))
                      
-                     Toggle(loc.localized("library.showHiddenMAMEFiles"), isOn: $prefs.showHiddenMAMEFiles)
-                     Text(loc.localized("library.showHiddenMAMEFilesDescription"))
-                         .font(.caption)
-                         .foregroundStyle(AppColors.textSecondary(colorScheme))
-                 } header: {
+                      Toggle(loc.localized("library.showHiddenMAMEFiles"), isOn: $prefs.showHiddenMAMEFiles)
+                      Text(loc.localized("library.showHiddenMAMEFilesDescription"))
+                          .font(.caption)
+                          .foregroundStyle(AppColors.textSecondary(colorScheme))
+
+                      Toggle(loc.localized("settings.mergeGBGBC"), isOn: Binding(
+                          get: { SystemDatabaseWrapper.shared.mergeGBGBC },
+                          set: { SystemDatabaseWrapper.shared.mergeGBGBC = $0 }
+                      ))
+                      Text(loc.localized("settings.mergeGBGBCDescription"))
+                          .font(.caption)
+                          .foregroundStyle(AppColors.textSecondary(colorScheme))
+
+                      Toggle(loc.localized("settings.mergeMameFBA"), isOn: Binding(
+                          get: { SystemDatabaseWrapper.shared.mergeMameFBA },
+                          set: { SystemDatabaseWrapper.shared.mergeMameFBA = $0 }
+                      ))
+                      Text(loc.localized("settings.mergeMameFBADescription"))
+                          .font(.caption)
+                          .foregroundStyle(AppColors.textSecondary(colorScheme))
+                  } header: {
                      Label { Text(loc.localized("library.displayOptions")) } icon: { Image(systemName: "eyeglasses") }
                  }
              }
