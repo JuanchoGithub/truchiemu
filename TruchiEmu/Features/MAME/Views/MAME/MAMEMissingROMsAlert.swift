@@ -144,18 +144,18 @@ func checkMAMEDependencies(rom: ROM, coreID: String) -> MAMEPreLaunchCheck {
             LoggerService.info(category: "MAMEDep", "Core \(core): cloneOf=\(dep.cloneOf ?? "nil"), romOf=\(dep.romOf ?? "nil"), sampleOf=\(dep.sampleOf ?? "nil"), merged=\(dep.mergedROMs?.joined(separator: ",") ?? "nil")")
         }
         
-        var requiredFiles: [String] = []
-        var missingFiles: [String] = []
+        var requiredFiles: Set<String> = []
+        var missingFiles: Set<String> = []
         
-        // Check all dependency types for each core
-        for (_, dep) in coreDeps {
+        // Only check the active core's dependencies
+        if let dep = coreDeps[coreID] {
             // Parent ROM (clone)
             if let cloneOf = dep.cloneOf, !cloneOf.isEmpty {
                 let path = romsDirectory.appendingPathComponent("\(cloneOf).zip")
                 let zipName = "\(cloneOf).zip"
-                requiredFiles.append(zipName)
+                requiredFiles.insert(zipName)
                 if !FileManager.default.fileExists(atPath: path.path) {
-                    missingFiles.append(zipName)
+                    missingFiles.insert(zipName)
                 }
             }
             
@@ -163,9 +163,9 @@ func checkMAMEDependencies(rom: ROM, coreID: String) -> MAMEPreLaunchCheck {
             if let romOf = dep.romOf, !romOf.isEmpty {
                 let path = romsDirectory.appendingPathComponent("\(romOf).zip")
                 let zipName = "\(romOf).zip"
-                requiredFiles.append(zipName)
+                requiredFiles.insert(zipName)
                 if !FileManager.default.fileExists(atPath: path.path) {
-                    missingFiles.append(zipName)
+                    missingFiles.insert(zipName)
                 }
             }
             
@@ -173,9 +173,9 @@ func checkMAMEDependencies(rom: ROM, coreID: String) -> MAMEPreLaunchCheck {
             if let sampleOf = dep.sampleOf, !sampleOf.isEmpty {
                 let path = romsDirectory.appendingPathComponent("\(sampleOf).zip")
                 let zipName = "\(sampleOf).zip"
-                requiredFiles.append(zipName)
+                requiredFiles.insert(zipName)
                 if !FileManager.default.fileExists(atPath: path.path) {
-                    missingFiles.append(zipName)
+                    missingFiles.insert(zipName)
                 }
             }
             
@@ -184,21 +184,21 @@ func checkMAMEDependencies(rom: ROM, coreID: String) -> MAMEPreLaunchCheck {
                 for mergedName in merged {
                     let path = romsDirectory.appendingPathComponent("\(mergedName).zip")
                     let zipName = "\(mergedName).zip"
-                    requiredFiles.append(zipName)
+                    requiredFiles.insert(zipName)
                     if !FileManager.default.fileExists(atPath: path.path) {
-                        missingFiles.append(zipName)
+                        missingFiles.insert(zipName)
                     }
                 }
             }
         }
         
-        LoggerService.info(category: "MAMEDep", "Required: \(requiredFiles.joined(separator: ",")), Missing: \(missingFiles.joined(separator: ","))")
+        LoggerService.info(category: "MAMEDep", "Required: \(Array(requiredFiles).sorted().joined(separator: ",")), Missing: \(Array(missingFiles).sorted().joined(separator: ","))")
         
         if !missingFiles.isEmpty {
             return .missingFiles(
                 gameName: rom.displayName,
-                required: requiredFiles,
-                missing: missingFiles,
+                required: Array(requiredFiles).sorted(),
+                missing: Array(missingFiles).sorted(),
                 romsDirectory: romsDirectory
             )
         }

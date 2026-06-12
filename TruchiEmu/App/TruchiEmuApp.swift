@@ -650,12 +650,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
       self.removeEditMenu()
     }
     
-    // Setup periodic log maintenance timer (every 12 hours)
-    Timer.scheduledTimer(withTimeInterval: 12 * 60 * 60, repeats: true) { _ in
-      LoggerService.debug(category: "App", "Running periodic log maintenance")
-      LogManager.shared.cleanupOldRotatedLogs()
-      LogManager.shared.quickTrimLog()
-    }
+        // Setup periodic log maintenance timer (every 12 hours)
+        Timer.scheduledTimer(withTimeInterval: 12 * 60 * 60, repeats: true) { _ in
+            LoggerService.debug(category: "App", "Running periodic log maintenance")
+            LogManager.shared.cleanupOldRotatedLogs()
+            LogManager.shared.quickTrimLog()
+        }
+
+        ArchiveExtractor.shared.cleanExpiredCache()
   }
 
 	// MARK: - UNUserNotificationCenterDelegate

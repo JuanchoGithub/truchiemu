@@ -3,6 +3,7 @@
 #import "XPCSharedMemory.h"
 
 #import "RcheevosWrapper.h"
+#import "ArchiveReader.h"
 
 @class LibretroBridgeImpl;
 

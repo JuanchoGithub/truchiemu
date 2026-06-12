@@ -82,8 +82,9 @@ struct MAMEDependencyStatusView: View {
     ))
 
     if let entry = MAMEUnifiedService.shared.lookup(shortName: shortName),
-       let coreDeps = entry.coreDeps {
-      for (_, dep) in coreDeps {
+       let coreDeps = entry.coreDeps,
+       let activeCoreID = coreID,
+       let dep = coreDeps[activeCoreID] {
         if let cloneOf = dep.cloneOf, !cloneOf.isEmpty {
           let parentPath = romsDirectory.appendingPathComponent("\(cloneOf).zip")
           deps.append(MAMEDependencyInfo(
@@ -125,7 +126,6 @@ struct MAMEDependencyStatusView: View {
             ))
           }
         }
-      }
     }
 
     await MainActor.run {

@@ -794,6 +794,8 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
         let affectedSubfolders = (subfolderMap[folderPath] ?? []).filter { !$0.isPrimary && !repository.isFolderPrimary(urlPath: $0.url.path) }
         var pathsToRemove = [folderPath]; pathsToRemove.append(contentsOf: affectedSubfolders.map { $0.url.path })
 
+        let removedROMs = roms.filter { rom in pathsToRemove.contains { rom.path.path == $0 || rom.path.path.hasPrefix($0 + "/") } }
+
         primaryFolders.remove(at: index)
         for sub in affectedSubfolders { subfolderMap[folderPath]?.removeAll { $0.url.path == sub.url.path } }
         if subfolderMap[folderPath]?.isEmpty == true { subfolderMap.removeValue(forKey: folderPath) }
@@ -803,18 +805,23 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
         repository.removeLibraryFolder(urlPath: folderPath, removeSubfolders: true)
 
         repository.deleteROMsByPath(pathsToRemove)
-        saveSecurityScopedBookmarks(); updateCounts(); saveROMsToDatabase()
+        LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryMetadataStore.pathKey(for: $0) }))
+        saveSecurityScopedBookmarks()
+        updateCounts()
     }
 
     @MainActor func removeSubfolder(from primaryFolderPath: String, subfolderPath: String) {
         if repository.isFolderPrimary(urlPath: subfolderPath) { return }
         let prefix = subfolderPath.hasSuffix("/") ? subfolderPath : subfolderPath + "/"
         
+        let removedROMs = roms.filter { $0.path.path == subfolderPath || $0.path.path.hasPrefix(prefix) }
+
         subfolderMap[primaryFolderPath]?.removeAll { $0.url.path == subfolderPath }
         if subfolderMap[primaryFolderPath]?.isEmpty == true { subfolderMap.removeValue(forKey: primaryFolderPath) }
 
         roms.removeAll { $0.path.path == subfolderPath || $0.path.path.hasPrefix(prefix) }
         repository.removeLibraryFolder(urlPath: subfolderPath, removeSubfolders: true)
+        LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryMetadataStore.pathKey(for: $0) }))
         updateCounts(); saveROMsToDatabase()
     }
 

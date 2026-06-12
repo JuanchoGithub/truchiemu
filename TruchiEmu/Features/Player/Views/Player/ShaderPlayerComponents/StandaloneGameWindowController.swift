@@ -505,15 +505,15 @@ super.init(window: window)
         LoggerService.info(category: "GameLauncher", "launch() received \(shaderUniformOverrides.count) shader uniforms, key shellColorIndex=\(shaderUniformOverrides["shellColorIndex"] ?? -1)")
         
         // Check if this same ROM is already running in another window
-        if RunningGamesTracker.shared.isRunning(romPath: rom.path.path) {
+        if RunningGamesTracker.shared.isRunning(romPath: rom.runningKey) {
             RunningGamesTracker.shared.notifyDuplicateLaunch(romName: rom.displayName)
             window?.close()
             return
         }
         
     // Register this ROM as running
-    RunningGamesTracker.shared.registerRunning(romPath: rom.path.path, displayName: rom.displayName)
-    trackedROMPath = rom.path.path
+        RunningGamesTracker.shared.registerRunning(romPath: rom.runningKey, displayName: rom.displayName)
+        trackedROMPath = rom.runningKey
     trackedROM = rom
     accumulatedPlaytime = 0
     startPlaytimeTracking()

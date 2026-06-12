@@ -56,7 +56,7 @@ actor ROMScanner {
         var playableMameURLs = Set<URL>()
 
         for url in urls {
-            if url.pathExtension.lowercased() == "zip" {
+        if url.pathExtension.lowercased() == "zip" || url.pathExtension.lowercased() == "7z" {
                 let shortName = url.deletingPathExtension().lastPathComponent.lowercased()
                 let strippedName = MAMEUnifiedService.stripDuplicateSuffix(shortName)
 
@@ -65,6 +65,8 @@ actor ROMScanner {
                     guard MAMEUnifiedService.shared.lookup(shortName: nameToTry) != nil else { continue }
                     if MAMEUnifiedService.shared.isRunnable(shortName: nameToTry)
                         && !MAMEUnifiedService.shared.isBIOS(shortName: nameToTry) {
+                        // Verify this isn't a console ROM in a ZIP (e.g. "batman.zip" with a .nes inside)
+                        if ROMIdentifier.archiveContainsConsoleROM(url) { continue }
                         playableMameURLs.insert(url)
                         break
                     }
@@ -149,27 +151,27 @@ actor ROMScanner {
         
         // 4. Concurrently Deep Scan the Rest
         let maxConcurrentTasks = 16
-        await withTaskGroup(of: ROM?.self) { group in
+        await withTaskGroup(of: [ROM].self) { group in
             var iterator = deepScanURLs.makeIterator()
-            
+
             // Enqueue initial batch of tasks
             for _ in 0..<maxConcurrentTasks {
                 if let nextURL = iterator.next() {
                     group.addTask { await self.processSingleFile(url: nextURL, ignoredURLs: ignoredURLs, xmlCache: xmlCache, progressTracker: progressTracker, cancellationToken: cancellationToken) }
                 }
             }
-            
+
             // Keep feeding the task group until empty
             for await result in group {
-                if let rom = result {
+                for rom in result {
                     found.append(rom)
                     let ext = rom.path.pathExtension.lowercased()
                     if ext == "zip" || ext == "7z" { zipCount += 1 }
                     if rom.systemID == "unknown" { unknownCount += 1 }
                 }
-                
+
                 if isCancelled || (cancellationToken?.isCancelled ?? false) { continue }
-                
+
                 if let nextURL = iterator.next() {
                     group.addTask { await self.processSingleFile(url: nextURL, ignoredURLs: ignoredURLs, xmlCache: xmlCache, progressTracker: progressTracker, cancellationToken: cancellationToken) }
                 }
@@ -191,54 +193,123 @@ actor ROMScanner {
         xmlCache: [URL: [String: ROMMetadata]],
         progressTracker: ProgressTracker,
         cancellationToken: ScanCancellationToken?
-    ) async -> ROM? {
+    ) async -> [ROM] {
         await progressTracker.incrementAndReport()
-        
-        if isCancelled || (cancellationToken?.isCancelled ?? false) { return nil }
-        if ignoredURLs.contains(url.standardized.path) { return nil }
-        guard (try? url.resourceValues(forKeys: [.isRegularFileKey]))?.isRegularFile == true else { return nil }
-        
+
+        if isCancelled || (cancellationToken?.isCancelled ?? false) { return [] }
+        if ignoredURLs.contains(url.standardized.path) { return [] }
+        guard (try? url.resourceValues(forKeys: [.isRegularFileKey]))?.isRegularFile == true else { return [] }
+
         let ext = url.pathExtension.lowercased()
-        guard !ext.isEmpty, !shouldSkipExtension(ext) else { return nil }
-        if url.path.contains("/Contents/") || url.path.hasSuffix(".app") { return nil }
-        
+        guard !ext.isEmpty, !shouldSkipExtension(ext) else { return [] }
+        if url.path.contains("/Contents/") || url.path.hasSuffix(".app") { return [] }
+
         let filename = url.lastPathComponent.lowercased()
-        
+
         // Ignore specific PS1 BIOS files
-        if filename == "scph5500.bin" || filename == "scph5501.bin" || filename == "scph5502.bin" { return nil }
-        
+        if filename == "scph5500.bin" || filename == "scph5501.bin" || filename == "scph5502.bin" { return [] }
+
         guard let system = await identifySystem(url: url, extension: ext) else {
-            return nil
+            return []
         }
+
+        // Archive-aware systems (MAME, FBNeo, ScummVM, DOS, etc.) use the whole archive
+        if ArchiveExtractor.isArchiveAwareSystem(system.id) || ext == "zip" && (system.id == "mame" || system.id == "fba" || system.id == "hbmame") {
+            let name = url.deletingPathExtension().lastPathComponent
+            var rom = ROM(id: UUID(), name: name, path: url, systemID: system.id, originalSystemID: system.id)
+
+            if KnownBIOS.isKnownBios(filename: url.lastPathComponent) {
+                rom.isBios = true
+                rom.isHidden = true
+                rom.category = "bios"
+            }
+
+            if system.id == "mame" {
+                await applyMAMEIdentification(to: &rom, url: url)
+                if rom.mameRomType == nil { return [] }
+            }
+
+            let folder = url.deletingLastPathComponent()
+            rom.metadata = xmlCache[folder]?[url.lastPathComponent]
+            if let crcFromMeta = rom.metadata?.crc32 { rom.crc32 = crcFromMeta }
+
+            rom.refreshDerivedFields()
+            if !rom.isBios && FileManager.default.fileExists(atPath: rom.boxArtLocalPath.path) {
+                rom.hasBoxArt = true
+                rom.refreshDerivedFields()
+            }
+
+            return [rom]
+        }
+
+        // For archives containing inner ROMs, create one ROM entry per inner file
+        let archiveExts: Set<String> = ["zip", "7z", "rar"]
+        if archiveExts.contains(ext) {
+            let innerROMs = ROMIdentifier.listInnerROMs(url: url)
+            if !innerROMs.isEmpty {
+                var results: [ROM] = []
+                for inner in innerROMs {
+                    let innerName = URL(fileURLWithPath: inner.relativePath).deletingPathExtension().lastPathComponent
+                    var rom = ROM(id: UUID(), name: innerName, path: url, systemID: inner.systemID, originalSystemID: inner.systemID)
+                    rom.innerROMPath = inner.relativePath
+
+                    let folder = url.deletingLastPathComponent()
+                    rom.metadata = xmlCache[folder]?[url.lastPathComponent]
+                    if let crcFromMeta = rom.metadata?.crc32 { rom.crc32 = crcFromMeta }
+
+                    rom.refreshDerivedFields()
+                    if !rom.isBios && FileManager.default.fileExists(atPath: rom.boxArtLocalPath.path) {
+                        rom.hasBoxArt = true
+                        rom.refreshDerivedFields()
+                    }
+                    results.append(rom)
+                }
+                return results
+            }
+
+            // Fallback: archive identified but no inner ROMs found (e.g. ambiguous inner extensions)
+            let name = url.deletingPathExtension().lastPathComponent
+            var rom = ROM(id: UUID(), name: name, path: url, systemID: system.id, originalSystemID: system.id)
+
+            let folder = url.deletingLastPathComponent()
+            rom.metadata = xmlCache[folder]?[url.lastPathComponent]
+            if let crcFromMeta = rom.metadata?.crc32 { rom.crc32 = crcFromMeta }
+
+            rom.refreshDerivedFields()
+            if !rom.isBios && FileManager.default.fileExists(atPath: rom.boxArtLocalPath.path) {
+                rom.hasBoxArt = true
+                rom.refreshDerivedFields()
+            }
+
+            return [rom]
+        }
+
+        // Non-archive files: standard single-ROM entry
         let name = url.deletingPathExtension().lastPathComponent
         var rom = ROM(id: UUID(), name: name, path: url, systemID: system.id, originalSystemID: system.id)
-        
+
         if KnownBIOS.isKnownBios(filename: url.lastPathComponent) {
             rom.isBios = true
             rom.isHidden = true
             rom.category = "bios"
         }
-        
+
         if system.id == "mame" {
             await applyMAMEIdentification(to: &rom, url: url)
-            if rom.mameRomType == nil { return nil }
+            if rom.mameRomType == nil { return [] }
         }
-        
+
         let folder = url.deletingLastPathComponent()
         rom.metadata = xmlCache[folder]?[url.lastPathComponent]
-        
-        // Also set CRC on the ROM if it exists in metadata (from games.xml)
-        if let crcFromMeta = rom.metadata?.crc32 {
-            rom.crc32 = crcFromMeta
-        }
-        
+        if let crcFromMeta = rom.metadata?.crc32 { rom.crc32 = crcFromMeta }
+
         rom.refreshDerivedFields()
         if !rom.isBios && FileManager.default.fileExists(atPath: rom.boxArtLocalPath.path) {
             rom.hasBoxArt = true
             rom.refreshDerivedFields()
         }
-        
-        return rom
+
+        return [rom]
     }
     
     private func buildIgnoreList(for urls: [URL], in uniqueFolders: Set<URL>) async -> Set<String> {

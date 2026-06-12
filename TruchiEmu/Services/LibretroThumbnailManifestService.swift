@@ -168,6 +168,31 @@ class LibretroThumbnailManifestService: ObservableObject {
         }
     }
 
+    // Probes whether a GitHub repository exists for the given repo name.
+    // Returns true if the repo responds with 200, false if 404 or other error.
+    func repoExists(repoName: String) async -> Bool {
+        let probeURL = "https://api.github.com/repos/libretro-thumbnails/\(repoName)"
+        guard let url = URL(string: probeURL) else { return false }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "HEAD"
+
+        do {
+            let (_, response) = try await urlSession.data(for: request)
+            guard let httpResponse = response as? HTTPURLResponse else { return false }
+            let exists = httpResponse.statusCode == 200
+            if !exists {
+                LoggerService.debug(category: logCategory, "Repo probe: \(repoName) → HTTP \(httpResponse.statusCode) (does not exist)")
+            } else {
+                LoggerService.debug(category: logCategory, "Repo probe: \(repoName) → exists")
+            }
+            return exists
+        } catch {
+            LoggerService.debug(category: logCategory, "Repo probe: \(repoName) → error: \(error.localizedDescription)")
+            return false
+        }
+    }
+
     // Retrieves the file manifest for a specific system repository, with caching.
     private func getManifest(for repoName: String) async throws -> Set<String> {
         if let cached = manifestCache[repoName] {

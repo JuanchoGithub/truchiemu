@@ -350,13 +350,26 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
     let romPath = rom.path
         let fileExt = romPath.pathExtension.lowercased()
         
-        // Only handle ZIP files - pass through other formats directly
-        if fileExt == "zip" {
-            LoggerService.info(category: "ScummVM", "Processing ZIP file: \(romPath.path)")
-            
-            // Step 1: Extract the ZIP
-            guard let extractedFolder = extractIfNeeded(zipPath: romPath) else {
-                LoggerService.info(category: "ScummVM", "Failed to extract ZIP: \(romPath.path)")
+        // Handle archive files (ZIP, 7z, RAR) - pass through other formats directly
+        let archiveExts: Set<String> = ["zip", "7z", "rar"]
+        if archiveExts.contains(fileExt) {
+            LoggerService.info(category: "ScummVM", "Processing archive file: \(romPath.path)")
+
+            // Step 1: Extract the archive
+            let extractedFolder: URL?
+            if fileExt == "zip" {
+                extractedFolder = extractIfNeeded(zipPath: romPath)
+            } else {
+                do {
+                    let files = try ArchiveExtractor.shared.extract(url: romPath, systemID: rom.systemID)
+                    extractedFolder = files.first?.deletingLastPathComponent()
+                } catch {
+                    LoggerService.info(category: "ScummVM", "Failed to extract \(fileExt): \(error.localizedDescription)")
+                    extractedFolder = nil
+                }
+            }
+            guard let extractedFolder else {
+                LoggerService.info(category: "ScummVM", "Failed to extract \(fileExt): \(romPath.path)")
                 return
             }
             

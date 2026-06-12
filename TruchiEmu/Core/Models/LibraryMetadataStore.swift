@@ -227,7 +227,10 @@ final class LibraryMetadataStore: ObservableObject {
     }
 
     static func pathKey(for rom: ROM) -> String {
-        rom.path.standardizedFileURL.path
+        if let inner = rom.innerROMPath {
+            return "\(rom.path.standardizedFileURL.path)!\(inner)"
+        }
+        return rom.path.standardizedFileURL.path
     }
 
     // Flush entire cache to SwiftData (used on init after sidecar migration).

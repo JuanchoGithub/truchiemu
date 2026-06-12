@@ -47,6 +47,10 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
     var shortNameForMAME: String = ""
     var filenameWithoutExtension: String = ""
     
+    // For ROMs inside archives: relative path of the ROM file within the archive (e.g. "game.nes").
+    // nil for regular files and archive-aware systems (MAME, ScummVM, etc.) that use the whole archive.
+    var innerROMPath: String?
+
     // RetroAchievements metadata
     var raGameId: Int?
     var raMatchStatus: String?
@@ -56,23 +60,33 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
     // Updates all stored derived properties based on current state.
     mutating func refreshDerivedFields() {
         // 1. filenameWithoutExtension
-        let rawName = path.lastPathComponent
-            .replacingOccurrences(of: ".zip", with: "")
-            .replacingOccurrences(of: ".7z", with: "")
-            .replacingOccurrences(of: ".rom", with: "")
+        let rawName: String
+        if let inner = innerROMPath {
+            rawName = URL(fileURLWithPath: inner).deletingPathExtension().lastPathComponent
+        } else {
+            rawName = path.lastPathComponent
+                .replacingOccurrences(of: ".zip", with: "")
+                .replacingOccurrences(of: ".7z", with: "")
+                .replacingOccurrences(of: ".rar", with: "")
+                .replacingOccurrences(of: ".rom", with: "")
+        }
         self.filenameWithoutExtension = rawName.lowercased()
 
         // 2. shortNameForMAME
         self.shortNameForMAME = self.filenameWithoutExtension
 
         // 3. fileExtension
-        self.fileExtension = path.pathExtension.lowercased()
+        if let inner = innerROMPath {
+            self.fileExtension = URL(fileURLWithPath: inner).pathExtension.lowercased()
+        } else {
+            self.fileExtension = path.pathExtension.lowercased()
+        }
 
         // 4. displayName
         if let custom = customName {
             self.displayName = GameNameFormatter.stripTags(custom)
         } else {
-            let baseName = metadata?.title ?? path.deletingPathExtension().lastPathComponent
+            let baseName = metadata?.title ?? rawName
             self.displayName = GameNameFormatter.stripTags(baseName)
         }
 
@@ -89,7 +103,12 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
 
         // 7. boxArtLocalPath
         let boxartDir = path.deletingLastPathComponent().appendingPathComponent("boxart")
-        let romNameWithoutExt = path.deletingPathExtension().lastPathComponent
+        let romNameWithoutExt: String
+        if let inner = innerROMPath {
+            romNameWithoutExt = URL(fileURLWithPath: inner).deletingPathExtension().lastPathComponent
+        } else {
+            romNameWithoutExt = path.deletingPathExtension().lastPathComponent
+        }
         let baseName = "\(romNameWithoutExt)_boxart"
         let pngPath = boxartDir.appendingPathComponent("\(baseName).png")
         let jpgPath = boxartDir.appendingPathComponent("\(baseName).jpg")
@@ -103,10 +122,23 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
             self.boxArtLocalPath = jpegPath
         } else {
             self.boxArtLocalPath = pngPath
+            if hasBoxArt {
+                hasBoxArt = false
+                needsAutomaticBoxArt = true
+            }
         }
 
         // 8. infoLocalPath
         self.infoLocalPath = path.deletingLastPathComponent().appendingPathComponent("\(name)_info.json")
+    }
+
+    // Unique key for tracking running games. Includes innerROMPath when present
+    // so that multiple ROMs from the same archive are tracked separately.
+    var runningKey: String {
+        if let inner = innerROMPath {
+            return "\(path.path)!\(inner)"
+        }
+        return path.path
     }
 }
 

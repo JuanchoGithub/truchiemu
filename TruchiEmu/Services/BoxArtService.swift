@@ -131,22 +131,30 @@ class BoxArtService: ObservableObject {
         let imageExtensions = ["png", "jpg", "jpeg", "webp", "gif", "bmp"]
         
         var candidateStems: [String] = []
-        let romFileName = rom.path.lastPathComponent
-        candidateStems.append("\(romFileName)_boxart")
-        
-        let romFileStem = rom.path.deletingPathExtension().lastPathComponent
-        candidateStems.append("\(romFileStem)_boxart")
-        
-        if rom.name != romFileStem && !rom.name.isEmpty {
-            candidateStems.append("\(rom.name)_boxart")
-        }
-        
-        let sanitized = romFileStem
-            .replacingOccurrences(of: " \\(.*?\\)", with: "", options: .regularExpression)
-            .replacingOccurrences(of: " \\[.*?\\]", with: "", options: .regularExpression)
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-        if sanitized != romFileStem && !sanitized.isEmpty {
-            candidateStems.append("\(sanitized)_boxart")
+        if let inner = rom.innerROMPath {
+            let innerStem = URL(fileURLWithPath: inner).deletingPathExtension().lastPathComponent
+            candidateStems.append("\(innerStem)_boxart")
+            if rom.name != innerStem && !rom.name.isEmpty {
+                candidateStems.append("\(rom.name)_boxart")
+            }
+        } else {
+            let romFileName = rom.path.lastPathComponent
+            candidateStems.append("\(romFileName)_boxart")
+
+            let romFileStem = rom.path.deletingPathExtension().lastPathComponent
+            candidateStems.append("\(romFileStem)_boxart")
+
+            if rom.name != romFileStem && !rom.name.isEmpty {
+                candidateStems.append("\(rom.name)_boxart")
+            }
+
+            let sanitized = romFileStem
+                .replacingOccurrences(of: " \\(.*?\\)", with: "", options: .regularExpression)
+                .replacingOccurrences(of: " \\[.*?\\]", with: "", options: .regularExpression)
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+            if sanitized != romFileStem && !sanitized.isEmpty {
+                candidateStems.append("\(sanitized)_boxart")
+            }
         }
         
         var seen = Set<String>()
@@ -279,7 +287,12 @@ class BoxArtService: ObservableObject {
     // MARK: - Libretro thumbnails CDN
 
     func fetchBoxArtLibretro(for rom: ROM) async -> URL? {
-        let romPathKey = rom.path.deletingPathExtension().lastPathComponent
+        let romPathKey: String
+        if let inner = rom.innerROMPath {
+            romPathKey = URL(fileURLWithPath: inner).deletingPathExtension().lastPathComponent
+        } else {
+            romPathKey = rom.path.deletingPathExtension().lastPathComponent
+        }
         let source = "libretro"
 
         // === OPTIMIZATION 2: Fast Cache Hit ===
@@ -291,8 +304,11 @@ class BoxArtService: ObservableObject {
             return URL(fileURLWithPath: cached.resolvedURL)
         }
 
-        guard let sysID = LibretroThumbnailResolver.effectiveThumbnailSystemID(for: rom),
-              let folder = LibretroThumbnailResolver.libretroFolderName(forSystemID: sysID) else { return nil }
+        guard let sysID = LibretroThumbnailResolver.effectiveThumbnailSystemID(for: rom) else { return nil }
+
+        // Resolve working folders (probes once, then cached)
+        let folders = await LibretroThumbnailResolver.workingFolders(forSystemID: sysID)
+        guard !folders.isEmpty else { return nil }
 
         // This is the heavy CRC calculation
         guard let gameTitle = await LibretroThumbnailResolver.resolveGameTitle(
@@ -310,27 +326,34 @@ class BoxArtService: ObservableObject {
 
         let localBoxArtDir = rom.path.deletingLastPathComponent().appendingPathComponent("boxart", isDirectory: true)
         let safeStem = LibretroThumbnailResolver.libretroFilesystemSafeName(gameTitle)
-        
+
         for stem in [gameTitle, safeStem] where !stem.isEmpty {
             if let local = LibretroThumbnailResolver.resolveLocalThumbnail(named: stem, in: localBoxArtDir) {
-                if isValidImageFile(at: local) { return local } 
+                if isValidImageFile(at: local) { return local }
                 else { try? FileManager.default.removeItem(at: local) }
             }
         }
 
-        let candidates = LibretroThumbnailResolver.candidateURLs(
-            base: thumbnailServerURL, systemFolder: folder, gameTitle: gameTitle,
-            knownVariants: knownVariants, priority: thumbnailPriority
-        )
+        // Generate candidate URLs across ALL working folders
+        var allCandidates: [(folder: String, url: URL)] = []
+        for folder in folders {
+            let urls = LibretroThumbnailResolver.candidateURLs(
+                base: thumbnailServerURL, systemFolder: folder, gameTitle: gameTitle,
+                knownVariants: knownVariants, priority: thumbnailPriority
+            )
+            for url in urls {
+                allCandidates.append((folder, url))
+            }
+        }
 
-        for url in candidates {
+        for (folder, url) in allCandidates {
             if let cached = cacheRepo.getBoxArtResolution(romPathKey: romPathKey, source: source) {
                 if cached.resolvedURL == url.absoluteString && !cached.isValid && cached.httpStatus != 0 { continue }
             }
-            
+
             let exists = await LibretroThumbnailManifestService.shared.existsInManifest(url: url, folderName: folder)
             guard exists else { continue }
-            
+
             var headStatusCode = -1
             if useHeadBeforeThumbnailDownload {
                 headStatusCode = await httpStatus(for: url, method: "HEAD", session: thumbnailURLSession)
@@ -339,7 +362,7 @@ class BoxArtService: ObservableObject {
                     continue
                 }
             }
-            
+
             if let saved = await downloadAndCache(artURL: url, for: rom, session: thumbnailURLSession) {
                 cacheRepo.storeBoxArtResolution(romPathKey: romPathKey, systemID: sysID, gameTitle: gameTitle, resolvedURL: saved.path, source: source, httpStatus: 200, isValid: true)
                 return saved
@@ -404,39 +427,46 @@ class BoxArtService: ObservableObject {
 
         let maxConcurrent = 2
         var modifiedIDs: [UUID] = []
+        let total = needsArt.count
         
         await withTaskGroup(of: (ROM, URL?).self) { group in
             var activeTasks = 0
+            var completed = 0
             var iterator = needsArt.makeIterator()
             
             while activeTasks < maxConcurrent, let rom = iterator.next() {
                 group.addTask {
                     if let local = self.resolveLocalBoxArt(for: rom) { return (rom, local) }
-                    return (rom, await self.fetchBoxArtGoogle(for: rom))
+                    return (rom, await self.fetchBoxArtLibretro(for: rom))
                 }
                 activeTasks += 1
             }
             
             for await result in group {
                 activeTasks -= 1
+                completed += 1
                 var (completedRom, url) = result
                 if url != nil {
                     completedRom.hasBoxArt = true
                     modifiedIDs.append(completedRom.id)
                     await MainActor.run { library.updateROM(completedRom, persist: false) }
                 }
+                onItemProgress?(completed, total, completedRom.displayName)
             if let nextRom = iterator.next() {
-                try? await Task.sleep(nanoseconds: 1_000_000_000)
+                try? await Task.sleep(nanoseconds: 500_000_000)
                 group.addTask {
                         if let local = self.resolveLocalBoxArt(for: nextRom) { return (nextRom, local) }
-                        return (nextRom, await self.fetchBoxArtGoogle(for: nextRom))
+                        return (nextRom, await self.fetchBoxArtLibretro(for: nextRom))
                     }
                     activeTasks += 1
                 }
             }
         }
         
-        await MainActor.run { library.saveROMsToDatabase(only: modifiedIDs) }
+        await MainActor.run {
+            library.saveROMsToDatabase(only: modifiedIDs)
+            if !modifiedIDs.isEmpty { signalBoxArtUpdated(for: UUID()) }
+        }
     }
     
     func fetchBoxArtGoogle(for rom: ROM) async -> URL? {

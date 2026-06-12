@@ -237,10 +237,15 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
                     } message: {
                         Text(loc.localized("settings.syncAllGamesMessage"))
                     }
-                }
             }
+        }
 
-            // Application Section
+        // Extracted ROM Cache Section
+        if !isSearching || matchesSearch("Extracted ROM cache archive zip 7z rar") {
+            ExtractedROMCacheSettingsView()
+        }
+
+        // Application Section
             if !isSearching || matchesSearch("Application version build notifications") {
                 Section(header: Label(loc.localized("settings.application"), systemImage: "app.badge")) {
                     LabeledContent(loc.localized("settings.version")) {
@@ -485,6 +490,7 @@ private struct CustomThemeButton: View {
         matchesSearch("Theme accent color appearance mode light dark gaming tinted surfaces toolbar") ||
         matchesSearch("Hidden Games category sidebar") ||
         matchesSearch("LaunchBox GamesDB sync metadata description developer publisher genre players ESRB") ||
+        matchesSearch("Extracted ROM cache archive zip 7z rar") ||
         matchesSearch("Application version build notifications") ||
         matchesSearch("Updates automatic check new version")
     }

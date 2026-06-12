@@ -175,7 +175,7 @@ func launchGame(
 
         // Check if this ROM is already running
         LoggerService.extreme(category: "GameLauncher", "Checking if ROM is already running")
-        if RunningGamesTracker.shared.isRunning(romPath: rom.path.path) {
+        if RunningGamesTracker.shared.isRunning(romPath: rom.runningKey) {
             RunningGamesTracker.shared.notifyDuplicateLaunch(romName: rom.displayName)
             completion?(nil)
             LoggerService.extreme(category: "GameLauncher", "ROM is already running, ignoring duplicate request")

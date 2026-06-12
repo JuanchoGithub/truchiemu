@@ -369,6 +369,7 @@ final class ROMRepository {
             enrichmentFailed: entry.enrichmentFailed
         )
         rom.mameRomType = entry.mameRomType
+        rom.innerROMPath = entry.innerROMPath
         return rom
     }
 
@@ -418,7 +419,8 @@ final class ROMRepository {
             settingsJSON: settingsJSON,
             isIdentified: false,
             enrichmentAttempted: rom.enrichmentAttempted,
-            enrichmentFailed: rom.enrichmentFailed
+            enrichmentFailed: rom.enrichmentFailed,
+            innerROMPath: rom.innerROMPath
         )
     }
 
@@ -446,6 +448,7 @@ final class ROMRepository {
         if entry.raMatchStatus != rom.raMatchStatus { entry.raMatchStatus = rom.raMatchStatus }
         if entry.enrichmentAttempted != rom.enrichmentAttempted { entry.enrichmentAttempted = rom.enrichmentAttempted }
         if entry.enrichmentFailed != rom.enrichmentFailed { entry.enrichmentFailed = rom.enrichmentFailed }
+        if entry.innerROMPath != rom.innerROMPath { entry.innerROMPath = rom.innerROMPath }
 
         // Update JSON fields only if they changed
         let newMetadataJSON: String? = rom.metadata.flatMap {

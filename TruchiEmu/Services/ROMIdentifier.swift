@@ -22,6 +22,11 @@ private extension Data {
 
 enum ROMIdentifier {
 
+    struct InnerROMEntry: Sendable {
+        let relativePath: String
+        let systemID: String
+    }
+
     // MARK: - Private Properties
 
     private static let cachedSystems:[SystemInfo] = {
@@ -188,13 +193,13 @@ enum ROMIdentifier {
             let topCandidates = sortedCandidates.prefix(3).map { "\($0.key): \($0.value)" }.joined(separator: ", ")
             LoggerService.debug(category: "ROMIdentifier", "Winner for \(filename) is \(winner.key). Top candidates:[\(topCandidates)]")
             
-            // Reject zips with no signal beyond ambiguous extension matching (40 pts)
-            // This prevents unidentifiable .zip files (not in MAME/FBNeo DB, no archive fingerprint,
-            // no path keywords, no CRC match) from leaking to random zip-accepting systems
-            if extLower == "zip" && winner.value <= 40 {
-                LoggerService.debug(category: "ROMIdentifier", "Dropping \(filename): no reliable identification signal for this zip file")
-                return nil
-            }
+        // Reject archives with no signal beyond ambiguous extension matching (40 pts)
+        // This prevents unidentifiable archive files (not in MAME/FBNeo DB, no archive fingerprint,
+        // no path keywords, no CRC match, no identifiable inner ROM) from leaking to random archive-accepting systems
+        if ["zip", "7z", "rar"].contains(extLower) && winner.value <= 40 {
+            LoggerService.debug(category: "ROMIdentifier", "Dropping \(filename): no reliable identification signal for this \(extLower) file")
+            return nil
+        }
             
             // Arcade validation: if winner is mame or fba, validate the filename against known romset names
             if winner.key == "mame" || winner.key == "fba" {
@@ -235,6 +240,45 @@ enum ROMIdentifier {
         return cachedSystems.first { system in
             system.extensions.contains { normalize(extension: $0) == extLower }
         } ?? SystemDatabase.system(forExtension: extLower)
+    }
+
+    // MARK: - Inner ROM Listing for Archives
+
+    static func listInnerROMs(url: URL) -> [InnerROMEntry] {
+        let ext = url.pathExtension.lowercased()
+        guard ["zip", "7z", "rar"].contains(ext) else { return [] }
+
+        let files: [String]?
+        if ext == "zip" {
+            files = peekInsideZipFiles(url: url)
+        } else {
+            files = listArchiveContentsC(url: url)
+        }
+        guard let files else { return [] }
+
+        let fileEntries = files.filter { !$0.hasSuffix("/") }
+        let skipExts: Set<String> = ["txt", "nfo", "readme", "xml", "cfg", "ini", "sav", "srm", "bsv", "json", "bps", "ips", "ups", "xdelta", "dat", "html", "htm"]
+
+        var results: [InnerROMEntry] = []
+        for entry in fileEntries {
+            let fileExt = URL(fileURLWithPath: entry).pathExtension.lowercased()
+            guard !fileExt.isEmpty, !skipExts.contains(fileExt), !entry.hasSuffix(".metadata.json") else { continue }
+
+            let normalizedExt = normalize(extension: fileExt)
+            let systemsWithExt = cachedSystems.filter { system in
+                system.extensions.contains { normalize(extension: $0) == normalizedExt }
+            }
+
+            if systemsWithExt.count == 1 {
+                results.append(InnerROMEntry(relativePath: entry, systemID: systemsWithExt[0].id))
+            } else if systemsWithExt.count > 1 {
+                if let best = systemsWithExt.first {
+                    results.append(InnerROMEntry(relativePath: entry, systemID: best.id))
+                }
+            }
+        }
+
+        return results
     }
 
     // MARK: - ISO Scanning for CD-based Systems
@@ -485,8 +529,12 @@ enum ROMIdentifier {
         }
         
         if mameEntry.isRunnableInAnyCore && !mameEntry.isBIOS {
-            candidates["mame", default: 0] += 90
-            LoggerService.debug(category: "ROMIdentifier", "MAME lookup match for \(url.lastPathComponent): \(mameEntry.shortName)")
+            if archiveContainsConsoleROM(url) {
+                LoggerService.debug(category: "ROMIdentifier", "Skipping MAME for \(url.lastPathComponent): archive contains console ROM(s)")
+            } else {
+                candidates["mame", default: 0] += 90
+                LoggerService.debug(category: "ROMIdentifier", "MAME lookup match for \(url.lastPathComponent): \(mameEntry.shortName)")
+            }
         } else {
             candidates.removeAll(keepingCapacity: true)
             LoggerService.debug(category: "ROMIdentifier", "Dropping \(url.lastPathComponent): known MAME entry (\(mameEntry.isBIOS ? "BIOS" : "unplayable")) — not a playable game")
@@ -505,6 +553,42 @@ enum ROMIdentifier {
             candidates["fba", default: 0] += 90
             LoggerService.debug(category: "ROMIdentifier", "FBNeo lookup match for \(url.lastPathComponent)")
         }
+    }
+
+    // MARK: - Archive Content Validation
+
+    /// Checks if an archive contains files whose extensions point to a small number of
+    /// non-archive-aware systems. Prevents MAME from "stealing" console ROMs in ZIPs whose
+    /// filenames happen to match arcade romsets (e.g. `batman.zip` containing a `.nes` file),
+    /// while allowing MAME to keep mixed-content or ambiguous archives (e.g. MAME chip-dump zips
+    /// with numeric extensions like `.20`/`.40`).
+    /// VIC-20 is excluded because its numeric-type extensions (`.20`, `.40`, etc.) are commonly
+    /// used as MAME chip label IDs and aren't reliable console-ROM indicators inside archives.
+    static func archiveContainsConsoleROM(_ url: URL) -> Bool {
+        let ext = url.pathExtension.lowercased()
+        guard ext == "zip" || ext == "7z" || ext == "rar" else { return false }
+        let files: [String]? = ext == "zip" ? peekInsideZipFiles(url: url) : listArchiveContentsC(url: url)
+        guard let files else { return false }
+
+        let skipExts: Set<String> = ["txt", "nfo", "readme", "xml", "cfg", "ini", "sav", "srm", "bsv", "json", "bps", "ips", "ups", "xdelta", "dat", "html", "htm"]
+        let archiveAwareIDs = ArchiveExtractor.archiveAwareSystemIDs
+
+        var consoleSystems = Set<String>()
+        for file in files {
+            guard !file.hasSuffix("/") else { continue }
+            let fileExt = URL(fileURLWithPath: file).pathExtension.lowercased()
+            guard !fileExt.isEmpty, !skipExts.contains(fileExt), !file.hasSuffix(".metadata.json") else { continue }
+            let normalizedExt = normalize(extension: fileExt)
+            let systemsWithExt = cachedSystems.filter { system in
+                system.extensions.contains { normalize(extension: $0) == normalizedExt }
+            }
+            for system in systemsWithExt where !archiveAwareIDs.contains(system.id) {
+                consoleSystems.insert(system.id)
+            }
+        }
+
+        consoleSystems.remove("commodore_vic20")
+        return consoleSystems.count >= 1 && consoleSystems.count <= 2
     }
 
     // MARK: - Archive Identification
@@ -587,7 +671,14 @@ enum ROMIdentifier {
     ]
 
     private static func fingerprintArchive(url: URL) -> SystemInfo? {
-        guard let files = peekInsideZipFiles(url: url) else { return nil }
+        let ext = url.pathExtension.lowercased()
+        let files: [String]?
+        if ext == "zip" {
+            files = peekInsideZipFiles(url: url)
+        } else {
+            files = listArchiveContentsC(url: url)
+        }
+        guard let files else { return nil }
         var scores: [String: Int] = [:]
 
         let fileEntries = files.filter { !$0.hasSuffix("/") }
@@ -751,6 +842,52 @@ enum ROMIdentifier {
                         LoggerService.debug(category: "ROMIdentifier", "ScummVM game code directory match: \(dirName)")
                         break
                     }
+                }
+            }
+        }
+
+        // Tier 9: Inner ROM extension detection
+        // For archives containing 1-few ROM-like files (single-ROM archives),
+        // identify the system from the inner file's extension.
+        let skipInnerExts: Set<String> = ["txt", "nfo", "readme", "xml", "cfg", "ini", "sav", "srm", "bsv", "json", "bps", "ips", "ups", "xdelta", "dat", "html", "htm"]
+        let romFileEntries = fileEntries.filter { entry in
+            let ext = URL(fileURLWithPath: entry).pathExtension.lowercased()
+            return !ext.isEmpty && !skipInnerExts.contains(ext) && !entry.hasSuffix(".metadata.json")
+        }
+
+        if !romFileEntries.isEmpty && romFileEntries.count <= 10 {
+            let romExts = romFileEntries.map { URL(fileURLWithPath: $0).pathExtension.lowercased() }
+            let romExtSet = Set(romExts)
+
+            var innerScores: [String: Int] = [:]
+            for romExt in romExtSet {
+                let count = romExts.filter { $0 == romExt }.count
+                let systemsWithExt = cachedSystems.filter { system in
+                    system.extensions.contains { normalize(extension: $0) == romExt }
+                }
+
+                if systemsWithExt.count == 1 {
+                    let systemID = systemsWithExt[0].id
+                    innerScores[systemID, default: 0] += count * 90
+                } else if systemsWithExt.count > 1 {
+                    for system in systemsWithExt {
+                        innerScores[system.id, default: 0] += count * 30
+                    }
+                }
+            }
+
+            // Bonus: single non-metadata file = strong signal this is a single-ROM archive
+            if romFileEntries.count == 1, let topInner = innerScores.sorted(by: { $0.value > $1.value }).first, topInner.value >= 90 {
+                innerScores[topInner.key, default: 0] += 30
+            }
+
+            // Only apply inner ROM scores if they produce a clear winner
+            // and don't let them override strong multi-file archive signals (ScummVM, DOS)
+            let topNonInner = scores.values.max() ?? 0
+            let topInnerScore = innerScores.values.max() ?? 0
+            if topInnerScore > topNonInner || (topInnerScore >= 90 && topNonInner < 30) {
+                for (systemID, score) in innerScores {
+                    scores[systemID, default: 0] += score
                 }
             }
         }
@@ -1026,6 +1163,25 @@ enum ROMIdentifier {
         }
 
         return filenames.isEmpty ? nil : filenames
+    }
+
+    private static func listArchiveContentsC(url: URL) -> [String]? {
+        var list = archive_list_files(url.path)
+        guard list.count > 0, let entries = list.entries else {
+            archive_file_list_free(&list)
+            return nil
+        }
+
+        var names: [String] = []
+        for i in 0..<Int(list.count) {
+            if let cStr = entries[i], let name = String(cString: cStr, encoding: .utf8) {
+                if !name.hasSuffix("/") {
+                    names.append(name)
+                }
+            }
+        }
+        archive_file_list_free(&list)
+        return names.isEmpty ? nil : names
     }
 
     // MARK: - Container Logic

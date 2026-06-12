@@ -246,7 +246,9 @@ final class ROMIdentifierService: @unchecked Sendable {
         }
 
         let romPath = rom.path
-        let fileSize = (try? FileManager.default.attributesOfItem(atPath: romPath.path)[.size] as? Int64) ?? 0
+        let fileSize = rom.innerROMPath == nil
+            ? ((try? FileManager.default.attributesOfItem(atPath: romPath.path)[.size] as? Int64) ?? 0)
+            : 0
         let isLargeFile = fileSize > 50 * 1024 * 1024 // > 50MB
         
         // PASS 1: Sony Serial Extraction (Fastest)
@@ -286,11 +288,42 @@ final class ROMIdentifierService: @unchecked Sendable {
 
         // PASS 3: CRC-based identification (Heavy)
         // Perform heavy file I/O and hashing on a background thread to avoid blocking the MainActor.
+        // For archive ROMs, extract the inner ROM to a temp directory (not the persistent cache)
+        // so we don't duplicate the player's library on disk. Cleaned up after CRC computation.
+        let crcURL: URL
+        var tempExtraction: ArchiveExtractor.TemporaryExtraction?
+        if let innerPath = rom.innerROMPath, ArchiveExtractor.isArchive(url: rom.path) {
+            do {
+                let extraction = try await ArchiveExtractor.shared.extractTemporary(url: rom.path, systemID: systemID)
+                tempExtraction = extraction
+                let innerName = URL(fileURLWithPath: innerPath).lastPathComponent
+                if let match = extraction.files.first(where: { $0.lastPathComponent == innerName }) {
+                    crcURL = match
+                } else if let best = extraction.files.first {
+                    crcURL = best
+                } else {
+                    try? FileManager.default.removeItem(at: extraction.tempDirectory)
+                    LoggerService.error(category: "ROMIdentifier", "Identify \(rom.name): archive extraction returned no files")
+                    return .romReadFailed("Could not extract ROM from archive.")
+                }
+            } catch {
+                LoggerService.error(category: "ROMIdentifier", "Identify \(rom.name): archive extraction failed: \(error.localizedDescription)")
+                return .romReadFailed("Could not extract ROM from archive: \(error.localizedDescription)")
+            }
+        } else {
+            crcURL = romPath
+        }
+
         guard let crc = await Task.detached(priority: .userInitiated, operation: {
-            self.computeCRC(for: romPath, systemID: systemID)
+            self.computeCRC(for: crcURL, systemID: systemID)
         }).value else {
-            LoggerService.error(category: "ROMIdentifier", "Identify \(rom.name): CRC read failed for \(rom.path.path)")
+            try? FileManager.default.removeItem(at: tempExtraction!.tempDirectory)
+            LoggerService.error(category: "ROMIdentifier", "Identify \(rom.name): CRC read failed for \(crcURL.path)")
             return .romReadFailed("Could not read the ROM file. If the library is on a removable drive or you moved files, re-add the folder in Settings.")
+        }
+
+        if let temp = tempExtraction {
+            try? FileManager.default.removeItem(at: temp.tempDirectory)
         }
 
         let key = crc.uppercased()
@@ -474,7 +507,12 @@ static func titleFromDatGame(name: String, description: String) -> String {
 
     private func identifyByName(rom: ROM, database: [String: GameInfo], language: EmulatorLanguage) -> GameInfo? {
         LoggerService.info(category: "ROMIdentifier", "IdentifyByName \(rom.name): START for ROM '\(rom.name)'")
-        let stem = rom.path.deletingPathExtension().lastPathComponent
+        let stem: String
+        if let inner = rom.innerROMPath {
+            stem = URL(fileURLWithPath: inner).deletingPathExtension().lastPathComponent
+        } else {
+            stem = rom.path.deletingPathExtension().lastPathComponent
+        }
         var cleaned = LibretroThumbnailResolver.stripRomFilenameTags(stem)
         cleaned = LibretroThumbnailResolver.stripParenthesesForFuzzyMatch(cleaned)
         let queryBase = Self.normalizedComparableTitle(cleaned)

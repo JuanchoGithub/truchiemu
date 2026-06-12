@@ -523,7 +523,7 @@ class CheatDownloadService: ObservableObject {
                 if isMatch {
                     if let cheats = CheatParser.parseChtFile(url: fileURL) {
                         let cheatFile = CheatFile(
-                            romPath: rom.path.path,
+                            romPath: rom.runningKey,
                             romName: rom.displayName,
                             cheats: cheats,
                             source: .libretroDatabase
@@ -533,12 +533,12 @@ class CheatDownloadService: ObservableObject {
                 }
             }
         }
-        
+
         // Merge cheats from all found files
         if !foundFiles.isEmpty {
             let allCheats = foundFiles.flatMap { $0.cheats }
             let mergedFile = CheatFile(
-                romPath: rom.path.path,
+                romPath: rom.runningKey,
                 romName: rom.displayName,
                 cheats: mergeCheats(allCheats),
                 source: .libretroDatabase

@@ -5,6 +5,11 @@ enum LibretroThumbnailResolver {
     static let defaultBaseURL = URL(string: "https://thumbnails.libretro.com")!
     private static let logCategory = "LibretroThumbnails"
 
+    // In-memory cache: systemID → list of CDN folder names that actually exist.
+    // Populated once per system by probing the GitHub repos, then persisted to AppSettings.
+    private static var resolvedWorkingFolders: [String: [String]] = [:]
+    private static let workingFoldersPrefix = "thumbnail_working_folders_"
+
     // Prefer `ROM.thumbnailLookupSystemID` when identification matched a different Libretro set (e.g. GB vs GBC).
     static func effectiveThumbnailSystemID(for rom: ROM) -> String? {
         let result = rom.thumbnailLookupSystemID ?? rom.systemID
@@ -16,25 +21,91 @@ enum LibretroThumbnailResolver {
         return result
     }
 
-    static func libretroFolderName(forSystemID systemID: String) -> String? {
-        guard let system = SystemDatabase.system(forID: systemID) else { 
+    // Returns all database folder names for a systemID (NOT just .first).
+    static func libretroFolderNames(forSystemID systemID: String) -> [String] {
+        guard let system = SystemDatabase.system(forID: systemID) else {
             LoggerService.warning(category: logCategory, "No system found for systemID '\(systemID)' — thumbnails will not be resolved")
-            return nil 
+            return []
         }
-        
-        // Use first database entry as CDN folder name
-        if let folder = system.database?.first {
-            LoggerService.debug(category: logCategory, "Mapped systemID '\(systemID)' → folder '\(folder)'")
-            return folder
-        } else {
+        guard let entries = system.database, !entries.isEmpty else {
             LoggerService.warning(category: logCategory, "No database entry for systemID '\(systemID)' — thumbnails will not be resolved")
-            return nil
+            return []
+        }
+        return entries
+    }
+
+    // Probes all database folder names for a system against the GitHub thumbnail repos.
+    // Returns only the folders whose repos actually exist, and caches the result.
+    // On subsequent calls for the same systemID, returns the cached list immediately.
+    @MainActor
+    static func workingFolders(forSystemID systemID: String) async -> [String] {
+        if let cached = resolvedWorkingFolders[systemID] {
+            return cached
+        }
+
+        // Try loading from AppSettings persistence
+        let settingsKey = "\(workingFoldersPrefix)\(systemID)"
+        if let data = AppSettings.getData(settingsKey),
+           let decoded = try? JSONDecoder().decode([String].self, from: data),
+           !decoded.isEmpty {
+            resolvedWorkingFolders[systemID] = decoded
+            LoggerService.debug(category: logCategory, "Loaded \(decoded.count) working folders from persistence for '\(systemID)': \(decoded)")
+            return decoded
+        }
+
+        // Probe all database entries against GitHub
+        let candidates = libretroFolderNames(forSystemID: systemID)
+        guard !candidates.isEmpty else { return [] }
+
+        LoggerService.info(category: logCategory, "Probing \(candidates.count) database folders for systemID '\(systemID)': \(candidates)")
+
+        var working: [String] = []
+        for folder in candidates {
+            let repoName = githubRepoName(for: folder)
+            let exists = await LibretroThumbnailManifestService.shared.repoExists(repoName: repoName)
+            if exists {
+                working.append(folder)
+                LoggerService.info(category: logCategory, "Folder '\(folder)' exists for '\(systemID)' — added to working set")
+            } else {
+                LoggerService.info(category: logCategory, "Folder '\(folder)' does NOT exist for '\(systemID)' — skipped")
+            }
+        }
+
+        if working.isEmpty {
+            // Fallback: if no repo was found, use all candidates to avoid completely blocking thumbnails
+            // (e.g. if GitHub API is down, we don't want to permanently block all lookups)
+            LoggerService.warning(category: logCategory, "No working folders found for '\(systemID)' — falling back to all database entries")
+            working = candidates
+        }
+
+        resolvedWorkingFolders[systemID] = working
+
+        // Persist to AppSettings
+        if let encoded = try? JSONEncoder().encode(working) {
+            AppSettings.setData(settingsKey, value: encoded)
+        }
+
+        LoggerService.info(category: logCategory, "Cached \(working.count) working folders for '\(systemID)': \(working)")
+        return working
+    }
+
+    // Clears the in-memory and persisted working folder cache for a system (or all if nil).
+    @MainActor
+    static func clearWorkingFoldersCache(systemID: String? = nil) {
+        if let systemID = systemID {
+            resolvedWorkingFolders.removeValue(forKey: systemID)
+            AppSettings.remove("\(workingFoldersPrefix)\(systemID)")
+        } else {
+            resolvedWorkingFolders.removeAll()
+            for system in SystemDatabase.systems {
+                AppSettings.remove("\(workingFoldersPrefix)\(system.id)")
+            }
         }
     }
 
     // Returns a list of all known Libretro thumbnail repository names (formatted for GitHub).
     static func allKnownSystemRepos() -> [String] {
-        let allFolders = SystemDatabase.systems.compactMap { $0.database?.first }.filter { !$0.isEmpty }
+        let allFolders = SystemDatabase.systems.flatMap { $0.database ?? [] }.filter { !$0.isEmpty }
         return Array(Set(allFolders)).map { githubRepoName(for: $0) }.sorted()
     }
 

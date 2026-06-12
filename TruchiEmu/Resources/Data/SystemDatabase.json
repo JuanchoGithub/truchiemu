@@ -417,7 +417,8 @@
       "m3u",
       "mds",
       "toc",
-      "zip"
+      "zip",
+      "rar"
     ],
     "emuIconName": "SATURN",
     "defaultBoxType": "Vertical",
@@ -454,7 +455,8 @@
       "iso",
       "lst",
       "m3u",
-      "zip"
+      "zip",
+      "rar"
     ],
     "emuIconName": "DC",
     "defaultBoxType": "Box",
@@ -480,10 +482,7 @@
     "displayInUI": true,
     "name": "Sega 32X",
     "extensions": [
-      "32x",
-      "smd",
-      "bin",
-      "md"
+      "32x"
     ],
     "emuIconName": "32X",
     "defaultBoxType": "Vertical",
@@ -904,7 +903,8 @@
       "ngp",
       "ngpc",
       "npc",
-      "zip"
+      "zip",
+      "rar"
     ],
     "emuIconName": "NGP",
     "defaultBoxType": "Vertical",
@@ -935,7 +935,8 @@
       "ngp",
       "ngpc",
       "npc",
-      "zip"
+      "zip",
+      "rar"
     ],
     "defaultBoxType": "Vertical",
     "iconName": "iphone",
@@ -985,14 +986,15 @@
     "iconName": "gamecontroller",
     "defaultCoreID": "mednafen_pce_libretro",
     "manufacturer": "NEC",
-    "database": [
-      "NEC - PC Engine - TurboGrafx-16"
-    ],
-    "defaultShaderPresetID": "builtin-crt-classic"
-  },
-  {
-    "year": "1994",
-    "id": "pcfx",
+"database": [
+    "NEC - PC Engine - TurboGrafx-16",
+    "NEC - PC Engine - TurboGrafx 16"
+  ],
+  "defaultShaderPresetID": "builtin-crt-classic"
+},
+{
+  "year": "1994",
+  "id": "pcfx",
     "sortOrder": 61,
     "displayInUI": true,
     "name": "PC-FX",
@@ -1040,7 +1042,8 @@
       "m3u8",
       "tc",
       "vhd",
-      "zip"
+      "zip",
+      "rar"
     ],
     "pathKeywords": [
       "dos",
@@ -1108,7 +1111,8 @@
       "slave",
       "uae",
       "wrp",
-      "zip"
+      "zip",
+      "rar"
     ],
     "defaultBoxType": "Landscape",
     "iconName": "gamecontroller",
@@ -1128,7 +1132,8 @@
       "int",
       "intv",
       "rom",
-      "zip"
+      "zip",
+      "rar"
     ],
     "defaultBoxType": "Landscape",
     "iconName": "gamecontroller",
@@ -1187,7 +1192,8 @@
       "int",
       "intv",
       "rom",
-      "zip"
+      "zip",
+      "rar"
     ],
     "defaultBoxType": "Landscape",
     "iconName": "gamecontroller",
@@ -1207,7 +1213,8 @@
       "dsk",
       "hvf",
       "img",
-      "zip"
+      "zip",
+      "rar"
     ],
     "defaultBoxType": "Landscape",
     "iconName": "gamecontroller",
@@ -1225,7 +1232,8 @@
     "extensions": [
       "bin777",
       "ptn777",
-      "zip"
+      "zip",
+      "rar"
     ],
     "defaultBoxType": "Landscape",
     "iconName": "gamecontroller",
@@ -1276,15 +1284,7 @@
     "id": "dice",
     "name": "Arcade (various)",
     "extensions": [
-      "1da",
-      "4c",
-      "4d",
-      "6c",
       "7z",
-      "a1",
-      "a4",
-      "c4",
-      "c6",
       "ccd",
       "chd",
       "cmd",
@@ -1292,13 +1292,9 @@
       "d2",
       "d4",
       "d7",
-      "da1",
-      "dmy",
-      "f4",
       "iso",
-      "k1",
-      "s1",
-      "zip"
+      "zip",
+      "rar"
     ],
     "defaultBoxType": "Landscape",
     "iconName": "gamecontroller",
@@ -1336,7 +1332,8 @@
       "slave",
       "uae",
       "wrp",
-      "zip"
+      "zip",
+      "rar"
     ],
     "defaultBoxType": "Landscape",
     "iconName": "gamecontroller",
@@ -1455,7 +1452,8 @@
       "st",
       "stx",
       "vhd",
-      "zip"
+      "zip",
+      "rar"
     ],
     "defaultBoxType": "Landscape",
     "iconName": "gamecontroller",
@@ -1518,7 +1516,8 @@
       "vsf",
       "x64",
       "x6z",
-      "zip"
+      "zip",
+      "rar"
     ],
     "defaultBoxType": "Landscape",
     "iconName": "gamecontroller",
@@ -1552,7 +1551,8 @@
       "tfd",
       "thd",
       "xdf",
-      "zip"
+      "zip",
+      "rar"
     ],
     "defaultBoxType": "Landscape",
     "iconName": "gamecontroller",
@@ -1572,7 +1572,8 @@
       "7z",
       "chd",
       "cmd",
-      "zip"
+      "zip",
+      "rar"
     ],
     "defaultBoxType": "Landscape",
     "iconName": "gamecontroller",
@@ -1623,15 +1624,7 @@
     "id": "hbmame",
     "name": "Arcade (various)",
     "extensions": [
-      "1da",
-      "4c",
-      "4d",
-      "6c",
       "7z",
-      "a1",
-      "a4",
-      "c4",
-      "c6",
       "ccd",
       "chd",
       "cmd",
@@ -1639,13 +1632,9 @@
       "d2",
       "d4",
       "d7",
-      "da1",
-      "dmy",
-      "f4",
       "iso",
-      "k1",
-      "s1",
-      "zip"
+      "zip",
+      "rar"
     ],
     "defaultBoxType": "Landscape",
     "iconName": "gamecontroller",
@@ -1703,10 +1692,11 @@
     "iconName": "gamecontroller",
     "sortOrder": 80,
     "manufacturer": "Arduboy",
-    "database": [
-      "Arduboy"
-    ],
-    "defaultShaderPresetID": "builtin-none"
+"database": [
+    "Arduboy",
+    "Arduboy Inc - Arduboy"
+  ],
+  "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -1743,7 +1733,8 @@
       "vsf",
       "x64",
       "x6z",
-      "zip"
+      "zip",
+      "rar"
     ],
     "defaultBoxType": "Landscape",
     "iconName": "gamecontroller",
@@ -1805,7 +1796,8 @@
       "spc",
       "vgm",
       "vgz",
-      "zip"
+      "zip",
+      "rar"
     ],
     "defaultBoxType": "Landscape",
     "iconName": "gamecontroller",
@@ -1889,20 +1881,22 @@
       "vsf",
       "x64",
       "x6z",
-      "zip"
+      "zip",
+      "rar"
     ],
     "defaultBoxType": "Landscape",
     "iconName": "gamecontroller",
     "sortOrder": 80,
     "manufacturer": "Commodore",
-    "database": [
-      "C64 SuperCPU"
-    ],
-    "defaultShaderPresetID": "builtin-none"
-  },
-  {
-    "displayInUI": true,
-    "id": "apple_ii",
+"database": [
+    "Commodore - PLUS/4",
+    "Commodore - Plus-4"
+  ],
+  "defaultShaderPresetID": "builtin-none"
+},
+{
+  "year": "1983",
+  "id": "apple_ii",
     "name": "II",
     "extensions": [
       "2img",
@@ -1919,7 +1913,8 @@
       "po",
       "woz",
       "yaml",
-      "zip"
+      "zip",
+      "rar"
     ],
     "defaultBoxType": "Landscape",
     "iconName": "gamecontroller",
@@ -1947,7 +1942,8 @@
       "spc",
       "vgm",
       "vgz",
-      "zip"
+      "zip",
+      "rar"
     ],
     "defaultBoxType": "Landscape",
     "iconName": "gamecontroller",
@@ -2058,7 +2054,8 @@
       "vsf",
       "x64",
       "x6z",
-      "zip"
+      "zip",
+      "rar"
     ],
     "defaultBoxType": "Landscape",
     "iconName": "gamecontroller",
@@ -2081,7 +2078,8 @@
       "sna",
       "tap",
       "voc",
-      "zip"
+      "zip",
+      "rar"
     ],
     "defaultBoxType": "Landscape",
     "iconName": "gamecontroller",
@@ -2133,7 +2131,8 @@
       "po",
       "woz",
       "yaml",
-      "zip"
+      "zip",
+      "rar"
     ],
     "defaultBoxType": "Landscape",
     "iconName": "gamecontroller",
@@ -2158,7 +2157,8 @@
       "ccd",
       "cue",
       "neo",
-      "zip"
+      "zip",
+      "rar"
     ],
     "emuIconName": "NEOGEO",
     "defaultBoxType": "Landscape",
@@ -2205,7 +2205,8 @@
       "vsf",
       "x64",
       "x6z",
-      "zip"
+      "zip",
+      "rar"
     ],
     "defaultBoxType": "Landscape",
     "iconName": "gamecontroller",
@@ -2243,10 +2244,11 @@
     "iconName": "gamecontroller",
     "sortOrder": 80,
     "manufacturer": "Various",
-    "database": [
-      "Bomberman"
-    ],
-    "defaultShaderPresetID": "builtin-none"
+"database": [
+    "Bomberman",
+    "MrBoom"
+  ],
+  "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2324,10 +2326,11 @@
     "iconName": "gamecontroller",
     "sortOrder": 80,
     "manufacturer": "Various",
-    "database": [
-      "MSX"
-    ],
-    "defaultShaderPresetID": "builtin-none"
+"database": [
+    "MSX",
+    "Microsoft - MSX"
+  ],
+  "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2381,7 +2384,8 @@
       "vsf",
       "x64",
       "x6z",
-      "zip"
+      "zip",
+      "rar"
     ],
     "defaultBoxType": "Landscape",
     "iconName": "gamecontroller",
@@ -2427,7 +2431,8 @@
       "vsf",
       "x64",
       "x6z",
-      "zip"
+      "zip",
+      "rar"
     ],
     "defaultBoxType": "Landscape",
     "iconName": "gamecontroller",
@@ -2583,10 +2588,11 @@
     "iconName": "gamecontroller",
     "sortOrder": 80,
     "manufacturer": "Various",
-    "database": [
-      "Classic Tomb Raider"
-    ],
-    "defaultShaderPresetID": "builtin-none"
+"database": [
+    "Classic Tomb Raider",
+    "Tomb Raider"
+  ],
+  "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -2769,7 +2775,8 @@
       "vsf",
       "x64",
       "x6z",
-      "zip"
+      "zip",
+      "rar"
     ],
     "defaultBoxType": "Landscape",
     "iconName": "gamecontroller",
@@ -2791,49 +2798,6 @@
     "manufacturer": "Brainchild Design",
     "database": [
       "Jump 'n Bump"
-    ],
-    "defaultShaderPresetID": "builtin-none"
-  },
-  {
-    "displayInUI": true,
-    "id": "movie",
-    "name": "MPV",
-    "extensions": [
-      "3g2",
-      "3gp",
-      "asf",
-      "avi",
-      "divx",
-      "f4f",
-      "f4v",
-      "flac",
-      "flv",
-      "m2p",
-      "m2ts",
-      "m4a",
-      "mkv",
-      "mov",
-      "mp3",
-      "mp4",
-      "mpeg",
-      "mpg",
-      "mxf",
-      "ogg",
-      "ogm",
-      "ps",
-      "ts",
-      "vob",
-      "wav",
-      "webm",
-      "wma",
-      "wmv"
-    ],
-    "defaultBoxType": "Landscape",
-    "iconName": "gamecontroller",
-    "sortOrder": 80,
-    "manufacturer": "Various",
-    "database": [
-      "MPV"
     ],
     "defaultShaderPresetID": "builtin-none"
   },
@@ -2878,7 +2842,8 @@
       "vsf",
       "x64",
       "x6z",
-      "zip"
+      "zip",
+      "rar"
     ],
     "defaultBoxType": "Landscape",
     "iconName": "gamecontroller",
@@ -2905,7 +2870,8 @@
       "tap",
       "tfd",
       "xdf",
-      "zip"
+      "zip",
+      "rar"
     ],
     "defaultBoxType": "Landscape",
     "iconName": "gamecontroller",
@@ -2952,7 +2918,8 @@
       "po",
       "woz",
       "yaml",
-      "zip"
+      "zip",
+      "rar"
     ],
     "defaultBoxType": "Landscape",
     "iconName": "gamecontroller",
@@ -3089,7 +3056,8 @@
     "name": "PC/XT",
     "extensions": [
       "img",
-      "zip"
+      "zip",
+      "rar"
     ],
     "defaultBoxType": "Landscape",
     "iconName": "gamecontroller",
@@ -3131,15 +3099,7 @@
     "id": "daphne",
     "name": "Arcade (various)",
     "extensions": [
-      "1da",
-      "4c",
-      "4d",
-      "6c",
       "7z",
-      "a1",
-      "a4",
-      "c4",
-      "c6",
       "ccd",
       "chd",
       "cmd",
@@ -3147,13 +3107,9 @@
       "d2",
       "d4",
       "d7",
-      "da1",
-      "dmy",
-      "f4",
       "iso",
-      "k1",
-      "s1",
-      "zip"
+      "zip",
+      "rar"
     ],
     "defaultBoxType": "Landscape",
     "iconName": "gamecontroller",
@@ -3228,16 +3184,18 @@
       "trd",
       "tzx",
       "z80",
-      "zip"
+      "zip",
+      "rar"
     ],
     "defaultBoxType": "Landscape",
     "iconName": "gamecontroller",
     "sortOrder": 80,
     "manufacturer": "Sinclair|Amstrad",
-    "database": [
-      "ZX Spectrum (various)"
-    ],
-    "defaultShaderPresetID": "builtin-none"
+"database": [
+    "ZX Spectrum (various)",
+    "Sinclair - ZX Spectrum"
+  ],
+  "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -3339,7 +3297,8 @@
       "vsf",
       "x64",
       "x6z",
-      "zip"
+      "zip",
+      "rar"
     ],
     "defaultBoxType": "Landscape",
     "iconName": "gamecontroller",
@@ -3400,7 +3359,8 @@
     "id": "xrick",
     "name": "Rick Dangerous Game Engine",
     "extensions": [
-      "zip"
+      "zip",
+      "rar"
     ],
     "defaultBoxType": "Landscape",
     "iconName": "gamecontroller",
@@ -3424,10 +3384,11 @@
     "iconName": "gamecontroller",
     "sortOrder": 80,
     "manufacturer": "Sinclair",
-    "database": [
-      "ZX81"
-    ],
-    "defaultShaderPresetID": "builtin-none"
+"database": [
+    "ZX81",
+    "Sinclair - ZX 81"
+  ],
+  "defaultShaderPresetID": "builtin-none"
   },
   {
     "displayInUI": true,
@@ -3619,7 +3580,6 @@
     "extensions": [
       "sc",
       "sg",
-      "sms",
       "rom"
     ],
     "defaultBoxType": "Landscape",

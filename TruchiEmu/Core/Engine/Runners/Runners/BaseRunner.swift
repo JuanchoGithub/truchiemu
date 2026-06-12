@@ -361,8 +361,40 @@ case "scummvm": runner = ScummVMRunner()
         }
         
         self.rom = rom
-        self.romPath = rom.path.path
         self.activeCoreID = coreID
+
+        if ArchiveExtractor.isArchive(url: rom.path)
+            && !ArchiveExtractor.isArchiveAwareCore(coreID)
+            && !ArchiveExtractor.isArchiveAwareSystem(rom.systemID) {
+            do {
+                let extractedFiles = try ArchiveExtractor.shared.extract(url: rom.path, systemID: rom.systemID)
+                let selectedFile: URL
+                if let innerPath = rom.innerROMPath {
+                    let innerName = URL(fileURLWithPath: innerPath).lastPathComponent
+                    if let match = extractedFiles.first(where: { $0.lastPathComponent == innerName }) {
+                        selectedFile = match
+                        LoggerService.info(category: "Runner", "Using extracted ROM (innerROMPath): \(match.lastPathComponent)")
+                    } else {
+                        selectedFile = extractedFiles[0]
+                        LoggerService.info(category: "Runner", "Inner ROM '\(innerName)' not found in extraction, using first: \(extractedFiles[0].lastPathComponent)")
+                    }
+                } else if let best = pickBestROM(from: extractedFiles, systemID: rom.systemID) {
+                    selectedFile = best
+                    LoggerService.info(category: "Runner", "Using extracted ROM: \(best.lastPathComponent)")
+                } else {
+                    selectedFile = extractedFiles[0]
+                    LoggerService.info(category: "Runner", "Using first extracted file: \(extractedFiles[0].lastPathComponent)")
+                }
+                self.romPath = selectedFile.path
+            } catch {
+                LoggerService.error(category: "Runner", "Archive extraction failed: \(error.localizedDescription)")
+                isRunning = false
+                self.stop()
+                return
+            }
+        } else {
+            self.romPath = rom.path.path
+        }
         let sysID = rom.systemID ?? "default"
         var mapping = ControllerService.shared.keyboardMapping(for: sysID)
         if mapping.buttons.isEmpty {
@@ -397,6 +429,7 @@ case "scummvm": runner = ScummVMRunner()
         let rom = self.rom
         let dylibPath = self.findCoreLib(coreID: coreID) ?? coreID
         let cachedAchievements = self.rcheevosAchievements ?? []
+        let resolvedRomPath = self.romPath
 
         emulationQueue.async { [cachedAchievements] in
             XPCBridgeAdapter.shared.setLanguage(selectedLang)
@@ -407,7 +440,7 @@ case "scummvm": runner = ScummVMRunner()
 
             guard let rom = rom else { return }
 
-            let romPath = rom.path.path
+            let romPath = resolvedRomPath
             let systemID = rom.systemID
 
             // Set up rcheevos achievement detection. The runtime lives in the
@@ -958,7 +991,35 @@ case "scummvm": runner = ScummVMRunner()
         XPCBridgeAdapter.shared.setKeyState(retroID: retroID, player: player, pressed: pressed)
     }
 
-  func findCoreLib(coreID: String) -> String? {
+    private func pickBestROM(from files: [URL], systemID: String?) -> URL? {
+        let knownExts: Set<String>
+        if let sysID = systemID,
+           let system = SystemDatabase.system(forID: sysID) {
+            knownExts = Set(system.extensions.map { $0.lowercased() })
+        } else {
+            knownExts = []
+        }
+
+        if !knownExts.isEmpty {
+            if let match = files.first(where: { knownExts.contains($0.pathExtension.lowercased()) }) {
+                return match
+            }
+        }
+
+        let preferredExts: Set<String> = ["nes", "smc", "sfc", "n64", "z64", "gba", "gbc", "gb", "gg", "sms", "md", "smd", "gen", "sfc", "fig", "pce", "ngp", "ws", "vb", "at7800", "a78", "lnx", "jag", "cue", "chd", "iso"]
+        if let match = files.first(where: { preferredExts.contains($0.pathExtension.lowercased()) }) {
+            return match
+        }
+
+        let skipExts: Set<String> = ["txt", "nfo", "readme", "xml", "cfg", "ini", "sav", "srm", "bsv", "json", "bps", "ips", "ups", "xdelta"]
+        if let match = files.first(where: { !skipExts.contains($0.pathExtension.lowercased()) && $0.lastPathComponent != ".metadata.json" }) {
+            return match
+        }
+
+        return files.first
+    }
+
+    func findCoreLib(coreID: String) -> String? {
     let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
       .first!.appendingPathComponent("TruchiEmu/Cores/\(coreID)")
     guard let versionDirs = try? FileManager.default.contentsOfDirectory(at: base, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)

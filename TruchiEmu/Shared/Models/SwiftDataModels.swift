@@ -33,6 +33,7 @@ final class ROMEntry {
     var enrichmentFailed: Bool
     var raGameId: Int?
     var raMatchStatus: String?
+    var innerROMPath: String?
 
     // Relationships
     // Note: inverse relationships with @Relationship can cause circular reference issues
@@ -73,9 +74,10 @@ final class ROMEntry {
         isIdentified: Bool = false,
         enrichmentAttempted: Bool = false,
         enrichmentFailed: Bool = false,
-        raGameId: Int? = nil,
-        raMatchStatus: String? = nil
-    ) {
+        raGameId: Int? = nil, 
+        raMatchStatus: String? = nil,
+        innerROMPath: String? = nil
+) {
         self.id = id
         self.name = name
         self.path = path.path
@@ -105,6 +107,7 @@ final class ROMEntry {
         self.enrichmentFailed = enrichmentFailed
         self.raGameId = raGameId
         self.raMatchStatus = raMatchStatus
+        self.innerROMPath = innerROMPath
     }
 }
 

@@ -35,7 +35,7 @@ class CheatManagerService: ObservableObject {
     
     // Get cheats for a specific ROM
     func cheats(for rom: ROM) -> [Cheat] {
-        return allCheats[rom.path.path] ?? []
+        return allCheats[rom.runningKey] ?? []
     }
     
     // Get enabled cheats for a ROM
@@ -55,13 +55,13 @@ class CheatManagerService: ObservableObject {
     
     // Update a cheat's state (enable/disable)
     func updateCheat(_ cheat: Cheat, for rom: ROM) {
-        var cheats = allCheats[rom.path.path] ?? []
+        var cheats = allCheats[rom.runningKey] ?? []
         if let index = cheats.firstIndex(where: { $0.id == cheat.id }) {
             cheats[index] = cheat
         } else {
             cheats.append(cheat)
         }
-        allCheats[rom.path.path] = cheats
+        allCheats[rom.runningKey] = cheats
         saveEnabledIndices(for: rom, cheats: cheats)
         LoggerService.info(category: "CheatManagerService", "Updated cheat: \(cheat.displayName) for \(rom.displayName)")
     }
@@ -75,18 +75,18 @@ class CheatManagerService: ObservableObject {
     
     // Add a new cheat for a ROM
     func addCheat(_ cheat: Cheat, for rom: ROM) {
-        var cheats = allCheats[rom.path.path] ?? []
+        var cheats = allCheats[rom.runningKey] ?? []
         cheats.append(cheat)
-        allCheats[rom.path.path] = cheats
+        allCheats[rom.runningKey] = cheats
         saveEnabledIndices(for: rom, cheats: cheats)
         LoggerService.info(category: "CheatManagerService", "Added cheat: \(cheat.displayName) for \(rom.displayName)")
     }
     
     // Remove a cheat from a ROM
     func removeCheat(_ cheat: Cheat, for rom: ROM) {
-        var cheats = allCheats[rom.path.path] ?? []
+        var cheats = allCheats[rom.runningKey] ?? []
         cheats.removeAll { $0.id == cheat.id }
-        allCheats[rom.path.path] = cheats
+        allCheats[rom.runningKey] = cheats
         saveEnabledIndices(for: rom, cheats: cheats)
         LoggerService.info(category: "CheatManagerService", "Removed cheat: \(cheat.displayName) from \(rom.displayName)")
     }
@@ -95,7 +95,7 @@ class CheatManagerService: ObservableObject {
     func enableAllCheats(for rom: ROM) {
         var cheats = cheats(for: rom)
         cheats.indices.forEach { cheats[$0].enabled = true }
-        allCheats[rom.path.path] = cheats
+        allCheats[rom.runningKey] = cheats
         saveEnabledIndices(for: rom, cheats: cheats)
     }
     
@@ -103,7 +103,7 @@ class CheatManagerService: ObservableObject {
     func disableAllCheats(for rom: ROM) {
         var cheats = cheats(for: rom)
         cheats.indices.forEach { cheats[$0].enabled = false }
-        allCheats[rom.path.path] = cheats
+        allCheats[rom.runningKey] = cheats
         saveEnabledIndices(for: rom, cheats: cheats)
     }
     
@@ -117,13 +117,13 @@ class CheatManagerService: ObservableObject {
         var loadedCheats = CheatAutoLoader.loadCheats(for: rom)
         
         // Apply enabled state from AppSettings
-        let enabledSet = enabledIndices[rom.path.path] ?? []
+        let enabledSet = enabledIndices[rom.runningKey] ?? []
         for i in loadedCheats.indices {
             loadedCheats[i].enabled = enabledSet.contains(loadedCheats[i].index)
         }
         
         // Store in memory for session
-        allCheats[rom.path.path] = loadedCheats
+        allCheats[rom.runningKey] = loadedCheats
         
         isLoading = false
         LoggerService.info(category: "CheatManagerService", "Loaded \(loadedCheats.count) cheats for ROM: \(rom.displayName)")
@@ -149,7 +149,7 @@ class CheatManagerService: ObservableObject {
         }
         
         // Merge with existing cheats
-        var existing = allCheats[rom.path.path] ?? []
+        var existing = allCheats[rom.runningKey] ?? []
         var addedCount = 0
         var updatedCount = 0
         
@@ -166,7 +166,7 @@ class CheatManagerService: ObservableObject {
             }
         }
         
-        allCheats[rom.path.path] = existing
+        allCheats[rom.runningKey] = existing
         saveEnabledIndices(for: rom, cheats: existing)
         
         LoggerService.info(category: "CheatManagerService", "Imported cheats: \(addedCount) added, \(updatedCount) updated")
@@ -227,10 +227,10 @@ class CheatManagerService: ObservableObject {
     
     // Clear all custom cheats for a ROM (delete custom .cht file and enabled state)
     func clearCheats(for rom: ROM) {
-        allCheats[rom.path.path] = nil
+        allCheats[rom.runningKey] = nil
         
         // Remove enabled indices from AppSettings
-        enabledIndices[rom.path.path] = nil
+        enabledIndices[rom.runningKey] = nil
         saveAllEnabledIndices()
         
         // Delete custom cheats file
@@ -322,7 +322,7 @@ class CheatManagerService: ObservableObject {
     // Save enabled indices for a ROM to AppSettings
     private func saveEnabledIndices(for rom: ROM, cheats: [Cheat]) {
         let enabledSet = Set(cheats.filter { $0.enabled }.map { $0.index })
-        enabledIndices[rom.path.path] = enabledSet
+        enabledIndices[rom.runningKey] = enabledSet
         saveAllEnabledIndices()
     }
     
