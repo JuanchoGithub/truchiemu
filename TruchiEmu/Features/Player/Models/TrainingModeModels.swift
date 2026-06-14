@@ -122,7 +122,9 @@ struct TrainingModeConfig: Codable {
     var freezeOnMenu: Bool = false
     var controlMode: TrainingControlMode = .standby
     var stance: TrainingStance = .stand
-    var `guard`: TrainingGuard = .noBlock
+    var `guard`: TrainingGuard = .allBlock
+    var p2FacesRight: Bool = false
+    var genesisThreeButtonMode: Bool = false
     var wakeUpTech: TrainingWakeUpTech = .none
     var reversalMoveId: String? = nil
     var reversalParsedSteps: [[ParsedStep]]? = nil

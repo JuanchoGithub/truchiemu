@@ -11,6 +11,7 @@ class TrainingInputManager {
     private var retroIDToButtonMap: [Int: RetroButton] = [:]
     private var frameCounter: Int = 0
     private var lastP1ActiveButtons: Set<RetroButton> = []
+    private var blockButton: RetroButton?
 
     private let p2Player = 1
 
@@ -20,9 +21,17 @@ class TrainingInputManager {
         self.manager = manager
     }
 
+    var blockButtonRawValue: String? {
+        blockButton?.rawValue
+    }
+
     func detachFromRunner() {
         cancellable?.cancel()
         cancellable = nil
+    }
+
+    func resolveBlockButtonIfNeeded() {
+        resolveBlockButton()
     }
 
     func attachToRunner(_ runner: EmulatorRunner) {
@@ -33,6 +42,38 @@ class TrainingInputManager {
                 self?.recordP1Input(state)
             }
         rebuildRetroIDMap()
+        resolveBlockButton()
+    }
+
+    private func resolveBlockButton() {
+        guard let game = manager.currentGameData else {
+            blockButton = nil
+            return
+        }
+        let layout = manager.currentArcadeLayout
+        let systemID = manager.currentSystemID
+        let systemControlMappings = game.systemControlMappings
+        let lowerSystemID = systemID.lowercased()
+
+        if (lowerSystemID == "genesis" || lowerSystemID == "megadrive" || lowerSystemID == "32x"),
+           layout == .midway6,
+           manager.config.genesisThreeButtonMode {
+            blockButton = .start
+            return
+        }
+
+        for (fdKey, label) in game.controls {
+            let lower = label.lowercased()
+            guard lower.contains("block") || lower.contains("guard") else { continue }
+            guard let button = ArcadeButtonMapper.shared.retroButton(
+                for: fdKey, layout: layout, systemID: systemID,
+                systemControlMappings: systemControlMappings
+            ) else { continue }
+            if button.isDirectional { continue }
+            blockButton = button
+            return
+        }
+        blockButton = nil
     }
 
     private func recordP1Input(_ state: [Int: Bool]) {
@@ -52,9 +93,10 @@ class TrainingInputManager {
 
     func rebuildRetroIDMap() {
         let systemID = manager.currentSystemID
+        let coreID = SystemDatabaseWrapper.shared.system(forID: systemID)?.defaultCoreID
         var map: [Int: RetroButton] = [:]
         for button in RetroButton.allCases {
-            let id = button.retroID(for: systemID)
+            let id = button.retroID(for: systemID, coreID: coreID)
             if id >= 0 {
                 map[Int(id)] = button
             }
@@ -101,6 +143,10 @@ class TrainingInputManager {
         }
     }
 
+    private var backDirection: RetroButton {
+        manager.config.p2FacesRight ? .left : .right
+    }
+
     private func applyStance(config: TrainingModeConfig, adapter: XPCBridgeAdapter) {
         switch config.stance {
         case .stand:
@@ -126,17 +172,12 @@ class TrainingInputManager {
             break
 
         case .allBlock:
-            if config.stance == .crouch {
-                pressP2Button(.down, adapter: adapter)
-                pressP2Button(.left, adapter: adapter)
-            } else {
-                pressP2Button(.left, adapter: adapter)
-            }
+            applyBlockDirection(adapter: adapter, crouching: config.stance == .crouch)
 
         case .randomBlock:
             if isP1Attacking && !lastP1AttackState {
                 if Bool.random() {
-                    pressP2Button(.left, adapter: adapter)
+                    applyBlockDirection(adapter: adapter, crouching: false)
                 }
             }
 
@@ -145,12 +186,7 @@ class TrainingInputManager {
                 if !firstHitBlocked {
                     firstHitBlocked = true
                 } else {
-                    if config.stance == .crouch {
-                        pressP2Button(.down, adapter: adapter)
-                        pressP2Button(.left, adapter: adapter)
-                    } else {
-                        pressP2Button(.left, adapter: adapter)
-                    }
+                    applyBlockDirection(adapter: adapter, crouching: config.stance == .crouch)
                 }
             } else if !isP1Attacking && lastP1AttackState {
                 firstHitBlocked = false
@@ -169,6 +205,20 @@ class TrainingInputManager {
         }
 
         lastP1AttackState = isP1Attacking
+    }
+
+    private func applyBlockDirection(adapter: XPCBridgeAdapter, crouching: Bool) {
+        if let block = blockButton {
+            if crouching {
+                pressP2Button(.down, adapter: adapter)
+            }
+            pressP2Button(block, adapter: adapter)
+        } else {
+            if crouching {
+                pressP2Button(.down, adapter: adapter)
+            }
+            pressP2Button(backDirection, adapter: adapter)
+        }
     }
 
     private func detectP1Attack() -> Bool {

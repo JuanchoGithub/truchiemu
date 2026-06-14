@@ -538,6 +538,7 @@ gameGuideViewModel.loadForGame(rom)
         trainingManager.activate(for: trainingGameData, systemID: systemID, layout: trainingLayout)
         if let runner = self.runner {
             trainingManager.inputManager.attachToRunner(runner)
+            trainingManager.syncFrameDriver()
             trainingManager.inputManager.onP1InputUpdate = { [weak self] buttons, frameIndex in
                 guard let self else { return }
                 let entry = TrainingModeOverlayViewModel.InputHistoryEntry(
@@ -782,10 +783,14 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
                         if success {
                             LoggerService.info(category: "SaveState", "Successfully loaded save state from slot \(slotToLoad) v\(progVersion)")
                         } else {
+                            #if LOG_DEBUG
                             LoggerService.debug(category: "SaveState", "Failed to load save state from slot \(slotToLoad) v\(progVersion)")
+                            #endif
                         }
                     } else {
+                        #if LOG_DEBUG
                         LoggerService.debug(category: "SaveState", "No save state found at: \(stateURL.path)")
+                        #endif
                     }
                 } else {
                     let versions = runner.saveManager.progressiveSlotVersions(gameName: gameName, systemID: systemID, slot: slotToLoad)
@@ -805,7 +810,9 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
                             runner.osdMessage = "Loaded Slot \(slotToLoad) #\(newestVersion)"
                             LoggerService.info(category: "SaveState", "Successfully loaded save state from slot \(slotToLoad) v\(newestVersion)")
                         } else {
+                            #if LOG_DEBUG
                             LoggerService.debug(category: "SaveState", "Failed to load save state from slot \(slotToLoad)")
+                            #endif
                         }
                     }
                 }
@@ -844,7 +851,9 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
                                 LoggerService.info(category: "SaveState", "Successfully loaded most recent save")
                             }
                         } else {
+                            #if LOG_DEBUG
                             LoggerService.debug(category: "SaveState", "No save states found for auto-load")
+                            #endif
                         }
                     }
                 }

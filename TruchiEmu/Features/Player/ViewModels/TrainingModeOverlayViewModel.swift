@@ -8,8 +8,10 @@ class TrainingModeOverlayViewModel: ObservableObject {
     @Published var p1InputHistory: [InputHistoryEntry] = []
     @Published var p2InputHistory: [InputHistoryEntry] = []
     @Published var activeCardInfo: String? = nil
+    @Published var p2JoinPhase: Int = 0
 
     private let storageService = MoveListStorageService.shared
+    private var joinPhaseTimer: Timer?
 
     var fmdMonitorText: String? {
         let runner = manager.sequenceRunner
@@ -130,19 +132,100 @@ class TrainingModeOverlayViewModel: ObservableObject {
         set { manager.updateConfig { $0.activeTapeSlot = newValue } }
     }
 
-    var freezeOnMenu: Bool {
-        get { manager.config.freezeOnMenu }
-        set { manager.updateConfig { $0.freezeOnMenu = newValue } }
-    }
-
     func toggleTraining() {
-        manager.setEnabled(!manager.config.isEnabled)
+        let enabling = !manager.config.isEnabled
+        manager.setEnabled(enabling)
+        if enabling && !manager.frameDriver.hasP2Joined {
+            startJoinPhasePolling()
+        }
     }
 
     var isArcadeSystem: Bool { manager.isArcadeSystem }
 
+    var isP2Joining: Bool { manager.isP2Joining }
+
+    var p2JoinStatusText: String? {
+        guard manager.isP2Joining else { return nil }
+        let phase = manager.frameDriver.currentP2JoinPhase
+        let loc = LocalizationManager.shared
+        if manager.isArcadeSystem {
+            switch phase {
+            case 1: return loc.localized("training.p2Join.insertingCoin")
+            case 2: return loc.localized("training.p2Join.coinReleased")
+            case 3: return loc.localized("training.p2Join.pressingStart")
+            case 4: return loc.localized("training.p2Join.waitingCharSelect")
+            case 5: return loc.localized("training.p2Join.selectingCharacter")
+            default: return loc.localized("training.p2Join.joining")
+            }
+        } else {
+            switch phase {
+            case 1: return loc.localized("training.p2Join.pressingStart")
+            case 2: return loc.localized("training.p2Join.waitingCharSelect")
+            case 3: return loc.localized("training.p2Join.selectingCharacter")
+            default: return loc.localized("training.p2Join.joining")
+            }
+        }
+    }
+
+    var p2FacesRight: Bool {
+        get { manager.config.p2FacesRight }
+        set {
+            manager.updateConfig { $0.p2FacesRight = newValue }
+            manager.syncOrientation()
+        }
+    }
+
+    var genesisThreeButtonMode: Bool {
+        get { manager.config.genesisThreeButtonMode }
+        set {
+            manager.updateConfig { $0.genesisThreeButtonMode = newValue }
+            manager.inputManager.rebuildRetroIDMap()
+            manager.inputManager.resolveBlockButtonIfNeeded()
+            manager.syncFrameDriver()
+        }
+    }
+
+    var isGenesisMidway6: Bool {
+        let lowerSystemID = manager.currentSystemID.lowercased()
+        return (lowerSystemID == "genesis" || lowerSystemID == "megadrive" || lowerSystemID == "32x")
+            && manager.currentArcadeLayout == .midway6
+    }
+
+    var blockButtonLabel: String? {
+        let lowerSystemID = manager.currentSystemID.lowercased()
+        if (lowerSystemID == "genesis" || lowerSystemID == "megadrive" || lowerSystemID == "32x"),
+           manager.currentArcadeLayout == .midway6,
+           manager.config.genesisThreeButtonMode {
+            return RetroButton.start.displayName(for: manager.currentSystemID)
+        }
+        guard let rawValue = manager.inputManagerBlockButtonRawValue,
+              let button = RetroButton(rawValue: rawValue) else { return nil }
+        return button.displayName(for: manager.currentSystemID)
+    }
+
     func triggerP2Join() {
         manager.triggerP2Join()
+        startJoinPhasePolling()
+    }
+
+    private func startJoinPhasePolling() {
+        joinPhaseTimer?.invalidate()
+        joinPhaseTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+            Task { @MainActor in
+                guard let self else { return }
+                self.p2JoinPhase = self.manager.frameDriver.currentP2JoinPhase
+                if !self.manager.isP2Joining {
+                    self.joinPhaseTimer?.invalidate()
+                    self.joinPhaseTimer = nil
+                    self.p2JoinPhase = 0
+                }
+            }
+        }
+    }
+
+    func stopJoinPhasePolling() {
+        joinPhaseTimer?.invalidate()
+        joinPhaseTimer = nil
     }
 
     func performReset() {

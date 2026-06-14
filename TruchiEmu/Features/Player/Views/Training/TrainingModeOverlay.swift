@@ -7,7 +7,8 @@ struct TrainingModeOverlay: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            Color.black.opacity(0)
+            Color.clear
+                .contentShape(Rectangle())
                 .ignoresSafeArea()
                 .onTapGesture {
                     viewModel.closeOverlay()
@@ -15,6 +16,9 @@ struct TrainingModeOverlay: View {
 
             VStack(spacing: 0) {
                 headerBar
+                if viewModel.isP2Joining {
+                    p2JoinStatusBar
+                }
                 tabContent
             }
             .frame(maxWidth: 480, maxHeight: 520)
@@ -40,16 +44,32 @@ struct TrainingModeOverlay: View {
                 Button {
                     viewModel.triggerP2Join()
                 } label: {
-                    Label(loc.localized("training.p2Join"), systemImage: "person.2.fill")
-                        .font(.caption)
-                        .fontWeight(.semibold)
+                    if viewModel.isP2Joining {
+                        HStack(spacing: 4) {
+                            ProgressView()
+                                .scaleEffect(0.6)
+                            Text(loc.localized("training.p2Join.joining"))
+                                .font(.caption)
+                                .fontWeight(.semibold)
+                        }
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
+                        .background(Color.gray.opacity(0.5))
+                        .cornerRadius(6)
+                        .foregroundColor(.white.opacity(0.7))
+                    } else {
+                        Label(loc.localized("training.p2Join"), systemImage: "person.2.fill")
+                            .font(.caption)
+                            .fontWeight(.semibold)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
 .background(AppColors.brandAccent.opacity(0.8))
-                    .cornerRadius(6)
-                    .foregroundColor(AppColors.textOnAccent(colorScheme))
+                        .cornerRadius(6)
+                        .foregroundColor(AppColors.textOnAccent(colorScheme))
+                    }
                 }
                 .buttonStyle(.plain)
+                .disabled(viewModel.isP2Joining)
             }
 
             Button {
@@ -85,6 +105,26 @@ struct TrainingModeOverlay: View {
 
             Divider()
         }
+    }
+
+    private var p2JoinStatusBar: some View {
+        HStack(spacing: 6) {
+            ProgressView()
+                .scaleEffect(0.7)
+            if let statusText = viewModel.p2JoinStatusText {
+                Text(statusText)
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundColor(AppColors.brandAccent)
+            } else {
+                Text(loc.localized("training.p2Join.joining"))
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundColor(AppColors.brandAccent)
+            }
+            Spacer()
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 6)
+        .background(AppColors.brandAccent.opacity(0.08))
     }
 
     private var tabPicker: some View {
@@ -159,6 +199,13 @@ struct TrainingDummyTab: View {
             controlModeSection
             stanceSection
             guardSection
+            if let blockLabel = viewModel.blockButtonLabel {
+                blockButtonInfoSection(blockLabel)
+            }
+            if viewModel.isGenesisMidway6 {
+                genesisThreeButtonSection
+            }
+            facingSection
             wakeUpTechSection
             reversalActionSection
         }
@@ -211,6 +258,59 @@ struct TrainingDummyTab: View {
                 ForEach(TrainingGuard.allCases, id: \.self) { g in
                     Text(guardLabel(g)).tag(g)
                 }
+            } label: {
+                EmptyView()
+            }
+            .pickerStyle(.segmented)
+        }
+    }
+
+    private func blockButtonInfoSection(_ label: String) -> some View {
+        HStack(spacing: 6) {
+            Image(systemName: "hand.raised.fill")
+                .font(.system(size: 11))
+                .foregroundColor(AppColors.brandAccent)
+            Text(loc.localized("training.guard.blockButton"))
+                .font(.system(size: 12, weight: .medium))
+                .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+            Text(label)
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundColor(AppColors.brandAccent)
+            Spacer()
+        }
+        .padding(.vertical, 4)
+        .padding(.horizontal, 8)
+        .background(AppColors.brandAccent.opacity(0.06))
+        .cornerRadius(6)
+    }
+
+    private var facingSection: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(loc.localized("training.facing"))
+                .font(.subheadline)
+                .fontWeight(.semibold)
+                .foregroundColor(AppColors.textPrimary(colorScheme))
+
+            Picker(selection: $viewModel.p2FacesRight) {
+                Text(loc.localized("training.facing.left")).tag(false)
+                Text(loc.localized("training.facing.right")).tag(true)
+            } label: {
+                EmptyView()
+            }
+            .pickerStyle(.segmented)
+        }
+    }
+
+    private var genesisThreeButtonSection: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(loc.localized("training.genesis.controller"))
+                .font(.subheadline)
+                .fontWeight(.semibold)
+                .foregroundColor(AppColors.textPrimary(colorScheme))
+
+            Picker(selection: $viewModel.genesisThreeButtonMode) {
+                Text(loc.localized("training.genesis.6button")).tag(false)
+                Text(loc.localized("training.genesis.3button")).tag(true)
             } label: {
                 EmptyView()
             }
@@ -815,7 +915,6 @@ struct TrainingSettingsTab: View {
             resetPositionSection
             healthRegenSection
             superMeterSection
-            freezeOnMenuSection
             hotkeySection
         }
     }
@@ -899,14 +998,6 @@ struct TrainingSettingsTab: View {
                 EmptyView()
             }
             .pickerStyle(.segmented)
-        }
-    }
-
-    private var freezeOnMenuSection: some View {
-        Toggle(isOn: $viewModel.freezeOnMenu) {
-            Text(loc.localized("training.freezeOnMenu"))
-                .font(.subheadline)
-                .foregroundColor(AppColors.textPrimary(colorScheme))
         }
     }
 
