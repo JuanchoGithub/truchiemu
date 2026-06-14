@@ -32,8 +32,9 @@ class ArcadeButtonMapper {
     private init() {}
 
     func retroButton(for fightDataKey: String, layout: ArcadeLayout, systemID: String, systemControlMappings: [String: [String: String]]? = nil) -> RetroButton? {
+        let resolvedKey = resolveAlias(fightDataKey)
         if let sysMap = systemControlMappings?[systemID.lowercased()] {
-            for (fdKey, btnRaw) in sysMap where normalizeKey(fdKey) == normalizeKey(fightDataKey) {
+            for (btnRaw, fdKey) in sysMap where normalizeKey(fdKey) == normalizeKey(resolvedKey) {
                 if let button = RetroButton(rawValue: btnRaw) { return button }
             }
         }
@@ -42,8 +43,8 @@ class ArcadeButtonMapper {
         ensureLoaded(for: key)
 
         guard let layoutMap = cachedMappings[key]?[layout],
-            let button = layoutMap[normalizeKey(fightDataKey)] else {
-            return fallbackMapping(fightDataKey: fightDataKey, layout: layout)
+            let button = layoutMap[normalizeKey(resolvedKey)] else {
+            return fallbackMapping(fightDataKey: resolvedKey, layout: layout)
         }
         return button
     }
@@ -88,7 +89,7 @@ class ArcadeButtonMapper {
 
     func fightDataKey(for button: RetroButton, layout: ArcadeLayout, systemID: String, systemControlMappings: [String: [String: String]]? = nil) -> String? {
         if let sysMap = systemControlMappings?[systemID.lowercased()] {
-            for (fdKey, btnRaw) in sysMap where btnRaw == button.rawValue {
+            if let fdKey = sysMap[button.rawValue] {
                 return fdKey
             }
         }
@@ -111,10 +112,10 @@ class ArcadeButtonMapper {
             switch button {
             case .y: return "^E"
             case .x: return "^F"
-            case .r1: return "^G"
+            case .l1: return "^G"
             case .b: return "^H"
             case .a: return "^I"
-            case .r2: return "^J"
+            case .r1: return "^J"
             default: return nil
             }
         case .midway6:
@@ -124,6 +125,7 @@ class ArcadeButtonMapper {
             case .l1: return "_G"
             case .b: return "^J"
             case .a: return "^H"
+            case .r1: return "_R"
             default: return nil
             }
         case .snk4:
@@ -181,16 +183,17 @@ class ArcadeButtonMapper {
 
         if key == "_s" { return .start }
         if key == "^s" { return .select }
+        if key == "_r" { return .r1 }
 
         switch layout {
         case .capcom6:
             switch key {
             case "e": return .y
             case "f": return .x
-            case "g": return .r1
+            case "g": return .l1
             case "h": return .b
             case "i": return .a
-            case "j": return .r2
+            case "j": return .r1
             case "_p": return .y
             case "_k": return .b
             default: return nil
@@ -202,6 +205,7 @@ class ArcadeButtonMapper {
             case "_g": return .l1
             case "j": return .b
             case "h": return .a
+            case "_r": return .r1
             default: return nil
             }
         case .snk4:
@@ -218,5 +222,10 @@ class ArcadeButtonMapper {
             default: return nil
             }
         }
+    }
+
+    private func resolveAlias(_ key: String) -> String {
+        if key == "@R-button" { return "_R" }
+        return key
     }
 }

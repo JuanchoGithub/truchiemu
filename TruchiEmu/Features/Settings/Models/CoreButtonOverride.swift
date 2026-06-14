@@ -23,9 +23,11 @@ class CoreButtonOverride {
     private var cachedSystemTurboButtons: [String: [String]] = [:]
     private var cachedSystemCategories: [String: String] = [:]
     private var cachedCoreOverrides: [String: [String: OverrideEntry]] = [:]
+    private var cachedSystemOverrides: [String: [String: OverrideEntry]] = [:]
     private var missingCoreLabels: Set<String> = []
     private var missingSystemLabels: Set<String> = []
     private var missingCoreOverrides: Set<String> = []
+    private var missingSystemOverrides: Set<String> = []
 
     private static let identityMap: [String: Int32] = [
         "b": 0, "y": 1, "select": 2, "start": 3,
@@ -45,12 +47,23 @@ class CoreButtonOverride {
 
     private init() {}
 
+    private func resourceURL(prefix: String, name: String) -> URL? {
+        if let url = Bundle.main.url(forResource: "\(prefix)\(name)", withExtension: "json") {
+            return url
+        }
+        if name.hasSuffix("_libretro") {
+            let stripped = String(name.dropLast(9))
+            return Bundle.main.url(forResource: "\(prefix)\(stripped)", withExtension: "json")
+        }
+        return nil
+    }
+
     private func loadCoreLabel(for key: String) -> [String: String]? {
         let lower = key.lowercased()
         if let cached = cachedCoreLabels[lower] { return cached }
         if missingCoreLabels.contains(lower) { return nil }
 
-        guard let url = Bundle.main.url(forResource: "input_coreLabels_\(lower)", withExtension: "json"),
+        guard let url = resourceURL(prefix: "input_coreLabels_", name: lower),
               let data = try? Data(contentsOf: url),
               let decoded = try? JSONDecoder().decode([String: LabelOnlyEntry].self, from: data) else {
             missingCoreLabels.insert(lower)
@@ -88,12 +101,27 @@ class CoreButtonOverride {
         loadSystemLabel(for: lower)
     }
 
+    private func loadSystemOverride(for key: String) -> [String: OverrideEntry]? {
+        let lower = key.lowercased()
+        if let cached = cachedSystemOverrides[lower] { return cached }
+        if missingSystemOverrides.contains(lower) { return nil }
+
+        guard let url = Bundle.main.url(forResource: "input_systemOverrides_\(lower)", withExtension: "json"),
+              let data = try? Data(contentsOf: url),
+              let decoded = try? JSONDecoder().decode([String: OverrideEntry].self, from: data) else {
+            missingSystemOverrides.insert(lower)
+            return nil
+        }
+        cachedSystemOverrides[lower] = decoded
+        return decoded
+    }
+
     private func loadCoreOverride(for key: String) -> [String: OverrideEntry]? {
         let lower = key.lowercased()
         if let cached = cachedCoreOverrides[lower] { return cached }
         if missingCoreOverrides.contains(lower) { return nil }
 
-        guard let url = Bundle.main.url(forResource: "input_coreOverrides_\(lower)", withExtension: "json"),
+        guard let url = resourceURL(prefix: "input_coreOverrides_", name: lower),
               let data = try? Data(contentsOf: url),
               let decoded = try? JSONDecoder().decode([String: OverrideEntry].self, from: data) else {
             missingCoreOverrides.insert(lower)
@@ -124,7 +152,12 @@ class CoreButtonOverride {
     }
 
     func retroID(for button: RetroButton, systemID: String) -> Int32? {
-        return nil
+        guard let sys = loadSystemOverride(for: systemID),
+              let entry = sys[button.rawValue],
+              let rid = entry.id else {
+            return nil
+        }
+        return Int32(rid)
     }
 
     static func identityID(for button: RetroButton) -> Int32? {

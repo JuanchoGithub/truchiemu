@@ -44,13 +44,13 @@ struct KeyboardMapping: Codable {
                 base[.y] = 7
             }
 
-        case "genesis", "megadrive":
+        case "genesis", "megadrive", "32x", "sms", "gamegear", "segacd", "segapico":
             base[.a] = 6
             base[.b] = 7
             base[.c] = 8
-            base[.x] = 12
-            base[.y] = 13
-            base[.z] = 14
+            base[.x] = 0
+            base[.y] = 1
+            base[.z] = 2
 
         case "n64":
             base[.a] = 6

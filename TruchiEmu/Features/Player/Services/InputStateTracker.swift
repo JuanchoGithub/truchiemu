@@ -26,15 +26,21 @@ class InputStateTracker: ObservableObject {
     private let maxSequenceLength = 10
 
     var arcadeLayout: ArcadeLayout = .capcom6
-    var systemID: String = "snes"
+    var systemID: String = "snes" {
+        didSet { rebuildRetroIDToButton() }
+    }
     var systemControlMappings: [String: [String: String]]? = nil
 
-    private let retroIDToButton: [Int: RetroButton] = [
-        0: .b, 1: .y, 2: .select, 3: .start,
-        4: .up, 5: .down, 6: .left, 7: .right,
-        8: .a, 9: .x, 10: .l1, 11: .r1,
-        12: .l2, 13: .r2, 14: .l3, 15: .r3
-    ]
+    private var retroIDToButton: [Int: RetroButton] = [:]
+
+    private func rebuildRetroIDToButton() {
+        var map: [Int: RetroButton] = [:]
+        for button in RetroButton.allCases {
+            let id = button.retroID(for: systemID)
+            if id >= 0 { map[Int(id)] = button }
+        }
+        retroIDToButton = map
+    }
 
     init(runner: EmulatorRunner) {
         cancellable = runner.$currentInputState

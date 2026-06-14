@@ -225,33 +225,33 @@
       "layout": "midway6",
       "systemID": "genesis",
       "mappings": [
-        { "fightDataKey": "^G", "retroButton": "y" },
-        { "fightDataKey": "^E", "retroButton": "b" },
-        { "fightDataKey": "_G", "retroButton": "x" },
-        { "fightDataKey": "^J", "retroButton": "c" },
-        { "fightDataKey": "^H", "retroButton": "a" }
+        { "fightDataKey": "^G", "retroButton": "x" },
+        { "fightDataKey": "^E", "retroButton": "a" },
+        { "fightDataKey": "_G", "retroButton": "y" },
+        { "fightDataKey": "^J", "retroButton": "z" },
+        { "fightDataKey": "^H", "retroButton": "c" }
       ]
     },
     {
       "layout": "midway6",
       "systemID": "megadrive",
       "mappings": [
-        { "fightDataKey": "^G", "retroButton": "y" },
-        { "fightDataKey": "^E", "retroButton": "b" },
-        { "fightDataKey": "_G", "retroButton": "x" },
-        { "fightDataKey": "^J", "retroButton": "c" },
-        { "fightDataKey": "^H", "retroButton": "a" }
+        { "fightDataKey": "^G", "retroButton": "x" },
+        { "fightDataKey": "^E", "retroButton": "a" },
+        { "fightDataKey": "_G", "retroButton": "y" },
+        { "fightDataKey": "^J", "retroButton": "z" },
+        { "fightDataKey": "^H", "retroButton": "c" }
       ]
     },
     {
       "layout": "midway6",
       "systemID": "32x",
       "mappings": [
-        { "fightDataKey": "^G", "retroButton": "y" },
-        { "fightDataKey": "^E", "retroButton": "b" },
-        { "fightDataKey": "_G", "retroButton": "x" },
-        { "fightDataKey": "^J", "retroButton": "c" },
-        { "fightDataKey": "^H", "retroButton": "a" }
+        { "fightDataKey": "^G", "retroButton": "x" },
+        { "fightDataKey": "^E", "retroButton": "a" },
+        { "fightDataKey": "_G", "retroButton": "y" },
+        { "fightDataKey": "^J", "retroButton": "z" },
+        { "fightDataKey": "^H", "retroButton": "c" }
       ]
     },
     {

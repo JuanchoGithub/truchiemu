@@ -77,6 +77,7 @@
 		0D1D3F09AC408193C27DA49A /* input_coreLabels_clownmdemu.json in Resources */ = {isa = PBXBuildFile; fileRef = 7D7F79126379D03F13901B84 /* input_coreLabels_clownmdemu.json */; };
 		0D222419B26CA228731108B8 /* input_systemLabels_psx.json in Resources */ = {isa = PBXBuildFile; fileRef = 97BCC09023B6804FCBFE4D9B /* input_systemLabels_psx.json */; };
 		0D2E27740B6ADF1221055466 /* cpc@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 880E0B1C3C4D3119152284CE /* cpc@132w.png */; };
+		0D44B7650B429F69ABBC705D /* input_systemOverrides_segapico.json in Resources */ = {isa = PBXBuildFile; fileRef = 58DBBF3F6D5914FA20507643 /* input_systemOverrides_segapico.json */; };
 		0D8A07B323B96EBC8E1F8E1F /* LibraryFilterOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44D6E43A22D859720886ECD6 /* LibraryFilterOption.swift */; };
 		0DDFBDCB92DA4D0DF256D6D9 /* input_coreOverrides_nxengine.json in Resources */ = {isa = PBXBuildFile; fileRef = 118C3C476FA18F110E167B39 /* input_coreOverrides_nxengine.json */; };
 		0EC966AB34C9316BEB777009 /* StandaloneGameWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6FCC4037CB225E511FD3F5 /* StandaloneGameWindowController.swift */; };
@@ -119,6 +120,7 @@
 		167576EAE6CAC82BB1003FCD /* msu1@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 2CC2FA12059751AA88870ECA /* msu1@132w.png */; };
 		16CEE1FC91FE8FBE871AF673 /* input_coreLabels_desmume.json in Resources */ = {isa = PBXBuildFile; fileRef = 3366F2EFEA27DA071F3FD1E3 /* input_coreLabels_desmume.json */; };
 		1722F9AFF0C43394DFA02AC1 /* snes-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 64F80BDBD0858B8801487FE5 /* snes-cheats.zip */; };
+		17302C69CB599C03AE0565A9 /* input_systemOverrides_32x.json in Resources */ = {isa = PBXBuildFile; fileRef = 0BBB848AD29E40173B241173 /* input_systemOverrides_32x.json */; };
 		174002735F0A257A64378DB4 /* fightdata_index.json in Resources */ = {isa = PBXBuildFile; fileRef = E157F75F5D3ED38A10662065 /* fightdata_index.json */; };
 		1741C362D3DEC0F8D856EEE2 /* n64@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = B7AEE24751C8A0337877A2E0 /* n64@132w.png */; };
 		175914AA2909F5BE44E29AF4 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDFDD053E0B69ACF2A0BBE22 /* main.swift */; };
@@ -256,6 +258,7 @@
 		3506553C6450AF207476A3D9 /* FLASHBACK.png in Resources */ = {isa = PBXBuildFile; fileRef = 857D78DF34C31AA99698DF6A /* FLASHBACK.png */; };
 		351C7B540C3DC5050729FD3D /* input_coreLabels_beetle_saturn.json in Resources */ = {isa = PBXBuildFile; fileRef = C6B902C8D11765B90604510E /* input_coreLabels_beetle_saturn.json */; };
 		3521349E5001440547982A69 /* input_systemLabels_atari5200.json in Resources */ = {isa = PBXBuildFile; fileRef = 20CB4EE2A4BDA71FE3BC0CA0 /* input_systemLabels_atari5200.json */; };
+		3555DAC7DA14C79A32B4F96E /* input_systemOverrides_segacd.json in Resources */ = {isa = PBXBuildFile; fileRef = 9C2D4457E6499AA2F5779FF4 /* input_systemOverrides_segacd.json */; };
 		356169128282D364CEF71082 /* fightdata_slammast.json in Resources */ = {isa = PBXBuildFile; fileRef = B06FCF64CFEBBF5B7EDD245F /* fightdata_slammast.json */; };
 		3577330C6AFEF55A0821D35B /* PCFX.png in Resources */ = {isa = PBXBuildFile; fileRef = A51EC5B948387F84D6AA081B /* PCFX.png */; };
 		3588D9A445FA7F8DD0A17F91 /* fightdata_sfiii.json in Resources */ = {isa = PBXBuildFile; fileRef = C8197A3CD7930768E84C3380 /* fightdata_sfiii.json */; };
@@ -634,6 +637,7 @@
 		88C6209E377761122EFF7420 /* input_systemLabels_ti_83.json in Resources */ = {isa = PBXBuildFile; fileRef = 2E0EE3D213A80F69382477E8 /* input_systemLabels_ti_83.json */; };
 		89787561CC0407307E78EA54 /* input_coreLabels_beetle_vb.json in Resources */ = {isa = PBXBuildFile; fileRef = D371E4C1F06305FA88AD9ADC /* input_coreLabels_beetle_vb.json */; };
 		89999BCF6C86749975156810 /* CLILauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F31D1631DA8C12805D91493 /* CLILauncher.swift */; };
+		89C8956AC2B831DA7E70F726 /* input_systemOverrides_gamegear.json in Resources */ = {isa = PBXBuildFile; fileRef = 553B9163434E407B82F065DB /* input_systemOverrides_gamegear.json */; };
 		8A6465EC1B5DD1F8FDB9297D /* PSP.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9C5D64D2262E657B3F007C98 /* PSP.metal */; };
 		8A6E0AB146F590BACFEEF9AD /* input_coreLabels_race.json in Resources */ = {isa = PBXBuildFile; fileRef = D256D164C12D4E02C237597C /* input_coreLabels_race.json */; };
 		8AEB9022A6AC780E97D92355 /* input_coreLabels_game_music_emu.json in Resources */ = {isa = PBXBuildFile; fileRef = 303E1FAF3550AD545FFB1426 /* input_coreLabels_game_music_emu.json */; };
@@ -647,6 +651,7 @@
 		8C8A32CFEF6A3E43EBF8AB4A /* input_systemLabels_wii.json in Resources */ = {isa = PBXBuildFile; fileRef = 948CE21AAEB52DD0237AA592 /* input_systemLabels_wii.json */; };
 		8D4E3566D305DE95CB7DEF13 /* sgfx@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 1ACE75A9B6A3EAF2C173E097 /* sgfx@132w.png */; };
 		8D82F1A6F1A1038A90CD46AA /* fightdata_garou.json in Resources */ = {isa = PBXBuildFile; fileRef = 455DBBFEAE8603E856A7D2D9 /* fightdata_garou.json */; };
+		8D894493EAB054556D39E80B /* input_systemOverrides_genesis.json in Resources */ = {isa = PBXBuildFile; fileRef = 96DFD5A0C66CAC4675FBBC1C /* input_systemOverrides_genesis.json */; };
 		8E10154DA5D4489221754134 /* fightdata_ffight.json in Resources */ = {isa = PBXBuildFile; fileRef = 8CF5A186A1763848B74DF099 /* fightdata_ffight.json */; };
 		8E2B2255CA91F5BA42CC015D /* ScummVMRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2D54794F1A800DF2053B9C1 /* ScummVMRunner.swift */; };
 		8E7AB5142487E776BA754AAC /* input_coreLabels_beetle_pc_fx.json in Resources */ = {isa = PBXBuildFile; fileRef = 67E3AE6E21EEEE60B5106D5D /* input_coreLabels_beetle_pc_fx.json */; };
@@ -1086,6 +1091,7 @@
 		F1AA44B0A96EE6EA380D60E7 /* EASYRPG.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D4A52AFA9B952287155E6A6 /* EASYRPG.png */; };
 		F1B11978BEC8CE8C0D198CBF /* SharedMemoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC670A67B8CEDEF192F88015 /* SharedMemoryManager.swift */; };
 		F2058F5CDAFDED1DB7FAFD71 /* genesis-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = CB6C88486821941C90609217 /* genesis-cheats.zip */; };
+		F2641ACD40A561AFD5D4CD43 /* input_systemOverrides_sms.json in Resources */ = {isa = PBXBuildFile; fileRef = 3B9894627ECDB98F6C564B69 /* input_systemOverrides_sms.json */; };
 		F2685E5074550574CAD37749 /* fightdata_tekken2.json in Resources */ = {isa = PBXBuildFile; fileRef = 67E3968F66782C9657808245 /* fightdata_tekken2.json */; };
 		F27F2A99DA133FC3BAD1F4FF /* fightdata_ssoldier.json in Resources */ = {isa = PBXBuildFile; fileRef = CFFF59517742B9B10657F3F5 /* fightdata_ssoldier.json */; };
 		F2903EDB7DD894827E44208C /* ResourceCacheModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86D467EC70EF33E265BAF765 /* ResourceCacheModels.swift */; };
@@ -1219,6 +1225,7 @@
 		0AD514FC205ED798BF0C5C4E /* input_coreOverrides_beetle_neopop.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_beetle_neopop.json; sourceTree = "<group>"; };
 		0B6E64CAC32E5F8FE49FE85C /* VIDEOPAC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VIDEOPAC.png; sourceTree = "<group>"; };
 		0BB2C09C2DA9168C7B2E11CE /* input_coreOverrides_prboom.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_prboom.json; sourceTree = "<group>"; };
+		0BBB848AD29E40173B241173 /* input_systemOverrides_32x.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemOverrides_32x.json; sourceTree = "<group>"; };
 		0BD096E25D6631637825D5C1 /* atari5200-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "atari5200-cheats.zip"; sourceTree = "<group>"; };
 		0C64F8151FBFA058A68B1FE8 /* pico@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pico@132w.png"; sourceTree = "<group>"; };
 		0CDA1D3810E1E4D29E9DF02A /* VIDEOPAC-alt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "VIDEOPAC-alt.png"; sourceTree = "<group>"; };
@@ -1441,6 +1448,7 @@
 		3B3A18079105AA50F2BFD108 /* fightdata_ninjamas.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_ninjamas.json; sourceTree = "<group>"; };
 		3B508F2E6A11186A526FC830 /* Sega - SG-1000.dat */ = {isa = PBXFileReference; path = "Sega - SG-1000.dat"; sourceTree = "<group>"; };
 		3B5A0C53E7EE0FE463B3CEB1 /* MAME2010.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MAME2010.png; sourceTree = "<group>"; };
+		3B9894627ECDB98F6C564B69 /* input_systemOverrides_sms.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemOverrides_sms.json; sourceTree = "<group>"; };
 		3BB12F3155291F4EC9C6EF84 /* LibraryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViewModel.swift; sourceTree = "<group>"; };
 		3BC92E3E97A6564FD5EE72BC /* MoveListSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveListSettingsView.swift; sourceTree = "<group>"; };
 		3BD337DAF7B206DF941EB16D /* LottesCRT.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = LottesCRT.metal; sourceTree = "<group>"; };
@@ -1563,6 +1571,7 @@
 		5496899A3DFCC8269B7D763D /* chai@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chai@132w.png"; sourceTree = "<group>"; };
 		54DD8754D9035E5B78CD5178 /* mednafen_psx_libretro_default.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = mednafen_psx_libretro_default.json; sourceTree = "<group>"; };
 		553202E8BACC113D608625E6 /* LibretroRDBParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroRDBParser.swift; sourceTree = "<group>"; };
+		553B9163434E407B82F065DB /* input_systemOverrides_gamegear.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemOverrides_gamegear.json; sourceTree = "<group>"; };
 		554B05428A53DA220A635F40 /* neocd@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "neocd@132w.png"; sourceTree = "<group>"; };
 		55A0C232023C7657365528C8 /* Nintendo - Nintendo Entertainment System.dat */ = {isa = PBXFileReference; path = "Nintendo - Nintendo Entertainment System.dat"; sourceTree = "<group>"; };
 		55C2586F126544666FE181BC /* UZEBOX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = UZEBOX.png; sourceTree = "<group>"; };
@@ -1579,6 +1588,7 @@
 		5803663F2F57F8B8212A8444 /* input_systemLabels_cpc.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_cpc.json; sourceTree = "<group>"; };
 		588987634A889D5C53A7EA69 /* input_systemLabels_pce.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_pce.json; sourceTree = "<group>"; };
 		58D13A1BA2A086DFF84123BB /* input_coreLabels_bsnes_cplusplus98.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_bsnes_cplusplus98.json; sourceTree = "<group>"; };
+		58DBBF3F6D5914FA20507643 /* input_systemOverrides_segapico.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemOverrides_segapico.json; sourceTree = "<group>"; };
 		58F6C2A68F840683B84E80DB /* Bezels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bezels.swift; sourceTree = "<group>"; };
 		593AC1EF65CAEC6BE968E14D /* input_systemLabels_pc_98.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_pc_98.json; sourceTree = "<group>"; };
 		596FC72EF305521FB589153D /* InputDeviceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputDeviceType.swift; sourceTree = "<group>"; };
@@ -1858,6 +1868,7 @@
 		96544BE3AA856C3809F57F4C /* megaduck@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "megaduck@132w.png"; sourceTree = "<group>"; };
 		96619349B830F47B3655D652 /* MoveDataUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveDataUtilities.swift; sourceTree = "<group>"; };
 		96D83EE16FECF459999464E5 /* msx@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "msx@132w.png"; sourceTree = "<group>"; };
+		96DFD5A0C66CAC4675FBBC1C /* input_systemOverrides_genesis.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemOverrides_genesis.json; sourceTree = "<group>"; };
 		96E6003B8C8F290A61CA2030 /* fightdata_ssf2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_ssf2.json; sourceTree = "<group>"; };
 		96EB760EBFD3458D61CE11D8 /* input_coreLabels_sameduck.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_sameduck.json; sourceTree = "<group>"; };
 		9720B57FECB78B265F5FAD8E /* input_coreLabels_jaxe.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_jaxe.json; sourceTree = "<group>"; };
@@ -1878,6 +1889,7 @@
 		9B06488DE005018FB65D9950 /* input_coreLabels_mesen-s.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "input_coreLabels_mesen-s.json"; sourceTree = "<group>"; };
 		9B9365CD6FC031FDA5FC4E59 /* CPS1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CPS1.png; sourceTree = "<group>"; };
 		9C0E8F85B2C2893C2F36FAB0 /* MoveDataGamesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveDataGamesView.swift; sourceTree = "<group>"; };
+		9C2D4457E6499AA2F5779FF4 /* input_systemOverrides_segacd.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemOverrides_segacd.json; sourceTree = "<group>"; };
 		9C414D93A2ECA0F8D6F1A5F3 /* fightdata_wargods.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_wargods.json; sourceTree = "<group>"; };
 		9C5D64D2262E657B3F007C98 /* PSP.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = PSP.metal; sourceTree = "<group>"; };
 		9D0409EE4A71A70746BE08BB /* scummvm@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "scummvm@132w.png"; sourceTree = "<group>"; };
@@ -2563,14 +2575,6 @@
 			path = Service;
 			sourceTree = "<group>";
 		};
-		1DAAD38FF182383AA6293234 /* MAME_Dats_287 */ = {
-			isa = PBXGroup;
-			children = (
-				823E87C6DF85B4789E707741 /* DATs */,
-			);
-			path = MAME_Dats_287;
-			sourceTree = "<group>";
-		};
 		1F92234FC7D9A5FE968934E4 /* CoreDownload */ = {
 			isa = PBXGroup;
 			children = (
@@ -2625,6 +2629,7 @@
 				B50D6C118AE104B1102EC306 /* coreLabels */,
 				4E08C1656467F826B9E095CF /* coreOverrides */,
 				C702E4259A3365EE302299C5 /* systemLabels */,
+				39E0ADEA9FFE4EF38D84C6B0 /* systemOverrides */,
 			);
 			path = CoreButtonSplit;
 			sourceTree = "<group>";
@@ -2700,6 +2705,19 @@
 				2F2DE6617AEEEBFC7DBFBD97 /* Sections */,
 			);
 			path = Detail;
+			sourceTree = "<group>";
+		};
+		39E0ADEA9FFE4EF38D84C6B0 /* systemOverrides */ = {
+			isa = PBXGroup;
+			children = (
+				0BBB848AD29E40173B241173 /* input_systemOverrides_32x.json */,
+				553B9163434E407B82F065DB /* input_systemOverrides_gamegear.json */,
+				96DFD5A0C66CAC4675FBBC1C /* input_systemOverrides_genesis.json */,
+				9C2D4457E6499AA2F5779FF4 /* input_systemOverrides_segacd.json */,
+				58DBBF3F6D5914FA20507643 /* input_systemOverrides_segapico.json */,
+				3B9894627ECDB98F6C564B69 /* input_systemOverrides_sms.json */,
+			);
+			path = systemOverrides;
 			sourceTree = "<group>";
 		};
 		3EA63703B94C8E15DB3416FA /* Models */ = {
@@ -3109,13 +3127,6 @@
 				A35ECAA1815FED1C7BF7968B /* MAME */,
 			);
 			path = Views;
-			sourceTree = "<group>";
-		};
-		823E87C6DF85B4789E707741 /* DATs */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = DATs;
 			sourceTree = "<group>";
 		};
 		85365FFE70DF28FA8129A9FC /* Features */ = {
@@ -3557,7 +3568,6 @@
 				AC4242637CF323E022F4E8FA /* mame_2003_plus.json */,
 				283FFD6FCF919837FDB9BB39 /* mame_rom_data.json */,
 				B28F30933735D61D9F280392 /* merge_sources.py */,
-				1DAAD38FF182383AA6293234 /* MAME_Dats_287 */,
 			);
 			path = mame_lookup;
 			sourceTree = "<group>";
@@ -5062,6 +5072,12 @@
 				516EE8E3C3A02E5129EE30D7 /* input_systemLabels_xrick.json in Resources */,
 				76AF02E86B8838FFA28E9E22 /* input_systemLabels_zx81.json in Resources */,
 				745305AB0164B62BE475C6B9 /* input_systemLabels_zx_spectrum.json in Resources */,
+				17302C69CB599C03AE0565A9 /* input_systemOverrides_32x.json in Resources */,
+				89C8956AC2B831DA7E70F726 /* input_systemOverrides_gamegear.json in Resources */,
+				8D894493EAB054556D39E80B /* input_systemOverrides_genesis.json in Resources */,
+				3555DAC7DA14C79A32B4F96E /* input_systemOverrides_segacd.json in Resources */,
+				0D44B7650B429F69ABBC705D /* input_systemOverrides_segapico.json in Resources */,
+				F2641ACD40A561AFD5D4CD43 /* input_systemOverrides_sms.json in Resources */,
 				07162B9B8CCB6C91E4FE8697 /* intellivision-cheats.zip in Resources */,
 				331E5D4313517BFC79FF693A /* itv@132w.png in Resources */,
 				66EDDE1C785804C530A133A5 /* j7C3Q.jpg in Resources */,
@@ -5523,6 +5539,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.TruchiEmu.app;
 				PRODUCT_NAME = TruchiEmu;
 				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "LOG_DEBUG LOG_EXTREME";
 				SWIFT_OBJC_BRIDGING_HEADER = "TruchiEmu/Core/Engine/TruchiEmu-Bridging-Header.h";
 				SWIFT_VERSION = 5.9;
 			};
@@ -5616,7 +5633,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.TruchiEmu.CoreHost;
 				PRODUCT_NAME = TruchiEmuCoreHost;
 				SDKROOT = macosx;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = XPC_SERVICE;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "XPC_SERVICE LOG_DEBUG LOG_EXTREME";
 				SWIFT_OBJC_BRIDGING_HEADER = "TruchiEmu/Core/Engine/TruchiEmu-Bridging-Header.h";
 				SWIFT_VERSION = 5.9;
 			};
@@ -5645,6 +5662,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.TruchiEmu.app;
 				PRODUCT_NAME = TruchiEmu;
 				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "LOG_DEBUG LOG_EXTREME";
 				SWIFT_OBJC_BRIDGING_HEADER = "TruchiEmu/Core/Engine/TruchiEmu-Bridging-Header.h";
 				SWIFT_VERSION = 5.9;
 			};
@@ -5675,7 +5693,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.TruchiEmu.CoreHost;
 				PRODUCT_NAME = TruchiEmuCoreHost;
 				SDKROOT = macosx;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = XPC_SERVICE;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "XPC_SERVICE LOG_DEBUG LOG_EXTREME";
 				SWIFT_OBJC_BRIDGING_HEADER = "TruchiEmu/Core/Engine/TruchiEmu-Bridging-Header.h";
 				SWIFT_VERSION = 5.9;
 			};

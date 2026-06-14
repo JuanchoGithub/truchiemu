@@ -317,9 +317,43 @@ class ControllerService: ObservableObject {
             return base
         }
 
-        return savedMappings[vendorName]?[systemID]
-            ?? savedMappings[vendorName]?["default"]
-            ?? ControllerGamepadMapping.defaults(for: vendorName, systemID: systemID, handedness: handedness)
+        if let saved = savedMappings[vendorName]?[systemID] {
+            return saved
+        }
+
+        guard systemID != "default" else {
+            return savedMappings[vendorName]?["default"]
+                ?? ControllerGamepadMapping.defaults(for: vendorName, systemID: "default", handedness: handedness)
+        }
+
+        let globalMapping = savedMappings[vendorName]?["default"]
+            ?? ControllerGamepadMapping.defaults(for: vendorName, systemID: "default", handedness: handedness)
+
+        let availableButtons = RetroButton.availableButtons(for: systemID)
+        let oldDefaults = ControllerGamepadMapping.defaults(for: vendorName, systemID: systemID, handedness: handedness)
+
+        var retroIDToIdentity: [Int32: RetroButton] = [:]
+        for btn in RetroButton.allCases {
+            if let rid = CoreButtonOverride.identityID(for: btn) {
+                retroIDToIdentity[rid] = btn
+            }
+        }
+
+        var result = ControllerGamepadMapping(vendorName: vendorName, buttons: [:])
+
+        for btn in availableButtons {
+            let rid = btn.retroID(for: systemID)
+            if rid >= 0, let identityBtn = retroIDToIdentity[rid],
+               let gcMapping = globalMapping.buttons[identityBtn] {
+                result.buttons[btn] = gcMapping
+            } else if let gcMapping = globalMapping.buttons[btn] {
+                result.buttons[btn] = gcMapping
+            } else if let gcMapping = oldDefaults.buttons[btn] {
+                result.buttons[btn] = gcMapping
+            }
+        }
+
+        return result
     }
 
     func updateKeyboardMapping(_ mapping: KeyboardMapping, for systemID: String, player: Int = 1) {
@@ -359,12 +393,30 @@ class ControllerService: ObservableObject {
         if let data = AppSettings.getData(mappingKey),
            let saved = try? JSONDecoder().decode([String: [String: ControllerGamepadMapping]].self, from: data) {
             savedMappings = saved
+            migrateStaleGenesisMappings()
         }
 
         if let data = AppSettings.getData(kbMappingKey),
            let saved = try? JSONDecoder().decode([String: KeyboardMapping].self, from: data) {
             keyboardMappings = saved
         }
+    }
+
+    private func migrateStaleGenesisMappings() {
+        let genesisSystems: Set<String> = ["genesis", "megadrive", "32x"]
+        var changed = false
+        for (vendor, sysMap) in savedMappings {
+            for (sysID, mapping) in sysMap {
+                guard genesisSystems.contains(sysID.lowercased()) else { continue }
+                let hasCWithoutX = mapping.buttons[.c] != nil && mapping.buttons[.x] == nil
+                let hasDuplicateGC = mapping.buttons[.c]?.gcElementName == mapping.buttons[.a]?.gcElementName
+                if hasCWithoutX || hasDuplicateGC {
+                    savedMappings[vendor]?[sysID] = self.mapping(for: vendor, systemID: sysID)
+                    changed = true
+                }
+            }
+        }
+        if changed { saveMappings() }
     }
 
     @Published var keyboardMappings: [String: KeyboardMapping] = [:]

@@ -50,49 +50,27 @@ class InputDescriptorsManager {
               let descs = loadFromDisk(for: defaultCoreID) else {
             return nil
         }
-        return convertToRetroButtons(descs)
+        return convertToRetroButtons(descs, coreID: defaultCoreID)
     }
 
-    private func convertToRetroButtons(_ inputDescriptors: [InputButtonDescriptor]) -> [RetroButton] {
+    nonisolated func retroID(for button: RetroButton, coreID: String) -> Int? {
+        guard let descs = loadFromDisk(for: coreID) else { return nil }
+        let expectedDesc = CoreButtonOverride.shared.label(for: button, coreID: coreID)
+            ?? button.displayName(for: nil)
+        return descs.first(where: { $0.description == expectedDesc })?.id
+    }
+
+    private func convertToRetroButtons(_ inputDescriptors: [InputButtonDescriptor], coreID: String) -> [RetroButton] {
         var result: [RetroButton] = []
 
-        let buttonIDMapping: [Int: RetroButton] = [
-            0: .b,
-            1: .y,
-            2: .select,
-            3: .start,
-            4: .up,
-            5: .down,
-            6: .left,
-            7: .right,
-            8: .a,
-            9: .x,
-            10: .l1,
-            11: .r1,
-            12: .l2,
-            13: .r2,
-            14: .l3,
-            15: .r3,
-            // Analog sticks (mapped from RETRO_DEVICE_ANALOG)
-            // Left stick X: 16=+, 17=-
-            // Left stick Y: 18=+, 19=-
-            // Right stick X: 20=+, 21=-
-            // Right stick Y: 22=+, 23=-
-            16: .lStickRight,
-            17: .lStickLeft,
-            18: .lStickUp,
-            19: .lStickDown,
-            20: .rStickRight,
-            21: .rStickLeft,
-            22: .rStickUp,
-            23: .rStickDown
-        ]
-
         for desc in inputDescriptors {
-            if let button = buttonIDMapping[desc.id] {
-                if !result.contains(button) {
-                    result.append(button)
-                }
+            let matchingButton = RetroButton.allCases.first { button in
+                let label = CoreButtonOverride.shared.label(for: button, coreID: coreID)
+                    ?? button.displayName(for: nil)
+                return label == desc.description
+            }
+            if let button = matchingButton, !result.contains(button) {
+                result.append(button)
             }
         }
 
@@ -105,12 +83,18 @@ extension InputDescriptorsManager {
     func discoverDescriptors(for coreID: String, dylibPath: String, romPath: String?) async {
         // Input descriptors are now captured during CoreOptionsManager.discoverOptions
         // Just load from disk here - if not found, that's ok (core may not have set any)
+        #if LOG_DEBUG
         LoggerService.debug(category: "InputDescriptorsManager", "Checking existing descriptors for core: \(coreID)")
+        #endif
 
         if let descriptors = loadFromDisk(for: coreID) {
+            #if LOG_DEBUG
             LoggerService.debug(category: "InputDescriptorsManager", "Found \(descriptors.count) input descriptors on disk for \(coreID)")
+            #endif
         } else {
+            #if LOG_DEBUG
             LoggerService.debug(category: "InputDescriptorsManager", "No input descriptors found on disk for \(coreID)")
+            #endif
         }
     }
 }

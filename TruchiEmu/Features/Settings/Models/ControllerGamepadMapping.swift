@@ -30,10 +30,10 @@ struct ControllerGamepadMapping: Codable {
         var mapping = ControllerGamepadMapping(vendorName: vendorName, buttons: [:])
         let availableButtons = RetroButton.availableButtons(for: systemID)
 
-        mapping.buttons[.up] = GCButtonMapping(gcElementName: "D-pad Up", gcElementAlias: "Up")
-        mapping.buttons[.down] = GCButtonMapping(gcElementName: "D-pad Down", gcElementAlias: "Down")
-        mapping.buttons[.left] = GCButtonMapping(gcElementName: "D-pad Left", gcElementAlias: "Left")
-        mapping.buttons[.right] = GCButtonMapping(gcElementName: "D-pad Right", gcElementAlias: "Right")
+        mapping.buttons[.up] = GCButtonMapping(gcElementName: "D-pad (Up)", gcElementAlias: "D-pad (Up)")
+        mapping.buttons[.down] = GCButtonMapping(gcElementName: "D-pad (Down)", gcElementAlias: "D-pad (Down)")
+        mapping.buttons[.left] = GCButtonMapping(gcElementName: "D-pad (Left)", gcElementAlias: "D-pad (Left)")
+        mapping.buttons[.right] = GCButtonMapping(gcElementName: "D-pad (Right)", gcElementAlias: "D-pad (Right)")
 
         if availableButtons.contains(.a) && availableButtons.contains(.b) && !availableButtons.contains(.x) {
             if isLeftHanded {
@@ -53,54 +53,49 @@ struct ControllerGamepadMapping: Codable {
         }
         else if availableButtons.contains(.x) && availableButtons.contains(.y) {
             if isLeftHanded {
-                mapping.buttons[.a] = GCButtonMapping(gcElementName: "Button X", gcElementAlias: "X")
-                mapping.buttons[.b] = GCButtonMapping(gcElementName: "Button Y", gcElementAlias: "Y")
-                mapping.buttons[.x] = GCButtonMapping(gcElementName: "Button A", gcElementAlias: "A")
-                mapping.buttons[.y] = GCButtonMapping(gcElementName: "Button B", gcElementAlias: "B")
+                mapping.buttons[.a] = GCButtonMapping(gcElementName: "X Button", gcElementAlias: "X Button")
+                mapping.buttons[.b] = GCButtonMapping(gcElementName: "Y Button", gcElementAlias: "Y Button")
+                mapping.buttons[.x] = GCButtonMapping(gcElementName: "A Button", gcElementAlias: "A Button")
+                mapping.buttons[.y] = GCButtonMapping(gcElementName: "B Button", gcElementAlias: "B Button")
             } else {
-                mapping.buttons[.a] = GCButtonMapping(gcElementName: "Button A", gcElementAlias: "A")
-                mapping.buttons[.b] = GCButtonMapping(gcElementName: "Button B", gcElementAlias: "B")
-                mapping.buttons[.x] = GCButtonMapping(gcElementName: "Button X", gcElementAlias: "X")
-                mapping.buttons[.y] = GCButtonMapping(gcElementName: "Button Y", gcElementAlias: "Y")
+                mapping.buttons[.a] = GCButtonMapping(gcElementName: "A Button", gcElementAlias: "A Button")
+                mapping.buttons[.b] = GCButtonMapping(gcElementName: "B Button", gcElementAlias: "B Button")
+                mapping.buttons[.x] = GCButtonMapping(gcElementName: "X Button", gcElementAlias: "X Button")
+                mapping.buttons[.y] = GCButtonMapping(gcElementName: "Y Button", gcElementAlias: "Y Button")
             }
 
-            mapping.buttons[.l1] = GCButtonMapping(gcElementName: "Left Shoulder", gcElementAlias: "L1")
-            mapping.buttons[.r1] = GCButtonMapping(gcElementName: "Right Shoulder", gcElementAlias: "R1")
+            mapping.buttons[.l1] = GCButtonMapping(gcElementName: "Left Bumper", gcElementAlias: "Left Bumper")
+            mapping.buttons[.r1] = GCButtonMapping(gcElementName: "Right Bumper", gcElementAlias: "Right Bumper")
 
             if availableButtons.contains(.l2) {
-                mapping.buttons[.l2] = GCButtonMapping(gcElementName: "Left Trigger", gcElementAlias: "L2")
+                mapping.buttons[.l2] = GCButtonMapping(gcElementName: "Left Trigger", gcElementAlias: "Left Trigger")
             }
             if availableButtons.contains(.r2) {
-                mapping.buttons[.r2] = GCButtonMapping(gcElementName: "Right Trigger", gcElementAlias: "R2")
+                mapping.buttons[.r2] = GCButtonMapping(gcElementName: "Right Trigger", gcElementAlias: "Right Trigger")
             }
 
-            mapping.buttons[.start] = GCButtonMapping(gcElementName: "Button Menu", gcElementAlias: "Menu")
-            mapping.buttons[.select] = GCButtonMapping(gcElementName: "Button Options", gcElementAlias: "Options")
-        }
-
-        if ["genesis", "megadrive"].contains(systemID) {
-            mapping.buttons[.c] = GCButtonMapping(gcElementName: "Button X", gcElementAlias: "X")
-            mapping.buttons[.z] = GCButtonMapping(gcElementName: "Button Y", gcElementAlias: "Y")
+            mapping.buttons[.start] = GCButtonMapping(gcElementName: "Menu Button", gcElementAlias: "Menu Button")
+            mapping.buttons[.select] = GCButtonMapping(gcElementName: "View Button", gcElementAlias: "View Button")
         }
 
         if availableButtons.contains(.lStickUp) {
-            mapping.buttons[.lStickUp] = GCButtonMapping(gcElementName: "Left Thumbstick Up", gcElementAlias: "L Stick Up")
-            mapping.buttons[.lStickDown] = GCButtonMapping(gcElementName: "Left Thumbstick Down", gcElementAlias: "L Stick Down")
-            mapping.buttons[.lStickLeft] = GCButtonMapping(gcElementName: "Left Thumbstick Left", gcElementAlias: "L Stick Left")
-            mapping.buttons[.lStickRight] = GCButtonMapping(gcElementName: "Left Thumbstick Right", gcElementAlias: "L Stick Right")
+            mapping.buttons[.lStickUp] = GCButtonMapping(gcElementName: "Left Stick (Up)", gcElementAlias: "Left Stick (Up)")
+            mapping.buttons[.lStickDown] = GCButtonMapping(gcElementName: "Left Stick (Down)", gcElementAlias: "Left Stick (Down)")
+            mapping.buttons[.lStickLeft] = GCButtonMapping(gcElementName: "Left Stick (Left)", gcElementAlias: "Left Stick (Left)")
+            mapping.buttons[.lStickRight] = GCButtonMapping(gcElementName: "Left Stick (Right)", gcElementAlias: "Left Stick (Right)")
         }
         if availableButtons.contains(.rStickUp) {
-            mapping.buttons[.rStickUp] = GCButtonMapping(gcElementName: "Right Thumbstick Up", gcElementAlias: "R Stick Up")
-            mapping.buttons[.rStickDown] = GCButtonMapping(gcElementName: "Right Thumbstick Down", gcElementAlias: "R Stick Down")
-            mapping.buttons[.rStickLeft] = GCButtonMapping(gcElementName: "Right Thumbstick Left", gcElementAlias: "R Stick Left")
-            mapping.buttons[.rStickRight] = GCButtonMapping(gcElementName: "Right Thumbstick Right", gcElementAlias: "R Stick Right")
+            mapping.buttons[.rStickUp] = GCButtonMapping(gcElementName: "Right Stick (Up)", gcElementAlias: "Right Stick (Up)")
+            mapping.buttons[.rStickDown] = GCButtonMapping(gcElementName: "Right Stick (Down)", gcElementAlias: "Right Stick (Down)")
+            mapping.buttons[.rStickLeft] = GCButtonMapping(gcElementName: "Right Stick (Left)", gcElementAlias: "Right Stick (Left)")
+            mapping.buttons[.rStickRight] = GCButtonMapping(gcElementName: "Right Stick (Right)", gcElementAlias: "Right Stick (Right)")
         }
 
         if availableButtons.contains(.l3) {
-            mapping.buttons[.l3] = GCButtonMapping(gcElementName: "Left Thumbstick Button", gcElementAlias: "L3")
+            mapping.buttons[.l3] = GCButtonMapping(gcElementName: "Left Stick Click", gcElementAlias: "Left Stick Click")
         }
         if availableButtons.contains(.r3) {
-            mapping.buttons[.r3] = GCButtonMapping(gcElementName: "Right Thumbstick Button", gcElementAlias: "R3")
+            mapping.buttons[.r3] = GCButtonMapping(gcElementName: "Right Stick Click", gcElementAlias: "Right Stick Click")
         }
 
         if availableButtons.contains(.cUp) {

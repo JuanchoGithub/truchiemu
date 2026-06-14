@@ -114,8 +114,16 @@ enum RetroButton: String, Codable, CaseIterable {
     }
 
     func retroID(for systemID: String, coreID: String? = nil) -> Int32 {
-        if let coreID = coreID, let override = CoreButtonOverride.shared.retroID(for: self, coreID: coreID) {
-            return override
+        if let coreID = coreID {
+            if let descID = InputDescriptorsManager.shared.retroID(for: self, coreID: coreID) {
+                return Int32(descID)
+            }
+            if let override = CoreButtonOverride.shared.retroID(for: self, coreID: coreID) {
+                return override
+            }
+        }
+        if let sysOverride = CoreButtonOverride.shared.retroID(for: self, systemID: systemID) {
+            return sysOverride
         }
         if let identity = CoreButtonOverride.identityID(for: self) {
             return identity
