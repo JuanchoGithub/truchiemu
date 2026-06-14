@@ -1,5 +1,4 @@
 import Foundation
-import os
 
 // C-callable callback for routing libretro core logs into the file logger.
 // Registered with LibretroBridge at startup so core-level logs (LibretroDB,
@@ -92,10 +91,7 @@ final class LoggerService: @unchecked Sendable {
   private var currentLogURL: URL?
   fileprivate let logFileQueue = DispatchQueue(label: "com.truchiemu.logger", qos: .utility)
   private let maxLogSizeBytes: Int64 = 5 * 1024 * 1024 // 5 MB
-  private let maxLogAgeDays: Int = 7
-    
-    // MARK: - OS Logger (for info-level, always visible in Console.app)
-    private let osLogger: OSLog
+    private let maxLogAgeDays: Int = 7
     
     // MARK: - Date formatter
     private let dateFormatter: ISO8601DateFormatter = {
@@ -110,9 +106,6 @@ final class LoggerService: @unchecked Sendable {
         // Load saved log level (default to INFO - don't read AppSettings here to avoid circular dependency)
         // The actual saved value will be loaded lazily on first access
         self.currentLevel = .info
-        
-        // Create OS logger for system console
-        self.osLogger = OSLog(subsystem: Bundle.main.bundleIdentifier ?? "com.truchiemu", category: "TruchiEmu")
         
         // Initialize file logging
         setupFileLogging()
@@ -246,6 +239,7 @@ final class LoggerService: @unchecked Sendable {
     }
     
     // Log at DEBUG level: more detailed logs for troubleshooting.
+    #if LOG_DEBUG
     static func debug(_ message: String) {
         shared.log(.debug, category: "App", message: message)
     }
@@ -254,8 +248,10 @@ final class LoggerService: @unchecked Sendable {
     static func debug(category: String, _ message: String) {
         shared.log(.debug, category: category, message: message)
     }
+    #endif
     
     // Log at EXTREME level: every frame, timing data, etc.
+    #if LOG_EXTREME
     static func extreme(_ message: String) {
         shared.log(.extreme, category: "App", message: message)
     }
@@ -264,6 +260,7 @@ final class LoggerService: @unchecked Sendable {
     static func extreme(category: String, _ message: String) {
         shared.log(.extreme, category: category, message: message)
     }
+    #endif
 
     // Log at ERROR level (logged as .info to always appear, tagged with [ERROR]).
     static func error(_ message: String) {
@@ -323,8 +320,6 @@ final class LoggerService: @unchecked Sendable {
         logFileQueue.async { [weak self] in
             self?.writeToFile(formatted + "\n")
         }
-        
-        // Note: os_log removed — print + file logging is sufficient and avoids duplicate output
     }
     
     private func shouldLogLevel(_ level: LogLevel) -> Bool {

@@ -343,7 +343,9 @@ final class GameGuideViewModel: ObservableObject {
                 self?.pollControllerNavigationStick()
             }
         }
+        #if LOG_DEBUG
         LoggerService.debug(category: "GameGuide", "Controller navigation started")
+        #endif
     }
 
     func stopControllerNavigation() {
@@ -394,13 +396,17 @@ final class GameGuideViewModel: ObservableObject {
         controllerNavPollCount += 1
         let controllers = ControllerService.shared.connectedControllers
         if controllerNavPollCount <= 5 {
+            #if LOG_DEBUG
             LoggerService.debug(category: "GameGuide", "Poll #\(controllerNavPollCount): controllers=\(controllers.count), first=\(controllers.first?.gcController != nil ? "hasGC" : "nilGC")")
+            #endif
         }
 
         guard let gc = controllers.first?.gcController,
               let gamepad = gc.extendedGamepad else {
             if controllerNavPollCount <= 5 {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "GameGuide", "Poll #\(controllerNavPollCount): no gamepad found")
+                #endif
             }
             return
         }
@@ -438,7 +444,9 @@ final class GameGuideViewModel: ObservableObject {
                     } else {
                         controllerSelectedIndex = 0
                     }
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "GameGuide", "Nav stick moved: y=\(yVal) x=\(xVal) idx=\(String(describing: controllerSelectedIndex)) items=\(itemCount)")
+                    #endif
                 }
                 navRepeatDelay = now + 0.12
             }

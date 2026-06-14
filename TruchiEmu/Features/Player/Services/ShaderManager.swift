@@ -75,7 +75,9 @@ class ShaderManager: ObservableObject {
         uniformValues = newUniforms
         Self.parameterStore.update(with: newUniforms)
         
+        #if LOG_DEBUG
         LoggerService.debug(category: "ShaderManager", "Shader manager reset to default")
+        #endif
     }
     
     
@@ -150,7 +152,9 @@ class ShaderManager: ObservableObject {
         do {
             let pipeline = try device.makeRenderPipelineState(descriptor: descriptor)
             pipelineCache[shaderName] = pipeline
+            #if LOG_DEBUG
             LoggerService.debug(category: "ShaderManager", "Created pipeline for '\(shaderName)'")
+            #endif
             return pipeline
         } catch {
             LoggerService.info(category: "ShaderManager", "ERROR: Failed to create pipeline for '\(shaderName)': \(error)")
@@ -254,7 +258,9 @@ class ShaderManager: ObservableObject {
         default: result = "fragment" + shaderFile
         }
         
+        #if LOG_EXTREME
         LoggerService.extreme(category: "Shaders", "ShaderFile: '\(shaderFile)' -> Fragment: '\(result)'")
+        #endif
         return result
     }
     

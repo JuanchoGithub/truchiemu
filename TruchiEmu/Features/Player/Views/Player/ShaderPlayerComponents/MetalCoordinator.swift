@@ -83,7 +83,9 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
             }
         }
         temporalIndex = 0
+        #if LOG_DEBUG
         LoggerService.debug(category: "Shaders", "Created 5-frame temporal buffer: \(width)x\(height) format:\(sourceFormat)")
+        #endif
     }
 
     private func getTemporalTexture(at index: Int) -> MTLTexture? {
@@ -120,14 +122,20 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
 
         // Create new pipeline
         guard let library = loadShaderLibrary(device: device) else {
+            #if LOG_DEBUG
             LoggerService.debug(category: "Shaders", "ERROR: Could not create shader library.")
+            #endif
             return nil
         }
 
         guard let vertexFunction = library.makeFunction(name: "vertexPassthrough"),
               let fragmentFunction = library.makeFunction(name: fragmentName) else {
+            #if LOG_DEBUG
             LoggerService.debug(category: "Shaders", "ERROR: Could not find shader function '\(fragmentName)'")
+            #endif
+            #if LOG_DEBUG
             LoggerService.debug(category: "Shaders", "Available functions: \(library.functionNames.joined(separator: ", "))")
+            #endif
             return nil
         }
 
@@ -139,10 +147,14 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
         do {
             let pipeline = try device.makeRenderPipelineState(descriptor: desc)
             pipelineCache[fragmentName] = pipeline
+            #if LOG_DEBUG
             LoggerService.debug(category: "Shaders", "Created pipeline for '\(fragmentName)'")
+            #endif
             return pipeline
         } catch {
+            #if LOG_DEBUG
             LoggerService.debug(category: "Shaders", "ERROR: Failed to create pipeline '\(fragmentName)': \(error)")
+            #endif
             return nil
         }
     }
@@ -163,13 +175,17 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
         descriptor.colorAttachments[0].storeAction = .store
 
         if commandQueue == nil {
+            #if LOG_DEBUG
             LoggerService.debug(category: "Metal", "Initializing Command Queue...")
+            #endif
             commandQueue = device.makeCommandQueue()
         }
 
         guard let cmdQueue = commandQueue,
               let cmdBuffer = cmdQueue.makeCommandBuffer() else {
+            #if LOG_DEBUG
             LoggerService.debug(category: "Metal", "Failed to create command buffer")
+            #endif
             return
         }
 
@@ -213,7 +229,9 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
                         // FIXME: this should be an option in settings
                         if targetAspect > 1.7 {
                             targetAspect = 1.6
+                            #if LOG_EXTREME
                             LoggerService.extreme(category: "Metal", "[Aspect Ratio] Core/pixel ratio \(String(format: "%.3f", targetAspect)) is wider than the macbook screen. Forcing aspect ratio to 16:10")
+                            #endif
                         }
                     }
                     var drawWidth = viewWidth
@@ -590,18 +608,24 @@ outputHeight: Float(drawHeight)
                     innerDrawCount += 1
 
                     if innerDrawCount <= 3 {
+                        #if LOG_EXTREME
                         LoggerService.extreme(category: "Metal", "Drawing frame \(innerDrawCount) with texture \(frameTex.width)x\(frameTex.height)")
+                        #endif
                     }
                 }
             } else {
                 // No frame texture yet - just present black screen
                 if innerDrawCount < 10 {
+                    #if LOG_EXTREME
                     LoggerService.extreme(category: "Metal", "No frame texture yet, drawing black")
+                    #endif
                 }
             }
         } else {
             if innerDrawCount < 5 {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "Metal", "Failed to get pipeline state for fragment shader")
+                #endif
             }
         }
 
@@ -631,7 +655,9 @@ outputHeight: Float(drawHeight)
                     LoggerService.info(category: "Shaders", "Compiled all_shaders.metal with functions: \(library.functionNames.joined(separator: ", "))")
                     return library
                 } catch {
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "Shaders", "Failed to compile all_shaders.metal: \(error)")
+                    #endif
                 }
             }
 
@@ -645,7 +671,9 @@ outputHeight: Float(drawHeight)
                         LoggerService.info(category: "Shaders", "Compiled \(file).metal with functions: \(library.functionNames.joined(separator: ", "))")
                         return library
                     } catch {
+                        #if LOG_DEBUG
                         LoggerService.debug(category: "Shaders", "Failed to compile \(file).metal: \(error)")
+                        #endif
                     }
                 }
             }

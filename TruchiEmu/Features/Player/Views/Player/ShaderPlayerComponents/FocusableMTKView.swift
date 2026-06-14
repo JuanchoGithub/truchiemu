@@ -68,7 +68,9 @@ class FocusableMTKView: MTKView {
     }
 
     override func mouseMoved(with event: NSEvent) {
+        #if LOG_DEBUG
         // LoggerService.debug(category: "InputCapture", "Mouse moved: dx=\(event.deltaX), dy=\(event.deltaY), inCapture=\(InputCaptureManager.shared.isCapturing)")
+        #endif
         updateMouseDelta(with: event)
     }
 
@@ -178,12 +180,16 @@ class FocusableMTKView: MTKView {
 
         // For DOS/ScummVM games, bypass ALL TruchiEmu keyboard handling and send properly mapped keys to DOSBOX
         if shouldCaptureInputForCurrentGame() {
+            #if LOG_DEBUG
             LoggerService.debug(category: "InputCapture", "DOS/ScummVM keyDown event: keyCode=\(event.keyCode), characters='\(event.characters ?? "")', charactersIgnoringModifiers='\(event.charactersIgnoringModifiers ?? "")'")
+            #endif
             
             // Convert Mac key code to libretro key code using the proper mapper
             let retroKey = RetroKeycodeMapper.retroKey(fromMacOS: event.keyCode)
             guard retroKey != 0 else { 
+                #if LOG_DEBUG
                 LoggerService.debug(category: "InputCapture", "Unmapped key for DOS/ScummVM: keyCode=\(event.keyCode)")
+                #endif
                 return 
             }
             
@@ -205,7 +211,9 @@ class FocusableMTKView: MTKView {
                 }
             }
             
+            #if LOG_DEBUG
             // LoggerService.debug(category: "InputCapture", "DOS/ScummVM sending keyDown: retroKey=\(retroKey), modifiers=\(modifiers), character=\(characterValue)")
+            #endif
             
             // Send properly mapped key event directly to core
             XPCBridgeAdapter.shared.dispatchKeyboardEvent(
@@ -215,7 +223,9 @@ class FocusableMTKView: MTKView {
                 down: true
             )
         } else {
+            #if LOG_DEBUG
             // LoggerService.debug(category: "InputCapture", "Mapped keyboard event for standard core: keyCode=\(event.keyCode)")
+            #endif
             // For standard cores, use the normal mapped path
             if let mapped = runner?.mapKey(event.keyCode) {
                 runner?.setKeyState(retroID: mapped.retroID, player: mapped.player, pressed: true)
@@ -226,12 +236,16 @@ class FocusableMTKView: MTKView {
     override func keyUp(with event: NSEvent) {
         // For DOS/ScummVM games, bypass ALL TruchiEmu keyboard handling and send properly mapped keys to DOSBOX
         if shouldCaptureInputForCurrentGame() {
+            #if LOG_DEBUG
             // LoggerService.debug(category: "InputCapture", "DOS/ScummVM keyUp event: keyCode=\(event.keyCode)")
+            #endif
             
             // Convert Mac key code to libretro key code using the proper mapper
             let retroKey = RetroKeycodeMapper.retroKey(fromMacOS: event.keyCode)
             guard retroKey != 0 else { 
+                #if LOG_DEBUG
                 // LoggerService.debug(category: "InputCapture", "Unmapped key for DOS/ScummVM: keyCode=\(event.keyCode)")
+                #endif
                 return 
             }
             
@@ -254,7 +268,9 @@ class FocusableMTKView: MTKView {
             }
             
             // Send properly mapped key event directly to core
+            #if LOG_DEBUG
             // LoggerService.debug(category: "InputCapture", "DOS/ScummVM sending keyUp: retroKey=\(retroKey), modifiers=\(modifiers), character=\(characterValue)")
+            #endif
             XPCBridgeAdapter.shared.dispatchKeyboardEvent(
                 keycode: retroKey,
                 character: characterValue,
@@ -262,7 +278,9 @@ class FocusableMTKView: MTKView {
                 down: false
             )
         } else {
+            #if LOG_DEBUG
             // LoggerService.debug(category: "InputCapture", "Mapped keyUp event for standard core: keyCode=\(event.keyCode)")
+            #endif
             // For standard cores, use the normal mapped path
             if let mapped = runner?.mapKey(event.keyCode) {
                 runner?.setKeyState(retroID: mapped.retroID, player: mapped.player, pressed: false)

@@ -250,7 +250,9 @@ Text(loc.localized("cheat.importInstructions"))
                     }
                 }
             case .failure(let error):
+                #if LOG_DEBUG
                 LoggerService.debug(category: "Cheats", "File import error: \(error)")
+                #endif
             }
         }
     }

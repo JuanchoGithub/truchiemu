@@ -77,7 +77,9 @@ class GameLauncher: ObservableObject {
             autoLoad: Bool? = nil,
             autoSave: Bool? = nil
         ) {
+            #if LOG_DEBUG
             LoggerService.debug(category: "GameLauncher", "Creating launch configuration for ROM: \(rom.displayName)")
+            #endif
             self.rom = rom
             self.coreID = coreID
             self.slotToLoad = slotToLoad
@@ -93,13 +95,19 @@ class GameLauncher: ObservableObject {
             
             // Resolve achievements
             self.achievementsEnabled = achievementsEnabled ?? AppSettings.getBool("ra_enabled", defaultValue: false)
+            #if LOG_EXTREME
             LoggerService.extreme(category: "GameLauncher", "Resolved achievements enabled: \(self.achievementsEnabled)")
+            #endif
             self.hardcoreMode = hardcoreMode ?? false
+            #if LOG_EXTREME
             LoggerService.extreme(category: "GameLauncher", "Resolved hardcore mode: \(self.hardcoreMode)")
+            #endif
             
             // Resolve cheats
             self.cheatsEnabled = cheatsEnabled ?? rom.settings.cheatsEnabled ?? AppSettings.getBool("cheats_enabled", defaultValue: false)
+            #if LOG_EXTREME
             LoggerService.extreme(category: "GameLauncher", "Resolved cheats enabled: \(self.cheatsEnabled)")
+            #endif
             
         // Resolve core options (system-level + game-level overrides)
         let resolvedSystemID = rom.systemID ?? "default"
@@ -112,17 +120,25 @@ class GameLauncher: ObservableObject {
             }
             return result
         }()
+            #if LOG_EXTREME
             LoggerService.extreme(category: "GameLauncher", "Resolved core options: \(self.coreOptions)")
+            #endif
             
             // Resolve auto save/load
             self.autoLoad = autoLoad ?? AppSettings.getBool("saveState_autoLoadOnStart", defaultValue: false)
+            #if LOG_EXTREME
             LoggerService.extreme(category: "GameLauncher", "Resolved auto load: \(self.autoLoad)")
+            #endif
             self.autoSave = autoSave ?? AppSettings.getBool("saveState_autoSaveOnExit", defaultValue: false)
+            #if LOG_EXTREME
             LoggerService.extreme(category: "GameLauncher", "Resolved auto save: \(self.autoSave)")
+            #endif
             
             // Resolve bezel
             self.bezelFileName = rom.settings.bezelFileName
+            #if LOG_EXTREME
             LoggerService.extreme(category: "GameLauncher", "Resolved bezel file name: \(self.bezelFileName)")
+            #endif
         }
     }
     
@@ -148,9 +164,13 @@ func launchGame(
 ) async {
  var rom = inputROM
  // Check if already launching
+        #if LOG_EXTREME
         LoggerService.extreme(category: "GameLauncher", "Checking if already launching")
+        #endif
         guard !isLaunching else {
+            #if LOG_EXTREME
             LoggerService.extreme(category: "GameLauncher", "Already launching, ignoring duplicate request")
+            #endif
             return
         }
 
@@ -174,16 +194,22 @@ func launchGame(
         }
 
         // Check if this ROM is already running
+        #if LOG_EXTREME
         LoggerService.extreme(category: "GameLauncher", "Checking if ROM is already running")
+        #endif
         if RunningGamesTracker.shared.isRunning(romPath: rom.runningKey) {
             RunningGamesTracker.shared.notifyDuplicateLaunch(romName: rom.displayName)
             completion?(nil)
+            #if LOG_EXTREME
             LoggerService.extreme(category: "GameLauncher", "ROM is already running, ignoring duplicate request")
+            #endif
             return
         }
 
         // MAME dependency check
+        #if LOG_EXTREME
         LoggerService.extreme(category: "GameLauncher", "Checking MAME dependencies")
+        #endif
         if (checkMAMEDeps && MAMEDependencyService.isMAMECore(coreID)) || coreID.lowercased().contains("ppsspp") || coreID.lowercased().contains("flycast") {
             launchPhase = .checkingDependencies
         }
@@ -242,13 +268,27 @@ func launchGame(
         CoreOptionsManager.shared.discoverOptionsIfNeeded(for: coreID, romPath: rom.path.path)
 
         LoggerService.info(category: "GameLauncher", "Launching game: \(rom.displayName)")
+        #if LOG_DEBUG
         LoggerService.debug(category: "GameLauncher", "ROM path: \(rom.path.path)")
+        #endif
+        #if LOG_DEBUG
         LoggerService.debug(category: "GameLauncher", "Core: \(coreID), System: \(systemID), Slot: \(slotToLoad.map { "\($0)" } ?? "none")")
+        #endif
+        #if LOG_DEBUG
         LoggerService.debug(category: "GameLauncher", "Shader: \(config.shaderPresetID), Uniform overrides: \(config.shaderUniformOverrides.count)")
+        #endif
+        #if LOG_DEBUG
         LoggerService.debug(category: "GameLauncher", "Bezel: \(config.bezelFileName.isEmpty ? "auto-match" : (config.bezelFileName == "none" ? "disabled" : config.bezelFileName))")
+        #endif
+        #if LOG_DEBUG
         LoggerService.debug(category: "GameLauncher", "Achievements: \(config.achievementsEnabled), Hardcore: \(config.hardcoreMode)")
+        #endif
+        #if LOG_DEBUG
         LoggerService.debug(category: "GameLauncher", "Cheats: \(config.cheatsEnabled), Core options: \(config.coreOptions.count) override(s)")
+        #endif
+        #if LOG_DEBUG
         LoggerService.debug(category: "GameLauncher", "Auto-load: \(config.autoLoad), Auto-save: \(config.autoSave)")
+        #endif
         
         // Apply all settings
         launchPhase = .applyingSettings
@@ -343,7 +383,9 @@ func launchGame(
              }
          }
      } else {
+         #if LOG_DEBUG
          LoggerService.debug(category: "GameLauncher", "Skipping RA auto-detect: \(systemID) not supported by RA")
+         #endif
      }
  }
 
@@ -419,7 +461,9 @@ func launchGame(
         isLaunching = false
         currentLaunchROM = nil
 
+        #if LOG_DEBUG
         LoggerService.debug(category: "GameLauncher", "Launch complete: \(rom.displayName)")
+        #endif
         completion?(controller)
     }
     
@@ -434,25 +478,35 @@ func launchGame(
             if let preset = ShaderPreset.preset(id: config.shaderPresetID) {
                 if config.shaderPresetID != currentPresetID {
                     ShaderManager.shared.activatePreset(preset)
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "GameLauncher", "Activated shader: \(preset.name)")
+                    #endif
                 } else {
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "GameLauncher", "Shader already active: \(preset.name)")
+                    #endif
                 }
             } else {
                 // Check saved custom presets (by UUID string)
                 if let savedPreset = ShaderPresetStorageService.shared.savedPresets.first(where: { $0.id.uuidString == config.shaderPresetID }) {
                     ShaderManager.shared.activatePresetWithOverrides(presetID: savedPreset.basePresetID, overrides: savedPreset.uniformValues)
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "GameLauncher", "Activated custom shader: \(savedPreset.name)")
+                    #endif
                 } else {
                     // Preset not found, reset to default
                     ShaderManager.shared.resetToDefault()
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "GameLauncher", "Shader not found, reset to default")
+                    #endif
                 }
             }
         } else {
             // If no shader is specified, we must explicitly reset the manager to prevent "leaking" the last used shader
             ShaderManager.shared.resetToDefault()
+            #if LOG_DEBUG
             LoggerService.debug(category: "GameLauncher", "Reset shader to default (no preset specified)")
+            #endif
         }
 
         

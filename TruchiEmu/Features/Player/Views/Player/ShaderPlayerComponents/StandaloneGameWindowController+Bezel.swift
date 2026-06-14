@@ -39,7 +39,9 @@ extension StandaloneGameWindowController {
         if let bezelLayer = bezelBackgroundLayer, let playableArea = bezelLayer.playableAreaRect {
             // Resize Metal view to match the playable area
             metalView?.frame = playableArea
+            #if LOG_DEBUG
             LoggerService.debug(category: "Bezel", "Metal view resized to playable area: \(playableArea.width)x\(playableArea.height)")
+            #endif
         } else {
             // No bezel or no playable area - Metal view fills the entire container
             metalView?.frame = containerView.bounds
@@ -74,7 +76,9 @@ extension StandaloneGameWindowController {
             // Get screen bounds to constrain bezel size
             let screenBounds = window?.screen?.visibleFrame ?? NSScreen.main?.visibleFrame ?? NSScreen.main?.frame ?? NSRect(x: 0, y: 0, width: 1920, height: 1080)
 
+            #if LOG_DEBUG
             LoggerService.debug(category: "Bezel", "Loading bezel for game. Screen bounds: \(Int(screenBounds.width))x\(Int(screenBounds.height)), Bezel size: \(Int(bezelImage.size.width))x\(Int(bezelImage.size.height))")
+            #endif
 
             // Create bezel background layer if needed
             if let containerView = window?.contentView as? GameContainerView {
@@ -97,7 +101,9 @@ extension StandaloneGameWindowController {
                 LoggerService.info(category: "Bezel", "Bezel applied for \(rom.displayName)")
             }
         } else {
+            #if LOG_DEBUG
             LoggerService.debug(category: "Bezel", "No bezel image loaded for \(rom.displayName)")
+            #endif
         }
     }
 
@@ -112,7 +118,9 @@ extension StandaloneGameWindowController {
 
         // If window is larger than screen, constrain it
         if currentFrame.width > screenFrame.width || currentFrame.height > screenFrame.height {
+            #if LOG_DEBUG
             LoggerService.debug(category: "Bezel", "Constraining window to screen bounds. Current: \(Int(currentFrame.width))x\(Int(currentFrame.height)), Screen: \(Int(screenFrame.width))x\(Int(screenFrame.height))")
+            #endif
 
             var newFrame = currentFrame
             newFrame.size.width = min(currentFrame.width, screenFrame.width)

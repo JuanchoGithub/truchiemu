@@ -70,7 +70,9 @@ class SaveStateManager: ObservableObject, @unchecked Sendable {
   private func updateDirectoryPaths() {
     // The savesDirectory is now immutable after init, but we can
     // trigger a refresh of any cached data if needed
+    #if LOG_DEBUG
     LoggerService.debug(category: "SaveStateManager", "Save directory changed: \(savesDirectory.path)")
+    #endif
   }
     
     // Returns the system-specific subdirectory, creating it if needed
@@ -232,7 +234,9 @@ return sysDir.appendingPathComponent(fileName)
     //   - slot: Slot number
     func saveThumbnail(_ image: NSImage, gameName: String, systemID: String, slot: Int) {
         let thumbURL = thumbnailPath(gameName: gameName, systemID: systemID, slot: slot)
+        #if LOG_DEBUG
         LoggerService.debug(category: "SaveStateManager", "Saving thumbnail: gameName='\(gameName)', systemID='\(systemID)', slot=\(slot), path: \(thumbURL.path)")
+        #endif
         
         // Downscale to 320x240 for consistent thumbnails
         let targetSize = NSSize(width: 320, height: 240)
@@ -272,7 +276,9 @@ return sysDir.appendingPathComponent(fileName)
         
         // Verify file was created
         guard FileManager.default.fileExists(atPath: thumbURL.path) else {
+            #if LOG_DEBUG
             LoggerService.debug(category: "SaveStateManager", "ERROR: Thumbnail file was not created")
+            #endif
             return
         }
     }
@@ -285,13 +291,17 @@ return sysDir.appendingPathComponent(fileName)
     // - Returns: The loaded NSImage, or nil if not found
     func loadThumbnail(gameName: String, systemID: String, slot: Int) -> NSImage? {
         let thumbURL = thumbnailPath(gameName: gameName, systemID: systemID, slot: slot)
+        #if LOG_DEBUG
         LoggerService.debug(category: "SaveStateManager", "Loading thumbnail: gameName='\(gameName)', systemID='\(systemID)', slot=\(slot)")
+        #endif
         
         // Also check what other files exist in the directory
         if !FileManager.default.fileExists(atPath: thumbURL.path) {
             let dir = thumbURL.deletingLastPathComponent()
             if let contents = try? FileManager.default.contentsOfDirectory(atPath: dir.path) {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "SaveStateManager", "Thumbnail not found, directory contents: \(contents)")
+                #endif
             }
         }
         

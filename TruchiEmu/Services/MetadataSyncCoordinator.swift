@@ -29,7 +29,9 @@ final class MetadataSyncCoordinator: ObservableObject {
         let scope = targetROMs ?? []
 
         if RunningGamesTracker.shared.isGameRunning {
+            #if LOG_DEBUG
             LoggerService.debug(category: "MetadataSync", "Skipping metadata sync — game is running")
+            #endif
             return
         }
 

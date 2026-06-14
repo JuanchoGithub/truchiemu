@@ -323,7 +323,9 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
         await MAMEUnifiedService.shared.ensureLoaded()
         
         if RunningGamesTracker.shared.isGameRunning {
+            #if LOG_DEBUG
             LoggerService.debug(category: "ROMLibrary", "Deferring ROM scan for \(folder.path) — game is running")
+            #endif
             return
         } else {
             LoggerService.info(category: "ROMLibrary", "Starting ROM scan for folder: \(folder.path)")
@@ -355,7 +357,9 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
             // 5. Persist only the new items
             repository.saveROMs(processedROMs)
             for rom in processedROMs {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "ROMLibrary", "Persisting new ROM: \(rom.displayName)")
+                #endif
                 LibraryMetadataStore.shared.persist(rom: rom)
             }
             LibraryMetadataStore.shared.flushToSwiftData()
@@ -633,10 +637,14 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
         // Any other GB-family extension should use GB system
         if ext == "gbc" && rom.systemID == "gb" {
             updated.systemID = "gbc"
+            #if LOG_DEBUG
             LoggerService.debug(category: "ROMLibrary", "GB/GBC Correction: '\(rom.name)' has .gbc extension → moved to GBC (for shader selection)")
+            #endif
         } else if ext != "gbc" && rom.systemID == "gbc" {
             updated.systemID = "gb"
+            #if LOG_DEBUG
             LoggerService.debug(category: "ROMLibrary", "GB/GBC Correction: '\(rom.name)' has .\(ext) extension → moved to GB (for shader selection)")
+            #endif
         }
         
         return updated
@@ -985,7 +993,9 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
                 enrichedCount += 1
                 
                 if enrichedCount % 500 == 0 {
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "ROMLibrary", "Enrichment progress: \(enrichedCount)/\(needsEnrichment.count)")
+                    #endif
                     await Task.yield()
                 }
             }

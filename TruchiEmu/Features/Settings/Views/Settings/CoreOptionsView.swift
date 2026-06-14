@@ -158,15 +158,23 @@ class CoreOptionsViewModel: ObservableObject {
 
             var dylibPath: String? = nil
             if let core = CoreManager.shared.installedCores.first(where: { $0.id == id }) {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "CoreOptionsViewModel", "Found installed core: \(core.id). Versions: \(core.installedVersions.count). ActiveTag: \(core.activeVersionTag ?? "nil"). ValidDylibs: \(core.installedVersions.filter { FileManager.default.fileExists(atPath: $0.dylibPath.path) }.map { $0.dylibPath.lastPathComponent })")
+                #endif
                 if let activeVersion = core.activeVersion {
                     dylibPath = activeVersion.dylibPath.path
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "CoreOptionsViewModel", "Resolved dylibPath: \(dylibPath!)")
+                    #endif
                 } else {
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "CoreOptionsViewModel", "No active version found for core: \(id)")
+                    #endif
                 }
             } else {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "CoreOptionsViewModel", "Core \(id) not found in installedCores")
+                #endif
             }
 
             var romPath: String? = nil
@@ -174,9 +182,13 @@ class CoreOptionsViewModel: ObservableObject {
                 let systemIDs = CoreManager.supportedSystems(for: id)
                 if let sysID = systemIDs.first, let rom = lib.roms.first(where: { $0.systemID == sysID }) {
                     romPath = rom.path.path
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "CoreOptionsViewModel", "Resolved romPath: \(romPath!) for system: \(sysID)")
+                    #endif
                 } else {
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "CoreOptionsViewModel", "No ROM found in library for system(s): \(systemIDs)")
+                    #endif
                 }
             }
 

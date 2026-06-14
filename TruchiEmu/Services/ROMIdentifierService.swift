@@ -184,7 +184,9 @@ final class ROMIdentifierService: @unchecked Sendable {
     private let indexCache = NSCache<NSString, SystemSearchIndex>()
 
     func identify(rom: ROM, preferNameMatch: Bool = false) async -> ROMIdentifyResult {
+        #if LOG_DEBUG
         LoggerService.debug(category: "ROMIdentifier","Identify \(rom.name): START (preferNameMatch=\(preferNameMatch))")
+        #endif
         guard let systemID = rom.systemID,
               let system = SystemDatabase.system(forID: systemID) else {
             LoggerService.error(category: "ROMIdentifier", "Identify: no system for ROM \(rom.path.lastPathComponent)")
@@ -192,7 +194,9 @@ final class ROMIdentifierService: @unchecked Sendable {
         }
 
         if systemID == "mame" {
+            #if LOG_DEBUG
             LoggerService.debug(category: "ROMIdentifier","Identify \(rom.name): MAME ROM detected, attempting unified database lookup...")
+            #endif
             let shortName = rom.path.deletingPathExtension().lastPathComponent.lowercased()
             
             // Ensure MAME database is loaded before lookup
@@ -203,7 +207,9 @@ final class ROMIdentifierService: @unchecked Sendable {
                 let isRunnable = MAMEUnifiedService.shared.isRunnable(shortName: shortName) 
                 let isBIOS = MAMEUnifiedService.shared.isBIOS(shortName: shortName) 
                 if isRunnable && !isBIOS {
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "ROMIdentifier","Identify \(rom.name): MAME game → \(unifiedEntry.description) [cores: \(unifiedEntry.compatibleCores.joined(separator: ", "))]")
+                    #endif
                     return .identified(GameInfo(
                         name: unifiedEntry.description,
                         year: unifiedEntry.year,
@@ -215,7 +221,9 @@ final class ROMIdentifierService: @unchecked Sendable {
                         players: unifiedEntry.players
                     ))
                 } else if isBIOS {
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "ROMIdentifier","Identify \(rom.name): MAME BIOS → \(unifiedEntry.description)")
+                    #endif
                     return .identified(GameInfo(
                         name: unifiedEntry.description,
                         year: unifiedEntry.year,
@@ -227,17 +235,23 @@ final class ROMIdentifierService: @unchecked Sendable {
                         players: unifiedEntry.players
                     ))
                 } else {
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "ROMIdentifier","Identify \(rom.name): MAME game '\(shortName)' found but not runnable in any core → \(unifiedEntry.description)")
+                    #endif
                     return .crcNotInDatabase(crc: shortName)
                 }
             }
             
             // Not in any MAME database — no point searching libretro DAT (bundled MAME DBs are more comprehensive)
+            #if LOG_DEBUG
             LoggerService.debug(category: "ROMIdentifier","Identify \(rom.name): MAME game '\(shortName)' not in MAME database — hiding")
+            #endif
             return .crcNotInDatabase(crc: shortName)
         }
 
+        #if LOG_DEBUG
         LoggerService.debug(category: "ROMIdentifier","Identify: START system=\(systemID) file=\(rom.path.lastPathComponent) (preferNameMatch=\(preferNameMatch))")
+        #endif
 
         let db = await LibretroDatabaseLibrary.shared.fetchAndLoadDat(for: system)
         if db.isEmpty {
@@ -254,22 +268,32 @@ final class ROMIdentifierService: @unchecked Sendable {
         // PASS 1: Sony Serial Extraction (Fastest)
         // Optimization: For Sony CD-based systems, try serial extraction (FASTEST)
         if ["psx", "ps2", "psp"].contains(systemID) {
+            #if LOG_DEBUG
             LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): Game is Playstation (1/2/P) \(systemID)...")
+            #endif
             if let serial = await extractSonySerial(from: romPath) {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): Checking database for serial '\(serial)'...")
+                #endif
                 let normalizedSerial = serial.replacingOccurrences(of: "-", with: "").replacingOccurrences(of: "_", with: "").replacingOccurrences(of: ".", with: "").lowercased()
                 
                 for info in db.values {
                     let infoName = info.name.lowercased()
                     // Many DATs include the serial in the title, e.g. "Game Name (USA) (SLUS-20071)"
                     if infoName.contains(normalizedSerial) || infoName.contains(serial.lowercased()) {
+                        #if LOG_DEBUG
                         LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): SUCCESS (Serial Path) → \(info.name) matched serial \(serial)")
+                        #endif
                         return .identified(info)
                     }
                 }
+                #if LOG_DEBUG
                 LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): Serial '\(serial)' not found.")
+                #endif
             } else {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): No serial found.")
+                #endif
             }
         }
 
@@ -277,13 +301,19 @@ final class ROMIdentifierService: @unchecked Sendable {
         // Optimization: Try name-based search first if requested OR if file is large.
         // If we find an exact match by name, we can skip the heavy CRC calculation.
         if preferNameMatch || isLargeFile {
+            #if LOG_DEBUG
             LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): Attempting name-based search (preferNameMatch=\(preferNameMatch), isLargeFile=\(isLargeFile))...")
+            #endif
             let language = Self.currentEmulatorLanguage()
             if let byName = identifyByName(rom: rom, database: db, language: language) {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): SUCCESS (Name Path) → \(byName.name) found by name, skipping CRC.")
+                #endif
                 return .identifiedFromName(byName)
             }
+            #if LOG_DEBUG
             LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): Name-based search failed for '\(rom.name)', falling back to CRC hashing...")
+            #endif
         }
 
         // PASS 3: CRC-based identification (Heavy)
@@ -327,23 +357,33 @@ final class ROMIdentifierService: @unchecked Sendable {
         }
 
         let key = crc.uppercased()
+        #if LOG_DEBUG
         LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): ROM CRC=\(key)")
+        #endif
 
         if let info = db[key] {
             if let thumb = info.thumbnailLookupSystemID, thumb != systemID {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): CRC HIT → \(info.name) (thumbnails: use system \(thumb), ROM is \(systemID))")
+                #endif
             } else {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): CRC HIT → \(info.name)")
+                #endif
             }
             return .identified(info)
         }
 
         // PASS 4: Name-based fallback (if we haven't tried it yet)
         if !preferNameMatch && !isLargeFile {
+            #if LOG_DEBUG
             LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): no CRC match for \(key), falling back to name search...")
+            #endif
             let language = Self.currentEmulatorLanguage()
             if let byName = identifyByName(rom: rom, database: db, language: language) {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): NAME MATCH → \(byName.name) (language=\(language.name))")
+                #endif
                 return .identifiedFromName(byName)
             }
         }
@@ -531,33 +571,49 @@ static func titleFromDatGame(name: String, description: String) -> String {
         }
 
         // PASS 1: Exact normalized match (Dictionary lookup)
+        #if LOG_DEBUG
         LoggerService.debug(category: "ROMIdentifier", "IdentifyByName \(rom.name): PASS 1 — exact match on queryBase='\(queryBase)'")
+        #endif
         var exact: [GameInfo] = index.exactMap[queryBase] ?? []
+        #if LOG_DEBUG
         if !exact.isEmpty { LoggerService.debug(category: "ROMIdentifier", "IdentifyByName \(rom.name): PASS 1 FOUND \(exact.count) exact match(es)") }
+        #endif
 
         if exact.isEmpty {
             let variants = Self.romanNumeralVariants(of: queryBase)
+            #if LOG_DEBUG
             LoggerService.debug(category: "ROMIdentifier", "IdentifyByName \(rom.name): PASS 2 — number variants (\(variants.count) variants generated)")
+            #endif
             if !variants.isEmpty {
                 for variant in variants {
                     if let found = index.exactMap[variant] {
                         exact.append(contentsOf: found)
+                        #if LOG_DEBUG
                         LoggerService.debug(category: "ROMIdentifier", "IdentifyByName \(rom.name): PASS 2 matched variant='\(variant)' → \(found.count) entries")
+                        #endif
                         break
                     }
                 }
             }
+            #if LOG_DEBUG
             if exact.isEmpty { LoggerService.debug(category: "ROMIdentifier", "IdentifyByName \(rom.name): PASS 2 found 0 matches") }
+            #endif
         }
 
         if exact.isEmpty {
             let aggressiveQuery = Self.aggressivelyNormalizedTitle(stem)
+            #if LOG_DEBUG
             LoggerService.debug(category: "ROMIdentifier", "IdentifyByName \(rom.name): PASS 3 — aggressive normalization")
+            #endif
+            #if LOG_DEBUG
             LoggerService.debug(category: "ROMIdentifier", "IdentifyByName \(rom.name): PASS 3 query='\(stem)' → '\(aggressiveQuery)'")
+            #endif
             if !aggressiveQuery.isEmpty && aggressiveQuery.count >= 2 {
                 if let found = index.aggressiveMap[aggressiveQuery] {
                     exact.append(contentsOf: found)
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "ROMIdentifier", "IdentifyByName \(rom.name): PASS 3 matched aggressive query → \(found.count) entries")
+                    #endif
                 }
                 
                 if exact.isEmpty {
@@ -565,7 +621,9 @@ static func titleFromDatGame(name: String, description: String) -> String {
                     for variant in aggressiveVariants {
                         if let found = index.aggressiveMap[variant] {
                             exact.append(contentsOf: found)
+                            #if LOG_DEBUG
                             LoggerService.debug(category: "ROMIdentifier", "IdentifyByName \(rom.name): PASS 3 matched aggressive variant='\(variant)'")
+                            #endif
                             break
                         }
                     }
@@ -575,7 +633,9 @@ static func titleFromDatGame(name: String, description: String) -> String {
 
         var candidates = exact
         if candidates.isEmpty {
+            #if LOG_DEBUG
             LoggerService.debug(category: "ROMIdentifier", "IdentifyByName \(rom.name): PASS 4 — dice-only fuzzy matching")
+            #endif
             var pass4Candidates:[(info: GameInfo, score: Double)] = []
             
             let aggressiveQuery = Self.aggressivelyNormalizedTitle(stem)
@@ -654,9 +714,13 @@ static func titleFromDatGame(name: String, description: String) -> String {
                 let maxScore = pass4Candidates.map { $0.score }.max() ?? 0.0
                 let topCandidates = pass4Candidates.filter { maxScore - $0.score <= 0.05 }
                 candidates = topCandidates.map { $0.info }
+                #if LOG_DEBUG
                 LoggerService.debug(category: "ROMIdentifier", "IdentifyByName \(rom.name): PASS 4 found \(pass4Candidates.count) fuzzy match(es), sending top \(candidates.count) (score ~\(String(format: "%.2f", maxScore))) to region tie-breaker.")
+                #endif
             } else {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "ROMIdentifier", "IdentifyByName \(rom.name): PASS 4 found 0 valid fuzzy matches.")
+                #endif
             }
         }
 
@@ -674,7 +738,9 @@ static func titleFromDatGame(name: String, description: String) -> String {
         }
         if let best = sorted.first {
             let rank = Self.regionPreferenceRank(fullName: best.name, language: language)
+            #if LOG_DEBUG
             if rank >= prefs.count { LoggerService.debug(category: "ROMIdentifier", "IdentifyByName \(rom.name): name match without preferred region tag; used worldwide/Japan tie-break then length/lex order") }
+            #endif
         }
         return sorted.first
     }
@@ -720,7 +786,9 @@ static func titleFromDatGame(name: String, description: String) -> String {
         if validSizes.contains(fileSize) || isPowerOfTwo(fileSize) { return data }
         let strippedSize = fileSize - 512
         if validSizes.contains(strippedSize) || isPowerOfTwo(strippedSize) {
+            #if LOG_DEBUG
             LoggerService.debug(category: "ROMIdentifier", "Stripped 512-byte SMD header from ROM (original: \(fileSize) bytes → stripped: \(strippedSize) bytes)")
+            #endif
             return data.dropFirst(512)
         }
         return data
@@ -778,7 +846,9 @@ static func titleFromDatGame(name: String, description: String) -> String {
                            let match = regex.firstMatch(in: string, options: [], range: NSRange(location: 0, length: string.count)) {
                             if let range = Range(match.range, in: string) {
                                 let serial = String(string[range]).replacingOccurrences(of: "_", with: "-")
+                                #if LOG_DEBUG
                                 LoggerService.debug(category: "ROMIdentifier", "For \(url): Found Sony serial candidate: \(serial)")
+                                #endif
                                 return serial
                             }
                         }
@@ -789,14 +859,18 @@ static func titleFromDatGame(name: String, description: String) -> String {
                            let match = regex.firstMatch(in: string, options: [], range: NSRange(location: 0, length: string.count)) {
                             if let range = Range(match.range, in: string) {
                                 let serial = String(string[range])
+                                #if LOG_DEBUG
                                 LoggerService.debug(category: "ROMIdentifier", "For \(url): Found PSP serial candidate: \(serial)")
+                                #endif
                                 return serial
                             }
                         }
                     }
                 }
             } catch {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "ROMIdentifier", "For \(url): Error reading disc for serial: \(error.localizedDescription)")
+                #endif
             }
             return nil
         }.value
@@ -864,11 +938,15 @@ actor LibretroDatabaseLibrary {
     }
 
     func parseDat(contentsOf url: URL) -> [String: GameInfo] {
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroDB", "Parsing DAT file: \(url.path)")
+        #endif
         guard let lines = try? String(contentsOf: url).components(separatedBy: .newlines) else {
             LoggerService.libretroDBWarn("Failed to read DAT file: \(url.path)"); return [:]
         }
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroDB", "DAT file has \(lines.count) lines")
+        #endif
         var database: [String: GameInfo] = [:]; var currentGame: LibretroDatGame?
         for line in lines {
             let trimmed = line.trimmingCharacters(in: .whitespaces)
@@ -894,7 +972,9 @@ actor LibretroDatabaseLibrary {
                 }
             }
         }
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroDB", "Parsed DAT \(url.lastPathComponent) → \(database.count) CRC entries")
+        #endif
         return database
     }
 
@@ -921,104 +1001,171 @@ actor LibretroDatabaseLibrary {
     }
 
     func fetchAndLoadDat(for system: SystemInfo) async -> [String: GameInfo] {
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroDB", "fetchAndLoadDat called for systemID=\(system.id) (displayName=\(system.name))")
+        #endif
         if Self.isGbFamily(system.id) {
-            if let merged = databases[Self.gbFamilyCacheKey] { LoggerService.debug(category: "LibretroDB", "Cache hit: merged GB+GBC (\(merged.count) CRC entries)"); return merged }
+            if let merged = databases[Self.gbFamilyCacheKey] {
+                #if LOG_DEBUG
+                LoggerService.debug(category: "LibretroDB", "Cache hit: merged GB+GBC (\(merged.count) CRC entries)")
+                #endif
+                return merged
+            }
             let partnerID = system.id == "gb" ? "gbc" : "gb"
             guard let partner = SystemDatabase.system(forID: partnerID) else { LoggerService.libretroDBError("GB family merge failed — missing partner system \(partnerID)"); return await loadSingleSystemDatabase(for: system) }
-            let primary = await loadSingleSystemDatabase(for: system); LoggerService.debug(category: "LibretroDB", "Primary \(system.id) → \(primary.count) CRC entries")
-            let secondary = await loadSingleSystemDatabase(for: partner); LoggerService.debug(category: "LibretroDB", "Partner \(partnerID) → \(secondary.count) CRC entries")
+            let primary = await loadSingleSystemDatabase(for: system)
+            #if LOG_DEBUG
+            LoggerService.debug(category: "LibretroDB", "Primary \(system.id) → \(primary.count) CRC entries")
+            #endif
+            let secondary = await loadSingleSystemDatabase(for: partner)
+            #if LOG_DEBUG
+            LoggerService.debug(category: "LibretroDB", "Partner \(partnerID) → \(secondary.count) CRC entries")
+            #endif
             var merged: [String: GameInfo] = [:]
             for (crc, info) in primary { merged[crc] = Self.tagGameInfo(info, thumbnailLookupSystemID: system.id) }
             var overlap = 0
             for (crc, info) in secondary { if merged[crc] != nil { overlap += 1 } else { merged[crc] = Self.tagGameInfo(info, thumbnailLookupSystemID: partner.id) } }
+            #if LOG_DEBUG
             LoggerService.debug(category: "LibretroDB", "Merged GB+GBC → \(merged.count) unique CRCs (\(overlap) overlapping)")
+            #endif
             databases[Self.gbFamilyCacheKey] = merged; databases["gb"] = merged; databases["gbc"] = merged
             return merged
         }
         if Self.isArcadeFamily(system.id) {
-            if let merged = databases[Self.arcadeFamilyCacheKey] { LoggerService.debug(category: "LibretroDB", "Cache hit: merged MAME+FBA (\(merged.count) CRC entries)"); return merged }
+            if let merged = databases[Self.arcadeFamilyCacheKey] {
+                #if LOG_DEBUG
+                LoggerService.debug(category: "LibretroDB", "Cache hit: merged MAME+FBA (\(merged.count) CRC entries)")
+                #endif
+                return merged
+            }
             let partnerID = system.id == "mame" ? "fba" : "mame"
             guard let partner = SystemDatabase.system(forID: partnerID) else { LoggerService.libretroDBError("Arcade family merge failed — missing partner system \(partnerID)"); return await loadSingleSystemDatabase(for: system) }
-            let primary = await loadSingleSystemDatabase(for: system); LoggerService.debug(category: "LibretroDB", "Primary \(system.id) → \(primary.count) CRC entries")
-            let secondary = await loadSingleSystemDatabase(for: partner); LoggerService.debug(category: "LibretroDB", "Partner \(partnerID) → \(secondary.count) CRC entries")
+            let primary = await loadSingleSystemDatabase(for: system)
+            #if LOG_DEBUG
+            LoggerService.debug(category: "LibretroDB", "Primary \(system.id) → \(primary.count) CRC entries")
+            #endif
+            let secondary = await loadSingleSystemDatabase(for: partner)
+            #if LOG_DEBUG
+            LoggerService.debug(category: "LibretroDB", "Partner \(partnerID) → \(secondary.count) CRC entries")
+            #endif
             var merged: [String: GameInfo] = [:]
             // MAME (primary) entries go in first, so they win on CRC overlap
             for (crc, info) in primary { merged[crc] = Self.tagGameInfo(info, thumbnailLookupSystemID: system.id) }
             var overlap = 0
             for (crc, info) in secondary { if merged[crc] != nil { overlap += 1 } else { merged[crc] = Self.tagGameInfo(info, thumbnailLookupSystemID: partner.id) } }
+            #if LOG_DEBUG
             LoggerService.debug(category: "LibretroDB", "Merged MAME+FBA → \(merged.count) unique CRCs (\(overlap) overlapping)")
+            #endif
             databases[Self.arcadeFamilyCacheKey] = merged; databases["mame"] = merged; databases["fba"] = merged
             return merged
         }
-        if let db = databases[system.id] { LoggerService.debug(category: "LibretroDB", "Cache hit: \(system.id) (\(db.count) CRC entries)"); return db }
+        if let db = databases[system.id] {
+            #if LOG_DEBUG
+            LoggerService.debug(category: "LibretroDB", "Cache hit: \(system.id) (\(db.count) CRC entries)")
+            #endif
+            return db
+        }
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroDB", "Cache miss for \(system.id), loading...")
+        #endif
         let loaded = await loadSingleSystemDatabase(for: system); databases[system.id] = loaded; return loaded
     }
 
     private func loadSingleSystemDatabase(for system: SystemInfo) async -> [String: GameInfo] {
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroDB", "loadSingleSystemDatabase called for systemID=\(system.id) name=\(system.name)")
+        #endif
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         // First we ensure the local directories exist, even if they may be empty. This way we can reliably log the paths we're using and avoid confusion about where files should be stored.
         let datsDir = appSupport.appendingPathComponent("TruchiEmu/Dats", isDirectory: true)
         let rdbDir = appSupport.appendingPathComponent("TruchiEmu/Rdb", isDirectory: true)
         try? FileManager.default.createDirectory(at: datsDir, withIntermediateDirectories: true)
         try? FileManager.default.createDirectory(at: rdbDir, withIntermediateDirectories: true)
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroDB", "DATs directory: \(datsDir.path)"); LoggerService.debug(category: "LibretroDB", "RDBs directory: \(rdbDir.path)")
+        #endif
         let localNames = datBasenamesToTry(for: system)
         let baseUrl = "https://raw.githubusercontent.com/libretro/libretro-database/master/"
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroDB", "=== STEP 1: Scanning local DATs in \(datsDir.path) ===")
+        #endif
         for fileName in localNames {
             let localUrl = datsDir.appendingPathComponent(fileName)
             if FileManager.default.fileExists(atPath: localUrl.path) {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "LibretroDB", "Found local DAT file: \(localUrl.path)")
+                #endif
                 let db = parseDat(contentsOf: localUrl)
                 if db.isEmpty { 
                     LoggerService.libretroDBWarn("Local DAT \(fileName) exists but parsed 0 entries — continuing") 
                 } else { 
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "LibretroDB", "Step 1: SUCCESS — loaded local DAT with \(db.count) entries"); 
+                    #endif
                     return db 
                 }
             } 
         }
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroDB", "No local DAT found for systemID=\(system.id) (tried: \(localNames.joined(separator: ", ")))")  
+        #endif
 
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroDB", "=== STEP 2: Looking for resource bundle dats at \(Bundle.main.resourcePath ?? "unknown") ===")
+        #endif
         // Get the dat from the resources <system.id>.dat if it exists, and write it to the datsDir for future use. This is because some of the older DATs are not available in the main libretro-database repo but are still very useful for identification.
         for fileName in localNames {
             // strip extension for resource lookup since bundled resources don's have to match the exact filename
             let expectedResourcePath = (fileName as NSString).deletingPathExtension
             if let resourceUrl = Bundle.main.url(forResource: expectedResourcePath, withExtension: "dat") {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "LibretroDB", "Found bundled DAT resource: \(expectedResourcePath) at \(resourceUrl.path)")
+                #endif
                 let db = parseDat(contentsOf: resourceUrl)
                 if !db.isEmpty {
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "LibretroDB", "Step 2: SUCCESS — loaded bundled DAT \(expectedResourcePath) with \(db.count) entries")
+                    #endif
                     return db 
                 } else {
                     LoggerService.libretroDBWarn("Bundled DAT \(expectedResourcePath) found but parsed 0 entries — continuing")
                 }   
             } 
         }
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroDB", "No bundled DAT found for systemID=\(system.id) (tried: \(localNames.joined(separator: ", ")))")
+        #endif
 
 
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroDB", "=== STEP 3: Downloading No-Intro DAT (metadat/no-intro) from \(baseUrl) ===")
+        #endif
         let noIntroOnly = ["metadat/no-intro"]
         if let db = await downloadDatRemote(systemID: system.id, names: localNames, remotePaths: noIntroOnly, datsDir: datsDir, baseUrl: baseUrl) { 
+            #if LOG_DEBUG
             LoggerService.debug(category: "LibretroDB", "Step 3: SUCCESS — downloaded No-Intro DAT with \(db.count) entries"); 
+            #endif
             return db 
         }
 
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroDB", "=== STEP 4: Downloading other DAT trees from \(baseUrl) ===")
+        #endif
         let otherDatPaths = ["metadat/redump", "metadat/mame", "metadat/fba", "metadat/fbneo-split", "dat"]
         if let db = await downloadDatRemote(systemID: system.id, names: localNames, remotePaths: otherDatPaths, datsDir: datsDir, baseUrl: baseUrl) { 
+            #if LOG_DEBUG
             LoggerService.debug(category: "LibretroDB", "Step 4: SUCCESS — downloaded DAT with \(db.count) entries"); 
+            #endif
             return db 
         }
 
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroDB", "=== STEP 5: Loading RDB (local then remote) from \(baseUrl) ===")
+        #endif
         if let db = await downloadRdbRemote(systemID: system.id, names: rdbBasenamesToTry(for: system), rdbDir: rdbDir, baseUrl: baseUrl) { 
+            #if LOG_DEBUG
             LoggerService.debug(category: "LibretroDB", "Step 5: SUCCESS — loaded RDB with \(db.count) entries"); 
+            #endif
             return db 
         }
 

@@ -67,7 +67,9 @@ enum ROMIdentifier {
         let filename = url.lastPathComponent.lowercased()
         let extLower = normalize(extension: ext)
         
+        #if LOG_DEBUG
         LoggerService.debug(category: "ROMIdentifier", "Analyzing \(filename)")
+        #endif
 
         // Reject .dat files smaller than 10 MB — these are never game ROMs
         // (high score files, config data, etc.) and only pollute system listings.
@@ -75,7 +77,9 @@ enum ROMIdentifier {
         if extLower == "dat" {
             let resourceValues = try? url.resourceValues(forKeys: [.fileSizeKey])
             if let fileSize = resourceValues?.fileSize, fileSize < 10_000_000 {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "ROMIdentifier", "Skipping \(filename): .dat file is too small (\(fileSize) bytes) to be a game ROM")
+                #endif
                 return nil
             }
         }
@@ -87,7 +91,9 @@ enum ROMIdentifier {
             if let uniqueSystem = cachedSystems.first(where: { system in
                 system.extensions.contains { normalize(extension: $0) == extLower }
             }) {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "ROMIdentifier", "Fast Path: \(filename) exactly matched \(uniqueSystem.id) via unique extension '.\(extLower)'")
+                #endif
                 return uniqueSystem
             }
         }
@@ -108,7 +114,9 @@ enum ROMIdentifier {
         if currentBestScore < 90 && extLower == "zip" {
             scoreByMAME(url: url, candidates: &candidates)
             if candidates.isEmpty {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "ROMIdentifier", "Dropping \(filename): known MAME BIOS/unplayable entry")
+                #endif
                 return nil
             }
             scoreByFBNeo(url: url, candidates: &candidates)
@@ -134,7 +142,9 @@ enum ROMIdentifier {
             if archiveFormats.contains(extLower) {
                 if let archiveSystem = identifyArchive(url: url) {
                     candidates[archiveSystem.id, default: 0] += 90
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "ROMIdentifier", "Archive match for \(filename): \(archiveSystem.id)")
+                    #endif
                     currentBestScore = candidates.values.max() ?? 0
                 }
             }
@@ -174,7 +184,9 @@ enum ROMIdentifier {
         // compute CRC32 and check candidate systems' DAT databases.
         if let crcMatch = await identifyByCRC(url: url, extLower: extLower, candidates: candidates) {
             candidates[crcMatch, default: 0] += 150
+            #if LOG_DEBUG
             LoggerService.debug(category: "ROMIdentifier", "CRC disambiguation for \(filename): \(crcMatch) matched")
+            #endif
             currentBestScore = candidates.values.max() ?? 0
         }
 
@@ -191,13 +203,17 @@ enum ROMIdentifier {
         if let winner = sortedCandidates.first, winner.value >= 30 {
             // Log only the winner and top 3 candidates to avoid massive string concatenation overhead
             let topCandidates = sortedCandidates.prefix(3).map { "\($0.key): \($0.value)" }.joined(separator: ", ")
+            #if LOG_DEBUG
             LoggerService.debug(category: "ROMIdentifier", "Winner for \(filename) is \(winner.key). Top candidates:[\(topCandidates)]")
+            #endif
             
         // Reject archives with no signal beyond ambiguous extension matching (40 pts)
         // This prevents unidentifiable archive files (not in MAME/FBNeo DB, no archive fingerprint,
         // no path keywords, no CRC match, no identifiable inner ROM) from leaking to random archive-accepting systems
         if ["zip", "7z", "rar"].contains(extLower) && winner.value <= 40 {
+            #if LOG_DEBUG
             LoggerService.debug(category: "ROMIdentifier", "Dropping \(filename): no reliable identification signal for this \(extLower) file")
+            #endif
             return nil
         }
             
@@ -207,13 +223,17 @@ enum ROMIdentifier {
                 let service = MAMEUnifiedService.shared
                 
                 if !service.isValidArcadeRomsetName(shortName) {
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "ROMIdentifier", "Dropping \(filename): winner is \(winner.key) but '\(shortName)' is not a valid arcade romset name")
+                    #endif
                     return nil
                 }
                 
                 // Disambiguation: if FBNeo won but the filename is also in MAME, prefer MAME
                 if winner.key == "fba" && service.isMAMERomsetName(shortName) {
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "ROMIdentifier", "Reassigning \(filename) from fba to mame: filename matches both MAME and FBNeo romsets")
+                    #endif
                     return cachedSystems.first { $0.id == "mame" } ?? SystemDatabase.system(forID: "mame")
                 }
             }
@@ -221,7 +241,9 @@ enum ROMIdentifier {
             return cachedSystems.first { $0.id == winner.key } ?? SystemDatabase.system(forID: winner.key)
         } else {
             let topCandidates = sortedCandidates.prefix(3).map { "\($0.key): \($0.value)" }.joined(separator: ", ")
+            #if LOG_DEBUG
             LoggerService.debug(category: "ROMIdentifier", "No clear winner for \(filename). Top candidates: [\(topCandidates)]")
+            #endif
         }
 
         // Fallback 1: Check if any parent folder name is a valid System ID
@@ -236,7 +258,9 @@ enum ROMIdentifier {
         }
 
         // Fallback 2: Standard extension lookup
+        #if LOG_DEBUG
         LoggerService.debug(category: "ROMIdentifier", "Fallback: Standard extension lookup for \(filename)")
+        #endif
         return cachedSystems.first { system in
             system.extensions.contains { normalize(extension: $0) == extLower }
         } ?? SystemDatabase.system(forExtension: extLower)
@@ -369,7 +393,9 @@ enum ROMIdentifier {
     }
 
     static func identifyDiscSystem(url: URL, candidates: inout [String: Int]) -> String? {
+        #if LOG_EXTREME
         LoggerService.extreme(category: "ROMIdentifier", "Attempting disc-based system identification for \(url.lastPathComponent)")
+        #endif
 
         // 1. ISO 9660-based systems: PS1/PS2 via SYSTEM.CNF
         if let config = ISOScanner.extractSystemConfig(from: url) {
@@ -519,7 +545,9 @@ enum ROMIdentifier {
     private static func scoreByMAME(url: URL, candidates: inout [String: Int]) {
         let shortName = url.deletingPathExtension().lastPathComponent.lowercased()
         let strippedName = MAMEUnifiedService.stripDuplicateSuffix(shortName)
+        #if LOG_DEBUG
         LoggerService.debug(category: "ROMIdentifier", "Performing MAME lookup for \(url.lastPathComponent) with short name: \(shortName) (stripped: \(strippedName))")
+        #endif
         
         // Try original name first, then stripped (for macOS duplicate suffixes like "sf2 (1)")
         guard let matchName = MAMEUnifiedService.shared.lookup(shortName: shortName) != nil ? shortName :
@@ -530,28 +558,38 @@ enum ROMIdentifier {
         
         if mameEntry.isRunnableInAnyCore && !mameEntry.isBIOS {
             if archiveContainsConsoleROM(url) {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "ROMIdentifier", "Skipping MAME for \(url.lastPathComponent): archive contains console ROM(s)")
+                #endif
             } else {
                 candidates["mame", default: 0] += 90
+                #if LOG_DEBUG
                 LoggerService.debug(category: "ROMIdentifier", "MAME lookup match for \(url.lastPathComponent): \(mameEntry.shortName)")
+                #endif
             }
         } else {
             candidates.removeAll(keepingCapacity: true)
+            #if LOG_DEBUG
             LoggerService.debug(category: "ROMIdentifier", "Dropping \(url.lastPathComponent): known MAME entry (\(mameEntry.isBIOS ? "BIOS" : "unplayable")) — not a playable game")
+            #endif
         }
     }
 
     private static func scoreByFBNeo(url: URL, candidates: inout [String: Int]) {
         let shortName = url.deletingPathExtension().lastPathComponent.lowercased()
         let strippedName = MAMEUnifiedService.stripDuplicateSuffix(shortName)
+        #if LOG_DEBUG
         LoggerService.debug(category: "ROMIdentifier", "Performing FBNeo lookup for \(url.lastPathComponent) with short name: \(shortName) (stripped: \(strippedName))")
+        #endif
         
         let isFBNeo = MAMEUnifiedService.shared.isFBNeoOnlyRomsetName(shortName) ||
                       (strippedName != shortName && MAMEUnifiedService.shared.isFBNeoOnlyRomsetName(strippedName))
         
         if isFBNeo {
             candidates["fba", default: 0] += 90
+            #if LOG_DEBUG
             LoggerService.debug(category: "ROMIdentifier", "FBNeo lookup match for \(url.lastPathComponent)")
+            #endif
         }
     }
 
@@ -839,7 +877,9 @@ enum ROMIdentifier {
                 for dirName in dirNames {
                     if gameCodes.contains(dirName) {
                         scores["scummvm", default: 0] += 20
+                        #if LOG_DEBUG
                         LoggerService.debug(category: "ROMIdentifier", "ScummVM game code directory match: \(dirName)")
+                        #endif
                         break
                     }
                 }
@@ -893,7 +933,9 @@ enum ROMIdentifier {
         }
 
         if let bestMatch = scores.sorted(by: { $0.value > $1.value }).first, bestMatch.value >= 15 {
+            #if LOG_DEBUG
             LoggerService.debug(category: "ROMIdentifier", "Fingerprint winner: \(bestMatch.key) (\(bestMatch.value) pts) from \(files.count) files")
+            #endif
             return SystemDatabase.system(forID: bestMatch.key)
         }
 
@@ -926,12 +968,16 @@ enum ROMIdentifier {
         }
 
         guard let datURL = Bundle.main.url(forResource: "ScummVM", withExtension: "dat", subdirectory: "Data/LibretroDats") else {
+            #if LOG_DEBUG
             LoggerService.debug(category: "ROMIdentifier", "ScummVM.dat not found in bundle")
+            #endif
             return nil
         }
 
         guard let content = try? String(contentsOf: datURL, encoding: .utf8) else {
+            #if LOG_DEBUG
             LoggerService.debug(category: "ROMIdentifier", "Failed to read ScummVM.dat")
+            #endif
             return nil
         }
 
@@ -949,7 +995,9 @@ enum ROMIdentifier {
             }
         }
 
+        #if LOG_DEBUG
         LoggerService.debug(category: "ROMIdentifier", "Loaded \(codes.count) ScummVM game codes (length >= 4)")
+        #endif
         _scummVMGameCodes = codes
         return codes
     }
@@ -1302,7 +1350,9 @@ enum ROMIdentifier {
             let db = await LibretroDatabaseLibrary.shared.fetchAndLoadDat(for: system)
             guard !db.isEmpty else { continue }
             if db[crc] != nil {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "ROMIdentifier", "CRC match: \(url.lastPathComponent) → \(systemID) (CRC: \(crc))")
+                #endif
                 return systemID
             }
         }

@@ -111,13 +111,17 @@ final class MAMEUnifiedService: ObservableObject {
                 fileURLWithPath: "mame_unified.json"
             )
             if FileManager.default.fileExists(atPath: projectURL.path) {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "MAMEUnifiedService", "Loading: \(projectURL) - mame_unified.json")
+                #endif
                 jsonURL = projectURL
             }
         }
         
         guard let url = jsonURL else {
+            #if LOG_DEBUG
             LoggerService.debug(category: "mameImport", "MAMEUnifiedService: Could not find bundled mame_unified.json")
+            #endif
             return
         }
         
@@ -176,11 +180,13 @@ final class MAMEUnifiedService: ObservableObject {
             self.unplayableShortNames = unplayable
             self.allMAMEShortNames = mameShortNames
             
+            #if LOG_DEBUG
             LoggerService.debug(category: "MAMEUnifiedService",
                 "Loaded \(db.metadata.totalEntries) entries " +
                 "(\(db.metadata.entriesInAtLeastOneCore) in cores, " +
                 "\(db.metadata.entriesNotInAnyCore) not in any core)"
             )
+            #endif
             
             // Best-effort: load FBNeo romset names
             await loadFBNeoRomsets()
@@ -239,12 +245,16 @@ final class MAMEUnifiedService: ObservableObject {
         }
         
         guard let url = datURL else {
+            #if LOG_DEBUG
             LoggerService.debug(category: "MAMEUnifiedService", "FBNeo DAT not found — romset names unavailable")
+            #endif
             return
         }
         
         guard let content = try? String(contentsOf: url, encoding: .utf8) else {
+            #if LOG_DEBUG
             LoggerService.debug(category: "MAMEUnifiedService", "FBNeo DAT exists but unreadable: \(url.path)")
+            #endif
             return
         }
         
@@ -270,7 +280,9 @@ final class MAMEUnifiedService: ObservableObject {
         }
         
         self.fbneoRomsetNames = romsetNames
+        #if LOG_DEBUG
         LoggerService.debug(category: "MAMEUnifiedService", "Loaded \(romsetNames.count) FBNeo romset names from \(url.lastPathComponent)")
+        #endif
     }
 
     // MARK: - Arcade Romset Name Validation

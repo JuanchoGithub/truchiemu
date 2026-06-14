@@ -45,19 +45,25 @@ class LibretroThumbnailManifestService: ObservableObject {
         let gitTreesURL = "https://api.github.com/repos/libretro-thumbnails/\(repoName)/git/trees/master?recursive=1"
         guard let url = URL(string: gitTreesURL) else { return true }
 
+        #if LOG_DEBUG
         LoggerService.debug(category: logCategory, "Checking if manifest for \(repoName) needs update via GitHub metadata... at \(gitTreesURL)")
+        #endif
 
         let cacheKey = ResourceCacheEntry.makeThumbnailManifestKey(repoName: repoName)
         
         // We need to know when our CURRENT local manifest was last updated.
         guard let localEntry = cacheRepo.getEntry(cacheKey: cacheKey) else {
+            #if LOG_DEBUG
             LoggerService.debug(category: logCategory, "No local manifest found for \(repoName), must download.")
+            #endif
             return true
         }
 
         // If we have an expiry in the future, we don't even bother checking GitHub metadata.
         if let expiresAt = localEntry.expiresAt, expiresAt > Int(Date().timeIntervalSince1970) {
+            #if LOG_DEBUG
             LoggerService.debug(category: logCategory, "Local manifest for \(repoName) is still valid (expires at \(expiresAt)). Skipping GitHub check.")
+            #endif
             return false
         }
 
@@ -70,7 +76,9 @@ class LibretroThumbnailManifestService: ObservableObject {
             guard let httpResponse = response as? HTTPURLResponse else { return true }
             
             if httpResponse.statusCode == 200 || httpResponse.statusCode == 304 {
+                #if LOG_DEBUG
                 LoggerService.debug(category: logCategory, "GitHub metadata check successful for \(repoName). Proceeding to fetch.")
+                #endif
                 return true
             }
 
@@ -85,7 +93,9 @@ class LibretroThumbnailManifestService: ObservableObject {
     // Loads pre-bundled manifests from the app's resource bundle.
     private func loadBundledManifests() async {
         guard let resourceURL = Bundle.main.url(forResource: "ThumbnailManifests", withExtension: nil) else {
+            #if LOG_DEBUG
             LoggerService.debug(category: logCategory, "No bundled ThumbnailManifests directory found")
+            #endif
             return
         }
         
@@ -157,9 +167,13 @@ class LibretroThumbnailManifestService: ObservableObject {
             
             let exists = fileSet.contains(relativePath)
             if !exists {
+                #if LOG_EXTREME
                 LoggerService.extreme(category: logCategory, "Manifest miss: '\(relativePath)' not found in \(repoName)")
+                #endif
             } else {
+                #if LOG_EXTREME
                 LoggerService.extreme(category: logCategory, "Manifest hit: '\(relativePath)' found in \(repoName)")
+                #endif
             }
             return exists
         } catch {
@@ -182,13 +196,19 @@ class LibretroThumbnailManifestService: ObservableObject {
             guard let httpResponse = response as? HTTPURLResponse else { return false }
             let exists = httpResponse.statusCode == 200
             if !exists {
+                #if LOG_DEBUG
                 LoggerService.debug(category: logCategory, "Repo probe: \(repoName) → HTTP \(httpResponse.statusCode) (does not exist)")
+                #endif
             } else {
+                #if LOG_DEBUG
                 LoggerService.debug(category: logCategory, "Repo probe: \(repoName) → exists")
+                #endif
             }
             return exists
         } catch {
+            #if LOG_DEBUG
             LoggerService.debug(category: logCategory, "Repo probe: \(repoName) → error: \(error.localizedDescription)")
+            #endif
             return false
         }
     }
@@ -219,7 +239,9 @@ class LibretroThumbnailManifestService: ObservableObject {
                 // So if it doesn't need update, but we don't have it in manifestCache, 
                 // it means we probably have it in the ResourceCache (disk) but not in memory.
                 
+                #if LOG_DEBUG
                 LoggerService.debug(category: logCategory, "Manifest for \(repoName) is up-to-date but not in memory. Loading from disk cache...")
+                #endif
                 return try await fetchManifestFromGitHub(repoName: repoName, force: false)
             }
         }

@@ -37,10 +37,14 @@ class BiosDownloader {
         let destinationFolder = getAppSupportDirectory().appendingPathComponent("System/dolphin-emu/Sys")
         //delete the destination folder
         try? fileManager.removeItem(at: destinationFolder)
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreManager", "Deleted support Sys folder for: \(coreID) at \(destinationFolder)")
+        #endif
         //delete the zip file
         try? fileManager.removeItem(at: zipFileLocation)
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreManager", "Deleted zip file for: \(coreID) at \(zipFileLocation)")
+        #endif
     }
     
     func downloadAndExtractDolphinBios(completion: @escaping (Result<Void, Error>) -> Void) {
@@ -57,7 +61,9 @@ class BiosDownloader {
             try fileManager.createDirectory(at: tempDir, withIntermediateDirectories: true)
             
             // 2. Download the Zip file
+            #if LOG_DEBUG
             LoggerService.debug(category: "CoreManager", "Downloading repository...")
+            #endif
             let semaphore = DispatchSemaphore(value: 0)
             var downloadError: Error?
             
@@ -86,17 +92,23 @@ class BiosDownloader {
             }
             
             // 3. Use the system 'unzip' utility
+            #if LOG_DEBUG
             LoggerService.debug(category: "CoreManager", "Running system unzip...")
+            #endif
             try runUnzip(zipPath: zipFileLocation.path, destination: tempDir.path)
             
             // 4. Move files from the specific subfolder to the destination
+            #if LOG_DEBUG
             LoggerService.debug(category: "CoreManager", "Moving files to application support...")
+            #endif
             try moveSysFiles(from: tempDir.appendingPathComponent(targetSubPath), to: destinationFolder)
             
             // 5. Cleanup
             try? fileManager.removeItem(at: tempDir)
             
+            #if LOG_DEBUG
             LoggerService.debug(category: "CoreManager", "Finished successfully.")
+            #endif
             completion(.success(()))
             
         } catch {
@@ -130,7 +142,9 @@ class BiosDownloader {
         
         // Ensure destination exists
         if !fileManager.fileExists(atPath: destination.path) {
+            #if LOG_DEBUG
             LoggerService.debug(category: "CoreManager", "Creating destination directory: \(destination)")
+            #endif
             try fileManager.createDirectory(at: destination, withIntermediateDirectories: true)
         }
         
@@ -149,13 +163,17 @@ class BiosDownloader {
                 try fileManager.removeItem(at: targetURL)
             }
             try fileManager.moveItem(at: fileURL, to: targetURL)
+            #if LOG_DEBUG
             LoggerService.debug(category: "CoreManager", "Moved file: \(fileURL.lastPathComponent)")
+            #endif
         }
     }
     
     private func getAppSupportDirectory() -> URL {
         let paths = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreManager", "Application support directory: \(paths[0])")
+        #endif
         return paths[0].appendingPathComponent("TruchiEmu")
     }
 }
@@ -220,7 +238,9 @@ class CoreManager: ObservableObject {
         
         var request = URLRequest(url: buildbotBase)
         request.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36", forHTTPHeaderField: "User-Agent")
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreManager", "Request: \(request)")
+        #endif
 
         guard let (data, response) = try? await URLSession.shared.data(for: request) else {
             LoggerService.error(category: "CoreManager", "Failed to fetch core list: Network error")
@@ -243,7 +263,9 @@ class CoreManager: ObservableObject {
         let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive)
         let matches = regex?.matches(in: html, range: NSRange(html.startIndex..., in: html)) ?? []
 
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreManager", "Found \(matches.count) core links in HTML")
+        #endif
 
         // Group results by coreID to extract build date
         var cores: [RemoteCoreInfo] = []
@@ -301,7 +323,9 @@ class CoreManager: ObservableObject {
         }
 
         // Now fetch .info files in parallel for version info
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreManager", "Fetching version info for \(cores.count) cores...")
+        #endif
         await withTaskGroup(of: Void.self) { group in
             for (index, core) in cores.enumerated() {
                 group.addTask {
@@ -314,11 +338,17 @@ class CoreManager: ObservableObject {
         }
 
         availableCores = cores.sorted { $0.displayName < $1.displayName }
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreManager", "Available cores: \(availableCores)")
+        #endif
         saveAvailableCores()
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreManager", "Available cores saved")
+        #endif
         AppSettings.setBool(coresInitialFetchDoneKey, value: true)
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreManager", "Available cores initial fetch done")
+        #endif
     }
 
     // MARK: - Info File Processing
@@ -373,14 +403,18 @@ class CoreManager: ObservableObject {
 
             // Cache the .info file locally for offline use
             try data.write(to: cachedInfoPath)
+            #if LOG_DEBUG
             LoggerService.debug(category: "CoreManager", "Cached .info file for \(coreID): \(cachedInfoPath.path)")
+            #endif
         } catch {
             LoggerService.warning(category: "CoreManager", "Failed to fetch .info for \(coreID): \(error.localizedDescription)")
             // Try to load from cache if available
             if let cachedData = try? Data(contentsOf: cachedInfoPath) {
                 infoProperties = parseInfoFile(cachedData)
                 versionString = infoProperties["display_version"] ?? infoProperties["version"] ?? ""
+                #if LOG_DEBUG
                 LoggerService.debug(category: "CoreManager", "Using cached .info for \(coreID)")
+                #endif
             }
         }
 
@@ -413,7 +447,9 @@ class CoreManager: ObservableObject {
             self.romID = romID
             self.systemID = systemID
             self.slotToLoad = slotToLoad
+            #if LOG_DEBUG
             LoggerService.debug(category: "CoreManager", "PendingCoreDownload initialized")
+            #endif
         }
 
         // Convenience: true when launch context is provided
@@ -426,11 +462,15 @@ class CoreManager: ObservableObject {
         romID: UUID? = nil,
         slotToLoad: Int? = nil
     ) {
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreManager", "[REQUEST] RequestCoreDownload called with coreID=\\(coreID), systemID=\\(sysStr), availableCores.count=\\(availableCores.count)")
+        #endif
     
     // Find in available list
     if let remote = availableCores.first(where: { $0.coreID == coreID }) {
+            #if LOG_DEBUG
             LoggerService.debug(category: "CoreManager", "Found remote core: \(remote)")
+            #endif
             pendingDownload = PendingCoreDownload(
                 coreInfo: remote,
                 romID: romID,
@@ -438,7 +478,9 @@ class CoreManager: ObservableObject {
                 slotToLoad: slotToLoad
             )
     } else {
+      #if LOG_DEBUG
       LoggerService.debug(category: "CoreManager", "Core not found in available list, building synthetic RemoteCoreInfo")
+      #endif
       // Build a synthetic RemoteCoreInfo - marks version as "synthetic" to identify in UI
       let fileName = "\(coreID).dylib.zip"
       let url = buildbotBase.appendingPathComponent(fileName)
@@ -456,8 +498,12 @@ class CoreManager: ObservableObject {
                 slotToLoad: slotToLoad
             )
             let coreIdStr = pendingDownload?.coreInfo.coreID ?? "nil"
+            #if LOG_DEBUG
             LoggerService.debug(category: "CoreManager", "[SYNTHETIC] pendingDownload SET: \(coreIdStr)")
+            #endif
+            #if LOG_DEBUG
             LoggerService.debug(category: "CoreManager", "[STATE] pendingDownload should now trigger sheet via @Published")
+            #endif
         }
     }
     
@@ -479,7 +525,9 @@ class CoreManager: ObservableObject {
     // MARK: - Download (user must authorize via pendingDownload)
     
     func downloadCore(_ info: RemoteCoreInfo, romPath: String? = nil) async {
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreManager", "Starting download: \(info.coreID) from \(info.downloadURL)")
+        #endif
 
         downloadCoreName = info.displayName
         downloadPhase = .findingURL
@@ -488,7 +536,9 @@ class CoreManager: ObservableObject {
         BiosDownloaderService.downloadAndExtractBios(for: info.coreID) { result in
             switch result {
             case .success(_):
+                #if LOG_DEBUG
                 LoggerService.debug(category: "CoreManager", "BIOS for \(info.coreID) downloaded successfully")
+                #endif
             case .failure(let error):
                 LoggerService.error(category: "CoreManager", "BIOS for \(info.coreID) download failed: \(error)")
             }
@@ -501,7 +551,9 @@ class CoreManager: ObservableObject {
 
         do {
             downloadPhase = .fetchingFromURL
+            #if LOG_DEBUG
             LoggerService.debug(category: "CoreManager", "Downloading core: \(info.coreID)")
+            #endif
             var request = URLRequest(url: info.downloadURL)
             request.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36", forHTTPHeaderField: "User-Agent")
 
@@ -525,15 +577,21 @@ class CoreManager: ObservableObject {
             let coreFolder = appSupportURL.appendingPathComponent(info.coreID, isDirectory: true)
             let versionFolder = coreFolder.appendingPathComponent("\(versionString)-\(buildDate)", isDirectory: true)
             try FileManager.default.createDirectory(at: versionFolder, withIntermediateDirectories: true)
+            #if LOG_DEBUG
             LoggerService.debug(category: "CoreManager", "Core version folder created: \(versionFolder.path)")
+            #endif
 
             // Unzip to version folder
             let dylibName = info.fileName.replacingOccurrences(of: ".zip", with: "")
             let dylibDest = versionFolder.appendingPathComponent(dylibName)
 
+            #if LOG_DEBUG
             LoggerService.debug(category: "CoreManager", "Unzipping to: \(dylibDest.path)")
+            #endif
             try await unzip(zipURL: tmpURL, extracting: dylibName, to: dylibDest)
+            #if LOG_DEBUG
             LoggerService.debug(category: "CoreManager", "Unzipped successfully")
+            #endif
 
             // Create CoreVersion object
             let coreVersion = CoreVersion(
@@ -544,7 +602,9 @@ class CoreManager: ObservableObject {
                 remoteURL: info.downloadURL,
                 isActive: true // Mark as active immediately after download
             )
+            #if LOG_DEBUG
             LoggerService.debug(category: "CoreManager", "Core version created: \(coreVersion)")
+            #endif
 
             // Create latest symlink pointing to the version we just downloaded
             let symlinkPath = coreFolder.appendingPathComponent(info.coreID + ".dylib")
@@ -558,7 +618,9 @@ class CoreManager: ObservableObject {
 
                 // Create new symlink to version folder
                 try FileManager.default.createSymbolicLink(at: symlinkPath, withDestinationURL: dylibDest)
+                #if LOG_DEBUG
                 LoggerService.debug(category: "CoreManager", "Created latest symlink: \(symlinkPath.path) -> \(relativePath)")
+                #endif
             } catch {
                 LoggerService.error(category: "CoreManager", "Failed to create latest symlink: \(error)")
             }
@@ -585,10 +647,14 @@ class CoreManager: ObservableObject {
             }
 
             // Discover core options and input descriptors in one shot (both captured during core init)
+            #if LOG_DEBUG
             LoggerService.debug(category: "CoreManager", "Discovering core options and input descriptors for: \(info.coreID)")
+            #endif
             await CoreOptionsManager.shared.discoverOptions(for: info.coreID, dylibPath: dylibDest.path, romPath: romPath)
 
+            #if LOG_DEBUG
             LoggerService.debug(category: "CoreManager", "Installed cores: \(installedCores)")
+            #endif
             saveInstalledCores()
             LoggerService.info(category: "CoreManager", "Successfully installed \(info.coreID) version \(versionString)")
         } catch {
@@ -610,23 +676,33 @@ class CoreManager: ObservableObject {
     func defaultCore(for systemID: String) -> LibretroCore? {
         guard let system = SystemDatabase.system(forID: systemID),
               let coreID = system.defaultCoreID else { return nil }
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreManager", "Default core \(coreID) for system \(systemID)")
+        #endif
         return installedCores.first { $0.id == coreID }
     }
 
     func isInstalled(coreID: String) -> Bool {
         let result = installedCores.first(where: { $0.id == coreID })?.isInstalled ?? false
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreManager", "Is installed: \(coreID) -> \(result)")
+        #endif
         return result
     }
 
     func setActiveVersion(coreID: String, tag: String) {
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreManager", "Set active version: \(coreID) -> \(tag)")
+        #endif
         if let idx = installedCores.firstIndex(where: { $0.id == coreID }) {
+            #if LOG_DEBUG
             LoggerService.debug(category: "CoreManager", "Found installed core: \(coreID)")
+            #endif
             installedCores[idx].activeVersionTag = tag
             saveInstalledCores()
+            #if LOG_DEBUG
             LoggerService.debug(category: "CoreManager", "Installed cores: \(installedCores)")
+            #endif
             CoreOptionsManager.shared.discoverOptionsIfNeeded(for: coreID)
         }
     }
@@ -634,13 +710,19 @@ class CoreManager: ObservableObject {
     func deleteCore(_ core: LibretroCore) {
         // Remove from disk
         let folder = appSupportURL.appendingPathComponent(core.id)
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreManager", "Deleting core: \(core.id)")
+        #endif
         try? FileManager.default.removeItem(at: folder)
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreManager", "Core deleted: \(core.id)")
+        #endif
         // Remove from list
         installedCores.removeAll { $0.id == core.id }
         saveInstalledCores()
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreManager", "Core removed from list: \(core.id)")
+        #endif
         // Instantly fallback any systems that were relying on this deleted core
         repairPreferredCores()
         let biosDownloaderService = BiosDownloader()
@@ -652,7 +734,9 @@ class CoreManager: ObservableObject {
     private func saveInstalledCores() {
         if let data = try? encoder.encode(installedCores) {
             AppSettings.setData(coresKey, value: data)
+            #if LOG_DEBUG
             LoggerService.debug(category: "CoreManager", "Installed cores saved: \(installedCores)")
+            #endif
             objectWillChange.send() 
         }
     }
@@ -710,7 +794,9 @@ class CoreManager: ObservableObject {
             persistedCores = saved
         }
 
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreManager", "Loading installed cores from filesystem and cache")
+        #endif
 
         var validCores: [LibretroCore] = []
         var cacheNeedsRepair = false
@@ -769,7 +855,9 @@ class CoreManager: ObservableObject {
                                     activeVersionTag = coreVersion.tag
                                 }
 
+                                #if LOG_DEBUG
                                 LoggerService.debug(category: "CoreManager", "Found version: \(version) for \(coreID)")
+                                #endif
                             }
                         }
                     }
@@ -807,7 +895,9 @@ class CoreManager: ObservableObject {
                     if FileManager.default.fileExists(atPath: v.dylibPath.path) {
                         return true
                     } else {
+                        #if LOG_DEBUG
                         LoggerService.debug(category: "CoreManager", "Removing missing version: \(v.dylibPath.path)")
+                        #endif
                         cacheNeedsRepair = true
                         return false
                     }
@@ -835,7 +925,9 @@ class CoreManager: ObservableObject {
             saveInstalledCores()
         }
 
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreManager", "Loaded \(installedCores.count) installed cores with versioned folders")
+        #endif
 
         repairPreferredCores()
         validateCoreVersions()
@@ -868,7 +960,9 @@ class CoreManager: ObservableObject {
                 let folderName = folder.lastPathComponent
                 if folderName.contains(" ") && folderName.count >= 16 {
                     // This looks like an old timestamp folder
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "CoreManager", "Found old timestamp folder: \(folderName)")
+                    #endif
 
                     // Find dylib in it
                     let dylibFiles = try FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil)
@@ -889,7 +983,9 @@ class CoreManager: ObservableObject {
                             try FileManager.default.removeItem(at: folder)
                         }
 
+                        #if LOG_DEBUG
                         LoggerService.debug(category: "CoreManager", "Migrated \(core.id) from timestamp to version folder")
+                        #endif
                     }
                 }
             }
@@ -902,9 +998,13 @@ class CoreManager: ObservableObject {
         guard let data = AppSettings.getData(availableCoresKey),
               var saved = try? decoder.decode([RemoteCoreInfo].self, from: data) else { return }
         // Refresh systemIDs so updates to supportedSystems mappings are applied to cached data
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreManager", "Loading available cores")
+        #endif
         for i in 0..<saved.count {
+            #if LOG_EXTREME
             LoggerService.extreme(category: "CoreManager", "Loading available core: \(saved[i].coreID) for system: \(saved[i].systemIDs)")
+            #endif
             saved[i].systemIDs = CoreManager.supportedSystems(for: saved[i].coreID)
         }
         availableCores = saved
@@ -913,7 +1013,9 @@ class CoreManager: ObservableObject {
     private func saveAvailableCores() {
         if let data = try? encoder.encode(availableCores) {
             AppSettings.setData(availableCoresKey, value: data)
+            #if LOG_DEBUG
             LoggerService.debug(category: "CoreManager", "Available cores saved: \(availableCores)")
+            #endif
         }
     }
 
@@ -948,7 +1050,9 @@ class CoreManager: ObservableObject {
     private func unzip(zipURL: URL, extracting targetName: String, to destination: URL) async throws {
         let tmpDir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         try FileManager.default.createDirectory(at: tmpDir, withIntermediateDirectories: true)
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreManager", "Unzipping core: \(zipURL.path) to \(tmpDir.path)")
+        #endif
 
         let proc = Process()
         proc.executableURL = URL(fileURLWithPath: "/usr/bin/ditto")
@@ -965,9 +1069,13 @@ class CoreManager: ObservableObject {
         // Recursive search for the dylib
         let enumerator = FileManager.default.enumerator(at: tmpDir, includingPropertiesForKeys: nil)
         var foundURL: URL?
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreManager", "Searching for file: \(targetName)")
+        #endif
         while let fileURL = enumerator?.nextObject() as? URL {
+            #if LOG_DEBUG
             LoggerService.debug(category: "CoreManager", "Found file: \(fileURL.path)")
+            #endif
             if fileURL.lastPathComponent == targetName {
                 foundURL = fileURL
                 break
@@ -975,11 +1083,15 @@ class CoreManager: ObservableObject {
         }
 
         if let dylib = foundURL {
+            #if LOG_DEBUG
             LoggerService.debug(category: "CoreManager", "Found dylib: \(dylib.path)")
+            #endif
             try? FileManager.default.removeItem(at: destination)
             try FileManager.default.moveItem(at: dylib, to: destination)
             await prepareCore(at: destination.path)
+            #if LOG_DEBUG
             LoggerService.debug(category: "CoreManager", "Core prepared: \(destination.path)")
+            #endif
         } else {
             LoggerService.error(category: "CoreManager", "Failed to find \(targetName) in unzipped archive.")
             throw NSError(domain: "CoreManager", code: 404, userInfo: [NSLocalizedDescriptionKey: "Failed to find \(targetName) in unzipped archive."])
@@ -997,10 +1109,14 @@ class CoreManager: ObservableObject {
         let proc = Process()
         proc.executableURL = URL(fileURLWithPath: "/usr/bin/codesign")
         proc.arguments = ["-s", "-", "--force", path]
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreManager", "Codesigning core: \(path)")
+        #endif
         try? proc.run()
         proc.waitUntilExit()
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreManager", "Core codesigned: \(path)")
+        #endif
         #endif
     }
     @MainActor
@@ -1008,20 +1124,28 @@ class CoreManager: ObservableObject {
         isFetchingCoreList = true
         // Use the LibretroInfoManager singleton to piggyback its status updates
         let infoManager = LibretroInfoManager.shared
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreManager", "Starting full system update")
+        #endif
         
         // Step 1: Update System/File Extension Database
         await infoManager.refreshCoreInfo()
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreManager", "System/File Extension Database updated")
+        #endif
     
         // Step 2: Fetch the actual Core binaries from Libretro buildbot
         await fetchAvailableCores()
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreManager", "Core binaries fetched")
+        #endif
     
         // Step 3: Cleanup/Post-process
         isFetchingCoreList = false
         infoManager.refreshStatus = "Full System Update Complete!"
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreManager", "Full System Update Complete!")
+        #endif
     
         // Trigger a UI refresh if your views are observing SystemPreferences
         self.loadAvailableCores()

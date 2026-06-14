@@ -41,7 +41,9 @@ final class LibraryAutomationCoordinator: ObservableObject {
         let scope = targetROMs ?? library.roms
         
         if RunningGamesTracker.shared.isGameRunning {
+            #if LOG_DEBUG
             LoggerService.debug(category: "LibraryAutomation", "Skipping post-scan automation — game is running")
+            #endif
             return
         }
 
@@ -56,7 +58,9 @@ final class LibraryAutomationCoordinator: ObservableObject {
 
         // Re-check after the delay — a game may have launched during the warm-up.
         if RunningGamesTracker.shared.isGameRunning {
+            #if LOG_DEBUG
             LoggerService.debug(category: "LibraryAutomation", "Skipping post-scan automation (game started during warm-up)")
+            #endif
             return
         }
 

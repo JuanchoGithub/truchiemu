@@ -11,7 +11,9 @@ LibretroBridge.registerCoreLogger { messagePtr, level in
     case 2: // RETRO_LOG_ERROR
         LoggerService.error(category: category, message)
     default:
+        #if LOG_DEBUG
         LoggerService.debug(category: category, message)
+        #endif
     }
 }
 

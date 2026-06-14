@@ -125,9 +125,15 @@ let windowController = ShaderWindowController(
 settings: shaderWindowSettings!
 )
 windowController.onPresetChanged = { [self] newPresetID, newUniformValues, selectedGameIDs in
+#if LOG_DEBUG
 LoggerService.debug(category: "ShaderPicker", "=== APPLY BUTTON PRESSED ===")
+#endif
+#if LOG_DEBUG
 LoggerService.debug(category: "ShaderPicker", "Received: presetID=\(newPresetID), uniformCount=\(newUniformValues.count)")
+#endif
+#if LOG_DEBUG
 LoggerService.debug(category: "ShaderPicker", "Settings context: systemID=\(String(describing: shaderWindowSettings?.systemID)), initialPresetID=\(shaderWindowSettings?.shaderPresetID ?? "nil")")
+#endif
 
 updateSettings { romSettings in
     romSettings.shaderPresetID = newPresetID
@@ -164,7 +170,9 @@ ShaderWindowController.shared?.close()
             return 
         }
         
+        #if LOG_DEBUG
         LoggerService.debug(category: "ShaderPicker", "applyToAllGamesInSystem: systemID=\(systemID), entries found=\(entries.count)")
+        #endif
         
         for entry in entries {
             var settings: ROMSettings
@@ -196,7 +204,9 @@ ShaderWindowController.shared?.close()
         do {
             try modelContext.save()
             LibraryMetadataStore.shared.flushDirtyToSwiftData()
+            #if LOG_DEBUG
             LoggerService.debug(category: "ShaderPicker", "Saved \(entries.count) entries with shader: \(presetID)")
+            #endif
         } catch {
             LoggerService.error(category: "ShaderPicker", "Failed to save: \(error.localizedDescription)")
         }

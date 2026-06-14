@@ -2,7 +2,9 @@ import Foundation
 
 // Logger for ROMScanner - routes through LoggerService for timestamped file logging.
 private enum ROMScannerLog {
+    #if LOG_DEBUG
     static func debug(_ message: String) { LoggerService.debug(category: "ROMScanner", message) }
+    #endif
 }
 
 // MARK: - Helper Actor for Thread-Safe Progress
@@ -80,7 +82,9 @@ actor ROMScanner {
             }
         }
 
+        #if LOG_DEBUG
         LoggerService.debug(category: "ROMScanner", "Bulk MAME: \(urls.count) files → \(playableMameURLs.count) playable, \(remainingURLs.count) to deep scan")
+        #endif
 
         return (playableMameURLs, remainingURLs)
     }
@@ -356,7 +360,9 @@ actor ROMScanner {
                   let gdiRefs = containerRefs[gdiURL],
                   cueRefs == gdiRefs else { continue }
             ignoredURLs.insert(gdiURL.standardized.path)
+            #if LOG_DEBUG
             ROMScannerLog.debug("Dedup: ignoring \(gdiURL.lastPathComponent) — same data files as \(cueURL.lastPathComponent)")
+            #endif
             break
         }
     }
@@ -380,7 +386,9 @@ actor ROMScanner {
             rom.isHidden = false
             rom.isBios = true
             rom.category = "bios"
+            #if LOG_DEBUG
             ROMScannerLog.debug("MAME BIOS '\(shortName)' → '\(entry.description)'")
+            #endif
         } else if entry.isRunnableInAnyCore {
             rom.mameRomType = "game"
             rom.name = entry.description

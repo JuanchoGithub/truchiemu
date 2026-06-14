@@ -324,14 +324,18 @@ class CLILauncher {
             LoggerService.info(category: "CLI", "Spawning app with: open -a \(bundleID) --args \(arguments.joined(separator: " "))")
             return true
         } catch {
+            #if LOG_DEBUG
             LoggerService.debug(category: "CLI", "Failed to spawn app: \(error)")
+            #endif
             return false
         }
     }
     
     private func spawnDirect(arguments: [String]) -> Process? {
         guard let executablePath = Bundle.main.executablePath else {
+            #if LOG_DEBUG
             LoggerService.debug(category: "CLI", "Cannot find app executable path")
+            #endif
             return nil
         }
         
@@ -344,7 +348,9 @@ class CLILauncher {
             LoggerService.info(category: "CLI", "Spawned directly: \(executablePath) \(arguments.joined(separator: " "))")
             return process
         } catch {
+            #if LOG_DEBUG
             LoggerService.debug(category: "CLI", "Failed to spawn directly: \(error)")
+            #endif
             return nil
         }
     }

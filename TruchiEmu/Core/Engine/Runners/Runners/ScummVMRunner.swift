@@ -103,7 +103,9 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
         if FileManager.default.fileExists(atPath: destFolder.path) {
             // Verify extraction is complete (has game files)
             if hasGameFiles(in: destFolder) {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "ScummVM", "Using cached extraction: \(destFolder.path)")
+                #endif
                 return destFolder
             } else {
                 // Corrupted or incomplete extraction, remove and re-extract
@@ -136,7 +138,9 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
             process.waitUntilExit()
             
             if process.terminationStatus == 0 {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "ScummVM", "Extraction successful")
+                #endif
                 return destFolder
             } else {
                 let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
@@ -144,7 +148,9 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
                 LoggerService.info(category: "ScummVM", "Extraction failed: \(errorMsg)")
                 
                 // Try alternative: use ditto
+                #if LOG_DEBUG
                 LoggerService.debug(category: "ScummVM", "Trying ditto as fallback...")
+                #endif
                 return extractWithDitto(zipPath: zipPath, destFolder: destFolder)
             }
         } catch {
@@ -164,14 +170,18 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
             process.waitUntilExit()
             
             if process.terminationStatus == 0 {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "ScummVM", "ditto extraction successful")
+                #endif
                 return destFolder
             } else {
                 LoggerService.info(category: "ScummVM", "ditto extraction failed with status: \(process.terminationStatus)")
                 return nil
             }
         } catch {
+            #if LOG_DEBUG
             LoggerService.debug(category: "ScummVM", "ditto extraction exception: \(error)")
+            #endif
             return nil
         }
     }
@@ -202,7 +212,9 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
             
             if hasAudioFiles || hasDataFiles {
                 // We have ScummVM game files but couldn't detect specific game
+                #if LOG_DEBUG
                 LoggerService.debug(category: "ScummVM", "Detected ScummVM data files but no specific game ID")
+                #endif
             }
             
         } catch {
@@ -235,11 +247,15 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
             let existingContent = (try? String(contentsOf: hookPath, encoding: .utf8)) ?? ""
             let firstLine = existingContent.components(separatedBy: "\n").first?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
             if firstLine == gameID {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "ScummVM", "Hook file already exists with valid format: \(hookPath.path)")
+                #endif
                 return hookPath
             } else {
                 // Wrong format, remove and recreate
+                #if LOG_DEBUG
                 LoggerService.debug(category: "ScummVM", "Hook file has wrong format (first line='\(firstLine)'), recreating...")
+                #endif
                 try? FileManager.default.removeItem(at: hookPath)
             }
         }
@@ -281,7 +297,9 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
 
             }
         } catch {
+            #if LOG_DEBUG
             LoggerService.debug(category: "ScummVM", "Failed to check for game files: \(error)")
+            #endif
         }
         return false
     }
@@ -313,7 +331,9 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
                 }
             }
         } catch {
+            #if LOG_DEBUG
             LoggerService.debug(category: "ScummVM", "Failed to check for game files: \(error)")
+            #endif
         }
         return nil
     }
@@ -341,7 +361,9 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
             LoggerService.info(category: "ScummVM", "Analog mouse enabled: sensitivity=\(sensitivity), deadZone=\(deadZone), stick=\(stickString), left=\(analogMouseButtonLeft), right=\(analogMouseButtonDownRight), middle=\(analogMouseButtonDownMiddle)")
         } else {
             XPCBridgeAdapter.shared.setAnalogMouseConfig(player: 0, enabled: false, sensitivity: 0.8, deadzone: 0.15, stickIndex: 0)
+            #if LOG_DEBUG
             LoggerService.debug(category: "ScummVM", "Analog mouse disabled")
+            #endif
         }
     }
 
@@ -410,7 +432,9 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
             }
         } else {
             // Non-ZIP file (maybe already a .scummvm file), launch normally
+            #if LOG_DEBUG
             LoggerService.debug(category: "ScummVM", "Launching non-ZIP file normally")
+            #endif
             super.launch(rom: rom, coreID: coreID, shaderUniformOverrides: shaderUniformOverrides)
         }
         

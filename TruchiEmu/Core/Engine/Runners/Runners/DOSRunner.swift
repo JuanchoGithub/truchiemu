@@ -70,7 +70,9 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
             LoggerService.info(category: "DOSRunner", "Analog mouse enabled: sensitivity=\(sensitivity), deadZone=\(deadZone), stick=\(stickString), left=\(analogMouseButtonLeft), right=\(analogMouseButtonDownRight), middle=\(analogMouseButtonDownMiddle)")
         } else {
             XPCBridgeAdapter.shared.setAnalogMouseConfig(player: 0, enabled: false, sensitivity: 0.8, deadzone: 0.15, stickIndex: 0)
+            #if LOG_DEBUG
             LoggerService.debug(category: "DOSRunner", "Analog mouse disabled")
+            #endif
         }
     }
 
@@ -88,7 +90,9 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
         } else {
             XPCBridgeAdapter.shared.setAnalogMouseConfig(player: 0, enabled: false, sensitivity: 0.8, deadzone: 0.15, stickIndex: 0)
         }
+        #if LOG_DEBUG
         LoggerService.debug(category: "DOSRunner", "Mouse mode: \(isMouseMode ? "ON" : "OFF")")
+        #endif
     }
 
     // MARK: - DOS-Specific Input Handling
@@ -124,7 +128,9 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
                 guard let self = self else { return }
                 if GameGuideViewModel.isGuideSidebarOpen,
                    let btn = element as? GCControllerButtonInput {
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "DOSRunner", "Sidebar button: element=\(element.localizedName) isPressed=\(btn.isPressed) btnA=\(btn === extendedGamepad.buttonA) btnB=\(btn === extendedGamepad.buttonB)")
+                    #endif
                     if btn === extendedGamepad.buttonA {
                         LoggerService.info(category: "DOSRunner", "A button → left click down=\(btn.isPressed)")
                         self.postMacMouseClick(button: .left, down: btn.isPressed)

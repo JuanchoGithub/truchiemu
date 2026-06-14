@@ -561,7 +561,9 @@ case "scummvm": runner = ScummVMRunner()
             }
         }
 
+        #if LOG_DEBUG
         LoggerService.debug(category: "Runner", "No SRAM file found for: \(baseName)")
+        #endif
     }
 
     @MainActor
@@ -574,12 +576,16 @@ case "scummvm": runner = ScummVMRunner()
     @MainActor
     private func saveSRAMIfAvailable() {
         guard let gameRom = rom else {
+            #if LOG_DEBUG
             LoggerService.debug(category: "Runner", "No ROM loaded, skipping SRAM save")
+            #endif
             return
         }
 
         guard let sramData = XPCBridgeAdapter.shared.getSaveRAMData(), !sramData.isEmpty else {
+            #if LOG_DEBUG
             LoggerService.debug(category: "Runner", "No SAVE_RAM to save for \(gameRom.displayName)")
+            #endif
             return
         }
 
@@ -602,7 +608,9 @@ case "scummvm": runner = ScummVMRunner()
         let sramPath = sramFilePath(for: rom)
 
         guard FileManager.default.fileExists(atPath: sramPath.path) else {
+            #if LOG_DEBUG
             LoggerService.debug(category: "Runner", "No SRAM file found at: \(sramPath.path)")
+            #endif
             return
         }
 
@@ -723,7 +731,9 @@ case "scummvm": runner = ScummVMRunner()
             if compressSaveStates, let compressed = SaveStateManager.compressStateData(stateData) {
                 finalData = compressed
                 let ratio = Double(finalData.count) / Double(stateData.count) * 100
+                #if LOG_DEBUG
                 LoggerService.debug(category: "SaveState", "Compressed: \(Int64(stateData.count).formattedByteSize) -> \(Int64(finalData.count).formattedByteSize) (\(Int(ratio))%)")
+                #endif
             } else {
                 finalData = stateData
             }
@@ -732,11 +742,17 @@ case "scummvm": runner = ScummVMRunner()
             
             // Capture and save thumbnail if we have a current frame
             if let frameTex = currentFrameTexture {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "SaveState", "Capturing thumbnail for slot \(slot)")
+                #endif
+                #if LOG_DEBUG
                 LoggerService.debug(category: "SaveState", "Texture format: \(frameTex.pixelFormat.rawValue), size: \(frameTex.width)x\(frameTex.height)")
+                #endif
                 let nsImage = NSImageFromMTLTexture(frameTex)
                 if let nsImage = nsImage {
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "SaveState", "Captured thumbnail: \(nsImage.size.width)x\(nsImage.size.height)")
+                    #endif
                     if let v = actualVersion {
                         saveManager.saveThumbnail(nsImage, gameName: gameKey, systemID: systemID, slot: slot)
                         // Also save thumbnail for progressive version
@@ -748,7 +764,9 @@ case "scummvm": runner = ScummVMRunner()
                     LoggerService.error(category: "SaveState", "ERROR: NSImageFromMTLTexture returned nil")
                 }
             } else {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "SaveState", "WARNING: currentFrameTexture is nil, cannot capture thumbnail")
+                #endif
             }
             
             if let v = actualVersion {

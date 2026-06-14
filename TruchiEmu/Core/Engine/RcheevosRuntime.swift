@@ -94,8 +94,10 @@ final class RcheevosRuntime {
                     "Failed to activate achievement \(achievement.id) (title='\(achievement.title)'): \(errStr) trigger=\(trigger.prefix(80))")
             } else {
                 activated += 1
+                #if LOG_DEBUG
                 LoggerService.debug(category: "Rcheevos",
                     "Activated id=\(achievement.id) title='\(achievement.title)' trigger=\(trigger.prefix(80))")
+                #endif
             }
         }
 
@@ -139,8 +141,10 @@ final class RcheevosRuntime {
                     "Failed to activate achievement \(entry.id) (title='\(entry.title)'): \(errStr) trigger=\(entry.trigger.prefix(80))")
             } else {
                 activated += 1
+                #if LOG_DEBUG
                 LoggerService.debug(category: "Rcheevos",
                     "Activated id=\(entry.id) title='\(entry.title)' trigger=\(entry.trigger.prefix(80))")
+                #endif
             }
         }
 
@@ -389,16 +393,22 @@ final class RcheevosRuntime {
             LoggerService.info(category: "Rcheevos", "Achievement TRIGGERED: \(achievementID)")
             onAchievementTriggered?(achievementID)
         case RCHEEVOS_EVENT_ACHIEVEMENT_ACTIVATED:
+            #if LOG_DEBUG
             LoggerService.debug(category: "Rcheevos", "Achievement ACTIVATED: \(achievementID)")
+            #endif
         case RCHEEVOS_EVENT_ACHIEVEMENT_PROGRESS_UPDATED:
             onAchievementProgress?(achievementID, Int(event.value))
         case RCHEEVOS_EVENT_ACHIEVEMENT_PRIMED:
+            #if LOG_DEBUG
             LoggerService.debug(category: "Rcheevos", "Achievement PRIMED: \(achievementID)")
+            #endif
             onChallengeStarted?(achievementID)
         case RCHEEVOS_EVENT_ACHIEVEMENT_UNPRIMED:
             onChallengeCancelled?(achievementID)
         default:
+            #if LOG_DEBUG
             LoggerService.debug(category: "Rcheevos", "Event type=\(event.type) id=\(achievementID) value=\(event.value)")
+            #endif
             break
         }
     }

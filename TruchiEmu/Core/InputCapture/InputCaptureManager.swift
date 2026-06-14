@@ -270,7 +270,9 @@ class InputCaptureManager: NSObject, ObservableObject {
     private func forwardMouseEvent(_ event: NSEvent) {
         guard let window = capturedWindow else { return }
         
+        #if LOG_DEBUG
         LoggerService.debug(category: "InputCapture", "Forwarding mouse event: type=\(event.type), location=\(event.locationInWindow)")
+        #endif
         
         // Create a new mouse event with the same properties and send it to the window
         // Note: buttonNumber is not available in all NSEvent.mouseEvent variants

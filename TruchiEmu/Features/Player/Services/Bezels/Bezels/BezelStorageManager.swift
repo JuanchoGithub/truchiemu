@@ -126,7 +126,9 @@ class BezelStorageManager: ObservableObject {
             try ensureDirectoriesExist()
             NSWorkspace.shared.selectFile(nil, inFileViewerRootedAtPath: bezelRootDirectory.path)
         } catch {
+            #if LOG_DEBUG
             LoggerService.debug(category: "Bezel", "Failed to open bezel directory: \(error)")
+            #endif
         }
     }
     
@@ -192,7 +194,9 @@ class BezelStorageManager: ObservableObject {
         do {
             try ensureDirectoriesExist()
         } catch {
+            #if LOG_DEBUG
             LoggerService.debug(category: "Bezel", "Failed to create directories: \(error)")
+            #endif
         }
         
         return true

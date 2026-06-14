@@ -65,6 +65,7 @@ targets:
         CODE_SIGN_STYLE: Automatic
         ENABLE_HARDENED_RUNTIME: NO
         SWIFT_VERSION: "5.9"
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: "LOG_DEBUG LOG_EXTREME"
         OTHER_LDFLAGS: "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework WebKit -framework OpenGL -framework SwiftData -larchive"
 
     sources:
@@ -109,7 +110,7 @@ targets:
         SWIFT_VERSION: "5.9"
         SWIFT_OBJC_BRIDGING_HEADER: TruchiEmu/Core/Engine/TruchiEmu-Bridging-Header.h
         OTHER_LDFLAGS: "-framework AVFoundation -framework OpenGL -framework IOSurface"
-        SWIFT_ACTIVE_COMPILATION_CONDITIONS: "XPC_SERVICE"
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: "XPC_SERVICE LOG_DEBUG LOG_EXTREME"
         GCC_PREPROCESSOR_DEFINITIONS: "XPC_SERVICE=1"
     sources:
     - path: TruchiEmu/Core/XPC/Service

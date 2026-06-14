@@ -126,7 +126,9 @@ final class ArchiveExtractor: ObservableObject {
         }
 
         let files = collectROMFiles(in: tempDir)
+        #if LOG_DEBUG
         LoggerService.debug(category: "ArchiveExtractor", "Temp extraction: \(archiveURL.lastPathComponent) (\(fileCount) files)")
+        #endif
         return TemporaryExtraction(files: files, tempDirectory: tempDir)
     }
 
@@ -140,7 +142,9 @@ final class ArchiveExtractor: ObservableObject {
 
         if let cached = validateCache(at: cacheDir, sourceURL: archiveURL) {
             touchAccessDate(at: cacheDir)
+            #if LOG_DEBUG
             LoggerService.debug(category: "ArchiveExtractor", "Cache hit for \(archiveURL.lastPathComponent)")
+            #endif
             return cached
         }
 
@@ -236,7 +240,9 @@ final class ArchiveExtractor: ObservableObject {
 
             if now.timeIntervalSince(accessDate) > maxAge {
                 try? fileManager.removeItem(at: dir)
+                #if LOG_DEBUG
                 LoggerService.debug(category: "ArchiveExtractor", "Expired cache removed: \(dir.lastPathComponent)")
+                #endif
             }
         }
     }

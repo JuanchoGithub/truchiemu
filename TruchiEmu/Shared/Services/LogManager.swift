@@ -73,7 +73,9 @@ final class LogManager: @unchecked Sendable {
             LoggerService.shared.setLevel(LoggerService.shared.currentLevel)
             LoggerService.info(category: "LogManager", "Log folder changed to \(url.path)")
         } catch {
+            #if LOG_DEBUG
             LoggerService.debug(category: "LogManager", "Failed to save log folder bookmark: \(error)")
+            #endif
         }
         #endif
     }
@@ -144,7 +146,9 @@ final class LogManager: @unchecked Sendable {
                 
                 if isRotated && Date().timeIntervalSince(creationDate) > maxAge {
                     try FileManager.default.removeItem(at: fileURL)
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "LogManager", "Cleaned up old rotated log: \(fileURL.lastPathComponent)")
+                    #endif
                 }
             } catch {
                 // Skip files we can't read

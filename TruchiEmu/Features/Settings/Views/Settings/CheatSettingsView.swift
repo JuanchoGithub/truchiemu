@@ -164,7 +164,9 @@ struct CheatSettingsView: View {
                 do {
                     try downloadService.clearDownloadedCheats()
                 } catch {
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "Cheats", "Failed to clear: \(error)")
+                    #endif
                 }
             }
         } message: {

@@ -54,7 +54,9 @@ LoggerService.info(category: category, message)
 case 2: // ERROR
 LoggerService.error(category: category, message)
 default:
+#if LOG_DEBUG
 LoggerService.debug(category: category, message)
+#endif
 }
 }
     }
@@ -652,7 +654,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     
         // Setup periodic log maintenance timer (every 12 hours)
         Timer.scheduledTimer(withTimeInterval: 12 * 60 * 60, repeats: true) { _ in
+            #if LOG_DEBUG
             LoggerService.debug(category: "App", "Running periodic log maintenance")
+            #endif
             LogManager.shared.cleanupOldRotatedLogs()
             LogManager.shared.quickTrimLog()
         }

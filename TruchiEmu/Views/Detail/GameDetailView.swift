@@ -506,7 +506,9 @@ struct GameDetailView: View {
                 updatedROM.raGameId = cachedGame.id
                 updatedROM.raMatchStatus = "matched"
                 library.updateROM(updatedROM)
+                #if LOG_DEBUG
                 LoggerService.debug(category: "GameDetailView", "Persisted RA match: raGameId=\(cachedGame.id), title='\(cachedGame.title)', achievements=\(achievementCount)")
+                #endif
 
                 await MainActor.run {
                     raComparisonRAGameId = cachedGame.id
@@ -700,7 +702,9 @@ struct GameDetailView: View {
     func updateSettings(_ action: (inout ROMSettings) -> Void) {
         var updated = currentROM
         action(&updated.settings)
+        #if LOG_DEBUG
         LoggerService.debug(category: "ShaderPicker", "updateSettings: about to call library.updateROM for ROM: \(updated.id), shaderPresetID: \(updated.settings.shaderPresetID)")
+        #endif
         library.updateROM(updated)
     }
 
@@ -715,14 +719,20 @@ struct GameDetailView: View {
         let cid = coreManager.resolveCoreID(for: currentROM, system: system)
         
         // DEBUG: Log the resolved coreID
+        #if LOG_DEBUG
         LoggerService.debug(category: "GameDetailView", "[LAUNCH]Helper resolved coreID: \(cid) for ROM: \(currentROM.displayName)")
+        #endif
         
         if !coreManager.isInstalled(coreID: cid) {
             // DEBUG: Log that core is not installed and download is being requested
+            #if LOG_DEBUG
             LoggerService.debug(category: "GameDetailView", "[LAUNCH] Core NOT installed: \(cid), initiating requestCoreDownload for ROM: \(currentROM.displayName)")
+            #endif
             coreManager.requestCoreDownload(for: cid, systemID: sysID, romID: currentROM.id, slotToLoad: slotToLoad)
             // DEBUG: Log after requestCoreDownload call
+            #if LOG_DEBUG
             LoggerService.debug(category: "GameDetailView", "[LAUNCH] requestCoreDownload completed, returning (isLaunchingGame=false)")
+            #endif
             isLaunchingGame = false
             return
         }

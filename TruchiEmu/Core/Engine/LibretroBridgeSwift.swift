@@ -49,7 +49,9 @@ import Foundation
                 let coreAR = CGFloat(aspectRatio())
                 if coreAR > 0.0 {
                     if let index = SystemDatabase.systems.firstIndex(where: { $0.id == sysID }) {
+                        #if LOG_DEBUG
                         LoggerService.debug(category: "LibretroBridge", "Core reported aspect ratio: \(coreAR)")
+                        #endif
                         SystemDatabase.systems[index].coreReportedAspectRatio = coreAR
                     }
                 }
@@ -58,13 +60,17 @@ import Foundation
     }
 
     static func stop() {
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroBridge", "Stopping LibretroBridge")
+        #endif
         LibretroBridge.stop()
     }
 
   static func waitForCompletion() {
     let result: Void = LibretroBridge.waitForCompletion()
+    #if LOG_DEBUG
     LoggerService.debug(category: "LibretroBridge", "Waiting for LibretroBridge to complete: \(result)")
+    #endif
     return result
   }
 
@@ -75,36 +81,48 @@ import Foundation
             return
         }
         #endif
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroBridge", "Loading core for options: \(coreID) from \(dylibPath)")
+        #endif
         LibretroBridge.loadCore(forOptions: dylibPath, coreID: coreID, romPath: romPath)
     }
 
   static func isCoreLoadedForOptions() -> Bool {
     let loaded = LibretroBridge.isCoreLoadedForOptions()
+    #if LOG_DEBUG
     LoggerService.debug(category: "LibretroBridge", "Is core loaded for options: \(loaded)")
+    #endif
     return loaded
   }
 
   // MARK: - Global State & Settings
     
     static func setLanguage(_ language: Int) {
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroBridge", "Setting language to: \(language)")
+        #endif
         LibretroBridge.setLanguage(Int32(language))
     }
 
     static func setLogLevel(_ level: Int) {
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroBridge", "Setting log level to: \(level)")
+        #endif
         LibretroBridge.setLogLevel(Int32(level))
     }
     
     static func setPaused(_ paused: Bool) {
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroBridge", "Setting paused to: \(paused)")
+        #endif
         LibretroBridge.setPaused(paused)
     }
     
     static func isPaused() -> Bool {
         let paused = LibretroBridge.isPaused()
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroBridge", "Checking if paused: \(paused)")
+        #endif
         return paused
     }
 
@@ -116,25 +134,33 @@ LibretroBridge.resetGame()
 
 static func saveState() {
         let result: Void = LibretroBridge.saveState()
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroBridge", "Saving state: \(result)")
+        #endif
         return result
     }
 
     static func serializeState() -> Data? {
         let data = LibretroBridge.serializeState()
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroBridge", "Serializing state: \(String(describing: data))")
+        #endif
         return data
     }
 
     static func unserializeState(_ data: Data) -> Bool {
         let result = LibretroBridge.unserializeState(data)
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroBridge", "Unserializing state: \(result)")
+        #endif
         return result
     }
 
     static func serializeSize() -> Int {
         let size = LibretroBridge.serializeSize()
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroBridge", "Getting serialize size: \(size)")
+        #endif
         return size
     }
 
@@ -145,12 +171,16 @@ LibretroBridge.setFramePollCallback(callback)
 }
 
 static func setKeyState(retroID: Int, pressed: Bool) {
+        #if LOG_EXTREME
         LoggerService.extreme(category: "LibretroBridge", "Setting key state: \(retroID) = \(pressed)")
+        #endif
         LibretroBridge.setKeyState(Int32(retroID), pressed: pressed)
     }
 
     static func setKeyState(retroID: Int, player: Int, pressed: Bool) {
+        #if LOG_EXTREME
         LoggerService.extreme(category: "LibretroBridge", "Setting key state: player=\(player) retroID=\(retroID) = \(pressed)")
+        #endif
         LibretroBridge.setKeyState(Int32(retroID), player: Int32(player), pressed: pressed)
     }
 
@@ -247,22 +277,30 @@ static func setKeyState(retroID: Int, pressed: Bool) {
     
     static func getOptionValue(forKey key: String) -> String? {
         let value = LibretroBridge.getOptionValue(forKey: key)
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroBridge", "Getting option value: \(String(describing: value))")
+        #endif
         return value
     }
 
     static func setOptionValue(_ value: String, forKey key: String) {
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroBridge", "Setting option value: \(value) = \(key)")
+        #endif
         LibretroBridge.setOptionValue(value, forKey: key)
     }
 
     static func resetOptionToDefault(forKey key: String) {
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroBridge", "Resetting option to default: \(key)")
+        #endif
         LibretroBridge.resetOptionToDefault(forKey: key)
     }
 
     static func resetAllOptionsToDefaults() {
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroBridge", "Resetting all options to defaults")
+        #endif
         LibretroBridge.resetAllOptionsToDefaults()
     }
 
@@ -298,7 +336,9 @@ static func setKeyState(retroID: Int, pressed: Bool) {
 
     static func getSaveRAMData() -> Data? {
         guard let data = LibretroBridge.getSaveRAMData() else {
+            #if LOG_DEBUG
             LoggerService.debug(category: "LibretroBridge", "No SAVE_RAM data available")
+            #endif
             return nil
         }
         LoggerService.info(category: "LibretroBridge", "Retrieved SAVE_RAM: \(data.count) bytes")
@@ -313,13 +353,17 @@ static func setKeyState(retroID: Int, pressed: Bool) {
 
     static func saveDirectoryPath() -> String {
         let path = LibretroBridge.saveDirectoryPath()
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroBridge", "Save directory: \(path)")
+        #endif
         return path
     }
 
     static func preloadSaveRAM(from path: String) -> Bool {
         guard FileManager.default.fileExists(atPath: path) else {
+            #if LOG_DEBUG
             LoggerService.debug(category: "LibretroBridge", "No SRAM file to preload: \(path)")
+            #endif
             return false
         }
 
@@ -336,20 +380,26 @@ static func setKeyState(retroID: Int, pressed: Bool) {
 
     static func getOptionsDictionary() -> [String: Any]? {
         let options = LibretroBridge.getOptionsDictionary() as [String: Any]?
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroBridge", "Getting options dictionary: \(String(describing: options))")
+        #endif
         return options
     }
 
     static func getCategoriesDictionary() -> [String: Any]? {
         let categories = LibretroBridge.getCategoriesDictionary() as [String: Any]?
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroBridge", "Getting categories dictionary: \(String(describing: categories))")
+        #endif
         return categories
     }
 
     // MARK: - Environment Callbacks (Bridge $\rightarrow$ Swift)
 
     static func setCoreOptionsV1(_ optionsArray: [[String: Any]]) {
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroBridge", "Receiving V1 core options")
+        #endif
         var options: [CoreOption] = []
         for dict in optionsArray {
             let key = dict["key"] as? String ?? ""
@@ -386,7 +436,9 @@ static func setKeyState(retroID: Int, pressed: Bool) {
     }
 
     static func setCoreOptionsV2(_ optionsArray: [[String: Any]], categoriesArray: [[String: Any]]) {
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroBridge", "Receiving V2 core options")
+        #endif
         var options: [CoreOption] = []
         for dict in optionsArray {
             let key = dict["key"] as? String ?? ""
@@ -434,12 +486,16 @@ static func setKeyState(retroID: Int, pressed: Bool) {
     // MARK: - Cheats
     
     static func applyCheats(_ cheats: [[String: Any]]) {
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroBridge", "Applying cheats: \(cheats)")
+        #endif
         LibretroBridge.applyCheats(cheats)
     }
     
     static func applyDirectMemoryCheats(_ cheats: [[String: Any]]) {
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroBridge", "Applying direct memory cheats: \(cheats)")
+        #endif
         LibretroBridge.applyDirectMemoryCheats(cheats)
     }
 }

@@ -52,14 +52,22 @@ final class SystemDatabaseWrapper {
     }
 
     func updateSystemShaderPreset(systemID: String, presetID: String) {
+        #if LOG_DEBUG
         LoggerService.debug(category: "ShaderPicker", "updateSystemShaderPreset called: systemID=\(systemID), presetID=\(presetID)")
+        #endif
         guard let index = systems.firstIndex(where: { $0.id == systemID }) else {
+            #if LOG_DEBUG
             LoggerService.debug(category: "ShaderPicker", "System not found: \(systemID)")
+            #endif
             return
         }
+        #if LOG_DEBUG
         LoggerService.debug(category: "ShaderPicker", "Found system at index: \(index)")
+        #endif
         systems[index].defaultShaderPresetID = presetID
+        #if LOG_DEBUG
         LoggerService.debug(category: "ShaderPicker", "Updated systems[\(index)].defaultShaderPresetID = \(presetID)")
+        #endif
     }
 
     private func saveToDisk() {

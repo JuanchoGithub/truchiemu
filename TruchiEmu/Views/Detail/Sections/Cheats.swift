@@ -220,7 +220,9 @@ extension GameDetailView {
                 if let url = urls.first {
                     Task { _ = await cheatManagerService.importChtFile(url, for: currentROM); updateCheatCounts(); loadCheatsList() }
                 }
+            #if LOG_DEBUG
             case .failure(let error): LoggerService.debug(category: "Cheats", "File import error: \(error)")
+            #endif
             }
         }
     }

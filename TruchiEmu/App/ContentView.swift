@@ -117,8 +117,12 @@ uniformValues: ShaderManager.shared.uniformValues,
 systemID: targetSystem.id
 )
 shaderController = ShaderWindowController(settings: settings) { [self] newPresetID, newUniforms, selectedGameIDs in
+#if LOG_DEBUG
 LoggerService.debug(category: "ShaderPicker", "=== CONTENTVIEW CALLBACK ===")
+#endif
+#if LOG_DEBUG
 LoggerService.debug(category: "ShaderPicker", "newPresetID=\(newPresetID), targetSystemID=\(targetSystem.id)")
+#endif
 
 // Activate the shader - check both built-in and saved presets
 if let preset = ShaderPreset.preset(id: newPresetID) {

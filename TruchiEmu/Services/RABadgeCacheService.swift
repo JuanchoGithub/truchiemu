@@ -56,7 +56,9 @@ class RABadgeCacheService: ObservableObject {
             await MainActor.run {
                 badgeUpdateToken = UUID()
             }
+            #if LOG_DEBUG
             LoggerService.debug(category: "RABadgeCache", "Downloaded and cached badge: \(badgeName)")
+            #endif
             return true
         } catch {
             LoggerService.error(category: "RABadgeCache", "Failed to download badge \(badgeName): \(error)")
@@ -75,20 +77,26 @@ class RABadgeCacheService: ObservableObject {
                 let exists = FileManager.default.fileExists(atPath: fileURL.path)
                 
                 if !exists {
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "RABadgeCache", "Badge \(achievement.badgeName) missing, queuing download...")
+                    #endif
                     if await ensureBadgeDownloaded(badgeName: achievement.badgeName) {
                         downloadCount += 1
                     }
                     // Throttle to 2 hits per second (500ms delay)
                     try? await Task.sleep(nanoseconds: 500_000_000)
                 } else {
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "RABadgeCache", "Badge \(achievement.badgeName) already exists at \(fileURL.path)")
+                    #endif
                 }
             }
             if downloadCount > 0 {
                 LoggerService.info(category: "RABadgeCache", "Finished prefetching. Downloaded \(downloadCount) new badges.")
             } else {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "RABadgeCache", "All badges already cached.")
+                #endif
             }
         }
     }

@@ -74,7 +74,9 @@ class BezelBackgroundLayer: NSView {
             height: originalSize.height * scaleFactor
         )
         
+        #if LOG_DEBUG
         LoggerService.debug(category: "Bezel", "Scaling bezel from \(originalSize.width)x\(originalSize.height) to \(newSize.width)x\(newSize.height)")
+        #endif
         
         // Create scaled image
         let scaledImage = NSImage(size: newSize)
@@ -110,7 +112,9 @@ class BezelBackgroundLayer: NSView {
         bezelImage = image
         
         if let image = image {
+            #if LOG_DEBUG
             LoggerService.debug(category: "Bezel", "Setting bezel image: \(image.size.width)x\(image.size.height), view frame: \(frame)")
+            #endif
             if imageView == nil {
                 let iv = NSImageView()
                 iv.image = image
@@ -123,7 +127,9 @@ class BezelBackgroundLayer: NSView {
                 
                 addSubview(iv)
                 imageView = iv
+                #if LOG_DEBUG
                 LoggerService.debug(category: "Bezel", "Created new NSImageView for bezel")
+                #endif
                 
                 // Pin to all edges - the image view scales to fit the container
                 NSLayoutConstraint.activate([
@@ -132,10 +138,14 @@ class BezelBackgroundLayer: NSView {
                     iv.topAnchor.constraint(equalTo: topAnchor),
                     iv.bottomAnchor.constraint(equalTo: bottomAnchor)
                 ])
+                #if LOG_DEBUG
                 LoggerService.debug(category: "Bezel", "NSImageView constraints activated")
+                #endif
             } else {
                 imageView?.image = image
+                #if LOG_DEBUG
                 LoggerService.debug(category: "Bezel", "Updated existing NSImageView bezel image")
+                #endif
             }
             
             // Black background (visible behind bezel transparent areas)
@@ -143,9 +153,13 @@ class BezelBackgroundLayer: NSView {
             
             // Force layout update
             layoutSubtreeIfNeeded()
+            #if LOG_DEBUG
             LoggerService.debug(category: "Bezel", "Bezel layer set, imageView exists: \(imageView != nil), superview: \(imageView?.superview != nil)")
+            #endif
         } else {
+            #if LOG_DEBUG
             LoggerService.debug(category: "Bezel", "Bezel image is nil, removing image view")
+            #endif
             imageView?.removeFromSuperview()
             imageView = nil
             layer?.backgroundColor = NSColor.black.cgColor
@@ -270,7 +284,9 @@ class BezelViewModel: ObservableObject {
         } else {
             self.bezelImage = nil
             self.playableAreaRect = nil
+            #if LOG_DEBUG
             LoggerService.debug(category: "Bezel", "No bezel found for \(rom.displayName) (system: \(systemID))")
+            #endif
         }
         
         isLoading = false

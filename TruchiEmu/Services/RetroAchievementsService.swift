@@ -185,8 +185,12 @@ class RetroAchievementsService: ObservableObject {
         let contentTypeStr = cContentType.map { String(cString: $0) }
         rcheevos_api_destroy_request_strings(cUrl, cPostData, cContentType)
 
+        #if LOG_DEBUG
         LoggerService.debug(category: "RetroAchievements", "Login2 request URL: \(requestURL)")
+        #endif
+        #if LOG_DEBUG
         LoggerService.debug(category: "RetroAchievements", "Login2 POST data: \(postDataStr ?? "nil")")
+        #endif
 
         guard let url = URL(string: requestURL) else { return nil }
 
@@ -363,7 +367,9 @@ class RetroAchievementsService: ObservableObject {
             if !forceRefresh, FileManager.default.fileExists(atPath: fileURL.path) {
                 let attributes = try? FileManager.default.attributesOfItem(atPath: fileURL.path)
                 if let modDate = attributes?[.modificationDate] as? Date, !shouldFetch(cachedAt: modDate, isUserInitiated: false) {
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "RetroAchievements", "Skipping fetch for \(console.name), local list is fresh.")
+                    #endif
                     continue
                 }
             }
@@ -874,7 +880,9 @@ class RetroAchievementsService: ObservableObject {
 
         // If already matched and valid, we can skip unless it's a placeholder 0
         if let currentId = romEntry.raGameId, currentId > 0, romEntry.raMatchStatus == "matched" {
+            #if LOG_DEBUG
             LoggerService.debug(category: "RetroAchievements", "\(rom.name) is already identified as ID \(currentId), skipping sync.")
+            #endif
             return
         }
 
@@ -1126,7 +1134,9 @@ class RetroAchievementsService: ObservableObject {
     private func requestGameByHash(hash: String, username: String) async throws -> RAHashResponse? {
         let url = URL(string: "\(apiBaseURL)/API_GetGameByHash.php")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
+        #if LOG_DEBUG
         LoggerService.debug(category: "RetroAchievements", "Requesting Game, hash \(hash), user: \(username)")
+        #endif
 
         components.queryItems = [
             URLQueryItem(name: "h", value: hash),
@@ -1135,11 +1145,15 @@ class RetroAchievementsService: ObservableObject {
         ]
         
         let (data, _) = try await URLSession.shared.data(from: components.url!)
+        #if LOG_DEBUG
         LoggerService.debug(category: "RetroAchievements", "Requesting Game, url: \(components.url?.absoluteString ?? "unknown")")
+        #endif
         // Check for error in JSON
         let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
         if let errorMsg = json?["Error"] as? String {
+            #if LOG_DEBUG
             LoggerService.debug(category: "RetroAchievements", "Hash resolution error: \(errorMsg)")
+            #endif
             return nil
         }
         
@@ -1181,7 +1195,9 @@ class RetroAchievementsService: ObservableObject {
         if let data = rawData {
             let fileURL = gameDataFolder.appendingPathComponent("\(gameID).json")
             try? data.write(to: fileURL)
+            #if LOG_DEBUG
             LoggerService.debug(category: "RetroAchievements", "Archived raw game info to \(fileURL.path)")
+            #endif
         }
 
         var achievements: [Achievement] = []
@@ -1324,7 +1340,9 @@ func loadCachedAchievements(gameID: Int, username: String) -> [Achievement]? {
             let unlocked = (ach.unlockedDate != nil)
 
             let trigPreview = (trigger ?? "<nil>").prefix(80)
+            #if LOG_DEBUG
             LoggerService.debug(category: "RetroAchievements", "RA ach id=\(ach.ID) source=\(source) unlocked=\(unlocked) trigger=\(trigPreview)")
+            #endif
 
             return Achievement(
                 id: ach.ID,
@@ -1692,7 +1710,9 @@ func refreshGameCacheAfterGameStop() {
  }
  }
         } catch {
+            #if LOG_DEBUG
             LoggerService.debug(category: "RetroAchievements", "Post-game cache refresh failed: \(error.localizedDescription)")
+            #endif
         }
     }
 }

@@ -159,7 +159,11 @@ Divider()
             let gameKey = "\(rom.displayName)__\(rom.id.uuidString.prefix(8))"
             try runner.saveManager.deleteState(gameName: gameKey, systemID: rom.systemID ?? "default", slot: slot)
             slotThumbnails[slot] = nil; refreshSlotInfo()
-        } catch { LoggerService.debug(category: "SaveState", "Error deleting state: \(error)") }
+        } catch {
+            #if LOG_DEBUG
+            LoggerService.debug(category: "SaveState", "Error deleting state: \(error)")
+            #endif
+        }
     }
 }
 

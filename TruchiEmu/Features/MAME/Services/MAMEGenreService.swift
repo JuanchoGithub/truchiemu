@@ -49,7 +49,9 @@ final class MAMEGenreService: ObservableObject {
 
         // Only set genre if empty (LaunchBox priority)
         guard metadataEntry.genre == nil else {
+            #if LOG_DEBUG
             LoggerService.debug(category: "MAMEGenre", "Skipping \(rom.name) - genre already set")
+            #endif
             return
         }
 
@@ -58,14 +60,18 @@ final class MAMEGenreService: ObservableObject {
 
         // Get genre from Progetto-SNAPS
         guard let genre = snapsService.getGenre(for: shortName) else {
+            #if LOG_DEBUG
             LoggerService.debug(category: "MAMEGenre", "No genre found for \(shortName)")
+            #endif
             return
         }
 
         // Apply genre
         metadataEntry.genre = genre
 
+        #if LOG_DEBUG
         LoggerService.debug(category: "MAMEGenre", "Applied genre '\(genre)' to \(shortName)")
+        #endif
     }
 
     /// Batch apply genre metadata to multiple ROMs.

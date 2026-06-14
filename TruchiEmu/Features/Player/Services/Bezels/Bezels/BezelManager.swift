@@ -91,19 +91,25 @@ class BezelManager: ObservableObject {
             
             // Check exact match after normalization
             if normalizedInput == normalizedEntry {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "Bezel", "Found bezel for \(gameName) via manifest match: \(entry.displayName)")
+                #endif
                 return createResultFor(entry: entry, systemID: systemID)
             }
             
             // Check if entry contains the game name (handles region variants)
             if normalizedInput.count > 3 && normalizedEntry.contains(normalizedInput) {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "Bezel", "Found bezel for \(gameName) via partial match: \(entry.displayName)")
+                #endif
                 return createResultFor(entry: entry, systemID: systemID)
             }
             
             // Check if input contains the entry
             if normalizedEntry.count > 3 && normalizedInput.contains(normalizedEntry) {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "Bezel", "Found bezel for \(gameName) via reverse match: \(entry.displayName)")
+                #endif
                 return createResultFor(entry: entry, systemID: systemID)
             }
         }

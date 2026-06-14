@@ -71,7 +71,9 @@ class CoreOptionsManager: ObservableObject {
         let dir = overridesDirectory.appendingPathComponent(coreID).appendingPathComponent(systemID)
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         let configURL = dir.appendingPathComponent("overrides.cfg")
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreOptionsManager", "Saving system override for \(coreID)/\(systemID): \(values)")
+        #endif
         let content = values.map { "\($0.key) = \"\($0.value)\"" }.joined(separator: "\n")
         try? content.write(to: configURL, atomically: true, encoding: .utf8)
     }
@@ -85,7 +87,9 @@ class CoreOptionsManager: ObservableObject {
         let dir = overridesDirectory.appendingPathComponent(coreID).appendingPathComponent(systemID)
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         let configURL = dir.appendingPathComponent("\(gameFilename).cfg")
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreOptionsManager", "Saving game override for \(coreID)/\(systemID)/\(gameFilename): \(values)")
+        #endif
         let content = values.map { "\($0.key) = \"\($0.value)\"" }.joined(separator: "\n")
         try? content.write(to: configURL, atomically: true, encoding: .utf8)
     }
@@ -108,7 +112,9 @@ class CoreOptionsManager: ObservableObject {
     // MARK: - Core Lifecycle
 
     func prepareForCore(coreID: String) {
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreOptionsManager", "New core \(coreID) loaded, cleaning all optiones and overrides")
+        #endif
         currentCoreID = coreID
         currentSystemID = nil
         currentGameFilename = nil
@@ -175,7 +181,9 @@ class CoreOptionsManager: ObservableObject {
     // Loads definitions and overrides from disk for a specific core.
     // Used when the core is not running (e.g., in Settings).
     func loadForCore(coreID: String, dylibPath: String? = nil, romPath: String? = nil) {
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreOptionsManager", "Loading options from core: \(coreID)")
+        #endif
         currentCoreID = coreID
 
         let defURL = definitionsDirectory.appendingPathComponent("\(coreID).json")
@@ -184,7 +192,9 @@ class CoreOptionsManager: ObservableObject {
         let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             options.removeAll()
             categories.removeAll()
+            #if LOG_DEBUG
             LoggerService.debug(category: "CoreOptionsManager", "For \(coreID): cleaned up. Definitions not found.")
+            #endif
             return
         }
 
@@ -229,7 +239,9 @@ class CoreOptionsManager: ObservableObject {
 
     /// Triggers the discovery of core options AND input descriptors by launching a headless core session.
     func discoverOptions(for coreID: String, dylibPath: String, romPath: String?) async {
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreOptionsManager", "Starting discovery for core: \(coreID)")
+        #endif
 
         var dummyRomPath: String? = nil
         if let systemID = CoreManager.supportedSystems(for: coreID).first {
@@ -240,12 +252,16 @@ class CoreOptionsManager: ObservableObject {
         }
 
         XPCBridgeAdapter.shared.loadCoreForOptions(dylibPath: dylibPath, coreID: coreID, romPath: dummyRomPath)
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreOptionsManager", "For: \(coreID), Core loaded")
+        #endif
 
         let optionsDict = (XPCBridgeAdapter.shared.getOptionsDictionary() as? [String: [String: Any]]) ?? [:]
         let categoriesDict = (XPCBridgeAdapter.shared.getCategoriesDictionary() as? [String: [String: Any]]) ?? [:]
         let rawDescriptors = XPCBridgeAdapter.shared.getInputDescriptorsDictionary() ?? [:]
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreOptionsManager", "For: \(coreID), options: \(optionsDict), categories: \(categoriesDict), inputDescriptors: \(rawDescriptors)")
+        #endif
 
         var newOptions: [CoreOption] = []
         var newCategories: [CoreOptionCategory] = []
@@ -255,7 +271,9 @@ class CoreOptionsManager: ObservableObject {
             let info = catData["info"] as? String ?? ""
             newCategories.append(CoreOptionCategory(key: catKey, description: desc, info: info))
         }
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreOptionsManager", "For: \(coreID), new Categories: \(newCategories)")
+        #endif
 
         for (key, optData) in optionsDict {
             let desc = optData["desc"] as? String ?? key
@@ -286,7 +304,9 @@ class CoreOptionsManager: ObservableObject {
                 version: .v2
             ))
         }
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreOptionsManager", "For: \(coreID), Parsed options")
+        #endif
 
         var buttonDescriptors: [InputButtonDescriptor] = []
         for (_, value) in rawDescriptors {
@@ -305,16 +325,22 @@ class CoreOptionsManager: ObservableObject {
                 }
             }
         }
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreOptionsManager", "For: \(coreID), parsed \(buttonDescriptors.count) input descriptors")
+        #endif
 
         await MainActor.run {
             self.prepareForCore(coreID: coreID)
             self.setOptions(newOptions, categories: newCategories)
+            #if LOG_DEBUG
             LoggerService.debug(category: "CoreOptionsManager", "Discovery complete. Persisted \(newOptions.count) options.")
+            #endif
 
             if !buttonDescriptors.isEmpty {
                 InputDescriptorsManager.shared.setDescriptors(buttonDescriptors, for: coreID)
+                #if LOG_DEBUG
                 LoggerService.debug(category: "CoreOptionsManager", "Discovery complete. Persisted \(buttonDescriptors.count) input descriptors.")
+                #endif
             }
         }
     }
@@ -465,7 +491,9 @@ class CoreOptionsManager: ObservableObject {
     }
 
     func restoreToPreviousLayer(key: String) {
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreOptionsManager", "For \(currentCoreID ?? "unknown"): restoring key: \(key) to previous layer")
+        #endif
 
         let matchingKeys = versionedKeys(for: key)
         guard !matchingKeys.isEmpty else { return }
@@ -489,7 +517,9 @@ class CoreOptionsManager: ObservableObject {
     }
 
     func resetAllToDefaults() {
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreOptionsManager", "For \(currentCoreID ?? "unknown"): resetting ALL KEYS")
+        #endif
         clearAllOverrides()
 
         for (vKey, _) in options {
@@ -555,7 +585,9 @@ class CoreOptionsManager: ObservableObject {
             let gameOverrides = loadGameOverrides(for: coreID, systemID: systemID, gameFilename: gameFilename)
             result.merge(gameOverrides) { _, new in new }
         }
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreOptionsManager", "For \(coreID)/\(systemID): Loaded overrides: \(result)")
+        #endif
         return result
     }
 
@@ -663,7 +695,9 @@ class CoreOptionsManager: ObservableObject {
     // MARK: - Export / Import (RetroArch compatibility)
 
     func exportAsRetroArchConfig() -> String {
+        #if LOG_DEBUG
         LoggerService.debug(category: "CoreOptionsManager", "For \(currentCoreID ?? "unknown"): Exporting data as retroarch config")
+        #endif
         let lines = options.values.map { opt in
             "\(opt.key) = \"\(opt.currentValue)\""
         }

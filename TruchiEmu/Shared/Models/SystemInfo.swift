@@ -182,7 +182,9 @@ struct SystemInfo: Identifiable, Codable, Hashable {
     }
     
     func emuImage(size: Int) -> NSImage? {
+        #if LOG_EXTREME
         LoggerService.extreme(category: "SystemInfo", "Loading emu image for system: \(id)")
+        #endif
         guard let iconName = emuIconName else { return nil }
 
         let cacheKey = "\(iconName)-\(size)" as NSString
@@ -237,7 +239,9 @@ struct SystemInfo: Identifiable, Codable, Hashable {
         }
 
         for name in namesToTry {
+            #if LOG_EXTREME
             LoggerService.extreme(category: "SystemInfo", "Loading emu image for system: \(id) with name: \(name)")
+            #endif
             if let path = bundle.path(forResource: name, ofType: "png") {
                 if let img = NSImage(contentsOf: URL(fileURLWithPath: path)) {
                     let cost = Int(img.size.width * img.size.height * 4)
@@ -297,7 +301,9 @@ class SystemDatabase {
                 for sys in parsedBundle {
                     bundledSystems[sys.id] = sys
                 }
+                #if LOG_DEBUG
                 LoggerService.debug(category: "SystemDatabase", "✅ SUCCESS: Loaded \(bundledSystems.count) systems from Xcode Bundle! from \(bundleURL)")
+                #endif
             } catch DecodingError.dataCorrupted(let context) {
                 LoggerService.error(category: "SystemDatabase", "🚨 JSON SYNTAX ERROR: \(context.debugDescription)")
             } catch DecodingError.keyNotFound(let key, let context) {
@@ -321,7 +327,9 @@ class SystemDatabase {
         // 2. Load the CACHED systems (Libretro discoveries, user preferences)
         var cachedSystems: [String: SystemInfo] = [:]
         if bundleChanged {
+            #if LOG_DEBUG
             LoggerService.debug(category: "SystemDatabase", "Bundle fingerprint changed — discarding stale cache")
+            #endif
             try? FileManager.default.removeItem(at: cacheURL)
         } else if let data = try? Data(contentsOf: cacheURL),
                   let parsedCache = try? JSONDecoder().decode([SystemInfo].self, from: data) {
@@ -383,7 +391,9 @@ class SystemDatabase {
     }
 
     static func _saveSystems(_ updatedSystems: [SystemInfo]) {
+        #if LOG_DEBUG
         LoggerService.debug(category: "SystemDatabase", "Saving systems")
+        #endif
         if let data = try? JSONEncoder().encode(updatedSystems) {
             try? data.write(to: cacheURL)
         }
@@ -556,7 +566,9 @@ class SystemPreferences: ObservableObject {
     func setPreferredCoreID(_ coreID: String?, for systemID: String) {
         AppSettings.set("\(Self.keyPreferredCorePrefix)\(systemID)", value: coreID ?? "")
         updateTrigger += 1
+        #if LOG_DEBUG
         LoggerService.debug(category: "SystemPreferences", "Set Preferred core ID for \(systemID): \(coreID ?? "unknown")")
+        #endif
     }
 
     init() {
@@ -600,16 +612,24 @@ extension SystemDatabase {
 /// Looks up the system ID from a libretro database name by checking all systems' database fields
     static func systemIDFromDatabaseName(_ dbName: String) -> String? {
         let trimmed = dbName.trimmingCharacters(in: .whitespaces)
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroInfoManager", "Looking up database entry: '\(trimmed)'")
+        #endif
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroInfoManager", "Total systems in database: \(systems.count)")
+        #endif
         
         // Search through all systems to find one whose database field contains this name
         for system in systems {
             if let dbArray = system.database {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "LibretroInfoManager", "Checking system '\(system.id)' with database: \(dbArray)")
+                #endif
                 for dbEntry in dbArray {
                     if dbEntry == trimmed {
+                        #if LOG_DEBUG
                         LoggerService.debug(category: "LibretroInfoManager", "✓ Found match: '\(trimmed)' -> '\(system.id)'")
+                        #endif
                         return system.id
                     }
                 }
@@ -649,7 +669,9 @@ class LibretroInfoManager: ObservableObject {
             )
             let data = try JSONEncoder().encode(cache)
             try data.write(to: mapURL)
+            #if LOG_DEBUG
             LoggerService.debug(category: "LibretroInfoManager", "✅ Saved core-to-system mappings to \(mapURL.lastPathComponent)")
+            #endif
         } catch {
             LoggerService.error(category: "LibretroInfoManager", "❌ Failed to save core-to-system mappings: \(error.localizedDescription)")
         }
@@ -660,9 +682,13 @@ class LibretroInfoManager: ObservableObject {
             let data = try Data(contentsOf: mapURL)
             let cache = try JSONDecoder().decode(CoreInfoCache.self, from: data)
             coreToSystemMap = cache.coreToSystemMap.mapValues { Set($0) }
+            #if LOG_DEBUG
             LoggerService.debug(category: "LibretroInfoManager", "✅ Loaded core-to-system mappings (Last updated: \(cache.lastUpdated))")
+            #endif
         } catch {
+            #if LOG_DEBUG
             LoggerService.debug(category: "LibretroInfoManager", "ℹ️ No existing core-to-system mappings found or failed to load: \(error.localizedDescription)")
+            #endif
         }
     }
     
@@ -678,7 +704,9 @@ class LibretroInfoManager: ObservableObject {
             let thirtyDaysAgo = Calendar.current.date(byAdding: .day, value: -30, to: Date()) ?? Date()
             
             if cache.lastUpdated < thirtyDaysAgo {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "LibretroInfoManager", "Mappings are older than 30 days. Triggering refresh.")
+                #endif
                 return true
             }
             
@@ -694,12 +722,16 @@ class LibretroInfoManager: ObservableObject {
                let lastModifiedDate = LibretroInfoManager.parseHTTPDate(lastModifiedString) {
                 
                 if lastModifiedDate > cache.lastUpdated {
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "LibretroInfoManager", "GitHub info is newer (\(lastModifiedDate)) than local (\(cache.lastUpdated)). Triggering refresh.")
+                    #endif
                     return true
                 }
             }
             
+            #if LOG_DEBUG
             LoggerService.debug(category: "LibretroInfoManager", "Mappings are up to date.")
+            #endif
             return false
             
         } catch {
@@ -739,7 +771,9 @@ class LibretroInfoManager: ObservableObject {
             try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true, attributes: nil)
             let zipPath = tempDir.appendingPathComponent("master.zip")
             try zipData.write(to: zipPath)
+            #if LOG_DEBUG
             LoggerService.debug(category: "LibretroInfoManager", "Downloaded libretro info to \(zipPath)")
+            #endif
             
             refreshStatus = "Extracting files..."
             
@@ -748,7 +782,9 @@ class LibretroInfoManager: ObservableObject {
             process.arguments = ["-q", zipPath.path, "-d", tempDir.path]
             try process.run()
             process.waitUntilExit()
+            #if LOG_DEBUG
             LoggerService.debug(category: "LibretroInfoManager", "Extracted libretro info to \(tempDir)")
+            #endif
             
             refreshStatus = "Parsing system info..."
             
@@ -759,7 +795,9 @@ class LibretroInfoManager: ObservableObject {
             var systemNamesFromInfo:[String: String] = [:]
             var systemMfgFromInfo: [String: String] = [:]
             
+            #if LOG_DEBUG
             LoggerService.debug(category: "LibretroInfoManager", "Parsing system info from \(extractedFolder)")
+            #endif
             if let contents = try? FileManager.default.contentsOfDirectory(at: extractedFolder, includingPropertiesForKeys: nil) {
                 for fileURL in contents where fileURL.pathExtension == "info" {
                     let infoDict = parseInfoFile(at: fileURL)
@@ -786,7 +824,9 @@ class LibretroInfoManager: ObservableObject {
                             for entry in databaseEntries {
                                 if let systemID = SystemDatabase.systemIDFromDatabaseName(entry) {
                                     ids.append(systemID)
+                                    #if LOG_DEBUG
                                     LoggerService.debug(category: "LibretroInfoManager", "Mapped database entry '\(entry)' to system ID '\(systemID)' for core '\(coreID)'")
+                                    #endif
                                 } else {
                                     LoggerService.warning(category: "LibretroInfoManager", "Could not map database entry '\(entry)' for core '\(coreID)'. Total systems loaded: \(SystemDatabase.systems.count)")
                                 }
@@ -824,7 +864,9 @@ class LibretroInfoManager: ObservableObject {
             }
             
             refreshStatus = "Updating database..."
+            #if LOG_DEBUG
             LoggerService.debug(category: "LibretroInfoManager", "Updating database...")
+            #endif
             
             var currentSystems = SystemDatabase.systems
             let existingIDs = Set(currentSystems.map { $0.id })
@@ -849,7 +891,9 @@ class LibretroInfoManager: ObservableObject {
                         displayInUI: true
                     )
                     currentSystems.append(newSystem)
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "LibretroInfoManager", "Dynamically added new system: \(name) (\(id))")
+                    #endif
                 }
             }
             
@@ -865,10 +909,14 @@ class LibretroInfoManager: ObservableObject {
             SystemDatabase.saveSystems(currentSystems)
             LibretroInfoManager.saveMappings() // The fix from the previous step!
             
+            #if LOG_DEBUG
             LoggerService.debug(category: "LibretroInfoManager", "Saved systems to database")
+            #endif
             try FileManager.default.removeItem(at: tempDir)
             
+            #if LOG_DEBUG
             LoggerService.debug(category: "LibretroInfoManager", "Removed temporary directory")
+            #endif
             
             LoggerService.info(category: "LibretroInfoManager", "Update Complete!")
             isRefreshing = false
@@ -883,7 +931,9 @@ class LibretroInfoManager: ObservableObject {
     }
     
     private func parseInfoFile(at url: URL) -> [String: String] {
+        #if LOG_DEBUG
         LoggerService.debug(category: "LibretroInfoManager", "Parsing system info from \(url)")
+        #endif
         guard let content = try? String(contentsOf: url, encoding: .utf8) else { return [:] }
         var result: [String: String] = [:]
         

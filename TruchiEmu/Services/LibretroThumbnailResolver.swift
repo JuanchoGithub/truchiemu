@@ -14,9 +14,13 @@ enum LibretroThumbnailResolver {
     static func effectiveThumbnailSystemID(for rom: ROM) -> String? {
         let result = rom.thumbnailLookupSystemID ?? rom.systemID
         if let thumbID = rom.thumbnailLookupSystemID, thumbID != rom.systemID {
+            #if LOG_DEBUG
             LoggerService.debug(category: logCategory, "ROM '\(rom.name)' using thumbnailLookupSystemID='\(thumbID)' instead of systemID='\(rom.systemID ?? "nil")'")
+            #endif
         } else {
+            #if LOG_DEBUG
             LoggerService.debug(category: logCategory, "ROM '\(rom.name)' using systemID='\(result ?? "nil")' for thumbnail lookup")
+            #endif
         }
         return result
     }
@@ -49,7 +53,9 @@ enum LibretroThumbnailResolver {
            let decoded = try? JSONDecoder().decode([String].self, from: data),
            !decoded.isEmpty {
             resolvedWorkingFolders[systemID] = decoded
+            #if LOG_DEBUG
             LoggerService.debug(category: logCategory, "Loaded \(decoded.count) working folders from persistence for '\(systemID)': \(decoded)")
+            #endif
             return decoded
         }
 
@@ -151,7 +157,9 @@ enum LibretroThumbnailResolver {
             .appendingPathComponent(systemFolder)
             .appendingPathComponent(typeFolder)
             .appendingPathComponent(name)
+        #if LOG_EXTREME
         LoggerService.extreme(category: logCategory, "Built thumbnail URL: \(url.absoluteString)")
+        #endif
         return url
     }
 
@@ -215,7 +223,9 @@ enum LibretroThumbnailResolver {
     ) -> [URL] {
         let primary = gameTitle.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !primary.isEmpty else {
+            #if LOG_DEBUG
             LoggerService.debug(category: logCategory, "candidateURLs: empty primary title after trim, returning no URLs")
+            #endif
             return []
         }
 
@@ -223,7 +233,9 @@ enum LibretroThumbnailResolver {
         let fuzzy = stripParenthesesForFuzzyMatch(primary)
         let numberVariants = Self.numberVariants(of: primary)
 
+        #if LOG_DEBUG
         LoggerService.debug(category: logCategory, "candidateURLs: primary='\(primary)', safe='\(safe)', fuzzy='\(fuzzy)', numberVariants=\(numberVariants.count), knownVariants=\(knownVariants.count), priority=\(priority.rawValue)")
+        #endif
 
         var urls: [URL] = []
         var seen = Set<URL>()
@@ -236,7 +248,9 @@ enum LibretroThumbnailResolver {
         }
 
         let typeFolders = orderedThumbnailTypeFolders(priority: priority)
+        #if LOG_DEBUG
         LoggerService.debug(category: logCategory, "candidateURLs: typeFolders order = \(typeFolders.joined(separator: ", "))")
+        #endif
 
         // Determine which folder is "first choice" for the given priority
         let firstChoiceFolder = typeFolders.first ?? "Named_Boxarts"
@@ -265,26 +279,36 @@ enum LibretroThumbnailResolver {
             }
         }
 
+        #if LOG_DEBUG
         LoggerService.debug(category: logCategory, "candidateURLs: \(titleVariants.count) title variants to try")
+        #endif
 
         // Step 1: For Named_Boxarts specifically, try the fuzzy (parenthesis-stripped) title FIRST.
         // The Libretro CDN stores boxart under cleaned names (no region tags), so this has
         // the highest chance of matching when the CRC-resolved title includes (USA, En) etc.
         if firstChoiceFolder == "Named_Boxarts" && fuzzy != primary && !fuzzy.isEmpty {
+            #if LOG_DEBUG
             LoggerService.debug(category: logCategory, "candidateURLs: Step 1 fuzzy boxart — '\(fuzzy)'")
+            #endif
             appendUnique(buildThumbnailURL(base: base, systemFolder: systemFolder, typeFolder: "Named_Boxarts", fileName: "\(fuzzy).png"))
             let fuzzySafe = libretroFilesystemSafeName(fuzzy)
             if fuzzySafe != fuzzy {
+                #if LOG_DEBUG
                 LoggerService.debug(category: logCategory, "candidateURLs: Step 1 fuzzy boxart (safe) — '\(fuzzySafe)'")
+                #endif
                 appendUnique(buildThumbnailURL(base: base, systemFolder: systemFolder, typeFolder: "Named_Boxarts", fileName: "\(fuzzySafe).png"))
             }
         }
 
         // Step 2: Try number variants (II, III, Two, etc.) for Named_Boxarts
         if firstChoiceFolder == "Named_Boxarts" && !numberVariants.isEmpty {
+            #if LOG_DEBUG
             LoggerService.debug(category: logCategory, "candidateURLs: Step 2 trying \(numberVariants.count) number variants for Named_Boxarts")
+            #endif
             for variant in numberVariants {
+                #if LOG_DEBUG
                 LoggerService.debug(category: logCategory, "candidateURLs: Step 2 number variant — '\(variant)'")
+                #endif
                 appendUnique(buildThumbnailURL(base: base, systemFolder: systemFolder, typeFolder: "Named_Boxarts", fileName: "\(variant).png"))
             }
         }
@@ -293,7 +317,9 @@ enum LibretroThumbnailResolver {
         // These are real entries from the libretro database, so they have the highest
         // probability of matching actual CDN assets.
         if firstChoiceFolder == "Named_Boxarts" && !knownVariants.isEmpty {
+            #if LOG_DEBUG
             LoggerService.debug(category: logCategory, "candidateURLs: Step 3 trying \(knownVariants.count) known DAT variants for Named_Boxarts")
+            #endif
             for variantName in knownVariants {
                 if variantName != primary {
                     appendUnique(buildThumbnailURL(base: base, systemFolder: systemFolder, typeFolder: "Named_Boxarts", fileName: "\(variantName).png"))
@@ -308,7 +334,9 @@ enum LibretroThumbnailResolver {
         // Step 4: For Named_Boxarts, try arbitrary suffix variants (Beta, Rev, etc.) as fallback.
         // Also try suffixes on number variants (e.g. "Ecco the Dolphin II (Japan).png")
         if firstChoiceFolder == "Named_Boxarts" {
+            #if LOG_DEBUG
             LoggerService.debug(category: logCategory, "candidateURLs: Step 4 trying arbitrary suffix variants for Named_Boxarts")
+            #endif
             for suffix in boxartSuffixVariants {
                 appendUnique(buildThumbnailURL(base: base, systemFolder: systemFolder, typeFolder: "Named_Boxarts", fileName: "\(primary)\(suffix).png"))
                 // Try suffixes on number variants too (e.g. "Ecco the Dolphin II (Japan).png")
@@ -319,7 +347,9 @@ enum LibretroThumbnailResolver {
         }
 
         // Step 5: Try primary title variants (including number variants) across all type folders in priority order
+        #if LOG_DEBUG
         LoggerService.debug(category: logCategory, "candidateURLs: Step 5 trying \(titleVariants.count) variants across \(typeFolders.joined(separator: ", "))")
+        #endif
         for titleVariant in titleVariants {
             for folder in typeFolders {
                 appendUnique(buildThumbnailURL(base: base, systemFolder: systemFolder, typeFolder: folder, fileName: "\(titleVariant).png"))
@@ -336,7 +366,9 @@ enum LibretroThumbnailResolver {
             }
         }
 
+        #if LOG_DEBUG
         LoggerService.debug(category: logCategory, "candidateURLs: generated \(urls.count) unique URLs")
+        #endif
         return urls
     }
 
@@ -347,10 +379,14 @@ enum LibretroThumbnailResolver {
         fallbackFilename: Bool
     ) async -> String? {
         let systemID = rom.systemID ?? ""
+        #if LOG_DEBUG
         LoggerService.debug(category: logCategory, "resolveGameTitle for '\(rom.name)': systemID='\(systemID)', useCRC=\(useCRC), fallbackFilename=\(fallbackFilename)")
+        #endif
 
         if useCRC, !systemID.isEmpty, SystemDatabase.system(forID: systemID) != nil {
+            #if LOG_DEBUG
             LoggerService.debug(category: logCategory, "resolveGameTitle: attempting CRC identification for '\(rom.name)'")
+            #endif
             if let info = await ROMIdentifierService.shared.identifyReturningGameInfo(rom: rom) {
                 let n = info.name.trimmingCharacters(in: .whitespacesAndNewlines)
                 if !n.isEmpty {
@@ -360,7 +396,9 @@ enum LibretroThumbnailResolver {
             } else {
             }
         } else {
+            #if LOG_DEBUG
             LoggerService.debug(category: logCategory, "resolveGameTitle: skipping CRC (useCRC=\(useCRC), systemID='\(systemID)')")
+            #endif
         }
 
         if fallbackFilename {
@@ -369,39 +407,53 @@ enum LibretroThumbnailResolver {
             if !stripped.isEmpty {
                 return stripped
             } else {
+                #if LOG_DEBUG
                 LoggerService.debug(category: logCategory, "resolveGameTitle: filename fallback produced empty string for '\(rom.name)'")
+                #endif
             }
         }
 
         if let meta = rom.metadata?.title?.trimmingCharacters(in: .whitespacesAndNewlines), !meta.isEmpty {
+            #if LOG_DEBUG
             LoggerService.debug(category: logCategory, "resolveGameTitle: metadata title → '\(meta)' for '\(rom.name)'")
+            #endif
             return meta
         }
 
         let stem = rom.path.deletingPathExtension().lastPathComponent
         let result = stripRomFilenameTags(stem)
+        #if LOG_DEBUG
         LoggerService.debug(category: logCategory, "resolveGameTitle: final fallback from filename stem '\(stem)' → '\(result)' for '\(rom.name)'")
+        #endif
         return result
     }
 
     // Strict file name match, else shortest prefix match among `.png` / `.jpg` in `folder`.
     static func resolveLocalThumbnail(named sanitizedStem: String, in folder: URL) -> URL? {
         let fm = FileManager.default
+        #if LOG_DEBUG
         LoggerService.debug(category: logCategory, "resolveLocalThumbnail: searching for '\(sanitizedStem)' in folder \(folder.path)")
+        #endif
 
         guard fm.fileExists(atPath: folder.path) else {
+            #if LOG_DEBUG
             LoggerService.debug(category: logCategory, "resolveLocalThumbnail: folder does not exist: \(folder.path)")
+            #endif
             return nil
         }
 
         guard let files = try? fm.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil) else {
+            #if LOG_DEBUG
             LoggerService.debug(category: logCategory, "resolveLocalThumbnail: failed to read folder contents: \(folder.path)")
+            #endif
             return nil
         }
 
         let exts = ["png", "PNG", "jpg", "JPG", "jpeg", "JPEG"]
         let candidates = files.filter { exts.contains($0.pathExtension) }
+        #if LOG_DEBUG
         LoggerService.debug(category: logCategory, "resolveLocalThumbnail: found \(files.count) files, \(candidates.count) are image candidates in \(folder.lastPathComponent)")
+        #endif
 
         let exactNames = [
             "\(sanitizedStem).png", "\(sanitizedStem).PNG",
@@ -409,22 +461,30 @@ enum LibretroThumbnailResolver {
         ]
         for e in exactNames {
             if let hit = candidates.first(where: { $0.lastPathComponent == e }) {
+                #if LOG_DEBUG
                 LoggerService.debug(category: logCategory, "resolveLocalThumbnail: exact match found: \(hit.lastPathComponent)")
+                #endif
                 return hit
             }
         }
 
+        #if LOG_DEBUG
         LoggerService.debug(category: logCategory, "resolveLocalThumbnail: no exact match, trying prefix match for '\(sanitizedStem)'")
+        #endif
         let prefix = sanitizedStem
         let prefixed = candidates.filter { $0.deletingPathExtension().lastPathComponent.hasPrefix(prefix) }
         guard !prefixed.isEmpty else {
+            #if LOG_DEBUG
             LoggerService.debug(category: logCategory, "resolveLocalThumbnail: no prefix matches found in \(folder.lastPathComponent)")
+            #endif
             return nil
         }
 
         let best = prefixed.min(by: { $0.lastPathComponent.count < $1.lastPathComponent.count })
         if let best = best {
+            #if LOG_DEBUG
             LoggerService.debug(category: logCategory, "resolveLocalThumbnail: prefix match found: \(best.lastPathComponent)")
+            #endif
         }
         return best
     }

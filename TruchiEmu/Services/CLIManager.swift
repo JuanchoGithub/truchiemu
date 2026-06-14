@@ -129,20 +129,26 @@ class CLIManager: ObservableObject {
                 i += 1
                 if i < arguments.count {
                     let uniformStr = arguments[i]
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "CLI", "Parsing shader uniform: '\(uniformStr)'")
+                    #endif
                     // Remove surrounding quotes if present
                     let cleanStr = uniformStr.trimmingCharacters(in: CharacterSet(charactersIn: "\"'"))
                     if let eqIndex = cleanStr.firstIndex(of: "=") {
                         let key = String(cleanStr[..<eqIndex])
                         let valueStr = String(cleanStr[cleanStr.index(after: eqIndex)...])
                         if let value = Float(valueStr) {
+                            #if LOG_DEBUG
                             LoggerService.debug(category: "CLI", "Shader uniform override: \(key) = \(value)")
+                            #endif
                             shaderUniformOverrides[key] = value
                         } else {
                             LoggerService.info(category: "CLI", "Failed to parse shader uniform value: '\(valueStr)'")
                         }
                     } else {
+                        #if LOG_DEBUG
                         LoggerService.debug(category: "CLI", "No '=' found in shader uniform: '\(cleanStr)'")
+                        #endif
                     }
                 }
 
@@ -242,28 +248,40 @@ class CLIManager: ObservableObject {
         
         LoggerService.info(category: "CLI", "Launching game: \(romPath)")
         if let coreID = options.coreID {
+            #if LOG_DEBUG
             LoggerService.debug(category: "CLI", "Core: \(coreID)")
+            #endif
         }
         if let slot = options.slot {
+            #if LOG_DEBUG
             LoggerService.debug(category: "CLI", "Slot: \(slot)")
+            #endif
         }
         if let shader = options.shaderPresetID {
+            #if LOG_DEBUG
             LoggerService.debug(category: "CLI", "Shader: \(shader)")
+            #endif
         }
         if options.achievementsEnabled {
             LoggerService.info(category: "CLI", "Achievements: Enabled" + (options.hardcoreMode ? " (Hardcore)" : ""))
         }
         if options.cheatsEnabled {
+            #if LOG_DEBUG
             LoggerService.debug(category: "CLI", "Cheats: Enabled")
+            #endif
         }
         if !options.coreOptions.isEmpty {
+            #if LOG_DEBUG
             LoggerService.debug(category: "CLI", "Core options: \(options.coreOptions)")
+            #endif
         }
         if options.headless {
             LoggerService.info(category: "CLI", "Mode: Headless")
         }
         if !options.shaderUniformOverrides.isEmpty {
+            #if LOG_DEBUG
             LoggerService.debug(category: "CLI", "Shader uniform overrides: \(options.shaderUniformOverrides)")
+            #endif
         }
         
         // Resolve system ID from ROM path
@@ -285,13 +303,17 @@ class CLIManager: ObservableObject {
         // Apply shader preset if specified
         if let shaderPresetID = options.shaderPresetID {
             rom.settings.shaderPresetID = shaderPresetID
+            #if LOG_DEBUG
             LoggerService.debug(category: "CLI", "Applied shader preset: \(shaderPresetID)")
+            #endif
         }
         
         // Apply bezel if specified
         if let bezelFileName = options.bezelFileName {
             rom.settings.bezelFileName = bezelFileName
+            #if LOG_DEBUG
             LoggerService.debug(category: "CLI", "Applied bezel: \(bezelFileName)")
+            #endif
         }
         
             // Apply core options if specified
@@ -299,32 +321,44 @@ class CLIManager: ObservableObject {
                 var existing = CoreOptionsManager.shared.loadSystemOverrides(for: coreID, systemID: systemID)
                 existing.merge(options.coreOptions) { _, new in new }
                 CoreOptionsManager.shared.saveSystemOverride(for: coreID, systemID: systemID, values: existing)
+            #if LOG_DEBUG
             LoggerService.debug(category: "CLI", "Applied \(options.coreOptions.count) core option(s)")
+            #endif
         }
         
         // Apply auto-load/save settings
         if options.autoLoad {
             AppSettings.setBool("saveState_autoLoadOnStart", value: false)
+            #if LOG_DEBUG
             LoggerService.debug(category: "CLI", "Auto-load enabled")
+            #endif
         }
         if options.autoSave {
             AppSettings.setBool("saveState_autoSaveOnExit", value: false)
+            #if LOG_DEBUG
             LoggerService.debug(category: "CLI", "Auto-save enabled")
+            #endif
         }
         
         // CRITICAL FIX: Apply achievements, hardcore, and cheats settings via AppSettings
         // GameLauncher.LaunchConfig reads these from AppSettings, so we MUST set them here
         if options.achievementsEnabled {
             AppSettings.setBool("ra_enabled", value: true)
+            #if LOG_DEBUG
             LoggerService.debug(category: "CLI", "Achievements enabled")
+            #endif
         }
         if options.hardcoreMode {
             AppSettings.setBool("ra_hardcore", value: true)
+            #if LOG_DEBUG
             LoggerService.debug(category: "CLI", "Hardcore mode enabled")
+            #endif
         }
         if options.cheatsEnabled {
             AppSettings.setBool("cheats_enabled", value: true)
+            #if LOG_DEBUG
             LoggerService.debug(category: "CLI", "Cheats enabled")
+            #endif
         }
         
         // Handle headless mode
@@ -364,24 +398,34 @@ class CLIManager: ObservableObject {
         gameWindow.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
         
+        #if LOG_DEBUG
         LoggerService.debug(category: "CLI", "Game window ordered front")
+        #endif
         
         // Close the CLI placeholder window immediately (on next run loop iteration after game window is shown)
         DispatchQueue.main.async {
+            #if LOG_DEBUG
             LoggerService.debug(category: "CLI", "Starting cleanup. Current windows: \(NSApp.windows.count)")
+            #endif
             
             for window in NSApp.windows {
                 if window == gameWindow { 
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "CLI", "Keeping game window")
+                    #endif
                     continue 
                 }
                 // Only close CLI placeholder windows, not other important windows
                 if window.title.isEmpty || window.title == "TruchiEmu" {
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "CLI", "Closing window: '\(window.title)'")
+                    #endif
                     window.close()
                 }
             }
+            #if LOG_DEBUG
             LoggerService.debug(category: "CLI", "Cleanup complete")
+            #endif
         }
         
         LoggerService.info(category: "CLI", "Game window created successfully")

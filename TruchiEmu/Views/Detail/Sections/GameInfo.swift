@@ -196,7 +196,9 @@ extension GameDetailView {
                     loadSlotInfo()
                 case .crcNotInDatabase(let crc):
                     showManualResult("Couldn't identify this game. Try downloading metadata manually.", tone: .warning)
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "Identity", "For: \(currentROM.name) — Unknown game — CRC: \(crc)")
+                    #endif
                 case .identificationCleared:
                     showManualResult("Identification cleared — game will use ROM filename", tone: .success)
                 case .databaseUnavailable:
