@@ -430,7 +430,7 @@ struct SettingsView: View {
             case .analogMouse: AnalogMouseSettingsView(searchText: $searchText)
             case .boxArt: BoxArtSettingsView(searchText: $searchText)
             case .display:     DisplaySettingsView(searchText: $searchText)
-            case .cheats:      CheatSettingsView(system: system, searchText: $searchText)
+            case .cheats:      CheatSettingsView(systemID: effectiveSystemID, searchText: $searchText)
             case .bezels:     BezelSettingsView(systemID: effectiveSystemID, searchText: $searchText)
             case .retroAchievements: RetroAchievementsSettingsView(searchText: $searchText, system: system)
             case .genre:       GenreSettingsView(searchText: $searchText)

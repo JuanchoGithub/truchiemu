@@ -251,6 +251,8 @@
   "cheats.clearAll": "Borrar todo",
   "cheats.clearConfirmation": "Eliminará todos los archivos descargados. No afectará tus trucos propios.",
   "cheats.downloadAll": "Descargar todo",
+  "cheats.downloadAllConfirmation": "¿Descargar todos los trucos de la base de datos? Son ~50 MB.",
+  "cheats.updateSystemConfirmation": "¿Descargar trucos para este sistema?",
   "cheats.updateSpecific": "Actualizar sistema...",
   "cheats.onlineDatabaseDescription": "Descarga trucos de Libretro. Se organizan automáticamente por núcleo.",
   "cheats.noResults": "Sin resultados",

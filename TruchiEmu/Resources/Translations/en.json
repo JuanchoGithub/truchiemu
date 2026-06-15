@@ -251,6 +251,8 @@
   "cheats.clearAll": "Clear All",
   "cheats.clearConfirmation": "This will remove all downloaded cheat files. Your custom cheats will not be affected.",
   "cheats.downloadAll": "Download All",
+  "cheats.downloadAllConfirmation": "Download all cheat files from the libretro database? This is a large download (~50 MB).",
+  "cheats.updateSystemConfirmation": "Download cheat files for this system?",
   "cheats.updateSpecific": "Update Specific...",
   "cheats.updateSystem": "Update",
   "cheats.statusIdle": "Idle",

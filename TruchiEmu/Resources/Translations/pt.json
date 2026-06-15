@@ -251,6 +251,8 @@
   "cheats.clearAll": "Limpar Tudo",
   "cheats.clearConfirmation": "Isso removerá todos os arquivos de cheat baixados. Seus cheats personalizados não serão afetados.",
   "cheats.downloadAll": "Baixar Tudo",
+  "cheats.downloadAllConfirmation": "Baixar todos os cheats do banco de dados? (~50 MB)",
+  "cheats.updateSystemConfirmation": "Baixar cheats para este sistema?",
   "cheats.updateSpecific": "Atualizar Específico...",
   "cheats.updateSystem": "Atualizar",
   "cheats.statusIdle": "Ocioso",

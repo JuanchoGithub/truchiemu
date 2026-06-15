@@ -4,6 +4,7 @@ import SwiftUI
 
 struct CheatSettingsView: View {
     @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject var library: ROMLibrary
     @StateObject private var downloadService = CheatDownloadService.shared
     @StateObject private var cheatManager = CheatManagerService.shared
     @ObservedObject var prefs = SystemPreferences.shared
@@ -12,12 +13,14 @@ struct CheatSettingsView: View {
 
     @State private var downloadResult: String?
     @State private var showClearConfirmation = false
-    @State private var selectedSystem: String = "all"
+    @State private var showDownloadAllConfirmation = false
+    @State private var showSystemDownloadConfirmation = false
+    @State private var pendingSystem: SystemInfo?
     @State private var isExporting = false
 
     @Binding var searchText: String
 
-    let system: SystemInfo?
+    let systemID: String?
 
     let searchKeywords = "cheats codes cheat code action replay"
 
@@ -38,8 +41,14 @@ struct CheatSettingsView: View {
         matchesSearch("Actions Show in Finder Clear Downloaded Cheats")
     }
 
-    init(system: SystemInfo? = nil, searchText: Binding<String> = .constant("")) {
-        self.system = system
+    private var systemsWithROMs: [SystemInfo] {
+        systemDatabase.systemsForDisplay
+            .filter { (library.romCounts[$0.id] ?? 0) > 0 }
+            .sorted { $0.name < $1.name }
+    }
+
+    init(systemID: String? = nil, searchText: Binding<String> = .constant("")) {
+        self.systemID = systemID
         self._searchText = searchText
     }
 
@@ -86,6 +95,12 @@ struct CheatSettingsView: View {
                                 .font(.system(.caption, design: .monospaced))
                                 .foregroundStyle(AppColors.textSecondary(colorScheme))
                         }
+
+                        if downloadService.isDownloading {
+                            downloadProgressView
+                        } else {
+                            downloadActionButtons
+                        }
                     }
 
                     Toggle(isOn: $prefs.applyCheatsOnLaunch) {
@@ -111,6 +126,10 @@ struct CheatSettingsView: View {
                     .onChange(of: prefs.showCheatNotifications) { _, _ in
                         AppSettings.setBool("showCheatNotifications", value: prefs.showCheatNotifications)
                     }
+                } header: {
+                    Label(loc.localized("cheats.onlineDatabase"), systemImage: "network")
+                } footer: {
+                    Text(loc.localized("cheats.onlineDatabaseDescription"))
                 }
             }
 
@@ -172,6 +191,27 @@ struct CheatSettingsView: View {
         } message: {
             Text(loc.localized("cheats.clearConfirmation"))
         }
+        .confirmationDialog(loc.localized("cheats.downloadAll"), isPresented: $showDownloadAllConfirmation, titleVisibility: .visible) {
+            Button(loc.localized("cheats.downloadAll")) {
+                Task {
+                    let result = await downloadService.downloadAllCheats()
+                    handleResult(result)
+                }
+            }
+            Button(loc.localized("app.cancel"), role: .cancel) { }
+        } message: {
+            Text(loc.localized("cheats.downloadAllConfirmation"))
+        }
+        .confirmationDialog(loc.localized("cheats.updateSystem"), isPresented: $showSystemDownloadConfirmation, titleVisibility: .visible) {
+            Button(loc.localized("cheats.download")) {
+                if let sid = systemID, let sys = systemDatabase.system(forID: sid) {
+                    downloadForSystem(sys.id, name: sys.name)
+                }
+            }
+            Button(loc.localized("app.cancel"), role: .cancel) { }
+        } message: {
+            Text(loc.localized("cheats.updateSystemConfirmation"))
+        }
         .overlay(alignment: .bottom) {
             if let result = downloadResult {
                 resultToast(result)
@@ -226,24 +266,29 @@ struct CheatSettingsView: View {
     private var downloadActionButtons: some View {
         HStack(spacing: AppSpacing.lg) {
             Button {
-                Task {
-                    let result = await downloadService.downloadAllCheats()
-                    handleResult(result)
-                }
+                showDownloadAllConfirmation = true
             } label: {
                 Label { Text(loc.localized("cheats.downloadAll")) } icon: { Image(systemName: "arrow.down.circle") }
             }
             .buttonStyle(.borderedProminent)
 
-            if let system = system {
-                Button("Update \(system.name)") {
-                    downloadForSystem(system.id, name: system.name)
+            if let sid = systemID, let sys = systemDatabase.system(forID: sid) {
+                Button("\(loc.localized("cheats.updateSystem")) \(sys.name)") {
+                    showSystemDownloadConfirmation = true
                 }
             } else {
+                if let sys = pendingSystem {
+                    Button("Download \(sys.name)") {
+                        downloadForSystem(sys.id, name: sys.name)
+                        pendingSystem = nil
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+
                 Menu(loc.localized("cheats.updateSpecific")) {
-                    ForEach(systemDatabase.systemsForDisplay.sorted(by: { $0.name < $1.name })) { sys in
+                    ForEach(systemsWithROMs) { sys in
                         Button(sys.name) {
-                            downloadForSystem(sys.id, name: sys.name)
+                            pendingSystem = sys
                         }
                     }
                 }
