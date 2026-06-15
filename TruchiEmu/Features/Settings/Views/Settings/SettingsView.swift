@@ -165,6 +165,7 @@ struct SettingsView: View {
     ]
     
     @State private var selectedPage: Page = .general
+    @State private var deepLinkID = UUID()
     @State private var searchText: String = ""
     @State private var hasPendingThemeChanges: Bool = false
     @State private var revertRequest: Int = 0
@@ -185,6 +186,7 @@ struct SettingsView: View {
            let page = Page(rawValue: pendingPage) {
             selectedPage = page
             AppSettings.remove("pending_settings_page")
+            deepLinkID = UUID()
         } else if let page = Page(rawValue: AppSettings.getString("settings_selectedTab", defaultValue: "general") ?? "general") {
             selectedPage = page
         }
@@ -274,7 +276,7 @@ struct SettingsView: View {
 
             // Detail
             detailContent
-                .id(selectedPage)
+                .id("\(selectedPage.rawValue)-\(deepLinkID)")
                 .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
@@ -429,7 +431,7 @@ struct SettingsView: View {
             case .boxArt: BoxArtSettingsView(searchText: $searchText)
             case .display:     DisplaySettingsView(searchText: $searchText)
             case .cheats:      CheatSettingsView(system: system, searchText: $searchText)
-            case .bezels:     BezelSettingsView(system: system, searchText: $searchText)
+            case .bezels:     BezelSettingsView(systemID: effectiveSystemID, searchText: $searchText)
             case .retroAchievements: RetroAchievementsSettingsView(searchText: $searchText, system: system)
             case .genre:       GenreSettingsView(searchText: $searchText)
             case .logging: LoggingSettingsView(searchText: $searchText)

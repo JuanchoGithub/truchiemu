@@ -1067,6 +1067,7 @@
   "shader.exportEllipsis": "Exportar...",
   "shader.custom": "Personalizado",
   "shader.editorTitle": "Editor de Shader",
+  "shader.editorTitleFor": "Editor de Shader para %@",
   "shader.currentShader": "Shader Atual",
   "shader.customize": "Personalizar",
   "shader.liveShaderEdit": "Edição de Shader ao Vivo ▶",

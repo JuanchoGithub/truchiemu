@@ -234,7 +234,11 @@ init(settings: ShaderWindowSettings, onPresetChanged: ((String, [String: Float],
             defer: false
         )
 
-        window.title = LocalizationManager.shared.localized("shader.editorTitle")
+        if let context = settings.contextDescription {
+            window.title = String(format: LocalizationManager.shared.localized("shader.editorTitleFor"), context)
+        } else {
+            window.title = LocalizationManager.shared.localized("shader.editorTitle")
+        }
         window.minSize = NSSize(width: 650, height: 350)
         window.isReleasedWhenClosed = false
         window.level = .floating

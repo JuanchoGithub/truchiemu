@@ -103,7 +103,10 @@ struct ControllerSettingsView: View {
 
     static let searchKeywords: String = "controllers gamepad keyboard mapping player buttons input"
 
+    private let initSystemID: String?
+
     init(systemID: String? = nil, searchText: Binding<String> = .constant("")) {
+        self.initSystemID = systemID
         _searchText = searchText
         if let sid = systemID {
             _selectedSystemID = State(initialValue: sid)
@@ -274,7 +277,7 @@ struct ControllerSettingsView: View {
         }
         }
  .onAppear {
- if let saved = AppSettings.getString("controller_selectedSystemID") {
+ if initSystemID == nil, let saved = AppSettings.getString("controller_selectedSystemID") {
  selectedSystemID = saved
  }
  applyPendingControllerSelection()

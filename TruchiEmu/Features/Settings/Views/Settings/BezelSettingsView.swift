@@ -12,16 +12,13 @@ struct BezelSettingsView: View {
     @State private var showClearConfirmation = false
     @State private var selectedSystem: String = "all"
     
-    let system: SystemInfo?
-    
     @Binding var searchText: String
     let searchKeywords: String = "bezel frame overlay monitor"
 
-    init(system: SystemInfo? = nil, searchText: Binding<String> = .constant("")) {
-        self.system = system
+    init(systemID: String? = nil, searchText: Binding<String> = .constant("")) {
         self._searchText = searchText
-        if let system = system {
-            _selectedSystem = State(initialValue: system.id)
+        if let sid = systemID {
+            _selectedSystem = State(initialValue: sid)
         }
     }
     
