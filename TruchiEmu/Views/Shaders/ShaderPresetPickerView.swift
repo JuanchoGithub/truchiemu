@@ -9,13 +9,29 @@ class ShaderWindowSettings: ObservableObject {
 @Published var uniformValues: [String: Float]
 @Published var systemID: String?
 @Published var notificationMessage: String?
+@Published var showUnsavedConfirmation = false
+
+let originalPresetID: String
+let originalUniformValues: [String: Float]
+let contextDescription: String?
+let contextImageData: Data?
+
+var hasPendingChanges: Bool {
+shaderPresetID != originalPresetID || uniformValues != originalUniformValues
+}
 
 init(shaderPresetID: String = "",
 uniformValues: [String: Float] = [:],
-systemID: String? = nil) {
+systemID: String? = nil,
+contextDescription: String? = nil,
+contextImageData: Data? = nil) {
 self.shaderPresetID = shaderPresetID
 self.uniformValues = uniformValues
 self.systemID = systemID
+self.originalPresetID = shaderPresetID
+self.originalUniformValues = uniformValues
+self.contextDescription = contextDescription
+self.contextImageData = contextImageData
 }
 }
 
@@ -211,15 +227,8 @@ init(settings: ShaderWindowSettings, onPresetChanged: ((String, [String: Float],
         self.settings = settings
         self.onPresetChanged = onPresetChanged
 
-        let rect: NSRect
-        if let savedPos = ShaderWindowPosition.shared.savedPosition {
-            rect = NSRect(x: savedPos.x, y: savedPos.y, width: 700, height: 450)
-        } else {
-            rect = NSRect(x: 0, y: 0, width: 700, height: 450)
-        }
-
         let window = KeyWindowPanel(
-            contentRect: rect,
+            contentRect: NSRect(x: 0, y: 0, width: 700, height: 450),
             styleMask: [.titled, .closable, .resizable],
             backing: .buffered,
             defer: false
@@ -257,15 +266,18 @@ self.onPresetChanged?(self.settings.shaderPresetID, values, [])
 
     override func windowDidLoad() {
         super.windowDidLoad()
-        if ShaderWindowPosition.shared.savedPosition == nil {
-            window?.center()
-        }
+        positionWindow()
     }
 
     func show() {
+        positionWindow()
         window?.makeKeyAndOrderFront(nil)
         window?.orderFrontRegardless()
         NSApp.activate(ignoringOtherApps: true)
+    }
+
+    private func positionWindow() {
+        window?.center()
     }
 
     func hide() {
@@ -283,6 +295,12 @@ self.onPresetChanged?(self.settings.shaderPresetID, values, [])
             ShaderWindowPosition.shared.savePosition(window.frame.origin)
         }
         onWindowWillClose?()
+    }
+
+    func windowShouldClose(_ sender: NSWindow) -> Bool {
+        guard settings.hasPendingChanges else { return true }
+        settings.showUnsavedConfirmation = true
+        return false
     }
 }
 
@@ -467,22 +485,23 @@ enum CategoryFilter: Hashable {
 }
 
     var body: some View {
-        HStack(spacing: 0) {
-            // LEFT COLUMN
-            VStack(spacing: 0) {
-                currentSelectionHeader
+        ZStack {
+            HStack(spacing: 0) {
+                // LEFT COLUMN
+                VStack(spacing: 0) {
+                    currentSelectionHeader
 
-                searchBar
+                    searchBar
 
-                categoryTabs
+                    categoryTabs
 
-                Divider()
+                    Divider()
 
 presetList
 
-                Divider()
-                VStack(spacing: 8) {
-                    HStack {
+                    Divider()
+                    VStack(spacing: 8) {
+                        HStack {
 if case .saved = selectedCategory {
     Button(loc.localized("shader.import"), systemImage: "square.and.arrow.down") {
         showImportPicker = true
@@ -490,89 +509,96 @@ if case .saved = selectedCategory {
     .buttonStyle(.bordered)
     .controlSize(.small)
 }
-                        Spacer()
+                            Spacer()
 Button(loc.localized("shader.apply")) {
 if let controller = ShaderWindowController.shared {
 controller.onPresetChanged?(settings.shaderPresetID, settings.uniformValues, [])
 controller.close()
 }
 }
-                        .buttonStyle(.borderedProminent)
-                        .controlSize(.small)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                    }
+                            .buttonStyle(.borderedProminent)
+                            .controlSize(.small)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                        }
 
-                    if let message = settings.notificationMessage {
-                Text(message)
-                    .font(.caption)
-                    .foregroundColor(AppColors.textSecondary(colorScheme))
-                    .multilineTextAlignment(.center)
-                            .padding(.horizontal, 10)
-                            .transition(.opacity)
+                        if let message = settings.notificationMessage {
+                    Text(message)
+                        .font(.caption)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
+                        .multilineTextAlignment(.center)
+                                .padding(.horizontal, 10)
+                                .transition(.opacity)
+                        }
                     }
-                }
-                .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
-            }
-            .frame(minWidth: 300, maxWidth: .infinity)
-
-            Divider()
-
-            // RIGHT COLUMN
-            Group {
-                if settings.shaderPresetID.isEmpty {
-                    VStack {
-                        Spacer()
-                Text(loc.localized("shader.selectShader"))
-                    .font(.subheadline)
-                    .foregroundColor(AppColors.textSecondary(colorScheme))
-                    Spacer()
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
-} else if let selectedPreset = ShaderPreset.preset(id: settings.shaderPresetID),
-                   !selectedPreset.globalUniforms.isEmpty {
-                    // Built-in preset with uniforms
-                    VStack(spacing: 0) {
-                        parameterSliders
-                        savePresetBar
-                    }
-                    .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
-                } else if let savedPreset = savedPresets.first(where: { $0.id.uuidString == settings.shaderPresetID }),
-                         !savedPreset.uniformValues.isEmpty {
-                     // Saved custom preset with uniforms
-                    VStack(spacing: 0) {
-                        parameterSliders
-                        savePresetBar
-                    }
-                    .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
-                } else if !settings.uniformValues.isEmpty {
-                    // Has custom uniform values (even if not from a known preset)
-                    VStack(spacing: 0) {
-                        parameterSliders
-                        savePresetBar
-                    }
-                    .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
-                } else {
-                    VStack {
-                        Spacer()
-                Text(loc.localized("shader.noParameters"))
-                    .font(.subheadline)
-                    .foregroundColor(AppColors.textSecondary(colorScheme))
-                    Spacer()
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
                 }
+                .frame(minWidth: 300, maxWidth: .infinity)
+
+                Divider()
+
+                // RIGHT COLUMN
+                Group {
+                    if settings.shaderPresetID.isEmpty {
+                        VStack {
+                            Spacer()
+                    Text(loc.localized("shader.selectShader"))
+                        .font(.subheadline)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
+                            Spacer()
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+    } else if let selectedPreset = ShaderPreset.preset(id: settings.shaderPresetID),
+                       !selectedPreset.globalUniforms.isEmpty {
+                        // Built-in preset with uniforms
+                        VStack(spacing: 0) {
+                            parameterSliders
+                            savePresetBar
+                        }
+                        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+                    } else if let savedPreset = savedPresets.first(where: { $0.id.uuidString == settings.shaderPresetID }),
+                             !savedPreset.uniformValues.isEmpty {
+                         // Saved custom preset with uniforms
+                        VStack(spacing: 0) {
+                            parameterSliders
+                            savePresetBar
+                        }
+                        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+                    } else if !settings.uniformValues.isEmpty {
+                        // Has custom uniform values (even if not from a known preset)
+                        VStack(spacing: 0) {
+                            parameterSliders
+                            savePresetBar
+                        }
+                        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+                    } else {
+                        VStack {
+                            Spacer()
+                    Text(loc.localized("shader.noParameters"))
+                        .font(.subheadline)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
+                            Spacer()
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+                    }
+                }
+                .frame(minWidth: 250, maxWidth: .infinity)
             }
-            .frame(minWidth: 250, maxWidth: .infinity)
-        }
-        .background {
-            AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled)
-                .ignoresSafeArea()
+            .background {
+                AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled)
+                    .ignoresSafeArea()
+            }
+
+            if settings.showUnsavedConfirmation {
+                UnsavedConfirmationView(settings: settings)
+                    .transition(.opacity)
+            }
         }
         .tint(AppColors.brandAccentSecondary)
         .frame(minWidth: 700, minHeight: 500)
+        .animation(.easeInOut(duration: 0.2), value: settings.showUnsavedConfirmation)
         .onAppear {
             savedPresets = ShaderPresetStorageService.shared.savedPresets
             
@@ -1007,6 +1033,171 @@ controller.close()
         }
         .padding(.horizontal, 12)
         .padding(.bottom, 8)
+    }
+}
+
+// MARK: - Unsaved Changes Confirmation View
+
+struct UnsavedConfirmationView: View {
+    @ObservedObject var settings: ShaderWindowSettings
+    @ObservedObject private var loc = LocalizationManager.shared
+    @Environment(\.colorScheme) private var colorScheme
+
+    @State private var contextImage: NSImage?
+
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.35)
+                .ignoresSafeArea()
+                .onTapGesture { settings.showUnsavedConfirmation = false }
+
+            VStack(spacing: 0) {
+                HStack(spacing: 20) {
+                    contextIcon
+                        .frame(width: 120, height: 120)
+                        .background(AppColors.cardBackground(colorScheme))
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 14)
+                                .stroke(AppColors.divider(colorScheme), lineWidth: 1)
+                        )
+                        .shadow(color: .black.opacity(0.15), radius: 6)
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(loc.localized("shader.unsavedChangesTitle"))
+                            .font(.title2.bold())
+
+                        if let context = settings.contextDescription {
+                            Text(String(format: loc.localized("shader.unsavedChangesFor"), context))
+                                .font(.subheadline)
+                                .foregroundColor(AppColors.textSecondary(colorScheme))
+                        }
+
+                        Divider()
+                            .padding(.vertical, 4)
+
+                        VStack(alignment: .leading, spacing: 6) {
+                            HStack(spacing: 10) {
+                                Text(loc.localized("shader.unsavedChangesCurrent"))
+                                    .font(.caption)
+                                    .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                                    .frame(width: 56, alignment: .trailing)
+                                Text(ShaderManager.displayName(for: settings.originalPresetID))
+                                    .font(.subheadline.weight(.medium))
+                                    .foregroundColor(AppColors.textPrimary(colorScheme))
+                            }
+
+                            HStack(spacing: 10) {
+                                Image(systemName: "arrowtriangle.down.fill")
+                                    .font(.caption2)
+                                    .foregroundColor(AppColors.brandAccent)
+                                    .frame(width: 56, alignment: .trailing)
+                            }
+
+                            HStack(spacing: 10) {
+                                Text(loc.localized("shader.unsavedChangesNew"))
+                                    .font(.caption)
+                                    .foregroundColor(AppColors.brandAccent)
+                                    .frame(width: 56, alignment: .trailing)
+                                Text(ShaderManager.displayName(for: settings.shaderPresetID))
+                                    .font(.subheadline.bold())
+                                    .foregroundColor(AppColors.brandAccent)
+                            }
+                        }
+                        .padding(.leading, 4)
+                    }
+                }
+                .padding(24)
+
+                Divider()
+
+                HStack {
+                    Button {
+                        settings.showUnsavedConfirmation = false
+                    } label: {
+                        Text(loc.localized("shader.cancel"))
+                            .frame(minWidth: 80)
+                    }
+                    .controlSize(.regular)
+                    .keyboardShortcut(.escape)
+
+                    Spacer()
+
+                    Button(role: .destructive) {
+                        settings.showUnsavedConfirmation = false
+                        ShaderWindowController.shared?.close()
+                    } label: {
+                        Text(loc.localized("shader.discardChanges"))
+                            .frame(minWidth: 80)
+                    }
+                    .controlSize(.regular)
+
+                    Button {
+                        settings.showUnsavedConfirmation = false
+                        ShaderWindowController.shared?.onPresetChanged?(settings.shaderPresetID, settings.uniformValues, [])
+                        ShaderWindowController.shared?.close()
+                    } label: {
+                        Text(loc.localized("shader.applyAndClose"))
+                            .frame(minWidth: 100)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.regular)
+                    .keyboardShortcut(.defaultAction)
+                }
+                .padding(.horizontal, 24)
+                .padding(.vertical, 16)
+                .background(AppColors.cardBackgroundSubtle(colorScheme))
+            }
+            .frame(width: 480)
+            .background(AppColors.windowBackground(colorScheme, tinted: false))
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .shadow(color: .black.opacity(0.25), radius: 24)
+        }
+        .onAppear {
+            loadContextImage()
+        }
+        .onExitCommand {
+            settings.showUnsavedConfirmation = false
+        }
+    }
+
+    @ViewBuilder
+    private var contextIcon: some View {
+        if let image = contextImage {
+            Image(nsImage: image)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+        } else if let sysID = settings.systemID,
+                  let sys = SystemDatabase.system(forID: sysID),
+                  let emuImage = sys.emuImage(size: 120) {
+            Image(nsImage: emuImage)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .padding(8)
+        } else {
+            VStack(spacing: 6) {
+                Image(systemName: "paintpalette.fill")
+                    .font(.system(size: 36))
+                    .foregroundColor(AppColors.brandAccent)
+                Text(loc.localized("shader.genericShaderLabel"))
+                    .font(.caption2)
+                    .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+            }
+        }
+    }
+
+    private func loadContextImage() {
+        if let data = settings.contextImageData, let image = NSImage(data: data) {
+            contextImage = image
+        }
+    }
+}
+
+extension NSImage {
+    var pngData: Data? {
+        guard let cgImage = self.cgImage(forProposedRect: nil, context: nil, hints: nil) else { return nil }
+        let bitmap = NSBitmapImageRep(cgImage: cgImage)
+        return bitmap.representation(using: .png, properties: [:])
     }
 }
 

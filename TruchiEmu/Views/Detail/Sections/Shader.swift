@@ -110,11 +110,23 @@ HStack {
 
     @MainActor
     func presentShaderWindow() {
+        let systemName = SystemDatabase.system(forID: currentROM.systemID ?? "")?.name ?? ""
+        let context = systemName.isEmpty ? currentROM.displayName : "\(systemName) / \(currentROM.displayName)"
+
+        let boxArtData: Data? = {
+            if let url = BoxArtService.shared.resolveLocalBoxArt(for: currentROM) {
+                return try? Data(contentsOf: url)
+            }
+            return nil
+        }()
+
         if shaderWindowSettings == nil {
             shaderWindowSettings = ShaderWindowSettings(
                 shaderPresetID: currentROM.settings.shaderPresetID,
                 uniformValues: extractUniformValues(from: currentROM.settings),
-                systemID: nil  // Don't pass systemID to hide Application Mode picker in Game Info
+                systemID: nil,  // Don't pass systemID to hide Application Mode picker in Game Info
+                contextDescription: context,
+                contextImageData: boxArtData
             )
         } else {
             shaderWindowSettings?.shaderPresetID = currentROM.settings.shaderPresetID

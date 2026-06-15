@@ -71,10 +71,18 @@ class LiveShaderEditManager: ObservableObject {
     }
 
     private func showShaderPicker(rom: ROM) {
+        let boxArtData: Data? = {
+            if let url = BoxArtService.shared.resolveLocalBoxArt(for: rom) {
+                return try? Data(contentsOf: url)
+            }
+            return nil
+        }()
         let settings = ShaderWindowSettings(
             shaderPresetID: rom.settings.shaderPresetID,
             uniformValues: extractCurrentUniformValues(from: rom.settings),
-            systemID: nil
+            systemID: nil,
+            contextDescription: rom.displayName,
+            contextImageData: boxArtData
         )
 
         let controller = ShaderWindowController(settings: settings)

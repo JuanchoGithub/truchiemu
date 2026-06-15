@@ -111,10 +111,13 @@ var targetSystem = system
 if let target = SystemDatabase.system(forID: resolvedSystemID) {
 targetSystem = target
 }
+let systemImageData = targetSystem.emuImage(size: 120)?.pngData
 let settings = ShaderWindowSettings(
 shaderPresetID: targetSystem.defaultShaderPresetID ?? "",
 uniformValues: ShaderManager.shared.uniformValues,
-systemID: targetSystem.id
+systemID: targetSystem.id,
+contextDescription: targetSystem.name,
+contextImageData: systemImageData
 )
 shaderController = ShaderWindowController(settings: settings) { [self] newPresetID, newUniforms, selectedGameIDs in
 #if LOG_DEBUG
