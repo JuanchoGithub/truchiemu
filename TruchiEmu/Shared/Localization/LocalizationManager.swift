@@ -61,7 +61,9 @@ final class LocalizationManager: ObservableObject {
             }
         }
         available.sort()
-        print("[🔤] Available languages: \(available)")
+        #if LOG_DEBUG
+        LoggerService.debug(category: "Localization", "Available languages: \(available)")
+        #endif
         return available.isEmpty ? [fallbackLanguage] : available
     }
 
@@ -73,13 +75,14 @@ final class LocalizationManager: ObservableObject {
 
         guard let data = try? Data(contentsOf: fileURL),
               let dict = try? JSONDecoder().decode([String: String].self, from: data) else {
-            print("[🔤] Failed to load translation: \(lang).json")
+            LoggerService.error(category: "Localization", "Failed to load translation: \(lang).json")
             return false
         }
         translationCache[lang] = dict
-        // Only log once per language to avoid spam
         if lang == currentLanguage || lang == fallbackLanguage {
-            print("[🔤] Loaded translation: \(lang) with \(dict.count) keys")
+            #if LOG_DEBUG
+            LoggerService.debug(category: "Localization", "Loaded translation: \(lang) with \(dict.count) keys")
+            #endif
         }
         return true
     }

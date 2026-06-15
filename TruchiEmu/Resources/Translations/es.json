@@ -1073,7 +1073,7 @@
   "shader.unsavedChangesTitle": "Cambios sin guardar",
   "shader.unsavedChangesContext": "Estás a punto de cambiar el shader para %@.\nActual: %@\nNuevo: %@",
   "shader.unsavedChangesDefault": "Estás a punto de cambiar el shader por defecto.\nActual: %@\nNuevo: %@",
-  "shader.applyAndClose": "Aplicar y Cerrar",
+  "shader.applyAndClose": "Guardar y Cerrar",
   "shader.discardChanges": "Descartar Cambios",
   "shader.unsavedChangesFor": "para %@",
   "shader.unsavedChangesCurrent": "Actual",

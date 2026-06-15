@@ -1,10 +1,7 @@
 import Foundation
-import os.log
 
 class PPSSPAssetService: ObservableObject {
     static let shared = PPSSPAssetService()
-    
-    private let logger = Logger(subsystem: "com.TruchiEmu", category: "PPSSPAssetService")
     
     @Published var isChecking = false
     @Published var isDownloading = false
@@ -67,24 +64,26 @@ func ensureAssetsCopied() -> Bool {
 do {
 try FileManager.default.createDirectory(at: appSupportURL.deletingLastPathComponent().deletingLastPathComponent(), withIntermediateDirectories: true)
 } catch {
-logger.error("Failed to create System directory: \(error.localizedDescription)")
+LoggerService.error(category: "PPSSPAssetService", "Failed to create System directory: \(error.localizedDescription)")
 return false
 }
 
 let zipFileName = "PPSSPP_assets.zip"
 guard let zipURL = Bundle.main.url(forResource: zipFileName, withExtension: nil, subdirectory: "System") else {
-logger.warning("No bundled PPSSPP assets zip found")
+LoggerService.warning(category: "PPSSPAssetService", "No bundled PPSSPP assets zip found")
 return false
 }
 
-logger.info("Found bundled PPSSPP zip at: \(zipURL.path)")
+#if LOG_DEBUG
+LoggerService.debug(category: "PPSSPAssetService", "Found bundled PPSSPP zip at: \(zipURL.path)")
+#endif
 
 let extractionSucceeded = extractZip(at: zipURL, to: appSupportURL.deletingLastPathComponent())
 if extractionSucceeded {
-logger.info("Successfully extracted bundled PPSSPP assets from zip")
+LoggerService.info(category: "PPSSPAssetService", "Successfully extracted bundled PPSSPP assets from zip")
 return true
 } else {
-logger.warning("Failed to extract bundled PPSSPP assets from zip")
+LoggerService.warning(category: "PPSSPAssetService", "Failed to extract bundled PPSSPP assets from zip")
 return false
 }
 }
@@ -100,20 +99,22 @@ do {
 try process.run()
 process.waitUntilExit()
 if process.terminationStatus == 0 {
+#if LOG_DEBUG
 if let outputData = try? pipe.fileHandleForReading.readToEnd(),
 let output = String(data: outputData, encoding: .utf8) {
-logger.info("Unzip output: \(output.prefix(500))")
+LoggerService.debug(category: "PPSSPAssetService", "Unzip output: \(output.prefix(500))")
 }
+#endif
 return true
 } else {
 let errorData = pipe.fileHandleForReading.readDataToEndOfFile()
 if let errorOutput = String(data: errorData, encoding: .utf8) {
-logger.error("Unzip failed: \(errorOutput)")
+LoggerService.error(category: "PPSSPAssetService", "Unzip failed: \(errorOutput)")
 }
 return false
 }
 } catch {
-logger.error("Failed to run unzip: \(error.localizedDescription)")
+LoggerService.error(category: "PPSSPAssetService", "Failed to run unzip: \(error.localizedDescription)")
 return false
 }
 }
@@ -129,10 +130,8 @@ func downloadAssets() async -> Bool {
         defer { isDownloading = false }
         
         do {
-            // Ensure app support directory exists
             try FileManager.default.createDirectory(at: appSupportURL, withIntermediateDirectories: true)
             
-            // Get latest release info from GitHub API
             let (data, response) = try await URLSession.shared.data(for: URLRequest(url: releasesURL))
             
             guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
@@ -143,7 +142,6 @@ func downloadAssets() async -> Bool {
             let decoder = JSONDecoder()
             let release = try decoder.decode(GitHubRelease.self, from: data)
             
-            // Find macOS SDL zip asset
             guard let asset = release.assets.first(where: { $0.name.contains("PPSSPPSDL-macOS") && $0.name.hasSuffix(".zip") }) else {
                 downloadStatus = "macOS SDL assets not found"
                 return false
@@ -152,7 +150,6 @@ func downloadAssets() async -> Bool {
             downloadStatus = "Downloading PPSSPP assets..."
             downloadProgress = 0.2
             
-            // Download the zip file
             let (zipData, zipResponse) = try await URLSession.shared.data(for: URLRequest(url: URL(string: asset.downloadUrl)!))
             
             guard let httpZipResponse = zipResponse as? HTTPURLResponse, httpZipResponse.statusCode == 200 else {
@@ -163,7 +160,6 @@ func downloadAssets() async -> Bool {
 downloadProgress = 0.6
     downloadStatus = "Extracting assets..."
 
-    // Create temp directory for extraction
     let tempDir = FileManager.default.temporaryDirectory
         .appendingPathComponent("ppsspp_assets_\(UUID().uuidString)")
 
@@ -173,16 +169,15 @@ downloadProgress = 0.6
 
     try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
 
-    // Write zip to temp file
     let zipFileURL = tempDir.appendingPathComponent("ppsspp.zip")
     try zipData.write(to: zipFileURL)
 
-    logger.info("Downloaded \(zipData.count) bytes, written to \(zipFileURL.path)")
+#if LOG_DEBUG
+    LoggerService.debug(category: "PPSSPAssetService", "Downloaded \(zipData.count) bytes, written to \(zipFileURL.path)")
+#endif
 
-    // Extract zip using native Foundation ZIP handling to avoid process issues
     let fileManager = FileManager.default
 
-    // First, list the zip contents to understand structure
     let unzipProcess = Process()
     unzipProcess.executableURL = URL(fileURLWithPath: "/usr/bin/unzip")
     unzipProcess.arguments = ["-l", zipFileURL.path]
@@ -191,12 +186,13 @@ downloadProgress = 0.6
     try unzipProcess.run()
     unzipProcess.waitUntilExit()
 
+#if LOG_DEBUG
     let listData = listPipe.fileHandleForReading.readDataToEndOfFile()
     if let listOutput = String(data: listData, encoding: .utf8) {
-        logger.info("ZIP contents (first 20 lines): \(String(listOutput.prefix(2000)))")
+        LoggerService.debug(category: "PPSSPAssetService", "ZIP contents (first 20 lines): \(String(listOutput.prefix(2000)))")
     }
+#endif
 
-    // Now extract
     let extractProcess = Process()
     extractProcess.executableURL = URL(fileURLWithPath: "/usr/bin/unzip")
     extractProcess.arguments = ["-o", zipFileURL.path, "-d", tempDir.path]
@@ -209,15 +205,16 @@ downloadProgress = 0.6
     if extractProcess.terminationStatus != 0 {
         let errorData = extractPipe.fileHandleForReading.readDataToEndOfFile()
         if let errorOutput = String(data: errorData, encoding: .utf8) {
-            logger.error("Unzip failed: \(errorOutput)")
+            LoggerService.error(category: "PPSSPAssetService", "Unzip failed: \(errorOutput)")
         }
         downloadStatus = "Extraction failed (code \(extractProcess.terminationStatus))"
         return false
     }
 
-    logger.info("Unzip succeeded, searching for assets directory")
+#if LOG_DEBUG
+    LoggerService.debug(category: "PPSSPAssetService", "Unzip succeeded, searching for assets directory")
+#endif
 
-    // Find the extracted assets directory - try multiple possible paths
     let possiblePaths = [
         tempDir.appendingPathComponent("PPSSPPSDL.app/Contents/Resources/assets"),
         tempDir.appendingPathComponent("PPSSPPSDL/assets"),
@@ -229,15 +226,18 @@ downloadProgress = 0.6
     for path in possiblePaths {
         if fileManager.fileExists(atPath: path.path) {
             extractedAppDir = path
-            logger.info("Found assets at: \(path.path)")
+            #if LOG_DEBUG
+            LoggerService.debug(category: "PPSSPAssetService", "Found assets at: \(path.path)")
+            #endif
             break
         }
     }
 
-    // List temp dir contents to debug
+#if LOG_DEBUG
     if let contents = try? fileManager.contentsOfDirectory(at: tempDir, includingPropertiesForKeys: nil) {
-        logger.info("Temp dir contents: \(contents.map { $0.lastPathComponent })")
+        LoggerService.debug(category: "PPSSPAssetService", "Temp dir contents: \(contents.map { $0.lastPathComponent })")
     }
+#endif
 
     guard let assetsDir = extractedAppDir else {
         downloadStatus = "Assets directory not found in package"
@@ -247,7 +247,6 @@ downloadProgress = 0.6
     downloadProgress = 0.8
     downloadStatus = "Copying assets..."
 
-    // Remove existing assets and copy new ones
     if fileManager.fileExists(atPath: appSupportURL.path) {
         try fileManager.removeItem(at: appSupportURL)
     }
@@ -256,16 +255,15 @@ downloadProgress = 0.6
             downloadProgress = 1.0
             downloadStatus = "Download complete"
             
-            // Update last check date
             let now = Date()
             lastCheckDate = now
             AppSettings.setDate("ppsspAssetCheckDate", value: now)
             
-            logger.info("Successfully downloaded and installed PPSSPP assets")
+            LoggerService.info(category: "PPSSPAssetService", "Successfully downloaded and installed PPSSPP assets")
             return true
             
         } catch {
-            logger.error("Failed to download PPSSPP assets: \(error.localizedDescription)")
+            LoggerService.error(category: "PPSSPAssetService", "Failed to download PPSSPP assets: \(error.localizedDescription)")
             downloadStatus = "Error: \(error.localizedDescription)"
             return false
         }
@@ -283,18 +281,16 @@ AppSettings.setDate("ppsspAssetCheckDate", value: now)
 return .ok
 }
 
-// Try bundled zip extraction first
 _ = ensureAssetsCopied()
 if hasAssets {
 let now = Date()
 lastCheckDate = now
 AppSettings.setDate("ppsspAssetCheckDate", value: now)
-logger.info("PPSSPP assets ready from bundled zip")
+LoggerService.info(category: "PPSSPAssetService", "PPSSPP assets ready from bundled zip")
 return .ok
 }
 
-// Fall back to GitHub download
-logger.info("Bundled extraction failed/missing, trying GitHub download...")
+LoggerService.info(category: "PPSSPAssetService", "Bundled extraction failed/missing, trying GitHub download...")
 let downloadSuccess = await downloadAssets()
 if downloadSuccess && hasAssets {
 let now = Date()

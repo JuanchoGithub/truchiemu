@@ -77,7 +77,7 @@ struct BezelSettingsView: View {
                 do {
                     try storageManager.clearAllBezels()
                 } catch {
-                    print("Error clearing bezels: \(error)")
+                    LoggerService.error(category: "BezelSettings", "Error clearing bezels: \(error)")
                 }
             }
         } message: {

@@ -26,7 +26,7 @@ public class NotificationService: ObservableObject {
 			self.isAuthorized = granted
 			return granted
 		} catch {
-			print("Error requesting notification authorization: \(error)")
+			LoggerService.error(category: "Notifications", "Error requesting notification authorization: \(error)")
 			return false
 		}
 	}

@@ -1081,7 +1081,7 @@
   "shader.unsavedChangesTitle": "Unsaved Changes",
   "shader.unsavedChangesContext": "You are about to change the shader for %@.\nCurrent: %@\nNew: %@",
   "shader.unsavedChangesDefault": "You are about to change the default shader.\nCurrent: %@\nNew: %@",
-  "shader.applyAndClose": "Apply && Close",
+  "shader.applyAndClose": "Apply & Close",
   "shader.discardChanges": "Discard Changes",
   "shader.unsavedChangesFor": "for %@",
   "shader.unsavedChangesCurrent": "Current",

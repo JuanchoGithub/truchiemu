@@ -1,5 +1,4 @@
 import Foundation
-import OSLog
 
 final class CoreOverrideService {
     static let shared = CoreOverrideService()
@@ -7,7 +6,6 @@ final class CoreOverrideService {
     // Key: coreID, Value: [scope: [optionKey: optionValue]]
     // scope is "default" or a systemID like "gb", "gbc"
     private var overrides: [String: [String: [String: String]]] = [:]
-    private let logger = Logger(subsystem: "com.truchiemu", category: "CoreOverrideService")
 
     static let coreOverridesDirectory: URL = {
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
@@ -20,7 +18,7 @@ final class CoreOverrideService {
 
     private func loadOverrides() {
         guard let urls = Bundle.main.urls(forResourcesWithExtension: "json", subdirectory: nil) else {
-            logger.info("No bundled CoreOverrides found")
+            LoggerService.info(category: "CoreOverrideService", "No bundled CoreOverrides found")
             return
         }
 
@@ -52,10 +50,10 @@ final class CoreOverrideService {
                 overrides[coreID] = [:]
             }
             overrides[coreID]?[scope] = scopeOverrides
-            logger.info("Loaded bundled override: \(coreID)/\(scope) (\(scopeOverrides.count) options)")
+            LoggerService.info(category: "CoreOverrideService", "Loaded bundled override: \(coreID)/\(scope) (\(scopeOverrides.count) options)")
         }
 
-        logger.info("Loaded bundled overrides for \(self.overrides.count) cores")
+        LoggerService.info(category: "CoreOverrideService", "Loaded bundled overrides for \(self.overrides.count) cores")
     }
 
     func syncBundledOverridesToAppSupport() {
@@ -71,7 +69,7 @@ final class CoreOverrideService {
         do {
             try fm.createDirectory(at: baseDir, withIntermediateDirectories: true)
         } catch {
-            logger.error("Failed to create CoreOverrides directory: \(error)")
+            LoggerService.error(category: "CoreOverrideService", "Failed to create CoreOverrides directory: \(error)")
             return
         }
 
@@ -106,18 +104,18 @@ final class CoreOverrideService {
                 try fm.copyItem(at: url, to: dest)
                 syncedCount += 1
             } catch {
-                logger.error("Failed to sync override \(coreID)/\(scope): \(error)")
+                LoggerService.error(category: "CoreOverrideService", "Failed to sync override \(coreID)/\(scope): \(error)")
             }
         }
 
         try? bundleVersion.write(to: versionFile, atomically: true, encoding: .utf8)
         if syncedCount > 0 {
-            logger.info("Synced \(syncedCount) bundled override files to CoreOverrides (bundle \(bundleVersion))")
+            LoggerService.info(category: "CoreOverrideService", "Synced \(syncedCount) bundled override files to CoreOverrides (bundle \(bundleVersion))")
         }
     }
 
     func reloadOverrides() {
-        logger.info("Reloading core overrides...")
+        LoggerService.info(category: "CoreOverrideService", "Reloading core overrides...")
         loadOverrides()
     }
 
@@ -216,15 +214,15 @@ struct CoreOverrideUpdate {
 
     @objc static func logOverrides(for coreID: NSString) {
         let overrides = CoreOverrideService.shared.getOverrides(for: coreID as String)
-        let logger = Logger(subsystem: "com.truchiemu", category: "CoreOverrideBridge")
-
+        #if LOG_DEBUG
         if overrides.isEmpty {
-            logger.debug("No overrides for core: \(coreID)")
+            LoggerService.debug(category: "CoreOverrideBridge", "No overrides for core: \(coreID)")
         } else {
             for (key, value) in overrides {
-                logger.debug(" \(key) = \(value)")
+                LoggerService.debug(category: "CoreOverrideBridge", " \(key) = \(value)")
             }
         }
+        #endif
     }
 
     @objc static func getOverrideKeys(for coreID: NSString) -> [String] {

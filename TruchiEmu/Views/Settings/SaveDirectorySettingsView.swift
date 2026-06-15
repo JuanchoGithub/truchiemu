@@ -112,9 +112,11 @@ public struct SaveDirectorySettingsView: View {
         directoryManager.performMigration { result in
           switch result {
           case .success:
-            print("Migration completed successfully")
+            #if LOG_DEBUG
+            LoggerService.debug(category: "SaveDirs", "Migration completed successfully")
+            #endif
           case .failure(let error):
-            print("Migration failed: \(error)")
+            LoggerService.error(category: "SaveDirs", "Migration failed: \(error)")
           }
         }
       }

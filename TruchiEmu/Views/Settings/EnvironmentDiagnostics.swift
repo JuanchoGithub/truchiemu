@@ -1,13 +1,7 @@
-//
-//  EnvironmentDiagnostics.swift
-//  TruchiEmu
-//
-//  Diagnostic tool for debugging environment propagation
-
+#if LOG_DEBUG
 import SwiftUI
 import Foundation
 
-/// Diagnostic wrapper that logs when systemDatabase is accessed
 struct EnvironmentGuard<T: View>: View {
   let content: T
   let location: String
@@ -15,7 +9,7 @@ struct EnvironmentGuard<T: View>: View {
   init(location: String, @ViewBuilder content: () -> T) {
     self.location = location
     self.content = content()
-    print("[ENV-DEBUG] Creating EnvironmentGuard at: \(location)")
+    LoggerService.debug(category: "EnvDiagnostics", "Creating EnvironmentGuard at: \(location)")
   }
   
   var body: some View {
@@ -23,15 +17,14 @@ struct EnvironmentGuard<T: View>: View {
       content
     }
     .onAppear {
-      print("[ENV-DEBUG] ✅ EnvironmentGuard appeared at: \(location)")
+      LoggerService.debug(category: "EnvDiagnostics", "EnvironmentGuard appeared at: \(location)")
     }
     .onDisappear {
-      print("[ENV-DEBUG] ❌ EnvironmentGuard disappeared at: \(location)")
+      LoggerService.debug(category: "EnvDiagnostics", "EnvironmentGuard disappeared at: \(location)")
     }
   }
 }
 
-/// Diagnostic view that captures and verifies environment
 struct SystemDatabaseEnvironmentCapture: View {
   @Environment(SystemDatabaseWrapper.self) private var systemDatabase
   @ObservedObject private var loc = LocalizationManager.shared
@@ -49,18 +42,17 @@ struct SystemDatabaseEnvironmentCapture: View {
         .font(.caption)
     }
     .onAppear {
-      print("[ENV-DEBUG] ✅ SystemDatabase captured at: \(location)")
+      LoggerService.debug(category: "EnvDiagnostics", "SystemDatabase captured at: \(location)")
     }
   }
 }
 
-/// Diagnostic version of SaveDirectoriesSection with aggressive environment capture
 public struct DebugSaveDirectoriesSection: View {
   @Environment(SystemDatabaseWrapper.self) private var systemDatabase
   @ObservedObject private var loc = LocalizationManager.shared
 
   public init() {
-    print("[ENV-DEBUG] Initializing DebugSaveDirectoriesSection")
+    LoggerService.debug(category: "EnvDiagnostics", "Initializing DebugSaveDirectoriesSection")
   }
 
   public var body: some View {
@@ -68,30 +60,28 @@ public struct DebugSaveDirectoriesSection: View {
       VStack {
         SystemDatabaseEnvironmentCapture(location: "DebugSaveDirectoriesSection.inner")
 
-        // Nested view hierarchy to test propagation
         Group {
           Text(loc.localized("saveDirectories.title"))
             .font(.headline)
 
           Button(loc.localized("app.openSettings")) {
-            print("[ENV-DEBUG] Button tapped - systemDatabase available: YES")
+            LoggerService.debug(category: "EnvDiagnostics", "Button tapped - systemDatabase available: YES")
           }
         }
         .onAppear {
-          print("[ENV-DEBUG] ✅ Group appeared with systemDatabase")
+          LoggerService.debug(category: "EnvDiagnostics", "Group appeared with systemDatabase")
         }
       }
     }
     .onAppear {
-      print("[ENV-DEBUG] ✅ DebugSaveDirectoriesSection appeared")
+      LoggerService.debug(category: "EnvDiagnostics", "DebugSaveDirectoriesSection appeared")
     }
     .onDisappear {
-      print("[ENV-DEBUG] ❌ DebugSaveDirectoriesSection disappeared")
+      LoggerService.debug(category: "EnvDiagnostics", "DebugSaveDirectoriesSection disappeared")
     }
   }
 }
 
-/// Diagnostic wrapper that ensures environment is maintained
 public struct PreventEnvironmentLoss<T: View>: View {
   @Environment(SystemDatabaseWrapper.self) private var systemDatabase
   let content: T
@@ -106,7 +96,8 @@ public struct PreventEnvironmentLoss<T: View>: View {
     }
     .environment(systemDatabase)
     .onAppear {
-      print("[ENV-DEBUG] ✅ Environment re-propagated manually")
+      LoggerService.debug(category: "EnvDiagnostics", "Environment re-propagated manually")
     }
   }
 }
+#endif
