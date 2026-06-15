@@ -12,6 +12,16 @@ class TrainingModeOverlayViewModel: ObservableObject {
 
     private let storageService = MoveListStorageService.shared
     private var joinPhaseTimer: Timer?
+    private var cancellables = Set<AnyCancellable>()
+
+    init() {
+        manager.objectWillChange
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.objectWillChange.send()
+            }
+            .store(in: &cancellables)
+    }
 
     var fmdMonitorText: String? {
         let runner = manager.sequenceRunner

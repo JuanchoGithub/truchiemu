@@ -32,8 +32,10 @@ class TrainingModeManager: ObservableObject {
         frameDriver.isP2Joining
     }
 
+    private var pendingP2Join: Bool = false
     private var framePollCallback: (@convention(c) () -> Void)?
     private var xpcModeTimer: DispatchSourceTimer?
+    private var p2JoinPhaseTimer: Timer?
 
     func activate(for game: FightDataGame?, systemID: String, layout: ArcadeLayout) {
         currentGameData = game
@@ -72,12 +74,21 @@ class TrainingModeManager: ObservableObject {
             syncFrameDriver()
             installFramePollDriver()
             if !frameDriver.hasP2Joined {
-                #if LOG_DEBUG
-                LoggerService.debug(category: "TrainingP2", "Training enabled — P2 not yet joined, starting P2 join sequence")
-                #endif
-                triggerP2Join()
+                if isMenuVisible {
+                    pendingP2Join = true
+                    #if LOG_DEBUG
+                    LoggerService.debug(category: "TrainingP2", "Training enabled while menu is open — deferring P2 join until menu closes")
+                    #endif
+                } else {
+                    #if LOG_DEBUG
+                    LoggerService.debug(category: "TrainingP2", "Training enabled — P2 not yet joined, starting P2 join sequence")
+                    #endif
+                    triggerP2Join()
+                }
             }
         } else {
+            pendingP2Join = false
+            p2JoinPhase = 0
             removeFramePollDriver()
             frameDriver.clearP2Input()
             frameDriver.stopCountdown()
@@ -95,6 +106,13 @@ class TrainingModeManager: ObservableObject {
             XPCBridgeAdapter.shared.setPaused(true)
         } else {
             XPCBridgeAdapter.shared.setPaused(false)
+            if pendingP2Join {
+                pendingP2Join = false
+                #if LOG_DEBUG
+                LoggerService.debug(category: "TrainingP2", "Menu closed — firing deferred P2 join")
+                #endif
+                triggerP2Join()
+            }
         }
     }
 
@@ -121,6 +139,13 @@ class TrainingModeManager: ObservableObject {
     }
 
     func triggerP2Join() {
+        if isMenuVisible {
+            pendingP2Join = true
+            #if LOG_DEBUG
+            LoggerService.debug(category: "TrainingP2", "P2 Join triggered while menu is open — deferring until menu closes")
+            #endif
+            return
+        }
         let wasEnabled = config.isEnabled
         #if LOG_DEBUG
         LoggerService.debug(category: "TrainingP2", "triggerP2Join: isEnabled=\(wasEnabled), isArcade=\(isArcadeSystem), systemID=\(currentSystemID)")
@@ -132,6 +157,7 @@ class TrainingModeManager: ObservableObject {
                     #if LOG_DEBUG
                     LoggerService.debug(category: "TrainingP2", "P2 join complete callback (training was not enabled) — removing frame poll")
                     #endif
+                    self?.p2JoinPhase = 0
                     self?.removeFramePollDriver()
                 }
             }
@@ -255,14 +281,31 @@ class TrainingModeManager: ObservableObject {
         } else {
             installInProcessCallback()
         }
+        startP2JoinPhasePolling()
     }
 
     private func removeFramePollDriver() {
+        stopP2JoinPhasePolling()
         #if LOG_DEBUG
         LoggerService.debug(category: "TrainingP2", "removeFramePollDriver called — xpcTimer=\(xpcModeTimer != nil), callback=\(framePollCallback != nil)")
         #endif
         removeXPCTimer()
         removeInProcessCallback()
+    }
+
+    private func startP2JoinPhasePolling() {
+        stopP2JoinPhasePolling()
+        p2JoinPhaseTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+            Task { @MainActor in
+                guard let self else { return }
+                self.p2JoinPhase = self.frameDriver.currentP2JoinPhase
+            }
+        }
+    }
+
+    private func stopP2JoinPhasePolling() {
+        p2JoinPhaseTimer?.invalidate()
+        p2JoinPhaseTimer = nil
     }
 
     private func installInProcessCallback() {
@@ -392,10 +435,25 @@ final class TrainingFramePollDriver: @unchecked Sendable {
         defer { lock.unlock() }
         return p2JoinPhase
     }
+    var currentP2JoinFrame: Int {
+        lock.lock()
+        defer { lock.unlock() }
+        return p2JoinFrame
+    }
     var isP2Joining: Bool {
         lock.lock()
         defer { lock.unlock() }
         return p2JoinPhase > 0
+    }
+    var p2JoinMaxFramesForCurrentPhase: Int {
+        lock.lock()
+        defer { lock.unlock() }
+        return Self.maxFrames(p2JoinPhase, isArcade: isArcadeSystem)
+    }
+    var isArcadeSystemForP2Join: Bool {
+        lock.lock()
+        defer { lock.unlock() }
+        return isArcadeSystem
     }
     var onCountdownComplete: (() -> Void)?
     var onP2JoinComplete: (() -> Void)?
@@ -404,8 +462,27 @@ final class TrainingFramePollDriver: @unchecked Sendable {
     private static let coinHoldFrames = 10
     private static let startHoldFrames = 10
     private static let joinPauseFrames = 5
-    private static let charSelectPauseFrames = 180
+    private static let charSelectPauseFrames = 600
     private static let charSelectHoldFrames = 5
+    static func maxFrames(_ phase: Int, isArcade: Bool) -> Int {
+        if isArcade {
+            switch phase {
+            case 1: return coinHoldFrames
+            case 2: return joinPauseFrames
+            case 3: return startHoldFrames
+            case 4: return charSelectPauseFrames
+            case 5: return charSelectHoldFrames
+            default: return 0
+            }
+        } else {
+            switch phase {
+            case 1: return startHoldFrames
+            case 2: return charSelectPauseFrames
+            case 3: return charSelectHoldFrames
+            default: return 0
+            }
+        }
+    }
     private static let coin2RetroID: Int32 = 2
     private static let start2RetroID: Int32 = 3
 
@@ -768,11 +845,11 @@ final class TrainingFramePollDriver: @unchecked Sendable {
                     p2JoinFrame = 0
                 }
             case 3:
-                adapter.setKeyState(retroID: 0, player: 1, pressed: true)
+                adapter.setKeyState(retroID: Int(Self.start2RetroID), player: 1, pressed: true)
                 if p2JoinFrame >= Self.charSelectHoldFrames {
-                    adapter.setKeyState(retroID: 0, player: 1, pressed: false)
+                    adapter.setKeyState(retroID: Int(Self.start2RetroID), player: 1, pressed: false)
                     #if LOG_DEBUG
-                    LoggerService.debug(category: "TrainingP2", "Non-arcade: phase 3 COMPLETE (A press to pick char)")
+                    LoggerService.debug(category: "TrainingP2", "Non-arcade: phase 3 COMPLETE (Start press to pick char)")
                     #endif
                     p2JoinLoggedStart = false
                     finishP2JoinLocked()
@@ -823,11 +900,11 @@ final class TrainingFramePollDriver: @unchecked Sendable {
                 #endif
             }
         case 5:
-            adapter.setKeyState(retroID: 0, player: 1, pressed: true)
+            adapter.setKeyState(retroID: Int(Self.start2RetroID), player: 1, pressed: true)
             if p2JoinFrame >= Self.charSelectHoldFrames {
-                adapter.setKeyState(retroID: 0, player: 1, pressed: false)
+                adapter.setKeyState(retroID: Int(Self.start2RetroID), player: 1, pressed: false)
                 #if LOG_DEBUG
-                LoggerService.debug(category: "TrainingP2", "Arcade: phase 5 COMPLETE (A press to pick char)")
+                LoggerService.debug(category: "TrainingP2", "Arcade: phase 5 COMPLETE (Start press to pick char)")
                 #endif
                 p2JoinLoggedStart = false
                 finishP2JoinLocked()

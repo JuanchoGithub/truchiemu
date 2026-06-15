@@ -92,6 +92,8 @@ var moveListOverlayView: NSHostingView<AnyView>?
 var achievementToastOverlayView: NSHostingView<AnyView>?
 var escapeToastOverlayView: SafeHostingView<AnyView>?
 var trainingModeOverlayView: NSHostingView<AnyView>?
+var p2JoinStatusOverlayView: NSHostingView<AnyView>?
+private var p2JoinStatusCancellable: AnyCancellable?
 var guideSidebarView: NSHostingView<AnyView>?
     @MainActor lazy var trainingModeViewModel = TrainingModeOverlayViewModel()
 
@@ -129,8 +131,11 @@ return MoveListOverlayViewModel(runner: runner)
         escapeToastOverlayView?.removeFromSuperview()
         escapeToastOverlayView = nil
         trainingModeOverlayView?.removeFromSuperview()
-trainingModeOverlayView = nil
-guideSidebarView?.removeFromSuperview()
+        trainingModeOverlayView = nil
+        p2JoinStatusOverlayView?.removeFromSuperview()
+        p2JoinStatusOverlayView = nil
+        p2JoinStatusCancellable = nil
+        guideSidebarView?.removeFromSuperview()
 guideSidebarView = nil
         loadingOverlayView?.removeFromSuperview()
         loadingOverlayView = nil
@@ -552,6 +557,18 @@ gameGuideViewModel.loadForGame(rom)
                 }
             }
         }
+
+        // Observe P2 join state to show/hide status overlay on game window
+        p2JoinStatusCancellable = TrainingModeManager.shared.$p2JoinPhase
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] phase in
+                guard let self else { return }
+                if phase > 0 {
+                    installP2JoinStatusOverlay()
+                } else {
+                    removeP2JoinStatusOverlay()
+                }
+            }
 
         // Store progressive version for later use in loadSaveStatesAfterLaunch
         pendingProgressiveVersion = progressiveVersion
@@ -1052,7 +1069,8 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
 
         trainingModeViewModel.onCloseOverlay = { [weak self] in
             guard let self else { return }
-            self.toggleTrainingModeOverlay()
+            self.trainingModeOverlayView?.removeFromSuperview()
+            self.trainingModeOverlayView = nil
         }
 
         trainingModeViewModel.onSelectCharacterAndShowMoves = { [weak self] in
@@ -1133,6 +1151,42 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
 ])
 }
 
+    @MainActor
+    private func installP2JoinStatusOverlay() {
+        guard p2JoinStatusOverlayView == nil, let containerView = window?.contentView else { return }
+
+        let manager = TrainingModeManager.shared
+        let hostingView = SafeHostingView(rootView: AnyView(
+            P2JoinStatusOverlay(
+                frameDriver: manager.frameDriver,
+                isArcadeSystem: manager.isArcadeSystem
+            )
+        ))
+        hostingView.translatesAutoresizingMaskIntoConstraints = false
+        hostingView.wantsLayer = true
+        hostingView.layer?.backgroundColor = .clear
+
+        if let toolbar = toolbarView {
+            containerView.addSubview(hostingView, positioned: .below, relativeTo: toolbar)
+        } else {
+            containerView.addSubview(hostingView, positioned: .above, relativeTo: nil)
+        }
+        self.p2JoinStatusOverlayView = hostingView
+
+        NSLayoutConstraint.activate([
+            hostingView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            hostingView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            hostingView.topAnchor.constraint(equalTo: containerView.topAnchor),
+            hostingView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
+        ])
+    }
+
+    @MainActor
+    private func removeP2JoinStatusOverlay() {
+        p2JoinStatusOverlayView?.removeFromSuperview()
+        p2JoinStatusOverlayView = nil
+    }
+
     func windowWillClose(_ notification: Notification) {
         XPCBridgeAdapter.shared.setPaused(true)
 
@@ -1145,6 +1199,9 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
         loadingOverlayView = nil
         errorOverlayView?.removeFromSuperview()
         errorOverlayView = nil
+        p2JoinStatusOverlayView?.removeFromSuperview()
+        p2JoinStatusOverlayView = nil
+        p2JoinStatusCancellable = nil
         isLoading = false
         launchError = nil
 

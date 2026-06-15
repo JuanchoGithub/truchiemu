@@ -226,6 +226,7 @@ struct TrainingDummyTab: View {
                 EmptyView()
             }
             .pickerStyle(.segmented)
+            .disabled(!viewModel.isTrainingEnabled)
         }
     }
 
@@ -244,6 +245,7 @@ struct TrainingDummyTab: View {
                 EmptyView()
             }
             .pickerStyle(.segmented)
+            .disabled(!viewModel.isTrainingEnabled)
         }
     }
 
@@ -262,6 +264,7 @@ struct TrainingDummyTab: View {
                 EmptyView()
             }
             .pickerStyle(.segmented)
+            .disabled(!viewModel.isTrainingEnabled)
         }
     }
 
@@ -298,6 +301,7 @@ struct TrainingDummyTab: View {
                 EmptyView()
             }
             .pickerStyle(.segmented)
+            .disabled(!viewModel.isTrainingEnabled)
         }
     }
 
@@ -315,6 +319,7 @@ struct TrainingDummyTab: View {
                 EmptyView()
             }
             .pickerStyle(.segmented)
+            .disabled(!viewModel.isTrainingEnabled)
         }
     }
 
@@ -333,6 +338,7 @@ struct TrainingDummyTab: View {
                 EmptyView()
             }
             .pickerStyle(.segmented)
+            .disabled(!viewModel.isTrainingEnabled)
         }
     }
 
@@ -1376,5 +1382,95 @@ struct TrainingMovesTab: View {
             .padding(.vertical, 6)
         }
         .padding(.vertical, 4)
+    }
+}
+
+// MARK: - P2 Join Status Overlay (shown on game window during P2 join)
+
+struct P2JoinStatusOverlay: View {
+    let frameDriver: TrainingFramePollDriver
+    let isArcadeSystem: Bool
+    @ObservedObject private var loc = LocalizationManager.shared
+    @Environment(\.colorScheme) private var colorScheme
+    @State private var phase: Int = 0
+    @State private var frame: Int = 0
+    @State private var maxFrames: Int = 0
+    @State private var timer: Timer?
+
+    private let pollInterval: TimeInterval = 0.1
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 6) {
+                ProgressView()
+                    .scaleEffect(0.8)
+                    .controlSize(.small)
+                Text(loc.localized("training.p2Join.joining"))
+                    .font(.system(size: 13, weight: .semibold))
+            }
+            .foregroundColor(.white)
+
+            Text(phaseText)
+                .font(.system(size: 12))
+                .foregroundColor(.white.opacity(0.85))
+
+            if maxFrames > 0 {
+                ProgressView(value: min(Double(frame) / Double(maxFrames), 1.0))
+                    .tint(.white)
+                    .progressViewStyle(.linear)
+                    .frame(width: 160)
+            } else {
+                ProgressView()
+                    .scaleEffect(0.6)
+                    .progressViewStyle(.circular)
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(.black.opacity(0.55))
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+        .padding(.trailing, 20)
+        .padding(.top, 60)
+        .onAppear(perform: startPolling)
+        .onDisappear(perform: stopPolling)
+    }
+
+    private var phaseText: String {
+        if isArcadeSystem {
+            switch phase {
+            case 1: return loc.localized("training.p2Join.insertingCoin")
+            case 2: return loc.localized("training.p2Join.coinReleased")
+            case 3: return loc.localized("training.p2Join.pressingStart")
+            case 4: return loc.localized("training.p2Join.waitingCharSelect")
+            case 5: return loc.localized("training.p2Join.selectingCharacter")
+            default: return ""
+            }
+        } else {
+            switch phase {
+            case 1: return loc.localized("training.p2Join.pressingStart")
+            case 2: return loc.localized("training.p2Join.waitingCharSelect")
+            case 3: return loc.localized("training.p2Join.selectingCharacter")
+            default: return ""
+            }
+        }
+    }
+
+    private func startPolling() {
+        phase = frameDriver.currentP2JoinPhase
+        frame = frameDriver.currentP2JoinFrame
+        maxFrames = frameDriver.p2JoinMaxFramesForCurrentPhase
+        timer = Timer.scheduledTimer(withTimeInterval: pollInterval, repeats: true) { _ in
+            Task { @MainActor in
+                phase = frameDriver.currentP2JoinPhase
+                frame = frameDriver.currentP2JoinFrame
+                maxFrames = frameDriver.p2JoinMaxFramesForCurrentPhase
+            }
+        }
+    }
+
+    private func stopPolling() {
+        timer?.invalidate()
+        timer = nil
     }
 }
