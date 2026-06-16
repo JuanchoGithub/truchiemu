@@ -1,1 +1,2783 @@
-{"schemaVersion":2,"romIds":["beastrzr","beastrzra","bldyroar"],"name":"Beastorizer","controls":{"_P":"Punch","_K":"Kick","_B":"Beast","_S":"Start"},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves","_`":"String Moves"},"commonCommands":[{"category":"_)","name":"Dash","input":"_6_6"},{"category":"_)","name":"Run","input":"_6^6"},{"category":"_)","name":"Retreat","input":"_4_4"},{"category":"_)","name":"Low Crouch","input":"_2^2"},{"category":"_)","name":"Crawl Forward","input":"^3"},{"category":"_)","name":"Crawl Backward","input":"^1"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_9 (Beast Mode only)"},{"category":"_)","name":"Hammer Drop","input":"_^_4 / _6_+_P"},{"category":"_)","name":"Flying Beast Attack","input":"_^_4 / _6_+_B"},{"category":"_)","name":"Drop Kick: Roll Backward","input":"_^_6_+_K"},{"category":"_)","name":"Reverse Drop Kick: Roll Forward","input":"_^_4_+_K"},{"category":"_)","name":"Rushing Low Punch before landing","input":"_2_+_P"},{"category":"_)","name":"Sweep before landing","input":"_2_+_K"},{"category":"_)","name":"Beast Sweep before landing","input":"_2_+_B"},{"category":"_)","name":"Guard Escape being hit","input":"_6"},{"category":"_)","name":"Land on Feet knocked down on air","input":"_P_+_K"},{"category":"_)","name":"Roll knocked down _?"},{"category":"_)","name":"Kick Up Attack knocked down","input":"_K"},{"category":"_)","name":"Ground Punch opponent knocked down","input":"_2_+_P"},{"category":"_)","name":"Ground Kick opponent knocked down","input":"_2_+_K"},{"category":"_)","name":"Ground Beast Attack opponent knocked down","input":"_2_+_B"},{"category":"_)","name":"Pounce opponent knocked down","input":"_8_+_P / _K / _B (Beast Mode only)"}],"characters":[{"name":"YUGO OOGAMI","moves":[{"category":"_(","name":"Throw","input":"_P_+_K"},{"category":"_(","name":"Crouching Throw crouching opponent","input":"_2_+_P_+_K"},{"category":"_@","name":"Quick One-Two","input":"_2_3_6_+_P"},{"category":"_@","name":"Body Upper","input":"_6_+_P_6_+_P"},{"category":"_@","name":"Gekka Shou","input":"_2_3_6_+_K"},{"category":"_@","name":"Bloody Roar","input":"_2_3_6_+_B"},{"category":"_@","name":"Silver Wolf Knuckle","input":"_2_1_4_+_P"},{"category":"_@","name":"Crescent Somersault","input":"_2_1_4_+_K"},{"category":"_@","name":"Flying Berserk","input":"_2_1_4_+_B"},{"category":"_@","name":"Meteor Crash hit the wall","input":"_P / _K / _B"},{"category":"_`","input":"_P_P_P","hitLevels":"hhm"},{"category":"_`","input":"_P_P_6_+_P","hitLevels":"hhm"},{"category":"_`","input":"_P_P_P_K","hitLevels":"hhmh"},{"category":"_`","input":"_P_P_P_2_+_K","hitLevels":"hhml"},{"category":"_`","input":"_P_P_P_2_+_B","hitLevels":"hhmm"},{"category":"_`","input":"_P_P_K","hitLevels":"hhh"},{"category":"_`","input":"_P_P_2_+_K","hitLevels":"hhl"},{"category":"_`","input":"_P_P_B","hitLevels":"hhm"},{"category":"_`","input":"_P_K_K","hitLevels":"hhh"},{"category":"_`","input":"_P_K_2_+_K","hitLevels":"hhl"},{"category":"_`","input":"_K_K","hitLevels":"hh"},{"category":"_`","input":"_K_2_+_K","hitLevels":"hl"},{"category":"_`","input":"_B_B_B","hitLevels":"mmmm"},{"category":"_`","input":"_B_6_+_B","hitLevels":"mmm"},{"category":"_`","input":"_B_2_+_P","hitLevels":"mm"},{"category":"_`","input":"_B_2_+_K","hitLevels":"ml"},{"category":"_`","input":"_B_2_+_B","hitLevels":"ml"},{"category":"_`","input":"_6_+_P","hitLevels":"m"},{"category":"_`","input":"_6_+_K","hitLevels":"m"},{"category":"_`","input":"_6_+_B","hitLevels":"mm"},{"category":"_`","input":"_6_6_+_P","hitLevels":"mh"},{"category":"_`","input":"_6_6_+_K_2_+_K","hitLevels":"ml"},{"category":"_`","input":"_6_6_+_B","hitLevels":"m"},{"category":"_`","input":"_4_+_P_4_+_P_4_+_P","hitLevels":"hhl"},{"category":"_`","input":"_4_+_P_4_+_P_4_+_B","hitLevels":"hhm"},{"category":"_`","input":"_4_+_P_2_+_P","hitLevels":"hl"},{"category":"_`","input":"_4_+_K","hitLevels":"h"},{"category":"_`","input":"_4_+_B","hitLevels":"m"},{"category":"_`","input":"_4_4_+_B","hitLevels":"l"},{"category":"_`","input":"_2_+_P_K","hitLevels":"lm"},{"category":"_`","input":"_2_+_P_2_+_K","hitLevels":"ll"},{"category":"_`","input":"_2_+_K_P_K","hitLevels":"lmm"},{"category":"_`","input":"_2_+_B","hitLevels":"m"},{"category":"_`","input":"_1_+_P","hitLevels":"l"},{"category":"_`","input":"_1_+_K","hitLevels":"l"},{"category":"_`","input":"_1_+_B_B","hitLevels":"lm"},{"category":"_`","input":"_3_+_P_3_+_P_3_+_P_3_+_P","hitLevels":"mmmmm"},{"category":"_`","input":"_3_+_K_K","hitLevels":"mm"},{"category":"_`","input":"_3_+_B_2_+_P","hitLevels":"lm"},{"category":"_`","input":"_8_+_P","hitLevels":"m"},{"category":"_`","input":"_8_+_K","hitLevels":"m"},{"category":"_`","input":"_8_+_B","hitLevels":"m"},{"category":"_`","name":"Low Crouch","input":"_P","hitLevels":"m"},{"category":"_`","name":"Low Crouch","input":"_K_K","hitLevels":"mm"},{"category":"_`","name":"Low Crouch","input":"_B","hitLevels":"m"}],"notes":["BEAST MODE: WOLF","Strings Moves"]},{"name":"ALAN GADO","moves":[{"category":"_(","name":"Throw","input":"_P_+_K"},{"category":"_(","name":"Crouching Throw crouching opponent","input":"_2_+_P_+_K"},{"category":"_@","name":"Heat Capture","input":"_2_3_6_+_P"},{"category":"_@","name":"Mid Kick","input":"_K"},{"category":"_@","name":"Low Kick","input":"_2_+_K"},{"category":"_@","name":"Rage Cutter","input":"_2_3_6_+_K"},{"category":"_@","name":"Demolition Fang","input":"_2_3_6_+_B"},{"category":"_@","name":"Assault Blow","input":"_2_1_4_+_P"},{"category":"_@","name":"Danger Spin","input":"_2_1_4_+_K"},{"category":"_@","name":"Rising Laser","input":"_2_1_4_+_B"},{"category":"_`","input":"_P_P_6_+_P","hitLevels":"hmm"},{"category":"_`","input":"_P_P_6_+_K","hitLevels":"hmm"},{"category":"_`","input":"_P_P_2_+_B","hitLevels":"hml"},{"category":"_`","input":"_K_K_K","hitLevels":"hhh"},{"category":"_`","input":"_K_K_6_+_K_K_K","hitLevels":"hhmmm"},{"category":"_`","input":"_K_K_6_+_K_2_+_K_K","hitLevels":"hhmlm"},{"category":"_`","input":"_K_4_+_P_P_B_6_+_K_K_K","hitLevels":"hhmmmmm"},{"category":"_`","input":"_K_4_+_P_P_B_6_+_K_2_+_K_K","hitLevels":"hhmmmlm"},{"category":"_`","input":"_K_4_+_P_P_B_B","hitLevels":"hhmmm"},{"category":"_`","input":"_K_4_+_P_P_B_2_+_B","hitLevels":"hhmml"},{"category":"_`","input":"_B_B_B","hitLevels":"hmm"},{"category":"_`","input":"_B_B_6_+_K_K_K","hitLevels":"hmmmm"},{"category":"_`","input":"_B_B_6_+_K_2_+_K_K","hitLevels":"hmmlm"},{"category":"_`","input":"_B_B_2_+_B","hitLevels":"hml"},{"category":"_`","input":"_B_2_+_B_B","hitLevels":"hmm"},{"category":"_`","input":"_6_+_P_P_P","hitLevels":"mmm"},{"category":"_`","input":"_6_+_P_K","hitLevels":"mh"},{"category":"_`","input":"_6_+_K_K_K","hitLevels":"mmm"},{"category":"_`","input":"_6_+_K_2_+_K_K","hitLevels":"mlm"},{"category":"_`","input":"_6_+_B_B","hitLevels":"mm"},{"category":"_`","input":"_6_6_+_P","hitLevels":"m"},{"category":"_`","input":"_6_6_+_K","hitLevels":"m"},{"category":"_`","input":"_6_6_+_B","hitLevels":"m"},{"category":"_`","input":"_4_+_P_P_B_B","hitLevels":"hmmm"},{"category":"_`","input":"_4_+_K","hitLevels":"h"},{"category":"_`","input":"_4_+_B","hitLevels":"m"},{"category":"_`","input":"_4_4_+_B","hitLevels":"mm"},{"category":"_`","input":"_2_+_P","hitLevels":"l"},{"category":"_`","input":"_2_+_K","hitLevels":"l"},{"category":"_`","input":"_2_+_B_B","hitLevels":"mm"},{"category":"_`","input":"_1_+_P","hitLevels":"l"},{"category":"_`","input":"_1_+_K","hitLevels":"l"},{"category":"_`","input":"_1_+_B","hitLevels":"l"},{"category":"_`","input":"_3_+_P_P","hitLevels":"mm"},{"category":"_`","input":"_3_+_P_6_+_B_B","hitLevels":"mmm"},{"category":"_`","input":"_3_+_P_6_+_B_2_+_B","hitLevels":"mml"},{"category":"_`","input":"_3_+_P_2_+_K","hitLevels":"ml"},{"category":"_`","input":"_3_+_K","hitLevels":"m"},{"category":"_`","input":"_3_+_B","hitLevels":"m"},{"category":"_`","input":"_8_+_P","hitLevels":"m"},{"category":"_`","input":"_8_+_K","hitLevels":"m"},{"category":"_`","input":"_8_+_B","hitLevels":"m"},{"category":"_`","name":"Low Crouch","input":"_P_P","hitLevels":"mm"},{"category":"_`","name":"Low Crouch","input":"_K","hitLevels":"m"},{"category":"_`","name":"Low Crouch","input":"_B","hitLevels":"l"}],"notes":["BEAST MODE: LION","Strings Moves"]},{"name":"ALICE TSUKAGAMI","moves":[{"category":"_(","name":"Throw","input":"_P_+_K"},{"category":"_(","name":"Crouching Throw crouching opponent","input":"_2_+_P_+_K"},{"category":"_(","name":"Air Raid","input":"_^_2_+_P_+_K"},{"category":"_@","name":"Rabbit Spiral","input":"_2_3_6_+_P"},{"category":"_@","name":"Round Slash","input":"_2_3_6_+_K"},{"category":"_@","name":"Rabbit Flip","input":"_2_3_6_+_B"},{"category":"_@","name":"Spinning Hopper","input":"_2_1_4_+_P"},{"category":"_@","name":"Triple Somersault","input":"_2_1_4_+_K_4_+_K_4_+_B"},{"category":"_@","name":"Switch Moonsault","input":"_2_1_4_+_B"},{"category":"_`","input":"_P_P_P_6_+_P_B_B_B_6_+_B","hitLevels":"hhmmhhmh"},{"category":"_`","input":"_P_P_P_6_+_P_B_B_B_4_+_B","hitLevels":"hhmmhhmm"},{"category":"_`","input":"_P_P_P_6_+_P_B_B_B_2_+_B","hitLevels":"hhmmhhml"},{"category":"_`","input":"_P_P_P_6_+_P_B_B_K","hitLevels":"hhmmhhl"},{"category":"_`","input":"_P_P_P_4_+_K","hitLevels":"hhmmm"},{"category":"_`","input":"_P_P_P_2_+_P","hitLevels":"hhmml"},{"category":"_`","input":"_P_K_K_6_+_K","hitLevels":"hhhm"},{"category":"_`","input":"_P_K_K_4_+_K","hitLevels":"hhhh"},{"category":"_`","input":"_P_K_K_2_+_K","hitLevels":"hhhl"},{"category":"_`","input":"_K_K_6_+_K","hitLevels":"hhm"},{"category":"_`","input":"_K_K_4_+_K","hitLevels":"hhh"},{"category":"_`","input":"_K_K_2_+_K","hitLevels":"hhl"},{"category":"_`","input":"_B_B_B_6_+_B","hitLevels":"hhmh"},{"category":"_`","input":"_B_B_B_4_+_B","hitLevels":"hhmm"},{"category":"_`","input":"_B_B_B_2_+_B","hitLevels":"hhml"},{"category":"_`","input":"_B_B_2_+_K","hitLevels":"hml"},{"category":"_`","input":"_6_+_P_6_+_P","hitLevels":"mm"},{"category":"_`","input":"_6_+_K_4_+_K","hitLevels":"mm"},{"category":"_`","input":"_6_+_K_2_+_K_2_+_P","hitLevels":"mll"},{"category":"_`","input":"_6_+_B","hitLevels":"m"},{"category":"_`","input":"_6_6_+_P","hitLevels":"l"},{"category":"_`","input":"_6_6_+_K","hitLevels":"m"},{"category":"_`","input":"_6_6_+_B","hitLevels":"m"},{"category":"_`","input":"_4_+_P_P_K","hitLevels":"mmm"},{"category":"_`","input":"_4_+_P_K","hitLevels":"mh"},{"category":"_`","input":"_4_+_K","hitLevels":"h"},{"category":"_`","input":"_4_+_B","hitLevels":"m"},{"category":"_`","input":"_4_4_+_B_B","hitLevels":"m"},{"category":"_`","input":"_2_+_P_2_+_K_K","hitLevels":"llm"},{"category":"_`","input":"_2_+_P_2_+_K_2_+_K","hitLevels":"lll"},{"category":"_`","input":"_2_+_K_K","hitLevels":"lm"},{"category":"_`","input":"_2_+_K_2_+_K","hitLevels":"ll"},{"category":"_`","input":"_2_+_B_2_+_B_B","hitLevels":"llm"},{"category":"_`","input":"_2_+_B_2_+_B_2_+_K_2_+_P","hitLevels":"llll"},{"category":"_`","input":"_1_+_P_K","hitLevels":"ll"},{"category":"_`","input":"_1_+_K","hitLevels":"l"},{"category":"_`","input":"_1_+_B","hitLevels":"l"},{"category":"_`","input":"_3_+_P_P_B_B_6_+_B","hitLevels":"mmhmh"},{"category":"_`","input":"_3_+_P_P_B_B_4_+_B","hitLevels":"mmhmm"},{"category":"_`","input":"_3_+_P_P_B_B_2_+_B","hitLevels":"mmhml"},{"category":"_`","input":"_3_+_P_P_B_2_+_K","hitLevels":"mmhl"},{"category":"_`","input":"_3_+_K","hitLevels":"l"},{"category":"_`","input":"_3_+_B","hitLevels":"l"},{"category":"_`","input":"_8_+_P","hitLevels":"m"},{"category":"_`","input":"_8_+_K","hitLevels":"m"},{"category":"_`","input":"_8_+_B","hitLevels":"m"},{"category":"_`","name":"Low Crouch","input":"_P","hitLevels":"m"},{"category":"_`","name":"Low Crouch","input":"_K","hitLevels":"m"},{"category":"_`","name":"Low Crouch","input":"_B","hitLevels":"m"}],"notes":["BEAST MODE: RABBIT","Strings Moves"]},{"name":"FOX","moves":[{"category":"_(","name":"Throw","input":"_P_+_K"},{"category":"_(","name":"Crouching Throw crouching opponent","input":"_2_+_P_+_K"},{"category":"_@","name":"Triple Mid Strike","input":"_2_3_6_+_P"},{"category":"_@","name":"Slice","input":"_P"},{"category":"_@","name":"Rising Kick","input":"_2_3_6_+_K"},{"category":"_@","name":"Charging Double Claw Swipe","input":"_2_3_6_+_B"},{"category":"_@","name":"Charge Up Rising Backhand Strike","input":"_2_1_4_+_P"},{"category":"_@","name":"Rising Windmill Kick","input":"_2_1_4_+_K"},{"category":"_@","name":"Roll Backward","input":"_2_1_4_+_B"},{"category":"_@","name":"Surprise Leap","input":"_B"},{"category":"_`","input":"_P_P_P_P","hitLevels":"hhhh"},{"category":"_`","input":"_P_P_P_K","hitLevels":"hhh-"},{"category":"_`","input":"_P_P_P_2_+_K","hitLevels":"hhhl"},{"category":"_`","input":"_P_P_K","hitLevels":"hhh"},{"category":"_`","input":"_P_P_B_B","hitLevels":"hhmm"},{"category":"_`","input":"_P_P_2_+_B","hitLevels":"hhll"},{"category":"_`","input":"_P_K","hitLevels":"hh"},{"category":"_`","input":"_K","hitLevels":"h"},{"category":"_`","input":"_B_B_B_B_8_+_K","hitLevels":"mmmmm"},{"category":"_`","input":"_6_+_P_P_P_K","hitLevels":"mmm-"},{"category":"_`","input":"_6_+_P_P_P_4_+_K_8_+_P_P","hitLevels":"mmmmm"},{"category":"_`","input":"_6_+_P_P_P_4_+_K_8_+_P_B","hitLevels":"mmmmm"},{"category":"_`","input":"_6_+_P_P_P_4_+_K_8_+_P_8_+_P","hitLevels":"mmmmmm"},{"category":"_`","input":"_6_+_P_P_P_4_+_K_7_+_P","hitLevels":"mmmmmm"},{"category":"_`","input":"_6_+_P_P_P_4_+_K_7_+_K_8_+_P_P","hitLevels":"mmmmmm"},{"category":"_`","input":"_6_+_P_P_P_4_+_K_7_+_K_8_+_P_B","hitLevels":"mmmmmm"},{"category":"_`","input":"_6_+_P_P_P_4_+_K_7_+_K_8_+_P_8_+_P","hitLevels":"mmmmmmm"},{"category":"_`","input":"_6_+_P_P_P_4_+_K_7_+_K_7_+_P","hitLevels":"mmmmmmm"},{"category":"_`","input":"_6_+_P_P_P_4_+_K_7_+_K_7_+_K_8_+_P_P","hitLevels":"mmmmmmm"},{"category":"_`","input":"_6_+_P_P_P_4_+_K_7_+_K_7_+_K_8_+_P_B","hitLevels":"mmmmmmm"},{"category":"_`","input":"_6_+_P_P_P_4_+_K_7_+_K_7_+_K_8_+_P_8_+_P","hitLevels":"mmmmmmmm"},{"category":"_`","input":"_6_+_P_P_P_4_+_K_7_+_K_7_+_K_7_+_P","hitLevels":"mmmmmmmm"},{"category":"_`","input":"_6_+_P_P_P_4_+_K_7_+_K_7_+_K_7_+_K_8_+_P_P","hitLevels":"mmmmmmmm"},{"category":"_`","input":"_6_+_P_P_P_4_+_K_7_+_K_7_+_K_7_+_K_8_+_P_B","hitLevels":"mmmmmmmm"},{"category":"_`","input":"_6_+_P_P_P_4_+_K_7_+_K_7_+_K_7_+_K_8_+_P_8_+_P","hitLevels":"mmmmmmmmm"},{"category":"_`","input":"_6_+_P_P_P_4_+_K_7_+_K_7_+_K_7_+_K_7_+_P","hitLevels":"mmmmmmmmm"},{"category":"_`","input":"_6_+_P_P_P_2_+_K","hitLevels":"mmml"},{"category":"_`","input":"_6_+_P_P_P_8_+_K","hitLevels":"mmmm"},{"category":"_`","input":"_6_+_K","hitLevels":"h"},{"category":"_`","input":"_6_+_B_B","hitLevels":"mm"},{"category":"_`","input":"_6_6_+_P","hitLevels":"m"},{"category":"_`","input":"_6_6_+_K_K","hitLevels":"mm"},{"category":"_`","input":"_6_6_+_B","hitLevels":"m"},{"category":"_`","input":"_4_+_P","hitLevels":"h"},{"category":"_`","input":"_4_+_K_K_2_+_K","hitLevels":"hml"},{"category":"_`","input":"_4_+_B","hitLevels":"m"},{"category":"_`","input":"_4_4_+_B","hitLevels":"m"},{"category":"_`","input":"_2_+_P","hitLevels":"l"},{"category":"_`","input":"_2_+_K_K","hitLevels":"lm"},{"category":"_`","input":"_2_+_K_2_+_K","hitLevels":"ll"},{"category":"_`","input":"_2_+_B","hitLevels":"l"},{"category":"_`","input":"_1_+_P","hitLevels":"ll"},{"category":"_`","input":"_1_+_K","hitLevels":"l"},{"category":"_`","input":"_1_+_B","hitLevels":"l"},{"category":"_`","input":"_3_+_P_P","hitLevels":"mm"},{"category":"_`","input":"_3_+_K","hitLevels":"m"},{"category":"_`","input":"_3_+_B","hitLevels":"l"},{"category":"_`","input":"_8_+_P_P","hitLevels":"m"},{"category":"_`","input":"_8_+_P_B","hitLevels":"m"},{"category":"_`","input":"_8_+_P_8_+_P","hitLevels":"mm"},{"category":"_`","input":"_8_+_K","hitLevels":"m"},{"category":"_`","input":"_8_+_B","hitLevels":"m"},{"category":"_`","input":"_7_+_P","hitLevels":"mm"},{"category":"_`","input":"_7_+_K_8_+_P_P","hitLevels":"mm"},{"category":"_`","input":"_7_+_K_8_+_P_B","hitLevels":"mm"},{"category":"_`","input":"_7_+_K_8_+_P_8_+_P","hitLevels":"mmm"},{"category":"_`","input":"_7_+_K_7_+_P","hitLevels":"mmm"},{"category":"_`","input":"_7_+_K_7_+_K_8_+_P_P","hitLevels":"mmm"},{"category":"_`","input":"_7_+_K_7_+_K_8_+_P_B","hitLevels":"mmm"},{"category":"_`","input":"_7_+_K_7_+_K_8_+_P_8_+_P","hitLevels":"mmmm"},{"category":"_`","input":"_7_+_K_7_+_K_7_+_P","hitLevels":"mmmm"},{"category":"_`","input":"_7_+_K_7_+_K_7_+_K_8_+_P_P","hitLevels":"mmmm"},{"category":"_`","input":"_7_+_K_7_+_K_7_+_K_8_+_P_B","hitLevels":"mmmm"},{"category":"_`","input":"_7_+_K_7_+_K_7_+_K_8_+_P_8_+_P","hitLevels":"mmmmm"},{"category":"_`","input":"_7_+_K_7_+_K_7_+_K_7_+_P","hitLevels":"mmmmm"},{"category":"_`","input":"_7_+_K_7_+_K_7_+_K_7_+_K_8_+_P_P","hitLevels":"mmmmm"},{"category":"_`","input":"_7_+_K_7_+_K_7_+_K_7_+_K_8_+_P_B","hitLevels":"mmmmm"},{"category":"_`","input":"_7_+_K_7_+_K_7_+_K_7_+_K_8_+_P_8_+_P","hitLevels":"mmmmmm"},{"category":"_`","input":"_7_+_K_7_+_K_7_+_K_7_+_K_7_+_P","hitLevels":"mmmmmm"},{"category":"_`","input":"_9_+_K_8_+_P_P","hitLevels":"mm"},{"category":"_`","input":"_9_+_K_8_+_P_B","hitLevels":"mm"},{"category":"_`","input":"_9_+_K_8_+_P_8_+_P","hitLevels":"mmm"},{"category":"_`","input":"_9_+_K_9_+_P","hitLevels":"mmm"},{"category":"_`","input":"_9_+_K_9_+_K_8_+_P_P","hitLevels":"mmm"},{"category":"_`","input":"_9_+_K_9_+_K_8_+_P_B","hitLevels":"mmm"},{"category":"_`","input":"_9_+_K_9_+_K_8_+_P_8_+_P","hitLevels":"mmmm"},{"category":"_`","input":"_9_+_K_9_+_K_9_+_P","hitLevels":"mmmm"},{"category":"_`","input":"_9_+_K_9_+_K_9_+_K_8_+_P_P","hitLevels":"mmmm"},{"category":"_`","input":"_9_+_K_9_+_K_9_+_K_8_+_P_B","hitLevels":"mmmm"},{"category":"_`","input":"_9_+_K_9_+_K_9_+_K_8_+_P_8_+_P","hitLevels":"mmmmm"},{"category":"_`","input":"_9_+_K_9_+_K_9_+_K_9_+_P","hitLevels":"mmmmm"},{"category":"_`","input":"_9_+_K_9_+_K_9_+_K_9_+_K_8_+_P_P","hitLevels":"mmmmm"},{"category":"_`","input":"_9_+_K_9_+_K_9_+_K_9_+_K_8_+_P_B","hitLevels":"mmmmm"},{"category":"_`","input":"_9_+_K_9_+_K_9_+_K_9_+_K_8_+_P_8_+_P","hitLevels":"mmmmmm"},{"category":"_`","input":"_9_+_K_9_+_K_9_+_K_9_+_K_9_+_P","hitLevels":"mmmmmm"},{"category":"_`","name":"Low Crouch","input":"_P","hitLevels":"m"},{"category":"_`","name":"Low Crouch","input":"_K","hitLevels":"ll"},{"category":"_`","name":"Low Crouch","input":"_B","hitLevels":"m"}],"notes":["BEAST MODE: FOX","Strings Moves"]},{"name":"BAKURYU","moves":[{"category":"_(","name":"Throw","input":"_P_+_K"},{"category":"_(","name":"Crouching Throw crouching opponent","input":"_2_+_P_+_K"},{"category":"_(","name":"Izuna Otoshi","input":"_^_2_+_P_+_K"},{"category":"_@","name":"Raikou Izuna Otoshi opponent in air","input":"_2_3_6_+_P"},{"category":"_@","name":"Enmaku Dan","input":"_2_3_6_+_K"},{"category":"_@","name":"Zugokku Zuki","input":"_2_3_6_+_B"},{"category":"_@","name":"Kouki Ryuu Gekihou","input":"_2_1_4_+_P"},{"category":"_@","name":"Enjin Rasen Kyaku","input":"_2_1_4_+_K"},{"category":"_@","name":"Shoten Kaki Age","input":"_2_1_4_+_B"},{"category":"_`","input":"_P_P_P_P","hitLevels":"hhhh"},{"category":"_`","input":"_P_P_P_2_+_K_P","hitLevels":"hhhlm"},{"category":"_`","input":"_P_P_P_8_+_P","hitLevels":"hhh"},{"category":"_`","input":"_P_P_K_K","hitLevels":"hhmm"},{"category":"_`","input":"_P_P_K_2_+_K","hitLevels":"hhml"},{"category":"_`","input":"_P_P_2_+_K_P","hitLevels":"hhlm"},{"category":"_`","input":"_P_K_K","hitLevels":"hhmm"},{"category":"_`","input":"_P_K_K_K","hitLevels":"hhmh"},{"category":"_`","input":"_P_K_K_6_+_K_4_+_K","hitLevels":"hhmmm"},{"category":"_`","input":"_P_K_K_4_+_K","hitLevels":"hhmm"},{"category":"_`","input":"_K_K","hitLevels":"hmm"},{"category":"_`","input":"_K_K_K","hitLevels":"hmh"},{"category":"_`","input":"_K_K_6_+_K_4_+_K","hitLevels":"hmmm"},{"category":"_`","input":"_K_K_4_+_K","hitLevels":"hmm"},{"category":"_`","input":"_B_B_B","hitLevels":"hhm"},{"category":"_`","input":"_B_B_2_+_K_K_K","hitLevels":"hhlhh"},{"category":"_`","input":"_B_B_2_+_K_6_+_K","hitLevels":"hhlm"},{"category":"_`","input":"_B_B_2_+_K_2_+_K","hitLevels":"hhll"},{"category":"_`","input":"_B_B_2_+_B","hitLevels":"hhll"},{"category":"_`","input":"_B_2_+_B","hitLevels":"hl"},{"category":"_`","input":"_6_+_P","hitLevels":"m"},{"category":"_`","input":"_6_+_K_4_+_K","hitLevels":"mm"},{"category":"_`","input":"_6_+_B_K_K_K","hitLevels":"mhmh"},{"category":"_`","input":"_6_+_B_K_K_6_+_K_4_+_K","hitLevels":"mhmmm"},{"category":"_`","input":"_6_+_B_K_K_4_+_K","hitLevels":"mhmm"},{"category":"_`","input":"_6_+_B_B_B_B_B","hitLevels":"mmmmm"},{"category":"_`","input":"_6_6_+_P","hitLevels":"m"},{"category":"_`","input":"_6_6_+_K_K_K","hitLevels":"mhm"},{"category":"_`","input":"_6_6_+_B","hitLevels":"m"},{"category":"_`","input":"_4_+_P","hitLevels":"m"},{"category":"_`","input":"_4_+_K","hitLevels":"m"},{"category":"_`","input":"_4_+_B","hitLevels":"m"},{"category":"_`","input":"_4_4_+_B","hitLevels":"m"},{"category":"_`","input":"_2_+_P","hitLevels":"l"},{"category":"_`","input":"_2_+_K","hitLevels":"l"},{"category":"_`","input":"_2_+_B","hitLevels":"l"},{"category":"_`","input":"_1_+_P","hitLevels":"l"},{"category":"_`","input":"_1_+_K","hitLevels":"l"},{"category":"_`","input":"_1_+_B","hitLevels":"m"},{"category":"_`","input":"_3_+_P_P","hitLevels":"mm"},{"category":"_`","input":"_3_+_P_K","hitLevels":"mm"},{"category":"_`","input":"_3_+_K_K_K","hitLevels":"lhh"},{"category":"_`","input":"_3_+_K_6_+_K","hitLevels":"lm"},{"category":"_`","input":"_3_+_K_2_+_K","hitLevels":"ll"},{"category":"_`","input":"_3_+_B","hitLevels":"l"},{"category":"_`","input":"_8_+_P","hitLevels":"-"},{"category":"_`","input":"_8_+_K","hitLevels":"m"},{"category":"_`","input":"_8_+_B","hitLevels":"m"},{"category":"_`","name":"running","input":"_K_K","hitLevels":"h"},{"category":"_`","name":"Low Crouch","input":"_P","hitLevels":"m"},{"category":"_`","name":"Low Crouch","input":"_K_K","hitLevels":"mm"},{"category":"_`","name":"Low Crouch","input":"_B","hitLevels":"l"}],"notes":["BEAST MODE: MOLE","Strings Moves"]},{"name":"GREG","moves":[{"category":"_(","name":"Throw","input":"_P_+_K"},{"category":"_(","name":"Crouching Throw crouching opponent","input":"_2_+_P_+_K"},{"category":"_@","name":"Leg Grab and Swing Throw","input":"_2_3_6_+_P"},{"category":"_@","name":"Lifting Throw","input":"_2_3_6_+_K"},{"category":"_@","name":"Grab and Triple Slam Throw","input":"_2_3_6_+_B"},{"category":"_@","name":"Wind Up Punch","input":"_2_1_4_+_P"},{"category":"_@","name":"Charge","input":"^4_+^*_P"},{"category":"_@","name":"Attack","input":"_P"},{"category":"_@","name":"Charge-Up Kick","input":"_2_1_4_+_K"},{"category":"_@","name":"Lifting Throw","input":"_2_1_4_+_B"},{"category":"_`","input":"_P_P_P","hitLevels":"hhm"},{"category":"_`","input":"_P_P_6_+_P","hitLevels":"hhh"},{"category":"_`","input":"_P_P_2_+_P","hitLevels":"hhl"},{"category":"_`","input":"_P_K","hitLevels":"hhm"},{"category":"_`","input":"_P_2_+_B","hitLevels":"hl"},{"category":"_`","input":"_B_B_B_B_B_B","hitLevels":"hhmmmm"},{"category":"_`","input":"_B_B_B_B_B_2_+_B","hitLevels":"hhmmml"},{"category":"_`","input":"_B_B_B_B_2_+_B","hitLevels":"hhmml"},{"category":"_`","input":"_B_6_+_B","hitLevels":"hm"},{"category":"_`","input":"_B_2_+_B","hitLevels":"hl"},{"category":"_`","input":"_6_+_P","hitLevels":"h"},{"category":"_`","input":"_6_+_K_2_+_B","hitLevels":"hl"},{"category":"_`","input":"_6_+_B","hitLevels":"h"},{"category":"_`","input":"_6_6_+_P_P","hitLevels":"mm"},{"category":"_`","input":"_6_6_+_P_2_+_K","hitLevels":"ml"},{"category":"_`","input":"_6_6_+_K","hitLevels":"h"},{"category":"_`","input":"_6_6_+_B","hitLevels":"m"},{"category":"_`","input":"_4_+_P_6_+_K","hitLevels":"mmlm"},{"category":"_`","input":"_4_+_P_2_+_P","hitLevels":"mml"},{"category":"_`","input":"_4_+_K_K_B_B_B","hitLevels":"mmmmm"},{"category":"_`","input":"_4_+_K_K_B_B_2_+_B","hitLevels":"mmmml"},{"category":"_`","input":"_4_+_K_K_B_2_+_B","hitLevels":"mmml"},{"category":"_`","input":"_4_+_B_B_B_B","hitLevels":"hmmm"},{"category":"_`","input":"_4_+_B_B_B_2_+_B","hitLevels":"hmml"},{"category":"_`","input":"_4_+_B_B_2_+_B","hitLevels":"hml"},{"category":"_`","input":"_4_4_+_B","hitLevels":"l"},{"category":"_`","input":"_2_+_P_2_+_K_K","hitLevels":"lll"},{"category":"_`","input":"_2_+_K","hitLevels":"l"},{"category":"_`","input":"_2_+_B","hitLevels":"l"},{"category":"_`","input":"_1_+_P","hitLevels":"m"},{"category":"_`","input":"_1_+_K","hitLevels":"l"},{"category":"_`","input":"_1_+_B","hitLevels":"l"},{"category":"_`","input":"_3_+_P_P_P","hitLevels":"mmm"},{"category":"_`","input":"_3_+_K","hitLevels":"l"},{"category":"_`","input":"_3_+_B","hitLevels":"m"},{"category":"_`","input":"_8_+_P_P","hitLevels":"mm"},{"category":"_`","input":"_8_+_P_2_+_P","hitLevels":"ml"},{"category":"_`","input":"_8_+_K","hitLevels":"m"},{"category":"_`","input":"_8_+_B","hitLevels":"m"},{"category":"_`","name":"Low Crouch","input":"_P","hitLevels":"m"},{"category":"_`","name":"Low Crouch","input":"_K","hitLevels":"l"}],"notes":["BEAST MODE: GORILLA","Strings Moves"]},{"name":"MITSUKO","moves":[{"category":"_(","name":"Throw","input":"_P_+_K"},{"category":"_(","name":"Crouching Throw crouching opponent","input":"_2_+_P_+_K"},{"category":"_@","name":"Neck Slam","input":"_2_3_6_+_P"},{"category":"_@","name":"Neck Throw","input":"_2_3_6_+_K"},{"category":"_@","name":"Lift and Smash Throw","input":"_2_3_6_+_B (_O)"},{"category":"_@","name":"Charge Up Head Strike","input":"_2_1_4_+_P"},{"category":"_@","name":"Earthquake Stomp","input":"_2_1_4_+_K"},{"category":"_@","name":"Wind Up","input":"_2_1_4_+^*_B"},{"category":"_@","name":"Planned Tackles","input":"_6_+_B"},{"category":"_`","input":"_P_P_P","hitLevels":"hhm"},{"category":"_`","input":"_P_P_K","hitLevels":"hhm"},{"category":"_`","input":"_P_P_2_+_K","hitLevels":"hhl"},{"category":"_`","input":"_P_P_B_B_6_+_B","hitLevels":"hhmmm"},{"category":"_`","input":"_P_P_B_B_2_+_B_B_8_+_B","hitLevels":"hhmmlmh"},{"category":"_`","input":"_P_K_P","hitLevels":"hhm"},{"category":"_`","input":"_K_P","hitLevels":"hm"},{"category":"_`","input":"_B_B_6_+_B","hitLevels":"mmm"},{"category":"_`","input":"_B_B_2_+_B_B_8_+_B","hitLevels":"mmlmh"},{"category":"_`","input":"_6_+_P_K","hitLevels":"hh"},{"category":"_`","input":"_6_+_P_6_+_K_K","hitLevels":"hmm"},{"category":"_`","input":"_6_+_K_K","hitLevels":"mm"},{"category":"_`","input":"_6_+_K_2_+_K","hitLevels":"ml"},{"category":"_`","input":"_6_+_B","hitLevels":"m"},{"category":"_`","input":"_6_6_+_P","hitLevels":"m"},{"category":"_`","input":"_6_6_+_K","hitLevels":"m"},{"category":"_`","input":"_6_6_+_B","hitLevels":"m"},{"category":"_`","input":"_4_+_P","hitLevels":"m"},{"category":"_`","input":"_4_+_K","hitLevels":"m"},{"category":"_`","input":"_4_+_B","hitLevels":"m"},{"category":"_`","input":"_4_4_+_B","hitLevels":"m"},{"category":"_`","input":"_2_+_P_2_+_K","hitLevels":"ll"},{"category":"_`","input":"_2_+_K","hitLevels":"l"},{"category":"_`","input":"_2_+_B","hitLevels":"l"},{"category":"_`","input":"_1_+_P_P","hitLevels":"mm"},{"category":"_`","input":"_1_+_K","hitLevels":"l"},{"category":"_`","input":"_1_+_B_B_8_+_B","hitLevels":"lmh"},{"category":"_`","input":"_3_+_P","hitLevels":"m"},{"category":"_`","input":"_3_+_K_2_+_K_K","hitLevels":"llm"},{"category":"_`","input":"_3_+_K_2_+_K_2_+_K","hitLevels":"lll"},{"category":"_`","input":"_3_+_B","hitLevels":"m"},{"category":"_`","input":"_8_+_P","hitLevels":"m"},{"category":"_`","input":"_8_+_K","hitLevels":"m"},{"category":"_`","input":"_8_+_B","hitLevels":"m"},{"category":"_`","name":"Low Crouch","input":"_P","hitLevels":"m"},{"category":"_`","name":"Low Crouch","input":"_K","hitLevels":"m"},{"category":"_`","name":"Low Crouch","input":"_B","hitLevels":"l"}],"notes":["BEAST MODE: BOAR","Strings Moves"]},{"name":"LONG","moves":[{"category":"_(","name":"Throw","input":"_P_+_K"},{"category":"_(","name":"Crouching Throw crouching opponent","input":"_2_+_P_+_K"},{"category":"_@","name":"Sen Shippo","input":"_2_3_6_+_P"},{"category":"_@","name":"Renkan Tai","input":"_2_3_6_+_K"},{"category":"_@","name":"Keisetsu Ga","input":"_2_3_6_+_B"},{"category":"_@","name":"Gaimon Choushuu","input":"_2_1_4_+_P"},{"category":"_@","name":"Muei Kyaku","input":"_2_1_4_+_K"},{"category":"_@","name":"Kongou Toutai","input":"_2_1_4_+_B"},{"category":"_@","name":"Kongou Renkou Tai","input":"_B_B_B"},{"category":"_@","name":"Renkou Muei Kyaku Do","input":"_2_1_4_+_K"},{"category":"_@","name":"Renkou Nichigetsu Ha","input":"_2_+_B"},{"category":"_@","name":"Kongou Kourin Shiki: You","input":"_6_+_B_B_B_B_B_B"},{"category":"_@","name":"Kongou Kourin Shiki: In","input":"_4_+_B_B_B_B_B_B"},{"category":"_@","name":"Kongou Kourin Shiki: Chi","input":"_2_+_B_B_B_B_B_B"},{"category":"_@","name":"Kongou Kourin Shiki: Ten","input":"_8_+_B_B_B_B_B_B"},{"category":"_`","name":"Can link all moves of Six Goose Circle Ceremony"},{"category":"_`","name":"Must alternate between Punch and Kick and not use the same direction twice in a row"},{"category":"_`","name":"Can use a Six Goose Circle Ceremony Finish after any of this moves"},{"category":"_`","input":"_P_P","hitLevels":"hm","condition":"Starter the \"SIX GOOSE CIRCLE CEREMONY\" by _6_+_P / _6_+_K"},{"category":"_`","input":"_P_P_P","hitLevels":"hmm","condition":"Starter the \"SIX GOOSE CIRCLE CEREMONY\" by any attack"},{"category":"_`","input":"_P_K_2_+_K_6_6_+_P","hitLevels":"hhlm"},{"category":"_`","input":"_P_K_2_+_K_6_6_+_K","hitLevels":"hhlm"},{"category":"_`","input":"_P_K_2_+_K_2_2_+_P","hitLevels":"hhlm"},{"category":"_`","input":"_P_K_2_+_K_2_2_+_K","hitLevels":"hhll"},{"category":"_`","input":"_K","hitLevels":"h","condition":"Starter the \"SIX GOOSE CIRCLE CEREMONY\" by _2_+_P / _2_+_K"},{"category":"_`","input":"_B_P","hitLevels":"hm","condition":"Starter the \"SIX GOOSE CIRCLE CEREMONY\" by any attack"},{"category":"_`","input":"_B_B","hitLevels":"hmh"},{"category":"_`","input":"_B_B_B","hitLevels":"hmh"},{"category":"_`","input":"_B_B_6_+_B","hitLevels":"hmm"},{"category":"_`","input":"_B_B_2_+_B","hitLevels":"hml"},{"category":"_`","input":"_B_2_+_B","hitLevels":"hl"},{"category":"_`","input":"_6_+_P","hitLevels":"h","condition":"Starter the \"SIX GOOSE CIRCLE CEREMONY\" by _P / _K"},{"category":"_`","input":"_6_+_K","hitLevels":"mm"},{"category":"_`","input":"_6_+_B","hitLevels":"m"},{"category":"_`","input":"_6_6_+_P","hitLevels":"m"},{"category":"_`","input":"_6_6_+_K","hitLevels":"l"},{"category":"_`","input":"_6_6_+_B","hitLevels":"m"},{"category":"_`","input":"_4_+_P","hitLevels":"m"},{"category":"_`","input":"_4_+_K","hitLevels":"h"},{"category":"_`","input":"_4_+_B","hitLevels":"m"},{"category":"_`","input":"_4_4_+_B","hitLevels":"m"},{"category":"_`","input":"_2_+_P","hitLevels":"l"},{"category":"_`","input":"_2_+_K","hitLevels":"l"},{"category":"_`","input":"_2_+_B","hitLevels":"l"},{"category":"_`","input":"_1_+_P","hitLevels":"m"},{"category":"_`","input":"_1_+_K","hitLevels":"l"},{"category":"_`","input":"_1_+_B","hitLevels":"l"},{"category":"_`","input":"_3_+_P","hitLevels":"l"},{"category":"_`","input":"_3_+_K","hitLevels":"m"},{"category":"_`","input":"_3_+_B","hitLevels":"l"},{"category":"_`","input":"_8_+_P","hitLevels":"h"},{"category":"_`","input":"_8_+_K","hitLevels":"h"},{"category":"_`","input":"_8_+_B","hitLevels":"m"},{"category":"_`","name":"Low Crouch","input":"_P_P","hitLevels":"mm"},{"category":"_`","name":"Low Crouch","input":"_K","hitLevels":"l"},{"category":"_`","name":"Low Crouch","input":"_B","hitLevels":"m"},{"category":"_`","input":"_P","hitLevels":"m"},{"category":"_`","input":"_6_+_K","hitLevels":"h"},{"category":"_`","input":"_2_+_P","hitLevels":"ll"},{"category":"_`","input":"_K","hitLevels":"m"},{"category":"_`","input":"_6_+_P","hitLevels":"m"},{"category":"_`","input":"_2_+_K","hitLevels":"l"},{"category":"_`","input":"_B_B","hitLevels":"mh"},{"category":"_`","input":"_B_6_+_B","hitLevels":"mm"},{"category":"_`","input":"_B_2_+_B","hitLevels":"ml"},{"category":"_`","input":"_6_6_+_P","hitLevels":"m"},{"category":"_`","input":"_6_6_+_K","hitLevels":"m"},{"category":"_`","input":"_4_+_P","hitLevels":"m"},{"category":"_`","input":"_4_+_K","hitLevels":"mm"},{"category":"_`","input":"_2_2_+_P","hitLevels":"m"},{"category":"_`","input":"_2_2_+_K","hitLevels":"l"}],"notes":["BEAST MODE: TIGER","Strings Moves","SIX GOOSE CIRCLE CEREMONY","Strings Moves","SIX GOOSE CIRCLE CEREMONY FINISH","Strings Moves"]}],"controlAbbr":{"_P":"P","_K":"K","_B":"BE","_S":"ST"},"systemControlMappings":{"snes":{"y":"_P","b":"_K"},"genesis":{"b":"_P","y":"_K","a":"_G"},"megadrive":{"b":"_P","y":"_K","a":"_G"},"32x":{"b":"_P","y":"_K"},"saturn":{"b":"_P","y":"_K"},"psx":{"y":"_P","b":"_K"},"ps2":{"y":"_P","b":"_K"},"gb":{"b":"_P","a":"_K"},"gbc":{"b":"_P","a":"_K"},"gamegear":{"a":"_P","b":"_K"},"sms":{"a":"_P","b":"_K"},"gba":{"b":"^E","a":"^H","l1":"^G","r1":"^J"},"ngpc":{"b":"_P","a":"_K"}},"controlGroups":{"_P":["_P"],"_K":["_K"]}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "beastrzr",
+    "beastrzra",
+    "bldyroar"
+  ],
+  "name": "Beastorizer",
+  "controls": {
+    "_P": "Punch",
+    "_K": "Kick",
+    "_B": "Beast",
+    "_S": "Start"
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_`": "String Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "_6_6"
+    },
+    {
+      "category": "_)",
+      "name": "Run",
+      "input": "_6^6"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4"
+    },
+    {
+      "category": "_)",
+      "name": "Low Crouch",
+      "input": "_2^2"
+    },
+    {
+      "category": "_)",
+      "name": "Crawl Forward",
+      "input": "^3"
+    },
+    {
+      "category": "_)",
+      "name": "Crawl Backward",
+      "input": "^1"
+    },
+    {
+      "category": "_)",
+      "name": "Sankaku Tobi jump against the wall",
+      "input": "_9 (Beast Mode only)"
+    },
+    {
+      "category": "_)",
+      "name": "Hammer Drop",
+      "input": "_^_4 / _6_+_P"
+    },
+    {
+      "category": "_)",
+      "name": "Flying Beast Attack",
+      "input": "_^_4 / _6_+_B"
+    },
+    {
+      "category": "_)",
+      "name": "Drop Kick: Roll Backward",
+      "input": "_^_6_+_K"
+    },
+    {
+      "category": "_)",
+      "name": "Reverse Drop Kick: Roll Forward",
+      "input": "_^_4_+_K"
+    },
+    {
+      "category": "_)",
+      "name": "Rushing Low Punch before landing",
+      "input": "_2_+_P"
+    },
+    {
+      "category": "_)",
+      "name": "Sweep before landing",
+      "input": "_2_+_K"
+    },
+    {
+      "category": "_)",
+      "name": "Beast Sweep before landing",
+      "input": "_2_+_B"
+    },
+    {
+      "category": "_)",
+      "name": "Guard Escape being hit",
+      "input": "_6"
+    },
+    {
+      "category": "_)",
+      "name": "Land on Feet knocked down on air",
+      "input": "_P_+_K"
+    },
+    {
+      "category": "_)",
+      "name": "Roll knocked down _?"
+    },
+    {
+      "category": "_)",
+      "name": "Kick Up Attack knocked down",
+      "input": "_K"
+    },
+    {
+      "category": "_)",
+      "name": "Ground Punch opponent knocked down",
+      "input": "_2_+_P"
+    },
+    {
+      "category": "_)",
+      "name": "Ground Kick opponent knocked down",
+      "input": "_2_+_K"
+    },
+    {
+      "category": "_)",
+      "name": "Ground Beast Attack opponent knocked down",
+      "input": "_2_+_B"
+    },
+    {
+      "category": "_)",
+      "name": "Pounce opponent knocked down",
+      "input": "_8_+_P / _K / _B (Beast Mode only)"
+    }
+  ],
+  "characters": [
+    {
+      "name": "YUGO OOGAMI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Crouching Throw crouching opponent",
+          "input": "_2_+_P_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Quick One-Two",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Body Upper",
+          "input": "_6_+_P_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Gekka Shou",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Bloody Roar",
+          "input": "_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Silver Wolf Knuckle",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Crescent Somersault",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Berserk",
+          "input": "_2_1_4_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Meteor Crash hit the wall",
+          "input": "_P / _K / _B"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_6_+_P",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P_K",
+          "hitLevels": "hhmh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P_2_+_K",
+          "hitLevels": "hhml"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P_2_+_B",
+          "hitLevels": "hhmm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_K",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_2_+_K",
+          "hitLevels": "hhl"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_B",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K_K",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K_2_+_K",
+          "hitLevels": "hhl"
+        },
+        {
+          "category": "_`",
+          "input": "_K_K",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_K_2_+_K",
+          "hitLevels": "hl"
+        },
+        {
+          "category": "_`",
+          "input": "_B_B_B",
+          "hitLevels": "mmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_B_6_+_B",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_B_2_+_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_B_2_+_K",
+          "hitLevels": "ml"
+        },
+        {
+          "category": "_`",
+          "input": "_B_2_+_B",
+          "hitLevels": "ml"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_B",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_K_2_+_K",
+          "hitLevels": "ml"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_4_+_P_4_+_P",
+          "hitLevels": "hhl"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_4_+_P_4_+_B",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_2_+_P",
+          "hitLevels": "hl"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_4_+_B",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_P_K",
+          "hitLevels": "lm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_P_2_+_K",
+          "hitLevels": "ll"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K_P_K",
+          "hitLevels": "lmm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_P",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_B_B",
+          "hitLevels": "lm"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P_3_+_P_3_+_P_3_+_P",
+          "hitLevels": "mmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_B_2_+_P",
+          "hitLevels": "lm"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "Low Crouch",
+          "input": "_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "Low Crouch",
+          "input": "_K_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "name": "Low Crouch",
+          "input": "_B",
+          "hitLevels": "m"
+        }
+      ],
+      "notes": [
+        "BEAST MODE: WOLF",
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "ALAN GADO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Crouching Throw crouching opponent",
+          "input": "_2_+_P_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Heat Capture",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Mid Kick",
+          "input": "_K"
+        },
+        {
+          "category": "_@",
+          "name": "Low Kick",
+          "input": "_2_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Rage Cutter",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Demolition Fang",
+          "input": "_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Assault Blow",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Danger Spin",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Rising Laser",
+          "input": "_2_1_4_+_B"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_6_+_P",
+          "hitLevels": "hmm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_6_+_K",
+          "hitLevels": "hmm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_2_+_B",
+          "hitLevels": "hml"
+        },
+        {
+          "category": "_`",
+          "input": "_K_K_K",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_K_K_6_+_K_K_K",
+          "hitLevels": "hhmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_K_K_6_+_K_2_+_K_K",
+          "hitLevels": "hhmlm"
+        },
+        {
+          "category": "_`",
+          "input": "_K_4_+_P_P_B_6_+_K_K_K",
+          "hitLevels": "hhmmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_K_4_+_P_P_B_6_+_K_2_+_K_K",
+          "hitLevels": "hhmmmlm"
+        },
+        {
+          "category": "_`",
+          "input": "_K_4_+_P_P_B_B",
+          "hitLevels": "hhmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_K_4_+_P_P_B_2_+_B",
+          "hitLevels": "hhmml"
+        },
+        {
+          "category": "_`",
+          "input": "_B_B_B",
+          "hitLevels": "hmm"
+        },
+        {
+          "category": "_`",
+          "input": "_B_B_6_+_K_K_K",
+          "hitLevels": "hmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_B_B_6_+_K_2_+_K_K",
+          "hitLevels": "hmmlm"
+        },
+        {
+          "category": "_`",
+          "input": "_B_B_2_+_B",
+          "hitLevels": "hml"
+        },
+        {
+          "category": "_`",
+          "input": "_B_2_+_B_B",
+          "hitLevels": "hmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P_P",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_K",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K_K_K",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K_2_+_K_K",
+          "hitLevels": "mlm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_B_B",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_P_B_B",
+          "hitLevels": "hmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_4_+_B",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_P",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_B_B",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_P",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_B",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P_6_+_B_B",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P_6_+_B_2_+_B",
+          "hitLevels": "mml"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P_2_+_K",
+          "hitLevels": "ml"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "Low Crouch",
+          "input": "_P_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "name": "Low Crouch",
+          "input": "_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "Low Crouch",
+          "input": "_B",
+          "hitLevels": "l"
+        }
+      ],
+      "notes": [
+        "BEAST MODE: LION",
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "ALICE TSUKAGAMI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Crouching Throw crouching opponent",
+          "input": "_2_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Air Raid",
+          "input": "_^_2_+_P_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Rabbit Spiral",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Round Slash",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Rabbit Flip",
+          "input": "_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Spinning Hopper",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Triple Somersault",
+          "input": "_2_1_4_+_K_4_+_K_4_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Switch Moonsault",
+          "input": "_2_1_4_+_B"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P_6_+_P_B_B_B_6_+_B",
+          "hitLevels": "hhmmhhmh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P_6_+_P_B_B_B_4_+_B",
+          "hitLevels": "hhmmhhmm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P_6_+_P_B_B_B_2_+_B",
+          "hitLevels": "hhmmhhml"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P_6_+_P_B_B_K",
+          "hitLevels": "hhmmhhl"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P_4_+_K",
+          "hitLevels": "hhmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P_2_+_P",
+          "hitLevels": "hhmml"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K_K_6_+_K",
+          "hitLevels": "hhhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K_K_4_+_K",
+          "hitLevels": "hhhh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K_K_2_+_K",
+          "hitLevels": "hhhl"
+        },
+        {
+          "category": "_`",
+          "input": "_K_K_6_+_K",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_K_K_4_+_K",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_K_K_2_+_K",
+          "hitLevels": "hhl"
+        },
+        {
+          "category": "_`",
+          "input": "_B_B_B_6_+_B",
+          "hitLevels": "hhmh"
+        },
+        {
+          "category": "_`",
+          "input": "_B_B_B_4_+_B",
+          "hitLevels": "hhmm"
+        },
+        {
+          "category": "_`",
+          "input": "_B_B_B_2_+_B",
+          "hitLevels": "hhml"
+        },
+        {
+          "category": "_`",
+          "input": "_B_B_2_+_K",
+          "hitLevels": "hml"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_6_+_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K_4_+_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K_2_+_K_2_+_P",
+          "hitLevels": "mll"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_P_K",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_K",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_4_+_B_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_P_2_+_K_K",
+          "hitLevels": "llm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_P_2_+_K_2_+_K",
+          "hitLevels": "lll"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K_K",
+          "hitLevels": "lm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K_2_+_K",
+          "hitLevels": "ll"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_B_2_+_B_B",
+          "hitLevels": "llm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_B_2_+_B_2_+_K_2_+_P",
+          "hitLevels": "llll"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_P_K",
+          "hitLevels": "ll"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_B",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P_P_B_B_6_+_B",
+          "hitLevels": "mmhmh"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P_P_B_B_4_+_B",
+          "hitLevels": "mmhmm"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P_P_B_B_2_+_B",
+          "hitLevels": "mmhml"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P_P_B_2_+_K",
+          "hitLevels": "mmhl"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_B",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "Low Crouch",
+          "input": "_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "Low Crouch",
+          "input": "_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "Low Crouch",
+          "input": "_B",
+          "hitLevels": "m"
+        }
+      ],
+      "notes": [
+        "BEAST MODE: RABBIT",
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "FOX",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Crouching Throw crouching opponent",
+          "input": "_2_+_P_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Triple Mid Strike",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Slice",
+          "input": "_P"
+        },
+        {
+          "category": "_@",
+          "name": "Rising Kick",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Charging Double Claw Swipe",
+          "input": "_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Charge Up Rising Backhand Strike",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Rising Windmill Kick",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Roll Backward",
+          "input": "_2_1_4_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Surprise Leap",
+          "input": "_B"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P_P",
+          "hitLevels": "hhhh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P_K",
+          "hitLevels": "hhh-"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P_2_+_K",
+          "hitLevels": "hhhl"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_K",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_B_B",
+          "hitLevels": "hhmm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_2_+_B",
+          "hitLevels": "hhll"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_B_B_B_B_8_+_K",
+          "hitLevels": "mmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P_P_K",
+          "hitLevels": "mmm-"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P_P_4_+_K_8_+_P_P",
+          "hitLevels": "mmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P_P_4_+_K_8_+_P_B",
+          "hitLevels": "mmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P_P_4_+_K_8_+_P_8_+_P",
+          "hitLevels": "mmmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P_P_4_+_K_7_+_P",
+          "hitLevels": "mmmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P_P_4_+_K_7_+_K_8_+_P_P",
+          "hitLevels": "mmmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P_P_4_+_K_7_+_K_8_+_P_B",
+          "hitLevels": "mmmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P_P_4_+_K_7_+_K_8_+_P_8_+_P",
+          "hitLevels": "mmmmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P_P_4_+_K_7_+_K_7_+_P",
+          "hitLevels": "mmmmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P_P_4_+_K_7_+_K_7_+_K_8_+_P_P",
+          "hitLevels": "mmmmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P_P_4_+_K_7_+_K_7_+_K_8_+_P_B",
+          "hitLevels": "mmmmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P_P_4_+_K_7_+_K_7_+_K_8_+_P_8_+_P",
+          "hitLevels": "mmmmmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P_P_4_+_K_7_+_K_7_+_K_7_+_P",
+          "hitLevels": "mmmmmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P_P_4_+_K_7_+_K_7_+_K_7_+_K_8_+_P_P",
+          "hitLevels": "mmmmmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P_P_4_+_K_7_+_K_7_+_K_7_+_K_8_+_P_B",
+          "hitLevels": "mmmmmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P_P_4_+_K_7_+_K_7_+_K_7_+_K_8_+_P_8_+_P",
+          "hitLevels": "mmmmmmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P_P_4_+_K_7_+_K_7_+_K_7_+_K_7_+_P",
+          "hitLevels": "mmmmmmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P_P_2_+_K",
+          "hitLevels": "mmml"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P_P_8_+_K",
+          "hitLevels": "mmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_B_B",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_K_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K_K_2_+_K",
+          "hitLevels": "hml"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_4_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_P",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K_K",
+          "hitLevels": "lm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K_2_+_K",
+          "hitLevels": "ll"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_B",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_P",
+          "hitLevels": "ll"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_B",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_B",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_P_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_P_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_P_8_+_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_K_8_+_P_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_K_8_+_P_B",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_K_8_+_P_8_+_P",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_K_7_+_P",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_K_7_+_K_8_+_P_P",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_K_7_+_K_8_+_P_B",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_K_7_+_K_8_+_P_8_+_P",
+          "hitLevels": "mmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_K_7_+_K_7_+_P",
+          "hitLevels": "mmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_K_7_+_K_7_+_K_8_+_P_P",
+          "hitLevels": "mmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_K_7_+_K_7_+_K_8_+_P_B",
+          "hitLevels": "mmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_K_7_+_K_7_+_K_8_+_P_8_+_P",
+          "hitLevels": "mmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_K_7_+_K_7_+_K_7_+_P",
+          "hitLevels": "mmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_K_7_+_K_7_+_K_7_+_K_8_+_P_P",
+          "hitLevels": "mmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_K_7_+_K_7_+_K_7_+_K_8_+_P_B",
+          "hitLevels": "mmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_K_7_+_K_7_+_K_7_+_K_8_+_P_8_+_P",
+          "hitLevels": "mmmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_K_7_+_K_7_+_K_7_+_K_7_+_P",
+          "hitLevels": "mmmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K_8_+_P_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K_8_+_P_B",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K_8_+_P_8_+_P",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K_9_+_P",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K_9_+_K_8_+_P_P",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K_9_+_K_8_+_P_B",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K_9_+_K_8_+_P_8_+_P",
+          "hitLevels": "mmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K_9_+_K_9_+_P",
+          "hitLevels": "mmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K_9_+_K_9_+_K_8_+_P_P",
+          "hitLevels": "mmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K_9_+_K_9_+_K_8_+_P_B",
+          "hitLevels": "mmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K_9_+_K_9_+_K_8_+_P_8_+_P",
+          "hitLevels": "mmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K_9_+_K_9_+_K_9_+_P",
+          "hitLevels": "mmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K_9_+_K_9_+_K_9_+_K_8_+_P_P",
+          "hitLevels": "mmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K_9_+_K_9_+_K_9_+_K_8_+_P_B",
+          "hitLevels": "mmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K_9_+_K_9_+_K_9_+_K_8_+_P_8_+_P",
+          "hitLevels": "mmmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K_9_+_K_9_+_K_9_+_K_9_+_P",
+          "hitLevels": "mmmmmm"
+        },
+        {
+          "category": "_`",
+          "name": "Low Crouch",
+          "input": "_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "Low Crouch",
+          "input": "_K",
+          "hitLevels": "ll"
+        },
+        {
+          "category": "_`",
+          "name": "Low Crouch",
+          "input": "_B",
+          "hitLevels": "m"
+        }
+      ],
+      "notes": [
+        "BEAST MODE: FOX",
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "BAKURYU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Crouching Throw crouching opponent",
+          "input": "_2_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Izuna Otoshi",
+          "input": "_^_2_+_P_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Raikou Izuna Otoshi opponent in air",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Enmaku Dan",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Zugokku Zuki",
+          "input": "_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Kouki Ryuu Gekihou",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Enjin Rasen Kyaku",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Shoten Kaki Age",
+          "input": "_2_1_4_+_B"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P_P",
+          "hitLevels": "hhhh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P_2_+_K_P",
+          "hitLevels": "hhhlm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P_8_+_P",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_K_K",
+          "hitLevels": "hhmm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_K_2_+_K",
+          "hitLevels": "hhml"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_2_+_K_P",
+          "hitLevels": "hhlm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K_K",
+          "hitLevels": "hhmm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K_K_K",
+          "hitLevels": "hhmh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K_K_6_+_K_4_+_K",
+          "hitLevels": "hhmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K_K_4_+_K",
+          "hitLevels": "hhmm"
+        },
+        {
+          "category": "_`",
+          "input": "_K_K",
+          "hitLevels": "hmm"
+        },
+        {
+          "category": "_`",
+          "input": "_K_K_K",
+          "hitLevels": "hmh"
+        },
+        {
+          "category": "_`",
+          "input": "_K_K_6_+_K_4_+_K",
+          "hitLevels": "hmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_K_K_4_+_K",
+          "hitLevels": "hmm"
+        },
+        {
+          "category": "_`",
+          "input": "_B_B_B",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_B_B_2_+_K_K_K",
+          "hitLevels": "hhlhh"
+        },
+        {
+          "category": "_`",
+          "input": "_B_B_2_+_K_6_+_K",
+          "hitLevels": "hhlm"
+        },
+        {
+          "category": "_`",
+          "input": "_B_B_2_+_K_2_+_K",
+          "hitLevels": "hhll"
+        },
+        {
+          "category": "_`",
+          "input": "_B_B_2_+_B",
+          "hitLevels": "hhll"
+        },
+        {
+          "category": "_`",
+          "input": "_B_2_+_B",
+          "hitLevels": "hl"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K_4_+_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_B_K_K_K",
+          "hitLevels": "mhmh"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_B_K_K_6_+_K_4_+_K",
+          "hitLevels": "mhmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_B_K_K_4_+_K",
+          "hitLevels": "mhmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_B_B_B_B_B",
+          "hitLevels": "mmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_K_K_K",
+          "hitLevels": "mhm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_4_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_P",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_B",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_P",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K_K_K",
+          "hitLevels": "lhh"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K_6_+_K",
+          "hitLevels": "lm"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K_2_+_K",
+          "hitLevels": "ll"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_B",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_P",
+          "hitLevels": "-"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "running",
+          "input": "_K_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "name": "Low Crouch",
+          "input": "_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "Low Crouch",
+          "input": "_K_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "name": "Low Crouch",
+          "input": "_B",
+          "hitLevels": "l"
+        }
+      ],
+      "notes": [
+        "BEAST MODE: MOLE",
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "GREG",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Crouching Throw crouching opponent",
+          "input": "_2_+_P_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Leg Grab and Swing Throw",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Lifting Throw",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Grab and Triple Slam Throw",
+          "input": "_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Wind Up Punch",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Charge",
+          "input": "^4_+^*_P"
+        },
+        {
+          "category": "_@",
+          "name": "Attack",
+          "input": "_P"
+        },
+        {
+          "category": "_@",
+          "name": "Charge-Up Kick",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Lifting Throw",
+          "input": "_2_1_4_+_B"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_6_+_P",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_2_+_P",
+          "hitLevels": "hhl"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_2_+_B",
+          "hitLevels": "hl"
+        },
+        {
+          "category": "_`",
+          "input": "_B_B_B_B_B_B",
+          "hitLevels": "hhmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_B_B_B_B_B_2_+_B",
+          "hitLevels": "hhmmml"
+        },
+        {
+          "category": "_`",
+          "input": "_B_B_B_B_2_+_B",
+          "hitLevels": "hhmml"
+        },
+        {
+          "category": "_`",
+          "input": "_B_6_+_B",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "input": "_B_2_+_B",
+          "hitLevels": "hl"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K_2_+_B",
+          "hitLevels": "hl"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_B",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P_2_+_K",
+          "hitLevels": "ml"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_6_+_K",
+          "hitLevels": "mmlm"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_2_+_P",
+          "hitLevels": "mml"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K_K_B_B_B",
+          "hitLevels": "mmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K_K_B_B_2_+_B",
+          "hitLevels": "mmmml"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K_K_B_2_+_B",
+          "hitLevels": "mmml"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_B_B_B_B",
+          "hitLevels": "hmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_B_B_B_2_+_B",
+          "hitLevels": "hmml"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_B_B_2_+_B",
+          "hitLevels": "hml"
+        },
+        {
+          "category": "_`",
+          "input": "_4_4_+_B",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_P_2_+_K_K",
+          "hitLevels": "lll"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_B",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_B",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P_P_P",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_P_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_P_2_+_P",
+          "hitLevels": "ml"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "Low Crouch",
+          "input": "_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "Low Crouch",
+          "input": "_K",
+          "hitLevels": "l"
+        }
+      ],
+      "notes": [
+        "BEAST MODE: GORILLA",
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "MITSUKO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Crouching Throw crouching opponent",
+          "input": "_2_+_P_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Neck Slam",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Neck Throw",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Lift and Smash Throw",
+          "input": "_2_3_6_+_B (_O)"
+        },
+        {
+          "category": "_@",
+          "name": "Charge Up Head Strike",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Earthquake Stomp",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Wind Up",
+          "input": "_2_1_4_+^*_B"
+        },
+        {
+          "category": "_@",
+          "name": "Planned Tackles",
+          "input": "_6_+_B"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_K",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_2_+_K",
+          "hitLevels": "hhl"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_B_B_6_+_B",
+          "hitLevels": "hhmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_B_B_2_+_B_B_8_+_B",
+          "hitLevels": "hhmmlmh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K_P",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_K_P",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "input": "_B_B_6_+_B",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_B_B_2_+_B_B_8_+_B",
+          "hitLevels": "mmlmh"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_K",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_6_+_K_K",
+          "hitLevels": "hmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K_2_+_K",
+          "hitLevels": "ml"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_4_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_P_2_+_K",
+          "hitLevels": "ll"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_B",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_P_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_B_B_8_+_B",
+          "hitLevels": "lmh"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K_2_+_K_K",
+          "hitLevels": "llm"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K_2_+_K_2_+_K",
+          "hitLevels": "lll"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "Low Crouch",
+          "input": "_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "Low Crouch",
+          "input": "_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "Low Crouch",
+          "input": "_B",
+          "hitLevels": "l"
+        }
+      ],
+      "notes": [
+        "BEAST MODE: BOAR",
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "LONG",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Crouching Throw crouching opponent",
+          "input": "_2_+_P_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Sen Shippo",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Renkan Tai",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Keisetsu Ga",
+          "input": "_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Gaimon Choushuu",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Muei Kyaku",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Kongou Toutai",
+          "input": "_2_1_4_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Kongou Renkou Tai",
+          "input": "_B_B_B"
+        },
+        {
+          "category": "_@",
+          "name": "Renkou Muei Kyaku Do",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Renkou Nichigetsu Ha",
+          "input": "_2_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Kongou Kourin Shiki: You",
+          "input": "_6_+_B_B_B_B_B_B"
+        },
+        {
+          "category": "_@",
+          "name": "Kongou Kourin Shiki: In",
+          "input": "_4_+_B_B_B_B_B_B"
+        },
+        {
+          "category": "_@",
+          "name": "Kongou Kourin Shiki: Chi",
+          "input": "_2_+_B_B_B_B_B_B"
+        },
+        {
+          "category": "_@",
+          "name": "Kongou Kourin Shiki: Ten",
+          "input": "_8_+_B_B_B_B_B_B"
+        },
+        {
+          "category": "_`",
+          "name": "Can link all moves of Six Goose Circle Ceremony"
+        },
+        {
+          "category": "_`",
+          "name": "Must alternate between Punch and Kick and not use the same direction twice in a row"
+        },
+        {
+          "category": "_`",
+          "name": "Can use a Six Goose Circle Ceremony Finish after any of this moves"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P",
+          "hitLevels": "hm",
+          "condition": "Starter the \"SIX GOOSE CIRCLE CEREMONY\" by _6_+_P / _6_+_K"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P",
+          "hitLevels": "hmm",
+          "condition": "Starter the \"SIX GOOSE CIRCLE CEREMONY\" by any attack"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K_2_+_K_6_6_+_P",
+          "hitLevels": "hhlm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K_2_+_K_6_6_+_K",
+          "hitLevels": "hhlm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K_2_+_K_2_2_+_P",
+          "hitLevels": "hhlm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K_2_+_K_2_2_+_K",
+          "hitLevels": "hhll"
+        },
+        {
+          "category": "_`",
+          "input": "_K",
+          "hitLevels": "h",
+          "condition": "Starter the \"SIX GOOSE CIRCLE CEREMONY\" by _2_+_P / _2_+_K"
+        },
+        {
+          "category": "_`",
+          "input": "_B_P",
+          "hitLevels": "hm",
+          "condition": "Starter the \"SIX GOOSE CIRCLE CEREMONY\" by any attack"
+        },
+        {
+          "category": "_`",
+          "input": "_B_B",
+          "hitLevels": "hmh"
+        },
+        {
+          "category": "_`",
+          "input": "_B_B_B",
+          "hitLevels": "hmh"
+        },
+        {
+          "category": "_`",
+          "input": "_B_B_6_+_B",
+          "hitLevels": "hmm"
+        },
+        {
+          "category": "_`",
+          "input": "_B_B_2_+_B",
+          "hitLevels": "hml"
+        },
+        {
+          "category": "_`",
+          "input": "_B_2_+_B",
+          "hitLevels": "hl"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P",
+          "hitLevels": "h",
+          "condition": "Starter the \"SIX GOOSE CIRCLE CEREMONY\" by _P / _K"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_4_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_P",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_B",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_B",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_B",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "Low Crouch",
+          "input": "_P_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "name": "Low Crouch",
+          "input": "_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "name": "Low Crouch",
+          "input": "_B",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_P",
+          "hitLevels": "ll"
+        },
+        {
+          "category": "_`",
+          "input": "_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_B_B",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "_B_6_+_B",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_B_2_+_B",
+          "hitLevels": "ml"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_2_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_2_+_K",
+          "hitLevels": "l"
+        }
+      ],
+      "notes": [
+        "BEAST MODE: TIGER",
+        "Strings Moves",
+        "SIX GOOSE CIRCLE CEREMONY",
+        "Strings Moves",
+        "SIX GOOSE CIRCLE CEREMONY FINISH",
+        "Strings Moves"
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_P": "P",
+    "_K": "K",
+    "_B": "BE",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_P",
+      "b": "_K"
+    },
+    "genesis": {
+      "b": "_P",
+      "y": "_K",
+      "a": "_G"
+    },
+    "megadrive": {
+      "b": "_P",
+      "y": "_K",
+      "a": "_G"
+    },
+    "32x": {
+      "b": "_P",
+      "y": "_K"
+    },
+    "saturn": {
+      "b": "_P",
+      "y": "_K"
+    },
+    "psx": {
+      "y": "_P",
+      "b": "_K"
+    },
+    "ps2": {
+      "y": "_P",
+      "b": "_K"
+    },
+    "gb": {
+      "b": "_P",
+      "a": "_K"
+    },
+    "gbc": {
+      "b": "_P",
+      "a": "_K"
+    },
+    "gamegear": {
+      "a": "_P",
+      "b": "_K"
+    },
+    "sms": {
+      "a": "_P",
+      "b": "_K"
+    },
+    "gba": {
+      "b": "^E",
+      "a": "^H",
+      "l1": "^G",
+      "r1": "^J"
+    },
+    "ngpc": {
+      "b": "_P",
+      "a": "_K"
+    }
+  },
+  "controlGroups": {
+    "_P": [
+      "_P"
+    ],
+    "_K": [
+      "_K"
+    ]
+  }
+}

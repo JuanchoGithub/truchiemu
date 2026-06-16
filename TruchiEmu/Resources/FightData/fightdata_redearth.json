@@ -1,1 +1,634 @@
-{"schemaVersion":2,"romIds":["redearth","redearthn","redearthnr1","redearthr1","warzard","warzardr1"],"name":"Red Earth","year":1996,"manufacturer":"Capcom","controls":{"^E":"Weak Punch","^F":"Medium Punch","^G":"Strong Punch","^H":"Weak Kick","^I":"Medium Kick","^J":"Strong Kick","_S":"Change Orb"},"controlGroups":{"_P":["^E","^F","^G"],"_K":["^H","^I","^J"]},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves","_*":"Mystic Combos","_`":"Mystic Combos"},"commonCommands":[{"category":"_)","name":"Dash","input":"_6_6","condition":"LV──"},{"category":"_)","name":"Retreat","input":"_4_4","condition":"LV──"},{"category":"_)","name":"Super Jump","input":"_2_8","condition":"LV──"},{"category":"_)","name":"Ultimate Guard","input":"_P_+_K","condition":"LV──"},{"category":"_)","input":"^!Counter Attack                                             _4_1_2_+_P","condition":"LV──"},{"category":"_)","name":"Chase Attack opponent knocked down","input":"_8_+_K","condition":"LV──"},{"category":"_)","name":"Moving Get Up knocked down","input":"_4 / _6","condition":"LV──"},{"category":"_)","name":"Mystic Force (1 Orb)","input":"_2_1_4_+^U","condition":"LV──"}],"characters":[{"name":"LEO","moves":[{"category":"_(","name":"Fierce Jaw","input":"_4 / _6_+^F","condition":"LV──"},{"category":"_(","name":"Wild Slam","input":"_4 / _6_+^G","condition":"LV──"},{"category":"_)","name":"Icarus Dive","input":"_^_2_+^I","condition":"LV──"},{"category":"_)","name":"Orion Vault","input":"_^_2_+^J","condition":"LV──"},{"category":"_)","name":"Face Apollon","input":"_^_8_+^F","condition":"LV──"},{"category":"_@","name":"Chronos Rush","input":"_2_3_6_+_P","condition":"LV──"},{"category":"_@","name":"Mars Slash","input":"_6_2_3_+_P","condition":"LV──"},{"category":"_@","name":"Sword Change","input":"_2_1_4_+_K (with Secret Weapon only)","condition":"LV──"},{"category":"_@","name":"Achilles Rush","input":"_2_3_6_+_K","condition":"LV08"},{"category":"_@","name":"Achilles Revenge Ultimate Guard","input":"_4_1_2_+_K","condition":"LV20"},{"category":"_@","name":"Gaia Driver close","condition":"LV31","input":"_x_+_P"},{"category":"_*","name":"Hercules Rush","input":"_2_3_6_2_3_6_+_P","condition":"LV──"},{"category":"_*","name":"Gigas Driver close","condition":"LV31","input":"_x_x_+_P"},{"category":"_`","name":"Swords and Shields"}],"notes":["LV03          Bronze Sword","LV06          Wooden Shield","LV10          Steel Sword","LV14          Steel Shield","LV19          Diamond Sword","LV25          Diamond Shield","LV30          Legend Shield (3000 vs. Points)","LV32          Legend Sword (5000 vs. Points)"]},{"name":"MAI LING (TAO)","moves":[{"category":"_(","name":"Overhead Throw","input":"_4 / _6_+^F / ^G","condition":"LV──"},{"category":"_(","name":"Knee Attack and Stomp","input":"_4 / _6_+^I / ^J","condition":"LV──"},{"category":"_)","name":"Idaten","input":"_^_6_6","condition":"LV10"},{"category":"_@","name":"Enryuu Kyaku","input":"_6_2_3_+_K","condition":"LV──"},{"category":"_@","name":"Kuujin Ken","input":"_2_3_6_+_P","condition":"LV──"},{"category":"_@","name":"Koukaku Shuu","input":"_4_2_1_+_K","condition":"LV03"},{"category":"_@","name":"Koen","input":"_6_3_2_1_4_+_K","condition":"LV19"},{"category":"_@","name":"Kokuu Ha Ultimate Guard","input":"_4_1_2_+_K (1000 vs. Points)","condition":"LV22"},{"category":"_@","name":"Kuugeki Shou","input":"_6_3_2_1_4_+_P","condition":"LV25"},{"category":"_@","name":"Tentsui Ga close","condition":"LV32","input":"_x_+_P"},{"category":"_*","name":"Chou Kuujin Ken","input":"_2_3_6_2_3_6_+_P","condition":"LV──"},{"category":"_*","name":"Chou Enryuu Kyaku","input":"_2_3_6_2_3_6_+_K","condition":"LV14"}]},{"name":"TESSA (TABASA)","moves":[{"category":"_(","name":"Ascend Proof","input":"_4 / _6_+^F / ^G","condition":"LV──"},{"category":"_)","name":"Flask","input":"(_^)_O^G","condition":"LV──"},{"category":"_)","name":"Haul Flapper","input":"_3_+^H","condition":"LV──"},{"category":"_)","name":"Restive Kitten","input":"_3_+^I","condition":"LV──"},{"category":"_)","name":"Mew Sweep Super Jump","input":"_2_+^H","condition":"LV──"},{"category":"_@","name":"Chakra Wave","input":"_2_3_6_+_P","condition":"LV──"},{"category":"_@","name":"Reverie Sword","input":"_6_2_3_+_P","condition":"LV──"},{"category":"_@","name":"Air Chakra Wave","input":"_^_2_3_6_+_P","condition":"LV03"},{"category":"_@","name":"Glace Cannon","input":"_2_3_6_+_K","condition":"LV06"},{"category":"_@","name":"Fiamma Cannon","input":"_4_2_1_+_K","condition":"LV10"},{"category":"_@","name":"Electric Cannon","input":"_6_2_3_+_K","condition":"LV14"},{"category":"_@","name":"Super Brave Pigeon","input":"_2_3_6_+_P (2000 vs. Points)","condition":"LV22"},{"category":"_@","name":"Air Super Brave Pigeon","input":"_^_2_3_6_+_P (2000 vs. Points)","condition":"LV22"},{"category":"_@","name":"Jamming Ghost","input":"_6_3_2_1_4_+_P","condition":"LV25"},{"category":"_@","name":"Super Reverie Sword","input":"_6_2_3_+_P (2500 vs. Points)","condition":"LV28"},{"category":"_@","name":"Death Phenomeno","input":"_6_3_2_1_4_+_K","condition":"LV32"},{"category":"_*","name":"Tricicle Edge","input":"_2_3_6_2_3_6_+_P","condition":"LV──"},{"category":"_*","name":"Hyper Cannon","input":"_2_3_6_2_3_6_+_K","condition":"LV19"}]},{"name":"KENJI (MUKURO)","moves":[{"category":"_(","name":"Back Suplex","input":"_4 / _6_+^F","condition":"LV──"},{"category":"_(","name":"Shoulder Attack","input":"_4 / _6_+^G","condition":"LV──"},{"category":"_)","name":"Forward Slash","input":"_6_+^F","condition":"LV──"},{"category":"_)","name":"Upward Kick","input":"_3_+^I","condition":"LV──"},{"category":"_)","name":"Bazooka Shoot","input":"_^_6 / _2_+^J","condition":"LV──"},{"category":"_)","name":"Kumo Gakure","input":"_^_8","condition":"LV06"},{"category":"_@","name":"Ichi Monji","input":"_2_3_6_+_P","condition":"LV──"},{"category":"_@","name":"Rasen Kyaku","input":"_2_1_4_+_K","condition":"LV──"},{"category":"_@","name":"Tsumuji","input":"_4_2_1_+_P","condition":"LV03"},{"category":"_@","name":"Baku Ryusho","input":"_6_2_3_+_P","condition":"LV10"},{"category":"_@","name":"Enma Zuki","input":"_6_3_2_1_4_+_P","condition":"LV14"},{"category":"_@","name":"Kagerou","input":"_4_2_1_+_K_P","condition":"LV19"},{"category":"_@","name":"Utsusemi","input":"_6_2_3_+_K","condition":"LV25"},{"category":"_@","name":"Kimo Yaburi Ultimate Guard","input":"_4_1_2_+_K (2000 vs. Points)","condition":"LV28"},{"category":"_@","name":"Rasetsu Jin","input":"_4_1_2_3_6_+_K (3000 vs. Points)","condition":"LV32"},{"category":"_*","name":"Jyuu Monji","input":"_2_3_6_2_3_6_+_P","condition":"LV──"},{"category":"_*","name":"Homura Tsumuji","input":"_2_1_4_2_1_4_+_P (1000 vs. Points)","condition":"LV16"}]}],"controlAbbr":{"^E":"LP","^F":"MP","^G":"HP","^H":"LK","^I":"MK","^J":"HK","_S":"CO"},"systemControlMappings":{"snes":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"genesis":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"megadrive":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"32x":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"saturn":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"psx":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"ps2":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"gba":{"b":"^E","a":"^F","l1":"^G","y":"^H","x":"^I","r1":"^J"},"pce":{"b":"^E","a":"^H"},"pce6":{"b":"^E","y":"^F","l1":"^G","a":"^H","x":"^I","r1":"^J"},"3do":{"b":"^E","a":"^F","l1":"^G","y":"^H","x":"^I","r1":"^J"},"n64":{"b":"^E","cDown":"^F","cRight":"^G","a":"^H","cLeft":"^I","cUp":"^J"},"dreamcast":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"gb":{"b":"^E","a":"^H"},"gbc":{"b":"^E","a":"^H"},"gamegear":{"a":"^E","b":"^H"},"sms":{"a":"^E","b":"^H"},"ngpc":{"b":"^E","y":"^F","l1":"^G","a":"^H","x":"^I","r1":"^J"},"lynx":{"b":"^E","a":"^F","l1":"^G","y":"^H","x":"^I","r1":"^J"},"wswan":{"b":"^E","a":"^H"}}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "redearth",
+    "redearthn",
+    "redearthnr1",
+    "redearthr1",
+    "warzard",
+    "warzardr1"
+  ],
+  "name": "Red Earth",
+  "year": 1996,
+  "manufacturer": "Capcom",
+  "controls": {
+    "^E": "Weak Punch",
+    "^F": "Medium Punch",
+    "^G": "Strong Punch",
+    "^H": "Weak Kick",
+    "^I": "Medium Kick",
+    "^J": "Strong Kick",
+    "_S": "Change Orb"
+  },
+  "controlGroups": {
+    "_P": [
+      "^E",
+      "^F",
+      "^G"
+    ],
+    "_K": [
+      "^H",
+      "^I",
+      "^J"
+    ]
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_*": "Mystic Combos",
+    "_`": "Mystic Combos"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "_6_6",
+      "condition": "LV──"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4",
+      "condition": "LV──"
+    },
+    {
+      "category": "_)",
+      "name": "Super Jump",
+      "input": "_2_8",
+      "condition": "LV──"
+    },
+    {
+      "category": "_)",
+      "name": "Ultimate Guard",
+      "input": "_P_+_K",
+      "condition": "LV──"
+    },
+    {
+      "category": "_)",
+      "input": "^!Counter Attack                                             _4_1_2_+_P",
+      "condition": "LV──"
+    },
+    {
+      "category": "_)",
+      "name": "Chase Attack opponent knocked down",
+      "input": "_8_+_K",
+      "condition": "LV──"
+    },
+    {
+      "category": "_)",
+      "name": "Moving Get Up knocked down",
+      "input": "_4 / _6",
+      "condition": "LV──"
+    },
+    {
+      "category": "_)",
+      "name": "Mystic Force (1 Orb)",
+      "input": "_2_1_4_+^U",
+      "condition": "LV──"
+    }
+  ],
+  "characters": [
+    {
+      "name": "LEO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Fierce Jaw",
+          "input": "_4 / _6_+^F",
+          "condition": "LV──"
+        },
+        {
+          "category": "_(",
+          "name": "Wild Slam",
+          "input": "_4 / _6_+^G",
+          "condition": "LV──"
+        },
+        {
+          "category": "_)",
+          "name": "Icarus Dive",
+          "input": "_^_2_+^I",
+          "condition": "LV──"
+        },
+        {
+          "category": "_)",
+          "name": "Orion Vault",
+          "input": "_^_2_+^J",
+          "condition": "LV──"
+        },
+        {
+          "category": "_)",
+          "name": "Face Apollon",
+          "input": "_^_8_+^F",
+          "condition": "LV──"
+        },
+        {
+          "category": "_@",
+          "name": "Chronos Rush",
+          "input": "_2_3_6_+_P",
+          "condition": "LV──"
+        },
+        {
+          "category": "_@",
+          "name": "Mars Slash",
+          "input": "_6_2_3_+_P",
+          "condition": "LV──"
+        },
+        {
+          "category": "_@",
+          "name": "Sword Change",
+          "input": "_2_1_4_+_K (with Secret Weapon only)",
+          "condition": "LV──"
+        },
+        {
+          "category": "_@",
+          "name": "Achilles Rush",
+          "input": "_2_3_6_+_K",
+          "condition": "LV08"
+        },
+        {
+          "category": "_@",
+          "name": "Achilles Revenge Ultimate Guard",
+          "input": "_4_1_2_+_K",
+          "condition": "LV20"
+        },
+        {
+          "category": "_@",
+          "name": "Gaia Driver close",
+          "condition": "LV31",
+          "input": "_x_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Hercules Rush",
+          "input": "_2_3_6_2_3_6_+_P",
+          "condition": "LV──"
+        },
+        {
+          "category": "_*",
+          "name": "Gigas Driver close",
+          "condition": "LV31",
+          "input": "_x_x_+_P"
+        },
+        {
+          "category": "_`",
+          "name": "Swords and Shields"
+        }
+      ],
+      "notes": [
+        "LV03          Bronze Sword",
+        "LV06          Wooden Shield",
+        "LV10          Steel Sword",
+        "LV14          Steel Shield",
+        "LV19          Diamond Sword",
+        "LV25          Diamond Shield",
+        "LV30          Legend Shield (3000 vs. Points)",
+        "LV32          Legend Sword (5000 vs. Points)"
+      ]
+    },
+    {
+      "name": "MAI LING (TAO)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Overhead Throw",
+          "input": "_4 / _6_+^F / ^G",
+          "condition": "LV──"
+        },
+        {
+          "category": "_(",
+          "name": "Knee Attack and Stomp",
+          "input": "_4 / _6_+^I / ^J",
+          "condition": "LV──"
+        },
+        {
+          "category": "_)",
+          "name": "Idaten",
+          "input": "_^_6_6",
+          "condition": "LV10"
+        },
+        {
+          "category": "_@",
+          "name": "Enryuu Kyaku",
+          "input": "_6_2_3_+_K",
+          "condition": "LV──"
+        },
+        {
+          "category": "_@",
+          "name": "Kuujin Ken",
+          "input": "_2_3_6_+_P",
+          "condition": "LV──"
+        },
+        {
+          "category": "_@",
+          "name": "Koukaku Shuu",
+          "input": "_4_2_1_+_K",
+          "condition": "LV03"
+        },
+        {
+          "category": "_@",
+          "name": "Koen",
+          "input": "_6_3_2_1_4_+_K",
+          "condition": "LV19"
+        },
+        {
+          "category": "_@",
+          "name": "Kokuu Ha Ultimate Guard",
+          "input": "_4_1_2_+_K (1000 vs. Points)",
+          "condition": "LV22"
+        },
+        {
+          "category": "_@",
+          "name": "Kuugeki Shou",
+          "input": "_6_3_2_1_4_+_P",
+          "condition": "LV25"
+        },
+        {
+          "category": "_@",
+          "name": "Tentsui Ga close",
+          "condition": "LV32",
+          "input": "_x_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Chou Kuujin Ken",
+          "input": "_2_3_6_2_3_6_+_P",
+          "condition": "LV──"
+        },
+        {
+          "category": "_*",
+          "name": "Chou Enryuu Kyaku",
+          "input": "_2_3_6_2_3_6_+_K",
+          "condition": "LV14"
+        }
+      ]
+    },
+    {
+      "name": "TESSA (TABASA)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Ascend Proof",
+          "input": "_4 / _6_+^F / ^G",
+          "condition": "LV──"
+        },
+        {
+          "category": "_)",
+          "name": "Flask",
+          "input": "(_^)_O^G",
+          "condition": "LV──"
+        },
+        {
+          "category": "_)",
+          "name": "Haul Flapper",
+          "input": "_3_+^H",
+          "condition": "LV──"
+        },
+        {
+          "category": "_)",
+          "name": "Restive Kitten",
+          "input": "_3_+^I",
+          "condition": "LV──"
+        },
+        {
+          "category": "_)",
+          "name": "Mew Sweep Super Jump",
+          "input": "_2_+^H",
+          "condition": "LV──"
+        },
+        {
+          "category": "_@",
+          "name": "Chakra Wave",
+          "input": "_2_3_6_+_P",
+          "condition": "LV──"
+        },
+        {
+          "category": "_@",
+          "name": "Reverie Sword",
+          "input": "_6_2_3_+_P",
+          "condition": "LV──"
+        },
+        {
+          "category": "_@",
+          "name": "Air Chakra Wave",
+          "input": "_^_2_3_6_+_P",
+          "condition": "LV03"
+        },
+        {
+          "category": "_@",
+          "name": "Glace Cannon",
+          "input": "_2_3_6_+_K",
+          "condition": "LV06"
+        },
+        {
+          "category": "_@",
+          "name": "Fiamma Cannon",
+          "input": "_4_2_1_+_K",
+          "condition": "LV10"
+        },
+        {
+          "category": "_@",
+          "name": "Electric Cannon",
+          "input": "_6_2_3_+_K",
+          "condition": "LV14"
+        },
+        {
+          "category": "_@",
+          "name": "Super Brave Pigeon",
+          "input": "_2_3_6_+_P (2000 vs. Points)",
+          "condition": "LV22"
+        },
+        {
+          "category": "_@",
+          "name": "Air Super Brave Pigeon",
+          "input": "_^_2_3_6_+_P (2000 vs. Points)",
+          "condition": "LV22"
+        },
+        {
+          "category": "_@",
+          "name": "Jamming Ghost",
+          "input": "_6_3_2_1_4_+_P",
+          "condition": "LV25"
+        },
+        {
+          "category": "_@",
+          "name": "Super Reverie Sword",
+          "input": "_6_2_3_+_P (2500 vs. Points)",
+          "condition": "LV28"
+        },
+        {
+          "category": "_@",
+          "name": "Death Phenomeno",
+          "input": "_6_3_2_1_4_+_K",
+          "condition": "LV32"
+        },
+        {
+          "category": "_*",
+          "name": "Tricicle Edge",
+          "input": "_2_3_6_2_3_6_+_P",
+          "condition": "LV──"
+        },
+        {
+          "category": "_*",
+          "name": "Hyper Cannon",
+          "input": "_2_3_6_2_3_6_+_K",
+          "condition": "LV19"
+        }
+      ]
+    },
+    {
+      "name": "KENJI (MUKURO)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Back Suplex",
+          "input": "_4 / _6_+^F",
+          "condition": "LV──"
+        },
+        {
+          "category": "_(",
+          "name": "Shoulder Attack",
+          "input": "_4 / _6_+^G",
+          "condition": "LV──"
+        },
+        {
+          "category": "_)",
+          "name": "Forward Slash",
+          "input": "_6_+^F",
+          "condition": "LV──"
+        },
+        {
+          "category": "_)",
+          "name": "Upward Kick",
+          "input": "_3_+^I",
+          "condition": "LV──"
+        },
+        {
+          "category": "_)",
+          "name": "Bazooka Shoot",
+          "input": "_^_6 / _2_+^J",
+          "condition": "LV──"
+        },
+        {
+          "category": "_)",
+          "name": "Kumo Gakure",
+          "input": "_^_8",
+          "condition": "LV06"
+        },
+        {
+          "category": "_@",
+          "name": "Ichi Monji",
+          "input": "_2_3_6_+_P",
+          "condition": "LV──"
+        },
+        {
+          "category": "_@",
+          "name": "Rasen Kyaku",
+          "input": "_2_1_4_+_K",
+          "condition": "LV──"
+        },
+        {
+          "category": "_@",
+          "name": "Tsumuji",
+          "input": "_4_2_1_+_P",
+          "condition": "LV03"
+        },
+        {
+          "category": "_@",
+          "name": "Baku Ryusho",
+          "input": "_6_2_3_+_P",
+          "condition": "LV10"
+        },
+        {
+          "category": "_@",
+          "name": "Enma Zuki",
+          "input": "_6_3_2_1_4_+_P",
+          "condition": "LV14"
+        },
+        {
+          "category": "_@",
+          "name": "Kagerou",
+          "input": "_4_2_1_+_K_P",
+          "condition": "LV19"
+        },
+        {
+          "category": "_@",
+          "name": "Utsusemi",
+          "input": "_6_2_3_+_K",
+          "condition": "LV25"
+        },
+        {
+          "category": "_@",
+          "name": "Kimo Yaburi Ultimate Guard",
+          "input": "_4_1_2_+_K (2000 vs. Points)",
+          "condition": "LV28"
+        },
+        {
+          "category": "_@",
+          "name": "Rasetsu Jin",
+          "input": "_4_1_2_3_6_+_K (3000 vs. Points)",
+          "condition": "LV32"
+        },
+        {
+          "category": "_*",
+          "name": "Jyuu Monji",
+          "input": "_2_3_6_2_3_6_+_P",
+          "condition": "LV──"
+        },
+        {
+          "category": "_*",
+          "name": "Homura Tsumuji",
+          "input": "_2_1_4_2_1_4_+_P (1000 vs. Points)",
+          "condition": "LV16"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "^E": "LP",
+    "^F": "MP",
+    "^G": "HP",
+    "^H": "LK",
+    "^I": "MK",
+    "^J": "HK",
+    "_S": "CO"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "genesis": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "megadrive": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "32x": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "saturn": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "psx": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "ps2": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "gba": {
+      "b": "^E",
+      "a": "^F",
+      "l1": "^G",
+      "y": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "pce": {
+      "b": "^E",
+      "a": "^H"
+    },
+    "pce6": {
+      "b": "^E",
+      "y": "^F",
+      "l1": "^G",
+      "a": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "3do": {
+      "b": "^E",
+      "a": "^F",
+      "l1": "^G",
+      "y": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "n64": {
+      "b": "^E",
+      "cDown": "^F",
+      "cRight": "^G",
+      "a": "^H",
+      "cLeft": "^I",
+      "cUp": "^J"
+    },
+    "dreamcast": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "gb": {
+      "b": "^E",
+      "a": "^H"
+    },
+    "gbc": {
+      "b": "^E",
+      "a": "^H"
+    },
+    "gamegear": {
+      "a": "^E",
+      "b": "^H"
+    },
+    "sms": {
+      "a": "^E",
+      "b": "^H"
+    },
+    "ngpc": {
+      "b": "^E",
+      "y": "^F",
+      "l1": "^G",
+      "a": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "lynx": {
+      "b": "^E",
+      "a": "^F",
+      "l1": "^G",
+      "y": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "wswan": {
+      "b": "^E",
+      "a": "^H"
+    }
+  }
+}

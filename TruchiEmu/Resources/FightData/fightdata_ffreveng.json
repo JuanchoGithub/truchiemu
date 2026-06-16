@@ -1,1 +1,1088 @@
-{"schemaVersion":2,"romIds":["ffreveng","ffrevng10"],"name":"Final Fight Revenge","year":1999,"manufacturer":"Capcom","controls":{"^E":"Weak Punch","^G":"Strong Punch","^H":"Weak Kick","^J":"Strong Kick","_S":"Taunt"},"controlGroups":{"_P":["^E","^G"],"_K":["^H","^J"]},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves","_*":"Supers","_`":"Supers"},"commonCommands":[{"category":"_)","name":"Dash","input":"_6_6 / _6_+^s"},{"category":"_)","name":"Retreat","input":"_4_4 / _4_+^s"},{"category":"_)","name":"Sidestep In ^s"},{"category":"_)","name":"Sidestep Out","input":"_2_+^s"},{"category":"_)","name":"Pick Up Item / Weapon close to item / weapon ^s"},{"category":"_)","name":"Change Weapon","input":"^E_+^H"},{"category":"_)","name":"Throw Weapon","input":"^G_+^J"}],"characters":[{"name":"CODY TRAVERS","moves":[{"category":"_(","name":"Belly-to-Belly Suplex","input":"_4 / _6_+^G"},{"category":"_(","name":"Knee Jamboree","input":"_4 / _6_+^J"},{"category":"_(","name":"Shoulder Throw","input":"_4 / _6_+^G"},{"category":"_)","name":"Glancing Upper","input":"_6_+^E"},{"category":"_)","name":"Brawling Smash","input":"_6_+^G"},{"category":"_)","name":"Push Kick","input":"_6_+^H"},{"category":"_)","name":"Knee Drop","input":"_^_2_+^H"},{"category":"_)","name":"Overdrive Wheel Kick","input":"_^_8_+^J"},{"category":"_)","name":"Windmill Knife Swipe with Knife","input":"_4_+^G"},{"category":"_)","name":"Diving Knife Twist with Knife","input":"_^_2_+^G"},{"category":"_@","name":"Strike Fist","input":"_2_3_6_+_P"},{"category":"_@","name":"Somersault Kick","input":"_6_2_3_+_K"},{"category":"_@","name":"Rapid Punch","input":"_6_2_3_+_P"},{"category":"_@","name":"Sobat Combo","input":"_2_1_4_+_K_K_K"},{"category":"_@","name":"Judo Catch","input":"^W_+^s (reverse high/mid)"},{"category":"_*","name":"Final Destruction","input":"_2_3_6_2_3_6_+_P, ^*_P / _K"},{"category":"_*","name":"Hyper Active","input":"_6_3_2_1_4_+_P"}]},{"name":"GUY","moves":[{"category":"_(","name":"Seoi Nage","input":"_4 / _6_+^G"},{"category":"_(","name":"Tsukami Nage","input":"_4 / _6_+^J"},{"category":"_(","name":"Bushin-ryuu Seoi Nage","input":"_4 / _6_+^G"},{"category":"_(","name":"Izuna Otoshi","input":"_^_4 / _6_+^G / ^J"},{"category":"_)","name":"Bushin Upper","input":"_6_+^E"},{"category":"_)","name":"Kubi Kudaki","input":"_6_+^G"},{"category":"_)","name":"Push Kick","input":"_6_+^H"},{"category":"_)","name":"Kamaitachi","input":"_6_+^J"},{"category":"_)","name":"Bushin Slide","input":"_3_+^J"},{"category":"_)","name":"Hiji Otoshi","input":"_^_2_+^G"},{"category":"_)","name":"Sword Thrust with Sword","input":"_6_+^G"},{"category":"_@","name":"Shuriken","input":"(_^)_2_3_6_+_P"},{"category":"_@","name":"Forward Leap","input":"_4_1_2_3_6_+_K"},{"category":"_@","name":"Bushin Izuna Otoshi close","input":"_K"},{"category":"_@","name":"Izuna no Hiji Otoshi","input":"_K"},{"category":"_@","name":"Bushin Senpuu Kyaku","input":"_2_1_4_+_K"},{"category":"_@","name":"Hayagake: Kubikari dashing","input":"_P"},{"category":"_@","name":"Hayagake: Kage Sukui dashing","input":"_K"},{"category":"_@","name":"Shira Hadori","input":"^W_+^s (reverse high/mid punch)"},{"category":"_*","name":"Super Shinobi close","input":"_2_3_6_2_3_6_+_K"},{"category":"_*","name":"Throw Shurikens","input":"^*^E"},{"category":"_*","name":"Throw Red Kunai","input":"^*^G"},{"category":"_*","name":"Shippu","input":"_6_3_2_1_4_+_P"}]},{"name":"DAMND","moves":[{"category":"_(","name":"Punch Mayhem","input":"_4 / _6_+^G"},{"category":"_(","name":"Bulldog","input":"_4 / _6_+^J"},{"category":"_(","name":"Backdrop","input":"_4 / _6_+^J"},{"category":"_(","name":"Flying Clothesline","input":"_^_4 / _6_+^G / ^J"},{"category":"_)","name":"Midsection Chop","input":"_6_+^E"},{"category":"_)","name":"Lunging Rasta","input":"_6_+^G"},{"category":"_)","name":"Drop Kick","input":"_6_+^J"},{"category":"_)","name":"Headbutt","input":"_4_+^G"},{"category":"_)","name":"Uppercut","input":"_3_+^G"},{"category":"_@","name":"Damnd Ball","input":"^4_6_+_P"},{"category":"_@","name":"Sidestep Damnd Ball","input":"^4_6_+_K"},{"category":"_@","name":"Guillotine Drop","input":"^2_8_+_K"},{"category":"_*","name":"Hyper Damnd","input":"_6_3_2_1_4_+^E (Custom Combo)"},{"category":"_*","name":"Hyper Damnd","input":"_6_3_2_1_4_+^G (damage increased for Special Moves)"},{"category":"_*","name":"Hyper Damnd","input":"_6_3_2_1_4_+^s (Super Armor)"},{"category":"_*","name":"Emergency Whistle","input":"_2_3_6_2_3_6_+_P"}]},{"name":"POISON","moves":[{"category":"_(","name":"Love Bites","input":"_4 / _6_+^G"},{"category":"_(","name":"Reverse Facebreaker","input":"_4 / _6_+^J"},{"category":"_(","name":"Flying Clothesline","input":"_^_4 / _6_+^G / ^J"},{"category":"_)","name":"Cat Paw","input":"_6_+^E"},{"category":"_)","name":"Quick Whip","input":"_6_+^G"},{"category":"_)","name":"Step Push Kick","input":"_6_+^J"},{"category":"_)","name":"Straight Paw","input":"_3_+^E"},{"category":"_)","name":"Sweeping Whip","input":"_3_+^G"},{"category":"_)","name":"Drop Whip","input":"_^_2_+^G"},{"category":"_@","name":"Cat Claw","input":"_6_2_3_+_P"},{"category":"_@","name":"Handcuff","input":"_2_3_6_+_P"},{"category":"_@","name":"Whip","input":"_6_3_2_1_4_+_P (steal weapon)"},{"category":"_*","name":"Poison Kiss","input":"_2_3_6_2_3_6_+_P"},{"category":"_*","name":"Thunder Whip","input":"_2_3_6_2_3_6_+_K"}]},{"name":"SODOM","moves":[{"category":"_(","name":"Shoulder Throw","input":"_4 / _6_+^G"},{"category":"_)","name":"Groin Punch","input":"_6_+^E"},{"category":"_)","name":"Side Kick","input":"_6_+^H"},{"category":"_)","name":"Slide Kick","input":"_3_+^J"},{"category":"_@","name":"Jigoku Scrape","input":"_2_3_6_+_P"},{"category":"_@","name":"Butsumetsu Buster","input":"_x_+_P"},{"category":"_@","name":"Daikyo Burning","input":"_x_+_K"},{"category":"_@","name":"Shiraha Catch","input":"^W_+^s (reverse high/mid/low punch)"},{"category":"_*","name":"Meido no Miyage","input":"_2_3_6_2_3_6_+_P"},{"category":"_*","name":"Tenchuu Satsu","input":"_x_x_+_P"}]},{"name":"EDI. E","moves":[{"category":"_(","name":"Punch Mayhem","input":"_4 / _6_+^G"},{"category":"_(","name":"Police Brutality","input":"_4 / _6_+^J"},{"category":"_(","name":"Bulldog","input":"_4 / _6_+^J"},{"category":"_)","name":"Slap Down","input":"_6_+^E"},{"category":"_)","name":"Clapper Jack","input":"_6_+^G"},{"category":"_)","name":"Straight Punch","input":"_3_+^E"},{"category":"_)","name":"Flying Head Butt","input":"_^_2_+^G"},{"category":"_@","name":"44 Shot","input":"_2_3_6_+_P / _K"},{"category":"_@","name":"Taikuu 44 Shot","input":"_6_2_3_+_P"},{"category":"_@","name":"Nightstick","input":"_6_3_2_1_4_+^G"},{"category":"_*","name":"Auto Arm","input":"_2_3_6_2_3_6_+_K (get a random weapon)"},{"category":"_*","name":"Patrol Crash","input":"_2_3_6_2_3_6_+_P"},{"category":"_*","name":"Control _?"}]},{"name":"ANDORE","moves":[{"category":"_(","name":"Neck Hanging Three","input":"_4 / _6_+^G"},{"category":"_(","name":"Choke Slam","input":"_4 / _6_+^J"},{"category":"_(","name":"Hopping Piledriver","input":"_4 / _6_+^J"},{"category":"_)","name":"Overhead Chop","input":"_6_+^E"},{"category":"_)","name":"Giant Palm Bomber","input":"_6_+^G"},{"category":"_)","name":"Hip Press","input":"_6_+^H"},{"category":"_)","name":"Cossack Wannabe","input":"_3_+^J"},{"category":"_)","name":"Butt Rush","input":"_^_2_+^J"},{"category":"_@","name":"Giant Chain","input":"_6_3_2_1_4_+_P"},{"category":"_@","name":"Giant Attack","input":"_4_1_2_3_6_+_P"},{"category":"_@","name":"Giant Hip Drop","input":"_6_2_3_+_K"},{"category":"_@","name":"Giant Slam close","input":"_x_+_K"},{"category":"_*","name":"Giant Grab","input":"_2_3_6_2_3_6_+_P"},{"category":"_*","name":"Grab close","input":"_P"},{"category":"_*","name":"Giant Meteo","input":"_2_3_6_2_3_6_+_K"}]},{"name":"EL GADO","moves":[{"category":"_(","name":"Strangle","input":"_4 / _6_+^G"},{"category":"_(","name":"Limb Breaker","input":"_4 / _6_+^J"},{"category":"_(","name":"Frankensteiner","input":"_3_+^G"},{"category":"_(","name":"Flying Back Breaker","input":"_^_4 / _6_+^G / ^J"},{"category":"_)","name":"Quick Upper","input":"_6_+^E"},{"category":"_)","name":"Push Kick","input":"_6_+^H"},{"category":"_)","name":"Axe Kick","input":"_6_+^J"},{"category":"_)","name":"Spinning Backfist","input":"_4_+^G"},{"category":"_)","name":"Crawling Double Punch","input":"_3_+^H"},{"category":"_)","name":"Diving Heel Smash","input":"_^_2_+^H / ^J"},{"category":"_)","name":"Thigh Slice with Knife","input":"_6_+^G"},{"category":"_)","name":"Jumping Knife Twist with Knife","input":"_3_+^G"},{"category":"_)","name":"Crawling Lunge with Knife","input":"_3_+^J"},{"category":"_)","name":"Downward Stab with Knife","input":"_^_2_+^E"},{"category":"_)","name":"Diving Knife Twist with Knife","input":"_^_2_+^G"},{"category":"_@","name":"Assassin Knife","input":"^4_6_+_P / _K"},{"category":"_@","name":"Scorpion Attack","input":"^2_8_+_K_K"},{"category":"_@","name":"Assassin Trap","input":"^W"},{"category":"_@","name":"Trap Off","input":"^W"},{"category":"_@","name":"Catch","input":"^W_+^s (reverse high/mid)"},{"category":"_*","name":"Death Scorpion","input":"_2_3_6_2_3_6_+_K"},{"category":"_*","name":"Scorpion Veil","input":"_6_3_2_1_4_+_P"},{"category":"_*","name":"Throw Knife","input":"^E"},{"category":"_*","name":"Throw Dynamite","input":"^G"}]},{"name":"MIKE HAGGAR","moves":[{"category":"_(","name":"Repeated Headbutts","input":"_4 / _6_+^G"},{"category":"_(","name":"Backdrop","input":"_4 / _6_+^J"},{"category":"_(","name":"Jumping Piledriver","input":"_4 / _6_+^J"},{"category":"_(","name":"Spinning Leg Takedown","input":"_3_+^G"},{"category":"_(","name":"Repeated Headbutts dashing","input":"_P"},{"category":"_(","name":"Backdrop","input":"_4 / _6_+^J"},{"category":"_(","name":"Jumping Piledriver dashing","input":"_K"},{"category":"_(","name":"Piledriver Interceptor","input":"_^_4 / _6_+^G / ^J"},{"category":"_)","name":"Forearm Slash","input":"_6_+^E"},{"category":"_)","name":"Heavy Lunge","input":"_6_+^G"},{"category":"_)","name":"Drop Kick","input":"_6_+^J"},{"category":"_)","name":"Body Splash","input":"_^_2_+^G"},{"category":"_)","name":"Knee Press","input":"_^_2_+^H"},{"category":"_)","name":"Swinging Pìpe with Steel Pipe","input":"_6_+^G"},{"category":"_)","name":"Hopping Overhead with Steel Pipe","input":"_3_+^G"},{"category":"_@","name":"Double Lariat","input":"^W"},{"category":"_@","name":"Move","input":"_4 / _6"},{"category":"_@","name":"Quick Double Lariat","input":"^V"},{"category":"_@","name":"Move","input":"_4 / _6"},{"category":"_@","name":"Spinning Piledriver","input":"_x_+_P"},{"category":"_@","name":"Violent Axe","input":"_6_2_3_+_P"},{"category":"_@","name":"Hammer Thru","input":"^W_+^s (reverse high/mid)"},{"category":"_*","name":"Gamble Slam close","input":"_x_x_+_P"},{"category":"_*","name":"Stop de Roulette","input":"_P / _K"},{"category":"_*","name":"Giant Swing","input":"_2_3_6_2_3_6_+_K"}]},{"name":"ROLENTO SCHUGERG","moves":[{"category":"_(","name":"Colonel Carrier","input":"_4 / _6_+^G"},{"category":"_(","name":"Deadly Package","input":"_4 / _6_+^J"},{"category":"_)","name":"Patriot Upper","input":"_6_+^E"},{"category":"_)","name":"Straight Punch","input":"_3_+^E"},{"category":"_)","name":"Angle Kick","input":"_1_+^H / ^J"},{"category":"_)","name":"High-Angle Descent Kick","input":"_^_2_+^H / ^J"},{"category":"_)","name":"Short Pole Tap with Stick","input":"_4_+^E"},{"category":"_)","name":"Pole Upper with Stick","input":"_4_+^G"},{"category":"_)","name":"Pole Poke with Stick","input":"_1_+^E"},{"category":"_)","name":"Pole Trip with Stick","input":"_1_+^G"},{"category":"_)","name":"Pogo Pole with Stick","input":"_^_2_+^E"},{"category":"_)","name":"Pole Dive with Stick","input":"_^_2_+^G"},{"category":"_@","name":"Patroit Circle","input":"_2_3_6_+_P_P_P"},{"category":"_@","name":"Sky Dive","input":"_6_2_3_+_P"},{"category":"_@","name":"Attack","input":"_P / _K"},{"category":"_@","name":"Mekong Delta Escape","input":"_2_1_4_+_K"},{"category":"_@","name":"Attack","input":"_P / _K"},{"category":"_*","name":"Take No Prisoner","input":"_2_3_6_2_3_6_+_K"},{"category":"_*","name":"Hell Sniper","input":"_2_1_4_2_1_4_+_P"},{"category":"_*","name":"Move _?"},{"category":"_*","name":"Shoot","input":"_P / _K"}]}],"controlAbbr":{"^E":"LP","^G":"HP","^H":"LK","^J":"HK","_S":"TA"},"systemControlMappings":{"snes":{"y":"^G","x":"^E","b":"^J","a":"^H"},"genesis":{"y":"^G","b":"^E","c":"^J","a":"^H"},"megadrive":{"y":"^G","b":"^E","c":"^J","a":"^H"},"32x":{"y":"^G","b":"^E","c":"^J","a":"^H"},"saturn":{"y":"^G","b":"^E","c":"^J","a":"^H"},"psx":{"y":"^G","x":"^E","b":"^J","a":"^H"},"ps2":{"y":"^G","x":"^E","b":"^J","a":"^H"},"gb":{"b":"^G","a":"^J"},"gbc":{"b":"^G","a":"^J"},"gamegear":{"a":"^G","b":"^J"},"sms":{"a":"^G","b":"^J"},"gba":{"b":"^G","a":"^E","y":"^J","x":"^H"},"ngpc":{"b":"^G","a":"^E","y":"^J","x":"^H"}}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "ffreveng",
+    "ffrevng10"
+  ],
+  "name": "Final Fight Revenge",
+  "year": 1999,
+  "manufacturer": "Capcom",
+  "controls": {
+    "^E": "Weak Punch",
+    "^G": "Strong Punch",
+    "^H": "Weak Kick",
+    "^J": "Strong Kick",
+    "_S": "Taunt"
+  },
+  "controlGroups": {
+    "_P": [
+      "^E",
+      "^G"
+    ],
+    "_K": [
+      "^H",
+      "^J"
+    ]
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_*": "Supers",
+    "_`": "Supers"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "_6_6 / _6_+^s"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4 / _4_+^s"
+    },
+    {
+      "category": "_)",
+      "name": "Sidestep In ^s"
+    },
+    {
+      "category": "_)",
+      "name": "Sidestep Out",
+      "input": "_2_+^s"
+    },
+    {
+      "category": "_)",
+      "name": "Pick Up Item / Weapon close to item / weapon ^s"
+    },
+    {
+      "category": "_)",
+      "name": "Change Weapon",
+      "input": "^E_+^H"
+    },
+    {
+      "category": "_)",
+      "name": "Throw Weapon",
+      "input": "^G_+^J"
+    }
+  ],
+  "characters": [
+    {
+      "name": "CODY TRAVERS",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Belly-to-Belly Suplex",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Knee Jamboree",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_(",
+          "name": "Shoulder Throw",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Glancing Upper",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Brawling Smash",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Push Kick",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Knee Drop",
+          "input": "_^_2_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Overdrive Wheel Kick",
+          "input": "_^_8_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Windmill Knife Swipe with Knife",
+          "input": "_4_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Diving Knife Twist with Knife",
+          "input": "_^_2_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Strike Fist",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Somersault Kick",
+          "input": "_6_2_3_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Rapid Punch",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Sobat Combo",
+          "input": "_2_1_4_+_K_K_K"
+        },
+        {
+          "category": "_@",
+          "name": "Judo Catch",
+          "input": "^W_+^s (reverse high/mid)"
+        },
+        {
+          "category": "_*",
+          "name": "Final Destruction",
+          "input": "_2_3_6_2_3_6_+_P, ^*_P / _K"
+        },
+        {
+          "category": "_*",
+          "name": "Hyper Active",
+          "input": "_6_3_2_1_4_+_P"
+        }
+      ]
+    },
+    {
+      "name": "GUY",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Seoi Nage",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Tsukami Nage",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_(",
+          "name": "Bushin-ryuu Seoi Nage",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Izuna Otoshi",
+          "input": "_^_4 / _6_+^G / ^J"
+        },
+        {
+          "category": "_)",
+          "name": "Bushin Upper",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Kubi Kudaki",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Push Kick",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Kamaitachi",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Bushin Slide",
+          "input": "_3_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Hiji Otoshi",
+          "input": "_^_2_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Sword Thrust with Sword",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Shuriken",
+          "input": "(_^)_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Forward Leap",
+          "input": "_4_1_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Bushin Izuna Otoshi close",
+          "input": "_K"
+        },
+        {
+          "category": "_@",
+          "name": "Izuna no Hiji Otoshi",
+          "input": "_K"
+        },
+        {
+          "category": "_@",
+          "name": "Bushin Senpuu Kyaku",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Hayagake: Kubikari dashing",
+          "input": "_P"
+        },
+        {
+          "category": "_@",
+          "name": "Hayagake: Kage Sukui dashing",
+          "input": "_K"
+        },
+        {
+          "category": "_@",
+          "name": "Shira Hadori",
+          "input": "^W_+^s (reverse high/mid punch)"
+        },
+        {
+          "category": "_*",
+          "name": "Super Shinobi close",
+          "input": "_2_3_6_2_3_6_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Throw Shurikens",
+          "input": "^*^E"
+        },
+        {
+          "category": "_*",
+          "name": "Throw Red Kunai",
+          "input": "^*^G"
+        },
+        {
+          "category": "_*",
+          "name": "Shippu",
+          "input": "_6_3_2_1_4_+_P"
+        }
+      ]
+    },
+    {
+      "name": "DAMND",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Punch Mayhem",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Bulldog",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_(",
+          "name": "Backdrop",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_(",
+          "name": "Flying Clothesline",
+          "input": "_^_4 / _6_+^G / ^J"
+        },
+        {
+          "category": "_)",
+          "name": "Midsection Chop",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Lunging Rasta",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Drop Kick",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Headbutt",
+          "input": "_4_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Uppercut",
+          "input": "_3_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Damnd Ball",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Sidestep Damnd Ball",
+          "input": "^4_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Guillotine Drop",
+          "input": "^2_8_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Hyper Damnd",
+          "input": "_6_3_2_1_4_+^E (Custom Combo)"
+        },
+        {
+          "category": "_*",
+          "name": "Hyper Damnd",
+          "input": "_6_3_2_1_4_+^G (damage increased for Special Moves)"
+        },
+        {
+          "category": "_*",
+          "name": "Hyper Damnd",
+          "input": "_6_3_2_1_4_+^s (Super Armor)"
+        },
+        {
+          "category": "_*",
+          "name": "Emergency Whistle",
+          "input": "_2_3_6_2_3_6_+_P"
+        }
+      ]
+    },
+    {
+      "name": "POISON",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Love Bites",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Reverse Facebreaker",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_(",
+          "name": "Flying Clothesline",
+          "input": "_^_4 / _6_+^G / ^J"
+        },
+        {
+          "category": "_)",
+          "name": "Cat Paw",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Quick Whip",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Step Push Kick",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Straight Paw",
+          "input": "_3_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Sweeping Whip",
+          "input": "_3_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Drop Whip",
+          "input": "_^_2_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Cat Claw",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Handcuff",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Whip",
+          "input": "_6_3_2_1_4_+_P (steal weapon)"
+        },
+        {
+          "category": "_*",
+          "name": "Poison Kiss",
+          "input": "_2_3_6_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Thunder Whip",
+          "input": "_2_3_6_2_3_6_+_K"
+        }
+      ]
+    },
+    {
+      "name": "SODOM",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Shoulder Throw",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Groin Punch",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Side Kick",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Slide Kick",
+          "input": "_3_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Jigoku Scrape",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Butsumetsu Buster",
+          "input": "_x_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Daikyo Burning",
+          "input": "_x_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Shiraha Catch",
+          "input": "^W_+^s (reverse high/mid/low punch)"
+        },
+        {
+          "category": "_*",
+          "name": "Meido no Miyage",
+          "input": "_2_3_6_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Tenchuu Satsu",
+          "input": "_x_x_+_P"
+        }
+      ]
+    },
+    {
+      "name": "EDI. E",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Punch Mayhem",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Police Brutality",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_(",
+          "name": "Bulldog",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Slap Down",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Clapper Jack",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Straight Punch",
+          "input": "_3_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Flying Head Butt",
+          "input": "_^_2_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "44 Shot",
+          "input": "_2_3_6_+_P / _K"
+        },
+        {
+          "category": "_@",
+          "name": "Taikuu 44 Shot",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Nightstick",
+          "input": "_6_3_2_1_4_+^G"
+        },
+        {
+          "category": "_*",
+          "name": "Auto Arm",
+          "input": "_2_3_6_2_3_6_+_K (get a random weapon)"
+        },
+        {
+          "category": "_*",
+          "name": "Patrol Crash",
+          "input": "_2_3_6_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Control _?"
+        }
+      ]
+    },
+    {
+      "name": "ANDORE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Neck Hanging Three",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Choke Slam",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_(",
+          "name": "Hopping Piledriver",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Overhead Chop",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Giant Palm Bomber",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Hip Press",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Cossack Wannabe",
+          "input": "_3_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Butt Rush",
+          "input": "_^_2_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Giant Chain",
+          "input": "_6_3_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Giant Attack",
+          "input": "_4_1_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Giant Hip Drop",
+          "input": "_6_2_3_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Giant Slam close",
+          "input": "_x_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Giant Grab",
+          "input": "_2_3_6_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Grab close",
+          "input": "_P"
+        },
+        {
+          "category": "_*",
+          "name": "Giant Meteo",
+          "input": "_2_3_6_2_3_6_+_K"
+        }
+      ]
+    },
+    {
+      "name": "EL GADO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Strangle",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Limb Breaker",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_(",
+          "name": "Frankensteiner",
+          "input": "_3_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Flying Back Breaker",
+          "input": "_^_4 / _6_+^G / ^J"
+        },
+        {
+          "category": "_)",
+          "name": "Quick Upper",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Push Kick",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Axe Kick",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Spinning Backfist",
+          "input": "_4_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Crawling Double Punch",
+          "input": "_3_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Diving Heel Smash",
+          "input": "_^_2_+^H / ^J"
+        },
+        {
+          "category": "_)",
+          "name": "Thigh Slice with Knife",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Jumping Knife Twist with Knife",
+          "input": "_3_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Crawling Lunge with Knife",
+          "input": "_3_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Downward Stab with Knife",
+          "input": "_^_2_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Diving Knife Twist with Knife",
+          "input": "_^_2_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Assassin Knife",
+          "input": "^4_6_+_P / _K"
+        },
+        {
+          "category": "_@",
+          "name": "Scorpion Attack",
+          "input": "^2_8_+_K_K"
+        },
+        {
+          "category": "_@",
+          "name": "Assassin Trap",
+          "input": "^W"
+        },
+        {
+          "category": "_@",
+          "name": "Trap Off",
+          "input": "^W"
+        },
+        {
+          "category": "_@",
+          "name": "Catch",
+          "input": "^W_+^s (reverse high/mid)"
+        },
+        {
+          "category": "_*",
+          "name": "Death Scorpion",
+          "input": "_2_3_6_2_3_6_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Scorpion Veil",
+          "input": "_6_3_2_1_4_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Throw Knife",
+          "input": "^E"
+        },
+        {
+          "category": "_*",
+          "name": "Throw Dynamite",
+          "input": "^G"
+        }
+      ]
+    },
+    {
+      "name": "MIKE HAGGAR",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Repeated Headbutts",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Backdrop",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_(",
+          "name": "Jumping Piledriver",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_(",
+          "name": "Spinning Leg Takedown",
+          "input": "_3_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Repeated Headbutts dashing",
+          "input": "_P"
+        },
+        {
+          "category": "_(",
+          "name": "Backdrop",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_(",
+          "name": "Jumping Piledriver dashing",
+          "input": "_K"
+        },
+        {
+          "category": "_(",
+          "name": "Piledriver Interceptor",
+          "input": "_^_4 / _6_+^G / ^J"
+        },
+        {
+          "category": "_)",
+          "name": "Forearm Slash",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Heavy Lunge",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Drop Kick",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Body Splash",
+          "input": "_^_2_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Knee Press",
+          "input": "_^_2_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Swinging Pìpe with Steel Pipe",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Hopping Overhead with Steel Pipe",
+          "input": "_3_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Double Lariat",
+          "input": "^W"
+        },
+        {
+          "category": "_@",
+          "name": "Move",
+          "input": "_4 / _6"
+        },
+        {
+          "category": "_@",
+          "name": "Quick Double Lariat",
+          "input": "^V"
+        },
+        {
+          "category": "_@",
+          "name": "Move",
+          "input": "_4 / _6"
+        },
+        {
+          "category": "_@",
+          "name": "Spinning Piledriver",
+          "input": "_x_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Violent Axe",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Hammer Thru",
+          "input": "^W_+^s (reverse high/mid)"
+        },
+        {
+          "category": "_*",
+          "name": "Gamble Slam close",
+          "input": "_x_x_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Stop de Roulette",
+          "input": "_P / _K"
+        },
+        {
+          "category": "_*",
+          "name": "Giant Swing",
+          "input": "_2_3_6_2_3_6_+_K"
+        }
+      ]
+    },
+    {
+      "name": "ROLENTO SCHUGERG",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Colonel Carrier",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Deadly Package",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Patriot Upper",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Straight Punch",
+          "input": "_3_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Angle Kick",
+          "input": "_1_+^H / ^J"
+        },
+        {
+          "category": "_)",
+          "name": "High-Angle Descent Kick",
+          "input": "_^_2_+^H / ^J"
+        },
+        {
+          "category": "_)",
+          "name": "Short Pole Tap with Stick",
+          "input": "_4_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Pole Upper with Stick",
+          "input": "_4_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Pole Poke with Stick",
+          "input": "_1_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Pole Trip with Stick",
+          "input": "_1_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Pogo Pole with Stick",
+          "input": "_^_2_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Pole Dive with Stick",
+          "input": "_^_2_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Patroit Circle",
+          "input": "_2_3_6_+_P_P_P"
+        },
+        {
+          "category": "_@",
+          "name": "Sky Dive",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Attack",
+          "input": "_P / _K"
+        },
+        {
+          "category": "_@",
+          "name": "Mekong Delta Escape",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Attack",
+          "input": "_P / _K"
+        },
+        {
+          "category": "_*",
+          "name": "Take No Prisoner",
+          "input": "_2_3_6_2_3_6_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Hell Sniper",
+          "input": "_2_1_4_2_1_4_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Move _?"
+        },
+        {
+          "category": "_*",
+          "name": "Shoot",
+          "input": "_P / _K"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "^E": "LP",
+    "^G": "HP",
+    "^H": "LK",
+    "^J": "HK",
+    "_S": "TA"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "^G",
+      "x": "^E",
+      "b": "^J",
+      "a": "^H"
+    },
+    "genesis": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "megadrive": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "32x": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "saturn": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "psx": {
+      "y": "^G",
+      "x": "^E",
+      "b": "^J",
+      "a": "^H"
+    },
+    "ps2": {
+      "y": "^G",
+      "x": "^E",
+      "b": "^J",
+      "a": "^H"
+    },
+    "gb": {
+      "b": "^G",
+      "a": "^J"
+    },
+    "gbc": {
+      "b": "^G",
+      "a": "^J"
+    },
+    "gamegear": {
+      "a": "^G",
+      "b": "^J"
+    },
+    "sms": {
+      "a": "^G",
+      "b": "^J"
+    },
+    "gba": {
+      "b": "^G",
+      "a": "^E",
+      "y": "^J",
+      "x": "^H"
+    },
+    "ngpc": {
+      "b": "^G",
+      "a": "^E",
+      "y": "^J",
+      "x": "^H"
+    }
+  }
+}

@@ -1,1 +1,4319 @@
-{"schemaVersion":2,"romIds":["rbff1","rbff1a","rbff1k","rbff1ka"],"name":"Real Bout Fatal Fury","year":1995,"manufacturer":"SNK","controls":{"_A":"Punch","_B":"Kick","_C":"Powerful Attack","_D":"Plane Switch","_S":"Start","^S":"Select (AES only)"},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves","_*":"Super Power (S.POWER)","_&":"Potential Power (P.POWER)","_`":"Combos"},"commonCommands":[{"category":"_)","name":"Dash","input":"_6_6","condition":"─/─"},{"category":"_)","name":"Retreat","input":"_4_4","condition":"─/─"},{"category":"_)","name":"Crawl","input":"^3","condition":"─/─"},{"category":"_)","name":"Normal Jump","input":"_8","condition":"─/─"},{"category":"_)","name":"Low Jump","input":"_X_8","condition":"─/─"},{"category":"_)","name":"Long Jump dashing","input":"_9","condition":"─/─"},{"category":"_)","name":"Turn in the Air","input":"_^_D","condition":"─/─"},{"category":"_)","name":"Defensive Attack blocking","input":"_6_+_A","condition":"─/─"},{"category":"_)","name":"Roll Recovery being knocked down","input":"_D","condition":"─/─"},{"category":"_)","name":"Taunt far","input":"_C","condition":"─/─"},{"category":"_)","name":"Change to Back Plane","input":"_D","condition":"─/─"},{"category":"_)","name":"Change to Front Plane","input":"_2_+_D","condition":"─/─"},{"category":"_)","name":"Return to Main Plane in Front Plane","input":"_8","condition":"─/─"},{"category":"_)","name":"Return to Main Plane in Back Plane","input":"_2","condition":"─/─"},{"category":"_)","name":"Weak Return in Front Plane / Back Plane","input":"_A / _B","condition":"─/─"},{"category":"_)","name":"Strong Return in Front Plane","input":"_C","condition":"B/─"},{"category":"_)","name":"Strong Return in Back Plane","input":"_C","condition":"F/─"},{"category":"_)","name":"High Pull opponent in Front Plane / Back Plane","input":"_D","condition":"M/─"},{"category":"_)","name":"Low Pull opponent in Front Plane / Back Plane","input":"_2_+_D","condition":"M/─"}],"commonNotes":["PLANE MOVES"],"characters":[{"name":"TERRY BOGARD","moves":[{"category":"_(","name":"Buster Throw","input":"_4 / _6_+_C","condition":"─/─"},{"category":"_)","name":"Backspin Kick","input":"_6_+_B","condition":"B/─"},{"category":"_)","name":"Rising Upper","input":"_1_+_A","condition":"─/─"},{"category":"_)","name":"Charge Kick dashing","input":"_6_+_C","condition":"─/─"},{"category":"_@","name":"Power Wave","input":"_2_3_6_+_A","condition":"─/─"},{"category":"_@","name":"Round Wave","input":"_2_3_6_+_C","condition":"A/─"},{"category":"_@","name":"Rising Tackle","input":"^2_8_+_A","condition":"─/─"},{"category":"_@","name":"Power Dunk","input":"_6_2_3_+_B","condition":"─/G"},{"category":"_@","name":"Burn Knuckle","input":"_2_1_4_+_A / _C","condition":"─/─"},{"category":"_@","name":"Crack Shoot","input":"_2_1_4_+_B","condition":"─/─"},{"category":"_@","name":"Passing Sway","input":"_2_3_6_+_D","condition":"─/─"},{"category":"_*","name":"Power Geyser","input":"_2_1_4_1_6_+_B_+_C","condition":"A/─"},{"category":"_&","name":"Triple Geyser","input":"_2_1_4_1_6_+_C","condition":"A/─"},{"category":"_`","name":"Fake Power Wave","input":"_2_+_A_+_B"},{"category":"_`","name":"Fake Burn Knuckle","input":"_6_+_A_+_B"},{"category":"_`","name":"Fake Power Geyser","input":"_2_+_B_+_C"},{"category":"_`","input":"_Ac _! _Bc _! _C#"},{"category":"_`","input":"_Ac _! _Bc _! _6_+_C#","condition":"B"},{"category":"_`","input":"_Ac _! _Bc _! _2_+_C#"},{"category":"_`","input":"_Ac _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_Ac _! _Cc"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _C#"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _6_+_C#","condition":"B"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_Bc _! _Bc _! _C#"},{"category":"_`","input":"_Bc _! _Bc _! _6_+_C#","condition":"B"},{"category":"_`","input":"_Bc _! _Bc _! _2_+_C#"},{"category":"_`","input":"_Bc _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _C#"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _6_+_C#","condition":"B"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_2_+_Ac _! _Bc _! _C#"},{"category":"_`","input":"_2_+_Ac _! _Bc _! _6_+_C#","condition":"B"},{"category":"_`","input":"_2_+_Ac _! _Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Ac _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_2_+_Ac _! _2_+_Bc _! _C#"},{"category":"_`","input":"_2_+_Ac _! _2_+_Bc _! _6_+_C#","condition":"B"},{"category":"_`","input":"_2_+_Ac _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Ac _! _2_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_2_+_Ac _! _2_+_Cc"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _C#"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _6_+_C#","condition":"B"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _C#"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _6_+_C#","condition":"B"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _1_+_Cj"},{"category":"_`","name":"dashing","input":"_Ac _! _Cc _! _Cc _! _Cc _! _C#"},{"category":"_`","input":"_^_A# _! _C#"},{"category":"_`","input":"_^_B# _! _C#"}],"notes":["Fake Moves"],"combos":["Combos"]},{"name":"ANDY BOGARD","moves":[{"category":"_(","name":"Uchimata","input":"_4 / _6_+_C","condition":"─/─"},{"category":"_)","name":"Abise Geri","input":"_6_+_B","condition":"─/─"},{"category":"_)","name":"Age Men","input":"_1_+_A","condition":"─/─"},{"category":"_)","name":"Kunai Tama opponent knocked down","input":"_2_+_C","condition":"─/─"},{"category":"_@","name":"Hishou Ken","input":"_2_1_4_+_A","condition":"─/─"},{"category":"_@","name":"Geki Hishou Ken","input":"_2_1_4_+_C","condition":"A/─"},{"category":"_@","name":"Shouryuu Dan","input":"_6_2_3_+_C","condition":"─/G"},{"category":"_@","name":"Kuuha Dan","input":"_1_2_3_6_+_B","condition":"─/─"},{"category":"_@","name":"Zan'ei Ken","input":"_1_6_+_A / _C","condition":"─/─"},{"category":"_@","input":"^!Shippuu Uraken (with _C)                                    _1_6_+_C","condition":"─/─"},{"category":"_@","name":"Yami Abise Geri","input":"_6_2_3_+_B","condition":"─/─"},{"category":"_@","name":"Shippuu Tatsumaki Geri","input":"_2_1_4_+_D","condition":"─/─"},{"category":"_@","name":"Gen'ei Shiranui","input":"_^_2_3_6_+_D","condition":"F/─"},{"category":"_@","name":"Shiranui Kumo Karami jump above the opponent","input":"_2_2_+_C","condition":"─/─"},{"category":"_*","name":"Chou Reppa Dan","input":"^2_3_6_+_B_+_C","condition":"─/─"},{"category":"_&","name":"Zan'ei Reppa","input":"_1_2_3_6_+_C","condition":"─/─"},{"category":"_`","name":"Fake Hishou Ken","input":"_2_+_A_+_B"},{"category":"_`","name":"Fake Zan'ei Ken","input":"_6_+_A_+_B"},{"category":"_`","name":"Fake Chou Reppa Dan","input":"_2_+_B_+_C"},{"category":"_`","input":"_Ac _! _Bc _! _C#"},{"category":"_`","input":"_Ac _! _Bc _! _6_+_CcF"},{"category":"_`","input":"_Ac _! _Bc _! _2_+_C#"},{"category":"_`","input":"_Ac _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _C#"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _6_+_CcF"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_Bcc _! _Bc _! _C#"},{"category":"_`","input":"_Bcc _! _Bc _! _6_+_CcF"},{"category":"_`","input":"_Bcc _! _Bc _! _2_+_C#"},{"category":"_`","input":"_Bcc _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_Bcc _! _2_+_Bc _! _C#"},{"category":"_`","input":"_Bcc _! _2_+_Bc _! _6_+_CcF"},{"category":"_`","input":"_Bcc _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_Bcc _! _2_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_Ccc _! _Ccc _! _Ccc _! _Cc _! _6_+_C#","condition":"F"},{"category":"_`","input":"_2_+_Ac _! _Bc _! _C#"},{"category":"_`","input":"_2_+_Ac _! _Bc _! _6_+_CcF"},{"category":"_`","input":"_2_+_Ac _! _Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Ac _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_2_+_Ac _! _2_+_Bc _! _C#"},{"category":"_`","input":"_2_+_Ac _! _2_+_Bc _! _6_+_CcF"},{"category":"_`","input":"_2_+_Ac _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Ac _! _2_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _C#"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _6_+_CcF"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _C#"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _6_+_CcF"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_^_A# _! _Cc"},{"category":"_`","input":"_^_B# _! _Cc"}],"notes":["Fake Moves"],"combos":["Combos"]},{"name":"JOE HIGASHI","moves":[{"category":"_(","name":"Joe Special","input":"_4 / _6_+_C","condition":"─/─"},{"category":"_(","name":"Hiza Jigoku","input":"_3_+_C","condition":"─/─"},{"category":"_)","name":"Vertical Upper","input":"_4_+_A","condition":"─/─"},{"category":"_)","name":"Joe Sobat","input":"_4_+_B","condition":"F/─"},{"category":"_)","name":"Shingami Hiji Uchi","input":"_1_+_A","condition":"─/─"},{"category":"_)","name":"Sliding","input":"_3_+_B","condition":"─/─"},{"category":"_@","name":"Bakuretsu Ken","input":"^*_A","condition":"─/─"},{"category":"_@","input":"^!Bakuretsu Hook                                              _2_3_6_+_A","condition":"─/─"},{"category":"_@","name":"Hurricane Upper","input":"_4_1_2_3_6_+_A","condition":"─/─"},{"category":"_@","name":"Bakuretsu Hurricane","input":"_4_1_2_3_6_+_C","condition":"A/─"},{"category":"_@","name":"Tiger Kick","input":"_6_2_3_+_B","condition":"─/G"},{"category":"_@","name":"Slash Kick","input":"_1_6_+_B / _C","condition":"─/─"},{"category":"_@","name":"Ougon no Kakato","input":"_2_1_4_+_B","condition":"─/─"},{"category":"_@","name":"Pressure Knee","input":"_2_3_6_+_D","condition":"─/─"},{"category":"_*","name":"Screw Upper","input":"_6_4_1_2_3_6_+_B_+_C","condition":"─/─"},{"category":"_&","name":"Slide Screw","input":"_6_4_1_2_3_6_+_C","condition":"─/─"},{"category":"_`","name":"Fake Hurricane Upper","input":"_2_+_A_+_B"},{"category":"_`","name":"Fake Tiger Kick","input":"_4_+_A_+_B"},{"category":"_`","name":"Fake Slash Kick","input":"_6_+_A_+_B"},{"category":"_`","name":"Fake Screw Upper","input":"_2_+_B_+_C"},{"category":"_`","input":"_Ac _! _Bc _! _C#"},{"category":"_`","input":"_Ac _! _Bc _! _6_+_CcF"},{"category":"_`","input":"_Ac _! _Bc _! _2_+_C#"},{"category":"_`","input":"_Ac _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_Ac _! _Cc"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _C#"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _6_+_CcF"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_Bc _! _Bc _! _C#"},{"category":"_`","input":"_Bc _! _Bc _! _6_+_CcF"},{"category":"_`","input":"_Bc _! _Bc _! _2_+_C#"},{"category":"_`","input":"_Bc _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _C#"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _6_+_CcF"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_4_+_Acc _! _Ccc _! _Ccc _! _Ccc _! _Cj"},{"category":"_`","input":"_2_+_Ac _! _Bc _! _C#"},{"category":"_`","input":"_2_+_Ac _! _Bc _! _6_+_CcF"},{"category":"_`","input":"_2_+_Ac _! _Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Ac _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_2_+_Ac _! _2_+_Bc _! _C#"},{"category":"_`","input":"_2_+_Ac _! _2_+_Bc _! _6_+_CcF"},{"category":"_`","input":"_2_+_Ac _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Ac _! _2_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _C#"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _6_+_CcF"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _C#"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _6_+_CcF"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_1_+_Ac _! _C# _! _C#"},{"category":"_`","input":"_^_A# _! _C#"},{"category":"_`","input":"_^_B# _! _C#"}],"notes":["Fake Moves"],"combos":["Combos"]},{"name":"FRANCO BASH","moves":[{"category":"_(","name":"Sand Buster","input":"_4 / _6_+_C","condition":"─/─"},{"category":"_)","name":"Chopping Roundhouse","input":"_6_+_B","condition":"F/─"},{"category":"_)","name":"Power Straight dashing","input":"_C","condition":"─/─"},{"category":"_)","name":"Power Uppercut knocked down","input":"^*_C","condition":"─/─"},{"category":"_@","name":"Double Kong","input":"_2_1_4_+_A / _C (\"G\" with _C)","condition":"─/G"},{"category":"_@","name":"Power Bicycle","input":"_2_3_6_+_B","condition":"F/─"},{"category":"_@","name":"Meteo Shot","input":"_2_3_6_+_A","condition":"─/─"},{"category":"_@","name":"Meteo Tackle","input":"_1_6_+_C","condition":"─/─"},{"category":"_@","input":"^!Meteo Back Blow                                             _1_6_+_C","condition":"─/─"},{"category":"_@","name":"Waving Blow","input":"_4_1_2_3_6_+_D","condition":"─/─"},{"category":"_@","input":"^!Waving Blow Finish                                          _4_1_2_3_6_+_D","condition":"─/─"},{"category":"_@","name":"Waving Step","input":"^4_6_+_B","condition":"─/─"},{"category":"_@","input":"^!Quick Step                                                  _4_6 / _6_4_+_B","condition":"─/─"},{"category":"_*","name":"Final Omega Shot","input":"_2_1_4_1_6_+_B_+_C","condition":"─/─"},{"category":"_&","name":"Armageddon Buster close","input":"_6_3_2_1_4_+_C (can use up to 5 moves)","condition":"─/─"},{"category":"_&","input":"^!One Two Straights                                           _2_3_6_+_A","condition":"─/─"},{"category":"_&","input":"^!Reaching Uppercut                                           _2_1_4_+_A","condition":"─/─"},{"category":"_&","input":"^!High Kick                                                   _2_1_4_+_B","condition":"─/─"},{"category":"_&","input":"^!Uppercut                                                    _6_2_3_+_A","condition":"─/─"},{"category":"_&","input":"^!Roundhouse                                                  _6_2_3_+_B","condition":"─/─"},{"category":"_&","input":"^!Straight Kick                                               _2_3_6_+_B (finisher)","condition":"─/─"},{"category":"_&","input":"^!Meteo Tackle Uppercut                                       _2_3_6_+_C (finisher)","condition":"─/─"},{"category":"_&","input":"^!Power Bicycle                                               _6_2_3_+_C (finisher)","condition":"─/─"},{"category":"_&","input":"^!Meteo Shot                                                  _2_1_4_+_C (finisher)","condition":"─/─"},{"category":"_&","input":"^!Mess Up Pose                                                _N","condition":"─/─"},{"category":"_`","name":"Fake Meteo Shot","input":"_2_+_A_+_B"},{"category":"_`","input":"_Ac _! _Bc _! _C#"},{"category":"_`","input":"_Ac _! _Bc _! _6_+_C#"},{"category":"_`","input":"_Ac _! _Bc _! _2_+_C#"},{"category":"_`","input":"_Ac _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_Ac _! _Bc _! _8_+_C#","condition":"B"},{"category":"_`","input":"_Ac _! _Ccc _! _Ccc _! _Ccc _! _6_+_CcB"},{"category":"_`","input":"_Ac _! _Ccc _! _Ccc _! _Ccc _! _8_+_C#"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _C#"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _6_+_C#"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _8_+_C#","condition":"B"},{"category":"_`","input":"_Bc _! _Bc _! _C#"},{"category":"_`","input":"_Bc _! _Bc _! _6_+_C#"},{"category":"_`","input":"_Bc _! _Bc _! _2_+_C#"},{"category":"_`","input":"_Bc _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_Bc _! _Bc _! _8_+_C#","condition":"B"},{"category":"_`","input":"_Bc _! _Cc"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _C#"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _6_+_C#"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _8_+_C#","condition":"B"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _C#"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _6_+_C#"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _8_+_C#","condition":"B"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _C#"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _6_+_C#"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _8_+_C#","condition":"B"},{"category":"_`","input":"_^_A# _! _C#"},{"category":"_`","input":"_^_B# _! _C#"}],"notes":["Fake Moves"],"combos":["Combos"]},{"name":"MAI SHIRANUI","moves":[{"category":"_(","name":"Fuusha Kuzuki Kai","input":"_4 / _6_+_C","condition":"─/─"},{"category":"_(","name":"Yume Zakura","input":"_^_2_+_C","condition":"─/─"},{"category":"_)","name":"Haimen Kyaku","input":"_6_+_B","condition":"─/─"},{"category":"_)","name":"Ryu no Mai","input":"_4_+_A","condition":"B/─"},{"category":"_)","name":"Hane Kyaku knocked down","input":"^*_C","condition":"─/─"},{"category":"_@","name":"Kacho Sen","input":"_2_3_6_+_A","condition":"─/─"},{"category":"_@","name":"Midare Kacho Sen","input":"_2_1_4_+_C","condition":"A/─"},{"category":"_@","name":"Ryuu Enbu","input":"_2_1_4_+_A","condition":"─/G"},{"category":"_@","name":"Hissatsu Shinobi Bachi","input":"_4_1_2_3_6_+_C","condition":"─/─"},{"category":"_@","name":"Kagero no Mai","input":"_2_2_+_C","condition":"─/─"},{"category":"_@","name":"Musasabi no Mai","input":"_^_2_+_A_+_B","condition":"─/─"},{"category":"_@","name":"Gen'ei Shiranui","input":"_^_2_3_6_+_D","condition":"F/─"},{"category":"_*","name":"Chou Hissatsu Shinobi Bachi","input":"_6_1_6_+_B_+_C","condition":"─/─"},{"category":"_&","name":"Leotard Shinobi Bachi","input":"_6_1_6_+_C","condition":"─/─"},{"category":"_`","name":"Fake Kacho Sen","input":"_2_+_A_+_B"},{"category":"_`","name":"Fake Ryuu Enbu","input":"_4_+_A_+_B"},{"category":"_`","input":"_Ac _! _Acc _! _C#"},{"category":"_`","input":"_Ac _! _Acc _! _6_+_CcF"},{"category":"_`","input":"_Ac _! _Acc _! _2_+_C#"},{"category":"_`","input":"_Ac _! _Acc _! _1_+_Cj"},{"category":"_`","input":"_Ac _! _Bc _! _C#"},{"category":"_`","input":"_Ac _! _Bc _! _6_+_CcF"},{"category":"_`","input":"_Ac _! _Bc _! _2_+_C#"},{"category":"_`","input":"_Ac _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_Ac _! _Ccc"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _C#"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _6_+_CcF"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_Bc _! _Bc _! _C#"},{"category":"_`","input":"_Bc _! _Bc _! _6_+_CcF"},{"category":"_`","input":"_Bc _! _Bc _! _2_+_C#"},{"category":"_`","input":"_Bc _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_Bc _! _C# _! _C#"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _C#"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _6_+_CcF"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_2_+_Ac _! _Acc _! _C#"},{"category":"_`","input":"_2_+_Ac _! _Acc _! _6_+_CcF"},{"category":"_`","input":"_2_+_Ac _! _Acc _! _2_+_C#"},{"category":"_`","input":"_2_+_Ac _! _Acc _! _1_+_Cj"},{"category":"_`","input":"_2_+_Ac _! _Bc _! _C#"},{"category":"_`","input":"_2_+_Ac _! _Bc _! _6_+_CcF"},{"category":"_`","input":"_2_+_Ac _! _Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Ac _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_2_+_Ac _! _2_+_Bc _! _C#"},{"category":"_`","input":"_2_+_Ac _! _2_+_Bc _! _6_+_CcF"},{"category":"_`","input":"_2_+_Ac _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Ac _! _2_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_2_+_Ac _! _2_+_Cc"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _C#"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _6_+_CcF"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _C#"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _6_+_CcF"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_^_Ac _! _Cc"},{"category":"_`","input":"_^_Bc _! _Cc"}],"notes":["Fake Moves"],"combos":["Combos"]},{"name":"BOB WILSON","moves":[{"category":"_(","name":"Falcon","input":"_4 / _6_+_C","condition":"─/─"},{"category":"_(","input":"^!Hornet Attack                                               _9_9_+_C","condition":"─/─"},{"category":"_)","name":"Sliding Headbutt","input":"_6_+_A","condition":"─/─"},{"category":"_)","name":"Elephant Tusk","input":"_1_+_A","condition":"─/─"},{"category":"_)","name":"Eagle Step","input":"_^_2_+_B","condition":"─/─"},{"category":"_)","name":"Fangs of the Lynx opponent knocked down","input":"_8_+_C","condition":"─/─"},{"category":"_)","name":"Flying Fish knocked down","input":"^*_C","condition":"─/─"},{"category":"_@","name":"Rolling Turtle","input":"_2_1_4_+_B","condition":"─/─"},{"category":"_@","name":"Rolling Sea Turtle","input":"_2_1_4_+_C","condition":"─/─"},{"category":"_@","input":"^!Move                                                        _4 / _6","condition":"─/─"},{"category":"_@","name":"Monkey Dance","input":"_6_2_3_+_B","condition":"─/G"},{"category":"_@","name":"Bison Horn","input":"^2_8_+_B / _C","condition":"─/─"},{"category":"_@","name":"Wild Wolf","input":"^4_6_+_B","condition":"─/─"},{"category":"_*","name":"Dangerous Wolf","input":"_6_4_1_2_3_6_+_B_+_C","condition":"─/─"},{"category":"_&","name":"Mad Spin Wolf","input":"_2_1_4_2_1_4_+_C","condition":"─/─"},{"category":"_&","input":"^!Wolf Fang                                                   ^*_C","condition":"─/─"},{"category":"_`","name":"Fake Mad Spin Wolf","input":"_2_+_B_+_C"},{"category":"_`","input":"_Ac _! _B# _! _C#"},{"category":"_`","input":"_Ac _! _B# _! _6_+_CcF"},{"category":"_`","input":"_Ac _! _B# _! _1_+_Cj"},{"category":"_`","input":"_Ac _! _B# _! _3_+_C#"},{"category":"_`","input":"_Ac _! _Cc"},{"category":"_`","input":"_Bc _! _B# _! _C#"},{"category":"_`","input":"_Bc _! _B# _! _6_+_CcF"},{"category":"_`","input":"_Bc _! _B# _! _1_+_Cj"},{"category":"_`","input":"_Bc _! _B# _! _3_+_C#"},{"category":"_`","input":"_Bc _! _Cc"},{"category":"_`","input":"_Ccc _! _Cc _! _Cc _! _Cc _! _Cc"},{"category":"_`","input":"_Ccc _! _Cc _! _Cc _! _Cc _! _8_+_C#"},{"category":"_`","input":"_Ccc _! _Cc _! _Cc _! _8_+_C#"},{"category":"_`","input":"_Ccc _! _Cc _! _8_+_C#"},{"category":"_`","input":"_2_+_A# _! _B# _! _C#"},{"category":"_`","input":"_2_+_A# _! _B# _! _6_+_CcF"},{"category":"_`","input":"_2_+_A# _! _B# _! _1_+_Cj"},{"category":"_`","input":"_2_+_A# _! _B# _! _3_+_C#"},{"category":"_`","input":"_2_+_A# _! _Cc"},{"category":"_`","input":"_^_A# _! _C#"},{"category":"_`","input":"_^_B# _! _C#"}],"notes":["Fake Moves"],"combos":["Combos"]},{"name":"BILLY KANE","moves":[{"category":"_(","name":"Ippon Zuri Nage","input":"_4 / _6_+_C","condition":"─/─"},{"category":"_(","name":"Jigoku Otoshi","input":"_6_+_B","condition":"─/─"},{"category":"_)","name":"Kyou Isamu Chuddan Tsuki","input":"_6_+_A","condition":"─/─"},{"category":"_)","name":"Atama Kahou Geki opponent knocked down","input":"_2_+_C","condition":"─/─"},{"category":"_@","name":"Senpuu Kon","input":"^*_A","condition":"─/─"},{"category":"_@","name":"Sansetsu Kon: Chuudan Uchi","input":"^4_6_+_A","condition":"─/─"},{"category":"_@","input":"^!Kaen Sansetsu Kon: Chuudan Tsuki                            _4_6_+_C","condition":"─/─"},{"category":"_@","name":"Kyoushuu Hishou Kon","input":"_1_2_3_6_+_B","condition":"─/─"},{"category":"_@","input":"^!Move                                                        _4 / _6","condition":"─/─"},{"category":"_@","name":"Suzume Otoshi","input":"_2_1_4_+_A","condition":"─/─"},{"category":"_@","name":"Karyuu Tsuigeki Kon","input":"_2_1_4_+_B (reverse high/mid)","condition":"─/G"},{"category":"_@","name":"Suiryuu Tsuigeki Kon","input":"_2_1_4_+_C (reverse jump/Specials)","condition":"─/G"},{"category":"_*","name":"Chou Kaen Senpuu Kon","input":"_2_3_6_3_2_1_4_+_B_+_C","condition":"─/─"},{"category":"_&","name":"Kuren Satsu Kon","input":"_6_3_2_+_C","condition":"─/G"},{"category":"_`","name":"Fake Kyoushuu Hishou Kon","input":"_4_+_A_+_B"},{"category":"_`","input":"_Ac _! _Ac _! _C#"},{"category":"_`","input":"_Ac _! _Ac _! _6_+_CcB"},{"category":"_`","input":"_Ac _! _Ac _! _2_+_C#"},{"category":"_`","input":"_Ac _! _Bccc _! _2_3_6_+_C######"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _C#"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _6_+_CcB"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_B### _! _2_+_Bc _! _C#"},{"category":"_`","input":"_B### _! _2_+_Bc _! _6_+_CcB"},{"category":"_`","input":"_B### _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Ac _! _Ac _! _C#"},{"category":"_`","input":"_2_+_Ac _! _Ac _! _6_+_CcB"},{"category":"_`","input":"_2_+_Ac _! _Ac _! _2_+_C#"},{"category":"_`","input":"_2_+_Ac _! _Bccc _! _2_3_6_+_C######"},{"category":"_`","input":"_2_+_Ac _! _2_+_Bc _! _C#"},{"category":"_`","input":"_2_+_Ac _! _2_+_Bc _! _6_+_CcB"},{"category":"_`","input":"_2_+_Ac _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _C#"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _6_+_CcB"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_^_A# _! _C#"},{"category":"_`","input":"_^_B# _! _C#"}],"notes":["Fake Moves"],"combos":["Combos"]},{"name":"HON FU","moves":[{"category":"_(","name":"Back Flip","input":"_4 / _6_+_C","condition":"─/─"},{"category":"_(","name":"Keiraku Randa","input":"_3_+_C","condition":"─/─"},{"category":"_)","name":"Hae Tataki","input":"_1_+_A","condition":"─/─"},{"category":"_)","name":"Fumi Somi Sokukeri","input":"_6_+_B","condition":"─/─"},{"category":"_)","name":"Todome Nunchaku opponent knocked down","input":"_2_+_C","condition":"─/─"},{"category":"_@","name":"Honou no Taneuma","input":"^*_A","condition":"─/─"},{"category":"_@","name":"Seikuu Rekka Kon","input":"_6_2_3_+_A","condition":"─/G"},{"category":"_@","name":"Kyu Ryu no Yomi close","input":"_4_1_2_3_6_+_C","condition":"─/─"},{"category":"_@","name":"Koku Ryu opponent in air, close","input":"_4_1_2_3_6_+_C","condition":"─/─"},{"category":"_@","name":"Denkou Sekka no Chi","input":"^1_6_+_B","condition":"─/─"},{"category":"_@","input":"^!Denkou Pachiki                                              _B","condition":"─/─"},{"category":"_@","name":"Denkou Sekka no Ten","input":"_2_1_4_+_B","condition":"─/─"},{"category":"_@","name":"Hissho Kyakushu Kyaku","input":"_2_1_4_+_C","condition":"─/─"},{"category":"_*","name":"Bakuhatsu Goro","input":"_2_1_4_1_6_+_B_+_C","condition":"─/─"},{"category":"_&","name":"Gadenza no Arashi","input":"_2_1_4_1_6_+_C","condition":"─/─"},{"category":"_`","name":"Fake Seikuu Rekka Kon","input":"_4_+_A_+_B"},{"category":"_`","name":"Fake Denkou Sekka no Chi","input":"_6_+_A_+_B"},{"category":"_`","input":"_Ac _! _Ac _! _C#"},{"category":"_`","input":"_Ac _! _Ac _! _6_+_CcF"},{"category":"_`","input":"_Ac _! _Ac _! _2_+_C#"},{"category":"_`","input":"_Ac _! _Ac _! _1_+_Cj"},{"category":"_`","input":"_Ac _! _Bc _! _C#"},{"category":"_`","input":"_Ac _! _Bc _! _6_+_CcF"},{"category":"_`","input":"_Ac _! _Bc _! _2_+_C#"},{"category":"_`","input":"_Ac _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_Ac _! _Cc"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _C#"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _6_+_CcF"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_Bc _! _Bc _! _C#"},{"category":"_`","input":"_Bc _! _Bc _! _6_+_CcF"},{"category":"_`","input":"_Bc _! _Bc _! _2_+_C#"},{"category":"_`","input":"_Bc _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _C#"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _6_+_CcF"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_2_+_Ac _! _Ac _! _C#"},{"category":"_`","input":"_2_+_Ac _! _Ac _! _6_+_CcF"},{"category":"_`","input":"_2_+_Ac _! _Ac _! _2_+_C#"},{"category":"_`","input":"_2_+_Ac _! _Ac _! _1_+_Cj"},{"category":"_`","input":"_2_+_Ac _! _Bc _! _C#"},{"category":"_`","input":"_2_+_Ac _! _Bc _! _6_+_CcF"},{"category":"_`","input":"_2_+_Ac _! _Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Ac _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_2_+_Ac _! _2_+_Bc _! _C#"},{"category":"_`","input":"_2_+_Ac _! _2_+_Bc _! _6_+_CcF"},{"category":"_`","input":"_2_+_Ac _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Ac _! _2_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _C#"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _6_+_CcF"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _C#"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _6_+_CcF"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_1_+_Ac _! _C# _! _C#"},{"category":"_`","input":"_^_A# _! _C#"},{"category":"_`","input":"_^_B# _! _C#"}],"notes":["Fake Moves"],"combos":["Combos"]},{"name":"RYUJI YAMAZAKI","moves":[{"category":"_(","name":"Bun Nage","input":"_4 / _6_+_C","condition":"─/─"},{"category":"_(","name":"Pachiki","input":"_3_+_C","condition":"─/─"},{"category":"_)","name":"Bussashi","input":"_6_+_A","condition":"─/─"},{"category":"_)","name":"Shouten","input":"_1_+_A","condition":"─/─"},{"category":"_)","name":"Tetsu no Tsume opponent knocked down","input":"_2_+_C","condition":"─/─"},{"category":"_)","name":"Metsubushi knocked down","input":"^*_C","condition":"─/─"},{"category":"_@","name":"Hebi Tsukai: Chuudan","input":"_2_1_4_+_C (_O)","condition":"─/─"},{"category":"_@","input":"^!Hebi Tsukai: Joudan                                         _9","condition":"─/─"},{"category":"_@","input":"^!Hebi Damashi (if held)                                      _A","condition":"─/─"},{"category":"_@","name":"Sabaki no Aikuchi","input":"_6_1_6_+_A / _C (\"G\" with _C)","condition":"─/G"},{"category":"_@","name":"Bai Gaeshi","input":"_2_3_6_+_C (reflect projectile)","condition":"─/─"},{"category":"_@","name":"Sadomazo","input":"_4_1_2_3_6_+_B (reverse jump/high/mid/Specials)","condition":"─/─"},{"category":"_*","name":"Guillotine","input":"_6_3_2_1_6_+_B_+_C","condition":"─/─"},{"category":"_&","name":"Drill close","condition":"─/─ ^*","input":"_x_+_C"},{"category":"_`","input":"_Ac _! _Bc _! _Cc"},{"category":"_`","input":"_Ac _! _Bc _! _6_+_C#"},{"category":"_`","input":"_Ac _! _Bc _! _2_+_C#"},{"category":"_`","input":"_Ac _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_Ac _! _Cc _! _Cc _! _Cc"},{"category":"_`","input":"_Ac _! _Cc _! _Cc _! _6_+_C#"},{"category":"_`","input":"_Ac _! _Cc _! _Cc _! _4_+_C#"},{"category":"_`","input":"_Ac _! _6_+_Bc _! _Cc"},{"category":"_`","input":"_Ac _! _6_+_Bc _! _6_+_C#"},{"category":"_`","input":"_Ac _! _6_+_Bc _! _2_+_C#"},{"category":"_`","input":"_Ac _! _6_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _Cc"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _6_+_C#"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_Bc _! _Bc _! _Cc"},{"category":"_`","input":"_Bc _! _Bc _! _6_+_C#"},{"category":"_`","input":"_Bc _! _Bc _! _2_+_C#"},{"category":"_`","input":"_Bc _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_Bc _! _CcB"},{"category":"_`","input":"_Bc _! _6_+_Bc _! _Cc"},{"category":"_`","input":"_Bc _! _6_+_Bc _! _6_+_C#"},{"category":"_`","input":"_Bc _! _6_+_Bc _! _2_+_C#"},{"category":"_`","input":"_Bc _! _6_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_Bc _! _6_+_CcF"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _Cc"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _6_+_C#"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _Cc"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _6_+_C#"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_2_+_Bc _! _6_+_Bc _! _Cc"},{"category":"_`","input":"_2_+_Bc _! _6_+_Bc _! _6_+_C#"},{"category":"_`","input":"_2_+_Bc _! _6_+_Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Bc _! _6_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _Cc"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _6_+_C#"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_^_A# _! _C#"},{"category":"_`","input":"_^_B# _! _C#"}],"combos":["Combos"]},{"name":"SOKAKU MOCHIZUKI","moves":[{"category":"_(","name":"Muken Jigoku Nage","input":"_6_+_C","condition":"─/─"},{"category":"_(","name":"Mudoh Shibari Nage","input":"_4_+_C","condition":"─/─"},{"category":"_(","input":"^!Jigoku Mon                                                  _6_+_C","condition":"─/─"},{"category":"_(","name":"Shoten Satsu","input":"_^_2_+_C","condition":"─/─"},{"category":"_)","name":"Shukajoh Joudan Uchi","input":"_1_+_A","condition":"─/─"},{"category":"_)","name":"Raigeki Kon opponent knocked down","input":"_2_+_C","condition":"─/─"},{"category":"_@","name":"Makibishi Masher","input":"_2_3_6_+_A","condition":"─/─"},{"category":"_@","name":"Nozaru Geri","input":"_2_1_4_+_A","condition":"─/─"},{"category":"_@","name":"Hyoi Dan","input":"_6_4_6_+_C","condition":"─/─"},{"category":"_@","name":"Higi Kaminari Otoshi","input":"_6_2_3_+_B","condition":"─/─"},{"category":"_@","name":"Gen Mu Jin","input":"_6_2_3_+_A","condition":"─/─"},{"category":"_@","name":"Ja Kon Bu","input":"^*_A","condition":"─/─"},{"category":"_@","input":"^!Ten Ha                                                      _1_+_C","condition":"─/─"},{"category":"_@","input":"^!Fu Ha                                                       _3_+_C","condition":"─/─"},{"category":"_@","input":"^!Toppa                                                       _6_+_C","condition":"─/─"},{"category":"_@","input":"^!Kou Ha                                                      _9_+_C","condition":"─/─"},{"category":"_@","input":"^!Tou Ha                                                      _D","condition":"A/─"},{"category":"_@","name":"Jashin Kon","input":"_4_1_2_3_6_+_B (reflect projectile)","condition":"─/─"},{"category":"_@","name":"Hametsu no Honou","input":"_2_4_1_+_B","condition":"─/G"},{"category":"_@","name":"Kimon Jin close","condition":"─/─","input":"_x_+_C"},{"category":"_*","name":"Ikazuchi","input":"_6_3_2_3_6_+_B_+_C","condition":"─/─"},{"category":"_&","name":"Raijin no Ibuki","input":"_6_3_2_3_6_+_C","condition":"─/─"},{"category":"_`","name":"Fake Makibishi Masher","input":"_2_+_A_+_B"},{"category":"_`","name":"Fake Raijin no Ibuki","input":"_2_+_B_+_C"},{"category":"_`","input":"_Ac _! _Bc _! _CcB"},{"category":"_`","input":"_Ac _! _Bc _! _6_+_C#"},{"category":"_`","input":"_Ac _! _Bc _! _2_+_C#"},{"category":"_`","input":"_Ac _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_Ac _! _Cc"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _CcB"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _6_+_C#"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_Bc _! _Bc _! _CcB"},{"category":"_`","input":"_Bc _! _Bc _! _6_+_C#"},{"category":"_`","input":"_Bc _! _Bc _! _2_+_C#"},{"category":"_`","input":"_Bc _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_Bc _! _6_+_Cc _! _6_+_CcF"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _CcB"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _6_+_C#"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_Ccc _! _Cc _! _Cc _! _Cc _! _2_+_C#"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _CcB"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _6_+_C#"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _CcB"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _6_+_C#"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_^_A# _! _C##"},{"category":"_`","input":"_^_B# _! _C##"}],"notes":["Fake Moves"],"combos":["Combos"]},{"name":"BLUE MARY","moves":[{"category":"_(","name":"Head Throw","input":"_4_+_C","condition":"─/─"},{"category":"_(","input":"^!Achilles Hold                                               _6_+_C","condition":"─/─"},{"category":"_)","name":"Double Rolling","input":"_4_+_B","condition":"─/─"},{"category":"_)","name":"Low Straight","input":"_3_+_A","condition":"─/─"},{"category":"_)","name":"Hopping Press opponent knocked down","input":"_2_+_C","condition":"─/─"},{"category":"_)","name":"Spin Heel Attack opponent knocked down","input":"_8_+_C","condition":"─/─"},{"category":"_)","name":"Fire Kick knocked down","input":"_2_8_+_C","condition":"─/─"},{"category":"_@","name":"Spin Fall","input":"_2_3_6_+_A","condition":"─/─"},{"category":"_@","name":"M. Spider","input":"_2_3_6_+_C","condition":"─/─"},{"category":"_@","name":"Vertical Arrow","input":"_6_2_3_+_B","condition":"─/─"},{"category":"_@","input":"^!M. Snatcher                                                 _6_2_3_+_B","condition":"─/─"},{"category":"_@","name":"Straight Slicer","input":"^4_6_+_B","condition":"─/G"},{"category":"_@","input":"^!Stun Fang                                                   _4_6_+_B","condition":"─/─"},{"category":"_@","name":"Crab Clutch","input":"^4_6_+_C","condition":"─/─"},{"category":"_@","name":"Real Counter","input":"_2_1_4_+_A","condition":"─/─"},{"category":"_@","input":"^!Backdrop Real                                               close _4_+_A","condition":"─/─"},{"category":"_@","input":"^!Face Lock                                               _4_+_B","condition":"─/─"},{"category":"_@","name":"M. Head Buster","input":"_2_1_4_+_B (reverse high/mid)","condition":"─/─"},{"category":"_@","name":"Stun Gun Smasher","input":"_2_1_4_+_C (reverse jump/Specials)","condition":"─/─"},{"category":"_*","name":"M. Typhoon","input":"_6_4_1_2_3_6_+_B_+_C","condition":"─/─"},{"category":"_&","name":"M. Driving Smasher close","input":"_6_4_1_2_3_6_+_C","condition":"─/─"},{"category":"_`","input":"_Ac _! _Bc _! _C#"},{"category":"_`","input":"_Ac _! _Bc _! _6_+_Cj"},{"category":"_`","input":"_Ac _! _Bc _! _4_+_C#","condition":"F"},{"category":"_`","input":"_Ac _! _Bc _! _2_+_C#"},{"category":"_`","input":"_Ac _! _Bc _! _1_+_Cc"},{"category":"_`","input":"_Ac _! _Bc _! _3_+_Cc"},{"category":"_`","input":"_Ac _! _Cc"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _C#"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _6_+_Cj"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _4_+_C#","condition":"F"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _1_+_Cc"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _3_+_Cc"},{"category":"_`","input":"_Bcc _! _Bc _! _C#"},{"category":"_`","input":"_Bcc _! _Bc _! _4_+_C#","condition":"F"},{"category":"_`","input":"_Bcc _! _Bc _! _4_+_C#","condition":"F"},{"category":"_`","input":"_Bcc _! _Bc _! _2_+_C#"},{"category":"_`","input":"_Bcc _! _Bc _! _1_+_Cc"},{"category":"_`","input":"_Bcc _! _Bc _! _3_+_Cc"},{"category":"_`","input":"_Bcc _! _2_+_Bc _! _C#"},{"category":"_`","input":"_Bcc _! _2_+_Bc _! _6_+_Cj"},{"category":"_`","input":"_Bcc _! _2_+_Bc _! _4_+_C#","condition":"F"},{"category":"_`","input":"_Bcc _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_Bcc _! _2_+_Bc _! _1_+_Cc"},{"category":"_`","input":"_Bcc _! _2_+_Bc _! _3_+_Cc"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _C#"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _6_+_Cj"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _4_+_C#","condition":"F"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _1_+_Cc"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _3_+_Cc"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _C#"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _6_+_Cj"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _4_+_C#","condition":"F"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _1_+_Cc"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _3_+_Cc"},{"category":"_`","input":"_^_A# _! _C#"},{"category":"_`","input":"_^_B# _! _C#"}],"combos":["Combos"]},{"name":"KIM KAPHWAN","moves":[{"category":"_(","name":"Sakkyaku Nage","input":"_4 / _6_+_C","condition":"─/─"},{"category":"_)","name":"Haki Kyaku","input":"_A_+_B","condition":"─/─"},{"category":"_)","name":"Neri Chagi","input":"_6_+_B","condition":"─/─"},{"category":"_)","name":"Hishou Kyaku","input":"_^_2_+_B","condition":"─/─"},{"category":"_@","name":"Hangetsu Zan","input":"_2_1_4_+_B / _C","condition":"─/─"},{"category":"_@","name":"Hien Zan","input":"^2_8_+_B","condition":"─/─"},{"category":"_@","input":"^!Tenshou Zan                                                 _2_+_B","condition":"─/─"},{"category":"_@","name":"Kuu Sajin","input":"_6_2_3_+_A","condition":"A/G"},{"category":"_*","name":"Hou'ou Tenbu Kyaku","input":"_^_4_1_2_3_6_+_B_+_C","condition":"─/─"},{"category":"_&","name":"Hou'ou Kyaku","input":"_2_1_4_1_6_+_C","condition":"─/─"},{"category":"_`","name":"Fake Hangetsu Zan","input":"_6_+_A_+_B"},{"category":"_`","name":"Fake Hou'ou Kyaku","input":"_2_+_B_+_C"},{"category":"_`","input":"_Ac _! _Bc _! _Bc _! _Cj _! _C#j"},{"category":"_`","input":"_Ac _! _Bc _! _C#"},{"category":"_`","input":"_Ac _! _Bc _! _6_+_CcF"},{"category":"_`","input":"_Ac _! _Bc _! _2_+_C#"},{"category":"_`","input":"_Ac _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _C#"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _6_+_CcF"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_Bc _! _Bc _! _Bc _! _Cj _! _C#j"},{"category":"_`","input":"_Bc _! _Bc _! _C#"},{"category":"_`","input":"_Bc _! _Bc _! _6_+_CcF"},{"category":"_`","input":"_Bc _! _Bc _! _2_+_C#"},{"category":"_`","input":"_Bc _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _C#"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _6_+_CcF"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_2_+_Ac _! _Bc _! _Bc _! _Cj _! _C#j"},{"category":"_`","input":"_2_+_Ac _! _Bc _! _C#"},{"category":"_`","input":"_2_+_Ac _! _Bc _! _6_+_CcF"},{"category":"_`","input":"_2_+_Ac _! _Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Ac _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_2_+_Ac _! _2_+_Bc _! _C#"},{"category":"_`","input":"_2_+_Ac _! _2_+_Bc _! _6_+_CcF"},{"category":"_`","input":"_2_+_Ac _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Ac _! _2_+_Bc _! _1_+_Cj"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _Bc _! _Cj _! _C#j"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _C#"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _6_+_CcF"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _C#"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _6_+_CcF"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _1_+_Cj"},{"category":"_`","name":"far","input":"_C# _! _C#"},{"category":"_`","input":"_^_Ac _! _Cc"},{"category":"_`","input":"_^_Bc _! _Cc"}],"notes":["Fake Moves"],"combos":["Combos"]},{"name":"JIN CHONREI","moves":[{"category":"_(","name":"Hatsukubi Tatsu","input":"_4 / _6_+_C","condition":"─/─"},{"category":"_)","name":"Ryuusatsu Kyaku","input":"_6_+_B","condition":"─/─"},{"category":"_@","name":"Teiou Jinsoku Ken","input":"_6_6_+_A","condition":"─/─"},{"category":"_@","name":"Teiou Jinsoku Ken: Enkyou","input":"_6_6_6_+_A","condition":"─/─"},{"category":"_@","name":"Teiou Tengen Ken","input":"_2_3_6_+_A / _C","condition":"─/─"},{"category":"_@","name":"Teiou Tenji Ken","input":"_6_2_3_+_A / _C (\"G\" with _A)","condition":"─/G"},{"category":"_@","name":"Teiou Roujin Ken","input":"_2_1_4_6_+_C","condition":"─/─"},{"category":"_@","name":"Teiou Tashin Ken","input":"_2_1_4_+_B (reflect projectile)","condition":"─/─"},{"category":"_@","name":"Ryuu Tenshin","input":"_2_3_6_+_B (_O)","condition":"─/─"},{"category":"_*","name":"Teiou Shukumei Ken","input":"_6_4_1_2_3_6_+_B_+_C","condition":"A/─"},{"category":"_&","name":"Teiou Ryuusei Ken","input":"_6_4_1_2_3_6_+_C","condition":"─/─"},{"category":"_`","name":"Fake Teiou Tengen Ken","input":"_2_+_A_+_B"},{"category":"_`","name":"Fake Teiou Shukumei Ken","input":"_2_+_B_+_C"},{"category":"_`","input":"_Ac _! _Ac _! _C#"},{"category":"_`","input":"_Ac _! _Ac _! _6_+_CcB"},{"category":"_`","input":"_Ac _! _Ac _! _2_+_C#"},{"category":"_`","input":"_Ac _! _Bc _! _C#"},{"category":"_`","input":"_Ac _! _Bc _! _6_+_CcB"},{"category":"_`","input":"_Ac _! _Bc _! _2_+_C#"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _C#"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _6_+_CcB"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_Bc _! _Bc _! _C#"},{"category":"_`","input":"_Bc _! _Bc _! _6_+_CcB"},{"category":"_`","input":"_Bc _! _Bc _! _2_+_C#"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _C#"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _6_+_CcB"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Ac _! _Ac _! _C#"},{"category":"_`","input":"_2_+_Ac _! _Ac _! _6_+_CcB"},{"category":"_`","input":"_2_+_Ac _! _Ac _! _2_+_C#"},{"category":"_`","input":"_2_+_Ac _! _Bc _! _C#"},{"category":"_`","input":"_2_+_Ac _! _Bc _! _6_+_CcB"},{"category":"_`","input":"_2_+_Ac _! _Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Ac _! _2_+_Bc _! _C#"},{"category":"_`","input":"_2_+_Ac _! _2_+_Bc _! _6_+_CcB"},{"category":"_`","input":"_2_+_Ac _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _C#"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _6_+_CcB"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _C#"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _6_+_CcB"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_^_A# _! _C#"},{"category":"_`","input":"_^_B# _! _C#"}],"notes":["Fake Moves"],"combos":["Combos"]},{"name":"JIN CHONSHU","moves":[{"category":"_(","name":"Hatsugei Tatsu","input":"_4 / _6_+_C","condition":"─/─"},{"category":"_)","name":"Tatsukai Atama","input":"_6_+_A","condition":"─/─"},{"category":"_)","name":"Tatsu Kaitou","input":"_3_+_C","condition":"─/─"},{"category":"_@","name":"Teiou Jinsoku Ken","input":"_6_6_+_A","condition":"─/─"},{"category":"_@","name":"Teiou Tengen Ken","input":"_2_3_6_+_A / _C","condition":"─/─"},{"category":"_@","name":"Teiou Tenji Ken","input":"_6_2_3_+_A / _C (\"G\" with _C)","condition":"─/G"},{"category":"_@","name":"Teiou Jingan Ken: Idounashi","input":"_6_3_2_1_4_+_A","condition":"─/─"},{"category":"_@","name":"Teiou Jingan Ken: Kuuchuu","input":"_6_3_2_1_4_+_B","condition":"─/─"},{"category":"_@","input":"^!Teiou Hagane Kachi                                          _A / _B / _C","condition":"─/─"},{"category":"_@","name":"Teiou Jingan Ken: Haigo","input":"_6_3_2_1_4_+_C","condition":"─/─"},{"category":"_*","name":"Teiou Roujin Ken","input":"_2_1_4_6_+_B_+_C","condition":"─/─"},{"category":"_&","name":"Teiou Shukumei Ken","input":"_2_1_4_6_+_C","condition":"A/─"},{"category":"_`","name":"Fake Teiou Tengen Ken","input":"_2_+_A_+_B"},{"category":"_`","name":"Fake Teiou Roujin Ken","input":"_2_+_B_+_C"},{"category":"_`","input":"_A## _! _Acc _! _C#"},{"category":"_`","input":"_A## _! _Acc _! _6_+_CcF"},{"category":"_`","input":"_A## _! _Acc _! _2_+_C#"},{"category":"_`","input":"_A## _! _Bcc _! _C#"},{"category":"_`","input":"_A## _! _Bcc _! _6_+_CcF"},{"category":"_`","input":"_A## _! _Bcc _! _2_+_C#"},{"category":"_`","input":"_A## _! _2_+_Bcc _! _C#"},{"category":"_`","input":"_A## _! _2_+_Bcc _! _6_+_CcF"},{"category":"_`","input":"_A## _! _2_+_Bcc _! _2_+_C#"},{"category":"_`","input":"_B## _! _Bcc _! _C#"},{"category":"_`","input":"_B## _! _Bcc _! _6_+_CcF"},{"category":"_`","input":"_B## _! _Bcc _! _2_+_C#"},{"category":"_`","input":"_B## _! _2_+_Bcc _! _C#"},{"category":"_`","input":"_B## _! _2_+_Bcc _! _6_+_CcF"},{"category":"_`","input":"_B## _! _2_+_Bcc _! _2_+_C#"},{"category":"_`","input":"_2_+_Acc _! _Acc _! _C#"},{"category":"_`","input":"_2_+_Acc _! _Acc _! _6_+_CcF"},{"category":"_`","input":"_2_+_Acc _! _Acc _! _2_+_C#"},{"category":"_`","input":"_2_+_Acc _! _Bcc _! _C#"},{"category":"_`","input":"_2_+_Acc _! _Bcc _! _6_+_CcF"},{"category":"_`","input":"_2_+_Acc _! _Bcc _! _2_+_C#"},{"category":"_`","input":"_2_+_Acc _! _2_+_Bcc _! _C#"},{"category":"_`","input":"_2_+_Acc _! _2_+_Bcc _! _6_+_CcF"},{"category":"_`","input":"_2_+_Acc _! _2_+_Bcc _! _2_+_C#"},{"category":"_`","input":"_2_+_B## _! _Bcc _! _C#"},{"category":"_`","input":"_2_+_B## _! _Bcc _! _6_+_CcF"},{"category":"_`","input":"_2_+_B## _! _Bcc _! _2_+_C#"},{"category":"_`","input":"_2_+_B## _! _2_+_Bcc _! _C#"},{"category":"_`","input":"_2_+_B## _! _2_+_Bcc _! _6_+_CcF"},{"category":"_`","input":"_2_+_B## _! _2_+_Bcc _! _2_+_C#"},{"category":"_`","input":"_^_A# _! _C#"},{"category":"_`","input":"_^_B# _! _C#"}],"notes":["Fake Moves"],"combos":["Combos"]},{"name":"DUCK KING","moves":[{"category":"_(","name":"Rolling Neck Throw","input":"_4 / _6_+_C","condition":"─/─"},{"category":"_(","name":"N ・ Reverse Breaker","input":"_^_2_+_C","condition":"─/─"},{"category":"_)","name":"Mad Spin Hammer","input":"_4_+_A","condition":"─/─"},{"category":"_)","name":"Needle Low","input":"_3_+_B","condition":"─/─"},{"category":"_)","name":"Duck Feint: Air","input":"_^_2_2","condition":"─/─"},{"category":"_)","input":"^!Move                                                        _4 / _6","condition":"─/─"},{"category":"_)","name":"Duck Feint: Ground dashing","input":"_3_+_C","condition":"─/─"},{"category":"_)","name":"Shocking Ball opponent knocked down","input":"_2_+_C","condition":"─/─"},{"category":"_@","name":"Head Spin Attack","input":"_2_3_6_+_A / _C","condition":"─/─"},{"category":"_@","input":"^!Overhead Kick (with _C)                                     _C","condition":"─/─"},{"category":"_@","name":"Neo Break Storm","input":"_6_2_3_+_B","condition":"─/─"},{"category":"_@","name":"Dancing Dive","input":"_2_1_4_+_B","condition":"─/G"},{"category":"_@","name":"Flying Spin Attack","input":"_^_2_1_4_+_A","condition":"─/─"},{"category":"_*","name":"Break Spiral close","input":"_4_1_2_3_6_9_2_+_B_+_C","condition":"─/─"},{"category":"_&","name":"Duck Dance","input":"_2_2_+_A_+_B_+_C","condition":"─/─"},{"category":"_&","input":"^!Diving Punisher                                             _^_6_3_2_+_B_+_C","condition":"─/─"},{"category":"_&","input":"^!Rolling Punisher                                            ^4_6_4_6_+_B_+_C","condition":"─/─"},{"category":"_&","input":"^!Dancing Caliber                                             _2_1_4_2_1_4_+_B_+_C","condition":"─/─"},{"category":"_&","input":"^!Break Hurricane                                             _2_3_6_2_3_6_+_B_+_C","condition":"─/─"},{"category":"_&","input":"^!Enhanced Break Spiral                                       close _4_1_2_3_6_9_2_+_B_+_C","condition":"─/─"},{"category":"_`","name":"Fake Duck Dance","input":"_2_+_B_+_C"},{"category":"_`","input":"_Ac _! _Ac _! _Bc _! _Bc _! _C#"},{"category":"_`","input":"_Ac _! _Ac _! _Bc _! _Bc _! _4_+_Ccc"},{"category":"_`","input":"_Ac _! _Bc _! _CcB"},{"category":"_`","input":"_Ac _! _Bc _! _4_+_Cj"},{"category":"_`","input":"_Ac _! _Bc _! _2_+_C#"},{"category":"_`","input":"_Ac _! _Bc _! _8_+_C#","condition":"F"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _CcB"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _4_+_Cj"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_Ac _! _2_+_Bc _! _8_+_C#","condition":"F"},{"category":"_`","input":"_Bc _! _Bc _! _CcB"},{"category":"_`","input":"_Bc _! _Bc _! _4_+_Cj"},{"category":"_`","input":"_Bc _! _Bc _! _2_+_C#"},{"category":"_`","input":"_Bc _! _Bc _! _8_+_C#","condition":"F"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _CcB"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _4_+_Cj"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_Bc _! _2_+_Bc _! _8_+_C#","condition":"F"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _CcB"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _4_+_Cj"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _8_+_C#","condition":"F"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _CcB"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _4_+_Cj"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Bc _! _2_+_Bc _! _8_+_C#","condition":"F"},{"category":"_`","input":"_^_Ac _! _Cc"},{"category":"_`","input":"_^_Bc _! _Cc"}],"notes":["Fake Moves"],"combos":["Combos"]},{"name":"GEESE HOWARD","moves":[{"category":"_(","name":"Shinkuu Nage","input":"_6_+_C","condition":"─/─"},{"category":"_(","name":"Kosatsu Nage","input":"_4_+_C","condition":"─/─"},{"category":"_(","input":"^!Zetsumei Hitonaka Uchi                                      _6_+_C","condition":"─/─"},{"category":"_(","name":"Ura Kumo Kakushii","input":"_1_+_C","condition":"─/─"},{"category":"_(","input":"^!Zetsumei Hitchu Shime                                       _9_+_C","condition":"─/─"},{"category":"_(","name":"Kosatsu Sho","input":"_3_+_C","condition":"─/─"},{"category":"_)","name":"Raikou Mawashi Geri","input":"_4_+_B","condition":"B/─"},{"category":"_)","name":"Shouten Myoujou Uchi","input":"_1_+_A","condition":"─/─"},{"category":"_)","name":"Raimei Gouha Nage opponent knocked down","input":"_2_+_C","condition":"─/─"},{"category":"_@","name":"Reppuu Ken","input":"_2_1_4_+_A","condition":"─/─"},{"category":"_@","name":"Double Reppuu Ken","input":"_2_1_4_+_C","condition":"─/─"},{"category":"_@","name":"Shippuu Ken","input":"_^_2_1_4_+_A","condition":"─/─"},{"category":"_@","name":"Double Shippuu Ken","input":"_^_2_1_4_+_C","condition":"─/─"},{"category":"_@","name":"Ja'ei Ken","input":"^4_6_+_B / _C (\"G\" with _C)","condition":"─/G"},{"category":"_@","name":"Joudan Atemi Nage","input":"_4_1_2_3_6_+_B (reverse jump/Specials)","condition":"─/─"},{"category":"_@","name":"Chuudan Atemi Nage","input":"_4_1_2_3_6_+_C (reverse high/mid)","condition":"─/G"},{"category":"_*","name":"Raging Storm","input":"_1_6_3_2_1_4_3_+_B_+_C","condition":"A/─"},{"category":"_&","name":"Thunder Break","input":"_6_3_2_+_C","condition":"A/─"},{"category":"_&","name":"Deadly Rave","input":"_6_3_2_1_4_6_+_A, _A_B_C_C_C_B_C, _2_1_4_+_C","condition":"─/─"},{"category":"_`","name":"Fake Reppuu Ken","input":"_2_+_A_+_B"},{"category":"_`","name":"Fake Ja'ei Ken","input":"_6_+_A_+_B"},{"category":"_`","name":"Fake Raging Storm","input":"_2_+_B_+_C"},{"category":"_`","input":"_Ac _! _Ac _! _C#"},{"category":"_`","input":"_Ac _! _Ac _! _6_+_CcB"},{"category":"_`","input":"_Ac _! _Ac _! _2_+_C#"},{"category":"_`","input":"_Ac _! _Ac _! _1_+_Cj"},{"category":"_`","input":"_Ac _! _Bc _! _C#"},{"category":"_`","input":"_Ac _! _Bc _! _6_+_CcB"},{"category":"_`","input":"_Ac _! _Bc _! _2_+_C#"},{"category":"_`","input":"_Ac _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_Ac _! _Ccc _! _Cc _! _Ccc _! _6_+_C#"},{"category":"_`","input":"_Ac _! _2_+_Ac _! _C#"},{"category":"_`","input":"_Ac _! _2_+_Ac _! _6_+_CcB"},{"category":"_`","input":"_Ac _! _2_+_Ac _! _2_+_C#"},{"category":"_`","input":"_Ac _! _2_+_Ac _! _1_+_Cj"},{"category":"_`","input":"_Bc _! _Bc _! _C#"},{"category":"_`","input":"_Bc _! _Bc _! _6_+_CcB"},{"category":"_`","input":"_Bc _! _Bc _! _2_+_C#"},{"category":"_`","input":"_Bc _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_2_+_Ac _! _Ac _! _C#"},{"category":"_`","input":"_2_+_Ac _! _Ac _! _6_+_CcB"},{"category":"_`","input":"_2_+_Ac _! _Ac _! _2_+_C#"},{"category":"_`","input":"_2_+_Ac _! _Ac _! _1_+_Cj"},{"category":"_`","input":"_2_+_Ac _! _Bc _! _C#"},{"category":"_`","input":"_2_+_Ac _! _Bc _! _6_+_CcB"},{"category":"_`","input":"_2_+_Ac _! _Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Ac _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_2_+_Ac _! _2_+_Ac _! _C#"},{"category":"_`","input":"_2_+_Ac _! _2_+_Ac _! _6_+_CcB"},{"category":"_`","input":"_2_+_Ac _! _2_+_Ac _! _2_+_C#"},{"category":"_`","input":"_2_+_Ac _! _2_+_Ac _! _1_+_Cj"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _C#"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _6_+_CcB"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _2_+_C#"},{"category":"_`","input":"_2_+_Bc _! _Bc _! _1_+_Cj"},{"category":"_`","input":"_^_Ac _! _Cc#"},{"category":"_`","input":"_^_Bc _! _Cc#"}],"notes":["Fake Moves"],"combos":["Combos"]}],"controlAbbr":{"_A":"P","_B":"K","_C":"PA","_D":"PS","_S":"ST","^S":"SL"},"systemControlMappings":{"snes":{"y":"_A","x":"_B","b":"_C","a":"_D"},"genesis":{"b":"_A","a":"_B","y":"_C","x":"_D"},"megadrive":{"b":"_A","a":"_B","y":"_C","x":"_D"},"32x":{"b":"_A","a":"_B","y":"_C","x":"_D"},"saturn":{"b":"_A","a":"_B","y":"_C","x":"_D"},"neogeo":{"b":"_A","y":"_B","a":"_C","x":"_D"},"psx":{"y":"_A","x":"_B","b":"_C","a":"_D"},"ps2":{"y":"_A","x":"_B","b":"_C","a":"_D"},"gb":{"b":"_A","a":"_B"},"gbc":{"b":"_A","a":"_B"},"gamegear":{"a":"_A","b":"_B"},"sms":{"a":"_A","b":"_B"},"gba":{"b":"_A","a":"_B","l1":"_C","r1":"_D"},"ngpc":{"b":"_A","a":"_B","y":"_C","x":"_D"},"dreamcast":{"y":"_A","x":"_B","b":"_C","a":"_D"},"n64":{"b":"_A","a":"_B","cDown":"_C","cLeft":"_D"},"wswan":{"b":"_A","a":"_B"}},"controlGroups":{"_P":["_A"],"_K":["_B"]}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "rbff1",
+    "rbff1a",
+    "rbff1k",
+    "rbff1ka"
+  ],
+  "name": "Real Bout Fatal Fury",
+  "year": 1995,
+  "manufacturer": "SNK",
+  "controls": {
+    "_A": "Punch",
+    "_B": "Kick",
+    "_C": "Powerful Attack",
+    "_D": "Plane Switch",
+    "_S": "Start",
+    "^S": "Select (AES only)"
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_*": "Super Power (S.POWER)",
+    "_&": "Potential Power (P.POWER)",
+    "_`": "Combos"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "_6_6",
+      "condition": "─/─"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4",
+      "condition": "─/─"
+    },
+    {
+      "category": "_)",
+      "name": "Crawl",
+      "input": "^3",
+      "condition": "─/─"
+    },
+    {
+      "category": "_)",
+      "name": "Normal Jump",
+      "input": "_8",
+      "condition": "─/─"
+    },
+    {
+      "category": "_)",
+      "name": "Low Jump",
+      "input": "_X_8",
+      "condition": "─/─"
+    },
+    {
+      "category": "_)",
+      "name": "Long Jump dashing",
+      "input": "_9",
+      "condition": "─/─"
+    },
+    {
+      "category": "_)",
+      "name": "Turn in the Air",
+      "input": "_^_D",
+      "condition": "─/─"
+    },
+    {
+      "category": "_)",
+      "name": "Defensive Attack blocking",
+      "input": "_6_+_A",
+      "condition": "─/─"
+    },
+    {
+      "category": "_)",
+      "name": "Roll Recovery being knocked down",
+      "input": "_D",
+      "condition": "─/─"
+    },
+    {
+      "category": "_)",
+      "name": "Taunt far",
+      "input": "_C",
+      "condition": "─/─"
+    },
+    {
+      "category": "_)",
+      "name": "Change to Back Plane",
+      "input": "_D",
+      "condition": "─/─"
+    },
+    {
+      "category": "_)",
+      "name": "Change to Front Plane",
+      "input": "_2_+_D",
+      "condition": "─/─"
+    },
+    {
+      "category": "_)",
+      "name": "Return to Main Plane in Front Plane",
+      "input": "_8",
+      "condition": "─/─"
+    },
+    {
+      "category": "_)",
+      "name": "Return to Main Plane in Back Plane",
+      "input": "_2",
+      "condition": "─/─"
+    },
+    {
+      "category": "_)",
+      "name": "Weak Return in Front Plane / Back Plane",
+      "input": "_A / _B",
+      "condition": "─/─"
+    },
+    {
+      "category": "_)",
+      "name": "Strong Return in Front Plane",
+      "input": "_C",
+      "condition": "B/─"
+    },
+    {
+      "category": "_)",
+      "name": "Strong Return in Back Plane",
+      "input": "_C",
+      "condition": "F/─"
+    },
+    {
+      "category": "_)",
+      "name": "High Pull opponent in Front Plane / Back Plane",
+      "input": "_D",
+      "condition": "M/─"
+    },
+    {
+      "category": "_)",
+      "name": "Low Pull opponent in Front Plane / Back Plane",
+      "input": "_2_+_D",
+      "condition": "M/─"
+    }
+  ],
+  "commonNotes": [
+    "PLANE MOVES"
+  ],
+  "characters": [
+    {
+      "name": "TERRY BOGARD",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Buster Throw",
+          "input": "_4 / _6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Backspin Kick",
+          "input": "_6_+_B",
+          "condition": "B/─"
+        },
+        {
+          "category": "_)",
+          "name": "Rising Upper",
+          "input": "_1_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Charge Kick dashing",
+          "input": "_6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Power Wave",
+          "input": "_2_3_6_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Round Wave",
+          "input": "_2_3_6_+_C",
+          "condition": "A/─"
+        },
+        {
+          "category": "_@",
+          "name": "Rising Tackle",
+          "input": "^2_8_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Power Dunk",
+          "input": "_6_2_3_+_B",
+          "condition": "─/G"
+        },
+        {
+          "category": "_@",
+          "name": "Burn Knuckle",
+          "input": "_2_1_4_+_A / _C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Crack Shoot",
+          "input": "_2_1_4_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Passing Sway",
+          "input": "_2_3_6_+_D",
+          "condition": "─/─"
+        },
+        {
+          "category": "_*",
+          "name": "Power Geyser",
+          "input": "_2_1_4_1_6_+_B_+_C",
+          "condition": "A/─"
+        },
+        {
+          "category": "_&",
+          "name": "Triple Geyser",
+          "input": "_2_1_4_1_6_+_C",
+          "condition": "A/─"
+        },
+        {
+          "category": "_`",
+          "name": "Fake Power Wave",
+          "input": "_2_+_A_+_B"
+        },
+        {
+          "category": "_`",
+          "name": "Fake Burn Knuckle",
+          "input": "_6_+_A_+_B"
+        },
+        {
+          "category": "_`",
+          "name": "Fake Power Geyser",
+          "input": "_2_+_B_+_C"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _6_+_C#",
+          "condition": "B"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _6_+_C#",
+          "condition": "B"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _6_+_C#",
+          "condition": "B"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _6_+_C#",
+          "condition": "B"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Bc _! _6_+_C#",
+          "condition": "B"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Bc _! _6_+_C#",
+          "condition": "B"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _6_+_C#",
+          "condition": "B"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _6_+_C#",
+          "condition": "B"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "name": "dashing",
+          "input": "_Ac _! _Cc _! _Cc _! _Cc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_^_A# _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_^_B# _! _C#"
+        }
+      ],
+      "notes": [
+        "Fake Moves"
+      ],
+      "combos": [
+        "Combos"
+      ]
+    },
+    {
+      "name": "ANDY BOGARD",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Uchimata",
+          "input": "_4 / _6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Abise Geri",
+          "input": "_6_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Age Men",
+          "input": "_1_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Kunai Tama opponent knocked down",
+          "input": "_2_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Hishou Ken",
+          "input": "_2_1_4_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Geki Hishou Ken",
+          "input": "_2_1_4_+_C",
+          "condition": "A/─"
+        },
+        {
+          "category": "_@",
+          "name": "Shouryuu Dan",
+          "input": "_6_2_3_+_C",
+          "condition": "─/G"
+        },
+        {
+          "category": "_@",
+          "name": "Kuuha Dan",
+          "input": "_1_2_3_6_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Zan'ei Ken",
+          "input": "_1_6_+_A / _C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Shippuu Uraken (with _C)                                    _1_6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Yami Abise Geri",
+          "input": "_6_2_3_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Shippuu Tatsumaki Geri",
+          "input": "_2_1_4_+_D",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Gen'ei Shiranui",
+          "input": "_^_2_3_6_+_D",
+          "condition": "F/─"
+        },
+        {
+          "category": "_@",
+          "name": "Shiranui Kumo Karami jump above the opponent",
+          "input": "_2_2_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_*",
+          "name": "Chou Reppa Dan",
+          "input": "^2_3_6_+_B_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_&",
+          "name": "Zan'ei Reppa",
+          "input": "_1_2_3_6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_`",
+          "name": "Fake Hishou Ken",
+          "input": "_2_+_A_+_B"
+        },
+        {
+          "category": "_`",
+          "name": "Fake Zan'ei Ken",
+          "input": "_6_+_A_+_B"
+        },
+        {
+          "category": "_`",
+          "name": "Fake Chou Reppa Dan",
+          "input": "_2_+_B_+_C"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Bcc _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bcc _! _Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_Bcc _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bcc _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Bcc _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bcc _! _2_+_Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_Bcc _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bcc _! _2_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Ccc _! _Ccc _! _Ccc _! _Cc _! _6_+_C#",
+          "condition": "F"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_^_A# _! _Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_^_B# _! _Cc"
+        }
+      ],
+      "notes": [
+        "Fake Moves"
+      ],
+      "combos": [
+        "Combos"
+      ]
+    },
+    {
+      "name": "JOE HIGASHI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Joe Special",
+          "input": "_4 / _6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_(",
+          "name": "Hiza Jigoku",
+          "input": "_3_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Vertical Upper",
+          "input": "_4_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Joe Sobat",
+          "input": "_4_+_B",
+          "condition": "F/─"
+        },
+        {
+          "category": "_)",
+          "name": "Shingami Hiji Uchi",
+          "input": "_1_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Sliding",
+          "input": "_3_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Bakuretsu Ken",
+          "input": "^*_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Bakuretsu Hook                                              _2_3_6_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Hurricane Upper",
+          "input": "_4_1_2_3_6_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Bakuretsu Hurricane",
+          "input": "_4_1_2_3_6_+_C",
+          "condition": "A/─"
+        },
+        {
+          "category": "_@",
+          "name": "Tiger Kick",
+          "input": "_6_2_3_+_B",
+          "condition": "─/G"
+        },
+        {
+          "category": "_@",
+          "name": "Slash Kick",
+          "input": "_1_6_+_B / _C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Ougon no Kakato",
+          "input": "_2_1_4_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Pressure Knee",
+          "input": "_2_3_6_+_D",
+          "condition": "─/─"
+        },
+        {
+          "category": "_*",
+          "name": "Screw Upper",
+          "input": "_6_4_1_2_3_6_+_B_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_&",
+          "name": "Slide Screw",
+          "input": "_6_4_1_2_3_6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_`",
+          "name": "Fake Hurricane Upper",
+          "input": "_2_+_A_+_B"
+        },
+        {
+          "category": "_`",
+          "name": "Fake Tiger Kick",
+          "input": "_4_+_A_+_B"
+        },
+        {
+          "category": "_`",
+          "name": "Fake Slash Kick",
+          "input": "_6_+_A_+_B"
+        },
+        {
+          "category": "_`",
+          "name": "Fake Screw Upper",
+          "input": "_2_+_B_+_C"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_Acc _! _Ccc _! _Ccc _! _Ccc _! _Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_Ac _! _C# _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_^_A# _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_^_B# _! _C#"
+        }
+      ],
+      "notes": [
+        "Fake Moves"
+      ],
+      "combos": [
+        "Combos"
+      ]
+    },
+    {
+      "name": "FRANCO BASH",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Sand Buster",
+          "input": "_4 / _6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Chopping Roundhouse",
+          "input": "_6_+_B",
+          "condition": "F/─"
+        },
+        {
+          "category": "_)",
+          "name": "Power Straight dashing",
+          "input": "_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Power Uppercut knocked down",
+          "input": "^*_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Double Kong",
+          "input": "_2_1_4_+_A / _C (\"G\" with _C)",
+          "condition": "─/G"
+        },
+        {
+          "category": "_@",
+          "name": "Power Bicycle",
+          "input": "_2_3_6_+_B",
+          "condition": "F/─"
+        },
+        {
+          "category": "_@",
+          "name": "Meteo Shot",
+          "input": "_2_3_6_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Meteo Tackle",
+          "input": "_1_6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Meteo Back Blow                                             _1_6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Waving Blow",
+          "input": "_4_1_2_3_6_+_D",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Waving Blow Finish                                          _4_1_2_3_6_+_D",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Waving Step",
+          "input": "^4_6_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Quick Step                                                  _4_6 / _6_4_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_*",
+          "name": "Final Omega Shot",
+          "input": "_2_1_4_1_6_+_B_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_&",
+          "name": "Armageddon Buster close",
+          "input": "_6_3_2_1_4_+_C (can use up to 5 moves)",
+          "condition": "─/─"
+        },
+        {
+          "category": "_&",
+          "input": "^!One Two Straights                                           _2_3_6_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_&",
+          "input": "^!Reaching Uppercut                                           _2_1_4_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_&",
+          "input": "^!High Kick                                                   _2_1_4_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_&",
+          "input": "^!Uppercut                                                    _6_2_3_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_&",
+          "input": "^!Roundhouse                                                  _6_2_3_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_&",
+          "input": "^!Straight Kick                                               _2_3_6_+_B (finisher)",
+          "condition": "─/─"
+        },
+        {
+          "category": "_&",
+          "input": "^!Meteo Tackle Uppercut                                       _2_3_6_+_C (finisher)",
+          "condition": "─/─"
+        },
+        {
+          "category": "_&",
+          "input": "^!Power Bicycle                                               _6_2_3_+_C (finisher)",
+          "condition": "─/─"
+        },
+        {
+          "category": "_&",
+          "input": "^!Meteo Shot                                                  _2_1_4_+_C (finisher)",
+          "condition": "─/─"
+        },
+        {
+          "category": "_&",
+          "input": "^!Mess Up Pose                                                _N",
+          "condition": "─/─"
+        },
+        {
+          "category": "_`",
+          "name": "Fake Meteo Shot",
+          "input": "_2_+_A_+_B"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _6_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _8_+_C#",
+          "condition": "B"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Ccc _! _Ccc _! _Ccc _! _6_+_CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Ccc _! _Ccc _! _Ccc _! _8_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _6_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _8_+_C#",
+          "condition": "B"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _6_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _8_+_C#",
+          "condition": "B"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _6_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _8_+_C#",
+          "condition": "B"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _6_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _8_+_C#",
+          "condition": "B"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _6_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _8_+_C#",
+          "condition": "B"
+        },
+        {
+          "category": "_`",
+          "input": "_^_A# _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_^_B# _! _C#"
+        }
+      ],
+      "notes": [
+        "Fake Moves"
+      ],
+      "combos": [
+        "Combos"
+      ]
+    },
+    {
+      "name": "MAI SHIRANUI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Fuusha Kuzuki Kai",
+          "input": "_4 / _6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_(",
+          "name": "Yume Zakura",
+          "input": "_^_2_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Haimen Kyaku",
+          "input": "_6_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Ryu no Mai",
+          "input": "_4_+_A",
+          "condition": "B/─"
+        },
+        {
+          "category": "_)",
+          "name": "Hane Kyaku knocked down",
+          "input": "^*_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Kacho Sen",
+          "input": "_2_3_6_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Midare Kacho Sen",
+          "input": "_2_1_4_+_C",
+          "condition": "A/─"
+        },
+        {
+          "category": "_@",
+          "name": "Ryuu Enbu",
+          "input": "_2_1_4_+_A",
+          "condition": "─/G"
+        },
+        {
+          "category": "_@",
+          "name": "Hissatsu Shinobi Bachi",
+          "input": "_4_1_2_3_6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Kagero no Mai",
+          "input": "_2_2_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Musasabi no Mai",
+          "input": "_^_2_+_A_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Gen'ei Shiranui",
+          "input": "_^_2_3_6_+_D",
+          "condition": "F/─"
+        },
+        {
+          "category": "_*",
+          "name": "Chou Hissatsu Shinobi Bachi",
+          "input": "_6_1_6_+_B_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_&",
+          "name": "Leotard Shinobi Bachi",
+          "input": "_6_1_6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_`",
+          "name": "Fake Kacho Sen",
+          "input": "_2_+_A_+_B"
+        },
+        {
+          "category": "_`",
+          "name": "Fake Ryuu Enbu",
+          "input": "_4_+_A_+_B"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Acc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Acc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Acc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Acc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Ccc"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _C# _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Acc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Acc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Acc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Acc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_^_Ac _! _Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_^_Bc _! _Cc"
+        }
+      ],
+      "notes": [
+        "Fake Moves"
+      ],
+      "combos": [
+        "Combos"
+      ]
+    },
+    {
+      "name": "BOB WILSON",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Falcon",
+          "input": "_4 / _6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_(",
+          "input": "^!Hornet Attack                                               _9_9_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Sliding Headbutt",
+          "input": "_6_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Elephant Tusk",
+          "input": "_1_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Eagle Step",
+          "input": "_^_2_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Fangs of the Lynx opponent knocked down",
+          "input": "_8_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Flying Fish knocked down",
+          "input": "^*_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Rolling Turtle",
+          "input": "_2_1_4_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Rolling Sea Turtle",
+          "input": "_2_1_4_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Move                                                        _4 / _6",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Monkey Dance",
+          "input": "_6_2_3_+_B",
+          "condition": "─/G"
+        },
+        {
+          "category": "_@",
+          "name": "Bison Horn",
+          "input": "^2_8_+_B / _C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Wild Wolf",
+          "input": "^4_6_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_*",
+          "name": "Dangerous Wolf",
+          "input": "_6_4_1_2_3_6_+_B_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_&",
+          "name": "Mad Spin Wolf",
+          "input": "_2_1_4_2_1_4_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_&",
+          "input": "^!Wolf Fang                                                   ^*_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_`",
+          "name": "Fake Mad Spin Wolf",
+          "input": "_2_+_B_+_C"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _B# _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _B# _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _B# _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _B# _! _3_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _B# _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _B# _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _B# _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _B# _! _3_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_Ccc _! _Cc _! _Cc _! _Cc _! _Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_Ccc _! _Cc _! _Cc _! _Cc _! _8_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ccc _! _Cc _! _Cc _! _8_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ccc _! _Cc _! _8_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_A# _! _B# _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_A# _! _B# _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_A# _! _B# _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_A# _! _B# _! _3_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_A# _! _Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_^_A# _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_^_B# _! _C#"
+        }
+      ],
+      "notes": [
+        "Fake Moves"
+      ],
+      "combos": [
+        "Combos"
+      ]
+    },
+    {
+      "name": "BILLY KANE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Ippon Zuri Nage",
+          "input": "_4 / _6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_(",
+          "name": "Jigoku Otoshi",
+          "input": "_6_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Kyou Isamu Chuddan Tsuki",
+          "input": "_6_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Atama Kahou Geki opponent knocked down",
+          "input": "_2_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Senpuu Kon",
+          "input": "^*_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Sansetsu Kon: Chuudan Uchi",
+          "input": "^4_6_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Kaen Sansetsu Kon: Chuudan Tsuki                            _4_6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Kyoushuu Hishou Kon",
+          "input": "_1_2_3_6_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Move                                                        _4 / _6",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Suzume Otoshi",
+          "input": "_2_1_4_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Karyuu Tsuigeki Kon",
+          "input": "_2_1_4_+_B (reverse high/mid)",
+          "condition": "─/G"
+        },
+        {
+          "category": "_@",
+          "name": "Suiryuu Tsuigeki Kon",
+          "input": "_2_1_4_+_C (reverse jump/Specials)",
+          "condition": "─/G"
+        },
+        {
+          "category": "_*",
+          "name": "Chou Kaen Senpuu Kon",
+          "input": "_2_3_6_3_2_1_4_+_B_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_&",
+          "name": "Kuren Satsu Kon",
+          "input": "_6_3_2_+_C",
+          "condition": "─/G"
+        },
+        {
+          "category": "_`",
+          "name": "Fake Kyoushuu Hishou Kon",
+          "input": "_4_+_A_+_B"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Ac _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Ac _! _6_+_CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Ac _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bccc _! _2_3_6_+_C######"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _6_+_CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_B### _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_B### _! _2_+_Bc _! _6_+_CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_B### _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Ac _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Ac _! _6_+_CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Ac _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Bccc _! _2_3_6_+_C######"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Bc _! _6_+_CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _6_+_CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_^_A# _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_^_B# _! _C#"
+        }
+      ],
+      "notes": [
+        "Fake Moves"
+      ],
+      "combos": [
+        "Combos"
+      ]
+    },
+    {
+      "name": "HON FU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Back Flip",
+          "input": "_4 / _6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_(",
+          "name": "Keiraku Randa",
+          "input": "_3_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Hae Tataki",
+          "input": "_1_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Fumi Somi Sokukeri",
+          "input": "_6_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Todome Nunchaku opponent knocked down",
+          "input": "_2_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Honou no Taneuma",
+          "input": "^*_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Seikuu Rekka Kon",
+          "input": "_6_2_3_+_A",
+          "condition": "─/G"
+        },
+        {
+          "category": "_@",
+          "name": "Kyu Ryu no Yomi close",
+          "input": "_4_1_2_3_6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Koku Ryu opponent in air, close",
+          "input": "_4_1_2_3_6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Denkou Sekka no Chi",
+          "input": "^1_6_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Denkou Pachiki                                              _B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Denkou Sekka no Ten",
+          "input": "_2_1_4_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Hissho Kyakushu Kyaku",
+          "input": "_2_1_4_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_*",
+          "name": "Bakuhatsu Goro",
+          "input": "_2_1_4_1_6_+_B_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_&",
+          "name": "Gadenza no Arashi",
+          "input": "_2_1_4_1_6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_`",
+          "name": "Fake Seikuu Rekka Kon",
+          "input": "_4_+_A_+_B"
+        },
+        {
+          "category": "_`",
+          "name": "Fake Denkou Sekka no Chi",
+          "input": "_6_+_A_+_B"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Ac _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Ac _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Ac _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Ac _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Ac _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Ac _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Ac _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Ac _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_Ac _! _C# _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_^_A# _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_^_B# _! _C#"
+        }
+      ],
+      "notes": [
+        "Fake Moves"
+      ],
+      "combos": [
+        "Combos"
+      ]
+    },
+    {
+      "name": "RYUJI YAMAZAKI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Bun Nage",
+          "input": "_4 / _6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_(",
+          "name": "Pachiki",
+          "input": "_3_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Bussashi",
+          "input": "_6_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Shouten",
+          "input": "_1_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Tetsu no Tsume opponent knocked down",
+          "input": "_2_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Metsubushi knocked down",
+          "input": "^*_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Hebi Tsukai: Chuudan",
+          "input": "_2_1_4_+_C (_O)",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Hebi Tsukai: Joudan                                         _9",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Hebi Damashi (if held)                                      _A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Sabaki no Aikuchi",
+          "input": "_6_1_6_+_A / _C (\"G\" with _C)",
+          "condition": "─/G"
+        },
+        {
+          "category": "_@",
+          "name": "Bai Gaeshi",
+          "input": "_2_3_6_+_C (reflect projectile)",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Sadomazo",
+          "input": "_4_1_2_3_6_+_B (reverse jump/high/mid/Specials)",
+          "condition": "─/─"
+        },
+        {
+          "category": "_*",
+          "name": "Guillotine",
+          "input": "_6_3_2_1_6_+_B_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_&",
+          "name": "Drill close",
+          "condition": "─/─ ^*",
+          "input": "_x_+_C"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _6_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Cc _! _Cc _! _Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Cc _! _Cc _! _6_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Cc _! _Cc _! _4_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _6_+_Bc _! _Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _6_+_Bc _! _6_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _6_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _6_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _6_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _6_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _6_+_Bc _! _Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _6_+_Bc _! _6_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _6_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _6_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _6_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _6_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _6_+_Bc _! _Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _6_+_Bc _! _6_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _6_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _6_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _6_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_^_A# _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_^_B# _! _C#"
+        }
+      ],
+      "combos": [
+        "Combos"
+      ]
+    },
+    {
+      "name": "SOKAKU MOCHIZUKI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Muken Jigoku Nage",
+          "input": "_6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_(",
+          "name": "Mudoh Shibari Nage",
+          "input": "_4_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_(",
+          "input": "^!Jigoku Mon                                                  _6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_(",
+          "name": "Shoten Satsu",
+          "input": "_^_2_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Shukajoh Joudan Uchi",
+          "input": "_1_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Raigeki Kon opponent knocked down",
+          "input": "_2_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Makibishi Masher",
+          "input": "_2_3_6_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Nozaru Geri",
+          "input": "_2_1_4_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Hyoi Dan",
+          "input": "_6_4_6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Higi Kaminari Otoshi",
+          "input": "_6_2_3_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Gen Mu Jin",
+          "input": "_6_2_3_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Ja Kon Bu",
+          "input": "^*_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Ten Ha                                                      _1_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Fu Ha                                                       _3_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Toppa                                                       _6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Kou Ha                                                      _9_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Tou Ha                                                      _D",
+          "condition": "A/─"
+        },
+        {
+          "category": "_@",
+          "name": "Jashin Kon",
+          "input": "_4_1_2_3_6_+_B (reflect projectile)",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Hametsu no Honou",
+          "input": "_2_4_1_+_B",
+          "condition": "─/G"
+        },
+        {
+          "category": "_@",
+          "name": "Kimon Jin close",
+          "condition": "─/─",
+          "input": "_x_+_C"
+        },
+        {
+          "category": "_*",
+          "name": "Ikazuchi",
+          "input": "_6_3_2_3_6_+_B_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_&",
+          "name": "Raijin no Ibuki",
+          "input": "_6_3_2_3_6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_`",
+          "name": "Fake Makibishi Masher",
+          "input": "_2_+_A_+_B"
+        },
+        {
+          "category": "_`",
+          "name": "Fake Raijin no Ibuki",
+          "input": "_2_+_B_+_C"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _6_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _6_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _6_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _6_+_Cc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _6_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Ccc _! _Cc _! _Cc _! _Cc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _6_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _6_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_^_A# _! _C##"
+        },
+        {
+          "category": "_`",
+          "input": "_^_B# _! _C##"
+        }
+      ],
+      "notes": [
+        "Fake Moves"
+      ],
+      "combos": [
+        "Combos"
+      ]
+    },
+    {
+      "name": "BLUE MARY",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Head Throw",
+          "input": "_4_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_(",
+          "input": "^!Achilles Hold                                               _6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Double Rolling",
+          "input": "_4_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Low Straight",
+          "input": "_3_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Hopping Press opponent knocked down",
+          "input": "_2_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Spin Heel Attack opponent knocked down",
+          "input": "_8_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Fire Kick knocked down",
+          "input": "_2_8_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Spin Fall",
+          "input": "_2_3_6_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "M. Spider",
+          "input": "_2_3_6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Vertical Arrow",
+          "input": "_6_2_3_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "input": "^!M. Snatcher                                                 _6_2_3_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Straight Slicer",
+          "input": "^4_6_+_B",
+          "condition": "─/G"
+        },
+        {
+          "category": "_@",
+          "input": "^!Stun Fang                                                   _4_6_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Crab Clutch",
+          "input": "^4_6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Real Counter",
+          "input": "_2_1_4_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Backdrop Real                                               close _4_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Face Lock                                               _4_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "M. Head Buster",
+          "input": "_2_1_4_+_B (reverse high/mid)",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Stun Gun Smasher",
+          "input": "_2_1_4_+_C (reverse jump/Specials)",
+          "condition": "─/─"
+        },
+        {
+          "category": "_*",
+          "name": "M. Typhoon",
+          "input": "_6_4_1_2_3_6_+_B_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_&",
+          "name": "M. Driving Smasher close",
+          "input": "_6_4_1_2_3_6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _6_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _4_+_C#",
+          "condition": "F"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _1_+_Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _3_+_Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _6_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _4_+_C#",
+          "condition": "F"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _1_+_Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _3_+_Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_Bcc _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bcc _! _Bc _! _4_+_C#",
+          "condition": "F"
+        },
+        {
+          "category": "_`",
+          "input": "_Bcc _! _Bc _! _4_+_C#",
+          "condition": "F"
+        },
+        {
+          "category": "_`",
+          "input": "_Bcc _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bcc _! _Bc _! _1_+_Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_Bcc _! _Bc _! _3_+_Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_Bcc _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bcc _! _2_+_Bc _! _6_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Bcc _! _2_+_Bc _! _4_+_C#",
+          "condition": "F"
+        },
+        {
+          "category": "_`",
+          "input": "_Bcc _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bcc _! _2_+_Bc _! _1_+_Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_Bcc _! _2_+_Bc _! _3_+_Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _6_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _4_+_C#",
+          "condition": "F"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _1_+_Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _3_+_Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _6_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _4_+_C#",
+          "condition": "F"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _1_+_Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _3_+_Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_^_A# _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_^_B# _! _C#"
+        }
+      ],
+      "combos": [
+        "Combos"
+      ]
+    },
+    {
+      "name": "KIM KAPHWAN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Sakkyaku Nage",
+          "input": "_4 / _6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Haki Kyaku",
+          "input": "_A_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Neri Chagi",
+          "input": "_6_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Hishou Kyaku",
+          "input": "_^_2_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Hangetsu Zan",
+          "input": "_2_1_4_+_B / _C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Hien Zan",
+          "input": "^2_8_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Tenshou Zan                                                 _2_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Kuu Sajin",
+          "input": "_6_2_3_+_A",
+          "condition": "A/G"
+        },
+        {
+          "category": "_*",
+          "name": "Hou'ou Tenbu Kyaku",
+          "input": "_^_4_1_2_3_6_+_B_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_&",
+          "name": "Hou'ou Kyaku",
+          "input": "_2_1_4_1_6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_`",
+          "name": "Fake Hangetsu Zan",
+          "input": "_6_+_A_+_B"
+        },
+        {
+          "category": "_`",
+          "name": "Fake Hou'ou Kyaku",
+          "input": "_2_+_B_+_C"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _Bc _! _Cj _! _C#j"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _Bc _! _Cj _! _C#j"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Bc _! _Bc _! _Cj _! _C#j"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _Bc _! _Cj _! _C#j"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "name": "far",
+          "input": "_C# _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_^_Ac _! _Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_^_Bc _! _Cc"
+        }
+      ],
+      "notes": [
+        "Fake Moves"
+      ],
+      "combos": [
+        "Combos"
+      ]
+    },
+    {
+      "name": "JIN CHONREI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Hatsukubi Tatsu",
+          "input": "_4 / _6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Ryuusatsu Kyaku",
+          "input": "_6_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Teiou Jinsoku Ken",
+          "input": "_6_6_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Teiou Jinsoku Ken: Enkyou",
+          "input": "_6_6_6_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Teiou Tengen Ken",
+          "input": "_2_3_6_+_A / _C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Teiou Tenji Ken",
+          "input": "_6_2_3_+_A / _C (\"G\" with _A)",
+          "condition": "─/G"
+        },
+        {
+          "category": "_@",
+          "name": "Teiou Roujin Ken",
+          "input": "_2_1_4_6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Teiou Tashin Ken",
+          "input": "_2_1_4_+_B (reflect projectile)",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Ryuu Tenshin",
+          "input": "_2_3_6_+_B (_O)",
+          "condition": "─/─"
+        },
+        {
+          "category": "_*",
+          "name": "Teiou Shukumei Ken",
+          "input": "_6_4_1_2_3_6_+_B_+_C",
+          "condition": "A/─"
+        },
+        {
+          "category": "_&",
+          "name": "Teiou Ryuusei Ken",
+          "input": "_6_4_1_2_3_6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_`",
+          "name": "Fake Teiou Tengen Ken",
+          "input": "_2_+_A_+_B"
+        },
+        {
+          "category": "_`",
+          "name": "Fake Teiou Shukumei Ken",
+          "input": "_2_+_B_+_C"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Ac _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Ac _! _6_+_CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Ac _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _6_+_CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _6_+_CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _6_+_CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _6_+_CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Ac _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Ac _! _6_+_CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Ac _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Bc _! _6_+_CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Bc _! _6_+_CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _6_+_CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _6_+_CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_^_A# _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_^_B# _! _C#"
+        }
+      ],
+      "notes": [
+        "Fake Moves"
+      ],
+      "combos": [
+        "Combos"
+      ]
+    },
+    {
+      "name": "JIN CHONSHU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Hatsugei Tatsu",
+          "input": "_4 / _6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Tatsukai Atama",
+          "input": "_6_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Tatsu Kaitou",
+          "input": "_3_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Teiou Jinsoku Ken",
+          "input": "_6_6_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Teiou Tengen Ken",
+          "input": "_2_3_6_+_A / _C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Teiou Tenji Ken",
+          "input": "_6_2_3_+_A / _C (\"G\" with _C)",
+          "condition": "─/G"
+        },
+        {
+          "category": "_@",
+          "name": "Teiou Jingan Ken: Idounashi",
+          "input": "_6_3_2_1_4_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Teiou Jingan Ken: Kuuchuu",
+          "input": "_6_3_2_1_4_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Teiou Hagane Kachi                                          _A / _B / _C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Teiou Jingan Ken: Haigo",
+          "input": "_6_3_2_1_4_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_*",
+          "name": "Teiou Roujin Ken",
+          "input": "_2_1_4_6_+_B_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_&",
+          "name": "Teiou Shukumei Ken",
+          "input": "_2_1_4_6_+_C",
+          "condition": "A/─"
+        },
+        {
+          "category": "_`",
+          "name": "Fake Teiou Tengen Ken",
+          "input": "_2_+_A_+_B"
+        },
+        {
+          "category": "_`",
+          "name": "Fake Teiou Roujin Ken",
+          "input": "_2_+_B_+_C"
+        },
+        {
+          "category": "_`",
+          "input": "_A## _! _Acc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_A## _! _Acc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_A## _! _Acc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_A## _! _Bcc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_A## _! _Bcc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_A## _! _Bcc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_A## _! _2_+_Bcc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_A## _! _2_+_Bcc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_A## _! _2_+_Bcc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_B## _! _Bcc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_B## _! _Bcc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_B## _! _Bcc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_B## _! _2_+_Bcc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_B## _! _2_+_Bcc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_B## _! _2_+_Bcc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Acc _! _Acc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Acc _! _Acc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Acc _! _Acc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Acc _! _Bcc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Acc _! _Bcc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Acc _! _Bcc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Acc _! _2_+_Bcc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Acc _! _2_+_Bcc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Acc _! _2_+_Bcc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_B## _! _Bcc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_B## _! _Bcc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_B## _! _Bcc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_B## _! _2_+_Bcc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_B## _! _2_+_Bcc _! _6_+_CcF"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_B## _! _2_+_Bcc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_^_A# _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_^_B# _! _C#"
+        }
+      ],
+      "notes": [
+        "Fake Moves"
+      ],
+      "combos": [
+        "Combos"
+      ]
+    },
+    {
+      "name": "DUCK KING",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Rolling Neck Throw",
+          "input": "_4 / _6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_(",
+          "name": "N ・ Reverse Breaker",
+          "input": "_^_2_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Mad Spin Hammer",
+          "input": "_4_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Needle Low",
+          "input": "_3_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Duck Feint: Air",
+          "input": "_^_2_2",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "input": "^!Move                                                        _4 / _6",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Duck Feint: Ground dashing",
+          "input": "_3_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Shocking Ball opponent knocked down",
+          "input": "_2_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Head Spin Attack",
+          "input": "_2_3_6_+_A / _C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Overhead Kick (with _C)                                     _C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Neo Break Storm",
+          "input": "_6_2_3_+_B",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Dancing Dive",
+          "input": "_2_1_4_+_B",
+          "condition": "─/G"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Spin Attack",
+          "input": "_^_2_1_4_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_*",
+          "name": "Break Spiral close",
+          "input": "_4_1_2_3_6_9_2_+_B_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_&",
+          "name": "Duck Dance",
+          "input": "_2_2_+_A_+_B_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_&",
+          "input": "^!Diving Punisher                                             _^_6_3_2_+_B_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_&",
+          "input": "^!Rolling Punisher                                            ^4_6_4_6_+_B_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_&",
+          "input": "^!Dancing Caliber                                             _2_1_4_2_1_4_+_B_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_&",
+          "input": "^!Break Hurricane                                             _2_3_6_2_3_6_+_B_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_&",
+          "input": "^!Enhanced Break Spiral                                       close _4_1_2_3_6_9_2_+_B_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_`",
+          "name": "Fake Duck Dance",
+          "input": "_2_+_B_+_C"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Ac _! _Bc _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Ac _! _Bc _! _Bc _! _4_+_Ccc"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _4_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _8_+_C#",
+          "condition": "F"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _4_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Bc _! _8_+_C#",
+          "condition": "F"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _4_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _8_+_C#",
+          "condition": "F"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _4_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _2_+_Bc _! _8_+_C#",
+          "condition": "F"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _4_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _8_+_C#",
+          "condition": "F"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _4_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _2_+_Bc _! _8_+_C#",
+          "condition": "F"
+        },
+        {
+          "category": "_`",
+          "input": "_^_Ac _! _Cc"
+        },
+        {
+          "category": "_`",
+          "input": "_^_Bc _! _Cc"
+        }
+      ],
+      "notes": [
+        "Fake Moves"
+      ],
+      "combos": [
+        "Combos"
+      ]
+    },
+    {
+      "name": "GEESE HOWARD",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Shinkuu Nage",
+          "input": "_6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_(",
+          "name": "Kosatsu Nage",
+          "input": "_4_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_(",
+          "input": "^!Zetsumei Hitonaka Uchi                                      _6_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_(",
+          "name": "Ura Kumo Kakushii",
+          "input": "_1_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_(",
+          "input": "^!Zetsumei Hitchu Shime                                       _9_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_(",
+          "name": "Kosatsu Sho",
+          "input": "_3_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Raikou Mawashi Geri",
+          "input": "_4_+_B",
+          "condition": "B/─"
+        },
+        {
+          "category": "_)",
+          "name": "Shouten Myoujou Uchi",
+          "input": "_1_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_)",
+          "name": "Raimei Gouha Nage opponent knocked down",
+          "input": "_2_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Reppuu Ken",
+          "input": "_2_1_4_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Double Reppuu Ken",
+          "input": "_2_1_4_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Shippuu Ken",
+          "input": "_^_2_1_4_+_A",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Double Shippuu Ken",
+          "input": "_^_2_1_4_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Ja'ei Ken",
+          "input": "^4_6_+_B / _C (\"G\" with _C)",
+          "condition": "─/G"
+        },
+        {
+          "category": "_@",
+          "name": "Joudan Atemi Nage",
+          "input": "_4_1_2_3_6_+_B (reverse jump/Specials)",
+          "condition": "─/─"
+        },
+        {
+          "category": "_@",
+          "name": "Chuudan Atemi Nage",
+          "input": "_4_1_2_3_6_+_C (reverse high/mid)",
+          "condition": "─/G"
+        },
+        {
+          "category": "_*",
+          "name": "Raging Storm",
+          "input": "_1_6_3_2_1_4_3_+_B_+_C",
+          "condition": "A/─"
+        },
+        {
+          "category": "_&",
+          "name": "Thunder Break",
+          "input": "_6_3_2_+_C",
+          "condition": "A/─"
+        },
+        {
+          "category": "_&",
+          "name": "Deadly Rave",
+          "input": "_6_3_2_1_4_6_+_A, _A_B_C_C_C_B_C, _2_1_4_+_C",
+          "condition": "─/─"
+        },
+        {
+          "category": "_`",
+          "name": "Fake Reppuu Ken",
+          "input": "_2_+_A_+_B"
+        },
+        {
+          "category": "_`",
+          "name": "Fake Ja'ei Ken",
+          "input": "_6_+_A_+_B"
+        },
+        {
+          "category": "_`",
+          "name": "Fake Raging Storm",
+          "input": "_2_+_B_+_C"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Ac _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Ac _! _6_+_CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Ac _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Ac _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _6_+_CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _Ccc _! _Cc _! _Ccc _! _6_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Ac _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Ac _! _6_+_CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Ac _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Ac _! _2_+_Ac _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _6_+_CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_Bc _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Ac _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Ac _! _6_+_CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Ac _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Ac _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Bc _! _6_+_CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Ac _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Ac _! _6_+_CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Ac _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Ac _! _2_+_Ac _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _6_+_CcB"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _2_+_C#"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_Bc _! _Bc _! _1_+_Cj"
+        },
+        {
+          "category": "_`",
+          "input": "_^_Ac _! _Cc#"
+        },
+        {
+          "category": "_`",
+          "input": "_^_Bc _! _Cc#"
+        }
+      ],
+      "notes": [
+        "Fake Moves"
+      ],
+      "combos": [
+        "Combos"
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_A": "P",
+    "_B": "K",
+    "_C": "PA",
+    "_D": "PS",
+    "_S": "ST",
+    "^S": "SL"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "genesis": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "megadrive": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "32x": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "saturn": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "neogeo": {
+      "b": "_A",
+      "y": "_B",
+      "a": "_C",
+      "x": "_D"
+    },
+    "psx": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "ps2": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "gb": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gbc": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gamegear": {
+      "a": "_A",
+      "b": "_B"
+    },
+    "sms": {
+      "a": "_A",
+      "b": "_B"
+    },
+    "gba": {
+      "b": "_A",
+      "a": "_B",
+      "l1": "_C",
+      "r1": "_D"
+    },
+    "ngpc": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "dreamcast": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "n64": {
+      "b": "_A",
+      "a": "_B",
+      "cDown": "_C",
+      "cLeft": "_D"
+    },
+    "wswan": {
+      "b": "_A",
+      "a": "_B"
+    }
+  },
+  "controlGroups": {
+    "_P": [
+      "_A"
+    ],
+    "_K": [
+      "_B"
+    ]
+  }
+}

@@ -1,1 +1,486 @@
-{"schemaVersion":2,"romIds":["bloodwar","oedfight","oedfighta"],"name":"Blood Warrior","year":1994,"manufacturer":"Kaneko","controls":{"^E":"Weak Punch","^G":"Strong Punch","^H":"Weak Kick","^J":"Strong Kick","_S":"Start"},"controlGroups":{"_P":["^E","^G"],"_K":["^H","^J"]},"categories":{"_(":"Normal Throws","_@":"Special Moves","_`":"Finishing Moves"},"characters":[{"name":"ARASHI","moves":[{"category":"_(","name":"Overhead Toss","input":"^W"},{"category":"_(","name":"Hanging Pummel","input":"^V"},{"category":"_(","name":"Riding Flattener","input":"_^^W / ^V"},{"category":"_@","name":"Shoi Shuriken","input":"_4_6_+_P"},{"category":"_@","name":"Bakudan","input":"_2_1_4_+_P"},{"category":"_@","name":"Ninpou Kaenrin","input":"_2_3_6_+_P"},{"category":"_@","name":"Hayate Geri","input":"^*_K"},{"category":"_@","name":"Move","input":"_6"}],"notes":["Finishing Moves","- Shuriken Explosion","- Bakudan Destroyer","- Ninpou Slicer"]},{"name":"IKKYU","moves":[{"category":"_(","name":"Blind Heaving Toss","input":"^W"},{"category":"_(","name":"Death Squeeze","input":"^V"},{"category":"_@","name":"Diverge Curse","input":"_2_1_4_+_P"},{"category":"_@","name":"Lotus Method","input":"_4_1_2_3_6"}],"notes":["Finishing Moves","- Diverge Explosion","- Lotus Destroyer"]},{"name":"KASUMI","moves":[{"category":"_(","name":"Overhead Toss","input":"^W"},{"category":"_(","name":"Release Frankensteiner","input":"_4 / _6_+^W"},{"category":"_(","name":"Mounted Stabs","input":"^V"},{"category":"_(","name":"Flipping Flattener","input":"_^^W / ^V"},{"category":"_@","name":"Kaen","input":"_1_6_+_P"},{"category":"_@","name":"Tsuru No Mai","input":"_4_1_2_3_6"},{"category":"_@","name":"Neko Kizu","input":"^*_P"},{"category":"_@","name":"Move","input":"_6"}],"notes":["Finishing Moves","- Tsuru Explosion","- Kaen Destroyer"]},{"name":"KINSHIRO","moves":[{"category":"_(","name":"Single Arm Toss","input":"^W"},{"category":"_(","name":"Hilt Bash","input":"^V"},{"category":"_(","name":"Impaler","input":"_4 / _6_+^V"},{"category":"_@","name":"Zanzouken","input":"_4_6_+_P"},{"category":"_@","name":"Sonikkuken","input":"_2_3_6_+_P"},{"category":"_@","name":"Hayabusa Giri","input":"^*_P"},{"category":"_@","name":"Move","input":"_6"}],"notes":["Finishing Moves","- Zanzouken Destroyer","- Sonikkuken Slicer"]},{"name":"SANPEI","moves":[{"category":"_(","name":"Rough Toss","input":"^W"},{"category":"_(","name":"Stinging Headbutt","input":"^V"},{"category":"_(","name":"Slamming Flattener","input":"_^^W / ^V"},{"category":"_@","name":"Ice Bomb","input":"_1_6_+_P"},{"category":"_@","name":"Noodling","input":"_4_3_+_P"},{"category":"_@","name":"Turtle Swim Clash","input":"_4_1_2_3_6"}],"notes":["Finishing Moves","- Noodling Explosion","- Turtle Swim Destroyer"]},{"name":"SYUGETHU","moves":[{"category":"_(","name":"Arc Toss","input":"^W"},{"category":"_(","name":"Blaster Impalement","input":"^V"},{"category":"_@","name":"Drill Energy","input":"_6_4_6_+_P"},{"category":"_@","name":"Crescent Break","input":"_2_3_6_+_P"},{"category":"_@","name":"Kamikaze Attack","input":"^*_P"},{"category":"_@","name":"Move","input":"_6"}],"notes":["Finishing Moves","- Drill Explosion","- Crescent Slicer"]},{"name":"SHISHIMARU","moves":[{"category":"_(","name":"Whipping Spin","input":"^W"},{"category":"_(","name":"Hair Squeeze","input":"^V"},{"category":"_@","name":"Kabuki Gust","input":"_4_6_+_P"},{"category":"_@","name":"Spider's Thread","input":"_2_4_+_P"},{"category":"_@","name":"Fire Hurricane","input":"_2_3_6_+_P"}],"notes":["Finishing Moves","- Kabuki Explosion","- Spider's Destroyer","- Fire Slicer"]},{"name":"BENKEI","moves":[{"category":"_(","name":"Brain Busting Spear","input":"^W"},{"category":"_(","name":"Nakiri Slice","input":"^V"},{"category":"_@","name":"Chrome Break","input":"^4_3_+_P"},{"category":"_@","name":"Chrome Buster","input":"^1_6_+_P"},{"category":"_@","name":"Iron Maiden","input":"^*_P"},{"category":"_@","name":"Move","input":"_6"}],"notes":["Finishing Moves","- Buster Explosion","- Break Destroyer"]},{"name":"GOEMON","moves":[{"category":"_(","name":"Overhead Toss","input":"^W"},{"category":"_(","name":"Jumping Piledriver","input":"_4 / _6_+^W"},{"category":"_(","name":"Roaring Tonfa","input":"^V"},{"category":"_@","name":"Hell's Fire","input":"_1_6_+_P"},{"category":"_@","name":"Storm Scorcher","input":"_6_4_6_+_P"},{"category":"_@","name":"Flash Tiger Strike","input":"_4_1_2_3_6"}],"notes":["Finishing Moves","- Hell's Explosion","- Flash Tiger Destroyer"]}],"controlAbbr":{"^E":"LP","^G":"HP","^H":"LK","^J":"HK","_S":"ST"},"systemControlMappings":{"snes":{"y":"^G","x":"^E","b":"^J","a":"^H"},"genesis":{"y":"^G","b":"^E","c":"^J","a":"^H"},"megadrive":{"y":"^G","b":"^E","c":"^J","a":"^H"},"32x":{"y":"^G","b":"^E","c":"^J","a":"^H"},"saturn":{"y":"^G","b":"^E","c":"^J","a":"^H"},"psx":{"y":"^G","x":"^E","b":"^J","a":"^H"},"ps2":{"y":"^G","x":"^E","b":"^J","a":"^H"},"gb":{"b":"^G","a":"^J"},"gbc":{"b":"^G","a":"^J"},"gamegear":{"a":"^G","b":"^J"},"sms":{"a":"^G","b":"^J"},"gba":{"b":"^G","a":"^E","y":"^J","x":"^H"},"ngpc":{"b":"^G","a":"^E","y":"^J","x":"^H"}}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "bloodwar",
+    "oedfight",
+    "oedfighta"
+  ],
+  "name": "Blood Warrior",
+  "year": 1994,
+  "manufacturer": "Kaneko",
+  "controls": {
+    "^E": "Weak Punch",
+    "^G": "Strong Punch",
+    "^H": "Weak Kick",
+    "^J": "Strong Kick",
+    "_S": "Start"
+  },
+  "controlGroups": {
+    "_P": [
+      "^E",
+      "^G"
+    ],
+    "_K": [
+      "^H",
+      "^J"
+    ]
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_@": "Special Moves",
+    "_`": "Finishing Moves"
+  },
+  "characters": [
+    {
+      "name": "ARASHI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Overhead Toss",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Hanging Pummel",
+          "input": "^V"
+        },
+        {
+          "category": "_(",
+          "name": "Riding Flattener",
+          "input": "_^^W / ^V"
+        },
+        {
+          "category": "_@",
+          "name": "Shoi Shuriken",
+          "input": "_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Bakudan",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Ninpou Kaenrin",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Hayate Geri",
+          "input": "^*_K"
+        },
+        {
+          "category": "_@",
+          "name": "Move",
+          "input": "_6"
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Shuriken Explosion",
+        "- Bakudan Destroyer",
+        "- Ninpou Slicer"
+      ]
+    },
+    {
+      "name": "IKKYU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Blind Heaving Toss",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Death Squeeze",
+          "input": "^V"
+        },
+        {
+          "category": "_@",
+          "name": "Diverge Curse",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Lotus Method",
+          "input": "_4_1_2_3_6"
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Diverge Explosion",
+        "- Lotus Destroyer"
+      ]
+    },
+    {
+      "name": "KASUMI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Overhead Toss",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Release Frankensteiner",
+          "input": "_4 / _6_+^W"
+        },
+        {
+          "category": "_(",
+          "name": "Mounted Stabs",
+          "input": "^V"
+        },
+        {
+          "category": "_(",
+          "name": "Flipping Flattener",
+          "input": "_^^W / ^V"
+        },
+        {
+          "category": "_@",
+          "name": "Kaen",
+          "input": "_1_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Tsuru No Mai",
+          "input": "_4_1_2_3_6"
+        },
+        {
+          "category": "_@",
+          "name": "Neko Kizu",
+          "input": "^*_P"
+        },
+        {
+          "category": "_@",
+          "name": "Move",
+          "input": "_6"
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Tsuru Explosion",
+        "- Kaen Destroyer"
+      ]
+    },
+    {
+      "name": "KINSHIRO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Single Arm Toss",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Hilt Bash",
+          "input": "^V"
+        },
+        {
+          "category": "_(",
+          "name": "Impaler",
+          "input": "_4 / _6_+^V"
+        },
+        {
+          "category": "_@",
+          "name": "Zanzouken",
+          "input": "_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Sonikkuken",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Hayabusa Giri",
+          "input": "^*_P"
+        },
+        {
+          "category": "_@",
+          "name": "Move",
+          "input": "_6"
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Zanzouken Destroyer",
+        "- Sonikkuken Slicer"
+      ]
+    },
+    {
+      "name": "SANPEI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Rough Toss",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Stinging Headbutt",
+          "input": "^V"
+        },
+        {
+          "category": "_(",
+          "name": "Slamming Flattener",
+          "input": "_^^W / ^V"
+        },
+        {
+          "category": "_@",
+          "name": "Ice Bomb",
+          "input": "_1_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Noodling",
+          "input": "_4_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Turtle Swim Clash",
+          "input": "_4_1_2_3_6"
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Noodling Explosion",
+        "- Turtle Swim Destroyer"
+      ]
+    },
+    {
+      "name": "SYUGETHU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Arc Toss",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Blaster Impalement",
+          "input": "^V"
+        },
+        {
+          "category": "_@",
+          "name": "Drill Energy",
+          "input": "_6_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Crescent Break",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Kamikaze Attack",
+          "input": "^*_P"
+        },
+        {
+          "category": "_@",
+          "name": "Move",
+          "input": "_6"
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Drill Explosion",
+        "- Crescent Slicer"
+      ]
+    },
+    {
+      "name": "SHISHIMARU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Whipping Spin",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Hair Squeeze",
+          "input": "^V"
+        },
+        {
+          "category": "_@",
+          "name": "Kabuki Gust",
+          "input": "_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Spider's Thread",
+          "input": "_2_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Fire Hurricane",
+          "input": "_2_3_6_+_P"
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Kabuki Explosion",
+        "- Spider's Destroyer",
+        "- Fire Slicer"
+      ]
+    },
+    {
+      "name": "BENKEI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Brain Busting Spear",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Nakiri Slice",
+          "input": "^V"
+        },
+        {
+          "category": "_@",
+          "name": "Chrome Break",
+          "input": "^4_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Chrome Buster",
+          "input": "^1_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Iron Maiden",
+          "input": "^*_P"
+        },
+        {
+          "category": "_@",
+          "name": "Move",
+          "input": "_6"
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Buster Explosion",
+        "- Break Destroyer"
+      ]
+    },
+    {
+      "name": "GOEMON",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Overhead Toss",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Jumping Piledriver",
+          "input": "_4 / _6_+^W"
+        },
+        {
+          "category": "_(",
+          "name": "Roaring Tonfa",
+          "input": "^V"
+        },
+        {
+          "category": "_@",
+          "name": "Hell's Fire",
+          "input": "_1_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Storm Scorcher",
+          "input": "_6_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Flash Tiger Strike",
+          "input": "_4_1_2_3_6"
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Hell's Explosion",
+        "- Flash Tiger Destroyer"
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "^E": "LP",
+    "^G": "HP",
+    "^H": "LK",
+    "^J": "HK",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "^G",
+      "x": "^E",
+      "b": "^J",
+      "a": "^H"
+    },
+    "genesis": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "megadrive": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "32x": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "saturn": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "psx": {
+      "y": "^G",
+      "x": "^E",
+      "b": "^J",
+      "a": "^H"
+    },
+    "ps2": {
+      "y": "^G",
+      "x": "^E",
+      "b": "^J",
+      "a": "^H"
+    },
+    "gb": {
+      "b": "^G",
+      "a": "^J"
+    },
+    "gbc": {
+      "b": "^G",
+      "a": "^J"
+    },
+    "gamegear": {
+      "a": "^G",
+      "b": "^J"
+    },
+    "sms": {
+      "a": "^G",
+      "b": "^J"
+    },
+    "gba": {
+      "b": "^G",
+      "a": "^E",
+      "y": "^J",
+      "x": "^H"
+    },
+    "ngpc": {
+      "b": "^G",
+      "a": "^E",
+      "y": "^J",
+      "x": "^H"
+    }
+  }
+}

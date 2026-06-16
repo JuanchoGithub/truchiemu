@@ -1,1 +1,1614 @@
-{"schemaVersion":2,"romIds":["xmcota","xmcotaa","xmcotaar1","xmcotaar2","xmcotab","xmcotah","xmcotahr1","xmcotaj","xmcotaj1","xmcotaj2","xmcotaj3","xmcotajr","xmcotar1","xmcotau"],"name":"X-Men: Children of the Atom","year":1994,"manufacturer":"Capcom","credits":"Fabricio Coroquer","controls":{"^E":"Weak Punch","^F":"Medium Punch","^G":"Strong Punch","^H":"Weak Kick","^I":"Medium Kick","^J":"Strong Kick","_S":"Start"},"controlGroups":{"_P":["^E","^F","^G"],"_K":["^H","^I","^J"]},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves","_#":"X-Ability","_*":"Hyper-X","_`":"Hyper-X"},"commonCommands":[{"category":"_)","name":"Dash","input":"_6_6 / ^W"},{"category":"_)","name":"Retreat","input":"_4_4 / _4_+^W"},{"category":"_)","name":"Super Jump","input":"_2_8 / ^T"},{"category":"_)","name":"Throw Escape (2LVs) when thrown","input":"_4 / _6_+_P / _K"},{"category":"_)","name":"Safety Roll (2LVs) knocked down","input":"_4 / _6_+^W"}],"characters":[{"name":"WOLVERINE","moves":[{"category":"_(","name":"Shoulder Mount Adamantium Hell","input":"_4 / _6_+^F"},{"category":"_(","name":"Ground Mount Adamantium Hell","input":"_4 / _6_+^G"},{"category":"_(","name":"Airborne Adamantium Hell","input":"_^_4 / _6_+^F / ^G"},{"category":"_)","name":"Taunt","input":"^E^I^I^G^F"},{"category":"_)","name":"Double Claw","input":"^F^F"},{"category":"_)","name":"Double Kick","input":"^I^I"},{"category":"_)","name":"Sliding Claw","input":"_3_+^G"},{"category":"_)","name":"Repeted Claw","input":"_^^*^F"},{"category":"_)","name":"Dart Kick","input":"_^_2_+^I"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_9"},{"category":"_@","name":"Tornado Claw","input":"_6_2_3_+_P (^*)"},{"category":"_@","name":"Drill Claw","input":"(_^)^E_+^H / ^F_+^I / ^G_+^J"},{"category":"_@","name":"Kabetsuki Drill Claw jump against the wall","input":"_4_+^E_+^H / ^F_+^I / ^G_+^J, _?_+_P / _K"},{"category":"_#","name":"Berserker Charge","input":"_2_1_4_+^U (speed up)"},{"category":"_#","name":"Healing Factor","input":"_2_1_4_+^T (restores life)"},{"category":"_*","name":"Berserker Barrage","input":"_2_3_6_+^W (^*)"},{"category":"_`","name":"Strikes","input":"^G"},{"category":"_`","name":"Knockdowns","input":"_2_+^I / _3_+^G"},{"category":"_`","name":"Launchers","input":"^J"}],"notes":["Combo Info","- Ground Chain-Combo                                                     Kick-to-Punch","- Jump Chain-Combo                                                       Kick-to-Punch","- Super Jump Chain-Combo                                                 Kick-to-Punch"]},{"name":"PSYLOCKE","moves":[{"category":"_(","name":"Vertical Launch","input":"_4 / _6_+^F"},{"category":"_(","name":"Rolling Slam","input":"_4 / _6_+^G"},{"category":"_(","name":"Roll Drop","input":"_^_4 / _6_+^F / ^G"},{"category":"_)","name":"Taunt","input":"_S"},{"category":"_)","name":"Flip Kick","input":"_6_+^I"},{"category":"_)","name":"Crossover Rolling Roundhouse","input":"^J_6"},{"category":"_)","name":"Delayed Rollig Roundhouse","input":"_4_+^J"},{"category":"_)","name":"2 Dan Jump","input":"_^_8"},{"category":"_@","name":"Psi-Blade","input":"(_^)_2_3_6_+_P"},{"category":"_@","name":"Psi-Spin","input":"(_^)_2_3_6_+_K"},{"category":"_@","name":"Psi-Spin Arc","input":"(_^)_2_3_6_+^H^I^J"},{"category":"_@","name":"Psi-Spin Curve","input":"(_^)_2_3_6_+^J^I^H"},{"category":"_#","name":"Ninjitsu","input":"_2_1_4_+_P / _K"},{"category":"_*","name":"Psi-Thrust","input":"(_^)_2_3_6_+^W, _?_+_P"},{"category":"_`","name":"Knockdowns","input":"_2_+^J"}],"notes":["Combo Info","- Ground Chain-Combo                                                     Zig-Zag","- Jump Chain-Combo                                                       Zig-Zag","- Super Jump Chain-Combo                                                 Zig-Zag","Strikes --","Launchers --"]},{"name":"CYCLOPS","moves":[{"category":"_(","name":"Optic Drill","input":"_4 / _6_+^F"},{"category":"_(","name":"Control","input":"_4 / _6"},{"category":"_(","name":"Ground Slam","input":"_4 / _6_+^G"},{"category":"_(","name":"Leg Throw","input":"_1 / _3_+^I / ^J"},{"category":"_(","name":"Downward Optic Drill","input":"_^_4 / _6_+^F / ^G"},{"category":"_)","name":"Quadruple Attacks","input":"^E^E^E^E / ^H^H^H^H"},{"category":"_)","name":"Double Kick","input":"^J^J"},{"category":"_)","name":"Alternative Attacks","input":"_^_2_+^F / ^G / ^H / ^I / ^J"},{"category":"_)","name":"2 Dan Jump","input":"_^_8"},{"category":"_@","name":"Optic Blast","input":"(_^)_2_3_6_+_P"},{"category":"_@","name":"Gene Splice","input":"_6_2_3_+_P (^*)"},{"category":"_@","name":"Rapid Punches","input":"_6_6_+^E_+^H, ^*_P"},{"category":"_@","name":"Running Neck Breaker Drop","input":"_6_6_+^G_+^J"},{"category":"_*","name":"Mega Optic Blast","input":"_2_3_6_+^W"},{"category":"_*","name":"Super Optic Blast","input":"(_^)_2_1_4_+_P"},{"category":"_*","name":"Control _?"},{"category":"_`","name":"Knockdowns","input":"_2_+^J"},{"category":"_`","name":"Launchers","input":"_2_+^F"}],"notes":["Combo Info","- Ground Chain-Combo                                                     Stronger","- Jump Chain-Combo                                                       Stronger","- Super Jump Chain-Combo                                                 Stronger","Strikes --"]},{"name":"COLOSSUS","moves":[{"category":"_(","name":"Pileriver","input":"_4 / _6_+^F"},{"category":"_(","name":"Back Toss","input":"_4 / _6_+^G"},{"category":"_(","name":"Air Piledriver","input":"_^_4 / _6_+^F / ^G"},{"category":"_)","name":"Combination Kick","input":"^E^I^G"},{"category":"_)","name":"Back Punch","input":"_6_+^G"},{"category":"_)","name":"Downward Punch","input":"_^_2_+^G"},{"category":"_)","name":"Ground Grab opponent knocked down","input":"_2_+^F / ^G"},{"category":"_)","name":"Throw","input":"_P"},{"category":"_@","name":"Giant Swing","input":"_2_3_6_+_P, _X_x"},{"category":"_@","name":"Power Tackle: Forward","input":"_2_3_6_+^H"},{"category":"_@","name":"Power Tackle: Diagonal","input":"_2_3_6_+^I / ^J"},{"category":"_#","name":"Super Armor","input":"_2_1_4_+^U (Hyper Armor)"},{"category":"_*","name":"Super Dive","input":"(_^)_2_3_6_+^W, _2_+_P"},{"category":"_`","name":"Strikes","input":"_2_+^F / _6_+^G"},{"category":"_`","name":"Knockdowns","input":"_2_+^J"},{"category":"_`","name":"Launchers","input":"^J"}],"notes":["Combo Info","- Ground Chain-Combo                                                     Weak Start","- Jump Chain-Combo                                                       Weak Start","- Super Jump Chain-Combo                                                 Weak Start"]},{"name":"STORM","moves":[{"category":"_(","name":"Grab and Shock","input":"_4 / _6_+^F"},{"category":"_(","name":"Grab and Whirlwind","input":"_4 / _6_+^G"},{"category":"_(","name":"Air Grab and Shock","input":"_^_4 / _6_+^F"},{"category":"_(","name":"Air Grab and Whirlwind","input":"_^_4 / _6_+^G"},{"category":"_)","name":"Lightning Ball","input":"_^ _?_+^F"},{"category":"_)","name":"Float","input":"_^^8"},{"category":"_)","name":"Air Dash","input":"_^ _?_+^W / ^V"},{"category":"_@","name":"Whirlwind","input":"(_^)_2_3_6_+_P"},{"category":"_@","name":"Lightning Attack","input":"(_^)^E_+^H / ^F_+^I / ^G_+^J (x2)"},{"category":"_#","name":"Flight","input":"(_^)_2_1_4_+^U"},{"category":"_#","name":"Cancel","input":"_2_1_4_+^U"},{"category":"_#","name":"Sucked In","input":"(_^)_2_1_4_+^T"},{"category":"_#","name":"Blown Away","input":"(_^)_2_3_6_+^T"},{"category":"_*","name":"Lightning Storm","input":"(_^)_2_3_6_+^W"},{"category":"_*","name":"Ice Storm","input":"_2_3_6_+_S (^*)"},{"category":"_`","name":"Knockdowns","input":"_2_+^J"},{"category":"_`","name":"Launchers","input":"^J"}],"notes":["Combo Info","- Ground Chain-Combo                                                     Punch-to-Kick","- Jump Chain-Combo                                                       Punch-to-Kick","- Super Jump Chain-Combo                                                 Zig-Zag","Strikes --"]},{"name":"ICEMAN","moves":[{"category":"_(","name":"Grab and Freeze","input":"_4 / _6_+^F"},{"category":"_(","name":"Ground Slam","input":"_4 / _6_+^G"},{"category":"_(","name":"Air Grab and Freeze","input":"_^_4 / _6_+^F / ^G"},{"category":"_)","name":"Ice Boulder","input":"_^_2_+^G"},{"category":"_)","name":"Downward Kick","input":"_^_2_+^J"},{"category":"_@","name":"Ice Beam","input":"(_^)_2_3_6_+_P"},{"category":"_@","name":"Ice Avalanche","input":"(_^)^E_+^H / ^F_+^I / ^G_+^J"},{"category":"_#","name":"Ice Fist","input":"_2_1_4_+^U (damage increased for Punches)"},{"category":"_*","name":"Artic Attack","input":"(_^)_2_3_6_+^W"},{"category":"_`","name":"Strikes","input":"^I / ^J"},{"category":"_`","name":"Knockdowns","input":"_2_+^G"},{"category":"_`","name":"Launchers","input":"_2_+^J"}],"notes":["Combo Info","- Ground Chain-Combo                                                     Punch-to-Kick","- Jump Chain-Combo                                                       Punch-to-Kick","- Super Jump Chain-Combo                                                 Zig-Zag"]},{"name":"OMEGA RED","moves":[{"category":"_(","name":"Coil Toss","input":"_4 / _6_+^F"},{"category":"_(","name":"Powerbomb","input":"_4 / _6_+^G"},{"category":"_(","name":"Air Powerbomb","input":"_^_4 / _6_+^F / ^G"},{"category":"_)","name":"Taunt","input":"^I^E_2^H^F"},{"category":"_)","name":"Ground Coil Strike","input":"_1 / _3_+^J"},{"category":"_)","name":"Air Dash","input":"_^_6_6 / ^W"},{"category":"_)","name":"Cancel","input":"_4"},{"category":"_@","name":"Carbonadium Coil","input":"_2_3_6_+_P"},{"category":"_@","name":"Coil Retract","input":"_P"},{"category":"_@","name":"Flail Smash _?_+_P (x2)"},{"category":"_@","name":"Death Factor","input":"^*_P"},{"category":"_@","name":"Energy Drain","input":"^*_K"},{"category":"_@","name":"Air Carbonadium Coil","input":"_^_2_3_6_+_P / _K"},{"category":"_@","name":"Coil Retract","input":"_P"},{"category":"_@","name":"Flail Smash _?_+_P /","input":"_K (x2)"},{"category":"_@","name":"Death Factor","input":"^*_P"},{"category":"_@","name":"Energy Drain","input":"^*_K"},{"category":"_@","name":"Omega Strike","input":"_2_3_6_+_K"},{"category":"_@","name":"Strike Recall","input":"_4_+_K"},{"category":"_@","name":"Strike Cancel","input":"_2_+_K"},{"category":"_*","name":"Omega Destroyer","input":"_2_3_6_+^W"},{"category":"_`","name":"Strikes","input":"^I / ^J / _2_+^G"},{"category":"_`","name":"Knockdowns","input":"_2_+^I"},{"category":"_`","name":"Launchers","input":"^F"}],"notes":["Combo Info","- Ground Chain-Combo                                                     Punch-to-Kick","- Jump Chain-Combo                                                       Punch-to-Kick","- Super Jump Chain-Combo                                                 Zig-Zag"]},{"name":"SILVER SAMURAI","moves":[{"category":"_(","name":"Back Toss","input":"_4 / _6_+^F"},{"category":"_(","name":"Sword Stab","input":"_4 / _6_+^G"},{"category":"_(","name":"Air Back Toss","input":"_^_4 / _6_+^F / ^G"},{"category":"_)","name":"Endless Slashes","input":"^E^E^E..."},{"category":"_)","name":"Low Slash","input":"^G^G"},{"category":"_@","name":"Shuriken","input":"(_^)_2_3_6_+_P"},{"category":"_@","name":"Move","input":"_2 / _8"},{"category":"_@","name":"Hyakuretsu Toh","input":"_6_2_3_+_P (^*)"},{"category":"_@","name":"Fumikomi Hyakuretsu Tou","input":"_6_6"},{"category":"_@","name":"Hyakuretsu Toh","input":"_6_+^*_P"},{"category":"_@","name":"Fumikomi Hyakuretsu Tou","input":"_6_6"},{"category":"_#","name":"Blink","input":"(_^)_2_3_6_+_K"},{"category":"_#","name":"Touki \"Kaminari\"","input":"_2_1_4_+^E"},{"category":"_#","name":"Touki \"Koori\"","input":"_2_1_4_+^F"},{"category":"_#","name":"Touki \"Honoo\"","input":"_2_1_4_+^G"},{"category":"_#","name":"Bushin","input":"_2_1_4_+^V"},{"category":"_*","name":"Raimei Ken","input":"_2_3_6_+^W"},{"category":"_*","name":"Chou Shuriken","input":"_2_1_4_+^W"},{"category":"_*","name":"Move","input":"_2 / _8"},{"category":"_`","name":"Strikes","input":"^J"},{"category":"_`","name":"Knockdowns","input":"_2_+^J"},{"category":"_`","name":"Launchers","input":"_2_+^G"}],"notes":["Combo Info","- Ground Chain-Combo                                                     Weak Start","- Jump Chain-Combo                                                       Weak Start","- Super Jump Chain-Combo                                                 Weak Start"]},{"name":"SENTINEL","moves":[{"category":"_(","name":"Grab and Missile","input":"_4 / _6_+^F"},{"category":"_(","name":"Grab and Rocket Punch","input":"_4 / _6_+^G"},{"category":"_(","name":"Air Grab and Missile","input":"_^_4 / _6_+^F"},{"category":"_(","name":"Air Grab and Rocket Punch","input":"_^_4 / _6_+^G"},{"category":"_)","name":"Hard Punch","input":"_^_2_+^F"},{"category":"_)","name":"Helicopter Kick","input":"_^_2_+^J"},{"category":"_)","name":"Ground Grab opponent knocked down","input":"_2_+^F / ^G"},{"category":"_)","name":"Grab and Missile","input":"_P"},{"category":"_@","name":"Rocket Punch: Downwards","input":"(_^)_2_3_6_+^E"},{"category":"_@","name":"Retract","input":"_4_+_P"},{"category":"_@","name":"Rocket Punch: Forward","input":"(_^)_2_3_6_+^F"},{"category":"_@","name":"Retract","input":"_4_+_P"},{"category":"_@","name":"Rocket Punch: Upwards","input":"(_^)_2_3_6_+^G"},{"category":"_@","name":"Retract","input":"_4_+_P"},{"category":"_@","name":"Sentinel Force: Control","input":"_2_3_6_+^H"},{"category":"_@","name":"Control","input":"^2 / ^8"},{"category":"_@","name":"Sentinel Force: Straight","input":"_2_3_6_+^I"},{"category":"_@","name":"Sentinel Force: Carpet Bomb","input":"_2_3_6_+^J (_O)"},{"category":"_#","name":"Hover","input":"_2_1_4_+^U"},{"category":"_#","name":"Cancel","input":"_2_1_4_+^U"},{"category":"_*","name":"Plasma Storm","input":"_2_3_6_+^W (^*)"},{"category":"_`","name":"Strikes","input":"^G"},{"category":"_`","name":"Knockdowns","input":"_2_+^J"},{"category":"_`","name":"Launchers","input":"^I"}],"notes":["Combo Info","- Ground Chain-Combo                                                     Weak Start","- Jump Chain-Combo                                                       Kick-to-Punch","- Super Jump Chain-Combo                                                 Kick-to-Punch"]},{"name":"SPIRAL","moves":[{"category":"_(","name":"Grab and Toss","input":"_4 / _6_+^F"},{"category":"_(","name":"Grab and Punches","input":"_4 / _6_+^G"},{"category":"_(","name":"Leg Toss","input":"_4 / _6_+^I / ^J"},{"category":"_(","name":"Air Grab and Toss","input":"_^_4 / _6_+^F / ^G"},{"category":"_(","name":"Air Leg Toss","input":"_^_4 / _6_+^I / ^J"},{"category":"_)","name":"Triple Arm Strike","input":"_^_2_+^F"},{"category":"_)","name":"Downward Punch","input":"_^_2_+^G"},{"category":"_@","name":"Dancing Sword","input":"(_^)_6_3_2_1_4_+^W"},{"category":"_@","name":"Sword Throw","input":"_P"},{"category":"_@","name":"Tsurugi Tobashi: Down","input":"_^_2_3_6_+^E"},{"category":"_@","name":"Tsurugi Tobashi: Zen","input":"(_^)_2_3_6_+^F"},{"category":"_@","name":"Tsurugi Tobashi: Ue","input":"(_^)_2_3_6_+^G"},{"category":"_@","name":"Tsurugi Tobashi: Explosion","input":"(_^)_2_3_6_+^H"},{"category":"_@","name":"Tsurugi Tobashi: Senkai","input":"(_^)_2_3_6_+^I"},{"category":"_@","name":"Tsurugi Tobashi: 6 Houkou","input":"(_^)_2_3_6_+^J"},{"category":"_@","name":"Six-hand Grapple","input":"_2_8_+_P"},{"category":"_@","name":"Kyuukouka Dance","input":"_^_2_1_4_+^G"},{"category":"_#","name":"Switch Dance","input":"(_^)_2_1_4_+^E"},{"category":"_#","name":"Teleport Dance","input":"(_^)_2_1_4_+^F"},{"category":"_#","name":"Change Position","input":"_P / _K"},{"category":"_#","name":"Power Dance","input":"(_^)_2_1_4_+^H (damage increased)"},{"category":"_#","name":"Speed Dance","input":"(_^)_2_1_4_+^I"},{"category":"_#","name":"Invisible Dance","input":"(_^)_2_1_4_+^J"},{"category":"_*","name":"Metamorphose","input":"(_^)_2_3_6_+^W"},{"category":"_*","name":"Grab","input":"(_^) close _P"},{"category":"_`","name":"Strikes","input":"_2_+^G"},{"category":"_`","name":"Launchers","input":"^I"}],"notes":["Combo Info","- Ground Chain-Combo                                                     Kick-to-Punch","- Jump Chain-Combo                                                       Kick-to-Punch","- Super Jump Chain-Combo                                                 Zig-Zag","Knockdowns --"]},{"name":"AKUMA (GOUKI)","moves":[{"category":"_(","name":"Seoi Nage","input":"_4 / _6_+^F"},{"category":"_(","name":"Tomoe Nage","input":"_4 / _6_+^G"},{"category":"_(","name":"Tsukami Hiza Geri","input":"_4 / _6_+^I"},{"category":"_(","name":"Jigoku Guruma","input":"_4 / _6_+^J"},{"category":"_(","name":"Izuna Drop","input":"_^_4 / _6_+^F / ^G"},{"category":"_@","name":"Gou Hadou Ken","input":"_2_3_6_+_P"},{"category":"_@","name":"Zankuu Hadou Ken","input":"_^_2_3_6_+_P"},{"category":"_@","name":"Gou Shouryuu Ken","input":"_6_2_3_+_P"},{"category":"_@","name":"Tatsumaki Zankuu Kyaku","input":"(_^)_2_1_4_+_K"},{"category":"_@","name":"Tenma Kuujin Kyaku","input":"_^_2_3_6_+_K"},{"category":"_#","name":"Ultimate Throw","input":"_2_1_4_+_P (reverse jump/high/Specials)"},{"category":"_#","name":"Ashura Senkuu: Zenpou","input":"_6_2_3_+^U / ^T"},{"category":"_#","name":"Ashura Senkuu: Kouhou","input":"_4_2_1_+^U / ^T"},{"category":"_*","name":"Messatsu Gou Shouryuu","input":"_2_3_6_2_3_+_P"},{"category":"_*","name":"Messatsu Gou Hadou","input":"_2_3_6_2_3_6_+_P"},{"category":"_`","name":"Knockdowns","input":"_2_+^J"}],"notes":["Combo Info","- Ground Chain-Combo                                                     Zig-Zag","- Jump Chain-Combo                                                       Zig-Zag","- Super Jump Chain-Combo                                                 Zig-Zag","Strikes --","Launchers --"]},{"name":"JUGGERNAUT","moves":[{"category":"_(","name":"Headbutts and Uppercut","input":"_4 / _6_+^F"},{"category":"_(","name":"Cackling Slam","input":"_4 / _6_+^G"},{"category":"_)","name":"Double Punch","input":"^E^E"},{"category":"_)","name":"Juggernaut Body Press","input":"_^_2_+^G"},{"category":"_)","name":"Ground Grab opponent knocked down","input":"_2_+^F / ^G"},{"category":"_)","name":"Headbutts and Uppercut","input":"^F"},{"category":"_)","name":"Cackling Slam","input":"^G"},{"category":"_)","name":"Taunt","input":"_4_2_1_+_P (Super Bar below to 2LVs)"},{"category":"_@","name":"Double Fist","input":"_2_3_6_+_P"},{"category":"_@","name":"Earthquake Punch","input":"_6_3_2_+_P"},{"category":"_@","name":"Pick Up Iron Bar close to iron bar","input":"_2_2_+_P"},{"category":"_@","name":"Throw Iron Bar","input":"_2_2_+_K"},{"category":"_#","name":"Cyttorak Power-Up","input":"_2_1_4_+_P (damage increased)"},{"category":"_*","name":"Juggernaut Headcrush","input":"_4_1_2_3_6_+_P"},{"category":"_`","name":"Knockdowns","input":"_2_+^J"},{"category":"_`","name":"Launchers","input":"_2_+^G"}],"notes":["Combo Info","- Ground Chain-Combo                                                     Kick-to-Punch","- Jump Chain-Combo                                                       Kick-to-Punch","- Super Jump Chain-Combo                                                 Kick-to-Punch","Strikes --"]},{"name":"MAGNETO","moves":[{"category":"_(","name":"Scrap Hold","input":"_4 / _6_+^F"},{"category":"_(","name":"E-M Repulse","input":"_4 / _6_+^G"},{"category":"_(","name":"Air Scrap Hold","input":"_^_4 / _6_+^F"},{"category":"_(","name":"Air E-M Repulse","input":"_^_4 / _6_+^G"},{"category":"_)","name":"E-M Disruptor","input":"^G"},{"category":"_)","name":"Air E-M Disruptor","input":"_^^F"},{"category":"_)","name":"Magnetic Blast","input":"_^^G"},{"category":"_)","name":"Taunt","input":"_2_3_6_+^J"},{"category":"_@","name":"Hyper Gravity","input":"_2_1_4_+^H"},{"category":"_@","name":"E-M Shock","input":"_2_3_6_+^F"},{"category":"_@","name":"Magnetic Tempest","input":"_2_3_6_+^E (on Magneto's stage)"},{"category":"_@","name":"Release","input":"_2_3_6_+^I"},{"category":"_#","name":"Flight","input":"_2_1_4_+^E"},{"category":"_#","name":"Force Field","input":"_2_3_6_+^G (don't takes damage)"},{"category":"_*","name":"Magnetic Shockwave","input":"_2_3_6_+^H"},{"category":"_`","name":"Strikes","input":"^G"},{"category":"_`","name":"Knockdowns","input":"_2_+^J"},{"category":"_`","name":"Launchers","input":"_2_+^G"}],"notes":["Combo Info","- Ground Chain-Combo                                                     Zig-Zag","- Jump Chain-Combo                                                       Zig-Zag","- Super Jump Chain-Combo                                                 Zig-Zag"]}],"cheatNotes":["_` Fight Akuma on Stage 6","- Don't lose any round","- Get a \"First Attack\" in 6 rounds","- Hit with a Hyper-X on 6 rounds","- Needs to do a combo hit of:","- Colossus           03 hits","- Cyclops            10 hits","- Iceman             10 hits","- Omega Red          05 hits","- Psylocke           05 hits","- Sentinel           03 hits","- Silver Samurai     10 hits","- Spiral             10 hits","- Storm              10 hits","- Wolverine          05 hits"],"controlAbbr":{"^E":"LP","^F":"MP","^G":"HP","^H":"LK","^I":"MK","^J":"HK","_S":"ST"},"systemControlMappings":{"snes":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"genesis":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"megadrive":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"32x":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"saturn":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"psx":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"ps2":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"gba":{"b":"^E","a":"^F","l1":"^G","y":"^H","x":"^I","r1":"^J"},"pce":{"b":"^E","a":"^H"},"pce6":{"b":"^E","y":"^F","l1":"^G","a":"^H","x":"^I","r1":"^J"},"3do":{"b":"^E","a":"^F","l1":"^G","y":"^H","x":"^I","r1":"^J"},"n64":{"b":"^E","cDown":"^F","cRight":"^G","a":"^H","cLeft":"^I","cUp":"^J"},"dreamcast":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"gb":{"b":"^E","a":"^H"},"gbc":{"b":"^E","a":"^H"},"gamegear":{"a":"^E","b":"^H"},"sms":{"a":"^E","b":"^H"},"ngpc":{"b":"^E","y":"^F","l1":"^G","a":"^H","x":"^I","r1":"^J"},"lynx":{"b":"^E","a":"^F","l1":"^G","y":"^H","x":"^I","r1":"^J"},"wswan":{"b":"^E","a":"^H"}}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "xmcota",
+    "xmcotaa",
+    "xmcotaar1",
+    "xmcotaar2",
+    "xmcotab",
+    "xmcotah",
+    "xmcotahr1",
+    "xmcotaj",
+    "xmcotaj1",
+    "xmcotaj2",
+    "xmcotaj3",
+    "xmcotajr",
+    "xmcotar1",
+    "xmcotau"
+  ],
+  "name": "X-Men: Children of the Atom",
+  "year": 1994,
+  "manufacturer": "Capcom",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "^E": "Weak Punch",
+    "^F": "Medium Punch",
+    "^G": "Strong Punch",
+    "^H": "Weak Kick",
+    "^I": "Medium Kick",
+    "^J": "Strong Kick",
+    "_S": "Start"
+  },
+  "controlGroups": {
+    "_P": [
+      "^E",
+      "^F",
+      "^G"
+    ],
+    "_K": [
+      "^H",
+      "^I",
+      "^J"
+    ]
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_#": "X-Ability",
+    "_*": "Hyper-X",
+    "_`": "Hyper-X"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "_6_6 / ^W"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4 / _4_+^W"
+    },
+    {
+      "category": "_)",
+      "name": "Super Jump",
+      "input": "_2_8 / ^T"
+    },
+    {
+      "category": "_)",
+      "name": "Throw Escape (2LVs) when thrown",
+      "input": "_4 / _6_+_P / _K"
+    },
+    {
+      "category": "_)",
+      "name": "Safety Roll (2LVs) knocked down",
+      "input": "_4 / _6_+^W"
+    }
+  ],
+  "characters": [
+    {
+      "name": "WOLVERINE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Shoulder Mount Adamantium Hell",
+          "input": "_4 / _6_+^F"
+        },
+        {
+          "category": "_(",
+          "name": "Ground Mount Adamantium Hell",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Airborne Adamantium Hell",
+          "input": "_^_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_)",
+          "name": "Taunt",
+          "input": "^E^I^I^G^F"
+        },
+        {
+          "category": "_)",
+          "name": "Double Claw",
+          "input": "^F^F"
+        },
+        {
+          "category": "_)",
+          "name": "Double Kick",
+          "input": "^I^I"
+        },
+        {
+          "category": "_)",
+          "name": "Sliding Claw",
+          "input": "_3_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Repeted Claw",
+          "input": "_^^*^F"
+        },
+        {
+          "category": "_)",
+          "name": "Dart Kick",
+          "input": "_^_2_+^I"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_9"
+        },
+        {
+          "category": "_@",
+          "name": "Tornado Claw",
+          "input": "_6_2_3_+_P (^*)"
+        },
+        {
+          "category": "_@",
+          "name": "Drill Claw",
+          "input": "(_^)^E_+^H / ^F_+^I / ^G_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Kabetsuki Drill Claw jump against the wall",
+          "input": "_4_+^E_+^H / ^F_+^I / ^G_+^J, _?_+_P / _K"
+        },
+        {
+          "category": "_#",
+          "name": "Berserker Charge",
+          "input": "_2_1_4_+^U (speed up)"
+        },
+        {
+          "category": "_#",
+          "name": "Healing Factor",
+          "input": "_2_1_4_+^T (restores life)"
+        },
+        {
+          "category": "_*",
+          "name": "Berserker Barrage",
+          "input": "_2_3_6_+^W (^*)"
+        },
+        {
+          "category": "_`",
+          "name": "Strikes",
+          "input": "^G"
+        },
+        {
+          "category": "_`",
+          "name": "Knockdowns",
+          "input": "_2_+^I / _3_+^G"
+        },
+        {
+          "category": "_`",
+          "name": "Launchers",
+          "input": "^J"
+        }
+      ],
+      "notes": [
+        "Combo Info",
+        "- Ground Chain-Combo                                                     Kick-to-Punch",
+        "- Jump Chain-Combo                                                       Kick-to-Punch",
+        "- Super Jump Chain-Combo                                                 Kick-to-Punch"
+      ]
+    },
+    {
+      "name": "PSYLOCKE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Vertical Launch",
+          "input": "_4 / _6_+^F"
+        },
+        {
+          "category": "_(",
+          "name": "Rolling Slam",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Roll Drop",
+          "input": "_^_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_)",
+          "name": "Taunt",
+          "input": "_S"
+        },
+        {
+          "category": "_)",
+          "name": "Flip Kick",
+          "input": "_6_+^I"
+        },
+        {
+          "category": "_)",
+          "name": "Crossover Rolling Roundhouse",
+          "input": "^J_6"
+        },
+        {
+          "category": "_)",
+          "name": "Delayed Rollig Roundhouse",
+          "input": "_4_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "2 Dan Jump",
+          "input": "_^_8"
+        },
+        {
+          "category": "_@",
+          "name": "Psi-Blade",
+          "input": "(_^)_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Psi-Spin",
+          "input": "(_^)_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Psi-Spin Arc",
+          "input": "(_^)_2_3_6_+^H^I^J"
+        },
+        {
+          "category": "_@",
+          "name": "Psi-Spin Curve",
+          "input": "(_^)_2_3_6_+^J^I^H"
+        },
+        {
+          "category": "_#",
+          "name": "Ninjitsu",
+          "input": "_2_1_4_+_P / _K"
+        },
+        {
+          "category": "_*",
+          "name": "Psi-Thrust",
+          "input": "(_^)_2_3_6_+^W, _?_+_P"
+        },
+        {
+          "category": "_`",
+          "name": "Knockdowns",
+          "input": "_2_+^J"
+        }
+      ],
+      "notes": [
+        "Combo Info",
+        "- Ground Chain-Combo                                                     Zig-Zag",
+        "- Jump Chain-Combo                                                       Zig-Zag",
+        "- Super Jump Chain-Combo                                                 Zig-Zag",
+        "Strikes --",
+        "Launchers --"
+      ]
+    },
+    {
+      "name": "CYCLOPS",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Optic Drill",
+          "input": "_4 / _6_+^F"
+        },
+        {
+          "category": "_(",
+          "name": "Control",
+          "input": "_4 / _6"
+        },
+        {
+          "category": "_(",
+          "name": "Ground Slam",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Leg Throw",
+          "input": "_1 / _3_+^I / ^J"
+        },
+        {
+          "category": "_(",
+          "name": "Downward Optic Drill",
+          "input": "_^_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_)",
+          "name": "Quadruple Attacks",
+          "input": "^E^E^E^E / ^H^H^H^H"
+        },
+        {
+          "category": "_)",
+          "name": "Double Kick",
+          "input": "^J^J"
+        },
+        {
+          "category": "_)",
+          "name": "Alternative Attacks",
+          "input": "_^_2_+^F / ^G / ^H / ^I / ^J"
+        },
+        {
+          "category": "_)",
+          "name": "2 Dan Jump",
+          "input": "_^_8"
+        },
+        {
+          "category": "_@",
+          "name": "Optic Blast",
+          "input": "(_^)_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Gene Splice",
+          "input": "_6_2_3_+_P (^*)"
+        },
+        {
+          "category": "_@",
+          "name": "Rapid Punches",
+          "input": "_6_6_+^E_+^H, ^*_P"
+        },
+        {
+          "category": "_@",
+          "name": "Running Neck Breaker Drop",
+          "input": "_6_6_+^G_+^J"
+        },
+        {
+          "category": "_*",
+          "name": "Mega Optic Blast",
+          "input": "_2_3_6_+^W"
+        },
+        {
+          "category": "_*",
+          "name": "Super Optic Blast",
+          "input": "(_^)_2_1_4_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Control _?"
+        },
+        {
+          "category": "_`",
+          "name": "Knockdowns",
+          "input": "_2_+^J"
+        },
+        {
+          "category": "_`",
+          "name": "Launchers",
+          "input": "_2_+^F"
+        }
+      ],
+      "notes": [
+        "Combo Info",
+        "- Ground Chain-Combo                                                     Stronger",
+        "- Jump Chain-Combo                                                       Stronger",
+        "- Super Jump Chain-Combo                                                 Stronger",
+        "Strikes --"
+      ]
+    },
+    {
+      "name": "COLOSSUS",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Pileriver",
+          "input": "_4 / _6_+^F"
+        },
+        {
+          "category": "_(",
+          "name": "Back Toss",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Air Piledriver",
+          "input": "_^_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_)",
+          "name": "Combination Kick",
+          "input": "^E^I^G"
+        },
+        {
+          "category": "_)",
+          "name": "Back Punch",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Downward Punch",
+          "input": "_^_2_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Ground Grab opponent knocked down",
+          "input": "_2_+^F / ^G"
+        },
+        {
+          "category": "_)",
+          "name": "Throw",
+          "input": "_P"
+        },
+        {
+          "category": "_@",
+          "name": "Giant Swing",
+          "input": "_2_3_6_+_P, _X_x"
+        },
+        {
+          "category": "_@",
+          "name": "Power Tackle: Forward",
+          "input": "_2_3_6_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Power Tackle: Diagonal",
+          "input": "_2_3_6_+^I / ^J"
+        },
+        {
+          "category": "_#",
+          "name": "Super Armor",
+          "input": "_2_1_4_+^U (Hyper Armor)"
+        },
+        {
+          "category": "_*",
+          "name": "Super Dive",
+          "input": "(_^)_2_3_6_+^W, _2_+_P"
+        },
+        {
+          "category": "_`",
+          "name": "Strikes",
+          "input": "_2_+^F / _6_+^G"
+        },
+        {
+          "category": "_`",
+          "name": "Knockdowns",
+          "input": "_2_+^J"
+        },
+        {
+          "category": "_`",
+          "name": "Launchers",
+          "input": "^J"
+        }
+      ],
+      "notes": [
+        "Combo Info",
+        "- Ground Chain-Combo                                                     Weak Start",
+        "- Jump Chain-Combo                                                       Weak Start",
+        "- Super Jump Chain-Combo                                                 Weak Start"
+      ]
+    },
+    {
+      "name": "STORM",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab and Shock",
+          "input": "_4 / _6_+^F"
+        },
+        {
+          "category": "_(",
+          "name": "Grab and Whirlwind",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Air Grab and Shock",
+          "input": "_^_4 / _6_+^F"
+        },
+        {
+          "category": "_(",
+          "name": "Air Grab and Whirlwind",
+          "input": "_^_4 / _6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Lightning Ball",
+          "input": "_^ _?_+^F"
+        },
+        {
+          "category": "_)",
+          "name": "Float",
+          "input": "_^^8"
+        },
+        {
+          "category": "_)",
+          "name": "Air Dash",
+          "input": "_^ _?_+^W / ^V"
+        },
+        {
+          "category": "_@",
+          "name": "Whirlwind",
+          "input": "(_^)_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Lightning Attack",
+          "input": "(_^)^E_+^H / ^F_+^I / ^G_+^J (x2)"
+        },
+        {
+          "category": "_#",
+          "name": "Flight",
+          "input": "(_^)_2_1_4_+^U"
+        },
+        {
+          "category": "_#",
+          "name": "Cancel",
+          "input": "_2_1_4_+^U"
+        },
+        {
+          "category": "_#",
+          "name": "Sucked In",
+          "input": "(_^)_2_1_4_+^T"
+        },
+        {
+          "category": "_#",
+          "name": "Blown Away",
+          "input": "(_^)_2_3_6_+^T"
+        },
+        {
+          "category": "_*",
+          "name": "Lightning Storm",
+          "input": "(_^)_2_3_6_+^W"
+        },
+        {
+          "category": "_*",
+          "name": "Ice Storm",
+          "input": "_2_3_6_+_S (^*)"
+        },
+        {
+          "category": "_`",
+          "name": "Knockdowns",
+          "input": "_2_+^J"
+        },
+        {
+          "category": "_`",
+          "name": "Launchers",
+          "input": "^J"
+        }
+      ],
+      "notes": [
+        "Combo Info",
+        "- Ground Chain-Combo                                                     Punch-to-Kick",
+        "- Jump Chain-Combo                                                       Punch-to-Kick",
+        "- Super Jump Chain-Combo                                                 Zig-Zag",
+        "Strikes --"
+      ]
+    },
+    {
+      "name": "ICEMAN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab and Freeze",
+          "input": "_4 / _6_+^F"
+        },
+        {
+          "category": "_(",
+          "name": "Ground Slam",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Air Grab and Freeze",
+          "input": "_^_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_)",
+          "name": "Ice Boulder",
+          "input": "_^_2_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Downward Kick",
+          "input": "_^_2_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Ice Beam",
+          "input": "(_^)_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Ice Avalanche",
+          "input": "(_^)^E_+^H / ^F_+^I / ^G_+^J"
+        },
+        {
+          "category": "_#",
+          "name": "Ice Fist",
+          "input": "_2_1_4_+^U (damage increased for Punches)"
+        },
+        {
+          "category": "_*",
+          "name": "Artic Attack",
+          "input": "(_^)_2_3_6_+^W"
+        },
+        {
+          "category": "_`",
+          "name": "Strikes",
+          "input": "^I / ^J"
+        },
+        {
+          "category": "_`",
+          "name": "Knockdowns",
+          "input": "_2_+^G"
+        },
+        {
+          "category": "_`",
+          "name": "Launchers",
+          "input": "_2_+^J"
+        }
+      ],
+      "notes": [
+        "Combo Info",
+        "- Ground Chain-Combo                                                     Punch-to-Kick",
+        "- Jump Chain-Combo                                                       Punch-to-Kick",
+        "- Super Jump Chain-Combo                                                 Zig-Zag"
+      ]
+    },
+    {
+      "name": "OMEGA RED",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Coil Toss",
+          "input": "_4 / _6_+^F"
+        },
+        {
+          "category": "_(",
+          "name": "Powerbomb",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Air Powerbomb",
+          "input": "_^_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_)",
+          "name": "Taunt",
+          "input": "^I^E_2^H^F"
+        },
+        {
+          "category": "_)",
+          "name": "Ground Coil Strike",
+          "input": "_1 / _3_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Air Dash",
+          "input": "_^_6_6 / ^W"
+        },
+        {
+          "category": "_)",
+          "name": "Cancel",
+          "input": "_4"
+        },
+        {
+          "category": "_@",
+          "name": "Carbonadium Coil",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Coil Retract",
+          "input": "_P"
+        },
+        {
+          "category": "_@",
+          "name": "Flail Smash _?_+_P (x2)"
+        },
+        {
+          "category": "_@",
+          "name": "Death Factor",
+          "input": "^*_P"
+        },
+        {
+          "category": "_@",
+          "name": "Energy Drain",
+          "input": "^*_K"
+        },
+        {
+          "category": "_@",
+          "name": "Air Carbonadium Coil",
+          "input": "_^_2_3_6_+_P / _K"
+        },
+        {
+          "category": "_@",
+          "name": "Coil Retract",
+          "input": "_P"
+        },
+        {
+          "category": "_@",
+          "name": "Flail Smash _?_+_P /",
+          "input": "_K (x2)"
+        },
+        {
+          "category": "_@",
+          "name": "Death Factor",
+          "input": "^*_P"
+        },
+        {
+          "category": "_@",
+          "name": "Energy Drain",
+          "input": "^*_K"
+        },
+        {
+          "category": "_@",
+          "name": "Omega Strike",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Strike Recall",
+          "input": "_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Strike Cancel",
+          "input": "_2_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Omega Destroyer",
+          "input": "_2_3_6_+^W"
+        },
+        {
+          "category": "_`",
+          "name": "Strikes",
+          "input": "^I / ^J / _2_+^G"
+        },
+        {
+          "category": "_`",
+          "name": "Knockdowns",
+          "input": "_2_+^I"
+        },
+        {
+          "category": "_`",
+          "name": "Launchers",
+          "input": "^F"
+        }
+      ],
+      "notes": [
+        "Combo Info",
+        "- Ground Chain-Combo                                                     Punch-to-Kick",
+        "- Jump Chain-Combo                                                       Punch-to-Kick",
+        "- Super Jump Chain-Combo                                                 Zig-Zag"
+      ]
+    },
+    {
+      "name": "SILVER SAMURAI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Back Toss",
+          "input": "_4 / _6_+^F"
+        },
+        {
+          "category": "_(",
+          "name": "Sword Stab",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Air Back Toss",
+          "input": "_^_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_)",
+          "name": "Endless Slashes",
+          "input": "^E^E^E..."
+        },
+        {
+          "category": "_)",
+          "name": "Low Slash",
+          "input": "^G^G"
+        },
+        {
+          "category": "_@",
+          "name": "Shuriken",
+          "input": "(_^)_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Move",
+          "input": "_2 / _8"
+        },
+        {
+          "category": "_@",
+          "name": "Hyakuretsu Toh",
+          "input": "_6_2_3_+_P (^*)"
+        },
+        {
+          "category": "_@",
+          "name": "Fumikomi Hyakuretsu Tou",
+          "input": "_6_6"
+        },
+        {
+          "category": "_@",
+          "name": "Hyakuretsu Toh",
+          "input": "_6_+^*_P"
+        },
+        {
+          "category": "_@",
+          "name": "Fumikomi Hyakuretsu Tou",
+          "input": "_6_6"
+        },
+        {
+          "category": "_#",
+          "name": "Blink",
+          "input": "(_^)_2_3_6_+_K"
+        },
+        {
+          "category": "_#",
+          "name": "Touki \"Kaminari\"",
+          "input": "_2_1_4_+^E"
+        },
+        {
+          "category": "_#",
+          "name": "Touki \"Koori\"",
+          "input": "_2_1_4_+^F"
+        },
+        {
+          "category": "_#",
+          "name": "Touki \"Honoo\"",
+          "input": "_2_1_4_+^G"
+        },
+        {
+          "category": "_#",
+          "name": "Bushin",
+          "input": "_2_1_4_+^V"
+        },
+        {
+          "category": "_*",
+          "name": "Raimei Ken",
+          "input": "_2_3_6_+^W"
+        },
+        {
+          "category": "_*",
+          "name": "Chou Shuriken",
+          "input": "_2_1_4_+^W"
+        },
+        {
+          "category": "_*",
+          "name": "Move",
+          "input": "_2 / _8"
+        },
+        {
+          "category": "_`",
+          "name": "Strikes",
+          "input": "^J"
+        },
+        {
+          "category": "_`",
+          "name": "Knockdowns",
+          "input": "_2_+^J"
+        },
+        {
+          "category": "_`",
+          "name": "Launchers",
+          "input": "_2_+^G"
+        }
+      ],
+      "notes": [
+        "Combo Info",
+        "- Ground Chain-Combo                                                     Weak Start",
+        "- Jump Chain-Combo                                                       Weak Start",
+        "- Super Jump Chain-Combo                                                 Weak Start"
+      ]
+    },
+    {
+      "name": "SENTINEL",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab and Missile",
+          "input": "_4 / _6_+^F"
+        },
+        {
+          "category": "_(",
+          "name": "Grab and Rocket Punch",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Air Grab and Missile",
+          "input": "_^_4 / _6_+^F"
+        },
+        {
+          "category": "_(",
+          "name": "Air Grab and Rocket Punch",
+          "input": "_^_4 / _6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Hard Punch",
+          "input": "_^_2_+^F"
+        },
+        {
+          "category": "_)",
+          "name": "Helicopter Kick",
+          "input": "_^_2_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Ground Grab opponent knocked down",
+          "input": "_2_+^F / ^G"
+        },
+        {
+          "category": "_)",
+          "name": "Grab and Missile",
+          "input": "_P"
+        },
+        {
+          "category": "_@",
+          "name": "Rocket Punch: Downwards",
+          "input": "(_^)_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Retract",
+          "input": "_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Rocket Punch: Forward",
+          "input": "(_^)_2_3_6_+^F"
+        },
+        {
+          "category": "_@",
+          "name": "Retract",
+          "input": "_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Rocket Punch: Upwards",
+          "input": "(_^)_2_3_6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Retract",
+          "input": "_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Sentinel Force: Control",
+          "input": "_2_3_6_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Control",
+          "input": "^2 / ^8"
+        },
+        {
+          "category": "_@",
+          "name": "Sentinel Force: Straight",
+          "input": "_2_3_6_+^I"
+        },
+        {
+          "category": "_@",
+          "name": "Sentinel Force: Carpet Bomb",
+          "input": "_2_3_6_+^J (_O)"
+        },
+        {
+          "category": "_#",
+          "name": "Hover",
+          "input": "_2_1_4_+^U"
+        },
+        {
+          "category": "_#",
+          "name": "Cancel",
+          "input": "_2_1_4_+^U"
+        },
+        {
+          "category": "_*",
+          "name": "Plasma Storm",
+          "input": "_2_3_6_+^W (^*)"
+        },
+        {
+          "category": "_`",
+          "name": "Strikes",
+          "input": "^G"
+        },
+        {
+          "category": "_`",
+          "name": "Knockdowns",
+          "input": "_2_+^J"
+        },
+        {
+          "category": "_`",
+          "name": "Launchers",
+          "input": "^I"
+        }
+      ],
+      "notes": [
+        "Combo Info",
+        "- Ground Chain-Combo                                                     Weak Start",
+        "- Jump Chain-Combo                                                       Kick-to-Punch",
+        "- Super Jump Chain-Combo                                                 Kick-to-Punch"
+      ]
+    },
+    {
+      "name": "SPIRAL",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab and Toss",
+          "input": "_4 / _6_+^F"
+        },
+        {
+          "category": "_(",
+          "name": "Grab and Punches",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Leg Toss",
+          "input": "_4 / _6_+^I / ^J"
+        },
+        {
+          "category": "_(",
+          "name": "Air Grab and Toss",
+          "input": "_^_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_(",
+          "name": "Air Leg Toss",
+          "input": "_^_4 / _6_+^I / ^J"
+        },
+        {
+          "category": "_)",
+          "name": "Triple Arm Strike",
+          "input": "_^_2_+^F"
+        },
+        {
+          "category": "_)",
+          "name": "Downward Punch",
+          "input": "_^_2_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Dancing Sword",
+          "input": "(_^)_6_3_2_1_4_+^W"
+        },
+        {
+          "category": "_@",
+          "name": "Sword Throw",
+          "input": "_P"
+        },
+        {
+          "category": "_@",
+          "name": "Tsurugi Tobashi: Down",
+          "input": "_^_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Tsurugi Tobashi: Zen",
+          "input": "(_^)_2_3_6_+^F"
+        },
+        {
+          "category": "_@",
+          "name": "Tsurugi Tobashi: Ue",
+          "input": "(_^)_2_3_6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Tsurugi Tobashi: Explosion",
+          "input": "(_^)_2_3_6_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Tsurugi Tobashi: Senkai",
+          "input": "(_^)_2_3_6_+^I"
+        },
+        {
+          "category": "_@",
+          "name": "Tsurugi Tobashi: 6 Houkou",
+          "input": "(_^)_2_3_6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Six-hand Grapple",
+          "input": "_2_8_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Kyuukouka Dance",
+          "input": "_^_2_1_4_+^G"
+        },
+        {
+          "category": "_#",
+          "name": "Switch Dance",
+          "input": "(_^)_2_1_4_+^E"
+        },
+        {
+          "category": "_#",
+          "name": "Teleport Dance",
+          "input": "(_^)_2_1_4_+^F"
+        },
+        {
+          "category": "_#",
+          "name": "Change Position",
+          "input": "_P / _K"
+        },
+        {
+          "category": "_#",
+          "name": "Power Dance",
+          "input": "(_^)_2_1_4_+^H (damage increased)"
+        },
+        {
+          "category": "_#",
+          "name": "Speed Dance",
+          "input": "(_^)_2_1_4_+^I"
+        },
+        {
+          "category": "_#",
+          "name": "Invisible Dance",
+          "input": "(_^)_2_1_4_+^J"
+        },
+        {
+          "category": "_*",
+          "name": "Metamorphose",
+          "input": "(_^)_2_3_6_+^W"
+        },
+        {
+          "category": "_*",
+          "name": "Grab",
+          "input": "(_^) close _P"
+        },
+        {
+          "category": "_`",
+          "name": "Strikes",
+          "input": "_2_+^G"
+        },
+        {
+          "category": "_`",
+          "name": "Launchers",
+          "input": "^I"
+        }
+      ],
+      "notes": [
+        "Combo Info",
+        "- Ground Chain-Combo                                                     Kick-to-Punch",
+        "- Jump Chain-Combo                                                       Kick-to-Punch",
+        "- Super Jump Chain-Combo                                                 Zig-Zag",
+        "Knockdowns --"
+      ]
+    },
+    {
+      "name": "AKUMA (GOUKI)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Seoi Nage",
+          "input": "_4 / _6_+^F"
+        },
+        {
+          "category": "_(",
+          "name": "Tomoe Nage",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Tsukami Hiza Geri",
+          "input": "_4 / _6_+^I"
+        },
+        {
+          "category": "_(",
+          "name": "Jigoku Guruma",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_(",
+          "name": "Izuna Drop",
+          "input": "_^_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_@",
+          "name": "Gou Hadou Ken",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Zankuu Hadou Ken",
+          "input": "_^_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Gou Shouryuu Ken",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Tatsumaki Zankuu Kyaku",
+          "input": "(_^)_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Tenma Kuujin Kyaku",
+          "input": "_^_2_3_6_+_K"
+        },
+        {
+          "category": "_#",
+          "name": "Ultimate Throw",
+          "input": "_2_1_4_+_P (reverse jump/high/Specials)"
+        },
+        {
+          "category": "_#",
+          "name": "Ashura Senkuu: Zenpou",
+          "input": "_6_2_3_+^U / ^T"
+        },
+        {
+          "category": "_#",
+          "name": "Ashura Senkuu: Kouhou",
+          "input": "_4_2_1_+^U / ^T"
+        },
+        {
+          "category": "_*",
+          "name": "Messatsu Gou Shouryuu",
+          "input": "_2_3_6_2_3_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Messatsu Gou Hadou",
+          "input": "_2_3_6_2_3_6_+_P"
+        },
+        {
+          "category": "_`",
+          "name": "Knockdowns",
+          "input": "_2_+^J"
+        }
+      ],
+      "notes": [
+        "Combo Info",
+        "- Ground Chain-Combo                                                     Zig-Zag",
+        "- Jump Chain-Combo                                                       Zig-Zag",
+        "- Super Jump Chain-Combo                                                 Zig-Zag",
+        "Strikes --",
+        "Launchers --"
+      ]
+    },
+    {
+      "name": "JUGGERNAUT",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Headbutts and Uppercut",
+          "input": "_4 / _6_+^F"
+        },
+        {
+          "category": "_(",
+          "name": "Cackling Slam",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Double Punch",
+          "input": "^E^E"
+        },
+        {
+          "category": "_)",
+          "name": "Juggernaut Body Press",
+          "input": "_^_2_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Ground Grab opponent knocked down",
+          "input": "_2_+^F / ^G"
+        },
+        {
+          "category": "_)",
+          "name": "Headbutts and Uppercut",
+          "input": "^F"
+        },
+        {
+          "category": "_)",
+          "name": "Cackling Slam",
+          "input": "^G"
+        },
+        {
+          "category": "_)",
+          "name": "Taunt",
+          "input": "_4_2_1_+_P (Super Bar below to 2LVs)"
+        },
+        {
+          "category": "_@",
+          "name": "Double Fist",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Earthquake Punch",
+          "input": "_6_3_2_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Pick Up Iron Bar close to iron bar",
+          "input": "_2_2_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Throw Iron Bar",
+          "input": "_2_2_+_K"
+        },
+        {
+          "category": "_#",
+          "name": "Cyttorak Power-Up",
+          "input": "_2_1_4_+_P (damage increased)"
+        },
+        {
+          "category": "_*",
+          "name": "Juggernaut Headcrush",
+          "input": "_4_1_2_3_6_+_P"
+        },
+        {
+          "category": "_`",
+          "name": "Knockdowns",
+          "input": "_2_+^J"
+        },
+        {
+          "category": "_`",
+          "name": "Launchers",
+          "input": "_2_+^G"
+        }
+      ],
+      "notes": [
+        "Combo Info",
+        "- Ground Chain-Combo                                                     Kick-to-Punch",
+        "- Jump Chain-Combo                                                       Kick-to-Punch",
+        "- Super Jump Chain-Combo                                                 Kick-to-Punch",
+        "Strikes --"
+      ]
+    },
+    {
+      "name": "MAGNETO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Scrap Hold",
+          "input": "_4 / _6_+^F"
+        },
+        {
+          "category": "_(",
+          "name": "E-M Repulse",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Air Scrap Hold",
+          "input": "_^_4 / _6_+^F"
+        },
+        {
+          "category": "_(",
+          "name": "Air E-M Repulse",
+          "input": "_^_4 / _6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "E-M Disruptor",
+          "input": "^G"
+        },
+        {
+          "category": "_)",
+          "name": "Air E-M Disruptor",
+          "input": "_^^F"
+        },
+        {
+          "category": "_)",
+          "name": "Magnetic Blast",
+          "input": "_^^G"
+        },
+        {
+          "category": "_)",
+          "name": "Taunt",
+          "input": "_2_3_6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Hyper Gravity",
+          "input": "_2_1_4_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "E-M Shock",
+          "input": "_2_3_6_+^F"
+        },
+        {
+          "category": "_@",
+          "name": "Magnetic Tempest",
+          "input": "_2_3_6_+^E (on Magneto's stage)"
+        },
+        {
+          "category": "_@",
+          "name": "Release",
+          "input": "_2_3_6_+^I"
+        },
+        {
+          "category": "_#",
+          "name": "Flight",
+          "input": "_2_1_4_+^E"
+        },
+        {
+          "category": "_#",
+          "name": "Force Field",
+          "input": "_2_3_6_+^G (don't takes damage)"
+        },
+        {
+          "category": "_*",
+          "name": "Magnetic Shockwave",
+          "input": "_2_3_6_+^H"
+        },
+        {
+          "category": "_`",
+          "name": "Strikes",
+          "input": "^G"
+        },
+        {
+          "category": "_`",
+          "name": "Knockdowns",
+          "input": "_2_+^J"
+        },
+        {
+          "category": "_`",
+          "name": "Launchers",
+          "input": "_2_+^G"
+        }
+      ],
+      "notes": [
+        "Combo Info",
+        "- Ground Chain-Combo                                                     Zig-Zag",
+        "- Jump Chain-Combo                                                       Zig-Zag",
+        "- Super Jump Chain-Combo                                                 Zig-Zag"
+      ]
+    }
+  ],
+  "cheatNotes": [
+    "_` Fight Akuma on Stage 6",
+    "- Don't lose any round",
+    "- Get a \"First Attack\" in 6 rounds",
+    "- Hit with a Hyper-X on 6 rounds",
+    "- Needs to do a combo hit of:",
+    "- Colossus           03 hits",
+    "- Cyclops            10 hits",
+    "- Iceman             10 hits",
+    "- Omega Red          05 hits",
+    "- Psylocke           05 hits",
+    "- Sentinel           03 hits",
+    "- Silver Samurai     10 hits",
+    "- Spiral             10 hits",
+    "- Storm              10 hits",
+    "- Wolverine          05 hits"
+  ],
+  "controlAbbr": {
+    "^E": "LP",
+    "^F": "MP",
+    "^G": "HP",
+    "^H": "LK",
+    "^I": "MK",
+    "^J": "HK",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "genesis": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "megadrive": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "32x": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "saturn": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "psx": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "ps2": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "gba": {
+      "b": "^E",
+      "a": "^F",
+      "l1": "^G",
+      "y": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "pce": {
+      "b": "^E",
+      "a": "^H"
+    },
+    "pce6": {
+      "b": "^E",
+      "y": "^F",
+      "l1": "^G",
+      "a": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "3do": {
+      "b": "^E",
+      "a": "^F",
+      "l1": "^G",
+      "y": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "n64": {
+      "b": "^E",
+      "cDown": "^F",
+      "cRight": "^G",
+      "a": "^H",
+      "cLeft": "^I",
+      "cUp": "^J"
+    },
+    "dreamcast": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "gb": {
+      "b": "^E",
+      "a": "^H"
+    },
+    "gbc": {
+      "b": "^E",
+      "a": "^H"
+    },
+    "gamegear": {
+      "a": "^E",
+      "b": "^H"
+    },
+    "sms": {
+      "a": "^E",
+      "b": "^H"
+    },
+    "ngpc": {
+      "b": "^E",
+      "y": "^F",
+      "l1": "^G",
+      "a": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "lynx": {
+      "b": "^E",
+      "a": "^F",
+      "l1": "^G",
+      "y": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "wswan": {
+      "b": "^E",
+      "a": "^H"
+    }
+  }
+}

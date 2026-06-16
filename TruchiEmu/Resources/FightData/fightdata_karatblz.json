@@ -1,1 +1,280 @@
-{"schemaVersion":2,"romIds":["karatblz","karatblza","karatblzj","karatblzt","karatblzu"],"name":"Karate Blazers","controls":{"_A":"Attack","_S":"Start"},"categories":{"_(":"Normal Throws","_)":"Command Moves","_*":"Desperation Moves","_`":"Desperation Moves"},"commonCommands":[{"category":"_)","name":"Pick Up Object close to object","input":"_A"}],"characters":[{"name":"MARK","moves":[{"category":"_(","name":"Grab close","input":"_6"},{"category":"_(","name":"Jawing Elbow","input":"_A"},{"category":"_(","name":"Energy Swing","input":"_A"},{"category":"_)","name":"Swiping Energy Kicks","input":"_A_A_A"},{"category":"_)","name":"High Energy Kicks","input":"_6_+_A_A_A"},{"category":"_)","name":"Low Sweep","input":"_2_+_A"},{"category":"_)","name":"Ground Kicks opponent knocked down","input":"_A_A_A"},{"category":"_)","name":"Charging Forearm @J-button","input":"_6"},{"category":"_*","name":"Force Ball","input":"_A_+@J-button"}]},{"name":"GLEN","moves":[{"category":"_(","name":"Grab close","input":"_6"},{"category":"_(","name":"Jawing Elbow","input":"_A"},{"category":"_(","name":"Energy Swing","input":"_A"},{"category":"_)","name":"Swiping Energy Kicks","input":"_A_A_A"},{"category":"_)","name":"High Energy Kicks","input":"_6_+_A_A_A"},{"category":"_)","name":"Low Sweep","input":"_2_+_A"},{"category":"_)","name":"Ground Kicks opponent knocked down","input":"_A_A_A"},{"category":"_)","name":"Torpedo Headbutt @J-button","input":"_6"},{"category":"_*","name":"Earth Blast","input":"_A_+@J-button"}]},{"name":"AKIRA","moves":[{"category":"_(","name":"Grab close","input":"_6"},{"category":"_(","name":"Jawing Elbow","input":"_A"},{"category":"_(","name":"Energy Swing","input":"_A"},{"category":"_)","name":"Swiping Energy Kicks","input":"_A_A_A"},{"category":"_)","name":"High Energy Kicks","input":"_6_+_A_A_A"},{"category":"_)","name":"Low Sweep","input":"_2_+_A"},{"category":"_)","name":"Ground Kicks opponent knocked down","input":"_A_A_A"},{"category":"_)","name":"Sliding Split @J-button","input":"_6"},{"category":"_*","name":"Triple Spirit Kick","input":"_A_+@J-button"}]},{"name":"GIL","moves":[{"category":"_(","name":"Grab close","input":"_6"},{"category":"_(","name":"Jawing Elbow","input":"_A"},{"category":"_(","name":"Energy Swing","input":"_A"},{"category":"_)","name":"Swiping Energy Kicks","input":"_A_A_A"},{"category":"_)","name":"High Energy Kicks","input":"_6_+_A_A_A"},{"category":"_)","name":"Low Sweep","input":"_2_+_A"},{"category":"_)","name":"Ground Kicks opponent knocked down","input":"_A_A_A"},{"category":"_)","name":"Charging Forearm @J-button","input":"_6"},{"category":"_*","name":"Spinning Fire","input":"_A_+@J-button"}]}],"controlAbbr":{"_A":"AT","_S":"ST"},"systemControlMappings":{"snes":{"y":"_A"},"genesis":{"b":"_A"},"megadrive":{"b":"_A"},"32x":{"b":"_A"},"saturn":{"b":"_A"},"psx":{"y":"_A"},"ps2":{"y":"_A"},"gb":{"b":"_A"},"gbc":{"b":"_A"},"gamegear":{"a":"_A"},"sms":{"a":"_A"},"gba":{"b":"_A"},"ngpc":{"b":"_A"}},"controlGroups":{"_P":["_A"]}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "karatblz",
+    "karatblza",
+    "karatblzj",
+    "karatblzt",
+    "karatblzu"
+  ],
+  "name": "Karate Blazers",
+  "controls": {
+    "_A": "Attack",
+    "_S": "Start"
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_*": "Desperation Moves",
+    "_`": "Desperation Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Pick Up Object close to object",
+      "input": "_A"
+    }
+  ],
+  "characters": [
+    {
+      "name": "MARK",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6"
+        },
+        {
+          "category": "_(",
+          "name": "Jawing Elbow",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Energy Swing",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Swiping Energy Kicks",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "High Energy Kicks",
+          "input": "_6_+_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Low Sweep",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Ground Kicks opponent knocked down",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Charging Forearm @J-button",
+          "input": "_6"
+        },
+        {
+          "category": "_*",
+          "name": "Force Ball",
+          "input": "_A_+@J-button"
+        }
+      ]
+    },
+    {
+      "name": "GLEN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6"
+        },
+        {
+          "category": "_(",
+          "name": "Jawing Elbow",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Energy Swing",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Swiping Energy Kicks",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "High Energy Kicks",
+          "input": "_6_+_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Low Sweep",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Ground Kicks opponent knocked down",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Torpedo Headbutt @J-button",
+          "input": "_6"
+        },
+        {
+          "category": "_*",
+          "name": "Earth Blast",
+          "input": "_A_+@J-button"
+        }
+      ]
+    },
+    {
+      "name": "AKIRA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6"
+        },
+        {
+          "category": "_(",
+          "name": "Jawing Elbow",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Energy Swing",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Swiping Energy Kicks",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "High Energy Kicks",
+          "input": "_6_+_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Low Sweep",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Ground Kicks opponent knocked down",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Sliding Split @J-button",
+          "input": "_6"
+        },
+        {
+          "category": "_*",
+          "name": "Triple Spirit Kick",
+          "input": "_A_+@J-button"
+        }
+      ]
+    },
+    {
+      "name": "GIL",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6"
+        },
+        {
+          "category": "_(",
+          "name": "Jawing Elbow",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Energy Swing",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Swiping Energy Kicks",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "High Energy Kicks",
+          "input": "_6_+_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Low Sweep",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Ground Kicks opponent knocked down",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Charging Forearm @J-button",
+          "input": "_6"
+        },
+        {
+          "category": "_*",
+          "name": "Spinning Fire",
+          "input": "_A_+@J-button"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_A": "AT",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_A"
+    },
+    "genesis": {
+      "b": "_A"
+    },
+    "megadrive": {
+      "b": "_A"
+    },
+    "32x": {
+      "b": "_A"
+    },
+    "saturn": {
+      "b": "_A"
+    },
+    "psx": {
+      "y": "_A"
+    },
+    "ps2": {
+      "y": "_A"
+    },
+    "gb": {
+      "b": "_A"
+    },
+    "gbc": {
+      "b": "_A"
+    },
+    "gamegear": {
+      "a": "_A"
+    },
+    "sms": {
+      "a": "_A"
+    },
+    "gba": {
+      "b": "_A"
+    },
+    "ngpc": {
+      "b": "_A"
+    }
+  },
+  "controlGroups": {
+    "_P": [
+      "_A"
+    ]
+  }
+}

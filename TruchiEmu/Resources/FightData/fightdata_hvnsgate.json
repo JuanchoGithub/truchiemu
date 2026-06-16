@@ -1,1 +1,1434 @@
-{"schemaVersion":2,"romIds":["hvnsgate"],"name":"Heaven's Gate","year":1996,"manufacturer":"Atlus","credits":"Fabricio Coroquer","controls":{"_G":"Guard","_P":"Punch","_K":"Kick","_S":"Start"},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves","_#":"Power Release","_*":"Power Release Moves","_`":"Power Release Moves"},"commonCommands":[{"category":"_)","name":"Run","input":"_6^6"},{"category":"_)","name":"Retreat","input":"_4_4"},{"category":"_)","name":"Crawl Forward","input":"^3"},{"category":"_)","name":"Crawl Backward","input":"^1"},{"category":"_)","name":"Side Kick","input":"_3_+_K"},{"category":"_)","name":"Pursuit Attack opponent knocked down","input":"_8_+_P"},{"category":"_)","name":"Roll Backward knocked down","input":"_4"},{"category":"_)","name":"Roll to Background knocked down","input":"_8"},{"category":"_)","name":"Roll to Foreground knocked down","input":"_2"},{"category":"_)","name":"Quick Get Up knocked down","input":"_G"},{"category":"_)","name":"High Kick knocked down","input":"_P"},{"category":"_)","name":"Low Kick knocked down","input":"_K"},{"category":"_#","name":"Power Release","input":"_G_+_P_+_K"},{"category":"_*","name":"Triangle Jump Attack","input":"_2_8_+_K (on arena with ceiling)"},{"category":"_*","name":"Assault Cancels any combo","input":"_G_+_P_+_K"}],"characters":[{"name":"SHINDO JIN","moves":[{"category":"_(","name":"Shoulder Throw","input":"_G_+_P"},{"category":"_(","name":"Kumihiza","input":"_4_6_+_G_+_P"},{"category":"_(","name":"Kumikobushi","input":"_G_+_P_P_G_+_P"},{"category":"_(","name":"Yanagi: Nagashi","input":"_2_3_6_+_G (reverse high punch)"},{"category":"_@","name":"Renken: Ura-Hijitetsu","input":"_P_P_6_+_P_P"},{"category":"_@","name":"Ryuga","input":"_P_P_6_+_P_2_+_P_+_K"},{"category":"_@","name":"Kengekiha","input":"_P_3_+_P"},{"category":"_@","name":"Ura-Hizitetsu","input":"_6_+_P_P"},{"category":"_@","name":"Souken","input":"^6_+_P"},{"category":"_@","name":"Sentyu","input":"_6_6_+_P"},{"category":"_@","name":"Kubikari","input":"_6_6_+_K"},{"category":"_@","name":"Ryu no Agito","input":"_6_2_3_+_P_+_K"},{"category":"_@","name":"Ryousou","input":"_4_+_P"},{"category":"_@","name":"Uraken","input":"_4_4_+_P"},{"category":"_@","name":"Kenken","input":"_4_6_+_P_+_K"},{"category":"_@","name":"Syasentyu","input":"_4_6_6_+_P_+_K"},{"category":"_@","name":"Niren: Hakyaku","input":"_2_+_K_1_+_K"},{"category":"_@","name":"Niren: Gekiha","input":"_2_+_K_3_+_P"},{"category":"_@","name":"Hakyaku","input":"_2_2_+_K"},{"category":"_@","name":"Morote: Shoutei","input":"_2_3_6_+_P"},{"category":"_@","name":"Rensenkuudan","input":"_2_1_4_+_K_K"},{"category":"_@","name":"Syasouken","input":"_3_+_P"},{"category":"_@","name":"Gekiha","input":"^3_+_P"},{"category":"_@","name":"Koutetugeri opponent knocked down","input":"_3_+_K"},{"category":"_*","name":"Ryuenkyaku (TRANSCEND)","input":"_2_2_+_G_+_P_+_K"},{"category":"_*","name":"Ensengoku (TRANSCEND)","input":"_2_1_4_1_6_+_P_+_K"}]},{"name":"MINABE KYOSUKE","moves":[{"category":"_(","name":"Push Choke","input":"_G_+_P"},{"category":"_(","name":"Armlock Rise Throw","input":"_4_6_+_G_+_P"},{"category":"_@","name":"High-Low Spin Kick","input":"_G_+_K_2_+_G_+_K"},{"category":"_@","name":"Combo Up Slicer","input":"_P_P_P_2_+_P_P"},{"category":"_@","name":"Jab Low Kick","input":"_P_2_+_K"},{"category":"_@","name":"Triple Spin Kick","input":"_K_K_2_+_K"},{"category":"_@","name":"Blow Cutter","input":"_6_+_P_P"},{"category":"_@","name":"Blow High Spin Kick","input":"_6_+_P_K"},{"category":"_@","name":"Low Kick","input":"_6_+_K"},{"category":"_@","name":"Elbow","input":"_6_6_+_P"},{"category":"_@","name":"Cyclone Cutter","input":"_6_2_3_+_P"},{"category":"_@","name":"Side Spin Kick","input":"_4_+_P_K"},{"category":"_@","name":"Tonfer Combo","input":"_4_6_+_P_P_P"},{"category":"_@","name":"Up Slicer","input":"_2_3_6_+_P_P"},{"category":"_@","name":"Tonfer Swing Straight","input":"_3_+_P_2_+_P"},{"category":"_@","name":"Down Strike","input":"^3_+_P"},{"category":"_@","name":"Step On opponent knocked down","input":"_3_+_K"},{"category":"_*","name":"Counter Edge (LUNAR)","input":"_2_2_+_G_+_P_+_K"},{"category":"_*","name":"Power Solid (LUNAR)","input":"_2_3_6_+_P_+_K"}]},{"name":"SAIKAWA NANASE","moves":[{"category":"_(","name":"Nanase Flip","input":"_G_+_P"},{"category":"_(","name":"Nanase Steiner","input":"_6_2_+_K"},{"category":"_@","name":"Nanase Combo","input":"_P_P_P_2_+_K"},{"category":"_@","name":"One-Two-Elbow Crescent","input":"_P_P_6_+_P_K"},{"category":"_@","name":"Nanase Rush","input":"_P_4_+_P_P"},{"category":"_@","name":"Elbow Crescent","input":"_6_+_P_K"},{"category":"_@","name":"Dash Double Kick","input":"_6_6_+_K_K"},{"category":"_@","name":"Tornado Upper","input":"_6_2_3_+_P"},{"category":"_@","name":"Body Blow","input":"_4_+_P"},{"category":"_@","name":"Low Spin Kick","input":"_2_+_G_+_K"},{"category":"_@","name":"Elbow Upper","input":"_2_3_6_+_P"},{"category":"_@","name":"Crescent Heel","input":"_2_1_4_+_K"},{"category":"_@","name":"Continual Kick","input":"_1_+_K_K_K"},{"category":"_@","name":"Upper & Tornado Upper","input":"_3_+_P_1_3_+_P"},{"category":"_@","name":"Toe Kick opponent knocked down","input":"_3_+_K"},{"category":"_*","name":"Shinning Upper (SOL)","input":"_2_2_+_G_+_P_+_K"},{"category":"_*","name":"Solid Gun (SOL)","input":"_1_6_3_2_1_4_3_+_P_+_K"}]},{"name":"VERNY","moves":[{"category":"_(","name":"Belly to Belly Suplex","input":"_G_+_P"},{"category":"_(","name":"Armlock Throw","input":"_6_2_+_G_+_P"},{"category":"_@","name":"Heel & Toe Kick","input":"_G_+_K_2_+_K"},{"category":"_@","name":"Combo Somersault Kick","input":"_P_P_P_7_+_K"},{"category":"_@","name":"Hook Combo","input":"_6_+_P_4_+_P_P_2_+_K"},{"category":"_@","name":"Middle Spin Kick","input":"_6_6_+_G_+_K"},{"category":"_@","name":"Double Spin Kick","input":"_6_6_+_K_3_+_K"},{"category":"_@","name":"Face Crash","input":"_6_2_3_+_K"},{"category":"_@","name":"Knuckle Combo","input":"_4_+_P_P_2_+_K"},{"category":"_@","name":"Down Elbow","input":"_2_2_+_P_8_+_P"},{"category":"_@","name":"Toe Kick","input":"_2_+_K"},{"category":"_@","name":"Sliding Kick","input":"_2_2_+_K"},{"category":"_@","name":"Slash Kick","input":"_1_6_+_K"},{"category":"_@","name":"Low Back Knuckle","input":"_1_+_P"},{"category":"_@","name":"Smash Upper","input":"_3_+_P"},{"category":"_@","name":"Down Upper","input":"^3_+_P"},{"category":"_@","name":"Somersault Kick","input":"_7_+_K"},{"category":"_@","name":"Back Somersault Kick back turned","input":"_2_1_4_+_K"},{"category":"_@","name":"Kawara Crash opponent knocked down","input":"_3_+_P"},{"category":"_*","name":"Energy Ray (LUNAR)","input":"_2_2_+_G_+_P_+_K"},{"category":"_*","name":"Evil Ray (LUNAR) close","input":"_6_4_6_+_P_+_K"}]},{"name":"DULFFER","moves":[{"category":"_(","name":"Quick Slice","input":"_G_+_P"},{"category":"_(","name":"Back Stab from behind","input":"_G_+_P"},{"category":"_@","name":"Spinning Kick","input":"_G_+_K"},{"category":"_@","name":"Combo Spin Kick","input":"_P_P_P_7_+_K"},{"category":"_@","name":"One-Two-Kick","input":"_P_P_6_+_K"},{"category":"_@","name":"Three Edge","input":"_P_P_4_+_P"},{"category":"_@","name":"Double Side Cut","input":"_6_+_P_P"},{"category":"_@","name":"Mad Shredder","input":"_6_+_P_2_+_P_P"},{"category":"_@","name":"Low Toe Kick","input":"_6_+_K"},{"category":"_@","name":"Screwdriver","input":"_6_6_+_P"},{"category":"_@","name":"Slide Edge","input":"_4_+_P"},{"category":"_@","name":"Low Edge","input":"_4_6_+_P"},{"category":"_@","name":"Three Slash","input":"_2_+_K_6_+_K_K"},{"category":"_@","name":"Kakato Otoshi","input":"_2_2_+_K"},{"category":"_@","name":"Rising Edge","input":"_2_3_6_+_P"},{"category":"_@","name":"Edge Shot","input":"_3_+_P"},{"category":"_@","name":"Back Spin Kick","input":"_7_+_K"},{"category":"_@","name":"Stab opponent knocked down","input":"_3_+_P"},{"category":"_*","name":"Shining Edge (LUNAR)","input":"_2_2_+_G_+_P_+_K"},{"category":"_*","name":"Scissors (LUNAR) close","input":"_6_2_3_+_P_+_K"},{"category":"_*","name":"Fall Edge (LUNAR)","input":"_8_+_P_+_K (on arena with ceiling)"}]},{"name":"SASA","moves":[{"category":"_(","name":"Roll Shoulder Throw","input":"_G_+_P"},{"category":"_(","name":"Neck Throw","input":"_2_3_6_+_G_+_P"},{"category":"_(","name":"Leg Wrench","input":"_2_3_6_+_G (reverse high kick)"},{"category":"_@","name":"Combo Knee","input":"_P_P_P_6_+_K"},{"category":"_@","name":"Shake Down","input":"_6_+_P_P"},{"category":"_@","name":"Knee","input":"_6_+_K"},{"category":"_@","name":"Slide Kick","input":"_6_6_+_K"},{"category":"_@","name":"Cyclone","input":"_4_+_P"},{"category":"_@","name":"Scorpion Round Kick","input":"_4_+_P_+_K_6_+_P_+_K"},{"category":"_@","name":"Fist Strike","input":"_4_6_+_P"},{"category":"_@","name":"Tackle","input":"_4_6_6_+_P"},{"category":"_@","name":"Heel","input":"_2_+_K"},{"category":"_@","name":"Rising Palm","input":"_2_3_6_+_P"},{"category":"_@","name":"Brush","input":"_1_+_P"},{"category":"_@","name":"Needle","input":"_3_+_P"},{"category":"_@","name":"Back Turn Kick","input":"_7_+_K"},{"category":"_@","name":"Knee Down opponent knocked down","input":"_3_+_K"},{"category":"_*","name":"Pine Needle (PLANT)","input":"_2_2_+_G_+_P_+_K"},{"category":"_*","name":"Energy Drain (PLANT) close","input":"_6_3_2_1_4_+_P_+_K"}]},{"name":"ENGETSU","moves":[{"category":"_(","name":"Body Slam","input":"_G_+_P"},{"category":"_(","name":"Monkey Rock Crash","input":"_x_+_G_+_P"},{"category":"_(","name":"Rock Head","input":"_4_6_+_G_+_P"},{"category":"_(","name":"Iron Head","input":"_P_G_+_P_+_K"},{"category":"_(","name":"Monkey Head","input":"_K_G_+_P_+_K"},{"category":"_(","name":"Monkey Dynamite on counter","input":"_6_+_P"},{"category":"_(","name":"Monkey Typhoon crouching opponent","input":"_3_+_G_+_P"},{"category":"_(","name":"Monkey Lift Press from behind","input":"_G_+_P"},{"category":"_@","name":"Monkey Power Hammer","input":"_6_+_P_2_+_P"},{"category":"_@","name":"Drop Kick","input":"_6_+_K"},{"category":"_@","name":"Monkey Lariat","input":"_6_6_+_P"},{"category":"_@","name":"Monkey Scoop","input":"_6_2_3_+_P"},{"category":"_@","name":"Middle Kick","input":"_4_+_K"},{"category":"_@","name":"Monkey Press","input":"_4_6_+_P"},{"category":"_@","name":"Sliding Kick","input":"_2_2_+_K"},{"category":"_@","name":"Monkey Hammer","input":"_2_6_+_P"},{"category":"_@","name":"Monkey Sledgehammer","input":"_2_3_6_+_P"},{"category":"_@","name":"Monkey Cyclone","input":"_2_1_4_+_P_P"},{"category":"_@","name":"Monkey Upper","input":"^3_+_P"},{"category":"_@","name":"Big Foot Press opponent knocked down","input":"_3_+_K"},{"category":"_*","name":"Monkey Magic (SOL)","input":"_2_2_+_G_+_P_+_K"},{"category":"_*","name":"Mad Monkey (SOL) close","input":"_x_+_P_+_K"}]},{"name":"A. HAU","moves":[{"category":"_(","name":"Hau-Press","input":"_G_+_P"},{"category":"_(","name":"Hau-Fist","input":"_4_6_+_G_+_P, ^*_P"},{"category":"_(","name":"Hau-Strangle","input":"_6_4_+_G_+_P"},{"category":"_(","name":"Hau-Lobster","input":"_P_K_G_+_P_+_K"},{"category":"_(","name":"Hau-Mattet","input":"_K_P_G_+_P_+_K"},{"category":"_(","name":"Hau-Fall crouching opponent","input":"_3_+_G_+_P"},{"category":"_(","name":"Hau-Back from behind","input":"_G_+_P"},{"category":"_@","name":"One-Two-Upper","input":"_P_P_P"},{"category":"_@","name":"Hau-Combo Low","input":"_P_P_4_+_K"},{"category":"_@","name":"Hau-Combo","input":"_P_P_3_+_P"},{"category":"_@","name":"Hau-Body","input":"_6_+_P"},{"category":"_@","name":"Hau-Head","input":"_6_+_P_+_K"},{"category":"_@","name":"Hau-Butt","input":"_6_+_K"},{"category":"_@","name":"Hau-Press","input":"_6_6_+_P"},{"category":"_@","name":"Hau-Flying Kneel","input":"_6_6_+_K"},{"category":"_@","name":"Hau-Hip Down","input":"_6_2_+_K"},{"category":"_@","name":"Hau-Low","input":"_4_+_K"},{"category":"_@","name":"Hau-Tackle","input":"_4_6_6_+_P"},{"category":"_@","name":"Hau-Rolling","input":"_4_1_2_3_6_+_P_4_1_2_3_6_+_P"},{"category":"_@","name":"Hau-Astride","input":"_2_+_P_+_K"},{"category":"_@","name":"Hau-Upper","input":"_3_+_P"},{"category":"_@","name":"Hau-Mistake","input":"_8_+_P_+_K"},{"category":"_@","name":"Drop Iron Head opponent knocked down","input":"_3_+_P"},{"category":"_@","name":"Holly Anmer opponent knocked down","input":"_6_3_2_1_4_+_G_+_P"},{"category":"_*","name":"Hau-Dance (SOL)","input":"_2_2_+_G_+_P_+_K"},{"category":"_*","name":"Hau-Warp (SOL)","input":"_6_2_3_+_P_+_K"},{"category":"_*","name":"Hau-Drop","input":"_8_2_+_P_+_K"},{"category":"_*","name":"Marvel Holy Anmer","input":"_G_+_P_+_K_G_P_K_G_+_P_+_K"}]},{"name":"DYBYD","moves":[{"category":"_(","name":"Roll Throw","input":"_G_+_P"},{"category":"_(","name":"Twin Lazer","input":"_2_3_6_+_G_+_P"},{"category":"_(","name":"Thrust from behind","input":"_G_+_P"},{"category":"_(","name":"Counter Throw","input":"_2_3_6_+_G (reverse high kick)"},{"category":"_@","name":"Rash Knee","input":"_P_P_P_6_+_K"},{"category":"_@","name":"Step Elbow","input":"_6_+_P"},{"category":"_@","name":"Step Straight","input":"^6_+_P"},{"category":"_@","name":"Knee","input":"_6_+_K"},{"category":"_@","name":"Lariat","input":"_6_6_+_P"},{"category":"_@","name":"Flying Kneel Kick","input":"_6_6_+_K"},{"category":"_@","name":"Middle Kick","input":"_4_+_K"},{"category":"_@","name":"Drop Kick","input":"_4_6_+_K"},{"category":"_@","name":"Tackle","input":"_4_6_6_+_P"},{"category":"_@","name":"Chopping Straight","input":"_2_+_P_6_+_P"},{"category":"_@","name":"High Toe Kick","input":"_2_+_K"},{"category":"_@","name":"Rising Palm","input":"_2_3_6_+_P"},{"category":"_@","name":"Turn Kick","input":"_2_1_4_+_K_K"},{"category":"_@","name":"Brush","input":"_1_+_P"},{"category":"_@","name":"Skid Kick","input":"_1_6_+_K"},{"category":"_@","name":"Lightning Needle","input":"_3_+_P"},{"category":"_@","name":"Fall Knee opponent knocked down","input":"_3_+_K"}]},{"name":"UNKNOWN","moves":[{"category":"_(","name":"God Flip","input":"_G_+_P"},{"category":"_(","name":"Stream","input":"_6_2_+_K"},{"category":"_(","name":"God's Fist","input":"_4_6_+_G_+_P, ^*_P"},{"category":"_@","name":"High Combo","input":"_P_P_P_K"},{"category":"_@","name":"Low Combo","input":"_P_P_P_2_+_K"},{"category":"_@","name":"Somersault Combo","input":"_P_P_P_7_+_K"},{"category":"_@","name":"Middle whirlwind Kick","input":"_6_6_+_G_+_K"},{"category":"_@","name":"Double whirlwind Kick","input":"_6_6_+_K_3_+_K"},{"category":"_@","name":"Sky Edge","input":"_6_2_3_+_P"},{"category":"_@","name":"Knuckle Somersault","input":"_4_+_P_P_7_+_K"},{"category":"_@","name":"Gale Hand Straight","input":"_4_6_+_P_2_+_P"},{"category":"_@","name":"Super Tackle","input":"_4_6_6_+_P_+_K"},{"category":"_@","name":"Low Back Knuckle","input":"_1_+_P"},{"category":"_@","name":"Continual Kick","input":"_1_+_K_K_K"},{"category":"_@","name":"Low Straight","input":"^3_+_P"},{"category":"_@","name":"Aerial Kick","input":"_7_+_K"},{"category":"_@","name":"Back Eye back turned","input":"_2_1_4_+_K"},{"category":"_@","name":"Toe Kick opponent knocked down","input":"_3_+_K"},{"category":"_*","name":"Shining Force (SOL)","input":"_2_2_+_G_+_P_+_K"},{"category":"_*","name":"Impulse (SOL) close","input":"_6_4_6_+_P_+_K"},{"category":"_*","name":"Shining Upper (SOL)","input":"_2_3_6_+_P_+_K"},{"category":"_*","name":"Soul Sparkle (SOL)","input":"_1_6_3_2_1_4_3_+_P_+_K"}]},{"name":"GEEZER","moves":[{"category":"_(","name":"Bear Hug","input":"_G_+_P"},{"category":"_(","name":"Iron Head","input":"_4_6_+_G_+_P"},{"category":"_(","name":"Titan Head","input":"_P_G_+_P_+_K"},{"category":"_(","name":"Bomb Head","input":"_K_G_+_P_+_K"},{"category":"_@","name":"Tornado Kick","input":"_G_+_K"},{"category":"_@","name":"Combo Lariat","input":"_P_P_P_6_6_+_P"},{"category":"_@","name":"Combo Middle","input":"_P_P_P_6_6_+_K"},{"category":"_@","name":"Combo Low Kick","input":"_P_P_P_2_+_K"},{"category":"_@","name":"Vicious Strike","input":"^6_+_P"},{"category":"_@","name":"Knee","input":"_6_+_K"},{"category":"_@","name":"Hell Saw","input":"_6_6_+_G_+_K"},{"category":"_@","name":"Power Lariat","input":"_6_6_+_P"},{"category":"_@","name":"Middle Kick","input":"_6_6_+_K"},{"category":"_@","name":"Jack Knife","input":"_6_2_3_+_P"},{"category":"_@","name":"Drop Kick","input":"_4_6_+_K"},{"category":"_@","name":"Mega Tackle","input":"_4_6_6_+_P"},{"category":"_@","name":"Hell Heel","input":"_2_+_K"},{"category":"_@","name":"Elbow Tackle","input":"_2_2_+_P_6_2_3_+_P"},{"category":"_@","name":"Hammer Dip","input":"_2_3_6_+_P"},{"category":"_@","name":"Poison Kick","input":"_1_6_+_K"},{"category":"_@","name":"Flame Chopper","input":"_3_+_P"},{"category":"_@","name":"Hell Stamp opponent knocked down","input":"_3_+_K"},{"category":"_*","name":"Hell Flame (LUNAR)","input":"_2_2_+_G_+_P_+_K"},{"category":"_*","name":"Bloody Cutter (LUNAR)","input":"_6_2_3_+_P_+_K"}]}],"cheatNotes":["_` 2nd Outfit","- On the Character Select Screen _S"],"controlAbbr":{"_G":"GR","_P":"P","_K":"K","_S":"ST"},"systemControlMappings":{"snes":{"y":"_P","b":"_K","x":"_G"},"genesis":{"b":"_P","y":"_K","a":"_G"},"megadrive":{"b":"_P","y":"_K","a":"_G"},"32x":{"b":"_P","y":"_K","c":"_G"},"saturn":{"b":"_P","y":"_K","a":"_G"},"psx":{"y":"_P","b":"_K","x":"_G"},"ps2":{"y":"_P","b":"_K","x":"_G"},"gb":{"b":"_P","a":"_K"},"gbc":{"b":"_P","a":"_K"},"gamegear":{"a":"_P","b":"_K"},"sms":{"a":"_P","b":"_K"},"gba":{"b":"_P","a":"_K","l1":"_G"}},"controlGroups":{"_P":["_P"],"_K":["_K"]}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "hvnsgate"
+  ],
+  "name": "Heaven's Gate",
+  "year": 1996,
+  "manufacturer": "Atlus",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "_G": "Guard",
+    "_P": "Punch",
+    "_K": "Kick",
+    "_S": "Start"
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_#": "Power Release",
+    "_*": "Power Release Moves",
+    "_`": "Power Release Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Run",
+      "input": "_6^6"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4"
+    },
+    {
+      "category": "_)",
+      "name": "Crawl Forward",
+      "input": "^3"
+    },
+    {
+      "category": "_)",
+      "name": "Crawl Backward",
+      "input": "^1"
+    },
+    {
+      "category": "_)",
+      "name": "Side Kick",
+      "input": "_3_+_K"
+    },
+    {
+      "category": "_)",
+      "name": "Pursuit Attack opponent knocked down",
+      "input": "_8_+_P"
+    },
+    {
+      "category": "_)",
+      "name": "Roll Backward knocked down",
+      "input": "_4"
+    },
+    {
+      "category": "_)",
+      "name": "Roll to Background knocked down",
+      "input": "_8"
+    },
+    {
+      "category": "_)",
+      "name": "Roll to Foreground knocked down",
+      "input": "_2"
+    },
+    {
+      "category": "_)",
+      "name": "Quick Get Up knocked down",
+      "input": "_G"
+    },
+    {
+      "category": "_)",
+      "name": "High Kick knocked down",
+      "input": "_P"
+    },
+    {
+      "category": "_)",
+      "name": "Low Kick knocked down",
+      "input": "_K"
+    },
+    {
+      "category": "_#",
+      "name": "Power Release",
+      "input": "_G_+_P_+_K"
+    },
+    {
+      "category": "_*",
+      "name": "Triangle Jump Attack",
+      "input": "_2_8_+_K (on arena with ceiling)"
+    },
+    {
+      "category": "_*",
+      "name": "Assault Cancels any combo",
+      "input": "_G_+_P_+_K"
+    }
+  ],
+  "characters": [
+    {
+      "name": "SHINDO JIN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Shoulder Throw",
+          "input": "_G_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Kumihiza",
+          "input": "_4_6_+_G_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Kumikobushi",
+          "input": "_G_+_P_P_G_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Yanagi: Nagashi",
+          "input": "_2_3_6_+_G (reverse high punch)"
+        },
+        {
+          "category": "_@",
+          "name": "Renken: Ura-Hijitetsu",
+          "input": "_P_P_6_+_P_P"
+        },
+        {
+          "category": "_@",
+          "name": "Ryuga",
+          "input": "_P_P_6_+_P_2_+_P_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Kengekiha",
+          "input": "_P_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Ura-Hizitetsu",
+          "input": "_6_+_P_P"
+        },
+        {
+          "category": "_@",
+          "name": "Souken",
+          "input": "^6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Sentyu",
+          "input": "_6_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Kubikari",
+          "input": "_6_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Ryu no Agito",
+          "input": "_6_2_3_+_P_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Ryousou",
+          "input": "_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Uraken",
+          "input": "_4_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Kenken",
+          "input": "_4_6_+_P_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Syasentyu",
+          "input": "_4_6_6_+_P_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Niren: Hakyaku",
+          "input": "_2_+_K_1_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Niren: Gekiha",
+          "input": "_2_+_K_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Hakyaku",
+          "input": "_2_2_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Morote: Shoutei",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Rensenkuudan",
+          "input": "_2_1_4_+_K_K"
+        },
+        {
+          "category": "_@",
+          "name": "Syasouken",
+          "input": "_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Gekiha",
+          "input": "^3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Koutetugeri opponent knocked down",
+          "input": "_3_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Ryuenkyaku (TRANSCEND)",
+          "input": "_2_2_+_G_+_P_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Ensengoku (TRANSCEND)",
+          "input": "_2_1_4_1_6_+_P_+_K"
+        }
+      ]
+    },
+    {
+      "name": "MINABE KYOSUKE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Push Choke",
+          "input": "_G_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Armlock Rise Throw",
+          "input": "_4_6_+_G_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "High-Low Spin Kick",
+          "input": "_G_+_K_2_+_G_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Combo Up Slicer",
+          "input": "_P_P_P_2_+_P_P"
+        },
+        {
+          "category": "_@",
+          "name": "Jab Low Kick",
+          "input": "_P_2_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Triple Spin Kick",
+          "input": "_K_K_2_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Blow Cutter",
+          "input": "_6_+_P_P"
+        },
+        {
+          "category": "_@",
+          "name": "Blow High Spin Kick",
+          "input": "_6_+_P_K"
+        },
+        {
+          "category": "_@",
+          "name": "Low Kick",
+          "input": "_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Elbow",
+          "input": "_6_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Cyclone Cutter",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Side Spin Kick",
+          "input": "_4_+_P_K"
+        },
+        {
+          "category": "_@",
+          "name": "Tonfer Combo",
+          "input": "_4_6_+_P_P_P"
+        },
+        {
+          "category": "_@",
+          "name": "Up Slicer",
+          "input": "_2_3_6_+_P_P"
+        },
+        {
+          "category": "_@",
+          "name": "Tonfer Swing Straight",
+          "input": "_3_+_P_2_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Down Strike",
+          "input": "^3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Step On opponent knocked down",
+          "input": "_3_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Counter Edge (LUNAR)",
+          "input": "_2_2_+_G_+_P_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Power Solid (LUNAR)",
+          "input": "_2_3_6_+_P_+_K"
+        }
+      ]
+    },
+    {
+      "name": "SAIKAWA NANASE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Nanase Flip",
+          "input": "_G_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Nanase Steiner",
+          "input": "_6_2_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Nanase Combo",
+          "input": "_P_P_P_2_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "One-Two-Elbow Crescent",
+          "input": "_P_P_6_+_P_K"
+        },
+        {
+          "category": "_@",
+          "name": "Nanase Rush",
+          "input": "_P_4_+_P_P"
+        },
+        {
+          "category": "_@",
+          "name": "Elbow Crescent",
+          "input": "_6_+_P_K"
+        },
+        {
+          "category": "_@",
+          "name": "Dash Double Kick",
+          "input": "_6_6_+_K_K"
+        },
+        {
+          "category": "_@",
+          "name": "Tornado Upper",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Body Blow",
+          "input": "_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Low Spin Kick",
+          "input": "_2_+_G_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Elbow Upper",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Crescent Heel",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Continual Kick",
+          "input": "_1_+_K_K_K"
+        },
+        {
+          "category": "_@",
+          "name": "Upper & Tornado Upper",
+          "input": "_3_+_P_1_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Toe Kick opponent knocked down",
+          "input": "_3_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Shinning Upper (SOL)",
+          "input": "_2_2_+_G_+_P_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Solid Gun (SOL)",
+          "input": "_1_6_3_2_1_4_3_+_P_+_K"
+        }
+      ]
+    },
+    {
+      "name": "VERNY",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Belly to Belly Suplex",
+          "input": "_G_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Armlock Throw",
+          "input": "_6_2_+_G_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Heel & Toe Kick",
+          "input": "_G_+_K_2_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Combo Somersault Kick",
+          "input": "_P_P_P_7_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Hook Combo",
+          "input": "_6_+_P_4_+_P_P_2_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Middle Spin Kick",
+          "input": "_6_6_+_G_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Double Spin Kick",
+          "input": "_6_6_+_K_3_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Face Crash",
+          "input": "_6_2_3_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Knuckle Combo",
+          "input": "_4_+_P_P_2_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Down Elbow",
+          "input": "_2_2_+_P_8_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Toe Kick",
+          "input": "_2_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Sliding Kick",
+          "input": "_2_2_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Slash Kick",
+          "input": "_1_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Low Back Knuckle",
+          "input": "_1_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Smash Upper",
+          "input": "_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Down Upper",
+          "input": "^3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Somersault Kick",
+          "input": "_7_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Back Somersault Kick back turned",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Kawara Crash opponent knocked down",
+          "input": "_3_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Energy Ray (LUNAR)",
+          "input": "_2_2_+_G_+_P_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Evil Ray (LUNAR) close",
+          "input": "_6_4_6_+_P_+_K"
+        }
+      ]
+    },
+    {
+      "name": "DULFFER",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Quick Slice",
+          "input": "_G_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Back Stab from behind",
+          "input": "_G_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Spinning Kick",
+          "input": "_G_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Combo Spin Kick",
+          "input": "_P_P_P_7_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "One-Two-Kick",
+          "input": "_P_P_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Three Edge",
+          "input": "_P_P_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Double Side Cut",
+          "input": "_6_+_P_P"
+        },
+        {
+          "category": "_@",
+          "name": "Mad Shredder",
+          "input": "_6_+_P_2_+_P_P"
+        },
+        {
+          "category": "_@",
+          "name": "Low Toe Kick",
+          "input": "_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Screwdriver",
+          "input": "_6_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Slide Edge",
+          "input": "_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Low Edge",
+          "input": "_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Three Slash",
+          "input": "_2_+_K_6_+_K_K"
+        },
+        {
+          "category": "_@",
+          "name": "Kakato Otoshi",
+          "input": "_2_2_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Rising Edge",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Edge Shot",
+          "input": "_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Back Spin Kick",
+          "input": "_7_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Stab opponent knocked down",
+          "input": "_3_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Shining Edge (LUNAR)",
+          "input": "_2_2_+_G_+_P_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Scissors (LUNAR) close",
+          "input": "_6_2_3_+_P_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Fall Edge (LUNAR)",
+          "input": "_8_+_P_+_K (on arena with ceiling)"
+        }
+      ]
+    },
+    {
+      "name": "SASA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Roll Shoulder Throw",
+          "input": "_G_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Neck Throw",
+          "input": "_2_3_6_+_G_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Leg Wrench",
+          "input": "_2_3_6_+_G (reverse high kick)"
+        },
+        {
+          "category": "_@",
+          "name": "Combo Knee",
+          "input": "_P_P_P_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Shake Down",
+          "input": "_6_+_P_P"
+        },
+        {
+          "category": "_@",
+          "name": "Knee",
+          "input": "_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Slide Kick",
+          "input": "_6_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Cyclone",
+          "input": "_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Scorpion Round Kick",
+          "input": "_4_+_P_+_K_6_+_P_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Fist Strike",
+          "input": "_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Tackle",
+          "input": "_4_6_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Heel",
+          "input": "_2_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Rising Palm",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Brush",
+          "input": "_1_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Needle",
+          "input": "_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Back Turn Kick",
+          "input": "_7_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Knee Down opponent knocked down",
+          "input": "_3_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Pine Needle (PLANT)",
+          "input": "_2_2_+_G_+_P_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Energy Drain (PLANT) close",
+          "input": "_6_3_2_1_4_+_P_+_K"
+        }
+      ]
+    },
+    {
+      "name": "ENGETSU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Body Slam",
+          "input": "_G_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Monkey Rock Crash",
+          "input": "_x_+_G_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Rock Head",
+          "input": "_4_6_+_G_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Iron Head",
+          "input": "_P_G_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Monkey Head",
+          "input": "_K_G_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Monkey Dynamite on counter",
+          "input": "_6_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Monkey Typhoon crouching opponent",
+          "input": "_3_+_G_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Monkey Lift Press from behind",
+          "input": "_G_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Monkey Power Hammer",
+          "input": "_6_+_P_2_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Drop Kick",
+          "input": "_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Monkey Lariat",
+          "input": "_6_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Monkey Scoop",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Middle Kick",
+          "input": "_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Monkey Press",
+          "input": "_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Sliding Kick",
+          "input": "_2_2_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Monkey Hammer",
+          "input": "_2_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Monkey Sledgehammer",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Monkey Cyclone",
+          "input": "_2_1_4_+_P_P"
+        },
+        {
+          "category": "_@",
+          "name": "Monkey Upper",
+          "input": "^3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Big Foot Press opponent knocked down",
+          "input": "_3_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Monkey Magic (SOL)",
+          "input": "_2_2_+_G_+_P_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Mad Monkey (SOL) close",
+          "input": "_x_+_P_+_K"
+        }
+      ]
+    },
+    {
+      "name": "A. HAU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Hau-Press",
+          "input": "_G_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Hau-Fist",
+          "input": "_4_6_+_G_+_P, ^*_P"
+        },
+        {
+          "category": "_(",
+          "name": "Hau-Strangle",
+          "input": "_6_4_+_G_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Hau-Lobster",
+          "input": "_P_K_G_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Hau-Mattet",
+          "input": "_K_P_G_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Hau-Fall crouching opponent",
+          "input": "_3_+_G_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Hau-Back from behind",
+          "input": "_G_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "One-Two-Upper",
+          "input": "_P_P_P"
+        },
+        {
+          "category": "_@",
+          "name": "Hau-Combo Low",
+          "input": "_P_P_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Hau-Combo",
+          "input": "_P_P_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Hau-Body",
+          "input": "_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Hau-Head",
+          "input": "_6_+_P_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Hau-Butt",
+          "input": "_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Hau-Press",
+          "input": "_6_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Hau-Flying Kneel",
+          "input": "_6_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Hau-Hip Down",
+          "input": "_6_2_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Hau-Low",
+          "input": "_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Hau-Tackle",
+          "input": "_4_6_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Hau-Rolling",
+          "input": "_4_1_2_3_6_+_P_4_1_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Hau-Astride",
+          "input": "_2_+_P_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Hau-Upper",
+          "input": "_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Hau-Mistake",
+          "input": "_8_+_P_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Drop Iron Head opponent knocked down",
+          "input": "_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Holly Anmer opponent knocked down",
+          "input": "_6_3_2_1_4_+_G_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Hau-Dance (SOL)",
+          "input": "_2_2_+_G_+_P_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Hau-Warp (SOL)",
+          "input": "_6_2_3_+_P_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Hau-Drop",
+          "input": "_8_2_+_P_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Marvel Holy Anmer",
+          "input": "_G_+_P_+_K_G_P_K_G_+_P_+_K"
+        }
+      ]
+    },
+    {
+      "name": "DYBYD",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Roll Throw",
+          "input": "_G_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Twin Lazer",
+          "input": "_2_3_6_+_G_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Thrust from behind",
+          "input": "_G_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Counter Throw",
+          "input": "_2_3_6_+_G (reverse high kick)"
+        },
+        {
+          "category": "_@",
+          "name": "Rash Knee",
+          "input": "_P_P_P_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Step Elbow",
+          "input": "_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Step Straight",
+          "input": "^6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Knee",
+          "input": "_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Lariat",
+          "input": "_6_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Kneel Kick",
+          "input": "_6_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Middle Kick",
+          "input": "_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Drop Kick",
+          "input": "_4_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Tackle",
+          "input": "_4_6_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Chopping Straight",
+          "input": "_2_+_P_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "High Toe Kick",
+          "input": "_2_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Rising Palm",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Turn Kick",
+          "input": "_2_1_4_+_K_K"
+        },
+        {
+          "category": "_@",
+          "name": "Brush",
+          "input": "_1_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Skid Kick",
+          "input": "_1_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Lightning Needle",
+          "input": "_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Fall Knee opponent knocked down",
+          "input": "_3_+_K"
+        }
+      ]
+    },
+    {
+      "name": "UNKNOWN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "God Flip",
+          "input": "_G_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Stream",
+          "input": "_6_2_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "God's Fist",
+          "input": "_4_6_+_G_+_P, ^*_P"
+        },
+        {
+          "category": "_@",
+          "name": "High Combo",
+          "input": "_P_P_P_K"
+        },
+        {
+          "category": "_@",
+          "name": "Low Combo",
+          "input": "_P_P_P_2_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Somersault Combo",
+          "input": "_P_P_P_7_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Middle whirlwind Kick",
+          "input": "_6_6_+_G_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Double whirlwind Kick",
+          "input": "_6_6_+_K_3_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Sky Edge",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Knuckle Somersault",
+          "input": "_4_+_P_P_7_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Gale Hand Straight",
+          "input": "_4_6_+_P_2_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Super Tackle",
+          "input": "_4_6_6_+_P_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Low Back Knuckle",
+          "input": "_1_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Continual Kick",
+          "input": "_1_+_K_K_K"
+        },
+        {
+          "category": "_@",
+          "name": "Low Straight",
+          "input": "^3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Aerial Kick",
+          "input": "_7_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Back Eye back turned",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Toe Kick opponent knocked down",
+          "input": "_3_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Shining Force (SOL)",
+          "input": "_2_2_+_G_+_P_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Impulse (SOL) close",
+          "input": "_6_4_6_+_P_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Shining Upper (SOL)",
+          "input": "_2_3_6_+_P_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Soul Sparkle (SOL)",
+          "input": "_1_6_3_2_1_4_3_+_P_+_K"
+        }
+      ]
+    },
+    {
+      "name": "GEEZER",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Bear Hug",
+          "input": "_G_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Iron Head",
+          "input": "_4_6_+_G_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Titan Head",
+          "input": "_P_G_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Bomb Head",
+          "input": "_K_G_+_P_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Tornado Kick",
+          "input": "_G_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Combo Lariat",
+          "input": "_P_P_P_6_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Combo Middle",
+          "input": "_P_P_P_6_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Combo Low Kick",
+          "input": "_P_P_P_2_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Vicious Strike",
+          "input": "^6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Knee",
+          "input": "_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Hell Saw",
+          "input": "_6_6_+_G_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Power Lariat",
+          "input": "_6_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Middle Kick",
+          "input": "_6_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Jack Knife",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Drop Kick",
+          "input": "_4_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Mega Tackle",
+          "input": "_4_6_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Hell Heel",
+          "input": "_2_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Elbow Tackle",
+          "input": "_2_2_+_P_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Hammer Dip",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Poison Kick",
+          "input": "_1_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Flame Chopper",
+          "input": "_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Hell Stamp opponent knocked down",
+          "input": "_3_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Hell Flame (LUNAR)",
+          "input": "_2_2_+_G_+_P_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Bloody Cutter (LUNAR)",
+          "input": "_6_2_3_+_P_+_K"
+        }
+      ]
+    }
+  ],
+  "cheatNotes": [
+    "_` 2nd Outfit",
+    "- On the Character Select Screen _S"
+  ],
+  "controlAbbr": {
+    "_G": "GR",
+    "_P": "P",
+    "_K": "K",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_P",
+      "b": "_K",
+      "x": "_G"
+    },
+    "genesis": {
+      "b": "_P",
+      "y": "_K",
+      "a": "_G"
+    },
+    "megadrive": {
+      "b": "_P",
+      "y": "_K",
+      "a": "_G"
+    },
+    "32x": {
+      "b": "_P",
+      "y": "_K",
+      "c": "_G"
+    },
+    "saturn": {
+      "b": "_P",
+      "y": "_K",
+      "a": "_G"
+    },
+    "psx": {
+      "y": "_P",
+      "b": "_K",
+      "x": "_G"
+    },
+    "ps2": {
+      "y": "_P",
+      "b": "_K",
+      "x": "_G"
+    },
+    "gb": {
+      "b": "_P",
+      "a": "_K"
+    },
+    "gbc": {
+      "b": "_P",
+      "a": "_K"
+    },
+    "gamegear": {
+      "a": "_P",
+      "b": "_K"
+    },
+    "sms": {
+      "a": "_P",
+      "b": "_K"
+    },
+    "gba": {
+      "b": "_P",
+      "a": "_K",
+      "l1": "_G"
+    }
+  },
+  "controlGroups": {
+    "_P": [
+      "_P"
+    ],
+    "_K": [
+      "_K"
+    ]
+  }
+}

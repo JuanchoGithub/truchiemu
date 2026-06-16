@@ -1,1 +1,396 @@
-{"schemaVersion":2,"romIds":["avsp","avspa","avsph","avspj","avspu"],"name":"Alien vs. Predator","year":1994,"manufacturer":"Capcom","credits":"Fabricio Coroquer","controls":{"_A":"Gun","_B":"Attack","_C":"Jump","_S":"Start"},"categories":{"_(":"Normal Throws","_)":"Command Moves","_*":"Desperation Moves","_`":"Desperation Moves"},"characters":[{"name":"PREDATOR WARRIOR","moves":[{"category":"_(","name":"Grab close","input":"_6"},{"category":"_(","name":"Wristblades Pummel","input":"_X_B"},{"category":"_(","name":"Ground Smash","input":"_C^2_+_O_B"},{"category":"_)","name":"Dash","input":"_6_+_C"},{"category":"_)","name":"Kick","input":"_B"},{"category":"_)","name":"Knee","input":"_2_+_B"},{"category":"_)","name":"Backward Hop","input":"_4_+_C"},{"category":"_)","name":"High Dash","input":"_9_+_C"},{"category":"_)","name":"Short Slide","input":"_2_+_C"},{"category":"_)","name":"Long Slide","input":"_3_+_C"},{"category":"_)","name":"High Jump","input":"_8_+_C"},{"category":"_)","name":"P.Spear Dive","input":"_C _2_+_C"},{"category":"_)","name":"Flying Kick","input":"_2_8_+_B"},{"category":"_*","name":"Twirling P.Spear","input":"_A_+_B / _A_+_C / _B_+_C"}],"notes":["Favorite Weapon          P.Spear","Gun                      Shoulder Cannon","Speed                    70%","Power                    60%","Skill                    65%"]},{"name":"Maj. DUTCH SCHAEFER","moves":[{"category":"_(","name":"Grab close","input":"_6"},{"category":"_(","name":"Pummel","input":"_X_B"},{"category":"_(","name":"Suplex","input":"_4 / _6_+_B"},{"category":"_(","name":"Backbreaker","input":"_C_B"},{"category":"_)","name":"Rush","input":"_C"},{"category":"_)","name":"Rush 'N Punch","input":"_B"},{"category":"_)","name":"Low Attack","input":"_2_+_C"},{"category":"_)","name":"Jump","input":"_8_+_C"},{"category":"_)","name":"Spinning Kick","input":"_B"},{"category":"_)","name":"Smart Gun Rig Uppercut","input":"_2_8_+_B (^*)"},{"category":"_*","name":"Spinning Electric Sparks","input":"_A_+_B / _A_+_C / _B_+_C"}],"notes":["Favorite Weapon          None","Gun                      Smart Gun","Speed                    30%","Power                    100%","Skill                    50%"]},{"name":"Lt. LINN KUROSAWA","moves":[{"category":"_)","name":"Front Flip","input":"_6_+_C"},{"category":"_)","name":"Back Flip","input":"_4_+_C"},{"category":"_)","name":"Sliding Kick","input":"_2_+_C"},{"category":"_)","name":"High Jump","input":"_8_+_C"},{"category":"_)","name":"High Flip","input":"_9_+_C"},{"category":"_)","name":"Jump Kick","input":"_C _B"},{"category":"_)","name":"Jumping Stab","input":"_C _2_+_B"},{"category":"_)","name":"Air Throw","input":"_C _B"},{"category":"_)","name":"Katani Slice","input":"_4_4 / _6_6"},{"category":"_)","name":"Soukeiha","input":"_O_B"},{"category":"_)","name":"Koeikyaku","input":"_2_8_+_B"},{"category":"_*","name":"Senpuzan","input":"_A_+_B / _A_+_C / _B_+_C"}],"notes":["Favorite Weapon          Katana","Gun                      Large Caliber Pistol","Speed                    60%","Power                    20%","Skill                    100%"]},{"name":"PREDATOR HUNTER","moves":[{"category":"_(","name":"Grab close","input":"_6"},{"category":"_(","name":"Wristblades Pummel","input":"_X_B"},{"category":"_(","name":"Ground Smash","input":"_C^2_+_O_B"},{"category":"_)","name":"Dash","input":"_6_+_C"},{"category":"_)","name":"Dash Kick","input":"_B"},{"category":"_)","name":"Flying Tackle","input":"_2_+_B"},{"category":"_)","name":"Backward Hop","input":"_4_+_C"},{"category":"_)","name":"Short Slide","input":"_2_+_C"},{"category":"_)","name":"Long Slide","input":"_3_+_C"},{"category":"_)","name":"High Jump","input":"_8_+_C"},{"category":"_)","name":"High Dash","input":"_9_+_C"},{"category":"_)","name":"Diving Cannonball","input":"_C _2_+_C"},{"category":"_)","name":"Wristblades Uppercut","input":"_2_8_+_B"},{"category":"_*","name":"Mini-Discs Spin","input":"_A_+_B / _A_+_C / _B_+_C"}],"notes":["Favorite Weapon          Halberd","Gun                      Shoulder Cannon","Speed                    70%","Power                    70%","Skill                    45%"]}],"controlAbbr":{"_A":"GN","_B":"AT","_C":"JM","_S":"ST"},"systemControlMappings":{"snes":{"y":"_A","b":"_B","a":"_C"},"genesis":{"b":"_A","y":"_B","a":"_C"},"megadrive":{"b":"_A","y":"_B","a":"_C"},"32x":{"b":"_A","y":"_B","c":"_C"},"saturn":{"b":"_A","y":"_B","a":"_C"},"psx":{"y":"_A","b":"_B","a":"_C"},"ps2":{"y":"_A","b":"_B","a":"_C"},"gb":{"b":"_A","a":"_B"},"gbc":{"b":"_A","a":"_B"},"gba":{"b":"_A","a":"_B","l1":"_C"}},"controlGroups":{"_P":["_A","_C"],"_K":["_B"]}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "avsp",
+    "avspa",
+    "avsph",
+    "avspj",
+    "avspu"
+  ],
+  "name": "Alien vs. Predator",
+  "year": 1994,
+  "manufacturer": "Capcom",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "_A": "Gun",
+    "_B": "Attack",
+    "_C": "Jump",
+    "_S": "Start"
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_*": "Desperation Moves",
+    "_`": "Desperation Moves"
+  },
+  "characters": [
+    {
+      "name": "PREDATOR WARRIOR",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6"
+        },
+        {
+          "category": "_(",
+          "name": "Wristblades Pummel",
+          "input": "_X_B"
+        },
+        {
+          "category": "_(",
+          "name": "Ground Smash",
+          "input": "_C^2_+_O_B"
+        },
+        {
+          "category": "_)",
+          "name": "Dash",
+          "input": "_6_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "Kick",
+          "input": "_B"
+        },
+        {
+          "category": "_)",
+          "name": "Knee",
+          "input": "_2_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Backward Hop",
+          "input": "_4_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "High Dash",
+          "input": "_9_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "Short Slide",
+          "input": "_2_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "Long Slide",
+          "input": "_3_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "High Jump",
+          "input": "_8_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "P.Spear Dive",
+          "input": "_C _2_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "Flying Kick",
+          "input": "_2_8_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Twirling P.Spear",
+          "input": "_A_+_B / _A_+_C / _B_+_C"
+        }
+      ],
+      "notes": [
+        "Favorite Weapon          P.Spear",
+        "Gun                      Shoulder Cannon",
+        "Speed                    70%",
+        "Power                    60%",
+        "Skill                    65%"
+      ]
+    },
+    {
+      "name": "Maj. DUTCH SCHAEFER",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6"
+        },
+        {
+          "category": "_(",
+          "name": "Pummel",
+          "input": "_X_B"
+        },
+        {
+          "category": "_(",
+          "name": "Suplex",
+          "input": "_4 / _6_+_B"
+        },
+        {
+          "category": "_(",
+          "name": "Backbreaker",
+          "input": "_C_B"
+        },
+        {
+          "category": "_)",
+          "name": "Rush",
+          "input": "_C"
+        },
+        {
+          "category": "_)",
+          "name": "Rush 'N Punch",
+          "input": "_B"
+        },
+        {
+          "category": "_)",
+          "name": "Low Attack",
+          "input": "_2_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "Jump",
+          "input": "_8_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "Spinning Kick",
+          "input": "_B"
+        },
+        {
+          "category": "_)",
+          "name": "Smart Gun Rig Uppercut",
+          "input": "_2_8_+_B (^*)"
+        },
+        {
+          "category": "_*",
+          "name": "Spinning Electric Sparks",
+          "input": "_A_+_B / _A_+_C / _B_+_C"
+        }
+      ],
+      "notes": [
+        "Favorite Weapon          None",
+        "Gun                      Smart Gun",
+        "Speed                    30%",
+        "Power                    100%",
+        "Skill                    50%"
+      ]
+    },
+    {
+      "name": "Lt. LINN KUROSAWA",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Front Flip",
+          "input": "_6_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "Back Flip",
+          "input": "_4_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "Sliding Kick",
+          "input": "_2_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "High Jump",
+          "input": "_8_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "High Flip",
+          "input": "_9_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "Jump Kick",
+          "input": "_C _B"
+        },
+        {
+          "category": "_)",
+          "name": "Jumping Stab",
+          "input": "_C _2_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Air Throw",
+          "input": "_C _B"
+        },
+        {
+          "category": "_)",
+          "name": "Katani Slice",
+          "input": "_4_4 / _6_6"
+        },
+        {
+          "category": "_)",
+          "name": "Soukeiha",
+          "input": "_O_B"
+        },
+        {
+          "category": "_)",
+          "name": "Koeikyaku",
+          "input": "_2_8_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Senpuzan",
+          "input": "_A_+_B / _A_+_C / _B_+_C"
+        }
+      ],
+      "notes": [
+        "Favorite Weapon          Katana",
+        "Gun                      Large Caliber Pistol",
+        "Speed                    60%",
+        "Power                    20%",
+        "Skill                    100%"
+      ]
+    },
+    {
+      "name": "PREDATOR HUNTER",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6"
+        },
+        {
+          "category": "_(",
+          "name": "Wristblades Pummel",
+          "input": "_X_B"
+        },
+        {
+          "category": "_(",
+          "name": "Ground Smash",
+          "input": "_C^2_+_O_B"
+        },
+        {
+          "category": "_)",
+          "name": "Dash",
+          "input": "_6_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "Dash Kick",
+          "input": "_B"
+        },
+        {
+          "category": "_)",
+          "name": "Flying Tackle",
+          "input": "_2_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Backward Hop",
+          "input": "_4_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "Short Slide",
+          "input": "_2_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "Long Slide",
+          "input": "_3_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "High Jump",
+          "input": "_8_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "High Dash",
+          "input": "_9_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "Diving Cannonball",
+          "input": "_C _2_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "Wristblades Uppercut",
+          "input": "_2_8_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Mini-Discs Spin",
+          "input": "_A_+_B / _A_+_C / _B_+_C"
+        }
+      ],
+      "notes": [
+        "Favorite Weapon          Halberd",
+        "Gun                      Shoulder Cannon",
+        "Speed                    70%",
+        "Power                    70%",
+        "Skill                    45%"
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_A": "GN",
+    "_B": "AT",
+    "_C": "JM",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_A",
+      "b": "_B",
+      "a": "_C"
+    },
+    "genesis": {
+      "b": "_A",
+      "y": "_B",
+      "a": "_C"
+    },
+    "megadrive": {
+      "b": "_A",
+      "y": "_B",
+      "a": "_C"
+    },
+    "32x": {
+      "b": "_A",
+      "y": "_B",
+      "c": "_C"
+    },
+    "saturn": {
+      "b": "_A",
+      "y": "_B",
+      "a": "_C"
+    },
+    "psx": {
+      "y": "_A",
+      "b": "_B",
+      "a": "_C"
+    },
+    "ps2": {
+      "y": "_A",
+      "b": "_B",
+      "a": "_C"
+    },
+    "gb": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gbc": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gba": {
+      "b": "_A",
+      "a": "_B",
+      "l1": "_C"
+    }
+  },
+  "controlGroups": {
+    "_P": [
+      "_A",
+      "_C"
+    ],
+    "_K": [
+      "_B"
+    ]
+  }
+}

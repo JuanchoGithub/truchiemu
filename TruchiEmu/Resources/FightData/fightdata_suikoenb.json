@@ -1,1 +1,921 @@
-{"schemaVersion":2,"romIds":["suikoenb"],"name":"Suiko Enbu","controls":{"^E":"Weak Punch","^F":"Medium Punch","^G":"Strong Punch","^H":"Weak Kick","^I":"Medium Kick","^J":"Strong Kick","_S":"Start"},"controlGroups":{"_P":["^E","^F","^G"],"_K":["^H","^I","^J"]},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves","_`":"Weapon System"},"commonCommands":[{"category":"_)","name":"Dash","input":"_6_6","condition":"─"},{"category":"_)","name":"Retreat","input":"_4_4","condition":"─"},{"category":"_)","name":"Run Forward","input":"_6^6","condition":"─"},{"category":"_)","name":"Run Backward","input":"_4_4^4","condition":"─"},{"category":"_)","name":"Low Jump","input":"_8^2","condition":"─"},{"category":"_)","name":"Projectile Hop jump on projectile, then","input":"_2","condition":"─"},{"category":"_)","name":"Throw Weapon","input":"^G_+^J","condition":"W"},{"category":"_)","name":"Taunt","input":"^E_+^H","condition":"─"},{"category":"_)","name":"Fake Dizzy","input":"^F_+^I","condition":"─"}],"characters":[{"name":"SHISHIN","moves":[{"category":"_(","name":"Shoulder Throw","input":"_4 / _6_+^F / ^G","condition":"W"},{"category":"_(","name":"Projectile Hop","input":"_4 / _6_+^F / ^G","condition":"N"},{"category":"_@","name":"Flying Serpent Missile","input":"_2_3_6_+_P","condition":"─"},{"category":"_@","name":"Flaming Serpent Sword","input":"_6_2_3_+_P","condition":"W"},{"category":"_@","name":"Knee Kick","input":"_2_8_+_K","condition":"─"},{"category":"_@","name":"Dashing Serpent Punch","input":"_2_1_4_+_P","condition":"N"}]},{"name":"RINCHUU","moves":[{"category":"_(","name":"Setup Impale","input":"_4 / _6_+^F / ^G","condition":"W"},{"category":"_(","name":"One Handed Throw","input":"_4 / _6_+^F / ^G","condition":"N"},{"category":"_)","name":"Thrust Kick","input":"_6_+^J","condition":"─"},{"category":"_@","name":"Invincible Rapid Fire","input":"^*_P","condition":"W"},{"category":"_@","name":"Savage Panther Claw","input":"_4_1_2_3_6_+_P","condition":"─"},{"category":"_@","name":"Typhoon Spear","input":"_6_2_3_+_K","condition":"W"},{"category":"_@","name":"Typhoon Spear","input":"_2_3_6_+_K","condition":"W"},{"category":"_@","name":"Cartwheel Kick","input":"_6_3_2_1_4_+_P","condition":"─"}]},{"name":"KOSANJYOU","moves":[{"category":"_(","name":"Frankensteiner","input":"_4 / _6_+^F / ^G","condition":"W"},{"category":"_(","name":"Changing Winds","input":"_4 / _6_+^F / ^G","condition":"N"},{"category":"_(","name":"Earth Direct","input":"_^_4 / _6_+^F / ^G","condition":"─"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_6_+_P / _K","condition":"─"},{"category":"_@","name":"Flaming Jasmine Wave","input":"_2_3_6_+_P","condition":"─"},{"category":"_@","name":"Typhoon Slasher","input":"_6_2_3_+_P","condition":"W"},{"category":"_@","name":"Samsara Kick","input":"_2_3_6_+_K","condition":"─"}]},{"name":"TAISOU","moves":[{"category":"_(","name":"Neckringer","input":"_4 / _6_+^F / ^G","condition":"W"},{"category":"_(","name":"Chest Chop","input":"_4 / _6_+^F / ^G","condition":"N"},{"category":"_(","name":"Chest Stomp","input":"_^_4 / _6_+^F / ^G","condition":"─"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_6_+_P / _K","condition":"─"},{"category":"_@","name":"Flaming Ki Punch","input":"^1_6_+_P","condition":"─"},{"category":"_@","name":"Ki Bomb","input":"_^_2_3_6_+_P (x5)","condition":"─"},{"category":"_@","name":"Majestic Teleport Attack","input":"_6_2_3_+_P","condition":"─"},{"category":"_@","name":"Teleport","input":"_6_3_2_1_4_+_K","condition":"─"}]},{"name":"RIKI","moves":[{"category":"_(","name":"Slice and Dice","input":"_4 / _6_+^F / ^G","condition":"W"},{"category":"_(","name":"Body Fling","input":"_4 / _6_+^F / ^G","condition":"N"},{"category":"_@","name":"Mandarin Earth Splitter","input":"_2_1_4_+_P / ^W","condition":"─"},{"category":"_@","name":"Scorching Breath","input":"_6_2_3_+_P","condition":"─"},{"category":"_@","name":"Black Death Blizzard","input":"_4_1_2_3_6_+_P","condition":"W"}]},{"name":"ROCHINSHIN","moves":[{"category":"_(","name":"Delayed Choke Slam","input":"_4 / _6_+^F / ^G","condition":"W"},{"category":"_(","name":"Smash and Uppercut","input":"_4 / _6_+^F / ^G","condition":"N"},{"category":"_@","name":"Flying Shadow Fist","input":"^1_6_+_P","condition":"W"},{"category":"_@","input":"^!Twin Fist (with ^F / ^G)                                      _2_3_6_+_P","condition":"W"},{"category":"_@","name":"Manchurian Fang","input":"_4_1_2_3_6_+_P (_O)","condition":"─"},{"category":"_@","input":"^!Powered Up                                                    ^*_?","condition":"─"},{"category":"_@","name":"Silkworm Slash","input":"_^_6_4_6_+_P","condition":"W"},{"category":"_@","name":"Freeze Ball","input":"_2_1_4_+_P","condition":"N"},{"category":"_@","name":"Low Freeze Ball","input":"_6_3_2_1_4_+_K","condition":"N"}]},{"name":"KOUSONSYOU","moves":[{"category":"_(","name":"Stomach Pummel","input":"_4 / _6_+^F","condition":"W"},{"category":"_(","name":"Hair Flip","input":"_4 / _6_+^G","condition":"W"},{"category":"_(","name":"Punch Wheel","input":"_4 / _6_+^F / ^G","condition":"N"},{"category":"_)","name":"Spirit Double Backfist","input":"_6_+^G","condition":"W"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_6_+_P / _K","condition":"─"},{"category":"_@","name":"Cosmic Strike","input":"^*_P","condition":"W"},{"category":"_@","name":"Earth Scorcher","input":"_2_3_6_+_P","condition":"W"},{"category":"_@","name":"Low Earth Scorcher","input":"_2_3_6_+_K","condition":"W"},{"category":"_@","name":"Meteor Strike","input":"_6_4_6_+_P","condition":"─"},{"category":"_@","name":"Horrifying Hellraiser","input":"^4_6_+_P","condition":"W"},{"category":"_@","name":"Hellraiser Slide","input":"^4_6_+_K","condition":"W"},{"category":"_@","name":"Mongolian Bear Hug close","input":"_6_3_2_1_4_1_2_+_P","condition":"W"}]},{"name":"BUSHOU","moves":[{"category":"_(","name":"Beat Down","input":"_4 / _6_+^F","condition":"─"},{"category":"_(","name":"Double Hook Suplex","input":"_4 / _6_+^G","condition":"W"},{"category":"_(","name":"D.D.T.","input":"_4 / _6_+^G","condition":"N"},{"category":"_(","name":"Air Double Hook Suplex","input":"_^_4 / _6_+^F / ^G","condition":"─"},{"category":"_)","name":"Reaching Tonfa Punch","input":"_6_+^G","condition":"W"},{"category":"_)","name":"Reaching Fist","input":"_6_+^G","condition":"N"},{"category":"_)","name":"Hop Knee","input":"_6_+^J","condition":"─"},{"category":"_@","name":"Shredding Talon","input":"_2_1_4_+_K","condition":"─"},{"category":"_@","name":"Crushing Tiger Claw","input":"_6_2_3_+_P","condition":"W"},{"category":"_@","name":"Doomsday Dragon close","input":"_6_3_2_1_4_1_2_+_P","condition":"─"},{"category":"_@","name":"Rushing Dragon","input":"_2_1_4_+_P (x3)","condition":"N"},{"category":"_@","name":"Piledriver close","input":"_6_3_2_1_4_+_P","condition":"N"},{"category":"_@","name":"Axe Kick","input":"_6_3_2_1_4_6_3_2_1_4_+_K","condition":"N"}]},{"name":"GEN SHOUJI","moves":[{"category":"_(","name":"Pinwheel Toss","input":"_4 / _6_+^F / ^G","condition":"W"},{"category":"_(","name":"Throat Kick","input":"_4 / _6_+^F / ^G","condition":"N"},{"category":"_@","name":"Shao Lin Slash and Burn","input":"^4_6_+_P","condition":"─"},{"category":"_@","name":"Skull Crusher","input":"_2_8_+_P","condition":"W"},{"category":"_@","name":"Water Torture","input":"_4_1_2_3_6_+_O_K","condition":"W"},{"category":"_@","input":"^!Move                                                          _4 / _6","condition":"W"},{"category":"_@","input":"^!Water Claw                                                    ^E","condition":"W"},{"category":"_@","input":"^!Water Spike                                                   ^F","condition":"W"},{"category":"_@","input":"^!Water Cage                                                    ^G","condition":"W"},{"category":"_@","input":"^!Skull Crusher                                                 _2_8_+_P","condition":"W"},{"category":"_@","name":"Shao Lin Crescent","input":"_6_2_3_+_K","condition":"─"},{"category":"_@","name":"Water Summoning","input":"_O^T","condition":"N"}]},{"name":"GEN SHOUGO","moves":[{"category":"_(","name":"Head Bite","input":"_4 / _6_+^F / ^G","condition":"─"},{"category":"_@","name":"Nunchaku Rage","input":"^*_P","condition":"W"},{"category":"_@","input":"^!Move                                                          _4 / _6","condition":"W"},{"category":"_@","name":"Punishing One-Two","input":"_2_3_6_+_P","condition":"─"},{"category":"_@","name":"Brilliant Storm","input":"_1_2_3_2_1_+_K","condition":"─"},{"category":"_@","name":"Phantom Cyclone Stinger","input":"_6_3_2_1_4_+_P","condition":"─"},{"category":"_@","name":"Mirage Roll","input":"_6_4_1_2_3_6_+_K","condition":"─"}]},{"name":"GEN SHOUSHICHI","moves":[{"category":"_(","name":"Throat Kick","input":"_4 / _6_+^F / ^G","condition":"W"},{"category":"_(","name":"Pinwheel Toss","input":"_4 / _6_+^F / ^G","condition":"N"},{"category":"_@","name":"Nunchaku Rage","input":"^*_P","condition":"W"},{"category":"_@","name":"Shao Lin Slash and Burn","input":"^4_6_+_P","condition":"─"},{"category":"_@","name":"Phantom Cyclone Stinger","input":"_6_3_2_1_4_+_P","condition":"─"},{"category":"_@","name":"Shao Lin Crescent","input":"_6_2_3_+_K","condition":"─"},{"category":"_@","name":"Mirage Roll","input":"_6_4_1_2_3_6_+_K","condition":"─"},{"category":"_@","name":"Triple-Leg Deathtrap","input":"_2_1_4_+_K","condition":"N"}]},{"name":"CHOUGAI","moves":[{"category":"_(","name":"One Handed Toss","input":"_4 / _6_+^G","condition":"─"},{"category":"_@","name":"Inferno Gust","input":"_6_3_2_1_4_+_P","condition":"─"},{"category":"_@","name":"Grave Kick","input":"_2_3_6_+_K","condition":"─"},{"category":"_@","name":"TRANSFORMED lose a round","condition":"─"},{"category":"_(","name":"One Handed Toss","input":"_4 / _6_+^G","condition":"─"},{"category":"_(","name":"Choking Spike","input":"_^_4 / _6_+^G","condition":"─"},{"category":"_)","name":"Rock Headbutt","input":"_6_+^G","condition":"─"},{"category":"_@","name":"Grave Kick","input":"_2_1_4_+_K","condition":"─"}],"notes":["TRANSFORMED"]}],"cheatNotes":["_` Color Select","- 1st Color, select the character with ^E","- 2nd Color, select the character with ^F","- 3rd Color, select the character with ^G","- 4th Color, select the character with ^H","- 5th Color, select the character with ^I","- 6th Color, select the character with ^J","- 7th Color, select the character with _S"],"controlAbbr":{"^E":"LP","^F":"MP","^G":"HP","^H":"LK","^I":"MK","^J":"HK","_S":"ST"},"systemControlMappings":{"snes":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"genesis":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"megadrive":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"32x":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"saturn":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"psx":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"ps2":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"gba":{"b":"^E","a":"^F","l1":"^G","y":"^H","x":"^I","r1":"^J"},"pce":{"b":"^E","a":"^H"},"pce6":{"b":"^E","y":"^F","l1":"^G","a":"^H","x":"^I","r1":"^J"},"3do":{"b":"^E","a":"^F","l1":"^G","y":"^H","x":"^I","r1":"^J"},"n64":{"b":"^E","cDown":"^F","cRight":"^G","a":"^H","cLeft":"^I","cUp":"^J"},"dreamcast":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"gb":{"b":"^E","a":"^H"},"gbc":{"b":"^E","a":"^H"},"gamegear":{"a":"^E","b":"^H"},"sms":{"a":"^E","b":"^H"},"ngpc":{"b":"^E","y":"^F","l1":"^G","a":"^H","x":"^I","r1":"^J"},"lynx":{"b":"^E","a":"^F","l1":"^G","y":"^H","x":"^I","r1":"^J"},"wswan":{"b":"^E","a":"^H"}}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "suikoenb"
+  ],
+  "name": "Suiko Enbu",
+  "controls": {
+    "^E": "Weak Punch",
+    "^F": "Medium Punch",
+    "^G": "Strong Punch",
+    "^H": "Weak Kick",
+    "^I": "Medium Kick",
+    "^J": "Strong Kick",
+    "_S": "Start"
+  },
+  "controlGroups": {
+    "_P": [
+      "^E",
+      "^F",
+      "^G"
+    ],
+    "_K": [
+      "^H",
+      "^I",
+      "^J"
+    ]
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_`": "Weapon System"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "_6_6",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Run Forward",
+      "input": "_6^6",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Run Backward",
+      "input": "_4_4^4",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Low Jump",
+      "input": "_8^2",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Projectile Hop jump on projectile, then",
+      "input": "_2",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Throw Weapon",
+      "input": "^G_+^J",
+      "condition": "W"
+    },
+    {
+      "category": "_)",
+      "name": "Taunt",
+      "input": "^E_+^H",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Fake Dizzy",
+      "input": "^F_+^I",
+      "condition": "─"
+    }
+  ],
+  "characters": [
+    {
+      "name": "SHISHIN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Shoulder Throw",
+          "input": "_4 / _6_+^F / ^G",
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "Projectile Hop",
+          "input": "_4 / _6_+^F / ^G",
+          "condition": "N"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Serpent Missile",
+          "input": "_2_3_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Flaming Serpent Sword",
+          "input": "_6_2_3_+_P",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Knee Kick",
+          "input": "_2_8_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Dashing Serpent Punch",
+          "input": "_2_1_4_+_P",
+          "condition": "N"
+        }
+      ]
+    },
+    {
+      "name": "RINCHUU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Setup Impale",
+          "input": "_4 / _6_+^F / ^G",
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "One Handed Throw",
+          "input": "_4 / _6_+^F / ^G",
+          "condition": "N"
+        },
+        {
+          "category": "_)",
+          "name": "Thrust Kick",
+          "input": "_6_+^J",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Invincible Rapid Fire",
+          "input": "^*_P",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Savage Panther Claw",
+          "input": "_4_1_2_3_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Typhoon Spear",
+          "input": "_6_2_3_+_K",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Typhoon Spear",
+          "input": "_2_3_6_+_K",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Cartwheel Kick",
+          "input": "_6_3_2_1_4_+_P",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "KOSANJYOU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Frankensteiner",
+          "input": "_4 / _6_+^F / ^G",
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "Changing Winds",
+          "input": "_4 / _6_+^F / ^G",
+          "condition": "N"
+        },
+        {
+          "category": "_(",
+          "name": "Earth Direct",
+          "input": "_^_4 / _6_+^F / ^G",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_6_+_P / _K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Flaming Jasmine Wave",
+          "input": "_2_3_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Typhoon Slasher",
+          "input": "_6_2_3_+_P",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Samsara Kick",
+          "input": "_2_3_6_+_K",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "TAISOU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Neckringer",
+          "input": "_4 / _6_+^F / ^G",
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "Chest Chop",
+          "input": "_4 / _6_+^F / ^G",
+          "condition": "N"
+        },
+        {
+          "category": "_(",
+          "name": "Chest Stomp",
+          "input": "_^_4 / _6_+^F / ^G",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_6_+_P / _K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Flaming Ki Punch",
+          "input": "^1_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Ki Bomb",
+          "input": "_^_2_3_6_+_P (x5)",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Majestic Teleport Attack",
+          "input": "_6_2_3_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Teleport",
+          "input": "_6_3_2_1_4_+_K",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "RIKI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Slice and Dice",
+          "input": "_4 / _6_+^F / ^G",
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "Body Fling",
+          "input": "_4 / _6_+^F / ^G",
+          "condition": "N"
+        },
+        {
+          "category": "_@",
+          "name": "Mandarin Earth Splitter",
+          "input": "_2_1_4_+_P / ^W",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Scorching Breath",
+          "input": "_6_2_3_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Black Death Blizzard",
+          "input": "_4_1_2_3_6_+_P",
+          "condition": "W"
+        }
+      ]
+    },
+    {
+      "name": "ROCHINSHIN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Delayed Choke Slam",
+          "input": "_4 / _6_+^F / ^G",
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "Smash and Uppercut",
+          "input": "_4 / _6_+^F / ^G",
+          "condition": "N"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Shadow Fist",
+          "input": "^1_6_+_P",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "input": "^!Twin Fist (with ^F / ^G)                                      _2_3_6_+_P",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Manchurian Fang",
+          "input": "_4_1_2_3_6_+_P (_O)",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Powered Up                                                    ^*_?",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Silkworm Slash",
+          "input": "_^_6_4_6_+_P",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Freeze Ball",
+          "input": "_2_1_4_+_P",
+          "condition": "N"
+        },
+        {
+          "category": "_@",
+          "name": "Low Freeze Ball",
+          "input": "_6_3_2_1_4_+_K",
+          "condition": "N"
+        }
+      ]
+    },
+    {
+      "name": "KOUSONSYOU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Stomach Pummel",
+          "input": "_4 / _6_+^F",
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "Hair Flip",
+          "input": "_4 / _6_+^G",
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "Punch Wheel",
+          "input": "_4 / _6_+^F / ^G",
+          "condition": "N"
+        },
+        {
+          "category": "_)",
+          "name": "Spirit Double Backfist",
+          "input": "_6_+^G",
+          "condition": "W"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_6_+_P / _K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Cosmic Strike",
+          "input": "^*_P",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Earth Scorcher",
+          "input": "_2_3_6_+_P",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Low Earth Scorcher",
+          "input": "_2_3_6_+_K",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Meteor Strike",
+          "input": "_6_4_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Horrifying Hellraiser",
+          "input": "^4_6_+_P",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Hellraiser Slide",
+          "input": "^4_6_+_K",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Mongolian Bear Hug close",
+          "input": "_6_3_2_1_4_1_2_+_P",
+          "condition": "W"
+        }
+      ]
+    },
+    {
+      "name": "BUSHOU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Beat Down",
+          "input": "_4 / _6_+^F",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Double Hook Suplex",
+          "input": "_4 / _6_+^G",
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "D.D.T.",
+          "input": "_4 / _6_+^G",
+          "condition": "N"
+        },
+        {
+          "category": "_(",
+          "name": "Air Double Hook Suplex",
+          "input": "_^_4 / _6_+^F / ^G",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Reaching Tonfa Punch",
+          "input": "_6_+^G",
+          "condition": "W"
+        },
+        {
+          "category": "_)",
+          "name": "Reaching Fist",
+          "input": "_6_+^G",
+          "condition": "N"
+        },
+        {
+          "category": "_)",
+          "name": "Hop Knee",
+          "input": "_6_+^J",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Shredding Talon",
+          "input": "_2_1_4_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Crushing Tiger Claw",
+          "input": "_6_2_3_+_P",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Doomsday Dragon close",
+          "input": "_6_3_2_1_4_1_2_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Rushing Dragon",
+          "input": "_2_1_4_+_P (x3)",
+          "condition": "N"
+        },
+        {
+          "category": "_@",
+          "name": "Piledriver close",
+          "input": "_6_3_2_1_4_+_P",
+          "condition": "N"
+        },
+        {
+          "category": "_@",
+          "name": "Axe Kick",
+          "input": "_6_3_2_1_4_6_3_2_1_4_+_K",
+          "condition": "N"
+        }
+      ]
+    },
+    {
+      "name": "GEN SHOUJI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Pinwheel Toss",
+          "input": "_4 / _6_+^F / ^G",
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "Throat Kick",
+          "input": "_4 / _6_+^F / ^G",
+          "condition": "N"
+        },
+        {
+          "category": "_@",
+          "name": "Shao Lin Slash and Burn",
+          "input": "^4_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Skull Crusher",
+          "input": "_2_8_+_P",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Water Torture",
+          "input": "_4_1_2_3_6_+_O_K",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "input": "^!Move                                                          _4 / _6",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "input": "^!Water Claw                                                    ^E",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "input": "^!Water Spike                                                   ^F",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "input": "^!Water Cage                                                    ^G",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "input": "^!Skull Crusher                                                 _2_8_+_P",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Shao Lin Crescent",
+          "input": "_6_2_3_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Water Summoning",
+          "input": "_O^T",
+          "condition": "N"
+        }
+      ]
+    },
+    {
+      "name": "GEN SHOUGO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Head Bite",
+          "input": "_4 / _6_+^F / ^G",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Nunchaku Rage",
+          "input": "^*_P",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "input": "^!Move                                                          _4 / _6",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Punishing One-Two",
+          "input": "_2_3_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Brilliant Storm",
+          "input": "_1_2_3_2_1_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Phantom Cyclone Stinger",
+          "input": "_6_3_2_1_4_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Mirage Roll",
+          "input": "_6_4_1_2_3_6_+_K",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "GEN SHOUSHICHI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throat Kick",
+          "input": "_4 / _6_+^F / ^G",
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "Pinwheel Toss",
+          "input": "_4 / _6_+^F / ^G",
+          "condition": "N"
+        },
+        {
+          "category": "_@",
+          "name": "Nunchaku Rage",
+          "input": "^*_P",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Shao Lin Slash and Burn",
+          "input": "^4_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Phantom Cyclone Stinger",
+          "input": "_6_3_2_1_4_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Shao Lin Crescent",
+          "input": "_6_2_3_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Mirage Roll",
+          "input": "_6_4_1_2_3_6_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Triple-Leg Deathtrap",
+          "input": "_2_1_4_+_K",
+          "condition": "N"
+        }
+      ]
+    },
+    {
+      "name": "CHOUGAI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "One Handed Toss",
+          "input": "_4 / _6_+^G",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Inferno Gust",
+          "input": "_6_3_2_1_4_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Grave Kick",
+          "input": "_2_3_6_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "TRANSFORMED lose a round",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "One Handed Toss",
+          "input": "_4 / _6_+^G",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Choking Spike",
+          "input": "_^_4 / _6_+^G",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Rock Headbutt",
+          "input": "_6_+^G",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Grave Kick",
+          "input": "_2_1_4_+_K",
+          "condition": "─"
+        }
+      ],
+      "notes": [
+        "TRANSFORMED"
+      ]
+    }
+  ],
+  "cheatNotes": [
+    "_` Color Select",
+    "- 1st Color, select the character with ^E",
+    "- 2nd Color, select the character with ^F",
+    "- 3rd Color, select the character with ^G",
+    "- 4th Color, select the character with ^H",
+    "- 5th Color, select the character with ^I",
+    "- 6th Color, select the character with ^J",
+    "- 7th Color, select the character with _S"
+  ],
+  "controlAbbr": {
+    "^E": "LP",
+    "^F": "MP",
+    "^G": "HP",
+    "^H": "LK",
+    "^I": "MK",
+    "^J": "HK",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "genesis": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "megadrive": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "32x": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "saturn": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "psx": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "ps2": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "gba": {
+      "b": "^E",
+      "a": "^F",
+      "l1": "^G",
+      "y": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "pce": {
+      "b": "^E",
+      "a": "^H"
+    },
+    "pce6": {
+      "b": "^E",
+      "y": "^F",
+      "l1": "^G",
+      "a": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "3do": {
+      "b": "^E",
+      "a": "^F",
+      "l1": "^G",
+      "y": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "n64": {
+      "b": "^E",
+      "cDown": "^F",
+      "cRight": "^G",
+      "a": "^H",
+      "cLeft": "^I",
+      "cUp": "^J"
+    },
+    "dreamcast": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "gb": {
+      "b": "^E",
+      "a": "^H"
+    },
+    "gbc": {
+      "b": "^E",
+      "a": "^H"
+    },
+    "gamegear": {
+      "a": "^E",
+      "b": "^H"
+    },
+    "sms": {
+      "a": "^E",
+      "b": "^H"
+    },
+    "ngpc": {
+      "b": "^E",
+      "y": "^F",
+      "l1": "^G",
+      "a": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "lynx": {
+      "b": "^E",
+      "a": "^F",
+      "l1": "^G",
+      "y": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "wswan": {
+      "b": "^E",
+      "a": "^H"
+    }
+  }
+}

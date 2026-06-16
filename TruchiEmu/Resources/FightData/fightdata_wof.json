@@ -1,1 +1,843 @@
-{"schemaVersion":2,"romIds":["wof","wofa","wofj","wofr1","wofu","wofch"],"name":"Warriors of Fate","year":1992,"manufacturer":"Capcom","categories":{"_(":"Normal Throws","_)":"Command Moves","_*":"Desperation Moves","_`":"Desperation Moves"},"commonCommands":[{"category":"_)","name":"Pick Up Object close to object","input":"_A"},{"category":"_)","name":"Pick Up Weapon close to weapon","input":"_A"},{"category":"_)","name":"Mount Horse walk towards the Horse"},{"category":"_)","name":"Turn Horse Around","input":"^4"},{"category":"_)","name":"Turn Around Cancel","input":"^6"},{"category":"_)","name":"Pick Up Object walk towards the object"}],"commonNotes":["ON FOOT","ON HORSEBACK"],"characters":[{"name":"ARCADE","moves":[{"category":"_`","input":"_A","condition":": Attack"},{"category":"_`","input":"_B","condition":": Jump"},{"category":"_`","input":"_S","condition":": Start"}]},{"name":"PORTOR","moves":[{"category":"_(","name":"Grab close","input":"_6"},{"category":"_(","name":"Headbutt","input":"^*_A"},{"category":"_(","name":"Toss","input":"_4 / _6_+_A"},{"category":"_(","name":"Splash Elbow","input":"_2_8_+_A"},{"category":"_(","name":"Jump Grapple","input":"_B"},{"category":"_(","name":"Backbreaker","input":"_A"},{"category":"_)","name":"Jabs","input":"_A_A"},{"category":"_)","name":"Front Kick","input":"_A"},{"category":"_)","name":"Toss","input":"_2 / _8_+_A"},{"category":"_)","name":"Dropkick","input":"_B_A"},{"category":"_)","name":"Flying Headbutt","input":"_2_+_B"},{"category":"_)","name":"Splash Elbow","input":"_2_8_+_A"},{"category":"_*","name":"Double Lariat","input":"_A_+_B"},{"category":"_(","name":"Stab and Toss","input":"^2 / ^8, then _A, ^4 / ^6"},{"category":"_)","name":"Multi Slashes","input":"_A_A_A"},{"category":"_)","name":"Backwards Stab","input":"_4_+_A"},{"category":"_)","name":"Slice and Dice","input":"^*_A"},{"category":"_)","name":"Crashing Wave","input":"_4_6_+_A"},{"category":"_)","name":"Mega Crashing Wave","input":"_4_6_+_B"},{"category":"_)","name":"Charging Naginata Helicopter","input":"_6_+_B_B"},{"category":"_)","name":"Heavy Slash","input":"_B"},{"category":"_)","name":"Turn Attack Stab","input":"_4_+_B"},{"category":"_)","name":"Charging","input":"_6_+_B"},{"category":"_)","name":"Rising Stab","input":"_A"},{"category":"_)","name":"Slash and Dismount","input":"_2_+_B"},{"category":"_*","name":"Naginata Helicopter","input":"_A_+_B"}],"notes":["ON FOOT","ON HORSEBACK"]},{"name":"KASSAR","moves":[{"category":"_(","name":"Grab close","input":"_6"},{"category":"_(","name":"Back Wrench","input":"^*_A"},{"category":"_(","name":"Suplex","input":"_4 / _6_+_A"},{"category":"_(","name":"Toss in Front","input":"_6_+_A"},{"category":"_(","name":"Head Bite","input":"_2_+_A"},{"category":"_(","name":"Destructive Straight","input":"_2_8_+_A"},{"category":"_(","name":"Jump Grapple","input":"_B"},{"category":"_(","name":"Piledriver","input":"_A"},{"category":"_(","name":"Jump Grapple","input":"_4 / _6_+_B"},{"category":"_(","name":"Superplex","input":"_A"},{"category":"_)","name":"Hammer Strike","input":"_A_A"},{"category":"_)","name":"Straight Punch","input":"_A"},{"category":"_)","name":"Toss in Front","input":"_2 / _8_+_A"},{"category":"_)","name":"Suplex","input":"^4"},{"category":"_)","name":"Air Boot","input":"_B_A"},{"category":"_)","name":"Reaching Air Boot diagonal jump","input":"_A"},{"category":"_)","name":"Charging Bull","input":"_2_+_B"},{"category":"_)","name":"Destructive Straight","input":"_2_8_+_A"},{"category":"_)","name":"Spinning Piledriver close","input":"_x_+_A"},{"category":"_*","name":"Wild Hammer","input":"_A_+_B"},{"category":"_(","name":"Stab and Toss","input":"^2 / ^8, then _A, ^4 / ^6"},{"category":"_)","name":"Multi Slashes","input":"_A_A_A"},{"category":"_)","name":"Backwards Stab","input":"_4_+_A"},{"category":"_)","name":"Sweeping Blade","input":"^*_A"},{"category":"_)","name":"Riding Wave","input":"_4_6_+_A"},{"category":"_)","name":"Mega Riding Wave","input":"_4_6_+_B"},{"category":"_)","name":"Charging Spiral Slicer","input":"_6_+_B_B"},{"category":"_)","name":"Heavy Low Stab","input":"_B"},{"category":"_)","name":"Turn Attack Stab","input":"_4_+_B"},{"category":"_)","name":"Charging","input":"_6_+_B"},{"category":"_)","name":"Low Stab","input":"_A"},{"category":"_)","name":"Stab and Dismount","input":"_2_+_B"},{"category":"_*","name":"Spiral Slicer","input":"_A_+_B"}],"notes":["ON FOOT","ON HORSEBACK"]},{"name":"SUBUTAI","moves":[{"category":"_(","name":"Grab close","input":"_6"},{"category":"_(","name":"Sword Impale","input":"^*_A"},{"category":"_(","name":"Toss","input":"_4 / _6_+_A"},{"category":"_(","name":"Soul Blade","input":"_2_8_+_A"},{"category":"_(","name":"Dashing Soul Blade","input":"_1_9_+_A"},{"category":"_(","name":"Jump Up Escape","input":"_B"},{"category":"_(","name":"Side Head Kick","input":"_A"},{"category":"_)","name":"Jab-Side Slice","input":"_A_A"},{"category":"_)","name":"Roundhouse","input":"_A"},{"category":"_)","name":"Toss","input":"_2 / _8_+_A"},{"category":"_)","name":"Jumping Sword Attack","input":"_B_A"},{"category":"_)","name":"Jump Kick diagonal jump","input":"_A"},{"category":"_)","name":"Shoulder Charge","input":"_2_+_B"},{"category":"_)","name":"Soul Blade","input":"_2_8_+_A"},{"category":"_)","name":"Dashing Soul Blade","input":"_1_9_+_A"},{"category":"_)","name":"Driving Choke Slam","input":"_B, close _2_+_A"},{"category":"_*","name":"Sword Wheel","input":"_A_+_B"},{"category":"_(","name":"Stab and Toss","input":"^2 / ^8, then _A, ^4 / ^6"},{"category":"_)","name":"Multi Slices","input":"_A_A_A"},{"category":"_)","name":"Backwards Stab","input":"_4_+_A"},{"category":"_)","name":"Rapid Impaler","input":"^*_A"},{"category":"_)","name":"Energy Wave","input":"_4_6_+_A"},{"category":"_)","name":"Mega Energy Wave","input":"_4_6_+_B"},{"category":"_)","name":"Charging Spear Helicopter","input":"_6_+_B_B"},{"category":"_)","name":"Heavy Stab","input":"_B"},{"category":"_)","name":"Turn Attack Stab","input":"_4_+_B"},{"category":"_)","name":"Charging","input":"_6_+_B"},{"category":"_)","name":"Spear Stab","input":"_A"},{"category":"_)","name":"Stab and Dismount","input":"_2_+_B"},{"category":"_*","name":"Spear Helicopter","input":"_A_+_B"}],"notes":["ON FOOT","ON HORSEBACK"]},{"name":"KADAN","moves":[{"category":"_(","name":"Grab close","input":"_6"},{"category":"_(","name":"Stab","input":"^*_A"},{"category":"_(","name":"Slam","input":"_4 / _6_+_A"},{"category":"_(","name":"Bow Uppercut","input":"_2_8_+_A"},{"category":"_(","name":"Vault","input":"_B"},{"category":"_(","name":"Neck Toss","input":"_A"},{"category":"_)","name":"Multi Arrows","input":"_A_A_A"},{"category":"_)","name":"Jumping Arrow","input":"_B_A"},{"category":"_)","name":"Diagonal Dagger diagonal jump","input":"_A"},{"category":"_)","name":"Roll Kick","input":"_2_+_B"},{"category":"_)","name":"Triple Arrow","input":"^*_A"},{"category":"_)","name":"Bow Uppercut","input":"_2_8_+_A"},{"category":"_*","name":"Spiral Rope Dart","input":"_A_+_B"},{"category":"_)","name":"Multi Arrows","input":"_A_A_A"},{"category":"_)","name":"Backwards Arrow","input":"_4_+_A"},{"category":"_)","name":"Triple Arrow","input":"^*_A"},{"category":"_)","name":"Flaming Arrow","input":"_4_6_+_A"},{"category":"_)","name":"Mega Flaming Arrow","input":"_4_6_+_B"},{"category":"_)","name":"Charging Sprial Rope Dart","input":"_6_+_B_B"},{"category":"_)","name":"Quick Arrow","input":"_B"},{"category":"_)","name":"Turn Around Arrow","input":"_4_+_B"},{"category":"_)","name":"Charging","input":"_6_+_B"},{"category":"_)","name":"Hidden Dagger","input":"_A"},{"category":"_)","name":"Arrow and Dismount","input":"_2_+_B"},{"category":"_*","name":"Spiral Rope Dart","input":"_A_+_B"}],"notes":["ON FOOT","ON HORSEBACK"]},{"name":"ABAKA","moves":[{"category":"_(","name":"Grab close","input":"_6"},{"category":"_(","name":"Throat Stab","input":"^*_A"},{"category":"_(","name":"Slam","input":"_4 / _6_+_A"},{"category":"_(","name":"Flash Kick","input":"_2_8_+_A"},{"category":"_(","name":"Jump Grapple","input":"_B"},{"category":"_(","name":"Driving Slam","input":"_A"},{"category":"_)","name":"Gut Punch-Straight Sword","input":"_A_A"},{"category":"_)","name":"Overhead Slice","input":"_A"},{"category":"_)","name":"Toss","input":"_2 / _8_+_A"},{"category":"_)","name":"Air Slice","input":"_B_A"},{"category":"_)","name":"Dash Elbow","input":"_2_+_B"},{"category":"_)","name":"Flash Kick","input":"_2_8_+_A"},{"category":"_*","name":"Tornado Sword","input":"_A_+_B"},{"category":"_(","name":"Stab and Toss","input":"^2 / ^8, then _A, ^4 / ^6"},{"category":"_)","name":"Multi Stabs","input":"_A_A_A"},{"category":"_)","name":"Backwards Slice","input":"_4_+_A"},{"category":"_)","name":"Lightning Sword","input":"^*_A"},{"category":"_)","name":"Riding Wave","input":"_4_6_+_A"},{"category":"_)","name":"Mega Riding Wave","input":"_4_6_+_B"},{"category":"_)","name":"Charging Wild Sword Swing","input":"_6_+_B_B"},{"category":"_)","name":"Sweeping Sword","input":"_B"},{"category":"_)","name":"Turn Attack Slice","input":"_4_+_B"},{"category":"_)","name":"Charging","input":"_6_+_B"},{"category":"_)","name":"Sword Stab","input":"_A"},{"category":"_)","name":"Slice and Dismount","input":"_2_+_B"},{"category":"_*","name":"Wild Sword Swing","input":"_A_+_B"}],"notes":["ON FOOT","ON HORSEBACK"]}],"cheatNotes":["_` Game Options (CPS Changer only)","- On any screen _O_S_+^S","_` URA MODE (CPS Changer only)","- On the Option Screen, put the Cursor on Password and press @R-button @X-button @L-button @Y-button _B _A @R-button","- Changes in URA MODE are unknown for now","- Some web sites shows \"New and changed special moves\", but i can't find any changes"],"systemControlMappings":{"snes":{"y":"_A","b":"_B"},"genesis":{"b":"_A","a":"_B"},"megadrive":{"b":"_A","a":"_B"}}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "wof",
+    "wofa",
+    "wofj",
+    "wofr1",
+    "wofu",
+    "wofch"
+  ],
+  "name": "Warriors of Fate",
+  "year": 1992,
+  "manufacturer": "Capcom",
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_*": "Desperation Moves",
+    "_`": "Desperation Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Pick Up Object close to object",
+      "input": "_A"
+    },
+    {
+      "category": "_)",
+      "name": "Pick Up Weapon close to weapon",
+      "input": "_A"
+    },
+    {
+      "category": "_)",
+      "name": "Mount Horse walk towards the Horse"
+    },
+    {
+      "category": "_)",
+      "name": "Turn Horse Around",
+      "input": "^4"
+    },
+    {
+      "category": "_)",
+      "name": "Turn Around Cancel",
+      "input": "^6"
+    },
+    {
+      "category": "_)",
+      "name": "Pick Up Object walk towards the object"
+    }
+  ],
+  "commonNotes": [
+    "ON FOOT",
+    "ON HORSEBACK"
+  ],
+  "characters": [
+    {
+      "name": "ARCADE",
+      "moves": [
+        {
+          "category": "_`",
+          "input": "_A",
+          "condition": ": Attack"
+        },
+        {
+          "category": "_`",
+          "input": "_B",
+          "condition": ": Jump"
+        },
+        {
+          "category": "_`",
+          "input": "_S",
+          "condition": ": Start"
+        }
+      ]
+    },
+    {
+      "name": "PORTOR",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6"
+        },
+        {
+          "category": "_(",
+          "name": "Headbutt",
+          "input": "^*_A"
+        },
+        {
+          "category": "_(",
+          "name": "Toss",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Splash Elbow",
+          "input": "_2_8_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Jump Grapple",
+          "input": "_B"
+        },
+        {
+          "category": "_(",
+          "name": "Backbreaker",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Jabs",
+          "input": "_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Front Kick",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Toss",
+          "input": "_2 / _8_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Dropkick",
+          "input": "_B_A"
+        },
+        {
+          "category": "_)",
+          "name": "Flying Headbutt",
+          "input": "_2_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Splash Elbow",
+          "input": "_2_8_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Double Lariat",
+          "input": "_A_+_B"
+        },
+        {
+          "category": "_(",
+          "name": "Stab and Toss",
+          "input": "^2 / ^8, then _A, ^4 / ^6"
+        },
+        {
+          "category": "_)",
+          "name": "Multi Slashes",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Backwards Stab",
+          "input": "_4_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Slice and Dice",
+          "input": "^*_A"
+        },
+        {
+          "category": "_)",
+          "name": "Crashing Wave",
+          "input": "_4_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Mega Crashing Wave",
+          "input": "_4_6_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Charging Naginata Helicopter",
+          "input": "_6_+_B_B"
+        },
+        {
+          "category": "_)",
+          "name": "Heavy Slash",
+          "input": "_B"
+        },
+        {
+          "category": "_)",
+          "name": "Turn Attack Stab",
+          "input": "_4_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Charging",
+          "input": "_6_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Rising Stab",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Slash and Dismount",
+          "input": "_2_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Naginata Helicopter",
+          "input": "_A_+_B"
+        }
+      ],
+      "notes": [
+        "ON FOOT",
+        "ON HORSEBACK"
+      ]
+    },
+    {
+      "name": "KASSAR",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6"
+        },
+        {
+          "category": "_(",
+          "name": "Back Wrench",
+          "input": "^*_A"
+        },
+        {
+          "category": "_(",
+          "name": "Suplex",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Toss in Front",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Head Bite",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Destructive Straight",
+          "input": "_2_8_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Jump Grapple",
+          "input": "_B"
+        },
+        {
+          "category": "_(",
+          "name": "Piledriver",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Jump Grapple",
+          "input": "_4 / _6_+_B"
+        },
+        {
+          "category": "_(",
+          "name": "Superplex",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Hammer Strike",
+          "input": "_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Straight Punch",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Toss in Front",
+          "input": "_2 / _8_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Suplex",
+          "input": "^4"
+        },
+        {
+          "category": "_)",
+          "name": "Air Boot",
+          "input": "_B_A"
+        },
+        {
+          "category": "_)",
+          "name": "Reaching Air Boot diagonal jump",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Charging Bull",
+          "input": "_2_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Destructive Straight",
+          "input": "_2_8_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Spinning Piledriver close",
+          "input": "_x_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Wild Hammer",
+          "input": "_A_+_B"
+        },
+        {
+          "category": "_(",
+          "name": "Stab and Toss",
+          "input": "^2 / ^8, then _A, ^4 / ^6"
+        },
+        {
+          "category": "_)",
+          "name": "Multi Slashes",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Backwards Stab",
+          "input": "_4_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Sweeping Blade",
+          "input": "^*_A"
+        },
+        {
+          "category": "_)",
+          "name": "Riding Wave",
+          "input": "_4_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Mega Riding Wave",
+          "input": "_4_6_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Charging Spiral Slicer",
+          "input": "_6_+_B_B"
+        },
+        {
+          "category": "_)",
+          "name": "Heavy Low Stab",
+          "input": "_B"
+        },
+        {
+          "category": "_)",
+          "name": "Turn Attack Stab",
+          "input": "_4_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Charging",
+          "input": "_6_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Low Stab",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Stab and Dismount",
+          "input": "_2_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Spiral Slicer",
+          "input": "_A_+_B"
+        }
+      ],
+      "notes": [
+        "ON FOOT",
+        "ON HORSEBACK"
+      ]
+    },
+    {
+      "name": "SUBUTAI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6"
+        },
+        {
+          "category": "_(",
+          "name": "Sword Impale",
+          "input": "^*_A"
+        },
+        {
+          "category": "_(",
+          "name": "Toss",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Soul Blade",
+          "input": "_2_8_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Dashing Soul Blade",
+          "input": "_1_9_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Jump Up Escape",
+          "input": "_B"
+        },
+        {
+          "category": "_(",
+          "name": "Side Head Kick",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Jab-Side Slice",
+          "input": "_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Roundhouse",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Toss",
+          "input": "_2 / _8_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Jumping Sword Attack",
+          "input": "_B_A"
+        },
+        {
+          "category": "_)",
+          "name": "Jump Kick diagonal jump",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Shoulder Charge",
+          "input": "_2_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Soul Blade",
+          "input": "_2_8_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Dashing Soul Blade",
+          "input": "_1_9_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Driving Choke Slam",
+          "input": "_B, close _2_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Sword Wheel",
+          "input": "_A_+_B"
+        },
+        {
+          "category": "_(",
+          "name": "Stab and Toss",
+          "input": "^2 / ^8, then _A, ^4 / ^6"
+        },
+        {
+          "category": "_)",
+          "name": "Multi Slices",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Backwards Stab",
+          "input": "_4_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Rapid Impaler",
+          "input": "^*_A"
+        },
+        {
+          "category": "_)",
+          "name": "Energy Wave",
+          "input": "_4_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Mega Energy Wave",
+          "input": "_4_6_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Charging Spear Helicopter",
+          "input": "_6_+_B_B"
+        },
+        {
+          "category": "_)",
+          "name": "Heavy Stab",
+          "input": "_B"
+        },
+        {
+          "category": "_)",
+          "name": "Turn Attack Stab",
+          "input": "_4_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Charging",
+          "input": "_6_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Spear Stab",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Stab and Dismount",
+          "input": "_2_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Spear Helicopter",
+          "input": "_A_+_B"
+        }
+      ],
+      "notes": [
+        "ON FOOT",
+        "ON HORSEBACK"
+      ]
+    },
+    {
+      "name": "KADAN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6"
+        },
+        {
+          "category": "_(",
+          "name": "Stab",
+          "input": "^*_A"
+        },
+        {
+          "category": "_(",
+          "name": "Slam",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Bow Uppercut",
+          "input": "_2_8_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Vault",
+          "input": "_B"
+        },
+        {
+          "category": "_(",
+          "name": "Neck Toss",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Multi Arrows",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Jumping Arrow",
+          "input": "_B_A"
+        },
+        {
+          "category": "_)",
+          "name": "Diagonal Dagger diagonal jump",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Roll Kick",
+          "input": "_2_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Triple Arrow",
+          "input": "^*_A"
+        },
+        {
+          "category": "_)",
+          "name": "Bow Uppercut",
+          "input": "_2_8_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Spiral Rope Dart",
+          "input": "_A_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Multi Arrows",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Backwards Arrow",
+          "input": "_4_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Triple Arrow",
+          "input": "^*_A"
+        },
+        {
+          "category": "_)",
+          "name": "Flaming Arrow",
+          "input": "_4_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Mega Flaming Arrow",
+          "input": "_4_6_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Charging Sprial Rope Dart",
+          "input": "_6_+_B_B"
+        },
+        {
+          "category": "_)",
+          "name": "Quick Arrow",
+          "input": "_B"
+        },
+        {
+          "category": "_)",
+          "name": "Turn Around Arrow",
+          "input": "_4_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Charging",
+          "input": "_6_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Hidden Dagger",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Arrow and Dismount",
+          "input": "_2_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Spiral Rope Dart",
+          "input": "_A_+_B"
+        }
+      ],
+      "notes": [
+        "ON FOOT",
+        "ON HORSEBACK"
+      ]
+    },
+    {
+      "name": "ABAKA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6"
+        },
+        {
+          "category": "_(",
+          "name": "Throat Stab",
+          "input": "^*_A"
+        },
+        {
+          "category": "_(",
+          "name": "Slam",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Flash Kick",
+          "input": "_2_8_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Jump Grapple",
+          "input": "_B"
+        },
+        {
+          "category": "_(",
+          "name": "Driving Slam",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Gut Punch-Straight Sword",
+          "input": "_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Overhead Slice",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Toss",
+          "input": "_2 / _8_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Air Slice",
+          "input": "_B_A"
+        },
+        {
+          "category": "_)",
+          "name": "Dash Elbow",
+          "input": "_2_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Flash Kick",
+          "input": "_2_8_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Tornado Sword",
+          "input": "_A_+_B"
+        },
+        {
+          "category": "_(",
+          "name": "Stab and Toss",
+          "input": "^2 / ^8, then _A, ^4 / ^6"
+        },
+        {
+          "category": "_)",
+          "name": "Multi Stabs",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Backwards Slice",
+          "input": "_4_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Lightning Sword",
+          "input": "^*_A"
+        },
+        {
+          "category": "_)",
+          "name": "Riding Wave",
+          "input": "_4_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Mega Riding Wave",
+          "input": "_4_6_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Charging Wild Sword Swing",
+          "input": "_6_+_B_B"
+        },
+        {
+          "category": "_)",
+          "name": "Sweeping Sword",
+          "input": "_B"
+        },
+        {
+          "category": "_)",
+          "name": "Turn Attack Slice",
+          "input": "_4_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Charging",
+          "input": "_6_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Sword Stab",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Slice and Dismount",
+          "input": "_2_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Wild Sword Swing",
+          "input": "_A_+_B"
+        }
+      ],
+      "notes": [
+        "ON FOOT",
+        "ON HORSEBACK"
+      ]
+    }
+  ],
+  "cheatNotes": [
+    "_` Game Options (CPS Changer only)",
+    "- On any screen _O_S_+^S",
+    "_` URA MODE (CPS Changer only)",
+    "- On the Option Screen, put the Cursor on Password and press @R-button @X-button @L-button @Y-button _B _A @R-button",
+    "- Changes in URA MODE are unknown for now",
+    "- Some web sites shows \"New and changed special moves\", but i can't find any changes"
+  ],
+  "systemControlMappings": {
+    "snes": {
+      "y": "_A",
+      "b": "_B"
+    },
+    "genesis": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "megadrive": {
+      "b": "_A",
+      "a": "_B"
+    }
+  }
+}

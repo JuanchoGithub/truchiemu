@@ -1,1 +1,525 @@
-{"schemaVersion":2,"romIds":["aof"],"name":"Art of Fighting","year":1992,"manufacturer":"SNK","controls":{"_A":"Punch","_B":"Kick","_C":"Throw","_D":"Taunt","_S":"Start","^S":"Select (AES only)"},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves","_*":"Super Moves","_&":"Super Death Blows","_`":"Super Death Blows"},"commonCommands":[{"category":"_)","name":"Dash","input":"_6_6","condition":"──%"},{"category":"_)","name":"Retreat","input":"_4_4","condition":"──%"},{"category":"_)","name":"Strong Punch","input":"_C (if last button is _A)","condition":"──%"},{"category":"_)","name":"Strong Kick","input":"_C (if last button is _B)","condition":"──%"},{"category":"_)","name":"Body Attack","input":"_A_+_C","condition":"──%"},{"category":"_)","name":"Low Strike","input":"_B_+_C","condition":"──%"},{"category":"_)","name":"Charge Spirit Gauge","input":"_O_A / _B","condition":"──%"}],"characters":[{"name":"RYO SAKAZAKI","moves":[{"category":"_(","name":"Tomoe Nage","input":"_C","condition":"──%"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_C","condition":"──%"},{"category":"_@","name":"Ko'ou Ken","input":"_2_3_6_+_A","condition":"20%"},{"category":"_@","name":"Kohou","input":"_6_2_3_+_A","condition":"──%"},{"category":"_@","name":"Hien Shippuu Kyaku","input":"_1_6_+_B","condition":"25%"},{"category":"_@","name":"Zanretsu Ken","input":"_6_4_6_+_C","condition":"50%"},{"category":"_*","name":"Haoh Shoukou Ken","input":"_6_4_1_2_3_6_+_A","condition":"75%"},{"category":"_&","name":"Ryuuko Ranbu","input":"_2_3_6_+_C_A","condition":"75%"}]},{"name":"ROBERT GARCIA","moves":[{"category":"_(","name":"Kubikiri Nage","input":"_C","condition":"──%"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_C","condition":"──%"},{"category":"_@","name":"Ryuugeki Ken","input":"_2_3_6_+_A","condition":"20%"},{"category":"_@","name":"Ryuuga","input":"_6_2_3_+_A","condition":"──%"},{"category":"_@","name":"Hien Shippuu Kyaku","input":"_1_6_+_B","condition":"25%"},{"category":"_@","name":"Gen'ei Kyaku","input":"_6_4_6_+_C","condition":"50%"},{"category":"_*","name":"Haoh Shoukou Ken","input":"_6_4_1_2_3_6_+_A","condition":"75%"},{"category":"_&","name":"Ryuuko Ranbu","input":"_2_3_6_+_C_A","condition":"75%"}]},{"name":"RYUHAKU TODOH","moves":[{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_C","condition":"──%"},{"category":"_@","name":"Kasane Ate","input":"_2_3_6_+_A","condition":"20%"}]},{"name":"JACK TURNER","moves":[{"category":"_(","name":"Body Slam","input":"_C","condition":"──%"},{"category":"_@","name":"Knuckle Pad","input":"_2_3_6_+_A","condition":"20%"},{"category":"_@","name":"Sliding Kick","input":"_2_3_6_+_B","condition":"20%"},{"category":"_@","name":"Super Drop Kick","input":"_1_6_+_B","condition":"20%"}]},{"name":"LEE PAI LONG","moves":[{"category":"_)","name":"Back Leaping Kick","input":"_4_+_B","condition":"──%"},{"category":"_)","name":"Back Leaping Snap Kicks","input":"_4_+_C","condition":"──%"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_C","condition":"──%"},{"category":"_@","name":"Kuuten Tsume Gedan Kougeki","input":"_2_3_6_+_A","condition":"20%"},{"category":"_@","name":"Kuuten Tsume Joudan Kougeki","input":"_2_3_6_+_B","condition":"20%"},{"category":"_@","name":"Hyakuretsu Senpuu Kyaku","input":"_1_6_+_B","condition":"20%"},{"category":"_@","name":"Hyakuretsu Ken","input":"_6_4_6_+_C","condition":"40%"}]},{"name":"JOHN CRAWLEY","moves":[{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_C","condition":"──%"},{"category":"_@","name":"Mega Smash","input":"_2_3_6_+_A","condition":"20%"},{"category":"_@","name":"Overdrive Kick","input":"_2_1_4_+_B","condition":"20%"},{"category":"_@","name":"Flying Cutter","input":"_1_6_+_A","condition":"20%"}]},{"name":"KING","moves":[{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_C","condition":"──%"},{"category":"_@","name":"Venom Strike","input":"_2_3_6_+_B","condition":"20%"},{"category":"_@","name":"Moushuu Kyaku","input":"_2_1_4_+_B","condition":"20%"},{"category":"_@","name":"Tornado Kick","input":"_1_6_+_B","condition":"25%"}]},{"name":"MICKEY ROGERS","moves":[{"category":"_@","name":"Burning Upper","input":"_2_3_6_+_A","condition":"20%"},{"category":"_@","name":"Rolling Upper","input":"_2_3_6_+_B","condition":"20%"}]},{"name":"Mr. BIG","moves":[{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_C","condition":"──%"},{"category":"_@","name":"Ground Blaster","input":"_2_3_6_+_A","condition":"20%"},{"category":"_@","name":"Cross Diving","input":"_2_3_6_9_8_+_A","condition":"15%"}]},{"name":"? \"Mr. KARATE\"","moves":[{"category":"_(","name":"Tomoe Nage","input":"_C","condition":"──%"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_C","condition":"──%"},{"category":"_@","name":"Ko'ou Ken","input":"_2_3_6_+_A","condition":"20%"},{"category":"_@","name":"Kohou","input":"_6_2_3_+_A","condition":"──%"},{"category":"_@","name":"Hien Shippuu Kyaku","input":"_1_6_+_B","condition":"25%"},{"category":"_@","name":"Zanretsu Ken","input":"_6_4_6_+_C","condition":"50%"},{"category":"_*","name":"Haoh Shikou Ken","input":"_6_4_1_2_3_6_+_A","condition":"75%"}]}],"controlAbbr":{"_A":"P","_B":"K","_C":"TH","_D":"TA","_S":"ST","^S":"SL"},"systemControlMappings":{"snes":{"y":"_A","x":"_B","b":"_C","a":"_D"},"genesis":{"b":"_A","a":"_B","y":"_C","x":"_D"},"megadrive":{"b":"_A","a":"_B","y":"_C","x":"_D"},"32x":{"b":"_A","a":"_B","y":"_C","x":"_D"},"saturn":{"b":"_A","a":"_B","y":"_C","x":"_D"},"neogeo":{"b":"_A","y":"_B","a":"_C","x":"_D"},"psx":{"y":"_A","x":"_B","b":"_C","a":"_D"},"ps2":{"y":"_A","x":"_B","b":"_C","a":"_D"},"gb":{"b":"_A","a":"_B"},"gbc":{"b":"_A","a":"_B"},"gamegear":{"a":"_A","b":"_B"},"sms":{"a":"_A","b":"_B"},"gba":{"b":"_A","a":"_B","l1":"_C","r1":"_D"},"ngpc":{"b":"_A","a":"_B","y":"_C","x":"_D"},"dreamcast":{"y":"_A","x":"_B","b":"_C","a":"_D"},"n64":{"b":"_A","a":"_B","cDown":"_C","cLeft":"_D"},"wswan":{"b":"_A","a":"_B"}},"controlGroups":{"_P":["_A"],"_K":["_B"]}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "aof"
+  ],
+  "name": "Art of Fighting",
+  "year": 1992,
+  "manufacturer": "SNK",
+  "controls": {
+    "_A": "Punch",
+    "_B": "Kick",
+    "_C": "Throw",
+    "_D": "Taunt",
+    "_S": "Start",
+    "^S": "Select (AES only)"
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_*": "Super Moves",
+    "_&": "Super Death Blows",
+    "_`": "Super Death Blows"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "_6_6",
+      "condition": "──%"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4",
+      "condition": "──%"
+    },
+    {
+      "category": "_)",
+      "name": "Strong Punch",
+      "input": "_C (if last button is _A)",
+      "condition": "──%"
+    },
+    {
+      "category": "_)",
+      "name": "Strong Kick",
+      "input": "_C (if last button is _B)",
+      "condition": "──%"
+    },
+    {
+      "category": "_)",
+      "name": "Body Attack",
+      "input": "_A_+_C",
+      "condition": "──%"
+    },
+    {
+      "category": "_)",
+      "name": "Low Strike",
+      "input": "_B_+_C",
+      "condition": "──%"
+    },
+    {
+      "category": "_)",
+      "name": "Charge Spirit Gauge",
+      "input": "_O_A / _B",
+      "condition": "──%"
+    }
+  ],
+  "characters": [
+    {
+      "name": "RYO SAKAZAKI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Tomoe Nage",
+          "input": "_C",
+          "condition": "──%"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_C",
+          "condition": "──%"
+        },
+        {
+          "category": "_@",
+          "name": "Ko'ou Ken",
+          "input": "_2_3_6_+_A",
+          "condition": "20%"
+        },
+        {
+          "category": "_@",
+          "name": "Kohou",
+          "input": "_6_2_3_+_A",
+          "condition": "──%"
+        },
+        {
+          "category": "_@",
+          "name": "Hien Shippuu Kyaku",
+          "input": "_1_6_+_B",
+          "condition": "25%"
+        },
+        {
+          "category": "_@",
+          "name": "Zanretsu Ken",
+          "input": "_6_4_6_+_C",
+          "condition": "50%"
+        },
+        {
+          "category": "_*",
+          "name": "Haoh Shoukou Ken",
+          "input": "_6_4_1_2_3_6_+_A",
+          "condition": "75%"
+        },
+        {
+          "category": "_&",
+          "name": "Ryuuko Ranbu",
+          "input": "_2_3_6_+_C_A",
+          "condition": "75%"
+        }
+      ]
+    },
+    {
+      "name": "ROBERT GARCIA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Kubikiri Nage",
+          "input": "_C",
+          "condition": "──%"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_C",
+          "condition": "──%"
+        },
+        {
+          "category": "_@",
+          "name": "Ryuugeki Ken",
+          "input": "_2_3_6_+_A",
+          "condition": "20%"
+        },
+        {
+          "category": "_@",
+          "name": "Ryuuga",
+          "input": "_6_2_3_+_A",
+          "condition": "──%"
+        },
+        {
+          "category": "_@",
+          "name": "Hien Shippuu Kyaku",
+          "input": "_1_6_+_B",
+          "condition": "25%"
+        },
+        {
+          "category": "_@",
+          "name": "Gen'ei Kyaku",
+          "input": "_6_4_6_+_C",
+          "condition": "50%"
+        },
+        {
+          "category": "_*",
+          "name": "Haoh Shoukou Ken",
+          "input": "_6_4_1_2_3_6_+_A",
+          "condition": "75%"
+        },
+        {
+          "category": "_&",
+          "name": "Ryuuko Ranbu",
+          "input": "_2_3_6_+_C_A",
+          "condition": "75%"
+        }
+      ]
+    },
+    {
+      "name": "RYUHAKU TODOH",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_C",
+          "condition": "──%"
+        },
+        {
+          "category": "_@",
+          "name": "Kasane Ate",
+          "input": "_2_3_6_+_A",
+          "condition": "20%"
+        }
+      ]
+    },
+    {
+      "name": "JACK TURNER",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Body Slam",
+          "input": "_C",
+          "condition": "──%"
+        },
+        {
+          "category": "_@",
+          "name": "Knuckle Pad",
+          "input": "_2_3_6_+_A",
+          "condition": "20%"
+        },
+        {
+          "category": "_@",
+          "name": "Sliding Kick",
+          "input": "_2_3_6_+_B",
+          "condition": "20%"
+        },
+        {
+          "category": "_@",
+          "name": "Super Drop Kick",
+          "input": "_1_6_+_B",
+          "condition": "20%"
+        }
+      ]
+    },
+    {
+      "name": "LEE PAI LONG",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Back Leaping Kick",
+          "input": "_4_+_B",
+          "condition": "──%"
+        },
+        {
+          "category": "_)",
+          "name": "Back Leaping Snap Kicks",
+          "input": "_4_+_C",
+          "condition": "──%"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_C",
+          "condition": "──%"
+        },
+        {
+          "category": "_@",
+          "name": "Kuuten Tsume Gedan Kougeki",
+          "input": "_2_3_6_+_A",
+          "condition": "20%"
+        },
+        {
+          "category": "_@",
+          "name": "Kuuten Tsume Joudan Kougeki",
+          "input": "_2_3_6_+_B",
+          "condition": "20%"
+        },
+        {
+          "category": "_@",
+          "name": "Hyakuretsu Senpuu Kyaku",
+          "input": "_1_6_+_B",
+          "condition": "20%"
+        },
+        {
+          "category": "_@",
+          "name": "Hyakuretsu Ken",
+          "input": "_6_4_6_+_C",
+          "condition": "40%"
+        }
+      ]
+    },
+    {
+      "name": "JOHN CRAWLEY",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_C",
+          "condition": "──%"
+        },
+        {
+          "category": "_@",
+          "name": "Mega Smash",
+          "input": "_2_3_6_+_A",
+          "condition": "20%"
+        },
+        {
+          "category": "_@",
+          "name": "Overdrive Kick",
+          "input": "_2_1_4_+_B",
+          "condition": "20%"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Cutter",
+          "input": "_1_6_+_A",
+          "condition": "20%"
+        }
+      ]
+    },
+    {
+      "name": "KING",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_C",
+          "condition": "──%"
+        },
+        {
+          "category": "_@",
+          "name": "Venom Strike",
+          "input": "_2_3_6_+_B",
+          "condition": "20%"
+        },
+        {
+          "category": "_@",
+          "name": "Moushuu Kyaku",
+          "input": "_2_1_4_+_B",
+          "condition": "20%"
+        },
+        {
+          "category": "_@",
+          "name": "Tornado Kick",
+          "input": "_1_6_+_B",
+          "condition": "25%"
+        }
+      ]
+    },
+    {
+      "name": "MICKEY ROGERS",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Burning Upper",
+          "input": "_2_3_6_+_A",
+          "condition": "20%"
+        },
+        {
+          "category": "_@",
+          "name": "Rolling Upper",
+          "input": "_2_3_6_+_B",
+          "condition": "20%"
+        }
+      ]
+    },
+    {
+      "name": "Mr. BIG",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_C",
+          "condition": "──%"
+        },
+        {
+          "category": "_@",
+          "name": "Ground Blaster",
+          "input": "_2_3_6_+_A",
+          "condition": "20%"
+        },
+        {
+          "category": "_@",
+          "name": "Cross Diving",
+          "input": "_2_3_6_9_8_+_A",
+          "condition": "15%"
+        }
+      ]
+    },
+    {
+      "name": "? \"Mr. KARATE\"",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Tomoe Nage",
+          "input": "_C",
+          "condition": "──%"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_C",
+          "condition": "──%"
+        },
+        {
+          "category": "_@",
+          "name": "Ko'ou Ken",
+          "input": "_2_3_6_+_A",
+          "condition": "20%"
+        },
+        {
+          "category": "_@",
+          "name": "Kohou",
+          "input": "_6_2_3_+_A",
+          "condition": "──%"
+        },
+        {
+          "category": "_@",
+          "name": "Hien Shippuu Kyaku",
+          "input": "_1_6_+_B",
+          "condition": "25%"
+        },
+        {
+          "category": "_@",
+          "name": "Zanretsu Ken",
+          "input": "_6_4_6_+_C",
+          "condition": "50%"
+        },
+        {
+          "category": "_*",
+          "name": "Haoh Shikou Ken",
+          "input": "_6_4_1_2_3_6_+_A",
+          "condition": "75%"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_A": "P",
+    "_B": "K",
+    "_C": "TH",
+    "_D": "TA",
+    "_S": "ST",
+    "^S": "SL"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "genesis": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "megadrive": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "32x": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "saturn": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "neogeo": {
+      "b": "_A",
+      "y": "_B",
+      "a": "_C",
+      "x": "_D"
+    },
+    "psx": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "ps2": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "gb": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gbc": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gamegear": {
+      "a": "_A",
+      "b": "_B"
+    },
+    "sms": {
+      "a": "_A",
+      "b": "_B"
+    },
+    "gba": {
+      "b": "_A",
+      "a": "_B",
+      "l1": "_C",
+      "r1": "_D"
+    },
+    "ngpc": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "dreamcast": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "n64": {
+      "b": "_A",
+      "a": "_B",
+      "cDown": "_C",
+      "cLeft": "_D"
+    },
+    "wswan": {
+      "b": "_A",
+      "a": "_B"
+    }
+  },
+  "controlGroups": {
+    "_P": [
+      "_A"
+    ],
+    "_K": [
+      "_B"
+    ]
+  }
+}

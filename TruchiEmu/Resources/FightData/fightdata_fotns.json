@@ -1,1 +1,1140 @@
-{"schemaVersion":2,"romIds":["fotns"],"name":"Fist of the North Star","year":2005,"manufacturer":"Sega","controls":{"^E":"Weak Punch","^H":"Weak Kick","^G":"Hard Punch","^J":"Hard Kick","_S":"Taunt"},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves","_*":"God Fist Blow","_&":"Deadly Fist Blow","_`":"Deadly Fist Blow"},"commonCommands":[{"category":"_)","name":"Run","input":"_6^6"},{"category":"_)","name":"Retreat","input":"_4_4"},{"category":"_)","name":"Super Jump","input":"_2_8"},{"category":"_)","name":"Air Dash","input":"_^_6_6"},{"category":"_)","name":"Air Retreat","input":"_^_4_4"},{"category":"_)","name":"2 Dan Jump","input":"_^_8"},{"category":"_)","name":"Boost (1 Boost stock) @E-button"},{"category":"_)","name":"Boost Cancel (1 Boost stock) any attack @E-button"},{"category":"_)","name":"Heavy Strike","input":"^E_+^H one star"},{"category":"_)","name":"Grave Shoot","input":"^E_+^G"},{"category":"_)","name":"Banishing Strike","input":"^G_+^J (_O)"},{"category":"_)","name":"Auto Boost (1 Boost stock)","input":"_6"},{"category":"_)","name":"Aura Guard (some power in Aura Gauge)","input":"^4_+_O@E-button"},{"category":"_)","name":"Agility Defence being hit","input":"_4 / _1"},{"category":"_)","name":"Guard Cancel (1 Aura Gauge) blocking","input":"_6_+^G_+^J"},{"category":"_)","name":"Tech Hit knocked down on air","input":"^E / ^H / ^G / ^J"},{"category":"_)","name":"Stagger Cancel (½ Aura Gauge) when stagger","input":"^E / ^H / ^G / ^J"},{"category":"_)","name":"Quick Standing knocked down","input":"_8"},{"category":"_)","name":"Delayed Standing knocked down","input":"_2"}],"characters":[{"name":"KENSHIRO","moves":[{"category":"_(","name":"Throw","input":"_4 / _6_+^G"},{"category":"_(","name":"Tsukami Nage","input":"^G_+^J"},{"category":"_)","name":"Overhead Chop","input":"_6_+^E"},{"category":"_)","name":"Backhand Punch","input":"_6_+^H"},{"category":"_@","name":"Touki","input":"_2_3_6_+^E"},{"category":"_@","name":"Hokuto Ujou Moushouha","input":"(_^)_6_2_3_+^E / ^G"},{"category":"_@","name":"Hokuto Hiei Ken","input":"_6_2_3_+^H"},{"category":"_@","name":"Hikou Seiei Kou","input":"_2_3_6_+^G"},{"category":"_@","name":"Tenha no Kamae","input":"_2_1_4_+^G (damage increased by 10%)"},{"category":"_@","name":"Hokuto Jarai Kou","input":"_2_3_6_+^J"},{"category":"_@","name":"Hokuto Shichi Shiki Heizan","input":"_^_2_1_4_+^E"},{"category":"_@","name":"Hokuto Ryugekiko","input":"_2_1_4_+^E (reverse high/mid)"},{"category":"_*","name":"Tenha Kassatsu","input":"_2_3_6_2_3_6_+^E"},{"category":"_*","name":"Musou Tensei","input":"_2_1_4_2_1_4_+^H"},{"category":"_*","name":"Teleport being hit","input":"_6 / _2 (x7)"},{"category":"_*","name":"Hokuto Zankai Ken (2 Aura Gauges)","input":"_2_1_4_2_1_4_+^G"},{"category":"_&","name":"Hokuto Hyakuretsuken","input":"_2_3_6_+^G_+^J"}]},{"name":"RAOH","moves":[{"category":"_(","name":"Throw","input":"_4 / _6_+^G"},{"category":"_(","name":"Tsukami Nage","input":"^G_+^J"},{"category":"_)","name":"Charging Punch","input":"_6_+^E"},{"category":"_)","name":"Drop Kick","input":"_6_+^H"},{"category":"_)","name":"Dodge","input":"_4_4"},{"category":"_@","name":"Hokuto Goushouha","input":"(_^)_2_3_6_+^G"},{"category":"_@","name":"Hokuto Tenshou Raigeki","input":"_6_2_3_+^E"},{"category":"_@","name":"Hokuto Raretsu Ken","input":"_6_2_3_+^G"},{"category":"_@","name":"Sai","input":"(_^)_2_1_4_+^J"},{"category":"_@","name":"Hokuto Donryu Kohou","input":"_2_1_4_+^E (damage increased by 20% for Special Moves)"},{"category":"_@","name":"Power Attack","input":"_O^G"},{"category":"_*","name":"Hikou Shinketsushu","input":"_2_1_4_2_1_4_+^E"},{"category":"_*","name":"Tenshou Honretsu","input":"_2_1_4_2_1_4_+^G"},{"category":"_*","name":"Musou Tensei","input":"_2_1_4_2_1_4_+^H"},{"category":"_*","name":"Teleport being hit","input":"_6 / _2 (x7)"},{"category":"_*","name":"Musou Insatsu Sai","input":"_4_1_2_3_6_+^J"},{"category":"_&","name":"Hokuto Metsu Tenha","input":"_2_3_6_+^G_+^J"}]},{"name":"TOKI","moves":[{"category":"_(","name":"Throw","input":"_4 / _6_+^G"},{"category":"_)","name":"Overhead Thrust","input":"_6_+^E"},{"category":"_)","name":"Jump Kick","input":"_6_+^H"},{"category":"_)","name":"Straight Chop","input":"_6_+^J"},{"category":"_@","name":"Toukei Kohou","input":"_6_3_2_1_4_+^J"},{"category":"_@","name":"Tenshou Hyakuretsu Ken","input":"_^_2_3_6_+^G"},{"category":"_@","name":"Hokuto Ryukojin","input":"_2_1_4_+^G (reflects projectile)"},{"category":"_@","name":"Hokuto Musou Ryubu: Forward","input":"_6_2_3_+^E / ^H / ^G / ^J"},{"category":"_@","name":"Hokuto Musou Ryubu: Backward","input":"_4_2_1_+^E / ^H / ^G / ^J"},{"category":"_@","name":"Hokuto Musou Ryubu: Vertical","input":"(_^)_2_3_6_+^E"},{"category":"_@","name":"Hokuto Haryuusho","input":"_2_1_4_+^E (reverse high/mid)"},{"category":"_@","name":"Hokuto Suibu Geki","input":"_2_1_4_+^H (reverse low)"},{"category":"_@","name":"Hokuto Shourin Kyaku","input":"_^_2_1_4_+^J (reverse jump)"},{"category":"_*","name":"Hokuto Ujou Danjinken","input":"_2_3_6_2_3_6_+^G"},{"category":"_*","name":"Hokuto Saiha Ken","input":"_2_1_4_2_1_4_+^G"},{"category":"_*","name":"Hikou Sekka Kou: Self","input":"_2_1_4_2_1_4_+^H (damage increased by 20% for Special Moves)"},{"category":"_*","name":"Hikou Sekka Kou: Opponent","input":"_2_3_6_2_3_6_+^H"},{"category":"_&","name":"Hokuto Ujou Hagan Ken","input":"_2_3_6_+^G_+^J"}]},{"name":"JAGI","moves":[{"category":"_(","name":"Throw","input":"_4 / _6_+^G"},{"category":"_(","name":"Tsukami Nage","input":"^G_+^J"},{"category":"_)","name":"Crab-punch","input":"_6_+^E"},{"category":"_)","name":"Jumping Knee","input":"_6_+^H"},{"category":"_@","name":"Shotgun","input":"_2_3_6_+^E"},{"category":"_@","name":"Anti-air Shotgun","input":"_6_2_3_+^E"},{"category":"_@","name":"Hokuto Senju Satsu","input":"_^_2_3_6_+^E"},{"category":"_@","name":"Nanto Jarou Geki","input":"_2_1_4_+^G (_O)"},{"category":"_@","name":"Cancel (if held)","input":"^E"},{"category":"_@","name":"Oil Drum","input":"_2_1_4_+^H (x2)"},{"category":"_@","name":"Gasoline","input":"_2_1_4_+^J (x2)"},{"category":"_@","name":"\"Y-yametekure!! T-tanomu!!\"","input":"_2_1_4_+^E (_O)"},{"category":"_@","name":"\"Yoku Dekita Otoutou!!\" close","input":"_6_3_2_1_4_6_+^J"},{"category":"_@","name":"Match","input":"_2_3_6_+^H"},{"category":"_@","name":"\"Bakame! Kateba Iinda Nani wo Tukaou ga!\" (½ Aura Gauge) knocked down, close to Shotgun","input":"^G"},{"category":"_*","name":"\"Madamada Yomi ga Amai wa\"","input":"_2_3_6_2_3_6_+^E"},{"category":"_*","name":"Hokuto Rakan Geki","input":"_2_3_6_2_3_6_+^G"},{"category":"_*","name":"Throw Needles","input":"^E / ^H / ^G"},{"category":"_*","name":"\"Ore no Na wo Ittemiro!\" (2 Aura Gauges) close","input":"_6_3_2_1_4_6_3_2_1_4_+^G (JAPAN BIOS only)"},{"category":"_*","name":"Shotgun Shot","input":"_2_3_6_+^E"},{"category":"_*","name":"\"Ima ha Akuma ga Hohoemu Jidai nanda!\" close","input":"_6_4_1_2_3_6_+^G (only against Shin)"},{"category":"_&","name":"\"Huhu, Kono Toki wo Matteitanoda!\"","input":"_2_3_6_+^G_+^J"}]},{"name":"SHIN","moves":[{"category":"_(","name":"Throw","input":"_4 / _6_+^G"},{"category":"_(","name":"Tsukami Nage","input":"^G_+^J"},{"category":"_)","name":"Slicing Punch","input":"_6_+^E"},{"category":"_)","name":"Stomping Kick","input":"_6_+^H"},{"category":"_@","name":"Nanto Senkyakusou","input":"_2_1_4_+^H"},{"category":"_@","name":"Nanto Gokuto Ken","input":"(_^)_6_2_3_+^H / ^J"},{"category":"_@","name":"Nanto Ryuhashidan","input":"_2_3_6_+^E (^*)"},{"category":"_@","name":"Nanto Hakuha Zan","input":"_2_1_4_+^G (reflects projectile)"},{"category":"_@","name":"Nanto Senju Zan","input":"_2_3_6_+^G (x2)"},{"category":"_@","name":"Nanto Gyakushisou close","input":"_6_3_2_1_4_+^E"},{"category":"_@","name":"Nanto Hakuen Tenshou: Forward","input":"_2_3_6_+^J"},{"category":"_@","name":"Nanto Hakuen Tenshou: Backward","input":"_2_1_4_+^J"},{"category":"_*","name":"Nanto Raishin Sho","input":"_2_3_6_2_3_6_+^G"},{"category":"_*","name":"Nanto Senjuryu Geki","input":"_2_1_4_2_1_4_+^G (_O)"},{"category":"_*","name":"\"Omae no Ken deha, Shinan!\"","input":"_4_1_2_3_6_3_2_1_4_+^E (after lose all \"Seven Stars of the Hokuto\")"},{"category":"_&","name":"Nanto Shoshu Tokyaku","input":"_2_3_6_+^G_+^J"}]},{"name":"REI","moves":[{"category":"_(","name":"Throw","input":"_4 / _6_+^G"},{"category":"_(","name":"Tsukami Nage","input":"^G_+^J"},{"category":"_(","name":"Air Throw","input":"_^_4 / _6_+^G"},{"category":"_)","name":"Elbow","input":"_6_+^E"},{"category":"_)","name":"Wall Cling jump against the wall","input":"_4_4"},{"category":"_@","name":"Hien Ryubu","input":"_^_2_3_6_+^E / ^H"},{"category":"_@","name":"Nanto Gekisei Kakubu","input":"_6_2_3_+^E / ^G"},{"category":"_@","name":"Nanto Jinshu Suizan: Forward","input":"_^_2_3_6_+^J"},{"category":"_@","name":"Nanto Jinshu Suizan: Backward","input":"_^_2_1_4_+^J"},{"category":"_@","name":"Nanto Kyoukaku Shoubu","input":"_^_2_1_4_+^G"},{"category":"_@","name":"Nanto Kakuyoku Jinzan","input":"_^_2_3_6_+^G"},{"category":"_@","name":"Nanto Koharyu","input":"_2_1_4_+^G (x2)"},{"category":"_*","name":"Nanto Seiki Mouha","input":"_2_3_6_2_3_6_+^E"},{"category":"_*","name":"Danko Sousai Ken","input":"_2_3_6_2_3_6_+^G (_O)"},{"category":"_*","name":"Kubuenri Zan","input":"_^_2_3_6_3_2_1_4_+^J"},{"category":"_&","name":"Hishou Hakurei","input":"_2_3_6_+^G_+^J"}]},{"name":"JUDA","moves":[{"category":"_(","name":"Throw","input":"_4 / _6_+^G"},{"category":"_(","name":"Tsukami Nage","input":"^G_+^J"},{"category":"_)","name":"Side Palm","input":"_6_+^E"},{"category":"_)","name":"Die, Like a Worm!","input":"_^_2_+^E / ^G"},{"category":"_@","name":"Denshou Reppa","input":"_2_3_6_+^G"},{"category":"_@","name":"\"Ichido Omoishirasete Ageyou\"","input":"_2_3_6_+^H"},{"category":"_@","name":"Dagar no Chiryaku","input":"_4_2_1_+^H"},{"category":"_@","name":"\"Ore wo Riyou Shitanoka~!!\"","input":"_2_1_4_+^H (reverse all)"},{"category":"_@","name":"Stamp the UD","input":"_6_2_3_+^E"},{"category":"_@","name":"Komaku no Chiryaku\"","input":"_4_2_1_+^E"},{"category":"_@","name":"\"Ichikoro\"","input":"_2_3_6_+^E"},{"category":"_@","name":"Chiryaku no Jidai\" knocked down","input":"_4_1_2_3_6++@E-button"},{"category":"_*","name":"\"Dam Kekkai\"","input":"_2_3_6_2_3_6_+^G"},{"category":"_*","name":"Nanto Yousou Hazan","input":"_2_1_4_2_1_4_+^G"},{"category":"_&","name":"Kesshou Shi","input":"_2_3_6_+^G_+^J"}]},{"name":"THOUTHER","moves":[{"category":"_(","name":"Throw","input":"_4 / _6_+^G"},{"category":"_(","name":"Tsukami Nage","input":"^G_+^J"},{"category":"_)","name":"Elbow","input":"_6_+^E"},{"category":"_)","name":"Low Kick","input":"_6_+^H"},{"category":"_@","name":"Kyokusei Jyuji Shohafu","input":"_2_1_4_+^E"},{"category":"_@","name":"Nanto Bakuseiha","input":"_^_2_1_4_+^E"},{"category":"_@","name":"Holy Spear","input":"_6_2_3_+^E / ^G"},{"category":"_@","name":"Kyokusei Jyuji Ken: Hitai","input":"_2_3_6_+^E"},{"category":"_@","name":"Kyokusei Jyuji Ken: Hibi - Gedan","input":"_2_3_6_+^H"},{"category":"_@","name":"Kyokusei Jyuji Ken: Hibi","input":"_2_3_6_+^G"},{"category":"_@","name":"Kyokusei Jyuji Ken: Hishou","input":"_2_3_6_+^J"},{"category":"_*","name":"Houshou Jyuji Hou","input":"(_^)_2_1_4_1_2_3_6_+^E"},{"category":"_*","name":"Houou Kotou Kaiten","input":"_2_1_4_2_1_4_+^G (speeds up, powered up Kyokusei Jyuji Ken)"},{"category":"_*","name":"Seitei Jyuji Ryou","input":"_2_3_6_2_3_6_+^G"},{"category":"_*","name":"Extra Spear","input":"_6_2_3_+^G"},{"category":"_&","name":"Tenshou Jyujihou","input":"_2_3_6_+^G_+^J"}]},{"name":"Mr. HEART","moves":[{"category":"_(","name":"Throw","input":"_4 / _6_+^G"},{"category":"_(","name":"Tsukami Nage","input":"^G_+^J"},{"category":"_(","name":"Air Throw","input":"_^^E_+^G"},{"category":"_)","name":"Charge Punch","input":"_O^G"},{"category":"_)","name":"Charge Low Punch","input":"^2_+_O^G"},{"category":"_)","name":"Headbutt","input":"_6_+^E"},{"category":"_)","name":"Earthquake","input":"_^_2_+^H"},{"category":"_@","name":"No Escape!","input":"_6_3_2_1_4_+^E"},{"category":"_@","name":"Bring it On!","input":"_2_1_4_+^E"},{"category":"_@","name":"Bring it On! (½ Aura Gauge) blocking","input":"_2_1_4_+^E"},{"category":"_@","name":"Earth Crush","input":"_2_1_4_+^H / ^J"},{"category":"_@","name":"Dunk Receive","input":"_6_2_3_+^E / ^G"},{"category":"_*","name":"Kenpou Goroshi","input":"_2_1_4_2_1_4_+^E"},{"category":"_*","name":"Heart's A close","input":"_2_3_6_2_3_6_+^E"},{"category":"_*","name":"Itteyo!!","input":"_2_3_6_2_3_6_+^G"},{"category":"_*","name":"Body Throwing","input":"_^_2_3_6_+^J"},{"category":"_*","name":"Big Typhoon","input":"(_^)_2_3_6_+^G"},{"category":"_*","name":"Meat Cross","input":"_^_2_3_6_+^H"},{"category":"_*","name":"Big Hug close","input":"_2_3_6_+^E"},{"category":"_*","name":"Meat Dunk","input":"_^ close _2_3_6_+^E"},{"category":"_&","name":"It Fucking Hurts!!","input":"_2_3_6_+^G_+^J"}]},{"name":"MAMIYA","moves":[{"category":"_)","name":"2-hit Yo-Yo Overhead","input":"_6_+^E"},{"category":"_)","name":"Yo-Yo Hitgrab","input":"_6_+^G"},{"category":"_@","name":"Bowgun: Upper","input":"(_^)_2_3_6_+^E (x10)"},{"category":"_@","name":"Bowgun: Lower","input":"_2_3_6_+^H (x10)"},{"category":"_@","name":"Bowgun Reload","input":"_2_1_4_+^E"},{"category":"_@","name":"Spike Attack","input":"_2_3_6_+^G"},{"category":"_@","name":"High Attack","input":"^E (x10)"},{"category":"_@","name":"Low Attack","input":"^H (x10)"},{"category":"_@","name":"Steel Spike Switch","input":"_2_1_4_+^G"},{"category":"_@","name":"Helmet Bomb","input":"_2_3_6_+^J"},{"category":"_@","name":"Forward Roll","input":"_2_1_4_+^H"},{"category":"_@","name":"Bind Yo-Yo","input":"_6_2_3_+^G"},{"category":"_@","name":"Backslash Kick","input":"_6_2_3_+^J"},{"category":"_*","name":"Bind Trick","input":"_2_3_6_2_3_6_+^E"},{"category":"_*","name":"Bike","input":"_2_3_6_2_3_6_+^G"},{"category":"_&","name":"Sayonara","input":"_2_3_6_+^G_+^J"},{"category":"_&","name":"Control","input":"_2 / _8"},{"category":"_&","name":"Bowgun Fire","input":"^E / ^H / ^G / ^J"}]}],"controlAbbr":{"^E":"LP","^H":"LK","^G":"HP","^J":"HK","_S":"TA"},"systemControlMappings":{"snes":{"y":"^G","x":"^E","b":"^J","a":"^H"},"genesis":{"y":"^G","b":"^E","c":"^J","a":"^H"},"megadrive":{"y":"^G","b":"^E","c":"^J","a":"^H"},"32x":{"y":"^G","b":"^E","c":"^J","a":"^H"},"saturn":{"y":"^G","b":"^E","c":"^J","a":"^H"},"psx":{"y":"^G","x":"^E","b":"^J","a":"^H"},"ps2":{"y":"^G","x":"^E","b":"^J","a":"^H"},"gb":{"b":"^G","a":"^J"},"gbc":{"b":"^G","a":"^J"},"gamegear":{"a":"^G","b":"^J"},"sms":{"a":"^G","b":"^J"},"gba":{"b":"^G","a":"^E","y":"^J","x":"^H"},"ngpc":{"b":"^G","a":"^E","y":"^J","x":"^H"}},"controlGroups":{"_P":["^E","^G"],"_K":["^H","^J"]}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "fotns"
+  ],
+  "name": "Fist of the North Star",
+  "year": 2005,
+  "manufacturer": "Sega",
+  "controls": {
+    "^E": "Weak Punch",
+    "^H": "Weak Kick",
+    "^G": "Hard Punch",
+    "^J": "Hard Kick",
+    "_S": "Taunt"
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_*": "God Fist Blow",
+    "_&": "Deadly Fist Blow",
+    "_`": "Deadly Fist Blow"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Run",
+      "input": "_6^6"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4"
+    },
+    {
+      "category": "_)",
+      "name": "Super Jump",
+      "input": "_2_8"
+    },
+    {
+      "category": "_)",
+      "name": "Air Dash",
+      "input": "_^_6_6"
+    },
+    {
+      "category": "_)",
+      "name": "Air Retreat",
+      "input": "_^_4_4"
+    },
+    {
+      "category": "_)",
+      "name": "2 Dan Jump",
+      "input": "_^_8"
+    },
+    {
+      "category": "_)",
+      "name": "Boost (1 Boost stock) @E-button"
+    },
+    {
+      "category": "_)",
+      "name": "Boost Cancel (1 Boost stock) any attack @E-button"
+    },
+    {
+      "category": "_)",
+      "name": "Heavy Strike",
+      "input": "^E_+^H one star"
+    },
+    {
+      "category": "_)",
+      "name": "Grave Shoot",
+      "input": "^E_+^G"
+    },
+    {
+      "category": "_)",
+      "name": "Banishing Strike",
+      "input": "^G_+^J (_O)"
+    },
+    {
+      "category": "_)",
+      "name": "Auto Boost (1 Boost stock)",
+      "input": "_6"
+    },
+    {
+      "category": "_)",
+      "name": "Aura Guard (some power in Aura Gauge)",
+      "input": "^4_+_O@E-button"
+    },
+    {
+      "category": "_)",
+      "name": "Agility Defence being hit",
+      "input": "_4 / _1"
+    },
+    {
+      "category": "_)",
+      "name": "Guard Cancel (1 Aura Gauge) blocking",
+      "input": "_6_+^G_+^J"
+    },
+    {
+      "category": "_)",
+      "name": "Tech Hit knocked down on air",
+      "input": "^E / ^H / ^G / ^J"
+    },
+    {
+      "category": "_)",
+      "name": "Stagger Cancel (½ Aura Gauge) when stagger",
+      "input": "^E / ^H / ^G / ^J"
+    },
+    {
+      "category": "_)",
+      "name": "Quick Standing knocked down",
+      "input": "_8"
+    },
+    {
+      "category": "_)",
+      "name": "Delayed Standing knocked down",
+      "input": "_2"
+    }
+  ],
+  "characters": [
+    {
+      "name": "KENSHIRO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Tsukami Nage",
+          "input": "^G_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Overhead Chop",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Backhand Punch",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Touki",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Hokuto Ujou Moushouha",
+          "input": "(_^)_6_2_3_+^E / ^G"
+        },
+        {
+          "category": "_@",
+          "name": "Hokuto Hiei Ken",
+          "input": "_6_2_3_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Hikou Seiei Kou",
+          "input": "_2_3_6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Tenha no Kamae",
+          "input": "_2_1_4_+^G (damage increased by 10%)"
+        },
+        {
+          "category": "_@",
+          "name": "Hokuto Jarai Kou",
+          "input": "_2_3_6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Hokuto Shichi Shiki Heizan",
+          "input": "_^_2_1_4_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Hokuto Ryugekiko",
+          "input": "_2_1_4_+^E (reverse high/mid)"
+        },
+        {
+          "category": "_*",
+          "name": "Tenha Kassatsu",
+          "input": "_2_3_6_2_3_6_+^E"
+        },
+        {
+          "category": "_*",
+          "name": "Musou Tensei",
+          "input": "_2_1_4_2_1_4_+^H"
+        },
+        {
+          "category": "_*",
+          "name": "Teleport being hit",
+          "input": "_6 / _2 (x7)"
+        },
+        {
+          "category": "_*",
+          "name": "Hokuto Zankai Ken (2 Aura Gauges)",
+          "input": "_2_1_4_2_1_4_+^G"
+        },
+        {
+          "category": "_&",
+          "name": "Hokuto Hyakuretsuken",
+          "input": "_2_3_6_+^G_+^J"
+        }
+      ]
+    },
+    {
+      "name": "RAOH",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Tsukami Nage",
+          "input": "^G_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Charging Punch",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Drop Kick",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Dodge",
+          "input": "_4_4"
+        },
+        {
+          "category": "_@",
+          "name": "Hokuto Goushouha",
+          "input": "(_^)_2_3_6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Hokuto Tenshou Raigeki",
+          "input": "_6_2_3_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Hokuto Raretsu Ken",
+          "input": "_6_2_3_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Sai",
+          "input": "(_^)_2_1_4_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Hokuto Donryu Kohou",
+          "input": "_2_1_4_+^E (damage increased by 20% for Special Moves)"
+        },
+        {
+          "category": "_@",
+          "name": "Power Attack",
+          "input": "_O^G"
+        },
+        {
+          "category": "_*",
+          "name": "Hikou Shinketsushu",
+          "input": "_2_1_4_2_1_4_+^E"
+        },
+        {
+          "category": "_*",
+          "name": "Tenshou Honretsu",
+          "input": "_2_1_4_2_1_4_+^G"
+        },
+        {
+          "category": "_*",
+          "name": "Musou Tensei",
+          "input": "_2_1_4_2_1_4_+^H"
+        },
+        {
+          "category": "_*",
+          "name": "Teleport being hit",
+          "input": "_6 / _2 (x7)"
+        },
+        {
+          "category": "_*",
+          "name": "Musou Insatsu Sai",
+          "input": "_4_1_2_3_6_+^J"
+        },
+        {
+          "category": "_&",
+          "name": "Hokuto Metsu Tenha",
+          "input": "_2_3_6_+^G_+^J"
+        }
+      ]
+    },
+    {
+      "name": "TOKI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Overhead Thrust",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Jump Kick",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Straight Chop",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Toukei Kohou",
+          "input": "_6_3_2_1_4_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Tenshou Hyakuretsu Ken",
+          "input": "_^_2_3_6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Hokuto Ryukojin",
+          "input": "_2_1_4_+^G (reflects projectile)"
+        },
+        {
+          "category": "_@",
+          "name": "Hokuto Musou Ryubu: Forward",
+          "input": "_6_2_3_+^E / ^H / ^G / ^J"
+        },
+        {
+          "category": "_@",
+          "name": "Hokuto Musou Ryubu: Backward",
+          "input": "_4_2_1_+^E / ^H / ^G / ^J"
+        },
+        {
+          "category": "_@",
+          "name": "Hokuto Musou Ryubu: Vertical",
+          "input": "(_^)_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Hokuto Haryuusho",
+          "input": "_2_1_4_+^E (reverse high/mid)"
+        },
+        {
+          "category": "_@",
+          "name": "Hokuto Suibu Geki",
+          "input": "_2_1_4_+^H (reverse low)"
+        },
+        {
+          "category": "_@",
+          "name": "Hokuto Shourin Kyaku",
+          "input": "_^_2_1_4_+^J (reverse jump)"
+        },
+        {
+          "category": "_*",
+          "name": "Hokuto Ujou Danjinken",
+          "input": "_2_3_6_2_3_6_+^G"
+        },
+        {
+          "category": "_*",
+          "name": "Hokuto Saiha Ken",
+          "input": "_2_1_4_2_1_4_+^G"
+        },
+        {
+          "category": "_*",
+          "name": "Hikou Sekka Kou: Self",
+          "input": "_2_1_4_2_1_4_+^H (damage increased by 20% for Special Moves)"
+        },
+        {
+          "category": "_*",
+          "name": "Hikou Sekka Kou: Opponent",
+          "input": "_2_3_6_2_3_6_+^H"
+        },
+        {
+          "category": "_&",
+          "name": "Hokuto Ujou Hagan Ken",
+          "input": "_2_3_6_+^G_+^J"
+        }
+      ]
+    },
+    {
+      "name": "JAGI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Tsukami Nage",
+          "input": "^G_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Crab-punch",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Jumping Knee",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Shotgun",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Anti-air Shotgun",
+          "input": "_6_2_3_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Hokuto Senju Satsu",
+          "input": "_^_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Nanto Jarou Geki",
+          "input": "_2_1_4_+^G (_O)"
+        },
+        {
+          "category": "_@",
+          "name": "Cancel (if held)",
+          "input": "^E"
+        },
+        {
+          "category": "_@",
+          "name": "Oil Drum",
+          "input": "_2_1_4_+^H (x2)"
+        },
+        {
+          "category": "_@",
+          "name": "Gasoline",
+          "input": "_2_1_4_+^J (x2)"
+        },
+        {
+          "category": "_@",
+          "name": "\"Y-yametekure!! T-tanomu!!\"",
+          "input": "_2_1_4_+^E (_O)"
+        },
+        {
+          "category": "_@",
+          "name": "\"Yoku Dekita Otoutou!!\" close",
+          "input": "_6_3_2_1_4_6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Match",
+          "input": "_2_3_6_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "\"Bakame! Kateba Iinda Nani wo Tukaou ga!\" (½ Aura Gauge) knocked down, close to Shotgun",
+          "input": "^G"
+        },
+        {
+          "category": "_*",
+          "name": "\"Madamada Yomi ga Amai wa\"",
+          "input": "_2_3_6_2_3_6_+^E"
+        },
+        {
+          "category": "_*",
+          "name": "Hokuto Rakan Geki",
+          "input": "_2_3_6_2_3_6_+^G"
+        },
+        {
+          "category": "_*",
+          "name": "Throw Needles",
+          "input": "^E / ^H / ^G"
+        },
+        {
+          "category": "_*",
+          "name": "\"Ore no Na wo Ittemiro!\" (2 Aura Gauges) close",
+          "input": "_6_3_2_1_4_6_3_2_1_4_+^G (JAPAN BIOS only)"
+        },
+        {
+          "category": "_*",
+          "name": "Shotgun Shot",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_*",
+          "name": "\"Ima ha Akuma ga Hohoemu Jidai nanda!\" close",
+          "input": "_6_4_1_2_3_6_+^G (only against Shin)"
+        },
+        {
+          "category": "_&",
+          "name": "\"Huhu, Kono Toki wo Matteitanoda!\"",
+          "input": "_2_3_6_+^G_+^J"
+        }
+      ]
+    },
+    {
+      "name": "SHIN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Tsukami Nage",
+          "input": "^G_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Slicing Punch",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Stomping Kick",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Nanto Senkyakusou",
+          "input": "_2_1_4_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Nanto Gokuto Ken",
+          "input": "(_^)_6_2_3_+^H / ^J"
+        },
+        {
+          "category": "_@",
+          "name": "Nanto Ryuhashidan",
+          "input": "_2_3_6_+^E (^*)"
+        },
+        {
+          "category": "_@",
+          "name": "Nanto Hakuha Zan",
+          "input": "_2_1_4_+^G (reflects projectile)"
+        },
+        {
+          "category": "_@",
+          "name": "Nanto Senju Zan",
+          "input": "_2_3_6_+^G (x2)"
+        },
+        {
+          "category": "_@",
+          "name": "Nanto Gyakushisou close",
+          "input": "_6_3_2_1_4_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Nanto Hakuen Tenshou: Forward",
+          "input": "_2_3_6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Nanto Hakuen Tenshou: Backward",
+          "input": "_2_1_4_+^J"
+        },
+        {
+          "category": "_*",
+          "name": "Nanto Raishin Sho",
+          "input": "_2_3_6_2_3_6_+^G"
+        },
+        {
+          "category": "_*",
+          "name": "Nanto Senjuryu Geki",
+          "input": "_2_1_4_2_1_4_+^G (_O)"
+        },
+        {
+          "category": "_*",
+          "name": "\"Omae no Ken deha, Shinan!\"",
+          "input": "_4_1_2_3_6_3_2_1_4_+^E (after lose all \"Seven Stars of the Hokuto\")"
+        },
+        {
+          "category": "_&",
+          "name": "Nanto Shoshu Tokyaku",
+          "input": "_2_3_6_+^G_+^J"
+        }
+      ]
+    },
+    {
+      "name": "REI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Tsukami Nage",
+          "input": "^G_+^J"
+        },
+        {
+          "category": "_(",
+          "name": "Air Throw",
+          "input": "_^_4 / _6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Elbow",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Wall Cling jump against the wall",
+          "input": "_4_4"
+        },
+        {
+          "category": "_@",
+          "name": "Hien Ryubu",
+          "input": "_^_2_3_6_+^E / ^H"
+        },
+        {
+          "category": "_@",
+          "name": "Nanto Gekisei Kakubu",
+          "input": "_6_2_3_+^E / ^G"
+        },
+        {
+          "category": "_@",
+          "name": "Nanto Jinshu Suizan: Forward",
+          "input": "_^_2_3_6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Nanto Jinshu Suizan: Backward",
+          "input": "_^_2_1_4_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Nanto Kyoukaku Shoubu",
+          "input": "_^_2_1_4_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Nanto Kakuyoku Jinzan",
+          "input": "_^_2_3_6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Nanto Koharyu",
+          "input": "_2_1_4_+^G (x2)"
+        },
+        {
+          "category": "_*",
+          "name": "Nanto Seiki Mouha",
+          "input": "_2_3_6_2_3_6_+^E"
+        },
+        {
+          "category": "_*",
+          "name": "Danko Sousai Ken",
+          "input": "_2_3_6_2_3_6_+^G (_O)"
+        },
+        {
+          "category": "_*",
+          "name": "Kubuenri Zan",
+          "input": "_^_2_3_6_3_2_1_4_+^J"
+        },
+        {
+          "category": "_&",
+          "name": "Hishou Hakurei",
+          "input": "_2_3_6_+^G_+^J"
+        }
+      ]
+    },
+    {
+      "name": "JUDA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Tsukami Nage",
+          "input": "^G_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Side Palm",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Die, Like a Worm!",
+          "input": "_^_2_+^E / ^G"
+        },
+        {
+          "category": "_@",
+          "name": "Denshou Reppa",
+          "input": "_2_3_6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "\"Ichido Omoishirasete Ageyou\"",
+          "input": "_2_3_6_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Dagar no Chiryaku",
+          "input": "_4_2_1_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "\"Ore wo Riyou Shitanoka~!!\"",
+          "input": "_2_1_4_+^H (reverse all)"
+        },
+        {
+          "category": "_@",
+          "name": "Stamp the UD",
+          "input": "_6_2_3_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Komaku no Chiryaku\"",
+          "input": "_4_2_1_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "\"Ichikoro\"",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Chiryaku no Jidai\" knocked down",
+          "input": "_4_1_2_3_6++@E-button"
+        },
+        {
+          "category": "_*",
+          "name": "\"Dam Kekkai\"",
+          "input": "_2_3_6_2_3_6_+^G"
+        },
+        {
+          "category": "_*",
+          "name": "Nanto Yousou Hazan",
+          "input": "_2_1_4_2_1_4_+^G"
+        },
+        {
+          "category": "_&",
+          "name": "Kesshou Shi",
+          "input": "_2_3_6_+^G_+^J"
+        }
+      ]
+    },
+    {
+      "name": "THOUTHER",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Tsukami Nage",
+          "input": "^G_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Elbow",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Low Kick",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Kyokusei Jyuji Shohafu",
+          "input": "_2_1_4_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Nanto Bakuseiha",
+          "input": "_^_2_1_4_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Holy Spear",
+          "input": "_6_2_3_+^E / ^G"
+        },
+        {
+          "category": "_@",
+          "name": "Kyokusei Jyuji Ken: Hitai",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Kyokusei Jyuji Ken: Hibi - Gedan",
+          "input": "_2_3_6_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Kyokusei Jyuji Ken: Hibi",
+          "input": "_2_3_6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Kyokusei Jyuji Ken: Hishou",
+          "input": "_2_3_6_+^J"
+        },
+        {
+          "category": "_*",
+          "name": "Houshou Jyuji Hou",
+          "input": "(_^)_2_1_4_1_2_3_6_+^E"
+        },
+        {
+          "category": "_*",
+          "name": "Houou Kotou Kaiten",
+          "input": "_2_1_4_2_1_4_+^G (speeds up, powered up Kyokusei Jyuji Ken)"
+        },
+        {
+          "category": "_*",
+          "name": "Seitei Jyuji Ryou",
+          "input": "_2_3_6_2_3_6_+^G"
+        },
+        {
+          "category": "_*",
+          "name": "Extra Spear",
+          "input": "_6_2_3_+^G"
+        },
+        {
+          "category": "_&",
+          "name": "Tenshou Jyujihou",
+          "input": "_2_3_6_+^G_+^J"
+        }
+      ]
+    },
+    {
+      "name": "Mr. HEART",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Tsukami Nage",
+          "input": "^G_+^J"
+        },
+        {
+          "category": "_(",
+          "name": "Air Throw",
+          "input": "_^^E_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Charge Punch",
+          "input": "_O^G"
+        },
+        {
+          "category": "_)",
+          "name": "Charge Low Punch",
+          "input": "^2_+_O^G"
+        },
+        {
+          "category": "_)",
+          "name": "Headbutt",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Earthquake",
+          "input": "_^_2_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "No Escape!",
+          "input": "_6_3_2_1_4_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Bring it On!",
+          "input": "_2_1_4_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Bring it On! (½ Aura Gauge) blocking",
+          "input": "_2_1_4_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Earth Crush",
+          "input": "_2_1_4_+^H / ^J"
+        },
+        {
+          "category": "_@",
+          "name": "Dunk Receive",
+          "input": "_6_2_3_+^E / ^G"
+        },
+        {
+          "category": "_*",
+          "name": "Kenpou Goroshi",
+          "input": "_2_1_4_2_1_4_+^E"
+        },
+        {
+          "category": "_*",
+          "name": "Heart's A close",
+          "input": "_2_3_6_2_3_6_+^E"
+        },
+        {
+          "category": "_*",
+          "name": "Itteyo!!",
+          "input": "_2_3_6_2_3_6_+^G"
+        },
+        {
+          "category": "_*",
+          "name": "Body Throwing",
+          "input": "_^_2_3_6_+^J"
+        },
+        {
+          "category": "_*",
+          "name": "Big Typhoon",
+          "input": "(_^)_2_3_6_+^G"
+        },
+        {
+          "category": "_*",
+          "name": "Meat Cross",
+          "input": "_^_2_3_6_+^H"
+        },
+        {
+          "category": "_*",
+          "name": "Big Hug close",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_*",
+          "name": "Meat Dunk",
+          "input": "_^ close _2_3_6_+^E"
+        },
+        {
+          "category": "_&",
+          "name": "It Fucking Hurts!!",
+          "input": "_2_3_6_+^G_+^J"
+        }
+      ]
+    },
+    {
+      "name": "MAMIYA",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "2-hit Yo-Yo Overhead",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Yo-Yo Hitgrab",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Bowgun: Upper",
+          "input": "(_^)_2_3_6_+^E (x10)"
+        },
+        {
+          "category": "_@",
+          "name": "Bowgun: Lower",
+          "input": "_2_3_6_+^H (x10)"
+        },
+        {
+          "category": "_@",
+          "name": "Bowgun Reload",
+          "input": "_2_1_4_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Spike Attack",
+          "input": "_2_3_6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "High Attack",
+          "input": "^E (x10)"
+        },
+        {
+          "category": "_@",
+          "name": "Low Attack",
+          "input": "^H (x10)"
+        },
+        {
+          "category": "_@",
+          "name": "Steel Spike Switch",
+          "input": "_2_1_4_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Helmet Bomb",
+          "input": "_2_3_6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Forward Roll",
+          "input": "_2_1_4_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Bind Yo-Yo",
+          "input": "_6_2_3_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Backslash Kick",
+          "input": "_6_2_3_+^J"
+        },
+        {
+          "category": "_*",
+          "name": "Bind Trick",
+          "input": "_2_3_6_2_3_6_+^E"
+        },
+        {
+          "category": "_*",
+          "name": "Bike",
+          "input": "_2_3_6_2_3_6_+^G"
+        },
+        {
+          "category": "_&",
+          "name": "Sayonara",
+          "input": "_2_3_6_+^G_+^J"
+        },
+        {
+          "category": "_&",
+          "name": "Control",
+          "input": "_2 / _8"
+        },
+        {
+          "category": "_&",
+          "name": "Bowgun Fire",
+          "input": "^E / ^H / ^G / ^J"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "^E": "LP",
+    "^H": "LK",
+    "^G": "HP",
+    "^J": "HK",
+    "_S": "TA"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "^G",
+      "x": "^E",
+      "b": "^J",
+      "a": "^H"
+    },
+    "genesis": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "megadrive": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "32x": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "saturn": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "psx": {
+      "y": "^G",
+      "x": "^E",
+      "b": "^J",
+      "a": "^H"
+    },
+    "ps2": {
+      "y": "^G",
+      "x": "^E",
+      "b": "^J",
+      "a": "^H"
+    },
+    "gb": {
+      "b": "^G",
+      "a": "^J"
+    },
+    "gbc": {
+      "b": "^G",
+      "a": "^J"
+    },
+    "gamegear": {
+      "a": "^G",
+      "b": "^J"
+    },
+    "sms": {
+      "a": "^G",
+      "b": "^J"
+    },
+    "gba": {
+      "b": "^G",
+      "a": "^E",
+      "y": "^J",
+      "x": "^H"
+    },
+    "ngpc": {
+      "b": "^G",
+      "a": "^E",
+      "y": "^J",
+      "x": "^H"
+    }
+  },
+  "controlGroups": {
+    "_P": [
+      "^E",
+      "^G"
+    ],
+    "_K": [
+      "^H",
+      "^J"
+    ]
+  }
+}

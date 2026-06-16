@@ -1,1 +1,760 @@
-{"schemaVersion":2,"romIds":["kaiserkn","gblchmp","kaiserknj"],"name":"Kaiser Knuckle","year":1994,"manufacturer":"Taito","controls":{"^E":"Weak Punch","^F":"Medium Punch","^G":"Strong Punch","^H":"Weak Kick","^I":"Medium Kick","^J":"Strong Kick","_S":"Start"},"controlGroups":{"_P":["^E","^F","^G"],"_K":["^H","^I","^J"]},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves","_*":"Desperation Moves","_`":"Desperation Moves"},"commonCommands":[{"category":"_)","name":"Super Punch","input":"^E_+^F"},{"category":"_)","name":"Extreme Punch","input":"^F_+^G"},{"category":"_)","name":"Super Kick","input":"^H_+^I"},{"category":"_)","name":"Extreme Kick","input":"^I_+^J"},{"category":"_)","name":"Dive Attack","input":"_^_2_+^H_+^I_+^J"}],"characters":[{"name":"KAZUYA","moves":[{"category":"_(","name":"Shoulder Toss","input":"_4 / _6_+^F / ^G"},{"category":"_(","name":"Sandal Strike","input":"_4 / _6_+^I"},{"category":"_(","name":"Backbreaker","input":"_4 / _6_+^J"},{"category":"_@","name":"Ko'oh Ken","input":"_2_3_6_+_P"},{"category":"_@","name":"Dankuuga","input":"_6_2_3_+_K"},{"category":"_@","name":"Gasaigeki","input":"_6_3_2_1_4_+_P"},{"category":"_@","name":"Genroudan","input":"_2_1_4_6_+_P"},{"category":"_@","name":"Shiten Kongouha","input":"_^_2_1_4_6_+_P"},{"category":"_*","name":"Gen'ei Koroudan","input":"_4_1_2_3_4_3_+^F_+^G"}]},{"name":"BARTS","moves":[{"category":"_(","name":"Neck Throw","input":"_4 / _6_+^F"},{"category":"_(","name":"Hard Spike","input":"_4 / _6_+^G"},{"category":"_(","name":"Suplex","input":"_4 / _6_+^I / ^J"},{"category":"_(","name":"Piledriver","input":"_^_4 / _6_+^F / ^G"},{"category":"_@","name":"Aura Cannon","input":"^2_8_+_P"},{"category":"_@","name":"Moonsault Smash","input":"^2_8_+_K"},{"category":"_@","name":"Thunder Knuckle","input":"^4_6_+_P"},{"category":"_@","name":"Rolling Smash","input":"^4_6_+_K"},{"category":"_*","name":"Final Spark","input":"^1_3_4_6_+^F_+^G"}]},{"name":"GEKKOU","moves":[{"category":"_(","name":"Jump Over Toss","input":"_4 / _6_+^F / ^G"},{"category":"_(","name":"Ninja Toss","input":"_^_4 / _6_+^F / ^G"},{"category":"_)","name":"Retreat","input":"_4_4"},{"category":"_)","name":"2 Dan Jump","input":"_^_8"},{"category":"_@","name":"Kurojuuji","input":"_2_3_6_+_P"},{"category":"_@","name":"Kaiten Kurojuuji","input":"_^_8_9_6_+_P"},{"category":"_@","name":"Jigokugoma","input":"(_^)_2_1_4_+_K"},{"category":"_@","name":"Kokushi Raikouzan","input":"_^ close _6_3_2_1_4_+^E_+^F"},{"category":"_@","name":"Izuna Otoshi","input":"_^ close _4_1_2_3_6_+^F_+^G"},{"category":"_*","name":"Senpuu Kaen Jigoku no Jutsu close","input":"_6_4_1_2_+^G_+^J"}]},{"name":"WULONG","moves":[{"category":"_(","name":"Snapping Back","input":"_4 / _6_+^F / ^G"},{"category":"_(","name":"Rapid Knees","input":"_4 / _6_+^I / ^J"},{"category":"_(","name":"Kick Away","input":"_^_4 / _6_+^I / ^J"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_9"},{"category":"_@","name":"Ryuugekiken","input":"_4_1_2_3_6_+_P"},{"category":"_@","name":"Shouten Ryuubu","input":"_4_1_2_3_6_+_K"},{"category":"_@","name":"Ryuukizan","input":"_6_2_3_+_P"},{"category":"_@","name":"Nunchuck no Mai","input":"_6_3_2_1_4_+_P (^*)"},{"category":"_*","name":"Gekisatsu Hiryuuken","input":"_4_6_3_2_1_6_+^G_+^J"}]},{"name":"LIHUA","moves":[{"category":"_(","name":"Flip Throw","input":"_4 / _6_+^F"},{"category":"_(","name":"Palm Shoot","input":"_4 / _6_+^G"},{"category":"_(","name":"Momiji-gari","input":"_4 / _6_+^I"},{"category":"_(","name":"Tenrakuna","input":"_4 / _6_+^J"},{"category":"_(","name":"Air Tenrakuna","input":"_^_4 / _6_+^I / ^J"},{"category":"_)","name":"Sword Stab","input":"_^_2_+^F"},{"category":"_@","name":"Iaizan","input":"_2_3_6_9_+_P"},{"category":"_@","name":"Hen'i Battou Kasumi Girl","input":"_2_1_4_6_+_P"},{"category":"_@","name":"Mueikassatsu Ken","input":"_4_1_2_+_P"},{"category":"_@","name":"Shinkuu Nage","input":"_6_3_2_1_4_7_+_P"},{"category":"_*","name":"Shinkuu Sen","input":"_6_3_2_1_4_1_7_+^F_+^G"}]},{"name":"LIZA","moves":[{"category":"_(","name":"Face Claw","input":"_4 / _6_+^F / ^G"},{"category":"_(","name":"Frankensteiner","input":"_4 / _6_+^I / ^J"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_9"},{"category":"_@","name":"Samba","input":"^*_K"},{"category":"_@","name":"Ester","input":"^2_8_+_P"},{"category":"_@","name":"Priego","input":"^2_8_+_K"},{"category":"_@","name":"Toto","input":"^4_6_+_P"},{"category":"_@","name":"Kiki","input":"^4_6_+_K"},{"category":"_*","name":"Samba de Excelente","input":"^2_1_4_1_2_3_+^I_+^J"}]},{"name":"J-McCOY","moves":[{"category":"_(","name":"Gut Punches","input":"_4 / _6_+^F"},{"category":"_(","name":"Hard Toss","input":"_4 / _6_+^G"},{"category":"_(","name":"Gut Knees","input":"_4 / _6_+^I / ^J"},{"category":"_@","name":"Spark Blow","input":"^*_P"},{"category":"_@","name":"Sonic Bomber","input":"_N"},{"category":"_@","name":"Boomerang Crush","input":"^4_6_+_P"},{"category":"_@","name":"Thunder Bolt","input":"^2_8_+_P"},{"category":"_@","name":"Jet Upper","input":"^4_6_+_K"},{"category":"_@","name":"Sonic Bomber","input":"^4_6_4_+_P"},{"category":"_*","name":"Destructive Combination","input":"^1_3_2_1_4_7_+^F_+^G"}]},{"name":"BOGGY","moves":[{"category":"_(","name":"Elbows","input":"_4 / _6_+^F"},{"category":"_(","name":"Throat Toss","input":"_4 / _6_+^G"},{"category":"_@","name":"Storm Dancer","input":"_4_1_2_3_6_+_K"},{"category":"_@","name":"Wheel Spin","input":"_2_1_4_7_+_K"},{"category":"_@","name":"Risky Step","input":"_1_3_7_+_K"},{"category":"_@","name":"Blast Hurricane","input":"_2_8_+_K"},{"category":"_*","name":"Dead Dance close","input":"_6_3_2_1_4_1_2_+^G_+^J"}]},{"name":"MARCO","moves":[{"category":"_(","name":"Toss Away","input":"_4 / _6_+^F"},{"category":"_(","name":"Head Chomp within throw range","input":"_4 / _6_+^F"},{"category":"_(","name":"Spin Toss","input":"_4 / _6_+^G"},{"category":"_(","name":"Backbreaker within throw range","input":"_4 / _6_+^G"},{"category":"_@","name":"Rampaging Tearing","input":"^*_P"},{"category":"_@","name":"Head Crasher","input":"_2_3_6_+_P"},{"category":"_@","name":"Magic Hand","input":"_6_3_2_1_4_6_+_P"},{"category":"_*","name":"Marco Dynamite","input":"_6_3_2_1_4_1_2_3_6_+^F_+^G"}]},{"name":"GONZALES","moves":[{"category":"_(","name":"Powerbomb","input":"_4 / _6_+^F"},{"category":"_(","name":"Judo Throw","input":"_4 / _6_+^G"},{"category":"_@","name":"Zenpou Kaiten Ukemi","input":"^F_+^G"},{"category":"_@","name":"Dai Tatsumaki-Otoshi close","input":"_4 / _6_+^I"},{"category":"_@","name":"Daisharin Nage close","input":"_4 / _6_+^J"}]},{"name":"AZTECA","moves":[{"category":"_(","name":"Dive","input":"_4 / _6_+_P"},{"category":"_@","name":"Mystic Buzzsaw","input":"_2_3_6_+_P"},{"category":"_@","name":"Silent Spear","input":"_2_1_4_6_+_P"}]},{"name":"GENERAL","moves":[{"category":"_(","name":"Grab and Toss","input":"_4 / _6_+^F / ^G"},{"category":"_(","name":"Stomach Grind","input":"_4 / _6_+^I / ^J"},{"category":"_)","name":"Slide","input":"_2_+^J"},{"category":"_@","name":"Green Ghost","input":"^E_+^F"},{"category":"_@","name":"Ghost Spread","input":"^F_+^G"},{"category":"_@","name":"Teleport","input":"^I_+^J"}]}],"cheatNotes":["_` Color Select","- 1st Color, select the character with _P / _K","- 2nd Color, select the character with _S"],"controlAbbr":{"^E":"LP","^F":"MP","^G":"HP","^H":"LK","^I":"MK","^J":"HK","_S":"ST"},"systemControlMappings":{"snes":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"genesis":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"megadrive":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"32x":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"saturn":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"psx":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"ps2":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"gba":{"b":"^E","a":"^F","l1":"^G","y":"^H","x":"^I","r1":"^J"},"pce":{"b":"^E","a":"^H"},"pce6":{"b":"^E","y":"^F","l1":"^G","a":"^H","x":"^I","r1":"^J"},"3do":{"b":"^E","a":"^F","l1":"^G","y":"^H","x":"^I","r1":"^J"},"n64":{"b":"^E","cDown":"^F","cRight":"^G","a":"^H","cLeft":"^I","cUp":"^J"},"dreamcast":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"gb":{"b":"^E","a":"^H"},"gbc":{"b":"^E","a":"^H"},"gamegear":{"a":"^E","b":"^H"},"sms":{"a":"^E","b":"^H"},"ngpc":{"b":"^E","y":"^F","l1":"^G","a":"^H","x":"^I","r1":"^J"},"lynx":{"b":"^E","a":"^F","l1":"^G","y":"^H","x":"^I","r1":"^J"},"wswan":{"b":"^E","a":"^H"}}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "kaiserkn",
+    "gblchmp",
+    "kaiserknj"
+  ],
+  "name": "Kaiser Knuckle",
+  "year": 1994,
+  "manufacturer": "Taito",
+  "controls": {
+    "^E": "Weak Punch",
+    "^F": "Medium Punch",
+    "^G": "Strong Punch",
+    "^H": "Weak Kick",
+    "^I": "Medium Kick",
+    "^J": "Strong Kick",
+    "_S": "Start"
+  },
+  "controlGroups": {
+    "_P": [
+      "^E",
+      "^F",
+      "^G"
+    ],
+    "_K": [
+      "^H",
+      "^I",
+      "^J"
+    ]
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_*": "Desperation Moves",
+    "_`": "Desperation Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Super Punch",
+      "input": "^E_+^F"
+    },
+    {
+      "category": "_)",
+      "name": "Extreme Punch",
+      "input": "^F_+^G"
+    },
+    {
+      "category": "_)",
+      "name": "Super Kick",
+      "input": "^H_+^I"
+    },
+    {
+      "category": "_)",
+      "name": "Extreme Kick",
+      "input": "^I_+^J"
+    },
+    {
+      "category": "_)",
+      "name": "Dive Attack",
+      "input": "_^_2_+^H_+^I_+^J"
+    }
+  ],
+  "characters": [
+    {
+      "name": "KAZUYA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Shoulder Toss",
+          "input": "_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_(",
+          "name": "Sandal Strike",
+          "input": "_4 / _6_+^I"
+        },
+        {
+          "category": "_(",
+          "name": "Backbreaker",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Ko'oh Ken",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Dankuuga",
+          "input": "_6_2_3_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Gasaigeki",
+          "input": "_6_3_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Genroudan",
+          "input": "_2_1_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Shiten Kongouha",
+          "input": "_^_2_1_4_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Gen'ei Koroudan",
+          "input": "_4_1_2_3_4_3_+^F_+^G"
+        }
+      ]
+    },
+    {
+      "name": "BARTS",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Neck Throw",
+          "input": "_4 / _6_+^F"
+        },
+        {
+          "category": "_(",
+          "name": "Hard Spike",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Suplex",
+          "input": "_4 / _6_+^I / ^J"
+        },
+        {
+          "category": "_(",
+          "name": "Piledriver",
+          "input": "_^_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_@",
+          "name": "Aura Cannon",
+          "input": "^2_8_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Moonsault Smash",
+          "input": "^2_8_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Thunder Knuckle",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Rolling Smash",
+          "input": "^4_6_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Final Spark",
+          "input": "^1_3_4_6_+^F_+^G"
+        }
+      ]
+    },
+    {
+      "name": "GEKKOU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Jump Over Toss",
+          "input": "_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_(",
+          "name": "Ninja Toss",
+          "input": "_^_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_)",
+          "name": "Retreat",
+          "input": "_4_4"
+        },
+        {
+          "category": "_)",
+          "name": "2 Dan Jump",
+          "input": "_^_8"
+        },
+        {
+          "category": "_@",
+          "name": "Kurojuuji",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Kaiten Kurojuuji",
+          "input": "_^_8_9_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Jigokugoma",
+          "input": "(_^)_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Kokushi Raikouzan",
+          "input": "_^ close _6_3_2_1_4_+^E_+^F"
+        },
+        {
+          "category": "_@",
+          "name": "Izuna Otoshi",
+          "input": "_^ close _4_1_2_3_6_+^F_+^G"
+        },
+        {
+          "category": "_*",
+          "name": "Senpuu Kaen Jigoku no Jutsu close",
+          "input": "_6_4_1_2_+^G_+^J"
+        }
+      ]
+    },
+    {
+      "name": "WULONG",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Snapping Back",
+          "input": "_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_(",
+          "name": "Rapid Knees",
+          "input": "_4 / _6_+^I / ^J"
+        },
+        {
+          "category": "_(",
+          "name": "Kick Away",
+          "input": "_^_4 / _6_+^I / ^J"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_9"
+        },
+        {
+          "category": "_@",
+          "name": "Ryuugekiken",
+          "input": "_4_1_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Shouten Ryuubu",
+          "input": "_4_1_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Ryuukizan",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Nunchuck no Mai",
+          "input": "_6_3_2_1_4_+_P (^*)"
+        },
+        {
+          "category": "_*",
+          "name": "Gekisatsu Hiryuuken",
+          "input": "_4_6_3_2_1_6_+^G_+^J"
+        }
+      ]
+    },
+    {
+      "name": "LIHUA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Flip Throw",
+          "input": "_4 / _6_+^F"
+        },
+        {
+          "category": "_(",
+          "name": "Palm Shoot",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Momiji-gari",
+          "input": "_4 / _6_+^I"
+        },
+        {
+          "category": "_(",
+          "name": "Tenrakuna",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_(",
+          "name": "Air Tenrakuna",
+          "input": "_^_4 / _6_+^I / ^J"
+        },
+        {
+          "category": "_)",
+          "name": "Sword Stab",
+          "input": "_^_2_+^F"
+        },
+        {
+          "category": "_@",
+          "name": "Iaizan",
+          "input": "_2_3_6_9_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Hen'i Battou Kasumi Girl",
+          "input": "_2_1_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Mueikassatsu Ken",
+          "input": "_4_1_2_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Shinkuu Nage",
+          "input": "_6_3_2_1_4_7_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Shinkuu Sen",
+          "input": "_6_3_2_1_4_1_7_+^F_+^G"
+        }
+      ]
+    },
+    {
+      "name": "LIZA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Face Claw",
+          "input": "_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_(",
+          "name": "Frankensteiner",
+          "input": "_4 / _6_+^I / ^J"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_9"
+        },
+        {
+          "category": "_@",
+          "name": "Samba",
+          "input": "^*_K"
+        },
+        {
+          "category": "_@",
+          "name": "Ester",
+          "input": "^2_8_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Priego",
+          "input": "^2_8_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Toto",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Kiki",
+          "input": "^4_6_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Samba de Excelente",
+          "input": "^2_1_4_1_2_3_+^I_+^J"
+        }
+      ]
+    },
+    {
+      "name": "J-McCOY",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Gut Punches",
+          "input": "_4 / _6_+^F"
+        },
+        {
+          "category": "_(",
+          "name": "Hard Toss",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Gut Knees",
+          "input": "_4 / _6_+^I / ^J"
+        },
+        {
+          "category": "_@",
+          "name": "Spark Blow",
+          "input": "^*_P"
+        },
+        {
+          "category": "_@",
+          "name": "Sonic Bomber",
+          "input": "_N"
+        },
+        {
+          "category": "_@",
+          "name": "Boomerang Crush",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Thunder Bolt",
+          "input": "^2_8_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Jet Upper",
+          "input": "^4_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Sonic Bomber",
+          "input": "^4_6_4_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Destructive Combination",
+          "input": "^1_3_2_1_4_7_+^F_+^G"
+        }
+      ]
+    },
+    {
+      "name": "BOGGY",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Elbows",
+          "input": "_4 / _6_+^F"
+        },
+        {
+          "category": "_(",
+          "name": "Throat Toss",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Storm Dancer",
+          "input": "_4_1_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Wheel Spin",
+          "input": "_2_1_4_7_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Risky Step",
+          "input": "_1_3_7_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Blast Hurricane",
+          "input": "_2_8_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Dead Dance close",
+          "input": "_6_3_2_1_4_1_2_+^G_+^J"
+        }
+      ]
+    },
+    {
+      "name": "MARCO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Toss Away",
+          "input": "_4 / _6_+^F"
+        },
+        {
+          "category": "_(",
+          "name": "Head Chomp within throw range",
+          "input": "_4 / _6_+^F"
+        },
+        {
+          "category": "_(",
+          "name": "Spin Toss",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Backbreaker within throw range",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Rampaging Tearing",
+          "input": "^*_P"
+        },
+        {
+          "category": "_@",
+          "name": "Head Crasher",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Magic Hand",
+          "input": "_6_3_2_1_4_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Marco Dynamite",
+          "input": "_6_3_2_1_4_1_2_3_6_+^F_+^G"
+        }
+      ]
+    },
+    {
+      "name": "GONZALES",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Powerbomb",
+          "input": "_4 / _6_+^F"
+        },
+        {
+          "category": "_(",
+          "name": "Judo Throw",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Zenpou Kaiten Ukemi",
+          "input": "^F_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Dai Tatsumaki-Otoshi close",
+          "input": "_4 / _6_+^I"
+        },
+        {
+          "category": "_@",
+          "name": "Daisharin Nage close",
+          "input": "_4 / _6_+^J"
+        }
+      ]
+    },
+    {
+      "name": "AZTECA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Dive",
+          "input": "_4 / _6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Mystic Buzzsaw",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Silent Spear",
+          "input": "_2_1_4_6_+_P"
+        }
+      ]
+    },
+    {
+      "name": "GENERAL",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab and Toss",
+          "input": "_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_(",
+          "name": "Stomach Grind",
+          "input": "_4 / _6_+^I / ^J"
+        },
+        {
+          "category": "_)",
+          "name": "Slide",
+          "input": "_2_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Green Ghost",
+          "input": "^E_+^F"
+        },
+        {
+          "category": "_@",
+          "name": "Ghost Spread",
+          "input": "^F_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Teleport",
+          "input": "^I_+^J"
+        }
+      ]
+    }
+  ],
+  "cheatNotes": [
+    "_` Color Select",
+    "- 1st Color, select the character with _P / _K",
+    "- 2nd Color, select the character with _S"
+  ],
+  "controlAbbr": {
+    "^E": "LP",
+    "^F": "MP",
+    "^G": "HP",
+    "^H": "LK",
+    "^I": "MK",
+    "^J": "HK",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "genesis": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "megadrive": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "32x": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "saturn": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "psx": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "ps2": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "gba": {
+      "b": "^E",
+      "a": "^F",
+      "l1": "^G",
+      "y": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "pce": {
+      "b": "^E",
+      "a": "^H"
+    },
+    "pce6": {
+      "b": "^E",
+      "y": "^F",
+      "l1": "^G",
+      "a": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "3do": {
+      "b": "^E",
+      "a": "^F",
+      "l1": "^G",
+      "y": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "n64": {
+      "b": "^E",
+      "cDown": "^F",
+      "cRight": "^G",
+      "a": "^H",
+      "cLeft": "^I",
+      "cUp": "^J"
+    },
+    "dreamcast": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "gb": {
+      "b": "^E",
+      "a": "^H"
+    },
+    "gbc": {
+      "b": "^E",
+      "a": "^H"
+    },
+    "gamegear": {
+      "a": "^E",
+      "b": "^H"
+    },
+    "sms": {
+      "a": "^E",
+      "b": "^H"
+    },
+    "ngpc": {
+      "b": "^E",
+      "y": "^F",
+      "l1": "^G",
+      "a": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "lynx": {
+      "b": "^E",
+      "a": "^F",
+      "l1": "^G",
+      "y": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "wswan": {
+      "b": "^E",
+      "a": "^H"
+    }
+  }
+}

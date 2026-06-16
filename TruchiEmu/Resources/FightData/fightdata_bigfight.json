@@ -1,1 +1,752 @@
-{"schemaVersion":2,"romIds":["bigfight","bigfightj"],"name":"Big Fight: Big Trouble in the Atlantic Ocean","year":1992,"manufacturer":"Tatsumi","credits":"Fabricio Coroquer","controls":{"_A":"Attack","_S":"Start"},"categories":{"_(":"Normal Throws","_)":"Command Moves","_*":"Desperation Moves","_&":"Anger Awakening","_`":"Anger Awakening"},"commonCommands":[{"category":"_)","name":"Block","input":"_4_+_A"},{"category":"_)","name":"Pick Up Object close to object","input":"_A"},{"category":"_&","name":"Anger Awakening knocked down","input":"^*_A"}],"characters":[{"name":"KEVIN","moves":[{"category":"_(","name":"Grab close","input":"_6"},{"category":"_(","name":"Knee Strikes","input":"_A_A_A"},{"category":"_(","name":"Layback Toss","input":"_4 / _6_+_A"},{"category":"_(","name":"Jump Grapple @J-button"},{"category":"_(","name":"Layback Toss Behind","input":"_A"},{"category":"_)","name":"Jab","input":"_A"},{"category":"_)","name":"Second Jab","input":"_A"},{"category":"_)","name":"Straight Punch","input":"_A"},{"category":"_)","name":"Uppercut/Straight","input":"_A"},{"category":"_)","name":"Bashing Punches close","input":"_2_+_A"},{"category":"_)","name":"Mach Punch","input":"^*_A"},{"category":"_)","name":"Uppercut","input":"_8_+_A"},{"category":"_)","name":"Knee Drop","input":"_^_2_+_A"},{"category":"_*","name":"Crescent Kick","input":"_A_+@J-button"}]},{"name":"GEAR","moves":[{"category":"_(","name":"Grab close","input":"_6"},{"category":"_(","name":"Concentrated Slaps","input":"_A_A_A"},{"category":"_(","name":"Overhead Toss","input":"_4 / _6_+_A"},{"category":"_(","name":"Dragon Screw","input":"_4_1_2_3_6 / _6_3_2_1_4_+_A"},{"category":"_(","name":"Jump Grapple @J-button"},{"category":"_(","name":"Vertical Suplex","input":"_A"},{"category":"_)","name":"Axe Chop","input":"_A"},{"category":"_)","name":"Chest Chop","input":"_A"},{"category":"_)","name":"Headbutt","input":"_A"},{"category":"_)","name":"Overhead Toss","input":"_A"},{"category":"_)","name":"Bashing Punches close","input":"_2_+_A"},{"category":"_)","name":"Concentrated Slap","input":"_8_+_A"},{"category":"_)","name":"Big Splash","input":"_^_2_+_A"},{"category":"_*","name":"Infantry Cyclone","input":"_A_+@J-button"}]},{"name":"ZILL","moves":[{"category":"_(","name":"Grab close","input":"_6"},{"category":"_(","name":"Knee Strikes","input":"_A_A_A"},{"category":"_(","name":"Shoulder Throw","input":"_4 / _6_+_A"},{"category":"_(","name":"Jump Grapple @J-button"},{"category":"_(","name":"Back Breaker","input":"_A"},{"category":"_)","name":"Fast Straight","input":"_A"},{"category":"_)","name":"Second Fast Straight","input":"_A"},{"category":"_)","name":"Quick Axe Kick","input":"_A"},{"category":"_)","name":"Roundhouse","input":"_A"},{"category":"_)","name":"Turn Kick","input":"_A"},{"category":"_)","name":"Slap Fury close","input":"_2_+_A"},{"category":"_)","name":"Flying Knee Attack","input":"_6_6_+_A"},{"category":"_)","name":"Rolling Kick","input":"_2_3_6_9_8_+_A"},{"category":"_)","name":"Quick Axe Kick","input":"_8_+_A"},{"category":"_)","name":"High Knee","input":"_^_2_+_A"},{"category":"_*","name":"Whirling Top","input":"_A_+@J-button"}]},{"name":"MEVELLA","moves":[{"category":"_(","name":"Grab close","input":"_6"},{"category":"_(","name":"Knee Strikes","input":"_A_A_A"},{"category":"_(","name":"Shoulder Throw","input":"_4 / _6_+_A"},{"category":"_(","name":"Neck Crash","input":"_4_1_2_3_6 / _6_3_2_1_4_+_A"},{"category":"_(","name":"Grapple Escape @J-button"},{"category":"_)","name":"Whip Slash","input":"_A"},{"category":"_)","name":"Second Whip Slash","input":"_A"},{"category":"_)","name":"Whip Snap","input":"_A"},{"category":"_)","name":"Whip Snap","input":"_2_+_A"},{"category":"_)","name":"Whip Spin close","input":"_2_+_A"},{"category":"_)","name":"Whip Snap","input":"_8_+_A"},{"category":"_)","name":"Drill Kick","input":"_^_2_+_A"},{"category":"_)","name":"Mad Stamping opponent knocked down","input":"^*_A"},{"category":"_*","name":"Tornado Fury","input":"_A_+@J-button"}]},{"name":"CHEN","moves":[{"category":"_(","name":"Grab close","input":"_6"},{"category":"_(","name":"Hop Knees","input":"_A_A_A"},{"category":"_(","name":"Neck Twist","input":"_4 / _6_+_A"},{"category":"_(","name":"Jump Escape @J-button"},{"category":"_)","name":"Sword Chop","input":"_A"},{"category":"_)","name":"Second Sword Chop","input":"_A"},{"category":"_)","name":"Sword Slash","input":"_A"},{"category":"_)","name":"Hop Sobat","input":"_A"},{"category":"_)","name":"Hilt Smack close","input":"_2_+_A"},{"category":"_)","name":"Burning Mist","input":"_4_1_2_3_6_+_A"},{"category":"_)","name":"Cannonball","input":"_2_3_6_9_8_+_A"},{"category":"_)","name":"Sword Slash","input":"_8_+_A"},{"category":"_)","name":"Finishing Stab","input":"_^_2_+_A"},{"category":"_*","name":"Slashing Spiral","input":"_A_+@J-button"}]},{"name":"GARUDA","moves":[{"category":"_(","name":"Grab close","input":"_6"},{"category":"_(","name":"Headbutts","input":"_A_A_A"},{"category":"_(","name":"Flip Tiger Bomb","input":"_4 / _6_+_A"},{"category":"_(","name":"Jump Grapple @J-button"},{"category":"_(","name":"Jumping Tiger Bomb","input":"_A"},{"category":"_)","name":"Throat Chop","input":"_A"},{"category":"_)","name":"Second Throat Chop","input":"_A"},{"category":"_)","name":"Double Palm/Kick","input":"_A"},{"category":"_)","name":"Double Palm","input":"_2_+_A"},{"category":"_)","name":"Mount Elbows close","input":"_2_+_A"},{"category":"_)","name":"Feather Wave","input":"_6_6_+_A"},{"category":"_)","name":"Kick","input":"_8_+_A"},{"category":"_)","name":"Body Splash","input":"_^_2_+_A"},{"category":"_*","name":"High Chief Spin","input":"_A_+@J-button"}]},{"name":"GONZA","moves":[{"category":"_(","name":"Grab close","input":"_6"},{"category":"_(","name":"Back Cracker","input":"_A_A_A"},{"category":"_(","name":"Rough Toss","input":"_4 / _6_+_A"},{"category":"_(","name":"Jump Escape @J-button"},{"category":"_)","name":"Straight Palm","input":"_A"},{"category":"_)","name":"Second Straight Palm","input":"_A"},{"category":"_)","name":"Strong Palm","input":"_A"},{"category":"_)","name":"Quick Snap Kick","input":"_A"},{"category":"_)","name":"Headbutts close","input":"_2_+_A"},{"category":"_)","name":"Sandal Strike","input":"_6_6_+_A"},{"category":"_)","name":"Head Twister","input":"_4_1_2_3_6_+_A"},{"category":"_)","name":"Focused Headbutt","input":"_8_+_A"},{"category":"_)","name":"Butt Drop","input":"_^_2_+_A"},{"category":"_*","name":"Sandal Aura","input":"_A_+@J-button"}]},{"name":"PHARAOH","moves":[{"category":"_(","name":"Grab close","input":"_6"},{"category":"_(","name":"Mounted Headbutts","input":"_A_A_A"},{"category":"_(","name":"Hurricana","input":"_4 / _6_+_A"},{"category":"_(","name":"Grapple Escape @J-button"},{"category":"_)","name":"Dig Fist","input":"_A"},{"category":"_)","name":"Second Dig Fist","input":"_A"},{"category":"_)","name":"Sneaky Kick/Stretch","input":"_A"},{"category":"_)","name":"Burying Fists close","input":"_2_+_A"},{"category":"_)","name":"Sliding Kick","input":"_6_6_+_A"},{"category":"_)","name":"Zutan Bird","input":"_4_1_2_3_6_+_A"},{"category":"_)","name":"Sneaky Kick","input":"_8_+_A"},{"category":"_)","name":"Cross Legged Drop","input":"_^_2_+_A"},{"category":"_*","name":"Uraeus Beam","input":"_A_+@J-button"}]},{"name":"TX-No.3","moves":[{"category":"_(","name":"Grab-Auto Toss close","input":"_6"},{"category":"_)","name":"Claws-Upper","input":"_A_A_A_A"},{"category":"_*","name":"Piercing Laser","input":"_A_+@J-button"}]},{"name":"Dr. D","moves":[{"category":"_(","name":"Grab close","input":"_6"},{"category":"_(","name":"Needle Operation","input":"_A"},{"category":"_(","name":"Press Slam","input":"_4 / _6_+_A"},{"category":"_(","name":"Jump Escape @J-button"},{"category":"_)","name":"Needle Stabs","input":"_A_A"},{"category":"_)","name":"Stretch Shot","input":"_2_2_2"},{"category":"_)","name":"Jumping Stretch Shot","input":"_6_6_6"},{"category":"_*","name":"Doctor Inferno","input":"_A_+@J-button"}]}],"controlAbbr":{"_A":"AT","_S":"ST"},"systemControlMappings":{"snes":{"y":"_A"},"genesis":{"b":"_A"},"megadrive":{"b":"_A"},"32x":{"b":"_A"},"saturn":{"b":"_A"},"psx":{"y":"_A"},"ps2":{"y":"_A"},"gb":{"b":"_A"},"gbc":{"b":"_A"},"gamegear":{"a":"_A"},"sms":{"a":"_A"},"gba":{"b":"_A"},"ngpc":{"b":"_A"}},"controlGroups":{"_P":["_A"]}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "bigfight",
+    "bigfightj"
+  ],
+  "name": "Big Fight: Big Trouble in the Atlantic Ocean",
+  "year": 1992,
+  "manufacturer": "Tatsumi",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "_A": "Attack",
+    "_S": "Start"
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_*": "Desperation Moves",
+    "_&": "Anger Awakening",
+    "_`": "Anger Awakening"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Block",
+      "input": "_4_+_A"
+    },
+    {
+      "category": "_)",
+      "name": "Pick Up Object close to object",
+      "input": "_A"
+    },
+    {
+      "category": "_&",
+      "name": "Anger Awakening knocked down",
+      "input": "^*_A"
+    }
+  ],
+  "characters": [
+    {
+      "name": "KEVIN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6"
+        },
+        {
+          "category": "_(",
+          "name": "Knee Strikes",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_(",
+          "name": "Layback Toss",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Jump Grapple @J-button"
+        },
+        {
+          "category": "_(",
+          "name": "Layback Toss Behind",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Jab",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Second Jab",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Straight Punch",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Uppercut/Straight",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Bashing Punches close",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Mach Punch",
+          "input": "^*_A"
+        },
+        {
+          "category": "_)",
+          "name": "Uppercut",
+          "input": "_8_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Knee Drop",
+          "input": "_^_2_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Crescent Kick",
+          "input": "_A_+@J-button"
+        }
+      ]
+    },
+    {
+      "name": "GEAR",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6"
+        },
+        {
+          "category": "_(",
+          "name": "Concentrated Slaps",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_(",
+          "name": "Overhead Toss",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Dragon Screw",
+          "input": "_4_1_2_3_6 / _6_3_2_1_4_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Jump Grapple @J-button"
+        },
+        {
+          "category": "_(",
+          "name": "Vertical Suplex",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Axe Chop",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Chest Chop",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Headbutt",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Overhead Toss",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Bashing Punches close",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Concentrated Slap",
+          "input": "_8_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Big Splash",
+          "input": "_^_2_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Infantry Cyclone",
+          "input": "_A_+@J-button"
+        }
+      ]
+    },
+    {
+      "name": "ZILL",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6"
+        },
+        {
+          "category": "_(",
+          "name": "Knee Strikes",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_(",
+          "name": "Shoulder Throw",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Jump Grapple @J-button"
+        },
+        {
+          "category": "_(",
+          "name": "Back Breaker",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Fast Straight",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Second Fast Straight",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Quick Axe Kick",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Roundhouse",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Turn Kick",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Slap Fury close",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Flying Knee Attack",
+          "input": "_6_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Rolling Kick",
+          "input": "_2_3_6_9_8_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Quick Axe Kick",
+          "input": "_8_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "High Knee",
+          "input": "_^_2_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Whirling Top",
+          "input": "_A_+@J-button"
+        }
+      ]
+    },
+    {
+      "name": "MEVELLA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6"
+        },
+        {
+          "category": "_(",
+          "name": "Knee Strikes",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_(",
+          "name": "Shoulder Throw",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Neck Crash",
+          "input": "_4_1_2_3_6 / _6_3_2_1_4_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Grapple Escape @J-button"
+        },
+        {
+          "category": "_)",
+          "name": "Whip Slash",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Second Whip Slash",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Whip Snap",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Whip Snap",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Whip Spin close",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Whip Snap",
+          "input": "_8_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Drill Kick",
+          "input": "_^_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Mad Stamping opponent knocked down",
+          "input": "^*_A"
+        },
+        {
+          "category": "_*",
+          "name": "Tornado Fury",
+          "input": "_A_+@J-button"
+        }
+      ]
+    },
+    {
+      "name": "CHEN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6"
+        },
+        {
+          "category": "_(",
+          "name": "Hop Knees",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_(",
+          "name": "Neck Twist",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Jump Escape @J-button"
+        },
+        {
+          "category": "_)",
+          "name": "Sword Chop",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Second Sword Chop",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Sword Slash",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Hop Sobat",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Hilt Smack close",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Burning Mist",
+          "input": "_4_1_2_3_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Cannonball",
+          "input": "_2_3_6_9_8_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Sword Slash",
+          "input": "_8_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Finishing Stab",
+          "input": "_^_2_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Slashing Spiral",
+          "input": "_A_+@J-button"
+        }
+      ]
+    },
+    {
+      "name": "GARUDA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6"
+        },
+        {
+          "category": "_(",
+          "name": "Headbutts",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_(",
+          "name": "Flip Tiger Bomb",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Jump Grapple @J-button"
+        },
+        {
+          "category": "_(",
+          "name": "Jumping Tiger Bomb",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Throat Chop",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Second Throat Chop",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Double Palm/Kick",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Double Palm",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Mount Elbows close",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Feather Wave",
+          "input": "_6_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Kick",
+          "input": "_8_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Body Splash",
+          "input": "_^_2_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "High Chief Spin",
+          "input": "_A_+@J-button"
+        }
+      ]
+    },
+    {
+      "name": "GONZA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6"
+        },
+        {
+          "category": "_(",
+          "name": "Back Cracker",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_(",
+          "name": "Rough Toss",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Jump Escape @J-button"
+        },
+        {
+          "category": "_)",
+          "name": "Straight Palm",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Second Straight Palm",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Strong Palm",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Quick Snap Kick",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Headbutts close",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Sandal Strike",
+          "input": "_6_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Head Twister",
+          "input": "_4_1_2_3_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Focused Headbutt",
+          "input": "_8_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Butt Drop",
+          "input": "_^_2_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Sandal Aura",
+          "input": "_A_+@J-button"
+        }
+      ]
+    },
+    {
+      "name": "PHARAOH",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6"
+        },
+        {
+          "category": "_(",
+          "name": "Mounted Headbutts",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_(",
+          "name": "Hurricana",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Grapple Escape @J-button"
+        },
+        {
+          "category": "_)",
+          "name": "Dig Fist",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Second Dig Fist",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Sneaky Kick/Stretch",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Burying Fists close",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Sliding Kick",
+          "input": "_6_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Zutan Bird",
+          "input": "_4_1_2_3_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Sneaky Kick",
+          "input": "_8_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Cross Legged Drop",
+          "input": "_^_2_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Uraeus Beam",
+          "input": "_A_+@J-button"
+        }
+      ]
+    },
+    {
+      "name": "TX-No.3",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab-Auto Toss close",
+          "input": "_6"
+        },
+        {
+          "category": "_)",
+          "name": "Claws-Upper",
+          "input": "_A_A_A_A"
+        },
+        {
+          "category": "_*",
+          "name": "Piercing Laser",
+          "input": "_A_+@J-button"
+        }
+      ]
+    },
+    {
+      "name": "Dr. D",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6"
+        },
+        {
+          "category": "_(",
+          "name": "Needle Operation",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Press Slam",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Jump Escape @J-button"
+        },
+        {
+          "category": "_)",
+          "name": "Needle Stabs",
+          "input": "_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Stretch Shot",
+          "input": "_2_2_2"
+        },
+        {
+          "category": "_)",
+          "name": "Jumping Stretch Shot",
+          "input": "_6_6_6"
+        },
+        {
+          "category": "_*",
+          "name": "Doctor Inferno",
+          "input": "_A_+@J-button"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_A": "AT",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_A"
+    },
+    "genesis": {
+      "b": "_A"
+    },
+    "megadrive": {
+      "b": "_A"
+    },
+    "32x": {
+      "b": "_A"
+    },
+    "saturn": {
+      "b": "_A"
+    },
+    "psx": {
+      "y": "_A"
+    },
+    "ps2": {
+      "y": "_A"
+    },
+    "gb": {
+      "b": "_A"
+    },
+    "gbc": {
+      "b": "_A"
+    },
+    "gamegear": {
+      "a": "_A"
+    },
+    "sms": {
+      "a": "_A"
+    },
+    "gba": {
+      "b": "_A"
+    },
+    "ngpc": {
+      "b": "_A"
+    }
+  },
+  "controlGroups": {
+    "_P": [
+      "_A"
+    ]
+  }
+}

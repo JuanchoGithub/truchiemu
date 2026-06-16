@@ -1,1 +1,873 @@
-{"schemaVersion":2,"romIds":["kov2p","kov2p200","kov2p202","kov2p203","kov2p204"],"name":"Knights of Valour 2: Nine Dragons","year":2001,"manufacturer":"IGS","controls":{"_A":"Attack","_B":"Jump","_C":"Open Item Menu","_D":"Use Item","_S":"Start"},"categories":{"_)":"Command Moves","_@":"Special Moves","_#":"Trick Moves","_&":"Formation Moves","_*":"Desperation Moves","_`":"Desperation Moves"},"commonCommands":[{"category":"_)","name":"Dash","input":"_6_+_B"},{"category":"_)","name":"Run","input":"_6^6"},{"category":"_)","name":"Crouch","input":"_2_+_B"},{"category":"_)","name":"Multiple Attack","input":"^*_A"},{"category":"_)","name":"Block","input":"_6_+_C"},{"category":"_)","name":"Counter Attack","input":"_A"},{"category":"_)","name":"Switch Between Circles of Items","input":"_C_B"},{"category":"_)","name":"Discard Item","input":"_B_+_C"},{"category":"_)","name":"Pick Up Object close to object","input":"_A"},{"category":"_*","name":"Desperation Mode","input":"_A_+_B"}],"characters":[{"name":"GUAN YU","moves":[{"category":"_)","name":"Long Xing Pi Zhan","input":"_2_3_6_+_A"},{"category":"_)","name":"Fei Long Zai Tian","input":"_2_8_+_A"},{"category":"_@","name":"Hui Feng Sao Ye","input":"_2_3_6_+_B"},{"category":"_@","name":"Kuang Long Chu Hai","input":"_4_6_+_B"},{"category":"_&","name":"Sky Lanterns","input":"_2_8_+_B"},{"category":"_&","name":"Fire Beasts","input":"_8_2_+_B"},{"category":"_&","name":"Pikemen","input":"_4_1_2_3_6_+_B"}]},{"name":"ZHUGE LIANG","moves":[{"category":"_)","name":"Ying Feng Dan Chen","input":"_2_3_6_+_A"},{"category":"_`","input":"_>","condition":"Blizzard                                                              _2_3_6_+_B"},{"category":"_`","input":"_>","hitLevels":"L","condition":"ightning                                                             _4_6_+_B"},{"category":"_`","input":"_>","condition":"Typhoon                                                               _2_8_+_B"},{"category":"_`","input":"_>","condition":"Ba Zheng Tu                                                           _8_2_+_B"},{"category":"_`","input":"_>","condition":"Recover                                                               _4_1_2_3_6_+_B"}]},{"name":"ZHAO YUN","moves":[{"category":"_)","name":"Fei Tian","input":"_6_+_A_A_A_A"},{"category":"_)","name":"Tan Zhua","input":"_^_3_+_A"},{"category":"_)","name":"Chuan Lin Jiao","input":"_^_3_+_A_A_A_A_A"},{"category":"_)","name":"Da Peng Zhan Chi","input":"_2_8_+_A"},{"category":"_@","name":"Ri Yue Shuang Hua","input":"_2_3_6_+_B"},{"category":"_@","name":"Meng Long Chu Zha","input":"_4_6_+_B"},{"category":"_&","name":"Pikemen","input":"_8_2_+_B"},{"category":"_&","name":"Fire Arrows","input":"_4_1_2_3_6_+_B"},{"category":"_`","input":"_>","condition":"Typhoon                                                               _2_8_+_B"}]},{"name":"DIAO CHAN","moves":[{"category":"_)","name":"3 Dan Jump","input":"_B_B_B"},{"category":"_)","name":"Ti Yun Zong","input":"_6_+_A_A_A_A"},{"category":"_)","name":"Yu Nv Jin Zhen","input":"_^_2_+_A_A_A_A"},{"category":"_)","name":"Tian Nv San Hua","input":"_2_8_+_A"},{"category":"_@","name":"Feng Ming","input":"_4_6_+_B"},{"category":"_@","name":"Yun Li Fan","input":"_2_8_+_B"},{"category":"_@","name":"Chan Tui","input":"_8_2_+_B"},{"category":"_`","input":"_>","condition":"Blizzard                                                              _2_3_6_+_B"},{"category":"_`","input":"_>","condition":"Recover                                                               _4_1_2_3_6_+_B"}]},{"name":"ZHANG FEI","moves":[{"category":"_)","name":"Er Hu Pu Yang","input":"_6_+_B_A"},{"category":"_)","name":"Er Hu Zhang Zui","input":"_^_2_+_A"},{"category":"_)","name":"Kuang Feng Shi","input":"_2_3_6_+_A"},{"category":"_@","name":"Shen Long Bai Wei","input":"_2_3_6_+_B"},{"category":"_@","name":"Huo Niu Han Di","input":"_2_8_+_B"},{"category":"_@","name":"Tian Beng Di Lie","input":"_8_2_+_B"},{"category":"_#","name":"Confuse","input":"_4_6_+_B"},{"category":"_&","name":"Pikemen","input":"_4_1_2_3_6_+_B"}]},{"name":"PANG TONG","moves":[{"category":"_)","name":"Ge Kong Xian Fa","input":"_6_+_A"},{"category":"_)","name":"Talisman-ground","input":"_^_A"},{"category":"_)","name":"Talisman-upward","input":"_^_6_+_A"},{"category":"_)","name":"Zuo You Pi Shan","input":"_2_3_6_+_A"},{"category":"_)","name":"Iron Spike","input":"_2_8_+_A"},{"category":"_`","input":"_>","condition":"Blizzard                                                              _2_3_6_+_B"},{"category":"_`","input":"_>","hitLevels":"L","condition":"ightnning                                                            _4_6_+_B"},{"category":"_`","input":"_>","condition":"Typhoon                                                               _2_8_+_B"},{"category":"_`","input":"_>","condition":"Summon: Lightning                                                     _8_2_+_B"},{"category":"_`","input":"_>","condition":"Summon: Fire                                                          _4_1_2_3_6_+_B"}]},{"name":"MA CHAO","moves":[{"category":"_)","name":"3 Dan Jump","input":"_B_B_B"},{"category":"_)","name":"Tan Tui-ground","input":"_6_+_A_A_A_A"},{"category":"_)","name":"Tan Tui-air","input":"_^_2_+_A_A_A_A"},{"category":"_)","name":"Di Tang Zhan","input":"_2_3_6_+_A"},{"category":"_)","name":"Chong Tui","input":"_2_8_+_A"},{"category":"_@","name":"Bai Niao Chao Feng","input":"_^_2_3_6_+_B"},{"category":"_@","name":"Shou Yao","input":"_4_6_+_B"},{"category":"_&","name":"Rolling Boulders","input":"_2_8_+_B"},{"category":"_&","name":"Dropping Boulders","input":"_8_2_+_B"},{"category":"_&","name":"Fire Beasts","input":"_4_1_2_3_6_+_B"}]},{"name":"SUN QUAN","moves":[{"category":"_)","name":"Hu Bi Gou","input":"_2_3_6_+_A"},{"category":"_)","name":"Ba Wang Hu Zhua","input":"_2_8_+_A"},{"category":"_@","name":"Yi Ci Ding Jiang Shan","input":"_2_3_6_+_B"},{"category":"_@","name":"Jiang Dong Nu Hou","input":"_4_6_+_B"},{"category":"_&","name":"Sky Lanterns","input":"_2_8_+_B"},{"category":"_&","name":"Pikemen","input":"_8_2_+_B"},{"category":"_&","name":"Sailors","input":"_4_1_2_3_6_+_B"}]},{"name":"HUANG ZHONG","moves":[{"category":"_)","name":"Sui Ren Jian","input":"_6_+_A"},{"category":"_)","name":"Zhu Di Jian","input":"_^_2_+_A"},{"category":"_)","name":"Zhui Feng Pi Yue","input":"_2_3_6_+_A"},{"category":"_)","name":"Zhui Tian Jian","input":"_2_8_+_A"},{"category":"_@","name":"Fen Xin Jian","input":"_4_6_+_B"},{"category":"_@","name":"Guan Shan Jian","input":"_2_8_+_B"},{"category":"_&","name":"Ballista","input":"_8_2_+_B"},{"category":"_&","name":"Fire Arrows","input":"_4_1_2_3_6_+_B"},{"category":"_`","input":"_>","condition":"Blizzard                                                              _2_3_6_+_B"}]},{"name":"\"RIGHTEOUS\" ZHAO YUN","moves":[{"category":"_)","name":"3 Dan Jump","input":"_B_B_B"},{"category":"_)","name":"Fei Tian","input":"_6_+_A_A_A_A"},{"category":"_)","name":"Tan Zhua","input":"_^_3_+_A_A"},{"category":"_)","name":"Chuan Lin Jiao","input":"_^_3_+_A_A_A_A_A"},{"category":"_)","name":"Li Hua Ci","input":"_2_3_6_+_A"},{"category":"_)","name":"Da Peng Zhan Chi","input":"_2_8_+_A"},{"category":"_@","name":"Ri Yue Shuang Hua","input":"_2_3_6_+_B"},{"category":"_@","name":"Meng Long Chu Zha","input":"_4_6_+_B"},{"category":"_@","name":"Zi Long Zhu Que","input":"_2_8_+_B"},{"category":"_&","name":"Pikemen","input":"_8_2_+_B"},{"category":"_&","name":"Fire Arrows","input":"_4_1_2_3_6_+_B"}]},{"name":"\"REBELLIOUS\" GUAN YU","moves":[{"category":"_)","name":"Kuang Long Ni Zhuan","input":"_2_3_6_+_A"},{"category":"_)","name":"Fei Long Zai Tian","input":"_2_8_+_A"},{"category":"_@","name":"Hui Feng Sao Ye","input":"_2_3_6_+_B"},{"category":"_@","name":"Kuang Long Chu Hai","input":"_4_6_+_B"},{"category":"_@","name":"Kuang Long Xuan Wu","input":"_2_8_+_B"},{"category":"_&","name":"Fire Beasts","input":"_8_2_+_B"},{"category":"_&","name":"Pikemen","input":"_4_1_2_3_6_+_B"}]},{"name":"\"RECKLESS\" ZHANG FEI","moves":[{"category":"_)","name":"Er Hu Pu Yang","input":"_6_+_B_A"},{"category":"_)","name":"Er Hu Zhang Zui","input":"_^_2_+_A"},{"category":"_)","name":"Long Bai Wei","input":"_2_3_6_+_A"},{"category":"_)","name":"Meng Hu Chui","input":"_2_8_+_A"},{"category":"_@","name":"Shen Long Bai Wei","input":"_2_3_6_+_B"},{"category":"_@","name":"Tiger Cannon","input":"_4_6_+_B"},{"category":"_@","name":"Huo Niu Han Di","input":"_2_8_+_B"},{"category":"_@","name":"Tian Beng Di Lie","input":"_8_2_+_B"},{"category":"_@","name":"Dragon Cannon","input":"_4_1_2_3_6_+_B"}]},{"name":"\"RICH\" MA CHAO","moves":[{"category":"_)","name":"3 Dan Jump","input":"_B_B_B"},{"category":"_)","name":"Yue Ma Deng","input":"_^_2_+_A"},{"category":"_)","name":"Kong Qi She","input":"_^_2_+_A_A"},{"category":"_)","name":"Di Tang Zhan","input":"_2_3_6_+_A"},{"category":"_)","name":"Chong Tui","input":"_2_8_+_A"},{"category":"_@","name":"Bai Niao Chao Feng","input":"_^_2_3_6_+_B"},{"category":"_@","name":"Shou Yao","input":"_4_6_+_B"},{"category":"_&","name":"Rolling Boulders","input":"_2_8_+_B"},{"category":"_&","name":"Dropping Boulders","input":"_8_2_+_B"},{"category":"_&","name":"Fire Beasts","input":"_4_1_2_3_6_+_B"}]},{"name":"\"FIERCE\" HUANG ZHONG","moves":[{"category":"_)","name":"Sui Ren Jian","input":"_6_+_A"},{"category":"_)","name":"Zhu Di Jian","input":"_^_2_+_A"},{"category":"_)","name":"Zhui Hun Pi","input":"_2_3_6_+_A"},{"category":"_)","name":"Zhui Tian Jian","input":"_2_8_+_A"},{"category":"_@","name":"Du Pi Hua Shan","input":"_2_3_6_+_B"},{"category":"_@","name":"Fen Xin Jian","input":"_4_6_+_B"},{"category":"_@","name":"Guan Shan Jian","input":"_2_8_+_B"},{"category":"_&","name":"Ballista","input":"_8_2_+_B"},{"category":"_&","name":"Fire Arrows","input":"_4_1_2_3_6_+_B"}]}],"howToPlayNotes":["_> Magic Moves"],"controlAbbr":{"_A":"AT","_B":"JM","_C":"IM","_D":"UI","_S":"ST"},"systemControlMappings":{"snes":{"y":"_A","x":"_B","b":"_C","a":"_D"},"genesis":{"b":"_A","a":"_B","y":"_C","x":"_D"},"megadrive":{"b":"_A","a":"_B","y":"_C","x":"_D"},"32x":{"b":"_A","a":"_B","y":"_C","x":"_D"},"saturn":{"b":"_A","a":"_B","y":"_C","x":"_D"},"neogeo":{"b":"_A","y":"_B","a":"_C","x":"_D"},"psx":{"y":"_A","x":"_B","b":"_C","a":"_D"},"ps2":{"y":"_A","x":"_B","b":"_C","a":"_D"},"gb":{"b":"_A","a":"_B"},"gbc":{"b":"_A","a":"_B"},"gamegear":{"a":"_A","b":"_B"},"sms":{"a":"_A","b":"_B"},"gba":{"b":"_A","a":"_B","l1":"_C","r1":"_D"},"ngpc":{"b":"_A","a":"_B","y":"_C","x":"_D"},"dreamcast":{"y":"_A","x":"_B","b":"_C","a":"_D"},"n64":{"b":"_A","a":"_B","cDown":"_C","cLeft":"_D"},"wswan":{"b":"_A","a":"_B"}},"controlGroups":{"_P":["_A","_C"],"_K":["_B","_D"]}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "kov2p",
+    "kov2p200",
+    "kov2p202",
+    "kov2p203",
+    "kov2p204"
+  ],
+  "name": "Knights of Valour 2: Nine Dragons",
+  "year": 2001,
+  "manufacturer": "IGS",
+  "controls": {
+    "_A": "Attack",
+    "_B": "Jump",
+    "_C": "Open Item Menu",
+    "_D": "Use Item",
+    "_S": "Start"
+  },
+  "categories": {
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_#": "Trick Moves",
+    "_&": "Formation Moves",
+    "_*": "Desperation Moves",
+    "_`": "Desperation Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "_6_+_B"
+    },
+    {
+      "category": "_)",
+      "name": "Run",
+      "input": "_6^6"
+    },
+    {
+      "category": "_)",
+      "name": "Crouch",
+      "input": "_2_+_B"
+    },
+    {
+      "category": "_)",
+      "name": "Multiple Attack",
+      "input": "^*_A"
+    },
+    {
+      "category": "_)",
+      "name": "Block",
+      "input": "_6_+_C"
+    },
+    {
+      "category": "_)",
+      "name": "Counter Attack",
+      "input": "_A"
+    },
+    {
+      "category": "_)",
+      "name": "Switch Between Circles of Items",
+      "input": "_C_B"
+    },
+    {
+      "category": "_)",
+      "name": "Discard Item",
+      "input": "_B_+_C"
+    },
+    {
+      "category": "_)",
+      "name": "Pick Up Object close to object",
+      "input": "_A"
+    },
+    {
+      "category": "_*",
+      "name": "Desperation Mode",
+      "input": "_A_+_B"
+    }
+  ],
+  "characters": [
+    {
+      "name": "GUAN YU",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Long Xing Pi Zhan",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Fei Long Zai Tian",
+          "input": "_2_8_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Hui Feng Sao Ye",
+          "input": "_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Kuang Long Chu Hai",
+          "input": "_4_6_+_B"
+        },
+        {
+          "category": "_&",
+          "name": "Sky Lanterns",
+          "input": "_2_8_+_B"
+        },
+        {
+          "category": "_&",
+          "name": "Fire Beasts",
+          "input": "_8_2_+_B"
+        },
+        {
+          "category": "_&",
+          "name": "Pikemen",
+          "input": "_4_1_2_3_6_+_B"
+        }
+      ]
+    },
+    {
+      "name": "ZHUGE LIANG",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Ying Feng Dan Chen",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_`",
+          "input": "_>",
+          "condition": "Blizzard                                                              _2_3_6_+_B"
+        },
+        {
+          "category": "_`",
+          "input": "_>",
+          "hitLevels": "L",
+          "condition": "ightning                                                             _4_6_+_B"
+        },
+        {
+          "category": "_`",
+          "input": "_>",
+          "condition": "Typhoon                                                               _2_8_+_B"
+        },
+        {
+          "category": "_`",
+          "input": "_>",
+          "condition": "Ba Zheng Tu                                                           _8_2_+_B"
+        },
+        {
+          "category": "_`",
+          "input": "_>",
+          "condition": "Recover                                                               _4_1_2_3_6_+_B"
+        }
+      ]
+    },
+    {
+      "name": "ZHAO YUN",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Fei Tian",
+          "input": "_6_+_A_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Tan Zhua",
+          "input": "_^_3_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Chuan Lin Jiao",
+          "input": "_^_3_+_A_A_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Da Peng Zhan Chi",
+          "input": "_2_8_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Ri Yue Shuang Hua",
+          "input": "_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Meng Long Chu Zha",
+          "input": "_4_6_+_B"
+        },
+        {
+          "category": "_&",
+          "name": "Pikemen",
+          "input": "_8_2_+_B"
+        },
+        {
+          "category": "_&",
+          "name": "Fire Arrows",
+          "input": "_4_1_2_3_6_+_B"
+        },
+        {
+          "category": "_`",
+          "input": "_>",
+          "condition": "Typhoon                                                               _2_8_+_B"
+        }
+      ]
+    },
+    {
+      "name": "DIAO CHAN",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "3 Dan Jump",
+          "input": "_B_B_B"
+        },
+        {
+          "category": "_)",
+          "name": "Ti Yun Zong",
+          "input": "_6_+_A_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Yu Nv Jin Zhen",
+          "input": "_^_2_+_A_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Tian Nv San Hua",
+          "input": "_2_8_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Feng Ming",
+          "input": "_4_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Yun Li Fan",
+          "input": "_2_8_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Chan Tui",
+          "input": "_8_2_+_B"
+        },
+        {
+          "category": "_`",
+          "input": "_>",
+          "condition": "Blizzard                                                              _2_3_6_+_B"
+        },
+        {
+          "category": "_`",
+          "input": "_>",
+          "condition": "Recover                                                               _4_1_2_3_6_+_B"
+        }
+      ]
+    },
+    {
+      "name": "ZHANG FEI",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Er Hu Pu Yang",
+          "input": "_6_+_B_A"
+        },
+        {
+          "category": "_)",
+          "name": "Er Hu Zhang Zui",
+          "input": "_^_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Kuang Feng Shi",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Shen Long Bai Wei",
+          "input": "_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Huo Niu Han Di",
+          "input": "_2_8_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Tian Beng Di Lie",
+          "input": "_8_2_+_B"
+        },
+        {
+          "category": "_#",
+          "name": "Confuse",
+          "input": "_4_6_+_B"
+        },
+        {
+          "category": "_&",
+          "name": "Pikemen",
+          "input": "_4_1_2_3_6_+_B"
+        }
+      ]
+    },
+    {
+      "name": "PANG TONG",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Ge Kong Xian Fa",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Talisman-ground",
+          "input": "_^_A"
+        },
+        {
+          "category": "_)",
+          "name": "Talisman-upward",
+          "input": "_^_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Zuo You Pi Shan",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Iron Spike",
+          "input": "_2_8_+_A"
+        },
+        {
+          "category": "_`",
+          "input": "_>",
+          "condition": "Blizzard                                                              _2_3_6_+_B"
+        },
+        {
+          "category": "_`",
+          "input": "_>",
+          "hitLevels": "L",
+          "condition": "ightnning                                                            _4_6_+_B"
+        },
+        {
+          "category": "_`",
+          "input": "_>",
+          "condition": "Typhoon                                                               _2_8_+_B"
+        },
+        {
+          "category": "_`",
+          "input": "_>",
+          "condition": "Summon: Lightning                                                     _8_2_+_B"
+        },
+        {
+          "category": "_`",
+          "input": "_>",
+          "condition": "Summon: Fire                                                          _4_1_2_3_6_+_B"
+        }
+      ]
+    },
+    {
+      "name": "MA CHAO",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "3 Dan Jump",
+          "input": "_B_B_B"
+        },
+        {
+          "category": "_)",
+          "name": "Tan Tui-ground",
+          "input": "_6_+_A_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Tan Tui-air",
+          "input": "_^_2_+_A_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Di Tang Zhan",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Chong Tui",
+          "input": "_2_8_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Bai Niao Chao Feng",
+          "input": "_^_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Shou Yao",
+          "input": "_4_6_+_B"
+        },
+        {
+          "category": "_&",
+          "name": "Rolling Boulders",
+          "input": "_2_8_+_B"
+        },
+        {
+          "category": "_&",
+          "name": "Dropping Boulders",
+          "input": "_8_2_+_B"
+        },
+        {
+          "category": "_&",
+          "name": "Fire Beasts",
+          "input": "_4_1_2_3_6_+_B"
+        }
+      ]
+    },
+    {
+      "name": "SUN QUAN",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Hu Bi Gou",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Ba Wang Hu Zhua",
+          "input": "_2_8_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Yi Ci Ding Jiang Shan",
+          "input": "_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Jiang Dong Nu Hou",
+          "input": "_4_6_+_B"
+        },
+        {
+          "category": "_&",
+          "name": "Sky Lanterns",
+          "input": "_2_8_+_B"
+        },
+        {
+          "category": "_&",
+          "name": "Pikemen",
+          "input": "_8_2_+_B"
+        },
+        {
+          "category": "_&",
+          "name": "Sailors",
+          "input": "_4_1_2_3_6_+_B"
+        }
+      ]
+    },
+    {
+      "name": "HUANG ZHONG",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Sui Ren Jian",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Zhu Di Jian",
+          "input": "_^_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Zhui Feng Pi Yue",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Zhui Tian Jian",
+          "input": "_2_8_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Fen Xin Jian",
+          "input": "_4_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Guan Shan Jian",
+          "input": "_2_8_+_B"
+        },
+        {
+          "category": "_&",
+          "name": "Ballista",
+          "input": "_8_2_+_B"
+        },
+        {
+          "category": "_&",
+          "name": "Fire Arrows",
+          "input": "_4_1_2_3_6_+_B"
+        },
+        {
+          "category": "_`",
+          "input": "_>",
+          "condition": "Blizzard                                                              _2_3_6_+_B"
+        }
+      ]
+    },
+    {
+      "name": "\"RIGHTEOUS\" ZHAO YUN",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "3 Dan Jump",
+          "input": "_B_B_B"
+        },
+        {
+          "category": "_)",
+          "name": "Fei Tian",
+          "input": "_6_+_A_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Tan Zhua",
+          "input": "_^_3_+_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Chuan Lin Jiao",
+          "input": "_^_3_+_A_A_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Li Hua Ci",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Da Peng Zhan Chi",
+          "input": "_2_8_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Ri Yue Shuang Hua",
+          "input": "_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Meng Long Chu Zha",
+          "input": "_4_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Zi Long Zhu Que",
+          "input": "_2_8_+_B"
+        },
+        {
+          "category": "_&",
+          "name": "Pikemen",
+          "input": "_8_2_+_B"
+        },
+        {
+          "category": "_&",
+          "name": "Fire Arrows",
+          "input": "_4_1_2_3_6_+_B"
+        }
+      ]
+    },
+    {
+      "name": "\"REBELLIOUS\" GUAN YU",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Kuang Long Ni Zhuan",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Fei Long Zai Tian",
+          "input": "_2_8_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Hui Feng Sao Ye",
+          "input": "_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Kuang Long Chu Hai",
+          "input": "_4_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Kuang Long Xuan Wu",
+          "input": "_2_8_+_B"
+        },
+        {
+          "category": "_&",
+          "name": "Fire Beasts",
+          "input": "_8_2_+_B"
+        },
+        {
+          "category": "_&",
+          "name": "Pikemen",
+          "input": "_4_1_2_3_6_+_B"
+        }
+      ]
+    },
+    {
+      "name": "\"RECKLESS\" ZHANG FEI",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Er Hu Pu Yang",
+          "input": "_6_+_B_A"
+        },
+        {
+          "category": "_)",
+          "name": "Er Hu Zhang Zui",
+          "input": "_^_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Long Bai Wei",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Meng Hu Chui",
+          "input": "_2_8_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Shen Long Bai Wei",
+          "input": "_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Tiger Cannon",
+          "input": "_4_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Huo Niu Han Di",
+          "input": "_2_8_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Tian Beng Di Lie",
+          "input": "_8_2_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Dragon Cannon",
+          "input": "_4_1_2_3_6_+_B"
+        }
+      ]
+    },
+    {
+      "name": "\"RICH\" MA CHAO",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "3 Dan Jump",
+          "input": "_B_B_B"
+        },
+        {
+          "category": "_)",
+          "name": "Yue Ma Deng",
+          "input": "_^_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Kong Qi She",
+          "input": "_^_2_+_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Di Tang Zhan",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Chong Tui",
+          "input": "_2_8_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Bai Niao Chao Feng",
+          "input": "_^_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Shou Yao",
+          "input": "_4_6_+_B"
+        },
+        {
+          "category": "_&",
+          "name": "Rolling Boulders",
+          "input": "_2_8_+_B"
+        },
+        {
+          "category": "_&",
+          "name": "Dropping Boulders",
+          "input": "_8_2_+_B"
+        },
+        {
+          "category": "_&",
+          "name": "Fire Beasts",
+          "input": "_4_1_2_3_6_+_B"
+        }
+      ]
+    },
+    {
+      "name": "\"FIERCE\" HUANG ZHONG",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Sui Ren Jian",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Zhu Di Jian",
+          "input": "_^_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Zhui Hun Pi",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Zhui Tian Jian",
+          "input": "_2_8_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Du Pi Hua Shan",
+          "input": "_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Fen Xin Jian",
+          "input": "_4_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Guan Shan Jian",
+          "input": "_2_8_+_B"
+        },
+        {
+          "category": "_&",
+          "name": "Ballista",
+          "input": "_8_2_+_B"
+        },
+        {
+          "category": "_&",
+          "name": "Fire Arrows",
+          "input": "_4_1_2_3_6_+_B"
+        }
+      ]
+    }
+  ],
+  "howToPlayNotes": [
+    "_> Magic Moves"
+  ],
+  "controlAbbr": {
+    "_A": "AT",
+    "_B": "JM",
+    "_C": "IM",
+    "_D": "UI",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "genesis": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "megadrive": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "32x": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "saturn": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "neogeo": {
+      "b": "_A",
+      "y": "_B",
+      "a": "_C",
+      "x": "_D"
+    },
+    "psx": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "ps2": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "gb": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gbc": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gamegear": {
+      "a": "_A",
+      "b": "_B"
+    },
+    "sms": {
+      "a": "_A",
+      "b": "_B"
+    },
+    "gba": {
+      "b": "_A",
+      "a": "_B",
+      "l1": "_C",
+      "r1": "_D"
+    },
+    "ngpc": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "dreamcast": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "n64": {
+      "b": "_A",
+      "a": "_B",
+      "cDown": "_C",
+      "cLeft": "_D"
+    },
+    "wswan": {
+      "b": "_A",
+      "a": "_B"
+    }
+  },
+  "controlGroups": {
+    "_P": [
+      "_A",
+      "_C"
+    ],
+    "_K": [
+      "_B",
+      "_D"
+    ]
+  }
+}

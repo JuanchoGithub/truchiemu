@@ -1,1 +1,158 @@
-{"schemaVersion":2,"romIds":["holo"],"name":"Holosseum","year":1992,"manufacturer":"Sega","credits":"by: Fabricio Coroquer (Created by: Minoplis)","controls":{"_S":"Start"},"categories":{"_@":"Special Moves"},"characters":[{"name":"SOMCHAY DOMPAYAGEN","moves":[{"category":"_@","name":"High Speed Kick","input":"^*_a / _b"},{"category":"_@","name":"Triple Spinning Roundhouse","input":"_2_1_4_+_b"},{"category":"_@","name":"Jumping Knee Bomb","input":"_6_3_2_1_+_b"},{"category":"_@","name":"Medula Slash","input":"^4_6_+_b"}]},{"name":"DAVE","moves":[{"category":"_@","name":"Liver Break","input":"^4_6_+_b"},{"category":"_@","name":"Kakato Otoshi","input":"_2_1_4_+_b"},{"category":"_@","name":"Tripping Up","input":"_4_1_2_3_+_b"}]},{"name":"PROFESSOR CHEN","moves":[{"category":"_@","name":"Lightning Charge","input":"^1_6_+_b"},{"category":"_@","name":"Dragon buster","input":"_2_3_6_+_b"},{"category":"_@","name":"Deadly Headbutt","input":"_6_3_2_1_+_b"},{"category":"_@","name":"Drunk Monkey","input":"_4_1_2_3_+_b"}]},{"name":"JACK GARRISON","moves":[{"category":"_@","name":"Giant Swing","input":"_2_1_4_+_b"},{"category":"_@","name":"Leg Reaper","input":"^4_3_+_b"},{"category":"_@","name":"Neck Scissors","input":"_2_3_6_+_b"},{"category":"_@","name":"Whirlwind Kick","input":"_3_2_1_+_b"}]}],"controlAbbr":{"_S":"ST"},"systemControlMappings":{"snes":{"y":"_a","b":"_b"},"genesis":{"b":"_a","a":"_b"},"megadrive":{"b":"_a","a":"_b"},"saturn":{"b":"_a","a":"_b"},"psx":{"y":"_a","b":"_b"},"ps2":{"y":"_a","b":"_b"},"gba":{"b":"_a","a":"_b"},"gb":{"b":"_a","a":"_b"},"gbc":{"b":"_a","a":"_b"},"ngpc":{"b":"_a","a":"_b"}}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "holo"
+  ],
+  "name": "Holosseum",
+  "year": 1992,
+  "manufacturer": "Sega",
+  "credits": "by: Fabricio Coroquer (Created by: Minoplis)",
+  "controls": {
+    "_S": "Start"
+  },
+  "categories": {
+    "_@": "Special Moves"
+  },
+  "characters": [
+    {
+      "name": "SOMCHAY DOMPAYAGEN",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "High Speed Kick",
+          "input": "^*_a / _b"
+        },
+        {
+          "category": "_@",
+          "name": "Triple Spinning Roundhouse",
+          "input": "_2_1_4_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Jumping Knee Bomb",
+          "input": "_6_3_2_1_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Medula Slash",
+          "input": "^4_6_+_b"
+        }
+      ]
+    },
+    {
+      "name": "DAVE",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Liver Break",
+          "input": "^4_6_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Kakato Otoshi",
+          "input": "_2_1_4_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Tripping Up",
+          "input": "_4_1_2_3_+_b"
+        }
+      ]
+    },
+    {
+      "name": "PROFESSOR CHEN",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Lightning Charge",
+          "input": "^1_6_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Dragon buster",
+          "input": "_2_3_6_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Deadly Headbutt",
+          "input": "_6_3_2_1_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Drunk Monkey",
+          "input": "_4_1_2_3_+_b"
+        }
+      ]
+    },
+    {
+      "name": "JACK GARRISON",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Giant Swing",
+          "input": "_2_1_4_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Leg Reaper",
+          "input": "^4_3_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Neck Scissors",
+          "input": "_2_3_6_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Whirlwind Kick",
+          "input": "_3_2_1_+_b"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_a",
+      "b": "_b"
+    },
+    "genesis": {
+      "b": "_a",
+      "a": "_b"
+    },
+    "megadrive": {
+      "b": "_a",
+      "a": "_b"
+    },
+    "saturn": {
+      "b": "_a",
+      "a": "_b"
+    },
+    "psx": {
+      "y": "_a",
+      "b": "_b"
+    },
+    "ps2": {
+      "y": "_a",
+      "b": "_b"
+    },
+    "gba": {
+      "b": "_a",
+      "a": "_b"
+    },
+    "gb": {
+      "b": "_a",
+      "a": "_b"
+    },
+    "gbc": {
+      "b": "_a",
+      "a": "_b"
+    },
+    "ngpc": {
+      "b": "_a",
+      "a": "_b"
+    }
+  }
+}

@@ -1,1 +1,268 @@
-{"schemaVersion":2,"romIds":["asterix","asterixaad","asterixeaa","asterixeac","asterixj"],"name":"Asterix","year":1992,"manufacturer":"Konami","credits":"Fabricio Coroquer","controls":{"_A":"Attack","_S":"Start"},"categories":{"_(":"Normal Throws","_)":"Command Moves","_#":"Tag Moves"},"commonCommands":[{"category":"_)","name":"Dash","input":"_6_6"},{"category":"_)","name":"Pick Up Object close to object","input":"_A"}],"characters":[{"name":"ASTERIX","moves":[{"category":"_(","name":"Grapple opponent knocked down","input":"_A"},{"category":"_(","name":"Random Throw","input":"_A"},{"category":"_(","name":"Toss in Front","input":"_6_+_A"},{"category":"_(","name":"Rapid Slaps on small opponent","input":"_4_+_A"},{"category":"_(","name":"Toss Behind on large opponent","input":"_4_+_A"},{"category":"_(","name":"Ragdoll Swing on small opponent","input":"_2_+_A"},{"category":"_(","name":"Toss in Front 2 on large opponent","input":"_2_+_A"},{"category":"_(","name":"Punt Kick","input":"_8_+_A"},{"category":"_)","name":"Wild Uppercut","input":"_A_A_A"},{"category":"_)","name":"Back Kick Back Turned","input":"_A"},{"category":"_)","name":"Wind Up Swing","input":"_O_A"},{"category":"_)","name":"Charging Fist","input":"_6_6_+_A"},{"category":"_)","name":"Dive Kick @J-button","input":"_A"},{"category":"_)","name":"Hop Wild Uppercut @J-button before landing","input":"_A"},{"category":"_)","name":"Slide Kick","input":"_3_+_A"},{"category":"_#","name":"Obelix Punt dashing on Obelix"},{"category":"_#","name":"Diving Frenzy jump on Obelix, then jump again"}]},{"name":"OBELIX","moves":[{"category":"_(","name":"Grapple opponent knocked down","input":"_A"},{"category":"_(","name":"Random Throw","input":"_A"},{"category":"_(","name":"Toss in Front","input":"_6_+_A"},{"category":"_(","name":"Rapid Slaps on small opponent","input":"_4_+_A"},{"category":"_(","name":"Toss Behind on large opponent","input":"_4_+_A"},{"category":"_(","name":"Toy Smash on small opponent","input":"_2_+_A"},{"category":"_(","name":"Toss in Front 2 on large opponent","input":"_2_+_A"},{"category":"_(","name":"Belly Bump","input":"_8_+_A"},{"category":"_)","name":"Slaps","input":"_A_A_A"},{"category":"_)","name":"Butt Bump Back Turned","input":"_A"},{"category":"_)","name":"Wind Up Swing","input":"_O_A"},{"category":"_)","name":"Stomach Crush","input":"_6_6_+_A"},{"category":"_)","name":"Butt Squash @J-button","input":"_A"},{"category":"_)","name":"Hop Heavy Slap @J-button before landing","input":"_A"},{"category":"_)","name":"Stone Toss with Menhir","input":"_A"},{"category":"_)","name":"Stone Smash with Menhir, close","input":"_A"},{"category":"_#","name":"Asterix Bump dashing on Asterix"},{"category":"_#","name":"Heavy Splash jump on Asterix, then jump again"}]}],"controlAbbr":{"_A":"AT","_S":"ST"},"systemControlMappings":{"snes":{"y":"_A"},"genesis":{"b":"_A"},"megadrive":{"b":"_A"},"32x":{"b":"_A"},"saturn":{"b":"_A"},"psx":{"y":"_A"},"ps2":{"y":"_A"},"gb":{"b":"_A"},"gbc":{"b":"_A"},"gamegear":{"a":"_A"},"sms":{"a":"_A"},"gba":{"b":"_A"},"ngpc":{"b":"_A"}},"controlGroups":{"_P":["_A"]}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "asterix",
+    "asterixaad",
+    "asterixeaa",
+    "asterixeac",
+    "asterixj"
+  ],
+  "name": "Asterix",
+  "year": 1992,
+  "manufacturer": "Konami",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "_A": "Attack",
+    "_S": "Start"
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_#": "Tag Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "_6_6"
+    },
+    {
+      "category": "_)",
+      "name": "Pick Up Object close to object",
+      "input": "_A"
+    }
+  ],
+  "characters": [
+    {
+      "name": "ASTERIX",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grapple opponent knocked down",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Random Throw",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Toss in Front",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Rapid Slaps on small opponent",
+          "input": "_4_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Toss Behind on large opponent",
+          "input": "_4_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Ragdoll Swing on small opponent",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Toss in Front 2 on large opponent",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Punt Kick",
+          "input": "_8_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Wild Uppercut",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Back Kick Back Turned",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Wind Up Swing",
+          "input": "_O_A"
+        },
+        {
+          "category": "_)",
+          "name": "Charging Fist",
+          "input": "_6_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Dive Kick @J-button",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Hop Wild Uppercut @J-button before landing",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Slide Kick",
+          "input": "_3_+_A"
+        },
+        {
+          "category": "_#",
+          "name": "Obelix Punt dashing on Obelix"
+        },
+        {
+          "category": "_#",
+          "name": "Diving Frenzy jump on Obelix, then jump again"
+        }
+      ]
+    },
+    {
+      "name": "OBELIX",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grapple opponent knocked down",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Random Throw",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Toss in Front",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Rapid Slaps on small opponent",
+          "input": "_4_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Toss Behind on large opponent",
+          "input": "_4_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Toy Smash on small opponent",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Toss in Front 2 on large opponent",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Belly Bump",
+          "input": "_8_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Slaps",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Butt Bump Back Turned",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Wind Up Swing",
+          "input": "_O_A"
+        },
+        {
+          "category": "_)",
+          "name": "Stomach Crush",
+          "input": "_6_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Butt Squash @J-button",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Hop Heavy Slap @J-button before landing",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Stone Toss with Menhir",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Stone Smash with Menhir, close",
+          "input": "_A"
+        },
+        {
+          "category": "_#",
+          "name": "Asterix Bump dashing on Asterix"
+        },
+        {
+          "category": "_#",
+          "name": "Heavy Splash jump on Asterix, then jump again"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_A": "AT",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_A"
+    },
+    "genesis": {
+      "b": "_A"
+    },
+    "megadrive": {
+      "b": "_A"
+    },
+    "32x": {
+      "b": "_A"
+    },
+    "saturn": {
+      "b": "_A"
+    },
+    "psx": {
+      "y": "_A"
+    },
+    "ps2": {
+      "y": "_A"
+    },
+    "gb": {
+      "b": "_A"
+    },
+    "gbc": {
+      "b": "_A"
+    },
+    "gamegear": {
+      "a": "_A"
+    },
+    "sms": {
+      "a": "_A"
+    },
+    "gba": {
+      "b": "_A"
+    },
+    "ngpc": {
+      "b": "_A"
+    }
+  },
+  "controlGroups": {
+    "_P": [
+      "_A"
+    ]
+  }
+}

@@ -1,1 +1,665 @@
-{"schemaVersion":2,"romIds":["aliencha","alienchac"],"name":"Alien Challenge","year":1994,"manufacturer":"IGS","credits":"Fabricio Coroquer","controls":{"^E":"Weak Punch","^F":"Medium Punch","^G":"Strong Punch","^H":"Weak Kick","^I":"Medium Kick","^J":"Strong Kick","_S":"Start"},"controlGroups":{"_P":["^E","^F","^G"],"_K":["^H","^I","^J"]},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves","_*":"Desperation Moves","_`":"Desperation Moves"},"commonCommands":[{"category":"_)","name":"Dash","input":"_6_6"},{"category":"_)","name":"Retreat","input":"_4_4"},{"category":"_)","name":"Crawl","input":"^3"},{"category":"_)","name":"Red Dodge","input":"^E_+^F"}],"characters":[{"name":"NIC-SAN","moves":[{"category":"_(","name":"Rain Dance","input":"_6_+^I / ^J"},{"category":"_@","name":"Umbrella Shot","input":"_2_3_6_+_P"},{"category":"_@","name":"Hair Whip","input":"_4_6_+_P"},{"category":"_@","name":"Spirit Palms","input":"_6_4_6_+_P"},{"category":"_@","name":"Blast Elbow","input":"_^_6_4_6_+_P"},{"category":"_@","name":"Rising Spike","input":"_2_1_4_+_K"},{"category":"_@","name":"Fan Sweep","input":"_4_1_2_+_K"},{"category":"_@","name":"Spirit Kicks","input":"_^_6_4_6_+_K"},{"category":"_*","name":"Umbrella Storm","input":"_2_1_4_1_2_3_6_+_P"},{"category":"_*","name":"Dragon Rave","input":"_6_4_6_3_2_1_4_+_P"}]},{"name":"JEAN PAUL","moves":[{"category":"_(","name":"Tornado Drop","input":"_6_+^F / ^G"},{"category":"_@","name":"Ninja Buzzsaw","input":"_2_1_4_+_P"},{"category":"_@","name":"Swift Tornado","input":"_4_1_2_3_6_+_P"},{"category":"_@","name":"Pummeling Strike","input":"_4_6_+_P"},{"category":"_@","name":"Shuriken","input":"_6_4_6_+_P"},{"category":"_@","name":"Nimble Dropkick","input":"_2_3_6_+_K"},{"category":"_@","name":"Changing Winds Tornado","input":"_6_3_2_1_4_+_K"},{"category":"_@","name":"Sonic Kick","input":"_^_4_6_+_K"},{"category":"_*","name":"Deadly Shurikens","input":"_2_3_6_2_1_4_+_P"},{"category":"_*","name":"Pressure Point Fandango","input":"_6_3_2_1_4_6_4_6_+_P"}]},{"name":"STEVARENO","moves":[{"category":"_(","name":"Overhead Slam","input":"_6_+^F / ^G"},{"category":"_@","name":"Victory Missile","input":"_2_3_6_+_P"},{"category":"_@","name":"Power Upper","input":"_2_1_4_+_P"},{"category":"_@","name":"Golden Edge","input":"_4_6_+_P"},{"category":"_@","name":"Burning Sludge","input":"_6_4_6_+_P"},{"category":"_@","name":"Trident Kick","input":"_2_3_6_+_K"},{"category":"_@","name":"Portal Port","input":"_4_1_2_+_K"},{"category":"_@","name":"Bull Charge","input":"_6_4_6_+_K"},{"category":"_*","name":"Ultimate Hammer","input":"_2_1_4_6_3_2_+_P"},{"category":"_*","name":"Gold Rush","input":"_6_3_2_6_4_6_+_P"}]},{"name":"DREW","moves":[{"category":"_(","name":"Circus Roll","input":"_6_+^I / ^J"},{"category":"_@","name":"Bowling Pin","input":"_2_3_6_+_P"},{"category":"_@","name":"Drew in a Box","input":"_2_1_4_+_P"},{"category":"_@","name":"Spin Cycle","input":"_6_4_6_+_P"},{"category":"_@","name":"Stench Bomb","input":"_^_8_9_6_+_P"},{"category":"_@","name":"Trapeze Dropkick","input":"_2_3_6_+_K"},{"category":"_@","name":"Comical Wind","input":"_2_1_4_+_K"},{"category":"_*","name":"Circus Smash","input":"_2_3_6_4_1_2_3_6_+_P"},{"category":"_*","name":"Bowling Pin Split","input":"_2_1_4_6_3_2_1_4_+_P"}]},{"name":"DOUGSTER","moves":[{"category":"_(","name":"Football Pummel","input":"_6_+^F / ^G"},{"category":"_@","name":"Sky Tackle","input":"_2_3_6_+_P"},{"category":"_@","name":"Helmet Dive","input":"_^_4_6_+_P"},{"category":"_@","name":"Football Punt","input":"_2_3_6_+_K"},{"category":"_@","name":"Touchdown Rush","input":"_4_6_+_K"},{"category":"_@","name":"Energy Kick","input":"_6_4_6_+_K"},{"category":"_*","name":"Touchdown Spikes","input":"_4_6_4_1_2_3_6_+_P"},{"category":"_*","name":"Victory Rush","input":"_6_4_1_2_3_6_+_K"}]},{"name":"FANG","moves":[{"category":"_(","name":"Face Bite","input":"_6_+^F / ^G"},{"category":"_@","name":"Mega Slash","input":"_6_3_2_+_P"},{"category":"_@","name":"Claw Uppercut","input":"_2_1_4_+_P"},{"category":"_@","name":"Sonic Howl","input":"_6_4_6_+_P"},{"category":"_@","name":"Furious Barrage","input":"_^_4_6_+_P"},{"category":"_@","name":"Mule Kick","input":"_6_3_2_+_K"},{"category":"_@","name":"Tail Snap","input":"_4_6_+_K"},{"category":"_*","name":"Midnight Mauling","input":"_2_3_6_2_3_6_+_P"},{"category":"_*","name":"Giant Chomp","input":"_2_3_6_4_1_2_+_P"}]},{"name":"BURNIE","moves":[{"category":"_(","name":"Overhead Slam","input":"_6_+^F / ^G"},{"category":"_@","name":"Fire Grenade","input":"_2_3_6_+_P"},{"category":"_@","name":"Nova Ball","input":"_2_1_4_+_P"},{"category":"_@","name":"Fire Blast","input":"_6_4_6_+_P"},{"category":"_@","name":"Phoenix Dive","input":"_^_4_6_+_P"},{"category":"_@","name":"Flaming Top","input":"_4_1_2_3_6_+_K"},{"category":"_@","name":"Flaming Wheel","input":"_6_3_2_1_4_+_K"},{"category":"_*","name":"Flame Clash","input":"_4_6_4_1_2_3_6_+_P"},{"category":"_*","name":"Fire Bomb Frenzy","input":"_6_4_6_3_2_1_4_+_P"}]},{"name":"MELANIE","moves":[{"category":"_(","name":"Release Frankensteiner","input":"_6_+^I / ^J"},{"category":"_@","name":"Chest Missiles","input":"_2_3_6_+_P"},{"category":"_@","name":"Nimble Twirl","input":"_2_1_4_+_P"},{"category":"_@","name":"Spear Capture","input":"_6_4_6_+_P"},{"category":"_@","name":"Rift Kick","input":"_4_1_2_3_6_+_K"},{"category":"_@","name":"Sneaky Drill Kick","input":"_6_3_2_1_4_+_K"},{"category":"_*","name":"Dagger Shower","input":"_2_1_4_6_4_6_+_P"},{"category":"_*","name":"Head Wallop","input":"_4_6_4_1_2_3_6_+_K"}]},{"name":"CLAUS","moves":[{"category":"_(","name":"Overhead Toss","input":"_6_+^G"},{"category":"_@","name":"Holiday Spark","input":"_2_3_6_+_P"},{"category":"_@","name":"Eruption Blast","input":"_2_1_4_+_P"},{"category":"_@","name":"Torpedo Dive","input":"_4_6_+_P"},{"category":"_@","name":"Flying Nimbus","input":"_6_4_6_+_P"},{"category":"_@","name":"Beard Cutter","input":"_2_3_6_+_K"},{"category":"_@","name":"Aura Roll","input":"_6_3_2_1_4_+_K"},{"category":"_*","name":"Holiday Jolt","input":"_6_4_1_2_3_6_+_P"},{"category":"_*","name":"Holiday Crush","input":"_6_4_6_4_6_+_P"}]}],"controlAbbr":{"^E":"LP","^F":"MP","^G":"HP","^H":"LK","^I":"MK","^J":"HK","_S":"ST"},"systemControlMappings":{"snes":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"genesis":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"megadrive":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"32x":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"saturn":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"psx":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"ps2":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"gba":{"b":"^E","a":"^F","l1":"^G","y":"^H","x":"^I","r1":"^J"},"pce":{"b":"^E","a":"^H"},"pce6":{"b":"^E","y":"^F","l1":"^G","a":"^H","x":"^I","r1":"^J"},"3do":{"b":"^E","a":"^F","l1":"^G","y":"^H","x":"^I","r1":"^J"},"n64":{"b":"^E","cDown":"^F","cRight":"^G","a":"^H","cLeft":"^I","cUp":"^J"},"dreamcast":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"gb":{"b":"^E","a":"^H"},"gbc":{"b":"^E","a":"^H"},"gamegear":{"a":"^E","b":"^H"},"sms":{"a":"^E","b":"^H"},"ngpc":{"b":"^E","y":"^F","l1":"^G","a":"^H","x":"^I","r1":"^J"},"lynx":{"b":"^E","a":"^F","l1":"^G","y":"^H","x":"^I","r1":"^J"},"wswan":{"b":"^E","a":"^H"}}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "aliencha",
+    "alienchac"
+  ],
+  "name": "Alien Challenge",
+  "year": 1994,
+  "manufacturer": "IGS",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "^E": "Weak Punch",
+    "^F": "Medium Punch",
+    "^G": "Strong Punch",
+    "^H": "Weak Kick",
+    "^I": "Medium Kick",
+    "^J": "Strong Kick",
+    "_S": "Start"
+  },
+  "controlGroups": {
+    "_P": [
+      "^E",
+      "^F",
+      "^G"
+    ],
+    "_K": [
+      "^H",
+      "^I",
+      "^J"
+    ]
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_*": "Desperation Moves",
+    "_`": "Desperation Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "_6_6"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4"
+    },
+    {
+      "category": "_)",
+      "name": "Crawl",
+      "input": "^3"
+    },
+    {
+      "category": "_)",
+      "name": "Red Dodge",
+      "input": "^E_+^F"
+    }
+  ],
+  "characters": [
+    {
+      "name": "NIC-SAN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Rain Dance",
+          "input": "_6_+^I / ^J"
+        },
+        {
+          "category": "_@",
+          "name": "Umbrella Shot",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Hair Whip",
+          "input": "_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Spirit Palms",
+          "input": "_6_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Blast Elbow",
+          "input": "_^_6_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Rising Spike",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Fan Sweep",
+          "input": "_4_1_2_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Spirit Kicks",
+          "input": "_^_6_4_6_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Umbrella Storm",
+          "input": "_2_1_4_1_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Dragon Rave",
+          "input": "_6_4_6_3_2_1_4_+_P"
+        }
+      ]
+    },
+    {
+      "name": "JEAN PAUL",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Tornado Drop",
+          "input": "_6_+^F / ^G"
+        },
+        {
+          "category": "_@",
+          "name": "Ninja Buzzsaw",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Swift Tornado",
+          "input": "_4_1_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Pummeling Strike",
+          "input": "_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Shuriken",
+          "input": "_6_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Nimble Dropkick",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Changing Winds Tornado",
+          "input": "_6_3_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Sonic Kick",
+          "input": "_^_4_6_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Deadly Shurikens",
+          "input": "_2_3_6_2_1_4_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Pressure Point Fandango",
+          "input": "_6_3_2_1_4_6_4_6_+_P"
+        }
+      ]
+    },
+    {
+      "name": "STEVARENO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Overhead Slam",
+          "input": "_6_+^F / ^G"
+        },
+        {
+          "category": "_@",
+          "name": "Victory Missile",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Power Upper",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Golden Edge",
+          "input": "_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Burning Sludge",
+          "input": "_6_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Trident Kick",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Portal Port",
+          "input": "_4_1_2_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Bull Charge",
+          "input": "_6_4_6_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Ultimate Hammer",
+          "input": "_2_1_4_6_3_2_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Gold Rush",
+          "input": "_6_3_2_6_4_6_+_P"
+        }
+      ]
+    },
+    {
+      "name": "DREW",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Circus Roll",
+          "input": "_6_+^I / ^J"
+        },
+        {
+          "category": "_@",
+          "name": "Bowling Pin",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Drew in a Box",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Spin Cycle",
+          "input": "_6_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Stench Bomb",
+          "input": "_^_8_9_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Trapeze Dropkick",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Comical Wind",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Circus Smash",
+          "input": "_2_3_6_4_1_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Bowling Pin Split",
+          "input": "_2_1_4_6_3_2_1_4_+_P"
+        }
+      ]
+    },
+    {
+      "name": "DOUGSTER",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Football Pummel",
+          "input": "_6_+^F / ^G"
+        },
+        {
+          "category": "_@",
+          "name": "Sky Tackle",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Helmet Dive",
+          "input": "_^_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Football Punt",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Touchdown Rush",
+          "input": "_4_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Energy Kick",
+          "input": "_6_4_6_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Touchdown Spikes",
+          "input": "_4_6_4_1_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Victory Rush",
+          "input": "_6_4_1_2_3_6_+_K"
+        }
+      ]
+    },
+    {
+      "name": "FANG",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Face Bite",
+          "input": "_6_+^F / ^G"
+        },
+        {
+          "category": "_@",
+          "name": "Mega Slash",
+          "input": "_6_3_2_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Claw Uppercut",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Sonic Howl",
+          "input": "_6_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Furious Barrage",
+          "input": "_^_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Mule Kick",
+          "input": "_6_3_2_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Tail Snap",
+          "input": "_4_6_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Midnight Mauling",
+          "input": "_2_3_6_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Giant Chomp",
+          "input": "_2_3_6_4_1_2_+_P"
+        }
+      ]
+    },
+    {
+      "name": "BURNIE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Overhead Slam",
+          "input": "_6_+^F / ^G"
+        },
+        {
+          "category": "_@",
+          "name": "Fire Grenade",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Nova Ball",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Fire Blast",
+          "input": "_6_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Phoenix Dive",
+          "input": "_^_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Flaming Top",
+          "input": "_4_1_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Flaming Wheel",
+          "input": "_6_3_2_1_4_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Flame Clash",
+          "input": "_4_6_4_1_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Fire Bomb Frenzy",
+          "input": "_6_4_6_3_2_1_4_+_P"
+        }
+      ]
+    },
+    {
+      "name": "MELANIE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Release Frankensteiner",
+          "input": "_6_+^I / ^J"
+        },
+        {
+          "category": "_@",
+          "name": "Chest Missiles",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Nimble Twirl",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Spear Capture",
+          "input": "_6_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Rift Kick",
+          "input": "_4_1_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Sneaky Drill Kick",
+          "input": "_6_3_2_1_4_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Dagger Shower",
+          "input": "_2_1_4_6_4_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Head Wallop",
+          "input": "_4_6_4_1_2_3_6_+_K"
+        }
+      ]
+    },
+    {
+      "name": "CLAUS",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Overhead Toss",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Holiday Spark",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Eruption Blast",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Torpedo Dive",
+          "input": "_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Nimbus",
+          "input": "_6_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Beard Cutter",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Aura Roll",
+          "input": "_6_3_2_1_4_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Holiday Jolt",
+          "input": "_6_4_1_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Holiday Crush",
+          "input": "_6_4_6_4_6_+_P"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "^E": "LP",
+    "^F": "MP",
+    "^G": "HP",
+    "^H": "LK",
+    "^I": "MK",
+    "^J": "HK",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "genesis": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "megadrive": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "32x": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "saturn": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "psx": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "ps2": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "gba": {
+      "b": "^E",
+      "a": "^F",
+      "l1": "^G",
+      "y": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "pce": {
+      "b": "^E",
+      "a": "^H"
+    },
+    "pce6": {
+      "b": "^E",
+      "y": "^F",
+      "l1": "^G",
+      "a": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "3do": {
+      "b": "^E",
+      "a": "^F",
+      "l1": "^G",
+      "y": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "n64": {
+      "b": "^E",
+      "cDown": "^F",
+      "cRight": "^G",
+      "a": "^H",
+      "cLeft": "^I",
+      "cUp": "^J"
+    },
+    "dreamcast": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "gb": {
+      "b": "^E",
+      "a": "^H"
+    },
+    "gbc": {
+      "b": "^E",
+      "a": "^H"
+    },
+    "gamegear": {
+      "a": "^E",
+      "b": "^H"
+    },
+    "sms": {
+      "a": "^E",
+      "b": "^H"
+    },
+    "ngpc": {
+      "b": "^E",
+      "y": "^F",
+      "l1": "^G",
+      "a": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "lynx": {
+      "b": "^E",
+      "a": "^F",
+      "l1": "^G",
+      "y": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "wswan": {
+      "b": "^E",
+      "a": "^H"
+    }
+  }
+}

@@ -1,1 +1,1137 @@
-{"schemaVersion":2,"romIds":["armwar","armwara","armwarar1","armwarb","armwarr1","armwaru","armwaru1","pgear","pgearr1"],"name":"Armored Warriors","year":1994,"manufacturer":"Capcom","controls":{"_A":"Attack","_B":"Jump","_C":"Weapon","_S":"Start"},"categories":{"_(":"Normal Throws","_)":"Command Moves","_*":"Desperation Moves","_&":"Super Desperation Moves","_`":"Enhancement Modules"},"commonCommands":[{"category":"_)","name":"Pick Up Item close to item","input":"_A"},{"category":"_)","name":"Pick Up Swappable Part close to swappable part","input":"_A"},{"category":"_*","name":"Megacrush Attack","input":"(_^)_A_+_B"},{"category":"_&","name":"Giga Burst","input":"_B_+_C"}],"characters":[{"name":"POWER KNUCKLE (Default)","moves":[{"category":"_(","name":"Grapple","input":"_4 / _6_+_A"},{"category":"_(","name":"Punching Bag","input":"^*_A"},{"category":"_(","name":"Toss Away","input":"_4 / _6_+_A"},{"category":"_(","name":"Jumping Grapple","input":"_B"},{"category":"_(","name":"Earth Slam","input":"_A"},{"category":"_(","name":"Weapon Shot","input":"_C"},{"category":"_)","name":"Metal Punch","input":"_A"},{"category":"_)","name":"Second Metal Punch","input":"_A"},{"category":"_)","name":"Back Swing","input":"_A"},{"category":"_)","name":"Hop Machine Pumper","input":"_A"},{"category":"_)","name":"Break Shaft","input":"_6_+_A"},{"category":"_)","name":"Slide Drill","input":"_2_+_A"},{"category":"_)","name":"Mega Hop Pumper","input":"_8_+_A (not for Guldin)"},{"category":"_)","name":"Knee Blades","input":"_2_+_A"},{"category":"_)","name":"Break Shaft","input":"_6_+_A"},{"category":"_)","name":"Break Shaft","input":"_6_+_A"},{"category":"_)","name":"Break Shaft","input":"_6_+_A"}],"notes":["ARM"]},{"name":"DEATH DRILL","moves":[{"category":"_)","name":"Hyper Drill","input":"_A"},{"category":"_)","name":"Dash Drill dashing","input":"_A"},{"category":"_)","name":"Hidden Drill Missiles","input":"_6_+_A"}],"notes":["ARM"]},{"name":"FORCE CLAW","moves":[{"category":"_(","name":"Grapple","input":"_4 / _6_+_A"},{"category":"_(","name":"Arm Ripper","input":"^*_A"},{"category":"_(","name":"Toss Away","input":"_4 / _6_+_A"},{"category":"_(","name":"Jumping Grapple","input":"_B"},{"category":"_(","name":"Earth Slam","input":"_A"},{"category":"_(","name":"Weapon Shot","input":"_C"},{"category":"_)","name":"Straight Claw","input":"_A"},{"category":"_)","name":"Capture Device if hit with the end of claw"},{"category":"_)","name":"Forward Wrecker","input":"^*_A"},{"category":"_)","name":"Reverse Wrecker","input":"_4_+^*_A"},{"category":"_)","name":"Drop Capture","input":"_2 / _8"},{"category":"_)","name":"Jump Escape","input":"_B"},{"category":"_)","name":"Long Straight Claw","input":"_6_+_A"},{"category":"_)","name":"Capture Device if hit with the end of claw"},{"category":"_)","name":"Forward Wrecker","input":"^*_A"},{"category":"_)","name":"Reverse Wrecker","input":"_4_+^*_A"},{"category":"_)","name":"Drop Capture","input":"_2 / _8"},{"category":"_)","name":"Jump Escape","input":"_B"}],"notes":["ARM"]},{"name":"CHAIN SPARK","moves":[{"category":"_)","name":"Sparkle Laser","input":"_A"},{"category":"_)","name":"Spark Capture if hit with the last hit"},{"category":"_)","name":"Push Out","input":"_6_+_A"},{"category":"_)","name":"Pull In","input":"_4_+_A"},{"category":"_)","name":"Quick Electric Bomber","input":"_A_6"},{"category":"_)","name":"Charging Electric Bomber","input":"_O_A_6"}],"notes":["ARM"]},{"name":"LASER BLADE","moves":[{"category":"_)","name":"Down Slash","input":"_A"},{"category":"_)","name":"Side Slash","input":"_A"},{"category":"_)","name":"Mega Sword Thrust","input":"_A"},{"category":"_)","name":"Slay Sword","input":"_6_+_A (_O)"},{"category":"_)","name":"Air Cutter","input":"_8_+_A"},{"category":"_)","name":"Slay Sword","input":"_6_+_A (_O)"},{"category":"_)","name":"Air Cutter","input":"_8_+_A"},{"category":"_)","name":"Slay Sword","input":"_6_+_A (_O)"},{"category":"_)","name":"Air Cutter","input":"_8_+_A"}],"notes":["ARM"]},{"name":"SHIELD CANNON","moves":[{"category":"_)","name":"Rocket Blast","input":"_A"},{"category":"_)","name":"Plasma Blast","input":"_6_+_A"},{"category":"_)","name":"Shield","input":"_4_+_O_A"},{"category":"_)","name":"Upward Split Cannon","input":"_2_+_A"},{"category":"_)","name":"Downward Split Cannon","input":"_8_+_A"}],"notes":["ARM"]},{"name":"COMMAND WALKER (Default)","moves":[{"category":"_)","name":"Boost Dash _? _? (same direction)"},{"category":"_)","name":"Slide Drill","input":"_A"},{"category":"_)","name":"Dash Orb Jump","input":"_B"},{"category":"_)","name":"Energy Sword","input":"_A"},{"category":"_)","name":"Knee Blades","input":"_2_+_A"},{"category":"_)","name":"Normal Orb Jump","input":"_B"},{"category":"_)","name":"Energy Sword","input":"_A"},{"category":"_)","name":"Knee Blades","input":"_2_+_A"},{"category":"_)","name":"Short Orb Jump","input":"_2_+_B"},{"category":"_)","name":"Energy Sword","input":"_A"},{"category":"_)","name":"Knee Blades","input":"_2_+_A"},{"category":"_)","name":"High Orb Jump","input":"_8_+_B"},{"category":"_)","name":"Energy Sword","input":"_A"},{"category":"_)","name":"Knee Blades","input":"_2_+_A"}],"notes":["LEG"]},{"name":"TREADS","moves":[{"category":"_)","name":"Boost Dash _? _? (same direction)"},{"category":"_)","name":"Charging Wheel","input":"_A"},{"category":"_)","name":"Dash Spiked Wheel Jump","input":"_B"},{"category":"_)","name":"Stretch Treads","input":"_A"},{"category":"_)","name":"Giant Drill","input":"_2_+_A"},{"category":"_)","name":"Normal Spiked Wheel Jump","input":"_B"},{"category":"_)","name":"Stretch Treads","input":"_A"},{"category":"_)","name":"Giant Drill","input":"_2_+_A"},{"category":"_)","name":"Short Spiked Wheel Jump","input":"_2_+_B"},{"category":"_)","name":"Stretch Treads","input":"_A"},{"category":"_)","name":"Giant Drill","input":"_2_+_A"},{"category":"_)","name":"High Spiked Wheel Jump","input":"_8_+_B"},{"category":"_)","name":"Stretch Treads","input":"_A"},{"category":"_)","name":"Giant Drill","input":"_2_+_A"}],"notes":["LEG"]},{"name":"TURBO JET","moves":[{"category":"_)","name":"Boost Dash _? _? (same direction)"},{"category":"_)","name":"Killer Screw Straight","input":"_A"},{"category":"_)","name":"Dash Boost Jump","input":"_B"},{"category":"_)","name":"Flame Wheel","input":"_A"},{"category":"_)","name":"Normal Take Off Jump","input":"_B (_O)"},{"category":"_)","name":"Air Movement _?"},{"category":"_)","name":"Quad Shot","input":"_A"},{"category":"_)","name":"Short Take Off Jump","input":"_2_+_B (_O)"},{"category":"_)","name":"Air Movement _?"},{"category":"_)","name":"Quad Shot","input":"_A"},{"category":"_)","name":"High Take Off Jump","input":"_8_+_B (_O)"},{"category":"_)","name":"Air Movement _?"},{"category":"_)","name":"Quad Shot","input":"_A"},{"category":"_)","name":"Normal Boost Jump","input":"_4 / _6_+_B"},{"category":"_)","name":"Flame Wheel","input":"_A"},{"category":"_)","name":"Short Boost Jump","input":"_1 / _3_+_B"},{"category":"_)","name":"Flame Wheel","input":"_A"},{"category":"_)","name":"High Boost Jump","input":"_7 / _9_+_B"},{"category":"_)","name":"Flame Wheel","input":"_A"}],"notes":["LEG"]},{"name":"POWER BUG","moves":[{"category":"_)","name":"Boost Dash _? _? (same direction)"},{"category":"_)","name":"Dizzy Boomerang Slicer","input":"_A"},{"category":"_)","name":"Dash Boomerang Jump","input":"_B"},{"category":"_)","name":"Hover","input":"^*_B"},{"category":"_)","name":"Quad Spikes","input":"_2_+_A"},{"category":"_)","name":"Dizzy Boomerang Jump","input":"_B"},{"category":"_)","name":"Hover","input":"^*_B"},{"category":"_)","name":"Quad Spikes","input":"_2_+_A"}],"notes":["LEG"]},{"name":"FIRE VULCAN (Default)","moves":[{"category":"_)","name":"Fire Vulcan","input":"_C"},{"category":"_`","name":"Blodia has 50 rounds"},{"category":"_`","name":"Reptos has 40 rounds"},{"category":"_`","name":"Guldin has 60 rounds"},{"category":"_`","name":"Fordy has 40 rounds"}],"notes":["SUB WEAPON"]},{"name":"MISSILE","moves":[{"category":"_)","name":"Fire Missiles","input":"_C"},{"category":"_`","name":"Blodia has 10 rounds"},{"category":"_`","name":"Reptos has 8 rounds"},{"category":"_`","name":"Guldin has 12 rounds"},{"category":"_`","name":"Fordy has 8 rounds"}],"notes":["SUB WEAPON"]},{"name":"GUIDED MISSILE","moves":[{"category":"_)","name":"Fire Guided Missiles","input":"_C"},{"category":"_`","name":"Blodia has 16 rounds"},{"category":"_`","name":"Reptos has 14 rounds"},{"category":"_`","name":"Guldin has 20 rounds"},{"category":"_`","name":"Fordy has 14 rounds"}],"notes":["SUB WEAPON"]},{"name":"FLAMETHROWER","moves":[{"category":"_)","name":"Fire Flamethrower","input":"_C"},{"category":"_`","name":"Blodia has 12 rounds"},{"category":"_`","name":"Reptos has 10 rounds"},{"category":"_`","name":"Guldin has 16 rounds"},{"category":"_`","name":"Fordy has 10 rounds"}],"notes":["SUB WEAPON"]},{"name":"LASER","moves":[{"category":"_)","name":"Fire Laser","input":"_C"},{"category":"_`","name":"Blodia has 6 rounds"},{"category":"_`","name":"Reptos has 5 rounds"},{"category":"_`","name":"Guldin has 8 rounds"},{"category":"_`","name":"Fordy has 5 rounds"}],"notes":["SUB WEAPON"]},{"name":"BOMB","moves":[{"category":"_)","name":"Fire Bomb","input":"_C"},{"category":"_`","name":"Blodia has 12 rounds"},{"category":"_`","name":"Reptos has 10 rounds"},{"category":"_`","name":"Guldin has 16 rounds"},{"category":"_`","name":"Fordy has 10 rounds"}],"notes":["SUB WEAPON"]},{"name":"NAPALM","moves":[{"category":"_)","name":"Fire Napalm","input":"_C"},{"category":"_`","name":"Blodia has 6 rounds"},{"category":"_`","name":"Reptos has 5 rounds"},{"category":"_`","name":"Guldin has 8 rounds"},{"category":"_`","name":"Fordy has 5 rounds"}],"notes":["SUB WEAPON"]},{"name":"ALPHA FORTRESS (TANK MECH)","moves":[{"category":"_)","name":"Mega Drill","input":"_A"},{"category":"_)","name":"Reverse Iron Nails","input":"_B"},{"category":"_)","name":"Straight Claw Stab","input":"_A"},{"category":"_)","name":"Forward Napalm Shot","input":"_A"},{"category":"_)","name":"Reverse Close Napalm Shot","input":"_B"},{"category":"_)","name":"Reverse Far Napalm Shot","input":"_C"},{"category":"_)","name":"Forward Napalm Shot","input":"_A"},{"category":"_)","name":"Reverse Napalm Shot","input":"_B"}],"notes":["ENHANCEMENT MODULE","BLODIA (DRILLING RIG)","REPTOS (CLAW ARM)","GULDIN (BACK MOUNTED NAPALM)","FORDY (NAPALM CANNON)"]},{"name":"BETA CANNON (TURBO JET MECH)","moves":[{"category":"_)","name":"Forward Plasma Bounce Shot","input":"_A"},{"category":"_)","name":"Reverse Plasma Bounce Shot","input":"_B"},{"category":"_)","name":"Steep Downward Blast","input":"_A"},{"category":"_)","name":"Far Diagonal Blast","input":"_B"},{"category":"_)","name":"Straight Blast","input":"_C"},{"category":"_)","name":"Straight Mega Punch","input":"_A"},{"category":"_)","name":"Reverse Elbow Spikes","input":"_B"},{"category":"_)","name":"Thrusting Chainsaw","input":"_A"}],"notes":["ENHANCEMENT MODULE","BLODIA (BACK MOUNTED PLASMA)","REPTOS (LASER CANNON)","GULDIN (MEGA KNUCKLE)","FORDY (CHAINSAW)"]},{"name":"GAMMA BATTLER (WALKER MECH)","moves":[{"category":"_)","name":"Forward Plasma Bounce Shot","input":"_A"},{"category":"_)","name":"Reverse Plasma Bounce Shot","input":"_B"},{"category":"_)","name":"Straight Claw Stab","input":"_A"},{"category":"_)","name":"Downward Claw Stab","input":"_B"},{"category":"_)","name":"Straight Mega Punch","input":"_A"},{"category":"_)","name":"Downward Mega Punch","input":"_B"},{"category":"_)","name":"Reverse Elbow Blade","input":"_C"},{"category":"_)","name":"Shock Tremor","input":"_A"},{"category":"_)","name":"Tail Flick","input":"_B"}],"notes":["ENHANCEMENT MODULE","BLODIA (BACK MOUNTED PLASMA)","REPTOS (CLAW ARM)","GULDIN (MEGA KNUCKLE)","FORDY (LASH TAIL)"]}],"cheatNotes":["_` Start the Stage with a Arm","- On the Stage Title Screen _O_B_+_C and press:","- Death Drill             _8","- Force Claw \t       _6","- Chain Spark             _2","- Laser Blade             _4","_` Start the Stage with a Sub Weapon","- On the Stage Title Screen _O_B_+_C and press:","- Missile                 _9","- Flame-thrower           _1","- Laser                   _3","- Bomb                    _7","_` Start the Stage with Enhancement Module","- On a 2P/3P game, during the cutscene, the player that pick up the Radio item must hold:","- Alpha Fortress          _2","- Beta Cannon             _8","- Gamma Battler           _4 / _6"],"controlAbbr":{"_A":"AT","_B":"JM","_C":"WP","_S":"ST"},"systemControlMappings":{"snes":{"y":"_A","b":"_B","a":"_C"},"genesis":{"b":"_A","y":"_B","a":"_C"},"megadrive":{"b":"_A","y":"_B","a":"_C"},"32x":{"b":"_A","y":"_B","c":"_C"},"saturn":{"b":"_A","y":"_B","a":"_C"},"psx":{"y":"_A","b":"_B","a":"_C"},"ps2":{"y":"_A","b":"_B","a":"_C"},"gb":{"b":"_A","a":"_B"},"gbc":{"b":"_A","a":"_B"},"gba":{"b":"_A","a":"_B","l1":"_C"}},"controlGroups":{"_P":["_A","_C"],"_K":["_B"]}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "armwar",
+    "armwara",
+    "armwarar1",
+    "armwarb",
+    "armwarr1",
+    "armwaru",
+    "armwaru1",
+    "pgear",
+    "pgearr1"
+  ],
+  "name": "Armored Warriors",
+  "year": 1994,
+  "manufacturer": "Capcom",
+  "controls": {
+    "_A": "Attack",
+    "_B": "Jump",
+    "_C": "Weapon",
+    "_S": "Start"
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_*": "Desperation Moves",
+    "_&": "Super Desperation Moves",
+    "_`": "Enhancement Modules"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Pick Up Item close to item",
+      "input": "_A"
+    },
+    {
+      "category": "_)",
+      "name": "Pick Up Swappable Part close to swappable part",
+      "input": "_A"
+    },
+    {
+      "category": "_*",
+      "name": "Megacrush Attack",
+      "input": "(_^)_A_+_B"
+    },
+    {
+      "category": "_&",
+      "name": "Giga Burst",
+      "input": "_B_+_C"
+    }
+  ],
+  "characters": [
+    {
+      "name": "POWER KNUCKLE (Default)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grapple",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Punching Bag",
+          "input": "^*_A"
+        },
+        {
+          "category": "_(",
+          "name": "Toss Away",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Jumping Grapple",
+          "input": "_B"
+        },
+        {
+          "category": "_(",
+          "name": "Earth Slam",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Weapon Shot",
+          "input": "_C"
+        },
+        {
+          "category": "_)",
+          "name": "Metal Punch",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Second Metal Punch",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Back Swing",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Hop Machine Pumper",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Break Shaft",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Slide Drill",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Mega Hop Pumper",
+          "input": "_8_+_A (not for Guldin)"
+        },
+        {
+          "category": "_)",
+          "name": "Knee Blades",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Break Shaft",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Break Shaft",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Break Shaft",
+          "input": "_6_+_A"
+        }
+      ],
+      "notes": [
+        "ARM"
+      ]
+    },
+    {
+      "name": "DEATH DRILL",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Hyper Drill",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Dash Drill dashing",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Hidden Drill Missiles",
+          "input": "_6_+_A"
+        }
+      ],
+      "notes": [
+        "ARM"
+      ]
+    },
+    {
+      "name": "FORCE CLAW",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grapple",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Arm Ripper",
+          "input": "^*_A"
+        },
+        {
+          "category": "_(",
+          "name": "Toss Away",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Jumping Grapple",
+          "input": "_B"
+        },
+        {
+          "category": "_(",
+          "name": "Earth Slam",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Weapon Shot",
+          "input": "_C"
+        },
+        {
+          "category": "_)",
+          "name": "Straight Claw",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Capture Device if hit with the end of claw"
+        },
+        {
+          "category": "_)",
+          "name": "Forward Wrecker",
+          "input": "^*_A"
+        },
+        {
+          "category": "_)",
+          "name": "Reverse Wrecker",
+          "input": "_4_+^*_A"
+        },
+        {
+          "category": "_)",
+          "name": "Drop Capture",
+          "input": "_2 / _8"
+        },
+        {
+          "category": "_)",
+          "name": "Jump Escape",
+          "input": "_B"
+        },
+        {
+          "category": "_)",
+          "name": "Long Straight Claw",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Capture Device if hit with the end of claw"
+        },
+        {
+          "category": "_)",
+          "name": "Forward Wrecker",
+          "input": "^*_A"
+        },
+        {
+          "category": "_)",
+          "name": "Reverse Wrecker",
+          "input": "_4_+^*_A"
+        },
+        {
+          "category": "_)",
+          "name": "Drop Capture",
+          "input": "_2 / _8"
+        },
+        {
+          "category": "_)",
+          "name": "Jump Escape",
+          "input": "_B"
+        }
+      ],
+      "notes": [
+        "ARM"
+      ]
+    },
+    {
+      "name": "CHAIN SPARK",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Sparkle Laser",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Spark Capture if hit with the last hit"
+        },
+        {
+          "category": "_)",
+          "name": "Push Out",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Pull In",
+          "input": "_4_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Quick Electric Bomber",
+          "input": "_A_6"
+        },
+        {
+          "category": "_)",
+          "name": "Charging Electric Bomber",
+          "input": "_O_A_6"
+        }
+      ],
+      "notes": [
+        "ARM"
+      ]
+    },
+    {
+      "name": "LASER BLADE",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Down Slash",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Side Slash",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Mega Sword Thrust",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Slay Sword",
+          "input": "_6_+_A (_O)"
+        },
+        {
+          "category": "_)",
+          "name": "Air Cutter",
+          "input": "_8_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Slay Sword",
+          "input": "_6_+_A (_O)"
+        },
+        {
+          "category": "_)",
+          "name": "Air Cutter",
+          "input": "_8_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Slay Sword",
+          "input": "_6_+_A (_O)"
+        },
+        {
+          "category": "_)",
+          "name": "Air Cutter",
+          "input": "_8_+_A"
+        }
+      ],
+      "notes": [
+        "ARM"
+      ]
+    },
+    {
+      "name": "SHIELD CANNON",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Rocket Blast",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Plasma Blast",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Shield",
+          "input": "_4_+_O_A"
+        },
+        {
+          "category": "_)",
+          "name": "Upward Split Cannon",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Downward Split Cannon",
+          "input": "_8_+_A"
+        }
+      ],
+      "notes": [
+        "ARM"
+      ]
+    },
+    {
+      "name": "COMMAND WALKER (Default)",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Boost Dash _? _? (same direction)"
+        },
+        {
+          "category": "_)",
+          "name": "Slide Drill",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Dash Orb Jump",
+          "input": "_B"
+        },
+        {
+          "category": "_)",
+          "name": "Energy Sword",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Knee Blades",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Normal Orb Jump",
+          "input": "_B"
+        },
+        {
+          "category": "_)",
+          "name": "Energy Sword",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Knee Blades",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Short Orb Jump",
+          "input": "_2_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Energy Sword",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Knee Blades",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "High Orb Jump",
+          "input": "_8_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Energy Sword",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Knee Blades",
+          "input": "_2_+_A"
+        }
+      ],
+      "notes": [
+        "LEG"
+      ]
+    },
+    {
+      "name": "TREADS",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Boost Dash _? _? (same direction)"
+        },
+        {
+          "category": "_)",
+          "name": "Charging Wheel",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Dash Spiked Wheel Jump",
+          "input": "_B"
+        },
+        {
+          "category": "_)",
+          "name": "Stretch Treads",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Giant Drill",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Normal Spiked Wheel Jump",
+          "input": "_B"
+        },
+        {
+          "category": "_)",
+          "name": "Stretch Treads",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Giant Drill",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Short Spiked Wheel Jump",
+          "input": "_2_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Stretch Treads",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Giant Drill",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "High Spiked Wheel Jump",
+          "input": "_8_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Stretch Treads",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Giant Drill",
+          "input": "_2_+_A"
+        }
+      ],
+      "notes": [
+        "LEG"
+      ]
+    },
+    {
+      "name": "TURBO JET",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Boost Dash _? _? (same direction)"
+        },
+        {
+          "category": "_)",
+          "name": "Killer Screw Straight",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Dash Boost Jump",
+          "input": "_B"
+        },
+        {
+          "category": "_)",
+          "name": "Flame Wheel",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Normal Take Off Jump",
+          "input": "_B (_O)"
+        },
+        {
+          "category": "_)",
+          "name": "Air Movement _?"
+        },
+        {
+          "category": "_)",
+          "name": "Quad Shot",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Short Take Off Jump",
+          "input": "_2_+_B (_O)"
+        },
+        {
+          "category": "_)",
+          "name": "Air Movement _?"
+        },
+        {
+          "category": "_)",
+          "name": "Quad Shot",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "High Take Off Jump",
+          "input": "_8_+_B (_O)"
+        },
+        {
+          "category": "_)",
+          "name": "Air Movement _?"
+        },
+        {
+          "category": "_)",
+          "name": "Quad Shot",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Normal Boost Jump",
+          "input": "_4 / _6_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Flame Wheel",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Short Boost Jump",
+          "input": "_1 / _3_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Flame Wheel",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "High Boost Jump",
+          "input": "_7 / _9_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Flame Wheel",
+          "input": "_A"
+        }
+      ],
+      "notes": [
+        "LEG"
+      ]
+    },
+    {
+      "name": "POWER BUG",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Boost Dash _? _? (same direction)"
+        },
+        {
+          "category": "_)",
+          "name": "Dizzy Boomerang Slicer",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Dash Boomerang Jump",
+          "input": "_B"
+        },
+        {
+          "category": "_)",
+          "name": "Hover",
+          "input": "^*_B"
+        },
+        {
+          "category": "_)",
+          "name": "Quad Spikes",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Dizzy Boomerang Jump",
+          "input": "_B"
+        },
+        {
+          "category": "_)",
+          "name": "Hover",
+          "input": "^*_B"
+        },
+        {
+          "category": "_)",
+          "name": "Quad Spikes",
+          "input": "_2_+_A"
+        }
+      ],
+      "notes": [
+        "LEG"
+      ]
+    },
+    {
+      "name": "FIRE VULCAN (Default)",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Fire Vulcan",
+          "input": "_C"
+        },
+        {
+          "category": "_`",
+          "name": "Blodia has 50 rounds"
+        },
+        {
+          "category": "_`",
+          "name": "Reptos has 40 rounds"
+        },
+        {
+          "category": "_`",
+          "name": "Guldin has 60 rounds"
+        },
+        {
+          "category": "_`",
+          "name": "Fordy has 40 rounds"
+        }
+      ],
+      "notes": [
+        "SUB WEAPON"
+      ]
+    },
+    {
+      "name": "MISSILE",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Fire Missiles",
+          "input": "_C"
+        },
+        {
+          "category": "_`",
+          "name": "Blodia has 10 rounds"
+        },
+        {
+          "category": "_`",
+          "name": "Reptos has 8 rounds"
+        },
+        {
+          "category": "_`",
+          "name": "Guldin has 12 rounds"
+        },
+        {
+          "category": "_`",
+          "name": "Fordy has 8 rounds"
+        }
+      ],
+      "notes": [
+        "SUB WEAPON"
+      ]
+    },
+    {
+      "name": "GUIDED MISSILE",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Fire Guided Missiles",
+          "input": "_C"
+        },
+        {
+          "category": "_`",
+          "name": "Blodia has 16 rounds"
+        },
+        {
+          "category": "_`",
+          "name": "Reptos has 14 rounds"
+        },
+        {
+          "category": "_`",
+          "name": "Guldin has 20 rounds"
+        },
+        {
+          "category": "_`",
+          "name": "Fordy has 14 rounds"
+        }
+      ],
+      "notes": [
+        "SUB WEAPON"
+      ]
+    },
+    {
+      "name": "FLAMETHROWER",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Fire Flamethrower",
+          "input": "_C"
+        },
+        {
+          "category": "_`",
+          "name": "Blodia has 12 rounds"
+        },
+        {
+          "category": "_`",
+          "name": "Reptos has 10 rounds"
+        },
+        {
+          "category": "_`",
+          "name": "Guldin has 16 rounds"
+        },
+        {
+          "category": "_`",
+          "name": "Fordy has 10 rounds"
+        }
+      ],
+      "notes": [
+        "SUB WEAPON"
+      ]
+    },
+    {
+      "name": "LASER",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Fire Laser",
+          "input": "_C"
+        },
+        {
+          "category": "_`",
+          "name": "Blodia has 6 rounds"
+        },
+        {
+          "category": "_`",
+          "name": "Reptos has 5 rounds"
+        },
+        {
+          "category": "_`",
+          "name": "Guldin has 8 rounds"
+        },
+        {
+          "category": "_`",
+          "name": "Fordy has 5 rounds"
+        }
+      ],
+      "notes": [
+        "SUB WEAPON"
+      ]
+    },
+    {
+      "name": "BOMB",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Fire Bomb",
+          "input": "_C"
+        },
+        {
+          "category": "_`",
+          "name": "Blodia has 12 rounds"
+        },
+        {
+          "category": "_`",
+          "name": "Reptos has 10 rounds"
+        },
+        {
+          "category": "_`",
+          "name": "Guldin has 16 rounds"
+        },
+        {
+          "category": "_`",
+          "name": "Fordy has 10 rounds"
+        }
+      ],
+      "notes": [
+        "SUB WEAPON"
+      ]
+    },
+    {
+      "name": "NAPALM",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Fire Napalm",
+          "input": "_C"
+        },
+        {
+          "category": "_`",
+          "name": "Blodia has 6 rounds"
+        },
+        {
+          "category": "_`",
+          "name": "Reptos has 5 rounds"
+        },
+        {
+          "category": "_`",
+          "name": "Guldin has 8 rounds"
+        },
+        {
+          "category": "_`",
+          "name": "Fordy has 5 rounds"
+        }
+      ],
+      "notes": [
+        "SUB WEAPON"
+      ]
+    },
+    {
+      "name": "ALPHA FORTRESS (TANK MECH)",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Mega Drill",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Reverse Iron Nails",
+          "input": "_B"
+        },
+        {
+          "category": "_)",
+          "name": "Straight Claw Stab",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Forward Napalm Shot",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Reverse Close Napalm Shot",
+          "input": "_B"
+        },
+        {
+          "category": "_)",
+          "name": "Reverse Far Napalm Shot",
+          "input": "_C"
+        },
+        {
+          "category": "_)",
+          "name": "Forward Napalm Shot",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Reverse Napalm Shot",
+          "input": "_B"
+        }
+      ],
+      "notes": [
+        "ENHANCEMENT MODULE",
+        "BLODIA (DRILLING RIG)",
+        "REPTOS (CLAW ARM)",
+        "GULDIN (BACK MOUNTED NAPALM)",
+        "FORDY (NAPALM CANNON)"
+      ]
+    },
+    {
+      "name": "BETA CANNON (TURBO JET MECH)",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Forward Plasma Bounce Shot",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Reverse Plasma Bounce Shot",
+          "input": "_B"
+        },
+        {
+          "category": "_)",
+          "name": "Steep Downward Blast",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Far Diagonal Blast",
+          "input": "_B"
+        },
+        {
+          "category": "_)",
+          "name": "Straight Blast",
+          "input": "_C"
+        },
+        {
+          "category": "_)",
+          "name": "Straight Mega Punch",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Reverse Elbow Spikes",
+          "input": "_B"
+        },
+        {
+          "category": "_)",
+          "name": "Thrusting Chainsaw",
+          "input": "_A"
+        }
+      ],
+      "notes": [
+        "ENHANCEMENT MODULE",
+        "BLODIA (BACK MOUNTED PLASMA)",
+        "REPTOS (LASER CANNON)",
+        "GULDIN (MEGA KNUCKLE)",
+        "FORDY (CHAINSAW)"
+      ]
+    },
+    {
+      "name": "GAMMA BATTLER (WALKER MECH)",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Forward Plasma Bounce Shot",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Reverse Plasma Bounce Shot",
+          "input": "_B"
+        },
+        {
+          "category": "_)",
+          "name": "Straight Claw Stab",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Downward Claw Stab",
+          "input": "_B"
+        },
+        {
+          "category": "_)",
+          "name": "Straight Mega Punch",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Downward Mega Punch",
+          "input": "_B"
+        },
+        {
+          "category": "_)",
+          "name": "Reverse Elbow Blade",
+          "input": "_C"
+        },
+        {
+          "category": "_)",
+          "name": "Shock Tremor",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Tail Flick",
+          "input": "_B"
+        }
+      ],
+      "notes": [
+        "ENHANCEMENT MODULE",
+        "BLODIA (BACK MOUNTED PLASMA)",
+        "REPTOS (CLAW ARM)",
+        "GULDIN (MEGA KNUCKLE)",
+        "FORDY (LASH TAIL)"
+      ]
+    }
+  ],
+  "cheatNotes": [
+    "_` Start the Stage with a Arm",
+    "- On the Stage Title Screen _O_B_+_C and press:",
+    "- Death Drill             _8",
+    "- Force Claw \t       _6",
+    "- Chain Spark             _2",
+    "- Laser Blade             _4",
+    "_` Start the Stage with a Sub Weapon",
+    "- On the Stage Title Screen _O_B_+_C and press:",
+    "- Missile                 _9",
+    "- Flame-thrower           _1",
+    "- Laser                   _3",
+    "- Bomb                    _7",
+    "_` Start the Stage with Enhancement Module",
+    "- On a 2P/3P game, during the cutscene, the player that pick up the Radio item must hold:",
+    "- Alpha Fortress          _2",
+    "- Beta Cannon             _8",
+    "- Gamma Battler           _4 / _6"
+  ],
+  "controlAbbr": {
+    "_A": "AT",
+    "_B": "JM",
+    "_C": "WP",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_A",
+      "b": "_B",
+      "a": "_C"
+    },
+    "genesis": {
+      "b": "_A",
+      "y": "_B",
+      "a": "_C"
+    },
+    "megadrive": {
+      "b": "_A",
+      "y": "_B",
+      "a": "_C"
+    },
+    "32x": {
+      "b": "_A",
+      "y": "_B",
+      "c": "_C"
+    },
+    "saturn": {
+      "b": "_A",
+      "y": "_B",
+      "a": "_C"
+    },
+    "psx": {
+      "y": "_A",
+      "b": "_B",
+      "a": "_C"
+    },
+    "ps2": {
+      "y": "_A",
+      "b": "_B",
+      "a": "_C"
+    },
+    "gb": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gbc": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gba": {
+      "b": "_A",
+      "a": "_B",
+      "l1": "_C"
+    }
+  },
+  "controlGroups": {
+    "_P": [
+      "_A",
+      "_C"
+    ],
+    "_K": [
+      "_B"
+    ]
+  }
+}

@@ -1,1 +1,2827 @@
-{"schemaVersion":2,"romIds":["ehrgeiz","ehrgeizja","ehrgeizua"],"name":"Ehrgeiz: God Bless the Ring","year":1997,"manufacturer":"Namco","credits":"Fabricio Coroquer","controls":{"_G":"Guard","_S":"Start"},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves","_`":"Special Moves"},"commonCommands":[{"category":"_(","name":"Grab _a_+_b_+_G"},{"category":"_(","name":"Push _?"},{"category":"_(","name":"Low Attacks _a_a_a"},{"category":"_(","name":"High Attacks _b_b_b"},{"category":"_(","name":"Takedown _?_+_a_+_b_+_G"},{"category":"_(","name":"Punches","input":"^*_a / _b"},{"category":"_)","name":"Walk","input":"_O_G _?"},{"category":"_)","name":"Crouch","input":"_O_G"},{"category":"_)","name":"Normal Jump ^s_+_G"},{"category":"_)","name":"Low Jump","input":"_X _? _? (same direction)"},{"category":"_)","name":"Long Jump _? _? (same direction)"},{"category":"_)","name":"Strong Low Attack _a_+_G"},{"category":"_)","name":"Strong High Attack _b_+_G"},{"category":"_)","name":"Mid Attack _a_+_b"},{"category":"_)","name":"Sidestep","input":"_G _X _?"},{"category":"_)","name":"Roll","input":"_O_G _? _? (same direction)"},{"category":"_)","name":"Throw Escape when thrown and flashing","input":"_G"},{"category":"_)","name":"Taunt _?_+_S"}],"characters":[{"name":"GODHAND","moves":[{"category":"_(","name":"Stretch Throw","input":"_a_+_b_+_G"},{"category":"_(","name":"Backbreaker","input":"_a_+_b_+_G_O_b"},{"category":"_(","name":"Spinning Pile","input":"_x_+_a_+_b_+_G"},{"category":"_(","name":"Neck Crush from left side","input":"_a_+_b_+_G"},{"category":"_(","name":"Moon Dive from right side","input":"_a_+_b_+_G"},{"category":"_(","name":"Power Arm Throw from behind","input":"_a_+_b_+_G"},{"category":"_)","name":"Ogre Crush","input":"_a_+_b_+^s"},{"category":"_)","name":"Hell Spin","input":"_a_+^s"},{"category":"_)","name":"Homing Sliding","input":"_a_+^s_a"},{"category":"_)","name":"Stomach Crush","input":"_a_+^s_a_+_b"},{"category":"_)","name":"Break Knuckle","input":"_a_+^s_b"},{"category":"_)","name":"Beam Run Hook Left","input":"_a_+^s_b_a"},{"category":"_)","name":"Shower Kick","input":"_a_+^s_+_G"},{"category":"_)","name":"Hell Spin Elbow","input":"_a_+^s_b"},{"category":"_)","name":"Turn Low High Kick","input":"_a_+_G_b"},{"category":"_)","name":"Maha Punch","input":"_b_a_b_b_b_b_b_b_b_b_b"},{"category":"_)","name":"UD Up Combination","input":"_b_b_a_b"},{"category":"_)","name":"Wrench Kick","input":"_b_b_b"},{"category":"_)","name":"Final Impact","input":"_b_b_b_b_b_b_b"},{"category":"_)","name":"Double Upper","input":"_b_+^s_b"},{"category":"_)","name":"Mirage Spin Kick","input":"_b_+^s_+_G_a"},{"category":"_)","name":"Flunking Upper","input":"_2_3_6_+_b"},{"category":"_)","name":"Gun Straight","input":"^2_+_b"},{"category":"_)","name":"Bazooka Straight","input":"^2_+_O_b"},{"category":"_)","name":"Low Kick","input":"^2_N_a"},{"category":"_)","name":"Turn High Kick","input":"^2_N_b"},{"category":"_)","name":"Straight Kick","input":"^2_N_b_+^s"},{"category":"_)","name":"Low Spin Kick sidestep","input":"_a_a_a"},{"category":"_)","name":"Lightning Godhand sidestep","input":"_a_a_+_b"},{"category":"_)","name":"Wind Godhand sidestep","input":"_a_b"},{"category":"_)","name":"Divide Tail sidestep","input":"_b"},{"category":"_)","name":"Divide Spin Kick sidestep","input":"_b_a"},{"category":"_)","name":"Divide Combination sidestep","input":"_b_a_b"},{"category":"_)","name":"Divide Knuckle sidestep","input":"_b_b"},{"category":"_)","name":"Hammer Sword walking","input":"_b_b"},{"category":"_)","name":"Sliding Kick running","input":"_a"},{"category":"_)","name":"Shoulder Tackle running","input":"_a_+_b"},{"category":"_)","name":"Triple Black Hook running","input":"_b_b_b"},{"category":"_)","name":"Earlied Kick running","input":"_b_+_G"},{"category":"_)","name":"Turn Back Kick running","input":"_G_b"},{"category":"_)","name":"Meteo Press on higher plane","input":"_a_+_b"},{"category":"_@","name":"Arm Gun","input":"^s"},{"category":"_@","name":"Double Arm Gun","input":"^s^s"},{"category":"_@","name":"Triple Arm Gun","input":"_O^s"},{"category":"_@","name":"Put Mine running","input":"^s"},{"category":"_@","name":"Rolling Set Mine roll forward","input":"^s"},{"category":"_@","name":"Grenade","input":"_^^s"},{"category":"_@","name":"Arm Hammer empty gauge","input":"^s"}]},{"name":"HAN DAEHAN","moves":[{"category":"_(","name":"Hold Partisan Kick","input":"_a_+_b_+_G"},{"category":"_(","name":"Arm Gaiden","input":"_x_+_a_+_b_+_G"},{"category":"_(","name":"Reverse One-hand Throw from left side","input":"_a_+_b_+_G"},{"category":"_(","name":"Kick Brush from right side","input":"_a_+_b_+_G"},{"category":"_(","name":"Brush","input":"_G"},{"category":"_(","name":"Inferno from behind","input":"_a_+_b_+_G"},{"category":"_)","name":"Dying Flail","input":"_a_a_a_a"},{"category":"_)","name":"Injury Flail","input":"_a_a_a_b"},{"category":"_)","name":"Swallows Last","input":"_a_+_b_b"},{"category":"_)","name":"Ultima Heel","input":"_a_+_b_+^s"},{"category":"_)","name":"Ring Kick","input":"_a_+^s"},{"category":"_)","name":"Ringing Scarecrow: SCARECROW","input":"_a_+^s_b"},{"category":"_)","name":"Landing Bird","input":"_a_+^s_+_G"},{"category":"_)","name":"Des Flail","input":"_a_+_G_a_a_a"},{"category":"_)","name":"Combo Blood Hound: SCARECROW","input":"_a_+_G_a_b"},{"category":"_)","name":"Javelin Combination","input":"_a_+_G_b_b"},{"category":"_)","name":"Killing Blade","input":"_b_b_a"},{"category":"_)","name":"Bleed Combination","input":"_b_b_b_a_b"},{"category":"_)","name":"Combination","input":"_b_b_b_b_b"},{"category":"_)","name":"Combo Change: SCARECROW","input":"_b_b_b_b"},{"category":"_)","name":"Heel Slice","input":"_b_+^s"},{"category":"_)","name":"Freeza Kick","input":"_b_+^s_+_G"},{"category":"_)","name":"Right Scarecrow: SCARECROW","input":"_O_b_+_G"},{"category":"_)","name":"Turn Heel","input":"_2_3_6_+_b"},{"category":"_)","name":"Thor Axe","input":"^2_+_b"},{"category":"_)","name":"Axe Heel","input":"^2_+_b_b"},{"category":"_)","name":"Turn Lance Kick","input":"^2_N_b"},{"category":"_)","name":"Lance Heel","input":"^2_N_b_b"},{"category":"_)","name":"Flail Kick sidestep","input":"_a"},{"category":"_)","name":"Reppa Kick sidestep","input":"_b"},{"category":"_)","name":"Halberd Kick walking","input":"_b_b_b"},{"category":"_)","name":"Ground Chakram running","input":"_a"},{"category":"_)","name":"Sling Kick running","input":"_a_+_b"},{"category":"_)","name":"Sling Shackle running","input":"_a_+_b_a"},{"category":"_)","name":"Ground Shackle running","input":"_a_+_G"},{"category":"_)","name":"Landing Crow running","input":"_b"},{"category":"_)","name":"Hunting Tomahawk running","input":"_b_b_b"},{"category":"_)","name":"Reverse Heel running","input":"_G_b"},{"category":"_)","name":"Desperate Attack on higher plane","input":"_a_+_b"},{"category":"_@","name":"Korea No. 1","input":"^s"},{"category":"_@","name":"Korea No. 10","input":"_O^s"},{"category":"_@","name":"Left Scarecrow: SCARECROW empty gauge","input":"^s"},{"category":"_)","name":"Switch Kick: SCARECROW","input":"_a"},{"category":"_)","name":"Switching Combination: SCARECROW","input":"_a_b_b_b_b"},{"category":"_)","name":"Crow Peck: SCARECROW","input":"_b"},{"category":"_)","name":"Peck Switch: SCARECROW","input":"_b_a_b_b_b_b"},{"category":"_)","name":"Crow Peck Combination","input":"_b_b_b_b"},{"category":"_)","name":"Triple Flighter","input":"_b_+_G_a_b"},{"category":"_)","name":"Triple Winger","input":"_b_+_G_b_b"}],"notes":["SCARECROW"]},{"name":"DASHER INOBA","moves":[{"category":"_(","name":"Head Butt","input":"_a_+_b_+_G"},{"category":"_(","name":"Head Butt 2","input":"_G"},{"category":"_(","name":"Head Butt 3","input":"_G"},{"category":"_(","name":"Neck Scissors","input":"_a_+_b_+_G_O_a"},{"category":"_(","name":"Dasher Screw Driver","input":"_a_+_b_+_G_O_b"},{"category":"_(","name":"Dasher Buster","input":"_x_+_a_+_b_+_G"},{"category":"_(","name":"Arm Lock from left side","input":"_a_+_b_+_G"},{"category":"_(","name":"Tiger Leg Lock from right side","input":"_a_+_b_+_G"},{"category":"_(","name":"Indian's Lock","input":"_G"},{"category":"_(","name":"Indian's Lock 2","input":"_G"},{"category":"_(","name":"Multipart","input":"_G"},{"category":"_(","name":"Dragon Suplex from behind","input":"_a_+_b_+_G"},{"category":"_(","name":"Mid Kick from behind","input":"_a_+_b_+_G_O_b"},{"category":"_)","name":"Turn Low Kick","input":"_a_+^s"},{"category":"_)","name":"Jump Kick","input":"_a_+^s_+_G"},{"category":"_)","name":"Triple Chop","input":"_b_b_b"},{"category":"_)","name":"Knuckle Part","input":"_b_+^s"},{"category":"_)","name":"Strong Knuckle Part","input":"_b_+^s_b_b"},{"category":"_)","name":"Soul Heart Low Kick","input":"_O_a, _a"},{"category":"_)","name":"Burning Vigour Chop","input":"_O_b"},{"category":"_)","name":"Strong Bamboo Cut","input":"_O_b_+_G"},{"category":"_)","name":"Weak Bamboo Cut","input":"_b_+_G"},{"category":"_)","name":"Hell Strike","input":"_X_b_+_G"},{"category":"_)","name":"Fake","input":"^s"},{"category":"_)","name":"Slide Left Ali Kick","input":"_2_3_6_+_a"},{"category":"_)","name":"Right Slash","input":"_2_3_6_+_b"},{"category":"_)","name":"Slide Right Ali Kick","input":"_2_1_4_+_a"},{"category":"_)","name":"Left Slash","input":"_2_1_4_+_b"},{"category":"_)","name":"Front Kick","input":"^2_+_b"},{"category":"_)","name":"Bombing Double Kick","input":"^2_+_b_b"},{"category":"_)","name":"Brutal Front Kick","input":"^2_+_O_b"},{"category":"_)","name":"Explosive Double Kick","input":"^2_+_O_b, _b"},{"category":"_)","name":"Dah Upper","input":"^2_N_b"},{"category":"_)","name":"Victory Stomping sidestep","input":"_a_a"},{"category":"_)","name":"Straight sidestep","input":"_a_b"},{"category":"_)","name":"Mid Kick sidestep","input":"_b"},{"category":"_)","name":"Knuckle Bomber walking","input":"_b"},{"category":"_)","name":"Ali Kick running","input":"_a_a_a"},{"category":"_)","name":"Drop Kick running","input":"_a_+_b"},{"category":"_)","name":"Dasher Lariat running","input":"_b"},{"category":"_)","name":"Dash Left Slash running","input":"_b_+_G"},{"category":"_)","name":"Back Turn Kick running","input":"_G_b"},{"category":"_)","name":"Homing Body Press","input":"_^^s"},{"category":"_)","name":"Flying Elbow Drop on higher plane","input":"_a_+_b"},{"category":"_@","name":"Dasher Bomb","input":"^s"},{"category":"_@","name":"Final Dasher","input":"_O^s"},{"category":"_@","name":"Soul Fighting Stance","input":"^s_b"},{"category":"_@","name":"Dasher Head Butt running","input":"^s_a_+_b"},{"category":"_@","name":"Dasher Scissors empty gauge","input":"^s"}]},{"name":"JO","moves":[{"category":"_(","name":"Fisheman's Hook","input":"_a_+_b_+_G"},{"category":"_(","name":"Sliding Supplex","input":"_a_+_b_+_G_O_a"},{"category":"_(","name":"Hound Rejection","input":"_a_+_b_+_G_O_b"},{"category":"_(","name":"Ragnarock","input":"_x_+_a_+_b_+_G"},{"category":"_(","name":"Stampede from left side","input":"_a_+_b_+_G"},{"category":"_(","name":"Moonsault Knee Dive from right side","input":"_a_+_b_+_G"},{"category":"_(","name":"Beast Face Brand from behind","input":"_a_+_b_+_G"},{"category":"_(","name":"Beast Lift Cannon from behind","input":"_a_+_b_+_G_O_b"},{"category":"_)","name":"Wolf Pack","input":"_a_a_a_b"},{"category":"_)","name":"Wolf Claw to Beast Tail","input":"_a_a_b_a_+_b_a"},{"category":"_)","name":"Wolf Claw to Beast Rush","input":"_a_a_b_a_+_b_a_+_b"},{"category":"_)","name":"Beast Barrage","input":"_a_a_b_b_b"},{"category":"_)","name":"Detain Kicks","input":"_a_b_a"},{"category":"_)","name":"Arrest Kicks","input":"_a_b_b_a"},{"category":"_)","name":"Jail Combo","input":"_a_b_b_b_b"},{"category":"_)","name":"Rage Ball","input":"_a_+_b_+^s"},{"category":"_)","name":"Gone Postal","input":"_a_+_b_+^s","condition":","},{"category":"_)","name":"Wolf Sickle","input":"_a_+^s"},{"category":"_)","name":"Beast Toss","input":"_a_+^s_b"},{"category":"_)","name":"Falling Scissors","input":"_a_+^s_+_G"},{"category":"_)","name":"Spin Fang","input":"_a_+_G_b"},{"category":"_)","name":"Hunting Wolf Low","input":"_b_a_a"},{"category":"_)","name":"Hunting Wolf High","input":"_b_a_b"},{"category":"_)","name":"Tornado Sweeper","input":"_b_b_a"},{"category":"_)","name":"Death Sentence","input":"_b_b_a_b"},{"category":"_)","name":"Prisoner Kicks","input":"_b_b_b"},{"category":"_)","name":"Fang Kick","input":"_b_+^s"},{"category":"_)","name":"Fang to Beast Rush","input":"_b_+^s_a_a_b_a_+_b_a"},{"category":"_)","name":"Fang to Beast Barrage","input":"_b_+^s_a_a_b_b_b"},{"category":"_)","name":"Illusion Fang","input":"_b_+^s_b_b"},{"category":"_)","name":"Hop Kick","input":"_b_+^s_+_G"},{"category":"_)","name":"Tornado Kicks","input":"_b_+_G_a_b"},{"category":"_)","name":"Iron Cutter","input":"_b_+_G_a_+_b"},{"category":"_)","name":"Cyclone Kicks","input":"_b_+_G_b_b"},{"category":"_)","name":"Steel Cutter","input":"_b_+_G_b_+_G_a_+_b"},{"category":"_)","name":"Death Cutter","input":"_b_+_G_b_+_G_b_+_G_a_+_b"},{"category":"_)","name":"Grudge Faint","input":"_2_3_6_+_b"},{"category":"_)","name":"Break Beats","input":"^2_+_a_a_b"},{"category":"_)","name":"Claw to Beast Grind","input":"^2_+_a_a_b_a_a_a_b"},{"category":"_)","name":"Claw to Beast Fall","input":"^2_+_a_a_b_a_a_b_a_a"},{"category":"_)","name":"Claw to Beast Rush","input":"^2_+_a_a_b_a_a_b_a_+_b_a"},{"category":"_)","name":"Claw to Beast Rage","input":"^2_+_a_a_b_a_a_b_b_b"},{"category":"_)","name":"Claw to Beast Slicer","input":"^2_+_a_a_b_a_b_a"},{"category":"_)","name":"Claw to Beast Trail","input":"^2_+_a_a_b_a_b_b_a"},{"category":"_)","name":"Claw to Beast Barrage","input":"^2_+_a_a_b_a_b_b_b_b"},{"category":"_)","name":"Wolf Trail","input":"^2_+_b_b"},{"category":"_)","name":"Arrow Kick","input":"^2_N_b"},{"category":"_)","name":"Kick Away Hop","input":"^2_N_b_a_+_b"},{"category":"_)","name":"Destruction Spin","input":"_x_+_b"},{"category":"_)","name":"Anger Ball sidestep","input":"_a_a"},{"category":"_)","name":"Wild Brand sidestep","input":"_a_b"},{"category":"_)","name":"Wild Bow Kick sidestep","input":"_a_O_G_b"},{"category":"_)","name":"Rage Pounce walking","input":"_b_b"},{"category":"_)","name":"Sliding running","input":"_a"},{"category":"_)","name":"Lunatic Spin running","input":"_a_+_b"},{"category":"_)","name":"Lunatic Dance running","input":"_a_+_b_a"},{"category":"_)","name":"Lunatic Scissors running","input":"_a_+_b_b"},{"category":"_)","name":"Crossbow Kick running","input":"_b"},{"category":"_)","name":"Escape Kick running","input":"_G_b"},{"category":"_)","name":"Moonsault on higher plane","input":"_a_+_b"},{"category":"_)","name":"Mad Kick back turned","input":"_a_+_b"},{"category":"_)","name":"Dirty Roll back turned","input":"_a"},{"category":"_@","name":"BEAST TRANSFORMATION","input":"^s"},{"category":"_@","name":"Lunatic Rush empty gauge","input":"^s"},{"category":"_@","name":"Wolf Claw","input":"_a"},{"category":"_@","name":"Wolf Rocket","input":"_a_+_b"},{"category":"_@","name":"Wolf Slash","input":"_b"},{"category":"_@","name":"Wolf Rush running","input":"_a_+_b"},{"category":"_@","name":"Wolf Insult Kick back turned","input":"_b"}],"notes":["BEAST TRANSFORMATION"]},{"name":"NASEEM","moves":[{"category":"_(","name":"Knee Break","input":"_a_+_b_+_G"},{"category":"_(","name":"Arm Lock Hold","input":"_a_+_b_+_G_O_a / _b"},{"category":"_(","name":"Knee Break One","input":"_x_+_a_+_b_+_G"},{"category":"_(","name":"Arm Lock Elbow Crush from left side","input":"_a_+_b_+_G"},{"category":"_(","name":"Arm Lock Scissor Break from right side","input":"_a_+_b_+_G"},{"category":"_(","name":"Back Rolling Crush from behind","input":"_a_+_b_+_G"},{"category":"_)","name":"Double Low Kick","input":"_a_a"},{"category":"_)","name":"Scissor Kick","input":"_a_b"},{"category":"_)","name":"Side Winder Combination","input":"_a_b"},{"category":"_)","name":"Swallow Combination","input":"_a_b_b"},{"category":"_)","name":"Phoenix Combination","input":"_a_b_b_b"},{"category":"_)","name":"Tomahawk Pin Point","input":"_a_b_b_b_+_G_b"},{"category":"_)","name":"Hurricane Straight","input":"_a_+_b_+^s"},{"category":"_)","name":"Spanish","input":"_a_+^s_+_G"},{"category":"_)","name":"Double Jab","input":"_b_b"},{"category":"_)","name":"Crush Combination","input":"_b_a_a"},{"category":"_)","name":"Break Combination","input":"_b_a_b"},{"category":"_)","name":"Scissor Combination","input":"_b_b_a_a"},{"category":"_)","name":"Scissor Crush Combination","input":"_b_b_a_b"},{"category":"_)","name":"Bone Crush Combination","input":"_b_b_b_a_b"},{"category":"_)","name":"Body Break Crush","input":"_b_b_b_b_a_b"},{"category":"_)","name":"Hurricane Combination","input":"_b_b_b"},{"category":"_)","name":"Snake Cry","input":"_b_b_b_b_a"},{"category":"_)","name":"Bear Fang","input":"_b_b_b_b_b_b"},{"category":"_)","name":"Bear Claw","input":"_b_b_b_b_b_b"},{"category":"_)","name":"Prize","input":"_b_b_b_b_b_b_a"},{"category":"_)","name":"Eagle Combination","input":"_b_b_b_b_b_+_G"},{"category":"_)","name":"Half Killing","input":"_b_b_+_G_b"},{"category":"_)","name":"Hammer Knuckle","input":"_b_+^s"},{"category":"_)","name":"Sky Kick","input":"_b_+^s_+_G"},{"category":"_)","name":"Left Sock Crab","input":"_2_3_6_+_b"},{"category":"_)","name":"Right Sock Crab","input":"_2_1_4_+_b"},{"category":"_)","name":"Knee Attack","input":"^2_+_b"},{"category":"_)","name":"Triple Knee Attack","input":"^2_+_b_b_b"},{"category":"_)","name":"Rocket Upper","input":"^2_N_b"},{"category":"_)","name":"Finish Upper","input":"^2_N_O_b"},{"category":"_)","name":"Low Beam Run Hook sidestep","input":"_a_a"},{"category":"_)","name":"Crush Hook sidestep","input":"_a_b"},{"category":"_)","name":"High Kick Shoot walking","input":"_b"},{"category":"_)","name":"Sliding running","input":"_a"},{"category":"_)","name":"Cross Attack running","input":"_a_+_b"},{"category":"_)","name":"Des Hammer One running","input":"_b"},{"category":"_)","name":"Triple Des Hammer running","input":"_b_b_b_b"},{"category":"_)","name":"Back Turn Kick running","input":"_G_b"},{"category":"_@","name":"Des Fire","input":"^s"},{"category":"_@","name":"Desperate Fire","input":"_O^s"},{"category":"_@","name":"Lose Bounty empty gauge","input":"^s"}]},{"name":"SASUKE","moves":[{"category":"_(","name":"Doormat","input":"_a_+_b_+_G"},{"category":"_(","name":"Flip Backdrop","input":"_a_+_b_+_G_O_a / _b"},{"category":"_(","name":"Double Backdrop","input":"_G"},{"category":"_(","name":"Assassination","input":"_G"},{"category":"_(","name":"Lightning Drop","input":"_x_+_a_+_b_+_G"},{"category":"_(","name":"Blood Dance from left side","input":"_a_+_b_+_G"},{"category":"_(","name":"Leg Stretch from right side","input":"_a_+_b_+_G"},{"category":"_(","name":"Meteor Toss from behind","input":"_a_+_b_+_G"},{"category":"_)","name":"Somersault Rush","input":"_a_b_b"},{"category":"_)","name":"Double Upper","input":"_a_+_b_a_+_b"},{"category":"_)","name":"Double Backflip to Slash","input":"_a_+_b_a_+_b_b"},{"category":"_)","name":"Bamboo Burial","input":"_a_+^s"},{"category":"_)","name":"Earth Flash Strike","input":"_a_+^s_a"},{"category":"_)","name":"Flip Slash","input":"_a_+^s_+_G"},{"category":"_)","name":"Double Blow","input":"_a_+_G_b"},{"category":"_)","name":"Ninja Rush","input":"_b_b_a"},{"category":"_)","name":"One-Two Slash","input":"_b_b_b"},{"category":"_)","name":"Ninja Sword Rush","input":"_b_b_b_a_b"},{"category":"_)","name":"Kagehisa","input":"_b_b_b_b"},{"category":"_)","name":"Overhead Slash","input":"_b_+^s"},{"category":"_)","name":"Cutting Rage","input":"_b_+^s_b"},{"category":"_)","name":"Sweeping Earth Slash","input":"_b_+^s_a"},{"category":"_)","name":"Hop Kick","input":"_b_+^s_+_G"},{"category":"_)","name":"Upper Left","input":"_2_3_6_+_b"},{"category":"_)","name":"Upper Right","input":"_2_1_4_+_b"},{"category":"_)","name":"Earth Slash Kick","input":"^2_+_a"},{"category":"_)","name":"Kinen Slash","input":"^2_+_b_b_b"},{"category":"_)","name":"Step Dragon Slash","input":"^2_N_b"},{"category":"_)","name":"Dancing Joy","input":"_x_+_b"},{"category":"_)","name":"Shinobi Sweep sidestep","input":"_a_a"},{"category":"_)","name":"Ninja Deception sidestep","input":"_a_a_b"},{"category":"_)","name":"Shinobi Cannon sidestep","input":"_a_b"},{"category":"_)","name":"Low Thrust Kick walking","input":"_a"},{"category":"_)","name":"Spinning Demon walking","input":"_a_a"},{"category":"_)","name":"Sunrise walking","input":"_a_+_b"},{"category":"_)","name":"Shadow Moon walking","input":"_b"},{"category":"_)","name":"Sliding running","input":"_a"},{"category":"_)","name":"Renmenzan running","input":"_b_b_b"},{"category":"_)","name":"Sunset running","input":"_G_b"},{"category":"_)","name":"Kamikaze on higher plane","input":"_a_+_b"},{"category":"_@","name":"Shooting Star","input":"^s"},{"category":"_@","name":"Super Star","input":"_O^s"},{"category":"_@","name":"Ninja Mines","input":"_O^s_a"},{"category":"_@","name":"Heaven Star","input":"_O^s_b"},{"category":"_@","name":"Flash Move Hit running","input":"^s"},{"category":"_@","name":"Ninja Bomb","input":"_^^s"},{"category":"_@","name":"Katashiki full gauge","input":"_a_+_b_+^s"},{"category":"_@","name":"Nap half gauge","input":"_a_+_b_+^s"},{"category":"_@","name":"Quick Slash empty gauge","input":"^s"}]},{"name":"LEE SHUWEN","moves":[{"category":"_(","name":"Mountain Breaker","input":"_a_+_b_+_G"},{"category":"_(","name":"Surprise Exchange","input":"_a_+_b_+_G_O_b"},{"category":"_(","name":"Thunder Mountain Breaker","input":"_x_+_a_+_b_+_G"},{"category":"_(","name":"Dragon Shoulder from left side","input":"_a_+_b_+_G"},{"category":"_(","name":"Stonewall Shatter from right side","input":"_a_+_b_+_G"},{"category":"_(","name":"Dragon's Rage from behind","input":"_a_+_b_+_G"},{"category":"_)","name":"Falling Leaf","input":"_a_a"},{"category":"_)","name":"Tiger's Rage","input":"_a_b"},{"category":"_)","name":"Falling Dragon","input":"_a_+_b_+^s"},{"category":"_)","name":"ACL Breaker","input":"_b_a"},{"category":"_)","name":"ACL to Dagger Punch","input":"_b_a_a"},{"category":"_)","name":"ACL to Uppercut","input":"_b_a_b"},{"category":"_)","name":"Hellstorm","input":"_b_b_b_b"},{"category":"_)","name":"Tiger Palm Punch","input":"_b_+^s"},{"category":"_)","name":"Tiger's Fake","input":"_b_+^s_4 /"},{"category":"_)","name":"Stonewall","input":"_b_+^s_4 /"},{"category":"_)","name":"Tiger's Rush","input":"_b_+^s_b_b"},{"category":"_)","name":"Hop Kick","input":"_b_+^s_+_G"},{"category":"_)","name":"Dragon Cannon","input":"_O_a_+_b_+^s"},{"category":"_)","name":"Shadowless Fist","input":"_X_b_+_G"},{"category":"_)","name":"Spin Palm","input":"_2_3_6_+_b"},{"category":"_)","name":"Tiger Cannon","input":"^2_+_a_b"},{"category":"_)","name":"Palm Uppercut","input":"^2_N_a"},{"category":"_)","name":"Tiger's Elbow Rush","input":"^2_N_a_+_b"},{"category":"_)","name":"Tiger's Tail","input":"^2_N_b"},{"category":"_)","name":"Tiger's Claw sidestep","input":"_a_a"},{"category":"_)","name":"Sweep to Tiger's Elbow sidestep","input":"_a_a_b"},{"category":"_)","name":"Tiger Elbow sidestep","input":"_a_a_+_b"},{"category":"_)","name":"Tiger's Roar sidestep","input":"_a_b"},{"category":"_)","name":"Head Punch sidestep","input":"_a^s"},{"category":"_)","name":"Guard Breaker sidestep","input":"_a^s_b"},{"category":"_)","name":"East Meets West sidestep","input":"_a^s_4 /"},{"category":"_)","name":"Wild Tiger walking","input":"_b_b"},{"category":"_)","name":"Wild Tiger Strike walking","input":"_b_b_b"},{"category":"_)","name":"Wild Tiger Crush walking","input":"_b_b_O_G_b"},{"category":"_)","name":"Sweep Spin running","input":"_a"},{"category":"_)","name":"Tiger Death Fist running","input":"_a_+_b"},{"category":"_)","name":"Left Side Kick running","input":"_b"},{"category":"_)","name":"Double Heave Kick running","input":"_b_b"},{"category":"_)","name":"Reverse Could Shoulder running","input":"_G_b"},{"category":"_)","name":"Moonsault on higher plane","input":"_a_+_b"},{"category":"_@","name":"Meteor Fall Spear","input":"_a_+^s_+_G"},{"category":"_@","name":"Divine Spear","input":"^s"},{"category":"_@","name":"Twin Divine Spear","input":"^s^s"},{"category":"_@","name":"Judgement","input":"_O^s"},{"category":"_@","name":"Heaven Spear","input":"_O^s_b"},{"category":"_@","name":"Earth Spear","input":"_O^s_a"},{"category":"_@","name":"Descending Spear","input":"_^^s"},{"category":"_@","name":"Stun Palm empty gauge","input":"^s"},{"category":"_@","name":"Palm Rush empty gauge","input":"^s_b"}]},{"name":"YOKO","moves":[{"category":"_(","name":"Flip Dislocator","input":"_a_+_b_+_G"},{"category":"_(","name":"Side Dislocator","input":"_a_+_b_+_G_O_a"},{"category":"_(","name":"Slapping Neck Cracker","input":"_x_+_a_+_b_+_G"},{"category":"_(","name":"Flip Toss from left side","input":"_a_+_b_+_G"},{"category":"_(","name":"Neck Drop from left side","input":"_a_+_b_+_G_O_a"},{"category":"_(","name":"Bash Closelime from right side","input":"_a_+_b_+_G"},{"category":"_(","name":"Evil Wheel from behind","input":"_a_+_b_+_G"},{"category":"_(","name":"Attack Reversal as reversal","input":"_a_+_b_+^s"},{"category":"_)","name":"Low Tide","input":"_a_a_a"},{"category":"_)","name":"High Tide","input":"_a_a_b"},{"category":"_)","name":"Spinning Orchid","input":"_a_a^s"},{"category":"_)","name":"Spin Sky Joint Kick","input":"_a_b"},{"category":"_)","name":"Welcome Home","input":"_a_+^s"},{"category":"_)","name":"Can't Touch This!","input":"_a_+^s_a_+_b"},{"category":"_)","name":"Dinner Maker","input":"_a_+^s_b"},{"category":"_)","name":"Inverted Moon","input":"_a_+^s_+_G"},{"category":"_)","name":"Jacob's Ladder","input":"_a_+_G_b_b_b_b"},{"category":"_)","name":"Sleeping Cat","input":"_b_a"},{"category":"_)","name":"Cat's Tail","input":"_b_b_a"},{"category":"_)","name":"Cat Scratch","input":"_b_b_b"},{"category":"_)","name":"Altima Fall","input":"_b_b_a_b_b"},{"category":"_)","name":"Slap Dragon","input":"_b^s"},{"category":"_)","name":"Breaking Up","input":"_b^s_b_b_b_b"},{"category":"_)","name":"Snap Dragon","input":"_b_+^s"},{"category":"_)","name":"Hop Kick","input":"_b_+^s_+_G"},{"category":"_)","name":"High Spin Kick","input":"_2_3_6_+_b"},{"category":"_)","name":"Shadow Moon","input":"^2_+_a"},{"category":"_)","name":"Hungry Hawk","input":"^2_+_b"},{"category":"_)","name":"Jack Knife","input":"^2_N_b"},{"category":"_)","name":"Reincarnation","input":"^2_N_b_+^s"},{"category":"_)","name":"Nose Gunner","input":"^2_N_b_+_G"},{"category":"_)","name":"Highway to Heaven","input":"^2_N_O_b_+^s"},{"category":"_)","name":"Whip Kick sidestep","input":"_a_a"},{"category":"_)","name":"Neck Slicer Right sidestep","input":"_a_a_b"},{"category":"_)","name":"Neck Slicer sidestep","input":"_a_a_+_b"},{"category":"_)","name":"Heel Hook sidestep","input":"_a_b"},{"category":"_)","name":"Neck Slicer Left sidestep","input":"_a_b_a"},{"category":"_)","name":"Crescent Moon sidestep","input":"_b"},{"category":"_)","name":"Tail Gunner walking","input":"_b_b_b_b_b_b"},{"category":"_)","name":"Sliding running","input":"_a"},{"category":"_)","name":"Running Dive running","input":"_a_+_b"},{"category":"_)","name":"Double Round-a-bout running","input":"_b_a"},{"category":"_)","name":"Triple Cyclone running","input":"_b_b_b"},{"category":"_)","name":"Half Moon running","input":"_b_+_G"},{"category":"_)","name":"Reflection Moon running","input":"_G_b"},{"category":"_)","name":"Moonsault on higher plane","input":"_a_+_b"},{"category":"_@","name":"Yo-yo Catch","input":"^s"},{"category":"_@","name":"Yo-yo Trap","input":"_O^s"},{"category":"_@","name":"Advanced Walk the Dog","input":"_O^s_O_a"},{"category":"_@","name":"Crazy Marbles","input":"_^^s"},{"category":"_@","name":"Slap Dragon empty gauge","input":"^s"}]},{"name":"CLOUD STRIFE","moves":[{"category":"_(","name":"Crescent Suplex","input":"_a_+_b_+_G"},{"category":"_(","name":"Crescent Dive","input":"_a_+_b_+_G_O_a / _b"},{"category":"_(","name":"Omnislash","input":"_x_+_a_+_b_+_G"},{"category":"_(","name":"Waist Suplex from left side","input":"_a_+_b_+_G"},{"category":"_(","name":"Neck Fall from left side","input":"_a_+_b_+_G"},{"category":"_(","name":"Manhattan Suplex from behind","input":"_a_+_b_+_G"},{"category":"_)","name":"Soldier Original","input":"_a_a_b"},{"category":"_)","name":"Soldier Elbow","input":"_a_+_b_+^s"},{"category":"_)","name":"Test Lab Shot","input":"_a_+_b_+^s_b"},{"category":"_)","name":"Shinra Needle","input":"_a_+^s"},{"category":"_)","name":"Soldier High Low","input":"_b_a"},{"category":"_)","name":"Shinra Chain","input":"_b_a_a_b"},{"category":"_)","name":"Cool Chain","input":"_b_a_b"},{"category":"_)","name":"Soldier Chain","input":"_b_b_a"},{"category":"_)","name":"Zack's Chain","input":"_b_b_a_b_b"},{"category":"_)","name":"Shinra Chain Test Lab","input":"_b_b_b_b"},{"category":"_)","name":"Soldier Hook","input":"_b_+^s"},{"category":"_)","name":"Shinra Genesis Chain","input":"_b_+^s_b_a"},{"category":"_)","name":"Shinra Chain Alpha","input":"_b_+^s_b_a_b_b"},{"category":"_)","name":"Soldier Chain Wheel","input":"_b_+^s_b_b"},{"category":"_)","name":"Soldier Double High Kick","input":"_b_+_G_b"},{"category":"_)","name":"Moonsault","input":"_O_a_+_b"},{"category":"_)","name":"Soldier Flip","input":"_O_a_+^s_+_G"},{"category":"_)","name":"Soldier Axe Kick","input":"_O_b_+^s_+_G"},{"category":"_)","name":"Soldier Feint Right","input":"_2_3_6_+_b"},{"category":"_)","name":"Soldier Feint Left","input":"_2_1_4_+_b"},{"category":"_)","name":"Zack's Kick","input":"^2_N_b"},{"category":"_)","name":"Maakou Punch sidestep","input":"_a_b"},{"category":"_)","name":"Slide Buster running","input":"_a"},{"category":"_)","name":"Soldier Tackle running","input":"_a_+_b"},{"category":"_)","name":"Air Slash running","input":"_b"},{"category":"_)","name":"Escape Back Kick running","input":"_b_+_G"},{"category":"_)","name":"Back Turn Kick running","input":"_G_b"},{"category":"_)","name":"Deathblow","input":"_^^s"},{"category":"_@","name":"SWORD STANCE","input":"^s"},{"category":"_@","name":"Shinra Beta Cutter empty gauge","input":"^s"},{"category":"_@","name":"Shinra Low Slash","input":"_a"},{"category":"_@","name":"Skull Break","input":"_a_a_a"},{"category":"_@","name":"Rune Blade Chain","input":"_a_+_b_a_a_a"},{"category":"_@","name":"Sephiroth Combo","input":"_a_+_b_b_b_b"},{"category":"_@","name":"Crosslash","input":"_a_+_b_b_b_b"},{"category":"_@","name":"Braver","input":"_a_+_b_b_+_G"},{"category":"_@","name":"Shinra Single Slash","input":"_b"},{"category":"_@","name":"Buster Sword Slash","input":"_b_b_b"},{"category":"_@","name":"Butterfly Edge","input":"_b_+_G_b_b"},{"category":"_@","name":"Sheath Sword","input":"_G"},{"category":"_@","name":"Meteorain","input":"_O^s"},{"category":"_@","name":"Clim Slash","input":"_?_+_b_+_G"},{"category":"_@","name":"Clim Hazard","input":"_?_+_b_+_G_b"}],"notes":["SWORD STANCE"]},{"name":"TIFA LOCKHEART","moves":[{"category":"_(","name":"Meteodrive","input":"_a_+_b_+_G"},{"category":"_(","name":"Beat Rush","input":"_a_+_b_+_G_O_a"},{"category":"_(","name":"Somersault","input":"_a_+_b_+_G_O_b"},{"category":"_(","name":"Meteor Strike","input":"_x_+_a_+_b_+_G"},{"category":"_(","name":"Moonsault Crescent from right side","input":"_a_+_b_+_G"},{"category":"_(","name":"Arm Breaker from right side","input":"_a_+_b_+_G_O_a / _b"},{"category":"_(","name":"Zangan Supplex from right side","input":"_a_+_b_+_G"},{"category":"_(","name":"Avalanche Drop from behind","input":"_a_+_b_+_G"},{"category":"_)","name":"Tiger Fang","input":"_a_b"},{"category":"_)","name":"Zangan Low Alpha","input":"_a_b"},{"category":"_)","name":"Kaiser Sault","input":"_a_+_b_b"},{"category":"_)","name":"Zangan Dragon Upper","input":"_a_+_b_+^s"},{"category":"_)","name":"Grand Glove Kick","input":"_a_+^s"},{"category":"_)","name":"Falling Scissors","input":"_a_+^s_+_G"},{"category":"_)","name":"Motor Drive","input":"_a_+_G_b"},{"category":"_)","name":"Zangan Jab to Low","input":"_b_a"},{"category":"_)","name":"Mythril Claw","input":"_b_a_b"},{"category":"_)","name":"Mythril Claw Slash","input":"_b_a_b"},{"category":"_)","name":"Zangan One-Two","input":"_b_b"},{"category":"_)","name":"Zangan Combination","input":"_b_b_a_b"},{"category":"_)","name":"Zangan Combination Alpha","input":"_b_b_a_b"},{"category":"_)","name":"Avalanche Combo","input":"_b_b_b"},{"category":"_)","name":"Dragon Claw","input":"_b_+^s_b"},{"category":"_)","name":"Hop Kick","input":"_b_+^s_+_G"},{"category":"_)","name":"Crystal Glove Kick","input":"_b_+_G_a"},{"category":"_)","name":"Zangan Dragon Sault","input":"_b_+_G_b"},{"category":"_)","name":"Dolphin Blow","input":"_O_a_+_b_+^s"},{"category":"_)","name":"Shoot Kick","input":"_2_3_6_+_a"},{"category":"_)","name":"Circle Kick","input":"_2_3_6_+_b"},{"category":"_)","name":"Diamond Knuckle Kick","input":"^2_+_b"},{"category":"_)","name":"Metal Knuckle Spin Kick sidestep","input":"_a_a"},{"category":"_)","name":"Zangan Reverse sidestep","input":"_a_b"},{"category":"_)","name":"God's Hand sidestep","input":"_a^s"},{"category":"_)","name":"7th Heaven sidestep","input":"_b"},{"category":"_)","name":"Over Drive sidestep","input":"_b_a"},{"category":"_)","name":"Over Drive Alpha sidestep","input":"_b_a_b"},{"category":"_)","name":"Shiva Slash Kick walking","input":"_b_b"},{"category":"_)","name":"Zangan Sliding running","input":"_a"},{"category":"_)","name":"Avalanche Tackle running","input":"_a_+_b"},{"category":"_)","name":"Power Soul running","input":"_a_+_G_b"},{"category":"_)","name":"Zangan Aerial Rave running","input":"_b_b_b"},{"category":"_)","name":"Crescent Fang running","input":"_G_b"},{"category":"_)","name":"Moonsault on higher plane","input":"_a_+_b"},{"category":"_@","name":"Final Heaven","input":"^s"},{"category":"_@","name":"Final Judgement","input":"_O^s"},{"category":"_@","name":"Death Force","input":"_O^s_a"},{"category":"_@","name":"Final Swirl","input":"_O^s_b"},{"category":"_@","name":"Platinum Fist","input":"_^^s"},{"category":"_@","name":"Summon empty gauge","input":"^s"}]},{"name":"DJANGO","moves":[{"category":"_(","name":"Biting Bahamut Zero","input":"_2_3_6_+_a_+_b_+_G"},{"category":"_)","name":"Hades Bite","input":"_a_+_b_+^s"},{"category":"_)","name":"Shiva Attack","input":"_a_+_G","condition":"+^s"},{"category":"_)","name":"Seto Combination","input":"_b_b_b"},{"category":"_)","name":"Nanaki Kick","input":"_b_+^s"},{"category":"_)","name":"Nanaki Combination","input":"_b_+^s^s"},{"category":"_)","name":"Ifrit Bite","input":"_b_+^s_+_G"},{"category":"_)","name":"Chupon Brush","input":"^2_+_a"},{"category":"_)","name":"Sled Fang","input":"^2_+_b"},{"category":"_)","name":"Django Step","input":"^2, _4 / _6"},{"category":"_)","name":"Blood Fang running","input":"_a_+_b"},{"category":"_)","name":"Chocobo Kick back turned","input":"_a_a"},{"category":"_)","name":"Tail Reversal back turned","input":"_b"},{"category":"_)","name":"Phoenix Roll knocked down","input":"_a / _b"},{"category":"_@","name":"Mega Flare","input":"^s"},{"category":"_@","name":"Giga Flare","input":"_O^s"},{"category":"_@","name":"Knight Round Rolling","input":"_^^s"}]}],"controlAbbr":{"_G":"GR","_S":"ST"},"systemControlMappings":{"snes":{"b":"_G"},"genesis":{"b":"_G"},"megadrive":{"b":"_G"},"psx":{"b":"_G"},"ps2":{"b":"_G"}}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "ehrgeiz",
+    "ehrgeizja",
+    "ehrgeizua"
+  ],
+  "name": "Ehrgeiz: God Bless the Ring",
+  "year": 1997,
+  "manufacturer": "Namco",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "_G": "Guard",
+    "_S": "Start"
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_`": "Special Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_(",
+      "name": "Grab _a_+_b_+_G"
+    },
+    {
+      "category": "_(",
+      "name": "Push _?"
+    },
+    {
+      "category": "_(",
+      "name": "Low Attacks _a_a_a"
+    },
+    {
+      "category": "_(",
+      "name": "High Attacks _b_b_b"
+    },
+    {
+      "category": "_(",
+      "name": "Takedown _?_+_a_+_b_+_G"
+    },
+    {
+      "category": "_(",
+      "name": "Punches",
+      "input": "^*_a / _b"
+    },
+    {
+      "category": "_)",
+      "name": "Walk",
+      "input": "_O_G _?"
+    },
+    {
+      "category": "_)",
+      "name": "Crouch",
+      "input": "_O_G"
+    },
+    {
+      "category": "_)",
+      "name": "Normal Jump ^s_+_G"
+    },
+    {
+      "category": "_)",
+      "name": "Low Jump",
+      "input": "_X _? _? (same direction)"
+    },
+    {
+      "category": "_)",
+      "name": "Long Jump _? _? (same direction)"
+    },
+    {
+      "category": "_)",
+      "name": "Strong Low Attack _a_+_G"
+    },
+    {
+      "category": "_)",
+      "name": "Strong High Attack _b_+_G"
+    },
+    {
+      "category": "_)",
+      "name": "Mid Attack _a_+_b"
+    },
+    {
+      "category": "_)",
+      "name": "Sidestep",
+      "input": "_G _X _?"
+    },
+    {
+      "category": "_)",
+      "name": "Roll",
+      "input": "_O_G _? _? (same direction)"
+    },
+    {
+      "category": "_)",
+      "name": "Throw Escape when thrown and flashing",
+      "input": "_G"
+    },
+    {
+      "category": "_)",
+      "name": "Taunt _?_+_S"
+    }
+  ],
+  "characters": [
+    {
+      "name": "GODHAND",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Stretch Throw",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Backbreaker",
+          "input": "_a_+_b_+_G_O_b"
+        },
+        {
+          "category": "_(",
+          "name": "Spinning Pile",
+          "input": "_x_+_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Neck Crush from left side",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Moon Dive from right side",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Power Arm Throw from behind",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Ogre Crush",
+          "input": "_a_+_b_+^s"
+        },
+        {
+          "category": "_)",
+          "name": "Hell Spin",
+          "input": "_a_+^s"
+        },
+        {
+          "category": "_)",
+          "name": "Homing Sliding",
+          "input": "_a_+^s_a"
+        },
+        {
+          "category": "_)",
+          "name": "Stomach Crush",
+          "input": "_a_+^s_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Break Knuckle",
+          "input": "_a_+^s_b"
+        },
+        {
+          "category": "_)",
+          "name": "Beam Run Hook Left",
+          "input": "_a_+^s_b_a"
+        },
+        {
+          "category": "_)",
+          "name": "Shower Kick",
+          "input": "_a_+^s_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Hell Spin Elbow",
+          "input": "_a_+^s_b"
+        },
+        {
+          "category": "_)",
+          "name": "Turn Low High Kick",
+          "input": "_a_+_G_b"
+        },
+        {
+          "category": "_)",
+          "name": "Maha Punch",
+          "input": "_b_a_b_b_b_b_b_b_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "UD Up Combination",
+          "input": "_b_b_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Wrench Kick",
+          "input": "_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Final Impact",
+          "input": "_b_b_b_b_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Double Upper",
+          "input": "_b_+^s_b"
+        },
+        {
+          "category": "_)",
+          "name": "Mirage Spin Kick",
+          "input": "_b_+^s_+_G_a"
+        },
+        {
+          "category": "_)",
+          "name": "Flunking Upper",
+          "input": "_2_3_6_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Gun Straight",
+          "input": "^2_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Bazooka Straight",
+          "input": "^2_+_O_b"
+        },
+        {
+          "category": "_)",
+          "name": "Low Kick",
+          "input": "^2_N_a"
+        },
+        {
+          "category": "_)",
+          "name": "Turn High Kick",
+          "input": "^2_N_b"
+        },
+        {
+          "category": "_)",
+          "name": "Straight Kick",
+          "input": "^2_N_b_+^s"
+        },
+        {
+          "category": "_)",
+          "name": "Low Spin Kick sidestep",
+          "input": "_a_a_a"
+        },
+        {
+          "category": "_)",
+          "name": "Lightning Godhand sidestep",
+          "input": "_a_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Wind Godhand sidestep",
+          "input": "_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Divide Tail sidestep",
+          "input": "_b"
+        },
+        {
+          "category": "_)",
+          "name": "Divide Spin Kick sidestep",
+          "input": "_b_a"
+        },
+        {
+          "category": "_)",
+          "name": "Divide Combination sidestep",
+          "input": "_b_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Divide Knuckle sidestep",
+          "input": "_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Hammer Sword walking",
+          "input": "_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Sliding Kick running",
+          "input": "_a"
+        },
+        {
+          "category": "_)",
+          "name": "Shoulder Tackle running",
+          "input": "_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Triple Black Hook running",
+          "input": "_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Earlied Kick running",
+          "input": "_b_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Turn Back Kick running",
+          "input": "_G_b"
+        },
+        {
+          "category": "_)",
+          "name": "Meteo Press on higher plane",
+          "input": "_a_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Arm Gun",
+          "input": "^s"
+        },
+        {
+          "category": "_@",
+          "name": "Double Arm Gun",
+          "input": "^s^s"
+        },
+        {
+          "category": "_@",
+          "name": "Triple Arm Gun",
+          "input": "_O^s"
+        },
+        {
+          "category": "_@",
+          "name": "Put Mine running",
+          "input": "^s"
+        },
+        {
+          "category": "_@",
+          "name": "Rolling Set Mine roll forward",
+          "input": "^s"
+        },
+        {
+          "category": "_@",
+          "name": "Grenade",
+          "input": "_^^s"
+        },
+        {
+          "category": "_@",
+          "name": "Arm Hammer empty gauge",
+          "input": "^s"
+        }
+      ]
+    },
+    {
+      "name": "HAN DAEHAN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Hold Partisan Kick",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Arm Gaiden",
+          "input": "_x_+_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Reverse One-hand Throw from left side",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Kick Brush from right side",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Brush",
+          "input": "_G"
+        },
+        {
+          "category": "_(",
+          "name": "Inferno from behind",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Dying Flail",
+          "input": "_a_a_a_a"
+        },
+        {
+          "category": "_)",
+          "name": "Injury Flail",
+          "input": "_a_a_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Swallows Last",
+          "input": "_a_+_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Ultima Heel",
+          "input": "_a_+_b_+^s"
+        },
+        {
+          "category": "_)",
+          "name": "Ring Kick",
+          "input": "_a_+^s"
+        },
+        {
+          "category": "_)",
+          "name": "Ringing Scarecrow: SCARECROW",
+          "input": "_a_+^s_b"
+        },
+        {
+          "category": "_)",
+          "name": "Landing Bird",
+          "input": "_a_+^s_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Des Flail",
+          "input": "_a_+_G_a_a_a"
+        },
+        {
+          "category": "_)",
+          "name": "Combo Blood Hound: SCARECROW",
+          "input": "_a_+_G_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Javelin Combination",
+          "input": "_a_+_G_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Killing Blade",
+          "input": "_b_b_a"
+        },
+        {
+          "category": "_)",
+          "name": "Bleed Combination",
+          "input": "_b_b_b_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Combination",
+          "input": "_b_b_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Combo Change: SCARECROW",
+          "input": "_b_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Heel Slice",
+          "input": "_b_+^s"
+        },
+        {
+          "category": "_)",
+          "name": "Freeza Kick",
+          "input": "_b_+^s_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Right Scarecrow: SCARECROW",
+          "input": "_O_b_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Turn Heel",
+          "input": "_2_3_6_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Thor Axe",
+          "input": "^2_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Axe Heel",
+          "input": "^2_+_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Turn Lance Kick",
+          "input": "^2_N_b"
+        },
+        {
+          "category": "_)",
+          "name": "Lance Heel",
+          "input": "^2_N_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Flail Kick sidestep",
+          "input": "_a"
+        },
+        {
+          "category": "_)",
+          "name": "Reppa Kick sidestep",
+          "input": "_b"
+        },
+        {
+          "category": "_)",
+          "name": "Halberd Kick walking",
+          "input": "_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Ground Chakram running",
+          "input": "_a"
+        },
+        {
+          "category": "_)",
+          "name": "Sling Kick running",
+          "input": "_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Sling Shackle running",
+          "input": "_a_+_b_a"
+        },
+        {
+          "category": "_)",
+          "name": "Ground Shackle running",
+          "input": "_a_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Landing Crow running",
+          "input": "_b"
+        },
+        {
+          "category": "_)",
+          "name": "Hunting Tomahawk running",
+          "input": "_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Reverse Heel running",
+          "input": "_G_b"
+        },
+        {
+          "category": "_)",
+          "name": "Desperate Attack on higher plane",
+          "input": "_a_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Korea No. 1",
+          "input": "^s"
+        },
+        {
+          "category": "_@",
+          "name": "Korea No. 10",
+          "input": "_O^s"
+        },
+        {
+          "category": "_@",
+          "name": "Left Scarecrow: SCARECROW empty gauge",
+          "input": "^s"
+        },
+        {
+          "category": "_)",
+          "name": "Switch Kick: SCARECROW",
+          "input": "_a"
+        },
+        {
+          "category": "_)",
+          "name": "Switching Combination: SCARECROW",
+          "input": "_a_b_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Crow Peck: SCARECROW",
+          "input": "_b"
+        },
+        {
+          "category": "_)",
+          "name": "Peck Switch: SCARECROW",
+          "input": "_b_a_b_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Crow Peck Combination",
+          "input": "_b_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Triple Flighter",
+          "input": "_b_+_G_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Triple Winger",
+          "input": "_b_+_G_b_b"
+        }
+      ],
+      "notes": [
+        "SCARECROW"
+      ]
+    },
+    {
+      "name": "DASHER INOBA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Head Butt",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Head Butt 2",
+          "input": "_G"
+        },
+        {
+          "category": "_(",
+          "name": "Head Butt 3",
+          "input": "_G"
+        },
+        {
+          "category": "_(",
+          "name": "Neck Scissors",
+          "input": "_a_+_b_+_G_O_a"
+        },
+        {
+          "category": "_(",
+          "name": "Dasher Screw Driver",
+          "input": "_a_+_b_+_G_O_b"
+        },
+        {
+          "category": "_(",
+          "name": "Dasher Buster",
+          "input": "_x_+_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Arm Lock from left side",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Tiger Leg Lock from right side",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Indian's Lock",
+          "input": "_G"
+        },
+        {
+          "category": "_(",
+          "name": "Indian's Lock 2",
+          "input": "_G"
+        },
+        {
+          "category": "_(",
+          "name": "Multipart",
+          "input": "_G"
+        },
+        {
+          "category": "_(",
+          "name": "Dragon Suplex from behind",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Mid Kick from behind",
+          "input": "_a_+_b_+_G_O_b"
+        },
+        {
+          "category": "_)",
+          "name": "Turn Low Kick",
+          "input": "_a_+^s"
+        },
+        {
+          "category": "_)",
+          "name": "Jump Kick",
+          "input": "_a_+^s_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Triple Chop",
+          "input": "_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Knuckle Part",
+          "input": "_b_+^s"
+        },
+        {
+          "category": "_)",
+          "name": "Strong Knuckle Part",
+          "input": "_b_+^s_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Soul Heart Low Kick",
+          "input": "_O_a, _a"
+        },
+        {
+          "category": "_)",
+          "name": "Burning Vigour Chop",
+          "input": "_O_b"
+        },
+        {
+          "category": "_)",
+          "name": "Strong Bamboo Cut",
+          "input": "_O_b_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Weak Bamboo Cut",
+          "input": "_b_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Hell Strike",
+          "input": "_X_b_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Fake",
+          "input": "^s"
+        },
+        {
+          "category": "_)",
+          "name": "Slide Left Ali Kick",
+          "input": "_2_3_6_+_a"
+        },
+        {
+          "category": "_)",
+          "name": "Right Slash",
+          "input": "_2_3_6_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Slide Right Ali Kick",
+          "input": "_2_1_4_+_a"
+        },
+        {
+          "category": "_)",
+          "name": "Left Slash",
+          "input": "_2_1_4_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Front Kick",
+          "input": "^2_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Bombing Double Kick",
+          "input": "^2_+_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Brutal Front Kick",
+          "input": "^2_+_O_b"
+        },
+        {
+          "category": "_)",
+          "name": "Explosive Double Kick",
+          "input": "^2_+_O_b, _b"
+        },
+        {
+          "category": "_)",
+          "name": "Dah Upper",
+          "input": "^2_N_b"
+        },
+        {
+          "category": "_)",
+          "name": "Victory Stomping sidestep",
+          "input": "_a_a"
+        },
+        {
+          "category": "_)",
+          "name": "Straight sidestep",
+          "input": "_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Mid Kick sidestep",
+          "input": "_b"
+        },
+        {
+          "category": "_)",
+          "name": "Knuckle Bomber walking",
+          "input": "_b"
+        },
+        {
+          "category": "_)",
+          "name": "Ali Kick running",
+          "input": "_a_a_a"
+        },
+        {
+          "category": "_)",
+          "name": "Drop Kick running",
+          "input": "_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Dasher Lariat running",
+          "input": "_b"
+        },
+        {
+          "category": "_)",
+          "name": "Dash Left Slash running",
+          "input": "_b_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Back Turn Kick running",
+          "input": "_G_b"
+        },
+        {
+          "category": "_)",
+          "name": "Homing Body Press",
+          "input": "_^^s"
+        },
+        {
+          "category": "_)",
+          "name": "Flying Elbow Drop on higher plane",
+          "input": "_a_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Dasher Bomb",
+          "input": "^s"
+        },
+        {
+          "category": "_@",
+          "name": "Final Dasher",
+          "input": "_O^s"
+        },
+        {
+          "category": "_@",
+          "name": "Soul Fighting Stance",
+          "input": "^s_b"
+        },
+        {
+          "category": "_@",
+          "name": "Dasher Head Butt running",
+          "input": "^s_a_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Dasher Scissors empty gauge",
+          "input": "^s"
+        }
+      ]
+    },
+    {
+      "name": "JO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Fisheman's Hook",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Sliding Supplex",
+          "input": "_a_+_b_+_G_O_a"
+        },
+        {
+          "category": "_(",
+          "name": "Hound Rejection",
+          "input": "_a_+_b_+_G_O_b"
+        },
+        {
+          "category": "_(",
+          "name": "Ragnarock",
+          "input": "_x_+_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Stampede from left side",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Moonsault Knee Dive from right side",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Beast Face Brand from behind",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Beast Lift Cannon from behind",
+          "input": "_a_+_b_+_G_O_b"
+        },
+        {
+          "category": "_)",
+          "name": "Wolf Pack",
+          "input": "_a_a_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Wolf Claw to Beast Tail",
+          "input": "_a_a_b_a_+_b_a"
+        },
+        {
+          "category": "_)",
+          "name": "Wolf Claw to Beast Rush",
+          "input": "_a_a_b_a_+_b_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Beast Barrage",
+          "input": "_a_a_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Detain Kicks",
+          "input": "_a_b_a"
+        },
+        {
+          "category": "_)",
+          "name": "Arrest Kicks",
+          "input": "_a_b_b_a"
+        },
+        {
+          "category": "_)",
+          "name": "Jail Combo",
+          "input": "_a_b_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Rage Ball",
+          "input": "_a_+_b_+^s"
+        },
+        {
+          "category": "_)",
+          "name": "Gone Postal",
+          "input": "_a_+_b_+^s",
+          "condition": ","
+        },
+        {
+          "category": "_)",
+          "name": "Wolf Sickle",
+          "input": "_a_+^s"
+        },
+        {
+          "category": "_)",
+          "name": "Beast Toss",
+          "input": "_a_+^s_b"
+        },
+        {
+          "category": "_)",
+          "name": "Falling Scissors",
+          "input": "_a_+^s_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Spin Fang",
+          "input": "_a_+_G_b"
+        },
+        {
+          "category": "_)",
+          "name": "Hunting Wolf Low",
+          "input": "_b_a_a"
+        },
+        {
+          "category": "_)",
+          "name": "Hunting Wolf High",
+          "input": "_b_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Tornado Sweeper",
+          "input": "_b_b_a"
+        },
+        {
+          "category": "_)",
+          "name": "Death Sentence",
+          "input": "_b_b_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Prisoner Kicks",
+          "input": "_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Fang Kick",
+          "input": "_b_+^s"
+        },
+        {
+          "category": "_)",
+          "name": "Fang to Beast Rush",
+          "input": "_b_+^s_a_a_b_a_+_b_a"
+        },
+        {
+          "category": "_)",
+          "name": "Fang to Beast Barrage",
+          "input": "_b_+^s_a_a_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Illusion Fang",
+          "input": "_b_+^s_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Hop Kick",
+          "input": "_b_+^s_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Tornado Kicks",
+          "input": "_b_+_G_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Iron Cutter",
+          "input": "_b_+_G_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Cyclone Kicks",
+          "input": "_b_+_G_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Steel Cutter",
+          "input": "_b_+_G_b_+_G_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Death Cutter",
+          "input": "_b_+_G_b_+_G_b_+_G_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Grudge Faint",
+          "input": "_2_3_6_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Break Beats",
+          "input": "^2_+_a_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Claw to Beast Grind",
+          "input": "^2_+_a_a_b_a_a_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Claw to Beast Fall",
+          "input": "^2_+_a_a_b_a_a_b_a_a"
+        },
+        {
+          "category": "_)",
+          "name": "Claw to Beast Rush",
+          "input": "^2_+_a_a_b_a_a_b_a_+_b_a"
+        },
+        {
+          "category": "_)",
+          "name": "Claw to Beast Rage",
+          "input": "^2_+_a_a_b_a_a_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Claw to Beast Slicer",
+          "input": "^2_+_a_a_b_a_b_a"
+        },
+        {
+          "category": "_)",
+          "name": "Claw to Beast Trail",
+          "input": "^2_+_a_a_b_a_b_b_a"
+        },
+        {
+          "category": "_)",
+          "name": "Claw to Beast Barrage",
+          "input": "^2_+_a_a_b_a_b_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Wolf Trail",
+          "input": "^2_+_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Arrow Kick",
+          "input": "^2_N_b"
+        },
+        {
+          "category": "_)",
+          "name": "Kick Away Hop",
+          "input": "^2_N_b_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Destruction Spin",
+          "input": "_x_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Anger Ball sidestep",
+          "input": "_a_a"
+        },
+        {
+          "category": "_)",
+          "name": "Wild Brand sidestep",
+          "input": "_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Wild Bow Kick sidestep",
+          "input": "_a_O_G_b"
+        },
+        {
+          "category": "_)",
+          "name": "Rage Pounce walking",
+          "input": "_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Sliding running",
+          "input": "_a"
+        },
+        {
+          "category": "_)",
+          "name": "Lunatic Spin running",
+          "input": "_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Lunatic Dance running",
+          "input": "_a_+_b_a"
+        },
+        {
+          "category": "_)",
+          "name": "Lunatic Scissors running",
+          "input": "_a_+_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Crossbow Kick running",
+          "input": "_b"
+        },
+        {
+          "category": "_)",
+          "name": "Escape Kick running",
+          "input": "_G_b"
+        },
+        {
+          "category": "_)",
+          "name": "Moonsault on higher plane",
+          "input": "_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Mad Kick back turned",
+          "input": "_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Dirty Roll back turned",
+          "input": "_a"
+        },
+        {
+          "category": "_@",
+          "name": "BEAST TRANSFORMATION",
+          "input": "^s"
+        },
+        {
+          "category": "_@",
+          "name": "Lunatic Rush empty gauge",
+          "input": "^s"
+        },
+        {
+          "category": "_@",
+          "name": "Wolf Claw",
+          "input": "_a"
+        },
+        {
+          "category": "_@",
+          "name": "Wolf Rocket",
+          "input": "_a_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Wolf Slash",
+          "input": "_b"
+        },
+        {
+          "category": "_@",
+          "name": "Wolf Rush running",
+          "input": "_a_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Wolf Insult Kick back turned",
+          "input": "_b"
+        }
+      ],
+      "notes": [
+        "BEAST TRANSFORMATION"
+      ]
+    },
+    {
+      "name": "NASEEM",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Knee Break",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Arm Lock Hold",
+          "input": "_a_+_b_+_G_O_a / _b"
+        },
+        {
+          "category": "_(",
+          "name": "Knee Break One",
+          "input": "_x_+_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Arm Lock Elbow Crush from left side",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Arm Lock Scissor Break from right side",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Back Rolling Crush from behind",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Double Low Kick",
+          "input": "_a_a"
+        },
+        {
+          "category": "_)",
+          "name": "Scissor Kick",
+          "input": "_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Side Winder Combination",
+          "input": "_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Swallow Combination",
+          "input": "_a_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Phoenix Combination",
+          "input": "_a_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Tomahawk Pin Point",
+          "input": "_a_b_b_b_+_G_b"
+        },
+        {
+          "category": "_)",
+          "name": "Hurricane Straight",
+          "input": "_a_+_b_+^s"
+        },
+        {
+          "category": "_)",
+          "name": "Spanish",
+          "input": "_a_+^s_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Double Jab",
+          "input": "_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Crush Combination",
+          "input": "_b_a_a"
+        },
+        {
+          "category": "_)",
+          "name": "Break Combination",
+          "input": "_b_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Scissor Combination",
+          "input": "_b_b_a_a"
+        },
+        {
+          "category": "_)",
+          "name": "Scissor Crush Combination",
+          "input": "_b_b_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Bone Crush Combination",
+          "input": "_b_b_b_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Body Break Crush",
+          "input": "_b_b_b_b_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Hurricane Combination",
+          "input": "_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Snake Cry",
+          "input": "_b_b_b_b_a"
+        },
+        {
+          "category": "_)",
+          "name": "Bear Fang",
+          "input": "_b_b_b_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Bear Claw",
+          "input": "_b_b_b_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Prize",
+          "input": "_b_b_b_b_b_b_a"
+        },
+        {
+          "category": "_)",
+          "name": "Eagle Combination",
+          "input": "_b_b_b_b_b_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Half Killing",
+          "input": "_b_b_+_G_b"
+        },
+        {
+          "category": "_)",
+          "name": "Hammer Knuckle",
+          "input": "_b_+^s"
+        },
+        {
+          "category": "_)",
+          "name": "Sky Kick",
+          "input": "_b_+^s_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Left Sock Crab",
+          "input": "_2_3_6_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Right Sock Crab",
+          "input": "_2_1_4_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Knee Attack",
+          "input": "^2_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Triple Knee Attack",
+          "input": "^2_+_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Rocket Upper",
+          "input": "^2_N_b"
+        },
+        {
+          "category": "_)",
+          "name": "Finish Upper",
+          "input": "^2_N_O_b"
+        },
+        {
+          "category": "_)",
+          "name": "Low Beam Run Hook sidestep",
+          "input": "_a_a"
+        },
+        {
+          "category": "_)",
+          "name": "Crush Hook sidestep",
+          "input": "_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "High Kick Shoot walking",
+          "input": "_b"
+        },
+        {
+          "category": "_)",
+          "name": "Sliding running",
+          "input": "_a"
+        },
+        {
+          "category": "_)",
+          "name": "Cross Attack running",
+          "input": "_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Des Hammer One running",
+          "input": "_b"
+        },
+        {
+          "category": "_)",
+          "name": "Triple Des Hammer running",
+          "input": "_b_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Back Turn Kick running",
+          "input": "_G_b"
+        },
+        {
+          "category": "_@",
+          "name": "Des Fire",
+          "input": "^s"
+        },
+        {
+          "category": "_@",
+          "name": "Desperate Fire",
+          "input": "_O^s"
+        },
+        {
+          "category": "_@",
+          "name": "Lose Bounty empty gauge",
+          "input": "^s"
+        }
+      ]
+    },
+    {
+      "name": "SASUKE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Doormat",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Flip Backdrop",
+          "input": "_a_+_b_+_G_O_a / _b"
+        },
+        {
+          "category": "_(",
+          "name": "Double Backdrop",
+          "input": "_G"
+        },
+        {
+          "category": "_(",
+          "name": "Assassination",
+          "input": "_G"
+        },
+        {
+          "category": "_(",
+          "name": "Lightning Drop",
+          "input": "_x_+_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Blood Dance from left side",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Leg Stretch from right side",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Meteor Toss from behind",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Somersault Rush",
+          "input": "_a_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Double Upper",
+          "input": "_a_+_b_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Double Backflip to Slash",
+          "input": "_a_+_b_a_+_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Bamboo Burial",
+          "input": "_a_+^s"
+        },
+        {
+          "category": "_)",
+          "name": "Earth Flash Strike",
+          "input": "_a_+^s_a"
+        },
+        {
+          "category": "_)",
+          "name": "Flip Slash",
+          "input": "_a_+^s_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Double Blow",
+          "input": "_a_+_G_b"
+        },
+        {
+          "category": "_)",
+          "name": "Ninja Rush",
+          "input": "_b_b_a"
+        },
+        {
+          "category": "_)",
+          "name": "One-Two Slash",
+          "input": "_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Ninja Sword Rush",
+          "input": "_b_b_b_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Kagehisa",
+          "input": "_b_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Overhead Slash",
+          "input": "_b_+^s"
+        },
+        {
+          "category": "_)",
+          "name": "Cutting Rage",
+          "input": "_b_+^s_b"
+        },
+        {
+          "category": "_)",
+          "name": "Sweeping Earth Slash",
+          "input": "_b_+^s_a"
+        },
+        {
+          "category": "_)",
+          "name": "Hop Kick",
+          "input": "_b_+^s_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Upper Left",
+          "input": "_2_3_6_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Upper Right",
+          "input": "_2_1_4_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Earth Slash Kick",
+          "input": "^2_+_a"
+        },
+        {
+          "category": "_)",
+          "name": "Kinen Slash",
+          "input": "^2_+_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Step Dragon Slash",
+          "input": "^2_N_b"
+        },
+        {
+          "category": "_)",
+          "name": "Dancing Joy",
+          "input": "_x_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Shinobi Sweep sidestep",
+          "input": "_a_a"
+        },
+        {
+          "category": "_)",
+          "name": "Ninja Deception sidestep",
+          "input": "_a_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Shinobi Cannon sidestep",
+          "input": "_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Low Thrust Kick walking",
+          "input": "_a"
+        },
+        {
+          "category": "_)",
+          "name": "Spinning Demon walking",
+          "input": "_a_a"
+        },
+        {
+          "category": "_)",
+          "name": "Sunrise walking",
+          "input": "_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Shadow Moon walking",
+          "input": "_b"
+        },
+        {
+          "category": "_)",
+          "name": "Sliding running",
+          "input": "_a"
+        },
+        {
+          "category": "_)",
+          "name": "Renmenzan running",
+          "input": "_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Sunset running",
+          "input": "_G_b"
+        },
+        {
+          "category": "_)",
+          "name": "Kamikaze on higher plane",
+          "input": "_a_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Shooting Star",
+          "input": "^s"
+        },
+        {
+          "category": "_@",
+          "name": "Super Star",
+          "input": "_O^s"
+        },
+        {
+          "category": "_@",
+          "name": "Ninja Mines",
+          "input": "_O^s_a"
+        },
+        {
+          "category": "_@",
+          "name": "Heaven Star",
+          "input": "_O^s_b"
+        },
+        {
+          "category": "_@",
+          "name": "Flash Move Hit running",
+          "input": "^s"
+        },
+        {
+          "category": "_@",
+          "name": "Ninja Bomb",
+          "input": "_^^s"
+        },
+        {
+          "category": "_@",
+          "name": "Katashiki full gauge",
+          "input": "_a_+_b_+^s"
+        },
+        {
+          "category": "_@",
+          "name": "Nap half gauge",
+          "input": "_a_+_b_+^s"
+        },
+        {
+          "category": "_@",
+          "name": "Quick Slash empty gauge",
+          "input": "^s"
+        }
+      ]
+    },
+    {
+      "name": "LEE SHUWEN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Mountain Breaker",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Surprise Exchange",
+          "input": "_a_+_b_+_G_O_b"
+        },
+        {
+          "category": "_(",
+          "name": "Thunder Mountain Breaker",
+          "input": "_x_+_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Dragon Shoulder from left side",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Stonewall Shatter from right side",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Dragon's Rage from behind",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Falling Leaf",
+          "input": "_a_a"
+        },
+        {
+          "category": "_)",
+          "name": "Tiger's Rage",
+          "input": "_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Falling Dragon",
+          "input": "_a_+_b_+^s"
+        },
+        {
+          "category": "_)",
+          "name": "ACL Breaker",
+          "input": "_b_a"
+        },
+        {
+          "category": "_)",
+          "name": "ACL to Dagger Punch",
+          "input": "_b_a_a"
+        },
+        {
+          "category": "_)",
+          "name": "ACL to Uppercut",
+          "input": "_b_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Hellstorm",
+          "input": "_b_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Tiger Palm Punch",
+          "input": "_b_+^s"
+        },
+        {
+          "category": "_)",
+          "name": "Tiger's Fake",
+          "input": "_b_+^s_4 /"
+        },
+        {
+          "category": "_)",
+          "name": "Stonewall",
+          "input": "_b_+^s_4 /"
+        },
+        {
+          "category": "_)",
+          "name": "Tiger's Rush",
+          "input": "_b_+^s_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Hop Kick",
+          "input": "_b_+^s_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Dragon Cannon",
+          "input": "_O_a_+_b_+^s"
+        },
+        {
+          "category": "_)",
+          "name": "Shadowless Fist",
+          "input": "_X_b_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Spin Palm",
+          "input": "_2_3_6_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Tiger Cannon",
+          "input": "^2_+_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Palm Uppercut",
+          "input": "^2_N_a"
+        },
+        {
+          "category": "_)",
+          "name": "Tiger's Elbow Rush",
+          "input": "^2_N_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Tiger's Tail",
+          "input": "^2_N_b"
+        },
+        {
+          "category": "_)",
+          "name": "Tiger's Claw sidestep",
+          "input": "_a_a"
+        },
+        {
+          "category": "_)",
+          "name": "Sweep to Tiger's Elbow sidestep",
+          "input": "_a_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Tiger Elbow sidestep",
+          "input": "_a_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Tiger's Roar sidestep",
+          "input": "_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Head Punch sidestep",
+          "input": "_a^s"
+        },
+        {
+          "category": "_)",
+          "name": "Guard Breaker sidestep",
+          "input": "_a^s_b"
+        },
+        {
+          "category": "_)",
+          "name": "East Meets West sidestep",
+          "input": "_a^s_4 /"
+        },
+        {
+          "category": "_)",
+          "name": "Wild Tiger walking",
+          "input": "_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Wild Tiger Strike walking",
+          "input": "_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Wild Tiger Crush walking",
+          "input": "_b_b_O_G_b"
+        },
+        {
+          "category": "_)",
+          "name": "Sweep Spin running",
+          "input": "_a"
+        },
+        {
+          "category": "_)",
+          "name": "Tiger Death Fist running",
+          "input": "_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Left Side Kick running",
+          "input": "_b"
+        },
+        {
+          "category": "_)",
+          "name": "Double Heave Kick running",
+          "input": "_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Reverse Could Shoulder running",
+          "input": "_G_b"
+        },
+        {
+          "category": "_)",
+          "name": "Moonsault on higher plane",
+          "input": "_a_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Meteor Fall Spear",
+          "input": "_a_+^s_+_G"
+        },
+        {
+          "category": "_@",
+          "name": "Divine Spear",
+          "input": "^s"
+        },
+        {
+          "category": "_@",
+          "name": "Twin Divine Spear",
+          "input": "^s^s"
+        },
+        {
+          "category": "_@",
+          "name": "Judgement",
+          "input": "_O^s"
+        },
+        {
+          "category": "_@",
+          "name": "Heaven Spear",
+          "input": "_O^s_b"
+        },
+        {
+          "category": "_@",
+          "name": "Earth Spear",
+          "input": "_O^s_a"
+        },
+        {
+          "category": "_@",
+          "name": "Descending Spear",
+          "input": "_^^s"
+        },
+        {
+          "category": "_@",
+          "name": "Stun Palm empty gauge",
+          "input": "^s"
+        },
+        {
+          "category": "_@",
+          "name": "Palm Rush empty gauge",
+          "input": "^s_b"
+        }
+      ]
+    },
+    {
+      "name": "YOKO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Flip Dislocator",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Side Dislocator",
+          "input": "_a_+_b_+_G_O_a"
+        },
+        {
+          "category": "_(",
+          "name": "Slapping Neck Cracker",
+          "input": "_x_+_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Flip Toss from left side",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Neck Drop from left side",
+          "input": "_a_+_b_+_G_O_a"
+        },
+        {
+          "category": "_(",
+          "name": "Bash Closelime from right side",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Evil Wheel from behind",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Attack Reversal as reversal",
+          "input": "_a_+_b_+^s"
+        },
+        {
+          "category": "_)",
+          "name": "Low Tide",
+          "input": "_a_a_a"
+        },
+        {
+          "category": "_)",
+          "name": "High Tide",
+          "input": "_a_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Spinning Orchid",
+          "input": "_a_a^s"
+        },
+        {
+          "category": "_)",
+          "name": "Spin Sky Joint Kick",
+          "input": "_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Welcome Home",
+          "input": "_a_+^s"
+        },
+        {
+          "category": "_)",
+          "name": "Can't Touch This!",
+          "input": "_a_+^s_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Dinner Maker",
+          "input": "_a_+^s_b"
+        },
+        {
+          "category": "_)",
+          "name": "Inverted Moon",
+          "input": "_a_+^s_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Jacob's Ladder",
+          "input": "_a_+_G_b_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Sleeping Cat",
+          "input": "_b_a"
+        },
+        {
+          "category": "_)",
+          "name": "Cat's Tail",
+          "input": "_b_b_a"
+        },
+        {
+          "category": "_)",
+          "name": "Cat Scratch",
+          "input": "_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Altima Fall",
+          "input": "_b_b_a_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Slap Dragon",
+          "input": "_b^s"
+        },
+        {
+          "category": "_)",
+          "name": "Breaking Up",
+          "input": "_b^s_b_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Snap Dragon",
+          "input": "_b_+^s"
+        },
+        {
+          "category": "_)",
+          "name": "Hop Kick",
+          "input": "_b_+^s_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "High Spin Kick",
+          "input": "_2_3_6_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Shadow Moon",
+          "input": "^2_+_a"
+        },
+        {
+          "category": "_)",
+          "name": "Hungry Hawk",
+          "input": "^2_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Jack Knife",
+          "input": "^2_N_b"
+        },
+        {
+          "category": "_)",
+          "name": "Reincarnation",
+          "input": "^2_N_b_+^s"
+        },
+        {
+          "category": "_)",
+          "name": "Nose Gunner",
+          "input": "^2_N_b_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Highway to Heaven",
+          "input": "^2_N_O_b_+^s"
+        },
+        {
+          "category": "_)",
+          "name": "Whip Kick sidestep",
+          "input": "_a_a"
+        },
+        {
+          "category": "_)",
+          "name": "Neck Slicer Right sidestep",
+          "input": "_a_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Neck Slicer sidestep",
+          "input": "_a_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Heel Hook sidestep",
+          "input": "_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Neck Slicer Left sidestep",
+          "input": "_a_b_a"
+        },
+        {
+          "category": "_)",
+          "name": "Crescent Moon sidestep",
+          "input": "_b"
+        },
+        {
+          "category": "_)",
+          "name": "Tail Gunner walking",
+          "input": "_b_b_b_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Sliding running",
+          "input": "_a"
+        },
+        {
+          "category": "_)",
+          "name": "Running Dive running",
+          "input": "_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Double Round-a-bout running",
+          "input": "_b_a"
+        },
+        {
+          "category": "_)",
+          "name": "Triple Cyclone running",
+          "input": "_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Half Moon running",
+          "input": "_b_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Reflection Moon running",
+          "input": "_G_b"
+        },
+        {
+          "category": "_)",
+          "name": "Moonsault on higher plane",
+          "input": "_a_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Yo-yo Catch",
+          "input": "^s"
+        },
+        {
+          "category": "_@",
+          "name": "Yo-yo Trap",
+          "input": "_O^s"
+        },
+        {
+          "category": "_@",
+          "name": "Advanced Walk the Dog",
+          "input": "_O^s_O_a"
+        },
+        {
+          "category": "_@",
+          "name": "Crazy Marbles",
+          "input": "_^^s"
+        },
+        {
+          "category": "_@",
+          "name": "Slap Dragon empty gauge",
+          "input": "^s"
+        }
+      ]
+    },
+    {
+      "name": "CLOUD STRIFE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Crescent Suplex",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Crescent Dive",
+          "input": "_a_+_b_+_G_O_a / _b"
+        },
+        {
+          "category": "_(",
+          "name": "Omnislash",
+          "input": "_x_+_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Waist Suplex from left side",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Neck Fall from left side",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Manhattan Suplex from behind",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Soldier Original",
+          "input": "_a_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Soldier Elbow",
+          "input": "_a_+_b_+^s"
+        },
+        {
+          "category": "_)",
+          "name": "Test Lab Shot",
+          "input": "_a_+_b_+^s_b"
+        },
+        {
+          "category": "_)",
+          "name": "Shinra Needle",
+          "input": "_a_+^s"
+        },
+        {
+          "category": "_)",
+          "name": "Soldier High Low",
+          "input": "_b_a"
+        },
+        {
+          "category": "_)",
+          "name": "Shinra Chain",
+          "input": "_b_a_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Cool Chain",
+          "input": "_b_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Soldier Chain",
+          "input": "_b_b_a"
+        },
+        {
+          "category": "_)",
+          "name": "Zack's Chain",
+          "input": "_b_b_a_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Shinra Chain Test Lab",
+          "input": "_b_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Soldier Hook",
+          "input": "_b_+^s"
+        },
+        {
+          "category": "_)",
+          "name": "Shinra Genesis Chain",
+          "input": "_b_+^s_b_a"
+        },
+        {
+          "category": "_)",
+          "name": "Shinra Chain Alpha",
+          "input": "_b_+^s_b_a_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Soldier Chain Wheel",
+          "input": "_b_+^s_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Soldier Double High Kick",
+          "input": "_b_+_G_b"
+        },
+        {
+          "category": "_)",
+          "name": "Moonsault",
+          "input": "_O_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Soldier Flip",
+          "input": "_O_a_+^s_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Soldier Axe Kick",
+          "input": "_O_b_+^s_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Soldier Feint Right",
+          "input": "_2_3_6_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Soldier Feint Left",
+          "input": "_2_1_4_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Zack's Kick",
+          "input": "^2_N_b"
+        },
+        {
+          "category": "_)",
+          "name": "Maakou Punch sidestep",
+          "input": "_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Slide Buster running",
+          "input": "_a"
+        },
+        {
+          "category": "_)",
+          "name": "Soldier Tackle running",
+          "input": "_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Air Slash running",
+          "input": "_b"
+        },
+        {
+          "category": "_)",
+          "name": "Escape Back Kick running",
+          "input": "_b_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Back Turn Kick running",
+          "input": "_G_b"
+        },
+        {
+          "category": "_)",
+          "name": "Deathblow",
+          "input": "_^^s"
+        },
+        {
+          "category": "_@",
+          "name": "SWORD STANCE",
+          "input": "^s"
+        },
+        {
+          "category": "_@",
+          "name": "Shinra Beta Cutter empty gauge",
+          "input": "^s"
+        },
+        {
+          "category": "_@",
+          "name": "Shinra Low Slash",
+          "input": "_a"
+        },
+        {
+          "category": "_@",
+          "name": "Skull Break",
+          "input": "_a_a_a"
+        },
+        {
+          "category": "_@",
+          "name": "Rune Blade Chain",
+          "input": "_a_+_b_a_a_a"
+        },
+        {
+          "category": "_@",
+          "name": "Sephiroth Combo",
+          "input": "_a_+_b_b_b_b"
+        },
+        {
+          "category": "_@",
+          "name": "Crosslash",
+          "input": "_a_+_b_b_b_b"
+        },
+        {
+          "category": "_@",
+          "name": "Braver",
+          "input": "_a_+_b_b_+_G"
+        },
+        {
+          "category": "_@",
+          "name": "Shinra Single Slash",
+          "input": "_b"
+        },
+        {
+          "category": "_@",
+          "name": "Buster Sword Slash",
+          "input": "_b_b_b"
+        },
+        {
+          "category": "_@",
+          "name": "Butterfly Edge",
+          "input": "_b_+_G_b_b"
+        },
+        {
+          "category": "_@",
+          "name": "Sheath Sword",
+          "input": "_G"
+        },
+        {
+          "category": "_@",
+          "name": "Meteorain",
+          "input": "_O^s"
+        },
+        {
+          "category": "_@",
+          "name": "Clim Slash",
+          "input": "_?_+_b_+_G"
+        },
+        {
+          "category": "_@",
+          "name": "Clim Hazard",
+          "input": "_?_+_b_+_G_b"
+        }
+      ],
+      "notes": [
+        "SWORD STANCE"
+      ]
+    },
+    {
+      "name": "TIFA LOCKHEART",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Meteodrive",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Beat Rush",
+          "input": "_a_+_b_+_G_O_a"
+        },
+        {
+          "category": "_(",
+          "name": "Somersault",
+          "input": "_a_+_b_+_G_O_b"
+        },
+        {
+          "category": "_(",
+          "name": "Meteor Strike",
+          "input": "_x_+_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Moonsault Crescent from right side",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Arm Breaker from right side",
+          "input": "_a_+_b_+_G_O_a / _b"
+        },
+        {
+          "category": "_(",
+          "name": "Zangan Supplex from right side",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Avalanche Drop from behind",
+          "input": "_a_+_b_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Tiger Fang",
+          "input": "_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Zangan Low Alpha",
+          "input": "_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Kaiser Sault",
+          "input": "_a_+_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Zangan Dragon Upper",
+          "input": "_a_+_b_+^s"
+        },
+        {
+          "category": "_)",
+          "name": "Grand Glove Kick",
+          "input": "_a_+^s"
+        },
+        {
+          "category": "_)",
+          "name": "Falling Scissors",
+          "input": "_a_+^s_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Motor Drive",
+          "input": "_a_+_G_b"
+        },
+        {
+          "category": "_)",
+          "name": "Zangan Jab to Low",
+          "input": "_b_a"
+        },
+        {
+          "category": "_)",
+          "name": "Mythril Claw",
+          "input": "_b_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Mythril Claw Slash",
+          "input": "_b_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Zangan One-Two",
+          "input": "_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Zangan Combination",
+          "input": "_b_b_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Zangan Combination Alpha",
+          "input": "_b_b_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Avalanche Combo",
+          "input": "_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Dragon Claw",
+          "input": "_b_+^s_b"
+        },
+        {
+          "category": "_)",
+          "name": "Hop Kick",
+          "input": "_b_+^s_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Crystal Glove Kick",
+          "input": "_b_+_G_a"
+        },
+        {
+          "category": "_)",
+          "name": "Zangan Dragon Sault",
+          "input": "_b_+_G_b"
+        },
+        {
+          "category": "_)",
+          "name": "Dolphin Blow",
+          "input": "_O_a_+_b_+^s"
+        },
+        {
+          "category": "_)",
+          "name": "Shoot Kick",
+          "input": "_2_3_6_+_a"
+        },
+        {
+          "category": "_)",
+          "name": "Circle Kick",
+          "input": "_2_3_6_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Diamond Knuckle Kick",
+          "input": "^2_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Metal Knuckle Spin Kick sidestep",
+          "input": "_a_a"
+        },
+        {
+          "category": "_)",
+          "name": "Zangan Reverse sidestep",
+          "input": "_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "God's Hand sidestep",
+          "input": "_a^s"
+        },
+        {
+          "category": "_)",
+          "name": "7th Heaven sidestep",
+          "input": "_b"
+        },
+        {
+          "category": "_)",
+          "name": "Over Drive sidestep",
+          "input": "_b_a"
+        },
+        {
+          "category": "_)",
+          "name": "Over Drive Alpha sidestep",
+          "input": "_b_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Shiva Slash Kick walking",
+          "input": "_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Zangan Sliding running",
+          "input": "_a"
+        },
+        {
+          "category": "_)",
+          "name": "Avalanche Tackle running",
+          "input": "_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Power Soul running",
+          "input": "_a_+_G_b"
+        },
+        {
+          "category": "_)",
+          "name": "Zangan Aerial Rave running",
+          "input": "_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Crescent Fang running",
+          "input": "_G_b"
+        },
+        {
+          "category": "_)",
+          "name": "Moonsault on higher plane",
+          "input": "_a_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Final Heaven",
+          "input": "^s"
+        },
+        {
+          "category": "_@",
+          "name": "Final Judgement",
+          "input": "_O^s"
+        },
+        {
+          "category": "_@",
+          "name": "Death Force",
+          "input": "_O^s_a"
+        },
+        {
+          "category": "_@",
+          "name": "Final Swirl",
+          "input": "_O^s_b"
+        },
+        {
+          "category": "_@",
+          "name": "Platinum Fist",
+          "input": "_^^s"
+        },
+        {
+          "category": "_@",
+          "name": "Summon empty gauge",
+          "input": "^s"
+        }
+      ]
+    },
+    {
+      "name": "DJANGO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Biting Bahamut Zero",
+          "input": "_2_3_6_+_a_+_b_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Hades Bite",
+          "input": "_a_+_b_+^s"
+        },
+        {
+          "category": "_)",
+          "name": "Shiva Attack",
+          "input": "_a_+_G",
+          "condition": "+^s"
+        },
+        {
+          "category": "_)",
+          "name": "Seto Combination",
+          "input": "_b_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Nanaki Kick",
+          "input": "_b_+^s"
+        },
+        {
+          "category": "_)",
+          "name": "Nanaki Combination",
+          "input": "_b_+^s^s"
+        },
+        {
+          "category": "_)",
+          "name": "Ifrit Bite",
+          "input": "_b_+^s_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Chupon Brush",
+          "input": "^2_+_a"
+        },
+        {
+          "category": "_)",
+          "name": "Sled Fang",
+          "input": "^2_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Django Step",
+          "input": "^2, _4 / _6"
+        },
+        {
+          "category": "_)",
+          "name": "Blood Fang running",
+          "input": "_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Chocobo Kick back turned",
+          "input": "_a_a"
+        },
+        {
+          "category": "_)",
+          "name": "Tail Reversal back turned",
+          "input": "_b"
+        },
+        {
+          "category": "_)",
+          "name": "Phoenix Roll knocked down",
+          "input": "_a / _b"
+        },
+        {
+          "category": "_@",
+          "name": "Mega Flare",
+          "input": "^s"
+        },
+        {
+          "category": "_@",
+          "name": "Giga Flare",
+          "input": "_O^s"
+        },
+        {
+          "category": "_@",
+          "name": "Knight Round Rolling",
+          "input": "_^^s"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_G": "GR",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "b": "_G"
+    },
+    "genesis": {
+      "b": "_G"
+    },
+    "megadrive": {
+      "b": "_G"
+    },
+    "psx": {
+      "b": "_G"
+    },
+    "ps2": {
+      "b": "_G"
+    }
+  }
+}

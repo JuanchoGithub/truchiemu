@@ -1,1 +1,440 @@
-{"schemaVersion":2,"romIds":["powerins","powerinsj","powerinspj","powerinspu"],"name":"Power Instinct","year":1993,"manufacturer":"Atlus","controls":{"^E":"Weak Punch","^H":"Weak Kick","^G":"Strong Punch","^J":"Strong Kick","_S":"Start"},"controlGroups":{"_P":["^E","^G"],"_K":["^H","^J"]},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves"},"commonCommands":[{"category":"_)","name":"Dash","input":"_6_6"},{"category":"_)","name":"Retreat","input":"_4_4"},{"category":"_)","name":"2 Dan Jump","input":"_^_8"}],"characters":[{"name":"REIJI OYAMA","moves":[{"category":"_(","name":"Tomoe Nage","input":"_4 / _6_+^G"},{"category":"_(","name":"Air Tomoe Nage","input":"_^_4 / _6_+^G"},{"category":"_@","name":"Raikou Kyaku","input":"^*_K"},{"category":"_@","name":"Geki Shou Hadou Ha","input":"_2_3_6_+_P"},{"category":"_@","name":"Ryuen Shou","input":"_6_2_3_+_P"},{"category":"_@","name":"Shou Enbu","input":"_^_x_+_K"}]},{"name":"KEITH WAYNE","moves":[{"category":"_(","name":"Uplifting Knee","input":"_4 / _6_+^G"},{"category":"_(","name":"Air Knee","input":"_^_4 / _6_+^G"},{"category":"_@","name":"Knuckle Bomber","input":"^4_6_+_P"},{"category":"_@","name":"Spiral Kick","input":"_2_3_6_+_K (^*)"},{"category":"_@","name":"Lightning Flash","input":"_2_1_4_+_P"},{"category":"_@","name":"Rolling Cannon","input":"_6_3_2_+_K"}]},{"name":"ANNIE HAMILTON","moves":[{"category":"_(","name":"Ostrich Throw","input":"_4 / _6_+^G"},{"category":"_(","name":"Air Ostrich Throw","input":"_^_4 / _6_+^G"},{"category":"_@","name":"Annie Dynamic","input":"_O^J for 4 seconds"},{"category":"_@","name":"Swanny Clash","input":"_4_1_2_3_6_+_P"},{"category":"_@","name":"Rainbow Barrier","input":"^4_6_+_P"},{"category":"_@","name":"Photon Burst","input":"_^_2_3_6_+_P"}]},{"name":"WHITE BUFFALO","moves":[{"category":"_(","name":"Flipping Slam","input":"_4 / _6_+^G"},{"category":"_(","name":"Air Flipping Slam","input":"_^_4 / _6_+^G"},{"category":"_@","name":"Arrow Shot","input":"_4_1_2_3_6_+_P"},{"category":"_@","name":"Buffalo Storm","input":"^2_8_+_K"},{"category":"_@","name":"Tackle Blow","input":"^4_6_+_P"},{"category":"_@","name":"Flying Elbow","input":"_^_x_+_P"}]},{"name":"SAIZO HATTORI","moves":[{"category":"_(","name":"Katate de Poi","input":"_4 / _6_+^G"},{"category":"_(","name":"Kubi Otoshi","input":"_^_4 / _6_+^G"},{"category":"_@","name":"Gokuen Shou Ryudan","input":"_2_1_4_+_P"},{"category":"_@","name":"Ryuu En Ha","input":"_2_3_6_+_P"},{"category":"_@","name":"Seien Reshou Zan","input":"_4_1_2_3_6_+_K"},{"category":"_@","name":"Shinkuu Senpuu Zan","input":"_^_x_+_P"}]},{"name":"ANGELA BELTI","moves":[{"category":"_(","name":"Disaster Mount","input":"_4 / _6_+^G"},{"category":"_(","name":"Air Disaster Mount","input":"_^_4 / _6_+^G"},{"category":"_@","name":"Thunder Wall","input":"^W"},{"category":"_@","name":"Love Me Whip","input":"^4_6_+_P"},{"category":"_@","name":"Angela Body Attack","input":"^4_6_+_K"},{"category":"_@","name":"Smash Kick","input":"_^_8_2_+_K"}]},{"name":"GOKETSUJI OTANE","moves":[{"category":"_(","name":"Chu Chu Ume Kaina: SUPER OTANE","input":"_4 / _6_+^G"},{"category":"_(","name":"Air Chu Chu Ume Kaina: SUPER OTANE","input":"_^_4 / _6_+^G"},{"category":"_)","name":"Crawl","input":"^3"},{"category":"_@","name":"Ikaku Gan","input":"^2_8_+_P"},{"category":"_@","name":"Gan Saishi","input":"^4_6_+_P"},{"category":"_@","name":"Ryusei Ranbu Dan","input":"^6_+^*_P"},{"category":"_@","name":"Ten Bu Kyaku","input":"_^_8_2_+_K"},{"category":"_(","name":"Sekkin Shite","input":"_4 / _6_+^G"},{"category":"_(","name":"Air Sekkin Shite","input":"_^_4 / _6_+^G"},{"category":"_@","name":"Chou Renka","input":"(_^)_2_3_6_+_P"},{"category":"_@","name":"Kousho Kuheki","input":"^4_6_+_P"}],"notes":["SUPER OTANE"]},{"name":"THIN NEN","moves":[{"category":"_(","name":"Backdrop","input":"_4 / _6_+^G"},{"category":"_(","name":"Quick Toss","input":"_^_4 / _6_+^G"},{"category":"_@","name":"Rekkou Ken","input":"_4_6_4_+_P"},{"category":"_@","name":"Jubakufu","input":"_6_3_2_1_4_+^W"},{"category":"_@","name":"Rengoku Reiha","input":"_4_1_2_3_6_+^W"},{"category":"_@","name":"Senkou Rekkyaku","input":"_2_3_6_9_+_K"}]}],"controlAbbr":{"^E":"LP","^H":"LK","^G":"HP","^J":"HK","_S":"ST"},"systemControlMappings":{"snes":{"y":"^G","x":"^E","b":"^J","a":"^H"},"genesis":{"y":"^G","b":"^E","c":"^J","a":"^H"},"megadrive":{"y":"^G","b":"^E","c":"^J","a":"^H"},"32x":{"y":"^G","b":"^E","c":"^J","a":"^H"},"saturn":{"y":"^G","b":"^E","c":"^J","a":"^H"},"psx":{"y":"^G","x":"^E","b":"^J","a":"^H"},"ps2":{"y":"^G","x":"^E","b":"^J","a":"^H"},"gb":{"b":"^G","a":"^J"},"gbc":{"b":"^G","a":"^J"},"gamegear":{"a":"^G","b":"^J"},"sms":{"a":"^G","b":"^J"},"gba":{"b":"^G","a":"^E","y":"^J","x":"^H"},"ngpc":{"b":"^G","a":"^E","y":"^J","x":"^H"}}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "powerins",
+    "powerinsj",
+    "powerinspj",
+    "powerinspu"
+  ],
+  "name": "Power Instinct",
+  "year": 1993,
+  "manufacturer": "Atlus",
+  "controls": {
+    "^E": "Weak Punch",
+    "^H": "Weak Kick",
+    "^G": "Strong Punch",
+    "^J": "Strong Kick",
+    "_S": "Start"
+  },
+  "controlGroups": {
+    "_P": [
+      "^E",
+      "^G"
+    ],
+    "_K": [
+      "^H",
+      "^J"
+    ]
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "_6_6"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4"
+    },
+    {
+      "category": "_)",
+      "name": "2 Dan Jump",
+      "input": "_^_8"
+    }
+  ],
+  "characters": [
+    {
+      "name": "REIJI OYAMA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Tomoe Nage",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Air Tomoe Nage",
+          "input": "_^_4 / _6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Raikou Kyaku",
+          "input": "^*_K"
+        },
+        {
+          "category": "_@",
+          "name": "Geki Shou Hadou Ha",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Ryuen Shou",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Shou Enbu",
+          "input": "_^_x_+_K"
+        }
+      ]
+    },
+    {
+      "name": "KEITH WAYNE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Uplifting Knee",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Air Knee",
+          "input": "_^_4 / _6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Knuckle Bomber",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Spiral Kick",
+          "input": "_2_3_6_+_K (^*)"
+        },
+        {
+          "category": "_@",
+          "name": "Lightning Flash",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Rolling Cannon",
+          "input": "_6_3_2_+_K"
+        }
+      ]
+    },
+    {
+      "name": "ANNIE HAMILTON",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Ostrich Throw",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Air Ostrich Throw",
+          "input": "_^_4 / _6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Annie Dynamic",
+          "input": "_O^J for 4 seconds"
+        },
+        {
+          "category": "_@",
+          "name": "Swanny Clash",
+          "input": "_4_1_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Rainbow Barrier",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Photon Burst",
+          "input": "_^_2_3_6_+_P"
+        }
+      ]
+    },
+    {
+      "name": "WHITE BUFFALO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Flipping Slam",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Air Flipping Slam",
+          "input": "_^_4 / _6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Arrow Shot",
+          "input": "_4_1_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Buffalo Storm",
+          "input": "^2_8_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Tackle Blow",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Elbow",
+          "input": "_^_x_+_P"
+        }
+      ]
+    },
+    {
+      "name": "SAIZO HATTORI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Katate de Poi",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Kubi Otoshi",
+          "input": "_^_4 / _6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Gokuen Shou Ryudan",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Ryuu En Ha",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Seien Reshou Zan",
+          "input": "_4_1_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Shinkuu Senpuu Zan",
+          "input": "_^_x_+_P"
+        }
+      ]
+    },
+    {
+      "name": "ANGELA BELTI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Disaster Mount",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Air Disaster Mount",
+          "input": "_^_4 / _6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Thunder Wall",
+          "input": "^W"
+        },
+        {
+          "category": "_@",
+          "name": "Love Me Whip",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Angela Body Attack",
+          "input": "^4_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Smash Kick",
+          "input": "_^_8_2_+_K"
+        }
+      ]
+    },
+    {
+      "name": "GOKETSUJI OTANE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Chu Chu Ume Kaina: SUPER OTANE",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Air Chu Chu Ume Kaina: SUPER OTANE",
+          "input": "_^_4 / _6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Crawl",
+          "input": "^3"
+        },
+        {
+          "category": "_@",
+          "name": "Ikaku Gan",
+          "input": "^2_8_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Gan Saishi",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Ryusei Ranbu Dan",
+          "input": "^6_+^*_P"
+        },
+        {
+          "category": "_@",
+          "name": "Ten Bu Kyaku",
+          "input": "_^_8_2_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Sekkin Shite",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Air Sekkin Shite",
+          "input": "_^_4 / _6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Chou Renka",
+          "input": "(_^)_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Kousho Kuheki",
+          "input": "^4_6_+_P"
+        }
+      ],
+      "notes": [
+        "SUPER OTANE"
+      ]
+    },
+    {
+      "name": "THIN NEN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Backdrop",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Quick Toss",
+          "input": "_^_4 / _6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Rekkou Ken",
+          "input": "_4_6_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Jubakufu",
+          "input": "_6_3_2_1_4_+^W"
+        },
+        {
+          "category": "_@",
+          "name": "Rengoku Reiha",
+          "input": "_4_1_2_3_6_+^W"
+        },
+        {
+          "category": "_@",
+          "name": "Senkou Rekkyaku",
+          "input": "_2_3_6_9_+_K"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "^E": "LP",
+    "^H": "LK",
+    "^G": "HP",
+    "^J": "HK",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "^G",
+      "x": "^E",
+      "b": "^J",
+      "a": "^H"
+    },
+    "genesis": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "megadrive": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "32x": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "saturn": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "psx": {
+      "y": "^G",
+      "x": "^E",
+      "b": "^J",
+      "a": "^H"
+    },
+    "ps2": {
+      "y": "^G",
+      "x": "^E",
+      "b": "^J",
+      "a": "^H"
+    },
+    "gb": {
+      "b": "^G",
+      "a": "^J"
+    },
+    "gbc": {
+      "b": "^G",
+      "a": "^J"
+    },
+    "gamegear": {
+      "a": "^G",
+      "b": "^J"
+    },
+    "sms": {
+      "a": "^G",
+      "b": "^J"
+    },
+    "gba": {
+      "b": "^G",
+      "a": "^E",
+      "y": "^J",
+      "x": "^H"
+    },
+    "ngpc": {
+      "b": "^G",
+      "a": "^E",
+      "y": "^J",
+      "x": "^H"
+    }
+  }
+}

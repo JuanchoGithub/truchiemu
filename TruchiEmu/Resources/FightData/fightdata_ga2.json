@@ -1,1 +1,509 @@
-{"schemaVersion":2,"romIds":["ga2","ga2j","ga2u"],"name":"Golden Axe: The Revenge of Death Adder","year":1992,"manufacturer":"Sega","credits":"Fabricio Coroquer","controls":{"_A":"Attack","_S":"Start"},"categories":{"_)":"Command Moves","_*":"Desperation Moves","_&":"Magic Moves","_`":"Magic Moves"},"commonCommands":[{"category":"_)","name":"Run","input":"_6^6"},{"category":"_)","name":"Pick Up Object close to object","input":"_A"},{"category":"_)","name":"Pull Cord close to a cord","input":"_A"},{"category":"_)","name":"Pilot Catapult close to catapult","input":"_A"},{"category":"_)","name":"Aim Catapult","input":"_4 / _6"},{"category":"_)","name":"Fire Catapult","input":"_A"},{"category":"_)","name":"Get Off Catapult @J-button"},{"category":"_)","name":"Ride On Beast close to the beast","input":"_A"},{"category":"_)","name":"Double Driver close to a dizzed opponent","input":"_A (2P only)"},{"category":"_)","name":"Spinning Driver close to a dizzed opponent","input":"_A (4P only)"},{"category":"_)","name":"Attack","input":"_A"},{"category":"_)","name":"Chain-Combo","input":"_A_A_A (Black Mantis and Gold Scorpion only)"},{"category":"_)","name":"Dash","input":"_6^6"},{"category":"_)","name":"Charge Move","input":"_A"},{"category":"_)","name":"Super Jump @J-button"},{"category":"_)","name":"Weak Attack @J-button"},{"category":"_)","name":"Dive Attack","input":"_4 / _6_+_A"},{"category":"_)","name":"Strong Attack","input":"_A"},{"category":"_)","name":"Dive Attack","input":"_4 / _6_+_A"},{"category":"_)","name":"Dive Attack","input":"_4 / _6_+_A"},{"category":"_)","name":"Splash","input":"_2_+_A"},{"category":"_)","name":"Retreat","input":"_4^4"},{"category":"_)","name":"Charge Move","input":"_A"},{"category":"_)","name":"Super Jump @J-button"},{"category":"_)","name":"Weak Attack @J-button"},{"category":"_)","name":"Dive Attack","input":"_4 / _6_+_A"},{"category":"_)","name":"Strong Attack","input":"_A"},{"category":"_)","name":"Dive Attack","input":"_4 / _6_+_A"},{"category":"_)","name":"Dive Attack","input":"_4 / _6_+_A"},{"category":"_)","name":"Splash","input":"_2_+_A"},{"category":"_)","name":"Jump @J-button"},{"category":"_)","name":"Weak Attack @J-button"},{"category":"_)","name":"Dive Attack","input":"_4 / _6_+_A"},{"category":"_)","name":"Strong Attack","input":"_A"},{"category":"_)","name":"Dive Attack","input":"_4 / _6_+_A"},{"category":"_)","name":"Dive Attack","input":"_4 / _6_+_A"},{"category":"_)","name":"Pick Up Object close to object","input":"_A"},{"category":"_)","name":"Pick Up Catapult close to catapult","input":"_A"},{"category":"_)","name":"Fire Catapult","input":"_A"},{"category":"_)","name":"Get Off Beast","input":"_A_+@J-button"},{"category":"_&","name":"Magic Attack @M-button"}],"commonNotes":["ON FOOT","RIDING ON A BEAST"],"characters":[{"name":"STERNNLADE","moves":[{"category":"_)","name":"Chain-Combo 1","input":"_A_A_A"},{"category":"_)","name":"Chain-Combo 2","input":"_A_A_6_+_A"},{"category":"_)","name":"Down Chop @J-button","input":"_A"},{"category":"_)","name":"Flying Kick","input":"_4 / _6_+_A"},{"category":"_)","name":"Air Boot @J-button @J-button"},{"category":"_)","name":"Flying Kick","input":"_4 / _6_+_A"},{"category":"_)","name":"Flying Kick @J-button","input":"_4 / _6_+_A"},{"category":"_)","name":"Charge Kick dashing","input":"_A"},{"category":"_)","name":"Final Stab dashing @J-button","input":"_2_+_A"},{"category":"_*","name":"Barbarian Upper","input":"_A_+@J-button"},{"category":"_&","name":"Ground Inferno (9 Magic Pots) @M-button"}]},{"name":"DORA","moves":[{"category":"_)","name":"Chain-Combo 1","input":"_A_A_A"},{"category":"_)","name":"Chain-Combo 2","input":"_A_A_6_+_A"},{"category":"_)","name":"Spin Smack @J-button","input":"_A"},{"category":"_)","name":"Horse Dive","input":"_4 / _6_+_A"},{"category":"_)","name":"Air Horse Kick @J-button @J-button"},{"category":"_)","name":"Horse Dive","input":"_4 / _6_+_A"},{"category":"_)","name":"Horse Dive @J-button","input":"_4 / _6_+_A"},{"category":"_)","name":"Charging Horse dashing","input":"_A"},{"category":"_)","name":"Crush Shot dashing @J-button","input":"_2_+_A"},{"category":"_*","name":"Back Kick","input":"_A_+@J-button"},{"category":"_&","name":"Lightning Quake (4 Magic Pots) @M-button"}]},{"name":"GOAH & GILIUS THUNDERHEAD","moves":[{"category":"_)","name":"Chain-Combo 1","input":"_A_A_A"},{"category":"_)","name":"Chain-Combo 2","input":"_A_A_6_+_A"},{"category":"_)","name":"Chop @J-button","input":"_A"},{"category":"_)","name":"Flying Kick","input":"_4 / _6_+_A"},{"category":"_)","name":"Air Boot @J-button @J-button"},{"category":"_)","name":"Flying Kick","input":"_4 / _6_+_A"},{"category":"_)","name":"Flying Kick @J-button","input":"_4 / _6_+_A"},{"category":"_)","name":"Swift Elbow dashing","input":"_A"},{"category":"_)","name":"Butt Drop dashing @J-button","input":"_2_+_A"},{"category":"_*","name":"Rolling Headbutt","input":"_A_+@J-button"},{"category":"_&","name":"Stone Reaper (13 Magic Pots) @M-button"}]},{"name":"LITTLE TRIX","moves":[{"category":"_)","name":"Chain-Combo 1","input":"_A_A_A_A"},{"category":"_)","name":"Chain-Combo 2","input":"_A_A_A_6_+_A"},{"category":"_)","name":"Down Swing @J-button","input":"_A"},{"category":"_)","name":"Trident Dive","input":"_4 / _6_+_A"},{"category":"_)","name":"Handle Stab @J-button @J-button"},{"category":"_)","name":"Trident Dive","input":"_4 / _6_+_A"},{"category":"_)","name":"Trident Dive @J-button","input":"_4 / _6_+_A"},{"category":"_)","name":"Impale dashing","input":"_A"},{"category":"_)","name":"Pitch Forked dashing @J-button","input":"_2_+_A"},{"category":"_*","name":"Heavy Roundhouse","input":"_A_+@J-button"},{"category":"_&","name":"Fruits of Magic (6 Magic Pots) @M-button"}]}],"controlAbbr":{"_A":"AT","_S":"ST"},"systemControlMappings":{"snes":{"y":"_A"},"genesis":{"b":"_A"},"megadrive":{"b":"_A"},"32x":{"b":"_A"},"saturn":{"b":"_A"},"psx":{"y":"_A"},"ps2":{"y":"_A"},"gb":{"b":"_A"},"gbc":{"b":"_A"},"gamegear":{"a":"_A"},"sms":{"a":"_A"},"gba":{"b":"_A"},"ngpc":{"b":"_A"}},"controlGroups":{"_P":["_A"]}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "ga2",
+    "ga2j",
+    "ga2u"
+  ],
+  "name": "Golden Axe: The Revenge of Death Adder",
+  "year": 1992,
+  "manufacturer": "Sega",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "_A": "Attack",
+    "_S": "Start"
+  },
+  "categories": {
+    "_)": "Command Moves",
+    "_*": "Desperation Moves",
+    "_&": "Magic Moves",
+    "_`": "Magic Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Run",
+      "input": "_6^6"
+    },
+    {
+      "category": "_)",
+      "name": "Pick Up Object close to object",
+      "input": "_A"
+    },
+    {
+      "category": "_)",
+      "name": "Pull Cord close to a cord",
+      "input": "_A"
+    },
+    {
+      "category": "_)",
+      "name": "Pilot Catapult close to catapult",
+      "input": "_A"
+    },
+    {
+      "category": "_)",
+      "name": "Aim Catapult",
+      "input": "_4 / _6"
+    },
+    {
+      "category": "_)",
+      "name": "Fire Catapult",
+      "input": "_A"
+    },
+    {
+      "category": "_)",
+      "name": "Get Off Catapult @J-button"
+    },
+    {
+      "category": "_)",
+      "name": "Ride On Beast close to the beast",
+      "input": "_A"
+    },
+    {
+      "category": "_)",
+      "name": "Double Driver close to a dizzed opponent",
+      "input": "_A (2P only)"
+    },
+    {
+      "category": "_)",
+      "name": "Spinning Driver close to a dizzed opponent",
+      "input": "_A (4P only)"
+    },
+    {
+      "category": "_)",
+      "name": "Attack",
+      "input": "_A"
+    },
+    {
+      "category": "_)",
+      "name": "Chain-Combo",
+      "input": "_A_A_A (Black Mantis and Gold Scorpion only)"
+    },
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "_6^6"
+    },
+    {
+      "category": "_)",
+      "name": "Charge Move",
+      "input": "_A"
+    },
+    {
+      "category": "_)",
+      "name": "Super Jump @J-button"
+    },
+    {
+      "category": "_)",
+      "name": "Weak Attack @J-button"
+    },
+    {
+      "category": "_)",
+      "name": "Dive Attack",
+      "input": "_4 / _6_+_A"
+    },
+    {
+      "category": "_)",
+      "name": "Strong Attack",
+      "input": "_A"
+    },
+    {
+      "category": "_)",
+      "name": "Dive Attack",
+      "input": "_4 / _6_+_A"
+    },
+    {
+      "category": "_)",
+      "name": "Dive Attack",
+      "input": "_4 / _6_+_A"
+    },
+    {
+      "category": "_)",
+      "name": "Splash",
+      "input": "_2_+_A"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4^4"
+    },
+    {
+      "category": "_)",
+      "name": "Charge Move",
+      "input": "_A"
+    },
+    {
+      "category": "_)",
+      "name": "Super Jump @J-button"
+    },
+    {
+      "category": "_)",
+      "name": "Weak Attack @J-button"
+    },
+    {
+      "category": "_)",
+      "name": "Dive Attack",
+      "input": "_4 / _6_+_A"
+    },
+    {
+      "category": "_)",
+      "name": "Strong Attack",
+      "input": "_A"
+    },
+    {
+      "category": "_)",
+      "name": "Dive Attack",
+      "input": "_4 / _6_+_A"
+    },
+    {
+      "category": "_)",
+      "name": "Dive Attack",
+      "input": "_4 / _6_+_A"
+    },
+    {
+      "category": "_)",
+      "name": "Splash",
+      "input": "_2_+_A"
+    },
+    {
+      "category": "_)",
+      "name": "Jump @J-button"
+    },
+    {
+      "category": "_)",
+      "name": "Weak Attack @J-button"
+    },
+    {
+      "category": "_)",
+      "name": "Dive Attack",
+      "input": "_4 / _6_+_A"
+    },
+    {
+      "category": "_)",
+      "name": "Strong Attack",
+      "input": "_A"
+    },
+    {
+      "category": "_)",
+      "name": "Dive Attack",
+      "input": "_4 / _6_+_A"
+    },
+    {
+      "category": "_)",
+      "name": "Dive Attack",
+      "input": "_4 / _6_+_A"
+    },
+    {
+      "category": "_)",
+      "name": "Pick Up Object close to object",
+      "input": "_A"
+    },
+    {
+      "category": "_)",
+      "name": "Pick Up Catapult close to catapult",
+      "input": "_A"
+    },
+    {
+      "category": "_)",
+      "name": "Fire Catapult",
+      "input": "_A"
+    },
+    {
+      "category": "_)",
+      "name": "Get Off Beast",
+      "input": "_A_+@J-button"
+    },
+    {
+      "category": "_&",
+      "name": "Magic Attack @M-button"
+    }
+  ],
+  "commonNotes": [
+    "ON FOOT",
+    "RIDING ON A BEAST"
+  ],
+  "characters": [
+    {
+      "name": "STERNNLADE",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Chain-Combo 1",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Chain-Combo 2",
+          "input": "_A_A_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Down Chop @J-button",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Flying Kick",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Air Boot @J-button @J-button"
+        },
+        {
+          "category": "_)",
+          "name": "Flying Kick",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Flying Kick @J-button",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Charge Kick dashing",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Final Stab dashing @J-button",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Barbarian Upper",
+          "input": "_A_+@J-button"
+        },
+        {
+          "category": "_&",
+          "name": "Ground Inferno (9 Magic Pots) @M-button"
+        }
+      ]
+    },
+    {
+      "name": "DORA",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Chain-Combo 1",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Chain-Combo 2",
+          "input": "_A_A_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Spin Smack @J-button",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Horse Dive",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Air Horse Kick @J-button @J-button"
+        },
+        {
+          "category": "_)",
+          "name": "Horse Dive",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Horse Dive @J-button",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Charging Horse dashing",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Crush Shot dashing @J-button",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Back Kick",
+          "input": "_A_+@J-button"
+        },
+        {
+          "category": "_&",
+          "name": "Lightning Quake (4 Magic Pots) @M-button"
+        }
+      ]
+    },
+    {
+      "name": "GOAH & GILIUS THUNDERHEAD",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Chain-Combo 1",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Chain-Combo 2",
+          "input": "_A_A_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Chop @J-button",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Flying Kick",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Air Boot @J-button @J-button"
+        },
+        {
+          "category": "_)",
+          "name": "Flying Kick",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Flying Kick @J-button",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Swift Elbow dashing",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Butt Drop dashing @J-button",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Rolling Headbutt",
+          "input": "_A_+@J-button"
+        },
+        {
+          "category": "_&",
+          "name": "Stone Reaper (13 Magic Pots) @M-button"
+        }
+      ]
+    },
+    {
+      "name": "LITTLE TRIX",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Chain-Combo 1",
+          "input": "_A_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Chain-Combo 2",
+          "input": "_A_A_A_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Down Swing @J-button",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Trident Dive",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Handle Stab @J-button @J-button"
+        },
+        {
+          "category": "_)",
+          "name": "Trident Dive",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Trident Dive @J-button",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Impale dashing",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Pitch Forked dashing @J-button",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Heavy Roundhouse",
+          "input": "_A_+@J-button"
+        },
+        {
+          "category": "_&",
+          "name": "Fruits of Magic (6 Magic Pots) @M-button"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_A": "AT",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_A"
+    },
+    "genesis": {
+      "b": "_A"
+    },
+    "megadrive": {
+      "b": "_A"
+    },
+    "32x": {
+      "b": "_A"
+    },
+    "saturn": {
+      "b": "_A"
+    },
+    "psx": {
+      "y": "_A"
+    },
+    "ps2": {
+      "y": "_A"
+    },
+    "gb": {
+      "b": "_A"
+    },
+    "gbc": {
+      "b": "_A"
+    },
+    "gamegear": {
+      "a": "_A"
+    },
+    "sms": {
+      "a": "_A"
+    },
+    "gba": {
+      "b": "_A"
+    },
+    "ngpc": {
+      "b": "_A"
+    }
+  },
+  "controlGroups": {
+    "_P": [
+      "_A"
+    ]
+  }
+}

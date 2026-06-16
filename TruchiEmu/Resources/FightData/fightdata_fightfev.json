@@ -1,1 +1,479 @@
-{"schemaVersion":2,"romIds":["fightfev","fightfeva"],"name":"Fight Fever","year":1994,"manufacturer":"Viccom","controls":{"_A":"Weak Punch","_B":"Weak Kick","_C":"Strong Punch","_D":"Strong Kick","_S":"Start"},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves","_*":"Desperation Moves","_`":"Desperation Moves"},"commonCommands":[{"category":"_)","name":"Dash","input":"_6_6"},{"category":"_)","name":"Retreat","input":"_4_4"},{"category":"_)","name":"Taunt far","input":"_C"}],"characters":[{"name":"HAN BAEDAL","moves":[{"category":"_(","name":"Atomic Bulldog","input":"_6_+_C"},{"category":"_)","name":"Drill Cutter","input":"_^_3_+_B"},{"category":"_@","name":"Tiger Simoon","input":"_2_3_6_+_A / _C"},{"category":"_@","name":"Violent Fist","input":"_6_4_6_+_C"},{"category":"_@","name":"Supremacy Kick","input":"_4_1_2_3_6_+_B"},{"category":"_*","name":"Furious Fandango","input":"_6_4_1_2_3_6_+_B_+_D"}]},{"name":"MIYUKI","moves":[{"category":"_(","name":"Shoulder Toss","input":"_6_+_C"},{"category":"_@","name":"Fierce Winds","input":"_2_1_4_+_A / _C"},{"category":"_@","name":"Deadly Bullet","input":"_4_1_2_3_6_+_B"},{"category":"_@","name":"Lightning Kick","input":"_6_2_3_6_+_C"},{"category":"_@","name":"Bloody Claws","input":"_2_8_+_B"},{"category":"_*","name":"Super Twin Claw","input":"_6_3_2_1_6_+_B_+_D"}]},{"name":"ROPHEN HEIMER","moves":[{"category":"_(","name":"Rough Slam","input":"_6_+_C"},{"category":"_@","name":"Thunder Wind Palm","input":"_2_1_4_+_A / _C"},{"category":"_@","name":"Roaring Kick","input":"_4_1_2_3_6_+_B"},{"category":"_@","name":"Taichi Breaker","input":"_6_4_1_2_3_+_C"},{"category":"_@","name":"Crescent Flip","input":"_2_8_+_B"},{"category":"_*","name":"Super Taichi Breaker","input":"_2_3_6_4_+_A_+_C"}]},{"name":"MAGIC DUNKER","moves":[{"category":"_(","name":"Chokeslam","input":"_6_+_C"},{"category":"_@","name":"Dunk Shot","input":"_2_3_6_+_A / _C"},{"category":"_@","name":"Rising Double Punch","input":"_6_4_6_+_A"},{"category":"_@","name":"Layup Kick","input":"_2_1_4_+_B"},{"category":"_@","name":"Brave Storm","input":"_4_1_2_3_6_+_C"},{"category":"_*","name":"Brave Hurricane","input":"_6_4_1_2_3_+_B_+_D"}]},{"name":"GOLRIO","moves":[{"category":"_(","name":"Bearhug","input":"_6_+_C"},{"category":"_@","name":"Pulse Wave","input":"_2_1_4_+_A / _C"},{"category":"_@","name":"Phoenix Flight","input":"_2_3_6_9_+_B"},{"category":"_@","name":"Turtle Belly","input":"_6_2_3_6_+_C"},{"category":"_*","name":"Turtle Hop","input":"_4_6_3_2_1_+_B_+_D"}]},{"name":"KIM HOON","moves":[{"category":"_(","name":"Atomic Bulldog","input":"_6_+_C"},{"category":"_@","name":"Tiger Simoon","input":"_2_3_6_+_A / _C"},{"category":"_@","name":"Supremacy Kick","input":"_4_1_2_3_6_+_B"},{"category":"_@","name":"Lightning Kick","input":"_6_4_6_+_C"},{"category":"_@","name":"Human Shuriken","input":"_2_1_4_+_A"},{"category":"_*","name":"Eagle Swooping Blow","input":"_6_4_1_2_3_6_+_B_+_C"}]},{"name":"CHINTAO","moves":[{"category":"_(","name":"Direct Knee","input":"_6_+_C"},{"category":"_@","name":"Pigtail Fist","input":"_2_3_6_+_B"},{"category":"_@","name":"Snow Scattering Palm","input":"_2_1_4_+_A / _C"},{"category":"_@","name":"Thunderclap Kick","input":"_4_1_2_3_+_C"},{"category":"_*","name":"Thunderclap Scissors","input":"_6_3_2_1_4_6_+_A_+_C"}]},{"name":"NICK COMMANDO","moves":[{"category":"_(","name":"Backbreaker","input":"_6_+_C"},{"category":"_@","name":"Grenade Toss","input":"_2_1_4_+_A / _C"},{"category":"_@","name":"Bull Charge","input":"_6_4_6_+_B"},{"category":"_@","name":"Charging Eagle","input":"_6_4_1_2_3_+_A"},{"category":"_*","name":"Super Charging Eagle","input":"_4_1_2_1_6_+_B_+_D"}]},{"name":"MASTER TAEKUK","moves":[{"category":"_)","name":"Headscissor Smash","input":"_^_3_+_B"},{"category":"_@","name":"Blaze Burst","input":"_2_3_6_+_A / _C"},{"category":"_@","name":"Stretch Catch","input":"_6_4_1_2_3_+_A"},{"category":"_@","name":"Teleport Stomp","input":"^2_8_+_C"},{"category":"_*","name":"Pulling Hand Blow","input":"_4_1_2_3_6_3_2_1_6_+_A"}]},{"name":"KARATE KENJI","moves":[{"category":"_(","name":"Suplex Spike","input":"_6_+_C"},{"category":"_@","name":"Scorching Earth","input":"_2_3_6_+_A / _C"},{"category":"_@","name":"Reaping Kick","input":"_4_1_2_3_6_+_C"},{"category":"_@","name":"Eruption","input":"_6_4_6_+_A"},{"category":"_@","name":"Demon Charge","input":"_2_1_4_+_B"}]}],"controlAbbr":{"_A":"LP","_B":"LK","_C":"HP","_D":"HK","_S":"ST"},"systemControlMappings":{"snes":{"y":"_A","x":"_B","b":"_C","a":"_D"},"genesis":{"b":"_A","a":"_B","y":"_C","x":"_D"},"megadrive":{"b":"_A","a":"_B","y":"_C","x":"_D"},"32x":{"b":"_A","a":"_B","y":"_C","x":"_D"},"saturn":{"b":"_A","a":"_B","y":"_C","x":"_D"},"neogeo":{"b":"_A","y":"_B","a":"_C","x":"_D"},"psx":{"y":"_A","x":"_B","b":"_C","a":"_D"},"ps2":{"y":"_A","x":"_B","b":"_C","a":"_D"},"gb":{"b":"_A","a":"_B"},"gbc":{"b":"_A","a":"_B"},"gamegear":{"a":"_A","b":"_B"},"sms":{"a":"_A","b":"_B"},"gba":{"b":"_A","a":"_B","l1":"_C","r1":"_D"},"ngpc":{"b":"_A","a":"_B","y":"_C","x":"_D"},"dreamcast":{"y":"_A","x":"_B","b":"_C","a":"_D"},"n64":{"b":"_A","a":"_B","cDown":"_C","cLeft":"_D"},"wswan":{"b":"_A","a":"_B"}},"controlGroups":{"_P":["_A","_C"],"_K":["_B","_D"]}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "fightfev",
+    "fightfeva"
+  ],
+  "name": "Fight Fever",
+  "year": 1994,
+  "manufacturer": "Viccom",
+  "controls": {
+    "_A": "Weak Punch",
+    "_B": "Weak Kick",
+    "_C": "Strong Punch",
+    "_D": "Strong Kick",
+    "_S": "Start"
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_*": "Desperation Moves",
+    "_`": "Desperation Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "_6_6"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4"
+    },
+    {
+      "category": "_)",
+      "name": "Taunt far",
+      "input": "_C"
+    }
+  ],
+  "characters": [
+    {
+      "name": "HAN BAEDAL",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Atomic Bulldog",
+          "input": "_6_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "Drill Cutter",
+          "input": "_^_3_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Tiger Simoon",
+          "input": "_2_3_6_+_A / _C"
+        },
+        {
+          "category": "_@",
+          "name": "Violent Fist",
+          "input": "_6_4_6_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Supremacy Kick",
+          "input": "_4_1_2_3_6_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Furious Fandango",
+          "input": "_6_4_1_2_3_6_+_B_+_D"
+        }
+      ]
+    },
+    {
+      "name": "MIYUKI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Shoulder Toss",
+          "input": "_6_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Fierce Winds",
+          "input": "_2_1_4_+_A / _C"
+        },
+        {
+          "category": "_@",
+          "name": "Deadly Bullet",
+          "input": "_4_1_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Lightning Kick",
+          "input": "_6_2_3_6_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Bloody Claws",
+          "input": "_2_8_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Super Twin Claw",
+          "input": "_6_3_2_1_6_+_B_+_D"
+        }
+      ]
+    },
+    {
+      "name": "ROPHEN HEIMER",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Rough Slam",
+          "input": "_6_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Thunder Wind Palm",
+          "input": "_2_1_4_+_A / _C"
+        },
+        {
+          "category": "_@",
+          "name": "Roaring Kick",
+          "input": "_4_1_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Taichi Breaker",
+          "input": "_6_4_1_2_3_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Crescent Flip",
+          "input": "_2_8_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Super Taichi Breaker",
+          "input": "_2_3_6_4_+_A_+_C"
+        }
+      ]
+    },
+    {
+      "name": "MAGIC DUNKER",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Chokeslam",
+          "input": "_6_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Dunk Shot",
+          "input": "_2_3_6_+_A / _C"
+        },
+        {
+          "category": "_@",
+          "name": "Rising Double Punch",
+          "input": "_6_4_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Layup Kick",
+          "input": "_2_1_4_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Brave Storm",
+          "input": "_4_1_2_3_6_+_C"
+        },
+        {
+          "category": "_*",
+          "name": "Brave Hurricane",
+          "input": "_6_4_1_2_3_+_B_+_D"
+        }
+      ]
+    },
+    {
+      "name": "GOLRIO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Bearhug",
+          "input": "_6_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Pulse Wave",
+          "input": "_2_1_4_+_A / _C"
+        },
+        {
+          "category": "_@",
+          "name": "Phoenix Flight",
+          "input": "_2_3_6_9_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Turtle Belly",
+          "input": "_6_2_3_6_+_C"
+        },
+        {
+          "category": "_*",
+          "name": "Turtle Hop",
+          "input": "_4_6_3_2_1_+_B_+_D"
+        }
+      ]
+    },
+    {
+      "name": "KIM HOON",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Atomic Bulldog",
+          "input": "_6_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Tiger Simoon",
+          "input": "_2_3_6_+_A / _C"
+        },
+        {
+          "category": "_@",
+          "name": "Supremacy Kick",
+          "input": "_4_1_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Lightning Kick",
+          "input": "_6_4_6_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Human Shuriken",
+          "input": "_2_1_4_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Eagle Swooping Blow",
+          "input": "_6_4_1_2_3_6_+_B_+_C"
+        }
+      ]
+    },
+    {
+      "name": "CHINTAO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Direct Knee",
+          "input": "_6_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Pigtail Fist",
+          "input": "_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Snow Scattering Palm",
+          "input": "_2_1_4_+_A / _C"
+        },
+        {
+          "category": "_@",
+          "name": "Thunderclap Kick",
+          "input": "_4_1_2_3_+_C"
+        },
+        {
+          "category": "_*",
+          "name": "Thunderclap Scissors",
+          "input": "_6_3_2_1_4_6_+_A_+_C"
+        }
+      ]
+    },
+    {
+      "name": "NICK COMMANDO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Backbreaker",
+          "input": "_6_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Grenade Toss",
+          "input": "_2_1_4_+_A / _C"
+        },
+        {
+          "category": "_@",
+          "name": "Bull Charge",
+          "input": "_6_4_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Charging Eagle",
+          "input": "_6_4_1_2_3_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Super Charging Eagle",
+          "input": "_4_1_2_1_6_+_B_+_D"
+        }
+      ]
+    },
+    {
+      "name": "MASTER TAEKUK",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Headscissor Smash",
+          "input": "_^_3_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Blaze Burst",
+          "input": "_2_3_6_+_A / _C"
+        },
+        {
+          "category": "_@",
+          "name": "Stretch Catch",
+          "input": "_6_4_1_2_3_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Teleport Stomp",
+          "input": "^2_8_+_C"
+        },
+        {
+          "category": "_*",
+          "name": "Pulling Hand Blow",
+          "input": "_4_1_2_3_6_3_2_1_6_+_A"
+        }
+      ]
+    },
+    {
+      "name": "KARATE KENJI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Suplex Spike",
+          "input": "_6_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Scorching Earth",
+          "input": "_2_3_6_+_A / _C"
+        },
+        {
+          "category": "_@",
+          "name": "Reaping Kick",
+          "input": "_4_1_2_3_6_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Eruption",
+          "input": "_6_4_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Demon Charge",
+          "input": "_2_1_4_+_B"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_A": "LP",
+    "_B": "LK",
+    "_C": "HP",
+    "_D": "HK",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "genesis": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "megadrive": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "32x": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "saturn": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "neogeo": {
+      "b": "_A",
+      "y": "_B",
+      "a": "_C",
+      "x": "_D"
+    },
+    "psx": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "ps2": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "gb": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gbc": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gamegear": {
+      "a": "_A",
+      "b": "_B"
+    },
+    "sms": {
+      "a": "_A",
+      "b": "_B"
+    },
+    "gba": {
+      "b": "_A",
+      "a": "_B",
+      "l1": "_C",
+      "r1": "_D"
+    },
+    "ngpc": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "dreamcast": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "n64": {
+      "b": "_A",
+      "a": "_B",
+      "cDown": "_C",
+      "cLeft": "_D"
+    },
+    "wswan": {
+      "b": "_A",
+      "a": "_B"
+    }
+  },
+  "controlGroups": {
+    "_P": [
+      "_A",
+      "_C"
+    ],
+    "_K": [
+      "_B",
+      "_D"
+    ]
+  }
+}

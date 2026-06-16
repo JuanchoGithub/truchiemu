@@ -1,1 +1,193 @@
-{"schemaVersion":2,"romIds":["knights","knightsj","knightsja","knightsu"],"name":"Knights of the Round","year":1991,"manufacturer":"Capcom","credits":"Fabricio Coroquer","controls":{"_A":"Attack","_S":"Start"},"categories":{"_)":"Command Moves","_*":"Desperation Moves","_`":"Desperation Moves"},"commonCommands":[{"category":"_)","name":"Basic Combo","input":"_A_A_A_A"},{"category":"_)","name":"Guard","input":"_O_A_4"},{"category":"_)","name":"Heavy Attack","input":"_A_6"},{"category":"_)","name":"Mount Horse close Horse @J-button"},{"category":"_*","name":"Desperation Move","input":"_A_+@J-button"},{"category":"_)","name":"Leap","input":"_6_6"},{"category":"_)","name":"Change Direction @J-button"},{"category":"_)","name":"Horse Stampede","input":"_A_+@J-button"}],"commonNotes":["ON FOOT","ON HORSEBACK"],"characters":[{"name":"LANCELOT","moves":[{"category":"_)","name":"Reverse Vault","input":"_4_+@J-button"},{"category":"_)","name":"Cross Slash","input":"_4_6_+_A"},{"category":"_)","name":"Kick Attack","input":"_A_8"}],"notes":["Offensive Power       3","Defensive Power       4","Agility               5"]},{"name":"ARTHUR","moves":[{"category":"_)","name":"Ascending Strike","input":"_4_+@J-button"},{"category":"_)","name":"Vertical Cut","input":"_4_6_+_A"},{"category":"_)","name":"Upper Slash","input":"_A_8"}],"notes":["Offensive Power        4","Defensive Power        4","Agility                4"]},{"name":"PERCEVAL","moves":[{"category":"_)","name":"Roll Escape","input":"_4_+@J-button"},{"category":"_)","name":"Dash","input":"_6_6"},{"category":"_)","name":"Dash Strike","input":"_A"}],"notes":["Offensive Power        5","Defensive Power        4","Agility                3"]}],"controlAbbr":{"_A":"AT","_S":"ST"},"systemControlMappings":{"snes":{"y":"_A"},"genesis":{"b":"_A"},"megadrive":{"b":"_A"},"32x":{"b":"_A"},"saturn":{"b":"_A"},"psx":{"y":"_A"},"ps2":{"y":"_A"},"gb":{"b":"_A"},"gbc":{"b":"_A"},"gamegear":{"a":"_A"},"sms":{"a":"_A"},"gba":{"b":"_A"},"ngpc":{"b":"_A"}},"controlGroups":{"_P":["_A"]}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "knights",
+    "knightsj",
+    "knightsja",
+    "knightsu"
+  ],
+  "name": "Knights of the Round",
+  "year": 1991,
+  "manufacturer": "Capcom",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "_A": "Attack",
+    "_S": "Start"
+  },
+  "categories": {
+    "_)": "Command Moves",
+    "_*": "Desperation Moves",
+    "_`": "Desperation Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Basic Combo",
+      "input": "_A_A_A_A"
+    },
+    {
+      "category": "_)",
+      "name": "Guard",
+      "input": "_O_A_4"
+    },
+    {
+      "category": "_)",
+      "name": "Heavy Attack",
+      "input": "_A_6"
+    },
+    {
+      "category": "_)",
+      "name": "Mount Horse close Horse @J-button"
+    },
+    {
+      "category": "_*",
+      "name": "Desperation Move",
+      "input": "_A_+@J-button"
+    },
+    {
+      "category": "_)",
+      "name": "Leap",
+      "input": "_6_6"
+    },
+    {
+      "category": "_)",
+      "name": "Change Direction @J-button"
+    },
+    {
+      "category": "_)",
+      "name": "Horse Stampede",
+      "input": "_A_+@J-button"
+    }
+  ],
+  "commonNotes": [
+    "ON FOOT",
+    "ON HORSEBACK"
+  ],
+  "characters": [
+    {
+      "name": "LANCELOT",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Reverse Vault",
+          "input": "_4_+@J-button"
+        },
+        {
+          "category": "_)",
+          "name": "Cross Slash",
+          "input": "_4_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Kick Attack",
+          "input": "_A_8"
+        }
+      ],
+      "notes": [
+        "Offensive Power       3",
+        "Defensive Power       4",
+        "Agility               5"
+      ]
+    },
+    {
+      "name": "ARTHUR",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Ascending Strike",
+          "input": "_4_+@J-button"
+        },
+        {
+          "category": "_)",
+          "name": "Vertical Cut",
+          "input": "_4_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Upper Slash",
+          "input": "_A_8"
+        }
+      ],
+      "notes": [
+        "Offensive Power        4",
+        "Defensive Power        4",
+        "Agility                4"
+      ]
+    },
+    {
+      "name": "PERCEVAL",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Roll Escape",
+          "input": "_4_+@J-button"
+        },
+        {
+          "category": "_)",
+          "name": "Dash",
+          "input": "_6_6"
+        },
+        {
+          "category": "_)",
+          "name": "Dash Strike",
+          "input": "_A"
+        }
+      ],
+      "notes": [
+        "Offensive Power        5",
+        "Defensive Power        4",
+        "Agility                3"
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_A": "AT",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_A"
+    },
+    "genesis": {
+      "b": "_A"
+    },
+    "megadrive": {
+      "b": "_A"
+    },
+    "32x": {
+      "b": "_A"
+    },
+    "saturn": {
+      "b": "_A"
+    },
+    "psx": {
+      "y": "_A"
+    },
+    "ps2": {
+      "y": "_A"
+    },
+    "gb": {
+      "b": "_A"
+    },
+    "gbc": {
+      "b": "_A"
+    },
+    "gamegear": {
+      "a": "_A"
+    },
+    "sms": {
+      "a": "_A"
+    },
+    "gba": {
+      "b": "_A"
+    },
+    "ngpc": {
+      "b": "_A"
+    }
+  },
+  "controlGroups": {
+    "_P": [
+      "_A"
+    ]
+  }
+}

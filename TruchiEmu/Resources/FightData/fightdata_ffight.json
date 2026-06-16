@@ -1,1 +1,331 @@
-{"schemaVersion":2,"romIds":["ffight","ffighta","ffightj","ffightj1","ffightj2","ffightj3","ffightj4","ffightu","ffightu1","ffightua","ffightub","ffightuc"],"name":"Final Fight","year":1990,"manufacturer":"Capcom","credits":"Fabricio Coroquer","controls":{"_A":"Attack","_S":"Start"},"categories":{"_(":"Normal Throws","_)":"Command Moves","_*":"Desperation Moves","_`":"Desperation Moves"},"commonCommands":[{"category":"_)","name":"Pick Up Object close to object","input":"_A"},{"category":"_)","name":"Pick Up Weapon close to weapon","input":"_A"}],"characters":[{"name":"GUY","moves":[{"category":"_(","name":"Grab close","input":"_6"},{"category":"_(","name":"Tsukami Nage","input":"^*_A"},{"category":"_(","name":"Bushin-ryuu Seoi Nage","input":"_4 / _6_+_A"},{"category":"_(","name":"Jump Escape @J-button"},{"category":"_)","name":"Bushin Gokusa Ken","input":"_A_A_A_A"},{"category":"_)","name":"Bushin Gokusa Ken Finish","input":"_A"},{"category":"_)","name":"Bushin-ryuu Seoi Nage","input":"_4_+_A"},{"category":"_)","name":"Skyward Kick @J-button","input":"_A"},{"category":"_)","name":"Short Knee Cancel","input":"_2_+_A"},{"category":"_)","name":"Straight Jump Kick diagonal jump","input":"_A"},{"category":"_)","name":"Short Knee Cancel","input":"_2_+_A"},{"category":"_)","name":"Short Knee @J-button","input":"_2_+_A"},{"category":"_)","name":"Jump Kick Cancel","input":"_A"},{"category":"_)","name":"Wall Jump jump toward the wall @J-button"},{"category":"_)","name":"Straight Jump Kick","input":"_A"},{"category":"_)","name":"Short Knee","input":"_2_+_A"},{"category":"_*","name":"Bushin Senpuu Kyaku","input":"_A_+@J-button"}]},{"name":"CODY TRAVERS","moves":[{"category":"_(","name":"Grab close","input":"_6"},{"category":"_(","name":"Knee Strike","input":"_A"},{"category":"_(","name":"Shoulder Toss","input":"_4 / _6_+_A"},{"category":"_(","name":"Jump Escape @J-button"},{"category":"_)","name":"Jabs-Stomach Blow","input":"_A_A_A"},{"category":"_)","name":"Uppercut","input":"_A"},{"category":"_)","name":"Shoulder Toss","input":"_4_+_A"},{"category":"_)","name":"Knife Stabbing with Knife, close","input":"_A"},{"category":"_)","name":"Skyward Kick @J-button","input":"_A"},{"category":"_)","name":"Knee Drop Cancel","input":"_2_+_A"},{"category":"_)","name":"Jump Kick diagonal jump","input":"_A"},{"category":"_)","name":"Knee Drop Cancel","input":"_2_+_A"},{"category":"_)","name":"Knee Drop @J-button","input":"_2_+_A"},{"category":"_)","name":"Jump Kick Cancel","input":"_A"},{"category":"_*","name":"Crack Kick","input":"_A_+@J-button"}]},{"name":"MIKE HAGGAR","moves":[{"category":"_(","name":"Grab close","input":"_6"},{"category":"_(","name":"Repeated Headbutts","input":"^*_A"},{"category":"_(","name":"Suplex","input":"_4 / _6_+_A"},{"category":"_(","name":"Jump Grapple @J-button"},{"category":"_(","name":"Piledriver","input":"_A"},{"category":"_)","name":"Gut Punches","input":"_A_A"},{"category":"_)","name":"Side Hammer","input":"_A"},{"category":"_)","name":"Suplex","input":"_4_+_A"},{"category":"_)","name":"Drop Kick diagonal jump","input":"_A"},{"category":"_)","name":"Body Splash Cancel","input":"_2_+_A"},{"category":"_)","name":"Body Splash @J-button","input":"_2_+_A"},{"category":"_)","name":"Drop Kick Cancel","input":"_A"},{"category":"_*","name":"Double Lariat","input":"_A_+@J-button"}]}],"controlAbbr":{"_A":"AT","_S":"ST"},"systemControlMappings":{"snes":{"y":"_A"},"genesis":{"b":"_A"},"megadrive":{"b":"_A"},"32x":{"b":"_A"},"saturn":{"b":"_A"},"psx":{"y":"_A"},"ps2":{"y":"_A"},"gb":{"b":"_A"},"gbc":{"b":"_A"},"gamegear":{"a":"_A"},"sms":{"a":"_A"},"gba":{"b":"_A"},"ngpc":{"b":"_A"}},"controlGroups":{"_P":["_A"]}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "ffight",
+    "ffighta",
+    "ffightj",
+    "ffightj1",
+    "ffightj2",
+    "ffightj3",
+    "ffightj4",
+    "ffightu",
+    "ffightu1",
+    "ffightua",
+    "ffightub",
+    "ffightuc"
+  ],
+  "name": "Final Fight",
+  "year": 1990,
+  "manufacturer": "Capcom",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "_A": "Attack",
+    "_S": "Start"
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_*": "Desperation Moves",
+    "_`": "Desperation Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Pick Up Object close to object",
+      "input": "_A"
+    },
+    {
+      "category": "_)",
+      "name": "Pick Up Weapon close to weapon",
+      "input": "_A"
+    }
+  ],
+  "characters": [
+    {
+      "name": "GUY",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6"
+        },
+        {
+          "category": "_(",
+          "name": "Tsukami Nage",
+          "input": "^*_A"
+        },
+        {
+          "category": "_(",
+          "name": "Bushin-ryuu Seoi Nage",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Jump Escape @J-button"
+        },
+        {
+          "category": "_)",
+          "name": "Bushin Gokusa Ken",
+          "input": "_A_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Bushin Gokusa Ken Finish",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Bushin-ryuu Seoi Nage",
+          "input": "_4_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Skyward Kick @J-button",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Short Knee Cancel",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Straight Jump Kick diagonal jump",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Short Knee Cancel",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Short Knee @J-button",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Jump Kick Cancel",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Wall Jump jump toward the wall @J-button"
+        },
+        {
+          "category": "_)",
+          "name": "Straight Jump Kick",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Short Knee",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Bushin Senpuu Kyaku",
+          "input": "_A_+@J-button"
+        }
+      ]
+    },
+    {
+      "name": "CODY TRAVERS",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6"
+        },
+        {
+          "category": "_(",
+          "name": "Knee Strike",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Shoulder Toss",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Jump Escape @J-button"
+        },
+        {
+          "category": "_)",
+          "name": "Jabs-Stomach Blow",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Uppercut",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Shoulder Toss",
+          "input": "_4_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Knife Stabbing with Knife, close",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Skyward Kick @J-button",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Knee Drop Cancel",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Jump Kick diagonal jump",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Knee Drop Cancel",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Knee Drop @J-button",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Jump Kick Cancel",
+          "input": "_A"
+        },
+        {
+          "category": "_*",
+          "name": "Crack Kick",
+          "input": "_A_+@J-button"
+        }
+      ]
+    },
+    {
+      "name": "MIKE HAGGAR",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6"
+        },
+        {
+          "category": "_(",
+          "name": "Repeated Headbutts",
+          "input": "^*_A"
+        },
+        {
+          "category": "_(",
+          "name": "Suplex",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Jump Grapple @J-button"
+        },
+        {
+          "category": "_(",
+          "name": "Piledriver",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Gut Punches",
+          "input": "_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Side Hammer",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Suplex",
+          "input": "_4_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Drop Kick diagonal jump",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Body Splash Cancel",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Body Splash @J-button",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Drop Kick Cancel",
+          "input": "_A"
+        },
+        {
+          "category": "_*",
+          "name": "Double Lariat",
+          "input": "_A_+@J-button"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_A": "AT",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_A"
+    },
+    "genesis": {
+      "b": "_A"
+    },
+    "megadrive": {
+      "b": "_A"
+    },
+    "32x": {
+      "b": "_A"
+    },
+    "saturn": {
+      "b": "_A"
+    },
+    "psx": {
+      "y": "_A"
+    },
+    "ps2": {
+      "y": "_A"
+    },
+    "gb": {
+      "b": "_A"
+    },
+    "gbc": {
+      "b": "_A"
+    },
+    "gamegear": {
+      "a": "_A"
+    },
+    "sms": {
+      "a": "_A"
+    },
+    "gba": {
+      "b": "_A"
+    },
+    "ngpc": {
+      "b": "_A"
+    }
+  },
+  "controlGroups": {
+    "_P": [
+      "_A"
+    ]
+  }
+}

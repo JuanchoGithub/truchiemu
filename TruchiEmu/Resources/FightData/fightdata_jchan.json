@@ -1,1 +1,482 @@
-{"schemaVersion":2,"romIds":["jchan","jchana"],"name":"Jackie Chan: The Kung-Fu Master","year":1995,"manufacturer":"Kaneko","credits":"Fabricio Coroquer","controls":{"^E":"Light Punch","^G":"Heavy Punch","^H":"Light Kick","^J":"Heavy Kick","_S":"Start"},"controlGroups":{"_P":["^E","^G"],"_K":["^H","^J"]},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves","_*":"Super","_`":"Finishing Moves"},"commonCommands":[{"category":"_)","name":"Dash","input":"_6_6"},{"category":"_)","name":"Retreat","input":"_4_4"},{"category":"_)","name":"Taunt","input":"^G_+^J"},{"category":"_)","name":"Chain-Combo 1","input":"^E^H^G^J"},{"category":"_)","name":"Chain-Combo 2","input":"^E^H^J^G"},{"category":"_)","name":"Chain-Combo 3","input":"^H^E^G^J"},{"category":"_)","name":"Chain-Combo 4","input":"^H^E^J^G"},{"category":"_`","name":"Normal Finisher","input":"_P / _K"}],"commonNotes":["Finishing Moves","- Morph Finisher                                                         Taunt"],"characters":[{"name":"SAM","moves":[{"category":"_(","name":"Layout Punch","input":"_4 / _6_+^G"},{"category":"_(","name":"Riding Backflip","input":"_4 / _6_+^J"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_9"},{"category":"_)","name":"Flying Kick jump against the wall","input":"_6_+_K"},{"category":"_@","name":"Thousand Fists","input":"^*_P"},{"category":"_@","name":"Flurry Rush","input":"_2_3_6_+_K (x3)"},{"category":"_*","name":"Flurry Combination","input":"_2_3_6_+^V"}],"notes":["Finishing Moves","- Unique Finisher 1                                                      Flurry Rush / Flurry Combination","- Unique Finisher 2                                                      Thousand Fists"]},{"name":"THORSTEN","moves":[{"category":"_(","name":"Rag Doll Toss","input":"_4 / _6_+^G"},{"category":"_@","name":"Slash Sword","input":"^4_6_+_P"},{"category":"_@","name":"Jackknife Storm","input":"^2_8_+_K"},{"category":"_*","name":"Deadly Jackknife Storm","input":"^2_8_+^V"}],"notes":["Finishing Moves","- Unique Finisher 1                                                      Jackknife Storm / Deadly Jackknife Storm"]},{"name":"YEUNG","moves":[{"category":"_(","name":"Typhoon Wallop","input":"_4 / _6_+^G"},{"category":"_@","name":"Crow Shot","input":"_2_3_6_+_P"},{"category":"_@","name":"Crane Wings","input":"_6_3_2_1_4_+_P"},{"category":"_*","name":"Bo Assault","input":"_6_3_2_1_4_+^W"}],"notes":["Finishing Moves","- Unique Finisher 1                                                      Crane Wings","- Unique Finisher 2                                                      Crow Shot"]},{"name":"KIM-MAREE","moves":[{"category":"_(","name":"Slap Barrage","input":"_4 / _6_+^G"},{"category":"_(","name":"Release Frankensteiner","input":"_4 / _6_+^J"},{"category":"_(","name":"Frankensteiner Driver","input":"_^_4 / _6_+^J"},{"category":"_@","name":"Running Lariat Drop","input":"_4_1_2_3_6_+_P"},{"category":"_@","name":"I Want You!","input":"_2_8_+_P"},{"category":"_@","name":"Double Frankensteiner close","input":"_4_1_2_3_6_+_K"},{"category":"_*","name":"Ultra Frankensteiner close","input":"_6_4_1_2_3_6_+^V"}],"notes":["Finishing Moves","- Unique Finisher 1                                                      I Want You!"]},{"name":"LAU","moves":[{"category":"_(","name":"Head Spike","input":"_4 / _6_+^G"},{"category":"_(","name":"Layback Toss","input":"_4 / _6_+^J"},{"category":"_@","name":"Flame Orb","input":"_2_3_6_+_P"},{"category":"_@","name":"Rising Dragon Punch","input":"_6_2_3_+_P"},{"category":"_*","name":"Dragon's Breath","input":"_2_3_6_+^W"}],"notes":["Finishing Moves","- Unique Finisher 1                                                      Rising Dragon Punch"]},{"name":"MYSTERIOUS LION","moves":[{"category":"_(","name":"Back Body Drop","input":"_4 / _6_+^G"},{"category":"_)","name":"Mighty Cape","input":"_4 / _6_+^G"},{"category":"_@","name":"Mini-Lion Bomb","input":"_2_3_6_+_P"},{"category":"_@","name":"Psycho Lion Crusher","input":"_6_4_6_+_P"},{"category":"_*","name":"Mini-Lion Transformation","input":"_4_1_2_3_6_+^W"},{"category":"_*","name":"Self-Destruct","input":"(_^)_P"},{"category":"_*","name":"Mini-Lion Force","input":"(_^)_K / _6_+_K"}],"notes":["Finishing Moves","- Unique Finisher 1                                                      Psycho Lion Crusher","- Unique Finisher 2                                                      Mini-Lion Bomb / Self-Destruct / Mini-Lion Force"]},{"name":"JACKIE CHAN (FIVE ANIMAL FIST)","moves":[{"category":"_(","name":"Head Spike","input":"_4 / _6_+^G"},{"category":"_)","name":"Punch to Bladed Stab","input":"_4 / _6_+^G"},{"category":"_)","name":"Forward Hop Kick","input":"_6_+^H"},{"category":"_)","name":"Backward Hop Kick","input":"_4_+^H"},{"category":"_@","name":"Five Animal Fist","input":"_4_1_2_3_6_+_P"},{"category":"_@","name":"Crush Kick","input":"_2_3_6_+_K"}],"notes":["Finishing Moves","- Unique Finisher 1                                                      Five Animal Fist"]},{"name":"JACKIE CHAN (DRUNKEN FIST)","moves":[{"category":"_(","name":"Tornado Throw","input":"_4 / _6_+^G"},{"category":"_@","name":"Jug Throw","input":"_2_3_6_+_P"},{"category":"_@","name":"Drunken Blitz","input":"_6_3_2_1_4_6_+_P"},{"category":"_*","name":"Drunken Power Up","input":"_2_1_4_+^W (damage increased)"}],"notes":["Finishing Moves","- Unique Finisher 1                                                      Jug Throw"]},{"name":"JACKIE CHAN (BAGUAZHANG)","moves":[{"category":"_(","name":"Catapult Kick","input":"_4 / _6_+^J"},{"category":"_@","name":"Fire Dragon","input":"_2_3_6_+_P"},{"category":"_@","name":"Aerial Fire Dragon","input":"_^_4_1_2_3_6_+_P"},{"category":"_@","name":"Double Dutch","input":"_6_2_3_+_K"}]}],"controlAbbr":{"^E":"LP","^G":"HP","^H":"LK","^J":"HK","_S":"ST"},"systemControlMappings":{"snes":{"y":"^G","x":"^E","b":"^J","a":"^H"},"genesis":{"y":"^G","b":"^E","c":"^J","a":"^H"},"megadrive":{"y":"^G","b":"^E","c":"^J","a":"^H"},"32x":{"y":"^G","b":"^E","c":"^J","a":"^H"},"saturn":{"y":"^G","b":"^E","c":"^J","a":"^H"},"psx":{"y":"^G","x":"^E","b":"^J","a":"^H"},"ps2":{"y":"^G","x":"^E","b":"^J","a":"^H"},"gb":{"b":"^G","a":"^J"},"gbc":{"b":"^G","a":"^J"},"gamegear":{"a":"^G","b":"^J"},"sms":{"a":"^G","b":"^J"},"gba":{"b":"^G","a":"^E","y":"^J","x":"^H"},"ngpc":{"b":"^G","a":"^E","y":"^J","x":"^H"}}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "jchan",
+    "jchana"
+  ],
+  "name": "Jackie Chan: The Kung-Fu Master",
+  "year": 1995,
+  "manufacturer": "Kaneko",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "^E": "Light Punch",
+    "^G": "Heavy Punch",
+    "^H": "Light Kick",
+    "^J": "Heavy Kick",
+    "_S": "Start"
+  },
+  "controlGroups": {
+    "_P": [
+      "^E",
+      "^G"
+    ],
+    "_K": [
+      "^H",
+      "^J"
+    ]
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_*": "Super",
+    "_`": "Finishing Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "_6_6"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4"
+    },
+    {
+      "category": "_)",
+      "name": "Taunt",
+      "input": "^G_+^J"
+    },
+    {
+      "category": "_)",
+      "name": "Chain-Combo 1",
+      "input": "^E^H^G^J"
+    },
+    {
+      "category": "_)",
+      "name": "Chain-Combo 2",
+      "input": "^E^H^J^G"
+    },
+    {
+      "category": "_)",
+      "name": "Chain-Combo 3",
+      "input": "^H^E^G^J"
+    },
+    {
+      "category": "_)",
+      "name": "Chain-Combo 4",
+      "input": "^H^E^J^G"
+    },
+    {
+      "category": "_`",
+      "name": "Normal Finisher",
+      "input": "_P / _K"
+    }
+  ],
+  "commonNotes": [
+    "Finishing Moves",
+    "- Morph Finisher                                                         Taunt"
+  ],
+  "characters": [
+    {
+      "name": "SAM",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Layout Punch",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Riding Backflip",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_9"
+        },
+        {
+          "category": "_)",
+          "name": "Flying Kick jump against the wall",
+          "input": "_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Thousand Fists",
+          "input": "^*_P"
+        },
+        {
+          "category": "_@",
+          "name": "Flurry Rush",
+          "input": "_2_3_6_+_K (x3)"
+        },
+        {
+          "category": "_*",
+          "name": "Flurry Combination",
+          "input": "_2_3_6_+^V"
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Unique Finisher 1                                                      Flurry Rush / Flurry Combination",
+        "- Unique Finisher 2                                                      Thousand Fists"
+      ]
+    },
+    {
+      "name": "THORSTEN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Rag Doll Toss",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Slash Sword",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Jackknife Storm",
+          "input": "^2_8_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Deadly Jackknife Storm",
+          "input": "^2_8_+^V"
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Unique Finisher 1                                                      Jackknife Storm / Deadly Jackknife Storm"
+      ]
+    },
+    {
+      "name": "YEUNG",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Typhoon Wallop",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Crow Shot",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Crane Wings",
+          "input": "_6_3_2_1_4_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Bo Assault",
+          "input": "_6_3_2_1_4_+^W"
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Unique Finisher 1                                                      Crane Wings",
+        "- Unique Finisher 2                                                      Crow Shot"
+      ]
+    },
+    {
+      "name": "KIM-MAREE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Slap Barrage",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Release Frankensteiner",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_(",
+          "name": "Frankensteiner Driver",
+          "input": "_^_4 / _6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Running Lariat Drop",
+          "input": "_4_1_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "I Want You!",
+          "input": "_2_8_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Double Frankensteiner close",
+          "input": "_4_1_2_3_6_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Ultra Frankensteiner close",
+          "input": "_6_4_1_2_3_6_+^V"
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Unique Finisher 1                                                      I Want You!"
+      ]
+    },
+    {
+      "name": "LAU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Head Spike",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Layback Toss",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Flame Orb",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Rising Dragon Punch",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Dragon's Breath",
+          "input": "_2_3_6_+^W"
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Unique Finisher 1                                                      Rising Dragon Punch"
+      ]
+    },
+    {
+      "name": "MYSTERIOUS LION",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Back Body Drop",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Mighty Cape",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Mini-Lion Bomb",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Psycho Lion Crusher",
+          "input": "_6_4_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Mini-Lion Transformation",
+          "input": "_4_1_2_3_6_+^W"
+        },
+        {
+          "category": "_*",
+          "name": "Self-Destruct",
+          "input": "(_^)_P"
+        },
+        {
+          "category": "_*",
+          "name": "Mini-Lion Force",
+          "input": "(_^)_K / _6_+_K"
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Unique Finisher 1                                                      Psycho Lion Crusher",
+        "- Unique Finisher 2                                                      Mini-Lion Bomb / Self-Destruct / Mini-Lion Force"
+      ]
+    },
+    {
+      "name": "JACKIE CHAN (FIVE ANIMAL FIST)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Head Spike",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Punch to Bladed Stab",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Forward Hop Kick",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Backward Hop Kick",
+          "input": "_4_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Five Animal Fist",
+          "input": "_4_1_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Crush Kick",
+          "input": "_2_3_6_+_K"
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Unique Finisher 1                                                      Five Animal Fist"
+      ]
+    },
+    {
+      "name": "JACKIE CHAN (DRUNKEN FIST)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Tornado Throw",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Jug Throw",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Drunken Blitz",
+          "input": "_6_3_2_1_4_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Drunken Power Up",
+          "input": "_2_1_4_+^W (damage increased)"
+        }
+      ],
+      "notes": [
+        "Finishing Moves",
+        "- Unique Finisher 1                                                      Jug Throw"
+      ]
+    },
+    {
+      "name": "JACKIE CHAN (BAGUAZHANG)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Catapult Kick",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Fire Dragon",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Aerial Fire Dragon",
+          "input": "_^_4_1_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Double Dutch",
+          "input": "_6_2_3_+_K"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "^E": "LP",
+    "^G": "HP",
+    "^H": "LK",
+    "^J": "HK",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "^G",
+      "x": "^E",
+      "b": "^J",
+      "a": "^H"
+    },
+    "genesis": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "megadrive": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "32x": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "saturn": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "psx": {
+      "y": "^G",
+      "x": "^E",
+      "b": "^J",
+      "a": "^H"
+    },
+    "ps2": {
+      "y": "^G",
+      "x": "^E",
+      "b": "^J",
+      "a": "^H"
+    },
+    "gb": {
+      "b": "^G",
+      "a": "^J"
+    },
+    "gbc": {
+      "b": "^G",
+      "a": "^J"
+    },
+    "gamegear": {
+      "a": "^G",
+      "b": "^J"
+    },
+    "sms": {
+      "a": "^G",
+      "b": "^J"
+    },
+    "gba": {
+      "b": "^G",
+      "a": "^E",
+      "y": "^J",
+      "x": "^H"
+    },
+    "ngpc": {
+      "b": "^G",
+      "a": "^E",
+      "y": "^J",
+      "x": "^H"
+    }
+  }
+}

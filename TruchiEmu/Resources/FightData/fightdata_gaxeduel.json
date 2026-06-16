@@ -1,1 +1,685 @@
-{"schemaVersion":2,"romIds":["gaxeduel"],"name":"Golden Axe: The Duel","year":1995,"manufacturer":"Sega","credits":"by: Fabricio Coroquer (Created by: Minoplis)","controls":{"^E":"Weak Punch","^F":"Medium Punch","^G":"Strong Punch","^H":"Weak Kick","^I":"Medium Kick","^J":"Strong Kick","_S":"Start"},"controlGroups":{"_P":["^E","^F","^G"],"_K":["^H","^I","^J"]},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves","_#":"Power-Up Move","_*":"Magic Moves","_`":"Magic Moves"},"commonCommands":[{"category":"_)","name":"Dash","input":"_6_6"},{"category":"_)","name":"Long Dash","input":"_6^6"},{"category":"_)","name":"Retreat","input":"_4_4"},{"category":"_#","name":"Power-Up Move","input":"^U / ^T (damage increased)"}],"characters":[{"name":"KAIN BLADE","moves":[{"category":"_(","name":"Catapult Toss","input":"_4 / _6_+^G"},{"category":"_@","name":"Power Blast","input":"_2_3_6_+_P"},{"category":"_@","name":"Fire Edge","input":"_6_2_3_+_P"},{"category":"_@","name":"Rushing Kick","input":"_2_1_4_+_K (^*)"},{"category":"_*","name":"Fire Storm","input":"_6_2_3_6_9_+_P"}]},{"name":"MILAN FLARE","moves":[{"category":"_(","name":"Power Punch","input":"_4 / _6_+^G"},{"category":"_(","name":"Leg Strangle","input":"_4 / _6_+^J"},{"category":"_@","name":"Rotor Sword","input":"^4_6_+_P"},{"category":"_@","name":"Air Strike","input":"^4_6_+_K"},{"category":"_@","name":"Gyro Sword","input":"^2_8_+_P"},{"category":"_@","name":"Bird of Prey","input":"^2_8_+_K"},{"category":"_@","name":"Talon Strike","input":"_P"},{"category":"_@","name":"Tornado Spin close","input":"_2_+^G"},{"category":"_*","name":"Bird of Prey Set Up","input":"^2_3_6_9_+_K"},{"category":"_*","name":"Bloody Tempest close","input":"_P"}]},{"name":"GILLIUS ROCKHEAD","moves":[{"category":"_(","name":"Buffalo Head","input":"_4 / _6_+^G"},{"category":"_)","name":"Rock Roll","input":"_^_2_+^G"},{"category":"_@","name":"Stone Crush","input":"_4_1_2_3_6_+_P"},{"category":"_@","name":"Shoulder Charge","input":"_2_3_6_+_K"},{"category":"_@","name":"Miner's Drill","input":"_2_1_4_+_P"},{"category":"_@","name":"Stone Storm close","input":"_6_4_6_+^G"},{"category":"_@","name":"Kick Fury close","input":"_6_3_2_+^J"},{"category":"_*","name":"Jawbreaker","input":"_6_3_2_1_9_+_P"}]},{"name":"ZOMA","moves":[{"category":"_(","name":"Staff Launch","input":"_4 / _6_+^G"},{"category":"_(","name":"Head Crusher","input":"_4 / _6_+^J"},{"category":"_)","name":"Circle of Death","input":"_^_2_+^G"},{"category":"_@","name":"Quick Staff","input":"^*_P"},{"category":"_@","name":"Changeling","input":"_2_3_6_+_P"},{"category":"_@","name":"Skull Charge","input":"(_^)_7_3_+_P"},{"category":"_@","name":"Levitation","input":"_6_2_3_+_K"},{"category":"_@","name":"Air Dash","input":"_6_6"},{"category":"_@","name":"Air Long Dash","input":"_6^6"},{"category":"_@","name":"Air Retreat","input":"_4_4"},{"category":"_@","name":"Drop Down","input":"_2"},{"category":"_@","name":"Skull Charge","input":"_7_3_+_P"},{"category":"_*","name":"Dark Carnival","input":"_2_3_6_2_3_6_+_P"}]},{"name":"JAMM","moves":[{"category":"_(","name":"Head Bite","input":"_4 / _6_+^G"},{"category":"_(","name":"Dropping Cannonball","input":"_4 / _6_+^J"},{"category":"_)","name":"Snapping Tail","input":"_6_+^I"},{"category":"_)","name":"Mule Kick","input":"_6_+^J"},{"category":"_@","name":"Cat's Paw","input":"^*_K"},{"category":"_@","name":"Beast Blast","input":"_2_3_6_+_P (_O)"},{"category":"_@","name":"Thundering Herd","input":"^4_6_+_P"},{"category":"_*","name":"Spirit Summon","input":"^4_6_2_3_+_P"}]},{"name":"DEATH-ADDER","moves":[{"category":"_(","name":"Heavy Slam","input":"_4 / _6_+^G"},{"category":"_(","name":"Fling Toss","input":"_4 / _6_+^J"},{"category":"_)","name":"Falling Sky","input":"_^_2_+_K"},{"category":"_@","name":"Dragon Breath","input":"_4_1_2_3_6_+_P"},{"category":"_@","name":"Death Wave","input":"^4_6_+_P"},{"category":"_*","name":"Soul Taker close","input":"_6_3_2_1_4_+^U"}]},{"name":"KEEL","moves":[{"category":"_(","name":"Saw Blade","input":"_4 / _6_+^G"},{"category":"_@","name":"Ice Arrow","input":"_2_3_6_+_P"},{"category":"_@","name":"Power Stab","input":"_2_1_4_+_P"},{"category":"_@","name":"Ice Slide","input":"_2_1_4_+_K"},{"category":"_@","name":"Freezing Bolt","input":"_6_2_3_+_P"},{"category":"_@","name":"Dematerialize","input":"_6_3_2_+_K"},{"category":"_*","name":"Insanity Winds","input":"_2_1_4_2_1_4_+_P"}]},{"name":"DOC","moves":[{"category":"_(","name":"Shoulder Slam","input":"_4 / _6_+^G"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_6_+_K"},{"category":"_)","name":"Sliding Knee jump against the wall","input":"_4_+_K"},{"category":"_@","name":"Rekkuzan","input":"^2_8_+_P"},{"category":"_@","name":"Raitessen","input":"_6_3_2_1_4_+_P"},{"category":"_@","name":"Shock Palm","input":"_O_P"},{"category":"_@","name":"Noborisangeri","input":"_6_2_3_+_K"},{"category":"_@","name":"Raigekishou close","input":"_6_2_3_+_P"},{"category":"_@","name":"Ryusuisen","input":"_6_3_2_1_4_+_K"},{"category":"_*","name":"Tenchi Raimeiha","input":"_6_3_2_1_4_6_+_P"}]},{"name":"GREEN","moves":[{"category":"_(","name":"Choke and Headbutt","input":"_4 / _6_+^G"},{"category":"_(","name":"Dangerous Knees","input":"_4 / _6_+^J (^*)"},{"category":"_@","name":"Backbreaker close","input":"_x_+_K"},{"category":"_@","name":"Attack Feint","input":"^4_6_+_K"},{"category":"_@","name":"Giant Hook","input":"_2_8_+_P"},{"category":"_@","name":"Windmill","input":"_O^W_+_K / ^V_+_P"},{"category":"_@","name":"Mammoth Slam diagonal jump","input":"_6_3_2_+_P"},{"category":"_*","name":"Raging Forest close","input":"_x_+^U"}]},{"name":"PANCHOS","moves":[{"category":"_(","name":"Bombs Away","input":"_4 / _6_+^G / ^J"},{"category":"_@","name":"Mini Bomb","input":"_2_3_6_+_P"},{"category":"_@","name":"Mega Bomb","input":"_2_3_6_+_K (_O)"},{"category":"_@","name":"Dyna Might","input":"_6_3_2_1_4_+_K"},{"category":"_*","name":"Blast Wave","input":"_4_1_2_3_6_9_+_K"}]},{"name":"GOLDEN AXE","moves":[{"category":"_(","name":"Levitate Drain","input":"_4 / _6_+_P"},{"category":"_@","name":"Death Beam","input":"_2_3_6_+_P"},{"category":"_@","name":"Dash Wave","input":"_2_1_4_+_P"},{"category":"_@","name":"Blast Uppercut","input":"_6_2_3_+_P"}]}],"controlAbbr":{"^E":"LP","^F":"MP","^G":"HP","^H":"LK","^I":"MK","^J":"HK","_S":"ST"},"systemControlMappings":{"snes":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"genesis":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"megadrive":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"32x":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"saturn":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"psx":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"ps2":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"gba":{"b":"^E","a":"^F","l1":"^G","y":"^H","x":"^I","r1":"^J"},"pce":{"b":"^E","a":"^H"},"pce6":{"b":"^E","y":"^F","l1":"^G","a":"^H","x":"^I","r1":"^J"},"3do":{"b":"^E","a":"^F","l1":"^G","y":"^H","x":"^I","r1":"^J"},"n64":{"b":"^E","cDown":"^F","cRight":"^G","a":"^H","cLeft":"^I","cUp":"^J"},"dreamcast":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"gb":{"b":"^E","a":"^H"},"gbc":{"b":"^E","a":"^H"},"gamegear":{"a":"^E","b":"^H"},"sms":{"a":"^E","b":"^H"},"ngpc":{"b":"^E","y":"^F","l1":"^G","a":"^H","x":"^I","r1":"^J"},"lynx":{"b":"^E","a":"^F","l1":"^G","y":"^H","x":"^I","r1":"^J"},"wswan":{"b":"^E","a":"^H"}}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "gaxeduel"
+  ],
+  "name": "Golden Axe: The Duel",
+  "year": 1995,
+  "manufacturer": "Sega",
+  "credits": "by: Fabricio Coroquer (Created by: Minoplis)",
+  "controls": {
+    "^E": "Weak Punch",
+    "^F": "Medium Punch",
+    "^G": "Strong Punch",
+    "^H": "Weak Kick",
+    "^I": "Medium Kick",
+    "^J": "Strong Kick",
+    "_S": "Start"
+  },
+  "controlGroups": {
+    "_P": [
+      "^E",
+      "^F",
+      "^G"
+    ],
+    "_K": [
+      "^H",
+      "^I",
+      "^J"
+    ]
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_#": "Power-Up Move",
+    "_*": "Magic Moves",
+    "_`": "Magic Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "_6_6"
+    },
+    {
+      "category": "_)",
+      "name": "Long Dash",
+      "input": "_6^6"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4"
+    },
+    {
+      "category": "_#",
+      "name": "Power-Up Move",
+      "input": "^U / ^T (damage increased)"
+    }
+  ],
+  "characters": [
+    {
+      "name": "KAIN BLADE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Catapult Toss",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Power Blast",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Fire Edge",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Rushing Kick",
+          "input": "_2_1_4_+_K (^*)"
+        },
+        {
+          "category": "_*",
+          "name": "Fire Storm",
+          "input": "_6_2_3_6_9_+_P"
+        }
+      ]
+    },
+    {
+      "name": "MILAN FLARE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Power Punch",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Leg Strangle",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Rotor Sword",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Air Strike",
+          "input": "^4_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Gyro Sword",
+          "input": "^2_8_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Bird of Prey",
+          "input": "^2_8_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Talon Strike",
+          "input": "_P"
+        },
+        {
+          "category": "_@",
+          "name": "Tornado Spin close",
+          "input": "_2_+^G"
+        },
+        {
+          "category": "_*",
+          "name": "Bird of Prey Set Up",
+          "input": "^2_3_6_9_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Bloody Tempest close",
+          "input": "_P"
+        }
+      ]
+    },
+    {
+      "name": "GILLIUS ROCKHEAD",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Buffalo Head",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Rock Roll",
+          "input": "_^_2_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Stone Crush",
+          "input": "_4_1_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Shoulder Charge",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Miner's Drill",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Stone Storm close",
+          "input": "_6_4_6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Kick Fury close",
+          "input": "_6_3_2_+^J"
+        },
+        {
+          "category": "_*",
+          "name": "Jawbreaker",
+          "input": "_6_3_2_1_9_+_P"
+        }
+      ]
+    },
+    {
+      "name": "ZOMA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Staff Launch",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Head Crusher",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Circle of Death",
+          "input": "_^_2_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Quick Staff",
+          "input": "^*_P"
+        },
+        {
+          "category": "_@",
+          "name": "Changeling",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Skull Charge",
+          "input": "(_^)_7_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Levitation",
+          "input": "_6_2_3_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Air Dash",
+          "input": "_6_6"
+        },
+        {
+          "category": "_@",
+          "name": "Air Long Dash",
+          "input": "_6^6"
+        },
+        {
+          "category": "_@",
+          "name": "Air Retreat",
+          "input": "_4_4"
+        },
+        {
+          "category": "_@",
+          "name": "Drop Down",
+          "input": "_2"
+        },
+        {
+          "category": "_@",
+          "name": "Skull Charge",
+          "input": "_7_3_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Dark Carnival",
+          "input": "_2_3_6_2_3_6_+_P"
+        }
+      ]
+    },
+    {
+      "name": "JAMM",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Head Bite",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Dropping Cannonball",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Snapping Tail",
+          "input": "_6_+^I"
+        },
+        {
+          "category": "_)",
+          "name": "Mule Kick",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Cat's Paw",
+          "input": "^*_K"
+        },
+        {
+          "category": "_@",
+          "name": "Beast Blast",
+          "input": "_2_3_6_+_P (_O)"
+        },
+        {
+          "category": "_@",
+          "name": "Thundering Herd",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Spirit Summon",
+          "input": "^4_6_2_3_+_P"
+        }
+      ]
+    },
+    {
+      "name": "DEATH-ADDER",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Heavy Slam",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Fling Toss",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Falling Sky",
+          "input": "_^_2_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Dragon Breath",
+          "input": "_4_1_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Death Wave",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Soul Taker close",
+          "input": "_6_3_2_1_4_+^U"
+        }
+      ]
+    },
+    {
+      "name": "KEEL",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Saw Blade",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Ice Arrow",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Power Stab",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Ice Slide",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Freezing Bolt",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Dematerialize",
+          "input": "_6_3_2_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Insanity Winds",
+          "input": "_2_1_4_2_1_4_+_P"
+        }
+      ]
+    },
+    {
+      "name": "DOC",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Shoulder Slam",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_6_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Sliding Knee jump against the wall",
+          "input": "_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Rekkuzan",
+          "input": "^2_8_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Raitessen",
+          "input": "_6_3_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Shock Palm",
+          "input": "_O_P"
+        },
+        {
+          "category": "_@",
+          "name": "Noborisangeri",
+          "input": "_6_2_3_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Raigekishou close",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Ryusuisen",
+          "input": "_6_3_2_1_4_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Tenchi Raimeiha",
+          "input": "_6_3_2_1_4_6_+_P"
+        }
+      ]
+    },
+    {
+      "name": "GREEN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Choke and Headbutt",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Dangerous Knees",
+          "input": "_4 / _6_+^J (^*)"
+        },
+        {
+          "category": "_@",
+          "name": "Backbreaker close",
+          "input": "_x_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Attack Feint",
+          "input": "^4_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Giant Hook",
+          "input": "_2_8_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Windmill",
+          "input": "_O^W_+_K / ^V_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Mammoth Slam diagonal jump",
+          "input": "_6_3_2_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Raging Forest close",
+          "input": "_x_+^U"
+        }
+      ]
+    },
+    {
+      "name": "PANCHOS",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Bombs Away",
+          "input": "_4 / _6_+^G / ^J"
+        },
+        {
+          "category": "_@",
+          "name": "Mini Bomb",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Mega Bomb",
+          "input": "_2_3_6_+_K (_O)"
+        },
+        {
+          "category": "_@",
+          "name": "Dyna Might",
+          "input": "_6_3_2_1_4_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Blast Wave",
+          "input": "_4_1_2_3_6_9_+_K"
+        }
+      ]
+    },
+    {
+      "name": "GOLDEN AXE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Levitate Drain",
+          "input": "_4 / _6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Death Beam",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Dash Wave",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Blast Uppercut",
+          "input": "_6_2_3_+_P"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "^E": "LP",
+    "^F": "MP",
+    "^G": "HP",
+    "^H": "LK",
+    "^I": "MK",
+    "^J": "HK",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "genesis": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "megadrive": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "32x": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "saturn": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "psx": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "ps2": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "gba": {
+      "b": "^E",
+      "a": "^F",
+      "l1": "^G",
+      "y": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "pce": {
+      "b": "^E",
+      "a": "^H"
+    },
+    "pce6": {
+      "b": "^E",
+      "y": "^F",
+      "l1": "^G",
+      "a": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "3do": {
+      "b": "^E",
+      "a": "^F",
+      "l1": "^G",
+      "y": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "n64": {
+      "b": "^E",
+      "cDown": "^F",
+      "cRight": "^G",
+      "a": "^H",
+      "cLeft": "^I",
+      "cUp": "^J"
+    },
+    "dreamcast": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "gb": {
+      "b": "^E",
+      "a": "^H"
+    },
+    "gbc": {
+      "b": "^E",
+      "a": "^H"
+    },
+    "gamegear": {
+      "a": "^E",
+      "b": "^H"
+    },
+    "sms": {
+      "a": "^E",
+      "b": "^H"
+    },
+    "ngpc": {
+      "b": "^E",
+      "y": "^F",
+      "l1": "^G",
+      "a": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "lynx": {
+      "b": "^E",
+      "a": "^F",
+      "l1": "^G",
+      "y": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "wswan": {
+      "b": "^E",
+      "a": "^H"
+    }
+  }
+}

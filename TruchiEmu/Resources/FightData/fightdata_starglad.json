@@ -1,1 +1,1520 @@
-{"schemaVersion":2,"romIds":["starglad","stargladj"],"name":"Star Gladiator - Episode I: Final Crusade","year":1996,"manufacturer":"Capcom","credits":"Fabricio Coroquer","controls":{"_K":"Kick","_G":"Guard","_S":"Start"},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves"},"commonCommands":[{"category":"_)","name":"Run","input":"_6^6"},{"category":"_)","name":"Retreat","input":"_4_4"},{"category":"_)","name":"Small Jump","input":"_K_+_G"},{"category":"_)","name":"Knockaround Attack","input":"_4_+_b"},{"category":"_)","name":"Move to Background","input":"_4_+_G"},{"category":"_)","name":"Move to Foreground","input":"_6_+_G"},{"category":"_)","name":"Crouching Dash","input":"_2_3_6_+_G"},{"category":"_)","name":"Weak Pursuit Attack opponent knocked down","input":"_8_+_K"},{"category":"_)","name":"Strong Pursuit Attack opponent knocked down","input":"_8_+_a / _b"},{"category":"_)","name":"Flip Away knocked down","input":"_4"},{"category":"_)","name":"Roll Forward knocked down","input":"_6"},{"category":"_)","name":"Quick Get-Up knocked down","input":"_2"},{"category":"_)","name":"Roll to Background knocked down","input":"_G"},{"category":"_)","name":"Roll to Foreground knocked down","input":"_2_+_G"},{"category":"_)","name":"Get-Up Attack knocked down","input":"_K"},{"category":"_)","name":"Get-Up Lower Attack knocked down","input":"_2_+_K"},{"category":"_)","name":"Get-Up Anti-Air Attack knocked down","input":"_2_8_+_K"},{"category":"_)","name":"Plasma Reverse: Revenge","input":"_4_+_a_+_G  /_b_+_G"},{"category":"_)","name":"Plasma Reverse: Reflect","input":"_6_+_a_+_G / _b_+_G"},{"category":"_)","name":"Plasma Strike _a_+_b_+_K (1 for match)"}],"characters":[{"name":"HAYATO KANZAKI","moves":[{"category":"_(","name":"Throw","input":"_a_+_b"},{"category":"_)","name":"Tenchi Zan","input":"_6_+_a"},{"category":"_)","name":"Rekkuu Zan","input":"_6_+_b"},{"category":"_)","name":"Eijin Kyaku","input":"_6_+_K"},{"category":"_)","name":"Eijin Rai'ei Kyaku","input":"_6_+_K"},{"category":"_)","name":"Tsuki Kag","input":"_3_+_a"},{"category":"_)","name":"Jajin","input":"_3_+_b"},{"category":"_)","name":"Jatan","input":"_3_+_K"},{"category":"_)","name":"Shou Jump","input":"_K_+_G"},{"category":"_)","name":"Hien","input":"_a / _b"},{"category":"_)","name":"Dokuryuu running","input":"_b"},{"category":"_)","name":"Souryuu","input":"_b"},{"category":"_)","name":"Kogetsu back turned","input":"_a"},{"category":"_@","name":"Shiden","input":"_2_3_6_+_b_a"},{"category":"_@","name":"Shiden: Kai","input":"_2_3_6_+_b_b_a"},{"category":"_@","name":"Engetsu","input":"_6_3_2_1_4_+_a"},{"category":"_@","name":"Ura Engetsu","input":"_6_3_2_1_4_+_O_a"},{"category":"_@","name":"Byakko Hou","input":"_6_4_+_K"},{"category":"_@","name":"Ashura","input":"_2_2_2"},{"category":"_@","name":"Shin Ashura","input":"_a_a_6_G_b"},{"category":"_@","name":"Shin Engetsu","input":"_6_3_2_1_4_+_a"},{"category":"_@","name":"Shin Ura Engetsu","input":"_6_3_2_1_4_+_O_a"},{"category":"_@","name":"Gekishin Haten","input":"_6_4_6_4_+_K"},{"category":"_@","name":"Guren","input":"_6_2_3_+_a"},{"category":"_@","name":"Guren Ranbu","input":"_6_2_3_+_a (x3)"},{"category":"_@","name":"Shuradou","input":"_2_2_2"},{"category":"_@","name":"Gekishin Haten","input":"_6_4_6_4_+_K"},{"category":"_@","name":"Goki Raimei Zan","input":"_6_4_6_4_6_4_+_K"},{"category":"_@","name":"Guren","input":"_6_2_3_+_a"},{"category":"_@","name":"Guren Ranbu","input":"_6_2_3_+_a (x3)"},{"category":"_`","input":"_a_a_b_a_a_8_+_a"}],"notes":["Plasma Combo: Kegon"]},{"name":"JUNE LIN MILLIAM","moves":[{"category":"_(","name":"Throw","input":"_a_+_b"},{"category":"_)","name":"Star Shot","input":"_6_+_a"},{"category":"_)","name":"Turn Shot","input":"_6_+_b"},{"category":"_)","name":"Gyro Shot","input":"_6_+_K"},{"category":"_)","name":"Shine Dream","input":"_3_+_a"},{"category":"_)","name":"Stardust","input":"_3_+_b"},{"category":"_)","name":"Scream Flash","input":"_3_+_K"},{"category":"_)","name":"Ground Gyro Shoot","input":"_1_+_K"},{"category":"_)","name":"Moonsault Kick back turned","input":"_K"},{"category":"_)","name":"Moonshine Kick","input":"_K_+_G"},{"category":"_@","name":"Twinkle Elbow","input":"_2_3_6_+_a_a"},{"category":"_@","name":"Starlight Wish","input":"_2_3_6_+_a_K"},{"category":"_@","name":"Comet Kick","input":"_2_1_4_+_K"},{"category":"_@","name":"Double Comet Kick","input":"_2_1_4_+_K_K"},{"category":"_@","name":"Sokuten","input":"_2_1_4_+_G"},{"category":"_@","name":"North Star Combo","input":"_4_6_+_b_K"},{"category":"_@","name":"Camel Clutch opponent knocked down, close feet","input":"_6_4_+_K"},{"category":"_@","name":"Somersault","input":"_2_8_+_K"},{"category":"_@","name":"Shine Dream","input":"_a"},{"category":"_@","name":"Chouhatsu","input":"_a_a_6_G_b"},{"category":"_@","name":"Back Ten","input":"_K_+_G"},{"category":"_@","name":"Big Bang","input":"_a_a_6_G_b"},{"category":"_@","name":"Butt Check","input":"_4_6_6_+_K"},{"category":"_@","name":"Spin while rising","input":"_b"},{"category":"_`","input":"_K_K_b_K_K_8_+_K"}],"notes":["Plasma Combo: Happy Black Hole"]},{"name":"SATURN DYER","moves":[{"category":"_(","name":"Throw","input":"_a_+_b"},{"category":"_)","name":"Long Slash Throw","input":"_6_+_a"},{"category":"_)","name":"Side Slash Throw","input":"_6_+_b"},{"category":"_)","name":"Drastic Follow","input":"_6_+_b_b"},{"category":"_)","name":"Passing Head","input":"_6_+_K"},{"category":"_)","name":"Double Surprise","input":"_6_+_K_a"},{"category":"_)","name":"Dancing Foot","input":"_2_+_K_6_+_K"},{"category":"_)","name":"Sendout","input":"_3_+_a"},{"category":"_)","name":"Roll Slash","input":"_3_+_b"},{"category":"_)","name":"Sailing Hit","input":"_3_+_K"},{"category":"_@","name":"Inu no Sambo","input":"_2_3_6_+_a_a"},{"category":"_@","name":"Top Spin","input":"_2_3_6_+_b"},{"category":"_@","name":"Acrobat Attack","input":"_2_1_4_+_b"},{"category":"_@","name":"Acrobat Combo","input":"_b_b"},{"category":"_@","name":"Sokuten","input":"_2_1_4_+_G"},{"category":"_@","name":"Tapping Attack","input":"_4_6_+_b"},{"category":"_@","name":"Firecracker","input":"_4_6_+_K"},{"category":"_`","input":"_b_b_K_K_b_b"}],"notes":["Plasma Combo: Deadly Cyclone"]},{"name":"GAMOF GOHGRY","moves":[{"category":"_(","name":"Throw","input":"_a_+_b"},{"category":"_)","name":"Gamo Burn","input":"_6_+_a"},{"category":"_)","name":"Gamo Victory","input":"_6_+_a_a"},{"category":"_)","name":"Gamo Boon","input":"_6_+_b"},{"category":"_)","name":"Gamo Head","input":"_6_+_K"},{"category":"_)","name":"Gamo Kick","input":"_4_+_K"},{"category":"_)","name":"Gamo Shot","input":"_2_+_b_6_+_a"},{"category":"_)","name":"Gamo Ride","input":"_3_+_a"},{"category":"_)","name":"Gamo Fly Kick","input":"_3_+_K"},{"category":"_)","name":"Gamo Running Kick running","input":"_a / _b"},{"category":"_)","name":"Gamo Fall","input":"_b"},{"category":"_@","name":"Gamo Swing","input":"_2_3_6_+_K"},{"category":"_@","name":"Gamo Home Run good timing","input":"_b"},{"category":"_@","name":"Gamo Chip bad timing","input":"_b"},{"category":"_@","name":"Gamo Screw","input":"_6_3_2_1_4_+_K"},{"category":"_@","name":"Gamo Giant Swing from behind","input":"_6_3_2_1_4_+_K"},{"category":"_@","name":"Zenten","input":"_2_1_4_+_K_+_G"},{"category":"_@","name":"Ushiro Mawarikomi Jump","input":"_K_+_G"},{"category":"_@","name":"Gamo Tornado","input":"_4_6_+_b (^*)"},{"category":"_@","name":"Gamo Press opponent in air","input":"_4_6_+_K"},{"category":"_`","input":"_K_a_K_a_K_a"}],"notes":["Plasma Combo: Gamo Flying Screw"]},{"name":"FRANCO GERELT","moves":[{"category":"_(","name":"Throw","input":"_a_+_b"},{"category":"_)","name":"Gran Tounche","input":"_6_+_a"},{"category":"_)","name":"Gran Cut","input":"_6_+_b"},{"category":"_)","name":"Trick Kick","input":"_6_+_K"},{"category":"_)","name":"Rapid Elbow","input":"_6_6_+_K"},{"category":"_)","name":"Just Stab","input":"_4_+_a"},{"category":"_)","name":"Spanish Dance","input":"_4_4_+_a_a_a"},{"category":"_)","name":"Killing Bull","input":"_1_+_a"},{"category":"_)","name":"Black Heaven","input":"_3_+_a"},{"category":"_)","name":"Sharp Crawl","input":"_3_+_b"},{"category":"_)","name":"Blood Down","input":"_3_+_K"},{"category":"_)","name":"Bloody Flamenco","input":"_3_+_K_2_+_K"},{"category":"_)","name":"Kick Del Sol running","input":"_K_+_G"},{"category":"_@","name":"Thunder Touche","input":"_2_3_6_+_a"},{"category":"_@","name":"Thunder Touche Storm","input":"^*_a"},{"category":"_@","name":"Southern Arrow","input":"^*_K"},{"category":"_@","name":"Andelucia Storm","input":"_6_3_2_1_4_+^*_a"},{"category":"_@","name":"Andelucia Crawl","input":"_b"},{"category":"_@","name":"Andelucia Arrow","input":"_K"},{"category":"_@","name":"Rising Arrow","input":"_6_+_a"},{"category":"_@","name":"S.D.F opponent knocked down, close feet","input":"_6_4_+_K"},{"category":"_@","name":"Flying Matador","input":"_4_6_+_a_+_K"},{"category":"_@","name":"Naname Zenten","input":"_4_6_+_K_+_G"},{"category":"_`","input":"_a_a_b_a_a_a"}],"notes":["Plasma Combo: Final Ecstasy"]},{"name":"VECTOR","moves":[{"category":"_(","name":"Throw","input":"_a_+_b"},{"category":"_)","name":"Upper Beam Bazooka","input":"_6_+_a"},{"category":"_)","name":"Chainsaw","input":"_6_+_b"},{"category":"_)","name":"Shovel Kick","input":"_6_+_K"},{"category":"_)","name":"Leg Impact","input":"_6_+_K_K"},{"category":"_)","name":"Back Roller Dash","input":"_1_+_K_+_G"},{"category":"_)","name":"Lower Beam Bazooka","input":"_3_+_a"},{"category":"_)","name":"Leg Cut","input":"_3_+_b"},{"category":"_)","name":"Drill Kick","input":"_3_+_K"},{"category":"_)","name":"Vertical Laser back turned","input":"_K"},{"category":"_)","name":"Last Shooting throw from behind","input":"_a"},{"category":"_@","name":"Hover Straight","input":"_2_1_4_+_a"},{"category":"_@","name":"Horizontal Laser","input":"_2_3_6_+_K"},{"category":"_@","name":"Mad Blit","input":"_2_8_+_K"},{"category":"_@","name":"Flying Drill","input":"_2_+_K"},{"category":"_`","input":"_K_a_K_a_K_K"}],"notes":["Plasma Combo: Gigantic Hammer"]},{"name":"RIMGAL","moves":[{"category":"_(","name":"Throw","input":"_a_+_b"},{"category":"_)","name":"Big Bone","input":"_6_+_a"},{"category":"_)","name":"Bone Branish","input":"_6_+_b"},{"category":"_)","name":"Meal Bite","input":"_6_+_K"},{"category":"_)","name":"King Tail","input":"_4_+_K"},{"category":"_)","name":"Fuse","input":"_2_2"},{"category":"_)","name":"Leg Bite","input":"_K"},{"category":"_)","name":"Lower Dino Flame","input":"_2_3_6_+_K"},{"category":"_)","name":"Tail Leap","input":"_1_+_K"},{"category":"_)","name":"Game Claw","input":"_3_+_b"},{"category":"_)","name":"Skull Burst","input":"_3_+_K"},{"category":"_)","name":"Crazy Wave running","input":"^*_b"},{"category":"_)","name":"Big Bone","input":"_a"},{"category":"_)","name":"Hell Float back turned","input":"_K"},{"category":"_@","name":"Dino Flame","input":"_2_3_6_+_K"},{"category":"_@","name":"Long Dino Flame","input":"_4_1_2_3_6_+_K"},{"category":"_@","name":"Volcano Kick","input":"_2_1_4_+_K"},{"category":"_@","name":"Double Volcano Kick","input":"_K"},{"category":"_@","name":"Landslide Kick","input":"_4_6_+_K"},{"category":"_@","name":"Long Backdash","input":"_6_4_+_K_+_G"},{"category":"_@","name":"Jurassic Trip opponent in air","input":"_2_8_+_K"},{"category":"_`","input":"_b_K_K_a_a_K"}],"notes":["Plasma Combo: Hundred Fang"]},{"name":"ZELKIN FISKEKROGEN","moves":[{"category":"_(","name":"Throw","input":"_a_+_b"},{"category":"_)","name":"Keen Slash","input":"_6_+_a"},{"category":"_)","name":"Wide Slash","input":"_6_+_b"},{"category":"_)","name":"Hammer Kick","input":"_6_+_K"},{"category":"_)","name":"Sky Snipe","input":"_4_+_a"},{"category":"_)","name":"Super Jump","input":"_2_8 / _8_8"},{"category":"_)","name":"Sky Destruction","input":"_2_+_K"},{"category":"_)","name":"Air Dash","input":"_6_6"},{"category":"_)","name":"Rising Blade","input":"_3_+_a"},{"category":"_)","name":"Fire Wheel Combo","input":"_3_+_a_K"},{"category":"_)","name":"Sliding Blade","input":"_3_+_b"},{"category":"_)","name":"Kaiten Super Jump","input":"_^_2_8"},{"category":"_)","name":"Air Javelin","input":"_^_2_+_a"},{"category":"_)","name":"Kyuu Rakka","input":"_^_2_+_G"},{"category":"_)","name":"Kuuchuu Fuyuu","input":"_^_a_b"},{"category":"_)","name":"Kuuchuu Yoko Idou","input":"_G"},{"category":"_)","name":"Air Wheel back turned","input":"^*_K"},{"category":"_@","name":"Trust Blow","input":"_4_6_+_a"},{"category":"_@","name":"Thunder Blade","input":"_4_6_+_b"},{"category":"_@","name":"Thunder Wheel Combo","input":"_K"},{"category":"_@","name":"Blue Storm","input":"_6_3_2_1_4_+_K (^*)"},{"category":"_`","input":"_b_K_K_a_a_8_+_a"}],"notes":["Plasma Combo: Dance in the Sky"]},{"name":"GORE GAJAH","moves":[{"category":"_(","name":"Throw","input":"_a_+_b"},{"category":"_)","name":"Kannon Biraki","input":"_6_+_a"},{"category":"_)","name":"Suihei Biraki","input":"_6_+_b"},{"category":"_)","name":"Kinteki Hishuu","input":"_6_+_K"},{"category":"_)","name":"Tsubo Shiatsu Zuki","input":"_3_+_a"},{"category":"_)","name":"Kaiten Keizan","input":"_3_+_b"},{"category":"_)","name":"Haikotsu Shinchou","input":"_3_+_K"},{"category":"_)","name":"Zenten","input":"_3_+_G"},{"category":"_)","name":"Zatou Ichizuki back turned","input":"_a"},{"category":"_)","name":"Katsu Tou'nyuu opponent knocked down","input":"_3_+_K"},{"category":"_@","name":"Dokuyaku Sanpu","input":"_2_3_6_+_a"},{"category":"_@","name":"Sosei Henkan","input":"_2_3_6_+_b"},{"category":"_@","name":"Hiyaku Youkyoku","input":"_2_1_4_+_a"},{"category":"_@","name":"Enshin Bunri opponent knocked down, close feet","input":"_6_4_+_K"},{"category":"_@","name":"Zettai Ansei","input":"_2_+_K_+_G"},{"category":"_@","name":"Kyakubu Kaiten","input":"_4_6_+_K"},{"category":"_@","name":"Shindou Ryouhou","input":"_a_b"},{"category":"_@","name":"Okiru","input":"_G"},{"category":"_@","name":"Temae Shin Idou","input":"_2_+_G"},{"category":"_@","name":"Ou Shin Idou","input":"_8_+_G"},{"category":"_@","name":"Shin Dash","input":"_4_4 / _6_6"},{"category":"_@","name":"Bairitsu Henkou: Kyokudaika","input":"_2_2_2"},{"category":"_@","name":"Bairitsu Henkou: 2 Dankai","input":"_2_2_2"},{"category":"_@","name":"Bairitsu Henkou: Shukushouka","input":"_2_2_2_2"},{"category":"_@","name":"Naizou Appaku","input":"_2_1_4_+_K_K_K"},{"category":"_@","name":"Ara Ryouji","input":"_6_+_a"},{"category":"_`","input":"_b_a_b_a_b_a"}],"notes":["Plasma Combo: Kyuukyoku Bouchuu"]},{"name":"Dr. EDWARD BILSTEIN","moves":[{"category":"_(","name":"Throw","input":"_a_+_b"},{"category":"_)","name":"Vertical Sword","input":"_6_+_a"},{"category":"_)","name":"Side Sword","input":"_6_+_b"},{"category":"_)","name":"Deadly Triple","input":"_6_+_b_a_a"},{"category":"_)","name":"Bowels Break","input":"_6_+_K"},{"category":"_)","name":"Kieru","input":"_4_+_K"},{"category":"_)","name":"Penetrate Sword","input":"_3_+_a"},{"category":"_)","name":"Ground hell Wind","input":"_3_+_b"},{"category":"_)","name":"Centipede Kick","input":"_3_+_K"},{"category":"_)","name":"Fuyuu","input":"_K_+_G"},{"category":"_)","name":"Kuuchuu Yoku Idou","input":"_O_G"},{"category":"_)","name":"Calamity Dive","input":"_a / _b"},{"category":"_)","name":"Cancel","input":"_K"},{"category":"_)","name":"Dark Cyclone back turned","input":"_K"},{"category":"_)","name":"Death Spell Kick","input":"_K_K"},{"category":"_)","name":"Death Spell Sword","input":"_K_a"},{"category":"_@","name":"Space Rend Sword","input":"_2_3_6_+_a"},{"category":"_@","name":"Final Bilstein","input":"_6_3_2_1_4_+_a_+_b"},{"category":"_@","name":"Blaze Sword","input":"_2_8_+_a"},{"category":"_@","name":"Double Blaze","input":"_2_8_+_a / _b"},{"category":"_@","name":"Hell Wind Sword","input":"_4_6_+_b"},{"category":"_`","input":"_a_a_b_K_K_a"}],"notes":["Plasma Combo: Fatal Decision"]},{"name":"KAPPAH NOSUKE","moves":[{"category":"_(","name":"Throw","input":"_a_+_b"},{"category":"_)","name":"Tsuku Shinbou","input":"_6_+_a"},{"category":"_)","name":"Yume Harai","input":"_6_+_b"},{"category":"_)","name":"Kare Suzuki","input":"_6_+_K"},{"category":"_)","name":"Inaba no Shirousagi","input":"_4_+_a"},{"category":"_)","name":"Amenbo Tsuki","input":"_3_+_a"},{"category":"_)","name":"Kusagari","input":"_3_+_b"},{"category":"_)","name":"Hasu no Hageri","input":"_3_+_K"},{"category":"_)","name":"Nomi Geri running","input":"_K_K"},{"category":"_)","name":"Uma no Inanaki running","input":"_K_+_G"},{"category":"_@","name":"Kane Narashi","input":"_6_6_+_K"},{"category":"_@","name":"Meoto Tonpo","input":"_2_1_4_+_K"},{"category":"_@","name":"Naname Zenten","input":"_4_6_+_K_+_G"},{"category":"_@","name":"Buyo no Mai","input":"_3_+_K_4_+_K"},{"category":"_@","name":"Tsumuji Kaze","input":"_6_3_2_1_4_+_b"},{"category":"_@","name":"Kappa Dadakko","input":"_6_3_2_1_4_+_a_+_b"},{"category":"_@","name":"Tagame Katame opponent knocked down, close feet","input":"_6_4_+_K"},{"category":"_@","name":"Mozu no Hayaie","input":"_2_3_6_+_a"},{"category":"_@","name":"Semi Shigure","input":"^*_a"},{"category":"_@","name":"Kawazu Geri","input":"_K"},{"category":"_@","name":"Yuuda Zuki","input":"_6_3_2_1_4_+_a (^*)"},{"category":"_@","name":"Yuuda Ippon Zuri","input":"_6_+_a"},{"category":"_@","name":"Yuuda Yume Harai","input":"_b"},{"category":"_@","name":"Yuuda Kawazu Geri","input":"_K"},{"category":"_`","input":"_a_a_b_a_a_a"}],"notes":["Plasma Combo: Senbon Sotoba"]}],"controlAbbr":{"_K":"K","_G":"GR","_S":"ST"},"systemControlMappings":{"snes":{"y":"_G","b":"_K"},"genesis":{"b":"_G","y":"_K"},"megadrive":{"b":"_G","y":"_K"},"32x":{"b":"_G","y":"_K"},"saturn":{"b":"_G","y":"_K"},"psx":{"y":"_K","x":"_G","b":"_A","a":"_B"},"ps2":{"y":"_G","b":"_K"},"gb":{"b":"_G","a":"_K"},"gbc":{"b":"_G","a":"_K"},"gba":{"b":"_G","a":"_K"}},"controlGroups":{"_K":["_K"]}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "starglad",
+    "stargladj"
+  ],
+  "name": "Star Gladiator - Episode I: Final Crusade",
+  "year": 1996,
+  "manufacturer": "Capcom",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "_K": "Kick",
+    "_G": "Guard",
+    "_S": "Start"
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Run",
+      "input": "_6^6"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4"
+    },
+    {
+      "category": "_)",
+      "name": "Small Jump",
+      "input": "_K_+_G"
+    },
+    {
+      "category": "_)",
+      "name": "Knockaround Attack",
+      "input": "_4_+_b"
+    },
+    {
+      "category": "_)",
+      "name": "Move to Background",
+      "input": "_4_+_G"
+    },
+    {
+      "category": "_)",
+      "name": "Move to Foreground",
+      "input": "_6_+_G"
+    },
+    {
+      "category": "_)",
+      "name": "Crouching Dash",
+      "input": "_2_3_6_+_G"
+    },
+    {
+      "category": "_)",
+      "name": "Weak Pursuit Attack opponent knocked down",
+      "input": "_8_+_K"
+    },
+    {
+      "category": "_)",
+      "name": "Strong Pursuit Attack opponent knocked down",
+      "input": "_8_+_a / _b"
+    },
+    {
+      "category": "_)",
+      "name": "Flip Away knocked down",
+      "input": "_4"
+    },
+    {
+      "category": "_)",
+      "name": "Roll Forward knocked down",
+      "input": "_6"
+    },
+    {
+      "category": "_)",
+      "name": "Quick Get-Up knocked down",
+      "input": "_2"
+    },
+    {
+      "category": "_)",
+      "name": "Roll to Background knocked down",
+      "input": "_G"
+    },
+    {
+      "category": "_)",
+      "name": "Roll to Foreground knocked down",
+      "input": "_2_+_G"
+    },
+    {
+      "category": "_)",
+      "name": "Get-Up Attack knocked down",
+      "input": "_K"
+    },
+    {
+      "category": "_)",
+      "name": "Get-Up Lower Attack knocked down",
+      "input": "_2_+_K"
+    },
+    {
+      "category": "_)",
+      "name": "Get-Up Anti-Air Attack knocked down",
+      "input": "_2_8_+_K"
+    },
+    {
+      "category": "_)",
+      "name": "Plasma Reverse: Revenge",
+      "input": "_4_+_a_+_G  /_b_+_G"
+    },
+    {
+      "category": "_)",
+      "name": "Plasma Reverse: Reflect",
+      "input": "_6_+_a_+_G / _b_+_G"
+    },
+    {
+      "category": "_)",
+      "name": "Plasma Strike _a_+_b_+_K (1 for match)"
+    }
+  ],
+  "characters": [
+    {
+      "name": "HAYATO KANZAKI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Tenchi Zan",
+          "input": "_6_+_a"
+        },
+        {
+          "category": "_)",
+          "name": "Rekkuu Zan",
+          "input": "_6_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Eijin Kyaku",
+          "input": "_6_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Eijin Rai'ei Kyaku",
+          "input": "_6_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Tsuki Kag",
+          "input": "_3_+_a"
+        },
+        {
+          "category": "_)",
+          "name": "Jajin",
+          "input": "_3_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Jatan",
+          "input": "_3_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Shou Jump",
+          "input": "_K_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Hien",
+          "input": "_a / _b"
+        },
+        {
+          "category": "_)",
+          "name": "Dokuryuu running",
+          "input": "_b"
+        },
+        {
+          "category": "_)",
+          "name": "Souryuu",
+          "input": "_b"
+        },
+        {
+          "category": "_)",
+          "name": "Kogetsu back turned",
+          "input": "_a"
+        },
+        {
+          "category": "_@",
+          "name": "Shiden",
+          "input": "_2_3_6_+_b_a"
+        },
+        {
+          "category": "_@",
+          "name": "Shiden: Kai",
+          "input": "_2_3_6_+_b_b_a"
+        },
+        {
+          "category": "_@",
+          "name": "Engetsu",
+          "input": "_6_3_2_1_4_+_a"
+        },
+        {
+          "category": "_@",
+          "name": "Ura Engetsu",
+          "input": "_6_3_2_1_4_+_O_a"
+        },
+        {
+          "category": "_@",
+          "name": "Byakko Hou",
+          "input": "_6_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Ashura",
+          "input": "_2_2_2"
+        },
+        {
+          "category": "_@",
+          "name": "Shin Ashura",
+          "input": "_a_a_6_G_b"
+        },
+        {
+          "category": "_@",
+          "name": "Shin Engetsu",
+          "input": "_6_3_2_1_4_+_a"
+        },
+        {
+          "category": "_@",
+          "name": "Shin Ura Engetsu",
+          "input": "_6_3_2_1_4_+_O_a"
+        },
+        {
+          "category": "_@",
+          "name": "Gekishin Haten",
+          "input": "_6_4_6_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Guren",
+          "input": "_6_2_3_+_a"
+        },
+        {
+          "category": "_@",
+          "name": "Guren Ranbu",
+          "input": "_6_2_3_+_a (x3)"
+        },
+        {
+          "category": "_@",
+          "name": "Shuradou",
+          "input": "_2_2_2"
+        },
+        {
+          "category": "_@",
+          "name": "Gekishin Haten",
+          "input": "_6_4_6_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Goki Raimei Zan",
+          "input": "_6_4_6_4_6_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Guren",
+          "input": "_6_2_3_+_a"
+        },
+        {
+          "category": "_@",
+          "name": "Guren Ranbu",
+          "input": "_6_2_3_+_a (x3)"
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_b_a_a_8_+_a"
+        }
+      ],
+      "notes": [
+        "Plasma Combo: Kegon"
+      ]
+    },
+    {
+      "name": "JUNE LIN MILLIAM",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Star Shot",
+          "input": "_6_+_a"
+        },
+        {
+          "category": "_)",
+          "name": "Turn Shot",
+          "input": "_6_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Gyro Shot",
+          "input": "_6_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Shine Dream",
+          "input": "_3_+_a"
+        },
+        {
+          "category": "_)",
+          "name": "Stardust",
+          "input": "_3_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Scream Flash",
+          "input": "_3_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Ground Gyro Shoot",
+          "input": "_1_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Moonsault Kick back turned",
+          "input": "_K"
+        },
+        {
+          "category": "_)",
+          "name": "Moonshine Kick",
+          "input": "_K_+_G"
+        },
+        {
+          "category": "_@",
+          "name": "Twinkle Elbow",
+          "input": "_2_3_6_+_a_a"
+        },
+        {
+          "category": "_@",
+          "name": "Starlight Wish",
+          "input": "_2_3_6_+_a_K"
+        },
+        {
+          "category": "_@",
+          "name": "Comet Kick",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Double Comet Kick",
+          "input": "_2_1_4_+_K_K"
+        },
+        {
+          "category": "_@",
+          "name": "Sokuten",
+          "input": "_2_1_4_+_G"
+        },
+        {
+          "category": "_@",
+          "name": "North Star Combo",
+          "input": "_4_6_+_b_K"
+        },
+        {
+          "category": "_@",
+          "name": "Camel Clutch opponent knocked down, close feet",
+          "input": "_6_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Somersault",
+          "input": "_2_8_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Shine Dream",
+          "input": "_a"
+        },
+        {
+          "category": "_@",
+          "name": "Chouhatsu",
+          "input": "_a_a_6_G_b"
+        },
+        {
+          "category": "_@",
+          "name": "Back Ten",
+          "input": "_K_+_G"
+        },
+        {
+          "category": "_@",
+          "name": "Big Bang",
+          "input": "_a_a_6_G_b"
+        },
+        {
+          "category": "_@",
+          "name": "Butt Check",
+          "input": "_4_6_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Spin while rising",
+          "input": "_b"
+        },
+        {
+          "category": "_`",
+          "input": "_K_K_b_K_K_8_+_K"
+        }
+      ],
+      "notes": [
+        "Plasma Combo: Happy Black Hole"
+      ]
+    },
+    {
+      "name": "SATURN DYER",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Long Slash Throw",
+          "input": "_6_+_a"
+        },
+        {
+          "category": "_)",
+          "name": "Side Slash Throw",
+          "input": "_6_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Drastic Follow",
+          "input": "_6_+_b_b"
+        },
+        {
+          "category": "_)",
+          "name": "Passing Head",
+          "input": "_6_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Double Surprise",
+          "input": "_6_+_K_a"
+        },
+        {
+          "category": "_)",
+          "name": "Dancing Foot",
+          "input": "_2_+_K_6_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Sendout",
+          "input": "_3_+_a"
+        },
+        {
+          "category": "_)",
+          "name": "Roll Slash",
+          "input": "_3_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Sailing Hit",
+          "input": "_3_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Inu no Sambo",
+          "input": "_2_3_6_+_a_a"
+        },
+        {
+          "category": "_@",
+          "name": "Top Spin",
+          "input": "_2_3_6_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Acrobat Attack",
+          "input": "_2_1_4_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Acrobat Combo",
+          "input": "_b_b"
+        },
+        {
+          "category": "_@",
+          "name": "Sokuten",
+          "input": "_2_1_4_+_G"
+        },
+        {
+          "category": "_@",
+          "name": "Tapping Attack",
+          "input": "_4_6_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Firecracker",
+          "input": "_4_6_+_K"
+        },
+        {
+          "category": "_`",
+          "input": "_b_b_K_K_b_b"
+        }
+      ],
+      "notes": [
+        "Plasma Combo: Deadly Cyclone"
+      ]
+    },
+    {
+      "name": "GAMOF GOHGRY",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Gamo Burn",
+          "input": "_6_+_a"
+        },
+        {
+          "category": "_)",
+          "name": "Gamo Victory",
+          "input": "_6_+_a_a"
+        },
+        {
+          "category": "_)",
+          "name": "Gamo Boon",
+          "input": "_6_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Gamo Head",
+          "input": "_6_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Gamo Kick",
+          "input": "_4_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Gamo Shot",
+          "input": "_2_+_b_6_+_a"
+        },
+        {
+          "category": "_)",
+          "name": "Gamo Ride",
+          "input": "_3_+_a"
+        },
+        {
+          "category": "_)",
+          "name": "Gamo Fly Kick",
+          "input": "_3_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Gamo Running Kick running",
+          "input": "_a / _b"
+        },
+        {
+          "category": "_)",
+          "name": "Gamo Fall",
+          "input": "_b"
+        },
+        {
+          "category": "_@",
+          "name": "Gamo Swing",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Gamo Home Run good timing",
+          "input": "_b"
+        },
+        {
+          "category": "_@",
+          "name": "Gamo Chip bad timing",
+          "input": "_b"
+        },
+        {
+          "category": "_@",
+          "name": "Gamo Screw",
+          "input": "_6_3_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Gamo Giant Swing from behind",
+          "input": "_6_3_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Zenten",
+          "input": "_2_1_4_+_K_+_G"
+        },
+        {
+          "category": "_@",
+          "name": "Ushiro Mawarikomi Jump",
+          "input": "_K_+_G"
+        },
+        {
+          "category": "_@",
+          "name": "Gamo Tornado",
+          "input": "_4_6_+_b (^*)"
+        },
+        {
+          "category": "_@",
+          "name": "Gamo Press opponent in air",
+          "input": "_4_6_+_K"
+        },
+        {
+          "category": "_`",
+          "input": "_K_a_K_a_K_a"
+        }
+      ],
+      "notes": [
+        "Plasma Combo: Gamo Flying Screw"
+      ]
+    },
+    {
+      "name": "FRANCO GERELT",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Gran Tounche",
+          "input": "_6_+_a"
+        },
+        {
+          "category": "_)",
+          "name": "Gran Cut",
+          "input": "_6_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Trick Kick",
+          "input": "_6_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Rapid Elbow",
+          "input": "_6_6_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Just Stab",
+          "input": "_4_+_a"
+        },
+        {
+          "category": "_)",
+          "name": "Spanish Dance",
+          "input": "_4_4_+_a_a_a"
+        },
+        {
+          "category": "_)",
+          "name": "Killing Bull",
+          "input": "_1_+_a"
+        },
+        {
+          "category": "_)",
+          "name": "Black Heaven",
+          "input": "_3_+_a"
+        },
+        {
+          "category": "_)",
+          "name": "Sharp Crawl",
+          "input": "_3_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Blood Down",
+          "input": "_3_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Bloody Flamenco",
+          "input": "_3_+_K_2_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Kick Del Sol running",
+          "input": "_K_+_G"
+        },
+        {
+          "category": "_@",
+          "name": "Thunder Touche",
+          "input": "_2_3_6_+_a"
+        },
+        {
+          "category": "_@",
+          "name": "Thunder Touche Storm",
+          "input": "^*_a"
+        },
+        {
+          "category": "_@",
+          "name": "Southern Arrow",
+          "input": "^*_K"
+        },
+        {
+          "category": "_@",
+          "name": "Andelucia Storm",
+          "input": "_6_3_2_1_4_+^*_a"
+        },
+        {
+          "category": "_@",
+          "name": "Andelucia Crawl",
+          "input": "_b"
+        },
+        {
+          "category": "_@",
+          "name": "Andelucia Arrow",
+          "input": "_K"
+        },
+        {
+          "category": "_@",
+          "name": "Rising Arrow",
+          "input": "_6_+_a"
+        },
+        {
+          "category": "_@",
+          "name": "S.D.F opponent knocked down, close feet",
+          "input": "_6_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Matador",
+          "input": "_4_6_+_a_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Naname Zenten",
+          "input": "_4_6_+_K_+_G"
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_b_a_a_a"
+        }
+      ],
+      "notes": [
+        "Plasma Combo: Final Ecstasy"
+      ]
+    },
+    {
+      "name": "VECTOR",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Upper Beam Bazooka",
+          "input": "_6_+_a"
+        },
+        {
+          "category": "_)",
+          "name": "Chainsaw",
+          "input": "_6_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Shovel Kick",
+          "input": "_6_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Leg Impact",
+          "input": "_6_+_K_K"
+        },
+        {
+          "category": "_)",
+          "name": "Back Roller Dash",
+          "input": "_1_+_K_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Lower Beam Bazooka",
+          "input": "_3_+_a"
+        },
+        {
+          "category": "_)",
+          "name": "Leg Cut",
+          "input": "_3_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Drill Kick",
+          "input": "_3_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Vertical Laser back turned",
+          "input": "_K"
+        },
+        {
+          "category": "_)",
+          "name": "Last Shooting throw from behind",
+          "input": "_a"
+        },
+        {
+          "category": "_@",
+          "name": "Hover Straight",
+          "input": "_2_1_4_+_a"
+        },
+        {
+          "category": "_@",
+          "name": "Horizontal Laser",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Mad Blit",
+          "input": "_2_8_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Drill",
+          "input": "_2_+_K"
+        },
+        {
+          "category": "_`",
+          "input": "_K_a_K_a_K_K"
+        }
+      ],
+      "notes": [
+        "Plasma Combo: Gigantic Hammer"
+      ]
+    },
+    {
+      "name": "RIMGAL",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Big Bone",
+          "input": "_6_+_a"
+        },
+        {
+          "category": "_)",
+          "name": "Bone Branish",
+          "input": "_6_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Meal Bite",
+          "input": "_6_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "King Tail",
+          "input": "_4_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Fuse",
+          "input": "_2_2"
+        },
+        {
+          "category": "_)",
+          "name": "Leg Bite",
+          "input": "_K"
+        },
+        {
+          "category": "_)",
+          "name": "Lower Dino Flame",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Tail Leap",
+          "input": "_1_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Game Claw",
+          "input": "_3_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Skull Burst",
+          "input": "_3_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Crazy Wave running",
+          "input": "^*_b"
+        },
+        {
+          "category": "_)",
+          "name": "Big Bone",
+          "input": "_a"
+        },
+        {
+          "category": "_)",
+          "name": "Hell Float back turned",
+          "input": "_K"
+        },
+        {
+          "category": "_@",
+          "name": "Dino Flame",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Long Dino Flame",
+          "input": "_4_1_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Volcano Kick",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Double Volcano Kick",
+          "input": "_K"
+        },
+        {
+          "category": "_@",
+          "name": "Landslide Kick",
+          "input": "_4_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Long Backdash",
+          "input": "_6_4_+_K_+_G"
+        },
+        {
+          "category": "_@",
+          "name": "Jurassic Trip opponent in air",
+          "input": "_2_8_+_K"
+        },
+        {
+          "category": "_`",
+          "input": "_b_K_K_a_a_K"
+        }
+      ],
+      "notes": [
+        "Plasma Combo: Hundred Fang"
+      ]
+    },
+    {
+      "name": "ZELKIN FISKEKROGEN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Keen Slash",
+          "input": "_6_+_a"
+        },
+        {
+          "category": "_)",
+          "name": "Wide Slash",
+          "input": "_6_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Hammer Kick",
+          "input": "_6_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Sky Snipe",
+          "input": "_4_+_a"
+        },
+        {
+          "category": "_)",
+          "name": "Super Jump",
+          "input": "_2_8 / _8_8"
+        },
+        {
+          "category": "_)",
+          "name": "Sky Destruction",
+          "input": "_2_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Air Dash",
+          "input": "_6_6"
+        },
+        {
+          "category": "_)",
+          "name": "Rising Blade",
+          "input": "_3_+_a"
+        },
+        {
+          "category": "_)",
+          "name": "Fire Wheel Combo",
+          "input": "_3_+_a_K"
+        },
+        {
+          "category": "_)",
+          "name": "Sliding Blade",
+          "input": "_3_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Kaiten Super Jump",
+          "input": "_^_2_8"
+        },
+        {
+          "category": "_)",
+          "name": "Air Javelin",
+          "input": "_^_2_+_a"
+        },
+        {
+          "category": "_)",
+          "name": "Kyuu Rakka",
+          "input": "_^_2_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Kuuchuu Fuyuu",
+          "input": "_^_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Kuuchuu Yoko Idou",
+          "input": "_G"
+        },
+        {
+          "category": "_)",
+          "name": "Air Wheel back turned",
+          "input": "^*_K"
+        },
+        {
+          "category": "_@",
+          "name": "Trust Blow",
+          "input": "_4_6_+_a"
+        },
+        {
+          "category": "_@",
+          "name": "Thunder Blade",
+          "input": "_4_6_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Thunder Wheel Combo",
+          "input": "_K"
+        },
+        {
+          "category": "_@",
+          "name": "Blue Storm",
+          "input": "_6_3_2_1_4_+_K (^*)"
+        },
+        {
+          "category": "_`",
+          "input": "_b_K_K_a_a_8_+_a"
+        }
+      ],
+      "notes": [
+        "Plasma Combo: Dance in the Sky"
+      ]
+    },
+    {
+      "name": "GORE GAJAH",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Kannon Biraki",
+          "input": "_6_+_a"
+        },
+        {
+          "category": "_)",
+          "name": "Suihei Biraki",
+          "input": "_6_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Kinteki Hishuu",
+          "input": "_6_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Tsubo Shiatsu Zuki",
+          "input": "_3_+_a"
+        },
+        {
+          "category": "_)",
+          "name": "Kaiten Keizan",
+          "input": "_3_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Haikotsu Shinchou",
+          "input": "_3_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Zenten",
+          "input": "_3_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Zatou Ichizuki back turned",
+          "input": "_a"
+        },
+        {
+          "category": "_)",
+          "name": "Katsu Tou'nyuu opponent knocked down",
+          "input": "_3_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Dokuyaku Sanpu",
+          "input": "_2_3_6_+_a"
+        },
+        {
+          "category": "_@",
+          "name": "Sosei Henkan",
+          "input": "_2_3_6_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Hiyaku Youkyoku",
+          "input": "_2_1_4_+_a"
+        },
+        {
+          "category": "_@",
+          "name": "Enshin Bunri opponent knocked down, close feet",
+          "input": "_6_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Zettai Ansei",
+          "input": "_2_+_K_+_G"
+        },
+        {
+          "category": "_@",
+          "name": "Kyakubu Kaiten",
+          "input": "_4_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Shindou Ryouhou",
+          "input": "_a_b"
+        },
+        {
+          "category": "_@",
+          "name": "Okiru",
+          "input": "_G"
+        },
+        {
+          "category": "_@",
+          "name": "Temae Shin Idou",
+          "input": "_2_+_G"
+        },
+        {
+          "category": "_@",
+          "name": "Ou Shin Idou",
+          "input": "_8_+_G"
+        },
+        {
+          "category": "_@",
+          "name": "Shin Dash",
+          "input": "_4_4 / _6_6"
+        },
+        {
+          "category": "_@",
+          "name": "Bairitsu Henkou: Kyokudaika",
+          "input": "_2_2_2"
+        },
+        {
+          "category": "_@",
+          "name": "Bairitsu Henkou: 2 Dankai",
+          "input": "_2_2_2"
+        },
+        {
+          "category": "_@",
+          "name": "Bairitsu Henkou: Shukushouka",
+          "input": "_2_2_2_2"
+        },
+        {
+          "category": "_@",
+          "name": "Naizou Appaku",
+          "input": "_2_1_4_+_K_K_K"
+        },
+        {
+          "category": "_@",
+          "name": "Ara Ryouji",
+          "input": "_6_+_a"
+        },
+        {
+          "category": "_`",
+          "input": "_b_a_b_a_b_a"
+        }
+      ],
+      "notes": [
+        "Plasma Combo: Kyuukyoku Bouchuu"
+      ]
+    },
+    {
+      "name": "Dr. EDWARD BILSTEIN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Vertical Sword",
+          "input": "_6_+_a"
+        },
+        {
+          "category": "_)",
+          "name": "Side Sword",
+          "input": "_6_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Deadly Triple",
+          "input": "_6_+_b_a_a"
+        },
+        {
+          "category": "_)",
+          "name": "Bowels Break",
+          "input": "_6_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Kieru",
+          "input": "_4_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Penetrate Sword",
+          "input": "_3_+_a"
+        },
+        {
+          "category": "_)",
+          "name": "Ground hell Wind",
+          "input": "_3_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Centipede Kick",
+          "input": "_3_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Fuyuu",
+          "input": "_K_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Kuuchuu Yoku Idou",
+          "input": "_O_G"
+        },
+        {
+          "category": "_)",
+          "name": "Calamity Dive",
+          "input": "_a / _b"
+        },
+        {
+          "category": "_)",
+          "name": "Cancel",
+          "input": "_K"
+        },
+        {
+          "category": "_)",
+          "name": "Dark Cyclone back turned",
+          "input": "_K"
+        },
+        {
+          "category": "_)",
+          "name": "Death Spell Kick",
+          "input": "_K_K"
+        },
+        {
+          "category": "_)",
+          "name": "Death Spell Sword",
+          "input": "_K_a"
+        },
+        {
+          "category": "_@",
+          "name": "Space Rend Sword",
+          "input": "_2_3_6_+_a"
+        },
+        {
+          "category": "_@",
+          "name": "Final Bilstein",
+          "input": "_6_3_2_1_4_+_a_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Blaze Sword",
+          "input": "_2_8_+_a"
+        },
+        {
+          "category": "_@",
+          "name": "Double Blaze",
+          "input": "_2_8_+_a / _b"
+        },
+        {
+          "category": "_@",
+          "name": "Hell Wind Sword",
+          "input": "_4_6_+_b"
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_b_K_K_a"
+        }
+      ],
+      "notes": [
+        "Plasma Combo: Fatal Decision"
+      ]
+    },
+    {
+      "name": "KAPPAH NOSUKE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Tsuku Shinbou",
+          "input": "_6_+_a"
+        },
+        {
+          "category": "_)",
+          "name": "Yume Harai",
+          "input": "_6_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Kare Suzuki",
+          "input": "_6_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Inaba no Shirousagi",
+          "input": "_4_+_a"
+        },
+        {
+          "category": "_)",
+          "name": "Amenbo Tsuki",
+          "input": "_3_+_a"
+        },
+        {
+          "category": "_)",
+          "name": "Kusagari",
+          "input": "_3_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Hasu no Hageri",
+          "input": "_3_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Nomi Geri running",
+          "input": "_K_K"
+        },
+        {
+          "category": "_)",
+          "name": "Uma no Inanaki running",
+          "input": "_K_+_G"
+        },
+        {
+          "category": "_@",
+          "name": "Kane Narashi",
+          "input": "_6_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Meoto Tonpo",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Naname Zenten",
+          "input": "_4_6_+_K_+_G"
+        },
+        {
+          "category": "_@",
+          "name": "Buyo no Mai",
+          "input": "_3_+_K_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Tsumuji Kaze",
+          "input": "_6_3_2_1_4_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Kappa Dadakko",
+          "input": "_6_3_2_1_4_+_a_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Tagame Katame opponent knocked down, close feet",
+          "input": "_6_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Mozu no Hayaie",
+          "input": "_2_3_6_+_a"
+        },
+        {
+          "category": "_@",
+          "name": "Semi Shigure",
+          "input": "^*_a"
+        },
+        {
+          "category": "_@",
+          "name": "Kawazu Geri",
+          "input": "_K"
+        },
+        {
+          "category": "_@",
+          "name": "Yuuda Zuki",
+          "input": "_6_3_2_1_4_+_a (^*)"
+        },
+        {
+          "category": "_@",
+          "name": "Yuuda Ippon Zuri",
+          "input": "_6_+_a"
+        },
+        {
+          "category": "_@",
+          "name": "Yuuda Yume Harai",
+          "input": "_b"
+        },
+        {
+          "category": "_@",
+          "name": "Yuuda Kawazu Geri",
+          "input": "_K"
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_b_a_a_a"
+        }
+      ],
+      "notes": [
+        "Plasma Combo: Senbon Sotoba"
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_K": "K",
+    "_G": "GR",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_G",
+      "b": "_K"
+    },
+    "genesis": {
+      "b": "_G",
+      "y": "_K"
+    },
+    "megadrive": {
+      "b": "_G",
+      "y": "_K"
+    },
+    "32x": {
+      "b": "_G",
+      "y": "_K"
+    },
+    "saturn": {
+      "b": "_G",
+      "y": "_K"
+    },
+    "psx": {
+      "y": "_K",
+      "x": "_G",
+      "b": "_A",
+      "a": "_B"
+    },
+    "ps2": {
+      "y": "_G",
+      "b": "_K"
+    },
+    "gb": {
+      "b": "_G",
+      "a": "_K"
+    },
+    "gbc": {
+      "b": "_G",
+      "a": "_K"
+    },
+    "gba": {
+      "b": "_G",
+      "a": "_K"
+    }
+  },
+  "controlGroups": {
+    "_K": [
+      "_K"
+    ]
+  }
+}

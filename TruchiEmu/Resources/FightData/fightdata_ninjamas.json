@@ -1,1 +1,2585 @@
-{"schemaVersion":2,"romIds":["ninjamas"],"name":"Ninja Master's: Haoh-ninpo-cho","year":1996,"manufacturer":"SNK","credits":"Fabricio Coroquer","controls":{"_A":"Weak Punch","_B":"Strong Punch","_C":"Weak Kick","_D":"Strong Kick","_S":"Start","^S":"Select (AES only)"},"controlGroups":{"_P":["_A","_B"],"_K":["_C","_D"]},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves","_*":"Super Moves","_&":"Desperation Moves","_#":"Super Chains","_`":"Super Chains"},"commonCommands":[{"category":"_)","name":"Dash","input":"_6_6","condition":"W/N/──"},{"category":"_)","name":"Retreat","input":"_4_4","condition":"W/N/──"},{"category":"_)","name":"Draw Weapon / Bare Hands","input":"_B_+_C","condition":"W/N/──"},{"category":"_)","name":"Retrive Weapon close to your weapon","input":"_2_+_B_+_C","condition":"─/─/──"},{"category":"_)","name":"Hyper Mode (MAX)","input":"_A_+_B_+_C","condition":"W/N/──"}],"characters":[{"name":"SASUKE","moves":[{"category":"_(","name":"Shoulder Toss","input":"_6_+_B","condition":"W/N/──"},{"category":"_(","name":"The Reaper","input":"_6_+_D","condition":"W/N/──"},{"category":"_)","name":"Handle Strike","input":"_6_+_A","condition":"W/─/──"},{"category":"_)","name":"Forward Palm","input":"_6_+_A","condition":"─/N/──"},{"category":"_)","name":"Forward Slice","input":"_6_+_B","condition":"W/─/──"},{"category":"_)","name":"Falling Elbow","input":"_6_+_B","condition":"─/N/──"},{"category":"_)","name":"Crouch Snap","input":"_1_1_+_D","condition":"W/N/──"},{"category":"_)","name":"Rolling Heel dashing","input":"_3_+_D","condition":"W/N/──"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_9","condition":"W/N/──"},{"category":"_@","name":"Hishou Getsu","input":"_2_3_6_+_P","condition":"W/N/EX"},{"category":"_@","name":"Shoukuu Kyaku Sen","input":"_2_1_4_+_K","condition":"W/N/EX"},{"category":"_@","name":"Shoukuu Kyaku Retsu","input":"_^_2_1_4_+_K","condition":"W/N/EX"},{"category":"_@","name":"Hishou Ken","input":"_6_2_3_+_P","condition":"W/N/EX"},{"category":"_@","input":"^!Reverse Hi Shouken (with _B)                             _2_3_6_+_B","condition":"W/N/EX"},{"category":"_@","input":"^!Finish                                               _2_3_6_+_B","condition":"W/N/EX"},{"category":"_@","name":"Shoulder Breaker close","input":"_6_3_2_1_4_+_D","condition":"W/N/──"},{"category":"_@","name":"Shin Geki Ha","input":"_6_4_1_2_3_6_+_A_+_B (_O)","condition":"W/N/──"},{"category":"_*","name":"Super Shin Geku Ha","input":"_6_4_1_2_3_6_+_A_+_B (_O)","condition":"W/N/──"},{"category":"_&","name":"Shipuuret Shin Geki","input":"_6_3_2_1_4_1_2_3_6_+_A_+_C","condition":"W/N/──"},{"category":"_#","input":"_A _! _B _! _B _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_A _! _6_+_A _! _B _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_B _! _A _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_B _! _B _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_B _! _C _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_C _! _B _! _B _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_C _! _6_+_A _! _B _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_D _! _B _! _B _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_D _! _6_+_A _! _B _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_`","input":"_>","condition":"Shou Shin Kohuubaku                                          _2_2_1_4_6_+_A_+_B ─/N/──"}]},{"name":"KAMUI","moves":[{"category":"_(","name":"Body Slam","input":"_6_+_B","condition":"W/N/──"},{"category":"_)","name":"Low Stab","input":"_6_+_A","condition":"W/─/──"},{"category":"_)","name":"Forward Palm","input":"_6_+_A","condition":"─/N/──"},{"category":"_)","name":"Backfist","input":"_6_+_B","condition":"─/N/──"},{"category":"_)","name":"Side Kick","input":"_6_+_C","condition":"W/N/──"},{"category":"_)","name":"Step Palm","input":"_3_+_A","condition":"W/N/──"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_9","condition":"W/N/──"},{"category":"_)","name":"Wall Hold jump against the wall","input":"_4","condition":"W/N/──"},{"category":"_)","input":"^!Crawl Up Wall                                            _8","condition":"W/N/──"},{"category":"_)","input":"^!Crawl Down Wall                                          _2","condition":"W/N/──"},{"category":"_)","input":"^!Jump Off Wall                                            _6","condition":"W/N/──"},{"category":"_)","input":"^!Quick Chop                                               _A","condition":"W/N/──"},{"category":"_)","input":"^!Spiral Dive                                              _B","condition":"W/N/──"},{"category":"_)","input":"^!Quick Kick                                               _C","condition":"W/N/──"},{"category":"_)","input":"^!Flying Kick                                              _D","condition":"W/N/──"},{"category":"_@","name":"Fuuga","input":"_2_3_6_+_P","condition":"W/N/EX"},{"category":"_@","name":"Ryu Toh Ga","input":"_6_2_3_+_P","condition":"W/N/EX"},{"category":"_@","name":"Sakki","input":"_2_1_4_+_K","condition":"W/N/EX"},{"category":"_@","input":"^!Kick Two                                                 _2_1_4_+_K","condition":"W/N/EX"},{"category":"_@","input":"^!Drill Finish                                         _2_1_4_+_K","condition":"W/N/EX"},{"category":"_@","name":"Head Spike close","input":"_6_4_1_2_+_D","condition":"W/N/──"},{"category":"_@","name":"Kaen Jin Onezame","input":"_^_6_3_2_1_4_+_A_+_B","condition":"W/N/──"},{"category":"_*","name":"Super Kaen Jin Onezame","input":"_^_6_3_2_1_4_+_A_+_B","condition":"W/N/──"},{"category":"_&","name":"Kiretsuzan Chikemuri","input":"_6_3_2_1_4_1_2_3_6_+_A_+_C","condition":"W/N/──"},{"category":"_#","name":"close","input":"_A _! _A _! _B _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","name":"far","input":"_A _! _B _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_3_+_A _! _A _! _B _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_B _! _A _! _A _! _B _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_B _! _C _! _A _! _B _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_C _! _A _! _B _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_D _! _B _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_`","input":"_>","condition":"Fire Pillars                                                 _2_2_1_4_6_+_A_+_B W/─/──"}]},{"name":"RAIGA","moves":[{"category":"_(","name":"Dangerous Suplex","input":"_6_+_B","condition":"W/N/──"},{"category":"_(","name":"Enzuigiri","input":"_6_+_D","condition":"W/N/──"},{"category":"_)","name":"Rough Shoulder","input":"_6_+_A","condition":"W/N/──"},{"category":"_)","name":"Short Dropkick","input":"_6_+_C","condition":"W/N/──"},{"category":"_)","name":"Upper dashing","input":"_3_+_B","condition":"W/N/──"},{"category":"_)","name":"Slide Kick dashing","input":"_3_+_C","condition":"W/N/──"},{"category":"_)","name":"Knee Hop dashing","input":"_3_+_D","condition":"W/N/──"},{"category":"_)","name":"Falling Back","input":"_^_2_+_B","condition":"W/N/──"},{"category":"_)","name":"Butt Drop","input":"_^_2_+_C","condition":"W/N/──"},{"category":"_@","name":"Raigeki Satsu","input":"_2_1_4_+_P","condition":"W/N/EX"},{"category":"_@","input":"^!Chirairyu                                                _4_1_2_3_6_+_P","condition":"W/N/EX"},{"category":"_@","name":"Ikazuchi Chiryuu","input":"^4_6_+_K","condition":"W/N/EX"},{"category":"_@","name":"Ikazuchi Tenryuu","input":"^2_8_+_K","condition":"W/N/EX"},{"category":"_@","name":"Bakurai Geki","input":"^4_6_+_P","condition":"W/N/EX"},{"category":"_@","input":"^!Rough Shoulder                                           _4_6_+_P","condition":"W/N/EX"},{"category":"_@","input":"^!Upper Finish                                         _4_6_+_P","condition":"W/N/EX"},{"category":"_@","name":"Mega Tiger Bomb close","condition":"W/N/──","input":"_x_+_B"},{"category":"_@","name":"Raishinsho","input":"^2_8_+_B_+_D","condition":"W/N/──"},{"category":"_*","name":"Super Raishinsho","input":"^2_8_+_B_+_D","condition":"W/N/──"},{"category":"_&","name":"Senco Raizin","input":"_2_3_6_4_1_2_3_6_+_A_+_B","condition":"W/N/──"},{"category":"_#","input":"_A _! _B _! _B _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_A _! _B _! _C _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_A _! _B _! _D _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_A _! _C _! _B _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_A _! _C _! _C _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_A _! _C _! _D _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_B _! _B _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_B _! _C _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_B _! _D _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_C _! _B _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_C _! _C _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_C _! _D _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_D _! _B _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_D _! _C _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_D _! _D _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_`","input":"_>","condition":"Lightning Cage                                               _4_6_4_1_2_+_C_+_D W/─/──"}]},{"name":"TENHO","moves":[{"category":"_(","name":"Bullseye Blast","input":"_6_+_B","condition":"W/N/──"},{"category":"_(","name":"Air Bullseye Blast","input":"_^_4 / _6_+_B","condition":"W/N/──"},{"category":"_)","name":"High Kick","input":"_6_+_C","condition":"W/N/──"},{"category":"_)","name":"Change Over far","input":"_4_+_B","condition":"W/─/──"},{"category":"_)","name":"Double Stomp","input":"_^_2_+_C","condition":"W/N/──"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_9","condition":"W/N/──"},{"category":"_)","name":"Wall Hold jump against the wall","input":"_4","condition":"W/N/──"},{"category":"_)","input":"^!Crawl Up Wall                                            _8","condition":"W/N/──"},{"category":"_)","input":"^!Crawl Down Wall                                          _2","condition":"W/N/──"},{"category":"_)","input":"^!Jump Off Wall                                            _6","condition":"W/N/──"},{"category":"_)","input":"^!Shoulder Dive                                            _P","condition":"W/N/──"},{"category":"_)","input":"^!Foot Plant                                               _K","condition":"W/N/──"},{"category":"_)","input":"^!Frog Leap                                                _4_+_D","condition":"W/N/──"},{"category":"_@","name":"Jubaku Fu","input":"_2_3_6_+_P","condition":"W/N/EX"},{"category":"_@","name":"Senkuu Dan","input":"_2_3_6_+_K","condition":"W/N/EX"},{"category":"_@","name":"Shuu Go Ju Retsu Dan","input":"_O_D for 3 seconds","condition":"W/N/──"},{"category":"_@","name":"Senmetsu Sho","input":"^*_P","condition":"─/N/EX"},{"category":"_@","name":"Tenmaen Satsujin","input":"_6_3_2_1_4_+_P","condition":"─/N/EX"},{"category":"_@","name":"Senkuken","input":"_6_2_3_+_P","condition":"W/N/EX"},{"category":"_@","input":"^!Second Senkuken                                          _2_3_6_+_P","condition":"W/N/EX"},{"category":"_@","input":"^!Senkuken Finish                                      _2_3_6_+_P","condition":"W/N/EX"},{"category":"_@","name":"Powered Spirit close","input":"_4_2_1_+_B","condition":"W/N/──"},{"category":"_@","name":"Taikyoku Ha","input":"_2_1_4_1_2_3_6_+_A_+_B","condition":"W/N/──"},{"category":"_*","name":"Super Taikyoku Ha","input":"_2_1_4_1_2_3_6_+_A_+_B","condition":"W/N/──"},{"category":"_&","name":"Senjin Fuja","input":"_6_3_2_1_4_6_3_2_+_A_+_C","condition":"W/N/──"},{"category":"_#","input":"_A _! _B _! _A _! _6_+_D _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_A _! _B _! _B _! _6_+_D _! _6_+_B","condition":"─/N/──"},{"category":"_#","input":"_A _! _B _! _C _! _6_+_D _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_A _! _C _! _A _! _6_+_D _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_A _! _C _! _B _! _6_+_D _! _6_+_B","condition":"─/N/──"},{"category":"_#","input":"_A _! _C _! _C _! _6_+_D _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_C _! _B _! _A _! _6_+_D _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_C _! _B _! _B _! _6_+_D _! _6_+_B","condition":"─/N/──"},{"category":"_#","input":"_C _! _B _! _C _! _6_+_D _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_C _! _C _! _A _! _6_+_D _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_C _! _C _! _B _! _6_+_D _! _6_+_B","condition":"─/N/──"},{"category":"_#","input":"_C _! _C _! _C _! _6_+_D _! _6_+_B","condition":"W/N/──"},{"category":"_`","input":"_>","condition":"Ofuda Engulf                                                 _O_A for 3 seconds, _2_1_4 ─/N/──"}]},{"name":"KARASU","moves":[{"category":"_(","name":"Final Stab","input":"_6_+_B","condition":"W/─/──"},{"category":"_(","name":"Crow Break","input":"_6_+_B","condition":"─/N/──"},{"category":"_)","name":"Waist Slice close","input":"_6_+_A","condition":"W/─/──"},{"category":"_)","name":"Arc Swipe far","input":"_6_+_A","condition":"W/─/──"},{"category":"_)","name":"Low Beak","input":"_6_+_A","condition":"─/N/──"},{"category":"_)","name":"Double Slash","input":"_6_+_B","condition":"W/─/──"},{"category":"_)","name":"Crow Weapon unarmed","input":"_6_+_B_+_C","condition":"─/─/──"},{"category":"_)","input":"^!Catch Weapon                                             _B_+_C","condition":"─/─/──"},{"category":"_@","name":"Karasu Yaiba","input":"_6_2_3_+_P","condition":"W/─/EX"},{"category":"_@","name":"Hayate Bane","input":"_6_2_3_+_P","condition":"─/N/EX"},{"category":"_@","name":"Ridare Bane","input":"_2_1_4_+_P","condition":"W/─/EX"},{"category":"_@","input":"^!Mid Finish                                               _A","condition":"W/─/EX"},{"category":"_@","input":"^!Low Finish                                               _B","condition":"W/─/EX"},{"category":"_@","name":"Hane Yaiba","input":"_^_2_3_6_+_P","condition":"W/─/EX"},{"category":"_@","name":"Yami Karasu","input":"_2_3_6_+_P","condition":"W/N/EX"},{"category":"_@","input":"^!Second Crow                                              _6_+_P","condition":"W/N/EX"},{"category":"_@","input":"^!Third Crow                                           _6_+_P","condition":"W/N/EX"},{"category":"_@","name":"Set Up Slash close","input":"_6_4_1_+_B","condition":"W/─/──"},{"category":"_@","name":"Set Up Uppercut close","input":"_6_4_1_+_B","condition":"─/N/──"},{"category":"_@","name":"Kikyo Shoheki","input":"_6_4_1_2_3_6_+_A_+_C","condition":"W/N/──"},{"category":"_*","name":"Super Kikyo Shoheki","input":"_6_4_1_2_3_6_+_A_+_C","condition":"W/N/──"},{"category":"_&","name":"Onmyo Karasu","input":"_6_3_2_1_4_6_+_A_+_B","condition":"W/N/──"},{"category":"_#","input":"_A _! _B _! _A _! _B _! _6_+_B","condition":"─/N/──"},{"category":"_#","input":"_A _! _B _! _A _! _B_+_C _! _6_+_B","condition":"─/N/──"},{"category":"_#","input":"_A _! _B _! _B_+_C _! _B _! _6_+_B","condition":"─/N/──"},{"category":"_#","input":"_A _! _B _! _B_+_C _! _B_+_C _! _6_+_B","condition":"─/N/──"},{"category":"_#","input":"_A _! _C _! _A _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_A _! _C _! _A _! _B_+_C _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_A _! _C _! _B_+_C _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_A _! _C _! _B_+_C _! _B_+_C _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_A _! _C _! _D _! _B _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_A _! _6_+_B _! _A _! _B _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_A _! _6_+_B _! _A _! _B_+_C _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_A _! _6_+_B _! _B_+_C _! _B _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_A _! _6_+_B _! _B_+_C _! _B_+_C _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_A _! _6_+_B _! _D _! _B _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_C _! _B _! _A _! _B _! _6_+_B","condition":"─/N/──"},{"category":"_#","input":"_C _! _B _! _A _! _B_+_C _! _6_+_B","condition":"─/N/──"},{"category":"_#","input":"_C _! _B _! _B_+_C _! _B _! _6_+_B","condition":"─/N/──"},{"category":"_#","input":"_C _! _B _! _B_+_C _! _B_+_C _! _6_+_B","condition":"─/N/──"},{"category":"_#","input":"_C _! _B_+_C _! _A _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_C _! _B_+_C _! _A _! _B_+_C _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_C _! _B_+_C _! _B_+_C _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_C _! _B_+_C _! _B_+_C _! _B_+_C _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_C _! _B_+_C _! _D _! _B _! _6_+_B","condition":"─/N/──"},{"category":"_#","input":"_C _! _C _! _A _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_C _! _C _! _A _! _B_+_C _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_C _! _C _! _B_+_C _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_C _! _C _! _B_+_C _! _B_+_C _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_C _! _C _! _D _! _B _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_C _! _6_+_B _! _A _! _B _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_C _! _6_+_B _! _A _! _B_+_C _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_C _! _6_+_B _! _B_+_C _! _B _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_C _! _6_+_B _! _B_+_C _! _B_+_C _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_C _! _6_+_B _! _D _! _B _! _6_+_B","condition":"W/─/──"},{"category":"_`","input":"_>","condition":"Rising Crows                                                 _4_6_3_2_1_4_+_A_+_B W/─/── _O"}]},{"name":"NATSUME","moves":[{"category":"_(","name":"Shoulder Roll","input":"_6_+_B","condition":"W/N/──"},{"category":"_(","name":"D.D.T.","input":"_6_+_D","condition":"W/N/──"},{"category":"_(","name":"Snap Shoulder Roll crouching opponent","input":"_3_+_B","condition":"W/N/──"},{"category":"_(","name":"Air Spike","input":"_^_4 / _6_+_B","condition":"W/N/──"},{"category":"_)","name":"Falling Elbow","input":"_6_+_A","condition":"W/N/──"},{"category":"_)","name":"Launch Kick","input":"_6_+_D","condition":"W/N/──"},{"category":"_)","name":"Charge Punch","input":"_3_+_A","condition":"W/N/──"},{"category":"_)","name":"Low Flip Kick","input":"_8_+_D","condition":"W/N/──"},{"category":"_@","name":"Jinku Zan","input":"_6_2_3_+_P","condition":"W/N/EX"},{"category":"_@","name":"Hyakki Rensai","input":"_2_1_4_+_P (^*)","condition":"W/N/EX"},{"category":"_@","name":"Go Zanpuu","input":"_2_1_4_+_K","condition":"W/N/EX"},{"category":"_@","name":"Asuka","input":"_4_1_2_3_6_+_P","condition":"W/─/EX"},{"category":"_@","input":"^!Catch Weapon                                             (_^)_B_+_C","condition":"W/─/EX"},{"category":"_@","name":"Tohasen Geki","input":"_2_3_6_+_K","condition":"W/N/EX"},{"category":"_@","input":"^!Viper Kick                                               _2_3_6_+_K","condition":"W/N/EX"},{"category":"_@","input":"^!Side Kick Finish                                     _2_3_6_+_K","condition":"W/N/EX"},{"category":"_@","name":"Rush Palm","input":"_2_3_6_4_6_+_B","condition":"─/N/──"},{"category":"_@","name":"Tower Side Slam close","input":"_4_2_1_+_D","condition":"W/N/──"},{"category":"_@","name":"Tenha Rekkyaku","input":"_6_4_1_2_3_6_+_C_+_D","condition":"W/N/──"},{"category":"_*","name":"Super Tenha Rekkyaku","input":"_6_4_1_2_3_6_+_C_+_D","condition":"W/N/──"},{"category":"_&","name":"Satsu Genmuryoran","input":"_6_3_2_1_4_2_3_6_+_A_+_C","condition":"W/N/──"},{"category":"_#","name":"far","input":"_A _! _6_+_A _! _A _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_6_+_A _! _6_+_A _! _A _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_3_+_A _! _6_+_A _! _6_+_A _! _A _! _6_+_B","condition":"W/N/──"},{"category":"_`","input":"_>","condition":"Concentrated Blast                                           _6_3_2_6_3_2_+_A_+_B ─/N/──"}]},{"name":"KASUMI","moves":[{"category":"_(","name":"Riding Plant","input":"_6_+_B","condition":"W/N/──"},{"category":"_(","name":"Crunch Dropkick","input":"_^_4 / _6_+_B","condition":"W/N/──"},{"category":"_)","name":"Blind Kick","input":"_6_+_C","condition":"W/N/──"},{"category":"_)","name":"Quick Stand Slice","input":"_3_+_A","condition":"W/─/──"},{"category":"_)","name":"Step Punch","input":"_3_+_A","condition":"─/N/──"},{"category":"_)","name":"Spiral Whip","input":"_3_+_B","condition":"W/─/──"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_9","condition":"W/N/──"},{"category":"_@","name":"Kakyaku Ensensyu","input":"_2_3_6_+_K","condition":"W/N/EX"},{"category":"_@","name":"Hisensyu","input":"_6_3_2_1_4_+_K","condition":"W/N/EX"},{"category":"_@","name":"Hiryuu Sen","input":"_^_8_2_+_K","condition":"W/N/EX"},{"category":"_@","name":"Hizangeki","input":"_2_3_6_+_P","condition":"W/N/EX"},{"category":"_@","input":"^!Slide Kick                                               _2_3_6_+_P","condition":"W/N/EX"},{"category":"_@","input":"^!Launch Kick                                          _2_3_6_+_P","condition":"W/N/EX"},{"category":"_@","name":"Hiten Kyaku","input":"^2_8_+_K","condition":"─/N/──"},{"category":"_@","input":"^!Tensin Senpuu                                            _P","condition":"─/N/──"},{"category":"_@","input":"^!Hiten Kyaku                                              _K","condition":"─/N/──"},{"category":"_@","input":"^!Flip Bulldog                                             close _4 / _6_+_K","condition":"─/N/──"},{"category":"_@","name":"Hien Bu close","input":"_2_1_4_6_+_B","condition":"W/N/──"},{"category":"_@","name":"Hesen Tyugeki","input":"^4_6_+_A_+_B (_O)","condition":"W/N/──"},{"category":"_*","name":"Super Hesen Tyugeki","input":"^4_6_+_A_+_B (_O)","condition":"W/N/──"},{"category":"_&","name":"Hesen","input":"_6_3_2_1_4_6_+_A_+_B","condition":"W/N/──"},{"category":"_#","input":"_A _! _B _! _A _! _B _! _6_+_A","condition":"W/N/──"},{"category":"_#","input":"_A _! _B _! _A _! _B _! _6_+_A_+_C","condition":"W/N/──"},{"category":"_#","input":"_A _! _B _! _A _! _6_+_B _! _6_+_A","condition":"W/N/──"},{"category":"_#","input":"_A _! _B _! _A _! _6_+_B _! _6_+_A_+_C","condition":"W/N/──"},{"category":"_#","input":"_A _! _6_+_A _! _A _! _B _! _6_+_A","condition":"W/N/──"},{"category":"_#","input":"_A _! _6_+_A _! _A _! _B _! _6_+_A_+_C","condition":"W/N/──"},{"category":"_#","input":"_A _! _6_+_A _! _A _! _6_+_B _! _6_+_A","condition":"W/N/──"},{"category":"_#","input":"_A _! _6_+_A _! _A _! _6_+_B _! _6_+_A_+_C","condition":"W/N/──"},{"category":"_#","input":"_B _! _B _! _A _! _B _! _6_+_A","condition":"W/N/──"},{"category":"_#","input":"_B _! _B _! _A _! _B _! _6_+_A_+_C","condition":"W/N/──"},{"category":"_#","input":"_B _! _B _! _A _! _6_+_B _! _6_+_A","condition":"W/N/──"},{"category":"_#","input":"_B _! _B _! _A _! _6_+_B _! _6_+_A_+_C","condition":"W/N/──"},{"category":"_#","input":"_B _! _6_+_A _! _A _! _B _! _6_+_A","condition":"W/N/──"},{"category":"_#","input":"_B _! _6_+_A _! _A _! _B _! _6_+_A_+_C","condition":"W/N/──"},{"category":"_#","input":"_B _! _6_+_A _! _A _! _6_+_B _! _6_+_A","condition":"W/N/──"},{"category":"_#","input":"_B _! _6_+_A _! _A _! _6_+_B _! _6_+_A_+_C","condition":"W/N/──"},{"category":"_#","input":"_C _! _B _! _A _! _B _! _6_+_A","condition":"W/N/──"},{"category":"_#","input":"_C _! _B _! _A _! _B _! _6_+_A_+_C","condition":"W/N/──"},{"category":"_#","input":"_C _! _B _! _A _! _6_+_B _! _6_+_A","condition":"W/N/──"},{"category":"_#","input":"_C _! _B _! _A _! _6_+_B _! _6_+_A_+_C","condition":"W/N/──"},{"category":"_#","input":"_C _! _6_+_A _! _A _! _B _! _6_+_A","condition":"W/N/──"},{"category":"_#","input":"_C _! _6_+_A _! _A _! _B _! _6_+_A_+_C","condition":"W/N/──"},{"category":"_#","input":"_C _! _6_+_A _! _A _! _6_+_B _! _6_+_A","condition":"W/N/──"},{"category":"_#","input":"_C _! _6_+_A _! _A _! _6_+_B _! _6_+_A_+_C","condition":"W/N/──"},{"category":"_#","input":"_6_+_C _! _B _! _A _! _B _! _6_+_A","condition":"W/N/──"},{"category":"_#","input":"_6_+_C _! _B _! _A _! _B _! _6_+_A_+_C","condition":"W/N/──"},{"category":"_#","input":"_6_+_C _! _B _! _A _! _6_+_B _! _6_+_A","condition":"W/N/──"},{"category":"_#","input":"_6_+_C _! _B _! _A _! _6_+_B _! _6_+_A_+_C","condition":"W/N/──"},{"category":"_#","input":"_6_+_C _! _6_+_A _! _A _! _B _! _6_+_A","condition":"W/N/──"},{"category":"_#","input":"_6_+_C _! _6_+_A _! _A _! _B _! _6_+_A_+_C","condition":"W/N/──"},{"category":"_#","input":"_6_+_C _! _6_+_A _! _A _! _6_+_B _! _6_+_A","condition":"W/N/──"},{"category":"_#","input":"_6_+_C _! _6_+_A _! _A _! _6_+_B _! _6_+_A_+_C","condition":"W/N/──"},{"category":"_#","input":"_3_+_A _! _B _! _A _! _B _! _6_+_A","condition":"W/N/──"},{"category":"_#","input":"_3_+_A _! _B _! _A _! _B _! _6_+_A_+_C","condition":"W/N/──"},{"category":"_#","input":"_3_+_A _! _B _! _A _! _6_+_B _! _6_+_A","condition":"W/N/──"},{"category":"_#","input":"_3_+_A _! _B _! _A _! _6_+_B _! _6_+_A_+_C","condition":"W/N/──"},{"category":"_#","input":"_3_+_A _! _6_+_A _! _A _! _B _! _6_+_A","condition":"W/N/──"},{"category":"_#","input":"_3_+_A _! _6_+_A _! _A _! _B _! _6_+_A_+_C","condition":"W/N/──"},{"category":"_#","input":"_3_+_A _! _6_+_A _! _A _! _6_+_B _! _6_+_A","condition":"W/N/──"},{"category":"_#","input":"_3_+_A _! _6_+_A _! _A _! _6_+_B _! _6_+_A_+_C","condition":"W/N/──"},{"category":"_`","input":"_>","condition":"Butterfly Shield                                             _2_2_1_4_6_+_A_+_C W/─/──"}]},{"name":"HOUOH","moves":[{"category":"_(","name":"Rough Dump","input":"_6_+_B","condition":"W/N/──"},{"category":"_(","name":"Layback Launch","input":"_6_+_D","condition":"W/N/──"},{"category":"_(","name":"Neckringer Slam","input":"_^_4 / _6_+_B","condition":"W/N/──"},{"category":"_)","name":"Back Swipe","input":"_6_+_A","condition":"W/─/──"},{"category":"_)","name":"Downward Palm","input":"_6_+_A","condition":"─/N/──"},{"category":"_)","name":"Backfist","input":"_6_+_B","condition":"W/─/──"},{"category":"_)","name":"Side Kick","input":"_6_+_C","condition":"W/N/──"},{"category":"_)","name":"Hop Knee","input":"_4_+_C","condition":"W/N/──"},{"category":"_)","name":"Backflip","input":"_4_+_D","condition":"W/N/──"},{"category":"_@","name":"Kusenkoh","input":"^4_6_+_P","condition":"W/N/EX"},{"category":"_@","name":"Chiretsusen","input":"^4_6_+_K","condition":"W/N/EX"},{"category":"_@","name":"Hou'ou Tenbu","input":"^2_8_+_K","condition":"W/N/EX"},{"category":"_@","name":"Kishinzan","input":"_4_1_2_3_6_+_P","condition":"W/N/EX"},{"category":"_@","input":"^!Side Kick                                                _2_3_6_+_P","condition":"W/N/EX"},{"category":"_@","input":"^!Backflip Finish                                      _2_3_6_+_P","condition":"W/N/EX"},{"category":"_@","name":"Deadly Palm close","input":"_4_6_3_2_+_B","condition":"W/N/──"},{"category":"_@","name":"Haja Reihadoh","input":"_2_1_4_6_+_A_+_B (_O)","condition":"W/N/──"},{"category":"_*","name":"Super Haja Reihadoh","input":"_2_1_4_6_+_A_+_B","condition":"W/N/──"},{"category":"_&","name":"Dainichi Syanasyorai","input":"_4_1_2_8_+_A_+_C","condition":"W/N/──"},{"category":"_#","input":"_A _! _B _! _A _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_A _! _D _! _A _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_B _! _D _! _A _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_C _! _B _! _A _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_C _! _D _! _A _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_D _! _D _! _A _! _6_+_B","condition":"W/N/──"},{"category":"_`","input":"_>","condition":"Musoutaiyoken                                                _6_3_2_1_4_6_3_2_+_A_+_C W/─/──"}]},{"name":"UNZEN","moves":[{"category":"_(","name":"Baseball Swing","input":"_6_+_B","condition":"W/─/──"},{"category":"_(","name":"Overhead Slam","input":"_6_+_B","condition":"─/N/──"},{"category":"_(","name":"Power Toss crouching opponent","input":"_3_+_B","condition":"W/N/──"},{"category":"_)","name":"Hammering","input":"_6_+_A","condition":"W/─/──"},{"category":"_)","name":"Strong Slap","input":"_6_+_A","condition":"─/N/──"},{"category":"_@","name":"Dai Funsai Geki","input":"_B_+_D","condition":"W/N/──"},{"category":"_@","input":"^!Move                                                     _4 / _6","condition":"W/N/──"},{"category":"_@","name":"Dai Gokusatu Geki close","input":"_2_1_6_3_2_1_4_+_P","condition":"W/N/EX"},{"category":"_@","name":"Inga Ohou","input":"_2_1_4_7_+_P (reverse high)","condition":"W/N/──"},{"category":"_@","name":"Dai Chi Meido","input":"_6_3_2_1_4_+_P","condition":"W/N/EX"},{"category":"_@","name":"Zainin Sabaki","input":"_6_2_3_+_P","condition":"W/─/──"},{"category":"_@","name":"Zange Kakugo","input":"_2_3_6_+_K","condition":"W/N/EX"},{"category":"_@","input":"^!Dai Funsai Geki                                          _2_3_6_+_K","condition":"W/N/EX"},{"category":"_@","input":"^!Forearm Smash Finish                                 _2_3_6_+_K","condition":"W/N/EX"},{"category":"_@","name":"Darkness Sending close","input":"_4_1_2_3_6_+_B","condition":"W/N/──"},{"category":"_@","name":"Meimyaku Mizin","input":"^4_6_+_A_+_C (_O)","condition":"W/N/──"},{"category":"_*","name":"Super Meimyaku Mizin","input":"^4_6_+_A_+_C (_O)","condition":"W/N/──"},{"category":"_&","name":"Yomi Okuri","input":"_4_6_3_2_1_4_6_+_A_+_C","condition":"W/N/──"},{"category":"_#","input":"_A _! _A _! _B _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_A _! _A _! _D _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_A _! _A _! _6_+_A _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_A _! _B _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_A _! _B _! _D _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_A _! _B _! _6_+_A _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_A _! _C _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_A _! _C _! _D _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_A _! _C _! _6_+_A _! _6_+_B","condition":"W/─/──"},{"category":"_#","name":"far","input":"_B _! _B _! _B _! _6_+_B","condition":"─/N/──"},{"category":"_#","name":"far","input":"_B _! _B _! _D _! _6_+_B","condition":"─/N/──"},{"category":"_#","input":"_C _! _A _! _B _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_C _! _A _! _D _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_C _! _A _! _6_+_A _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_C _! _B _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_C _! _B _! _D _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_C _! _B _! _6_+_A _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_C _! _C _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_C _! _C _! _D _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_C _! _C _! _6_+_A _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_6_+_A _! _B _! _B _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_6_+_A _! _B _! _D _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_6_+_A _! _B _! _6_+_A _! _6_+_B","condition":"W/─/──"},{"category":"_`","input":"_>","condition":"Rampage                                                      _2_1_4_1_2_3_6_+_A_+_C ─/N/──"}]},{"name":"GOEMON","moves":[{"category":"_(","name":"Throw Away","input":"_6_+_B","condition":"W/N/──"},{"category":"_(","name":"Earth Direct","input":"_^_4 / _6_+_B","condition":"W/N/──"},{"category":"_)","name":"Long Palm Strike","input":"_6_+_A","condition":"W/N/──"},{"category":"_)","name":"Hidden Chains","input":"_4_+_B","condition":"─/N/──"},{"category":"_)","name":"Charging","input":"_3_+_A","condition":"W/N/──"},{"category":"_)","name":"Flying Kick dashing","input":"_3_+_D","condition":"W/N/──"},{"category":"_)","name":"Chain Claw unarmed","input":"_6_+_B_+_C","condition":"─/─/──"},{"category":"_)","input":"^!Catch Weapon                                             _B_+_C","condition":"─/─/──"},{"category":"_)","name":"Chained Weight","input":"_^_2_+_B","condition":"─/N/──"},{"category":"_@","name":"Bakuen Sho","input":"_6_2_3_+_P (_O)","condition":"W/N/EX"},{"category":"_@","name":"Kaen Sho","input":"_2_1_4_+_P","condition":"─/N/EX"},{"category":"_@","name":"Jitekkyuu","input":"_2_3_6_+_P","condition":"─/N/EX"},{"category":"_@","name":"Gogekiho","input":"_2_3_6_+_P","condition":"W/─/EX"},{"category":"_@","name":"Tenchu Baku","input":"_2_3_6_+_K","condition":"W/N/EX"},{"category":"_@","input":"^!Forward Palm                                             _2_3_6_+_K","condition":"W/N/EX"},{"category":"_@","input":"^!Sweeping Fist Finish                                 _2_3_6_+_K","condition":"W/N/EX"},{"category":"_@","name":"Point Blank close","input":"_4_2_1_+_D","condition":"W/─/──"},{"category":"_@","name":"Savage Beating close","input":"_4_2_1_+_D","condition":"─/N/──"},{"category":"_@","name":"Tekkyuu Kaen Goku","input":"_2_1_4_6_+_A_+_B","condition":"W/N/──"},{"category":"_*","name":"Super Tekkyuu Kaen Goku","input":"_2_1_4_6_+_A_+_B","condition":"W/N/──"},{"category":"_&","name":"Rekka Messtusyo","input":"_4_2_1_6_+_A_+_C","condition":"W/N/──"},{"category":"_#","input":"_3_+_A _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_`","input":"_>","condition":"Secret Arsenal                                               _4_6_2_3_+_A_+_C ─/N/──"}]},{"name":"RANMARU","moves":[{"category":"_(","name":"Push Over","input":"_6_+_B","condition":"W/N/──"},{"category":"_)","name":"Hand Flick","input":"_6_+_A","condition":"─/N/──"},{"category":"_)","name":"Spiral Kick","input":"_6_+_C","condition":"W/N/──"},{"category":"_@","name":"Vortex Blast","input":"_2_3_6_+_P","condition":"W/N/EX"},{"category":"_@","name":"Spin Slice","input":"_6_2_3_+_P","condition":"─/N/EX"},{"category":"_@","name":"Slicing Wind","input":"_2_1_4_+_K","condition":"W/N/EX"},{"category":"_@","input":"^!Floating Slice                                           _2_1_4_+_K","condition":"W/N/EX"},{"category":"_@","input":"^!Spin Slice Finish                                    _2_1_4_+_K","condition":"W/N/EX"},{"category":"_@","name":"Floating Slice","input":"_^_6_3_2_1_4_+_P","condition":"W/N/EX"},{"category":"_@","name":"Crash Kicks","input":"_6_4_1_2_3_6_+_K","condition":"W/N/EX"},{"category":"_@","name":"Blast Palm close","input":"_6_3_2_1_4_+_D","condition":"W/N/──"},{"category":"_@","name":"Ribbon Bite","input":"_6_3_2_1_4_6_+_A_+_B","condition":"W/N/──"},{"category":"_*","name":"Super Ribbon Bite","input":"_6_3_2_1_4_6_+_A_+_B","condition":"W/N/──"},{"category":"_&","name":"Angle Break","input":"_4_6_3_2_1_4_+_A_+_B","condition":"W/N/──"},{"category":"_#","input":"_A _! _B _! _A _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_A _! _B _! _A _! _6_+_A _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_A _! _B _! _6_+_A _! _B _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_A _! _C _! _A _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_A _! _C _! _A _! _6_+_A _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_A _! _C _! _6_+_A _! _B _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_B _! _A _! _A _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_B _! _A _! _A _! _6_+_A _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_B _! _A _! _B _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_B _! _A _! _B _! _6_+_A _! _6_+_B","condition":"─/N/──"},{"category":"_#","input":"_B _! _B _! _A _! _B _! _6_+_B","condition":"─/N/──"},{"category":"_#","input":"_B_+_C _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_B_+_C _! _6_+_A _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_C _! _B _! _A _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_C _! _B _! _A _! _6_+_A _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_C _! _B _! _6_+_A _! _B _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_C _! _C _! _A _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_C _! _C _! _A _! _6_+_A _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_C _! _C _! _6_+_A _! _B _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_D _! _A _! _A _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_D _! _A _! _A _! _6_+_A _! _6_+_B","condition":"W/─/──"},{"category":"_#","input":"_D _! _A _! _B _! _B _! _6_+_B","condition":"W/N/──"},{"category":"_#","input":"_D _! _A _! _B _! _6_+_A _! _6_+_B","condition":"─/N/──"},{"category":"_#","input":"_D _! _B _! _A _! _B _! _6_+_B","condition":"─/N/──"},{"category":"_`","input":"_>","condition":"Sacrifice                                                    _4_1_2_3_6_4_1_2_+_A_+_B W/─/── _O"}]},{"name":"NOBUNAGA","moves":[{"category":"_(","name":"Earth Grind","input":"_6_+_B","condition":"W/N/──"},{"category":"_)","name":"Inferno Stab","input":"_6_+_A","condition":"W/─/──"},{"category":"_)","name":"Deadly Stab","input":"_6_+_A","condition":"─/N/──"},{"category":"_)","name":"Scorging Stab","input":"_6_+_B","condition":"W/─/──"},{"category":"_)","name":"Piercing Blade","input":"_6_+_C","condition":"W/N/──"},{"category":"_)","name":"Quick Stab Slice","input":"_3_+_A","condition":"W/N/──"},{"category":"_@","name":"Cape Flick","input":"_2_3_6_+_P","condition":"W/N/──"},{"category":"_@","name":"Hell Rising","input":"_6_2_3_+_P","condition":"W/N/EX"},{"category":"_@","name":"Demon Stalking","input":"_2_3_6_+_K","condition":"W/─/EX"},{"category":"_@","name":"Demon Hunting","input":"_2_3_6_+_K","condition":"─/N/EX"},{"category":"_@","name":"Cape Charge","input":"^4_6_+_P","condition":"W/N/EX"},{"category":"_@","input":"^!Knee Drop                                                _4_6_+_P","condition":"W/N/EX"},{"category":"_@","input":"^!Hell Rising Finish                                   _4_6_+_P","condition":"W/N/EX"},{"category":"_@","name":"Cape Drop","input":"^2_8_+_K","condition":"W/N/EX"},{"category":"_@","input":"^!Knee Drop                                                _K","condition":"W/N/EX"},{"category":"_@","name":"Gut Crunch close","input":"_6_4_1_+_D","condition":"W/N/──"},{"category":"_@","name":"Soul Torment","input":"_2_1_4_1_2_3_6_+_A_+_B","condition":"W/N/──"},{"category":"_*","name":"Super Soul Torment","input":"_2_1_4_1_2_3_6_+_A_+_B","condition":"W/N/──"},{"category":"_&","name":"Flame Sword Massacre","input":"_4_6_3_2_1_4_+_A_+_B","condition":"W/N/──"},{"category":"_#","input":"_3_+_A _! _6_+_D _! _B _! _D _! _6_+_B","condition":"W/N/──"},{"category":"_`","input":"_>","condition":"Bloody Capture                                               _2_1_4_6_3_2_1_4_+_A_+_C ─/N/──"}]}],"cheatNotes":["_` Time Attack Mode","- On the Character Select Screen, put the cursor on Kamui and press _2_4_8_4_2_4_8_4_2_6_6_6_6_8_+_C_+_D"],"howToPlayNotes":["_> Finishing Moves"],"controlAbbr":{"_A":"LP","_B":"HP","_C":"LK","_D":"HK","_S":"ST","^S":"SL"},"systemControlMappings":{"snes":{"y":"_A","x":"_B","b":"_C","a":"_D"},"genesis":{"b":"_A","a":"_B","y":"_C","x":"_D"},"megadrive":{"b":"_A","a":"_B","y":"_C","x":"_D"},"32x":{"b":"_A","a":"_B","y":"_C","x":"_D"},"saturn":{"b":"_A","a":"_B","y":"_C","x":"_D"},"neogeo":{"b":"_A","y":"_B","a":"_C","x":"_D"},"psx":{"y":"_A","x":"_B","b":"_C","a":"_D"},"ps2":{"y":"_A","x":"_B","b":"_C","a":"_D"},"gb":{"b":"_A","a":"_B"},"gbc":{"b":"_A","a":"_B"},"gamegear":{"a":"_A","b":"_B"},"sms":{"a":"_A","b":"_B"},"gba":{"b":"_A","a":"_B","l1":"_C","r1":"_D"},"ngpc":{"b":"_A","a":"_B","y":"_C","x":"_D"},"dreamcast":{"y":"_A","x":"_B","b":"_C","a":"_D"},"n64":{"b":"_A","a":"_B","cDown":"_C","cLeft":"_D"},"wswan":{"b":"_A","a":"_B"}}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "ninjamas"
+  ],
+  "name": "Ninja Master's: Haoh-ninpo-cho",
+  "year": 1996,
+  "manufacturer": "SNK",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "_A": "Weak Punch",
+    "_B": "Strong Punch",
+    "_C": "Weak Kick",
+    "_D": "Strong Kick",
+    "_S": "Start",
+    "^S": "Select (AES only)"
+  },
+  "controlGroups": {
+    "_P": [
+      "_A",
+      "_B"
+    ],
+    "_K": [
+      "_C",
+      "_D"
+    ]
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_*": "Super Moves",
+    "_&": "Desperation Moves",
+    "_#": "Super Chains",
+    "_`": "Super Chains"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "_6_6",
+      "condition": "W/N/──"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4",
+      "condition": "W/N/──"
+    },
+    {
+      "category": "_)",
+      "name": "Draw Weapon / Bare Hands",
+      "input": "_B_+_C",
+      "condition": "W/N/──"
+    },
+    {
+      "category": "_)",
+      "name": "Retrive Weapon close to your weapon",
+      "input": "_2_+_B_+_C",
+      "condition": "─/─/──"
+    },
+    {
+      "category": "_)",
+      "name": "Hyper Mode (MAX)",
+      "input": "_A_+_B_+_C",
+      "condition": "W/N/──"
+    }
+  ],
+  "characters": [
+    {
+      "name": "SASUKE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Shoulder Toss",
+          "input": "_6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_(",
+          "name": "The Reaper",
+          "input": "_6_+_D",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Handle Strike",
+          "input": "_6_+_A",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_)",
+          "name": "Forward Palm",
+          "input": "_6_+_A",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Forward Slice",
+          "input": "_6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_)",
+          "name": "Falling Elbow",
+          "input": "_6_+_B",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Crouch Snap",
+          "input": "_1_1_+_D",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Rolling Heel dashing",
+          "input": "_3_+_D",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_9",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_@",
+          "name": "Hishou Getsu",
+          "input": "_2_3_6_+_P",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Shoukuu Kyaku Sen",
+          "input": "_2_1_4_+_K",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Shoukuu Kyaku Retsu",
+          "input": "_^_2_1_4_+_K",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Hishou Ken",
+          "input": "_6_2_3_+_P",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "input": "^!Reverse Hi Shouken (with _B)                             _2_3_6_+_B",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "input": "^!Finish                                               _2_3_6_+_B",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Shoulder Breaker close",
+          "input": "_6_3_2_1_4_+_D",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_@",
+          "name": "Shin Geki Ha",
+          "input": "_6_4_1_2_3_6_+_A_+_B (_O)",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_*",
+          "name": "Super Shin Geku Ha",
+          "input": "_6_4_1_2_3_6_+_A_+_B (_O)",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_&",
+          "name": "Shipuuret Shin Geki",
+          "input": "_6_3_2_1_4_1_2_3_6_+_A_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _B _! _B _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _6_+_A _! _B _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_B _! _A _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_B _! _B _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_B _! _C _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _B _! _B _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _6_+_A _! _B _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_D _! _B _! _B _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_D _! _6_+_A _! _B _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_`",
+          "input": "_>",
+          "condition": "Shou Shin Kohuubaku                                          _2_2_1_4_6_+_A_+_B ─/N/──"
+        }
+      ]
+    },
+    {
+      "name": "KAMUI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Body Slam",
+          "input": "_6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Low Stab",
+          "input": "_6_+_A",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_)",
+          "name": "Forward Palm",
+          "input": "_6_+_A",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Backfist",
+          "input": "_6_+_B",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Side Kick",
+          "input": "_6_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Step Palm",
+          "input": "_3_+_A",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_9",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Wall Hold jump against the wall",
+          "input": "_4",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "input": "^!Crawl Up Wall                                            _8",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "input": "^!Crawl Down Wall                                          _2",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "input": "^!Jump Off Wall                                            _6",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "input": "^!Quick Chop                                               _A",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "input": "^!Spiral Dive                                              _B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "input": "^!Quick Kick                                               _C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "input": "^!Flying Kick                                              _D",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_@",
+          "name": "Fuuga",
+          "input": "_2_3_6_+_P",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Ryu Toh Ga",
+          "input": "_6_2_3_+_P",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Sakki",
+          "input": "_2_1_4_+_K",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "input": "^!Kick Two                                                 _2_1_4_+_K",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "input": "^!Drill Finish                                         _2_1_4_+_K",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Head Spike close",
+          "input": "_6_4_1_2_+_D",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_@",
+          "name": "Kaen Jin Onezame",
+          "input": "_^_6_3_2_1_4_+_A_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_*",
+          "name": "Super Kaen Jin Onezame",
+          "input": "_^_6_3_2_1_4_+_A_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_&",
+          "name": "Kiretsuzan Chikemuri",
+          "input": "_6_3_2_1_4_1_2_3_6_+_A_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "name": "close",
+          "input": "_A _! _A _! _B _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "name": "far",
+          "input": "_A _! _B _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_3_+_A _! _A _! _B _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_B _! _A _! _A _! _B _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_B _! _C _! _A _! _B _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _A _! _B _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_D _! _B _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_`",
+          "input": "_>",
+          "condition": "Fire Pillars                                                 _2_2_1_4_6_+_A_+_B W/─/──"
+        }
+      ]
+    },
+    {
+      "name": "RAIGA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Dangerous Suplex",
+          "input": "_6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_(",
+          "name": "Enzuigiri",
+          "input": "_6_+_D",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Rough Shoulder",
+          "input": "_6_+_A",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Short Dropkick",
+          "input": "_6_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Upper dashing",
+          "input": "_3_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Slide Kick dashing",
+          "input": "_3_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Knee Hop dashing",
+          "input": "_3_+_D",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Falling Back",
+          "input": "_^_2_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Butt Drop",
+          "input": "_^_2_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_@",
+          "name": "Raigeki Satsu",
+          "input": "_2_1_4_+_P",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "input": "^!Chirairyu                                                _4_1_2_3_6_+_P",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Ikazuchi Chiryuu",
+          "input": "^4_6_+_K",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Ikazuchi Tenryuu",
+          "input": "^2_8_+_K",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Bakurai Geki",
+          "input": "^4_6_+_P",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "input": "^!Rough Shoulder                                           _4_6_+_P",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "input": "^!Upper Finish                                         _4_6_+_P",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Mega Tiger Bomb close",
+          "condition": "W/N/──",
+          "input": "_x_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Raishinsho",
+          "input": "^2_8_+_B_+_D",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_*",
+          "name": "Super Raishinsho",
+          "input": "^2_8_+_B_+_D",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_&",
+          "name": "Senco Raizin",
+          "input": "_2_3_6_4_1_2_3_6_+_A_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _B _! _B _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _B _! _C _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _B _! _D _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _C _! _B _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _C _! _C _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _C _! _D _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_B _! _B _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_B _! _C _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_B _! _D _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _B _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _C _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _D _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_D _! _B _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_D _! _C _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_D _! _D _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_`",
+          "input": "_>",
+          "condition": "Lightning Cage                                               _4_6_4_1_2_+_C_+_D W/─/──"
+        }
+      ]
+    },
+    {
+      "name": "TENHO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Bullseye Blast",
+          "input": "_6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_(",
+          "name": "Air Bullseye Blast",
+          "input": "_^_4 / _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "High Kick",
+          "input": "_6_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Change Over far",
+          "input": "_4_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_)",
+          "name": "Double Stomp",
+          "input": "_^_2_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_9",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Wall Hold jump against the wall",
+          "input": "_4",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "input": "^!Crawl Up Wall                                            _8",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "input": "^!Crawl Down Wall                                          _2",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "input": "^!Jump Off Wall                                            _6",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "input": "^!Shoulder Dive                                            _P",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "input": "^!Foot Plant                                               _K",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "input": "^!Frog Leap                                                _4_+_D",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_@",
+          "name": "Jubaku Fu",
+          "input": "_2_3_6_+_P",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Senkuu Dan",
+          "input": "_2_3_6_+_K",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Shuu Go Ju Retsu Dan",
+          "input": "_O_D for 3 seconds",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_@",
+          "name": "Senmetsu Sho",
+          "input": "^*_P",
+          "condition": "─/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Tenmaen Satsujin",
+          "input": "_6_3_2_1_4_+_P",
+          "condition": "─/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Senkuken",
+          "input": "_6_2_3_+_P",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "input": "^!Second Senkuken                                          _2_3_6_+_P",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "input": "^!Senkuken Finish                                      _2_3_6_+_P",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Powered Spirit close",
+          "input": "_4_2_1_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_@",
+          "name": "Taikyoku Ha",
+          "input": "_2_1_4_1_2_3_6_+_A_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_*",
+          "name": "Super Taikyoku Ha",
+          "input": "_2_1_4_1_2_3_6_+_A_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_&",
+          "name": "Senjin Fuja",
+          "input": "_6_3_2_1_4_6_3_2_+_A_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _B _! _A _! _6_+_D _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _B _! _B _! _6_+_D _! _6_+_B",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _B _! _C _! _6_+_D _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _C _! _A _! _6_+_D _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _C _! _B _! _6_+_D _! _6_+_B",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _C _! _C _! _6_+_D _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _B _! _A _! _6_+_D _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _B _! _B _! _6_+_D _! _6_+_B",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _B _! _C _! _6_+_D _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _C _! _A _! _6_+_D _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _C _! _B _! _6_+_D _! _6_+_B",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _C _! _C _! _6_+_D _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_`",
+          "input": "_>",
+          "condition": "Ofuda Engulf                                                 _O_A for 3 seconds, _2_1_4 ─/N/──"
+        }
+      ]
+    },
+    {
+      "name": "KARASU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Final Stab",
+          "input": "_6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_(",
+          "name": "Crow Break",
+          "input": "_6_+_B",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Waist Slice close",
+          "input": "_6_+_A",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_)",
+          "name": "Arc Swipe far",
+          "input": "_6_+_A",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_)",
+          "name": "Low Beak",
+          "input": "_6_+_A",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Double Slash",
+          "input": "_6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_)",
+          "name": "Crow Weapon unarmed",
+          "input": "_6_+_B_+_C",
+          "condition": "─/─/──"
+        },
+        {
+          "category": "_)",
+          "input": "^!Catch Weapon                                             _B_+_C",
+          "condition": "─/─/──"
+        },
+        {
+          "category": "_@",
+          "name": "Karasu Yaiba",
+          "input": "_6_2_3_+_P",
+          "condition": "W/─/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Hayate Bane",
+          "input": "_6_2_3_+_P",
+          "condition": "─/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Ridare Bane",
+          "input": "_2_1_4_+_P",
+          "condition": "W/─/EX"
+        },
+        {
+          "category": "_@",
+          "input": "^!Mid Finish                                               _A",
+          "condition": "W/─/EX"
+        },
+        {
+          "category": "_@",
+          "input": "^!Low Finish                                               _B",
+          "condition": "W/─/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Hane Yaiba",
+          "input": "_^_2_3_6_+_P",
+          "condition": "W/─/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Yami Karasu",
+          "input": "_2_3_6_+_P",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "input": "^!Second Crow                                              _6_+_P",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "input": "^!Third Crow                                           _6_+_P",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Set Up Slash close",
+          "input": "_6_4_1_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_@",
+          "name": "Set Up Uppercut close",
+          "input": "_6_4_1_+_B",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_@",
+          "name": "Kikyo Shoheki",
+          "input": "_6_4_1_2_3_6_+_A_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_*",
+          "name": "Super Kikyo Shoheki",
+          "input": "_6_4_1_2_3_6_+_A_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_&",
+          "name": "Onmyo Karasu",
+          "input": "_6_3_2_1_4_6_+_A_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _B _! _A _! _B _! _6_+_B",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _B _! _A _! _B_+_C _! _6_+_B",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _B _! _B_+_C _! _B _! _6_+_B",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _B _! _B_+_C _! _B_+_C _! _6_+_B",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _C _! _A _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _C _! _A _! _B_+_C _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _C _! _B_+_C _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _C _! _B_+_C _! _B_+_C _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _C _! _D _! _B _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _6_+_B _! _A _! _B _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _6_+_B _! _A _! _B_+_C _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _6_+_B _! _B_+_C _! _B _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _6_+_B _! _B_+_C _! _B_+_C _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _6_+_B _! _D _! _B _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _B _! _A _! _B _! _6_+_B",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _B _! _A _! _B_+_C _! _6_+_B",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _B _! _B_+_C _! _B _! _6_+_B",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _B _! _B_+_C _! _B_+_C _! _6_+_B",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _B_+_C _! _A _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _B_+_C _! _A _! _B_+_C _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _B_+_C _! _B_+_C _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _B_+_C _! _B_+_C _! _B_+_C _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _B_+_C _! _D _! _B _! _6_+_B",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _C _! _A _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _C _! _A _! _B_+_C _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _C _! _B_+_C _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _C _! _B_+_C _! _B_+_C _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _C _! _D _! _B _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _6_+_B _! _A _! _B _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _6_+_B _! _A _! _B_+_C _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _6_+_B _! _B_+_C _! _B _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _6_+_B _! _B_+_C _! _B_+_C _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _6_+_B _! _D _! _B _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_`",
+          "input": "_>",
+          "condition": "Rising Crows                                                 _4_6_3_2_1_4_+_A_+_B W/─/── _O"
+        }
+      ]
+    },
+    {
+      "name": "NATSUME",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Shoulder Roll",
+          "input": "_6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_(",
+          "name": "D.D.T.",
+          "input": "_6_+_D",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_(",
+          "name": "Snap Shoulder Roll crouching opponent",
+          "input": "_3_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_(",
+          "name": "Air Spike",
+          "input": "_^_4 / _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Falling Elbow",
+          "input": "_6_+_A",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Launch Kick",
+          "input": "_6_+_D",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Charge Punch",
+          "input": "_3_+_A",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Low Flip Kick",
+          "input": "_8_+_D",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_@",
+          "name": "Jinku Zan",
+          "input": "_6_2_3_+_P",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Hyakki Rensai",
+          "input": "_2_1_4_+_P (^*)",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Go Zanpuu",
+          "input": "_2_1_4_+_K",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Asuka",
+          "input": "_4_1_2_3_6_+_P",
+          "condition": "W/─/EX"
+        },
+        {
+          "category": "_@",
+          "input": "^!Catch Weapon                                             (_^)_B_+_C",
+          "condition": "W/─/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Tohasen Geki",
+          "input": "_2_3_6_+_K",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "input": "^!Viper Kick                                               _2_3_6_+_K",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "input": "^!Side Kick Finish                                     _2_3_6_+_K",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Rush Palm",
+          "input": "_2_3_6_4_6_+_B",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_@",
+          "name": "Tower Side Slam close",
+          "input": "_4_2_1_+_D",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_@",
+          "name": "Tenha Rekkyaku",
+          "input": "_6_4_1_2_3_6_+_C_+_D",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_*",
+          "name": "Super Tenha Rekkyaku",
+          "input": "_6_4_1_2_3_6_+_C_+_D",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_&",
+          "name": "Satsu Genmuryoran",
+          "input": "_6_3_2_1_4_2_3_6_+_A_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "name": "far",
+          "input": "_A _! _6_+_A _! _A _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_6_+_A _! _6_+_A _! _A _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_3_+_A _! _6_+_A _! _6_+_A _! _A _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_`",
+          "input": "_>",
+          "condition": "Concentrated Blast                                           _6_3_2_6_3_2_+_A_+_B ─/N/──"
+        }
+      ]
+    },
+    {
+      "name": "KASUMI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Riding Plant",
+          "input": "_6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_(",
+          "name": "Crunch Dropkick",
+          "input": "_^_4 / _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Blind Kick",
+          "input": "_6_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Quick Stand Slice",
+          "input": "_3_+_A",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_)",
+          "name": "Step Punch",
+          "input": "_3_+_A",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Spiral Whip",
+          "input": "_3_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_9",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_@",
+          "name": "Kakyaku Ensensyu",
+          "input": "_2_3_6_+_K",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Hisensyu",
+          "input": "_6_3_2_1_4_+_K",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Hiryuu Sen",
+          "input": "_^_8_2_+_K",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Hizangeki",
+          "input": "_2_3_6_+_P",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "input": "^!Slide Kick                                               _2_3_6_+_P",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "input": "^!Launch Kick                                          _2_3_6_+_P",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Hiten Kyaku",
+          "input": "^2_8_+_K",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_@",
+          "input": "^!Tensin Senpuu                                            _P",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_@",
+          "input": "^!Hiten Kyaku                                              _K",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_@",
+          "input": "^!Flip Bulldog                                             close _4 / _6_+_K",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_@",
+          "name": "Hien Bu close",
+          "input": "_2_1_4_6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_@",
+          "name": "Hesen Tyugeki",
+          "input": "^4_6_+_A_+_B (_O)",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_*",
+          "name": "Super Hesen Tyugeki",
+          "input": "^4_6_+_A_+_B (_O)",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_&",
+          "name": "Hesen",
+          "input": "_6_3_2_1_4_6_+_A_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _B _! _A _! _B _! _6_+_A",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _B _! _A _! _B _! _6_+_A_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _B _! _A _! _6_+_B _! _6_+_A",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _B _! _A _! _6_+_B _! _6_+_A_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _6_+_A _! _A _! _B _! _6_+_A",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _6_+_A _! _A _! _B _! _6_+_A_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _6_+_A _! _A _! _6_+_B _! _6_+_A",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _6_+_A _! _A _! _6_+_B _! _6_+_A_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_B _! _B _! _A _! _B _! _6_+_A",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_B _! _B _! _A _! _B _! _6_+_A_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_B _! _B _! _A _! _6_+_B _! _6_+_A",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_B _! _B _! _A _! _6_+_B _! _6_+_A_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_B _! _6_+_A _! _A _! _B _! _6_+_A",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_B _! _6_+_A _! _A _! _B _! _6_+_A_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_B _! _6_+_A _! _A _! _6_+_B _! _6_+_A",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_B _! _6_+_A _! _A _! _6_+_B _! _6_+_A_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _B _! _A _! _B _! _6_+_A",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _B _! _A _! _B _! _6_+_A_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _B _! _A _! _6_+_B _! _6_+_A",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _B _! _A _! _6_+_B _! _6_+_A_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _6_+_A _! _A _! _B _! _6_+_A",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _6_+_A _! _A _! _B _! _6_+_A_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _6_+_A _! _A _! _6_+_B _! _6_+_A",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _6_+_A _! _A _! _6_+_B _! _6_+_A_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_6_+_C _! _B _! _A _! _B _! _6_+_A",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_6_+_C _! _B _! _A _! _B _! _6_+_A_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_6_+_C _! _B _! _A _! _6_+_B _! _6_+_A",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_6_+_C _! _B _! _A _! _6_+_B _! _6_+_A_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_6_+_C _! _6_+_A _! _A _! _B _! _6_+_A",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_6_+_C _! _6_+_A _! _A _! _B _! _6_+_A_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_6_+_C _! _6_+_A _! _A _! _6_+_B _! _6_+_A",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_6_+_C _! _6_+_A _! _A _! _6_+_B _! _6_+_A_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_3_+_A _! _B _! _A _! _B _! _6_+_A",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_3_+_A _! _B _! _A _! _B _! _6_+_A_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_3_+_A _! _B _! _A _! _6_+_B _! _6_+_A",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_3_+_A _! _B _! _A _! _6_+_B _! _6_+_A_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_3_+_A _! _6_+_A _! _A _! _B _! _6_+_A",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_3_+_A _! _6_+_A _! _A _! _B _! _6_+_A_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_3_+_A _! _6_+_A _! _A _! _6_+_B _! _6_+_A",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_3_+_A _! _6_+_A _! _A _! _6_+_B _! _6_+_A_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_`",
+          "input": "_>",
+          "condition": "Butterfly Shield                                             _2_2_1_4_6_+_A_+_C W/─/──"
+        }
+      ]
+    },
+    {
+      "name": "HOUOH",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Rough Dump",
+          "input": "_6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_(",
+          "name": "Layback Launch",
+          "input": "_6_+_D",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_(",
+          "name": "Neckringer Slam",
+          "input": "_^_4 / _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Back Swipe",
+          "input": "_6_+_A",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_)",
+          "name": "Downward Palm",
+          "input": "_6_+_A",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Backfist",
+          "input": "_6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_)",
+          "name": "Side Kick",
+          "input": "_6_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Hop Knee",
+          "input": "_4_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Backflip",
+          "input": "_4_+_D",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_@",
+          "name": "Kusenkoh",
+          "input": "^4_6_+_P",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Chiretsusen",
+          "input": "^4_6_+_K",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Hou'ou Tenbu",
+          "input": "^2_8_+_K",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Kishinzan",
+          "input": "_4_1_2_3_6_+_P",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "input": "^!Side Kick                                                _2_3_6_+_P",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "input": "^!Backflip Finish                                      _2_3_6_+_P",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Deadly Palm close",
+          "input": "_4_6_3_2_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_@",
+          "name": "Haja Reihadoh",
+          "input": "_2_1_4_6_+_A_+_B (_O)",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_*",
+          "name": "Super Haja Reihadoh",
+          "input": "_2_1_4_6_+_A_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_&",
+          "name": "Dainichi Syanasyorai",
+          "input": "_4_1_2_8_+_A_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _B _! _A _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _D _! _A _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_B _! _D _! _A _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _B _! _A _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _D _! _A _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_D _! _D _! _A _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_`",
+          "input": "_>",
+          "condition": "Musoutaiyoken                                                _6_3_2_1_4_6_3_2_+_A_+_C W/─/──"
+        }
+      ]
+    },
+    {
+      "name": "UNZEN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Baseball Swing",
+          "input": "_6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_(",
+          "name": "Overhead Slam",
+          "input": "_6_+_B",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_(",
+          "name": "Power Toss crouching opponent",
+          "input": "_3_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Hammering",
+          "input": "_6_+_A",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_)",
+          "name": "Strong Slap",
+          "input": "_6_+_A",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_@",
+          "name": "Dai Funsai Geki",
+          "input": "_B_+_D",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_@",
+          "input": "^!Move                                                     _4 / _6",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_@",
+          "name": "Dai Gokusatu Geki close",
+          "input": "_2_1_6_3_2_1_4_+_P",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Inga Ohou",
+          "input": "_2_1_4_7_+_P (reverse high)",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_@",
+          "name": "Dai Chi Meido",
+          "input": "_6_3_2_1_4_+_P",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Zainin Sabaki",
+          "input": "_6_2_3_+_P",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_@",
+          "name": "Zange Kakugo",
+          "input": "_2_3_6_+_K",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "input": "^!Dai Funsai Geki                                          _2_3_6_+_K",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "input": "^!Forearm Smash Finish                                 _2_3_6_+_K",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Darkness Sending close",
+          "input": "_4_1_2_3_6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_@",
+          "name": "Meimyaku Mizin",
+          "input": "^4_6_+_A_+_C (_O)",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_*",
+          "name": "Super Meimyaku Mizin",
+          "input": "^4_6_+_A_+_C (_O)",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_&",
+          "name": "Yomi Okuri",
+          "input": "_4_6_3_2_1_4_6_+_A_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _A _! _B _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _A _! _D _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _A _! _6_+_A _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _B _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _B _! _D _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _B _! _6_+_A _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _C _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _C _! _D _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _C _! _6_+_A _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "name": "far",
+          "input": "_B _! _B _! _B _! _6_+_B",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_#",
+          "name": "far",
+          "input": "_B _! _B _! _D _! _6_+_B",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _A _! _B _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _A _! _D _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _A _! _6_+_A _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _B _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _B _! _D _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _B _! _6_+_A _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _C _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _C _! _D _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _C _! _6_+_A _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_6_+_A _! _B _! _B _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_6_+_A _! _B _! _D _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_6_+_A _! _B _! _6_+_A _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_`",
+          "input": "_>",
+          "condition": "Rampage                                                      _2_1_4_1_2_3_6_+_A_+_C ─/N/──"
+        }
+      ]
+    },
+    {
+      "name": "GOEMON",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw Away",
+          "input": "_6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_(",
+          "name": "Earth Direct",
+          "input": "_^_4 / _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Long Palm Strike",
+          "input": "_6_+_A",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Hidden Chains",
+          "input": "_4_+_B",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Charging",
+          "input": "_3_+_A",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Flying Kick dashing",
+          "input": "_3_+_D",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Chain Claw unarmed",
+          "input": "_6_+_B_+_C",
+          "condition": "─/─/──"
+        },
+        {
+          "category": "_)",
+          "input": "^!Catch Weapon                                             _B_+_C",
+          "condition": "─/─/──"
+        },
+        {
+          "category": "_)",
+          "name": "Chained Weight",
+          "input": "_^_2_+_B",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_@",
+          "name": "Bakuen Sho",
+          "input": "_6_2_3_+_P (_O)",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Kaen Sho",
+          "input": "_2_1_4_+_P",
+          "condition": "─/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Jitekkyuu",
+          "input": "_2_3_6_+_P",
+          "condition": "─/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Gogekiho",
+          "input": "_2_3_6_+_P",
+          "condition": "W/─/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Tenchu Baku",
+          "input": "_2_3_6_+_K",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "input": "^!Forward Palm                                             _2_3_6_+_K",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "input": "^!Sweeping Fist Finish                                 _2_3_6_+_K",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Point Blank close",
+          "input": "_4_2_1_+_D",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_@",
+          "name": "Savage Beating close",
+          "input": "_4_2_1_+_D",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_@",
+          "name": "Tekkyuu Kaen Goku",
+          "input": "_2_1_4_6_+_A_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_*",
+          "name": "Super Tekkyuu Kaen Goku",
+          "input": "_2_1_4_6_+_A_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_&",
+          "name": "Rekka Messtusyo",
+          "input": "_4_2_1_6_+_A_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_3_+_A _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_`",
+          "input": "_>",
+          "condition": "Secret Arsenal                                               _4_6_2_3_+_A_+_C ─/N/──"
+        }
+      ]
+    },
+    {
+      "name": "RANMARU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Push Over",
+          "input": "_6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Hand Flick",
+          "input": "_6_+_A",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Spiral Kick",
+          "input": "_6_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_@",
+          "name": "Vortex Blast",
+          "input": "_2_3_6_+_P",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Spin Slice",
+          "input": "_6_2_3_+_P",
+          "condition": "─/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Slicing Wind",
+          "input": "_2_1_4_+_K",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "input": "^!Floating Slice                                           _2_1_4_+_K",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "input": "^!Spin Slice Finish                                    _2_1_4_+_K",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Floating Slice",
+          "input": "_^_6_3_2_1_4_+_P",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Crash Kicks",
+          "input": "_6_4_1_2_3_6_+_K",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Blast Palm close",
+          "input": "_6_3_2_1_4_+_D",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_@",
+          "name": "Ribbon Bite",
+          "input": "_6_3_2_1_4_6_+_A_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_*",
+          "name": "Super Ribbon Bite",
+          "input": "_6_3_2_1_4_6_+_A_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_&",
+          "name": "Angle Break",
+          "input": "_4_6_3_2_1_4_+_A_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _B _! _A _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _B _! _A _! _6_+_A _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _B _! _6_+_A _! _B _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _C _! _A _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _C _! _A _! _6_+_A _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_A _! _C _! _6_+_A _! _B _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_B _! _A _! _A _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_B _! _A _! _A _! _6_+_A _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_B _! _A _! _B _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_B _! _A _! _B _! _6_+_A _! _6_+_B",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_B _! _B _! _A _! _B _! _6_+_B",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_B_+_C _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_B_+_C _! _6_+_A _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _B _! _A _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _B _! _A _! _6_+_A _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _B _! _6_+_A _! _B _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _C _! _A _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _C _! _A _! _6_+_A _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_C _! _C _! _6_+_A _! _B _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_D _! _A _! _A _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_D _! _A _! _A _! _6_+_A _! _6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_#",
+          "input": "_D _! _A _! _B _! _B _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_D _! _A _! _B _! _6_+_A _! _6_+_B",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_D _! _B _! _A _! _B _! _6_+_B",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_`",
+          "input": "_>",
+          "condition": "Sacrifice                                                    _4_1_2_3_6_4_1_2_+_A_+_B W/─/── _O"
+        }
+      ]
+    },
+    {
+      "name": "NOBUNAGA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Earth Grind",
+          "input": "_6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Inferno Stab",
+          "input": "_6_+_A",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_)",
+          "name": "Deadly Stab",
+          "input": "_6_+_A",
+          "condition": "─/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Scorging Stab",
+          "input": "_6_+_B",
+          "condition": "W/─/──"
+        },
+        {
+          "category": "_)",
+          "name": "Piercing Blade",
+          "input": "_6_+_C",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_)",
+          "name": "Quick Stab Slice",
+          "input": "_3_+_A",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_@",
+          "name": "Cape Flick",
+          "input": "_2_3_6_+_P",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_@",
+          "name": "Hell Rising",
+          "input": "_6_2_3_+_P",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Demon Stalking",
+          "input": "_2_3_6_+_K",
+          "condition": "W/─/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Demon Hunting",
+          "input": "_2_3_6_+_K",
+          "condition": "─/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Cape Charge",
+          "input": "^4_6_+_P",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "input": "^!Knee Drop                                                _4_6_+_P",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "input": "^!Hell Rising Finish                                   _4_6_+_P",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Cape Drop",
+          "input": "^2_8_+_K",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "input": "^!Knee Drop                                                _K",
+          "condition": "W/N/EX"
+        },
+        {
+          "category": "_@",
+          "name": "Gut Crunch close",
+          "input": "_6_4_1_+_D",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_@",
+          "name": "Soul Torment",
+          "input": "_2_1_4_1_2_3_6_+_A_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_*",
+          "name": "Super Soul Torment",
+          "input": "_2_1_4_1_2_3_6_+_A_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_&",
+          "name": "Flame Sword Massacre",
+          "input": "_4_6_3_2_1_4_+_A_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_#",
+          "input": "_3_+_A _! _6_+_D _! _B _! _D _! _6_+_B",
+          "condition": "W/N/──"
+        },
+        {
+          "category": "_`",
+          "input": "_>",
+          "condition": "Bloody Capture                                               _2_1_4_6_3_2_1_4_+_A_+_C ─/N/──"
+        }
+      ]
+    }
+  ],
+  "cheatNotes": [
+    "_` Time Attack Mode",
+    "- On the Character Select Screen, put the cursor on Kamui and press _2_4_8_4_2_4_8_4_2_6_6_6_6_8_+_C_+_D"
+  ],
+  "howToPlayNotes": [
+    "_> Finishing Moves"
+  ],
+  "controlAbbr": {
+    "_A": "LP",
+    "_B": "HP",
+    "_C": "LK",
+    "_D": "HK",
+    "_S": "ST",
+    "^S": "SL"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "genesis": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "megadrive": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "32x": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "saturn": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "neogeo": {
+      "b": "_A",
+      "y": "_B",
+      "a": "_C",
+      "x": "_D"
+    },
+    "psx": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "ps2": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "gb": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gbc": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gamegear": {
+      "a": "_A",
+      "b": "_B"
+    },
+    "sms": {
+      "a": "_A",
+      "b": "_B"
+    },
+    "gba": {
+      "b": "_A",
+      "a": "_B",
+      "l1": "_C",
+      "r1": "_D"
+    },
+    "ngpc": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "dreamcast": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "n64": {
+      "b": "_A",
+      "a": "_B",
+      "cDown": "_C",
+      "cLeft": "_D"
+    },
+    "wswan": {
+      "b": "_A",
+      "a": "_B"
+    }
+  }
+}

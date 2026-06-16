@@ -1,1 +1,923 @@
-{"schemaVersion":2,"romIds":["ragnagrd"],"name":"Ragnagard","year":1996,"manufacturer":"Saurus","controls":{"_A":"Light Punch","_B":"Light Kick","_C":"Heavy Punch","_D":"Heavy Kick","_S":"Start","^S":"Select (AES only)"},"controlGroups":{"_P":["_A","_C"],"_K":["_B","_D"]},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves","_*":"Desperation Moves","_&":"Super Desperation Moves","_`":"Super Desperation Moves"},"commonCommands":[{"category":"_)","name":"Dash","input":"_6_6"},{"category":"_)","name":"Retreat","input":"_4_4"},{"category":"_)","name":"Air Dash","input":"_^_6_6"},{"category":"_)","name":"Blow Away Attack","input":"_6_+_B_+_C"},{"category":"_)","name":"Diving Attack","input":"_^_2_+_A_+_B"},{"category":"_)","name":"Flying Attack","input":"(_^)_8_+_A_+_B"},{"category":"_)","name":"Throw Escape when thrown","input":"_6_9_8_+_A / _B"},{"category":"_)","name":"Charge Element 1 Gauge","input":"_O_A_+_B_+_C"},{"category":"_)","name":"Charge Element 2 Gauge","input":"_O_B_+_C_+_D"}],"characters":[{"name":"SUSANO","moves":[{"category":"_(","name":"Overhead Toss","input":"_4 / _6_+_C / _D","condition":"─"},{"category":"_)","name":"Charging Elbow Drop","input":"_6_+_C","condition":"─"},{"category":"_@","name":"Ryuu Ga Hou","input":"_2_3_6_+_P","condition":"T"},{"category":"_@","name":"Ryuu Hare Ba","input":"_2_3_6_2_3_6_+_P","condition":"T"},{"category":"_@","name":"Ryuu Ga Raku Kyaku","input":"(_^)_4_2_1_+_K","condition":"T"},{"category":"_@","name":"Koku Ryuu Sai","input":"(_^)_6_2_3_+_P","condition":"F"},{"category":"_@","name":"Slam Strike close","input":"_6_3_2_1_4_+_C / _D","condition":"─"},{"category":"_*","name":"Raigeki Rin","input":"_2_3_6_2_+_A_+_B","condition":"T"},{"category":"_*","name":"Nana Garera Orochinagi","input":"_A_+_B_+_C_6_3_2_1_4_+_A_B_C_D_A_B_C","condition":"F"},{"category":"_&","name":"Sou Mei Fuu Rai Ken","input":"_2_3_6_2_1_4_+_C_+_D","condition":"─"}]},{"name":"BENTEN","moves":[{"category":"_(","name":"Frankensteiner","input":"_4 / _6_+_C / _D","condition":"─"},{"category":"_)","name":"Twirl Slice","input":"_6_+_C","condition":"─"},{"category":"_@","name":"Sourai Raku","input":"_^ close _6_3_2_1_4_+_K","condition":"T"},{"category":"_@","name":"Sourai Geki","input":"_^ close _4_1_2_3_6_+_K","condition":"T"},{"category":"_@","name":"Ryuu Sei Zan","input":"(_^)_6_2_3_+_P","condition":"B"},{"category":"_@","name":"Sou Rai Raku close","input":"_6_3_2_1_4_+_C / _D","condition":"─"},{"category":"_*","name":"Seki Ryuu Sou Ken","input":"_2_1_4_2_3_6_+_A_+_B","condition":"T"},{"category":"_*","name":"Senkuu Hou'ou Yoku","input":"_2_3_6_4_6_+_B_+_C","condition":"B"},{"category":"_&","name":"Shinkuu Ren Zan","input":"_6_4_6_3_2_1_4_+_A_+_B","condition":"─"}]},{"name":"CHICHI-NENE","moves":[{"category":"_(","name":"Human Catapult","input":"_4 / _6_+_C / _D","condition":"─"},{"category":"_)","name":"Charging Dropkick","input":"_6_+_D","condition":"─"},{"category":"_@","name":"Rekka E","input":"(_^)_A_+_B_+_C_+_D (switches characters)","condition":"─"},{"category":"_@","name":"Kururin Ko close","input":"_2_1_4_2_3_6_+_C","condition":"B"},{"category":"_@","name":"Funjin Kyaku","input":"(_^)_2_1_4_+_K (Ne Ne only)","condition":"B"},{"category":"_@","name":"Ton De Ke Punch","input":"^4_6_+_P","condition":"B"},{"category":"_@","name":"Raijin Ken","input":"_6_2_3_+_P (Chi Chi only)","condition":"T"},{"category":"_@","name":"Mane Mane Attack","input":"_6_4_6_+_P","condition":"─"},{"category":"_@","name":"Double Team close","input":"_6_3_2_1_4_+_C","condition":"─"},{"category":"_*","name":"Boko Boko Drop","input":"_2_3_6_2_3_6_+_D","condition":"B"},{"category":"_*","name":"Biri Biri Cannon","input":"_6_2_3_6_2_3_+_A_+_B","condition":"T"},{"category":"_&","name":"Tensei Fuu Raijin","input":"_4_6_1_3_+_A_+_B_+_C_+_D","condition":"─"},{"category":"_&","input":"^!Lightning Wave                                                ^3_+_O_P / _K","condition":"─"}]},{"name":"SON GOKUU","moves":[{"category":"_(","name":"Staff Carry","input":"_4 / _6_+_C / _D","condition":"─"},{"category":"_)","name":"Tricky Extend","input":"_6_+_C","condition":"─"},{"category":"_@","name":"Sou Shin Ni Ki Kyaku","input":"_6_2_3_+_K","condition":"B"},{"category":"_@","name":"Ensatsu Kon","input":"_2_1_4_6_+_P","condition":"F"},{"category":"_@","name":"Sanren Kon","input":"_2_3_6_+_P","condition":"F"},{"category":"_@","name":"Bop Toss close","input":"_6_3_2_1_4_+_C / _D","condition":"─"},{"category":"_*","name":"Ren Sen Kon","input":"_4_1_2_4_1_2_+_A_+_B","condition":"B"},{"category":"_*","name":"Enjin No Kei","input":"_2_3_6_2_3_6_+_B_+_C","condition":"F"},{"category":"_&","name":"En Bou Jutsu","input":"_6_4_6_4_6_+_A_+_B_+_C","condition":"─"}]},{"name":"BINTEN","moves":[{"category":"_(","name":"Takeoff","input":"_4 / _6_+_C / _D","condition":"─"},{"category":"_)","name":"Gust Strike","input":"_6_+_C","condition":"─"},{"category":"_@","name":"Juu Baku Kin","input":"_6_3_2_1_4_+_A","condition":"W"},{"category":"_@","name":"You Sen Nen Ja","input":"_2_1_4_+_D","condition":"W"},{"category":"_@","name":"Downward Sai Nen Dan","input":"_^_2_3_6_+_A","condition":"B"},{"category":"_@","name":"Straight Sai Nen Dan","input":"_^_2_3_6_+_B","condition":"B"},{"category":"_@","name":"Upward Sai Nen Dan","input":"_^_2_3_6_+_C","condition":"B"},{"category":"_@","name":"Gorilla Slam close","input":"_6_3_2_1_4_+_C","condition":"─"},{"category":"_*","name":"Juu Baku Ten Hyou Juu Baku Kin","input":"_2_3_6_2_3_6_+_C_+_D","condition":"W"},{"category":"_*","name":"Pun Jin Otoshi","input":"^2_4_6_+_B_+_C","condition":"B"},{"category":"_&","name":"Hachi Mon Nen Ki Jin","input":"_4_6_4_1_2_3_6_+_A_+_B_+_C_+_D","condition":"─"}]},{"name":"SYUTEN-DOZI","moves":[{"category":"_(","name":"Volcano Eruption","input":"_4 / _6_+_C / _D","condition":"─"},{"category":"_)","name":"Spinning Forearm","input":"_6_+_C","condition":"─"},{"category":"_@","name":"Oni Hone Kudaki","input":"_2_3_6_+_K","condition":"F"},{"category":"_@","name":"Kongou Hajiki","input":"^6_8_+_P","condition":"F"},{"category":"_@","name":"Oni Kobushi","input":"_6_2_3_+_P","condition":"F"},{"category":"_@","name":"Daku Ryuu Nada close","input":"_2_1_4_6_+_P","condition":"W"},{"category":"_@","name":"Punching Bag close","input":"_6_3_2_1_4_+_C / _D","condition":"─"},{"category":"_*","name":"Gouen Shu","input":"_4_1_2_4_1_2_+_A_+_B","condition":"F"},{"category":"_*","name":"Jigoku Nagashi close","input":"_4_6_+_C","condition":"W"},{"category":"_*","input":"^!Backbreaker                                                   _2_2_+_C","condition":"W"},{"category":"_*","input":"^!Second Backbreaker                                        _2_2_+_B_+_C","condition":"W"},{"category":"_&","name":"Rei Shuuki Jin Yado Ri","input":"_6_2_3_6_2_3_+_A_+_B, ^*_C","condition":"─"}]},{"name":"SEENA","moves":[{"category":"_(","name":"Staff Toss","input":"_4 / _6_+_C / _D","condition":"─"},{"category":"_)","name":"Whale Dive","input":"_6_+_C","condition":"─"},{"category":"_@","name":"Tail Whip","input":"(_^)^4_6_+_K","condition":"B"},{"category":"_@","name":"Dolphin Roll","input":"^2_8_+_K","condition":"B"},{"category":"_@","name":"Two Launcher","input":"^4_6_+_P","condition":"W"},{"category":"_@","name":"Aqua Bell","input":"_2_3_6_2_3_6_+_B","condition":"W"},{"category":"_@","name":"Wave Spike close","input":"_6_3_2_1_4_+_C / _D","condition":"─"},{"category":"_*","name":"Bubble Spike","input":"_4_1_2_3_6_+_A_+_B","condition":"B"},{"category":"_*","name":"Crystal Splash","input":"_2_2_2_+_A_+_B_+_C","condition":"W"},{"category":"_&","name":"Two Mind Storm","input":"^2_4_6_+_B_+_C","condition":"─"}]},{"name":"IGRET","moves":[{"category":"_(","name":"Sharp Edge","input":"_4 / _6_+_C / _D","condition":"─"},{"category":"_)","name":"Finishing Blow","input":"_6_+_C","condition":"─"},{"category":"_@","name":"Soul Slash","input":"^4_2_3_6_+_P","condition":"T"},{"category":"_@","name":"Ripper Haaken","input":"^4_6_+_K","condition":"F"},{"category":"_@","name":"Bramble Ring","input":"(_^)^2_8_+_K","condition":"F"},{"category":"_@","name":"Blade Fury close","input":"_6_3_2_1_4_+_C / _D","condition":"─"},{"category":"_*","name":"Trap Edge","input":"^4_6_3_2_1_4_+_A_+_B","condition":"T"},{"category":"_*","name":"Vigor Remove","input":"^4_6_2_3_6_+_B_+_C","condition":"F"},{"category":"_&","name":"Hell Inhabitant","input":"_^_x_+_A_+_B","condition":"─"}]},{"name":"BEHEMOTH","moves":[{"category":"_(","name":"One-handed Toss","input":"_4 / _6_+_C / _D","condition":"─"},{"category":"_)","name":"Gut Smash","input":"_6_+_C","condition":"─"},{"category":"_@","name":"Nitro Break","input":"_6_2_3_+_C","condition":"T"},{"category":"_@","name":"Wild Snap","input":"_2_3_6_+_P","condition":"F"},{"category":"_@","name":"Deadly Press","input":"(_^)_2_1_4_+_A","condition":"F"},{"category":"_@","name":"Corrupt Slam close","input":"_6_3_2_1_4_+_C / _D","condition":"─"},{"category":"_*","name":"Murder Fang","input":"_2_3_6_2_3_6_+_B_+_C","condition":"T"},{"category":"_*","name":"Howling Beast close","input":"_6_4_1_2_3_6_+_A_+_B","condition":"F"},{"category":"_&","name":"Grand Explosion","input":"_2_1_4_2_3_6_+_C_+_D","condition":"─"}]},{"name":"EELIS","moves":[{"category":"_(","name":"Choke Swing","input":"_4 / _6_+_C / _D","condition":"─"},{"category":"_)","name":"Rising Forearm","input":"_6_+_C","condition":"─"},{"category":"_@","name":"Dancing Needle","input":"_^_4_2_1_+_K","condition":"T"},{"category":"_@","name":"Nightmare Wing","input":"(_^)_2_3_6_9_+_P","condition":"B"},{"category":"_@","name":"Phantom Kuroishi","input":"_6_4_6_+_K","condition":"B"},{"category":"_@","name":"Bat Illusion","input":"_2_8_+_A (parry)","condition":"B"},{"category":"_@","input":"^!Stationary Teleport                                           _N","condition":"B"},{"category":"_@","input":"^!Left Side Teleport                                            _D","condition":"B"},{"category":"_@","input":"^!Right Side Teleport                                           _A","condition":"B"},{"category":"_@","input":"^!Air Left Teleport                                             _C","condition":"B"},{"category":"_@","input":"^!Air Right Teleport                                            _B","condition":"B"},{"category":"_@","name":"Abandoned Cave close","input":"_6_3_2_1_4_+_C / _D","condition":"─"},{"category":"_*","name":"Lunatic Jail","input":"(_^)_2_1_4_2_3_6_2_1_4_+_A_+_B","condition":"T"},{"category":"_*","name":"Killing Chariot","input":"_6_2_3_6_2_3_+_C_+_D","condition":"B"},{"category":"_&","name":"Midnight Fire","input":"_6_3_2_1_4_2_3_6_+_B_+_C","condition":"─"}]},{"name":"LUCIFER","moves":[{"category":"_(","name":"Throw Away","input":"_4 / _6_+_C / _D","condition":"─"},{"category":"_@","name":"Pentagram Dune","input":"^4_6_+_P","condition":"T"},{"category":"_@","name":"Pentagram Ruin","input":"^4_6_+_K","condition":"T"},{"category":"_@","name":"Mind Wave","input":"^2_8_+_A_+_B","condition":"F"},{"category":"_@","name":"Electric Crunch close","input":"_6_3_2_1_4_+_C / _D","condition":"─"},{"category":"_*","name":"Dark Side Gate","input":"^4_6_+_A_+_B_+_C","condition":"T"},{"category":"_*","name":"Anger Body Sonic","input":"_4_6_4_6_+_A_+_B","condition":"F"},{"category":"_&","name":"Flare Burst","input":"_O_A_+_B_+_C_+_D","condition":"─"}]}],"controlAbbr":{"_A":"LP","_B":"LK","_C":"HP","_D":"HK","_S":"ST","^S":"SL"},"systemControlMappings":{"snes":{"y":"_A","x":"_B","b":"_C","a":"_D"},"genesis":{"b":"_A","a":"_B","y":"_C","x":"_D"},"megadrive":{"b":"_A","a":"_B","y":"_C","x":"_D"},"32x":{"b":"_A","a":"_B","y":"_C","x":"_D"},"saturn":{"b":"_A","a":"_B","y":"_C","x":"_D"},"neogeo":{"b":"_A","y":"_B","a":"_C","x":"_D"},"psx":{"y":"_A","x":"_B","b":"_C","a":"_D"},"ps2":{"y":"_A","x":"_B","b":"_C","a":"_D"},"gb":{"b":"_A","a":"_B"},"gbc":{"b":"_A","a":"_B"},"gamegear":{"a":"_A","b":"_B"},"sms":{"a":"_A","b":"_B"},"gba":{"b":"_A","a":"_B","l1":"_C","r1":"_D"},"ngpc":{"b":"_A","a":"_B","y":"_C","x":"_D"},"dreamcast":{"y":"_A","x":"_B","b":"_C","a":"_D"},"n64":{"b":"_A","a":"_B","cDown":"_C","cLeft":"_D"},"wswan":{"b":"_A","a":"_B"}}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "ragnagrd"
+  ],
+  "name": "Ragnagard",
+  "year": 1996,
+  "manufacturer": "Saurus",
+  "controls": {
+    "_A": "Light Punch",
+    "_B": "Light Kick",
+    "_C": "Heavy Punch",
+    "_D": "Heavy Kick",
+    "_S": "Start",
+    "^S": "Select (AES only)"
+  },
+  "controlGroups": {
+    "_P": [
+      "_A",
+      "_C"
+    ],
+    "_K": [
+      "_B",
+      "_D"
+    ]
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_*": "Desperation Moves",
+    "_&": "Super Desperation Moves",
+    "_`": "Super Desperation Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "_6_6"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4"
+    },
+    {
+      "category": "_)",
+      "name": "Air Dash",
+      "input": "_^_6_6"
+    },
+    {
+      "category": "_)",
+      "name": "Blow Away Attack",
+      "input": "_6_+_B_+_C"
+    },
+    {
+      "category": "_)",
+      "name": "Diving Attack",
+      "input": "_^_2_+_A_+_B"
+    },
+    {
+      "category": "_)",
+      "name": "Flying Attack",
+      "input": "(_^)_8_+_A_+_B"
+    },
+    {
+      "category": "_)",
+      "name": "Throw Escape when thrown",
+      "input": "_6_9_8_+_A / _B"
+    },
+    {
+      "category": "_)",
+      "name": "Charge Element 1 Gauge",
+      "input": "_O_A_+_B_+_C"
+    },
+    {
+      "category": "_)",
+      "name": "Charge Element 2 Gauge",
+      "input": "_O_B_+_C_+_D"
+    }
+  ],
+  "characters": [
+    {
+      "name": "SUSANO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Overhead Toss",
+          "input": "_4 / _6_+_C / _D",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Charging Elbow Drop",
+          "input": "_6_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Ryuu Ga Hou",
+          "input": "_2_3_6_+_P",
+          "condition": "T"
+        },
+        {
+          "category": "_@",
+          "name": "Ryuu Hare Ba",
+          "input": "_2_3_6_2_3_6_+_P",
+          "condition": "T"
+        },
+        {
+          "category": "_@",
+          "name": "Ryuu Ga Raku Kyaku",
+          "input": "(_^)_4_2_1_+_K",
+          "condition": "T"
+        },
+        {
+          "category": "_@",
+          "name": "Koku Ryuu Sai",
+          "input": "(_^)_6_2_3_+_P",
+          "condition": "F"
+        },
+        {
+          "category": "_@",
+          "name": "Slam Strike close",
+          "input": "_6_3_2_1_4_+_C / _D",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Raigeki Rin",
+          "input": "_2_3_6_2_+_A_+_B",
+          "condition": "T"
+        },
+        {
+          "category": "_*",
+          "name": "Nana Garera Orochinagi",
+          "input": "_A_+_B_+_C_6_3_2_1_4_+_A_B_C_D_A_B_C",
+          "condition": "F"
+        },
+        {
+          "category": "_&",
+          "name": "Sou Mei Fuu Rai Ken",
+          "input": "_2_3_6_2_1_4_+_C_+_D",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "BENTEN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Frankensteiner",
+          "input": "_4 / _6_+_C / _D",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Twirl Slice",
+          "input": "_6_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Sourai Raku",
+          "input": "_^ close _6_3_2_1_4_+_K",
+          "condition": "T"
+        },
+        {
+          "category": "_@",
+          "name": "Sourai Geki",
+          "input": "_^ close _4_1_2_3_6_+_K",
+          "condition": "T"
+        },
+        {
+          "category": "_@",
+          "name": "Ryuu Sei Zan",
+          "input": "(_^)_6_2_3_+_P",
+          "condition": "B"
+        },
+        {
+          "category": "_@",
+          "name": "Sou Rai Raku close",
+          "input": "_6_3_2_1_4_+_C / _D",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Seki Ryuu Sou Ken",
+          "input": "_2_1_4_2_3_6_+_A_+_B",
+          "condition": "T"
+        },
+        {
+          "category": "_*",
+          "name": "Senkuu Hou'ou Yoku",
+          "input": "_2_3_6_4_6_+_B_+_C",
+          "condition": "B"
+        },
+        {
+          "category": "_&",
+          "name": "Shinkuu Ren Zan",
+          "input": "_6_4_6_3_2_1_4_+_A_+_B",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "CHICHI-NENE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Human Catapult",
+          "input": "_4 / _6_+_C / _D",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Charging Dropkick",
+          "input": "_6_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Rekka E",
+          "input": "(_^)_A_+_B_+_C_+_D (switches characters)",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Kururin Ko close",
+          "input": "_2_1_4_2_3_6_+_C",
+          "condition": "B"
+        },
+        {
+          "category": "_@",
+          "name": "Funjin Kyaku",
+          "input": "(_^)_2_1_4_+_K (Ne Ne only)",
+          "condition": "B"
+        },
+        {
+          "category": "_@",
+          "name": "Ton De Ke Punch",
+          "input": "^4_6_+_P",
+          "condition": "B"
+        },
+        {
+          "category": "_@",
+          "name": "Raijin Ken",
+          "input": "_6_2_3_+_P (Chi Chi only)",
+          "condition": "T"
+        },
+        {
+          "category": "_@",
+          "name": "Mane Mane Attack",
+          "input": "_6_4_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Double Team close",
+          "input": "_6_3_2_1_4_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Boko Boko Drop",
+          "input": "_2_3_6_2_3_6_+_D",
+          "condition": "B"
+        },
+        {
+          "category": "_*",
+          "name": "Biri Biri Cannon",
+          "input": "_6_2_3_6_2_3_+_A_+_B",
+          "condition": "T"
+        },
+        {
+          "category": "_&",
+          "name": "Tensei Fuu Raijin",
+          "input": "_4_6_1_3_+_A_+_B_+_C_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_&",
+          "input": "^!Lightning Wave                                                ^3_+_O_P / _K",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "SON GOKUU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Staff Carry",
+          "input": "_4 / _6_+_C / _D",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Tricky Extend",
+          "input": "_6_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Sou Shin Ni Ki Kyaku",
+          "input": "_6_2_3_+_K",
+          "condition": "B"
+        },
+        {
+          "category": "_@",
+          "name": "Ensatsu Kon",
+          "input": "_2_1_4_6_+_P",
+          "condition": "F"
+        },
+        {
+          "category": "_@",
+          "name": "Sanren Kon",
+          "input": "_2_3_6_+_P",
+          "condition": "F"
+        },
+        {
+          "category": "_@",
+          "name": "Bop Toss close",
+          "input": "_6_3_2_1_4_+_C / _D",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Ren Sen Kon",
+          "input": "_4_1_2_4_1_2_+_A_+_B",
+          "condition": "B"
+        },
+        {
+          "category": "_*",
+          "name": "Enjin No Kei",
+          "input": "_2_3_6_2_3_6_+_B_+_C",
+          "condition": "F"
+        },
+        {
+          "category": "_&",
+          "name": "En Bou Jutsu",
+          "input": "_6_4_6_4_6_+_A_+_B_+_C",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "BINTEN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Takeoff",
+          "input": "_4 / _6_+_C / _D",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Gust Strike",
+          "input": "_6_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Juu Baku Kin",
+          "input": "_6_3_2_1_4_+_A",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "You Sen Nen Ja",
+          "input": "_2_1_4_+_D",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Downward Sai Nen Dan",
+          "input": "_^_2_3_6_+_A",
+          "condition": "B"
+        },
+        {
+          "category": "_@",
+          "name": "Straight Sai Nen Dan",
+          "input": "_^_2_3_6_+_B",
+          "condition": "B"
+        },
+        {
+          "category": "_@",
+          "name": "Upward Sai Nen Dan",
+          "input": "_^_2_3_6_+_C",
+          "condition": "B"
+        },
+        {
+          "category": "_@",
+          "name": "Gorilla Slam close",
+          "input": "_6_3_2_1_4_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Juu Baku Ten Hyou Juu Baku Kin",
+          "input": "_2_3_6_2_3_6_+_C_+_D",
+          "condition": "W"
+        },
+        {
+          "category": "_*",
+          "name": "Pun Jin Otoshi",
+          "input": "^2_4_6_+_B_+_C",
+          "condition": "B"
+        },
+        {
+          "category": "_&",
+          "name": "Hachi Mon Nen Ki Jin",
+          "input": "_4_6_4_1_2_3_6_+_A_+_B_+_C_+_D",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "SYUTEN-DOZI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Volcano Eruption",
+          "input": "_4 / _6_+_C / _D",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Spinning Forearm",
+          "input": "_6_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Oni Hone Kudaki",
+          "input": "_2_3_6_+_K",
+          "condition": "F"
+        },
+        {
+          "category": "_@",
+          "name": "Kongou Hajiki",
+          "input": "^6_8_+_P",
+          "condition": "F"
+        },
+        {
+          "category": "_@",
+          "name": "Oni Kobushi",
+          "input": "_6_2_3_+_P",
+          "condition": "F"
+        },
+        {
+          "category": "_@",
+          "name": "Daku Ryuu Nada close",
+          "input": "_2_1_4_6_+_P",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Punching Bag close",
+          "input": "_6_3_2_1_4_+_C / _D",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Gouen Shu",
+          "input": "_4_1_2_4_1_2_+_A_+_B",
+          "condition": "F"
+        },
+        {
+          "category": "_*",
+          "name": "Jigoku Nagashi close",
+          "input": "_4_6_+_C",
+          "condition": "W"
+        },
+        {
+          "category": "_*",
+          "input": "^!Backbreaker                                                   _2_2_+_C",
+          "condition": "W"
+        },
+        {
+          "category": "_*",
+          "input": "^!Second Backbreaker                                        _2_2_+_B_+_C",
+          "condition": "W"
+        },
+        {
+          "category": "_&",
+          "name": "Rei Shuuki Jin Yado Ri",
+          "input": "_6_2_3_6_2_3_+_A_+_B, ^*_C",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "SEENA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Staff Toss",
+          "input": "_4 / _6_+_C / _D",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Whale Dive",
+          "input": "_6_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Tail Whip",
+          "input": "(_^)^4_6_+_K",
+          "condition": "B"
+        },
+        {
+          "category": "_@",
+          "name": "Dolphin Roll",
+          "input": "^2_8_+_K",
+          "condition": "B"
+        },
+        {
+          "category": "_@",
+          "name": "Two Launcher",
+          "input": "^4_6_+_P",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Aqua Bell",
+          "input": "_2_3_6_2_3_6_+_B",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Wave Spike close",
+          "input": "_6_3_2_1_4_+_C / _D",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Bubble Spike",
+          "input": "_4_1_2_3_6_+_A_+_B",
+          "condition": "B"
+        },
+        {
+          "category": "_*",
+          "name": "Crystal Splash",
+          "input": "_2_2_2_+_A_+_B_+_C",
+          "condition": "W"
+        },
+        {
+          "category": "_&",
+          "name": "Two Mind Storm",
+          "input": "^2_4_6_+_B_+_C",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "IGRET",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Sharp Edge",
+          "input": "_4 / _6_+_C / _D",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Finishing Blow",
+          "input": "_6_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Soul Slash",
+          "input": "^4_2_3_6_+_P",
+          "condition": "T"
+        },
+        {
+          "category": "_@",
+          "name": "Ripper Haaken",
+          "input": "^4_6_+_K",
+          "condition": "F"
+        },
+        {
+          "category": "_@",
+          "name": "Bramble Ring",
+          "input": "(_^)^2_8_+_K",
+          "condition": "F"
+        },
+        {
+          "category": "_@",
+          "name": "Blade Fury close",
+          "input": "_6_3_2_1_4_+_C / _D",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Trap Edge",
+          "input": "^4_6_3_2_1_4_+_A_+_B",
+          "condition": "T"
+        },
+        {
+          "category": "_*",
+          "name": "Vigor Remove",
+          "input": "^4_6_2_3_6_+_B_+_C",
+          "condition": "F"
+        },
+        {
+          "category": "_&",
+          "name": "Hell Inhabitant",
+          "input": "_^_x_+_A_+_B",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "BEHEMOTH",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "One-handed Toss",
+          "input": "_4 / _6_+_C / _D",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Gut Smash",
+          "input": "_6_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Nitro Break",
+          "input": "_6_2_3_+_C",
+          "condition": "T"
+        },
+        {
+          "category": "_@",
+          "name": "Wild Snap",
+          "input": "_2_3_6_+_P",
+          "condition": "F"
+        },
+        {
+          "category": "_@",
+          "name": "Deadly Press",
+          "input": "(_^)_2_1_4_+_A",
+          "condition": "F"
+        },
+        {
+          "category": "_@",
+          "name": "Corrupt Slam close",
+          "input": "_6_3_2_1_4_+_C / _D",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Murder Fang",
+          "input": "_2_3_6_2_3_6_+_B_+_C",
+          "condition": "T"
+        },
+        {
+          "category": "_*",
+          "name": "Howling Beast close",
+          "input": "_6_4_1_2_3_6_+_A_+_B",
+          "condition": "F"
+        },
+        {
+          "category": "_&",
+          "name": "Grand Explosion",
+          "input": "_2_1_4_2_3_6_+_C_+_D",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "EELIS",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Choke Swing",
+          "input": "_4 / _6_+_C / _D",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Rising Forearm",
+          "input": "_6_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Dancing Needle",
+          "input": "_^_4_2_1_+_K",
+          "condition": "T"
+        },
+        {
+          "category": "_@",
+          "name": "Nightmare Wing",
+          "input": "(_^)_2_3_6_9_+_P",
+          "condition": "B"
+        },
+        {
+          "category": "_@",
+          "name": "Phantom Kuroishi",
+          "input": "_6_4_6_+_K",
+          "condition": "B"
+        },
+        {
+          "category": "_@",
+          "name": "Bat Illusion",
+          "input": "_2_8_+_A (parry)",
+          "condition": "B"
+        },
+        {
+          "category": "_@",
+          "input": "^!Stationary Teleport                                           _N",
+          "condition": "B"
+        },
+        {
+          "category": "_@",
+          "input": "^!Left Side Teleport                                            _D",
+          "condition": "B"
+        },
+        {
+          "category": "_@",
+          "input": "^!Right Side Teleport                                           _A",
+          "condition": "B"
+        },
+        {
+          "category": "_@",
+          "input": "^!Air Left Teleport                                             _C",
+          "condition": "B"
+        },
+        {
+          "category": "_@",
+          "input": "^!Air Right Teleport                                            _B",
+          "condition": "B"
+        },
+        {
+          "category": "_@",
+          "name": "Abandoned Cave close",
+          "input": "_6_3_2_1_4_+_C / _D",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Lunatic Jail",
+          "input": "(_^)_2_1_4_2_3_6_2_1_4_+_A_+_B",
+          "condition": "T"
+        },
+        {
+          "category": "_*",
+          "name": "Killing Chariot",
+          "input": "_6_2_3_6_2_3_+_C_+_D",
+          "condition": "B"
+        },
+        {
+          "category": "_&",
+          "name": "Midnight Fire",
+          "input": "_6_3_2_1_4_2_3_6_+_B_+_C",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "LUCIFER",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw Away",
+          "input": "_4 / _6_+_C / _D",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Pentagram Dune",
+          "input": "^4_6_+_P",
+          "condition": "T"
+        },
+        {
+          "category": "_@",
+          "name": "Pentagram Ruin",
+          "input": "^4_6_+_K",
+          "condition": "T"
+        },
+        {
+          "category": "_@",
+          "name": "Mind Wave",
+          "input": "^2_8_+_A_+_B",
+          "condition": "F"
+        },
+        {
+          "category": "_@",
+          "name": "Electric Crunch close",
+          "input": "_6_3_2_1_4_+_C / _D",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Dark Side Gate",
+          "input": "^4_6_+_A_+_B_+_C",
+          "condition": "T"
+        },
+        {
+          "category": "_*",
+          "name": "Anger Body Sonic",
+          "input": "_4_6_4_6_+_A_+_B",
+          "condition": "F"
+        },
+        {
+          "category": "_&",
+          "name": "Flare Burst",
+          "input": "_O_A_+_B_+_C_+_D",
+          "condition": "─"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_A": "LP",
+    "_B": "LK",
+    "_C": "HP",
+    "_D": "HK",
+    "_S": "ST",
+    "^S": "SL"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "genesis": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "megadrive": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "32x": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "saturn": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "neogeo": {
+      "b": "_A",
+      "y": "_B",
+      "a": "_C",
+      "x": "_D"
+    },
+    "psx": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "ps2": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "gb": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gbc": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gamegear": {
+      "a": "_A",
+      "b": "_B"
+    },
+    "sms": {
+      "a": "_A",
+      "b": "_B"
+    },
+    "gba": {
+      "b": "_A",
+      "a": "_B",
+      "l1": "_C",
+      "r1": "_D"
+    },
+    "ngpc": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "dreamcast": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "n64": {
+      "b": "_A",
+      "a": "_B",
+      "cDown": "_C",
+      "cLeft": "_D"
+    },
+    "wswan": {
+      "b": "_A",
+      "a": "_B"
+    }
+  }
+}

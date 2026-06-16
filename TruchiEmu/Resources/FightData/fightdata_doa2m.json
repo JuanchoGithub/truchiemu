@@ -1,1 +1,5409 @@
-{"schemaVersion":2,"romIds":["doa2m","doa2","doa2a"],"name":"Dead or Alive 2","year":1999,"manufacturer":"Tecmo","controls":{"_H":"Hold","_P":"Punch","_K":"Kick","_S":"Start"},"categories":{"_(":"Throws, Holds and Tag Throws","_)":"Command Moves","_`":"Positions"},"commonCommands":[{"category":"_)","name":"Dash","input":"_6_6"},{"category":"_)","name":"Run","input":"_6^6"},{"category":"_)","name":"Retreat","input":"_4_4"},{"category":"_)","name":"Low Dash","input":"_3_3"},{"category":"_)","name":"Low Retreat","input":"_1_1"},{"category":"_)","name":"Tag","input":"_H_+_P_+_K"},{"category":"_)","name":"Sidestep In","input":"_8_+_H"},{"category":"_)","name":"Sidestep Out","input":"_2_2_+_H"},{"category":"_)","name":"Moving","input":"_O_H, _4_4 / _6_6 / _2_2 / _8_8"},{"category":"_)","name":"Throw Escape when thrown","input":"_H_+_P"},{"category":"_)","name":"Safe Landing being knocked down","input":"_H / _P / _K"},{"category":"_)","name":"Get Up","input":"_H"},{"category":"_)","name":"Roll to Background and Get Up knocked down","input":"^8_+_H"},{"category":"_)","name":"Roll to Foreground and Get Up knocked down","input":"^2_+_H"}],"characters":[{"name":"KASUMI","moves":[{"category":"_(","name":"Kahen","input":"_H_+_P"},{"category":"_(","name":"Kegon","input":"_6_+_H_+_P"},{"category":"_(","name":"Ibara Otoshi","input":"_6_6_+_H_+_P"},{"category":"_(","name":"Thorn Drop","input":"_2_+_H_+_P"},{"category":"_(","name":"Tenryu 2","input":"_4_+_H_+_P"},{"category":"_(","name":"Tsuzumi","input":"_2_3_6_+_H_+_P"},{"category":"_(","name":"Rogai","input":"_2_1_4_+_H_+_P"},{"category":"_(","name":"Oboro","input":"_3_3_+_H_+_P"},{"category":"_(","name":"Hein","input":"_8_+_H_+_P"},{"category":"_(","name":"Swallow Reverse Drop","input":"_4_+_H_+_P"},{"category":"_(","name":"Youshi close to wall","input":"_6_+_H_+_P"},{"category":"_(","name":"Ibara Kudaki close to wall","input":"_6_6_+_H_+_P"},{"category":"_(","name":"Thorn Crush","input":"_2_+_H_+_P"},{"category":"_(","name":"Adachi close to wall","input":"_4_+_H_+_P"},{"category":"_(","name":"Hakkato from behind","input":"_H_+_P"},{"category":"_(","name":"Hishu from behind","input":"_6_+_H_+_P"},{"category":"_(","name":"Urahien from behind","input":"_8_+_H_+_P"},{"category":"_(","name":"Himatsu crouching opponent","input":"_2_+_H_+_P"},{"category":"_(","name":"Enshu crouching opponent","input":"_1_+_H_+_P"},{"category":"_(","name":"Kyoka","input":"_6_8_+_H (reverse high punch)"},{"category":"_(","name":"Kakinomi","input":"_6_8_+_H (reverse high kick)"},{"category":"_(","name":"Shiraha","input":"_6_4_+_H (reverse mid punch)"},{"category":"_(","name":"Shigure","input":"_4_6_+_H (reverse mid kick)"},{"category":"_(","name":"Momiji","input":"_6_4_+_H (reverse low punch)"},{"category":"_(","name":"Soken","input":"_6_4_+_H (reverse low kick)"},{"category":"_(","name":"Madol","input":"_4_8_+_H (reverse high/mid punch)"},{"category":"_(","name":"Mayoi","input":"_4_2_+_H (reverse low punch)"},{"category":"_(","name":"Oborofutae (with Hayabusa)","input":"_6_6_+_H_+_P_+_K"},{"category":"_(","name":"Oboro 2 (with others)","input":"_6_6_+_H_+_P_+_K"},{"category":"_)","name":"Appeal: Sakura Matoi","input":"_4_6_4_+_H_+_P_+_K"},{"category":"_)","name":"Uragake","input":"_7_+_P"},{"category":"_)","name":"Tenbu","input":"_9_+_P"},{"category":"_`","input":"_H_+_K_K","hitLevels":"hh"},{"category":"_`","input":"_H_+_K_2_+_K","hitLevels":"hl"},{"category":"_`","input":"_P_P_P_P","hitLevels":"hhmm"},{"category":"_`","input":"_P_P_K_K_K","hitLevels":"hhhhm"},{"category":"_`","input":"_P_P_K_2_+_K","hitLevels":"hhhl"},{"category":"_`","input":"_P_P_K_3_+_K","hitLevels":"hhhm"},{"category":"_`","input":"_P_P_6_+_P_K_K","hitLevels":"hhmmm"},{"category":"_`","input":"_P_P_6_+_P_K_2_+_K","hitLevels":"hhmml"},{"category":"_`","input":"_P_P_6_+_P_6_+_K","hitLevels":"hhmm"},{"category":"_`","input":"_P_P_6_+_P_2_+_K","hitLevels":"hhml"},{"category":"_`","input":"_P_P_6_+_K_K","hitLevels":"hhmh"},{"category":"_`","input":"_P_P_6_+_K_2_+_K","hitLevels":"hhml"},{"category":"_`","input":"_P_P_7_+_P","hitLevels":"hhm"},{"category":"_`","input":"_P_K_K_K","hitLevels":"hhhm"},{"category":"_`","input":"_P_K_2_+_K","hitLevels":"hhl"},{"category":"_`","input":"_P_K_3_+_K","hitLevels":"hhm"},{"category":"_`","input":"_P_+_K","hitLevels":"h"},{"category":"_`","input":"_K_K_K","hitLevels":"hhm"},{"category":"_`","input":"_K_2_+_K","hitLevels":"hl"},{"category":"_`","input":"_K_3_+_K","hitLevels":"hm"},{"category":"_`","input":"_6_+_P_K_K","hitLevels":"mmm"},{"category":"_`","input":"_6_+_P_K_2_+_K","hitLevels":"mml"},{"category":"_`","input":"_6_+_P_6_+_K","hitLevels":"mm"},{"category":"_`","input":"_6_+_P_2_+_K","hitLevels":"ml"},{"category":"_`","input":"_6_+_K_K","hitLevels":"mh"},{"category":"_`","input":"_6_+_K_2_+_K","hitLevels":"ml"},{"category":"_`","input":"_6_6_+_P_2_+_K","hitLevels":"ml"},{"category":"_`","input":"_6_6_+_K","hitLevels":"l"},{"category":"_`","input":"_4_+_H_+_K","hitLevels":"m"},{"category":"_`","input":"_4_+_P","hitLevels":"h"},{"category":"_`","input":"_4_+_K_K","hitLevels":"hm","condition":"BK"},{"category":"_`","input":"_2_+_H_+_K","hitLevels":"l"},{"category":"_`","input":"_3_+_H_+_K","hitLevels":"m"},{"category":"_`","input":"_3_+_P_P","hitLevels":"mm"},{"category":"_`","input":"_3_+_P_2_+_K","hitLevels":"ml"},{"category":"_`","input":"_3_+_K","hitLevels":"m"},{"category":"_`","input":"_3_3_+_P","hitLevels":"m","condition":"BK"},{"category":"_`","input":"_3_3_+_K","hitLevels":"m"},{"category":"_`","input":"_8_+_P","hitLevels":"h"},{"category":"_`","input":"_8_+_K","hitLevels":"h"},{"category":"_`","input":"_7_+_K","hitLevels":"m"},{"category":"_`","input":"_9_+_P_K","hitLevels":"h"},{"category":"_`","input":"_9_+_K","hitLevels":"m"},{"category":"_`","name":"before landing","input":"_P","hitLevels":"m","condition":"BK"},{"category":"_`","name":"before landing","input":"_K","hitLevels":"l"},{"category":"_`","name":"opponent knocked down","input":"_2_+_P","hitLevels":"g"},{"category":"_`","name":"opponent knocked down","input":"_8_+_P_+_K","hitLevels":"g"},{"category":"_`","name":"knocked down","input":"_K_6_+_K","hitLevels":"mm"},{"category":"_`","name":"knocked down, face down and feet away","input":"_H_+_K","hitLevels":"m"},{"category":"_`","input":"_K_K","hitLevels":"hm"},{"category":"_`","input":"_2_+_P","hitLevels":"m"},{"category":"_`","input":"_2_+_K","hitLevels":"m"},{"category":"_`","input":"_8_+_K","hitLevels":"m"}],"notes":["Strings Moves","BACK TURNED (BK)","Strings Moves"]},{"name":"RYU HAYABUSA","moves":[{"category":"_(","name":"Juuji","input":"_H_+_P"},{"category":"_(","name":"Kubi Kiri","input":"_6_+_H_+_P"},{"category":"_(","name":"Hayabusa","input":"_6_6_+_H_+_P"},{"category":"_(","name":"Yama","input":"_4_+_H_+_P"},{"category":"_(","name":"Genei","input":"_4_6_+_H_+_P"},{"category":"_(","name":"Izuna","input":"_4_1_2_3_6_+_H_+_P"},{"category":"_(","name":"Kama-Itachi","input":"_2_3_6_7_8_+_H_+_P"},{"category":"_(","name":"Hankou Drop","input":"_x_+_H_+_P"},{"category":"_(","name":"Rakujinsho","input":"_2_1_4_+_H_+_P"},{"category":"_(","name":"Shiho","input":"_3_+_H_+_P"},{"category":"_(","name":"Shoro close to wall","input":"_6_+_H_+_P"},{"category":"_(","name":"Ura Nage from behind","input":"_H_+_P"},{"category":"_(","name":"Rakuryu from behind","input":"_6_6_+_H_+_P"},{"category":"_(","name":"Kandachi from behind","input":"_4_+_H_+_P"},{"category":"_(","name":"Zanshu crouching opponent","input":"_2_+_H_+_P"},{"category":"_(","name":"Hane crouching opponent","input":"_1_+_H_+_P"},{"category":"_(","name":"Takitsubo crouching opponent, from behind","input":"_2_+_H_+_P"},{"category":"_(","name":"Sen Izuna","input":"_6_8_+_H (reverse high punch)"},{"category":"_(","name":"Kama-Itachi","input":"_2_1_4_7_8_+_H"},{"category":"_(","name":"Hankou Drop","input":"_x_+_H"},{"category":"_(","name":"Kagedoro","input":"_6_8_+_H (reverse high kick)"},{"category":"_(","name":"Rekko","input":"_6_4_+_H (reverse mid punch)"},{"category":"_(","name":"Kama-Itachi","input":"_2_1_4_7_8_+_H"},{"category":"_(","name":"Hankou Drop","input":"_x_+_H"},{"category":"_(","name":"Shugeki","input":"_4_6_+_H (reverse mid kick)"},{"category":"_(","name":"Yoko","input":"_6_4_+_H (reverse low punch)"},{"category":"_(","name":"Kama-Itachi","input":"_2_1_4_7_8_+_H"},{"category":"_(","name":"Hankou Drop","input":"_x_+_H"},{"category":"_(","name":"Koken","input":"_6_4_+_H (reverse low kick)"},{"category":"_(","name":"Kazaguruma (with Kasumi)","input":"_6_6_+_H_+_P_+_K"},{"category":"_(","name":"Sen Izuna (with others)","input":"_6_6_+_H_+_P_+_K"},{"category":"_(","name":"Kama-Itachi","input":"_2_1_4_7_8_+_H_+_P"},{"category":"_(","name":"Hankou Drop","input":"_x_+_H_+_P"},{"category":"_)","name":"Appeal: Nin","input":"_4_6_4_+_H_+_P_+_K"},{"category":"_)","name":"Appeal: Rin","input":"_6_4_6_+_H_+_P_+_K"},{"category":"_)","name":"Appeal: Rei","input":"_2_2_+_H_+_P_+_K"},{"category":"_)","name":"Tenchi: HSP","input":"_2_+_P_+_K"},{"category":"_)","name":"Urakaze","input":"_9_+_P"},{"category":"_(","name":"Kirimomi","input":"_H_+_P"},{"category":"_(","name":"Kabuto","input":"_4_+_H_+_P"},{"category":"_)","name":"Korobi","input":"_4_4"},{"category":"_)","name":"Koten","input":"_2"},{"category":"_`","input":"_H_+_K_K_K","hitLevels":"hhh"},{"category":"_`","input":"_P_P_P","hitLevels":"hhm"},{"category":"_`","input":"_P_P_4_+_P_6_+_P","hitLevels":"hhmm"},{"category":"_`","input":"_P_P_4_+_P_K","hitLevels":"hhmm"},{"category":"_`","input":"_P_P_K_K_K","hitLevels":"hhhhh"},{"category":"_`","input":"_P_P_2_+_K","hitLevels":"hhl","condition":"HSP"},{"category":"_`","input":"_P_K_K","hitLevels":"hhh"},{"category":"_`","input":"_P_+_K","hitLevels":"h"},{"category":"_`","input":"_K_P","hitLevels":"hm"},{"category":"_`","input":"_K_K","hitLevels":"hh"},{"category":"_`","input":"_6_+_P_K_K","hitLevels":"mml"},{"category":"_`","input":"_6_+_K_K","hitLevels":"mh"},{"category":"_`","input":"_6_6_+_P","hitLevels":"m"},{"category":"_`","input":"_6_6_+_K","hitLevels":"l"},{"category":"_`","input":"_6_4_+_K","hitLevels":"l"},{"category":"_`","input":"_4_+_H_+_K","hitLevels":"h","condition":"HSP"},{"category":"_`","input":"_4_+_P_K","hitLevels":"mm"},{"category":"_`","input":"_4_+_P_+_K","hitLevels":"m"},{"category":"_`","input":"_4_+_P_6_+_P","hitLevels":"mm"},{"category":"_`","input":"_4_+_K","hitLevels":"h","condition":"HSP"},{"category":"_`","input":"_2_+_H_+_K","hitLevels":"l","condition":"HSP"},{"category":"_`","input":"_2_3_6_+_P","hitLevels":"m"},{"category":"_`","input":"_2_3_6_+_K","hitLevels":"m"},{"category":"_`","input":"_2_4_+_K","hitLevels":"m","condition":"HSP"},{"category":"_`","input":"_1_+_P","hitLevels":"l"},{"category":"_`","input":"_1_+_K_2_+_K","hitLevels":"ll","condition":"HSP"},{"category":"_`","input":"_1_+_K^2_+_K","hitLevels":"ll","condition":"HSP"},{"category":"_`","input":"_1_+_K_1_+_K_2_+_K","hitLevels":"lll","condition":"HSP"},{"category":"_`","input":"_3_+_H_+_K","hitLevels":"m"},{"category":"_`","input":"_3_+_P","hitLevels":"m"},{"category":"_`","input":"_3_+_P_+_K","hitLevels":"m","condition":"BK"},{"category":"_`","input":"_3_+_P_+_K_K","hitLevels":"mm"},{"category":"_`","input":"_3_+_K_2_+_K","hitLevels":"ml"},{"category":"_`","input":"_8_+_P","hitLevels":"h"},{"category":"_`","input":"_8_+_K_K","hitLevels":"hm"},{"category":"_`","input":"_7_+_P","hitLevels":"m"},{"category":"_`","input":"_7_+_K","hitLevels":"m"},{"category":"_`","input":"_9_+_K","hitLevels":"m"},{"category":"_`","name":"before landing","input":"_P","hitLevels":"m"},{"category":"_`","name":"before landing","input":"_K","hitLevels":"l"},{"category":"_`","name":"opponent knocked down","input":"_2_+_P","hitLevels":"g"},{"category":"_`","name":"opponent knocked down","input":"_8_+_P_+_K","hitLevels":"g"},{"category":"_`","input":"_2_+_P","hitLevels":"m"},{"category":"_`","input":"_2_+_K","hitLevels":"m"},{"category":"_`","input":"_8_+_K","hitLevels":"m"},{"category":"_`","input":"_H_+_K","hitLevels":"l"},{"category":"_`","input":"_P","hitLevels":"h"},{"category":"_`","input":"_P_K","hitLevels":"m"},{"category":"_`","input":"_P_+_K","hitLevels":"m"},{"category":"_`","input":"_K_K","hitLevels":"hm"}],"notes":["Strings Moves","BACK TURNED (BK)","Strings Moves","HANDSTAND POSITION (HSP)","Strings Moves"]},{"name":"AYANE","moves":[{"category":"_(","name":"Momiji","input":"_H_+_P"},{"category":"_(","name":"H. Embu","input":"_6_+_H_+_P"},{"category":"_(","name":"Tsurara","input":"_6_6_+_H_+_P"},{"category":"_(","name":"Ice Pillar Drop","input":"_8_+_H_+_P"},{"category":"_(","name":"Kirimadoi","input":"_4_+_H_+_P"},{"category":"_(","name":"Tosenka","input":"_4_6_+_H_+_P"},{"category":"_(","name":"K. Gengi","input":"_2_3_6_+_H_+_P (BK)"},{"category":"_(","name":"K. Ranmu","input":"_2_1_4_+_H_+_P"},{"category":"_(","name":"Hikari close to wall","input":"_6_+_H_+_P"},{"category":"_(","name":"Baisenka close to wall","input":"_4_6_+_H_+_P"},{"category":"_(","name":"Ryusa from behind","input":"_H_+_P"},{"category":"_(","name":"Tsubaki from behind","input":"_6_+_H_+_P"},{"category":"_(","name":"Setsuna crouching opponent","input":"_2_+_H_+_P"},{"category":"_(","name":"Kamiyo crouching opponent","input":"_1_+_H_+_P"},{"category":"_(","name":"Muso crouching opponent, from behind","input":"_2_+_H_+_P"},{"category":"_(","name":"Tenbujin crouching opponent, from behind","input":"_1_+_H_+_P"},{"category":"_(","name":"Kamiyoi","input":"_6_8_+_H (reverse high punch)"},{"category":"_(","name":"Hyorin","input":"_6_8_+_H (reverse high kick)"},{"category":"_(","name":"Ayase","input":"_6_4_+_H (reverse mid punch)"},{"category":"_(","name":"Fubujin","input":"_4_6_+_H (reverse mid kick)"},{"category":"_(","name":"Kogarashi","input":"_6_4_+_H (reverse low punch)"},{"category":"_(","name":"Futenro","input":"_6_4_+_H (reverse low kick)"},{"category":"_(","name":"M. Tensho (with Ein)","input":"_6_6_+_H_+_P_+_K"},{"category":"_(","name":"Ayase 2 (with others)","input":"_6_6_+_H_+_P_+_K"},{"category":"_)","name":"Appeal: \"No, Kidding\"","input":"_4_6_4_+_H_+_P_+_K"},{"category":"_)","name":"Appeal: \"Silly\"","input":"_2_2_+_H_+_P_+_K"},{"category":"_)","name":"Haijin: BK","input":"_8_+_P"},{"category":"_)","name":"Kazemai: BK","input":"_7_+_P"},{"category":"_(","name":"Namigatana","input":"_H_+_P"},{"category":"_(","name":"Yamigarasu","input":"_6_+_H_+_P (BK)"},{"category":"_(","name":"Urayami from behind","input":"_6_+_H_+_P (BK)"},{"category":"_(","name":"Syusui crouching opponent","input":"_2_+_H_+_P"},{"category":"_)","name":"Furo","input":"_6_6"},{"category":"_)","name":"Renpul","input":"_6^6"},{"category":"_)","name":"Oroshi","input":"_3"},{"category":"_)","name":"Shimo","input":"^3"},{"category":"_)","name":"Oroshiryu","input":"_3^4 (BK)"},{"category":"_)","name":"S. Oroshi","input":"_3^1 (BK)"},{"category":"_`","input":"_H_+_K","hitLevels":"h"},{"category":"_`","input":"_P_P_P","hitLevels":"hhm"},{"category":"_`","input":"_P_P_K_K","hitLevels":"hhhh"},{"category":"_`","input":"_P_P_6_+_P_P","hitLevels":"hhmm"},{"category":"_`","input":"_P_K","hitLevels":"hh"},{"category":"_`","input":"_P_+_K_P_P","hitLevels":"hhh"},{"category":"_`","input":"_P_+_K_P_K","hitLevels":"hhh","condition":"BK"},{"category":"_`","input":"_P_+_K_P_2_+_K","hitLevels":"hhl"},{"category":"_`","input":"_P_+_K_P_7_+_K","hitLevels":"hhm"},{"category":"_`","input":"_K_K","hitLevels":"hh"},{"category":"_`","input":"_6_+_P","hitLevels":"m","condition":"BK"},{"category":"_`","input":"_6_+_P_P","hitLevels":"mm"},{"category":"_`","input":"_6_+_K_K","hitLevels":"mh"},{"category":"_`","input":"_6_+_K_2_+_K","hitLevels":"ml"},{"category":"_`","input":"_6_6_+_P_6_+_K","hitLevels":"mm"},{"category":"_`","input":"_4_+_H_+_K","hitLevels":"m"},{"category":"_`","input":"_4_+_P","hitLevels":"m","condition":"BK"},{"category":"_`","input":"_4_+_P_K","hitLevels":"mh"},{"category":"_`","input":"_4_+_P_2_+_K","hitLevels":"ml"},{"category":"_`","input":"_4_+_K","hitLevels":"m"},{"category":"_`","input":"_2_+_H_+_K","hitLevels":"l"},{"category":"_`","input":"_2_3_6_+_H_+_K","hitLevels":"h","condition":"BK"},{"category":"_`","input":"_2_3_6_+_K","hitLevels":"m"},{"category":"_`","input":"_1_+_P","hitLevels":"l","condition":"BK"},{"category":"_`","input":"^1_+_P_K","hitLevels":"ll"},{"category":"_`","input":"_3_+_H_+_K","hitLevels":"m"},{"category":"_`","input":"_3_+_P_4_+_P","hitLevels":"mm","condition":"BK"},{"category":"_`","input":"_3_+_K","hitLevels":"m"},{"category":"_`","input":"_3_3_+_P_2_+_K","hitLevels":"ll"},{"category":"_`","input":"_8_+_K","hitLevels":"h"},{"category":"_`","input":"_7_+_K","hitLevels":"m","condition":"BK"},{"category":"_`","input":"_9_+_P_P_P","hitLevels":"hhm"},{"category":"_`","input":"_9_+_P_K_K","hitLevels":"hhh"},{"category":"_`","input":"_9_+_K","hitLevels":"m"},{"category":"_`","name":"before landing","input":"_P","hitLevels":"m"},{"category":"_`","name":"before landing","input":"_K","hitLevels":"l"},{"category":"_`","name":"opponent knocked down","input":"_2_+_P","hitLevels":"g"},{"category":"_`","name":"opponent knocked down","input":"_8_+_P_+_K","hitLevels":"g"},{"category":"_`","name":"knocked down, face up and feet away","input":"_H_+_K","hitLevels":"m"},{"category":"_`","input":"_H_+_K","hitLevels":"m","condition":"BK"},{"category":"_`","input":"_P_P_P","hitLevels":"hhm"},{"category":"_`","input":"_P_P_6_+_P_K","hitLevels":"hhmh"},{"category":"_`","input":"_P_P_6_+_P_2_+_K","hitLevels":"hhml"},{"category":"_`","input":"_P_P_4_+_P_P_P","hitLevels":"hhhhh"},{"category":"_`","input":"_P_P_4_+_P_P_K","hitLevels":"hhhhh","condition":"BK"},{"category":"_`","input":"_P_P_4_+_P_P_2_+_K","hitLevels":"hhhhl"},{"category":"_`","input":"_P_P_4_+_P_P_7_+_K","hitLevels":"hhhhm"},{"category":"_`","input":"_P_P_1_+_P","hitLevels":"hhl","condition":"BK"},{"category":"_`","input":"_P_P^1_+_P_K","hitLevels":"hhll"},{"category":"_`","input":"_4_+_P_P_P","hitLevels":"hhh"},{"category":"_`","input":"_4_+_P_P_K","hitLevels":"hhh","condition":"BK"},{"category":"_`","input":"_4_+_P_P_2_+_K","hitLevels":"hhl"},{"category":"_`","input":"_4_+_P_P_7_+_K","hitLevels":"hhm"},{"category":"_`","input":"_2_+_H_+_K","hitLevels":"l"},{"category":"_`","input":"_2_+_P","hitLevels":"m"},{"category":"_`","input":"_2_+_K","hitLevels":"m"},{"category":"_`","input":"_1_+_P","hitLevels":"l","condition":"BK"},{"category":"_`","input":"^1_+_P_K","hitLevels":"ll"},{"category":"_`","input":"_8_+_K","hitLevels":"m","condition":"BK"},{"category":"_`","input":"_7_+_P","hitLevels":"m","condition":"BK"},{"category":"_`","input":"_7_+_K","hitLevels":"m"}],"notes":["Strings Moves","BACK TURNED (BK)","Strings Moves"]},{"name":"EIN","moves":[{"category":"_(","name":"Suigetsu","input":"_H_+_P"},{"category":"_(","name":"Futo","input":"_6_+_H_+_P"},{"category":"_(","name":"Ryukotsu","input":"_4_+_H_+_P"},{"category":"_(","name":"Guren","input":"_2_1_4_+_H_+_P"},{"category":"_(","name":"Kaei","input":"_3_3_+_H_+_P"},{"category":"_(","name":"FGankotsu close to wall","input":"_4_+_H_+_P"},{"category":"_(","name":"Rekka close to wall","input":"_3_3_+_H_+_P"},{"category":"_(","name":"Socho from behind","input":"_H_+_P"},{"category":"_(","name":"Seiryo from behind","input":"_4_+_H_+_P"},{"category":"_(","name":"Reigetsu crouching opponent","input":"_2_+_H_+_P"},{"category":"_(","name":"Mozu crouching opponent","input":"_1_+_H_+_P"},{"category":"_(","name":"Kakushu crouching opponent, from behind","input":"_2_+_H_+_P"},{"category":"_(","name":"Suirin crouching opponent, from behind","input":"_1_+_H_+_P"},{"category":"_(","name":"Namioi","input":"_6_8_+_H (reverse high punch)"},{"category":"_(","name":"Tenga","input":"_6_8_+_H (reverse high kick)"},{"category":"_(","name":"Otoshiami","input":"_6_4_+_H (reverse mid punch)"},{"category":"_(","name":"Metsumon","input":"_4_6_+_H (reverse mid kick)"},{"category":"_(","name":"Ruten","input":"_6_4_+_H (reverse low punch)"},{"category":"_(","name":"Kobo","input":"_6_4_+_H (reverse low kick)"},{"category":"_(","name":"Kagura (with Ayane)","input":"_6_6_+_H_+_P_+_K"},{"category":"_(","name":"Kael (with others)","input":"_6_6_+_H_+_P_+_K"},{"category":"_)","name":"Appeal: \"Come On!\"","input":"_4_6_4_+_H_+_P_+_K"},{"category":"_)","name":"Appeal: \"Easy!\"","input":"_2_2_+_H_+_P_+_K"},{"category":"_`","input":"_H_+_K_K","hitLevels":"mh"},{"category":"_`","input":"_H_+_K_2_+_K","hitLevels":"ml"},{"category":"_`","input":"_P_P_P","hitLevels":"hhm"},{"category":"_`","input":"_P_P_K_K","hitLevels":"hhhm"},{"category":"_`","input":"_P_K_K","hitLevels":"hhm"},{"category":"_`","input":"_P_P_6_+_P_P","hitLevels":"hhhm"},{"category":"_`","input":"_P_P_6_+_P_K","hitLevels":"hhhm"},{"category":"_`","input":"_P_P_6_+_P_2_+_K","hitLevels":"hhhl"},{"category":"_`","input":"_P_P_2_+_K_K","hitLevels":"hhlh"},{"category":"_`","input":"_P_P^2_+_K_K","hitLevels":"hhll"},{"category":"_`","input":"_P_+_K_6_+_P","hitLevels":"mm"},{"category":"_`","input":"_K_K","hitLevels":"hm"},{"category":"_`","input":"_6_+_H_+_K","hitLevels":"m","condition":"BK"},{"category":"_`","input":"_6_+_P","hitLevels":"m"},{"category":"_`","input":"_6_+_P_+_K","hitLevels":"hm"},{"category":"_`","input":"_6_+_K_K_K","hitLevels":"hhh"},{"category":"_`","input":"_6_+_K_K_6_+_K","hitLevels":"hhm"},{"category":"_`","input":"^6_+_K_K","hitLevels":"mm"},{"category":"_`","input":"_6_6_+_P_P","hitLevels":"hm"},{"category":"_`","input":"_6_6_+_P_K","hitLevels":"hm"},{"category":"_`","input":"_6_6_+_P_2_+_K","hitLevels":"hl"},{"category":"_`","input":"_6_6_+_K_K_K","hitLevels":"mhm"},{"category":"_`","input":"_4_+_H_+_K","hitLevels":"h","condition":"BK"},{"category":"_`","input":"_4_+_P_P_P","hitLevels":"hhm"},{"category":"_`","input":"_4_+_P_P_2_+_K","hitLevels":"hhl"},{"category":"_`","input":"_4_+_P_2_+_K_P","hitLevels":"hlm"},{"category":"_`","input":"_4_+_K","hitLevels":"m"},{"category":"_`","input":"_4_6_+_P","hitLevels":"h"},{"category":"_`","input":"_4_6_+_K","hitLevels":"m"},{"category":"_`","input":"^2_+_K_K","hitLevels":"ll"},{"category":"_`","input":"_2_3_6_+_P","hitLevels":"m"},{"category":"_`","input":"_2_3_6_+_K","hitLevels":"m"},{"category":"_`","input":"_1_+_K_P","hitLevels":"lm"},{"category":"_`","input":"_1_+_K_K","hitLevels":"lm"},{"category":"_`","input":"_1_+_K_6_+_P_P","hitLevels":"lhm"},{"category":"_`","input":"_1_+_K_6_+_P_K","hitLevels":"lhm"},{"category":"_`","input":"_1_+_K_6_+_P_2_+_K","hitLevels":"lhl"},{"category":"_`","input":"_3_+_P","hitLevels":"m"},{"category":"_`","input":"_3_+_K_K_K","hitLevels":"mmh"},{"category":"_`","input":"_3_3_+_K","hitLevels":"m"},{"category":"_`","input":"_8_+_P","hitLevels":"m"},{"category":"_`","input":"_8_+_K","hitLevels":"m"},{"category":"_`","input":"_7_+_P","hitLevels":"h"},{"category":"_`","input":"_7_+_K","hitLevels":"m"},{"category":"_`","input":"_9_+_P","hitLevels":"m","condition":"BK"},{"category":"_`","input":"_9_+_P_K","hitLevels":"mh"},{"category":"_`","input":"_9_+_K_K","hitLevels":"mh"},{"category":"_`","name":"before landing","input":"_P","hitLevels":"hm"},{"category":"_`","name":"before landing","input":"_K","hitLevels":"l"},{"category":"_`","name":"opponent knocked down","input":"_2_+_P","hitLevels":"g"},{"category":"_`","name":"opponent knocked down","input":"_8_+_P_+_K","hitLevels":"g"},{"category":"_`","input":"_2_+_P","hitLevels":"m"},{"category":"_`","input":"_2_+_K","hitLevels":"m"},{"category":"_`","input":"_8_+_K","hitLevels":"m"}],"notes":["Strings Moves","BACK TURNED (BK)","Strings Moves"]},{"name":"GEN-FU","moves":[{"category":"_(","name":"Juji","input":"_H_+_P"},{"category":"_(","name":"Shutai","input":"_6_+_H_+_P"},{"category":"_(","name":"Koukei","input":"_6_6_+_H_+_P"},{"category":"_(","name":"Monkey Style","input":"_6_+_H_+_P"},{"category":"_(","name":"Shin-i","input":"_4_+_H_+_P"},{"category":"_(","name":"Umpei","input":"_2_3_6_+_H_+_P"},{"category":"_(","name":"Close the Clouds and...","input":"_H_+_P"},{"category":"_(","name":"Kokaisan","input":"_2_1_4_+_H_+_P"},{"category":"_(","name":"Ryuyo close to wall","input":"_4_+_H_+_P"},{"category":"_(","name":"Tora from behind","input":"_H_+_P"},{"category":"_(","name":"Sokujin from behind","input":"_6_+_H_+_P"},{"category":"_(","name":"Batetsu crouching opponent","input":"_2_+_H_+_P"},{"category":"_(","name":"Ribyo crouching opponent","input":"_1_+_H_+_P"},{"category":"_(","name":"Juji crouching opponent, from behind","input":"_2_+_H_+_P"},{"category":"_(","name":"Taizan","input":"_6_8_+_H (reverse high punch)"},{"category":"_(","name":"Ten Ha","input":"_6_8_+_H (reverse high kick)"},{"category":"_(","name":"Ryukei","input":"_6_4_+_H (reverse mid punch)"},{"category":"_(","name":"Ryucho","input":"_4_6_+_H (reverse mid kick)"},{"category":"_(","name":"Tensan","input":"_6_4_+_H (reverse low punch)"},{"category":"_(","name":"Daiso","input":"_6_4_+_H (reverse low kick)"},{"category":"_(","name":"Saishu","input":"_4_8_+_H (reverse high/mid punch)"},{"category":"_(","name":"Roshu","input":"_4_8_+_H (reverse high/mid kick)"},{"category":"_(","name":"Kasyu","input":"_4_2_+_H (reverse low punch)"},{"category":"_(","name":"Koge","input":"_4_2_+_H (reverse low kick)"},{"category":"_(","name":"Soho (with Helena)","input":"_6_6_+_H_+_P_+_K"},{"category":"_(","name":"Yougeki (with Kasumi/Ayane)","input":"_6_6_+_H_+_P_+_K"},{"category":"_(","name":"Nichigetsu (with others)","input":"_6_6_+_H_+_P_+_K"},{"category":"_)","name":"Appeal: Hanraku","input":"_4_6_4_+_H_+_P_+_K"},{"category":"_)","name":"Appeal: Tensei","input":"_2_2_+_H_+_P_+_K"},{"category":"_)","name":"Senpo","input":"_2_3_6_+_P"},{"category":"_)","name":"Sokuten","input":"_7_+_P"},{"category":"_`","input":"_H_+_K","hitLevels":"h"},{"category":"_`","input":"_P_P_P","hitLevels":"hhm"},{"category":"_`","input":"_P_+_K","hitLevels":"m"},{"category":"_`","input":"_6_+_P_P_P","hitLevels":"mmm"},{"category":"_`","input":"_6_+_P_P_P_+_K","hitLevels":"mmm"},{"category":"_`","input":"_6_+_P_+_K","hitLevels":"m"},{"category":"_`","input":"_6_+_K","hitLevels":"h"},{"category":"_`","input":"^6_+_K_K","hitLevels":"mm"},{"category":"_`","input":"_6_6_+_P","hitLevels":"m"},{"category":"_`","input":"_6_4_+_P","hitLevels":"m"},{"category":"_`","input":"_4_+_P_P","hitLevels":"mm"},{"category":"_`","input":"_4_+_P_6_+_P_P_+_K","hitLevels":"mmm"},{"category":"_`","input":"_4_+_P_+_K","hitLevels":"h"},{"category":"_`","input":"_2_+_H_+_K","hitLevels":"l"},{"category":"_`","input":"_2_+_P_+_K_4_6_+_P","hitLevels":"hmm"},{"category":"_`","input":"_2_3_6_+_P_P","hitLevels":"-m"},{"category":"_`","input":"_1_+_P","hitLevels":"l"},{"category":"_`","input":"_1_+_P_+_K","hitLevels":"m"},{"category":"_`","input":"_1_+_K_6_+_P","hitLevels":"lm"},{"category":"_`","input":"_1_6_+_P","hitLevels":"m"},{"category":"_`","input":"_3_+_P_P","hitLevels":"mm"},{"category":"_`","input":"_3_+_P_+_K","hitLevels":"m"},{"category":"_`","input":"^3_+_P","hitLevels":"m"},{"category":"_`","input":"_3_+_K_P_4_6_+_P","hitLevels":"mmh"},{"category":"_`","input":"_3_3_+_P","hitLevels":"m"},{"category":"_`","input":"_8_+_P","hitLevels":"h"},{"category":"_`","input":"_8_+_K","hitLevels":"m"},{"category":"_`","input":"_7_+_K","hitLevels":"m"},{"category":"_`","input":"_9_+_P","hitLevels":"h"},{"category":"_`","input":"_9_+_K_2_+_K","hitLevels":"hl"},{"category":"_`","name":"before landing","input":"_P","hitLevels":"h"},{"category":"_`","name":"before landing","input":"_K","hitLevels":"l"},{"category":"_`","name":"opponent knocked down","input":"_2_+_P","hitLevels":"g"},{"category":"_`","name":"opponent knocked down","input":"_8_+_P_+_K","hitLevels":"g"},{"category":"_`","input":"_2_+_P","hitLevels":"m"},{"category":"_`","input":"_2_+_K","hitLevels":"m"}],"notes":["Strings Moves","BACK TURNED (BK)","Strings Moves"]},{"name":"HELENA","moves":[{"category":"_(","name":"1,2,3","input":"_H_+_P"},{"category":"_(","name":"Shohen","input":"_6_6_+_H_+_P"},{"category":"_(","name":"Senpeki","input":"_4_+_H_+_P"},{"category":"_(","name":"Yoto","input":"_2_3_6_+_H_+_P"},{"category":"_(","name":"Tenyoryu close to wall","input":"_4_+_H_+_P"},{"category":"_(","name":"Tenbu from behind","input":"_H_+_P"},{"category":"_(","name":"Shousen crouching opponent","input":"_2_+_H_+_P"},{"category":"_(","name":"Fukanbu crouching opponent","input":"_1_+_H_+_P"},{"category":"_(","name":"Z. Kaou crouching opponent, from behind","input":"_2_+_H_+_P"},{"category":"_(","name":"Danpi","input":"_6_8_+_H (reverse high punch)"},{"category":"_(","name":"Fukanro","input":"_6_8_+_H (reverse high kick)"},{"category":"_(","name":"Tenban","input":"_6_4_+_H (reverse mid punch)"},{"category":"_(","name":"Ishitsu","input":"_4_6_+_H (reverse mid kick)"},{"category":"_(","name":"Hekizan","input":"_6_2_+_H (reverse low punch)"},{"category":"_(","name":"Koran","input":"_6_2_+_H (reverse low kick)"},{"category":"_(","name":"Sokanbu (with Gen-Fu)","input":"_6_6_+_H_+_P_+_K"},{"category":"_(","name":"Tenshinban (with others)","input":"_6_6_+_H_+_P_+_K"},{"category":"_)","name":"Appeal: Token: AOP","input":"_4_6_4_+_H_+_P_+_K"},{"category":"_)","name":"Bokuho: AOP","input":"_2_+_P_+_K"},{"category":"_(","name":"Yoto","input":"_H_+_P"},{"category":"_)","name":"Turn Dash","input":"_6_6"},{"category":"_(","name":"Yoto","input":"_H_+_P"},{"category":"_(","name":"Tenbu from behind","input":"_H_+_P"},{"category":"_)","name":"Forward","input":"_6"},{"category":"_)","name":"Back","input":"_4"},{"category":"_)","name":"Stand","input":"_8"},{"category":"_)","name":"Turn: BK","input":"_7"},{"category":"_)","name":"Dash","input":"_6_6"},{"category":"_)","name":"Retreat","input":"_4_4"},{"category":"_)","name":"Teishitsu","input":"_2_2"},{"category":"_`","input":"_P_P_P","hitLevels":"hmm"},{"category":"_`","input":"_P_P_K","hitLevels":"hmh"},{"category":"_`","input":"_P_P^4","hitLevels":"hm","condition":"BK"},{"category":"_`","input":"_P_P^4_+_P_P","hitLevels":"hmmm"},{"category":"_`","input":"_P_P_2_+_K","hitLevels":"hml","condition":"AOP"},{"category":"_`","input":"_P_K_K_K","hitLevels":"hhmh"},{"category":"_`","input":"_P_+_K_P_+_K","hitLevels":"mm"},{"category":"_`","input":"_K_K_K","hitLevels":"hmh"},{"category":"_`","input":"_6_+_P_P","hitLevels":"mm"},{"category":"_`","input":"_6_+_P_+_K","hitLevels":"m"},{"category":"_`","input":"_6_+_K_P","hitLevels":"mm"},{"category":"_`","input":"_6_+_K_2_+_K","hitLevels":"ml","condition":"AOP"},{"category":"_`","input":"_6_6_+_P","hitLevels":"m"},{"category":"_`","input":"_6_6_+_K","hitLevels":"l","condition":"BK"},{"category":"_`","input":"_6_6_+_K_P","hitLevels":"ll","condition":"BK"},{"category":"_`","input":"_6_6_+_K_P_P","hitLevels":"llhm"},{"category":"_`","input":"_4_+_P","hitLevels":"m","condition":"BK"},{"category":"_`","input":"_4_+_P_P_P","hitLevels":"mmm"},{"category":"_`","input":"_4_+_P_+_K","hitLevels":"l"},{"category":"_`","input":"_4_+_K_K","hitLevels":"hm","condition":"BK"},{"category":"_`","input":"_4_4_+_P","hitLevels":"m","condition":"BK"},{"category":"_`","input":"_4_4_+_P_P_2_+_P","hitLevels":"mml","condition":"BK"},{"category":"_`","input":"_2_+_H_+_K","hitLevels":"l","condition":"AOP"},{"category":"_`","input":"_2_+_K_K","hitLevels":"lm"},{"category":"_`","input":"_2_3_6_+_P","hitLevels":"mmm","condition":"AOP"},{"category":"_`","input":"_2_1_4_+_P","hitLevels":"m"},{"category":"_`","input":"_1_+_P","hitLevels":"l","condition":"BK"},{"category":"_`","input":"_1_+_K","hitLevels":"l","condition":"BK"},{"category":"_`","input":"_1_+_K_P","hitLevels":"lhm"},{"category":"_`","input":"_3_+_P_P","hitLevels":"mm","condition":"BK"},{"category":"_`","input":"^3_+_P_P","hitLevels":"mm"},{"category":"_`","input":"_3_+_K","hitLevels":"m"},{"category":"_`","input":"_8_+_P","hitLevels":"h"},{"category":"_`","input":"_8_+_K","hitLevels":"h","condition":"AOP"},{"category":"_`","input":"_7_+_P","hitLevels":"m"},{"category":"_`","input":"_7_+_K","hitLevels":"m","condition":"BK"},{"category":"_`","input":"_9_+_P_P","hitLevels":"mm"},{"category":"_`","input":"_9_+_P_K","hitLevels":"mh"},{"category":"_`","input":"_9_+_P_2_+_K","hitLevels":"ml","condition":"AOP"},{"category":"_`","input":"_9_+_K","hitLevels":"mm"},{"category":"_`","name":"before landing","input":"_P","hitLevels":"m"},{"category":"_`","name":"before landing","input":"_K","hitLevels":"l","condition":"BK"},{"category":"_`","name":"opponent knocked down","input":"_2_+_K","hitLevels":"g"},{"category":"_`","name":"opponent knocked down","input":"_8_+_P_+_K","hitLevels":"g"},{"category":"_`","input":"_P_P_P_P","hitLevels":"hhmm"},{"category":"_`","input":"_P_P_4_+_P","hitLevels":"hhm","condition":"BK"},{"category":"_`","input":"_P_P_4_+_P_P_P","hitLevels":"hhmmm"},{"category":"_`","input":"_P_+_K","hitLevels":"m"},{"category":"_`","input":"_6_+_P","hitLevels":"m"},{"category":"_`","input":"_6_+_K_P","hitLevels":"mm"},{"category":"_`","input":"_6_+_K_2_+_K","hitLevels":"ml","condition":"AOP"},{"category":"_`","input":"_6_6_+_K","hitLevels":"l"},{"category":"_`","input":"_2_+_P","hitLevels":"m","condition":"BK"},{"category":"_`","input":"_2_+_K","hitLevels":"m","condition":"BK"},{"category":"_`","input":"_P_P_P","hitLevels":"hhm"},{"category":"_`","input":"_P_P_K","hitLevels":"hhmm"},{"category":"_`","input":"_P_+_K","hitLevels":"m"},{"category":"_`","input":"_6_+_P_P_P","hitLevels":"mmm"},{"category":"_`","input":"_6_+_P_P_K","hitLevels":"mmh","condition":"AOP"},{"category":"_`","input":"_6_+_K","hitLevels":"h","condition":"AOP"},{"category":"_`","input":"_6_6_+_P","hitLevels":"m"},{"category":"_`","input":"_4_+_P","hitLevels":"m","condition":"BK"},{"category":"_`","input":"_4_+_P_K_P","hitLevels":"mmm"},{"category":"_`","input":"_4_+_P_K_2_+_K","hitLevels":"mml","condition":"AOP"},{"category":"_`","input":"_2_+_H_+_K","hitLevels":"l"},{"category":"_`","input":"_3_+_K^2_+_K","hitLevels":"ml","condition":"AOP"}],"notes":["Strings Moves","BACK TURNED (BK)","Strings Moves","ART OF PHOENIX (AOP)","Strings Moves"]},{"name":"JANN-LEE","moves":[{"category":"_(","name":"Hell Drive","input":"_H_+_P"},{"category":"_(","name":"Dragon Gunner","input":"_6_+_H_+_P"},{"category":"_(","name":"Shoulder Throw","input":"_4_+_H_+_P"},{"category":"_(","name":"Headlock","input":"_2_3_6_+_H_+_P"},{"category":"_(","name":"Bulldogging Headlock","input":"_4_4_+_H_+_P"},{"category":"_(","name":"The Way of the Dragon","input":"_2_1_4_+_H_+_P"},{"category":"_(","name":"The Way of the Dragon close to wall","input":"_2_1_4_+_H_+_P"},{"category":"_(","name":"Dragon Rave from behind","input":"_H_+_P"},{"category":"_(","name":"Sekkan Punch from behind","input":"_2_3_6_+_H_+_P"},{"category":"_(","name":"Front Facelock crouching opponent","input":"_2_+_H_+_P"},{"category":"_(","name":"Side Buster crouching opponent","input":"_1_+_H_+_P"},{"category":"_(","name":"Punish Punch crouching opponent, from behind","input":"_2_+_H_+_P"},{"category":"_(","name":"Godless Short Knee","input":"_6_8_+_H (reverse high punch)"},{"category":"_(","name":"Trace Gunner","input":"_6_8_+_H (reverse high kick)"},{"category":"_(","name":"Double Bind","input":"_6_4_+_H (reverse mid punch)"},{"category":"_(","name":"Leg Sweep","input":"_4_6_+_H (reverse mid kick)"},{"category":"_(","name":"Deep the Dragon","input":"_6_4_+_H (reverse low punch)"},{"category":"_(","name":"Dragon Twist","input":"_6_4_+_H (reverse low kick)"},{"category":"_(","name":"Double Dragon (with Lei-Fang)","input":"_6_6_+_H_+_P_+_K"},{"category":"_(","name":"Deep the Dragon (with others)","input":"_6_6_+_H_+_P_+_K"},{"category":"_)","name":"Appeal: Shout","input":"_4_6_4_+_H_+_P_+_K"},{"category":"_`","input":"_H_+_K_K","hitLevels":"mh"},{"category":"_`","input":"_P_P_P_K","hitLevels":"hhhh"},{"category":"_`","input":"_P_P_P_6_+_P","hitLevels":"hhhm"},{"category":"_`","input":"_P_P_P_2_+_K","hitLevels":"hhhl"},{"category":"_`","input":"_P_P_K","hitLevels":"hhh"},{"category":"_`","input":"_P_P_6_+_P","hitLevels":"hhh"},{"category":"_`","input":"_P_K","hitLevels":"hh"},{"category":"_`","input":"_P_6_+_P_K","hitLevels":"hhm"},{"category":"_`","input":"_P_6_+_P_2_+_K","hitLevels":"hhl"},{"category":"_`","input":"_P_2_+_P_P","hitLevels":"hmm"},{"category":"_`","input":"_P^2_+_P_K","hitLevels":"hml"},{"category":"_`","input":"_P_+_K","hitLevels":"m"},{"category":"_`","input":"_K_K","hitLevels":"hh"},{"category":"_`","input":"_6_+_H_+_K","hitLevels":"h"},{"category":"_`","input":"_6_+_P_P","hitLevels":"mm"},{"category":"_`","input":"_6_+_P_2_+_K","hitLevels":"ml"},{"category":"_`","input":"_6_+_K_K","hitLevels":"mh"},{"category":"_`","input":"_6_+_K_4_6_+_K","hitLevels":"mm"},{"category":"_`","input":"_6_6_+_P_K","hitLevels":"hm"},{"category":"_`","input":"_6_6_+_P_2_+_K","hitLevels":"hl"},{"category":"_`","input":"_6_6_+_K","hitLevels":"m"},{"category":"_`","input":"_4_+_P","hitLevels":"m"},{"category":"_`","input":"_4_+_K_K","hitLevels":"mh"},{"category":"_`","input":"_4_6_+_P","hitLevels":"m"},{"category":"_`","input":"_4_6_+_K","hitLevels":"m"},{"category":"_`","input":"_2_+_H_+_K","hitLevels":"l"},{"category":"_`","input":"_2_+_K_K","hitLevels":"lm"},{"category":"_`","input":"^2_+_K_K","hitLevels":"ll"},{"category":"_`","input":"_2_3_6_+_P","hitLevels":"h"},{"category":"_`","input":"_2_3_6_+_K","hitLevels":"h"},{"category":"_`","input":"^2_4_6_+_P","hitLevels":"m"},{"category":"_`","input":"_1_+_P","hitLevels":"l"},{"category":"_`","input":"_1_+_K","hitLevels":"l"},{"category":"_`","input":"_3_+_P","hitLevels":"m"},{"category":"_`","input":"_3_+_K_K","hitLevels":"mh"},{"category":"_`","input":"_3_+_K_6_+_P","hitLevels":"mm"},{"category":"_`","input":"_3_+_K_4_+_K","hitLevels":"mm"},{"category":"_`","input":"_8_+_P","hitLevels":"h"},{"category":"_`","input":"_8_+_K","hitLevels":"h"},{"category":"_`","input":"_7_+_P","hitLevels":"h"},{"category":"_`","input":"_7_+_K","hitLevels":"h"},{"category":"_`","input":"_9_+_P","hitLevels":"h"},{"category":"_`","input":"_9_+_K_K","hitLevels":"mh"},{"category":"_`","name":"before landing","input":"_P","hitLevels":"h"},{"category":"_`","name":"before landing","input":"_K","hitLevels":"l"},{"category":"_`","name":"opponent knocked down","input":"_2_+_K","hitLevels":"g"},{"category":"_`","name":"opponent knocked down","input":"_8_+_H_+_P_+_K","hitLevels":"g"},{"category":"_`","name":"opponent knocked down","input":"_8_+_P_+_K","hitLevels":"g"},{"category":"_`","input":"_P_+_K","hitLevels":"m"},{"category":"_`","input":"_2_+_P","hitLevels":"m"},{"category":"_`","input":"_2_+_K","hitLevels":"m"},{"category":"_`","input":"_1_+_P","hitLevels":"h"}],"notes":["Strings Moves","BACK TURNED (BK)","Strings Moves"]},{"name":"LEI-FANG","moves":[{"category":"_(","name":"Toden","input":"_H_+_P"},{"category":"_(","name":"Yoho","input":"_6_6_+_H_+_P"},{"category":"_(","name":"Noba","input":"_4_+_H_+_P"},{"category":"_(","name":"Heishin","input":"_4_6_+_H_+_P"},{"category":"_(","name":"Challenge the Hand and...","input":"_2_3_6_+_H_+_P"},{"category":"_(","name":"The Fat Prince...","input":"_4_+_H_+_P"},{"category":"_(","name":"Fat Prince Combo","input":"_6_6_+_H_+_P"},{"category":"_(","name":"Request the Bodycheck","input":"_4_6_+_H_+_P"},{"category":"_(","name":"Rinei","input":"_2_1_4_+_H_+_P"},{"category":"_(","name":"Token","input":"_3_+_H_+_P"},{"category":"_(","name":"Asshin close to wall","input":"_6_6_+_H_+_P"},{"category":"_(","name":"Kaishin close to wall","input":"_4_+_H_+_P"},{"category":"_(","name":"Haisui from behind","input":"_H_+_P"},{"category":"_(","name":"Shanpo from behind","input":"_6_6_+_H_+_P"},{"category":"_(","name":"Choko from behind","input":"_2_3_6_+_H_+_P"},{"category":"_(","name":"Toitsu crouching opponent","input":"_2_+_H_+_P"},{"category":"_(","name":"Kindoku crouching opponent","input":"_1_+_H_+_P"},{"category":"_(","name":"Teishu crouching opponent, from behind","input":"_2_+_H_+_P"},{"category":"_(","name":"Tensen","input":"_6_8_+_H (reverse high punch)"},{"category":"_(","name":"Rotai","input":"_6_8_+_H (reverse high kick)"},{"category":"_(","name":"Shingeki","input":"_6_4_+_H (reverse mid punch)"},{"category":"_(","name":"Kaiso","input":"_4_6_+_H (reverse mid kick)"},{"category":"_(","name":"Sohi","input":"_6_4_+_H (reverse low punch)"},{"category":"_(","name":"Hotai","input":"_6_4_+_H (reverse low kick)"},{"category":"_(","name":"Sairetsu","input":"_4_8_+_H (reverse high/mid punch)"},{"category":"_(","name":"Housei","input":"_4_8_+_H (reverse high/mid kick)"},{"category":"_(","name":"Risei","input":"_4_2_+_H (reverse low punch)"},{"category":"_(","name":"Kasui","input":"_4_8_+_H (reverse low kick)"},{"category":"_(","name":"Tengyo (with Jann-Lee)","input":"_6_6_+_H_+_P_+_K"},{"category":"_(","name":"Heishin (with others)","input":"_6_6_+_H_+_P_+_K"},{"category":"_)","name":"Appeal: Geishin","input":"_4_6_4_+_H_+_P_+_K"},{"category":"_)","name":"Appeal: \"Got it!\"","input":"_6_4_6_+_H_+_P_+_K"},{"category":"_)","name":"Appeal: \"No, No!\"","input":"_2_2_+_H_+_P_+_K"},{"category":"_)","name":"Appeal: \"No, No, No!\"","input":"_4_4_+_H_+_P_+_K"},{"category":"_`","input":"_H_+_K","hitLevels":"m"},{"category":"_`","input":"_P_P_P","hitLevels":"hhm"},{"category":"_`","input":"_P_P_K_K","hitLevels":"hhhh"},{"category":"_`","input":"_P_P_K_2_+_K","hitLevels":"hhhm"},{"category":"_`","input":"_P_P_6_+_P_K","hitLevels":"hhmhm"},{"category":"_`","input":"_P_P_4_+_P_P","hitLevels":"hhmm"},{"category":"_`","input":"_P_P_2_+_K","hitLevels":"hhl"},{"category":"_`","input":"_P_K_K_2_+_K","hitLevels":"hhml"},{"category":"_`","input":"_P^3_+_P_P","hitLevels":"hmm"},{"category":"_`","input":"_P^3_+_P_P_+_K","hitLevels":"hmm","condition":"BK"},{"category":"_`","input":"_P_+_K","hitLevels":"hm"},{"category":"_`","input":"_K_K","hitLevels":"hh"},{"category":"_`","input":"_K_2_+_K","hitLevels":"hm"},{"category":"_`","input":"_6_+_P_K","hitLevels":"mhm"},{"category":"_`","input":"_6_+_P_+_K","hitLevels":"h"},{"category":"_`","input":"_6_+_K","hitLevels":"h"},{"category":"_`","input":"_6_6_+_P","hitLevels":"m"},{"category":"_`","input":"_6_6_+_K","hitLevels":"m"},{"category":"_`","input":"_6_4_+_P","hitLevels":"h"},{"category":"_`","input":"_4_+_P_P","hitLevels":"mm"},{"category":"_`","input":"_4_+_P_+_K","hitLevels":"h"},{"category":"_`","input":"_4_+_K_K_2_+_K","hitLevels":"hml"},{"category":"_`","input":"_4_6_+_P","hitLevels":"m"},{"category":"_`","input":"_2_+_P_+_K","hitLevels":"m","condition":"BK"},{"category":"_`","input":"_2_2_+_K","hitLevels":"l"},{"category":"_`","input":"_2_3_6_+_P","hitLevels":"m"},{"category":"_`","input":"_1_+_P_P","hitLevels":"mm"},{"category":"_`","input":"_1_+_P_+_K","hitLevels":"m"},{"category":"_`","input":"_1_+_K","hitLevels":"l"},{"category":"_`","input":"^1_+_K_K","hitLevels":"ll"},{"category":"_`","input":"_3_+_P","hitLevels":"m"},{"category":"_`","input":"_3_+_K_P_+_K","hitLevels":"mm","condition":"BK"},{"category":"_`","input":"_3_3_+_P_K_K","hitLevels":"lmh"},{"category":"_`","input":"_3_3_+_P_P_+_K","hitLevels":"lm","condition":"BK"},{"category":"_`","input":"_8_+_P","hitLevels":"h"},{"category":"_`","input":"_8_+_K","hitLevels":"h"},{"category":"_`","input":"_7_+_P","hitLevels":"m"},{"category":"_`","input":"_7_+_K","hitLevels":"h"},{"category":"_`","input":"_9_+_P","hitLevels":"m"},{"category":"_`","input":"_9_+_K_K","hitLevels":"mh"},{"category":"_`","name":"before landing","input":"_P","hitLevels":"h"},{"category":"_`","name":"before landing","input":"_K","hitLevels":"l"},{"category":"_`","name":"opponent knocked down","input":"_2_+_K","hitLevels":"g"},{"category":"_`","name":"opponent knocked down","input":"_8_+_P_+_K","hitLevels":"g"},{"category":"_`","input":"_P_+_K","hitLevels":"m"},{"category":"_`","input":"_2_+_P","hitLevels":"m"},{"category":"_`","input":"_2_+_K","hitLevels":"m"}],"notes":["Strings Moves","BACK TURNED (BK)","Strings Moves"]},{"name":"TINA ARMSTRONG","moves":[{"category":"_(","name":"Death Valley Bomb","input":"_H_+_P"},{"category":"_(","name":"Body Slam","input":"_6_+_H_+_P"},{"category":"_(","name":"Texas Driver","input":"_2_+_H_+_P"},{"category":"_(","name":"Hammer Throw","input":"_6_6_+_H_+_P"},{"category":"_(","name":"Japan Ocean Suplex","input":"_H_+_P"},{"category":"_(","name":"Piledriver","input":"_6_4_+_H_+_P"},{"category":"_(","name":"Gorii Bomb","input":"_2_+_H_+_P"},{"category":"_(","name":"Skytwister Press","input":"_2_8_+_H_+_P"},{"category":"_(","name":"Frankensteiner","input":"_4_+_H_+_P"},{"category":"_(","name":"Tackle","input":"_4_6_+_H_+_P"},{"category":"_(","name":"Giant Swing","input":"_4_1_2_3_6_+_H_+_P"},{"category":"_(","name":"Fisherman's Buster","input":"_4_1_2_3_6_+_H_+_P"},{"category":"_(","name":"Flying Mare","input":"_2_1_4_+_H_+_P"},{"category":"_(","name":"Surfboard-Style Lock","input":"_4_6_+_H_+_P"},{"category":"_(","name":"Japan Ocean Suplex","input":"_2_8_+_H_+_P"},{"category":"_(","name":"Japan Ocean Cyclone","input":"^2_6_4_+_H_+_P"},{"category":"_(","name":"Bust Cyclone close to wall","input":"_6_+_H_+_P"},{"category":"_(","name":"Bust Japan Ocean Suplex close to wall","input":"_6_6_+_H_+_P"},{"category":"_(","name":"Bust Suplex close to wall, from behind","input":"_6_+_H_+_P"},{"category":"_(","name":"German Suplex from behind","input":"_H_+_P"},{"category":"_(","name":"Double Break","input":"_2_+_H_+_P"},{"category":"_(","name":"Throwing German Suplex from behind","input":"_6_+_H_+_P"},{"category":"_(","name":"Full Nelson from behind","input":"_6_4_+_H_+_P"},{"category":"_(","name":"Dragon Suplex","input":"_6_4_+_H_+_P"},{"category":"_(","name":"Bass Bomb crouching opponent","input":"_2_+_H_+_P"},{"category":"_(","name":"Trance Four Leg Lock","input":"_2_2_+_H_+_P"},{"category":"_(","name":"Double Arm Suplex crouching opponent","input":"_1_+_H_+_P"},{"category":"_(","name":"Tiger Driver","input":"_2_+_H_+_P"},{"category":"_(","name":"Japanese Ocean Bomb crouching opponent","input":"_3_3_+_H_+_P"},{"category":"_(","name":"Neck Crasher crouching opponent, from behind","input":"_2_+_H_+_P"},{"category":"_(","name":"Locking Hammer","input":"_6_8_+_H (reverse high punch)"},{"category":"_(","name":"Spring Leg Lock","input":"_6_8_+_H (reverse high kick)"},{"category":"_(","name":"Arm Whip","input":"_6_4_+_H (reverse mid punch)"},{"category":"_(","name":"Dragon Screw","input":"_4_6_+_H (reverse mid kick)"},{"category":"_(","name":"Figure 4 Leg Lock","input":"_2_2_+_H"},{"category":"_(","name":"Pull-in Triangle Lock","input":"_6_4_+_H (reverse low punch)"},{"category":"_(","name":"Leg Split","input":"_6_4_+_H (reverse low kick)"},{"category":"_(","name":"Double Armstrong Buster (with Bass)","input":"_6_6_+_H_+_P_+_K"},{"category":"_(","name":"Dual Bomber (with Bass)","input":"_2_3_6_+_H_+_P_+_K"},{"category":"_(","name":"Flying Cyclone (with Zack)","input":"_6_6_+_H_+_P_+_K"},{"category":"_(","name":"Arm Whip (with others)","input":"_6_6_+_H_+_P_+_K"},{"category":"_)","name":"Appeal: \"Come On!\"","input":"_4_6_4_+_H_+_P_+_K"},{"category":"_)","name":"Appeal: Guts Pose","input":"_2_2_+_H_+_P_+_K"},{"category":"_)","name":"Front Forward","input":"_2_+_P_+_K"},{"category":"_`","input":"_H_+_K","hitLevels":"h"},{"category":"_`","input":"_P_P_P_K","hitLevels":"hhhm"},{"category":"_`","input":"_P_P_K","hitLevels":"hhm"},{"category":"_`","input":"_P_K","hitLevels":"hh"},{"category":"_`","input":"_P_+_K","hitLevels":"h"},{"category":"_`","input":"_K_K","hitLevels":"hh"},{"category":"_`","input":"_6_+_H_+_K","hitLevels":"m"},{"category":"_`","input":"_6_+_P_P_P","hitLevels":"mmm"},{"category":"_`","input":"_6_+_P_P_K","hitLevels":"mmm"},{"category":"_`","input":"_6_+_P_P_2_+_P","hitLevels":"mml"},{"category":"_`","input":"_6_+_P_P_2_+_K","hitLevels":"mml"},{"category":"_`","input":"_6_+_P_+_K","hitLevels":"m"},{"category":"_`","input":"_6_+_K_P","hitLevels":"mm"},{"category":"_`","input":"_6_6_+_P_P_K","hitLevels":"mmm"},{"category":"_`","input":"_6_6_+_P_+_K","hitLevels":"mm"},{"category":"_`","input":"_6_6_+_K","hitLevels":"m"},{"category":"_`","input":"_4_+_P","hitLevels":"m"},{"category":"_`","input":"_4_+_P_+_K","hitLevels":"m"},{"category":"_`","input":"_4_+_K","hitLevels":"m","condition":"BK"},{"category":"_`","input":"_4_6_+_P","hitLevels":"m"},{"category":"_`","input":"_2_+_H_+_K","hitLevels":"l"},{"category":"_`","input":"^2_+_K_K_K","hitLevels":"lll"},{"category":"_`","input":"_2_3_6_+_P","hitLevels":"m"},{"category":"_`","input":"_3_+_P","hitLevels":"m"},{"category":"_`","input":"^3_+_P","hitLevels":"m"},{"category":"_`","input":"_3_+_K_K","hitLevels":"mm"},{"category":"_`","input":"_3_3_+_P","hitLevels":"m"},{"category":"_`","input":"_3_3_+_K","hitLevels":"m"},{"category":"_`","input":"_8_+_P","hitLevels":"m"},{"category":"_`","input":"_8_+_K","hitLevels":"m"},{"category":"_`","input":"_7_+_P","hitLevels":"m"},{"category":"_`","input":"_7_+_K","hitLevels":"h"},{"category":"_`","input":"_9_+_P_K","hitLevels":"hm"},{"category":"_`","input":"_9_+_K","hitLevels":"h"},{"category":"_`","name":"before landing","input":"_P","hitLevels":"m"},{"category":"_`","name":"before landing","input":"_K","hitLevels":"m"},{"category":"_`","name":"opponent knocked down","input":"_2_+_P","hitLevels":"g"},{"category":"_`","name":"opponent knocked down","input":"_8_+_P_+_K","hitLevels":"g"},{"category":"_`","input":"_H_+_K","hitLevels":"h"},{"category":"_`","input":"_P_+_K","hitLevels":"m"},{"category":"_`","input":"_2_+_P","hitLevels":"m"},{"category":"_`","input":"_2_+_K","hitLevels":"m"}],"notes":["Strings Moves","BACK TURNED (BK)","Strings Moves"]},{"name":"BASS ARMSTRONG","moves":[{"category":"_(","name":"Falcon Arrow","input":"_H_+_P"},{"category":"_(","name":"Bass Tornado","input":"_6_+_H_+_P"},{"category":"_(","name":"Powerslam","input":"_6_6_+_H_+_P"},{"category":"_(","name":"Oklahoma Stampede","input":"_6_+_H_+_P"},{"category":"_(","name":"Water Mill Drop","input":"_4_+_H_+_P"},{"category":"_(","name":"Dynamite Lariat","input":"_4_6_+_H_+_P"},{"category":"_(","name":"Superfreak Powerbomb","input":"_4_1_2_3_6_+_H_+_P"},{"category":"_(","name":"Kitchen Sink","input":"_2_1_4_+_H_+_P"},{"category":"_(","name":"Stretch Plum","input":"_2_+_H_+_P"},{"category":"_(","name":"Manhattan Drop","input":"_2_8_+_H_+_P"},{"category":"_(","name":"T.F.B.B.","input":"^2_6_4_+_H_+_P"},{"category":"_(","name":"One Legged Headbutt","input":"_3_+_H_+_P"},{"category":"_(","name":"Flying Body Scissors","input":"_8_+_H_+_P"},{"category":"_(","name":"Bear Press close to wall","input":"_4_+_H_+_P"},{"category":"_(","name":"Atomic Hammer Crash close to wall","input":"_4_6_+_H_+_P"},{"category":"_(","name":"T.F.B.C. close to wall","input":"^2_6_4_+_H_+_P"},{"category":"_(","name":"Wild Bull Headbutt close to wall","input":"_3_+_H_+_P"},{"category":"_(","name":"Locomotion Backdrop close to wall, from behind","input":"_H_+_P"},{"category":"_(","name":"Iron Claw close to wall, from behind","input":"_4_1_2_3_6_+_H_+_P"},{"category":"_(","name":"Grizzly Crush","input":"_2_2_+_H_+_P"},{"category":"_(","name":"Dangerous Backdrop from behind","input":"_H_+_P"},{"category":"_(","name":"Atomic Drop from behind","input":"_6_6_+_H_+_P"},{"category":"_(","name":"Face Crusher","input":"_6_+_H_+_P"},{"category":"_(","name":"Argentine Backbreaker from behind","input":"_4_+_H_+_P"},{"category":"_(","name":"Iron Claw from behind","input":"_4_1_2_3_6_+_H_+_P"},{"category":"_(","name":"Grizzly Launcher","input":"_2_2_+_H_+_P"},{"category":"_(","name":"Reverse Powerbomb from behind","input":"_8_+_H_+_P"},{"category":"_(","name":"Bass Bomb crouching opponent","input":"_2_+_H_+_P"},{"category":"_(","name":"Spiral Bomb crouching opponent","input":"_1_+_H_+_P"},{"category":"_(","name":"Double Arm D.D.T. crouching opponent","input":"_3_3_+_H_+_P"},{"category":"_(","name":"Calf Branding crouching opponent, from behind","input":"_2_+_H_+_P"},{"category":"_(","name":"Half Neck Suplex","input":"_6_8_+_H (reverse high punch)"},{"category":"_(","name":"Rolling Sentoon","input":"_6_8_+_H (reverse high kick)"},{"category":"_(","name":"Shoulder Through","input":"_6_4_+_H (reverse mid punch)"},{"category":"_(","name":"Spine Buster","input":"_4_6_+_H (reverse mid kick)"},{"category":"_(","name":"Jurassic Trailer","input":"_4_4_+_H"},{"category":"_(","name":"Guillotine Drop","input":"_6_4_+_H (reverse low punch)"},{"category":"_(","name":"Giant Hammer Throw","input":"_6_4_+_H (reverse low punch)"},{"category":"_(","name":"Docking Driver (with Tina)","input":"_6_6_+_H_+_P_+_K"},{"category":"_(","name":"Lock-on Sky Twister Press (with Tina)","input":"_2_3_6_+_H_+_P_+_K"},{"category":"_(","name":"Two Platoon D.D.T. (with Ayane)","input":"_6_6_+_H_+_P_+_K"},{"category":"_(","name":"Allyoop (with Zack)","input":"_6_6_+_H_+_P_+_K"},{"category":"_(","name":"Tag Powerslam (with others)","input":"_6_6_+_H_+_P_+_K"},{"category":"_(","name":"Tag Oklahoma Stampede","input":"_6_+_H_+_P"},{"category":"_)","name":"Appeal: I Love Tina","input":"_4_6_4_+_H_+_P_+_K"},{"category":"_)","name":"Appeal: Show Time","input":"_2_2_+_H_+_P_+_K"},{"category":"_(","name":"Escape Back","input":"_H_+_P"},{"category":"_`","input":"_P_P_P","hitLevels":"hhm"},{"category":"_`","input":"_P_P_K","hitLevels":"hhh"},{"category":"_`","input":"_P_P_2_+_P","hitLevels":"hhl"},{"category":"_`","input":"_P_K_K","hitLevels":"hmh"},{"category":"_`","input":"_P_+_K","hitLevels":"h"},{"category":"_`","input":"_6_+_H_+_K","hitLevels":"m"},{"category":"_`","input":"_6_+_P_P","hitLevels":"mm"},{"category":"_`","input":"_6_+_P_+_K","hitLevels":"h","condition":"BK"},{"category":"_`","input":"_6_+_K_P","hitLevels":"mm"},{"category":"_`","input":"_6_6_+_P","hitLevels":"m"},{"category":"_`","input":"_6_6_+_P_+_K","hitLevels":"m"},{"category":"_`","input":"_6_6_+_K","hitLevels":"m","condition":"BK"},{"category":"_`","input":"_4_+_P_P_P_+_K","hitLevels":"mmm"},{"category":"_`","input":"_4_+_P_+_K","hitLevels":"mm","condition":"BK"},{"category":"_`","input":"_4_6_+_P","hitLevels":"m"},{"category":"_`","input":"_2_+_H_+_K","hitLevels":"l"},{"category":"_`","input":"_2_+_P_+_K_P_+_K","hitLevels":"-h"},{"category":"_`","input":"_2_3_6_+_K","hitLevels":"m"},{"category":"_`","input":"_1_+_P_P","hitLevels":"lm"},{"category":"_`","input":"_1_+_K","hitLevels":"l"},{"category":"_`","input":"_3_+_P","hitLevels":"m"},{"category":"_`","input":"_3_+_P_+_K_P","hitLevels":"mm"},{"category":"_`","input":"_3_+_K_K","hitLevels":"mh"},{"category":"_`","input":"_3_3_+_P","hitLevels":"m"},{"category":"_`","input":"_8_+_P","hitLevels":"m"},{"category":"_`","input":"_8_+_K","hitLevels":"h"},{"category":"_`","input":"_7_+_P_P","hitLevels":"mm"},{"category":"_`","input":"_9_+_P_P","hitLevels":"hm"},{"category":"_`","name":"before landing","input":"_P","hitLevels":"h"},{"category":"_`","name":"before landing","input":"_K","hitLevels":"l"},{"category":"_`","name":"opponent knocked down","input":"_2_+_K","hitLevels":"g"},{"category":"_`","name":"opponent knocked down","input":"_8_+_P_+_K","hitLevels":"g"},{"category":"_`","name":"knocked down, face up and feet towards","input":"^2_+_H_+_K","hitLevels":"l"},{"category":"_`","input":"_P_+_K","hitLevels":"mm"},{"category":"_`","input":"_4_+_K","hitLevels":"h"},{"category":"_`","input":"_2_+_P","hitLevels":"m"},{"category":"_`","input":"_2_+_K","hitLevels":"m"}],"notes":["Strings Moves","BACK TURNED (BK)","Strings Moves"]},{"name":"ZACK","moves":[{"category":"_(","name":"Wild Throw","input":"_H_+_P"},{"category":"_(","name":"Gokko Tei Kau","input":"_6_4_+_H_+_P"},{"category":"_(","name":"Stunner","input":"_4_+_H_+_P"},{"category":"_(","name":"Splash Dunk","input":"_2_3_6_+_H_+_P"},{"category":"_(","name":"Hard Rush","input":"_3_3_+_H_+_P"},{"category":"_(","name":"Nightmare Stand close to wall","input":"_6_4_+_H_+_P"},{"category":"_(","name":"Fly Boarding close to wall","input":"_2_3_6_+_H_+_P"},{"category":"_(","name":"Neck Hunting from behind","input":"_H_+_P"},{"category":"_(","name":"Violence Beat from behind","input":"_4_+_H_+_P"},{"category":"_(","name":"Beast Fang crouching opponent","input":"_2_+_H_+_P"},{"category":"_(","name":"Heart Breaker crouching opponent","input":"_1_+_H_+_P"},{"category":"_(","name":"Reverse Beast Fang crouching opponent, from behind","input":"_2_+_H_+_P"},{"category":"_(","name":"Octopus Blow","input":"_6_8_+_H (reverse high punch)"},{"category":"_(","name":"Slash Elbow","input":"_6_8_+_H (reverse high kick)"},{"category":"_(","name":"Cross Bazooka","input":"_6_4_+_H (reverse mid punch)"},{"category":"_(","name":"Heel Edge","input":"_4_6_+_H (reverse mid kick)"},{"category":"_(","name":"Funky Elbow","input":"_6_2_+_H (reverse low punch)"},{"category":"_(","name":"Dust Stamp","input":"_6_2_+_H (reverse low kick)"},{"category":"_(","name":"Mad Shaking (with Leon)","input":"_6_6_+_H_+_P_+_K"},{"category":"_(","name":"Funky Elbow (with others)","input":"_6_6_+_H_+_P_+_K"},{"category":"_)","name":"Appeal: Wave","input":"_4_6_4_+_H_+_P_+_K"},{"category":"_)","name":"Appeal: \"Why's That!\"","input":"_2_2_+_H_+_P_+_K"},{"category":"_)","name":"Fake Roll","input":"_2_3_6_+_H"},{"category":"_`","input":"_H_+_K","hitLevels":"m"},{"category":"_`","input":"_P_P_P_K","hitLevels":"hhhm"},{"category":"_`","input":"_P_P_K_K_K_K","hitLevels":"hhhmmmm"},{"category":"_`","input":"_P_P_6_+_P_P","hitLevels":"hhmm","condition":"BK"},{"category":"_`","input":"_P_P_6_+_P_K","hitLevels":"hhmm","condition":"BK"},{"category":"_`","input":"_P_P_6_+_K","hitLevels":"hhm"},{"category":"_`","input":"_P_P_4_K","hitLevels":"hh-m"},{"category":"_`","input":"_P_P^2_+_K_K_K_K","hitLevels":"hhllll"},{"category":"_`","input":"_P_K_K_K_K","hitLevels":"hhmhm"},{"category":"_`","input":"_P_+_K","hitLevels":"m","condition":"BK"},{"category":"_`","input":"_K_K_K_K","hitLevels":"hmhm"},{"category":"_`","input":"_6_+_P_P","hitLevels":"mm"},{"category":"_`","input":"_6_+_P_K_K_K_K","hitLevels":"mmmmm"},{"category":"_`","input":"_6_+_P_+_K","hitLevels":"mh"},{"category":"_`","input":"_6_+_K_K","hitLevels":"mm"},{"category":"_`","input":"_6_6_+_P","hitLevels":"m"},{"category":"_`","input":"_6_6_+_P_+_K","hitLevels":"m"},{"category":"_`","input":"_6_6_+_K","hitLevels":"m"},{"category":"_`","input":"_4_+_P","hitLevels":"h"},{"category":"_`","input":"_4_+_K","hitLevels":"h","condition":"BK"},{"category":"_`","input":"_4_+_K_P","hitLevels":"hh"},{"category":"_`","input":"_4_+_K_K","hitLevels":"hm"},{"category":"_`","input":"_4_4_+_K_K","hitLevels":"mm"},{"category":"_`","input":"_4_6_+_P","hitLevels":"m"},{"category":"_`","input":"_2_+_H_+_K","hitLevels":"l"},{"category":"_`","input":"_2_+_K_P_P_K","hitLevels":"lhhm"},{"category":"_`","input":"_2_+_K_P_K_K_K_K","hitLevels":"lhmmmm"},{"category":"_`","input":"_2_+_K_P_6_+_P_K","hitLevels":"lhmm","condition":"BK"},{"category":"_`","input":"_2_+_K_P_6_+_K","hitLevels":"lhm"},{"category":"_`","input":"_2_+_K_P_4_K","hitLevels":"lh-m"},{"category":"_`","input":"_2_+_K_P^2_+_K_K_K_K","hitLevels":"lhllll"},{"category":"_`","input":"^2_+_K_K_K_K_K","hitLevels":"lllll"},{"category":"_`","input":"_2_3_6_+_P_P","hitLevels":"hm"},{"category":"_`","input":"_2_3_6_+_P_K","hitLevels":"hm"},{"category":"_`","input":"_1_+_P","hitLevels":"m"},{"category":"_`","input":"^3_+_P_P_P","hitLevels":"mmm"},{"category":"_`","input":"_3_+_P_+_K","hitLevels":"m"},{"category":"_`","input":"_3_+_K_K_K_K_K","hitLevels":"mmmmm"},{"category":"_`","input":"_3_3_+_P_6_+_P","hitLevels":"mh"},{"category":"_`","input":"_3_3_+_K_K","hitLevels":"mm","condition":"BK"},{"category":"_`","input":"_8_+_P","hitLevels":"m"},{"category":"_`","input":"_8_+_K","hitLevels":"h"},{"category":"_`","input":"_7_+_P","hitLevels":"h"},{"category":"_`","input":"_7_+_K","hitLevels":"m"},{"category":"_`","name":"before landing","input":"_P","hitLevels":"m"},{"category":"_`","name":"before landing","input":"_K","hitLevels":"m"},{"category":"_`","name":"opponent knocked down","input":"_2_+_K","hitLevels":"g"},{"category":"_`","name":"opponent knocked down","input":"_8_+_P_+_K_4_6_+_P_+_K","hitLevels":"g-"},{"category":"_`","name":"knocked down","input":"^6_+_K_K","hitLevels":"-m"},{"category":"_`","input":"_4_+_P","hitLevels":"h"},{"category":"_`","input":"_4_+_K","hitLevels":"m"},{"category":"_`","input":"_2_+_P","hitLevels":"m"},{"category":"_`","input":"_2_+_K","hitLevels":"m"}],"notes":["Strings Moves","BACK TURNED (BK)","Strings Moves"]},{"name":"LEON","moves":[{"category":"_(","name":"Victor Knee Cross Lock","input":"_H_+_P"},{"category":"_(","name":"Arm Lock","input":"_6_+_H_+_P"},{"category":"_(","name":"Neck Hanging Tree","input":"_4_+_H_+_P"},{"category":"_(","name":"Pivoting Leg Sweep","input":"_4_6_+_H_+_P"},{"category":"_(","name":"Standing Achilles Lock","input":"_6_4_+_H_+_P"},{"category":"_(","name":"Reverse Shrimp Lock","input":"_2_+_H_+_P"},{"category":"_(","name":"Windmill Backbreaker","input":"_4_1_2_3_6_+_H_+_P"},{"category":"_(","name":"Standing Arm Lock","input":"_2_1_4_+_H_+_P"},{"category":"_(","name":"Neck-Arm Gammadion","input":"_6_4_+_H_+_P"},{"category":"_(","name":"D.D.T.","input":"_2_+_H_+_P"},{"category":"_(","name":"Crab Scissors","input":"_3_3_+_H_+_P"},{"category":"_(","name":"S.T.F.","input":"_2_2_+_H_+_P"},{"category":"_(","name":"Firestorm Knee close to wall","input":"_6_+_H_+_P"},{"category":"_(","name":"Neck Hanging Blow close to wall","input":"_4_+_H_+_P"},{"category":"_(","name":"Desert Bridge close to wall","input":"_4_1_2_3_6_+_H_+_P"},{"category":"_(","name":"Sleeper Hold close to wall, from behind","input":"_4_6_+_H_+_P"},{"category":"_(","name":"Swing Bless Wall","input":"_6_4_+_H_+_P"},{"category":"_(","name":"Jumping Arm Reverse Cross Lock from behind","input":"_H_+_P"},{"category":"_(","name":"Hell Hazard Lock from behind","input":"_6_+_H_+_P"},{"category":"_(","name":"Sleeper Hold from behind","input":"_4_6_+_H_+_P"},{"category":"_(","name":"Swing Sleeper","input":"_6_4_+_H_+_P"},{"category":"_(","name":"Side Lock crouching opponent","input":"_2_+_H_+_P"},{"category":"_(","name":"Reverse Arm Cross Lock","input":"_2_+_H_+_P"},{"category":"_(","name":"Crazy Crash","input":"_2_2_+_H_+_P"},{"category":"_(","name":"Snake Facelock crouching opponent","input":"_1_+_H_+_P"},{"category":"_(","name":"Reverse Arm Lock","input":"_2_+_H_+_P"},{"category":"_(","name":"Ground Submission opponent knocked down","input":"_2_+_H_+_P"},{"category":"_(","name":"Nead Hunting Cross Lock","input":"_6_8_+_H (reverse high punch)"},{"category":"_(","name":"Reverse Achilles Hell Lock","input":"_6_8_+_H (reverse high kick)"},{"category":"_(","name":"Death Trap","input":"_6_4_+_H (reverse mid punch)"},{"category":"_(","name":"Jumping Knee Cross Lock","input":"_4_6_+_H (reverse mid kick)"},{"category":"_(","name":"Grabbing Cross Lock","input":"_6_2_+_H (reverse low punch)"},{"category":"_(","name":"Cobra Death Lock","input":"_6_2_+_H (reverse low kick)"},{"category":"_(","name":"Heavy Sand (with Zack)","input":"_6_6_+_H_+_P_+_K"},{"category":"_(","name":"Guillotine Napalm (with Bass)","input":"_6_6_+_H_+_P_+_K"},{"category":"_(","name":"Death Trap (with others)","input":"_6_6_+_H_+_P_+_K"},{"category":"_)","name":"Appeal: Go to Hell","input":"_4_6_4_+_H_+_P_+_K"},{"category":"_`","input":"_H_+_K","hitLevels":"m"},{"category":"_`","input":"_P_P_P","hitLevels":"hhm"},{"category":"_`","input":"_P_P_K","hitLevels":"hhm"},{"category":"_`","input":"_P_P_4_+_P","hitLevels":"hhh"},{"category":"_`","input":"_P_P_1_+_P","hitLevels":"hhm"},{"category":"_`","input":"_P_K","hitLevels":"hh"},{"category":"_`","input":"_P_6_+_P_K","hitLevels":"hmm"},{"category":"_`","input":"_P_6_+_P_2_+_K","hitLevels":"hml"},{"category":"_`","input":"_P_+_K","hitLevels":"m"},{"category":"_`","input":"_K_P_P","hitLevels":"hmm"},{"category":"_`","input":"_K_K","hitLevels":"hm"},{"category":"_`","input":"_6_+_P_P_P","hitLevels":"mmm"},{"category":"_`","input":"_6_+_P_P_2_+_K","hitLevels":"mml"},{"category":"_`","input":"_6_+_P_K","hitLevels":"mm"},{"category":"_`","input":"_6_+_P_+_K","hitLevels":"h"},{"category":"_`","input":"_6_+_K","hitLevels":"m"},{"category":"_`","input":"_6_6_+_P","hitLevels":"h"},{"category":"_`","input":"_6_6_+_K_K","hitLevels":"lm"},{"category":"_`","input":"_4_+_P_K","hitLevels":"hh"},{"category":"_`","input":"_4_+_P_6_+_K","hitLevels":"hm"},{"category":"_`","input":"_4_+_P_+_K_P","hitLevels":"mm"},{"category":"_`","input":"_4_+_K","hitLevels":"m"},{"category":"_`","input":"_4_6_+_P","hitLevels":"m"},{"category":"_`","input":"_2_+_H_+_K","hitLevels":"l"},{"category":"_`","input":"_2_1_4_+_P","hitLevels":"m"},{"category":"_`","input":"^2_N_K","hitLevels":"h"},{"category":"_`","input":"_1_+_K","hitLevels":"l"},{"category":"_`","input":"_3_+_P","hitLevels":"m"},{"category":"_`","input":"^3_+_P","hitLevels":"m"},{"category":"_`","input":"_3_+_K","hitLevels":"m"},{"category":"_`","input":"_8_+_P_P","hitLevels":"mm"},{"category":"_`","input":"_8_+_K","hitLevels":"h"},{"category":"_`","input":"_7_+_P","hitLevels":"m"},{"category":"_`","input":"_9_+_P","hitLevels":"m"},{"category":"_`","input":"_9_+_K","hitLevels":"m"},{"category":"_`","name":"before landing","input":"_P","hitLevels":"m"},{"category":"_`","name":"before landing","input":"_K","hitLevels":"l"},{"category":"_`","name":"opponent knocked down","input":"_2_+_K","hitLevels":"g"},{"category":"_`","name":"opponent knocked down","input":"_8_+_P_+_K","hitLevels":"g"},{"category":"_`","input":"_P_P_P","hitLevels":"hmm"},{"category":"_`","input":"_2_+_P","hitLevels":"m"},{"category":"_`","input":"_2_+_K","hitLevels":"m"}],"notes":["Strings Moves","BACK TURNED (BK)","Strings Moves"]}],"cheatNotes":["_` Kasumi 4th Outfit and Ayane 3rd Outfit","- After insert coins press _O_P_+_K and press _S","_` VTR Replay","- Before the replay start, press _H_+_K","- Use _P to rewind","_` Unlocks Tag Battle Mode (Dead or Alive 2 only)","- On the Game Test Mode, go to PASSWORD, select TAG BATTLE MODE and enter a password below:","LOVE? = Unlocks Tag Battle Mode","_` Unlocks Survival Mode (Dead or Alive 2 only)","- On the Game Test Mode, go to PASSWORD, select SURVIVAL MODE and enter a password below:","MIRAI = Unlocks Survival Mode"],"controlAbbr":{"_H":"HD","_P":"P","_K":"K","_S":"ST"},"systemControlMappings":{"snes":{"y":"_P","b":"_K","a":"_H"},"genesis":{"b":"_P","a":"_K","x":"_H"},"megadrive":{"b":"_P","a":"_K","x":"_H"},"32x":{"b":"_P","a":"_K","c":"_H"},"saturn":{"b":"_P","a":"_K","c":"_H"},"psx":{"x":"_P","b":"_K","a":"_H"},"ps2":{"x":"_P","b":"_K","a":"_H"},"gb":{"b":"_P","a":"_K"},"gbc":{"b":"_P","a":"_K"},"gamegear":{"a":"_P","b":"_K"},"sms":{"a":"_P","b":"_K"},"gba":{"b":"_P","a":"_K","l1":"_H"},"ngpc":{"b":"_P","a":"_K","y":"_H"}},"controlGroups":{"_P":["_P"],"_K":["_K"]}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "doa2m",
+    "doa2",
+    "doa2a"
+  ],
+  "name": "Dead or Alive 2",
+  "year": 1999,
+  "manufacturer": "Tecmo",
+  "controls": {
+    "_H": "Hold",
+    "_P": "Punch",
+    "_K": "Kick",
+    "_S": "Start"
+  },
+  "categories": {
+    "_(": "Throws, Holds and Tag Throws",
+    "_)": "Command Moves",
+    "_`": "Positions"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "_6_6"
+    },
+    {
+      "category": "_)",
+      "name": "Run",
+      "input": "_6^6"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4"
+    },
+    {
+      "category": "_)",
+      "name": "Low Dash",
+      "input": "_3_3"
+    },
+    {
+      "category": "_)",
+      "name": "Low Retreat",
+      "input": "_1_1"
+    },
+    {
+      "category": "_)",
+      "name": "Tag",
+      "input": "_H_+_P_+_K"
+    },
+    {
+      "category": "_)",
+      "name": "Sidestep In",
+      "input": "_8_+_H"
+    },
+    {
+      "category": "_)",
+      "name": "Sidestep Out",
+      "input": "_2_2_+_H"
+    },
+    {
+      "category": "_)",
+      "name": "Moving",
+      "input": "_O_H, _4_4 / _6_6 / _2_2 / _8_8"
+    },
+    {
+      "category": "_)",
+      "name": "Throw Escape when thrown",
+      "input": "_H_+_P"
+    },
+    {
+      "category": "_)",
+      "name": "Safe Landing being knocked down",
+      "input": "_H / _P / _K"
+    },
+    {
+      "category": "_)",
+      "name": "Get Up",
+      "input": "_H"
+    },
+    {
+      "category": "_)",
+      "name": "Roll to Background and Get Up knocked down",
+      "input": "^8_+_H"
+    },
+    {
+      "category": "_)",
+      "name": "Roll to Foreground and Get Up knocked down",
+      "input": "^2_+_H"
+    }
+  ],
+  "characters": [
+    {
+      "name": "KASUMI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Kahen",
+          "input": "_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Kegon",
+          "input": "_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Ibara Otoshi",
+          "input": "_6_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Thorn Drop",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Tenryu 2",
+          "input": "_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Tsuzumi",
+          "input": "_2_3_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Rogai",
+          "input": "_2_1_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Oboro",
+          "input": "_3_3_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Hein",
+          "input": "_8_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Swallow Reverse Drop",
+          "input": "_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Youshi close to wall",
+          "input": "_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Ibara Kudaki close to wall",
+          "input": "_6_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Thorn Crush",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Adachi close to wall",
+          "input": "_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Hakkato from behind",
+          "input": "_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Hishu from behind",
+          "input": "_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Urahien from behind",
+          "input": "_8_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Himatsu crouching opponent",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Enshu crouching opponent",
+          "input": "_1_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Kyoka",
+          "input": "_6_8_+_H (reverse high punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Kakinomi",
+          "input": "_6_8_+_H (reverse high kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Shiraha",
+          "input": "_6_4_+_H (reverse mid punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Shigure",
+          "input": "_4_6_+_H (reverse mid kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Momiji",
+          "input": "_6_4_+_H (reverse low punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Soken",
+          "input": "_6_4_+_H (reverse low kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Madol",
+          "input": "_4_8_+_H (reverse high/mid punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Mayoi",
+          "input": "_4_2_+_H (reverse low punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Oborofutae (with Hayabusa)",
+          "input": "_6_6_+_H_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Oboro 2 (with others)",
+          "input": "_6_6_+_H_+_P_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Appeal: Sakura Matoi",
+          "input": "_4_6_4_+_H_+_P_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Uragake",
+          "input": "_7_+_P"
+        },
+        {
+          "category": "_)",
+          "name": "Tenbu",
+          "input": "_9_+_P"
+        },
+        {
+          "category": "_`",
+          "input": "_H_+_K_K",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_H_+_K_2_+_K",
+          "hitLevels": "hl"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P_P",
+          "hitLevels": "hhmm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_K_K_K",
+          "hitLevels": "hhhhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_K_2_+_K",
+          "hitLevels": "hhhl"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_K_3_+_K",
+          "hitLevels": "hhhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_6_+_P_K_K",
+          "hitLevels": "hhmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_6_+_P_K_2_+_K",
+          "hitLevels": "hhmml"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_6_+_P_6_+_K",
+          "hitLevels": "hhmm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_6_+_P_2_+_K",
+          "hitLevels": "hhml"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_6_+_K_K",
+          "hitLevels": "hhmh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_6_+_K_2_+_K",
+          "hitLevels": "hhml"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_7_+_P",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K_K_K",
+          "hitLevels": "hhhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K_2_+_K",
+          "hitLevels": "hhl"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K_3_+_K",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_K_K_K",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_K_2_+_K",
+          "hitLevels": "hl"
+        },
+        {
+          "category": "_`",
+          "input": "_K_3_+_K",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_K_K",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_K_2_+_K",
+          "hitLevels": "mml"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_6_+_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_2_+_K",
+          "hitLevels": "ml"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K_K",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K_2_+_K",
+          "hitLevels": "ml"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P_2_+_K",
+          "hitLevels": "ml"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_H_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K_K",
+          "hitLevels": "hm",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_H_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_H_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P_2_+_K",
+          "hitLevels": "ml"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_3_+_P",
+          "hitLevels": "m",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_3_3_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_P_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "before landing",
+          "input": "_P",
+          "hitLevels": "m",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "name": "before landing",
+          "input": "_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_2_+_P",
+          "hitLevels": "g"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_8_+_P_+_K",
+          "hitLevels": "g"
+        },
+        {
+          "category": "_`",
+          "name": "knocked down",
+          "input": "_K_6_+_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "name": "knocked down, face down and feet away",
+          "input": "_H_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_K_K",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_K",
+          "hitLevels": "m"
+        }
+      ],
+      "notes": [
+        "Strings Moves",
+        "BACK TURNED (BK)",
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "RYU HAYABUSA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Juuji",
+          "input": "_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Kubi Kiri",
+          "input": "_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Hayabusa",
+          "input": "_6_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Yama",
+          "input": "_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Genei",
+          "input": "_4_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Izuna",
+          "input": "_4_1_2_3_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Kama-Itachi",
+          "input": "_2_3_6_7_8_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Hankou Drop",
+          "input": "_x_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Rakujinsho",
+          "input": "_2_1_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Shiho",
+          "input": "_3_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Shoro close to wall",
+          "input": "_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Ura Nage from behind",
+          "input": "_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Rakuryu from behind",
+          "input": "_6_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Kandachi from behind",
+          "input": "_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Zanshu crouching opponent",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Hane crouching opponent",
+          "input": "_1_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Takitsubo crouching opponent, from behind",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Sen Izuna",
+          "input": "_6_8_+_H (reverse high punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Kama-Itachi",
+          "input": "_2_1_4_7_8_+_H"
+        },
+        {
+          "category": "_(",
+          "name": "Hankou Drop",
+          "input": "_x_+_H"
+        },
+        {
+          "category": "_(",
+          "name": "Kagedoro",
+          "input": "_6_8_+_H (reverse high kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Rekko",
+          "input": "_6_4_+_H (reverse mid punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Kama-Itachi",
+          "input": "_2_1_4_7_8_+_H"
+        },
+        {
+          "category": "_(",
+          "name": "Hankou Drop",
+          "input": "_x_+_H"
+        },
+        {
+          "category": "_(",
+          "name": "Shugeki",
+          "input": "_4_6_+_H (reverse mid kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Yoko",
+          "input": "_6_4_+_H (reverse low punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Kama-Itachi",
+          "input": "_2_1_4_7_8_+_H"
+        },
+        {
+          "category": "_(",
+          "name": "Hankou Drop",
+          "input": "_x_+_H"
+        },
+        {
+          "category": "_(",
+          "name": "Koken",
+          "input": "_6_4_+_H (reverse low kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Kazaguruma (with Kasumi)",
+          "input": "_6_6_+_H_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Sen Izuna (with others)",
+          "input": "_6_6_+_H_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Kama-Itachi",
+          "input": "_2_1_4_7_8_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Hankou Drop",
+          "input": "_x_+_H_+_P"
+        },
+        {
+          "category": "_)",
+          "name": "Appeal: Nin",
+          "input": "_4_6_4_+_H_+_P_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Appeal: Rin",
+          "input": "_6_4_6_+_H_+_P_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Appeal: Rei",
+          "input": "_2_2_+_H_+_P_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Tenchi: HSP",
+          "input": "_2_+_P_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Urakaze",
+          "input": "_9_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Kirimomi",
+          "input": "_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Kabuto",
+          "input": "_4_+_H_+_P"
+        },
+        {
+          "category": "_)",
+          "name": "Korobi",
+          "input": "_4_4"
+        },
+        {
+          "category": "_)",
+          "name": "Koten",
+          "input": "_2"
+        },
+        {
+          "category": "_`",
+          "input": "_H_+_K_K_K",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_4_+_P_6_+_P",
+          "hitLevels": "hhmm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_4_+_P_K",
+          "hitLevels": "hhmm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_K_K_K",
+          "hitLevels": "hhhhh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_2_+_K",
+          "hitLevels": "hhl",
+          "condition": "HSP"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K_K",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_K_P",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "input": "_K_K",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_K_K",
+          "hitLevels": "mml"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K_K",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_6_4_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_H_+_K",
+          "hitLevels": "h",
+          "condition": "HSP"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_6_+_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K",
+          "hitLevels": "h",
+          "condition": "HSP"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_H_+_K",
+          "hitLevels": "l",
+          "condition": "HSP"
+        },
+        {
+          "category": "_`",
+          "input": "_2_3_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_3_6_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_4_+_K",
+          "hitLevels": "m",
+          "condition": "HSP"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_P",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_K_2_+_K",
+          "hitLevels": "ll",
+          "condition": "HSP"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_K^2_+_K",
+          "hitLevels": "ll",
+          "condition": "HSP"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_K_1_+_K_2_+_K",
+          "hitLevels": "lll",
+          "condition": "HSP"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_H_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P_+_K",
+          "hitLevels": "m",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P_+_K_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K_2_+_K",
+          "hitLevels": "ml"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_K_K",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "before landing",
+          "input": "_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "before landing",
+          "input": "_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_2_+_P",
+          "hitLevels": "g"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_8_+_P_+_K",
+          "hitLevels": "g"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_H_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_P_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_K_K",
+          "hitLevels": "hm"
+        }
+      ],
+      "notes": [
+        "Strings Moves",
+        "BACK TURNED (BK)",
+        "Strings Moves",
+        "HANDSTAND POSITION (HSP)",
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "AYANE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Momiji",
+          "input": "_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "H. Embu",
+          "input": "_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Tsurara",
+          "input": "_6_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Ice Pillar Drop",
+          "input": "_8_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Kirimadoi",
+          "input": "_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Tosenka",
+          "input": "_4_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "K. Gengi",
+          "input": "_2_3_6_+_H_+_P (BK)"
+        },
+        {
+          "category": "_(",
+          "name": "K. Ranmu",
+          "input": "_2_1_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Hikari close to wall",
+          "input": "_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Baisenka close to wall",
+          "input": "_4_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Ryusa from behind",
+          "input": "_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Tsubaki from behind",
+          "input": "_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Setsuna crouching opponent",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Kamiyo crouching opponent",
+          "input": "_1_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Muso crouching opponent, from behind",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Tenbujin crouching opponent, from behind",
+          "input": "_1_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Kamiyoi",
+          "input": "_6_8_+_H (reverse high punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Hyorin",
+          "input": "_6_8_+_H (reverse high kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Ayase",
+          "input": "_6_4_+_H (reverse mid punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Fubujin",
+          "input": "_4_6_+_H (reverse mid kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Kogarashi",
+          "input": "_6_4_+_H (reverse low punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Futenro",
+          "input": "_6_4_+_H (reverse low kick)"
+        },
+        {
+          "category": "_(",
+          "name": "M. Tensho (with Ein)",
+          "input": "_6_6_+_H_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Ayase 2 (with others)",
+          "input": "_6_6_+_H_+_P_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Appeal: \"No, Kidding\"",
+          "input": "_4_6_4_+_H_+_P_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Appeal: \"Silly\"",
+          "input": "_2_2_+_H_+_P_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Haijin: BK",
+          "input": "_8_+_P"
+        },
+        {
+          "category": "_)",
+          "name": "Kazemai: BK",
+          "input": "_7_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Namigatana",
+          "input": "_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Yamigarasu",
+          "input": "_6_+_H_+_P (BK)"
+        },
+        {
+          "category": "_(",
+          "name": "Urayami from behind",
+          "input": "_6_+_H_+_P (BK)"
+        },
+        {
+          "category": "_(",
+          "name": "Syusui crouching opponent",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_)",
+          "name": "Furo",
+          "input": "_6_6"
+        },
+        {
+          "category": "_)",
+          "name": "Renpul",
+          "input": "_6^6"
+        },
+        {
+          "category": "_)",
+          "name": "Oroshi",
+          "input": "_3"
+        },
+        {
+          "category": "_)",
+          "name": "Shimo",
+          "input": "^3"
+        },
+        {
+          "category": "_)",
+          "name": "Oroshiryu",
+          "input": "_3^4 (BK)"
+        },
+        {
+          "category": "_)",
+          "name": "S. Oroshi",
+          "input": "_3^1 (BK)"
+        },
+        {
+          "category": "_`",
+          "input": "_H_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_K_K",
+          "hitLevels": "hhhh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_6_+_P_P",
+          "hitLevels": "hhmm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_+_K_P_P",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_+_K_P_K",
+          "hitLevels": "hhh",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_P_+_K_P_2_+_K",
+          "hitLevels": "hhl"
+        },
+        {
+          "category": "_`",
+          "input": "_P_+_K_P_7_+_K",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_K_K",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P",
+          "hitLevels": "m",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K_K",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K_2_+_K",
+          "hitLevels": "ml"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P_6_+_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_H_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P",
+          "hitLevels": "m",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_K",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_2_+_K",
+          "hitLevels": "ml"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_H_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_2_3_6_+_H_+_K",
+          "hitLevels": "h",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_2_3_6_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_P",
+          "hitLevels": "l",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "^1_+_P_K",
+          "hitLevels": "ll"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_H_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P_4_+_P",
+          "hitLevels": "mm",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_3_+_P_2_+_K",
+          "hitLevels": "ll"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_K",
+          "hitLevels": "m",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_P_P_P",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_P_K_K",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "before landing",
+          "input": "_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "before landing",
+          "input": "_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_2_+_P",
+          "hitLevels": "g"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_8_+_P_+_K",
+          "hitLevels": "g"
+        },
+        {
+          "category": "_`",
+          "name": "knocked down, face up and feet away",
+          "input": "_H_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_H_+_K",
+          "hitLevels": "m",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_6_+_P_K",
+          "hitLevels": "hhmh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_6_+_P_2_+_K",
+          "hitLevels": "hhml"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_4_+_P_P_P",
+          "hitLevels": "hhhhh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_4_+_P_P_K",
+          "hitLevels": "hhhhh",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_4_+_P_P_2_+_K",
+          "hitLevels": "hhhhl"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_4_+_P_P_7_+_K",
+          "hitLevels": "hhhhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_1_+_P",
+          "hitLevels": "hhl",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P^1_+_P_K",
+          "hitLevels": "hhll"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_P_P",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_P_K",
+          "hitLevels": "hhh",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_P_2_+_K",
+          "hitLevels": "hhl"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_P_7_+_K",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_H_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_P",
+          "hitLevels": "l",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "^1_+_P_K",
+          "hitLevels": "ll"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_K",
+          "hitLevels": "m",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_P",
+          "hitLevels": "m",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_K",
+          "hitLevels": "m"
+        }
+      ],
+      "notes": [
+        "Strings Moves",
+        "BACK TURNED (BK)",
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "EIN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Suigetsu",
+          "input": "_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Futo",
+          "input": "_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Ryukotsu",
+          "input": "_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Guren",
+          "input": "_2_1_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Kaei",
+          "input": "_3_3_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "FGankotsu close to wall",
+          "input": "_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Rekka close to wall",
+          "input": "_3_3_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Socho from behind",
+          "input": "_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Seiryo from behind",
+          "input": "_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Reigetsu crouching opponent",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Mozu crouching opponent",
+          "input": "_1_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Kakushu crouching opponent, from behind",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Suirin crouching opponent, from behind",
+          "input": "_1_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Namioi",
+          "input": "_6_8_+_H (reverse high punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Tenga",
+          "input": "_6_8_+_H (reverse high kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Otoshiami",
+          "input": "_6_4_+_H (reverse mid punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Metsumon",
+          "input": "_4_6_+_H (reverse mid kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Ruten",
+          "input": "_6_4_+_H (reverse low punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Kobo",
+          "input": "_6_4_+_H (reverse low kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Kagura (with Ayane)",
+          "input": "_6_6_+_H_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Kael (with others)",
+          "input": "_6_6_+_H_+_P_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Appeal: \"Come On!\"",
+          "input": "_4_6_4_+_H_+_P_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Appeal: \"Easy!\"",
+          "input": "_2_2_+_H_+_P_+_K"
+        },
+        {
+          "category": "_`",
+          "input": "_H_+_K_K",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "_H_+_K_2_+_K",
+          "hitLevels": "ml"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_K_K",
+          "hitLevels": "hhhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K_K",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_6_+_P_P",
+          "hitLevels": "hhhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_6_+_P_K",
+          "hitLevels": "hhhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_6_+_P_2_+_K",
+          "hitLevels": "hhhl"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_2_+_K_K",
+          "hitLevels": "hhlh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P^2_+_K_K",
+          "hitLevels": "hhll"
+        },
+        {
+          "category": "_`",
+          "input": "_P_+_K_6_+_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_K_K",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_H_+_K",
+          "hitLevels": "m",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_+_K",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K_K_K",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K_K_6_+_K",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "^6_+_K_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P_P",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P_K",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P_2_+_K",
+          "hitLevels": "hl"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_K_K_K",
+          "hitLevels": "mhm"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_H_+_K",
+          "hitLevels": "h",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_P_P",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_P_2_+_K",
+          "hitLevels": "hhl"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_2_+_K_P",
+          "hitLevels": "hlm"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_6_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_6_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^2_+_K_K",
+          "hitLevels": "ll"
+        },
+        {
+          "category": "_`",
+          "input": "_2_3_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_3_6_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_K_P",
+          "hitLevels": "lm"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_K_K",
+          "hitLevels": "lm"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_K_6_+_P_P",
+          "hitLevels": "lhm"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_K_6_+_P_K",
+          "hitLevels": "lhm"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_K_6_+_P_2_+_K",
+          "hitLevels": "lhl"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K_K_K",
+          "hitLevels": "mmh"
+        },
+        {
+          "category": "_`",
+          "input": "_3_3_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_P",
+          "hitLevels": "m",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_P_K",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K_K",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "name": "before landing",
+          "input": "_P",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "name": "before landing",
+          "input": "_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_2_+_P",
+          "hitLevels": "g"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_8_+_P_+_K",
+          "hitLevels": "g"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_K",
+          "hitLevels": "m"
+        }
+      ],
+      "notes": [
+        "Strings Moves",
+        "BACK TURNED (BK)",
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "GEN-FU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Juji",
+          "input": "_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Shutai",
+          "input": "_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Koukei",
+          "input": "_6_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Monkey Style",
+          "input": "_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Shin-i",
+          "input": "_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Umpei",
+          "input": "_2_3_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Close the Clouds and...",
+          "input": "_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Kokaisan",
+          "input": "_2_1_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Ryuyo close to wall",
+          "input": "_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Tora from behind",
+          "input": "_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Sokujin from behind",
+          "input": "_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Batetsu crouching opponent",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Ribyo crouching opponent",
+          "input": "_1_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Juji crouching opponent, from behind",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Taizan",
+          "input": "_6_8_+_H (reverse high punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Ten Ha",
+          "input": "_6_8_+_H (reverse high kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Ryukei",
+          "input": "_6_4_+_H (reverse mid punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Ryucho",
+          "input": "_4_6_+_H (reverse mid kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Tensan",
+          "input": "_6_4_+_H (reverse low punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Daiso",
+          "input": "_6_4_+_H (reverse low kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Saishu",
+          "input": "_4_8_+_H (reverse high/mid punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Roshu",
+          "input": "_4_8_+_H (reverse high/mid kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Kasyu",
+          "input": "_4_2_+_H (reverse low punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Koge",
+          "input": "_4_2_+_H (reverse low kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Soho (with Helena)",
+          "input": "_6_6_+_H_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Yougeki (with Kasumi/Ayane)",
+          "input": "_6_6_+_H_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Nichigetsu (with others)",
+          "input": "_6_6_+_H_+_P_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Appeal: Hanraku",
+          "input": "_4_6_4_+_H_+_P_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Appeal: Tensei",
+          "input": "_2_2_+_H_+_P_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Senpo",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_)",
+          "name": "Sokuten",
+          "input": "_7_+_P"
+        },
+        {
+          "category": "_`",
+          "input": "_H_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P_P",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P_P_+_K",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "^6_+_K_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_4_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_6_+_P_P_+_K",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_H_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_P_+_K_4_6_+_P",
+          "hitLevels": "hmm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_3_6_+_P_P",
+          "hitLevels": "-m"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_P",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_P_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_K_6_+_P",
+          "hitLevels": "lm"
+        },
+        {
+          "category": "_`",
+          "input": "_1_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^3_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K_P_4_6_+_P",
+          "hitLevels": "mmh"
+        },
+        {
+          "category": "_`",
+          "input": "_3_3_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K_2_+_K",
+          "hitLevels": "hl"
+        },
+        {
+          "category": "_`",
+          "name": "before landing",
+          "input": "_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "name": "before landing",
+          "input": "_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_2_+_P",
+          "hitLevels": "g"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_8_+_P_+_K",
+          "hitLevels": "g"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K",
+          "hitLevels": "m"
+        }
+      ],
+      "notes": [
+        "Strings Moves",
+        "BACK TURNED (BK)",
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "HELENA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "1,2,3",
+          "input": "_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Shohen",
+          "input": "_6_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Senpeki",
+          "input": "_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Yoto",
+          "input": "_2_3_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Tenyoryu close to wall",
+          "input": "_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Tenbu from behind",
+          "input": "_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Shousen crouching opponent",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Fukanbu crouching opponent",
+          "input": "_1_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Z. Kaou crouching opponent, from behind",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Danpi",
+          "input": "_6_8_+_H (reverse high punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Fukanro",
+          "input": "_6_8_+_H (reverse high kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Tenban",
+          "input": "_6_4_+_H (reverse mid punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Ishitsu",
+          "input": "_4_6_+_H (reverse mid kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Hekizan",
+          "input": "_6_2_+_H (reverse low punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Koran",
+          "input": "_6_2_+_H (reverse low kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Sokanbu (with Gen-Fu)",
+          "input": "_6_6_+_H_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Tenshinban (with others)",
+          "input": "_6_6_+_H_+_P_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Appeal: Token: AOP",
+          "input": "_4_6_4_+_H_+_P_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Bokuho: AOP",
+          "input": "_2_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Yoto",
+          "input": "_H_+_P"
+        },
+        {
+          "category": "_)",
+          "name": "Turn Dash",
+          "input": "_6_6"
+        },
+        {
+          "category": "_(",
+          "name": "Yoto",
+          "input": "_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Tenbu from behind",
+          "input": "_H_+_P"
+        },
+        {
+          "category": "_)",
+          "name": "Forward",
+          "input": "_6"
+        },
+        {
+          "category": "_)",
+          "name": "Back",
+          "input": "_4"
+        },
+        {
+          "category": "_)",
+          "name": "Stand",
+          "input": "_8"
+        },
+        {
+          "category": "_)",
+          "name": "Turn: BK",
+          "input": "_7"
+        },
+        {
+          "category": "_)",
+          "name": "Dash",
+          "input": "_6_6"
+        },
+        {
+          "category": "_)",
+          "name": "Retreat",
+          "input": "_4_4"
+        },
+        {
+          "category": "_)",
+          "name": "Teishitsu",
+          "input": "_2_2"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P",
+          "hitLevels": "hmm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_K",
+          "hitLevels": "hmh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P^4",
+          "hitLevels": "hm",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P^4_+_P_P",
+          "hitLevels": "hmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_2_+_K",
+          "hitLevels": "hml",
+          "condition": "AOP"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K_K_K",
+          "hitLevels": "hhmh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_+_K_P_+_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_K_K_K",
+          "hitLevels": "hmh"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K_2_+_K",
+          "hitLevels": "ml",
+          "condition": "AOP"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_K",
+          "hitLevels": "l",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_K_P",
+          "hitLevels": "ll",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_K_P_P",
+          "hitLevels": "llhm"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P",
+          "hitLevels": "m",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_P_P",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K_K",
+          "hitLevels": "hm",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_4_4_+_P",
+          "hitLevels": "m",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_4_4_+_P_P_2_+_P",
+          "hitLevels": "mml",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_H_+_K",
+          "hitLevels": "l",
+          "condition": "AOP"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K_K",
+          "hitLevels": "lm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_3_6_+_P",
+          "hitLevels": "mmm",
+          "condition": "AOP"
+        },
+        {
+          "category": "_`",
+          "input": "_2_1_4_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_P",
+          "hitLevels": "l",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_K",
+          "hitLevels": "l",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_K_P",
+          "hitLevels": "lhm"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P_P",
+          "hitLevels": "mm",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "^3_+_P_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_K",
+          "hitLevels": "h",
+          "condition": "AOP"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_K",
+          "hitLevels": "m",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_P_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_P_K",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_P_2_+_K",
+          "hitLevels": "ml",
+          "condition": "AOP"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "name": "before landing",
+          "input": "_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "before landing",
+          "input": "_K",
+          "hitLevels": "l",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_2_+_K",
+          "hitLevels": "g"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_8_+_P_+_K",
+          "hitLevels": "g"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P_P",
+          "hitLevels": "hhmm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_4_+_P",
+          "hitLevels": "hhm",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_4_+_P_P_P",
+          "hitLevels": "hhmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K_2_+_K",
+          "hitLevels": "ml",
+          "condition": "AOP"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_P",
+          "hitLevels": "m",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K",
+          "hitLevels": "m",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_K",
+          "hitLevels": "hhmm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P_P",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P_K",
+          "hitLevels": "mmh",
+          "condition": "AOP"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K",
+          "hitLevels": "h",
+          "condition": "AOP"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P",
+          "hitLevels": "m",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_K_P",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_K_2_+_K",
+          "hitLevels": "mml",
+          "condition": "AOP"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_H_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K^2_+_K",
+          "hitLevels": "ml",
+          "condition": "AOP"
+        }
+      ],
+      "notes": [
+        "Strings Moves",
+        "BACK TURNED (BK)",
+        "Strings Moves",
+        "ART OF PHOENIX (AOP)",
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "JANN-LEE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Hell Drive",
+          "input": "_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Dragon Gunner",
+          "input": "_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Shoulder Throw",
+          "input": "_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Headlock",
+          "input": "_2_3_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Bulldogging Headlock",
+          "input": "_4_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "The Way of the Dragon",
+          "input": "_2_1_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "The Way of the Dragon close to wall",
+          "input": "_2_1_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Dragon Rave from behind",
+          "input": "_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Sekkan Punch from behind",
+          "input": "_2_3_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Front Facelock crouching opponent",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Side Buster crouching opponent",
+          "input": "_1_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Punish Punch crouching opponent, from behind",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Godless Short Knee",
+          "input": "_6_8_+_H (reverse high punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Trace Gunner",
+          "input": "_6_8_+_H (reverse high kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Double Bind",
+          "input": "_6_4_+_H (reverse mid punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Leg Sweep",
+          "input": "_4_6_+_H (reverse mid kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Deep the Dragon",
+          "input": "_6_4_+_H (reverse low punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Dragon Twist",
+          "input": "_6_4_+_H (reverse low kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Double Dragon (with Lei-Fang)",
+          "input": "_6_6_+_H_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Deep the Dragon (with others)",
+          "input": "_6_6_+_H_+_P_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Appeal: Shout",
+          "input": "_4_6_4_+_H_+_P_+_K"
+        },
+        {
+          "category": "_`",
+          "input": "_H_+_K_K",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P_K",
+          "hitLevels": "hhhh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P_6_+_P",
+          "hitLevels": "hhhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P_2_+_K",
+          "hitLevels": "hhhl"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_K",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_6_+_P",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_6_+_P_K",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_6_+_P_2_+_K",
+          "hitLevels": "hhl"
+        },
+        {
+          "category": "_`",
+          "input": "_P_2_+_P_P",
+          "hitLevels": "hmm"
+        },
+        {
+          "category": "_`",
+          "input": "_P^2_+_P_K",
+          "hitLevels": "hml"
+        },
+        {
+          "category": "_`",
+          "input": "_P_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_K_K",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_H_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_2_+_K",
+          "hitLevels": "ml"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K_K",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K_4_6_+_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P_K",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P_2_+_K",
+          "hitLevels": "hl"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K_K",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "_4_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_6_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_H_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K_K",
+          "hitLevels": "lm"
+        },
+        {
+          "category": "_`",
+          "input": "^2_+_K_K",
+          "hitLevels": "ll"
+        },
+        {
+          "category": "_`",
+          "input": "_2_3_6_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_2_3_6_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "^2_4_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_P",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K_K",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K_6_+_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K_4_+_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K_K",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "name": "before landing",
+          "input": "_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "name": "before landing",
+          "input": "_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_2_+_K",
+          "hitLevels": "g"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_8_+_H_+_P_+_K",
+          "hitLevels": "g"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_8_+_P_+_K",
+          "hitLevels": "g"
+        },
+        {
+          "category": "_`",
+          "input": "_P_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_P",
+          "hitLevels": "h"
+        }
+      ],
+      "notes": [
+        "Strings Moves",
+        "BACK TURNED (BK)",
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "LEI-FANG",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Toden",
+          "input": "_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Yoho",
+          "input": "_6_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Noba",
+          "input": "_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Heishin",
+          "input": "_4_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Challenge the Hand and...",
+          "input": "_2_3_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "The Fat Prince...",
+          "input": "_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Fat Prince Combo",
+          "input": "_6_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Request the Bodycheck",
+          "input": "_4_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Rinei",
+          "input": "_2_1_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Token",
+          "input": "_3_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Asshin close to wall",
+          "input": "_6_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Kaishin close to wall",
+          "input": "_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Haisui from behind",
+          "input": "_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Shanpo from behind",
+          "input": "_6_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Choko from behind",
+          "input": "_2_3_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Toitsu crouching opponent",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Kindoku crouching opponent",
+          "input": "_1_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Teishu crouching opponent, from behind",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Tensen",
+          "input": "_6_8_+_H (reverse high punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Rotai",
+          "input": "_6_8_+_H (reverse high kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Shingeki",
+          "input": "_6_4_+_H (reverse mid punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Kaiso",
+          "input": "_4_6_+_H (reverse mid kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Sohi",
+          "input": "_6_4_+_H (reverse low punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Hotai",
+          "input": "_6_4_+_H (reverse low kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Sairetsu",
+          "input": "_4_8_+_H (reverse high/mid punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Housei",
+          "input": "_4_8_+_H (reverse high/mid kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Risei",
+          "input": "_4_2_+_H (reverse low punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Kasui",
+          "input": "_4_8_+_H (reverse low kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Tengyo (with Jann-Lee)",
+          "input": "_6_6_+_H_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Heishin (with others)",
+          "input": "_6_6_+_H_+_P_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Appeal: Geishin",
+          "input": "_4_6_4_+_H_+_P_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Appeal: \"Got it!\"",
+          "input": "_6_4_6_+_H_+_P_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Appeal: \"No, No!\"",
+          "input": "_2_2_+_H_+_P_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Appeal: \"No, No, No!\"",
+          "input": "_4_4_+_H_+_P_+_K"
+        },
+        {
+          "category": "_`",
+          "input": "_H_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_K_K",
+          "hitLevels": "hhhh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_K_2_+_K",
+          "hitLevels": "hhhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_6_+_P_K",
+          "hitLevels": "hhmhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_4_+_P_P",
+          "hitLevels": "hhmm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_2_+_K",
+          "hitLevels": "hhl"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K_K_2_+_K",
+          "hitLevels": "hhml"
+        },
+        {
+          "category": "_`",
+          "input": "_P^3_+_P_P",
+          "hitLevels": "hmm"
+        },
+        {
+          "category": "_`",
+          "input": "_P^3_+_P_P_+_K",
+          "hitLevels": "hmm",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_P_+_K",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "input": "_K_K",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_K_2_+_K",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_K",
+          "hitLevels": "mhm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_4_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K_K_2_+_K",
+          "hitLevels": "hml"
+        },
+        {
+          "category": "_`",
+          "input": "_4_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_P_+_K",
+          "hitLevels": "m",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_2_2_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_2_3_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_P_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_P_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "^1_+_K_K",
+          "hitLevels": "ll"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K_P_+_K",
+          "hitLevels": "mm",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_3_3_+_P_K_K",
+          "hitLevels": "lmh"
+        },
+        {
+          "category": "_`",
+          "input": "_3_3_+_P_P_+_K",
+          "hitLevels": "lm",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K_K",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "name": "before landing",
+          "input": "_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "name": "before landing",
+          "input": "_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_2_+_K",
+          "hitLevels": "g"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_8_+_P_+_K",
+          "hitLevels": "g"
+        },
+        {
+          "category": "_`",
+          "input": "_P_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K",
+          "hitLevels": "m"
+        }
+      ],
+      "notes": [
+        "Strings Moves",
+        "BACK TURNED (BK)",
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "TINA ARMSTRONG",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Death Valley Bomb",
+          "input": "_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Body Slam",
+          "input": "_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Texas Driver",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Hammer Throw",
+          "input": "_6_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Japan Ocean Suplex",
+          "input": "_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Piledriver",
+          "input": "_6_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Gorii Bomb",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Skytwister Press",
+          "input": "_2_8_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Frankensteiner",
+          "input": "_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Tackle",
+          "input": "_4_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Giant Swing",
+          "input": "_4_1_2_3_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Fisherman's Buster",
+          "input": "_4_1_2_3_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Flying Mare",
+          "input": "_2_1_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Surfboard-Style Lock",
+          "input": "_4_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Japan Ocean Suplex",
+          "input": "_2_8_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Japan Ocean Cyclone",
+          "input": "^2_6_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Bust Cyclone close to wall",
+          "input": "_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Bust Japan Ocean Suplex close to wall",
+          "input": "_6_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Bust Suplex close to wall, from behind",
+          "input": "_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "German Suplex from behind",
+          "input": "_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Double Break",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Throwing German Suplex from behind",
+          "input": "_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Full Nelson from behind",
+          "input": "_6_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Dragon Suplex",
+          "input": "_6_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Bass Bomb crouching opponent",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Trance Four Leg Lock",
+          "input": "_2_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Double Arm Suplex crouching opponent",
+          "input": "_1_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Tiger Driver",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Japanese Ocean Bomb crouching opponent",
+          "input": "_3_3_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Neck Crasher crouching opponent, from behind",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Locking Hammer",
+          "input": "_6_8_+_H (reverse high punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Spring Leg Lock",
+          "input": "_6_8_+_H (reverse high kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Arm Whip",
+          "input": "_6_4_+_H (reverse mid punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Dragon Screw",
+          "input": "_4_6_+_H (reverse mid kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Figure 4 Leg Lock",
+          "input": "_2_2_+_H"
+        },
+        {
+          "category": "_(",
+          "name": "Pull-in Triangle Lock",
+          "input": "_6_4_+_H (reverse low punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Leg Split",
+          "input": "_6_4_+_H (reverse low kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Double Armstrong Buster (with Bass)",
+          "input": "_6_6_+_H_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Dual Bomber (with Bass)",
+          "input": "_2_3_6_+_H_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Flying Cyclone (with Zack)",
+          "input": "_6_6_+_H_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Arm Whip (with others)",
+          "input": "_6_6_+_H_+_P_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Appeal: \"Come On!\"",
+          "input": "_4_6_4_+_H_+_P_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Appeal: Guts Pose",
+          "input": "_2_2_+_H_+_P_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Front Forward",
+          "input": "_2_+_P_+_K"
+        },
+        {
+          "category": "_`",
+          "input": "_H_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P_K",
+          "hitLevels": "hhhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_K",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_K_K",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_H_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P_P",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P_K",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P_2_+_P",
+          "hitLevels": "mml"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P_2_+_K",
+          "hitLevels": "mml"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P_P_K",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P_+_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K",
+          "hitLevels": "m",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_4_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_H_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "^2_+_K_K_K",
+          "hitLevels": "lll"
+        },
+        {
+          "category": "_`",
+          "input": "_2_3_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^3_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_3_3_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_3_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_P_K",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "name": "before landing",
+          "input": "_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "before landing",
+          "input": "_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_2_+_P",
+          "hitLevels": "g"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_8_+_P_+_K",
+          "hitLevels": "g"
+        },
+        {
+          "category": "_`",
+          "input": "_H_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_P_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K",
+          "hitLevels": "m"
+        }
+      ],
+      "notes": [
+        "Strings Moves",
+        "BACK TURNED (BK)",
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "BASS ARMSTRONG",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Falcon Arrow",
+          "input": "_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Bass Tornado",
+          "input": "_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Powerslam",
+          "input": "_6_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Oklahoma Stampede",
+          "input": "_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Water Mill Drop",
+          "input": "_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Dynamite Lariat",
+          "input": "_4_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Superfreak Powerbomb",
+          "input": "_4_1_2_3_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Kitchen Sink",
+          "input": "_2_1_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Stretch Plum",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Manhattan Drop",
+          "input": "_2_8_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "T.F.B.B.",
+          "input": "^2_6_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "One Legged Headbutt",
+          "input": "_3_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Flying Body Scissors",
+          "input": "_8_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Bear Press close to wall",
+          "input": "_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Atomic Hammer Crash close to wall",
+          "input": "_4_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "T.F.B.C. close to wall",
+          "input": "^2_6_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Wild Bull Headbutt close to wall",
+          "input": "_3_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Locomotion Backdrop close to wall, from behind",
+          "input": "_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Iron Claw close to wall, from behind",
+          "input": "_4_1_2_3_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Grizzly Crush",
+          "input": "_2_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Dangerous Backdrop from behind",
+          "input": "_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Atomic Drop from behind",
+          "input": "_6_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Face Crusher",
+          "input": "_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Argentine Backbreaker from behind",
+          "input": "_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Iron Claw from behind",
+          "input": "_4_1_2_3_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Grizzly Launcher",
+          "input": "_2_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Reverse Powerbomb from behind",
+          "input": "_8_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Bass Bomb crouching opponent",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Spiral Bomb crouching opponent",
+          "input": "_1_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Double Arm D.D.T. crouching opponent",
+          "input": "_3_3_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Calf Branding crouching opponent, from behind",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Half Neck Suplex",
+          "input": "_6_8_+_H (reverse high punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Rolling Sentoon",
+          "input": "_6_8_+_H (reverse high kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Shoulder Through",
+          "input": "_6_4_+_H (reverse mid punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Spine Buster",
+          "input": "_4_6_+_H (reverse mid kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Jurassic Trailer",
+          "input": "_4_4_+_H"
+        },
+        {
+          "category": "_(",
+          "name": "Guillotine Drop",
+          "input": "_6_4_+_H (reverse low punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Giant Hammer Throw",
+          "input": "_6_4_+_H (reverse low punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Docking Driver (with Tina)",
+          "input": "_6_6_+_H_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Lock-on Sky Twister Press (with Tina)",
+          "input": "_2_3_6_+_H_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Two Platoon D.D.T. (with Ayane)",
+          "input": "_6_6_+_H_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Allyoop (with Zack)",
+          "input": "_6_6_+_H_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Tag Powerslam (with others)",
+          "input": "_6_6_+_H_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Tag Oklahoma Stampede",
+          "input": "_6_+_H_+_P"
+        },
+        {
+          "category": "_)",
+          "name": "Appeal: I Love Tina",
+          "input": "_4_6_4_+_H_+_P_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Appeal: Show Time",
+          "input": "_2_2_+_H_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Escape Back",
+          "input": "_H_+_P"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_K",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_2_+_P",
+          "hitLevels": "hhl"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K_K",
+          "hitLevels": "hmh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_H_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_+_K",
+          "hitLevels": "h",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_K",
+          "hitLevels": "m",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_P_P_+_K",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_+_K",
+          "hitLevels": "mm",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_4_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_H_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_P_+_K_P_+_K",
+          "hitLevels": "-h"
+        },
+        {
+          "category": "_`",
+          "input": "_2_3_6_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_P_P",
+          "hitLevels": "lm"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P_+_K_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K_K",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "_3_3_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_P_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_P_P",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "name": "before landing",
+          "input": "_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "name": "before landing",
+          "input": "_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_2_+_K",
+          "hitLevels": "g"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_8_+_P_+_K",
+          "hitLevels": "g"
+        },
+        {
+          "category": "_`",
+          "name": "knocked down, face up and feet towards",
+          "input": "^2_+_H_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_P_+_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K",
+          "hitLevels": "m"
+        }
+      ],
+      "notes": [
+        "Strings Moves",
+        "BACK TURNED (BK)",
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "ZACK",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Wild Throw",
+          "input": "_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Gokko Tei Kau",
+          "input": "_6_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Stunner",
+          "input": "_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Splash Dunk",
+          "input": "_2_3_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Hard Rush",
+          "input": "_3_3_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Nightmare Stand close to wall",
+          "input": "_6_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Fly Boarding close to wall",
+          "input": "_2_3_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Neck Hunting from behind",
+          "input": "_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Violence Beat from behind",
+          "input": "_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Beast Fang crouching opponent",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Heart Breaker crouching opponent",
+          "input": "_1_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Reverse Beast Fang crouching opponent, from behind",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Octopus Blow",
+          "input": "_6_8_+_H (reverse high punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Slash Elbow",
+          "input": "_6_8_+_H (reverse high kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Cross Bazooka",
+          "input": "_6_4_+_H (reverse mid punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Heel Edge",
+          "input": "_4_6_+_H (reverse mid kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Funky Elbow",
+          "input": "_6_2_+_H (reverse low punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Dust Stamp",
+          "input": "_6_2_+_H (reverse low kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Mad Shaking (with Leon)",
+          "input": "_6_6_+_H_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Funky Elbow (with others)",
+          "input": "_6_6_+_H_+_P_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Appeal: Wave",
+          "input": "_4_6_4_+_H_+_P_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Appeal: \"Why's That!\"",
+          "input": "_2_2_+_H_+_P_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Fake Roll",
+          "input": "_2_3_6_+_H"
+        },
+        {
+          "category": "_`",
+          "input": "_H_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P_K",
+          "hitLevels": "hhhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_K_K_K_K",
+          "hitLevels": "hhhmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_6_+_P_P",
+          "hitLevels": "hhmm",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_6_+_P_K",
+          "hitLevels": "hhmm",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_6_+_K",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_4_K",
+          "hitLevels": "hh-m"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P^2_+_K_K_K_K",
+          "hitLevels": "hhllll"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K_K_K_K",
+          "hitLevels": "hhmhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_+_K",
+          "hitLevels": "m",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_K_K_K_K",
+          "hitLevels": "hmhm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_K_K_K_K",
+          "hitLevels": "mmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_+_K",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K",
+          "hitLevels": "h",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K_P",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K_K",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "input": "_4_4_+_K_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_4_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_H_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K_P_P_K",
+          "hitLevels": "lhhm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K_P_K_K_K_K",
+          "hitLevels": "lhmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K_P_6_+_P_K",
+          "hitLevels": "lhmm",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K_P_6_+_K",
+          "hitLevels": "lhm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K_P_4_K",
+          "hitLevels": "lh-m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K_P^2_+_K_K_K_K",
+          "hitLevels": "lhllll"
+        },
+        {
+          "category": "_`",
+          "input": "^2_+_K_K_K_K_K",
+          "hitLevels": "lllll"
+        },
+        {
+          "category": "_`",
+          "input": "_2_3_6_+_P_P",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_3_6_+_P_K",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^3_+_P_P_P",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K_K_K_K_K",
+          "hitLevels": "mmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_3_3_+_P_6_+_P",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "_3_3_+_K_K",
+          "hitLevels": "mm",
+          "condition": "BK"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "before landing",
+          "input": "_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "before landing",
+          "input": "_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_2_+_K",
+          "hitLevels": "g"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_8_+_P_+_K_4_6_+_P_+_K",
+          "hitLevels": "g-"
+        },
+        {
+          "category": "_`",
+          "name": "knocked down",
+          "input": "^6_+_K_K",
+          "hitLevels": "-m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K",
+          "hitLevels": "m"
+        }
+      ],
+      "notes": [
+        "Strings Moves",
+        "BACK TURNED (BK)",
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "LEON",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Victor Knee Cross Lock",
+          "input": "_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Arm Lock",
+          "input": "_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Neck Hanging Tree",
+          "input": "_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Pivoting Leg Sweep",
+          "input": "_4_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Standing Achilles Lock",
+          "input": "_6_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Reverse Shrimp Lock",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Windmill Backbreaker",
+          "input": "_4_1_2_3_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Standing Arm Lock",
+          "input": "_2_1_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Neck-Arm Gammadion",
+          "input": "_6_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "D.D.T.",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Crab Scissors",
+          "input": "_3_3_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "S.T.F.",
+          "input": "_2_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Firestorm Knee close to wall",
+          "input": "_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Neck Hanging Blow close to wall",
+          "input": "_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Desert Bridge close to wall",
+          "input": "_4_1_2_3_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Sleeper Hold close to wall, from behind",
+          "input": "_4_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Swing Bless Wall",
+          "input": "_6_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Jumping Arm Reverse Cross Lock from behind",
+          "input": "_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Hell Hazard Lock from behind",
+          "input": "_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Sleeper Hold from behind",
+          "input": "_4_6_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Swing Sleeper",
+          "input": "_6_4_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Side Lock crouching opponent",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Reverse Arm Cross Lock",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Crazy Crash",
+          "input": "_2_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Snake Facelock crouching opponent",
+          "input": "_1_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Reverse Arm Lock",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Ground Submission opponent knocked down",
+          "input": "_2_+_H_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Nead Hunting Cross Lock",
+          "input": "_6_8_+_H (reverse high punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Reverse Achilles Hell Lock",
+          "input": "_6_8_+_H (reverse high kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Death Trap",
+          "input": "_6_4_+_H (reverse mid punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Jumping Knee Cross Lock",
+          "input": "_4_6_+_H (reverse mid kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Grabbing Cross Lock",
+          "input": "_6_2_+_H (reverse low punch)"
+        },
+        {
+          "category": "_(",
+          "name": "Cobra Death Lock",
+          "input": "_6_2_+_H (reverse low kick)"
+        },
+        {
+          "category": "_(",
+          "name": "Heavy Sand (with Zack)",
+          "input": "_6_6_+_H_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Guillotine Napalm (with Bass)",
+          "input": "_6_6_+_H_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Death Trap (with others)",
+          "input": "_6_6_+_H_+_P_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Appeal: Go to Hell",
+          "input": "_4_6_4_+_H_+_P_+_K"
+        },
+        {
+          "category": "_`",
+          "input": "_H_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_K",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_4_+_P",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_1_+_P",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_6_+_P_K",
+          "hitLevels": "hmm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_6_+_P_2_+_K",
+          "hitLevels": "hml"
+        },
+        {
+          "category": "_`",
+          "input": "_P_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_K_P_P",
+          "hitLevels": "hmm"
+        },
+        {
+          "category": "_`",
+          "input": "_K_K",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P_P",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_P_2_+_K",
+          "hitLevels": "mml"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_K_K",
+          "hitLevels": "lm"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_K",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_6_+_K",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_+_K_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_H_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_2_1_4_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^3_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_P_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "before landing",
+          "input": "_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "before landing",
+          "input": "_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_2_+_K",
+          "hitLevels": "g"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_8_+_P_+_K",
+          "hitLevels": "g"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P",
+          "hitLevels": "hmm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K",
+          "hitLevels": "m"
+        }
+      ],
+      "notes": [
+        "Strings Moves",
+        "BACK TURNED (BK)",
+        "Strings Moves"
+      ]
+    }
+  ],
+  "cheatNotes": [
+    "_` Kasumi 4th Outfit and Ayane 3rd Outfit",
+    "- After insert coins press _O_P_+_K and press _S",
+    "_` VTR Replay",
+    "- Before the replay start, press _H_+_K",
+    "- Use _P to rewind",
+    "_` Unlocks Tag Battle Mode (Dead or Alive 2 only)",
+    "- On the Game Test Mode, go to PASSWORD, select TAG BATTLE MODE and enter a password below:",
+    "LOVE? = Unlocks Tag Battle Mode",
+    "_` Unlocks Survival Mode (Dead or Alive 2 only)",
+    "- On the Game Test Mode, go to PASSWORD, select SURVIVAL MODE and enter a password below:",
+    "MIRAI = Unlocks Survival Mode"
+  ],
+  "controlAbbr": {
+    "_H": "HD",
+    "_P": "P",
+    "_K": "K",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_P",
+      "b": "_K",
+      "a": "_H"
+    },
+    "genesis": {
+      "b": "_P",
+      "a": "_K",
+      "x": "_H"
+    },
+    "megadrive": {
+      "b": "_P",
+      "a": "_K",
+      "x": "_H"
+    },
+    "32x": {
+      "b": "_P",
+      "a": "_K",
+      "c": "_H"
+    },
+    "saturn": {
+      "b": "_P",
+      "a": "_K",
+      "c": "_H"
+    },
+    "psx": {
+      "x": "_P",
+      "b": "_K",
+      "a": "_H"
+    },
+    "ps2": {
+      "x": "_P",
+      "b": "_K",
+      "a": "_H"
+    },
+    "gb": {
+      "b": "_P",
+      "a": "_K"
+    },
+    "gbc": {
+      "b": "_P",
+      "a": "_K"
+    },
+    "gamegear": {
+      "a": "_P",
+      "b": "_K"
+    },
+    "sms": {
+      "a": "_P",
+      "b": "_K"
+    },
+    "gba": {
+      "b": "_P",
+      "a": "_K",
+      "l1": "_H"
+    },
+    "ngpc": {
+      "b": "_P",
+      "a": "_K",
+      "y": "_H"
+    }
+  },
+  "controlGroups": {
+    "_P": [
+      "_P"
+    ],
+    "_K": [
+      "_K"
+    ]
+  }
+}

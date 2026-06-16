@@ -1,1 +1,2066 @@
-{"schemaVersion":2,"romIds":["sftm","sftm110","sftm111","sftmj112","sftmj114","sftmk112"],"name":"Street Fighter: The Movie","credits":"Fabricio Coroquer","controls":{"^E":"Weak Punch","^F":"Medium Punch","^G":"Strong Punch","^H":"Weak Kick","^I":"Medium Kick","^J":"Strong Kick","_S":"Start"},"controlGroups":{"_P":["^E","^F","^G"],"_K":["^H","^I","^J"]},"categories":{"_(":"Normal Throws / Tech Hits","_)":"Command Moves","_@":"Special Moves","_*":"Supers","_&":"Comeback Moves","_#":"Interrupt Moves","_`":"Comeback Moves"},"characters":[{"name":"GUILE","moves":[{"category":"_(","name":"Judo Throw","input":"_4 / _6_+^F / ^G"},{"category":"_(","name":"Dragon Suplex","input":"_4 / _6_+^I / ^J"},{"category":"_(","name":"Flying Buster Drop","input":"_^_4 / _6_+^F / ^G"},{"category":"_(","name":"Tech Hits"},{"category":"_)","name":"2-Fisted Punch","input":"_O^F"},{"category":"_)","name":"Split Punch","input":"_O^G"},{"category":"_)","name":"Lunge Kicks","input":"_O^I, ^*^J"},{"category":"_)","name":"Multi-Kicks","input":"^J, ^*^H"},{"category":"_@","name":"Sonic Boom","input":"^4_6_+_P"},{"category":"_@","name":"Somersault Kick","input":"^2_8_+_K"},{"category":"_@","name":"Handcuffs close","input":"_O^U_4_6_4_6"},{"category":"_@","name":"Kick Combo","input":"^H^I^I^I"},{"category":"_*","name":"Somersault Strike","input":"^1_3_1_9_+_K"},{"category":"_*","name":"G. Arts","input":"^4_6_+_K"},{"category":"_*","name":"Regen","input":"_O^H_+^J"},{"category":"_&","name":"Sonic Boom","input":"^4_6_4_6_+_P"},{"category":"_&","name":"Explode","input":"_2_1_4_2_1_4_+_P"},{"category":"_#","name":"Strong Kick blocking","input":"_6_+^J"},{"category":"_#","name":"Somersault Kick blocking","input":"_8_+^H"},{"category":"_`","name":"Counter                                                             when thrown","input":"_8_+^F"},{"category":"_`","name":"Reverse                                                             when countered","input":"_8_+^F"},{"category":"_`","name":"Slammaster                                                          when reversed","input":"_2_+^I"}]},{"name":"BISON","moves":[{"category":"_(","name":"Deadly Throw","input":"_4 / _6_+^F / ^G"},{"category":"_(","name":"Tech Hits"},{"category":"_)","name":"Electric Arc","input":"_O^G"},{"category":"_@","name":"Psycho Crusher","input":"^4_6_+_P"},{"category":"_@","name":"Electric Psycho Crusher","input":"_O_P^4_6"},{"category":"_@","name":"Devil Reverse","input":"^2_8_+_P_P"},{"category":"_@","name":"Double Knee Press","input":"^4_6_+_K"},{"category":"_@","name":"High Knee Press","input":"_O_K^4_6"},{"category":"_@","name":"Head Press","input":"^2_8_+_K"},{"category":"_@","name":"Somersault Skull Diver","input":"_P"},{"category":"_*","name":"Knee Press Nightmare","input":"^4_6_4_6_+_K"},{"category":"_*","name":"Head Press Nightmare","input":"^1_3_1_9_+_K"},{"category":"_*","name":"Regen","input":"_O^F_+^I"},{"category":"_&","name":"Quick Punch Combo","input":"_O^E"},{"category":"_#","name":"Strong Punch blocking","input":"_6_+^G"},{"category":"_#","name":"Double Knee Press blocking","input":"_8_+^H"},{"category":"_`","name":"Counter                                                             when thrown","input":"_8_+^J"},{"category":"_`","name":"Reverse                                                             when countered","input":"_8_+^J"},{"category":"_`","name":"Slammaster                                                          when reversed","input":"_2_+^G"}]},{"name":"RYU","moves":[{"category":"_(","name":"Seoi Nage","input":"_4 / _6_+^F / ^G"},{"category":"_(","name":"Tomoe Nage","input":"_4 / _6_+^I / ^J"},{"category":"_(","name":"Tech Hits"},{"category":"_)","name":"Shadow Weak Kick","input":"_O^H"},{"category":"_)","name":"Shadow Strong Kick","input":"_O^J"},{"category":"_@","name":"Hadou Ken","input":"_2_3_6_+_P"},{"category":"_@","name":"Shakunetsu Hadou Ken","input":"_4_1_2_3_6_+_P"},{"category":"_@","name":"Shouryuu Ken","input":"_6_2_3_+_P"},{"category":"_@","name":"Shadow Shouryuu Ken","input":"_O^G_6_2_3"},{"category":"_@","name":"Tatsumaki Senpuu Kyaku","input":"(_^)_2_1_4_+_K"},{"category":"_@","name":"Shadow Tatsumaki Senpuu Kyaku","input":"(_^)_O_K_2_1_4"},{"category":"_*","name":"Shinkuu Hadou Ken","input":"_2_3_6_2_3_6_+_P"},{"category":"_*","name":"Shinkuu Midare Uchi close","input":"_O^F_2_3_6_2_3_6"},{"category":"_*","name":"Regen","input":"_O^G_+^I"},{"category":"_&","name":"Double Hadouken","input":"_O^W_2_3_6"},{"category":"_#","name":"Medium Kick blocking","input":"_6_+^I"},{"category":"_#","name":"Shouryuu Ken blocking","input":"_8_+^F"},{"category":"_`","name":"Counter                                                             when thrown","input":"_8_+^F"},{"category":"_`","name":"Reverse                                                             when countered","input":"_8_+^F"},{"category":"_`","name":"Slammaster                                                          when reversed","input":"_2_+^I"}]},{"name":"KEN","moves":[{"category":"_(","name":"Seoi Nage","input":"_4 / _6_+^F / ^G"},{"category":"_(","name":"Tsukami Hiza Geri","input":"_4 / _6_+^I"},{"category":"_(","name":"Jigoku Guruma","input":"_4 / _6_+^J"},{"category":"_(","name":"Jigoku Fuusha","input":"_^_4 / _6_+^I / ^J"},{"category":"_(","name":"Tech Hits"},{"category":"_)","name":"Fire Upper","input":"_O^G"},{"category":"_@","name":"Hadou Ken","input":"_2_3_6_+_P"},{"category":"_@","name":"Control","input":"_2 / _8"},{"category":"_@","name":"Shouryuu Ken","input":"_6_2_3_+_P"},{"category":"_@","name":"Tatsumaki Senpuu Kyaku","input":"(_^)_2_1_4_+_K"},{"category":"_@","name":"2 Dan Jump","input":"_8_+^T"},{"category":"_@","name":"Shadow Tatsumaki Senpuu Kyaku","input":"(_^)_O_K_2_1_4"},{"category":"_@","name":"2 Dan Jump","input":"_8_+^T"},{"category":"_*","name":"Shouryuu Reppa","input":"_2_3_6_2_3_6_+_P"},{"category":"_*","name":"Rengoku Guruma close","input":"_2_1_4_2_1_4_+_K"},{"category":"_*","name":"Regen","input":"_O^E_+^F"},{"category":"_&","name":"Super Long Tatsumaki Senpuu Kyaku","input":"_2_3_6_2_3_6_+_K"},{"category":"_&","name":"Move","input":"_2 / _8"},{"category":"_&","name":"2 Dan Jump","input":"_8_+^T"},{"category":"_#","name":"Fire Upper blocking","input":"_6_+^G"},{"category":"_#","name":"Crouching Strong Kick blocking","input":"_8_+^H"},{"category":"_`","name":"Counter                                                             when thrown","input":"_8_+^F"},{"category":"_`","name":"Reverse                                                             when countered","input":"_8_+^F"},{"category":"_`","name":"Slammaster                                                          when reversed","input":"_2_+^I"}]},{"name":"VEGA","moves":[{"category":"_(","name":"Rainbow Suplex","input":"_4 / _6_+^F / ^G"},{"category":"_(","name":"Tech Hits"},{"category":"_)","name":"Backslash","input":"^U"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_9"},{"category":"_@","name":"Mask Throw","input":"_O^E^4_6"},{"category":"_@","name":"Claw Throw","input":"_O^J^4_6"},{"category":"_@","name":"Rolling Crystal Flash","input":"^4_6_+_P"},{"category":"_@","name":"Sky High Claw","input":"^2_8_+_P"},{"category":"_@","name":"Wall Leap","input":"^2_8_+_K"},{"category":"_@","name":"Flying Barcelona Attack","input":"_P"},{"category":"_@","name":"Izuna Drop close","input":"_P"},{"category":"_@","name":"Scarlet Terror","input":"^2_6_+_K"},{"category":"_*","name":"Rolling Izuna Drop close","input":"_2_1_4_2_1_4_+_P"},{"category":"_*","name":"Scarlet Mirage","input":"^4_6_4_6_+_K"},{"category":"_*","name":"Regen","input":"_O^F_+^G"},{"category":"_&","name":"Super Long Rolling Crystal Flash","input":"^4_6_4_6_+_P"},{"category":"_#","name":"Rolling Crystal Flash blocking","input":"_6_+^E"},{"category":"_#","name":"Crouching Strong Kick blocking","input":"_8_+^H"},{"category":"_#","name":"Strong Kick blocking","input":"_8_+^J"},{"category":"_`","name":"Counter                                                             when thrown","input":"_8_+^I"},{"category":"_`","name":"Reverse                                                             when countered","input":"_8_+^I"},{"category":"_`","name":"Slammaster                                                          when reversed","input":"_2_+^F"}]},{"name":"SAGAT","moves":[{"category":"_(","name":"Tiger Carry","input":"_4 / _6_+^F / ^G"},{"category":"_(","name":"Tech Hits"},{"category":"_)","name":"Evil Eye","input":"_O^U"},{"category":"_@","name":"Tiger Shot","input":"_2_3_6_+_P"},{"category":"_@","name":"Ground Tiger Shot","input":"_2_3_6_+_K"},{"category":"_@","name":"2-hit Tiger Shot","input":"_O_P_2_3_6"},{"category":"_@","name":"Tiger Crush","input":"_2_3_6_9_+_K"},{"category":"_@","name":"Tiger Blow","input":"_6_2_3_+_P"},{"category":"_*","name":"Tiger Genocide","input":"_2_3_6_2_3_6_+_P"},{"category":"_*","name":"Tiger Crossfire","input":"^4_2_3_6_2_3_6_+_K"},{"category":"_*","name":"Regen","input":"_O^H_+^I"},{"category":"_&","name":"Ground Tiger Shot & Tiger Shot","input":"_6_3_2_1_4_6_3_2_1_4_+_K"},{"category":"_#","name":"Tiger Crush blocking","input":"_6_+^H"},{"category":"_#","name":"Strong Punch blocking","input":"_8_+^F"},{"category":"_`","name":"Counter                                                             when thrown","input":"_8_+^J"},{"category":"_`","name":"Reverse                                                             when countered","input":"_8_+^J"},{"category":"_`","name":"Slammaster                                                          when reversed","input":"_2_+^G"}]},{"name":"EDMOND HONDA","moves":[{"category":"_(","name":"Tawara Nage","input":"_4 / _6_+^F / ^G"},{"category":"_(","name":"Sekkan Kyaku","input":"_4 / _6_+^I"},{"category":"_(","name":"Tech Hits"},{"category":"_@","name":"Hyakuretsu Harite","input":"^*_P"},{"category":"_@","name":"Hyakuretsu Harite","input":"_O^U, ^*_P"},{"category":"_@","name":"Super Zutsuki","input":"^4_6_+_P"},{"category":"_@","name":"Super Hyakkan Otoshi","input":"^2_8_+_K"},{"category":"_@","name":"High Super Hyakkan Otoshi","input":"_O_K^2_8"},{"category":"_@","name":"Move","input":"_4 / _6"},{"category":"_@","name":"Super Shiko","input":"_O^T"},{"category":"_@","name":"Ooichou Nage close","input":"_2_1_4_+_P"},{"category":"_@","name":"Triple Ooichou Nage close","input":"_2_1_4_2_1_4_+_P"},{"category":"_*","name":"Oni Musou","input":"^4_6_4_6_+_P"},{"category":"_*","name":"Super Hyakuretsu Harite","input":"^4_2_1_4_2_1_4_+_P"},{"category":"_*","name":"Regen","input":"_O^F_+^I"},{"category":"_&","name":"Sumo Ball","input":"^4_6_4_6_+_K"},{"category":"_#","name":"Strong Kick blocking","input":"_6_+^I"},{"category":"_#","name":"Weak Punch blocking","input":"_8_+^F"},{"category":"_`","name":"Counter                                                             when thrown","input":"_8_+^G"},{"category":"_`","name":"Reverse                                                             when countered","input":"_8_+^G"},{"category":"_`","name":"Slammaster                                                          when reversed","input":"_2_+^J"}]},{"name":"CAPTAIN SAWADA","moves":[{"category":"_(","name":"Face Punch","input":"_4 / _6_+^F"},{"category":"_(","name":"Back Slam","input":"_4 / _6_+^I / ^J"},{"category":"_(","name":"Tech Hits"},{"category":"_)","name":"Low Katana","input":"_O^F"},{"category":"_@","name":"Senku Kyaku","input":"_2_1_4_+_K"},{"category":"_@","name":"Air Senku Kyaku","input":"_O^J_2_1_4"},{"category":"_@","name":"Ki Raisen","input":"_6_2_3_+^E"},{"category":"_@","name":"Ku Raisen","input":"_6_2_3_+^F / ^G"},{"category":"_@","name":"Koku Kyaku","input":"^2_8_+_K"},{"category":"_@","name":"Drop Kick","input":"_^_2_1_4_+^I"},{"category":"_*","name":"Retsuku Daisharin","input":"_2_1_4_2_1_4_+_K"},{"category":"_*","name":"Hyakki Raisen close","input":"_O_P_6_6"},{"category":"_*","name":"Regen","input":"_O^I_+^J"},{"category":"_&","name":"Overhead Punch","input":"_2_1_4_+^F"},{"category":"_#","name":"Weak Kick blocking","input":"_6_+^J"},{"category":"_#","name":"Koku Kyaku blocking","input":"_8_+^H"},{"category":"_`","name":"Counter                                                             when thrown","input":"_8_+^F"},{"category":"_`","name":"Reverse                                                             when countered","input":"_8_+^F"},{"category":"_`","name":"Slammaster                                                          when reversed","input":"_2_+^I"}]},{"name":"CHUN-LI","moves":[{"category":"_(","name":"Koshuu Tou","input":"_4 / _6_+^F / ^G"},{"category":"_(","name":"Ryuusei Raku","input":"_^_4 / _6_+^F / ^G"},{"category":"_(","name":"Tech Hits"},{"category":"_)","name":"Kouhou Kaiten Kyaku","input":"_O^I"},{"category":"_)","name":"Yousou Kyaku","input":"_^_2_+^I"},{"category":"_@","name":"Hyakuretsu Kyaku","input":"^*_K"},{"category":"_@","name":"Kikou Ken","input":"^4_6_+_P"},{"category":"_@","name":"Tenshou Kyaku","input":"^2_8_+_K"},{"category":"_@","name":"Spinning Bird Kick","input":"(_^)^4_6_+_K"},{"category":"_@","name":"Hishou Shuu","input":"_O_P^2_8_+_P"},{"category":"_@","name":"Bracelet Throw","input":"_O_P^4_6_4_6"},{"category":"_*","name":"Senretsu Kyaku","input":"^4_6_4_6_+_K"},{"category":"_*","name":"Kikou Hou'ou Ken","input":"^4_2_3_6_2_3_6_+_P"},{"category":"_*","name":"Regen","input":"_O^H_+^J"},{"category":"_&","name":"Bird Kikouken","input":"_2_3_6_+_P"},{"category":"_#","name":"Strong Kick blocking","input":"_8_+^E"},{"category":"_#","name":"Crouching Strong Kick blocking","input":"_8_+^J"},{"category":"_`","name":"Counter                                                             when thrown","input":"_8_+^E"},{"category":"_`","name":"Reverse                                                             when countered","input":"_8_+^E"},{"category":"_`","name":"Slammaster                                                          when reversed","input":"_2_+^H"}]},{"name":"CAMMY WHITE","moves":[{"category":"_(","name":"Hooligan Suplex","input":"_4 / _6_+^F / ^G"},{"category":"_(","name":"Frankensteiner","input":"_4 / _6_+^I / ^J"},{"category":"_(","name":"Air Frankensteiner","input":"_^_4 / _6_+^I / ^J"},{"category":"_(","name":"Tech Hits"},{"category":"_)","name":"Choke Whip","input":"_O^G"},{"category":"_)","name":"Air Knee","input":"_^_O^H_6"},{"category":"_@","name":"Spiral Arrow","input":"_2_3_6_+_K"},{"category":"_@","name":"Air Spiral Arrow jump forward","input":"_O_K_2_3_6"},{"category":"_@","name":"Cannon Spike","input":"_6_2_3_+_K"},{"category":"_@","name":"Axle Spin Knuckle","input":"_2_3_6_+_P"},{"category":"_@","name":"Hooligan Combination","input":"_2_3_6_9_+_P"},{"category":"_@","name":"Razor Edge Slicer","input":"_N"},{"category":"_@","name":"Cross Scissor Pressure close","input":"_K"},{"category":"_*","name":"Spin Drive Smasher","input":"_2_3_6_2_3_6_+_K"},{"category":"_*","name":"Killer Choke Whip","input":"_O^E^4_6_6"},{"category":"_*","name":"Regen","input":"_O^I_+^J"},{"category":"_&","name":"Grenade","input":"_O^F_2_1_4"},{"category":"_#","name":"Strong Kick blocking","input":"_6_+^H"},{"category":"_#","name":"Spiral Arrow blocking","input":"_8_+^J"},{"category":"_`","name":"Counter                                                             when thrown","input":"_8_+^E"},{"category":"_`","name":"Reverse                                                             when countered","input":"_8_+^E"},{"category":"_`","name":"Slammaster                                                          when reversed","input":"_2_+^H"}]},{"name":"BALROG","moves":[{"category":"_(","name":"Head Bomber","input":"_4 / _6_+^G"},{"category":"_(","name":"Shoulder Throw","input":"_4 / _6_+^J"},{"category":"_(","name":"Tech Hits"},{"category":"_)","name":"High One-Two Jabs","input":"^*^E"},{"category":"_)","name":"Low One-Two Jabs","input":"_2_+^*^F"},{"category":"_)","name":"Reflect Glove","input":"^F_+^I (reflect projectile)"},{"category":"_@","name":"Dash Straight","input":"^4_6_+_P"},{"category":"_@","name":"Dash Upper","input":"^4_6_+_K"},{"category":"_@","name":"Turn Punch","input":"_O_P"},{"category":"_@","name":"Charge Upper","input":"_O^T"},{"category":"_@","name":"Buffalo Headbutt","input":"^2_8_+_P"},{"category":"_@","name":"Shadow Upper","input":"_2_1_4_+^J"},{"category":"_*","name":"Crazy Buffalo","input":"^4_6_4_6_+_P"},{"category":"_*","name":"Dash Ground One-Two","input":"^4_2_3_6_2_3_6_+_K"},{"category":"_*","name":"Regen","input":"_O^J"},{"category":"_&","name":"Jab Punch Frenzy","input":"_O^H_6_6"},{"category":"_#","name":"Dash Upper blocking","input":"_6_+^J"},{"category":"_#","name":"Buffalo Headbutt blocking","input":"_8_+^G"},{"category":"_`","name":"Counter                                                             when thrown","input":"_8_+^G"},{"category":"_`","name":"Reverse                                                             when countered","input":"_8_+^G"},{"category":"_`","name":"Slammaster                                                          when reversed","input":"_2_+^J"}]},{"name":"ZANGIEF","moves":[{"category":"_(","name":"Piledriver","input":"_4 / _6_+^F"},{"category":"_(","name":"Kamitsuki","input":"_4 / _6_+^G"},{"category":"_(","name":"German Suplex","input":"_4 / _6_+^I / ^J"},{"category":"_(","name":"Tech Hits"},{"category":"_)","name":"Airplane Spin close","input":"_O^G, _4 / _6"},{"category":"_@","name":"Double Lariat","input":"^U"},{"category":"_@","name":"Move","input":"_4 / _6"},{"category":"_@","name":"Quick Double Lariat","input":"^T"},{"category":"_@","name":"Move","input":"_4 / _6"},{"category":"_@","name":"Spinning Piledriver close","input":"_6_3_2_1_4_6_+_P"},{"category":"_@","name":"Atomic Suplex close","input":"_6_3_2_1_4_6_+_K"},{"category":"_@","name":"Banishing Flat","input":"_2_1_4_+_P"},{"category":"_*","name":"Final Atomic Buster close","input":"_2_1_4_2_1_4_+_P"},{"category":"_*","name":"Flying Brain Crusher close","input":"_2_3_6_2_3_6_+_P"},{"category":"_*","name":"Regen","input":"_O^E_+^H"},{"category":"_&","name":"Head Slide","input":"_O^T_2"},{"category":"_#","name":"Banishing Flat blocking","input":"_6_+^F"},{"category":"_#","name":"Medium Kick blocking","input":"_8_+^J"},{"category":"_`","name":"Counter                                                             when thrown","input":"_8_+^J"},{"category":"_`","name":"Reverse                                                             when countered","input":"_8_+^J"},{"category":"_`","name":"Slammaster                                                          when reversed","input":"_2_+^G"}]},{"name":"BLADE","moves":[{"category":"_(","name":"Shoulder Throw","input":"_4 / _6_+^F / ^G"},{"category":"_(","name":"Tech Hits"},{"category":"_)","name":"Stun Rod","input":"_O^F"},{"category":"_)","name":"Neck Hanging Tree close","input":"_O^G, _4 / _6"},{"category":"_@","name":"Surprise Dagger","input":"_2_2_+_K"},{"category":"_@","name":"Dagger Kick","input":"_6_4_6_+^I"},{"category":"_@","name":"Sky Dagger Kick","input":"_^_O^I"},{"category":"_@","name":"Assassin Dagger","input":"_6_4_6_+_P"},{"category":"_@","name":"Air Assassin Dagger","input":"_^_2_3_6_+_P"},{"category":"_*","name":"Body Grinder","input":"^4_6_4_6_+_P"},{"category":"_*","name":"Life Shaver","input":"_2_3_6_2_3_6_+_K"},{"category":"_*","name":"Regen","input":"_O^H_+^I"},{"category":"_&","name":"Bazooka","input":"_O^I_2_3_6"},{"category":"_#","name":"Stun Rod blocking","input":"_6_+^F"},{"category":"_#","name":"Crouching Strong Kick blocking","input":"_6_+^H"},{"category":"_#","name":"Weak Kick blocking","input":"_6_+^I"},{"category":"_`","name":"Counter                                                             when thrown","input":"_8_+^F"},{"category":"_`","name":"Reverse                                                             when countered","input":"_8_+^F"},{"category":"_`","name":"Slammaster                                                          when reversed","input":"_2_+^I"}]},{"name":"AKUMA","moves":[{"category":"_(","name":"Seoi Nage","input":"_4 / _6_+^F / ^G"},{"category":"_(","name":"Tech Hits"},{"category":"_)","name":"Shadow Strong Kick","input":"_O^J"},{"category":"_@","name":"Gou Hadou Ken","input":"_2_3_6_+_P"},{"category":"_@","name":"Zankuu Hadou Ken","input":"_^_2_3_6_+_P"},{"category":"_@","name":"Shakunetsu Hadou Ken","input":"_4_1_2_3_6_+_P"},{"category":"_@","name":"Gou Shouryuu Ken","input":"_6_2_3_+_P"},{"category":"_@","name":"Tatsumaki Zankuu Kyaku","input":"(_^)_2_1_4_+_K"},{"category":"_@","name":"Ashura Senkuu: Zenpou","input":"_6_2_3_+^U / ^T"},{"category":"_@","name":"Ashura Senkuu: Kouhou","input":"_4_2_1_+^U / ^T"},{"category":"_*","name":"Messatsu Gou Hadou","input":"_2_3_6_2_3_6_+_P"},{"category":"_*","name":"Shun Goku Satsu close","input":"_O_P_2_3_6_2_3_6"},{"category":"_*","name":"Regen","input":"_O^E_+^I"},{"category":"_&","name":"Super Tatsumaki Zankuu Kyaku","input":"_2_1_4_2_1_4_+_K"},{"category":"_&","name":"Move","input":"_2 / _8"},{"category":"_#","name":"Strong Kick blocking","input":"_6_+^I"},{"category":"_#","name":"Gou Shouryuu Ken blocking","input":"_8_+^F"},{"category":"_`","name":"Counter                                                             when thrown","input":"_8_+^I"},{"category":"_`","name":"Reverse                                                             when countered","input":"_8_+^I"},{"category":"_`","name":"Slammaster                                                          when reversed","input":"_2_+^F"}]},{"name":"ARKANE","moves":[{"category":"_(","name":"Shoulder Throw","input":"_4 / _6_+^F / ^G"},{"category":"_(","name":"Tech Hits"},{"category":"_)","name":"Electric Arc","input":"_O^G"},{"category":"_)","name":"Neck Hanging Tree close","input":"_O^G, _4 / _6"},{"category":"_@","name":"Extend Arm","input":"_6_6_+^E"},{"category":"_@","name":"Ground Extend Arm","input":"_6_6_2_+^G"},{"category":"_@","name":"Extend Leg","input":"_6_6_+^I"},{"category":"_@","name":"Teleport: Front","input":"_6_2_3_+^U / ^T"},{"category":"_@","name":"Teleport: Back","input":"_4_2_1_+^U / ^T"},{"category":"_*","name":"Assault Teleport close","input":"_4_2_1_4_2_1_+_P"},{"category":"_*","name":"Regen","input":"_O^H_+^I"},{"category":"_#","name":"Extend Arm blocking","input":"_6_+^E"},{"category":"_#","name":"Crouching Strong Kick blocking","input":"_6_+^H"},{"category":"_#","name":"Weak Kick blocking","input":"_6_+^I"},{"category":"_`","name":"Counter                                                             when thrown","input":"_8_+^I"},{"category":"_`","name":"Reverse                                                             when countered","input":"_8_+^I"},{"category":"_`","name":"Slammaster                                                          when reversed","input":"_2_+^F"}]},{"name":"KYBER","moves":[{"category":"_(","name":"Shoulder Throw","input":"_4 / _6_+^F / ^G"},{"category":"_(","name":"Tech Hits"},{"category":"_)","name":"Neck Hanging Tree close","input":"_O^G, _4 / _6"},{"category":"_@","name":"Assault Flame","input":"_4_1_2_3_6_+_P"},{"category":"_@","name":"Assault Blast","input":"_2_1_4_+_K"},{"category":"_@","name":"Assault Fire","input":"_6_2_3_+_P"},{"category":"_*","name":"Assault Inferno","input":"_2_3_6_2_3_6_+_P"},{"category":"_*","name":"Regen","input":"_O^H_+^I"},{"category":"_#","name":"Crouching Strong Kick blocking","input":"_6_+^H"},{"category":"_#","name":"Weak Kick blocking","input":"_6_+^I"},{"category":"_#","name":"Assault Flame blocking","input":"_8_+^F"},{"category":"_`","name":"Counter                                                             when thrown","input":"_8_+^I"},{"category":"_`","name":"Reverse                                                             when countered","input":"_8_+^I"},{"category":"_`","name":"Slammaster                                                          when reversed","input":"_2_+^F"}]},{"name":"F7","moves":[{"category":"_(","name":"Shoulder Throw","input":"_4 / _6_+^F / ^G"},{"category":"_(","name":"Tech Hits"},{"category":"_)","name":"Stun Rod","input":"_O^F"},{"category":"_)","name":"Electric Arc","input":"_O^G"},{"category":"_)","name":"Neck Hanging Tree close","input":"_O^G, _4 / _6"},{"category":"_@","name":"Surprise Dagger","input":"_2_2_+_K"},{"category":"_@","name":"Dagger Kick","input":"_6_4_6_+^I"},{"category":"_@","name":"Sky Dagger Kick","input":"_^_O^I"},{"category":"_@","name":"Assassin Dagger","input":"_6_4_6_+_P"},{"category":"_@","name":"Air Assassin Dagger","input":"_^_2_3_6_+_P"},{"category":"_@","name":"Extend Arm","input":"_6_6_+^E"},{"category":"_@","name":"Ground Extend Arm","input":"_6_6_2_+^G"},{"category":"_@","name":"Extend Leg","input":"_6_6_+^I"},{"category":"_@","name":"Teleport: Front","input":"_6_2_3_+^U / ^T"},{"category":"_@","name":"Teleport: Back","input":"_4_2_1_+^U / ^T"},{"category":"_@","name":"Assault Flame","input":"_4_1_2_3_6_+_P"},{"category":"_@","name":"Assault Blast","input":"_2_1_4_+_K"},{"category":"_@","name":"Assault Fire","input":"_6_2_3_+_P"},{"category":"_*","name":"Body Grinder","input":"^4_6_4_6_+_P"},{"category":"_*","name":"Assault Inferno","input":"_2_3_6_2_3_6_+_P"},{"category":"_*","name":"Life Shaver","input":"_2_3_6_2_3_6_+_K"},{"category":"_*","name":"Assault Teleport close","input":"_4_2_1_4_2_1_+_P"},{"category":"_*","name":"Regen","input":"_O^H_+^I"},{"category":"_&","name":"Bazooka","input":"_O^I_2_3_6"},{"category":"_#","name":"Extend Arm blocking","input":"_6_+^E"},{"category":"_#","name":"Crouching Strong Kick blocking","input":"_6_+^H"},{"category":"_#","name":"Weak Kick blocking","input":"_6_+^I"},{"category":"_#","name":"Assault Flame blocking","input":"_8_+^F"},{"category":"_`","name":"Counter                                                             when thrown","input":"_8_+^F / ^I"},{"category":"_`","name":"Reverse                                                             when countered","input":"_8_+^F / ^I"},{"category":"_`","name":"Slammaster                                                          when reversed","input":"_2_+^I / ^F"}]}],"cheatNotes":["_` Fight Arkane","- On the Bison's Lair Stage","- When Arkane walks by the doorway, press _S","_` Fight Kyber","- On the Dungeon Stage","- Get a perfect on 1st round","- On next round, when the platform drop, press _S","_` Classic Soundtrack Select","- On the vs. Screen, press:","- Akuma                                        ^G^G^H","- Balrog                                       ^F^F^J","- Bison                                        ^G^G^F","- Blanka                                       ^G^G^E","- Cammy                                        ^F^F^H","- Chun-Li                                      ^F^F^G","- Fei Long                                     ^F^F^I","- Guile                                        ^E^E^H","- Honda                                        ^F^F^E","- Ken                                          ^E^E^J","- Ryu                                          ^E^E^F","- Sagat                                        ^E^E^I","- Vega                                         ^E^E^G","- Zangief                                      ^G^G^I","_` Mode Select","- On the Character Select Screen, press:","- Random Select                                _8_+_S","- Full Random                                  _4_+_S_+^T","- Programmer Levels                            _2_+_S_+^E_+^H","- Clear All Modes                              _2_+_S_+^J","_` Mode Select","- On the Character Select Screen, press:","- Hide Meters                                  _S_+^E","- Invisible Tag                                _S_+^F on both sides","- No Throws                                    _S_+^G","- No Specials                                  _S_+^H","- No Standards                                 _S_+^I","- Tag Team                                     _S_+^J","- Double Damage                                _6_+_S_+^E","- Speed Select                                 _6_+_S_+^F","- No Blocking                                  _6_+_S_+^G","- Combo Mode                                   _6_+_S_+^H","- No Kicks                                     _6_+_S_+^I","- No Punches                                   _6_+_S_+^J","- Reverse Controls                             _4_+_S_+^E","- Swap Fighters                                _4_+_S_+^G on both sides","- Strobe                                       _2_+_S_+^F on both sides","- Invisible                                    _2_+_S_+^G","- Classic Throws                               _2_+_S_+^I","- Only on a 2P Game","_` Bonus Clips","- On the Komande Centre Stage, press:","- Guile strikes a pose                         _S","- Ryu with nunchakus                           ^E^E^I^J","- Cammy kicking baddies                        ^E^F^I^J","- Ken punches Sagat                            ^E^H^I^F","- Chun Li breaks her handcuffs                 ^H^E^I^G","- Bison using electric attacks                 ^H^H^F^J","- Guile attacks Bison                          ^H^H^I^J","- Vega putting on his mask                     ^J^H^E^G"],"controlAbbr":{"^E":"LP","^F":"MP","^G":"HP","^H":"LK","^I":"MK","^J":"HK","_S":"ST"},"systemControlMappings":{"snes":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"genesis":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"megadrive":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"32x":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"saturn":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"psx":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"ps2":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"gba":{"b":"^E","a":"^F","l1":"^G","y":"^H","x":"^I","r1":"^J"},"pce":{"b":"^E","a":"^H"},"pce6":{"b":"^E","y":"^F","l1":"^G","a":"^H","x":"^I","r1":"^J"},"3do":{"b":"^E","a":"^F","l1":"^G","y":"^H","x":"^I","r1":"^J"},"n64":{"b":"^E","cDown":"^F","cRight":"^G","a":"^H","cLeft":"^I","cUp":"^J"},"dreamcast":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"gb":{"b":"^E","a":"^H"},"gbc":{"b":"^E","a":"^H"},"gamegear":{"a":"^E","b":"^H"},"sms":{"a":"^E","b":"^H"},"ngpc":{"b":"^E","y":"^F","l1":"^G","a":"^H","x":"^I","r1":"^J"},"lynx":{"b":"^E","a":"^F","l1":"^G","y":"^H","x":"^I","r1":"^J"},"wswan":{"b":"^E","a":"^H"}}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "sftm",
+    "sftm110",
+    "sftm111",
+    "sftmj112",
+    "sftmj114",
+    "sftmk112"
+  ],
+  "name": "Street Fighter: The Movie",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "^E": "Weak Punch",
+    "^F": "Medium Punch",
+    "^G": "Strong Punch",
+    "^H": "Weak Kick",
+    "^I": "Medium Kick",
+    "^J": "Strong Kick",
+    "_S": "Start"
+  },
+  "controlGroups": {
+    "_P": [
+      "^E",
+      "^F",
+      "^G"
+    ],
+    "_K": [
+      "^H",
+      "^I",
+      "^J"
+    ]
+  },
+  "categories": {
+    "_(": "Normal Throws / Tech Hits",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_*": "Supers",
+    "_&": "Comeback Moves",
+    "_#": "Interrupt Moves",
+    "_`": "Comeback Moves"
+  },
+  "characters": [
+    {
+      "name": "GUILE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Judo Throw",
+          "input": "_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_(",
+          "name": "Dragon Suplex",
+          "input": "_4 / _6_+^I / ^J"
+        },
+        {
+          "category": "_(",
+          "name": "Flying Buster Drop",
+          "input": "_^_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_(",
+          "name": "Tech Hits"
+        },
+        {
+          "category": "_)",
+          "name": "2-Fisted Punch",
+          "input": "_O^F"
+        },
+        {
+          "category": "_)",
+          "name": "Split Punch",
+          "input": "_O^G"
+        },
+        {
+          "category": "_)",
+          "name": "Lunge Kicks",
+          "input": "_O^I, ^*^J"
+        },
+        {
+          "category": "_)",
+          "name": "Multi-Kicks",
+          "input": "^J, ^*^H"
+        },
+        {
+          "category": "_@",
+          "name": "Sonic Boom",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Somersault Kick",
+          "input": "^2_8_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Handcuffs close",
+          "input": "_O^U_4_6_4_6"
+        },
+        {
+          "category": "_@",
+          "name": "Kick Combo",
+          "input": "^H^I^I^I"
+        },
+        {
+          "category": "_*",
+          "name": "Somersault Strike",
+          "input": "^1_3_1_9_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "G. Arts",
+          "input": "^4_6_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Regen",
+          "input": "_O^H_+^J"
+        },
+        {
+          "category": "_&",
+          "name": "Sonic Boom",
+          "input": "^4_6_4_6_+_P"
+        },
+        {
+          "category": "_&",
+          "name": "Explode",
+          "input": "_2_1_4_2_1_4_+_P"
+        },
+        {
+          "category": "_#",
+          "name": "Strong Kick blocking",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_#",
+          "name": "Somersault Kick blocking",
+          "input": "_8_+^H"
+        },
+        {
+          "category": "_`",
+          "name": "Counter                                                             when thrown",
+          "input": "_8_+^F"
+        },
+        {
+          "category": "_`",
+          "name": "Reverse                                                             when countered",
+          "input": "_8_+^F"
+        },
+        {
+          "category": "_`",
+          "name": "Slammaster                                                          when reversed",
+          "input": "_2_+^I"
+        }
+      ]
+    },
+    {
+      "name": "BISON",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Deadly Throw",
+          "input": "_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_(",
+          "name": "Tech Hits"
+        },
+        {
+          "category": "_)",
+          "name": "Electric Arc",
+          "input": "_O^G"
+        },
+        {
+          "category": "_@",
+          "name": "Psycho Crusher",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Electric Psycho Crusher",
+          "input": "_O_P^4_6"
+        },
+        {
+          "category": "_@",
+          "name": "Devil Reverse",
+          "input": "^2_8_+_P_P"
+        },
+        {
+          "category": "_@",
+          "name": "Double Knee Press",
+          "input": "^4_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "High Knee Press",
+          "input": "_O_K^4_6"
+        },
+        {
+          "category": "_@",
+          "name": "Head Press",
+          "input": "^2_8_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Somersault Skull Diver",
+          "input": "_P"
+        },
+        {
+          "category": "_*",
+          "name": "Knee Press Nightmare",
+          "input": "^4_6_4_6_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Head Press Nightmare",
+          "input": "^1_3_1_9_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Regen",
+          "input": "_O^F_+^I"
+        },
+        {
+          "category": "_&",
+          "name": "Quick Punch Combo",
+          "input": "_O^E"
+        },
+        {
+          "category": "_#",
+          "name": "Strong Punch blocking",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_#",
+          "name": "Double Knee Press blocking",
+          "input": "_8_+^H"
+        },
+        {
+          "category": "_`",
+          "name": "Counter                                                             when thrown",
+          "input": "_8_+^J"
+        },
+        {
+          "category": "_`",
+          "name": "Reverse                                                             when countered",
+          "input": "_8_+^J"
+        },
+        {
+          "category": "_`",
+          "name": "Slammaster                                                          when reversed",
+          "input": "_2_+^G"
+        }
+      ]
+    },
+    {
+      "name": "RYU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Seoi Nage",
+          "input": "_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_(",
+          "name": "Tomoe Nage",
+          "input": "_4 / _6_+^I / ^J"
+        },
+        {
+          "category": "_(",
+          "name": "Tech Hits"
+        },
+        {
+          "category": "_)",
+          "name": "Shadow Weak Kick",
+          "input": "_O^H"
+        },
+        {
+          "category": "_)",
+          "name": "Shadow Strong Kick",
+          "input": "_O^J"
+        },
+        {
+          "category": "_@",
+          "name": "Hadou Ken",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Shakunetsu Hadou Ken",
+          "input": "_4_1_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Shouryuu Ken",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Shadow Shouryuu Ken",
+          "input": "_O^G_6_2_3"
+        },
+        {
+          "category": "_@",
+          "name": "Tatsumaki Senpuu Kyaku",
+          "input": "(_^)_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Shadow Tatsumaki Senpuu Kyaku",
+          "input": "(_^)_O_K_2_1_4"
+        },
+        {
+          "category": "_*",
+          "name": "Shinkuu Hadou Ken",
+          "input": "_2_3_6_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Shinkuu Midare Uchi close",
+          "input": "_O^F_2_3_6_2_3_6"
+        },
+        {
+          "category": "_*",
+          "name": "Regen",
+          "input": "_O^G_+^I"
+        },
+        {
+          "category": "_&",
+          "name": "Double Hadouken",
+          "input": "_O^W_2_3_6"
+        },
+        {
+          "category": "_#",
+          "name": "Medium Kick blocking",
+          "input": "_6_+^I"
+        },
+        {
+          "category": "_#",
+          "name": "Shouryuu Ken blocking",
+          "input": "_8_+^F"
+        },
+        {
+          "category": "_`",
+          "name": "Counter                                                             when thrown",
+          "input": "_8_+^F"
+        },
+        {
+          "category": "_`",
+          "name": "Reverse                                                             when countered",
+          "input": "_8_+^F"
+        },
+        {
+          "category": "_`",
+          "name": "Slammaster                                                          when reversed",
+          "input": "_2_+^I"
+        }
+      ]
+    },
+    {
+      "name": "KEN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Seoi Nage",
+          "input": "_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_(",
+          "name": "Tsukami Hiza Geri",
+          "input": "_4 / _6_+^I"
+        },
+        {
+          "category": "_(",
+          "name": "Jigoku Guruma",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_(",
+          "name": "Jigoku Fuusha",
+          "input": "_^_4 / _6_+^I / ^J"
+        },
+        {
+          "category": "_(",
+          "name": "Tech Hits"
+        },
+        {
+          "category": "_)",
+          "name": "Fire Upper",
+          "input": "_O^G"
+        },
+        {
+          "category": "_@",
+          "name": "Hadou Ken",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Control",
+          "input": "_2 / _8"
+        },
+        {
+          "category": "_@",
+          "name": "Shouryuu Ken",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Tatsumaki Senpuu Kyaku",
+          "input": "(_^)_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "2 Dan Jump",
+          "input": "_8_+^T"
+        },
+        {
+          "category": "_@",
+          "name": "Shadow Tatsumaki Senpuu Kyaku",
+          "input": "(_^)_O_K_2_1_4"
+        },
+        {
+          "category": "_@",
+          "name": "2 Dan Jump",
+          "input": "_8_+^T"
+        },
+        {
+          "category": "_*",
+          "name": "Shouryuu Reppa",
+          "input": "_2_3_6_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Rengoku Guruma close",
+          "input": "_2_1_4_2_1_4_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Regen",
+          "input": "_O^E_+^F"
+        },
+        {
+          "category": "_&",
+          "name": "Super Long Tatsumaki Senpuu Kyaku",
+          "input": "_2_3_6_2_3_6_+_K"
+        },
+        {
+          "category": "_&",
+          "name": "Move",
+          "input": "_2 / _8"
+        },
+        {
+          "category": "_&",
+          "name": "2 Dan Jump",
+          "input": "_8_+^T"
+        },
+        {
+          "category": "_#",
+          "name": "Fire Upper blocking",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_#",
+          "name": "Crouching Strong Kick blocking",
+          "input": "_8_+^H"
+        },
+        {
+          "category": "_`",
+          "name": "Counter                                                             when thrown",
+          "input": "_8_+^F"
+        },
+        {
+          "category": "_`",
+          "name": "Reverse                                                             when countered",
+          "input": "_8_+^F"
+        },
+        {
+          "category": "_`",
+          "name": "Slammaster                                                          when reversed",
+          "input": "_2_+^I"
+        }
+      ]
+    },
+    {
+      "name": "VEGA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Rainbow Suplex",
+          "input": "_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_(",
+          "name": "Tech Hits"
+        },
+        {
+          "category": "_)",
+          "name": "Backslash",
+          "input": "^U"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_9"
+        },
+        {
+          "category": "_@",
+          "name": "Mask Throw",
+          "input": "_O^E^4_6"
+        },
+        {
+          "category": "_@",
+          "name": "Claw Throw",
+          "input": "_O^J^4_6"
+        },
+        {
+          "category": "_@",
+          "name": "Rolling Crystal Flash",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Sky High Claw",
+          "input": "^2_8_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Wall Leap",
+          "input": "^2_8_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Barcelona Attack",
+          "input": "_P"
+        },
+        {
+          "category": "_@",
+          "name": "Izuna Drop close",
+          "input": "_P"
+        },
+        {
+          "category": "_@",
+          "name": "Scarlet Terror",
+          "input": "^2_6_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Rolling Izuna Drop close",
+          "input": "_2_1_4_2_1_4_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Scarlet Mirage",
+          "input": "^4_6_4_6_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Regen",
+          "input": "_O^F_+^G"
+        },
+        {
+          "category": "_&",
+          "name": "Super Long Rolling Crystal Flash",
+          "input": "^4_6_4_6_+_P"
+        },
+        {
+          "category": "_#",
+          "name": "Rolling Crystal Flash blocking",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_#",
+          "name": "Crouching Strong Kick blocking",
+          "input": "_8_+^H"
+        },
+        {
+          "category": "_#",
+          "name": "Strong Kick blocking",
+          "input": "_8_+^J"
+        },
+        {
+          "category": "_`",
+          "name": "Counter                                                             when thrown",
+          "input": "_8_+^I"
+        },
+        {
+          "category": "_`",
+          "name": "Reverse                                                             when countered",
+          "input": "_8_+^I"
+        },
+        {
+          "category": "_`",
+          "name": "Slammaster                                                          when reversed",
+          "input": "_2_+^F"
+        }
+      ]
+    },
+    {
+      "name": "SAGAT",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Tiger Carry",
+          "input": "_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_(",
+          "name": "Tech Hits"
+        },
+        {
+          "category": "_)",
+          "name": "Evil Eye",
+          "input": "_O^U"
+        },
+        {
+          "category": "_@",
+          "name": "Tiger Shot",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Ground Tiger Shot",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "2-hit Tiger Shot",
+          "input": "_O_P_2_3_6"
+        },
+        {
+          "category": "_@",
+          "name": "Tiger Crush",
+          "input": "_2_3_6_9_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Tiger Blow",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Tiger Genocide",
+          "input": "_2_3_6_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Tiger Crossfire",
+          "input": "^4_2_3_6_2_3_6_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Regen",
+          "input": "_O^H_+^I"
+        },
+        {
+          "category": "_&",
+          "name": "Ground Tiger Shot & Tiger Shot",
+          "input": "_6_3_2_1_4_6_3_2_1_4_+_K"
+        },
+        {
+          "category": "_#",
+          "name": "Tiger Crush blocking",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_#",
+          "name": "Strong Punch blocking",
+          "input": "_8_+^F"
+        },
+        {
+          "category": "_`",
+          "name": "Counter                                                             when thrown",
+          "input": "_8_+^J"
+        },
+        {
+          "category": "_`",
+          "name": "Reverse                                                             when countered",
+          "input": "_8_+^J"
+        },
+        {
+          "category": "_`",
+          "name": "Slammaster                                                          when reversed",
+          "input": "_2_+^G"
+        }
+      ]
+    },
+    {
+      "name": "EDMOND HONDA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Tawara Nage",
+          "input": "_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_(",
+          "name": "Sekkan Kyaku",
+          "input": "_4 / _6_+^I"
+        },
+        {
+          "category": "_(",
+          "name": "Tech Hits"
+        },
+        {
+          "category": "_@",
+          "name": "Hyakuretsu Harite",
+          "input": "^*_P"
+        },
+        {
+          "category": "_@",
+          "name": "Hyakuretsu Harite",
+          "input": "_O^U, ^*_P"
+        },
+        {
+          "category": "_@",
+          "name": "Super Zutsuki",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Super Hyakkan Otoshi",
+          "input": "^2_8_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "High Super Hyakkan Otoshi",
+          "input": "_O_K^2_8"
+        },
+        {
+          "category": "_@",
+          "name": "Move",
+          "input": "_4 / _6"
+        },
+        {
+          "category": "_@",
+          "name": "Super Shiko",
+          "input": "_O^T"
+        },
+        {
+          "category": "_@",
+          "name": "Ooichou Nage close",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Triple Ooichou Nage close",
+          "input": "_2_1_4_2_1_4_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Oni Musou",
+          "input": "^4_6_4_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Super Hyakuretsu Harite",
+          "input": "^4_2_1_4_2_1_4_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Regen",
+          "input": "_O^F_+^I"
+        },
+        {
+          "category": "_&",
+          "name": "Sumo Ball",
+          "input": "^4_6_4_6_+_K"
+        },
+        {
+          "category": "_#",
+          "name": "Strong Kick blocking",
+          "input": "_6_+^I"
+        },
+        {
+          "category": "_#",
+          "name": "Weak Punch blocking",
+          "input": "_8_+^F"
+        },
+        {
+          "category": "_`",
+          "name": "Counter                                                             when thrown",
+          "input": "_8_+^G"
+        },
+        {
+          "category": "_`",
+          "name": "Reverse                                                             when countered",
+          "input": "_8_+^G"
+        },
+        {
+          "category": "_`",
+          "name": "Slammaster                                                          when reversed",
+          "input": "_2_+^J"
+        }
+      ]
+    },
+    {
+      "name": "CAPTAIN SAWADA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Face Punch",
+          "input": "_4 / _6_+^F"
+        },
+        {
+          "category": "_(",
+          "name": "Back Slam",
+          "input": "_4 / _6_+^I / ^J"
+        },
+        {
+          "category": "_(",
+          "name": "Tech Hits"
+        },
+        {
+          "category": "_)",
+          "name": "Low Katana",
+          "input": "_O^F"
+        },
+        {
+          "category": "_@",
+          "name": "Senku Kyaku",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Air Senku Kyaku",
+          "input": "_O^J_2_1_4"
+        },
+        {
+          "category": "_@",
+          "name": "Ki Raisen",
+          "input": "_6_2_3_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Ku Raisen",
+          "input": "_6_2_3_+^F / ^G"
+        },
+        {
+          "category": "_@",
+          "name": "Koku Kyaku",
+          "input": "^2_8_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Drop Kick",
+          "input": "_^_2_1_4_+^I"
+        },
+        {
+          "category": "_*",
+          "name": "Retsuku Daisharin",
+          "input": "_2_1_4_2_1_4_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Hyakki Raisen close",
+          "input": "_O_P_6_6"
+        },
+        {
+          "category": "_*",
+          "name": "Regen",
+          "input": "_O^I_+^J"
+        },
+        {
+          "category": "_&",
+          "name": "Overhead Punch",
+          "input": "_2_1_4_+^F"
+        },
+        {
+          "category": "_#",
+          "name": "Weak Kick blocking",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_#",
+          "name": "Koku Kyaku blocking",
+          "input": "_8_+^H"
+        },
+        {
+          "category": "_`",
+          "name": "Counter                                                             when thrown",
+          "input": "_8_+^F"
+        },
+        {
+          "category": "_`",
+          "name": "Reverse                                                             when countered",
+          "input": "_8_+^F"
+        },
+        {
+          "category": "_`",
+          "name": "Slammaster                                                          when reversed",
+          "input": "_2_+^I"
+        }
+      ]
+    },
+    {
+      "name": "CHUN-LI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Koshuu Tou",
+          "input": "_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_(",
+          "name": "Ryuusei Raku",
+          "input": "_^_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_(",
+          "name": "Tech Hits"
+        },
+        {
+          "category": "_)",
+          "name": "Kouhou Kaiten Kyaku",
+          "input": "_O^I"
+        },
+        {
+          "category": "_)",
+          "name": "Yousou Kyaku",
+          "input": "_^_2_+^I"
+        },
+        {
+          "category": "_@",
+          "name": "Hyakuretsu Kyaku",
+          "input": "^*_K"
+        },
+        {
+          "category": "_@",
+          "name": "Kikou Ken",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Tenshou Kyaku",
+          "input": "^2_8_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Spinning Bird Kick",
+          "input": "(_^)^4_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Hishou Shuu",
+          "input": "_O_P^2_8_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Bracelet Throw",
+          "input": "_O_P^4_6_4_6"
+        },
+        {
+          "category": "_*",
+          "name": "Senretsu Kyaku",
+          "input": "^4_6_4_6_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Kikou Hou'ou Ken",
+          "input": "^4_2_3_6_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Regen",
+          "input": "_O^H_+^J"
+        },
+        {
+          "category": "_&",
+          "name": "Bird Kikouken",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_#",
+          "name": "Strong Kick blocking",
+          "input": "_8_+^E"
+        },
+        {
+          "category": "_#",
+          "name": "Crouching Strong Kick blocking",
+          "input": "_8_+^J"
+        },
+        {
+          "category": "_`",
+          "name": "Counter                                                             when thrown",
+          "input": "_8_+^E"
+        },
+        {
+          "category": "_`",
+          "name": "Reverse                                                             when countered",
+          "input": "_8_+^E"
+        },
+        {
+          "category": "_`",
+          "name": "Slammaster                                                          when reversed",
+          "input": "_2_+^H"
+        }
+      ]
+    },
+    {
+      "name": "CAMMY WHITE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Hooligan Suplex",
+          "input": "_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_(",
+          "name": "Frankensteiner",
+          "input": "_4 / _6_+^I / ^J"
+        },
+        {
+          "category": "_(",
+          "name": "Air Frankensteiner",
+          "input": "_^_4 / _6_+^I / ^J"
+        },
+        {
+          "category": "_(",
+          "name": "Tech Hits"
+        },
+        {
+          "category": "_)",
+          "name": "Choke Whip",
+          "input": "_O^G"
+        },
+        {
+          "category": "_)",
+          "name": "Air Knee",
+          "input": "_^_O^H_6"
+        },
+        {
+          "category": "_@",
+          "name": "Spiral Arrow",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Air Spiral Arrow jump forward",
+          "input": "_O_K_2_3_6"
+        },
+        {
+          "category": "_@",
+          "name": "Cannon Spike",
+          "input": "_6_2_3_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Axle Spin Knuckle",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Hooligan Combination",
+          "input": "_2_3_6_9_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Razor Edge Slicer",
+          "input": "_N"
+        },
+        {
+          "category": "_@",
+          "name": "Cross Scissor Pressure close",
+          "input": "_K"
+        },
+        {
+          "category": "_*",
+          "name": "Spin Drive Smasher",
+          "input": "_2_3_6_2_3_6_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Killer Choke Whip",
+          "input": "_O^E^4_6_6"
+        },
+        {
+          "category": "_*",
+          "name": "Regen",
+          "input": "_O^I_+^J"
+        },
+        {
+          "category": "_&",
+          "name": "Grenade",
+          "input": "_O^F_2_1_4"
+        },
+        {
+          "category": "_#",
+          "name": "Strong Kick blocking",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_#",
+          "name": "Spiral Arrow blocking",
+          "input": "_8_+^J"
+        },
+        {
+          "category": "_`",
+          "name": "Counter                                                             when thrown",
+          "input": "_8_+^E"
+        },
+        {
+          "category": "_`",
+          "name": "Reverse                                                             when countered",
+          "input": "_8_+^E"
+        },
+        {
+          "category": "_`",
+          "name": "Slammaster                                                          when reversed",
+          "input": "_2_+^H"
+        }
+      ]
+    },
+    {
+      "name": "BALROG",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Head Bomber",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Shoulder Throw",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_(",
+          "name": "Tech Hits"
+        },
+        {
+          "category": "_)",
+          "name": "High One-Two Jabs",
+          "input": "^*^E"
+        },
+        {
+          "category": "_)",
+          "name": "Low One-Two Jabs",
+          "input": "_2_+^*^F"
+        },
+        {
+          "category": "_)",
+          "name": "Reflect Glove",
+          "input": "^F_+^I (reflect projectile)"
+        },
+        {
+          "category": "_@",
+          "name": "Dash Straight",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Dash Upper",
+          "input": "^4_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Turn Punch",
+          "input": "_O_P"
+        },
+        {
+          "category": "_@",
+          "name": "Charge Upper",
+          "input": "_O^T"
+        },
+        {
+          "category": "_@",
+          "name": "Buffalo Headbutt",
+          "input": "^2_8_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Shadow Upper",
+          "input": "_2_1_4_+^J"
+        },
+        {
+          "category": "_*",
+          "name": "Crazy Buffalo",
+          "input": "^4_6_4_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Dash Ground One-Two",
+          "input": "^4_2_3_6_2_3_6_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Regen",
+          "input": "_O^J"
+        },
+        {
+          "category": "_&",
+          "name": "Jab Punch Frenzy",
+          "input": "_O^H_6_6"
+        },
+        {
+          "category": "_#",
+          "name": "Dash Upper blocking",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_#",
+          "name": "Buffalo Headbutt blocking",
+          "input": "_8_+^G"
+        },
+        {
+          "category": "_`",
+          "name": "Counter                                                             when thrown",
+          "input": "_8_+^G"
+        },
+        {
+          "category": "_`",
+          "name": "Reverse                                                             when countered",
+          "input": "_8_+^G"
+        },
+        {
+          "category": "_`",
+          "name": "Slammaster                                                          when reversed",
+          "input": "_2_+^J"
+        }
+      ]
+    },
+    {
+      "name": "ZANGIEF",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Piledriver",
+          "input": "_4 / _6_+^F"
+        },
+        {
+          "category": "_(",
+          "name": "Kamitsuki",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "German Suplex",
+          "input": "_4 / _6_+^I / ^J"
+        },
+        {
+          "category": "_(",
+          "name": "Tech Hits"
+        },
+        {
+          "category": "_)",
+          "name": "Airplane Spin close",
+          "input": "_O^G, _4 / _6"
+        },
+        {
+          "category": "_@",
+          "name": "Double Lariat",
+          "input": "^U"
+        },
+        {
+          "category": "_@",
+          "name": "Move",
+          "input": "_4 / _6"
+        },
+        {
+          "category": "_@",
+          "name": "Quick Double Lariat",
+          "input": "^T"
+        },
+        {
+          "category": "_@",
+          "name": "Move",
+          "input": "_4 / _6"
+        },
+        {
+          "category": "_@",
+          "name": "Spinning Piledriver close",
+          "input": "_6_3_2_1_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Atomic Suplex close",
+          "input": "_6_3_2_1_4_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Banishing Flat",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Final Atomic Buster close",
+          "input": "_2_1_4_2_1_4_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Flying Brain Crusher close",
+          "input": "_2_3_6_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Regen",
+          "input": "_O^E_+^H"
+        },
+        {
+          "category": "_&",
+          "name": "Head Slide",
+          "input": "_O^T_2"
+        },
+        {
+          "category": "_#",
+          "name": "Banishing Flat blocking",
+          "input": "_6_+^F"
+        },
+        {
+          "category": "_#",
+          "name": "Medium Kick blocking",
+          "input": "_8_+^J"
+        },
+        {
+          "category": "_`",
+          "name": "Counter                                                             when thrown",
+          "input": "_8_+^J"
+        },
+        {
+          "category": "_`",
+          "name": "Reverse                                                             when countered",
+          "input": "_8_+^J"
+        },
+        {
+          "category": "_`",
+          "name": "Slammaster                                                          when reversed",
+          "input": "_2_+^G"
+        }
+      ]
+    },
+    {
+      "name": "BLADE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Shoulder Throw",
+          "input": "_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_(",
+          "name": "Tech Hits"
+        },
+        {
+          "category": "_)",
+          "name": "Stun Rod",
+          "input": "_O^F"
+        },
+        {
+          "category": "_)",
+          "name": "Neck Hanging Tree close",
+          "input": "_O^G, _4 / _6"
+        },
+        {
+          "category": "_@",
+          "name": "Surprise Dagger",
+          "input": "_2_2_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Dagger Kick",
+          "input": "_6_4_6_+^I"
+        },
+        {
+          "category": "_@",
+          "name": "Sky Dagger Kick",
+          "input": "_^_O^I"
+        },
+        {
+          "category": "_@",
+          "name": "Assassin Dagger",
+          "input": "_6_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Air Assassin Dagger",
+          "input": "_^_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Body Grinder",
+          "input": "^4_6_4_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Life Shaver",
+          "input": "_2_3_6_2_3_6_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Regen",
+          "input": "_O^H_+^I"
+        },
+        {
+          "category": "_&",
+          "name": "Bazooka",
+          "input": "_O^I_2_3_6"
+        },
+        {
+          "category": "_#",
+          "name": "Stun Rod blocking",
+          "input": "_6_+^F"
+        },
+        {
+          "category": "_#",
+          "name": "Crouching Strong Kick blocking",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_#",
+          "name": "Weak Kick blocking",
+          "input": "_6_+^I"
+        },
+        {
+          "category": "_`",
+          "name": "Counter                                                             when thrown",
+          "input": "_8_+^F"
+        },
+        {
+          "category": "_`",
+          "name": "Reverse                                                             when countered",
+          "input": "_8_+^F"
+        },
+        {
+          "category": "_`",
+          "name": "Slammaster                                                          when reversed",
+          "input": "_2_+^I"
+        }
+      ]
+    },
+    {
+      "name": "AKUMA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Seoi Nage",
+          "input": "_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_(",
+          "name": "Tech Hits"
+        },
+        {
+          "category": "_)",
+          "name": "Shadow Strong Kick",
+          "input": "_O^J"
+        },
+        {
+          "category": "_@",
+          "name": "Gou Hadou Ken",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Zankuu Hadou Ken",
+          "input": "_^_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Shakunetsu Hadou Ken",
+          "input": "_4_1_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Gou Shouryuu Ken",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Tatsumaki Zankuu Kyaku",
+          "input": "(_^)_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Ashura Senkuu: Zenpou",
+          "input": "_6_2_3_+^U / ^T"
+        },
+        {
+          "category": "_@",
+          "name": "Ashura Senkuu: Kouhou",
+          "input": "_4_2_1_+^U / ^T"
+        },
+        {
+          "category": "_*",
+          "name": "Messatsu Gou Hadou",
+          "input": "_2_3_6_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Shun Goku Satsu close",
+          "input": "_O_P_2_3_6_2_3_6"
+        },
+        {
+          "category": "_*",
+          "name": "Regen",
+          "input": "_O^E_+^I"
+        },
+        {
+          "category": "_&",
+          "name": "Super Tatsumaki Zankuu Kyaku",
+          "input": "_2_1_4_2_1_4_+_K"
+        },
+        {
+          "category": "_&",
+          "name": "Move",
+          "input": "_2 / _8"
+        },
+        {
+          "category": "_#",
+          "name": "Strong Kick blocking",
+          "input": "_6_+^I"
+        },
+        {
+          "category": "_#",
+          "name": "Gou Shouryuu Ken blocking",
+          "input": "_8_+^F"
+        },
+        {
+          "category": "_`",
+          "name": "Counter                                                             when thrown",
+          "input": "_8_+^I"
+        },
+        {
+          "category": "_`",
+          "name": "Reverse                                                             when countered",
+          "input": "_8_+^I"
+        },
+        {
+          "category": "_`",
+          "name": "Slammaster                                                          when reversed",
+          "input": "_2_+^F"
+        }
+      ]
+    },
+    {
+      "name": "ARKANE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Shoulder Throw",
+          "input": "_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_(",
+          "name": "Tech Hits"
+        },
+        {
+          "category": "_)",
+          "name": "Electric Arc",
+          "input": "_O^G"
+        },
+        {
+          "category": "_)",
+          "name": "Neck Hanging Tree close",
+          "input": "_O^G, _4 / _6"
+        },
+        {
+          "category": "_@",
+          "name": "Extend Arm",
+          "input": "_6_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Ground Extend Arm",
+          "input": "_6_6_2_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Extend Leg",
+          "input": "_6_6_+^I"
+        },
+        {
+          "category": "_@",
+          "name": "Teleport: Front",
+          "input": "_6_2_3_+^U / ^T"
+        },
+        {
+          "category": "_@",
+          "name": "Teleport: Back",
+          "input": "_4_2_1_+^U / ^T"
+        },
+        {
+          "category": "_*",
+          "name": "Assault Teleport close",
+          "input": "_4_2_1_4_2_1_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Regen",
+          "input": "_O^H_+^I"
+        },
+        {
+          "category": "_#",
+          "name": "Extend Arm blocking",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_#",
+          "name": "Crouching Strong Kick blocking",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_#",
+          "name": "Weak Kick blocking",
+          "input": "_6_+^I"
+        },
+        {
+          "category": "_`",
+          "name": "Counter                                                             when thrown",
+          "input": "_8_+^I"
+        },
+        {
+          "category": "_`",
+          "name": "Reverse                                                             when countered",
+          "input": "_8_+^I"
+        },
+        {
+          "category": "_`",
+          "name": "Slammaster                                                          when reversed",
+          "input": "_2_+^F"
+        }
+      ]
+    },
+    {
+      "name": "KYBER",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Shoulder Throw",
+          "input": "_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_(",
+          "name": "Tech Hits"
+        },
+        {
+          "category": "_)",
+          "name": "Neck Hanging Tree close",
+          "input": "_O^G, _4 / _6"
+        },
+        {
+          "category": "_@",
+          "name": "Assault Flame",
+          "input": "_4_1_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Assault Blast",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Assault Fire",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Assault Inferno",
+          "input": "_2_3_6_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Regen",
+          "input": "_O^H_+^I"
+        },
+        {
+          "category": "_#",
+          "name": "Crouching Strong Kick blocking",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_#",
+          "name": "Weak Kick blocking",
+          "input": "_6_+^I"
+        },
+        {
+          "category": "_#",
+          "name": "Assault Flame blocking",
+          "input": "_8_+^F"
+        },
+        {
+          "category": "_`",
+          "name": "Counter                                                             when thrown",
+          "input": "_8_+^I"
+        },
+        {
+          "category": "_`",
+          "name": "Reverse                                                             when countered",
+          "input": "_8_+^I"
+        },
+        {
+          "category": "_`",
+          "name": "Slammaster                                                          when reversed",
+          "input": "_2_+^F"
+        }
+      ]
+    },
+    {
+      "name": "F7",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Shoulder Throw",
+          "input": "_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_(",
+          "name": "Tech Hits"
+        },
+        {
+          "category": "_)",
+          "name": "Stun Rod",
+          "input": "_O^F"
+        },
+        {
+          "category": "_)",
+          "name": "Electric Arc",
+          "input": "_O^G"
+        },
+        {
+          "category": "_)",
+          "name": "Neck Hanging Tree close",
+          "input": "_O^G, _4 / _6"
+        },
+        {
+          "category": "_@",
+          "name": "Surprise Dagger",
+          "input": "_2_2_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Dagger Kick",
+          "input": "_6_4_6_+^I"
+        },
+        {
+          "category": "_@",
+          "name": "Sky Dagger Kick",
+          "input": "_^_O^I"
+        },
+        {
+          "category": "_@",
+          "name": "Assassin Dagger",
+          "input": "_6_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Air Assassin Dagger",
+          "input": "_^_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Extend Arm",
+          "input": "_6_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Ground Extend Arm",
+          "input": "_6_6_2_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Extend Leg",
+          "input": "_6_6_+^I"
+        },
+        {
+          "category": "_@",
+          "name": "Teleport: Front",
+          "input": "_6_2_3_+^U / ^T"
+        },
+        {
+          "category": "_@",
+          "name": "Teleport: Back",
+          "input": "_4_2_1_+^U / ^T"
+        },
+        {
+          "category": "_@",
+          "name": "Assault Flame",
+          "input": "_4_1_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Assault Blast",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Assault Fire",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Body Grinder",
+          "input": "^4_6_4_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Assault Inferno",
+          "input": "_2_3_6_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Life Shaver",
+          "input": "_2_3_6_2_3_6_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Assault Teleport close",
+          "input": "_4_2_1_4_2_1_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Regen",
+          "input": "_O^H_+^I"
+        },
+        {
+          "category": "_&",
+          "name": "Bazooka",
+          "input": "_O^I_2_3_6"
+        },
+        {
+          "category": "_#",
+          "name": "Extend Arm blocking",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_#",
+          "name": "Crouching Strong Kick blocking",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_#",
+          "name": "Weak Kick blocking",
+          "input": "_6_+^I"
+        },
+        {
+          "category": "_#",
+          "name": "Assault Flame blocking",
+          "input": "_8_+^F"
+        },
+        {
+          "category": "_`",
+          "name": "Counter                                                             when thrown",
+          "input": "_8_+^F / ^I"
+        },
+        {
+          "category": "_`",
+          "name": "Reverse                                                             when countered",
+          "input": "_8_+^F / ^I"
+        },
+        {
+          "category": "_`",
+          "name": "Slammaster                                                          when reversed",
+          "input": "_2_+^I / ^F"
+        }
+      ]
+    }
+  ],
+  "cheatNotes": [
+    "_` Fight Arkane",
+    "- On the Bison's Lair Stage",
+    "- When Arkane walks by the doorway, press _S",
+    "_` Fight Kyber",
+    "- On the Dungeon Stage",
+    "- Get a perfect on 1st round",
+    "- On next round, when the platform drop, press _S",
+    "_` Classic Soundtrack Select",
+    "- On the vs. Screen, press:",
+    "- Akuma                                        ^G^G^H",
+    "- Balrog                                       ^F^F^J",
+    "- Bison                                        ^G^G^F",
+    "- Blanka                                       ^G^G^E",
+    "- Cammy                                        ^F^F^H",
+    "- Chun-Li                                      ^F^F^G",
+    "- Fei Long                                     ^F^F^I",
+    "- Guile                                        ^E^E^H",
+    "- Honda                                        ^F^F^E",
+    "- Ken                                          ^E^E^J",
+    "- Ryu                                          ^E^E^F",
+    "- Sagat                                        ^E^E^I",
+    "- Vega                                         ^E^E^G",
+    "- Zangief                                      ^G^G^I",
+    "_` Mode Select",
+    "- On the Character Select Screen, press:",
+    "- Random Select                                _8_+_S",
+    "- Full Random                                  _4_+_S_+^T",
+    "- Programmer Levels                            _2_+_S_+^E_+^H",
+    "- Clear All Modes                              _2_+_S_+^J",
+    "_` Mode Select",
+    "- On the Character Select Screen, press:",
+    "- Hide Meters                                  _S_+^E",
+    "- Invisible Tag                                _S_+^F on both sides",
+    "- No Throws                                    _S_+^G",
+    "- No Specials                                  _S_+^H",
+    "- No Standards                                 _S_+^I",
+    "- Tag Team                                     _S_+^J",
+    "- Double Damage                                _6_+_S_+^E",
+    "- Speed Select                                 _6_+_S_+^F",
+    "- No Blocking                                  _6_+_S_+^G",
+    "- Combo Mode                                   _6_+_S_+^H",
+    "- No Kicks                                     _6_+_S_+^I",
+    "- No Punches                                   _6_+_S_+^J",
+    "- Reverse Controls                             _4_+_S_+^E",
+    "- Swap Fighters                                _4_+_S_+^G on both sides",
+    "- Strobe                                       _2_+_S_+^F on both sides",
+    "- Invisible                                    _2_+_S_+^G",
+    "- Classic Throws                               _2_+_S_+^I",
+    "- Only on a 2P Game",
+    "_` Bonus Clips",
+    "- On the Komande Centre Stage, press:",
+    "- Guile strikes a pose                         _S",
+    "- Ryu with nunchakus                           ^E^E^I^J",
+    "- Cammy kicking baddies                        ^E^F^I^J",
+    "- Ken punches Sagat                            ^E^H^I^F",
+    "- Chun Li breaks her handcuffs                 ^H^E^I^G",
+    "- Bison using electric attacks                 ^H^H^F^J",
+    "- Guile attacks Bison                          ^H^H^I^J",
+    "- Vega putting on his mask                     ^J^H^E^G"
+  ],
+  "controlAbbr": {
+    "^E": "LP",
+    "^F": "MP",
+    "^G": "HP",
+    "^H": "LK",
+    "^I": "MK",
+    "^J": "HK",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "genesis": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "megadrive": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "32x": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "saturn": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "psx": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "ps2": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "gba": {
+      "b": "^E",
+      "a": "^F",
+      "l1": "^G",
+      "y": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "pce": {
+      "b": "^E",
+      "a": "^H"
+    },
+    "pce6": {
+      "b": "^E",
+      "y": "^F",
+      "l1": "^G",
+      "a": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "3do": {
+      "b": "^E",
+      "a": "^F",
+      "l1": "^G",
+      "y": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "n64": {
+      "b": "^E",
+      "cDown": "^F",
+      "cRight": "^G",
+      "a": "^H",
+      "cLeft": "^I",
+      "cUp": "^J"
+    },
+    "dreamcast": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "gb": {
+      "b": "^E",
+      "a": "^H"
+    },
+    "gbc": {
+      "b": "^E",
+      "a": "^H"
+    },
+    "gamegear": {
+      "a": "^E",
+      "b": "^H"
+    },
+    "sms": {
+      "a": "^E",
+      "b": "^H"
+    },
+    "ngpc": {
+      "b": "^E",
+      "y": "^F",
+      "l1": "^G",
+      "a": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "lynx": {
+      "b": "^E",
+      "a": "^F",
+      "l1": "^G",
+      "y": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "wswan": {
+      "b": "^E",
+      "a": "^H"
+    }
+  }
+}

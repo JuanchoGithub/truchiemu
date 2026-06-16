@@ -1,1 +1,211 @@
-{"schemaVersion":2,"romIds":["blandia"],"name":"Blandia","year":1992,"manufacturer":"Allumer","credits":"Fabricio Coroquer","controls":{"_S":"Start"},"categories":{"_@":"Special Moves"},"characters":[{"name":"GURIANOS","moves":[{"category":"_@","name":"Charging Blade","input":"^4_6_+_a / _b / _c"},{"category":"_@","name":"Magic Ball","input":"_2_3_6_+_b"},{"category":"_@","name":"Mighty Cut","input":"_4_1_2_3_6_+_c"}]},{"name":"DIOKLES","moves":[{"category":"_@","name":"Diokles Charge","input":"^4_6_+_a / _b / _c"},{"category":"_@","name":"Lava Rain","input":"_2_3_6_+_b"},{"category":"_@","name":"Moonlight Slash","input":"_4_1_2_3_6_+_a"}]},{"name":"McGILL","moves":[{"category":"_@","name":"Lariat Blitz","input":"^4_6_+_a / _b / _c"},{"category":"_@","name":"Great Swing","input":"_2_3_6_+_b"},{"category":"_@","name":"Hurricane Slash","input":"_a_+_b / _a_+_c / _b_+_c"}]},{"name":"IRRIANA","moves":[{"category":"_@","name":"Diving Slash","input":"^4_6_+_a / _b / _c"},{"category":"_@","name":"Backspin Slash","input":"_2_3_6_+_b"},{"category":"_@","name":"Mega Nuke","input":"_O_a_+_b_+_c, release and press _2"}]},{"name":"JURANE","moves":[{"category":"_@","name":"Spear Thrust","input":"^4_6_+_a / _b / _c"},{"category":"_@","name":"Elven Spear","input":"_2_1_4_+_b"},{"category":"_@","name":"Elf Flame","input":"_2_3_6_+_c"},{"category":"_@","name":"Elf Forcefeild close","input":"_6_+_b"},{"category":"_@","name":"Hellfire Magic","input":"_O_a_+_c, release and press _8"},{"category":"_@","name":"Heavens Thunder","input":"_O_a_+_b_+_c, release and press _2"},{"category":"_@","name":"Fairy Confuse","input":"_O_a_+_c, release and press _6"}]},{"name":"RETSU.ZEN","moves":[{"category":"_@","name":"Vacuum Sword","input":"^4_6_+_a / _b / _c"},{"category":"_@","name":"Mizuki Slash","input":"_6_3_2_1_4_6_+_a"},{"category":"_@","name":"Poison Mist","input":"_O_a_+_b / _b_+_c"},{"category":"_@","name":"Spirit Transform Attack","input":"_O_a_+_b_+_c, relase and press _6"}]}],"controlAbbr":{"_S":"ST"},"systemControlMappings":{"snes":{"y":"_a","b":"_b","a":"_c"},"genesis":{"b":"_a","y":"_b","a":"_c"},"megadrive":{"b":"_a","y":"_b","a":"_c"},"saturn":{"b":"_a","y":"_b","a":"_c"},"psx":{"y":"_a","b":"_b","a":"_c"},"ps2":{"y":"_a","b":"_b","a":"_c"},"gba":{"b":"_a","a":"_b","l1":"_c"},"gb":{"b":"_a","a":"_b"},"gbc":{"b":"_a","a":"_b"}}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "blandia"
+  ],
+  "name": "Blandia",
+  "year": 1992,
+  "manufacturer": "Allumer",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "_S": "Start"
+  },
+  "categories": {
+    "_@": "Special Moves"
+  },
+  "characters": [
+    {
+      "name": "GURIANOS",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Charging Blade",
+          "input": "^4_6_+_a / _b / _c"
+        },
+        {
+          "category": "_@",
+          "name": "Magic Ball",
+          "input": "_2_3_6_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Mighty Cut",
+          "input": "_4_1_2_3_6_+_c"
+        }
+      ]
+    },
+    {
+      "name": "DIOKLES",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Diokles Charge",
+          "input": "^4_6_+_a / _b / _c"
+        },
+        {
+          "category": "_@",
+          "name": "Lava Rain",
+          "input": "_2_3_6_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Moonlight Slash",
+          "input": "_4_1_2_3_6_+_a"
+        }
+      ]
+    },
+    {
+      "name": "McGILL",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Lariat Blitz",
+          "input": "^4_6_+_a / _b / _c"
+        },
+        {
+          "category": "_@",
+          "name": "Great Swing",
+          "input": "_2_3_6_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Hurricane Slash",
+          "input": "_a_+_b / _a_+_c / _b_+_c"
+        }
+      ]
+    },
+    {
+      "name": "IRRIANA",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Diving Slash",
+          "input": "^4_6_+_a / _b / _c"
+        },
+        {
+          "category": "_@",
+          "name": "Backspin Slash",
+          "input": "_2_3_6_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Mega Nuke",
+          "input": "_O_a_+_b_+_c, release and press _2"
+        }
+      ]
+    },
+    {
+      "name": "JURANE",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Spear Thrust",
+          "input": "^4_6_+_a / _b / _c"
+        },
+        {
+          "category": "_@",
+          "name": "Elven Spear",
+          "input": "_2_1_4_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Elf Flame",
+          "input": "_2_3_6_+_c"
+        },
+        {
+          "category": "_@",
+          "name": "Elf Forcefeild close",
+          "input": "_6_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Hellfire Magic",
+          "input": "_O_a_+_c, release and press _8"
+        },
+        {
+          "category": "_@",
+          "name": "Heavens Thunder",
+          "input": "_O_a_+_b_+_c, release and press _2"
+        },
+        {
+          "category": "_@",
+          "name": "Fairy Confuse",
+          "input": "_O_a_+_c, release and press _6"
+        }
+      ]
+    },
+    {
+      "name": "RETSU.ZEN",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Vacuum Sword",
+          "input": "^4_6_+_a / _b / _c"
+        },
+        {
+          "category": "_@",
+          "name": "Mizuki Slash",
+          "input": "_6_3_2_1_4_6_+_a"
+        },
+        {
+          "category": "_@",
+          "name": "Poison Mist",
+          "input": "_O_a_+_b / _b_+_c"
+        },
+        {
+          "category": "_@",
+          "name": "Spirit Transform Attack",
+          "input": "_O_a_+_b_+_c, relase and press _6"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_a",
+      "b": "_b",
+      "a": "_c"
+    },
+    "genesis": {
+      "b": "_a",
+      "y": "_b",
+      "a": "_c"
+    },
+    "megadrive": {
+      "b": "_a",
+      "y": "_b",
+      "a": "_c"
+    },
+    "saturn": {
+      "b": "_a",
+      "y": "_b",
+      "a": "_c"
+    },
+    "psx": {
+      "y": "_a",
+      "b": "_b",
+      "a": "_c"
+    },
+    "ps2": {
+      "y": "_a",
+      "b": "_b",
+      "a": "_c"
+    },
+    "gba": {
+      "b": "_a",
+      "a": "_b",
+      "l1": "_c"
+    },
+    "gb": {
+      "b": "_a",
+      "a": "_b"
+    },
+    "gbc": {
+      "b": "_a",
+      "a": "_b"
+    }
+  }
+}

@@ -1,1 +1,985 @@
-{"schemaVersion":2,"romIds":["3countb"],"name":"3 Count Bout","year":1993,"manufacturer":"SNK","controls":{"_A":"Punch","_B":"Kick","_C":"Jump","_D":"Taunt","_S":"Start","^S":"Select (AES only)"},"categories":{"_)":"Command Moves","_@":"Special Moves","_(":"Normal Grapple Moves","_*":"Power Grapple Moves","_`":"Power Grapple Moves"},"commonCommands":[{"category":"_)","name":"Run Forward","input":"_6_6"},{"category":"_)","name":"Run Backward","input":"_4_4"},{"category":"_)","name":"Quick Movement","input":"_A_+_B"},{"category":"_)","name":"Climb Turnbuckle close to turnbuckle","input":"^8"},{"category":"_)","name":"Pin opponent knocked down","input":"_D"},{"category":"_(","name":"Grapple Start close to opponent"},{"category":"_(","name":"Grapple Win","input":"^*_A"},{"category":"_(","name":"Normal Grapple see CHARACTER move list"},{"category":"_(","name":"Power Grapple see CHARACTER move list"}],"characters":[{"name":"TERRY ROGERS","moves":[{"category":"_@","name":"Repeating Palm","input":"_6_+^*_A"},{"category":"_@","name":"Somersault Shoulder","input":"_4_6_+_A"},{"category":"_@","name":"Frankensteiner opponent running","input":"_A"},{"category":"_@","name":"Shoulder Charge running","input":"_A / _B"},{"category":"_@","name":"Somersault Senton on turnbuckle","input":"_A / _B"},{"category":"_@","name":"S.T.F. opponent knocked down","input":"_B"},{"category":"_@","name":"Double Knee Drop opponent knocked down","input":"_C"},{"category":"_(","name":"Body Slam","input":"_A"},{"category":"_(","name":"3-Palms","input":"_8_+_A"},{"category":"_(","name":"Palms to Kick","input":"_2_+_A"},{"category":"_(","name":"Hammer Throw","input":"_4 / _6_+_A"},{"category":"_*","name":"Throwing Body Slam","input":"_B"},{"category":"_*","name":"Super Jumping PB","input":"_8_+_B"},{"category":"_*","name":"Sit Out Powerbomb","input":"_2_+_B"},{"category":"_*","name":"German Suplex","input":"_4 / _6_+_B"}]},{"name":"BIG BOMBERDER","moves":[{"category":"_@","name":"Biting","input":"_6_+^*_A"},{"category":"_@","name":"Run to Shoulder Toss","input":"_4_6_+_A"},{"category":"_@","name":"Shoulder Toss opponent running","input":"_A"},{"category":"_@","name":"Hip Attack running","input":"_A"},{"category":"_@","name":"Cross Body running","input":"_B"},{"category":"_@","name":"Double Knee on turnbuckle","input":"_A / _B"},{"category":"_@","name":"Boston Crab opponent knocked down","input":"_B"},{"category":"_@","name":"Double Knee opponent knocked down","input":"_C"},{"category":"_(","name":"Body Slam","input":"_A"},{"category":"_(","name":"Big Swipes","input":"_8_+_A"},{"category":"_(","name":"Swipes to Headbutt","input":"_2_+_A"},{"category":"_(","name":"Hammer Throw","input":"_4 / _6_+_A"},{"category":"_*","name":"Toss Body Slam","input":"_B"},{"category":"_*","name":"Backbreaker","input":"_8_+_B"},{"category":"_*","name":"Slum Drop Hold","input":"_2_+_B"},{"category":"_*","name":"Dangerous German","input":"_4 / _6_+_B"}]},{"name":"BLUES HABLAM","moves":[{"category":"_@","name":"Knife Attack","input":"_6_+^*_A"},{"category":"_@","name":"Thunderball","input":"_4_6_+_A"},{"category":"_@","name":"Hip Attack running","input":"_A"},{"category":"_@","name":"Headbutt running","input":"_B"},{"category":"_@","name":"Fire Bird Splash on turnbuckle","input":"_A / _B"},{"category":"_@","name":"Knife Stab opponent knocked down","input":"_B"},{"category":"_@","name":"Flip Leg Drop opponent knocked down","input":"_C"},{"category":"_(","name":"Headbutt","input":"_A"},{"category":"_(","name":"Hell Stabs","input":"_8_+_A"},{"category":"_(","name":"Hell Stabs to Low HS","input":"_2_+_A"},{"category":"_(","name":"Hammer Throw","input":"_4 / _6_+_A"},{"category":"_*","name":"Rolling Headbutt","input":"_B"},{"category":"_*","name":"Thunder Fire Bomb","input":"_8_+_B"},{"category":"_*","name":"Lift Up Toss","input":"_2_+_B"},{"category":"_*","name":"Release German Suplex","input":"_4 / _6_+_B"}]},{"name":"MASTER BARNES","moves":[{"category":"_@","name":"Kick Rush","input":"_6_+^*_A"},{"category":"_@","name":"Flying Knee","input":"_4_6_+_A"},{"category":"_@","name":"Jumping Knee opponent running","input":"_A"},{"category":"_@","name":"Shoulder Charge running","input":"_A / _B"},{"category":"_@","name":"Elbow Drop on turnbuckle","input":"_A / _B"},{"category":"_@","name":"Boston Crab opponent knocked down","input":"_B"},{"category":"_@","name":"Elbow Drop opponent knocked down","input":"_C"},{"category":"_(","name":"Punches","input":"_A"},{"category":"_(","name":"Punches to Kick","input":"_2_+_A"},{"category":"_(","name":"Hammer Throw","input":"_4 / _6_+_A"},{"category":"_*","name":"Atomic Drop","input":"_B"},{"category":"_*","name":"Super Ganso Bomb","input":"_8_+_B"},{"category":"_*","name":"Ganso Bomb","input":"_2_+_B"},{"category":"_*","name":"Thunder Fire Bomb","input":"_4 / _6_+_B"}]},{"name":"ROY WILSON","moves":[{"category":"_@","name":"Biting","input":"_6_+^*_A"},{"category":"_@","name":"Crotch Ride","input":"_4_6_+_A"},{"category":"_@","name":"Power Slam opponent running","input":"_A"},{"category":"_@","name":"Lariat running","input":"_A / _B"},{"category":"_@","name":"Flip Leg Drop on turnbuckle","input":"_A / _B"},{"category":"_@","name":"Half Boston Crab opponent knocked down","input":"_B"},{"category":"_@","name":"Flip Leg Drop opponent knocked down","input":"_C"},{"category":"_(","name":"Body Slam","input":"_A"},{"category":"_(","name":"Chops","input":"_8_+_A"},{"category":"_(","name":"Chops to Kick","input":"_2_+_A"},{"category":"_(","name":"Hammer Throw","input":"_4 / _6_+_A"},{"category":"_*","name":"Toss Body Slam","input":"_B"},{"category":"_*","name":"Suplex","input":"_8_+_B"},{"category":"_*","name":"Belly to Belly Suplex","input":"_2_+_B"},{"category":"_*","name":"Power Slam","input":"_4 / _6_+_B"}]},{"name":"BLUBBER MAN","moves":[{"category":"_@","name":"Knife Attack","input":"_6_+^*_A"},{"category":"_@","name":"Thunderball","input":"_4_6_+_A"},{"category":"_@","name":"Hip Attack running","input":"_A"},{"category":"_@","name":"Headbutt running","input":"_B"},{"category":"_@","name":"Fire Bird Splash on turnbuckle","input":"_A / _B"},{"category":"_@","name":"Knife Stab opponent knocked down","input":"_B"},{"category":"_@","name":"Flip Leg Drop opponent knocked down","input":"_C"},{"category":"_(","name":"Headbutt","input":"_A"},{"category":"_(","name":"Hell Stabs","input":"_8_+_A"},{"category":"_(","name":"Hell Stabs to Low HS","input":"_2_+_A"},{"category":"_(","name":"Hammer Throw","input":"_4 / _6_+_A"},{"category":"_*","name":"Rolling Headbutt","input":"_B"},{"category":"_*","name":"Thunder Fire Bomb","input":"_8_+_B"},{"category":"_*","name":"Lift Up Toss","input":"_2_+_B"},{"category":"_*","name":"Release German Suplex","input":"_4 / _6_+_B"}]},{"name":"LEO BRADLAY","moves":[{"category":"_@","name":"Chain Flurry","input":"_6_+^*_A"},{"category":"_@","name":"Head Stomp","input":"_4_6_+_A"},{"category":"_@","name":"Neck Breaker opponent running","input":"_A"},{"category":"_@","name":"Jumping Neck Breaker running","input":"_A"},{"category":"_@","name":"Flying Forearm running","input":"_B"},{"category":"_@","name":"Double Stomp on turnbuckle","input":"_A / _B"},{"category":"_@","name":"Chain Choke opponent knocked down","input":"_B"},{"category":"_@","name":"Double Stomp opponent knocked down","input":"_C"},{"category":"_(","name":"Body Slam","input":"_A"},{"category":"_(","name":"Chops to Chain","input":"_8_+_A"},{"category":"_(","name":"Chops to Kick","input":"_2_+_A"},{"category":"_(","name":"Hammer Throw","input":"_4 / _6_+_A"},{"category":"_*","name":"Toss Body Slam","input":"_B"},{"category":"_*","name":"Stalling Suplex","input":"_8_+_B"},{"category":"_*","name":"Danger Suplex","input":"_2_+_B"},{"category":"_*","name":"Backbreaker Toss","input":"_4 / _6_+_B"}]},{"name":"THE GANDHARA","moves":[{"category":"_@","name":"Fire Ball","input":"_6_+^*_A"},{"category":"_@","name":"Flying Screw Kick","input":"_4_6_+_A"},{"category":"_@","name":"Rolling Clutch Hold opponent running","input":"_A"},{"category":"_@","name":"Screw Kick running","input":"_A / _B"},{"category":"_@","name":"Somersault Senton on turnbuckle","input":"_A / _B"},{"category":"_@","name":"Romero Special opponent knocked down","input":"_B"},{"category":"_@","name":"Somersault Senton opponent knocked down","input":"_C"},{"category":"_(","name":"Body Slam","input":"_A"},{"category":"_(","name":"Palm Strikes","input":"_8_+_A"},{"category":"_(","name":"Palms to High Kick","input":"_2_+_A"},{"category":"_(","name":"Hammer Throw","input":"_4 / _6_+_A"},{"category":"_*","name":"Rolling Clutch Hold","input":"_B"},{"category":"_*","name":"Jumping Powerbomb","input":"_2 / _8_+_B"},{"category":"_*","name":"Powerbomb","input":"_4 / _6_+_B"}]},{"name":"THE RED DRAGON","moves":[{"category":"_@","name":"Muta Mist","input":"_6_+^*_A"},{"category":"_@","name":"Cartwheel Elbow","input":"_4_6_+_A"},{"category":"_@","name":"Side Suplex opponent running","input":"_A"},{"category":"_@","name":"Spinning Heel Kick running","input":"_A / _B"},{"category":"_@","name":"Moonsault on turnbuckle","input":"_A / _B"},{"category":"_@","name":"Romero Special opponent knocked down","input":"_B"},{"category":"_@","name":"Flashing Elbow opponent knocked down","input":"_C"},{"category":"_(","name":"Body Slam","input":"_A"},{"category":"_(","name":"Uppercuts","input":"_8_+_A"},{"category":"_(","name":"Uppercuts to Kick","input":"_2_+_A"},{"category":"_(","name":"Hammer Throw","input":"_4 / _6_+_A"},{"category":"_*","name":"Toss Body Slam","input":"_B"},{"category":"_*","name":"Super D.D.T.","input":"_8_+_B"},{"category":"_*","name":"D.D.T.","input":"_2_+_B"},{"category":"_*","name":"Side Suplex","input":"_4 / _6_+_B"}]},{"name":"GOCHACK BIGBOMB","moves":[{"category":"_@","name":"Biting","input":"_6_+^*_A"},{"category":"_@","name":"Run to Shoulder Toss","input":"_4_6_+_A"},{"category":"_@","name":"Shoulder Toss opponent running","input":"_A"},{"category":"_@","name":"Hip Attack running","input":"_A"},{"category":"_@","name":"Cross Body running","input":"_B"},{"category":"_@","name":"Double Knee on turnbuckle","input":"_A / _B"},{"category":"_@","name":"Boston Crab opponent knocked down","input":"_B"},{"category":"_@","name":"Double Knee opponent knocked down","input":"_C"},{"category":"_(","name":"Body Slam","input":"_A"},{"category":"_(","name":"Big Swipes","input":"_8_+_A"},{"category":"_(","name":"Swipes to Headbutt","input":"_2_+_A"},{"category":"_(","name":"Hammer Throw","input":"_4 / _6_+_A"},{"category":"_*","name":"Toss Body Slam","input":"_B"},{"category":"_*","name":"Backbreaker","input":"_8_+_B"},{"category":"_*","name":"Slum Drop Hold","input":"_2_+_B"},{"category":"_*","name":"Dangerous German","input":"_4 / _6_+_B"}]}],"controlAbbr":{"_A":"P","_B":"K","_C":"JM","_D":"TA","_S":"ST","^S":"SL"},"systemControlMappings":{"snes":{"y":"_A","x":"_B","b":"_C","a":"_D"},"genesis":{"b":"_A","a":"_B","y":"_C","x":"_D"},"megadrive":{"b":"_A","a":"_B","y":"_C","x":"_D"},"32x":{"b":"_A","a":"_B","y":"_C","x":"_D"},"saturn":{"b":"_A","a":"_B","y":"_C","x":"_D"},"neogeo":{"b":"_A","y":"_B","a":"_C","x":"_D"},"psx":{"y":"_A","x":"_B","b":"_C","a":"_D"},"ps2":{"y":"_A","x":"_B","b":"_C","a":"_D"},"gb":{"b":"_A","a":"_B"},"gbc":{"b":"_A","a":"_B"},"gamegear":{"a":"_A","b":"_B"},"sms":{"a":"_A","b":"_B"},"gba":{"b":"_A","a":"_B","l1":"_C","r1":"_D"},"ngpc":{"b":"_A","a":"_B","y":"_C","x":"_D"},"dreamcast":{"y":"_A","x":"_B","b":"_C","a":"_D"},"n64":{"b":"_A","a":"_B","cDown":"_C","cLeft":"_D"},"wswan":{"b":"_A","a":"_B"}},"controlGroups":{"_P":["_A"],"_K":["_B"]}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "3countb"
+  ],
+  "name": "3 Count Bout",
+  "year": 1993,
+  "manufacturer": "SNK",
+  "controls": {
+    "_A": "Punch",
+    "_B": "Kick",
+    "_C": "Jump",
+    "_D": "Taunt",
+    "_S": "Start",
+    "^S": "Select (AES only)"
+  },
+  "categories": {
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_(": "Normal Grapple Moves",
+    "_*": "Power Grapple Moves",
+    "_`": "Power Grapple Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Run Forward",
+      "input": "_6_6"
+    },
+    {
+      "category": "_)",
+      "name": "Run Backward",
+      "input": "_4_4"
+    },
+    {
+      "category": "_)",
+      "name": "Quick Movement",
+      "input": "_A_+_B"
+    },
+    {
+      "category": "_)",
+      "name": "Climb Turnbuckle close to turnbuckle",
+      "input": "^8"
+    },
+    {
+      "category": "_)",
+      "name": "Pin opponent knocked down",
+      "input": "_D"
+    },
+    {
+      "category": "_(",
+      "name": "Grapple Start close to opponent"
+    },
+    {
+      "category": "_(",
+      "name": "Grapple Win",
+      "input": "^*_A"
+    },
+    {
+      "category": "_(",
+      "name": "Normal Grapple see CHARACTER move list"
+    },
+    {
+      "category": "_(",
+      "name": "Power Grapple see CHARACTER move list"
+    }
+  ],
+  "characters": [
+    {
+      "name": "TERRY ROGERS",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Repeating Palm",
+          "input": "_6_+^*_A"
+        },
+        {
+          "category": "_@",
+          "name": "Somersault Shoulder",
+          "input": "_4_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Frankensteiner opponent running",
+          "input": "_A"
+        },
+        {
+          "category": "_@",
+          "name": "Shoulder Charge running",
+          "input": "_A / _B"
+        },
+        {
+          "category": "_@",
+          "name": "Somersault Senton on turnbuckle",
+          "input": "_A / _B"
+        },
+        {
+          "category": "_@",
+          "name": "S.T.F. opponent knocked down",
+          "input": "_B"
+        },
+        {
+          "category": "_@",
+          "name": "Double Knee Drop opponent knocked down",
+          "input": "_C"
+        },
+        {
+          "category": "_(",
+          "name": "Body Slam",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "3-Palms",
+          "input": "_8_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Palms to Kick",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Hammer Throw",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Throwing Body Slam",
+          "input": "_B"
+        },
+        {
+          "category": "_*",
+          "name": "Super Jumping PB",
+          "input": "_8_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Sit Out Powerbomb",
+          "input": "_2_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "German Suplex",
+          "input": "_4 / _6_+_B"
+        }
+      ]
+    },
+    {
+      "name": "BIG BOMBERDER",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Biting",
+          "input": "_6_+^*_A"
+        },
+        {
+          "category": "_@",
+          "name": "Run to Shoulder Toss",
+          "input": "_4_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Shoulder Toss opponent running",
+          "input": "_A"
+        },
+        {
+          "category": "_@",
+          "name": "Hip Attack running",
+          "input": "_A"
+        },
+        {
+          "category": "_@",
+          "name": "Cross Body running",
+          "input": "_B"
+        },
+        {
+          "category": "_@",
+          "name": "Double Knee on turnbuckle",
+          "input": "_A / _B"
+        },
+        {
+          "category": "_@",
+          "name": "Boston Crab opponent knocked down",
+          "input": "_B"
+        },
+        {
+          "category": "_@",
+          "name": "Double Knee opponent knocked down",
+          "input": "_C"
+        },
+        {
+          "category": "_(",
+          "name": "Body Slam",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Big Swipes",
+          "input": "_8_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Swipes to Headbutt",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Hammer Throw",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Toss Body Slam",
+          "input": "_B"
+        },
+        {
+          "category": "_*",
+          "name": "Backbreaker",
+          "input": "_8_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Slum Drop Hold",
+          "input": "_2_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Dangerous German",
+          "input": "_4 / _6_+_B"
+        }
+      ]
+    },
+    {
+      "name": "BLUES HABLAM",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Knife Attack",
+          "input": "_6_+^*_A"
+        },
+        {
+          "category": "_@",
+          "name": "Thunderball",
+          "input": "_4_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Hip Attack running",
+          "input": "_A"
+        },
+        {
+          "category": "_@",
+          "name": "Headbutt running",
+          "input": "_B"
+        },
+        {
+          "category": "_@",
+          "name": "Fire Bird Splash on turnbuckle",
+          "input": "_A / _B"
+        },
+        {
+          "category": "_@",
+          "name": "Knife Stab opponent knocked down",
+          "input": "_B"
+        },
+        {
+          "category": "_@",
+          "name": "Flip Leg Drop opponent knocked down",
+          "input": "_C"
+        },
+        {
+          "category": "_(",
+          "name": "Headbutt",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Hell Stabs",
+          "input": "_8_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Hell Stabs to Low HS",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Hammer Throw",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Rolling Headbutt",
+          "input": "_B"
+        },
+        {
+          "category": "_*",
+          "name": "Thunder Fire Bomb",
+          "input": "_8_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Lift Up Toss",
+          "input": "_2_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Release German Suplex",
+          "input": "_4 / _6_+_B"
+        }
+      ]
+    },
+    {
+      "name": "MASTER BARNES",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Kick Rush",
+          "input": "_6_+^*_A"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Knee",
+          "input": "_4_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Jumping Knee opponent running",
+          "input": "_A"
+        },
+        {
+          "category": "_@",
+          "name": "Shoulder Charge running",
+          "input": "_A / _B"
+        },
+        {
+          "category": "_@",
+          "name": "Elbow Drop on turnbuckle",
+          "input": "_A / _B"
+        },
+        {
+          "category": "_@",
+          "name": "Boston Crab opponent knocked down",
+          "input": "_B"
+        },
+        {
+          "category": "_@",
+          "name": "Elbow Drop opponent knocked down",
+          "input": "_C"
+        },
+        {
+          "category": "_(",
+          "name": "Punches",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Punches to Kick",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Hammer Throw",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Atomic Drop",
+          "input": "_B"
+        },
+        {
+          "category": "_*",
+          "name": "Super Ganso Bomb",
+          "input": "_8_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Ganso Bomb",
+          "input": "_2_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Thunder Fire Bomb",
+          "input": "_4 / _6_+_B"
+        }
+      ]
+    },
+    {
+      "name": "ROY WILSON",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Biting",
+          "input": "_6_+^*_A"
+        },
+        {
+          "category": "_@",
+          "name": "Crotch Ride",
+          "input": "_4_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Power Slam opponent running",
+          "input": "_A"
+        },
+        {
+          "category": "_@",
+          "name": "Lariat running",
+          "input": "_A / _B"
+        },
+        {
+          "category": "_@",
+          "name": "Flip Leg Drop on turnbuckle",
+          "input": "_A / _B"
+        },
+        {
+          "category": "_@",
+          "name": "Half Boston Crab opponent knocked down",
+          "input": "_B"
+        },
+        {
+          "category": "_@",
+          "name": "Flip Leg Drop opponent knocked down",
+          "input": "_C"
+        },
+        {
+          "category": "_(",
+          "name": "Body Slam",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Chops",
+          "input": "_8_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Chops to Kick",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Hammer Throw",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Toss Body Slam",
+          "input": "_B"
+        },
+        {
+          "category": "_*",
+          "name": "Suplex",
+          "input": "_8_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Belly to Belly Suplex",
+          "input": "_2_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Power Slam",
+          "input": "_4 / _6_+_B"
+        }
+      ]
+    },
+    {
+      "name": "BLUBBER MAN",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Knife Attack",
+          "input": "_6_+^*_A"
+        },
+        {
+          "category": "_@",
+          "name": "Thunderball",
+          "input": "_4_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Hip Attack running",
+          "input": "_A"
+        },
+        {
+          "category": "_@",
+          "name": "Headbutt running",
+          "input": "_B"
+        },
+        {
+          "category": "_@",
+          "name": "Fire Bird Splash on turnbuckle",
+          "input": "_A / _B"
+        },
+        {
+          "category": "_@",
+          "name": "Knife Stab opponent knocked down",
+          "input": "_B"
+        },
+        {
+          "category": "_@",
+          "name": "Flip Leg Drop opponent knocked down",
+          "input": "_C"
+        },
+        {
+          "category": "_(",
+          "name": "Headbutt",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Hell Stabs",
+          "input": "_8_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Hell Stabs to Low HS",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Hammer Throw",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Rolling Headbutt",
+          "input": "_B"
+        },
+        {
+          "category": "_*",
+          "name": "Thunder Fire Bomb",
+          "input": "_8_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Lift Up Toss",
+          "input": "_2_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Release German Suplex",
+          "input": "_4 / _6_+_B"
+        }
+      ]
+    },
+    {
+      "name": "LEO BRADLAY",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Chain Flurry",
+          "input": "_6_+^*_A"
+        },
+        {
+          "category": "_@",
+          "name": "Head Stomp",
+          "input": "_4_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Neck Breaker opponent running",
+          "input": "_A"
+        },
+        {
+          "category": "_@",
+          "name": "Jumping Neck Breaker running",
+          "input": "_A"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Forearm running",
+          "input": "_B"
+        },
+        {
+          "category": "_@",
+          "name": "Double Stomp on turnbuckle",
+          "input": "_A / _B"
+        },
+        {
+          "category": "_@",
+          "name": "Chain Choke opponent knocked down",
+          "input": "_B"
+        },
+        {
+          "category": "_@",
+          "name": "Double Stomp opponent knocked down",
+          "input": "_C"
+        },
+        {
+          "category": "_(",
+          "name": "Body Slam",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Chops to Chain",
+          "input": "_8_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Chops to Kick",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Hammer Throw",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Toss Body Slam",
+          "input": "_B"
+        },
+        {
+          "category": "_*",
+          "name": "Stalling Suplex",
+          "input": "_8_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Danger Suplex",
+          "input": "_2_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Backbreaker Toss",
+          "input": "_4 / _6_+_B"
+        }
+      ]
+    },
+    {
+      "name": "THE GANDHARA",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Fire Ball",
+          "input": "_6_+^*_A"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Screw Kick",
+          "input": "_4_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Rolling Clutch Hold opponent running",
+          "input": "_A"
+        },
+        {
+          "category": "_@",
+          "name": "Screw Kick running",
+          "input": "_A / _B"
+        },
+        {
+          "category": "_@",
+          "name": "Somersault Senton on turnbuckle",
+          "input": "_A / _B"
+        },
+        {
+          "category": "_@",
+          "name": "Romero Special opponent knocked down",
+          "input": "_B"
+        },
+        {
+          "category": "_@",
+          "name": "Somersault Senton opponent knocked down",
+          "input": "_C"
+        },
+        {
+          "category": "_(",
+          "name": "Body Slam",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Palm Strikes",
+          "input": "_8_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Palms to High Kick",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Hammer Throw",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Rolling Clutch Hold",
+          "input": "_B"
+        },
+        {
+          "category": "_*",
+          "name": "Jumping Powerbomb",
+          "input": "_2 / _8_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Powerbomb",
+          "input": "_4 / _6_+_B"
+        }
+      ]
+    },
+    {
+      "name": "THE RED DRAGON",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Muta Mist",
+          "input": "_6_+^*_A"
+        },
+        {
+          "category": "_@",
+          "name": "Cartwheel Elbow",
+          "input": "_4_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Side Suplex opponent running",
+          "input": "_A"
+        },
+        {
+          "category": "_@",
+          "name": "Spinning Heel Kick running",
+          "input": "_A / _B"
+        },
+        {
+          "category": "_@",
+          "name": "Moonsault on turnbuckle",
+          "input": "_A / _B"
+        },
+        {
+          "category": "_@",
+          "name": "Romero Special opponent knocked down",
+          "input": "_B"
+        },
+        {
+          "category": "_@",
+          "name": "Flashing Elbow opponent knocked down",
+          "input": "_C"
+        },
+        {
+          "category": "_(",
+          "name": "Body Slam",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Uppercuts",
+          "input": "_8_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Uppercuts to Kick",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Hammer Throw",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Toss Body Slam",
+          "input": "_B"
+        },
+        {
+          "category": "_*",
+          "name": "Super D.D.T.",
+          "input": "_8_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "D.D.T.",
+          "input": "_2_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Side Suplex",
+          "input": "_4 / _6_+_B"
+        }
+      ]
+    },
+    {
+      "name": "GOCHACK BIGBOMB",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Biting",
+          "input": "_6_+^*_A"
+        },
+        {
+          "category": "_@",
+          "name": "Run to Shoulder Toss",
+          "input": "_4_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Shoulder Toss opponent running",
+          "input": "_A"
+        },
+        {
+          "category": "_@",
+          "name": "Hip Attack running",
+          "input": "_A"
+        },
+        {
+          "category": "_@",
+          "name": "Cross Body running",
+          "input": "_B"
+        },
+        {
+          "category": "_@",
+          "name": "Double Knee on turnbuckle",
+          "input": "_A / _B"
+        },
+        {
+          "category": "_@",
+          "name": "Boston Crab opponent knocked down",
+          "input": "_B"
+        },
+        {
+          "category": "_@",
+          "name": "Double Knee opponent knocked down",
+          "input": "_C"
+        },
+        {
+          "category": "_(",
+          "name": "Body Slam",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Big Swipes",
+          "input": "_8_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Swipes to Headbutt",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Hammer Throw",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Toss Body Slam",
+          "input": "_B"
+        },
+        {
+          "category": "_*",
+          "name": "Backbreaker",
+          "input": "_8_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Slum Drop Hold",
+          "input": "_2_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Dangerous German",
+          "input": "_4 / _6_+_B"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_A": "P",
+    "_B": "K",
+    "_C": "JM",
+    "_D": "TA",
+    "_S": "ST",
+    "^S": "SL"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "genesis": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "megadrive": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "32x": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "saturn": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "neogeo": {
+      "b": "_A",
+      "y": "_B",
+      "a": "_C",
+      "x": "_D"
+    },
+    "psx": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "ps2": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "gb": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gbc": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gamegear": {
+      "a": "_A",
+      "b": "_B"
+    },
+    "sms": {
+      "a": "_A",
+      "b": "_B"
+    },
+    "gba": {
+      "b": "_A",
+      "a": "_B",
+      "l1": "_C",
+      "r1": "_D"
+    },
+    "ngpc": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "dreamcast": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "n64": {
+      "b": "_A",
+      "a": "_B",
+      "cDown": "_C",
+      "cLeft": "_D"
+    },
+    "wswan": {
+      "b": "_A",
+      "a": "_B"
+    }
+  },
+  "controlGroups": {
+    "_P": [
+      "_A"
+    ],
+    "_K": [
+      "_B"
+    ]
+  }
+}

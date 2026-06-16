@@ -1,1 +1,892 @@
-{"schemaVersion":2,"romIds":["daraku"],"name":"The Fallen Angels","year":1998,"manufacturer":"Psikyo","controls":{"^E":"Weak Punch","^G":"Strong Punch","^H":"Weak Kick","^J":"Strong Kick","_S":"Start"},"controlGroups":{"_P":["^E","^G"],"_K":["^H","^J"]},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves","_*":"Super Moves","_&":"Level 2 Super Moves","_`":"Level 2 Super Moves"},"commonCommands":[{"category":"_)","name":"Dash","input":"_6_6"},{"category":"_)","name":"Retreat","input":"_4_4"},{"category":"_)","name":"Super Jump","input":"_2_8"},{"category":"_)","name":"Dashing Dodge","input":"^W (_O)"},{"category":"_)","name":"Dash Attack","input":"_6_+_P / _K"},{"category":"_)","name":"Standard Trip","input":"_3_+^J"},{"category":"_)","name":"Charge Super Bar","input":"_O^G_+^J"},{"category":"_)","name":"Safe Fall being knocked down","input":"^W"},{"category":"_)","name":"Guard Cancel in Dash (MAX) blocking","input":"_6_6"},{"category":"_)","name":"Guard Cancel in Dodge (MAX) blocking","input":"^W"},{"category":"_)","name":"Change Stance","input":"^V"},{"category":"_)","name":"Alternative Punch","input":"_P"},{"category":"_)","name":"Alternative Kick","input":"_K"},{"category":"_)","name":"Alternative Low Punch","input":"_2_+_P"},{"category":"_)","name":"Alternative Low Kick","input":"_2_+_K"},{"category":"_)","name":"Taunt","input":"^E_+^H"}],"characters":[{"name":"COOL","moves":[{"category":"_(","name":"Knockdown and Stomp","input":"_6_+^G"},{"category":"_(","name":"Frankensteiner","input":"_6_+^J"},{"category":"_)","name":"Reverse Backfist","input":"_6_+^G"},{"category":"_)","name":"Turn Kick","input":"_6_+^J"},{"category":"_@","name":"Black Darts","input":"^4_6_+_P"},{"category":"_@","name":"Summersault Kick","input":"^2_8_+_K"},{"category":"_*","name":"Bad Rack","input":"^4_1_2_3_6_+^G"},{"category":"_*","name":"Triple Summersault Kick","input":"^2_6_4_+^J"},{"category":"_&","name":"Bad Rack Finsher","input":"^4_1_2_3_6_+^G"},{"category":"_&","name":"Quad Summersault Kick","input":"^2_6_4_+^J"}]},{"name":"HARRY NESS","moves":[{"category":"_(","name":"Neck Breaker","input":"_6_+^G"},{"category":"_(","name":"Head Toss","input":"_6_+^J"},{"category":"_)","name":"Down Punch","input":"_6_+^G"},{"category":"_)","name":"Axe Kick","input":"_6_+^J"},{"category":"_@","name":"Wild Boar","input":"_2_1_4_+_P"},{"category":"_@","name":"Army Bomb close","input":"_4_1_2_3_6_+_P"},{"category":"_@","name":"Hold Destiny","input":"_6_2_3_+_P"},{"category":"_@","name":"The Baghdad in the Sky","input":"_6_2_3_+_K"},{"category":"_*","name":"Waste of Taxes","input":"_2_1_4_1_2_3_6_+^J"},{"category":"_*","name":"Destruction Bomb close","input":"_4_1_2_3_6_4_1_2_3_6_+^G"}]},{"name":"TARO","moves":[{"category":"_(","name":"Grab and Toss","input":"_6_+^G"},{"category":"_(","name":"Grab and Headbutt","input":"_6_+^J"},{"category":"_)","name":"Charge Knee-Turn Knee","input":"^J^J"},{"category":"_)","name":"Charge Knee-Flying Foot","input":"^J_2_+^J"},{"category":"_)","name":"Falling Stomp","input":"_6_+^J"},{"category":"_@","name":"Casablanca","input":"_2_3_6_+_P (x3)"},{"category":"_@","name":"Serasera","input":"_2_1_4_+_K"},{"category":"_@","name":"Lavian Rose","input":"_6_3_6_+_K"},{"category":"_*","name":"Breathless","input":"_2_3_6_2_3_6_+^J"},{"category":"_*","name":"The Harlem Shuffle","input":"_2_1_4_2_1_4_+^G"},{"category":"_&","name":"Breathless Flight","input":"_2_3_6_2_3_6_+^J"},{"category":"_&","name":"The Harlem Smash","input":"_2_1_4_2_1_4_+^G"}]},{"name":"YUIREN","moves":[{"category":"_(","name":"Flip Over German","input":"_6_+^G"},{"category":"_(","name":"Shoulder Toss","input":"_6_+^J"},{"category":"_(","name":"Air Arm Drag","input":"_^_2_+^G"},{"category":"_)","name":"Run","input":"_6^6"},{"category":"_)","name":"Rapid One Two","input":"^*^E"},{"category":"_)","name":"High Kick-Power Backfist","input":"^J^G"},{"category":"_)","name":"High Kick-Double Elbow","input":"^J_2_+^G"},{"category":"_)","name":"High Kick-Lean Back Kick","input":"^J^J"},{"category":"_)","name":"High Kick-Iron Heal","input":"^J_2_+^J"},{"category":"_)","name":"Falling Elbow","input":"_6_+^G"},{"category":"_)","name":"Twirl Kick","input":"_6_+^J"},{"category":"_@","name":"Knuckle Street","input":"_2_3_6_+_P"},{"category":"_@","name":"Knuckle Street Dash","input":"_O_P"},{"category":"_@","name":"Knuckle Street","input":"_P"},{"category":"_@","name":"Dodge-A-Blow","input":"_2_1_4_+_P"},{"category":"_@","name":"Crescent Kick","input":"_2_1_4_+_K"},{"category":"_@","name":"Rising Toe Kick","input":"_6_2_3_+_K"},{"category":"_*","name":"Moonlight Kick","input":"_2_1_4_2_1_4_+^J"},{"category":"_*","name":"Starlight Dance","input":"_2_3_6_2_3_6_+^G"},{"category":"_&","name":"Moonlight Break","input":"_2_1_4_2_1_4_+^J"},{"category":"_&","name":"Twilight Dance","input":"_2_3_6_2_3_6_+^G"}]},{"name":"YUIRAN","moves":[{"category":"_(","name":"German Suplex","input":"_6_+^G"},{"category":"_(","name":"Quick Toss","input":"_6_+^J"},{"category":"_(","name":"Air Arm Drag","input":"_^_2_+^G"},{"category":"_)","name":"Rapid One Two","input":"^*^E"},{"category":"_)","name":"High Kick-Power Backfist","input":"^J_P"},{"category":"_)","name":"High Kick-Double Elbow","input":"^J_2_+_P"},{"category":"_)","name":"Falling Elbow","input":"_6_+^G"},{"category":"_)","name":"Twirl Kick","input":"_6_+^J"},{"category":"_)","name":"Crawl","input":"^3"},{"category":"_)","name":"Double Knee","input":"_^_2_+^J"},{"category":"_@","name":"Fortification","input":"^4_6_+_P"},{"category":"_@","name":"Jumping Arm Crush close","input":"^2_8_+_P"},{"category":"_@","name":"Dropkick","input":"^4_6_+_K"},{"category":"_@","name":"Dodge-A-Blow","input":"_2_1_4_+_P"},{"category":"_*","name":"Instant Fortification","input":"_4_1_2_3_6_+^G"},{"category":"_*","name":"Yuiran Special","input":"^1_4_6_+^G"},{"category":"_*","name":"Rolling Neck Snapper close","input":"^3_4_6_+^G"},{"category":"_&","name":"Rolling Neck Destroyer close","input":"^3_4_6_+^G"}]},{"name":"RUCCIO ROCHE","moves":[{"category":"_(","name":"Monkey Flip","input":"_6_+^G"},{"category":"_(","name":"Pull Down","input":"_6_+^J"},{"category":"_)","name":"Blind Kick-Quick Feet","input":"^J^J"},{"category":"_)","name":"One-Two","input":"_6_+^G"},{"category":"_)","name":"Punish Stomp","input":"_6_+^J"},{"category":"_@","name":"Neck Toss","input":"_2_1_4_+_P (_O)"},{"category":"_@","name":"Dash In","input":"_2_1_4_+_K"},{"category":"_@","name":"Sweet Sound of the Neck","input":"_P"},{"category":"_@","name":"Neck Slashing","input":"_K"},{"category":"_@","name":"Ten Thousand Stop Signs","input":"_6_2_3_+_P"},{"category":"_@","name":"Shooting Wind Rhyme","input":"_6_2_3_+_K"},{"category":"_*","name":"A Storage For Children","input":"_2_3_6_2_3_6_+^G"},{"category":"_*","name":"Neck Fang Separation","input":"_6_3_2_1_4_6_+^J"}]},{"name":"TORAO ONIGAWARA","moves":[{"category":"_(","name":"Head Chop","input":"_6_+^G"},{"category":"_(","name":"Turn and Chop","input":"_6_+^J"},{"category":"_)","name":"Rapid Punches","input":"^*^E"},{"category":"_)","name":"Quick Punt-Cheap Shot","input":"^H_P"},{"category":"_)","name":"Quick Punt-Short Uppercut","input":"^H_2_+_P"},{"category":"_)","name":"Quick Punt-Roundhouse","input":"^H^J"},{"category":"_)","name":"Quick Punt-Sweep Away","input":"^H_2_+^J"},{"category":"_)","name":"Short Swing","input":"_6_+^E"},{"category":"_)","name":"Dash Short Swing","input":"_6_+^G"},{"category":"_)","name":"Step Uppercut","input":"_3_+^G"},{"category":"_@","name":"Pinwheel of Hell","input":"_2_3_6_+_P"},{"category":"_@","name":"Rapid Strikes","input":"^*_P"},{"category":"_@","name":"Stance Changing Kick","input":"^H"},{"category":"_@","name":"Clear Out Roundhouse","input":"^J"},{"category":"_@","name":"Flying Vacuum Kick","input":"_2_3_6_+_K"},{"category":"_@","name":"Pull Back","input":"_2_1_4_+_P (parry)"},{"category":"_*","name":"Dosu Dragon","input":"_2_1_4_1_2_3_6_+^G"},{"category":"_*","name":"The Kenka Karate Example","input":"_6_3_2_1_4_+^J"},{"category":"_&","name":"Dosu Dragon Dash","input":"_2_1_4_1_2_3_6_+^G"},{"category":"_&","name":"Reckless Man","input":"_6_3_2_1_4_+^J"}]},{"name":"HAIJI MIBU","moves":[{"category":"_(","name":"Headbutt","input":"_6_+^G"},{"category":"_(","name":"Neck Ringer","input":"_6_+^J"},{"category":"_)","name":"Rapid Punches","input":"^*^E"},{"category":"_)","name":"Turn Kick-Skyward Uppercut","input":"^J^G"},{"category":"_)","name":"Turn Kick-Powerful Straight","input":"^J_2_+^G"},{"category":"_)","name":"Uppercut Swing","input":"_6_+^G"},{"category":"_@","name":"Massacre Trumpet","input":"_2_1_4_+_P (_O)"},{"category":"_@","name":"Left Handed Baby","input":"_2_3_6_+_P"},{"category":"_@","name":"Iron Moon","input":"_2_3_6_+_K"},{"category":"_@","name":"White Sigh","input":"_6_2_3_+_P"},{"category":"_*","name":"Subway Train Called Despair","input":"_2_3_6_2_3_6_+^G"},{"category":"_*","name":"Sunglasses of A Dead God","input":"_2_1_4_1_2_3_6_+^J"}]},{"name":"TRIGGER","moves":[{"category":"_(","name":"Bulldog","input":"_6_+^G / ^J"},{"category":"_@","name":"Mad Easter","input":"_2_3_6_+_P"},{"category":"_@","name":"Death Christmas","input":"_6_2_3_+_P"},{"category":"_@","name":"Violence Birthday","input":"_6_3_2_1_4_+_P"},{"category":"_*","name":"Family Restaurant","input":"_2_3_6_2_3_6_+^G"},{"category":"_&","name":"Restaurant of Blood","input":"_2_3_6_2_3_6_+^G"}]},{"name":"CARLOS","moves":[{"category":"_(","name":"Handle Beat Down","input":"_6_+^G / ^J"},{"category":"_)","name":"Rapid Down Sword","input":"^*^J"},{"category":"_)","name":"Rapid Angle Sword","input":"^2_+^*^G"},{"category":"_)","name":"Rapid Low Sword","input":"^2_+^*^J"},{"category":"_@","name":"Flying Sword Strike","input":"_2_3_6_+_P (_O)"},{"category":"_@","name":"Skyward Sword Strike","input":"_6_2_3_+_P (_O)"},{"category":"_*","name":"Death Sword","input":"_2_1_4_2_1_4_+^G"}]}],"controlAbbr":{"^E":"LP","^G":"HP","^H":"LK","^J":"HK","_S":"ST"},"systemControlMappings":{"snes":{"y":"^G","x":"^E","b":"^J","a":"^H"},"genesis":{"y":"^G","b":"^E","c":"^J","a":"^H"},"megadrive":{"y":"^G","b":"^E","c":"^J","a":"^H"},"32x":{"y":"^G","b":"^E","c":"^J","a":"^H"},"saturn":{"y":"^G","b":"^E","c":"^J","a":"^H"},"psx":{"y":"^G","x":"^E","b":"^J","a":"^H"},"ps2":{"y":"^G","x":"^E","b":"^J","a":"^H"},"gb":{"b":"^G","a":"^J"},"gbc":{"b":"^G","a":"^J"},"gamegear":{"a":"^G","b":"^J"},"sms":{"a":"^G","b":"^J"},"gba":{"b":"^G","a":"^E","y":"^J","x":"^H"},"ngpc":{"b":"^G","a":"^E","y":"^J","x":"^H"}}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "daraku"
+  ],
+  "name": "The Fallen Angels",
+  "year": 1998,
+  "manufacturer": "Psikyo",
+  "controls": {
+    "^E": "Weak Punch",
+    "^G": "Strong Punch",
+    "^H": "Weak Kick",
+    "^J": "Strong Kick",
+    "_S": "Start"
+  },
+  "controlGroups": {
+    "_P": [
+      "^E",
+      "^G"
+    ],
+    "_K": [
+      "^H",
+      "^J"
+    ]
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_*": "Super Moves",
+    "_&": "Level 2 Super Moves",
+    "_`": "Level 2 Super Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "_6_6"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4"
+    },
+    {
+      "category": "_)",
+      "name": "Super Jump",
+      "input": "_2_8"
+    },
+    {
+      "category": "_)",
+      "name": "Dashing Dodge",
+      "input": "^W (_O)"
+    },
+    {
+      "category": "_)",
+      "name": "Dash Attack",
+      "input": "_6_+_P / _K"
+    },
+    {
+      "category": "_)",
+      "name": "Standard Trip",
+      "input": "_3_+^J"
+    },
+    {
+      "category": "_)",
+      "name": "Charge Super Bar",
+      "input": "_O^G_+^J"
+    },
+    {
+      "category": "_)",
+      "name": "Safe Fall being knocked down",
+      "input": "^W"
+    },
+    {
+      "category": "_)",
+      "name": "Guard Cancel in Dash (MAX) blocking",
+      "input": "_6_6"
+    },
+    {
+      "category": "_)",
+      "name": "Guard Cancel in Dodge (MAX) blocking",
+      "input": "^W"
+    },
+    {
+      "category": "_)",
+      "name": "Change Stance",
+      "input": "^V"
+    },
+    {
+      "category": "_)",
+      "name": "Alternative Punch",
+      "input": "_P"
+    },
+    {
+      "category": "_)",
+      "name": "Alternative Kick",
+      "input": "_K"
+    },
+    {
+      "category": "_)",
+      "name": "Alternative Low Punch",
+      "input": "_2_+_P"
+    },
+    {
+      "category": "_)",
+      "name": "Alternative Low Kick",
+      "input": "_2_+_K"
+    },
+    {
+      "category": "_)",
+      "name": "Taunt",
+      "input": "^E_+^H"
+    }
+  ],
+  "characters": [
+    {
+      "name": "COOL",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Knockdown and Stomp",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Frankensteiner",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Reverse Backfist",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Turn Kick",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Black Darts",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Summersault Kick",
+          "input": "^2_8_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Bad Rack",
+          "input": "^4_1_2_3_6_+^G"
+        },
+        {
+          "category": "_*",
+          "name": "Triple Summersault Kick",
+          "input": "^2_6_4_+^J"
+        },
+        {
+          "category": "_&",
+          "name": "Bad Rack Finsher",
+          "input": "^4_1_2_3_6_+^G"
+        },
+        {
+          "category": "_&",
+          "name": "Quad Summersault Kick",
+          "input": "^2_6_4_+^J"
+        }
+      ]
+    },
+    {
+      "name": "HARRY NESS",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Neck Breaker",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Head Toss",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Down Punch",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Axe Kick",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Wild Boar",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Army Bomb close",
+          "input": "_4_1_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Hold Destiny",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "The Baghdad in the Sky",
+          "input": "_6_2_3_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Waste of Taxes",
+          "input": "_2_1_4_1_2_3_6_+^J"
+        },
+        {
+          "category": "_*",
+          "name": "Destruction Bomb close",
+          "input": "_4_1_2_3_6_4_1_2_3_6_+^G"
+        }
+      ]
+    },
+    {
+      "name": "TARO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab and Toss",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Grab and Headbutt",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Charge Knee-Turn Knee",
+          "input": "^J^J"
+        },
+        {
+          "category": "_)",
+          "name": "Charge Knee-Flying Foot",
+          "input": "^J_2_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Falling Stomp",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Casablanca",
+          "input": "_2_3_6_+_P (x3)"
+        },
+        {
+          "category": "_@",
+          "name": "Serasera",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Lavian Rose",
+          "input": "_6_3_6_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Breathless",
+          "input": "_2_3_6_2_3_6_+^J"
+        },
+        {
+          "category": "_*",
+          "name": "The Harlem Shuffle",
+          "input": "_2_1_4_2_1_4_+^G"
+        },
+        {
+          "category": "_&",
+          "name": "Breathless Flight",
+          "input": "_2_3_6_2_3_6_+^J"
+        },
+        {
+          "category": "_&",
+          "name": "The Harlem Smash",
+          "input": "_2_1_4_2_1_4_+^G"
+        }
+      ]
+    },
+    {
+      "name": "YUIREN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Flip Over German",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Shoulder Toss",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_(",
+          "name": "Air Arm Drag",
+          "input": "_^_2_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Run",
+          "input": "_6^6"
+        },
+        {
+          "category": "_)",
+          "name": "Rapid One Two",
+          "input": "^*^E"
+        },
+        {
+          "category": "_)",
+          "name": "High Kick-Power Backfist",
+          "input": "^J^G"
+        },
+        {
+          "category": "_)",
+          "name": "High Kick-Double Elbow",
+          "input": "^J_2_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "High Kick-Lean Back Kick",
+          "input": "^J^J"
+        },
+        {
+          "category": "_)",
+          "name": "High Kick-Iron Heal",
+          "input": "^J_2_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Falling Elbow",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Twirl Kick",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Knuckle Street",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Knuckle Street Dash",
+          "input": "_O_P"
+        },
+        {
+          "category": "_@",
+          "name": "Knuckle Street",
+          "input": "_P"
+        },
+        {
+          "category": "_@",
+          "name": "Dodge-A-Blow",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Crescent Kick",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Rising Toe Kick",
+          "input": "_6_2_3_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Moonlight Kick",
+          "input": "_2_1_4_2_1_4_+^J"
+        },
+        {
+          "category": "_*",
+          "name": "Starlight Dance",
+          "input": "_2_3_6_2_3_6_+^G"
+        },
+        {
+          "category": "_&",
+          "name": "Moonlight Break",
+          "input": "_2_1_4_2_1_4_+^J"
+        },
+        {
+          "category": "_&",
+          "name": "Twilight Dance",
+          "input": "_2_3_6_2_3_6_+^G"
+        }
+      ]
+    },
+    {
+      "name": "YUIRAN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "German Suplex",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Quick Toss",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_(",
+          "name": "Air Arm Drag",
+          "input": "_^_2_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Rapid One Two",
+          "input": "^*^E"
+        },
+        {
+          "category": "_)",
+          "name": "High Kick-Power Backfist",
+          "input": "^J_P"
+        },
+        {
+          "category": "_)",
+          "name": "High Kick-Double Elbow",
+          "input": "^J_2_+_P"
+        },
+        {
+          "category": "_)",
+          "name": "Falling Elbow",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Twirl Kick",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Crawl",
+          "input": "^3"
+        },
+        {
+          "category": "_)",
+          "name": "Double Knee",
+          "input": "_^_2_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Fortification",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Jumping Arm Crush close",
+          "input": "^2_8_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Dropkick",
+          "input": "^4_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Dodge-A-Blow",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Instant Fortification",
+          "input": "_4_1_2_3_6_+^G"
+        },
+        {
+          "category": "_*",
+          "name": "Yuiran Special",
+          "input": "^1_4_6_+^G"
+        },
+        {
+          "category": "_*",
+          "name": "Rolling Neck Snapper close",
+          "input": "^3_4_6_+^G"
+        },
+        {
+          "category": "_&",
+          "name": "Rolling Neck Destroyer close",
+          "input": "^3_4_6_+^G"
+        }
+      ]
+    },
+    {
+      "name": "RUCCIO ROCHE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Monkey Flip",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Pull Down",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Blind Kick-Quick Feet",
+          "input": "^J^J"
+        },
+        {
+          "category": "_)",
+          "name": "One-Two",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Punish Stomp",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Neck Toss",
+          "input": "_2_1_4_+_P (_O)"
+        },
+        {
+          "category": "_@",
+          "name": "Dash In",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Sweet Sound of the Neck",
+          "input": "_P"
+        },
+        {
+          "category": "_@",
+          "name": "Neck Slashing",
+          "input": "_K"
+        },
+        {
+          "category": "_@",
+          "name": "Ten Thousand Stop Signs",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Shooting Wind Rhyme",
+          "input": "_6_2_3_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "A Storage For Children",
+          "input": "_2_3_6_2_3_6_+^G"
+        },
+        {
+          "category": "_*",
+          "name": "Neck Fang Separation",
+          "input": "_6_3_2_1_4_6_+^J"
+        }
+      ]
+    },
+    {
+      "name": "TORAO ONIGAWARA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Head Chop",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Turn and Chop",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Rapid Punches",
+          "input": "^*^E"
+        },
+        {
+          "category": "_)",
+          "name": "Quick Punt-Cheap Shot",
+          "input": "^H_P"
+        },
+        {
+          "category": "_)",
+          "name": "Quick Punt-Short Uppercut",
+          "input": "^H_2_+_P"
+        },
+        {
+          "category": "_)",
+          "name": "Quick Punt-Roundhouse",
+          "input": "^H^J"
+        },
+        {
+          "category": "_)",
+          "name": "Quick Punt-Sweep Away",
+          "input": "^H_2_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Short Swing",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Dash Short Swing",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Step Uppercut",
+          "input": "_3_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Pinwheel of Hell",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Rapid Strikes",
+          "input": "^*_P"
+        },
+        {
+          "category": "_@",
+          "name": "Stance Changing Kick",
+          "input": "^H"
+        },
+        {
+          "category": "_@",
+          "name": "Clear Out Roundhouse",
+          "input": "^J"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Vacuum Kick",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Pull Back",
+          "input": "_2_1_4_+_P (parry)"
+        },
+        {
+          "category": "_*",
+          "name": "Dosu Dragon",
+          "input": "_2_1_4_1_2_3_6_+^G"
+        },
+        {
+          "category": "_*",
+          "name": "The Kenka Karate Example",
+          "input": "_6_3_2_1_4_+^J"
+        },
+        {
+          "category": "_&",
+          "name": "Dosu Dragon Dash",
+          "input": "_2_1_4_1_2_3_6_+^G"
+        },
+        {
+          "category": "_&",
+          "name": "Reckless Man",
+          "input": "_6_3_2_1_4_+^J"
+        }
+      ]
+    },
+    {
+      "name": "HAIJI MIBU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Headbutt",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Neck Ringer",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Rapid Punches",
+          "input": "^*^E"
+        },
+        {
+          "category": "_)",
+          "name": "Turn Kick-Skyward Uppercut",
+          "input": "^J^G"
+        },
+        {
+          "category": "_)",
+          "name": "Turn Kick-Powerful Straight",
+          "input": "^J_2_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Uppercut Swing",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Massacre Trumpet",
+          "input": "_2_1_4_+_P (_O)"
+        },
+        {
+          "category": "_@",
+          "name": "Left Handed Baby",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Iron Moon",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "White Sigh",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Subway Train Called Despair",
+          "input": "_2_3_6_2_3_6_+^G"
+        },
+        {
+          "category": "_*",
+          "name": "Sunglasses of A Dead God",
+          "input": "_2_1_4_1_2_3_6_+^J"
+        }
+      ]
+    },
+    {
+      "name": "TRIGGER",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Bulldog",
+          "input": "_6_+^G / ^J"
+        },
+        {
+          "category": "_@",
+          "name": "Mad Easter",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Death Christmas",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Violence Birthday",
+          "input": "_6_3_2_1_4_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Family Restaurant",
+          "input": "_2_3_6_2_3_6_+^G"
+        },
+        {
+          "category": "_&",
+          "name": "Restaurant of Blood",
+          "input": "_2_3_6_2_3_6_+^G"
+        }
+      ]
+    },
+    {
+      "name": "CARLOS",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Handle Beat Down",
+          "input": "_6_+^G / ^J"
+        },
+        {
+          "category": "_)",
+          "name": "Rapid Down Sword",
+          "input": "^*^J"
+        },
+        {
+          "category": "_)",
+          "name": "Rapid Angle Sword",
+          "input": "^2_+^*^G"
+        },
+        {
+          "category": "_)",
+          "name": "Rapid Low Sword",
+          "input": "^2_+^*^J"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Sword Strike",
+          "input": "_2_3_6_+_P (_O)"
+        },
+        {
+          "category": "_@",
+          "name": "Skyward Sword Strike",
+          "input": "_6_2_3_+_P (_O)"
+        },
+        {
+          "category": "_*",
+          "name": "Death Sword",
+          "input": "_2_1_4_2_1_4_+^G"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "^E": "LP",
+    "^G": "HP",
+    "^H": "LK",
+    "^J": "HK",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "^G",
+      "x": "^E",
+      "b": "^J",
+      "a": "^H"
+    },
+    "genesis": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "megadrive": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "32x": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "saturn": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "psx": {
+      "y": "^G",
+      "x": "^E",
+      "b": "^J",
+      "a": "^H"
+    },
+    "ps2": {
+      "y": "^G",
+      "x": "^E",
+      "b": "^J",
+      "a": "^H"
+    },
+    "gb": {
+      "b": "^G",
+      "a": "^J"
+    },
+    "gbc": {
+      "b": "^G",
+      "a": "^J"
+    },
+    "gamegear": {
+      "a": "^G",
+      "b": "^J"
+    },
+    "sms": {
+      "a": "^G",
+      "b": "^J"
+    },
+    "gba": {
+      "b": "^G",
+      "a": "^E",
+      "y": "^J",
+      "x": "^H"
+    },
+    "ngpc": {
+      "b": "^G",
+      "a": "^E",
+      "y": "^J",
+      "x": "^H"
+    }
+  }
+}

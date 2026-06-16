@@ -1,1 +1,205 @@
-{"schemaVersion":2,"romIds":["64street","64streetj","64streetja"],"name":"64th. Street: A Detective Story","year":1991,"manufacturer":"Jaleco","credits":"Fabricio Coroquer","controls":{"_A":"Attack","_S":"Start"},"categories":{"_(":"Normal Throws","_)":"Command Moves","_*":"Desperation Moves","_#":"Tag Moves","_`":"Desperation Moves"},"commonCommands":[{"category":"_)","name":"Pick Up Object close to object","input":"_A"},{"category":"_)","name":"Pick Up Weapon close to weapon","input":"_A"}],"characters":[{"name":"RICK","moves":[{"category":"_(","name":"Grab close","input":"_6"},{"category":"_(","name":"Driving Knee","input":"_A"},{"category":"_(","name":"Shoulder Throw","input":"_4 / _6_+_A"},{"category":"_(","name":"Toss into Background","input":"_8_+_A"},{"category":"_(","name":"Jump Escape @J-button"},{"category":"_)","name":"Gut Punches","input":"_A_A_A_A"},{"category":"_)","name":"Burn Fist","input":"_6_+_A"},{"category":"_)","name":"Axe Handle with low life","input":"_A_+@J-button"},{"category":"_*","name":"Spiral Upper","input":"_A_+@J-button"},{"category":"_#","name":"Split Chaos Grab Allen","input":"_A"},{"category":"_#","name":"Jump Kick Toss Grab Allen","input":"_4 / _6_+_A"}]},{"name":"ALLEN","moves":[{"category":"_(","name":"Grab close","input":"_6"},{"category":"_(","name":"Gut Punch","input":"_A"},{"category":"_(","name":"Shoulder Throw","input":"_4 / _6_+_A"},{"category":"_(","name":"Toss into Background","input":"_8_+_A"},{"category":"_(","name":"Jump Escape @J-button"},{"category":"_)","name":"Backfist Combo","input":"_A_A_A_A"},{"category":"_)","name":"Dash Tackle","input":"_6_+_A"},{"category":"_)","name":"Back Kick with low life","input":"_A_+@J-button"},{"category":"_*","name":"Chopper Kick","input":"_A_+@J-button"},{"category":"_#","name":"Split Chaos Grab Rick","input":"_A"},{"category":"_#","name":"Hop Smash Toss in Front Grab Rick","input":"_4 / _6_+_A"}]}],"controlAbbr":{"_A":"AT","_S":"ST"},"systemControlMappings":{"snes":{"y":"_A"},"genesis":{"b":"_A"},"megadrive":{"b":"_A"},"32x":{"b":"_A"},"saturn":{"b":"_A"},"psx":{"y":"_A"},"ps2":{"y":"_A"},"gb":{"b":"_A"},"gbc":{"b":"_A"},"gamegear":{"a":"_A"},"sms":{"a":"_A"},"gba":{"b":"_A"},"ngpc":{"b":"_A"}},"controlGroups":{"_P":["_A"]}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "64street",
+    "64streetj",
+    "64streetja"
+  ],
+  "name": "64th. Street: A Detective Story",
+  "year": 1991,
+  "manufacturer": "Jaleco",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "_A": "Attack",
+    "_S": "Start"
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_*": "Desperation Moves",
+    "_#": "Tag Moves",
+    "_`": "Desperation Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Pick Up Object close to object",
+      "input": "_A"
+    },
+    {
+      "category": "_)",
+      "name": "Pick Up Weapon close to weapon",
+      "input": "_A"
+    }
+  ],
+  "characters": [
+    {
+      "name": "RICK",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6"
+        },
+        {
+          "category": "_(",
+          "name": "Driving Knee",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Shoulder Throw",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Toss into Background",
+          "input": "_8_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Jump Escape @J-button"
+        },
+        {
+          "category": "_)",
+          "name": "Gut Punches",
+          "input": "_A_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Burn Fist",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Axe Handle with low life",
+          "input": "_A_+@J-button"
+        },
+        {
+          "category": "_*",
+          "name": "Spiral Upper",
+          "input": "_A_+@J-button"
+        },
+        {
+          "category": "_#",
+          "name": "Split Chaos Grab Allen",
+          "input": "_A"
+        },
+        {
+          "category": "_#",
+          "name": "Jump Kick Toss Grab Allen",
+          "input": "_4 / _6_+_A"
+        }
+      ]
+    },
+    {
+      "name": "ALLEN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6"
+        },
+        {
+          "category": "_(",
+          "name": "Gut Punch",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Shoulder Throw",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Toss into Background",
+          "input": "_8_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Jump Escape @J-button"
+        },
+        {
+          "category": "_)",
+          "name": "Backfist Combo",
+          "input": "_A_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Dash Tackle",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Back Kick with low life",
+          "input": "_A_+@J-button"
+        },
+        {
+          "category": "_*",
+          "name": "Chopper Kick",
+          "input": "_A_+@J-button"
+        },
+        {
+          "category": "_#",
+          "name": "Split Chaos Grab Rick",
+          "input": "_A"
+        },
+        {
+          "category": "_#",
+          "name": "Hop Smash Toss in Front Grab Rick",
+          "input": "_4 / _6_+_A"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_A": "AT",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_A"
+    },
+    "genesis": {
+      "b": "_A"
+    },
+    "megadrive": {
+      "b": "_A"
+    },
+    "32x": {
+      "b": "_A"
+    },
+    "saturn": {
+      "b": "_A"
+    },
+    "psx": {
+      "y": "_A"
+    },
+    "ps2": {
+      "y": "_A"
+    },
+    "gb": {
+      "b": "_A"
+    },
+    "gbc": {
+      "b": "_A"
+    },
+    "gamegear": {
+      "a": "_A"
+    },
+    "sms": {
+      "a": "_A"
+    },
+    "gba": {
+      "b": "_A"
+    },
+    "ngpc": {
+      "b": "_A"
+    }
+  },
+  "controlGroups": {
+    "_P": [
+      "_A"
+    ]
+  }
+}

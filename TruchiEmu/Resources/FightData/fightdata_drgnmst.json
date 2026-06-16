@@ -1,1 +1,532 @@
-{"schemaVersion":2,"romIds":["drgnmst","drgnmst2"],"name":"Dragon Master","year":1994,"manufacturer":"Unico","credits":"Fabricio Coroquer","controls":{"^E":"Weak Punch","^F":"Medium Punch","^H":"Weak Kick","^I":"Medium Kick","_S":"Start"},"controlGroups":{"_P":["^E","^F"],"_K":["^H","^I"]},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves","_`":"Normal Attacks, Normal Throws, Command Moves and Special Moves"},"commonCommands":[{"category":"_)","name":"Strong Punch","input":"^W"},{"category":"_)","name":"Strong Kick","input":"^V"},{"category":"_)","name":"Spirit Meter Charge","input":"_O_P / _K"}],"characters":[{"name":"KLAUS GARCIA","moves":[{"category":"_(","name":"Suplex","input":"_4 / _6_+^F / ^I / ^W / ^V"},{"category":"_(","name":"Ryuusei Raku","input":"_^_4 / _6_+^F / ^I / ^W / ^V"},{"category":"_@","name":"Space Warp","input":"_2_3_6 / _2_1_4_+_P"},{"category":"_@","name":"Spin Wiper","input":"(_^)_2_3_6_+_K"},{"category":"_@","name":"Jump Dash Kick","input":"^2_8_+_K"},{"category":"_@","name":"Upper Block","input":"_6_3_6_+_P"},{"category":"_@","name":"Wild Straight","input":"_3_2_1_4_+_K"}]},{"name":"DELIZA","moves":[{"category":"_(","name":"Frankensteiner","input":"_4 / _6_+^F / ^I / ^W / ^V"},{"category":"_)","name":"Triangle Jump jump against the wall","input":"_6"},{"category":"_)","name":"Aerial Kick","input":"_4_+_K"},{"category":"_@","name":"Magic Pearl","input":"_2_3_6_+_P"},{"category":"_@","name":"Falcon Drop","input":"_^_2_1_4_+_P"},{"category":"_@","name":"Crane Spin Kick","input":"_4_6_4_6_+_K"},{"category":"_@","name":"Cuter Flake","input":"_6_3_2_1_4_+_K"},{"category":"_@","name":"Harsh Jet Kick","input":"^1_9_+_K"}]},{"name":"BAEKUN DOSA","moves":[{"category":"_(","name":"Tomoe Nage","input":"_4 / _6_+^F / ^I / ^W / ^V"},{"category":"_@","name":"Ultra Fist","input":"_2_3_6_+_P"},{"category":"_@","name":"Eagle Wing","input":"(_^)_2_1_4_+_P"},{"category":"_@","name":"Head Top Swipe","input":"_6_4_6_+_P"},{"category":"_@","name":"Spin Kick","input":"_4_1_2_3_6_+_K"},{"category":"_@","name":"Jump Cut","input":"(_^)^1_9_+_K"},{"category":"_@","name":"Arc Spin Kick","input":"(_^)_2_1_4_7_8_+_K"}]},{"name":"JEDI RYAN","moves":[{"category":"_(","name":"Rainbow Suplex","input":"_4 / _6_+^F / ^W"},{"category":"_)","name":"Triangle Jump jump against the wall","input":"_6"},{"category":"_)","name":"Aerial Punch","input":"_^_4_+_P"},{"category":"_)","name":"Aerial Kick","input":"_^_4_+_K"},{"category":"_@","name":"Power Spear","input":"_2_3_6_+^E"},{"category":"_@","name":"Power Spear-Diagonal","input":"_2_3_6_+^F / ^W"},{"category":"_@","name":"Dash Block","input":"_2_1_4_+_P"},{"category":"_@","name":"Dash Straight","input":"_6_6_6_+_P"},{"category":"_@","name":"Block Square","input":"^4_6_+_P"},{"category":"_@","name":"Max Dash Kick","input":"^4_6_+_K"}]},{"name":"GLORIA","moves":[{"category":"_(","name":"Deadly Throw","input":"_4 / _6_+^F / ^W"},{"category":"_)","name":"Triangle Jump jump against the wall","input":"_6"},{"category":"_@","name":"Power Beam","input":"_2_3_6_+_P"},{"category":"_@","name":"Condor Attack","input":"_6_3_2_1_4_+_P"},{"category":"_@","name":"Fire Block","input":"_3_3_+_K"},{"category":"_@","name":"All Side Kick","input":"^2_8_+_K"},{"category":"_@","name":"Shut Kick","input":"(_^)_2_1_4_7_8_+_K"}]},{"name":"JACKIE","moves":[{"category":"_(","name":"Shoulder Toss","input":"_4 / _6_+^F / ^W"},{"category":"_@","name":"Jackie Knife","input":"_2_3_6_+_P"},{"category":"_@","name":"Arc Spin Kick","input":"_6_3_6_+_P"},{"category":"_@","name":"Max Dash Hook","input":"^4_6_+_P"},{"category":"_@","name":"Jump Claw","input":"(_^)^2_8_+_P"},{"category":"_@","name":"Jet Claw","input":"(_^)_2_1_4_7_8_+_P"},{"category":"_@","name":"Rocket Blow","input":"^1_9_+_K"}]},{"name":"DARKMAN","moves":[{"category":"_(","name":"Seoi Nage","input":"_4 / _6_+^F / ^W"},{"category":"_)","name":"Triangle Jump jump against the wall","input":"_6"},{"category":"_@","name":"Power Frame","input":"_2_3_6_+_P"},{"category":"_@","name":"Cutting Power","input":"_4_1_4_+_P"},{"category":"_@","name":"Rolling Squirrel","input":"^4_6_+_P"},{"category":"_@","name":"Straight Blast","input":"^4_6_+_K"},{"category":"_@","name":"Jet Multi Kick","input":"^1_9_+_K"}]},{"name":"JOEY","moves":[{"category":"_(","name":"Spinning Piledriver","input":"_4 / _6_+^F / ^W"},{"category":"_@","name":"Spirit Storm","input":"_2_3_6_+_P"},{"category":"_@","name":"Max Dash Punch","input":"^4_6_+_P"},{"category":"_@","name":"Jet Rolling","input":"^4_6_+_K"},{"category":"_@","name":"Power Tackle","input":"_6_6_6_+_K"},{"category":"_@","name":"Cutting Kick","input":"_6_3_2_1_4_+_K"}]},{"name":"DYNAMO","moves":[{"category":"_@","name":"Portal Blast","input":"_2_3_6_+_P"},{"category":"_@","name":"Fire Tackle","input":"_2_1_4_+_P"},{"category":"_@","name":"Power Wave","input":"_2_3_6_+_K"},{"category":"_@","name":"Rapid Puncher","input":"_2_1_4_+_K"}]},{"name":"MOZARD","moves":[{"category":"_(","name":"German Suplex","input":"_4 / _6_+^F / ^I / ^W / ^V (crash the game)"},{"category":"_@","name":"Emperor Wave","input":"_2_3_6_+_P"},{"category":"_@","name":"Cannonball","input":"_2_1_4_+_P"},{"category":"_@","name":"Slash Wave","input":"_2_3_6_+_K"},{"category":"_@","name":"Tornado Lariat","input":"_2_1_4_+_K"}]},{"name":"GARNER","moves":[{"category":"_(","name":"Ground Throw opponent blocking","input":"_4 / _6_+^F / ^W / ^V"},{"category":"_@","name":"Dual Dragon Blast","input":"_2_3_6_+_P"},{"category":"_@","name":"Dragon Kick","input":"_2_1_4_+_P"},{"category":"_@","name":"Diving Torpedo","input":"_2_3_6_+_K"},{"category":"_@","name":"Max Stunner","input":"_2_1_4_+_K"}]}],"controlAbbr":{"^E":"LP","^F":"MP","^H":"LK","^I":"MK","_S":"ST"},"systemControlMappings":{"snes":{"y":"^E","x":"^F","b":"^H","a":"^I"},"genesis":{"b":"^E","a":"^F","y":"^H","x":"^I"},"megadrive":{"b":"^E","a":"^F","y":"^H","x":"^I"},"32x":{"b":"^E","a":"^F","y":"^H","x":"^I"},"saturn":{"b":"^E","a":"^F","y":"^H","x":"^I"},"psx":{"y":"^E","x":"^F","b":"^H","a":"^I"},"ps2":{"y":"^E","x":"^F","b":"^H","a":"^I"},"gb":{"b":"^E","a":"^H"},"gbc":{"b":"^E","a":"^H"}}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "drgnmst",
+    "drgnmst2"
+  ],
+  "name": "Dragon Master",
+  "year": 1994,
+  "manufacturer": "Unico",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "^E": "Weak Punch",
+    "^F": "Medium Punch",
+    "^H": "Weak Kick",
+    "^I": "Medium Kick",
+    "_S": "Start"
+  },
+  "controlGroups": {
+    "_P": [
+      "^E",
+      "^F"
+    ],
+    "_K": [
+      "^H",
+      "^I"
+    ]
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_`": "Normal Attacks, Normal Throws, Command Moves and Special Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Strong Punch",
+      "input": "^W"
+    },
+    {
+      "category": "_)",
+      "name": "Strong Kick",
+      "input": "^V"
+    },
+    {
+      "category": "_)",
+      "name": "Spirit Meter Charge",
+      "input": "_O_P / _K"
+    }
+  ],
+  "characters": [
+    {
+      "name": "KLAUS GARCIA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Suplex",
+          "input": "_4 / _6_+^F / ^I / ^W / ^V"
+        },
+        {
+          "category": "_(",
+          "name": "Ryuusei Raku",
+          "input": "_^_4 / _6_+^F / ^I / ^W / ^V"
+        },
+        {
+          "category": "_@",
+          "name": "Space Warp",
+          "input": "_2_3_6 / _2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Spin Wiper",
+          "input": "(_^)_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Jump Dash Kick",
+          "input": "^2_8_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Upper Block",
+          "input": "_6_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Wild Straight",
+          "input": "_3_2_1_4_+_K"
+        }
+      ]
+    },
+    {
+      "name": "DELIZA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Frankensteiner",
+          "input": "_4 / _6_+^F / ^I / ^W / ^V"
+        },
+        {
+          "category": "_)",
+          "name": "Triangle Jump jump against the wall",
+          "input": "_6"
+        },
+        {
+          "category": "_)",
+          "name": "Aerial Kick",
+          "input": "_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Magic Pearl",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Falcon Drop",
+          "input": "_^_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Crane Spin Kick",
+          "input": "_4_6_4_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Cuter Flake",
+          "input": "_6_3_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Harsh Jet Kick",
+          "input": "^1_9_+_K"
+        }
+      ]
+    },
+    {
+      "name": "BAEKUN DOSA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Tomoe Nage",
+          "input": "_4 / _6_+^F / ^I / ^W / ^V"
+        },
+        {
+          "category": "_@",
+          "name": "Ultra Fist",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Eagle Wing",
+          "input": "(_^)_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Head Top Swipe",
+          "input": "_6_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Spin Kick",
+          "input": "_4_1_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Jump Cut",
+          "input": "(_^)^1_9_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Arc Spin Kick",
+          "input": "(_^)_2_1_4_7_8_+_K"
+        }
+      ]
+    },
+    {
+      "name": "JEDI RYAN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Rainbow Suplex",
+          "input": "_4 / _6_+^F / ^W"
+        },
+        {
+          "category": "_)",
+          "name": "Triangle Jump jump against the wall",
+          "input": "_6"
+        },
+        {
+          "category": "_)",
+          "name": "Aerial Punch",
+          "input": "_^_4_+_P"
+        },
+        {
+          "category": "_)",
+          "name": "Aerial Kick",
+          "input": "_^_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Power Spear",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Power Spear-Diagonal",
+          "input": "_2_3_6_+^F / ^W"
+        },
+        {
+          "category": "_@",
+          "name": "Dash Block",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Dash Straight",
+          "input": "_6_6_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Block Square",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Max Dash Kick",
+          "input": "^4_6_+_K"
+        }
+      ]
+    },
+    {
+      "name": "GLORIA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Deadly Throw",
+          "input": "_4 / _6_+^F / ^W"
+        },
+        {
+          "category": "_)",
+          "name": "Triangle Jump jump against the wall",
+          "input": "_6"
+        },
+        {
+          "category": "_@",
+          "name": "Power Beam",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Condor Attack",
+          "input": "_6_3_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Fire Block",
+          "input": "_3_3_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "All Side Kick",
+          "input": "^2_8_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Shut Kick",
+          "input": "(_^)_2_1_4_7_8_+_K"
+        }
+      ]
+    },
+    {
+      "name": "JACKIE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Shoulder Toss",
+          "input": "_4 / _6_+^F / ^W"
+        },
+        {
+          "category": "_@",
+          "name": "Jackie Knife",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Arc Spin Kick",
+          "input": "_6_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Max Dash Hook",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Jump Claw",
+          "input": "(_^)^2_8_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Jet Claw",
+          "input": "(_^)_2_1_4_7_8_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Rocket Blow",
+          "input": "^1_9_+_K"
+        }
+      ]
+    },
+    {
+      "name": "DARKMAN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Seoi Nage",
+          "input": "_4 / _6_+^F / ^W"
+        },
+        {
+          "category": "_)",
+          "name": "Triangle Jump jump against the wall",
+          "input": "_6"
+        },
+        {
+          "category": "_@",
+          "name": "Power Frame",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Cutting Power",
+          "input": "_4_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Rolling Squirrel",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Straight Blast",
+          "input": "^4_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Jet Multi Kick",
+          "input": "^1_9_+_K"
+        }
+      ]
+    },
+    {
+      "name": "JOEY",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Spinning Piledriver",
+          "input": "_4 / _6_+^F / ^W"
+        },
+        {
+          "category": "_@",
+          "name": "Spirit Storm",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Max Dash Punch",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Jet Rolling",
+          "input": "^4_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Power Tackle",
+          "input": "_6_6_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Cutting Kick",
+          "input": "_6_3_2_1_4_+_K"
+        }
+      ]
+    },
+    {
+      "name": "DYNAMO",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Portal Blast",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Fire Tackle",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Power Wave",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Rapid Puncher",
+          "input": "_2_1_4_+_K"
+        }
+      ]
+    },
+    {
+      "name": "MOZARD",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "German Suplex",
+          "input": "_4 / _6_+^F / ^I / ^W / ^V (crash the game)"
+        },
+        {
+          "category": "_@",
+          "name": "Emperor Wave",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Cannonball",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Slash Wave",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Tornado Lariat",
+          "input": "_2_1_4_+_K"
+        }
+      ]
+    },
+    {
+      "name": "GARNER",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Ground Throw opponent blocking",
+          "input": "_4 / _6_+^F / ^W / ^V"
+        },
+        {
+          "category": "_@",
+          "name": "Dual Dragon Blast",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Dragon Kick",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Diving Torpedo",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Max Stunner",
+          "input": "_2_1_4_+_K"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "^E": "LP",
+    "^F": "MP",
+    "^H": "LK",
+    "^I": "MK",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "^E",
+      "x": "^F",
+      "b": "^H",
+      "a": "^I"
+    },
+    "genesis": {
+      "b": "^E",
+      "a": "^F",
+      "y": "^H",
+      "x": "^I"
+    },
+    "megadrive": {
+      "b": "^E",
+      "a": "^F",
+      "y": "^H",
+      "x": "^I"
+    },
+    "32x": {
+      "b": "^E",
+      "a": "^F",
+      "y": "^H",
+      "x": "^I"
+    },
+    "saturn": {
+      "b": "^E",
+      "a": "^F",
+      "y": "^H",
+      "x": "^I"
+    },
+    "psx": {
+      "y": "^E",
+      "x": "^F",
+      "b": "^H",
+      "a": "^I"
+    },
+    "ps2": {
+      "y": "^E",
+      "x": "^F",
+      "b": "^H",
+      "a": "^I"
+    },
+    "gb": {
+      "b": "^E",
+      "a": "^H"
+    },
+    "gbc": {
+      "b": "^E",
+      "a": "^H"
+    }
+  }
+}

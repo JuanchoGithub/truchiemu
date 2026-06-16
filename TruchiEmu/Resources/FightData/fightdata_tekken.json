@@ -1,1 +1,1251 @@
-{"schemaVersion":2,"romIds":["tekken","tekkenac","tekkenb","tekkenjb"],"name":"Tekken","year":1994,"manufacturer":"Namco","credits":"Fabricio Coroquer","controls":{"_S":"Start"},"categories":{"_(":"Throws & Multipart Throws","_)":"Command Moves","_`":"Positions"},"commonCommands":[{"category":"_(","name":"Tackle run for 11 steps"},{"category":"_)","name":"Run","input":"_6^6"},{"category":"_)","name":"Retreat","input":"_4_4"},{"category":"_)","name":"Crawl","input":"^3"},{"category":"_)","name":"Low Jump","input":"_8"},{"category":"_)","name":"High Jump","input":"^8"},{"category":"_)","name":"Flying Cross Chop run for 12 steps _a_+_b"},{"category":"_)","name":"Sliding Leg Sweep: FU-FA run for 12 steps _d"},{"category":"_)","name":"Short Quick Pounce opponent knocked down","input":"_8_+_b"},{"category":"_)","name":"Long Quick Pounce opponent knocked down","input":"^8_+_b"},{"category":"_)","name":"Get Up","input":"_8"},{"category":"_)","name":"Roll-Get Up","input":"_4 / _6"},{"category":"_)","name":"Cross Chop","input":"_6_+_a_+_b"},{"category":"_)","name":"Get Up-Left Kick _c"},{"category":"_)","name":"Get Up-High Kick _d"},{"category":"_)","name":"Double Pop Kick","input":"_4_+_c_+_d"},{"category":"_)","name":"Get Up","input":"_8"},{"category":"_)","name":"Roll-Get Up","input":"_4 / _6"},{"category":"_)","name":"Cross Chop","input":"_6_+_a_+_b"},{"category":"_)","name":"Get Up-Left Kick _c"},{"category":"_)","name":"Get Up-High Kick _d"},{"category":"_)","name":"Get Up","input":"_8"},{"category":"_)","name":"Roll-Get Up","input":"_4 / _6"},{"category":"_)","name":"Cross Chop","input":"_6_+_a_+_b"},{"category":"_)","name":"Get Up-Left Kick _c"},{"category":"_)","name":"Get Up-High Kick _d"},{"category":"_)","name":"Get Up","input":"_8"},{"category":"_)","name":"Roll-Get Up","input":"_4 / _6"},{"category":"_)","name":"Cross Chop","input":"_6_+_a_+_b"},{"category":"_)","name":"Get Up-Left Kick _c"},{"category":"_)","name":"Get Up-High Kick _d"}],"commonNotes":["FACE UP AND FEET TOWARDS (FU-FT)","FACE UP AND FEET AWAYS (FU-FA)","FACE DOWN AND FEET TOWARDS (FD-FT)","FACE DOWN AND FEET AWAYS (FD-FA)"],"characters":[{"name":"KAZUYA MISHIMA","moves":[{"category":"_(","name":"Bitch Kicks","input":"_a_+_c"},{"category":"_(","name":"Shoulder Throw","input":"_b_+_d"},{"category":"_(","name":"Stonehead","input":"_6_6_+_a_+_b"},{"category":"_`","input":"_a_a_b","hitLevels":"hhm"},{"category":"_`","input":"_a_b_b","hitLevels":"hhh"},{"category":"_`","input":"_b_b","hitLevels":"hh"},{"category":"_`","input":"_6_+_b","hitLevels":"h"},{"category":"_`","input":"_6_+_d","hitLevels":"m"},{"category":"_`","input":"_6_6_+_b_a_b_b_c_d_d_a_b_a","hitLevels":"hhhhmmLhmm"},{"category":"_`","input":"_6_6_+_c","hitLevels":"m"},{"category":"_`","input":"_6_6_6_+_c","hitLevels":"m"},{"category":"_`","input":"_6_N_2_3_N_a","hitLevels":"m"},{"category":"_`","input":"_6_N_2_3_N_b","hitLevels":"m"},{"category":"_`","input":"_6_N_2_3_N_d","hitLevels":"m"},{"category":"_`","input":"_6_N_2^3_+_d_d","hitLevels":"Ll"},{"category":"_`","input":"^2_N_b","hitLevels":"m"},{"category":"_`","input":"^2_N_d_d","hitLevels":"mm"},{"category":"_`","input":"_3_+_a_b","hitLevels":"mm"},{"category":"_`","input":"_9_+_b_+_d","hitLevels":"M"},{"category":"_`","input":"_9_+_d_d","hitLevels":"hL"}],"notes":["Strings Moves"]},{"name":"PAUL PHOENIX","moves":[{"category":"_(","name":"Shoulder Flip","input":"_a_+_c"},{"category":"_(","name":"Foot Launch","input":"^4_+_a_+_c"},{"category":"_(","name":"Arm Bar Rollover: FU-FT","input":"_b_+_d"},{"category":"_(","name":"Death Push Away","input":"_6_6_+_a_+_b"},{"category":"_`","input":"_a_b_c_b_a_b_a_d_b_a","hitLevels":"hhmhmhhlmm"},{"category":"_`","input":"_b_c","hitLevels":"hh"},{"category":"_`","input":"_b_2_+_c","hitLevels":"hL"},{"category":"_`","input":"_6_6_+_c_d_d","hitLevels":"mmh"},{"category":"_`","input":"_6_6_+_c_d_6_+_d","hitLevels":"mmm"},{"category":"_`","input":"_6_6_+_c_d_2_+_d","hitLevels":"mmL"},{"category":"_`","input":"_6_6_+_d","hitLevels":"m"},{"category":"_`","input":"_2_+_a_6_+_b","hitLevels":"mm"},{"category":"_`","input":"_2_+_b","hitLevels":"M"},{"category":"_`","input":"_2_+_d_b","hitLevels":"lm"},{"category":"_`","input":"_2_3_6_+_b","hitLevels":"m"},{"category":"_`","input":"^2_3_6_+_b","hitLevels":"m"},{"category":"_`","input":"_9_+_c_d","hitLevels":"mm"}],"notes":["Strings Moves"]},{"name":"MARSHALL LAW","moves":[{"category":"_(","name":"Atomic Drop","input":"_a_+_c"},{"category":"_(","name":"Chastisement Punch","input":"_b_+_d"},{"category":"_(","name":"Knee Lift","input":"_6_6_+_c_+_d"},{"category":"_`","input":"_a_a_a_a_a","hitLevels":"hhhhh"},{"category":"_`","input":"_a_b","hitLevels":"hh"},{"category":"_`","input":"_b_b","hitLevels":"hh"},{"category":"_`","input":"_c_c_c","hitLevels":"hhh"},{"category":"_`","input":"_c_c_6_+_c","hitLevels":"hhm"},{"category":"_`","input":"_d_c_d","hitLevels":"hhh"},{"category":"_`","input":"_d_8_+_c","hitLevels":"hm"},{"category":"_`","input":"^6_+_b_b_b","hitLevels":"hmh"},{"category":"_`","input":"_6_6_6_+_c","hitLevels":"m"},{"category":"_`","input":"_2_+_c_c_c_c","hitLevels":"lhhh"},{"category":"_`","input":"_2_+_c_c_6_+_c","hitLevels":"lhm"},{"category":"_`","input":"^2_3_2_3_+_c","hitLevels":"L","condition":"FU-FA"},{"category":"_`","input":"^2_8_+_d","hitLevels":"m"},{"category":"_`","input":"^2^8_+_d","hitLevels":"m"},{"category":"_`","input":"_1_+_a_+_b","hitLevels":"!","condition":"_8_8 to cancel"},{"category":"_`","input":"_3_+_a_b_b_a_c_c_c_d_c_d","hitLevels":"mhhhhlhhhm"},{"category":"_`","input":"_3_+_c","hitLevels":"m"}],"notes":["Strings Moves"]},{"name":"JACK","moves":[{"category":"_(","name":"Body Press","input":"_a_+_c"},{"category":"_(","name":"Lift Slam","input":"_b_+_d"},{"category":"_(","name":"Pyramid Driver","input":"_2_3_6_+_a"},{"category":"_(","name":"Backbreaker","input":"_2_1_4_+_b"},{"category":"_(","name":"Piledriver","input":"_1_6_+_a_+_b"},{"category":"_)","name":"SIT STANCE: SIT","input":"_2_+_c_+_d"},{"category":"_`","input":"_a_a_a","hitLevels":"hhm"},{"category":"_`","input":"_b_a","hitLevels":"hm"},{"category":"_`","input":"_6_6_+_a_+_b","hitLevels":"m"},{"category":"_`","input":"_4_1_2^3_+_b","hitLevels":"m"},{"category":"_`","input":"_4_1_2_3_6x3_N_a","hitLevels":"m"},{"category":"_`","input":"_4_1_2_3_6x5_+_a","hitLevels":"!"},{"category":"_`","input":"_2_+_b_a_a_a_b_a_b_a_a_+_b_a_+_b","hitLevels":"lllmmmMmmm"},{"category":"_`","input":"^2_+_a_a_a_b_a","hitLevels":"llmmm"},{"category":"_`","input":"^2_3_+_a_b_a","hitLevels":"mmm"},{"category":"_`","input":"^2_N_a","hitLevels":"m"},{"category":"_`","input":"^2_N_a_+_b_a_+_b","hitLevels":"mm"},{"category":"_`","input":"_1_+_a_a_a_3_+_b","hitLevels":"lllm"},{"category":"_`","input":"_3_+_a_+_b","hitLevels":"m"},{"category":"_`","input":"^3_+_a_b_a","hitLevels":"mmm"},{"category":"_`","input":"^3_+_b_a_b","hitLevels":"mmm"},{"category":"_`","input":"_9_+_c_+_d","hitLevels":"M","condition":"SIT"},{"category":"_`","name":"far","input":"_a_+_c","hitLevels":"M","condition":"FD-FA"},{"category":"_`","input":"^2_+_a_+_b","hitLevels":"m","condition":"SIT"},{"category":"_`","input":"_a_b_a_b","hitLevels":"llll"},{"category":"_`","input":"_b_a_b_a","hitLevels":"llll"}],"notes":["Strings Moves","FACE UP AND FEET TOWARDS (FU-FT)","Strings Moves","SIT STANCE (SIT)","Strings Moves"]},{"name":"NINA WILLIAMS","moves":[{"category":"_(","name":"Arm Turn","input":"_a_+_c"},{"category":"_(","name":"Lifting Toss: BK","input":"_b_+_d"},{"category":"_(","name":"Neck Throw","input":"^6_+_a_+_c"},{"category":"_(","name":"Embracing Elbow","input":"_3_3_+_a"},{"category":"_(","name":"Palm Grab","input":"_2_3_6_+_a_+_b"},{"category":"_(","name":"Arm Bar","input":"_c_d_c_a_+_b"},{"category":"_(","name":"Standing Reverse Arm Lock","input":"_a_c_b_a"},{"category":"_(","name":"Rear G-Tech","input":"_c_a_d_a_+_b_a_+_b"},{"category":"_(","name":"Falling Reverse Arm Lock","input":"_b_a_c_d_a_+_b"},{"category":"_`","input":"_a_b_a_b_c_c_b_a_b_d","hitLevels":"hhhhhlhhhh"},{"category":"_`","input":"_a_b_c","hitLevels":"hhh"},{"category":"_`","input":"_a_b_d","hitLevels":"hhh"},{"category":"_`","input":"_a_b_2_+_c","hitLevels":"hhL"},{"category":"_`","input":"_b_c","hitLevels":"hh"},{"category":"_`","input":"_b_d","hitLevels":"hh"},{"category":"_`","input":"_b_2_+_c","hitLevels":"hL"},{"category":"_`","input":"_6_6_+_a_+_b","hitLevels":"m"},{"category":"_`","input":"_6_6_+_d","hitLevels":"M","condition":"FU-FT"},{"category":"_`","input":"_6_6_6_+_c","hitLevels":"h","condition":"FU-FT"},{"category":"_`","input":"_2_+_a_d","hitLevels":"lm"},{"category":"_`","input":"_1_+_a_+_b","hitLevels":"!","condition":"_8_8 to cancel"},{"category":"_`","input":"_3_+_a_b_a_b_c_c_b_a_b_d","hitLevels":"mhhhhlhhhh"},{"category":"_`","input":"_3_+_a_b_c","hitLevels":"mhh"},{"category":"_`","input":"_3_+_a_b_d","hitLevels":"mhh"},{"category":"_`","input":"_3_+_a_b_2_+_c","hitLevels":"mhL"},{"category":"_`","input":"_3_+_c_a_b","hitLevels":"mhh"},{"category":"_`","input":"_3_+_c_b_a","hitLevels":"mhh"},{"category":"_`","input":"_3_+_c_b_c","hitLevels":"mhh"},{"category":"_`","input":"_3_+_c_b_d","hitLevels":"mhh"},{"category":"_`","input":"_3_+_c_b_2_+_c","hitLevels":"mhL"},{"category":"_`","input":"_3_+_c_c_c_a","hitLevels":"mhhh"},{"category":"_`","input":"_3_+_c_c_c_b","hitLevels":"mhhh"},{"category":"_`","input":"_3_+_c_c_c_d","hitLevels":"mhhh"},{"category":"_`","input":"_3_+_c_d","hitLevels":"mh"},{"category":"_`","input":"_9_+_c","hitLevels":"m"},{"category":"_`","input":"_9_+_d_c_d","hitLevels":"hLh"}],"notes":["Strings Moves"]},{"name":"KING","moves":[{"category":"_(","name":"Knee Bash","input":"_a_+_c"},{"category":"_(","name":"Suplex: FD-FA","input":"_b_+_d"},{"category":"_(","name":"Spinning Swing","input":"_6_4_1_2_3_6_+_a"},{"category":"_(","name":"Jaguar Driver","input":"_2_3_6_+_a"},{"category":"_(","name":"Falling Headlock: FU-FA","input":"_1_1_+_a_+_b"},{"category":"_(","name":"Tombstone Piledriver","input":"_1_6_+_a_+_b"},{"category":"_(","name":"Frankensteiner: BK","input":"_3_+_c_+_d"},{"category":"_`","input":"_a_b_a_a_b_d_d_d_a_c","hitLevels":"hhmmmLLLmm"},{"category":"_`","input":"_b_a","hitLevels":"hm"},{"category":"_`","input":"_6_+_b_a_a_b_d_d_d_a_c","hitLevels":"hmmmLLLmm"},{"category":"_`","input":"_6_6_N_b","hitLevels":"L"},{"category":"_`","input":"_6_6_+_a_+_b","hitLevels":"h","condition":"/L"},{"category":"_`","input":"_6_6_+_b","hitLevels":"m"},{"category":"_`","input":"_6_6_+_c_+_d","hitLevels":"m","condition":"FU-FT"},{"category":"_`","input":"_6_6_+_d","hitLevels":"m"},{"category":"_`","input":"_6_6_6_+_c_+_d","hitLevels":"h","condition":"FU-FT"},{"category":"_`","input":"_2_+_a_b","hitLevels":"lm"},{"category":"_`","input":"_2_3_+_b","hitLevels":"m"},{"category":"_`","input":"^2_3_+_d_d_d","hitLevels":"LLL"},{"category":"_`","input":"_3_+_a","hitLevels":"m"},{"category":"_`","input":"_3_+_b","hitLevels":"m"},{"category":"_`","input":"_8_+_b_+_d","hitLevels":"M","condition":"FU-FA"},{"category":"_`","input":"_9_+_a_+_b","hitLevels":"m"},{"category":"_`","input":"_9_+_c_+_d","hitLevels":"M"},{"category":"_`","name":"far","input":"_3_+_c_+_d","hitLevels":"M","condition":"FU-FT"},{"category":"_`","name":"run for 12 steps","input":"_d_d_d","hitLevels":"LLL"},{"category":"_`","name":"on counter","input":"^2_3_+_d_d_d_d_d","hitLevels":"LLLLL"}],"notes":["Strings Moves"]},{"name":"YOSHIMITSU","moves":[{"category":"_(","name":"Jumping Body Slam","input":"_a_+_c"},{"category":"_(","name":"Jaw Smash","input":"_b_+_d"},{"category":"_`","input":"_a_b_a_d_d_d_a_a_a_a","hitLevels":"hmmhhLm","condition":"{!}{!}!"},{"category":"_`","input":"_b_c","hitLevels":"hh"},{"category":"_`","input":"_b_2_+_c","hitLevels":"hL"},{"category":"_`","input":"_c_d","hitLevels":"hm"},{"category":"_`","input":"_d_d_d","hitLevels":"hhh"},{"category":"_`","input":"_6_+_b","hitLevels":"h"},{"category":"_`","input":"_6_6_+_c_+_d_a_+_b","hitLevels":"mh"},{"category":"_`","input":"_6_6_+_d","hitLevels":"m"},{"category":"_`","input":"_4_+_a_a_a_a_a_a","hitLevels":"hhhhhh","condition":"FU-FT"},{"category":"_`","input":"_4_4_+_a","hitLevels":"!"},{"category":"_`","input":"^2_3_+_c","hitLevels":"L"},{"category":"_`","input":"_1_+_a","condition":"{!}"},{"category":"_`","input":"^1_+_c_c_c_c_c_6_+_d","hitLevels":"Lllllm"},{"category":"_`","input":"_3_+_b","hitLevels":"m"},{"category":"_`","input":"_3_+_d","hitLevels":"m"},{"category":"_`","input":"_8_+_d","hitLevels":"m"},{"category":"_`","input":"_9_+_c_+_d","hitLevels":"M"}],"notes":["Strings Moves"]},{"name":"MICHELLE CHANG","moves":[{"category":"_(","name":"Waist Suplex","input":"_a_+_c"},{"category":"_(","name":"Knee Suplex","input":"_b_+_d"},{"category":"_(","name":"Punch-Spin-German Suplex","input":"_b_4_a_+_b"},{"category":"_`","input":"_a_a_a","hitLevels":"hmm"},{"category":"_`","input":"_b_a_a_b_c_c_c_d_d_a","hitLevels":"hmmhlhmhLm"},{"category":"_`","input":"_b_4","hitLevels":"h"},{"category":"_`","input":"_d_2_+_d_a","hitLevels":"hLm"},{"category":"_`","input":"_d_2_+_d_d","hitLevels":"hLh"},{"category":"_`","input":"_d_2_+_d_2_+_d","hitLevels":"hLL"},{"category":"_`","input":"_6_6_+_a_+_b","hitLevels":"m"},{"category":"_`","input":"_6_6_6_+_c","hitLevels":"m","condition":"FU-FT"},{"category":"_`","input":"_4_4^4_+_a","hitLevels":"!"},{"category":"_`","input":"_2_+_d_a","hitLevels":"Lm"},{"category":"_`","input":"_2_+_d_d","hitLevels":"Lh"},{"category":"_`","input":"_2_+_d_2_+_d","hitLevels":"LL"},{"category":"_`","input":"^2_3_+_d_c","hitLevels":"Lh"},{"category":"_`","input":"^2_N_b_a_a","hitLevels":"mMm"},{"category":"_`","input":"^2_N_d","hitLevels":"m"},{"category":"_`","input":"_3_+_a_a","hitLevels":"mm"},{"category":"_`","input":"_3_+_b_a","hitLevels":"m!"},{"category":"_`","input":"_3_+_c","hitLevels":"m"},{"category":"_`","input":"_9_+_c_+_d","hitLevels":"M"}],"notes":["Strings Moves"]}],"controlAbbr":{"_S":"ST"},"systemControlMappings":{"psx":{"x":"_a","y":"_b","a":"_c","b":"_d"},"ps2":{"x":"_a","y":"_b","a":"_c","b":"_d"},"snes":{"y":"_a","x":"_b","b":"_c","a":"_d"},"genesis":{"b":"_a","a":"_b","y":"_c","x":"_d"},"megadrive":{"b":"_a","a":"_b","y":"_c","x":"_d"},"saturn":{"b":"_a","a":"_b","y":"_c","x":"_d"},"gba":{"b":"_a","a":"_b","l1":"_c","r1":"_d"},"ngpc":{"b":"_a","a":"_b","y":"_c","x":"_d"}}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "tekken",
+    "tekkenac",
+    "tekkenb",
+    "tekkenjb"
+  ],
+  "name": "Tekken",
+  "year": 1994,
+  "manufacturer": "Namco",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "_S": "Start"
+  },
+  "categories": {
+    "_(": "Throws & Multipart Throws",
+    "_)": "Command Moves",
+    "_`": "Positions"
+  },
+  "commonCommands": [
+    {
+      "category": "_(",
+      "name": "Tackle run for 11 steps"
+    },
+    {
+      "category": "_)",
+      "name": "Run",
+      "input": "_6^6"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4"
+    },
+    {
+      "category": "_)",
+      "name": "Crawl",
+      "input": "^3"
+    },
+    {
+      "category": "_)",
+      "name": "Low Jump",
+      "input": "_8"
+    },
+    {
+      "category": "_)",
+      "name": "High Jump",
+      "input": "^8"
+    },
+    {
+      "category": "_)",
+      "name": "Flying Cross Chop run for 12 steps _a_+_b"
+    },
+    {
+      "category": "_)",
+      "name": "Sliding Leg Sweep: FU-FA run for 12 steps _d"
+    },
+    {
+      "category": "_)",
+      "name": "Short Quick Pounce opponent knocked down",
+      "input": "_8_+_b"
+    },
+    {
+      "category": "_)",
+      "name": "Long Quick Pounce opponent knocked down",
+      "input": "^8_+_b"
+    },
+    {
+      "category": "_)",
+      "name": "Get Up",
+      "input": "_8"
+    },
+    {
+      "category": "_)",
+      "name": "Roll-Get Up",
+      "input": "_4 / _6"
+    },
+    {
+      "category": "_)",
+      "name": "Cross Chop",
+      "input": "_6_+_a_+_b"
+    },
+    {
+      "category": "_)",
+      "name": "Get Up-Left Kick _c"
+    },
+    {
+      "category": "_)",
+      "name": "Get Up-High Kick _d"
+    },
+    {
+      "category": "_)",
+      "name": "Double Pop Kick",
+      "input": "_4_+_c_+_d"
+    },
+    {
+      "category": "_)",
+      "name": "Get Up",
+      "input": "_8"
+    },
+    {
+      "category": "_)",
+      "name": "Roll-Get Up",
+      "input": "_4 / _6"
+    },
+    {
+      "category": "_)",
+      "name": "Cross Chop",
+      "input": "_6_+_a_+_b"
+    },
+    {
+      "category": "_)",
+      "name": "Get Up-Left Kick _c"
+    },
+    {
+      "category": "_)",
+      "name": "Get Up-High Kick _d"
+    },
+    {
+      "category": "_)",
+      "name": "Get Up",
+      "input": "_8"
+    },
+    {
+      "category": "_)",
+      "name": "Roll-Get Up",
+      "input": "_4 / _6"
+    },
+    {
+      "category": "_)",
+      "name": "Cross Chop",
+      "input": "_6_+_a_+_b"
+    },
+    {
+      "category": "_)",
+      "name": "Get Up-Left Kick _c"
+    },
+    {
+      "category": "_)",
+      "name": "Get Up-High Kick _d"
+    },
+    {
+      "category": "_)",
+      "name": "Get Up",
+      "input": "_8"
+    },
+    {
+      "category": "_)",
+      "name": "Roll-Get Up",
+      "input": "_4 / _6"
+    },
+    {
+      "category": "_)",
+      "name": "Cross Chop",
+      "input": "_6_+_a_+_b"
+    },
+    {
+      "category": "_)",
+      "name": "Get Up-Left Kick _c"
+    },
+    {
+      "category": "_)",
+      "name": "Get Up-High Kick _d"
+    }
+  ],
+  "commonNotes": [
+    "FACE UP AND FEET TOWARDS (FU-FT)",
+    "FACE UP AND FEET AWAYS (FU-FA)",
+    "FACE DOWN AND FEET TOWARDS (FD-FT)",
+    "FACE DOWN AND FEET AWAYS (FD-FA)"
+  ],
+  "characters": [
+    {
+      "name": "KAZUYA MISHIMA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Bitch Kicks",
+          "input": "_a_+_c"
+        },
+        {
+          "category": "_(",
+          "name": "Shoulder Throw",
+          "input": "_b_+_d"
+        },
+        {
+          "category": "_(",
+          "name": "Stonehead",
+          "input": "_6_6_+_a_+_b"
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_b",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_a_b_b",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_b_b",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_b",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_d",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_b_a_b_b_c_d_d_a_b_a",
+          "hitLevels": "hhhhmmLhmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_c",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_6_+_c",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_N_2_3_N_a",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_N_2_3_N_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_N_2_3_N_d",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_N_2^3_+_d_d",
+          "hitLevels": "Ll"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_d_d",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_a_b",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_b_+_d",
+          "hitLevels": "M"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_d_d",
+          "hitLevels": "hL"
+        }
+      ],
+      "notes": [
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "PAUL PHOENIX",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Shoulder Flip",
+          "input": "_a_+_c"
+        },
+        {
+          "category": "_(",
+          "name": "Foot Launch",
+          "input": "^4_+_a_+_c"
+        },
+        {
+          "category": "_(",
+          "name": "Arm Bar Rollover: FU-FT",
+          "input": "_b_+_d"
+        },
+        {
+          "category": "_(",
+          "name": "Death Push Away",
+          "input": "_6_6_+_a_+_b"
+        },
+        {
+          "category": "_`",
+          "input": "_a_b_c_b_a_b_a_d_b_a",
+          "hitLevels": "hhmhmhhlmm"
+        },
+        {
+          "category": "_`",
+          "input": "_b_c",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_b_2_+_c",
+          "hitLevels": "hL"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_c_d_d",
+          "hitLevels": "mmh"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_c_d_6_+_d",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_c_d_2_+_d",
+          "hitLevels": "mmL"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_d",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_a_6_+_b",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_b",
+          "hitLevels": "M"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_d_b",
+          "hitLevels": "lm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_3_6_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^2_3_6_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_c_d",
+          "hitLevels": "mm"
+        }
+      ],
+      "notes": [
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "MARSHALL LAW",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Atomic Drop",
+          "input": "_a_+_c"
+        },
+        {
+          "category": "_(",
+          "name": "Chastisement Punch",
+          "input": "_b_+_d"
+        },
+        {
+          "category": "_(",
+          "name": "Knee Lift",
+          "input": "_6_6_+_c_+_d"
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_a_a_a",
+          "hitLevels": "hhhhh"
+        },
+        {
+          "category": "_`",
+          "input": "_a_b",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_b_b",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_c_c_c",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_c_c_6_+_c",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_d_c_d",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_d_8_+_c",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "input": "^6_+_b_b_b",
+          "hitLevels": "hmh"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_6_+_c",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_c_c_c_c",
+          "hitLevels": "lhhh"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_c_c_6_+_c",
+          "hitLevels": "lhm"
+        },
+        {
+          "category": "_`",
+          "input": "^2_3_2_3_+_c",
+          "hitLevels": "L",
+          "condition": "FU-FA"
+        },
+        {
+          "category": "_`",
+          "input": "^2_8_+_d",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^2^8_+_d",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_a_+_b",
+          "hitLevels": "!",
+          "condition": "_8_8 to cancel"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_a_b_b_a_c_c_c_d_c_d",
+          "hitLevels": "mhhhhlhhhm"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_c",
+          "hitLevels": "m"
+        }
+      ],
+      "notes": [
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "JACK",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Body Press",
+          "input": "_a_+_c"
+        },
+        {
+          "category": "_(",
+          "name": "Lift Slam",
+          "input": "_b_+_d"
+        },
+        {
+          "category": "_(",
+          "name": "Pyramid Driver",
+          "input": "_2_3_6_+_a"
+        },
+        {
+          "category": "_(",
+          "name": "Backbreaker",
+          "input": "_2_1_4_+_b"
+        },
+        {
+          "category": "_(",
+          "name": "Piledriver",
+          "input": "_1_6_+_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "SIT STANCE: SIT",
+          "input": "_2_+_c_+_d"
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_a",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_b_a",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_a_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_1_2^3_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_1_2_3_6x3_N_a",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_1_2_3_6x5_+_a",
+          "hitLevels": "!"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_b_a_a_a_b_a_b_a_a_+_b_a_+_b",
+          "hitLevels": "lllmmmMmmm"
+        },
+        {
+          "category": "_`",
+          "input": "^2_+_a_a_a_b_a",
+          "hitLevels": "llmmm"
+        },
+        {
+          "category": "_`",
+          "input": "^2_3_+_a_b_a",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_a",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_a_+_b_a_+_b",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_a_a_a_3_+_b",
+          "hitLevels": "lllm"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_a_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^3_+_a_b_a",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "^3_+_b_a_b",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_c_+_d",
+          "hitLevels": "M",
+          "condition": "SIT"
+        },
+        {
+          "category": "_`",
+          "name": "far",
+          "input": "_a_+_c",
+          "hitLevels": "M",
+          "condition": "FD-FA"
+        },
+        {
+          "category": "_`",
+          "input": "^2_+_a_+_b",
+          "hitLevels": "m",
+          "condition": "SIT"
+        },
+        {
+          "category": "_`",
+          "input": "_a_b_a_b",
+          "hitLevels": "llll"
+        },
+        {
+          "category": "_`",
+          "input": "_b_a_b_a",
+          "hitLevels": "llll"
+        }
+      ],
+      "notes": [
+        "Strings Moves",
+        "FACE UP AND FEET TOWARDS (FU-FT)",
+        "Strings Moves",
+        "SIT STANCE (SIT)",
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "NINA WILLIAMS",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Arm Turn",
+          "input": "_a_+_c"
+        },
+        {
+          "category": "_(",
+          "name": "Lifting Toss: BK",
+          "input": "_b_+_d"
+        },
+        {
+          "category": "_(",
+          "name": "Neck Throw",
+          "input": "^6_+_a_+_c"
+        },
+        {
+          "category": "_(",
+          "name": "Embracing Elbow",
+          "input": "_3_3_+_a"
+        },
+        {
+          "category": "_(",
+          "name": "Palm Grab",
+          "input": "_2_3_6_+_a_+_b"
+        },
+        {
+          "category": "_(",
+          "name": "Arm Bar",
+          "input": "_c_d_c_a_+_b"
+        },
+        {
+          "category": "_(",
+          "name": "Standing Reverse Arm Lock",
+          "input": "_a_c_b_a"
+        },
+        {
+          "category": "_(",
+          "name": "Rear G-Tech",
+          "input": "_c_a_d_a_+_b_a_+_b"
+        },
+        {
+          "category": "_(",
+          "name": "Falling Reverse Arm Lock",
+          "input": "_b_a_c_d_a_+_b"
+        },
+        {
+          "category": "_`",
+          "input": "_a_b_a_b_c_c_b_a_b_d",
+          "hitLevels": "hhhhhlhhhh"
+        },
+        {
+          "category": "_`",
+          "input": "_a_b_c",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_a_b_d",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_a_b_2_+_c",
+          "hitLevels": "hhL"
+        },
+        {
+          "category": "_`",
+          "input": "_b_c",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_b_d",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_b_2_+_c",
+          "hitLevels": "hL"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_a_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_d",
+          "hitLevels": "M",
+          "condition": "FU-FT"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_6_+_c",
+          "hitLevels": "h",
+          "condition": "FU-FT"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_a_d",
+          "hitLevels": "lm"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_a_+_b",
+          "hitLevels": "!",
+          "condition": "_8_8 to cancel"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_a_b_a_b_c_c_b_a_b_d",
+          "hitLevels": "mhhhhlhhhh"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_a_b_c",
+          "hitLevels": "mhh"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_a_b_d",
+          "hitLevels": "mhh"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_a_b_2_+_c",
+          "hitLevels": "mhL"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_c_a_b",
+          "hitLevels": "mhh"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_c_b_a",
+          "hitLevels": "mhh"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_c_b_c",
+          "hitLevels": "mhh"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_c_b_d",
+          "hitLevels": "mhh"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_c_b_2_+_c",
+          "hitLevels": "mhL"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_c_c_c_a",
+          "hitLevels": "mhhh"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_c_c_c_b",
+          "hitLevels": "mhhh"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_c_c_c_d",
+          "hitLevels": "mhhh"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_c_d",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_c",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_d_c_d",
+          "hitLevels": "hLh"
+        }
+      ],
+      "notes": [
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "KING",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Knee Bash",
+          "input": "_a_+_c"
+        },
+        {
+          "category": "_(",
+          "name": "Suplex: FD-FA",
+          "input": "_b_+_d"
+        },
+        {
+          "category": "_(",
+          "name": "Spinning Swing",
+          "input": "_6_4_1_2_3_6_+_a"
+        },
+        {
+          "category": "_(",
+          "name": "Jaguar Driver",
+          "input": "_2_3_6_+_a"
+        },
+        {
+          "category": "_(",
+          "name": "Falling Headlock: FU-FA",
+          "input": "_1_1_+_a_+_b"
+        },
+        {
+          "category": "_(",
+          "name": "Tombstone Piledriver",
+          "input": "_1_6_+_a_+_b"
+        },
+        {
+          "category": "_(",
+          "name": "Frankensteiner: BK",
+          "input": "_3_+_c_+_d"
+        },
+        {
+          "category": "_`",
+          "input": "_a_b_a_a_b_d_d_d_a_c",
+          "hitLevels": "hhmmmLLLmm"
+        },
+        {
+          "category": "_`",
+          "input": "_b_a",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_b_a_a_b_d_d_d_a_c",
+          "hitLevels": "hmmmLLLmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_N_b",
+          "hitLevels": "L"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_a_+_b",
+          "hitLevels": "h",
+          "condition": "/L"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_c_+_d",
+          "hitLevels": "m",
+          "condition": "FU-FT"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_d",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_6_+_c_+_d",
+          "hitLevels": "h",
+          "condition": "FU-FT"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_a_b",
+          "hitLevels": "lm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_3_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^2_3_+_d_d_d",
+          "hitLevels": "LLL"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_a",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_b_+_d",
+          "hitLevels": "M",
+          "condition": "FU-FA"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_a_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_c_+_d",
+          "hitLevels": "M"
+        },
+        {
+          "category": "_`",
+          "name": "far",
+          "input": "_3_+_c_+_d",
+          "hitLevels": "M",
+          "condition": "FU-FT"
+        },
+        {
+          "category": "_`",
+          "name": "run for 12 steps",
+          "input": "_d_d_d",
+          "hitLevels": "LLL"
+        },
+        {
+          "category": "_`",
+          "name": "on counter",
+          "input": "^2_3_+_d_d_d_d_d",
+          "hitLevels": "LLLLL"
+        }
+      ],
+      "notes": [
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "YOSHIMITSU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Jumping Body Slam",
+          "input": "_a_+_c"
+        },
+        {
+          "category": "_(",
+          "name": "Jaw Smash",
+          "input": "_b_+_d"
+        },
+        {
+          "category": "_`",
+          "input": "_a_b_a_d_d_d_a_a_a_a",
+          "hitLevels": "hmmhhLm",
+          "condition": "{!}{!}!"
+        },
+        {
+          "category": "_`",
+          "input": "_b_c",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_b_2_+_c",
+          "hitLevels": "hL"
+        },
+        {
+          "category": "_`",
+          "input": "_c_d",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "input": "_d_d_d",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_b",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_c_+_d_a_+_b",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_d",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_a_a_a_a_a_a",
+          "hitLevels": "hhhhhh",
+          "condition": "FU-FT"
+        },
+        {
+          "category": "_`",
+          "input": "_4_4_+_a",
+          "hitLevels": "!"
+        },
+        {
+          "category": "_`",
+          "input": "^2_3_+_c",
+          "hitLevels": "L"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_a",
+          "condition": "{!}"
+        },
+        {
+          "category": "_`",
+          "input": "^1_+_c_c_c_c_c_6_+_d",
+          "hitLevels": "Lllllm"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_d",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_d",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_c_+_d",
+          "hitLevels": "M"
+        }
+      ],
+      "notes": [
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "MICHELLE CHANG",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Waist Suplex",
+          "input": "_a_+_c"
+        },
+        {
+          "category": "_(",
+          "name": "Knee Suplex",
+          "input": "_b_+_d"
+        },
+        {
+          "category": "_(",
+          "name": "Punch-Spin-German Suplex",
+          "input": "_b_4_a_+_b"
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_a",
+          "hitLevels": "hmm"
+        },
+        {
+          "category": "_`",
+          "input": "_b_a_a_b_c_c_c_d_d_a",
+          "hitLevels": "hmmhlhmhLm"
+        },
+        {
+          "category": "_`",
+          "input": "_b_4",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_d_2_+_d_a",
+          "hitLevels": "hLm"
+        },
+        {
+          "category": "_`",
+          "input": "_d_2_+_d_d",
+          "hitLevels": "hLh"
+        },
+        {
+          "category": "_`",
+          "input": "_d_2_+_d_2_+_d",
+          "hitLevels": "hLL"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_a_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_6_+_c",
+          "hitLevels": "m",
+          "condition": "FU-FT"
+        },
+        {
+          "category": "_`",
+          "input": "_4_4^4_+_a",
+          "hitLevels": "!"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_d_a",
+          "hitLevels": "Lm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_d_d",
+          "hitLevels": "Lh"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_d_2_+_d",
+          "hitLevels": "LL"
+        },
+        {
+          "category": "_`",
+          "input": "^2_3_+_d_c",
+          "hitLevels": "Lh"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_b_a_a",
+          "hitLevels": "mMm"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_d",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_a_a",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_b_a",
+          "hitLevels": "m!"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_c",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_c_+_d",
+          "hitLevels": "M"
+        }
+      ],
+      "notes": [
+        "Strings Moves"
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "psx": {
+      "x": "_a",
+      "y": "_b",
+      "a": "_c",
+      "b": "_d"
+    },
+    "ps2": {
+      "x": "_a",
+      "y": "_b",
+      "a": "_c",
+      "b": "_d"
+    },
+    "snes": {
+      "y": "_a",
+      "x": "_b",
+      "b": "_c",
+      "a": "_d"
+    },
+    "genesis": {
+      "b": "_a",
+      "a": "_b",
+      "y": "_c",
+      "x": "_d"
+    },
+    "megadrive": {
+      "b": "_a",
+      "a": "_b",
+      "y": "_c",
+      "x": "_d"
+    },
+    "saturn": {
+      "b": "_a",
+      "a": "_b",
+      "y": "_c",
+      "x": "_d"
+    },
+    "gba": {
+      "b": "_a",
+      "a": "_b",
+      "l1": "_c",
+      "r1": "_d"
+    },
+    "ngpc": {
+      "b": "_a",
+      "a": "_b",
+      "y": "_c",
+      "x": "_d"
+    }
+  }
+}

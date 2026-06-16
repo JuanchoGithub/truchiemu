@@ -1,1 +1,2167 @@
-{"schemaVersion":2,"romIds":["souledge","souledgea","souledgeja","souledgeua","souledgeuc"],"name":"Soul Edge Ver. II","year":1996,"manufacturer":"Namco","controls":{"_K":"Kick","_G":"Guard","_S":"Start"},"categories":{"_(":"Throws","_)":"Command Moves","_*":"Critical Edge Moves","_`":"String Moves"},"commonCommands":[{"category":"_)","name":"Run","input":"_6^6"},{"category":"_)","name":"Retreat","input":"_4_4"},{"category":"_)","name":"Crawl Forward","input":"^3"},{"category":"_)","name":"Crawl Backward","input":"^1"},{"category":"_)","name":"Sidestep Out","input":"_2_8"},{"category":"_)","name":"Sidestep In","input":"_2_2"},{"category":"_)","name":"Low Jump","input":"_8"},{"category":"_)","name":"High Jump","input":"^8"},{"category":"_)","name":"Short Quick Pounce opponent knocked down","input":"_8_+_a / _b"},{"category":"_)","name":"Long Quick Pounce opponent knocked down","input":"^8_+_a / _b"},{"category":"_)","name":"Roll Forward knocked down","input":"_6"},{"category":"_)","name":"Roll Backward knocked down","input":"_4"},{"category":"_)","name":"Roll Out knocked down","input":"_8_+_G"},{"category":"_)","name":"Roll In knocked down","input":"_2_+_G"},{"category":"_)","name":"Rising Attack knocked down _b"},{"category":"_)","name":"Rising Kick knocked down","input":"_K"},{"category":"_*","name":"Critical Edge _a_+_b_+_K"}],"characters":[{"name":"MITSURUGI HEISHIRO","moves":[{"category":"_(","name":"Sea of Madness","input":"_a_+_G"},{"category":"_(","name":"Pulling Ivy","input":"_b_+_G"},{"category":"_)","name":"Dirty Stab","input":"_4_+_a_+_G (reverse high/mid)"},{"category":"_*","name":"Rising Uppercut","input":"_a_+_b_+_K","condition":","},{"category":"_*","name":"Cross the Styx","input":"_a_+_b_+_K","condition":","},{"category":"_`","input":"_a_a_a","hitLevels":"hhh"},{"category":"_`","input":"_a_a_b","hitLevels":"hhm"},{"category":"_`","input":"_a_a_2_+_a","hitLevels":"hhl"},{"category":"_`","input":"_a_+_b","hitLevels":"mm"},{"category":"_`","input":"_b_b_a_b","hitLevels":"mmhm"},{"category":"_`","input":"_b_b_a_2_+_a","hitLevels":"mmhl"},{"category":"_`","input":"_6_+_a_b","hitLevels":"mm"},{"category":"_`","input":"_6_+_a_2_+_a","hitLevels":"ml"},{"category":"_`","input":"_6_+_b","hitLevels":"m"},{"category":"_`","input":"_6_+_K","hitLevels":"m"},{"category":"_`","input":"_6^6_+_a_+_b","hitLevels":"m"},{"category":"_`","input":"_6^6_+_b","hitLevels":"m"},{"category":"_`","input":"_6_3_2_1_4_+_b","hitLevels":"!"},{"category":"_`","input":"_4_+_a","hitLevels":"h"},{"category":"_`","input":"_4_+_b","hitLevels":"m"},{"category":"_`","input":"_4_+_K_b","hitLevels":"mm"},{"category":"_`","input":"_2_+_K_b","hitLevels":"lm"},{"category":"_`","input":"_2_3_6_a_b","hitLevels":"mm"},{"category":"_`","input":"_2_3_6_a_2_+_a","hitLevels":"ml"},{"category":"_`","input":"_2_3_6_b","hitLevels":"m"},{"category":"_`","input":"_2_3_6_K","hitLevels":"m"},{"category":"_`","input":"^2_N_a_b","hitLevels":"mm"},{"category":"_`","input":"^2_N_a_2_+_a","hitLevels":"ml"},{"category":"_`","input":"^2_N_b","hitLevels":"m"},{"category":"_`","input":"^2_N_K","hitLevels":"m"},{"category":"_`","input":"_1_+_a","hitLevels":"l"},{"category":"_`","input":"_3_+_a","hitLevels":"m"},{"category":"_`","input":"_3_+_b","hitLevels":"m"},{"category":"_`","input":"_3_+_K","hitLevels":"m"},{"category":"_`","name":"running","input":"_K","hitLevels":"l"},{"category":"_`","name":"opponent knocked down","input":"_3_+_b","hitLevels":"g"}],"notes":["Strings Moves"]},{"name":"SIEGFREID SCHTAUFFEN","moves":[{"category":"_(","name":"Hilt Impact","input":"_a_+_G"},{"category":"_(","name":"Nightmare Slasher","input":"_b_+_G"},{"category":"_(","name":"Flap Jack","input":"_2_+_a_+_G"},{"category":"_(","name":"Mortal Slaughter","input":"_1_+_b_4_+_b"},{"category":"_*","name":"Critical Edge","input":"_a_+_b_+_K","condition":","},{"category":"_`","input":"_a_a_b","hitLevels":"hhm"},{"category":"_`","input":"_a_+_K","hitLevels":"h"},{"category":"_`","input":"_a_2_+_a","hitLevels":"hl"},{"category":"_`","input":"_b_b_b","hitLevels":"mml"},{"category":"_`","input":"_b_b_K","hitLevels":"mmh"},{"category":"_`","input":"_b_K","hitLevels":"mm"},{"category":"_`","input":"_b_2_+_a","hitLevels":"ml"},{"category":"_`","input":"_6_+_a","hitLevels":"h"},{"category":"_`","input":"_6_+_b","hitLevels":"m"},{"category":"_`","input":"_6_+_b_+_K","hitLevels":"m"},{"category":"_`","input":"_6_+_K","hitLevels":"h"},{"category":"_`","input":"_6_6_+_K","hitLevels":"h"},{"category":"_`","input":"_6^6_+_a_+_b","hitLevels":"m"},{"category":"_`","input":"_4_+_a","hitLevels":"h"},{"category":"_`","input":"_4_+_b_a_b","hitLevels":"hhh"},{"category":"_`","input":"_4_4_+_b_b","hitLevels":"ml"},{"category":"_`","input":"_2_3_6_+_b","hitLevels":"!"},{"category":"_`","input":"^2_N_a_a","hitLevels":"ml"},{"category":"_`","input":"^2_N_b","hitLevels":"m"},{"category":"_`","input":"^2_N_K","hitLevels":"m"},{"category":"_`","input":"_1_+_b","hitLevels":"m"},{"category":"_`","input":"_3_+_a","hitLevels":"m"},{"category":"_`","input":"_3_+_b","hitLevels":"m"},{"category":"_`","input":"_3_+_K_K_b","hitLevels":"mlm"},{"category":"_`","name":"running","input":"_b_+_K","hitLevels":"h"},{"category":"_`","name":"running","input":"_K","hitLevels":"l"},{"category":"_`","name":"opponent knocked down","input":"^3_+_K_K_K_K","hitLevels":"gggg"}],"notes":["Strings Moves"]},{"name":"SOPHITIA ALEXANDER","moves":[{"category":"_(","name":"Widow Maker","input":"_a_+_G"},{"category":"_(","name":"Heaven","input":"_b_+_G"},{"category":"_(","name":"Heaven to Hell","input":"_2_+_a_+_b_+_K"},{"category":"_)","name":"Returning Madness","input":"_4_+_a_+_G (reverse high/mid)"},{"category":"_*","name":"Soul Asylum","input":"_a_+_b_+_K","condition":","},{"category":"_*","name":"Dragon Blade","input":"_a_+_b_+_K","condition":","},{"category":"_`","input":"_a_a_a_K","hitLevels":"hhhm"},{"category":"_`","input":"_a_a_b","hitLevels":"hhm"},{"category":"_`","input":"_a_a_K","hitLevels":"hhm"},{"category":"_`","input":"_a_a_2_+_a","hitLevels":"hhl"},{"category":"_`","input":"_a_a_2_+_K","hitLevels":"hhl"},{"category":"_`","input":"_a_+_K","hitLevels":"h"},{"category":"_`","input":"_b_b_a_b","hitLevels":"mmhm"},{"category":"_`","input":"_b_b_b","hitLevels":"mmm"},{"category":"_`","input":"_b_b_2_+_a","hitLevels":"mml"},{"category":"_`","input":"_b_b_2_+_K","hitLevels":"mml"},{"category":"_`","input":"_K_K_2_+_K_6_+_K","hitLevels":"hmlm"},{"category":"_`","input":"_6_+_a","hitLevels":"h"},{"category":"_`","input":"_6_+_b","hitLevels":"m"},{"category":"_`","input":"_6_+_K","hitLevels":"h"},{"category":"_`","input":"_6_2_3_+_a","hitLevels":"m"},{"category":"_`","input":"_6_2_3_+_b","hitLevels":"m"},{"category":"_`","input":"_4_+_a","hitLevels":"m"},{"category":"_`","input":"_4_+_b","hitLevels":"m"},{"category":"_`","input":"_4_4_4_+_a~_b","hitLevels":"!"},{"category":"_`","input":"_2_3_6_+_b","hitLevels":"m"},{"category":"_`","input":"^2_3_+_a","hitLevels":"l"},{"category":"_`","input":"^2_3_+_b","hitLevels":"l"},{"category":"_`","input":"^2_N_a","hitLevels":"m"},{"category":"_`","input":"^2_N_b","hitLevels":"m"},{"category":"_`","input":"^2_N_K","hitLevels":"m"},{"category":"_`","input":"_1_+_b","hitLevels":"m"},{"category":"_`","input":"_1_+_K","hitLevels":"l"},{"category":"_`","input":"_3_+_a","hitLevels":"m"},{"category":"_`","input":"_3_+_b","hitLevels":"m"},{"category":"_`","input":"_3_+_K","hitLevels":"m"},{"category":"_`","input":"_9_+_K_a","hitLevels":"ml"},{"category":"_`","input":"_9_+_K_b","hitLevels":"mm"},{"category":"_`","input":"_9_+_K_K","hitLevels":"mm"},{"category":"_`","name":"running","input":"_K","hitLevels":"l"},{"category":"_`","name":"opponent knocked down","input":"^3_+_b_b_b_b","hitLevels":"gggg"},{"category":"_`","name":"on counter","input":"_4_+_a","hitLevels":"mm"}],"notes":["Strings Moves"]},{"name":"SEUNG MINA","moves":[{"category":"_(","name":"Dropping Embrace","input":"_a_+_G"},{"category":"_(","name":"Crushing Soul","input":"_b_+_G"},{"category":"_*","name":"Crystal Cyclone","input":"_a_+_b_+_K","condition":","},{"category":"_`","input":"_a_a_a_K","hitLevels":"hhhm"},{"category":"_`","input":"_a_a_a_2_+_K","hitLevels":"hhhl"},{"category":"_`","input":"_a_a_b","hitLevels":"hhm"},{"category":"_`","input":"_a_a_K","hitLevels":"hhh"},{"category":"_`","input":"_a_K","hitLevels":"hh"},{"category":"_`","input":"_a_+_b_a_+_b","hitLevels":"mm"},{"category":"_`","input":"_a_+_b_6_+_a_b","hitLevels":"mhm"},{"category":"_`","input":"_a_6_+_a_a_K","hitLevels":"hhhm"},{"category":"_`","input":"_a_6_+_a_a_2_+_K","hitLevels":"hhhl"},{"category":"_`","input":"_b_a","hitLevels":"mh"},{"category":"_`","input":"_b_b_b","hitLevels":"mmm"},{"category":"_`","input":"_b_b_2_+_a","hitLevels":"mml"},{"category":"_`","input":"_b_K","hitLevels":"mh"},{"category":"_`","input":"_b_+_K","hitLevels":"m"},{"category":"_`","input":"_b_2_+_a","hitLevels":"ml"},{"category":"_`","input":"_6_+_a_K","hitLevels":"mh"},{"category":"_`","input":"_6_+_b_a","hitLevels":"mm"},{"category":"_`","input":"_6_+_b_b","hitLevels":"mm"},{"category":"_`","input":"_6_+_b_2_+_a","hitLevels":"mm"},{"category":"_`","input":"_6_+_K","hitLevels":"m"},{"category":"_`","input":"_6^6_+_K_K_K","hitLevels":"mmm"},{"category":"_`","input":"_4_+_b_2_+_a_+_b","hitLevels":"mm"},{"category":"_`","input":"_4_+_K","hitLevels":"h"},{"category":"_`","input":"_4_6_+_K","hitLevels":"mm"},{"category":"_`","input":"^2_N_a","hitLevels":"m"},{"category":"_`","input":"^2_N_b","hitLevels":"m"},{"category":"_`","input":"^2_N_K","hitLevels":"m"},{"category":"_`","input":"_1_+_a","hitLevels":"l"},{"category":"_`","input":"_1_+_K","hitLevels":"l"},{"category":"_`","input":"_3_+_a","hitLevels":"m"},{"category":"_`","input":"_3_+_b","hitLevels":"m"},{"category":"_`","input":"_3_+_K","hitLevels":"m"},{"category":"_`","input":"_8_+_a_+_b","hitLevels":"m"},{"category":"_`","input":"_9_+_a_+_b","hitLevels":"!","condition":"_O_G to cancel"},{"category":"_`","input":"_9_+_b_+_K","hitLevels":"mm"},{"category":"_`","name":"running","input":"_K","hitLevels":"l"},{"category":"_`","name":"opponent knocked down","input":"_3_+_K","hitLevels":"g"}],"notes":["Strings Moves"]},{"name":"TAKI","moves":[{"category":"_(","name":"Return of the Sun","input":"_a_+_G"},{"category":"_(","name":"Departure in Fire","input":"_b_+_G"},{"category":"_(","name":"Crossing the Cliff","input":"_2_1_4_+_b_+_G"},{"category":"_)","name":"Stalker","input":"_6^6_+_a_+_b"},{"category":"_)","name":"Counter","input":"_4_+_a_+_G (reverse high/mid)"},{"category":"_)","name":"Backflip","input":"_7"},{"category":"_*","name":"Critical Edge","input":"_a_+_b_+_K","condition":","},{"category":"_`","input":"_a_a_a","hitLevels":"hhh"},{"category":"_`","input":"_a_a_b","hitLevels":"hhm"},{"category":"_`","input":"_a_a_2_+_K","hitLevels":"hhl"},{"category":"_`","input":"_a_b_K","hitLevels":"hmh"},{"category":"_`","input":"_a_K","hitLevels":"hh"},{"category":"_`","input":"_a_+_K","hitLevels":"mm"},{"category":"_`","input":"_b_a_K","hitLevels":"mhh"},{"category":"_`","input":"_b_a_6_+_K","hitLevels":"mhm"},{"category":"_`","input":"_b_a_2_+_K","hitLevels":"mhl"},{"category":"_`","input":"_b_b_a_K","hitLevels":"mmhh"},{"category":"_`","input":"_b_b_b","hitLevels":"mmm"},{"category":"_`","input":"_b_K","hitLevels":"mh"},{"category":"_`","input":"_K_K_a","hitLevels":"hhh"},{"category":"_`","input":"_K_K_K","hitLevels":"hhh"},{"category":"_`","input":"_K_K_2_+_K","hitLevels":"hhl"},{"category":"_`","input":"_6_+_a_b_b_b","hitLevels":"hmmm"},{"category":"_`","input":"_6_+_b","hitLevels":"m"},{"category":"_`","input":"_6_+_K","hitLevels":"m"},{"category":"_`","input":"_6^6_+_a","hitLevels":"h"},{"category":"_`","input":"_6^6_+_b","hitLevels":"m"},{"category":"_`","input":"_6^6_+_K","hitLevels":"h"},{"category":"_`","input":"_6_3_2_1_+_b","hitLevels":"!"},{"category":"_`","input":"_4_+_K","hitLevels":"h"},{"category":"_`","input":"_2_+_K_K","hitLevels":"lm"},{"category":"_`","input":"_2_3_6_N_b_K","hitLevels":"mh"},{"category":"_`","input":"_2_3_6_N_K","hitLevels":"l"},{"category":"_`","input":"^2_N_a","hitLevels":"m"},{"category":"_`","input":"^2_N_b_b","hitLevels":"mm"},{"category":"_`","input":"^2_N_K","hitLevels":"h"},{"category":"_`","input":"_1_+_a","hitLevels":"l"},{"category":"_`","input":"_3_+_a","hitLevels":"m"},{"category":"_`","input":"_3_+_b","hitLevels":"m"},{"category":"_`","input":"_3_+_K_K_K","hitLevels":"mmm"},{"category":"_`","name":"running","input":"_K","hitLevels":"l"},{"category":"_`","name":"opponent knocked down","input":"_3_+_K","hitLevels":"g"}],"notes":["Strings Moves"]},{"name":"LI LONG","moves":[{"category":"_(","name":"Dangerous Driver","input":"_a_+_G"},{"category":"_(","name":"Hell's Throat","input":"_b_+_G"},{"category":"_)","name":"Dragon's Revenge","input":"_4_+_a_+_G (reverse high/mid)"},{"category":"_*","name":"Fire and Brimstone","input":"_a_+_b_+_K","condition":","},{"category":"_`","input":"_a_a_a","hitLevels":"hhh"},{"category":"_`","input":"_a_a_K","hitLevels":"hhm"},{"category":"_`","input":"_a_a_2_+_a","hitLevels":"hhl"},{"category":"_`","input":"_a_a_2_+_K_b","hitLevels":"hhlm"},{"category":"_`","input":"_a_b_K","hitLevels":"hmh"},{"category":"_`","input":"_a_+_b","hitLevels":"mm"},{"category":"_`","input":"_b_a","hitLevels":"mh"},{"category":"_`","input":"_b_b_b","hitLevels":"mmm"},{"category":"_`","input":"_b_K","hitLevels":"mm"},{"category":"_`","input":"_K_K","hitLevels":"hm"},{"category":"_`","input":"_K_2_+_a","hitLevels":"hl"},{"category":"_`","input":"_K_2_+_K","hitLevels":"hl"},{"category":"_`","input":"_6_+_a_a_a","hitLevels":"hhh"},{"category":"_`","input":"_6_+_a_a_2_+_a","hitLevels":"hhl"},{"category":"_`","input":"_6_+_a_a_2_+_K_b","hitLevels":"hhlm"},{"category":"_`","input":"_6_+_a_b_K","hitLevels":"hmh"},{"category":"_`","input":"_6_+_b_b","hitLevels":"hm"},{"category":"_`","input":"_6_+_K","hitLevels":"h"},{"category":"_`","input":"_6^6_+_b","hitLevels":"m"},{"category":"_`","input":"_6^6_+_K","hitLevels":"h"},{"category":"_`","input":"_4_+_a","hitLevels":"m"},{"category":"_`","input":"_4_+_b_b_b","hitLevels":"mmm"},{"category":"_`","input":"_2_1_4_+_b_4_+_b","hitLevels":"mh"},{"category":"_`","input":"_2_3_6_+_b","hitLevels":"mm","condition":"_4 to cancel"},{"category":"_`","input":"^2_+_a_8_+_b","hitLevels":"lm"},{"category":"_`","input":"^2_N_a","hitLevels":"m"},{"category":"_`","input":"^2_N_b","hitLevels":"m"},{"category":"_`","input":"^2_N_K","hitLevels":"l"},{"category":"_`","input":"_1_+_a","hitLevels":"l"},{"category":"_`","input":"_1_+_b","hitLevels":"m"},{"category":"_`","input":"_1_+_b_a","hitLevels":"l"},{"category":"_`","input":"_1_+_b_+_K","hitLevels":"!"},{"category":"_`","input":"_3_+_a","hitLevels":"m"},{"category":"_`","input":"_3_+_b","hitLevels":"m"},{"category":"_`","input":"_3_+_K","hitLevels":"m"},{"category":"_`","name":"running","input":"_K","hitLevels":"l"},{"category":"_`","name":"opponent knocked down","input":"_3_+_K","hitLevels":"g"}],"notes":["Strings Moves"]},{"name":"ROCK ADAMS","moves":[{"category":"_(","name":"Rock Slam","input":"_a_+_G"},{"category":"_(","name":"Canyon Dive","input":"_b_+_G"},{"category":"_(","name":"Falling Rock","input":"_2_1_4_+_b_+_G"},{"category":"_(","name":"Dynamite Slam opponent knocked down, close feet","input":"_3_+_a_+_G"},{"category":"_*","name":"Devastator","input":"_a_+_b_+_K","condition":","},{"category":"_*","name":"Rising Uppercut","input":"_a_+_b_+_K","condition":","},{"category":"_`","input":"_a_a_a","hitLevels":"hhh"},{"category":"_`","input":"_a_b","hitLevels":"hh"},{"category":"_`","input":"_a_K","hitLevels":"hh"},{"category":"_`","input":"_b_a","hitLevels":"mh"},{"category":"_`","input":"_b_b_b","hitLevels":"mmm"},{"category":"_`","input":"_6_+_a_a_a","hitLevels":"hhl"},{"category":"_`","input":"_6_+_a_a_b","hitLevels":"hhm"},{"category":"_`","input":"_6_+_b","hitLevels":"m"},{"category":"_`","input":"_6_+_K","hitLevels":"m"},{"category":"_`","input":"_6^6_+_a_b","hitLevels":"mm"},{"category":"_`","input":"_6^6_+_b","hitLevels":"m"},{"category":"_`","input":"_6^6_+_K","hitLevels":"m"},{"category":"_`","input":"_4_+_a_+_b","hitLevels":"m"},{"category":"_`","input":"_4_+_b","hitLevels":"m"},{"category":"_`","input":"_2_+_a_b","hitLevels":"lm"},{"category":"_`","input":"_2_3_6_+_b_+_K","hitLevels":"!"},{"category":"_`","input":"^2_N_a","hitLevels":"m"},{"category":"_`","input":"^2_N_b","hitLevels":"m"},{"category":"_`","input":"^2_N_K","hitLevels":"m"},{"category":"_`","input":"_1_+_a","hitLevels":"l"},{"category":"_`","input":"_1_+_K","hitLevels":"l"},{"category":"_`","input":"_3_+_a","hitLevels":"m"},{"category":"_`","input":"_3_+_b","hitLevels":"m"},{"category":"_`","input":"_3_+_K_a","hitLevels":"ml"},{"category":"_`","name":"running","input":"_K","hitLevels":"l"},{"category":"_`","name":"opponent knocked down","input":"_8_+_K","hitLevels":"g"}],"notes":["Strings Moves"]},{"name":"VOLDO","moves":[{"category":"_(","name":"Spinning Umbrella","input":"_a_+_G"},{"category":"_(","name":"Centipede Nightmare","input":"_b_+_G"},{"category":"_(","name":"Bloody Drill","input":"_2_3_6_+_b_+_G"},{"category":"_)","name":"BLIND STANCE: BS","input":"_2_1_4"},{"category":"_*","name":"House of Pain","input":"_a_+_b_+_K","condition":","},{"category":"_`","input":"_a_a_b","hitLevels":"hhm"},{"category":"_`","input":"_a_b_a","hitLevels":"hmm"},{"category":"_`","input":"_a_+_b","hitLevels":"m"},{"category":"_`","input":"_a_K","hitLevels":"hm"},{"category":"_`","input":"_a_+_K","hitLevels":"hh"},{"category":"_`","input":"_a_2_+_b","hitLevels":"l"},{"category":"_`","input":"_b_b","hitLevels":"mm"},{"category":"_`","input":"_6_+_a","hitLevels":"h"},{"category":"_`","input":"_6_+_b","hitLevels":"h"},{"category":"_`","input":"_6^6_+_a_+_b_K","hitLevels":"mm"},{"category":"_`","input":"_6^6_+_a_+_b_+_G_K","hitLevels":"mm"},{"category":"_`","input":"_6^6_+_b","hitLevels":"m"},{"category":"_`","input":"_4_+_a_a","hitLevels":"hh","condition":"BS"},{"category":"_`","input":"_4_+_a_+_b","hitLevels":"m"},{"category":"_`","input":"_4_+_b","hitLevels":"m"},{"category":"_`","input":"_2_+_a_a_a_K","hitLevels":"lllh"},{"category":"_`","input":"_2_+_a_+_b","hitLevels":"l"},{"category":"_`","input":"_2_+_a_K","hitLevels":"lh"},{"category":"_`","input":"_2_+_b_b","hitLevels":"mm"},{"category":"_`","input":"_2_3_6_+_a","hitLevels":"!"},{"category":"_`","input":"^2_3_+_a_+_b","hitLevels":"h"},{"category":"_`","input":"^2_N_a","hitLevels":"m"},{"category":"_`","input":"^2_N_b","hitLevels":"m"},{"category":"_`","input":"^2_N_K","hitLevels":"m"},{"category":"_`","input":"_1_+_K","hitLevels":"m"},{"category":"_`","input":"_3_+_a","hitLevels":"m"},{"category":"_`","input":"_3_+_b","hitLevels":"m"},{"category":"_`","input":"_3_+_K","hitLevels":"m"},{"category":"_`","name":"running","input":"_a","hitLevels":"l"},{"category":"_`","name":"running","input":"_K","hitLevels":"l"},{"category":"_`","name":"opponent knocked down","input":"^3_+_a_a_a","hitLevels":"ggg"},{"category":"_`","name":"on counter","input":"_b_b_b_b_b","hitLevels":"mmmmm"},{"category":"_`","input":"_a_+_G_8_+_b","hitLevels":"ll"},{"category":"_`","input":"^2_+_a_+_b","hitLevels":"l"}],"notes":["Strings Moves","BLIND STANCE (BS)","Strings Moves"]},{"name":"HWANG SUNG KYUNG","moves":[{"category":"_(","name":"Sea of Madness","input":"_a_+_G"},{"category":"_(","name":"Machine Gun Kick","input":"_b_+_G"},{"category":"_*","name":"Cross the Styx","input":"_a_+_b_+_K","condition":","},{"category":"_*","name":"Rising Uppercut","input":"_a_+_b_+_K","condition":","},{"category":"_`","input":"_a_a_a","hitLevels":"hhh"},{"category":"_`","input":"_a_a_b","hitLevels":"hhm"},{"category":"_`","input":"_a_a_2_+_a","hitLevels":"hhl"},{"category":"_`","input":"_a_+_b","hitLevels":"mm"},{"category":"_`","input":"_b_b_a_b","hitLevels":"mmhm"},{"category":"_`","input":"_b_b_a_2_+_a","hitLevels":"mmhl"},{"category":"_`","input":"_K_K","hitLevels":"hm"},{"category":"_`","input":"_6_+_a","hitLevels":"h"},{"category":"_`","input":"_6_+_b","hitLevels":"m"},{"category":"_`","input":"_6_+_K","hitLevels":"h"},{"category":"_`","input":"_6^6_+_a_+_b","hitLevels":"m"},{"category":"_`","input":"_6^6_+_b","hitLevels":"m"},{"category":"_`","input":"_6^6_+_K_K_K","hitLevels":"mmm"},{"category":"_`","input":"_4_+_a","hitLevels":"h"},{"category":"_`","input":"_4_+_b","hitLevels":"m"},{"category":"_`","input":"_4_+_b_+_K","hitLevels":"!"},{"category":"_`","input":"_4_+_K","hitLevels":"h"},{"category":"_`","input":"_4_6_+_K","hitLevels":"mm"},{"category":"_`","input":"_2_+_K_b","hitLevels":"lm"},{"category":"_`","input":"_2_3_6_N_a_b","hitLevels":"hm"},{"category":"_`","input":"_2_3_6_N_b","hitLevels":"m"},{"category":"_`","input":"_2_3_6_N_K","hitLevels":"mh"},{"category":"_`","input":"^2_N_a_b","hitLevels":"hm"},{"category":"_`","input":"^2_N_b","hitLevels":"m"},{"category":"_`","input":"^2_N_K","hitLevels":"mh"},{"category":"_`","input":"_1_+_a","hitLevels":"l"},{"category":"_`","input":"_1_+_K","hitLevels":"l"},{"category":"_`","input":"_3_+_a_a_b","hitLevels":"lhm"},{"category":"_`","input":"_3_+_b","hitLevels":"m"},{"category":"_`","input":"_3_+_K","hitLevels":"m"},{"category":"_`","name":"running","input":"_K","hitLevels":"l"},{"category":"_`","name":"opponent knocked down","input":"_3_+_K","hitLevels":"g"}],"notes":["Strings Moves"]},{"name":"CERVANTES DE LEON","moves":[{"category":"_(","name":"Shoulder Blades","input":"_a_+_G"},{"category":"_(","name":"Grand Slam Soul Edge","input":"_b_+_G"},{"category":"_*","name":"Critical Edge","input":"_a_+_b_+_K","condition":","},{"category":"_`","input":"_a_a_a","hitLevels":"hhh"},{"category":"_`","input":"_a_a_b","hitLevels":"hhh"},{"category":"_`","input":"_a_a_2_+_a","hitLevels":"hhl"},{"category":"_`","input":"_a_+_b","hitLevels":"h"},{"category":"_`","input":"_b_b_b","hitLevels":"hhh"},{"category":"_`","input":"_b_b_2_+_a","hitLevels":"hhl"},{"category":"_`","input":"_K_3_+_K","hitLevels":"hm"},{"category":"_`","input":"_6_+_a","hitLevels":"h"},{"category":"_`","input":"_6_+_a_+_b","hitLevels":"m"},{"category":"_`","input":"_6_+_b_b_b","hitLevels":"mhh"},{"category":"_`","input":"_6_+_K","hitLevels":"h"},{"category":"_`","input":"_6^6_+_a_+_b","hitLevels":"h"},{"category":"_`","input":"_6^6_+_b_+_K","hitLevels":"m"},{"category":"_`","input":"_6^6_+_b","hitLevels":"m"},{"category":"_`","input":"_6^6_+_K","hitLevels":"h"},{"category":"_`","input":"_6_2_3_+_b","hitLevels":"mm"},{"category":"_`","input":"_4_+_K","hitLevels":"h"},{"category":"_`","input":"_4_4_+_b","hitLevels":"m"},{"category":"_`","input":"_2_1_4_+_b","hitLevels":"m"},{"category":"_`","input":"^2_N_a","hitLevels":"m"},{"category":"_`","input":"^2_N_b","hitLevels":"mm"},{"category":"_`","input":"^2_N_K","hitLevels":"m"},{"category":"_`","input":"_1_+_a","hitLevels":"l"},{"category":"_`","input":"_1_+_a_+_b","hitLevels":"!"},{"category":"_`","input":"_1_+_a_+_K","hitLevels":"l"},{"category":"_`","input":"_1_+_K","hitLevels":"l"},{"category":"_`","input":"_3_+_a","hitLevels":"m"},{"category":"_`","input":"_3_+_a_+_b","hitLevels":"l"},{"category":"_`","input":"_3_+_b","hitLevels":"m"},{"category":"_`","input":"_3_+_K","hitLevels":"m"},{"category":"_`","name":"running","input":"_K","hitLevels":"l"},{"category":"_`","name":"opponent knocked down","input":"_2_+_a_+_b","hitLevels":"g"}],"notes":["Strings Moves"]}],"cheatNotes":["_` 2nd Outfit","- On the Character Select Screen _O_G"],"controlAbbr":{"_K":"K","_G":"GR","_S":"ST"},"systemControlMappings":{"snes":{"y":"_G","b":"_K"},"genesis":{"b":"_G","y":"_K"},"megadrive":{"b":"_G","y":"_K"},"32x":{"b":"_G","y":"_K"},"saturn":{"b":"_G","y":"_K"},"psx":{"y":"_K","x":"_G","b":"_A","a":"_B"},"ps2":{"y":"_G","b":"_K"},"gb":{"b":"_G","a":"_K"},"gbc":{"b":"_G","a":"_K"},"gba":{"b":"_G","a":"_K"}},"controlGroups":{"_K":["_K"]}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "souledge",
+    "souledgea",
+    "souledgeja",
+    "souledgeua",
+    "souledgeuc"
+  ],
+  "name": "Soul Edge Ver. II",
+  "year": 1996,
+  "manufacturer": "Namco",
+  "controls": {
+    "_K": "Kick",
+    "_G": "Guard",
+    "_S": "Start"
+  },
+  "categories": {
+    "_(": "Throws",
+    "_)": "Command Moves",
+    "_*": "Critical Edge Moves",
+    "_`": "String Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Run",
+      "input": "_6^6"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4"
+    },
+    {
+      "category": "_)",
+      "name": "Crawl Forward",
+      "input": "^3"
+    },
+    {
+      "category": "_)",
+      "name": "Crawl Backward",
+      "input": "^1"
+    },
+    {
+      "category": "_)",
+      "name": "Sidestep Out",
+      "input": "_2_8"
+    },
+    {
+      "category": "_)",
+      "name": "Sidestep In",
+      "input": "_2_2"
+    },
+    {
+      "category": "_)",
+      "name": "Low Jump",
+      "input": "_8"
+    },
+    {
+      "category": "_)",
+      "name": "High Jump",
+      "input": "^8"
+    },
+    {
+      "category": "_)",
+      "name": "Short Quick Pounce opponent knocked down",
+      "input": "_8_+_a / _b"
+    },
+    {
+      "category": "_)",
+      "name": "Long Quick Pounce opponent knocked down",
+      "input": "^8_+_a / _b"
+    },
+    {
+      "category": "_)",
+      "name": "Roll Forward knocked down",
+      "input": "_6"
+    },
+    {
+      "category": "_)",
+      "name": "Roll Backward knocked down",
+      "input": "_4"
+    },
+    {
+      "category": "_)",
+      "name": "Roll Out knocked down",
+      "input": "_8_+_G"
+    },
+    {
+      "category": "_)",
+      "name": "Roll In knocked down",
+      "input": "_2_+_G"
+    },
+    {
+      "category": "_)",
+      "name": "Rising Attack knocked down _b"
+    },
+    {
+      "category": "_)",
+      "name": "Rising Kick knocked down",
+      "input": "_K"
+    },
+    {
+      "category": "_*",
+      "name": "Critical Edge _a_+_b_+_K"
+    }
+  ],
+  "characters": [
+    {
+      "name": "MITSURUGI HEISHIRO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Sea of Madness",
+          "input": "_a_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Pulling Ivy",
+          "input": "_b_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Dirty Stab",
+          "input": "_4_+_a_+_G (reverse high/mid)"
+        },
+        {
+          "category": "_*",
+          "name": "Rising Uppercut",
+          "input": "_a_+_b_+_K",
+          "condition": ","
+        },
+        {
+          "category": "_*",
+          "name": "Cross the Styx",
+          "input": "_a_+_b_+_K",
+          "condition": ","
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_a",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_b",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_2_+_a",
+          "hitLevels": "hhl"
+        },
+        {
+          "category": "_`",
+          "input": "_a_+_b",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_b_b_a_b",
+          "hitLevels": "mmhm"
+        },
+        {
+          "category": "_`",
+          "input": "_b_b_a_2_+_a",
+          "hitLevels": "mmhl"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_a_b",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_a_2_+_a",
+          "hitLevels": "ml"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6^6_+_a_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6^6_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_3_2_1_4_+_b",
+          "hitLevels": "!"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_a",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K_b",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K_b",
+          "hitLevels": "lm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_3_6_a_b",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_3_6_a_2_+_a",
+          "hitLevels": "ml"
+        },
+        {
+          "category": "_`",
+          "input": "_2_3_6_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_3_6_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_a_b",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_a_2_+_a",
+          "hitLevels": "ml"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_a",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_a",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "running",
+          "input": "_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_3_+_b",
+          "hitLevels": "g"
+        }
+      ],
+      "notes": [
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "SIEGFREID SCHTAUFFEN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Hilt Impact",
+          "input": "_a_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Nightmare Slasher",
+          "input": "_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Flap Jack",
+          "input": "_2_+_a_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Mortal Slaughter",
+          "input": "_1_+_b_4_+_b"
+        },
+        {
+          "category": "_*",
+          "name": "Critical Edge",
+          "input": "_a_+_b_+_K",
+          "condition": ","
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_b",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_a_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_a_2_+_a",
+          "hitLevels": "hl"
+        },
+        {
+          "category": "_`",
+          "input": "_b_b_b",
+          "hitLevels": "mml"
+        },
+        {
+          "category": "_`",
+          "input": "_b_b_K",
+          "hitLevels": "mmh"
+        },
+        {
+          "category": "_`",
+          "input": "_b_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_b_2_+_a",
+          "hitLevels": "ml"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_a",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_b_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6^6_+_a_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_a",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_b_a_b",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_4_4_+_b_b",
+          "hitLevels": "ml"
+        },
+        {
+          "category": "_`",
+          "input": "_2_3_6_+_b",
+          "hitLevels": "!"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_a_a",
+          "hitLevels": "ml"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_a",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K_K_b",
+          "hitLevels": "mlm"
+        },
+        {
+          "category": "_`",
+          "name": "running",
+          "input": "_b_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "name": "running",
+          "input": "_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "^3_+_K_K_K_K",
+          "hitLevels": "gggg"
+        }
+      ],
+      "notes": [
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "SOPHITIA ALEXANDER",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Widow Maker",
+          "input": "_a_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Heaven",
+          "input": "_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Heaven to Hell",
+          "input": "_2_+_a_+_b_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Returning Madness",
+          "input": "_4_+_a_+_G (reverse high/mid)"
+        },
+        {
+          "category": "_*",
+          "name": "Soul Asylum",
+          "input": "_a_+_b_+_K",
+          "condition": ","
+        },
+        {
+          "category": "_*",
+          "name": "Dragon Blade",
+          "input": "_a_+_b_+_K",
+          "condition": ","
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_a_K",
+          "hitLevels": "hhhm"
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_b",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_K",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_2_+_a",
+          "hitLevels": "hhl"
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_2_+_K",
+          "hitLevels": "hhl"
+        },
+        {
+          "category": "_`",
+          "input": "_a_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_b_b_a_b",
+          "hitLevels": "mmhm"
+        },
+        {
+          "category": "_`",
+          "input": "_b_b_b",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_b_b_2_+_a",
+          "hitLevels": "mml"
+        },
+        {
+          "category": "_`",
+          "input": "_b_b_2_+_K",
+          "hitLevels": "mml"
+        },
+        {
+          "category": "_`",
+          "input": "_K_K_2_+_K_6_+_K",
+          "hitLevels": "hmlm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_a",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6_2_3_+_a",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_2_3_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_a",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_4_4_+_a~_b",
+          "hitLevels": "!"
+        },
+        {
+          "category": "_`",
+          "input": "_2_3_6_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^2_3_+_a",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "^2_3_+_b",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_a",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_a",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K_a",
+          "hitLevels": "ml"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K_b",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "name": "running",
+          "input": "_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "^3_+_b_b_b_b",
+          "hitLevels": "gggg"
+        },
+        {
+          "category": "_`",
+          "name": "on counter",
+          "input": "_4_+_a",
+          "hitLevels": "mm"
+        }
+      ],
+      "notes": [
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "SEUNG MINA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Dropping Embrace",
+          "input": "_a_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Crushing Soul",
+          "input": "_b_+_G"
+        },
+        {
+          "category": "_*",
+          "name": "Crystal Cyclone",
+          "input": "_a_+_b_+_K",
+          "condition": ","
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_a_K",
+          "hitLevels": "hhhm"
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_a_2_+_K",
+          "hitLevels": "hhhl"
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_b",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_K",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_a_K",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_a_+_b_a_+_b",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_a_+_b_6_+_a_b",
+          "hitLevels": "mhm"
+        },
+        {
+          "category": "_`",
+          "input": "_a_6_+_a_a_K",
+          "hitLevels": "hhhm"
+        },
+        {
+          "category": "_`",
+          "input": "_a_6_+_a_a_2_+_K",
+          "hitLevels": "hhhl"
+        },
+        {
+          "category": "_`",
+          "input": "_b_a",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "_b_b_b",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_b_b_2_+_a",
+          "hitLevels": "mml"
+        },
+        {
+          "category": "_`",
+          "input": "_b_K",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "_b_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_b_2_+_a",
+          "hitLevels": "ml"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_a_K",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_b_a",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_b_b",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_b_2_+_a",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6^6_+_K_K_K",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_b_2_+_a_+_b",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_6_+_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_a",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_a",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_a",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_a_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_a_+_b",
+          "hitLevels": "!",
+          "condition": "_O_G to cancel"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_b_+_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "name": "running",
+          "input": "_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_3_+_K",
+          "hitLevels": "g"
+        }
+      ],
+      "notes": [
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "TAKI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Return of the Sun",
+          "input": "_a_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Departure in Fire",
+          "input": "_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Crossing the Cliff",
+          "input": "_2_1_4_+_b_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Stalker",
+          "input": "_6^6_+_a_+_b"
+        },
+        {
+          "category": "_)",
+          "name": "Counter",
+          "input": "_4_+_a_+_G (reverse high/mid)"
+        },
+        {
+          "category": "_)",
+          "name": "Backflip",
+          "input": "_7"
+        },
+        {
+          "category": "_*",
+          "name": "Critical Edge",
+          "input": "_a_+_b_+_K",
+          "condition": ","
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_a",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_b",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_2_+_K",
+          "hitLevels": "hhl"
+        },
+        {
+          "category": "_`",
+          "input": "_a_b_K",
+          "hitLevels": "hmh"
+        },
+        {
+          "category": "_`",
+          "input": "_a_K",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_a_+_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_b_a_K",
+          "hitLevels": "mhh"
+        },
+        {
+          "category": "_`",
+          "input": "_b_a_6_+_K",
+          "hitLevels": "mhm"
+        },
+        {
+          "category": "_`",
+          "input": "_b_a_2_+_K",
+          "hitLevels": "mhl"
+        },
+        {
+          "category": "_`",
+          "input": "_b_b_a_K",
+          "hitLevels": "mmhh"
+        },
+        {
+          "category": "_`",
+          "input": "_b_b_b",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_b_K",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "_K_K_a",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_K_K_K",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_K_K_2_+_K",
+          "hitLevels": "hhl"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_a_b_b_b",
+          "hitLevels": "hmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6^6_+_a",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6^6_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6^6_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6_3_2_1_+_b",
+          "hitLevels": "!"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K_K",
+          "hitLevels": "lm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_3_6_N_b_K",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "_2_3_6_N_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_a",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_b_b",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_a",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_a",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K_K_K",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "name": "running",
+          "input": "_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_3_+_K",
+          "hitLevels": "g"
+        }
+      ],
+      "notes": [
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "LI LONG",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Dangerous Driver",
+          "input": "_a_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Hell's Throat",
+          "input": "_b_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Dragon's Revenge",
+          "input": "_4_+_a_+_G (reverse high/mid)"
+        },
+        {
+          "category": "_*",
+          "name": "Fire and Brimstone",
+          "input": "_a_+_b_+_K",
+          "condition": ","
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_a",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_K",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_2_+_a",
+          "hitLevels": "hhl"
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_2_+_K_b",
+          "hitLevels": "hhlm"
+        },
+        {
+          "category": "_`",
+          "input": "_a_b_K",
+          "hitLevels": "hmh"
+        },
+        {
+          "category": "_`",
+          "input": "_a_+_b",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_b_a",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "_b_b_b",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_b_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_K_K",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "input": "_K_2_+_a",
+          "hitLevels": "hl"
+        },
+        {
+          "category": "_`",
+          "input": "_K_2_+_K",
+          "hitLevels": "hl"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_a_a_a",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_a_a_2_+_a",
+          "hitLevels": "hhl"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_a_a_2_+_K_b",
+          "hitLevels": "hhlm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_a_b_K",
+          "hitLevels": "hmh"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_b_b",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6^6_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6^6_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_a",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_b_b_b",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_1_4_+_b_4_+_b",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "_2_3_6_+_b",
+          "hitLevels": "mm",
+          "condition": "_4 to cancel"
+        },
+        {
+          "category": "_`",
+          "input": "^2_+_a_8_+_b",
+          "hitLevels": "lm"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_a",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_a",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_b_a",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_b_+_K",
+          "hitLevels": "!"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_a",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "running",
+          "input": "_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_3_+_K",
+          "hitLevels": "g"
+        }
+      ],
+      "notes": [
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "ROCK ADAMS",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Rock Slam",
+          "input": "_a_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Canyon Dive",
+          "input": "_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Falling Rock",
+          "input": "_2_1_4_+_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Dynamite Slam opponent knocked down, close feet",
+          "input": "_3_+_a_+_G"
+        },
+        {
+          "category": "_*",
+          "name": "Devastator",
+          "input": "_a_+_b_+_K",
+          "condition": ","
+        },
+        {
+          "category": "_*",
+          "name": "Rising Uppercut",
+          "input": "_a_+_b_+_K",
+          "condition": ","
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_a",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_a_b",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_a_K",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_b_a",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "_b_b_b",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_a_a_a",
+          "hitLevels": "hhl"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_a_a_b",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6^6_+_a_b",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6^6_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6^6_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_a_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_a_b",
+          "hitLevels": "lm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_3_6_+_b_+_K",
+          "hitLevels": "!"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_a",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_a",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_a",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K_a",
+          "hitLevels": "ml"
+        },
+        {
+          "category": "_`",
+          "name": "running",
+          "input": "_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_8_+_K",
+          "hitLevels": "g"
+        }
+      ],
+      "notes": [
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "VOLDO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Spinning Umbrella",
+          "input": "_a_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Centipede Nightmare",
+          "input": "_b_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Bloody Drill",
+          "input": "_2_3_6_+_b_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "BLIND STANCE: BS",
+          "input": "_2_1_4"
+        },
+        {
+          "category": "_*",
+          "name": "House of Pain",
+          "input": "_a_+_b_+_K",
+          "condition": ","
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_b",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_a_b_a",
+          "hitLevels": "hmm"
+        },
+        {
+          "category": "_`",
+          "input": "_a_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_a_K",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "input": "_a_+_K",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_a_2_+_b",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_b_b",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_a",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_b",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6^6_+_a_+_b_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6^6_+_a_+_b_+_G_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6^6_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_a_a",
+          "hitLevels": "hh",
+          "condition": "BS"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_a_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_a_a_a_K",
+          "hitLevels": "lllh"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_a_+_b",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_a_K",
+          "hitLevels": "lh"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_b_b",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_3_6_+_a",
+          "hitLevels": "!"
+        },
+        {
+          "category": "_`",
+          "input": "^2_3_+_a_+_b",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_a",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_a",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "running",
+          "input": "_a",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "name": "running",
+          "input": "_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "^3_+_a_a_a",
+          "hitLevels": "ggg"
+        },
+        {
+          "category": "_`",
+          "name": "on counter",
+          "input": "_b_b_b_b_b",
+          "hitLevels": "mmmmm"
+        },
+        {
+          "category": "_`",
+          "input": "_a_+_G_8_+_b",
+          "hitLevels": "ll"
+        },
+        {
+          "category": "_`",
+          "input": "^2_+_a_+_b",
+          "hitLevels": "l"
+        }
+      ],
+      "notes": [
+        "Strings Moves",
+        "BLIND STANCE (BS)",
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "HWANG SUNG KYUNG",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Sea of Madness",
+          "input": "_a_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Machine Gun Kick",
+          "input": "_b_+_G"
+        },
+        {
+          "category": "_*",
+          "name": "Cross the Styx",
+          "input": "_a_+_b_+_K",
+          "condition": ","
+        },
+        {
+          "category": "_*",
+          "name": "Rising Uppercut",
+          "input": "_a_+_b_+_K",
+          "condition": ","
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_a",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_b",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_2_+_a",
+          "hitLevels": "hhl"
+        },
+        {
+          "category": "_`",
+          "input": "_a_+_b",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_b_b_a_b",
+          "hitLevels": "mmhm"
+        },
+        {
+          "category": "_`",
+          "input": "_b_b_a_2_+_a",
+          "hitLevels": "mmhl"
+        },
+        {
+          "category": "_`",
+          "input": "_K_K",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_a",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6^6_+_a_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6^6_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6^6_+_K_K_K",
+          "hitLevels": "mmm"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_a",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_b_+_K",
+          "hitLevels": "!"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_6_+_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K_b",
+          "hitLevels": "lm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_3_6_N_a_b",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_3_6_N_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_3_6_N_K",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_a_b",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_K",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_a",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_a_a_b",
+          "hitLevels": "lhm"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "running",
+          "input": "_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_3_+_K",
+          "hitLevels": "g"
+        }
+      ],
+      "notes": [
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "CERVANTES DE LEON",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Shoulder Blades",
+          "input": "_a_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Grand Slam Soul Edge",
+          "input": "_b_+_G"
+        },
+        {
+          "category": "_*",
+          "name": "Critical Edge",
+          "input": "_a_+_b_+_K",
+          "condition": ","
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_a",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_b",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_a_a_2_+_a",
+          "hitLevels": "hhl"
+        },
+        {
+          "category": "_`",
+          "input": "_a_+_b",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_b_b_b",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_b_b_2_+_a",
+          "hitLevels": "hhl"
+        },
+        {
+          "category": "_`",
+          "input": "_K_3_+_K",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_a",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_a_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_b_b_b",
+          "hitLevels": "mhh"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6^6_+_a_+_b",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6^6_+_b_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6^6_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6^6_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6_2_3_+_b",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_4_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_1_4_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_a",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_b",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_a",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_a_+_b",
+          "hitLevels": "!"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_a_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_a",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_a_+_b",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_b",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "running",
+          "input": "_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_2_+_a_+_b",
+          "hitLevels": "g"
+        }
+      ],
+      "notes": [
+        "Strings Moves"
+      ]
+    }
+  ],
+  "cheatNotes": [
+    "_` 2nd Outfit",
+    "- On the Character Select Screen _O_G"
+  ],
+  "controlAbbr": {
+    "_K": "K",
+    "_G": "GR",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_G",
+      "b": "_K"
+    },
+    "genesis": {
+      "b": "_G",
+      "y": "_K"
+    },
+    "megadrive": {
+      "b": "_G",
+      "y": "_K"
+    },
+    "32x": {
+      "b": "_G",
+      "y": "_K"
+    },
+    "saturn": {
+      "b": "_G",
+      "y": "_K"
+    },
+    "psx": {
+      "y": "_K",
+      "x": "_G",
+      "b": "_A",
+      "a": "_B"
+    },
+    "ps2": {
+      "y": "_G",
+      "b": "_K"
+    },
+    "gb": {
+      "b": "_G",
+      "a": "_K"
+    },
+    "gbc": {
+      "b": "_G",
+      "a": "_K"
+    },
+    "gba": {
+      "b": "_G",
+      "a": "_K"
+    }
+  },
+  "controlGroups": {
+    "_K": [
+      "_K"
+    ]
+  }
+}

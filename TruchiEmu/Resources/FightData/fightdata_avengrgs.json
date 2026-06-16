@@ -1,1 +1,532 @@
-{"schemaVersion":2,"romIds":["avengrgs","avengrgsj"],"name":"Avengers in Galactic Storm","credits":"Fabricio Coroquer","controls":{"^E":"Light Punch","^G":"Strong Punch","^H":"Light Kick","^J":"Strong Kick","_S":"Start"},"controlGroups":{"_P":["^E","^G"],"_K":["^H","^J"]},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves","_#":"Partner Assist","_*":"Supers","_&":"Double Team Super"},"commonCommands":[{"category":"_)","name":"Dash","input":"_6_6"},{"category":"_)","name":"Retreat","input":"_4_4"},{"category":"_#","name":"Partner Assist","input":"_2_3_6_+^W"},{"category":"_&","name":"Double Team Super close to partner","input":"^W_+^V"}],"characters":[{"name":"CAPTAIN AMERICA","moves":[{"category":"_(","name":"One-handed Toss","input":"_6_+^E"},{"category":"_(","name":"Spike Slam","input":"_6_+^G"},{"category":"_)","name":"Shield Attack","input":"_^_2_+^G"},{"category":"_)","name":"Riding Shield Attack","input":"_^_2_+^J"},{"category":"_@","name":"Shield Slash","input":"_2_3_6_+_P"},{"category":"_@","name":"Charging Star","input":"_2_3_6_+_K"},{"category":"_@","name":"Rising Shield","input":"_6_2_3_+_P"},{"category":"_@","name":"Liberty Kick","input":"_6_2_3_+_K"},{"category":"_@","name":"Shield Reflector","input":"_2_1_4_+_P (reflect projectile)"},{"category":"_*","name":"Liberty Rush","input":"_2_3_6_+^V"}]},{"name":"THUNDER-STRIKE","moves":[{"category":"_(","name":"High Toss","input":"_6_+^E"},{"category":"_(","name":"Overhead Toss","input":"_6_+^G"},{"category":"_@","name":"Hammer Bolt","input":"_2_3_6_+_P"},{"category":"_@","name":"Thunder Bolt","input":"_6_2_3_+_P"},{"category":"_@","name":"Thunder Wave","input":"_2_1_4_+_P"},{"category":"_@","name":"Tornado","input":"_2_1_4_+_K"},{"category":"_*","name":"Thunder Storm","input":"_2_3_6_+^V"}]},{"name":"BLACK KNIGHT","moves":[{"category":"_(","name":"Neck Drop","input":"_6_+^G"},{"category":"_(","name":"Hilt Bashing","input":"_6_+^J"},{"category":"_(","name":"Air Neck Drop","input":"_^_6_+^G"},{"category":"_)","name":"Step Saber Swipe","input":"_6_+^G"},{"category":"_)","name":"Death Saber","input":"_^_2_+^G"},{"category":"_@","name":"Saber Cutter","input":"^*_P"},{"category":"_@","name":"Saber Rush","input":"_2_3_6_+_P (x4)"},{"category":"_@","name":"Saber Upper","input":"_6_2_3_+_P"},{"category":"_@","name":"Somersault Kick","input":"_6_2_3_+_K"},{"category":"_@","name":"Saber Reflect","input":"_2_1_4_+_P (reflect projectile)"},{"category":"_*","name":"Saber Fury","input":"_2_3_6_+^V"}]},{"name":"CRYSTAL","moves":[{"category":"_(","name":"Layback Throw","input":"_6_+^E"},{"category":"_(","name":"Layback Toss","input":"_6_+^G"},{"category":"_@","name":"Flame Blast","input":"_2_3_6_+_P"},{"category":"_@","name":"Wind Tunnel","input":"_6_2_3_+_P"},{"category":"_@","name":"Earth Tremor","input":"_6_2_3_+_K"},{"category":"_@","name":"Inferno Rush","input":"_2_1_4_+_P"},{"category":"_@","name":"Meteorite","input":"_2_1_4_+_K"},{"category":"_*","name":"Tidal Wave","input":"_2_3_6_+^V"}]},{"name":"SHATTERAX","moves":[{"category":"_(","name":"Electric Field","input":"_6_+^G"},{"category":"_(","name":"Air Electric Field","input":"_^_6_+^G"},{"category":"_)","name":"Hover","input":"_^^8"},{"category":"_@","name":"Death Beam","input":"_2_3_6_+_P"},{"category":"_@","name":"Blast Attack","input":"_^_2_3_6_+_P"},{"category":"_@","name":"Death Charge","input":"_6_2_3_+_P"},{"category":"_@","name":"Capture Pack","input":"_2_1_4_+_P"},{"category":"_*","name":"Jolt Burst","input":"_2_3_6_+^V"}]},{"name":"KORATH","moves":[{"category":"_(","name":"High Angle Drop","input":"_6_+^E"},{"category":"_(","name":"High Angle Crash","input":"_6_+^G"},{"category":"_)","name":"Blast Boot","input":"_6_+^H"},{"category":"_)","name":"Blast High Kick","input":"_6_+^J"},{"category":"_)","name":"Blast Trip","input":"_3_+^J"},{"category":"_)","name":"Blast Stomp","input":"_^_2_+^J"},{"category":"_@","name":"Beta Baton Bash","input":"^*_P"},{"category":"_@","name":"Berserker Charge","input":"(_^)_2_3_6_+_P"},{"category":"_@","name":"Berserker Climb","input":"_6_2_3_+_P"},{"category":"_@","name":"Berserker Dive","input":"_^_6_3_2_+_P"},{"category":"_@","name":"Plasma Field","input":"_2_1_4_+_P"},{"category":"_*","name":"Plasma Barrage","input":"_2_3_6_+^V"}]},{"name":"Dr. MINERVA","moves":[{"category":"_(","name":"Neck Ringer","input":"_6_+_P"},{"category":"_)","name":"Wall Hold jump against the wall","input":"^4"},{"category":"_@","name":"Surge Dive","input":"(_^)_2_3_6_+_P"},{"category":"_@","name":"Rage Stinger","input":"_2_3_6_+_K (x3)"},{"category":"_@","name":"Drill Kick","input":"_^_2_3_6_+_K"},{"category":"_@","name":"Jawing Knee","input":"_6_2_3_+_K"},{"category":"_@","name":"Eruption Driver","input":"_6_3_2_1_4_+_P"},{"category":"_*","name":"Surge Driver","input":"_2_3_6_+^V"}]},{"name":"SUPREMOR","moves":[{"category":"_(","name":"Bear Hug","input":"_6_+_P"},{"category":"_@","name":"Death Ray","input":"_2_3_6_+_P"},{"category":"_@","name":"Bio Slide","input":"_2_3_6_+_K"},{"category":"_@","name":"Torture Capture close","input":"_6_2_3_+^G"},{"category":"_@","name":"Tentacle Smash","input":"_6_2_3_+_K"},{"category":"_@","name":"Tentacle Slam","input":"_6_3_2_1_4_+_P"},{"category":"_*","name":"Death Blast","input":"_2_3_6_+^V"}]}],"controlAbbr":{"^E":"LP","^G":"HP","^H":"LK","^J":"HK","_S":"ST"},"systemControlMappings":{"snes":{"y":"^G","x":"^E","b":"^J","a":"^H"},"genesis":{"y":"^G","b":"^E","c":"^J","a":"^H"},"megadrive":{"y":"^G","b":"^E","c":"^J","a":"^H"},"32x":{"y":"^G","b":"^E","c":"^J","a":"^H"},"saturn":{"y":"^G","b":"^E","c":"^J","a":"^H"},"psx":{"y":"^G","x":"^E","b":"^J","a":"^H"},"ps2":{"y":"^G","x":"^E","b":"^J","a":"^H"},"gb":{"b":"^G","a":"^J"},"gbc":{"b":"^G","a":"^J"},"gamegear":{"a":"^G","b":"^J"},"sms":{"a":"^G","b":"^J"},"gba":{"b":"^G","a":"^E","y":"^J","x":"^H"},"ngpc":{"b":"^G","a":"^E","y":"^J","x":"^H"}}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "avengrgs",
+    "avengrgsj"
+  ],
+  "name": "Avengers in Galactic Storm",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "^E": "Light Punch",
+    "^G": "Strong Punch",
+    "^H": "Light Kick",
+    "^J": "Strong Kick",
+    "_S": "Start"
+  },
+  "controlGroups": {
+    "_P": [
+      "^E",
+      "^G"
+    ],
+    "_K": [
+      "^H",
+      "^J"
+    ]
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_#": "Partner Assist",
+    "_*": "Supers",
+    "_&": "Double Team Super"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "_6_6"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4"
+    },
+    {
+      "category": "_#",
+      "name": "Partner Assist",
+      "input": "_2_3_6_+^W"
+    },
+    {
+      "category": "_&",
+      "name": "Double Team Super close to partner",
+      "input": "^W_+^V"
+    }
+  ],
+  "characters": [
+    {
+      "name": "CAPTAIN AMERICA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "One-handed Toss",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_(",
+          "name": "Spike Slam",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Shield Attack",
+          "input": "_^_2_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Riding Shield Attack",
+          "input": "_^_2_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Shield Slash",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Charging Star",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Rising Shield",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Liberty Kick",
+          "input": "_6_2_3_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Shield Reflector",
+          "input": "_2_1_4_+_P (reflect projectile)"
+        },
+        {
+          "category": "_*",
+          "name": "Liberty Rush",
+          "input": "_2_3_6_+^V"
+        }
+      ]
+    },
+    {
+      "name": "THUNDER-STRIKE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "High Toss",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_(",
+          "name": "Overhead Toss",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Hammer Bolt",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Thunder Bolt",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Thunder Wave",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Tornado",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Thunder Storm",
+          "input": "_2_3_6_+^V"
+        }
+      ]
+    },
+    {
+      "name": "BLACK KNIGHT",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Neck Drop",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Hilt Bashing",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_(",
+          "name": "Air Neck Drop",
+          "input": "_^_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Step Saber Swipe",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Death Saber",
+          "input": "_^_2_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Saber Cutter",
+          "input": "^*_P"
+        },
+        {
+          "category": "_@",
+          "name": "Saber Rush",
+          "input": "_2_3_6_+_P (x4)"
+        },
+        {
+          "category": "_@",
+          "name": "Saber Upper",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Somersault Kick",
+          "input": "_6_2_3_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Saber Reflect",
+          "input": "_2_1_4_+_P (reflect projectile)"
+        },
+        {
+          "category": "_*",
+          "name": "Saber Fury",
+          "input": "_2_3_6_+^V"
+        }
+      ]
+    },
+    {
+      "name": "CRYSTAL",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Layback Throw",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_(",
+          "name": "Layback Toss",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Flame Blast",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Wind Tunnel",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Earth Tremor",
+          "input": "_6_2_3_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Inferno Rush",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Meteorite",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Tidal Wave",
+          "input": "_2_3_6_+^V"
+        }
+      ]
+    },
+    {
+      "name": "SHATTERAX",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Electric Field",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Air Electric Field",
+          "input": "_^_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Hover",
+          "input": "_^^8"
+        },
+        {
+          "category": "_@",
+          "name": "Death Beam",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Blast Attack",
+          "input": "_^_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Death Charge",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Capture Pack",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Jolt Burst",
+          "input": "_2_3_6_+^V"
+        }
+      ]
+    },
+    {
+      "name": "KORATH",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "High Angle Drop",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_(",
+          "name": "High Angle Crash",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Blast Boot",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Blast High Kick",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Blast Trip",
+          "input": "_3_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Blast Stomp",
+          "input": "_^_2_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Beta Baton Bash",
+          "input": "^*_P"
+        },
+        {
+          "category": "_@",
+          "name": "Berserker Charge",
+          "input": "(_^)_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Berserker Climb",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Berserker Dive",
+          "input": "_^_6_3_2_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Plasma Field",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Plasma Barrage",
+          "input": "_2_3_6_+^V"
+        }
+      ]
+    },
+    {
+      "name": "Dr. MINERVA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Neck Ringer",
+          "input": "_6_+_P"
+        },
+        {
+          "category": "_)",
+          "name": "Wall Hold jump against the wall",
+          "input": "^4"
+        },
+        {
+          "category": "_@",
+          "name": "Surge Dive",
+          "input": "(_^)_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Rage Stinger",
+          "input": "_2_3_6_+_K (x3)"
+        },
+        {
+          "category": "_@",
+          "name": "Drill Kick",
+          "input": "_^_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Jawing Knee",
+          "input": "_6_2_3_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Eruption Driver",
+          "input": "_6_3_2_1_4_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Surge Driver",
+          "input": "_2_3_6_+^V"
+        }
+      ]
+    },
+    {
+      "name": "SUPREMOR",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Bear Hug",
+          "input": "_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Death Ray",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Bio Slide",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Torture Capture close",
+          "input": "_6_2_3_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Tentacle Smash",
+          "input": "_6_2_3_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Tentacle Slam",
+          "input": "_6_3_2_1_4_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Death Blast",
+          "input": "_2_3_6_+^V"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "^E": "LP",
+    "^G": "HP",
+    "^H": "LK",
+    "^J": "HK",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "^G",
+      "x": "^E",
+      "b": "^J",
+      "a": "^H"
+    },
+    "genesis": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "megadrive": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "32x": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "saturn": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "psx": {
+      "y": "^G",
+      "x": "^E",
+      "b": "^J",
+      "a": "^H"
+    },
+    "ps2": {
+      "y": "^G",
+      "x": "^E",
+      "b": "^J",
+      "a": "^H"
+    },
+    "gb": {
+      "b": "^G",
+      "a": "^J"
+    },
+    "gbc": {
+      "b": "^G",
+      "a": "^J"
+    },
+    "gamegear": {
+      "a": "^G",
+      "b": "^J"
+    },
+    "sms": {
+      "a": "^G",
+      "b": "^J"
+    },
+    "gba": {
+      "b": "^G",
+      "a": "^E",
+      "y": "^J",
+      "x": "^H"
+    },
+    "ngpc": {
+      "b": "^G",
+      "a": "^E",
+      "y": "^J",
+      "x": "^H"
+    }
+  }
+}

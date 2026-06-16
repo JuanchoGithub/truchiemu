@@ -1,1 +1,1654 @@
-{"schemaVersion":2,"romIds":["sgemf","sgemfa","sgemfh","pfghtj"],"name":"Super Gem Fighter: Mini Mix","year":1997,"manufacturer":"Capcom","controls":{"_P":"Punch","_K":"Kick","_S":"Taunt"},"categories":{"_(":"Normal Throws / Special Throws","_#":"Super Throw","_)":"Command Moves","_@":"Special Moves","_*":"Mighty Combos","_`":"Mighty Combos"},"commonCommands":[{"category":"_)","name":"Dash","input":"_6_6","condition":"─"},{"category":"_)","name":"Run","input":"_6^6","condition":"─"},{"category":"_)","name":"Retreat","input":"_4_4","condition":"─"},{"category":"_)","name":"High Jump","input":"_2_8","condition":"─"},{"category":"_)","name":"Guard Return","input":"_4_+^s (reverse ^s)","condition":"─"},{"category":"_)","name":"Pursuit Attack opponent knocked down","input":"_8_+_P / _K","condition":"─"},{"category":"_)","name":"Throw Escape when thrown","input":"_P_+_K","condition":"─"},{"category":"_)","name":"Guard Cancel (1LV) blocking","input":"_6_+^s","condition":"─"},{"category":"_)","name":"Counter Mega Crush against a Mega Crush","input":"_P_+_K_+_^s","condition":"─"},{"category":"_)","name":"Air Recovery knocked down on air","input":"_P_+_K","condition":"─"},{"category":"_)","name":"Easy Reversal knocked down ^s","condition":"─"},{"category":"_)","name":"Mega Crush (1LV and 1LV of GEM Color)","input":"_P_+_K_+^s","condition":"─"},{"category":"_)","name":"Item Throw","input":"_K_+^s","condition":"─"},{"category":"_`","input":"_P_P_P_P"},{"category":"_`","input":"_P_P_P_K"},{"category":"_`","input":"_P_P_K_P"},{"category":"_`","input":"_P_P_K_K"},{"category":"_`","input":"_P_K_P_P"},{"category":"_`","input":"_P_K_P_K"},{"category":"_`","input":"_P_K_K_P"},{"category":"_`","input":"_P_K_K_K"}],"commonNotes":["Flash Combos"],"characters":[{"name":"RYU","moves":[{"category":"_(","name":"Seoi Nage","input":"_P_+_K","condition":"─"},{"category":"_(","name":"Kuuchuu Seoi Nage","input":"_^_P_+_K","condition":"─"},{"category":"_(","name":"Tomoe Nage","input":"_6_3_2_1_4_+_P_+_K","condition":"─"},{"category":"_#","name":"Repeated Stomach Punches","input":"_4_1_2_3_6_+_P_+_K","condition":"─"},{"category":"_)","name":"Sakotsu Wari","input":"_6_+_P","condition":"─"},{"category":"_)","name":"Overhead Kick","input":"_6_+_K","condition":"─"},{"category":"_)","name":"Quick Punch","input":"_4_+_P","condition":"─"},{"category":"_)","name":"Uppercut","input":"_3_+_P","condition":"─"},{"category":"_)","name":"Front Kick","input":"_3_+_K","condition":"─"},{"category":"_@","name":"Hadou Ken","input":"_2_3_6_+_P","condition":"R"},{"category":"_@","name":"Shouryuu Ken","input":"_6_2_3_+_P","condition":"Y"},{"category":"_@","name":"Tatsumaki Senpuu Kyaku","input":"(_^)_2_1_4_+_K","condition":"B"},{"category":"_*","name":"Shinkuu Hadou Ken","input":"_2_3_6_2_3_6_+_P","condition":"─"},{"category":"_*","name":"Shinkuu Hadou Ken","input":"_2_3_6_+^s","condition":"─"},{"category":"_*","name":"Boufuu Tatsumaki Senpuu Kyaku","input":"_2_1_4_2_1_4_+_K","condition":"─"},{"category":"_*","name":"Boufuu Tatsumaki Senpuu Kyaku","input":"_2_1_4_+^s","condition":"─"},{"category":"_*","name":"Reppuu Jinrai Shou","input":"_P_P_6_K^s","condition":"─"},{"category":"_*","name":"Reppuu Jinrai Shou","input":"_6_2_3_+^s","condition":"─"}]},{"name":"KEN MASTERS","moves":[{"category":"_(","name":"Seoi Nage","input":"_P_+_K","condition":"─"},{"category":"_(","name":"Kuuchuu Tomoe Nage","input":"_^_P_+_K","condition":"─"},{"category":"_(","name":"Tomoe Nage","input":"_6_3_2_1_4_+_P_+_K","condition":"─"},{"category":"_#","name":"Soccer Ball Kick","input":"_4_1_2_3_6_+_P_+_K","condition":"─"},{"category":"_)","name":"Inazuma Kakato Wari","input":"_6_+_K","condition":"─"},{"category":"_)","name":"Uppercut","input":"_3_+_P","condition":"─"},{"category":"_)","name":"Front Kick","input":"_3_+_K","condition":"─"},{"category":"_@","name":"Hadou Ken","input":"_2_3_6_+_P","condition":"R"},{"category":"_@","name":"Shouryuu Ken","input":"_6_2_3_+_P","condition":"Y"},{"category":"_@","name":"Tatsumaki Senpuu Kyaku","input":"(_^)_2_1_4_+_K","condition":"B"},{"category":"_*","name":"Shouryuu Reppa","input":"_2_3_6_2_3_6_+_P","condition":"─"},{"category":"_*","name":"Shouryuu Reppa","input":"_6_2_3_+^s","condition":"─"},{"category":"_*","name":"Shinryuu Ken","input":"_2_3_6_2_3_6_+_K (^*)","condition":"─"},{"category":"_*","name":"Shinryuu Ken","input":"_4_2_1_+^s (^*)","condition":"─"},{"category":"_*","name":"Shippuu Jinrai Kyaku","input":"_2_1_4_2_1_4_+_K","condition":"─"},{"category":"_*","name":"Shippuu Jinrai Kyaku","input":"_4_1_2_3_6_+^s","condition":"─"}]},{"name":"SAKURA KASUGANO","moves":[{"category":"_(","name":"Sakura-jime","input":"_P_+_K","condition":"─"},{"category":"_(","name":"Butt Drop","input":"_^_P_+_K","condition":"─"},{"category":"_(","name":"Two-Handed Toss","input":"_6_3_2_1_4_+_P_+_K","condition":"─"},{"category":"_#","name":"Bunnygirl Butt Smash","input":"_4_1_2_3_6_+_P_+_K","condition":"─"},{"category":"_)","name":"Flower Kick","input":"_6_+_K","condition":"─"},{"category":"_)","name":"Upward Smash","input":"_3_+_P","condition":"─"},{"category":"_)","name":"Slow Sweep","input":"_3_+_K","condition":"─"},{"category":"_@","name":"Hadou Ken","input":"_2_3_6_+_P","condition":"R"},{"category":"_@","name":"Shou'ou San","input":"_6_2_3_+_P","condition":"Y"},{"category":"_@","name":"Shunka Shuutou","input":"_4_1_2_3_6_+_K (^*)","condition":"B"},{"category":"_*","name":"Midare Harusame","input":"_2_3_6_2_3_6_+_K","condition":"─"},{"category":"_*","name":"Midare Harusame","input":"_6_2_3_+^s","condition":"─"},{"category":"_*","name":"Shinkuu Hadou Ken","input":"_2_3_6_2_3_6_+_P","condition":"─"},{"category":"_*","name":"Shinkuu Hadou Ken","input":"_2_3_6_+^s","condition":"─"},{"category":"_*","name":"Haru Ranman","input":"_6_3_2_1_4_1_2_3_6_+_P","condition":"─"},{"category":"_*","name":"Haru Ranman","input":"_6_3_2_1_4_+^s","condition":"─"}]},{"name":"MORRIGAN AENSLAND","moves":[{"category":"_(","name":"Moon Tracer","input":"_P_+_K","condition":"─"},{"category":"_(","name":"Sexual Embrace","input":"_^_P_+_K","condition":"─"},{"category":"_(","name":"Vector Drain","input":"_4_1_2_3_6_+_P_+_K","condition":"─"},{"category":"_#","name":"Firework Launch","input":"_6_3_2_1_4_+_P_+_K","condition":"─"},{"category":"_)","name":"Splash Libido","input":"_6_+_P","condition":"─"},{"category":"_)","name":"Ecstasy Climb","input":"_3_+_P","condition":"─"},{"category":"_)","name":"Vania Dash: Forward","input":"_O^s_6^6","condition":"─"},{"category":"_)","name":"Vania Dash: Backward","input":"_O^s_4^4","condition":"─"},{"category":"_)","name":"Shell Kick","input":"_^_2_+_K","condition":"─"},{"category":"_@","name":"Soul Fist","input":"(_^)_2_3_6_+_P","condition":"R"},{"category":"_@","name":"Shadow Blade","input":"_6_2_3_+_P","condition":"Y"},{"category":"_@","name":"Parasite Roll","input":"_2_1_4_+_K","condition":"B"},{"category":"_*","name":"Death Blade","input":"_2_3_6_2_3_6_+_P","condition":"─"},{"category":"_*","name":"Death Blade","input":"_6_2_3_+^s","condition":"─"},{"category":"_*","name":"Parasite Tempest","input":"_2_1_4_2_1_4_+_K","condition":"─"},{"category":"_*","name":"Parasite Tempest","input":"_2_1_4_+^s","condition":"─"},{"category":"_*","name":"Darkness Illusion","input":"_P_P_6_K^s","condition":"─"},{"category":"_*","name":"Darkness Illusion","input":"_4_1_2_3_6_+^s","condition":"─"}]},{"name":"CHUN-LI","moves":[{"category":"_(","name":"Koshuu Tou","input":"_P_+_K","condition":"─"},{"category":"_(","name":"Spinning Foot Drop","input":"_^_P_+_K","condition":"─"},{"category":"_(","name":"June's High Kick","input":"_6_3_2_1_4_+_P_+_K","condition":"─"},{"category":"_#","name":"Schoolgirl's Love Letter","input":"_4_1_2_3_6_+_P_+_K","condition":"─"},{"category":"_)","name":"Forward Kick","input":"_6_+_K","condition":"─"},{"category":"_)","name":"Upward Kick","input":"_3_+_P","condition":"─"},{"category":"_)","name":"Roundhouse Kick","input":"_3_+_K","condition":"─"},{"category":"_)","name":"Yousou Kyaku","input":"_^_2_+_K","condition":"─"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_9","condition":"─"},{"category":"_@","name":"Hyakuretsu Kyaku","input":"^*_K","condition":"R"},{"category":"_@","name":"Kikou Ken","input":"_4_1_2_3_6_+_P","condition":"Y"},{"category":"_@","name":"Hishou Kyaku","input":"_6_2_3_+_K","condition":"B"},{"category":"_@","name":"Spinning Bird Kick","input":"_4_1_2_3_6_+_K","condition":"─"},{"category":"_*","name":"Kikou Shou","input":"_2_3_6_2_3_6_+_P","condition":"─"},{"category":"_*","name":"Kikou Shou","input":"_2_3_6_+^s","condition":"─"},{"category":"_*","name":"Rinkaishou","input":"_6_3_2_1_4_1_2_3_6_+_P","condition":"─"},{"category":"_*","name":"Rinkaishou","input":"_6_3_2_1_4_+^s","condition":"─"},{"category":"_*","name":"Hazan Hishou Kyaku","input":"_2_3_6_2_3_6_+_K","condition":"─"},{"category":"_*","name":"Hazan Hishou Kyaku","input":"_6_2_3_+^s","condition":"─"}]},{"name":"HSIEN-KO (LEI-LEI)","moves":[{"category":"_(","name":"Hourei","input":"_P_+_K","condition":"─"},{"category":"_(","name":"Houten","input":"_^_P_+_K","condition":"─"},{"category":"_(","name":"Hourei: High Toss","input":"_6_3_2_1_4_+_P_+_K","condition":"─"},{"category":"_#","name":"Houten Geki","input":"_4_1_2_3_6_+_P_+_K","condition":"─"},{"category":"_)","name":"Edoga","input":"_6_+_P","condition":"─"},{"category":"_)","name":"Chainsaw Blade","input":"_6_+_K","condition":"─"},{"category":"_)","name":"Uppercut","input":"_3_+_P","condition":"─"},{"category":"_)","name":"Teleport Dash","input":"_O^s_6_6","condition":"─"},{"category":"_)","name":"Air Walk Forward","input":"_^_6_6","condition":"─"},{"category":"_)","name":"Air Walk Backward","input":"_^_4_4","condition":"─"},{"category":"_@","name":"Anki Hou","input":"_2_3_6_+_P (_O)","condition":"R"},{"category":"_@","name":"Henkyou Ki","input":"(_^)_2_3_6_+_P (reflect projectile)","condition":"Y"},{"category":"_@","name":"Chireitou","input":"_4_1_2_3_6_+_K","condition":"B"},{"category":"_*","name":"Tenrai Ha","input":"_6_3_2_1_4_+^s","condition":"─"},{"category":"_*","name":"Rairai Kyuu","input":"_2_3_6_2_3_6_+_K","condition":"─"},{"category":"_*","name":"Rairai Kyuu","input":"_2_3_6_+^s","condition":"─"},{"category":"_*","name":"Tenkaisan","input":"_2_3_6_2_3_6_+_P","condition":"─"},{"category":"_*","name":"Tenkaisan","input":"_6_2_3_+^s","condition":"─"}]},{"name":"TESSA (TABASA)","moves":[{"category":"_(","name":"Cat Rolling Throw","input":"_P_+_K","condition":"─"},{"category":"_(","name":"Air Cat Rolling Throw","input":"_^_P_+_K","condition":"─"},{"category":"_(","name":"Cat Spinning Throw","input":"_4_1_2_3_6_+_P_+_K","condition":"─"},{"category":"_#","name":"Clown with Giant Rocket Launch","input":"_6_3_2_1_4_+_P_+_K","condition":"─"},{"category":"_)","name":"Cat Kick","input":"(_^)_6_+_K","condition":"─"},{"category":"_)","name":"Witch's Hat","input":"_3_+_P","condition":"─"},{"category":"_)","name":"Haul Flapper","input":"_3_+_K","condition":"─"},{"category":"_)","name":"Mew Sweep High Jump","input":"_2_+_K","condition":"─"},{"category":"_@","name":"Winder Fist","input":"_2_3_6_+_P","condition":"R"},{"category":"_@","name":"Reverie Sword","input":"_6_2_3_+_P","condition":"Y"},{"category":"_@","name":"Dragon's Roar","input":"_2_3_6_+_K","condition":"B"},{"category":"_*","name":"Astron Cannon","input":"_2_1_4_2_1_4_+_P","condition":"─"},{"category":"_*","name":"Astron Cannon","input":"_2_3_6_+^s","condition":"─"},{"category":"_*","name":"Untouchable Force","input":"_6_3_2_1_4_1_2_3_6_+_P_+_K","condition":"─"},{"category":"_*","name":"Untouchable Force","input":"_6_3_2_1_4_+^s","condition":"─"},{"category":"_*","name":"Dragon Apocalypse","input":"_2_3_6_2_3_6_+_K (^*)","condition":"─"},{"category":"_*","name":"Dragon Apocalypse","input":"_6_2_3_+^s (^*)","condition":"─"}]},{"name":"ZANGIEF","moves":[{"category":"_(","name":"Kamitsuki","input":"_P_+_K","condition":"─"},{"category":"_(","name":"Hammer Throw","input":"_4 / _6_+_P_+_K","condition":"─"},{"category":"_(","name":"Piledriver","input":"_2_+_P_+_K","condition":"─"},{"category":"_(","name":"Floor Drop Slam","input":"_^_P_+_K","condition":"─"},{"category":"_(","name":"German Suplex","input":"_2_3_6_+_P_+_K","condition":"─"},{"category":"_#","name":"Two-Hand Toss","input":"_6_3_2_1_4_+_P_+_K","condition":"─"},{"category":"_)","name":"Strong Upper","input":"_3_+_P","condition":"─"},{"category":"_)","name":"Dynamite Kick","input":"_3_+_K","condition":"─"},{"category":"_)","name":"Flying Body Press","input":"_^_2_+_P","condition":"─"},{"category":"_)","name":"Double Knee Drop","input":"_^_2_+_K","condition":"─"},{"category":"_@","name":"Spinning Piledriver close","condition":"R","input":"_x_+_P_+_K"},{"category":"_@","name":"Double Lariat","input":"_P_+^s","condition":"Y"},{"category":"_@","input":"^!Move                                                          _4 / _6","condition":"Y"},{"category":"_@","name":"Banishing Flat","input":"_6_2_3_+_P","condition":"B"},{"category":"_@","name":"Iron Press","input":"_^_2_2_+_P","condition":"─"},{"category":"_*","name":"Final Atomic Buster close","condition":"─","input":"_x_x_+_P_+_K"},{"category":"_*","name":"Final Atomic Buster close","condition":"─","input":"_x_+^s"},{"category":"_*","name":"Russian Beat","input":"_2_3_6_2_3_6_+_K, ^*_P_K_P_K_.","condition":"─"},{"category":"_*","name":"Russian Beat","input":"_6_2_3_+^s","condition":"─"},{"category":"_*","name":"Heavy Bite","input":"_2_1_4_2_1_4_+_P_+_K","condition":"─"},{"category":"_*","name":"Heavy Bite","input":"_4_1_2_3_6_+^s","condition":"─"}]},{"name":"FELICIA","moves":[{"category":"_(","name":"Panic Nail","input":"_P_+_K","condition":"─"},{"category":"_(","name":"Flip Cat","input":"_^_P_+_K","condition":"─"},{"category":"_(","name":"Tumble Cat","input":"_6_3_2_1_4_+_P_+_K","condition":"─"},{"category":"_(","name":"Cat Lick","input":"_4_1_2_3_6_+_P_+_K","condition":"─"},{"category":"_#","name":"Gamo Screw","condition":"─","input":"_x_+_P_+_K"},{"category":"_)","name":"Upper Kick","input":"_3_+_P","condition":"─"},{"category":"_)","name":"Toe Kick","input":"_3_+_K","condition":"─"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_9","condition":"─"},{"category":"_@","name":"Sand Splash","input":"_2_3_6_+_K","condition":"R"},{"category":"_@","name":"Rolling Buckler","input":"_2_3_6_+_P","condition":"Y"},{"category":"_@","input":"^!Rolling Uppercut                                              _P","condition":"Y"},{"category":"_@","name":"Delta Kick","input":"_6_2_3_+_K_K","condition":"B"},{"category":"_@","name":"Hysteric Star","input":"^*_P","condition":"─"},{"category":"_@","name":"Rolling Scratch","input":"_2_1_4_+_P_P","condition":"─"},{"category":"_*","name":"Dancing Flash","input":"_2_3_6_2_3_6_+_P","condition":"─"},{"category":"_*","name":"Dancing Flash","input":"_6_2_3_+^s","condition":"─"},{"category":"_*","name":"Please Help Me!","input":"_6_3_2_1_4_1_2_3_6_+_P","condition":"─"},{"category":"_*","name":"Please Help Me!","input":"_4_1_2_3_6_+^s","condition":"─"},{"category":"_*","name":"Crazy For You","input":"_4_1_2_3_6_3_2_1_4_+_K","condition":"─"},{"category":"_*","name":"Crazy For You","input":"_6_3_2_1_4_+^s","condition":"─"}]},{"name":"IBUKI","moves":[{"category":"_(","name":"Floor Panel Smash","input":"_P_+_K","condition":"─"},{"category":"_(","name":"Tobizaru","input":"_^_P_+_K","condition":"─"},{"category":"_(","name":"High Floor Panel Smash","input":"_6_3_2_1_4_+_P_+_K","condition":"─"},{"category":"_#","name":"Man with Top Spin","input":"_4_1_2_3_6_+_P_+_K","condition":"─"},{"category":"_)","name":"Split Kick","input":"_3_+_P","condition":"─"},{"category":"_)","name":"Spin Kick","input":"_3_+_K","condition":"─"},{"category":"_@","name":"Kunai","input":"(_^)_2_3_6_+_P","condition":"R"},{"category":"_@","name":"Kazekiri","input":"_6_2_3_+_K","condition":"Y"},{"category":"_@","name":"Hien","input":"_4_2_1_+_K","condition":"B"},{"category":"_@","name":"Tsumuji","input":"_2_1_4_+_K","condition":"─"},{"category":"_@","input":"^!Medium Kick                                                   _K (x2)","condition":"─"},{"category":"_@","input":"^!Low Kick                                                      _2_+_K (x2)","condition":"─"},{"category":"_*","name":"Kasumi Suzaku","input":"(_^)_2_3_6_2_3_6_+_P","condition":"─"},{"category":"_*","name":"Kasumi Suzaku","input":"(_^)_2_3_6_+^s","condition":"─"},{"category":"_*","name":"Hayate","input":"_2_3_6_2_3_6_+_P","condition":"─"},{"category":"_*","name":"Hayate","input":"_6_2_3_+^s","condition":"─"},{"category":"_*","name":"Jiraiya","input":"_6_3_2_1_4_1_2_3_6_+_K","condition":"─"},{"category":"_*","name":"Jiraiya","input":"_6_3_2_1_4_+^s","condition":"─"}]},{"name":"AKUMA (GOUKI)","moves":[{"category":"_(","name":"Seoi Nage","input":"_P_+_K","condition":"─"},{"category":"_(","name":"Kuuchuu Seoi Nage","input":"_^_P_+_K","condition":"─"},{"category":"_(","name":"Tomoe Nage","input":"_6_3_2_1_4_+_P_+_K","condition":"─"},{"category":"_#","name":"Dramatic Speech","input":"_4_1_2_3_6_+_P_+_K","condition":"─"},{"category":"_)","name":"Overhead Kick","input":"_6_+_K","condition":"─"},{"category":"_)","name":"Uppercut","input":"_3_+_P","condition":"─"},{"category":"_)","name":"Front Kick","input":"_3_+_K","condition":"─"},{"category":"_)","name":"Tenma Kuujin Kyaku jump forward","input":"_2_+_K","condition":"─"},{"category":"_@","name":"Gou Hadou Ken","input":"_2_3_6_+_P","condition":"R"},{"category":"_@","name":"Zankuu Hadou Ken","input":"_^_2_3_6_+_P","condition":"R"},{"category":"_@","name":"Gou Shouryuu Ken","input":"_6_2_3_+_P","condition":"Y"},{"category":"_@","name":"Tatsumaki Zankuu Kyaku","input":"(_^)_2_1_4_+_K","condition":"B"},{"category":"_@","name":"Shakunetsu Hadou Ken","input":"_6_3_2_1_4_+_P","condition":"─"},{"category":"_@","name":"Hyakki Shuu","input":"_2_3_6_9_+_P","condition":"─"},{"category":"_@","input":"^!Hyakki Gou Zan                                                _N","condition":"─"},{"category":"_@","input":"^!Hyakki Gou Shou                                               _P","condition":"─"},{"category":"_@","input":"^!Hyakki Gou Sen                                                _K","condition":"─"},{"category":"_@","input":"^!Hyakki Gou Sai                                                close _4 / _6_+_P","condition":"─"},{"category":"_@","input":"^!Hyakki Gou Tsui                                               opponent in air, close _4 / _6_+_K","condition":"─"},{"category":"_@","name":"Ashura Senkuu: Zenpou","input":"_6_2_3_+_P_+^s / _K","condition":"─"},{"category":"_@","name":"Ashura Senkuu: Kouhou","input":"_4_2_1_+_P_+^s / _K","condition":"─"},{"category":"_*","name":"Messatsu Gou Shouryuu","input":"_2_3_6_2_3_6_+_P","condition":"─"},{"category":"_*","name":"Messatsu Gou Shouryuu","input":"_6_2_3_+^s","condition":"─"},{"category":"_*","name":"Messatsu Gou Hadou","input":"_6_3_2_1_4_1_2_3_6_+_P","condition":"─"},{"category":"_*","name":"Messatsu Gou Hadou","input":"_4_1_2_3_6_+^s","condition":"─"},{"category":"_*","name":"Tenma Gou Zankuu","input":"_^_6_3_2_1_4_1_2_3_6_+_P","condition":"─"},{"category":"_*","name":"Tenma Gou Zankuu","input":"_^_4_1_2_3_6_+^s","condition":"─"},{"category":"_*","name":"Shun Goku Satsu (3LVs)","input":"_P_P_6_K^s","condition":"─"},{"category":"_*","name":"Shun Goku Satsu (3LVs)","input":"_6_3_2_1_4_+^s","condition":"─"}]},{"name":"DAN HIBIKI","moves":[{"category":"_(","name":"Seoi Nage","input":"_P_+_K","condition":"─"},{"category":"_(","name":"Kuuchuu Tomoe Nage","input":"_^_P_+_K","condition":"─"},{"category":"_(","name":"Tomoe Nage","input":"_6_3_2_1_4_+_P_+_K","condition":"─"},{"category":"_#","name":"Karaoke Singing","input":"_4_1_2_3_6_+_P_+_K","condition":"─"},{"category":"_)","name":"Uppercut","input":"_3_+_P","condition":"─"},{"category":"_)","name":"Front Kick","input":"_3_+_K","condition":"─"},{"category":"_)","name":"Shagami Chouhatsu crouching","input":"_S","condition":"─"},{"category":"_)","name":"Kuuchuu Chouhatsu","input":"_^_S","condition":"─"},{"category":"_@","name":"Gadou Ken","input":"_2_3_6_+_P","condition":"R"},{"category":"_@","name":"Kouryuu Ken","input":"_6_2_3_+_P","condition":"Y"},{"category":"_@","name":"Dankuu Kyaku","input":"_2_1_4_+_K","condition":"B"},{"category":"_*","name":"Shinkuu Gadou Ken","input":"_2_3_6_2_3_6_+_P","condition":"─"},{"category":"_*","name":"Shinkuu Gadou Ken","input":"_2_3_6_+^s","condition":"─"},{"category":"_*","name":"Kouryuu Rekka","input":"_2_3_6_2_3_6_+_K","condition":"─"},{"category":"_*","name":"Kouryuu Rekka","input":"_6_2_3_+^s","condition":"─"},{"category":"_*","name":"Oyaji Blast","input":"_2_1_4_1_2_3_6_+_P","condition":"─"},{"category":"_*","name":"Oyaji Blast","input":"_4_1_2_3_6_+^s","condition":"─"},{"category":"_*","name":"Jun Koku Satsu (3LVs)","input":"_P_P_6_K^s","condition":"─"},{"category":"_*","name":"Jun Koku Satsu (3LVs)","input":"_6_3_2_1_4_+^s","condition":"─"},{"category":"_*","name":"Chouhatsu Densetsu","input":"_2_3_6_2_3_6_+_S","condition":"─"}]}],"cheatNotes":["_` Fight Dan Hibiki","- Don't lose any round","- Win 3 rounds in under 40 seconds","- Win 3 rounds with more than 75% Life Bar","- Win 2 rounds with all Gem Moves at LV1 and your opponent with all Gem Moves at LV3","_` Fight Akuma","- Don't lose any round","- Win 6 matchs with Mighty Combos","- Win 2 rounds in under 20 seconds","- Win 2 rounds with more than 90% Life Bar","- Win 2 rounds with all Gem Moves at LV3 and your opponent with all Gem Moves at LV1"],"controlAbbr":{"_P":"P","_K":"K","_S":"TA"},"systemControlMappings":{"snes":{"y":"_P","b":"_K"},"genesis":{"b":"_P","y":"_K"},"megadrive":{"b":"_P","y":"_K"},"32x":{"b":"_P","y":"_K"},"saturn":{"b":"_P","y":"_K"},"psx":{"y":"_P","b":"_K"},"ps2":{"y":"_P","b":"_K"},"gb":{"b":"_P","a":"_K"},"gbc":{"b":"_P","a":"_K"},"gamegear":{"a":"_P","b":"_K"},"sms":{"a":"_P","b":"_K"},"gba":{"b":"^E","a":"^H","l1":"^G","r1":"^J"},"ngpc":{"b":"_P","a":"_K"}},"controlGroups":{"_P":["_P"],"_K":["_K"]}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "sgemf",
+    "sgemfa",
+    "sgemfh",
+    "pfghtj"
+  ],
+  "name": "Super Gem Fighter: Mini Mix",
+  "year": 1997,
+  "manufacturer": "Capcom",
+  "controls": {
+    "_P": "Punch",
+    "_K": "Kick",
+    "_S": "Taunt"
+  },
+  "categories": {
+    "_(": "Normal Throws / Special Throws",
+    "_#": "Super Throw",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_*": "Mighty Combos",
+    "_`": "Mighty Combos"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "_6_6",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Run",
+      "input": "_6^6",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "High Jump",
+      "input": "_2_8",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Guard Return",
+      "input": "_4_+^s (reverse ^s)",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Pursuit Attack opponent knocked down",
+      "input": "_8_+_P / _K",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Throw Escape when thrown",
+      "input": "_P_+_K",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Guard Cancel (1LV) blocking",
+      "input": "_6_+^s",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Counter Mega Crush against a Mega Crush",
+      "input": "_P_+_K_+_^s",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Air Recovery knocked down on air",
+      "input": "_P_+_K",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Easy Reversal knocked down ^s",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Mega Crush (1LV and 1LV of GEM Color)",
+      "input": "_P_+_K_+^s",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Item Throw",
+      "input": "_K_+^s",
+      "condition": "─"
+    },
+    {
+      "category": "_`",
+      "input": "_P_P_P_P"
+    },
+    {
+      "category": "_`",
+      "input": "_P_P_P_K"
+    },
+    {
+      "category": "_`",
+      "input": "_P_P_K_P"
+    },
+    {
+      "category": "_`",
+      "input": "_P_P_K_K"
+    },
+    {
+      "category": "_`",
+      "input": "_P_K_P_P"
+    },
+    {
+      "category": "_`",
+      "input": "_P_K_P_K"
+    },
+    {
+      "category": "_`",
+      "input": "_P_K_K_P"
+    },
+    {
+      "category": "_`",
+      "input": "_P_K_K_K"
+    }
+  ],
+  "commonNotes": [
+    "Flash Combos"
+  ],
+  "characters": [
+    {
+      "name": "RYU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Seoi Nage",
+          "input": "_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Kuuchuu Seoi Nage",
+          "input": "_^_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Tomoe Nage",
+          "input": "_6_3_2_1_4_+_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Repeated Stomach Punches",
+          "input": "_4_1_2_3_6_+_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Sakotsu Wari",
+          "input": "_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Overhead Kick",
+          "input": "_6_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Quick Punch",
+          "input": "_4_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Uppercut",
+          "input": "_3_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Front Kick",
+          "input": "_3_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Hadou Ken",
+          "input": "_2_3_6_+_P",
+          "condition": "R"
+        },
+        {
+          "category": "_@",
+          "name": "Shouryuu Ken",
+          "input": "_6_2_3_+_P",
+          "condition": "Y"
+        },
+        {
+          "category": "_@",
+          "name": "Tatsumaki Senpuu Kyaku",
+          "input": "(_^)_2_1_4_+_K",
+          "condition": "B"
+        },
+        {
+          "category": "_*",
+          "name": "Shinkuu Hadou Ken",
+          "input": "_2_3_6_2_3_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Shinkuu Hadou Ken",
+          "input": "_2_3_6_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Boufuu Tatsumaki Senpuu Kyaku",
+          "input": "_2_1_4_2_1_4_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Boufuu Tatsumaki Senpuu Kyaku",
+          "input": "_2_1_4_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Reppuu Jinrai Shou",
+          "input": "_P_P_6_K^s",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Reppuu Jinrai Shou",
+          "input": "_6_2_3_+^s",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "KEN MASTERS",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Seoi Nage",
+          "input": "_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Kuuchuu Tomoe Nage",
+          "input": "_^_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Tomoe Nage",
+          "input": "_6_3_2_1_4_+_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Soccer Ball Kick",
+          "input": "_4_1_2_3_6_+_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Inazuma Kakato Wari",
+          "input": "_6_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Uppercut",
+          "input": "_3_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Front Kick",
+          "input": "_3_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Hadou Ken",
+          "input": "_2_3_6_+_P",
+          "condition": "R"
+        },
+        {
+          "category": "_@",
+          "name": "Shouryuu Ken",
+          "input": "_6_2_3_+_P",
+          "condition": "Y"
+        },
+        {
+          "category": "_@",
+          "name": "Tatsumaki Senpuu Kyaku",
+          "input": "(_^)_2_1_4_+_K",
+          "condition": "B"
+        },
+        {
+          "category": "_*",
+          "name": "Shouryuu Reppa",
+          "input": "_2_3_6_2_3_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Shouryuu Reppa",
+          "input": "_6_2_3_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Shinryuu Ken",
+          "input": "_2_3_6_2_3_6_+_K (^*)",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Shinryuu Ken",
+          "input": "_4_2_1_+^s (^*)",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Shippuu Jinrai Kyaku",
+          "input": "_2_1_4_2_1_4_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Shippuu Jinrai Kyaku",
+          "input": "_4_1_2_3_6_+^s",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "SAKURA KASUGANO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Sakura-jime",
+          "input": "_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Butt Drop",
+          "input": "_^_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Two-Handed Toss",
+          "input": "_6_3_2_1_4_+_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Bunnygirl Butt Smash",
+          "input": "_4_1_2_3_6_+_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Flower Kick",
+          "input": "_6_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Upward Smash",
+          "input": "_3_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Slow Sweep",
+          "input": "_3_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Hadou Ken",
+          "input": "_2_3_6_+_P",
+          "condition": "R"
+        },
+        {
+          "category": "_@",
+          "name": "Shou'ou San",
+          "input": "_6_2_3_+_P",
+          "condition": "Y"
+        },
+        {
+          "category": "_@",
+          "name": "Shunka Shuutou",
+          "input": "_4_1_2_3_6_+_K (^*)",
+          "condition": "B"
+        },
+        {
+          "category": "_*",
+          "name": "Midare Harusame",
+          "input": "_2_3_6_2_3_6_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Midare Harusame",
+          "input": "_6_2_3_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Shinkuu Hadou Ken",
+          "input": "_2_3_6_2_3_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Shinkuu Hadou Ken",
+          "input": "_2_3_6_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Haru Ranman",
+          "input": "_6_3_2_1_4_1_2_3_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Haru Ranman",
+          "input": "_6_3_2_1_4_+^s",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "MORRIGAN AENSLAND",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Moon Tracer",
+          "input": "_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Sexual Embrace",
+          "input": "_^_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Vector Drain",
+          "input": "_4_1_2_3_6_+_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Firework Launch",
+          "input": "_6_3_2_1_4_+_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Splash Libido",
+          "input": "_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Ecstasy Climb",
+          "input": "_3_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Vania Dash: Forward",
+          "input": "_O^s_6^6",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Vania Dash: Backward",
+          "input": "_O^s_4^4",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Shell Kick",
+          "input": "_^_2_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Soul Fist",
+          "input": "(_^)_2_3_6_+_P",
+          "condition": "R"
+        },
+        {
+          "category": "_@",
+          "name": "Shadow Blade",
+          "input": "_6_2_3_+_P",
+          "condition": "Y"
+        },
+        {
+          "category": "_@",
+          "name": "Parasite Roll",
+          "input": "_2_1_4_+_K",
+          "condition": "B"
+        },
+        {
+          "category": "_*",
+          "name": "Death Blade",
+          "input": "_2_3_6_2_3_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Death Blade",
+          "input": "_6_2_3_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Parasite Tempest",
+          "input": "_2_1_4_2_1_4_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Parasite Tempest",
+          "input": "_2_1_4_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Darkness Illusion",
+          "input": "_P_P_6_K^s",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Darkness Illusion",
+          "input": "_4_1_2_3_6_+^s",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "CHUN-LI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Koshuu Tou",
+          "input": "_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Spinning Foot Drop",
+          "input": "_^_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "June's High Kick",
+          "input": "_6_3_2_1_4_+_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Schoolgirl's Love Letter",
+          "input": "_4_1_2_3_6_+_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Forward Kick",
+          "input": "_6_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Upward Kick",
+          "input": "_3_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Roundhouse Kick",
+          "input": "_3_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Yousou Kyaku",
+          "input": "_^_2_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_9",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Hyakuretsu Kyaku",
+          "input": "^*_K",
+          "condition": "R"
+        },
+        {
+          "category": "_@",
+          "name": "Kikou Ken",
+          "input": "_4_1_2_3_6_+_P",
+          "condition": "Y"
+        },
+        {
+          "category": "_@",
+          "name": "Hishou Kyaku",
+          "input": "_6_2_3_+_K",
+          "condition": "B"
+        },
+        {
+          "category": "_@",
+          "name": "Spinning Bird Kick",
+          "input": "_4_1_2_3_6_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Kikou Shou",
+          "input": "_2_3_6_2_3_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Kikou Shou",
+          "input": "_2_3_6_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Rinkaishou",
+          "input": "_6_3_2_1_4_1_2_3_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Rinkaishou",
+          "input": "_6_3_2_1_4_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Hazan Hishou Kyaku",
+          "input": "_2_3_6_2_3_6_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Hazan Hishou Kyaku",
+          "input": "_6_2_3_+^s",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "HSIEN-KO (LEI-LEI)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Hourei",
+          "input": "_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Houten",
+          "input": "_^_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Hourei: High Toss",
+          "input": "_6_3_2_1_4_+_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Houten Geki",
+          "input": "_4_1_2_3_6_+_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Edoga",
+          "input": "_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Chainsaw Blade",
+          "input": "_6_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Uppercut",
+          "input": "_3_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Teleport Dash",
+          "input": "_O^s_6_6",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Air Walk Forward",
+          "input": "_^_6_6",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Air Walk Backward",
+          "input": "_^_4_4",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Anki Hou",
+          "input": "_2_3_6_+_P (_O)",
+          "condition": "R"
+        },
+        {
+          "category": "_@",
+          "name": "Henkyou Ki",
+          "input": "(_^)_2_3_6_+_P (reflect projectile)",
+          "condition": "Y"
+        },
+        {
+          "category": "_@",
+          "name": "Chireitou",
+          "input": "_4_1_2_3_6_+_K",
+          "condition": "B"
+        },
+        {
+          "category": "_*",
+          "name": "Tenrai Ha",
+          "input": "_6_3_2_1_4_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Rairai Kyuu",
+          "input": "_2_3_6_2_3_6_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Rairai Kyuu",
+          "input": "_2_3_6_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Tenkaisan",
+          "input": "_2_3_6_2_3_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Tenkaisan",
+          "input": "_6_2_3_+^s",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "TESSA (TABASA)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Cat Rolling Throw",
+          "input": "_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Air Cat Rolling Throw",
+          "input": "_^_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Cat Spinning Throw",
+          "input": "_4_1_2_3_6_+_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Clown with Giant Rocket Launch",
+          "input": "_6_3_2_1_4_+_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Cat Kick",
+          "input": "(_^)_6_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Witch's Hat",
+          "input": "_3_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Haul Flapper",
+          "input": "_3_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Mew Sweep High Jump",
+          "input": "_2_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Winder Fist",
+          "input": "_2_3_6_+_P",
+          "condition": "R"
+        },
+        {
+          "category": "_@",
+          "name": "Reverie Sword",
+          "input": "_6_2_3_+_P",
+          "condition": "Y"
+        },
+        {
+          "category": "_@",
+          "name": "Dragon's Roar",
+          "input": "_2_3_6_+_K",
+          "condition": "B"
+        },
+        {
+          "category": "_*",
+          "name": "Astron Cannon",
+          "input": "_2_1_4_2_1_4_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Astron Cannon",
+          "input": "_2_3_6_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Untouchable Force",
+          "input": "_6_3_2_1_4_1_2_3_6_+_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Untouchable Force",
+          "input": "_6_3_2_1_4_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Dragon Apocalypse",
+          "input": "_2_3_6_2_3_6_+_K (^*)",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Dragon Apocalypse",
+          "input": "_6_2_3_+^s (^*)",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "ZANGIEF",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Kamitsuki",
+          "input": "_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Hammer Throw",
+          "input": "_4 / _6_+_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Piledriver",
+          "input": "_2_+_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Floor Drop Slam",
+          "input": "_^_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "German Suplex",
+          "input": "_2_3_6_+_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Two-Hand Toss",
+          "input": "_6_3_2_1_4_+_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Strong Upper",
+          "input": "_3_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Dynamite Kick",
+          "input": "_3_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Flying Body Press",
+          "input": "_^_2_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Double Knee Drop",
+          "input": "_^_2_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Spinning Piledriver close",
+          "condition": "R",
+          "input": "_x_+_P_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Double Lariat",
+          "input": "_P_+^s",
+          "condition": "Y"
+        },
+        {
+          "category": "_@",
+          "input": "^!Move                                                          _4 / _6",
+          "condition": "Y"
+        },
+        {
+          "category": "_@",
+          "name": "Banishing Flat",
+          "input": "_6_2_3_+_P",
+          "condition": "B"
+        },
+        {
+          "category": "_@",
+          "name": "Iron Press",
+          "input": "_^_2_2_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Final Atomic Buster close",
+          "condition": "─",
+          "input": "_x_x_+_P_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Final Atomic Buster close",
+          "condition": "─",
+          "input": "_x_+^s"
+        },
+        {
+          "category": "_*",
+          "name": "Russian Beat",
+          "input": "_2_3_6_2_3_6_+_K, ^*_P_K_P_K_.",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Russian Beat",
+          "input": "_6_2_3_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Heavy Bite",
+          "input": "_2_1_4_2_1_4_+_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Heavy Bite",
+          "input": "_4_1_2_3_6_+^s",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "FELICIA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Panic Nail",
+          "input": "_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Flip Cat",
+          "input": "_^_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Tumble Cat",
+          "input": "_6_3_2_1_4_+_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Cat Lick",
+          "input": "_4_1_2_3_6_+_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Gamo Screw",
+          "condition": "─",
+          "input": "_x_+_P_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Upper Kick",
+          "input": "_3_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Toe Kick",
+          "input": "_3_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_9",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Sand Splash",
+          "input": "_2_3_6_+_K",
+          "condition": "R"
+        },
+        {
+          "category": "_@",
+          "name": "Rolling Buckler",
+          "input": "_2_3_6_+_P",
+          "condition": "Y"
+        },
+        {
+          "category": "_@",
+          "input": "^!Rolling Uppercut                                              _P",
+          "condition": "Y"
+        },
+        {
+          "category": "_@",
+          "name": "Delta Kick",
+          "input": "_6_2_3_+_K_K",
+          "condition": "B"
+        },
+        {
+          "category": "_@",
+          "name": "Hysteric Star",
+          "input": "^*_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Rolling Scratch",
+          "input": "_2_1_4_+_P_P",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Dancing Flash",
+          "input": "_2_3_6_2_3_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Dancing Flash",
+          "input": "_6_2_3_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Please Help Me!",
+          "input": "_6_3_2_1_4_1_2_3_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Please Help Me!",
+          "input": "_4_1_2_3_6_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Crazy For You",
+          "input": "_4_1_2_3_6_3_2_1_4_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Crazy For You",
+          "input": "_6_3_2_1_4_+^s",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "IBUKI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Floor Panel Smash",
+          "input": "_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Tobizaru",
+          "input": "_^_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "High Floor Panel Smash",
+          "input": "_6_3_2_1_4_+_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Man with Top Spin",
+          "input": "_4_1_2_3_6_+_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Split Kick",
+          "input": "_3_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Spin Kick",
+          "input": "_3_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Kunai",
+          "input": "(_^)_2_3_6_+_P",
+          "condition": "R"
+        },
+        {
+          "category": "_@",
+          "name": "Kazekiri",
+          "input": "_6_2_3_+_K",
+          "condition": "Y"
+        },
+        {
+          "category": "_@",
+          "name": "Hien",
+          "input": "_4_2_1_+_K",
+          "condition": "B"
+        },
+        {
+          "category": "_@",
+          "name": "Tsumuji",
+          "input": "_2_1_4_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Medium Kick                                                   _K (x2)",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Low Kick                                                      _2_+_K (x2)",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Kasumi Suzaku",
+          "input": "(_^)_2_3_6_2_3_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Kasumi Suzaku",
+          "input": "(_^)_2_3_6_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Hayate",
+          "input": "_2_3_6_2_3_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Hayate",
+          "input": "_6_2_3_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Jiraiya",
+          "input": "_6_3_2_1_4_1_2_3_6_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Jiraiya",
+          "input": "_6_3_2_1_4_+^s",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "AKUMA (GOUKI)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Seoi Nage",
+          "input": "_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Kuuchuu Seoi Nage",
+          "input": "_^_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Tomoe Nage",
+          "input": "_6_3_2_1_4_+_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Dramatic Speech",
+          "input": "_4_1_2_3_6_+_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Overhead Kick",
+          "input": "_6_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Uppercut",
+          "input": "_3_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Front Kick",
+          "input": "_3_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Tenma Kuujin Kyaku jump forward",
+          "input": "_2_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Gou Hadou Ken",
+          "input": "_2_3_6_+_P",
+          "condition": "R"
+        },
+        {
+          "category": "_@",
+          "name": "Zankuu Hadou Ken",
+          "input": "_^_2_3_6_+_P",
+          "condition": "R"
+        },
+        {
+          "category": "_@",
+          "name": "Gou Shouryuu Ken",
+          "input": "_6_2_3_+_P",
+          "condition": "Y"
+        },
+        {
+          "category": "_@",
+          "name": "Tatsumaki Zankuu Kyaku",
+          "input": "(_^)_2_1_4_+_K",
+          "condition": "B"
+        },
+        {
+          "category": "_@",
+          "name": "Shakunetsu Hadou Ken",
+          "input": "_6_3_2_1_4_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Hyakki Shuu",
+          "input": "_2_3_6_9_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Hyakki Gou Zan                                                _N",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Hyakki Gou Shou                                               _P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Hyakki Gou Sen                                                _K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Hyakki Gou Sai                                                close _4 / _6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Hyakki Gou Tsui                                               opponent in air, close _4 / _6_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Ashura Senkuu: Zenpou",
+          "input": "_6_2_3_+_P_+^s / _K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Ashura Senkuu: Kouhou",
+          "input": "_4_2_1_+_P_+^s / _K",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Messatsu Gou Shouryuu",
+          "input": "_2_3_6_2_3_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Messatsu Gou Shouryuu",
+          "input": "_6_2_3_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Messatsu Gou Hadou",
+          "input": "_6_3_2_1_4_1_2_3_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Messatsu Gou Hadou",
+          "input": "_4_1_2_3_6_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Tenma Gou Zankuu",
+          "input": "_^_6_3_2_1_4_1_2_3_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Tenma Gou Zankuu",
+          "input": "_^_4_1_2_3_6_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Shun Goku Satsu (3LVs)",
+          "input": "_P_P_6_K^s",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Shun Goku Satsu (3LVs)",
+          "input": "_6_3_2_1_4_+^s",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "DAN HIBIKI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Seoi Nage",
+          "input": "_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Kuuchuu Tomoe Nage",
+          "input": "_^_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Tomoe Nage",
+          "input": "_6_3_2_1_4_+_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Karaoke Singing",
+          "input": "_4_1_2_3_6_+_P_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Uppercut",
+          "input": "_3_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Front Kick",
+          "input": "_3_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Shagami Chouhatsu crouching",
+          "input": "_S",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Kuuchuu Chouhatsu",
+          "input": "_^_S",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Gadou Ken",
+          "input": "_2_3_6_+_P",
+          "condition": "R"
+        },
+        {
+          "category": "_@",
+          "name": "Kouryuu Ken",
+          "input": "_6_2_3_+_P",
+          "condition": "Y"
+        },
+        {
+          "category": "_@",
+          "name": "Dankuu Kyaku",
+          "input": "_2_1_4_+_K",
+          "condition": "B"
+        },
+        {
+          "category": "_*",
+          "name": "Shinkuu Gadou Ken",
+          "input": "_2_3_6_2_3_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Shinkuu Gadou Ken",
+          "input": "_2_3_6_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Kouryuu Rekka",
+          "input": "_2_3_6_2_3_6_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Kouryuu Rekka",
+          "input": "_6_2_3_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Oyaji Blast",
+          "input": "_2_1_4_1_2_3_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Oyaji Blast",
+          "input": "_4_1_2_3_6_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Jun Koku Satsu (3LVs)",
+          "input": "_P_P_6_K^s",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Jun Koku Satsu (3LVs)",
+          "input": "_6_3_2_1_4_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Chouhatsu Densetsu",
+          "input": "_2_3_6_2_3_6_+_S",
+          "condition": "─"
+        }
+      ]
+    }
+  ],
+  "cheatNotes": [
+    "_` Fight Dan Hibiki",
+    "- Don't lose any round",
+    "- Win 3 rounds in under 40 seconds",
+    "- Win 3 rounds with more than 75% Life Bar",
+    "- Win 2 rounds with all Gem Moves at LV1 and your opponent with all Gem Moves at LV3",
+    "_` Fight Akuma",
+    "- Don't lose any round",
+    "- Win 6 matchs with Mighty Combos",
+    "- Win 2 rounds in under 20 seconds",
+    "- Win 2 rounds with more than 90% Life Bar",
+    "- Win 2 rounds with all Gem Moves at LV3 and your opponent with all Gem Moves at LV1"
+  ],
+  "controlAbbr": {
+    "_P": "P",
+    "_K": "K",
+    "_S": "TA"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_P",
+      "b": "_K"
+    },
+    "genesis": {
+      "b": "_P",
+      "y": "_K"
+    },
+    "megadrive": {
+      "b": "_P",
+      "y": "_K"
+    },
+    "32x": {
+      "b": "_P",
+      "y": "_K"
+    },
+    "saturn": {
+      "b": "_P",
+      "y": "_K"
+    },
+    "psx": {
+      "y": "_P",
+      "b": "_K"
+    },
+    "ps2": {
+      "y": "_P",
+      "b": "_K"
+    },
+    "gb": {
+      "b": "_P",
+      "a": "_K"
+    },
+    "gbc": {
+      "b": "_P",
+      "a": "_K"
+    },
+    "gamegear": {
+      "a": "_P",
+      "b": "_K"
+    },
+    "sms": {
+      "a": "_P",
+      "b": "_K"
+    },
+    "gba": {
+      "b": "^E",
+      "a": "^H",
+      "l1": "^G",
+      "r1": "^J"
+    },
+    "ngpc": {
+      "b": "_P",
+      "a": "_K"
+    }
+  },
+  "controlGroups": {
+    "_P": [
+      "_P"
+    ],
+    "_K": [
+      "_K"
+    ]
+  }
+}

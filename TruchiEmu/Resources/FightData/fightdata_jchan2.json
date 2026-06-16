@@ -1,1 +1,682 @@
-{"schemaVersion":2,"romIds":["jchan2"],"name":"Jackie Chan in Fists of Fire","year":1995,"manufacturer":"Kaneko","credits":"Fabricio Coroquer","controls":{"^E":"Light Punch","^G":"Heavy Punch","^H":"Light Kick","^J":"Heavy Kick","_S":"Taunt"},"controlGroups":{"_P":["^E","^G"],"_K":["^H","^J"]},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves","_*":"Super","_`":"Super"},"commonCommands":[{"category":"_)","name":"Dash","input":"_6_6"},{"category":"_)","name":"Retreat","input":"_4_4"},{"category":"_)","name":"Taunt","input":"^G_+^J"},{"category":"_)","name":"Charge Power Gauge","input":"_O^G / ^J"},{"category":"_)","name":"Pursuit Attack opponent knocked down","input":"_8_+_P"},{"category":"_)","name":"Knockdown Recovery knocked down _?_+^*_P /","input":"_K"},{"category":"_)","name":"Forward Recovery","input":"^6"},{"category":"_)","name":"Backward Recovery","input":"^4"},{"category":"_)","name":"Wake Up Attack","input":"_K"},{"category":"_)","name":"Pursuit Reversal being hit by a Pursuit Attack","input":"_P_+_K / ^W / ^V"},{"category":"_)","name":"Chain-Combo 1","input":"^E^H^G^J"},{"category":"_)","name":"Chain-Combo 2","input":"^E^H^J^G"},{"category":"_)","name":"Chain-Combo 3","input":"^H^E^G^J"},{"category":"_)","name":"Chain-Combo 4","input":"^H^E^J^G"}],"characters":[{"name":"LAU","moves":[{"category":"_(","name":"Head Spike","input":"_4 / _6_+^G"},{"category":"_(","name":"Layback Toss","input":"_4 / _6_+^J"},{"category":"_)","name":"Flying Overhead Kick","input":"_6_+^J"},{"category":"_)","name":"Punch to Kick Rush","input":"^E^E^E^E"},{"category":"_)","name":"Punch to Uppercut Fury","input":"^E^E^G^G^W"},{"category":"_@","name":"Flame Orb","input":"_2_3_6_+_P"},{"category":"_@","name":"Rising Dragon Punch","input":"_6_2_3_+_P (^*)"},{"category":"_@","name":"Dragon Kick","input":"_2_3_6_+_K"},{"category":"_*","name":"Dragon's Breath","input":"_2_3_6_+^W"}]},{"name":"MYSTERIOUS LION","moves":[{"category":"_(","name":"Back Body Drop","input":"_4 / _6_+^G"},{"category":"_(","name":"Savage Lion","input":"_1 / _3_+^G"},{"category":"_)","name":"Mighty Cape","input":"_6_+^G"},{"category":"_)","name":"Lion Axe Kick","input":"_6_+^J"},{"category":"_)","name":"Headbutts to Mighty Cape","input":"^E^E^E^E^E^E"},{"category":"_)","name":"Cape Attack to Crusher","input":"^H^H^J^G^G^W"},{"category":"_@","name":"Mini-Lion Bomb","input":"_2_3_6_+_P"},{"category":"_@","name":"Psycho Lion Crusher","input":"_6_4_6_+_P (^*)"},{"category":"_@","name":"Lion Vanish","input":"_6_3_2_1_4_+_P / _K"},{"category":"_*","name":"Mini-Lion Transformation","input":"_6_4_6_+^W"},{"category":"_*","name":"Self-Destruct","input":"(_^)_P"},{"category":"_*","name":"Mini-Lion Force","input":"(_^)_K / _6_+_K"}]},{"name":"YEUNG","moves":[{"category":"_(","name":"Typhoon Wallop","input":"_4 / _6_+^G"},{"category":"_)","name":"Bo Thrust","input":"_6_+^G"},{"category":"_)","name":"Rolling Heel Drop","input":"_6_+^J"},{"category":"_)","name":"Advancing Pole Rush","input":"^E^E^E^E"},{"category":"_)","name":"Flip to Pole Slash","input":"_2_+^J^J^G^G"},{"category":"_@","name":"Crow Shot","input":"_2_3_6_+_P"},{"category":"_@","name":"Crane Wings","input":"_6_3_2_1_4_+_P"},{"category":"_@","name":"Swallow Kick","input":"_4_1_2_3_6_+_K"},{"category":"_*","name":"Bo Assault","input":"_6_3_2_1_4_+^W"}]},{"name":"KIM-MAREE","moves":[{"category":"_(","name":"Slap Barrage","input":"_4 / _6_+^G"},{"category":"_(","name":"Release Frankensteiner","input":"_4 / _6_+^J"},{"category":"_(","name":"Frankensteiner and Bash","input":"_1 / _3_+^G"},{"category":"_(","name":"Frankensteiner Driver","input":"_^_4 / _6_+^J"},{"category":"_)","name":"Cartwheel","input":"_6_+^J"},{"category":"_)","name":"Rush to Roundhouse Kick","input":"^E^E^E^E"},{"category":"_)","name":"Cartwheel to Dropkick","input":"^E^H^G^J^J^V"},{"category":"_@","name":"Running Lariat Drop","input":"_2_3_6_+_P"},{"category":"_@","name":"I Want You!","input":"_2_8_+_P"},{"category":"_@","name":"Double Frankensteiner close","input":"_2_3_6_+_K"},{"category":"_*","name":"Ultra Frankensteiner close","input":"_4_1_2_3_6_+^V"}]},{"name":"THORSTEN","moves":[{"category":"_(","name":"Rag Doll Toss","input":"_4 / _6_+^G"},{"category":"_)","name":"Advancing Dig Fist","input":"_6_+^G"},{"category":"_)","name":"Mid Kick","input":"_6_+^J"},{"category":"_)","name":"Punch Flail to Back Kick","input":"^E^E^E^E^E^E"},{"category":"_)","name":"Attack Rush to Jacknife","input":"^E^E^G^G^G^J^J^V"},{"category":"_@","name":"Slash Sword","input":"_1_6_+_P"},{"category":"_@","name":"Teleport","input":"_2_8_+_P"},{"category":"_@","name":"Jackknife Storm","input":"_4_6_+_K (^*)"},{"category":"_@","name":"Upkicks","input":"_2_8_+_K"},{"category":"_*","name":"Spinning Death Saw","input":"_6_4_6_+^V"}]},{"name":"SAM","moves":[{"category":"_(","name":"Layout Punch","input":"_4 / _6_+^G"},{"category":"_(","name":"Riding Backflip","input":"_4 / _6_+^J"},{"category":"_)","name":"Double Axe Kick","input":"_6_+^J"},{"category":"_)","name":"Rush to Swipe Kick","input":"^E^E^E^E^E"},{"category":"_)","name":"Kick Fury to Flip Kick","input":"^E^G^J^J_8_+^V"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_9"},{"category":"_@","name":"Thousand Fists","input":"_2_3_6_+_P"},{"category":"_@","name":"Flurry Rush","input":"_2_3_6_+_K_K_K"},{"category":"_@","name":"Flying Kick","input":"_2_1_4_+_K"},{"category":"_*","name":"Flurry Combination","input":"_2_3_6_+^V"}]},{"name":"JACKIE CHAN (DRUNKEN FIST)","moves":[{"category":"_(","name":"Tornado Throw","input":"_4 / _6_+^G"},{"category":"_)","name":"Drunken Overhead Kick","input":"_6_+^J"},{"category":"_)","name":"Drunken Rush to Flop","input":"^E^E^E^E^E^E"},{"category":"_)","name":"Blind Attacks to Backfist","input":"^E^J^G^H^E^G"},{"category":"_@","name":"Jug Throw","input":"_2_3_6_+_P"},{"category":"_@","name":"Drunken Rising Tackle","input":"_2_8_+_P"},{"category":"_@","name":"Drunken Blitz","input":"_6_3_2_1_4_+_P"},{"category":"_@","name":"Slam Drunk","input":"_2_3_6_+_K"},{"category":"_*","name":"Drunken Barrage","input":"_6_3_2_1_4_+^W"}]},{"name":"JACKIE CHAN (BAGUAZHANG)","moves":[{"category":"_(","name":"Catapult Kick","input":"_4 / _6_+^J"},{"category":"_)","name":"Double Overhead Kick","input":"_6_+^J"},{"category":"_)","name":"Palm Strikes to Kicks","input":"^E^E^E^E^E"},{"category":"_)","name":"Overhead Kick to Hop Kick","input":"_6_+^J^G^J^J^V"},{"category":"_@","name":"Exalted Palm","input":"_4_1_2_3_6_+_P"},{"category":"_@","name":"Fire Dragon","input":"_^_4_1_2_3_6_+_P"},{"category":"_@","name":"Double Dutch","input":"_6_2_3_+_K"},{"category":"_*","name":"Buddha's Palm","input":"_4_1_2_3_6_+^W"}]},{"name":"JACKIE CHAN (FIVE ANIMAL FIST)","moves":[{"category":"_(","name":"Head Spike","input":"_4 / _6_+^G"},{"category":"_)","name":"Punch to Bladed Stab","input":"_6_+^G"},{"category":"_)","name":"Forward Hop Kick","input":"_6_+^H"},{"category":"_)","name":"Backward Hop Kick","input":"_4_+^H"},{"category":"_)","name":"Hopping Heel Drop","input":"_6_+^J"},{"category":"_)","name":"Quick Rush to Claw Push","input":"^E^E^E^E^E"},{"category":"_)","name":"Push to Flying Kick","input":"^E^G^G^J^J^V"},{"category":"_@","name":"Five Animal Fist","input":"_4_1_2_3_6_+_P"},{"category":"_@","name":"Crush Kick","input":"_2_3_6_+_K"},{"category":"_@","name":"Frantic Kick close","input":"_6_3_2_1_4_+_K"},{"category":"_*","name":"Five Animal Fist Ranbu","input":"_4_1_2_3_6_+^W"}]}],"cheatNotes":["_` \"Boss Character\" Version","- On the Character Select Screen, select your character with _S_+_P / _K","- All \"Boss Characters\" use the same moves, but have better juggles"],"controlAbbr":{"^E":"LP","^G":"HP","^H":"LK","^J":"HK","_S":"TA"},"systemControlMappings":{"snes":{"y":"^G","x":"^E","b":"^J","a":"^H"},"genesis":{"y":"^G","b":"^E","c":"^J","a":"^H"},"megadrive":{"y":"^G","b":"^E","c":"^J","a":"^H"},"32x":{"y":"^G","b":"^E","c":"^J","a":"^H"},"saturn":{"y":"^G","b":"^E","c":"^J","a":"^H"},"psx":{"y":"^G","x":"^E","b":"^J","a":"^H"},"ps2":{"y":"^G","x":"^E","b":"^J","a":"^H"},"gb":{"b":"^G","a":"^J"},"gbc":{"b":"^G","a":"^J"},"gamegear":{"a":"^G","b":"^J"},"sms":{"a":"^G","b":"^J"},"gba":{"b":"^G","a":"^E","y":"^J","x":"^H"},"ngpc":{"b":"^G","a":"^E","y":"^J","x":"^H"}}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "jchan2"
+  ],
+  "name": "Jackie Chan in Fists of Fire",
+  "year": 1995,
+  "manufacturer": "Kaneko",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "^E": "Light Punch",
+    "^G": "Heavy Punch",
+    "^H": "Light Kick",
+    "^J": "Heavy Kick",
+    "_S": "Taunt"
+  },
+  "controlGroups": {
+    "_P": [
+      "^E",
+      "^G"
+    ],
+    "_K": [
+      "^H",
+      "^J"
+    ]
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_*": "Super",
+    "_`": "Super"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "_6_6"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4"
+    },
+    {
+      "category": "_)",
+      "name": "Taunt",
+      "input": "^G_+^J"
+    },
+    {
+      "category": "_)",
+      "name": "Charge Power Gauge",
+      "input": "_O^G / ^J"
+    },
+    {
+      "category": "_)",
+      "name": "Pursuit Attack opponent knocked down",
+      "input": "_8_+_P"
+    },
+    {
+      "category": "_)",
+      "name": "Knockdown Recovery knocked down _?_+^*_P /",
+      "input": "_K"
+    },
+    {
+      "category": "_)",
+      "name": "Forward Recovery",
+      "input": "^6"
+    },
+    {
+      "category": "_)",
+      "name": "Backward Recovery",
+      "input": "^4"
+    },
+    {
+      "category": "_)",
+      "name": "Wake Up Attack",
+      "input": "_K"
+    },
+    {
+      "category": "_)",
+      "name": "Pursuit Reversal being hit by a Pursuit Attack",
+      "input": "_P_+_K / ^W / ^V"
+    },
+    {
+      "category": "_)",
+      "name": "Chain-Combo 1",
+      "input": "^E^H^G^J"
+    },
+    {
+      "category": "_)",
+      "name": "Chain-Combo 2",
+      "input": "^E^H^J^G"
+    },
+    {
+      "category": "_)",
+      "name": "Chain-Combo 3",
+      "input": "^H^E^G^J"
+    },
+    {
+      "category": "_)",
+      "name": "Chain-Combo 4",
+      "input": "^H^E^J^G"
+    }
+  ],
+  "characters": [
+    {
+      "name": "LAU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Head Spike",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Layback Toss",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Flying Overhead Kick",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Punch to Kick Rush",
+          "input": "^E^E^E^E"
+        },
+        {
+          "category": "_)",
+          "name": "Punch to Uppercut Fury",
+          "input": "^E^E^G^G^W"
+        },
+        {
+          "category": "_@",
+          "name": "Flame Orb",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Rising Dragon Punch",
+          "input": "_6_2_3_+_P (^*)"
+        },
+        {
+          "category": "_@",
+          "name": "Dragon Kick",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Dragon's Breath",
+          "input": "_2_3_6_+^W"
+        }
+      ]
+    },
+    {
+      "name": "MYSTERIOUS LION",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Back Body Drop",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Savage Lion",
+          "input": "_1 / _3_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Mighty Cape",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Lion Axe Kick",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Headbutts to Mighty Cape",
+          "input": "^E^E^E^E^E^E"
+        },
+        {
+          "category": "_)",
+          "name": "Cape Attack to Crusher",
+          "input": "^H^H^J^G^G^W"
+        },
+        {
+          "category": "_@",
+          "name": "Mini-Lion Bomb",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Psycho Lion Crusher",
+          "input": "_6_4_6_+_P (^*)"
+        },
+        {
+          "category": "_@",
+          "name": "Lion Vanish",
+          "input": "_6_3_2_1_4_+_P / _K"
+        },
+        {
+          "category": "_*",
+          "name": "Mini-Lion Transformation",
+          "input": "_6_4_6_+^W"
+        },
+        {
+          "category": "_*",
+          "name": "Self-Destruct",
+          "input": "(_^)_P"
+        },
+        {
+          "category": "_*",
+          "name": "Mini-Lion Force",
+          "input": "(_^)_K / _6_+_K"
+        }
+      ]
+    },
+    {
+      "name": "YEUNG",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Typhoon Wallop",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Bo Thrust",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Rolling Heel Drop",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Advancing Pole Rush",
+          "input": "^E^E^E^E"
+        },
+        {
+          "category": "_)",
+          "name": "Flip to Pole Slash",
+          "input": "_2_+^J^J^G^G"
+        },
+        {
+          "category": "_@",
+          "name": "Crow Shot",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Crane Wings",
+          "input": "_6_3_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Swallow Kick",
+          "input": "_4_1_2_3_6_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Bo Assault",
+          "input": "_6_3_2_1_4_+^W"
+        }
+      ]
+    },
+    {
+      "name": "KIM-MAREE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Slap Barrage",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Release Frankensteiner",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_(",
+          "name": "Frankensteiner and Bash",
+          "input": "_1 / _3_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Frankensteiner Driver",
+          "input": "_^_4 / _6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Cartwheel",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Rush to Roundhouse Kick",
+          "input": "^E^E^E^E"
+        },
+        {
+          "category": "_)",
+          "name": "Cartwheel to Dropkick",
+          "input": "^E^H^G^J^J^V"
+        },
+        {
+          "category": "_@",
+          "name": "Running Lariat Drop",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "I Want You!",
+          "input": "_2_8_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Double Frankensteiner close",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Ultra Frankensteiner close",
+          "input": "_4_1_2_3_6_+^V"
+        }
+      ]
+    },
+    {
+      "name": "THORSTEN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Rag Doll Toss",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Advancing Dig Fist",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Mid Kick",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Punch Flail to Back Kick",
+          "input": "^E^E^E^E^E^E"
+        },
+        {
+          "category": "_)",
+          "name": "Attack Rush to Jacknife",
+          "input": "^E^E^G^G^G^J^J^V"
+        },
+        {
+          "category": "_@",
+          "name": "Slash Sword",
+          "input": "_1_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Teleport",
+          "input": "_2_8_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Jackknife Storm",
+          "input": "_4_6_+_K (^*)"
+        },
+        {
+          "category": "_@",
+          "name": "Upkicks",
+          "input": "_2_8_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Spinning Death Saw",
+          "input": "_6_4_6_+^V"
+        }
+      ]
+    },
+    {
+      "name": "SAM",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Layout Punch",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Riding Backflip",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Double Axe Kick",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Rush to Swipe Kick",
+          "input": "^E^E^E^E^E"
+        },
+        {
+          "category": "_)",
+          "name": "Kick Fury to Flip Kick",
+          "input": "^E^G^J^J_8_+^V"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_9"
+        },
+        {
+          "category": "_@",
+          "name": "Thousand Fists",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Flurry Rush",
+          "input": "_2_3_6_+_K_K_K"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Kick",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Flurry Combination",
+          "input": "_2_3_6_+^V"
+        }
+      ]
+    },
+    {
+      "name": "JACKIE CHAN (DRUNKEN FIST)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Tornado Throw",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Drunken Overhead Kick",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Drunken Rush to Flop",
+          "input": "^E^E^E^E^E^E"
+        },
+        {
+          "category": "_)",
+          "name": "Blind Attacks to Backfist",
+          "input": "^E^J^G^H^E^G"
+        },
+        {
+          "category": "_@",
+          "name": "Jug Throw",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Drunken Rising Tackle",
+          "input": "_2_8_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Drunken Blitz",
+          "input": "_6_3_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Slam Drunk",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Drunken Barrage",
+          "input": "_6_3_2_1_4_+^W"
+        }
+      ]
+    },
+    {
+      "name": "JACKIE CHAN (BAGUAZHANG)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Catapult Kick",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Double Overhead Kick",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Palm Strikes to Kicks",
+          "input": "^E^E^E^E^E"
+        },
+        {
+          "category": "_)",
+          "name": "Overhead Kick to Hop Kick",
+          "input": "_6_+^J^G^J^J^V"
+        },
+        {
+          "category": "_@",
+          "name": "Exalted Palm",
+          "input": "_4_1_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Fire Dragon",
+          "input": "_^_4_1_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Double Dutch",
+          "input": "_6_2_3_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Buddha's Palm",
+          "input": "_4_1_2_3_6_+^W"
+        }
+      ]
+    },
+    {
+      "name": "JACKIE CHAN (FIVE ANIMAL FIST)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Head Spike",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Punch to Bladed Stab",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Forward Hop Kick",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Backward Hop Kick",
+          "input": "_4_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Hopping Heel Drop",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Quick Rush to Claw Push",
+          "input": "^E^E^E^E^E"
+        },
+        {
+          "category": "_)",
+          "name": "Push to Flying Kick",
+          "input": "^E^G^G^J^J^V"
+        },
+        {
+          "category": "_@",
+          "name": "Five Animal Fist",
+          "input": "_4_1_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Crush Kick",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Frantic Kick close",
+          "input": "_6_3_2_1_4_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Five Animal Fist Ranbu",
+          "input": "_4_1_2_3_6_+^W"
+        }
+      ]
+    }
+  ],
+  "cheatNotes": [
+    "_` \"Boss Character\" Version",
+    "- On the Character Select Screen, select your character with _S_+_P / _K",
+    "- All \"Boss Characters\" use the same moves, but have better juggles"
+  ],
+  "controlAbbr": {
+    "^E": "LP",
+    "^G": "HP",
+    "^H": "LK",
+    "^J": "HK",
+    "_S": "TA"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "^G",
+      "x": "^E",
+      "b": "^J",
+      "a": "^H"
+    },
+    "genesis": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "megadrive": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "32x": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "saturn": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "psx": {
+      "y": "^G",
+      "x": "^E",
+      "b": "^J",
+      "a": "^H"
+    },
+    "ps2": {
+      "y": "^G",
+      "x": "^E",
+      "b": "^J",
+      "a": "^H"
+    },
+    "gb": {
+      "b": "^G",
+      "a": "^J"
+    },
+    "gbc": {
+      "b": "^G",
+      "a": "^J"
+    },
+    "gamegear": {
+      "a": "^G",
+      "b": "^J"
+    },
+    "sms": {
+      "a": "^G",
+      "b": "^J"
+    },
+    "gba": {
+      "b": "^G",
+      "a": "^E",
+      "y": "^J",
+      "x": "^H"
+    },
+    "ngpc": {
+      "b": "^G",
+      "a": "^E",
+      "y": "^J",
+      "x": "^H"
+    }
+  }
+}

@@ -1,1 +1,251 @@
-{"schemaVersion":2,"romIds":["tophuntr","tophuntrh"],"name":"Top Hunter - Roddy & Cathy","year":1994,"manufacturer":"SNK","credits":"by: Fabricio Coroquer (Created by: André Luiz Dias da Silva)","controls":{"_A":"Arm Stretch","_B":"Jump","_C":"Change Planes","_D":"Not Used","_S":"Start","^S":"Select (AES only)"},"categories":{"_)":"Command Moves","_@":"Special Moves","_*":"Desperation Moves","_`":"Desperation Moves"},"commonCommands":[{"category":"_)","name":"Punch","input":"_X_A"},{"category":"_)","name":"Arm Stretch","input":"_A"},{"category":"_)","name":"Arm Stretch Up","input":"_8_+_A"},{"category":"_)","name":"Throw close to enemy / object","input":"_A"},{"category":"_)","name":"Release Away","input":"_A"}],"characters":[{"name":"RODDY","moves":[{"category":"_@","name":"Ko'ou Ken","input":"_2_3_6_+_A"},{"category":"_@","name":"Zanretsu Ken","input":"^*_A"},{"category":"_@","name":"Ryuuga","input":"_6_2_3_+_A"},{"category":"_@","name":"Burn Knuckle","input":"^3_6_+_A"},{"category":"_@","name":"Power Wave","input":"^8_9_+_A"},{"category":"_@","name":"Slide Kick","input":"_2_3_6_+_B"},{"category":"_@","name":"Roll Jump","input":"^2_8_+_B"},{"category":"_*","name":"Ryuuko Ranbu","input":"^3_6_+_B"}]},{"name":"CATHY","moves":[{"category":"_@","name":"Venom Strike","input":"_2_3_6_+_A"},{"category":"_@","name":"Gen'ei Kyaku","input":"^*_A"},{"category":"_@","name":"Kohou","input":"_6_2_3_+_A"},{"category":"_@","name":"Slash Kick","input":"^3_6_+_A"},{"category":"_@","name":"Power Wave","input":"^8_9_+_A"},{"category":"_@","name":"Slide Kick","input":"_2_3_6_+_B"},{"category":"_@","name":"Roll Jump","input":"^2_8_+_B"},{"category":"_*","name":"Ryuuko Ranbu","input":"^3_6_+_B"}]}],"controlAbbr":{"_A":"AS","_B":"JM","_C":"CP","_D":"—","_S":"ST","^S":"SL"},"systemControlMappings":{"snes":{"y":"_A","x":"_B","b":"_C","a":"_D"},"genesis":{"b":"_A","a":"_B","y":"_C","x":"_D"},"megadrive":{"b":"_A","a":"_B","y":"_C","x":"_D"},"32x":{"b":"_A","a":"_B","y":"_C","x":"_D"},"saturn":{"b":"_A","a":"_B","y":"_C","x":"_D"},"neogeo":{"b":"_A","y":"_B","a":"_C","x":"_D"},"psx":{"y":"_A","x":"_B","b":"_C","a":"_D"},"ps2":{"y":"_A","x":"_B","b":"_C","a":"_D"},"gb":{"b":"_A","a":"_B"},"gbc":{"b":"_A","a":"_B"},"gamegear":{"a":"_A","b":"_B"},"sms":{"a":"_A","b":"_B"},"gba":{"b":"_A","a":"_B","l1":"_C","r1":"_D"},"ngpc":{"b":"_A","a":"_B","y":"_C","x":"_D"},"dreamcast":{"y":"_A","x":"_B","b":"_C","a":"_D"},"n64":{"b":"_A","a":"_B","cDown":"_C","cLeft":"_D"},"wswan":{"b":"_A","a":"_B"}},"controlGroups":{"_P":["_A"]}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "tophuntr",
+    "tophuntrh"
+  ],
+  "name": "Top Hunter - Roddy & Cathy",
+  "year": 1994,
+  "manufacturer": "SNK",
+  "credits": "by: Fabricio Coroquer (Created by: André Luiz Dias da Silva)",
+  "controls": {
+    "_A": "Arm Stretch",
+    "_B": "Jump",
+    "_C": "Change Planes",
+    "_D": "Not Used",
+    "_S": "Start",
+    "^S": "Select (AES only)"
+  },
+  "categories": {
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_*": "Desperation Moves",
+    "_`": "Desperation Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Punch",
+      "input": "_X_A"
+    },
+    {
+      "category": "_)",
+      "name": "Arm Stretch",
+      "input": "_A"
+    },
+    {
+      "category": "_)",
+      "name": "Arm Stretch Up",
+      "input": "_8_+_A"
+    },
+    {
+      "category": "_)",
+      "name": "Throw close to enemy / object",
+      "input": "_A"
+    },
+    {
+      "category": "_)",
+      "name": "Release Away",
+      "input": "_A"
+    }
+  ],
+  "characters": [
+    {
+      "name": "RODDY",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Ko'ou Ken",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Zanretsu Ken",
+          "input": "^*_A"
+        },
+        {
+          "category": "_@",
+          "name": "Ryuuga",
+          "input": "_6_2_3_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Burn Knuckle",
+          "input": "^3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Power Wave",
+          "input": "^8_9_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Slide Kick",
+          "input": "_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Roll Jump",
+          "input": "^2_8_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Ryuuko Ranbu",
+          "input": "^3_6_+_B"
+        }
+      ]
+    },
+    {
+      "name": "CATHY",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Venom Strike",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Gen'ei Kyaku",
+          "input": "^*_A"
+        },
+        {
+          "category": "_@",
+          "name": "Kohou",
+          "input": "_6_2_3_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Slash Kick",
+          "input": "^3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Power Wave",
+          "input": "^8_9_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Slide Kick",
+          "input": "_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Roll Jump",
+          "input": "^2_8_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Ryuuko Ranbu",
+          "input": "^3_6_+_B"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_A": "AS",
+    "_B": "JM",
+    "_C": "CP",
+    "_D": "—",
+    "_S": "ST",
+    "^S": "SL"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "genesis": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "megadrive": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "32x": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "saturn": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "neogeo": {
+      "b": "_A",
+      "y": "_B",
+      "a": "_C",
+      "x": "_D"
+    },
+    "psx": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "ps2": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "gb": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gbc": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gamegear": {
+      "a": "_A",
+      "b": "_B"
+    },
+    "sms": {
+      "a": "_A",
+      "b": "_B"
+    },
+    "gba": {
+      "b": "_A",
+      "a": "_B",
+      "l1": "_C",
+      "r1": "_D"
+    },
+    "ngpc": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "dreamcast": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "n64": {
+      "b": "_A",
+      "a": "_B",
+      "cDown": "_C",
+      "cLeft": "_D"
+    },
+    "wswan": {
+      "b": "_A",
+      "a": "_B"
+    }
+  },
+  "controlGroups": {
+    "_P": [
+      "_A"
+    ]
+  }
+}

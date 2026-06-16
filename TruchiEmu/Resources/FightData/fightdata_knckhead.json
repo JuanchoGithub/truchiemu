@@ -1,1 +1,374 @@
-{"schemaVersion":2,"romIds":["knckhead","knckheadj","knckheadjp"],"name":"Knuckle Heads","year":1993,"manufacturer":"Namco","credits":"Fabricio Coroquer","controls":{"_S":"Start"},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves"},"commonCommands":[{"category":"_)","name":"LV1 Aura Moves","input":"_O_a / _b for 1 second"},{"category":"_)","name":"LV2 Aura Moves","input":"_O_a / _b for 2 seconds"}],"characters":[{"name":"ROB VINCENT","moves":[{"category":"_(","name":"Shoulder Toss","input":"_6_+_a / _b"},{"category":"_@","name":"Blast Force Wave","input":"^4_6_+_a / _b"},{"category":"_@","name":"Mega Blast Force Wave","input":"_O_a / _b ^4_6"},{"category":"_@","name":"Spiral Cutter","input":"_2_8_+_a / _b"},{"category":"_@","name":"Tornado Slash","input":"_6_2_3_+_a"},{"category":"_@","name":"Far Tornado Slash","input":"_O_a _6_2_3"},{"category":"_@","name":"Slide Kick","input":"_2_3_6_+_b"},{"category":"_@","name":"Long Slide Kick","input":"_O_b _2_3_6"}]},{"name":"TAKESHI FUJIOKA","moves":[{"category":"_(","name":"Frankensteiner","input":"_6_+_a / _b"},{"category":"_@","name":"Taka-Mai Kuretsuzan","input":"_2_3_6_+_a / _b"},{"category":"_@","name":"Long Taka-Mai Kuretsuzan","input":"_O_a / _b _2_3_6"},{"category":"_@","name":"Shotakaki","input":"_2_8_+_a / _b"},{"category":"_@","name":"Zetsumeiki","input":"_^_6_+_a / _b"},{"category":"_@","name":"Far Zetsumeiki","input":"_O_a _^_6_+_b"},{"category":"_@","name":"Far Zetsumeiki","input":"_O_b _^_6_+_a"},{"category":"_@","name":"Bukyoku Enbu Ya jump forward","input":"_2_+_a / _b"},{"category":"_@","name":"Far Bukyoku Enbu Ya","input":"_O_a jump forward _2_+_b"},{"category":"_@","name":"Far Bukyoku Enbu Ya","input":"_O_b jump forward _2_+_a"},{"category":"_@","name":"Enzui-Kiri","input":"_8_9_6_+_a"},{"category":"_@","name":"Far Enzui-Kiri","input":"_O_a _8_9_6"}]},{"name":"CHRISTINE MYAO","moves":[{"category":"_(","name":"Layback Throw","input":"_6_+_a / _b"},{"category":"_@","name":"Kui Tou Gun","input":"^4_6_+_a / _b"},{"category":"_@","name":"Far Kui Tou Gun","input":"_O_a / _b ^4_6"},{"category":"_@","name":"Chongji Lun","input":"_2_8_+_a / _b"},{"category":"_@","name":"Lie Dao Gun","input":"^*_a"},{"category":"_@","name":"Bao Gun Er Tou Zu","input":"_2_3_6_+_b"},{"category":"_@","name":"Sweep Bao Gun Er Tou Zu","input":"_O_b _2_3_6"}]},{"name":"GREGORY DARRELL","moves":[{"category":"_(","name":"Riding Clothesline","input":"_6_+_a / _b"},{"category":"_@","name":"Tidal Wave","input":"_2_3_6_+_a / _b"},{"category":"_@","name":"Large Tidal Wave","input":"_O_a / _b _2_3_6"},{"category":"_@","name":"Norman Burst","input":"_4_6_+_a / _b"},{"category":"_@","name":"Hell Diving Backbreaker close","input":"_6_6_+_a / _b"},{"category":"_@","name":"Super Crunch","input":"_2_8_+_a"},{"category":"_@","name":"Advancing Super Crunch","input":"_O_a _2_8"},{"category":"_@","name":"Bastard Headbutt","input":"^4_6_+_a"},{"category":"_@","name":"Far Bastard Headbutt","input":"_O_a ^4_6"}]},{"name":"CLAUDIA SILVA","moves":[{"category":"_(","name":"Leap Over Toss","input":"_6_+_a / _b"},{"category":"_@","name":"Rio Grande Attack","input":"_2_8_+_a / _b"},{"category":"_@","name":"Golgovard Drop","input":"_2_3_6_9_8_+_a / _b"},{"category":"_@","name":"Control","input":"_4 / _6"},{"category":"_@","name":"Flying Heel Kick","input":"_6_2_3_+_a"},{"category":"_@","name":"Jumping Bat","input":"_6_2_3_+_b"},{"category":"_@","name":"Far Jumping Bat","input":"_O_b _6_2_3"},{"category":"_@","name":"Crossing Seizure","input":"_8_9_6_+_b"},{"category":"_@","name":"Far Crossing Seizure","input":"_O_b _8_9_6"}]},{"name":"BLAT VAIKE","moves":[{"category":"_(","name":"Flip Toss","input":"_6_+_a / _b"},{"category":"_@","name":"Mad Hammer","input":"_4_6_+_a / _b"},{"category":"_@","name":"Anger Beast","input":"^4_6_+_a / _b"},{"category":"_@","name":"Far Anger Beast","input":"_O_a / _b ^4_6"},{"category":"_@","name":"Earthquake Hammer","input":"_8_9_6_+_a"},{"category":"_@","name":"Far Earthquake Hammer","input":"_O_b _8_9_6"},{"category":"_@","name":"Rolling Madness","input":"_2_3_6_+_b"},{"category":"_@","name":"Far Rolling Madness","input":"_O_b _2_3_6"}]}],"controlAbbr":{"_S":"ST"},"systemControlMappings":{"snes":{"y":"_a","b":"_b"},"genesis":{"b":"_a","a":"_b"},"megadrive":{"b":"_a","a":"_b"},"saturn":{"b":"_a","a":"_b"},"psx":{"y":"_a","b":"_b"},"ps2":{"y":"_a","b":"_b"},"gba":{"b":"_a","a":"_b"},"gb":{"b":"_a","a":"_b"},"gbc":{"b":"_a","a":"_b"},"ngpc":{"b":"_a","a":"_b"}}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "knckhead",
+    "knckheadj",
+    "knckheadjp"
+  ],
+  "name": "Knuckle Heads",
+  "year": 1993,
+  "manufacturer": "Namco",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "_S": "Start"
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "LV1 Aura Moves",
+      "input": "_O_a / _b for 1 second"
+    },
+    {
+      "category": "_)",
+      "name": "LV2 Aura Moves",
+      "input": "_O_a / _b for 2 seconds"
+    }
+  ],
+  "characters": [
+    {
+      "name": "ROB VINCENT",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Shoulder Toss",
+          "input": "_6_+_a / _b"
+        },
+        {
+          "category": "_@",
+          "name": "Blast Force Wave",
+          "input": "^4_6_+_a / _b"
+        },
+        {
+          "category": "_@",
+          "name": "Mega Blast Force Wave",
+          "input": "_O_a / _b ^4_6"
+        },
+        {
+          "category": "_@",
+          "name": "Spiral Cutter",
+          "input": "_2_8_+_a / _b"
+        },
+        {
+          "category": "_@",
+          "name": "Tornado Slash",
+          "input": "_6_2_3_+_a"
+        },
+        {
+          "category": "_@",
+          "name": "Far Tornado Slash",
+          "input": "_O_a _6_2_3"
+        },
+        {
+          "category": "_@",
+          "name": "Slide Kick",
+          "input": "_2_3_6_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Long Slide Kick",
+          "input": "_O_b _2_3_6"
+        }
+      ]
+    },
+    {
+      "name": "TAKESHI FUJIOKA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Frankensteiner",
+          "input": "_6_+_a / _b"
+        },
+        {
+          "category": "_@",
+          "name": "Taka-Mai Kuretsuzan",
+          "input": "_2_3_6_+_a / _b"
+        },
+        {
+          "category": "_@",
+          "name": "Long Taka-Mai Kuretsuzan",
+          "input": "_O_a / _b _2_3_6"
+        },
+        {
+          "category": "_@",
+          "name": "Shotakaki",
+          "input": "_2_8_+_a / _b"
+        },
+        {
+          "category": "_@",
+          "name": "Zetsumeiki",
+          "input": "_^_6_+_a / _b"
+        },
+        {
+          "category": "_@",
+          "name": "Far Zetsumeiki",
+          "input": "_O_a _^_6_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Far Zetsumeiki",
+          "input": "_O_b _^_6_+_a"
+        },
+        {
+          "category": "_@",
+          "name": "Bukyoku Enbu Ya jump forward",
+          "input": "_2_+_a / _b"
+        },
+        {
+          "category": "_@",
+          "name": "Far Bukyoku Enbu Ya",
+          "input": "_O_a jump forward _2_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Far Bukyoku Enbu Ya",
+          "input": "_O_b jump forward _2_+_a"
+        },
+        {
+          "category": "_@",
+          "name": "Enzui-Kiri",
+          "input": "_8_9_6_+_a"
+        },
+        {
+          "category": "_@",
+          "name": "Far Enzui-Kiri",
+          "input": "_O_a _8_9_6"
+        }
+      ]
+    },
+    {
+      "name": "CHRISTINE MYAO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Layback Throw",
+          "input": "_6_+_a / _b"
+        },
+        {
+          "category": "_@",
+          "name": "Kui Tou Gun",
+          "input": "^4_6_+_a / _b"
+        },
+        {
+          "category": "_@",
+          "name": "Far Kui Tou Gun",
+          "input": "_O_a / _b ^4_6"
+        },
+        {
+          "category": "_@",
+          "name": "Chongji Lun",
+          "input": "_2_8_+_a / _b"
+        },
+        {
+          "category": "_@",
+          "name": "Lie Dao Gun",
+          "input": "^*_a"
+        },
+        {
+          "category": "_@",
+          "name": "Bao Gun Er Tou Zu",
+          "input": "_2_3_6_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Sweep Bao Gun Er Tou Zu",
+          "input": "_O_b _2_3_6"
+        }
+      ]
+    },
+    {
+      "name": "GREGORY DARRELL",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Riding Clothesline",
+          "input": "_6_+_a / _b"
+        },
+        {
+          "category": "_@",
+          "name": "Tidal Wave",
+          "input": "_2_3_6_+_a / _b"
+        },
+        {
+          "category": "_@",
+          "name": "Large Tidal Wave",
+          "input": "_O_a / _b _2_3_6"
+        },
+        {
+          "category": "_@",
+          "name": "Norman Burst",
+          "input": "_4_6_+_a / _b"
+        },
+        {
+          "category": "_@",
+          "name": "Hell Diving Backbreaker close",
+          "input": "_6_6_+_a / _b"
+        },
+        {
+          "category": "_@",
+          "name": "Super Crunch",
+          "input": "_2_8_+_a"
+        },
+        {
+          "category": "_@",
+          "name": "Advancing Super Crunch",
+          "input": "_O_a _2_8"
+        },
+        {
+          "category": "_@",
+          "name": "Bastard Headbutt",
+          "input": "^4_6_+_a"
+        },
+        {
+          "category": "_@",
+          "name": "Far Bastard Headbutt",
+          "input": "_O_a ^4_6"
+        }
+      ]
+    },
+    {
+      "name": "CLAUDIA SILVA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Leap Over Toss",
+          "input": "_6_+_a / _b"
+        },
+        {
+          "category": "_@",
+          "name": "Rio Grande Attack",
+          "input": "_2_8_+_a / _b"
+        },
+        {
+          "category": "_@",
+          "name": "Golgovard Drop",
+          "input": "_2_3_6_9_8_+_a / _b"
+        },
+        {
+          "category": "_@",
+          "name": "Control",
+          "input": "_4 / _6"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Heel Kick",
+          "input": "_6_2_3_+_a"
+        },
+        {
+          "category": "_@",
+          "name": "Jumping Bat",
+          "input": "_6_2_3_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Far Jumping Bat",
+          "input": "_O_b _6_2_3"
+        },
+        {
+          "category": "_@",
+          "name": "Crossing Seizure",
+          "input": "_8_9_6_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Far Crossing Seizure",
+          "input": "_O_b _8_9_6"
+        }
+      ]
+    },
+    {
+      "name": "BLAT VAIKE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Flip Toss",
+          "input": "_6_+_a / _b"
+        },
+        {
+          "category": "_@",
+          "name": "Mad Hammer",
+          "input": "_4_6_+_a / _b"
+        },
+        {
+          "category": "_@",
+          "name": "Anger Beast",
+          "input": "^4_6_+_a / _b"
+        },
+        {
+          "category": "_@",
+          "name": "Far Anger Beast",
+          "input": "_O_a / _b ^4_6"
+        },
+        {
+          "category": "_@",
+          "name": "Earthquake Hammer",
+          "input": "_8_9_6_+_a"
+        },
+        {
+          "category": "_@",
+          "name": "Far Earthquake Hammer",
+          "input": "_O_b _8_9_6"
+        },
+        {
+          "category": "_@",
+          "name": "Rolling Madness",
+          "input": "_2_3_6_+_b"
+        },
+        {
+          "category": "_@",
+          "name": "Far Rolling Madness",
+          "input": "_O_b _2_3_6"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_a",
+      "b": "_b"
+    },
+    "genesis": {
+      "b": "_a",
+      "a": "_b"
+    },
+    "megadrive": {
+      "b": "_a",
+      "a": "_b"
+    },
+    "saturn": {
+      "b": "_a",
+      "a": "_b"
+    },
+    "psx": {
+      "y": "_a",
+      "b": "_b"
+    },
+    "ps2": {
+      "y": "_a",
+      "b": "_b"
+    },
+    "gba": {
+      "b": "_a",
+      "a": "_b"
+    },
+    "gb": {
+      "b": "_a",
+      "a": "_b"
+    },
+    "gbc": {
+      "b": "_a",
+      "a": "_b"
+    },
+    "ngpc": {
+      "b": "_a",
+      "a": "_b"
+    }
+  }
+}

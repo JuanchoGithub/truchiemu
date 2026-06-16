@@ -1,1 +1,1917 @@
-{"schemaVersion":2,"romIds":["vf2","vf2a","vf2b","vf2o"],"name":"Virtua Fighter 2","year":1994,"manufacturer":"Sega","credits":"Fabricio Coroquer","controls":{"_G":"Guard","_P":"Punch","_K":"Kick","_S":"Start"},"categories":{"_(":"Throws","_)":"Command Moves","_`":"Positions"},"commonCommands":[{"category":"_)","name":"Dash","input":"_6_6"},{"category":"_)","name":"Run","input":"_6^6"},{"category":"_)","name":"Retreat","input":"_4_4"},{"category":"_)","name":"Low Jump","input":"_8"},{"category":"_)","name":"High Jump","input":"^8"},{"category":"_)","name":"Side Kick","input":"_3_+_K"},{"category":"_)","name":"Hopping Karate Chop","input":"_8_+_P"},{"category":"_)","name":"Hop Kick","input":"_8_+_K"},{"category":"_)","name":"OverHead Hammer","input":"_^_6_+_P"},{"category":"_)","name":"Drop Kick Forward","input":"_^_6_+_K"},{"category":"_)","name":"Drop Kick Backward","input":"_^_4_+_K"},{"category":"_)","name":"Quick Pounce opponent knocked down","input":"_X_8_+_P"},{"category":"_)","name":"Stronger Pounce opponent knocked down","input":"_8_+_P"},{"category":"_)","name":"Rising Heel Kick knocked down, feet away","input":"_K"},{"category":"_)","name":"Rear Kick knocked down, feet towards","input":"_K"},{"category":"_)","name":"Roll and Rise with Reel Kick knocked down","input":"_G_K"},{"category":"_)","name":"Roll and Rise with Sweep knocked down","input":"_G_2_+_K"},{"category":"_)","name":"Rising Sweep knocked down","input":"_2_+_K"},{"category":"_)","name":"Roll Backward knocked down","input":"_4"},{"category":"_)","name":"Roll Backward with Mule Kick knocked down","input":"_4_K"},{"category":"_)","name":"Roll Backward with Sweep knocked down","input":"_4_2_+_K"},{"category":"_)","name":"Roll Backward with Rising Heel Kick knocked down","input":"_4_6_+_K"},{"category":"_)","name":"Get Up knocked down","input":"_8"}],"characters":[{"name":"AKIRA YUKI","moves":[{"category":"_(","name":"Trip and 2 Punches","input":"_P_+_G"},{"category":"_(","name":"Stun Palm","input":"_P_+_K_+_G"},{"category":"_(","name":"Back Body Check","input":"_4_3_+_P_+_K"},{"category":"_(","name":"Stun Palm of Doom","input":"_4_3_+_K"},{"category":"_(","name":"Break Stance","input":"_6_+_P_+_G"},{"category":"_(","name":"Close-in Ram","input":"_6_4_6_+_P_+_K"},{"category":"_(","name":"Shake'em Up","input":"_4_+_P_+_G"},{"category":"_(","name":"Stumbling Throw","input":"_4_2_+_P_+_G"},{"category":"_(","name":"Shake'em Up Harder","input":"_2_+_P_+_G"},{"category":"_(","name":"Surprise Exchange","input":"_1_+_P_+_G"},{"category":"_(","name":"Pull-in Push-out","input":"_1_6_+_P"},{"category":"_(","name":"Backwards Uppercut","input":"_1_6_+_P_+_K"},{"category":"_`","input":"_P_P","hitLevels":"hh"},{"category":"_`","input":"_P_K","hitLevels":"hh"},{"category":"_`","input":"_K_+_G_G","hitLevels":"m"},{"category":"_`","input":"_G_4_+_P","hitLevels":"h","condition":"reverse high"},{"category":"_`","input":"_G_1_+_P","hitLevels":"m","condition":"reverse mid"},{"category":"_`","input":"_G_2_+_P","hitLevels":"l","condition":"reverse low"},{"category":"_`","input":"_6_+_P","hitLevels":"m"},{"category":"_`","input":"_6_6_+_P","hitLevels":"m"},{"category":"_`","input":"_6_6_6_+_P","hitLevels":"m"},{"category":"_`","input":"_6_6_+_K_K","hitLevels":"mm"},{"category":"_`","input":"_4_6_6_+_P_+_K","hitLevels":"m"},{"category":"_`","input":"^2_6_+_P","hitLevels":"m"},{"category":"_`","input":"^2_4_6_+_P","hitLevels":"m"},{"category":"_`","input":"_3_3_+_P","hitLevels":"m"},{"category":"_`","name":"opponent knocked down","input":"_3_+_P","hitLevels":"g"}],"notes":["String Moves"]},{"name":"LION RAFALE","moves":[{"category":"_(","name":"Trip","input":"_P_+_G"},{"category":"_(","name":"Grab and Flying","input":"_6_6_+_P_+_G"},{"category":"_(","name":"Frontal Piggyback Attack","input":"_6_3_2_1_4_+_P_+_G"},{"category":"_(","name":"Reaping Throw","input":"_4_+_P_+_K"},{"category":"_(","name":"Piggyback Attack from behind","input":"_P_+_G"},{"category":"_)","name":"Backflip","input":"_7"},{"category":"_`","input":"_P_P_P","hitLevels":"hhh"},{"category":"_`","input":"_P_K","hitLevels":"hh"},{"category":"_`","input":"_P_+_G","hitLevels":"l"},{"category":"_`","input":"_G_6_+_P","hitLevels":"h"},{"category":"_`","input":"_G_3_+_P","hitLevels":"l"},{"category":"_`","input":"_6_+_P","hitLevels":"m"},{"category":"_`","input":"_6_+_P_+_G","hitLevels":"h"},{"category":"_`","input":"_6_+_K","hitLevels":"m"},{"category":"_`","input":"_6_6_+_P","hitLevels":"m"},{"category":"_`","input":"_6_6_+_K_+_G","hitLevels":"m"},{"category":"_`","input":"_4_+_P","hitLevels":"h"},{"category":"_`","input":"_4_4_+_P","hitLevels":"h"},{"category":"_`","input":"_4_4_+_K","hitLevels":"h"},{"category":"_`","input":"_4_4_+_K_+_G","hitLevels":"m"},{"category":"_`","input":"_2_+_K_K","hitLevels":"ll"},{"category":"_`","input":"_2_+_K_K_+_G","hitLevels":"lh"},{"category":"_`","input":"_2_+_K_+_G","hitLevels":"l"},{"category":"_`","input":"_2_2_+_K","hitLevels":"m"},{"category":"_`","input":"^2_3_+_P_P","hitLevels":"ll"},{"category":"_`","input":"_1_+_P_P","hitLevels":"ll"},{"category":"_`","input":"_1_+_G","hitLevels":"-"},{"category":"_`","input":"_3_+_P_P","hitLevels":"mh"},{"category":"_`","input":"_3_+_P_+_G","hitLevels":"l"},{"category":"_`","input":"_3_+_K_+_G","hitLevels":"l"},{"category":"_`","input":"_3_+_G","hitLevels":"-"},{"category":"_`","input":"_7_+_P","hitLevels":"m"},{"category":"_`","input":"_9_+_P","hitLevels":"m"},{"category":"_`","input":"_9_+_K","hitLevels":"m"}],"notes":["String Moves"]},{"name":"PAI CHAN","moves":[{"category":"_(","name":"Wrist Twist","input":"_P_+_G"},{"category":"_(","name":"Cartwheel Over Low Opponent","input":"_6_+_P_+_K_+_G"},{"category":"_(","name":"Reaping Throw and Punch","input":"_6_6_+_P_+_K"},{"category":"_(","name":"Falling D.D.T.","input":"_6_2_+_P"},{"category":"_(","name":"Pushover","input":"_4_6_+_P"},{"category":"_(","name":"Stomach Throw","input":"_4_2_+_P_+_G"},{"category":"_)","name":"Backflip","input":"_7"},{"category":"_`","input":"_P_P_P_K","hitLevels":"hhhh"},{"category":"_`","input":"_P_P_P_4_+_K","hitLevels":"hhhm"},{"category":"_`","input":"_P_P_P_2_+_K","hitLevels":"hhhl"},{"category":"_`","input":"_P_P_K","hitLevels":"hhh"},{"category":"_`","input":"_P_K","hitLevels":"hh"},{"category":"_`","input":"_P_K_+_G","hitLevels":"hh"},{"category":"_`","input":"_P_2_+_K_+_G","hitLevels":"hl"},{"category":"_`","input":"_G_+_K","hitLevels":"h"},{"category":"_`","input":"_6_+_K","hitLevels":"m"},{"category":"_`","input":"_4_+_P","hitLevels":"h","condition":"reverse high"},{"category":"_`","input":"_4_+_G_+_K","hitLevels":"h"},{"category":"_`","input":"_4_4_+_P","hitLevels":"h"},{"category":"_`","input":"^2_N_K","hitLevels":"m"},{"category":"_`","input":"_1_+_P","hitLevels":"h"},{"category":"_`","input":"_1_+_P","hitLevels":"m","condition":"reverse mid"},{"category":"_`","input":"_3_+_P","hitLevels":"m"},{"category":"_`","input":"_7_+_K","hitLevels":"m"},{"category":"_`","input":"_9_+_K","hitLevels":"m"},{"category":"_`","input":"_9_+_K_K","hitLevels":"m"},{"category":"_`","name":"opponent knocked down","input":"_3_+_P","hitLevels":"g"}],"notes":["String Moves"]},{"name":"SHUN DI","moves":[{"category":"_(","name":"Dances with Punches","input":"_P_+_G"},{"category":"_(","name":"Grab and Fall","input":"_P_+_K_+_G"},{"category":"_)","name":"Backflip","input":"_7"},{"category":"_`","input":"_P_P_P","hitLevels":"hhm"},{"category":"_`","input":"_P_K","hitLevels":"hh"},{"category":"_`","input":"_P_+_K","hitLevels":"m","condition":"drinks if hits"},{"category":"_`","input":"_K_+_G_P","hitLevels":"mh"},{"category":"_`","input":"_6_+_P","hitLevels":"h"},{"category":"_`","input":"_6_6_+_K","hitLevels":"m"},{"category":"_`","input":"_4_+_P","hitLevels":"h"},{"category":"_`","input":"_4_+_K","hitLevels":"h"},{"category":"_`","input":"_4_+_K_+_G","hitLevels":"m"},{"category":"_`","input":"_4_+_G_P","hitLevels":"-h"},{"category":"_`","input":"_4_4_+_P","hitLevels":"h"},{"category":"_`","input":"_4_4_+_K","hitLevels":"h"},{"category":"_`","input":"_4_1_2_3_6_+_K","hitLevels":"-h"},{"category":"_`","input":"_2_+_P_+_K","hitLevels":"l","condition":"must drink x1"},{"category":"_`","input":"_2_+_P_+_K_K","hitLevels":"ll","condition":"must drink x2"},{"category":"_`","input":"_2_+_P_+_K_K_K","hitLevels":"lll","condition":"must drink x3"},{"category":"_`","input":"_2_+_K_+_G","hitLevels":"m"},{"category":"_`","input":"^2_+_K_+_G","hitLevels":"l"},{"category":"_`","input":"_2_2","hitLevels":"-"},{"category":"_`","input":"^2_6_+_P","hitLevels":"m"},{"category":"_`","input":"_1_+_P","hitLevels":"l"},{"category":"_`","input":"_1_+_K_K","hitLevels":"lh"},{"category":"_`","input":"_1_+_K_+_G","hitLevels":"l"},{"category":"_`","input":"_1_+_G_P","hitLevels":"-h"},{"category":"_`","input":"_1_+_G_P_+_K","hitLevels":"-m"},{"category":"_`","input":"_1_1_+_K","hitLevels":"hh"},{"category":"_`","input":"_3_+_P","hitLevels":"m"},{"category":"_`","input":"_3_+_G","hitLevels":"-"},{"category":"_`","input":"_9_+_P","hitLevels":"m"},{"category":"_`","input":"_9_+_K","hitLevels":"m"}],"notes":["String Moves"]},{"name":"LAU CHAN","moves":[{"category":"_(","name":"Waterwheel Drop","input":"_P_+_G"},{"category":"_(","name":"Piggyback Drop","input":"_4_+_P"},{"category":"_(","name":"Head Slam","input":"_4_6_+_P"},{"category":"_(","name":"Sideways Throw","input":"_4_2_+_P_+_G"},{"category":"_)","name":"Backflip","input":"_7"},{"category":"_`","input":"_P_P_K","hitLevels":"hhh"},{"category":"_`","input":"_P_P_P_K","hitLevels":"hhhh"},{"category":"_`","input":"_P_P_P_4_+_K","hitLevels":"hhhm"},{"category":"_`","input":"_P_P_P_2_+_K","hitLevels":"hhhl"},{"category":"_`","input":"_P_K","hitLevels":"hh"},{"category":"_`","input":"_P_K_+_G","hitLevels":"hh"},{"category":"_`","input":"_P_2_+_K_+_G","hitLevels":"hl"},{"category":"_`","input":"_G_+_K","hitLevels":"h"},{"category":"_`","input":"_6_+_P","hitLevels":"m"},{"category":"_`","input":"_6_+_K","hitLevels":"m"},{"category":"_`","input":"_6_2_+_K","hitLevels":"l"},{"category":"_`","input":"_2_+_K_+_G","hitLevels":"l"},{"category":"_`","input":"^2_3_+_P","hitLevels":"h"},{"category":"_`","input":"^2_N_K","hitLevels":"m"},{"category":"_`","input":"_1_+_P","hitLevels":"h"},{"category":"_`","input":"_3_+_P_P_P_K","hitLevels":"mhhh"},{"category":"_`","input":"_3_+_P_P_P_4_+_K","hitLevels":"mhhm"},{"category":"_`","input":"_3_+_P_P_P_2_+_K","hitLevels":"mhhl"},{"category":"_`","input":"_3_+_P_P_K","hitLevels":"mhh"},{"category":"_`","input":"_3_3_+_P","hitLevels":"m"},{"category":"_`","input":"_7_+_K","hitLevels":"m"},{"category":"_`","name":"opponent knocked down","input":"_3_+_K","hitLevels":"g"}],"notes":["String Moves"]},{"name":"JACKY BRYANT","moves":[{"category":"_(","name":"Brainbuster","input":"_P_+_G"},{"category":"_(","name":"Jumping Clothesline","input":"_6_6_+_P"},{"category":"_(","name":"Trip and Hammer","input":"_6_4_+_P_+_K"},{"category":"_(","name":"Toe Kick, Side Kick","input":"_2_3_K_K"},{"category":"_(","name":"Backside Clothesline from behind","input":"_P_+_G"},{"category":"_)","name":"Backflip","input":"_7"},{"category":"_`","input":"_P_P_P","hitLevels":"hhh"},{"category":"_`","input":"_P_P_K","hitLevels":"hhh"},{"category":"_`","input":"_P_P_6_+_P_K","hitLevels":"hhmh"},{"category":"_`","input":"_P_P_4_+_P_K","hitLevels":"hhhh"},{"category":"_`","input":"_P_K","hitLevels":"hh"},{"category":"_`","input":"_P_2_+_K","hitLevels":"hl"},{"category":"_`","input":"_P_+_K","hitLevels":"m"},{"category":"_`","input":"_K_K","hitLevels":"hm"},{"category":"_`","input":"_K_+_G_2_+_K_+_G","hitLevels":"hl"},{"category":"_`","input":"_G_P","hitLevels":"h"},{"category":"_`","input":"_6_+_P_K","hitLevels":"mh"},{"category":"_`","input":"_6_+_K","hitLevels":"m"},{"category":"_`","input":"_6_6_+_K","hitLevels":"m"},{"category":"_`","input":"_4_+_P_P","hitLevels":"hh"},{"category":"_`","input":"_4_+_P_K","hitLevels":"hh"},{"category":"_`","input":"_4_+_P_2_+_K","hitLevels":"hl"},{"category":"_`","input":"_4_+_P_1_+_P","hitLevels":"hl"},{"category":"_`","input":"_4_+_K","hitLevels":"m"},{"category":"_`","input":"_4_4_+_P","hitLevels":"h"},{"category":"_`","input":"_4_4_+_K","hitLevels":"h"},{"category":"_`","input":"_4_6_+_K_+_G","hitLevels":"m"},{"category":"_`","input":"_2_+_P_+_K_K_K_K_K","hitLevels":"mmmhh"},{"category":"_`","input":"_2_+_K_+_G","hitLevels":"l"},{"category":"_`","input":"_1_+_P_K","hitLevels":"ll"},{"category":"_`","input":"_3_+_P","hitLevels":"h"},{"category":"_`","input":"_7_+_K","hitLevels":"m"},{"category":"_`","name":"close","input":"_P_K","hitLevels":"hm"},{"category":"_`","name":"opponent knocked down","input":"_3_+_K","hitLevels":"g"},{"category":"_`","input":"_4_+_P","hitLevels":"h"},{"category":"_`","input":"_4_+_K","hitLevels":"h"}],"notes":["String Moves","BACK TURNED (BK)","Strings Moves"]},{"name":"WOLF HAWKFIELD","moves":[{"category":"_(","name":"Backfall Suplex","input":"_P_+_G"},{"category":"_(","name":"Variation German Suplex","input":"_P_+_K_+_G"},{"category":"_(","name":"Body Slam","input":"_6_+_P"},{"category":"_(","name":"Twirl and Hurl","input":"_4_1_2_3_6_+_P"},{"category":"_(","name":"Torso Takedown","input":"_2_+_P_+_G"},{"category":"_(","name":"Double Arm Suplex","input":"_1_+_P_+_K_+_G"},{"category":"_(","name":"Tombstone","input":"_3_+_P_+_K_+_G"},{"category":"_(","name":"Ghostbuster","input":"_3_3_+_P_+_K"},{"category":"_(","name":"Frankensteiner","input":"_9_+_K_+_G"},{"category":"_(","name":"German Suplex from behind","input":"_P_+_G"},{"category":"_`","input":"_P_P_P","hitLevels":"hhm"},{"category":"_`","input":"_P_K","hitLevels":"hh"},{"category":"_`","input":"_K_+_G","hitLevels":"h"},{"category":"_`","input":"_6_+_P","hitLevels":"m"},{"category":"_`","input":"_6_+_K","hitLevels":"m"},{"category":"_`","input":"_6_+_K_+_G","hitLevels":"h"},{"category":"_`","input":"_6_6_+_P","hitLevels":"l"},{"category":"_`","input":"_6_6_+_K_+_G","hitLevels":"h"},{"category":"_`","input":"_6_2_+_K","hitLevels":"l"},{"category":"_`","input":"_4_+_P","hitLevels":"h"},{"category":"_`","input":"_4_+_P_+_K","hitLevels":"m"},{"category":"_`","input":"_4_6_+_P","hitLevels":"h"},{"category":"_`","input":"_4_6_+_K_+_G","hitLevels":"m"},{"category":"_`","input":"^2_6_+_P","hitLevels":"m"},{"category":"_`","input":"_1_+_P","hitLevels":"m","condition":"reverse mid kick"},{"category":"_`","input":"_3_+_P","hitLevels":"m"},{"category":"_`","input":"^3_+_P","hitLevels":"m"},{"category":"_`","input":"_9_+_K","hitLevels":"m"},{"category":"_`","name":"opponent knocked down","input":"_3_+_P","hitLevels":"g"},{"category":"_`","name":"opponent knocked down","input":"_8_+_K","hitLevels":"g"}],"notes":["String Moves"]},{"name":"SARAH BRYANT","moves":[{"category":"_(","name":"Belly Suplex","input":"_P_+_G"},{"category":"_(","name":"Jumping Clothesline","input":"_6_6_+_P"},{"category":"_(","name":"Torso Takedown from behind","input":"_P_+_G"},{"category":"_)","name":"Backflip","input":"_7"},{"category":"_`","input":"_P_P_P_K","hitLevels":"hhhm"},{"category":"_`","input":"_P_P_P_8_+_K","hitLevels":"hhhm"},{"category":"_`","input":"_P_P_P_4_+_K","hitLevels":"hhhm"},{"category":"_`","input":"_P_K","hitLevels":"hh"},{"category":"_`","input":"_P_P_K","hitLevels":"hhh"},{"category":"_`","input":"_P_2_+_K","hitLevels":"hm"},{"category":"_`","input":"_K_P","hitLevels":"hh"},{"category":"_`","input":"_K_+_G","hitLevels":"m"},{"category":"_`","input":"_6_+_P_K","hitLevels":"mm"},{"category":"_`","input":"_6_+_K_3_+_K","hitLevels":"mm"},{"category":"_`","input":"_6_6_+_K","hitLevels":"m"},{"category":"_`","input":"_4_+_K","hitLevels":"h"},{"category":"_`","input":"_4_4_+_P","hitLevels":"h"},{"category":"_`","input":"_4_4_+_K","hitLevels":"h"},{"category":"_`","input":"_2_+_K_K","hitLevels":"mm"},{"category":"_`","input":"_2_+_K_+_G","hitLevels":"l"},{"category":"_`","input":"^2_6_+_K","hitLevels":"m"},{"category":"_`","input":"^2_4_+_K_K","hitLevels":"hh"},{"category":"_`","input":"_1_+_P","hitLevels":"h"},{"category":"_`","input":"_1_+_K_+_G","hitLevels":"m"},{"category":"_`","input":"_3_+_P","hitLevels":"m"},{"category":"_`","input":"_3_+_K_K_K","hitLevels":"mhh"},{"category":"_`","input":"_7_+_K","hitLevels":"m"},{"category":"_`","input":"_9_+_K","hitLevels":"m"},{"category":"_`","input":"_9_+_K_+_G","hitLevels":"h"},{"category":"_`","name":"opponent knocked down","input":"_3_+_K","hitLevels":"g"},{"category":"_`","input":"_4_+_K","hitLevels":"h"},{"category":"_`","input":"_1_+_K","hitLevels":"h"}],"notes":["String Moves","BACK TURNED (BK)","Strings Moves"]},{"name":"JEFFRY McWILD","moves":[{"category":"_(","name":"Fireman's Carry","input":"_P_+_G"},{"category":"_(","name":"Power Slam","input":"_6_+_P"},{"category":"_(","name":"Body Press","input":"_4_+_P_+_G"},{"category":"_(","name":"Single Headbutt","input":"_4_6_+_P_+_K"},{"category":"_(","name":"Double Headbutt","input":"_6_+_P_+_K"},{"category":"_(","name":"Triple Headbutt","input":"_6_+_P_+_K"},{"category":"_(","name":"Backbreaker","input":"_4_6_6_+_P_+_K_+_G"},{"category":"_(","name":"Face Grab","input":"_2_+_P"},{"category":"_(","name":"Triple Knee Bash","input":"_2_6_+_K"},{"category":"_(","name":"Powerbomb","input":"_3_+_P_+_K_+_G"},{"category":"_(","name":"Crucifix Piledriver","input":"_3_3_+_P_+_K"},{"category":"_(","name":"Backbreaker from behind","input":"_P_+_G"},{"category":"_`","input":"_P_P_P","hitLevels":"hhm"},{"category":"_`","input":"_P_K","hitLevels":"hh"},{"category":"_`","input":"_P_+_K_+_G","hitLevels":"m"},{"category":"_`","input":"_6_+_P_4_+_P","hitLevels":"mm"},{"category":"_`","input":"_6_+_P_+_K","hitLevels":"h"},{"category":"_`","input":"_6_+_K","hitLevels":"m"},{"category":"_`","input":"_6_6_+_P_P","hitLevels":"mm"},{"category":"_`","input":"_6_6_+_K","hitLevels":"m"},{"category":"_`","input":"_6_2_+_K","hitLevels":"m"},{"category":"_`","input":"_4_6_+_P","hitLevels":"m"},{"category":"_`","input":"_4_3_+_P","hitLevels":"m"},{"category":"_`","input":"_2_+_P_+_K","hitLevels":"h"},{"category":"_`","input":"_2_+_K_P","hitLevels":"mm"},{"category":"_`","input":"_2_+_K^2_3_6_+_P_+_K_+_G","hitLevels":"m"},{"category":"_`","input":"^2_3_+_P","hitLevels":"m"},{"category":"_`","input":"_1_6_+_P_+_K","hitLevels":"m"},{"category":"_`","input":"_3_+_P_P","hitLevels":"mm"},{"category":"_`","name":"opponent knocked down","input":"_3_+_K","hitLevels":"g"}],"notes":["String Moves"]},{"name":"KAGE-MARU","moves":[{"category":"_(","name":"Hip Throw","input":"_P_+_G"},{"category":"_(","name":"Toka Throw","input":"_P_+_K_+_G"},{"category":"_(","name":"Ten Foot Toss","input":"_4_+_P"},{"category":"_(","name":"Reaping Throw","input":"_4_6_+_P"},{"category":"_(","name":"Torso Takedown from behind","input":"_P_+_G"},{"category":"_)","name":"Backflip","input":"_7"},{"category":"_`","input":"_P_P_P_K","hitLevels":"hhhm"},{"category":"_`","input":"_P_P_P_4_+_K","hitLevels":"hhhm"},{"category":"_`","input":"_P_K","hitLevels":"hh"},{"category":"_`","input":"_P_P_K","hitLevels":"hhh"},{"category":"_`","input":"_6_+_P","hitLevels":"m"},{"category":"_`","input":"_6_6_+_P_+_K_+_G","hitLevels":"m"},{"category":"_`","input":"_6_6_+_K","hitLevels":"l"},{"category":"_`","input":"_6_6_+_K_+_G","hitLevels":"m"},{"category":"_`","input":"_6_3_2_1_4","hitLevels":"-"},{"category":"_`","input":"_6_3_2_1_4_+_K","hitLevels":"-l"},{"category":"_`","input":"_6_3_2_1_4_6_3_2_1_4_+_P","hitLevels":"-l"},{"category":"_`","input":"_6_3_2_1_4_6_3_2_1_4_+_P_+_K_+_G","hitLevels":"-l"},{"category":"_`","input":"_4_+_G","hitLevels":"-"},{"category":"_`","input":"_4_+_K_+_G","hitLevels":"h"},{"category":"_`","input":"_4_4_+_P","hitLevels":"h"},{"category":"_`","input":"_4_4_+_P_+_G","hitLevels":"h"},{"category":"_`","input":"_4_4_+_K","hitLevels":"h"},{"category":"_`","input":"_4_4_+_K_+_G","hitLevels":"l"},{"category":"_`","input":"_4_6_+_P_+_K","hitLevels":"m"},{"category":"_`","input":"_4_6_+_P_+_K _P_+_K","hitLevels":"hh"},{"category":"_`","input":"_4_2_3_6_2_+_K","hitLevels":"l"},{"category":"_`","input":"_4_1_2_3_6","hitLevels":"-"},{"category":"_`","input":"_4_1_2_3_6_+_K","hitLevels":"-l"},{"category":"_`","input":"_4_1_2_3_6_4_1_2_3_6_+_P","hitLevels":"-l"},{"category":"_`","input":"_4_1_2_3_6_4_1_2_3_6_+_K","hitLevels":"-l"},{"category":"_`","input":"_4_1_2_3_6_4_1_2_3_6_+_P_+_K_+_G","hitLevels":"-l"},{"category":"_`","input":"_2_+_P","hitLevels":"h","condition":"reverse punch"},{"category":"_`","input":"_2_+_P_+_K _P_+_K","hitLevels":"hm"},{"category":"_`","input":"_2_+_K_+_G","hitLevels":"m"},{"category":"_`","input":"^2_6_+_P_+_K_P_+_K","hitLevels":"mh"},{"category":"_`","input":"^2_6_+_K","hitLevels":"m"},{"category":"_`","input":"_1_+_P","hitLevels":"h"},{"category":"_`","input":"_7_+_K","hitLevels":"m"},{"category":"_`","input":"_7_+_K_+_G","hitLevels":"m"},{"category":"_`","input":"^9_+_K","hitLevels":"m"},{"category":"_`","name":"opponent knocked down","input":"_3_+_K","hitLevels":"g"},{"category":"_`","input":"_8_+_K","hitLevels":"m"}],"notes":["String Moves","BACK TURNED (BK)","Strings Moves"]}],"controlAbbr":{"_G":"GR","_P":"P","_K":"K","_S":"ST"},"systemControlMappings":{"snes":{"y":"_P","b":"_K","x":"_G"},"genesis":{"b":"_P","y":"_K","a":"_G"},"megadrive":{"b":"_P","y":"_K","a":"_G"},"32x":{"b":"_P","y":"_K","c":"_G"},"saturn":{"b":"_P","y":"_K","a":"_G"},"psx":{"y":"_P","b":"_K","x":"_G"},"ps2":{"y":"_P","b":"_K","x":"_G"},"gb":{"b":"_P","a":"_K"},"gbc":{"b":"_P","a":"_K"},"gamegear":{"a":"_P","b":"_K"},"sms":{"a":"_P","b":"_K"},"gba":{"b":"_P","a":"_K","l1":"_G"}},"controlGroups":{"_P":["_P"],"_K":["_K"]}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "vf2",
+    "vf2a",
+    "vf2b",
+    "vf2o"
+  ],
+  "name": "Virtua Fighter 2",
+  "year": 1994,
+  "manufacturer": "Sega",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "_G": "Guard",
+    "_P": "Punch",
+    "_K": "Kick",
+    "_S": "Start"
+  },
+  "categories": {
+    "_(": "Throws",
+    "_)": "Command Moves",
+    "_`": "Positions"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "_6_6"
+    },
+    {
+      "category": "_)",
+      "name": "Run",
+      "input": "_6^6"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4"
+    },
+    {
+      "category": "_)",
+      "name": "Low Jump",
+      "input": "_8"
+    },
+    {
+      "category": "_)",
+      "name": "High Jump",
+      "input": "^8"
+    },
+    {
+      "category": "_)",
+      "name": "Side Kick",
+      "input": "_3_+_K"
+    },
+    {
+      "category": "_)",
+      "name": "Hopping Karate Chop",
+      "input": "_8_+_P"
+    },
+    {
+      "category": "_)",
+      "name": "Hop Kick",
+      "input": "_8_+_K"
+    },
+    {
+      "category": "_)",
+      "name": "OverHead Hammer",
+      "input": "_^_6_+_P"
+    },
+    {
+      "category": "_)",
+      "name": "Drop Kick Forward",
+      "input": "_^_6_+_K"
+    },
+    {
+      "category": "_)",
+      "name": "Drop Kick Backward",
+      "input": "_^_4_+_K"
+    },
+    {
+      "category": "_)",
+      "name": "Quick Pounce opponent knocked down",
+      "input": "_X_8_+_P"
+    },
+    {
+      "category": "_)",
+      "name": "Stronger Pounce opponent knocked down",
+      "input": "_8_+_P"
+    },
+    {
+      "category": "_)",
+      "name": "Rising Heel Kick knocked down, feet away",
+      "input": "_K"
+    },
+    {
+      "category": "_)",
+      "name": "Rear Kick knocked down, feet towards",
+      "input": "_K"
+    },
+    {
+      "category": "_)",
+      "name": "Roll and Rise with Reel Kick knocked down",
+      "input": "_G_K"
+    },
+    {
+      "category": "_)",
+      "name": "Roll and Rise with Sweep knocked down",
+      "input": "_G_2_+_K"
+    },
+    {
+      "category": "_)",
+      "name": "Rising Sweep knocked down",
+      "input": "_2_+_K"
+    },
+    {
+      "category": "_)",
+      "name": "Roll Backward knocked down",
+      "input": "_4"
+    },
+    {
+      "category": "_)",
+      "name": "Roll Backward with Mule Kick knocked down",
+      "input": "_4_K"
+    },
+    {
+      "category": "_)",
+      "name": "Roll Backward with Sweep knocked down",
+      "input": "_4_2_+_K"
+    },
+    {
+      "category": "_)",
+      "name": "Roll Backward with Rising Heel Kick knocked down",
+      "input": "_4_6_+_K"
+    },
+    {
+      "category": "_)",
+      "name": "Get Up knocked down",
+      "input": "_8"
+    }
+  ],
+  "characters": [
+    {
+      "name": "AKIRA YUKI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Trip and 2 Punches",
+          "input": "_P_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Stun Palm",
+          "input": "_P_+_K_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Back Body Check",
+          "input": "_4_3_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Stun Palm of Doom",
+          "input": "_4_3_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Break Stance",
+          "input": "_6_+_P_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Close-in Ram",
+          "input": "_6_4_6_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Shake'em Up",
+          "input": "_4_+_P_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Stumbling Throw",
+          "input": "_4_2_+_P_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Shake'em Up Harder",
+          "input": "_2_+_P_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Surprise Exchange",
+          "input": "_1_+_P_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Pull-in Push-out",
+          "input": "_1_6_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Backwards Uppercut",
+          "input": "_1_6_+_P_+_K"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_K_+_G_G",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_G_4_+_P",
+          "hitLevels": "h",
+          "condition": "reverse high"
+        },
+        {
+          "category": "_`",
+          "input": "_G_1_+_P",
+          "hitLevels": "m",
+          "condition": "reverse mid"
+        },
+        {
+          "category": "_`",
+          "input": "_G_2_+_P",
+          "hitLevels": "l",
+          "condition": "reverse low"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_K_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_4_6_6_+_P_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^2_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^2_4_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_3_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_3_+_P",
+          "hitLevels": "g"
+        }
+      ],
+      "notes": [
+        "String Moves"
+      ]
+    },
+    {
+      "name": "LION RAFALE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Trip",
+          "input": "_P_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Grab and Flying",
+          "input": "_6_6_+_P_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Frontal Piggyback Attack",
+          "input": "_6_3_2_1_4_+_P_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Reaping Throw",
+          "input": "_4_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Piggyback Attack from behind",
+          "input": "_P_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Backflip",
+          "input": "_7"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_+_G",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_G_6_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_G_3_+_P",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_+_G",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_K_+_G",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_4_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_4_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_4_+_K_+_G",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K_K",
+          "hitLevels": "ll"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K_K_+_G",
+          "hitLevels": "lh"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K_+_G",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_2_2_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^2_3_+_P_P",
+          "hitLevels": "ll"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_P_P",
+          "hitLevels": "ll"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_G",
+          "hitLevels": "-"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P_P",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P_+_G",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K_+_G",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_G",
+          "hitLevels": "-"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K",
+          "hitLevels": "m"
+        }
+      ],
+      "notes": [
+        "String Moves"
+      ]
+    },
+    {
+      "name": "PAI CHAN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Wrist Twist",
+          "input": "_P_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Cartwheel Over Low Opponent",
+          "input": "_6_+_P_+_K_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Reaping Throw and Punch",
+          "input": "_6_6_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Falling D.D.T.",
+          "input": "_6_2_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Pushover",
+          "input": "_4_6_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Stomach Throw",
+          "input": "_4_2_+_P_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Backflip",
+          "input": "_7"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P_K",
+          "hitLevels": "hhhh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P_4_+_K",
+          "hitLevels": "hhhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P_2_+_K",
+          "hitLevels": "hhhl"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_K",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K_+_G",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_2_+_K_+_G",
+          "hitLevels": "hl"
+        },
+        {
+          "category": "_`",
+          "input": "_G_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P",
+          "hitLevels": "h",
+          "condition": "reverse high"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_G_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_4_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_P",
+          "hitLevels": "m",
+          "condition": "reverse mid"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_3_+_P",
+          "hitLevels": "g"
+        }
+      ],
+      "notes": [
+        "String Moves"
+      ]
+    },
+    {
+      "name": "SHUN DI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Dances with Punches",
+          "input": "_P_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Grab and Fall",
+          "input": "_P_+_K_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Backflip",
+          "input": "_7"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_+_K",
+          "hitLevels": "m",
+          "condition": "drinks if hits"
+        },
+        {
+          "category": "_`",
+          "input": "_K_+_G_P",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K_+_G",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_G_P",
+          "hitLevels": "-h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_4_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_4_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_1_2_3_6_+_K",
+          "hitLevels": "-h"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_P_+_K",
+          "hitLevels": "l",
+          "condition": "must drink x1"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_P_+_K_K",
+          "hitLevels": "ll",
+          "condition": "must drink x2"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_P_+_K_K_K",
+          "hitLevels": "lll",
+          "condition": "must drink x3"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K_+_G",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^2_+_K_+_G",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_2_2",
+          "hitLevels": "-"
+        },
+        {
+          "category": "_`",
+          "input": "^2_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_P",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_K_K",
+          "hitLevels": "lh"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_K_+_G",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_G_P",
+          "hitLevels": "-h"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_G_P_+_K",
+          "hitLevels": "-m"
+        },
+        {
+          "category": "_`",
+          "input": "_1_1_+_K",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_G",
+          "hitLevels": "-"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K",
+          "hitLevels": "m"
+        }
+      ],
+      "notes": [
+        "String Moves"
+      ]
+    },
+    {
+      "name": "LAU CHAN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Waterwheel Drop",
+          "input": "_P_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Piggyback Drop",
+          "input": "_4_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Head Slam",
+          "input": "_4_6_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Sideways Throw",
+          "input": "_4_2_+_P_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Backflip",
+          "input": "_7"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_K",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P_K",
+          "hitLevels": "hhhh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P_4_+_K",
+          "hitLevels": "hhhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P_2_+_K",
+          "hitLevels": "hhhl"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K_+_G",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_2_+_K_+_G",
+          "hitLevels": "hl"
+        },
+        {
+          "category": "_`",
+          "input": "_G_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_2_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K_+_G",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "^2_3_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "^2_N_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P_P_P_K",
+          "hitLevels": "mhhh"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P_P_P_4_+_K",
+          "hitLevels": "mhhm"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P_P_P_2_+_K",
+          "hitLevels": "mhhl"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P_P_K",
+          "hitLevels": "mhh"
+        },
+        {
+          "category": "_`",
+          "input": "_3_3_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_3_+_K",
+          "hitLevels": "g"
+        }
+      ],
+      "notes": [
+        "String Moves"
+      ]
+    },
+    {
+      "name": "JACKY BRYANT",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Brainbuster",
+          "input": "_P_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Jumping Clothesline",
+          "input": "_6_6_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Trip and Hammer",
+          "input": "_6_4_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Toe Kick, Side Kick",
+          "input": "_2_3_K_K"
+        },
+        {
+          "category": "_(",
+          "name": "Backside Clothesline from behind",
+          "input": "_P_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Backflip",
+          "input": "_7"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_K",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_6_+_P_K",
+          "hitLevels": "hhmh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_4_+_P_K",
+          "hitLevels": "hhhh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_2_+_K",
+          "hitLevels": "hl"
+        },
+        {
+          "category": "_`",
+          "input": "_P_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_K_K",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "input": "_K_+_G_2_+_K_+_G",
+          "hitLevels": "hl"
+        },
+        {
+          "category": "_`",
+          "input": "_G_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_K",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_P",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_K",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_2_+_K",
+          "hitLevels": "hl"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_1_+_P",
+          "hitLevels": "hl"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_4_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_4_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_6_+_K_+_G",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_P_+_K_K_K_K_K",
+          "hitLevels": "mmmhh"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K_+_G",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_P_K",
+          "hitLevels": "ll"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "close",
+          "input": "_P_K",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_3_+_K",
+          "hitLevels": "g"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K",
+          "hitLevels": "h"
+        }
+      ],
+      "notes": [
+        "String Moves",
+        "BACK TURNED (BK)",
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "WOLF HAWKFIELD",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Backfall Suplex",
+          "input": "_P_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Variation German Suplex",
+          "input": "_P_+_K_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Body Slam",
+          "input": "_6_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Twirl and Hurl",
+          "input": "_4_1_2_3_6_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Torso Takedown",
+          "input": "_2_+_P_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Double Arm Suplex",
+          "input": "_1_+_P_+_K_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Tombstone",
+          "input": "_3_+_P_+_K_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Ghostbuster",
+          "input": "_3_3_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Frankensteiner",
+          "input": "_9_+_K_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "German Suplex from behind",
+          "input": "_P_+_G"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_K_+_G",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K_+_G",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_K_+_G",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6_2_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_P_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_6_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_6_+_K_+_G",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^2_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_P",
+          "hitLevels": "m",
+          "condition": "reverse mid kick"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^3_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_3_+_P",
+          "hitLevels": "g"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_8_+_K",
+          "hitLevels": "g"
+        }
+      ],
+      "notes": [
+        "String Moves"
+      ]
+    },
+    {
+      "name": "SARAH BRYANT",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Belly Suplex",
+          "input": "_P_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Jumping Clothesline",
+          "input": "_6_6_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Torso Takedown from behind",
+          "input": "_P_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Backflip",
+          "input": "_7"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P_K",
+          "hitLevels": "hhhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P_8_+_K",
+          "hitLevels": "hhhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P_4_+_K",
+          "hitLevels": "hhhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_K",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_2_+_K",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "input": "_K_P",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_K_+_G",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K_3_+_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_4_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_4_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K_K",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K_+_G",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "^2_6_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^2_4_+_K_K",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_K_+_G",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_K_K_K",
+          "hitLevels": "mhh"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_9_+_K_+_G",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_3_+_K",
+          "hitLevels": "g"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_K",
+          "hitLevels": "h"
+        }
+      ],
+      "notes": [
+        "String Moves",
+        "BACK TURNED (BK)",
+        "Strings Moves"
+      ]
+    },
+    {
+      "name": "JEFFRY McWILD",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Fireman's Carry",
+          "input": "_P_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Power Slam",
+          "input": "_6_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Body Press",
+          "input": "_4_+_P_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Single Headbutt",
+          "input": "_4_6_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Double Headbutt",
+          "input": "_6_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Triple Headbutt",
+          "input": "_6_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Backbreaker",
+          "input": "_4_6_6_+_P_+_K_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Face Grab",
+          "input": "_2_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Triple Knee Bash",
+          "input": "_2_6_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Powerbomb",
+          "input": "_3_+_P_+_K_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Crucifix Piledriver",
+          "input": "_3_3_+_P_+_K"
+        },
+        {
+          "category": "_(",
+          "name": "Backbreaker from behind",
+          "input": "_P_+_G"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P",
+          "hitLevels": "hhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_+_K_+_G",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_4_+_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_2_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_3_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_P_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K^2_3_6_+_P_+_K_+_G",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^2_3_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_1_6_+_P_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_3_+_P_P",
+          "hitLevels": "mm"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_3_+_K",
+          "hitLevels": "g"
+        }
+      ],
+      "notes": [
+        "String Moves"
+      ]
+    },
+    {
+      "name": "KAGE-MARU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Hip Throw",
+          "input": "_P_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Toka Throw",
+          "input": "_P_+_K_+_G"
+        },
+        {
+          "category": "_(",
+          "name": "Ten Foot Toss",
+          "input": "_4_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Reaping Throw",
+          "input": "_4_6_+_P"
+        },
+        {
+          "category": "_(",
+          "name": "Torso Takedown from behind",
+          "input": "_P_+_G"
+        },
+        {
+          "category": "_)",
+          "name": "Backflip",
+          "input": "_7"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P_K",
+          "hitLevels": "hhhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_P_4_+_K",
+          "hitLevels": "hhhm"
+        },
+        {
+          "category": "_`",
+          "input": "_P_K",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_P_P_K",
+          "hitLevels": "hhh"
+        },
+        {
+          "category": "_`",
+          "input": "_6_+_P",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_P_+_K_+_G",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_6_6_+_K_+_G",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_6_3_2_1_4",
+          "hitLevels": "-"
+        },
+        {
+          "category": "_`",
+          "input": "_6_3_2_1_4_+_K",
+          "hitLevels": "-l"
+        },
+        {
+          "category": "_`",
+          "input": "_6_3_2_1_4_6_3_2_1_4_+_P",
+          "hitLevels": "-l"
+        },
+        {
+          "category": "_`",
+          "input": "_6_3_2_1_4_6_3_2_1_4_+_P_+_K_+_G",
+          "hitLevels": "-l"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_G",
+          "hitLevels": "-"
+        },
+        {
+          "category": "_`",
+          "input": "_4_+_K_+_G",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_4_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_4_+_P_+_G",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_4_+_K",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_4_4_+_K_+_G",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_4_6_+_P_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_4_6_+_P_+_K _P_+_K",
+          "hitLevels": "hh"
+        },
+        {
+          "category": "_`",
+          "input": "_4_2_3_6_2_+_K",
+          "hitLevels": "l"
+        },
+        {
+          "category": "_`",
+          "input": "_4_1_2_3_6",
+          "hitLevels": "-"
+        },
+        {
+          "category": "_`",
+          "input": "_4_1_2_3_6_+_K",
+          "hitLevels": "-l"
+        },
+        {
+          "category": "_`",
+          "input": "_4_1_2_3_6_4_1_2_3_6_+_P",
+          "hitLevels": "-l"
+        },
+        {
+          "category": "_`",
+          "input": "_4_1_2_3_6_4_1_2_3_6_+_K",
+          "hitLevels": "-l"
+        },
+        {
+          "category": "_`",
+          "input": "_4_1_2_3_6_4_1_2_3_6_+_P_+_K_+_G",
+          "hitLevels": "-l"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_P",
+          "hitLevels": "h",
+          "condition": "reverse punch"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_P_+_K _P_+_K",
+          "hitLevels": "hm"
+        },
+        {
+          "category": "_`",
+          "input": "_2_+_K_+_G",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^2_6_+_P_+_K_P_+_K",
+          "hitLevels": "mh"
+        },
+        {
+          "category": "_`",
+          "input": "^2_6_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_1_+_P",
+          "hitLevels": "h"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "_7_+_K_+_G",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "input": "^9_+_K",
+          "hitLevels": "m"
+        },
+        {
+          "category": "_`",
+          "name": "opponent knocked down",
+          "input": "_3_+_K",
+          "hitLevels": "g"
+        },
+        {
+          "category": "_`",
+          "input": "_8_+_K",
+          "hitLevels": "m"
+        }
+      ],
+      "notes": [
+        "String Moves",
+        "BACK TURNED (BK)",
+        "Strings Moves"
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_G": "GR",
+    "_P": "P",
+    "_K": "K",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_P",
+      "b": "_K",
+      "x": "_G"
+    },
+    "genesis": {
+      "b": "_P",
+      "y": "_K",
+      "a": "_G"
+    },
+    "megadrive": {
+      "b": "_P",
+      "y": "_K",
+      "a": "_G"
+    },
+    "32x": {
+      "b": "_P",
+      "y": "_K",
+      "c": "_G"
+    },
+    "saturn": {
+      "b": "_P",
+      "y": "_K",
+      "a": "_G"
+    },
+    "psx": {
+      "y": "_P",
+      "b": "_K",
+      "x": "_G"
+    },
+    "ps2": {
+      "y": "_P",
+      "b": "_K",
+      "x": "_G"
+    },
+    "gb": {
+      "b": "_P",
+      "a": "_K"
+    },
+    "gbc": {
+      "b": "_P",
+      "a": "_K"
+    },
+    "gamegear": {
+      "a": "_P",
+      "b": "_K"
+    },
+    "sms": {
+      "a": "_P",
+      "b": "_K"
+    },
+    "gba": {
+      "b": "_P",
+      "a": "_K",
+      "l1": "_G"
+    }
+  },
+  "controlGroups": {
+    "_P": [
+      "_P"
+    ],
+    "_K": [
+      "_K"
+    ]
+  }
+}

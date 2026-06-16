@@ -1,1 +1,1212 @@
-{"schemaVersion":2,"romIds":["wh2j"],"name":"World Heroes 2 Jet","year":1994,"manufacturer":"SNK","credits":"Fabricio Coroquer","controls":{"_A":"Punch","_B":"Kick","_C":"Taunt","_D":"Not Used","_S":"Start","^S":"Select (AES only)"},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves"},"commonCommands":[{"category":"_)","name":"Dash","input":"_6_6"},{"category":"_)","name":"Retreat","input":"_4_4"},{"category":"_)","name":"Weak Punch","input":"_X_A"},{"category":"_)","name":"Strong Punch","input":"_A"},{"category":"_)","name":"Weak Kick","input":"_X_B"},{"category":"_)","name":"Strong Kick","input":"_B"},{"category":"_)","name":"Projectile Reflection being hit by a projectile","input":"_4 / _1 (reflect projectile)"},{"category":"_)","name":"Alternative Taunt","input":"_6_+_C"},{"category":"_)","name":"Time Over Pose","input":"_4_+_C"},{"category":"_)","name":"Fake Dizzy","input":"_2_+_C"}],"characters":[{"name":"HANZO HATTORI","moves":[{"category":"_(","name":"Izuna Otoshi","input":"_6_+_A"},{"category":"_(","name":"Ura Nage","input":"_4_+_A"},{"category":"_)","name":"Roundhouse close","input":"_4 / _6_+_B"},{"category":"_)","name":"Izuna Giri","input":"_^_2_+_A"},{"category":"_)","name":"2 Dan Jump","input":"_^_8"},{"category":"_@","name":"Rekko Zan","input":"_2_3_6_+_A"},{"category":"_@","name":"Double Rekko Zan","input":"_2_3_6_2_3_6_+_A"},{"category":"_@","name":"Kouryu Ha","input":"_6_2_3_+_A"},{"category":"_@","name":"Ninpou Kohrin Kazan","input":"_2_1_4_+_B"},{"category":"_@","name":"Ninja Leg Lariat","input":"_2_3_6_+_B"},{"category":"_@","name":"Mijin Komoru no Subi","input":"_6_2_3_+_B"}]},{"name":"KOTARO FUUMA","moves":[{"category":"_(","name":"Izuna Otoshi","input":"_6_+_A"},{"category":"_(","name":"Ura Nage","input":"_4_+_A"},{"category":"_(","name":"Izuna Ochitoshi","input":"_^_4 / _6_+_A"},{"category":"_)","name":"Roundhouse","input":"_4 / _6_+_B"},{"category":"_)","name":"2 Dan Jump","input":"_^_8"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_9"},{"category":"_@","name":"Reppu Zan","input":"_2_3_6_+_A"},{"category":"_@","name":"Double Reppu Zan","input":"_2_3_6_2_3_6_+_A"},{"category":"_@","name":"Enryu Ha","input":"(_^)_6_2_3_+_A"},{"category":"_@","name":"Ninpou Furin Kazan","input":"_2_1_4_+_B"},{"category":"_@","name":"Bakuretsu Kyuukyoku Ken","input":"_6_3_2_1_4_7_+_A"}]},{"name":"KIM DRAGON","moves":[{"category":"_(","name":"Skull Crush","input":"_4 / _6_+_A"},{"category":"_(","name":"Chinese Choke","input":"_4 / _6_+_B"},{"category":"_(","name":"Dragon Falling","input":"_^_4 / _6_+_A"},{"category":"_)","name":"Straight Fist","input":"_4 / _6_+_X_A"},{"category":"_)","name":"Backfist","input":"_4 / _6_+_A"},{"category":"_)","name":"Gut Punch close","input":"_4 / _6_+_A"},{"category":"_)","name":"Straight Kick","input":"_4 / _6_+_X_B"},{"category":"_)","name":"Leaping Kick","input":"_4 / _6_+_B"},{"category":"_)","name":"Keri Age","input":"_^_2_+_B"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_9"},{"category":"_@","name":"Hyakuretsu Ken","input":"^*_A"},{"category":"_@","name":"Dragon Kick","input":"_2_8_+_B"},{"category":"_@","name":"Tobisokutou","input":"_2_3_6_+_B"},{"category":"_@","name":"Hiryu Kyaku","input":"_2_1_4_+_B"},{"category":"_@","name":"Hyakuretsu Shuu","input":"_6_3_2_1_+_B"}]},{"name":"JENGHIS CARN","moves":[{"category":"_(","name":"Dynamite Upper","input":"_6_+_A"},{"category":"_(","name":"Mongolian Throw","input":"_4_+_A"},{"category":"_)","name":"Claw Fist","input":"_4 / _6_+_X_A"},{"category":"_)","name":"Double Palm","input":"_4 / _6_+_A"},{"category":"_)","name":"Hand Dive","input":"_3_+_X_B"},{"category":"_)","name":"Strong Hand Dive","input":"_3_+_B"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_9"},{"category":"_@","name":"Mongolian Tiger Mash","input":"^4_6_+_A"},{"category":"_@","name":"Mongolian Dynamite","input":"^2_8_+_A"},{"category":"_@","name":"Mongolian Tackle","input":"^4_6_+_B"},{"category":"_@","name":"Mongolian Press","input":"_2_3_6_+_B"}]},{"name":"RASPUTIN","moves":[{"category":"_(","name":"Aura Grip","input":"_4 / _6_+_A"},{"category":"_(","name":"Handshake","input":"_4 / _6_+_B"},{"category":"_)","name":"Big Fists","input":"_4 / _6_+_A"},{"category":"_@","name":"Fireball","input":"(_^)_2_3_6_+_A"},{"category":"_@","name":"Thunder Ball","input":"_4_1_2_3_6_+_A"},{"category":"_@","name":"Axle Spin","input":"(_^)_2_1_4_+_B"},{"category":"_@","name":"Move","input":"_4 / _6"},{"category":"_@","name":"Kossak Dance","input":"_2_3_6_+_B"},{"category":"_@","name":"Move","input":"_4 / _6"}]},{"name":"JANNE D'ARC","moves":[{"category":"_(","name":"Seoi Nage","input":"_4 / _6_+_A"},{"category":"_(","name":"Face Slaps","input":"_4 / _6_+_B"},{"category":"_)","name":"Step Strike","input":"_4 / _6_+_X_A"},{"category":"_)","name":"Ground Slice","input":"_4 / _6_+_A"},{"category":"_)","name":"Hop Kick","input":"_4 / _6_+_B"},{"category":"_)","name":"Slide","input":"_3_+_X_B"},{"category":"_)","name":"Strong Slide","input":"_3_+_B"},{"category":"_)","name":"Mercury Sword","input":"_^_2_+_A"},{"category":"_@","name":"Aura Bird","input":"_4_6_+_A"},{"category":"_@","name":"Flash Sword","input":"_2_8_+_B"},{"category":"_@","name":"Justice Sword","input":"_4_6_+_B"},{"category":"_@","name":"Fire Bird","input":"_6_2_3_6_9_+_A"}]},{"name":"BROCKEN","moves":[{"category":"_(","name":"High Drop Suplex","input":"_6_+_A"},{"category":"_(","name":"Suplex","input":"_4_+_A"},{"category":"_)","name":"Stretch Arm","input":"_4 / _6_+_A"},{"category":"_)","name":"Stretch Roundhouse","input":"_4 / _6_+_B"},{"category":"_)","name":"Metal Knee close","input":"_4 / _6_+_B"},{"category":"_)","name":"Rocket Jump","input":"_^_A_+_B"},{"category":"_)","name":"Control","input":"_2 / _8"},{"category":"_)","name":"Rolling Heel Kick","input":"_^_2_+_B"},{"category":"_@","name":"Spark Thunder","input":"^*_A"},{"category":"_@","name":"Long Spark Thunder","input":"_4_1_2_3_6_+_A"},{"category":"_@","name":"Rocket Punch","input":"_2_3_6_+_A"},{"category":"_@","name":"German Missile","input":"_2_3_6_+_B"},{"category":"_@","name":"Hurricane Arm","input":"_2_6_3_+_A"},{"category":"_@","name":"Jack Hammer","input":"_2_1_4_+_A"}]},{"name":"MUSCLE POWER","moves":[{"category":"_(","name":"Knee Drop","input":"_6_+_A"},{"category":"_(","name":"Vertical Suplex","input":"_4_+_A / _B"},{"category":"_(","name":"Powerbomb","input":"_6_+_B"},{"category":"_(","name":"Choke Hold within throw range","input":"_4 / _6_+_A"},{"category":"_(","name":"Headbutt within throw range","input":"_4 / _6_+_B"},{"category":"_(","name":"Fireman's Carry","input":"_2_+_A"},{"category":"_)","name":"Elbow Drop","input":"_^_2_+_A"},{"category":"_)","name":"Guillotine Drop","input":"_^_2_+_B"},{"category":"_@","name":"Muscle Bomber","input":"_4_6_+_B"},{"category":"_@","name":"Tornado Body Smash close","input":"_x_+_A"},{"category":"_@","name":"Super Drop Kick","input":"_2_3_6_9_+_B"},{"category":"_@","name":"Anti-aircraft Jump Swing opponent in air","input":"_9_+_A_+_B"}]},{"name":"CAPTAIN KIDD","moves":[{"category":"_(","name":"One Arm Toss","input":"_4 / _6_+_A"},{"category":"_(","name":"Face Slaps","input":"_4 / _6_+_B"},{"category":"_)","name":"Quick Punch","input":"_4 / _6_+_X_A"},{"category":"_)","name":"Pirate Knuckle","input":"_4 / _6_+_A"},{"category":"_)","name":"Flying Kick","input":"_4 / _6_+_B"},{"category":"_)","name":"Shark Kick","input":"_^_2_+_B"},{"category":"_@","name":"Shark Knuckle","input":"^4_6_+_A"},{"category":"_@","name":"Shark Upper","input":"^2_8_+_A"},{"category":"_@","name":"Spiral Kick","input":"^4_6_+_B"},{"category":"_@","name":"Pirate Ship Blast","input":"_2_3_6_+_A"},{"category":"_@","name":"Hyper Dash Kick","input":"_6_3_2_1_4_+_B"},{"category":"_@","name":"Special Taunt","input":"_A_+_B_+_C"}]},{"name":"ERICK","moves":[{"category":"_(","name":"Arm Press","input":"_6_+_A"},{"category":"_(","name":"Horn Throw","input":"_4_+_A"},{"category":"_(","name":"The Viking Crash within throw range","input":"_4 / _6_+_A"},{"category":"_)","name":"Straight Shield","input":"_4 / _6_+_X_A"},{"category":"_)","name":"Low Axe","input":"_4 / _6_+_A"},{"category":"_)","name":"Body Press","input":"_^_2_+_A"},{"category":"_@","name":"Blizzard Breath","input":"_4_1_2_3_6_+_A"},{"category":"_@","name":"Thor's Hammer","input":"_2_1_4_+_A"},{"category":"_@","name":"Aegyr's Halberd","input":"_2_1_4_+_B"},{"category":"_@","name":"Long Horn","input":"^4_6_+_A"},{"category":"_@","name":"Hurricane Drop close","input":"_6_4_1_2_3_6_+_A"}]},{"name":"RYOKO IZUMO","moves":[{"category":"_(","name":"Seoi Nage","input":"_4 / _6_+_A"},{"category":"_(","name":"Tomoe Nage","input":"_4 / _6_+_B"},{"category":"_(","name":"Fireman's Carry","input":"_2_+_A"},{"category":"_(","name":"Strangle Hold within throw range","input":"_4 / _6_+_A"},{"category":"_(","name":"Shinkuu Nage","input":"_^_4 / _6_+_A"},{"category":"_)","name":"Palm Push","input":"_4 / _6_+_A"},{"category":"_)","name":"Shoutei Ha","input":"_3_+_A"},{"category":"_)","name":"Shoutei Kyaku","input":"_3_+_B"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_9"},{"category":"_)","name":"Hien Ken","input":"_A"},{"category":"_@","name":"Bo Satsu Sho","input":"_2_1_4_+_A"},{"category":"_@","name":"Iakeri","input":"_6_2_3_+_B"},{"category":"_@","name":"Ni Dan Seoi Nage close","input":"_4_1_2_3_6_+_A"},{"category":"_@","name":"Kubi Kiri Nage","input":"_4_1_2_3_6_+_B"}]},{"name":"SHURA","moves":[{"category":"_(","name":"Knee Bash","input":"_4 / _6_+_A"},{"category":"_)","name":"Quick Straight","input":"_4 / _6_+_X_A"},{"category":"_)","name":"Back Elbow","input":"_4 / _6_+_A"},{"category":"_)","name":"Quick Knee close","input":"_4 / _6_+_X_B"},{"category":"_@","name":"Tiger Claw","input":"^4_6_+_B"},{"category":"_@","name":"Tiger Fang","input":"^4_6_+_A"},{"category":"_@","name":"Muai Thai Kick","input":"^2_8_+_B"},{"category":"_@","name":"Double Knee Kick","input":"_2_3_6_+_B"}]},{"name":"JOHNNY MAXIMUM","moves":[{"category":"_(","name":"Touchdown","input":"_6_+_A"},{"category":"_(","name":"Back Toss","input":"_4_+_A"},{"category":"_(","name":"Bearhug within throw range","input":"_4 / _6_+_A"},{"category":"_)","name":"Gut Punch","input":"_4 / _6_+_A"},{"category":"_)","name":"Short Punt","input":"_4 / _6_+_B"},{"category":"_)","name":"Slide","input":"_3_+_X_B"},{"category":"_)","name":"Strong Slide","input":"_3_+_B"},{"category":"_@","name":"Johnny Special close","input":"_4_1_2_3_6_+_A"},{"category":"_@","name":"Lightning Tackle","input":"_6_2_3_+_A"},{"category":"_@","name":"Shoulder Butt Crash","input":"_2_3_6_+_B"},{"category":"_@","name":"Head Crash","input":"^2_8_+_A"}]},{"name":"MUDMAN","moves":[{"category":"_(","name":"Dakitsuki Punch","input":"_6_+_A"},{"category":"_(","name":"Mask Hooking","input":"_4_+_A"},{"category":"_(","name":"Mudman Dance","input":"_4 / _6_+_B"},{"category":"_)","name":"Forward Mask Attack","input":"_4 / _6_+_A"},{"category":"_)","name":"Shin Kick","input":"_4 / _6_+_X_B"},{"category":"_)","name":"Mud Kick","input":"_4 / _6_+_B"},{"category":"_)","name":"Mud Slider","input":"_3_+_B"},{"category":"_@","name":"Mud Attack","input":"_2_3_6_+_A"},{"category":"_@","name":"Mud Launcher","input":"_2_3_6_+_B"},{"category":"_@","name":"Mud Cutter","input":"_2_1_4_+_A"},{"category":"_@","name":"Move","input":"_4 / _6"},{"category":"_@","name":"Mud Gyro","input":"^2_8_+_A"},{"category":"_@","name":"Mud Dance","input":"_A_+_B_+_C"}]},{"name":"JACK","moves":[{"category":"_(","name":"Flip Slam","input":"_4 / _6_+_A"},{"category":"_(","name":"Flip and Claw","input":"_4 / _6_+_B"},{"category":"_)","name":"Cannonball Blade","input":"_4 / _6_+_X_B"},{"category":"_)","name":"Backflip Blade","input":"_4 / _6_+_B"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_9"},{"category":"_@","name":"Mixer Crush","input":"_2_3_6_+_A"},{"category":"_@","name":"Jaws of Death","input":"_6_2_3_+_B"},{"category":"_@","name":"Iron Crawl","input":"_2_3_6_+_B"},{"category":"_@","name":"Knee Smasher","input":"_2_1_4_+_B"},{"category":"_@","name":"Taunt","input":"_A_+_B_+_C"}]},{"name":"RYOFU","moves":[{"category":"_(","name":"Spear Intense Destruction","input":"_6_+_A"},{"category":"_(","name":"Pinwheel Murder","input":"_4_+_A"},{"category":"_)","name":"Long Swipe","input":"_4 / _6_+_A"},{"category":"_)","name":"Upward Swipe","input":"_4 / _6_+_B"},{"category":"_@","name":"Sou Geki Ha","input":"_2_3_6_+_B"},{"category":"_@","name":"Sou Ranbu","input":"_2_1_4_+_A"},{"category":"_@","name":"Kaen Ken","input":"_2_3_6_+_A"},{"category":"_@","name":"Psychic Kick","input":"_6_3_2_1_4_+_B"}]},{"name":"ZEUS","moves":[{"category":"_(","name":"Double Strike","input":"_6_+_A"},{"category":"_(","name":"Hammer Throw","input":"_4_+_A"},{"category":"_@","name":"Megaton Punch","input":"_2_3_6_+_A"},{"category":"_@","name":"Atomic Heat","input":"^4_6_+_A"},{"category":"_@","name":"Gigger Smasher","input":"_2_1_4_1_2_3_6_+_A"},{"category":"_@","name":"Grab and Upper close","input":"_2_1_4_1_2_3_6_+_B"}]}],"controlAbbr":{"_A":"P","_B":"K","_C":"TA","_D":"—","_S":"ST","^S":"SL"},"systemControlMappings":{"snes":{"y":"_A","x":"_B","b":"_C","a":"_D"},"genesis":{"b":"_A","a":"_B","y":"_C","x":"_D"},"megadrive":{"b":"_A","a":"_B","y":"_C","x":"_D"},"32x":{"b":"_A","a":"_B","y":"_C","x":"_D"},"saturn":{"b":"_A","a":"_B","y":"_C","x":"_D"},"neogeo":{"b":"_A","y":"_B","a":"_C","x":"_D"},"psx":{"y":"_A","x":"_B","b":"_C","a":"_D"},"ps2":{"y":"_A","x":"_B","b":"_C","a":"_D"},"gb":{"b":"_A","a":"_B"},"gbc":{"b":"_A","a":"_B"},"gamegear":{"a":"_A","b":"_B"},"sms":{"a":"_A","b":"_B"},"gba":{"b":"_A","a":"_B","l1":"_C","r1":"_D"},"ngpc":{"b":"_A","a":"_B","y":"_C","x":"_D"},"dreamcast":{"y":"_A","x":"_B","b":"_C","a":"_D"},"n64":{"b":"_A","a":"_B","cDown":"_C","cLeft":"_D"},"wswan":{"b":"_A","a":"_B"}},"controlGroups":{"_P":["_A"],"_K":["_B"]}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "wh2j"
+  ],
+  "name": "World Heroes 2 Jet",
+  "year": 1994,
+  "manufacturer": "SNK",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "_A": "Punch",
+    "_B": "Kick",
+    "_C": "Taunt",
+    "_D": "Not Used",
+    "_S": "Start",
+    "^S": "Select (AES only)"
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "_6_6"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4"
+    },
+    {
+      "category": "_)",
+      "name": "Weak Punch",
+      "input": "_X_A"
+    },
+    {
+      "category": "_)",
+      "name": "Strong Punch",
+      "input": "_A"
+    },
+    {
+      "category": "_)",
+      "name": "Weak Kick",
+      "input": "_X_B"
+    },
+    {
+      "category": "_)",
+      "name": "Strong Kick",
+      "input": "_B"
+    },
+    {
+      "category": "_)",
+      "name": "Projectile Reflection being hit by a projectile",
+      "input": "_4 / _1 (reflect projectile)"
+    },
+    {
+      "category": "_)",
+      "name": "Alternative Taunt",
+      "input": "_6_+_C"
+    },
+    {
+      "category": "_)",
+      "name": "Time Over Pose",
+      "input": "_4_+_C"
+    },
+    {
+      "category": "_)",
+      "name": "Fake Dizzy",
+      "input": "_2_+_C"
+    }
+  ],
+  "characters": [
+    {
+      "name": "HANZO HATTORI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Izuna Otoshi",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Ura Nage",
+          "input": "_4_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Roundhouse close",
+          "input": "_4 / _6_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Izuna Giri",
+          "input": "_^_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "2 Dan Jump",
+          "input": "_^_8"
+        },
+        {
+          "category": "_@",
+          "name": "Rekko Zan",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Double Rekko Zan",
+          "input": "_2_3_6_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Kouryu Ha",
+          "input": "_6_2_3_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Ninpou Kohrin Kazan",
+          "input": "_2_1_4_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Ninja Leg Lariat",
+          "input": "_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Mijin Komoru no Subi",
+          "input": "_6_2_3_+_B"
+        }
+      ]
+    },
+    {
+      "name": "KOTARO FUUMA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Izuna Otoshi",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Ura Nage",
+          "input": "_4_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Izuna Ochitoshi",
+          "input": "_^_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Roundhouse",
+          "input": "_4 / _6_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "2 Dan Jump",
+          "input": "_^_8"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_9"
+        },
+        {
+          "category": "_@",
+          "name": "Reppu Zan",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Double Reppu Zan",
+          "input": "_2_3_6_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Enryu Ha",
+          "input": "(_^)_6_2_3_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Ninpou Furin Kazan",
+          "input": "_2_1_4_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Bakuretsu Kyuukyoku Ken",
+          "input": "_6_3_2_1_4_7_+_A"
+        }
+      ]
+    },
+    {
+      "name": "KIM DRAGON",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Skull Crush",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Chinese Choke",
+          "input": "_4 / _6_+_B"
+        },
+        {
+          "category": "_(",
+          "name": "Dragon Falling",
+          "input": "_^_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Straight Fist",
+          "input": "_4 / _6_+_X_A"
+        },
+        {
+          "category": "_)",
+          "name": "Backfist",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Gut Punch close",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Straight Kick",
+          "input": "_4 / _6_+_X_B"
+        },
+        {
+          "category": "_)",
+          "name": "Leaping Kick",
+          "input": "_4 / _6_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Keri Age",
+          "input": "_^_2_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_9"
+        },
+        {
+          "category": "_@",
+          "name": "Hyakuretsu Ken",
+          "input": "^*_A"
+        },
+        {
+          "category": "_@",
+          "name": "Dragon Kick",
+          "input": "_2_8_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Tobisokutou",
+          "input": "_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Hiryu Kyaku",
+          "input": "_2_1_4_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Hyakuretsu Shuu",
+          "input": "_6_3_2_1_+_B"
+        }
+      ]
+    },
+    {
+      "name": "JENGHIS CARN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Dynamite Upper",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Mongolian Throw",
+          "input": "_4_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Claw Fist",
+          "input": "_4 / _6_+_X_A"
+        },
+        {
+          "category": "_)",
+          "name": "Double Palm",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Hand Dive",
+          "input": "_3_+_X_B"
+        },
+        {
+          "category": "_)",
+          "name": "Strong Hand Dive",
+          "input": "_3_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_9"
+        },
+        {
+          "category": "_@",
+          "name": "Mongolian Tiger Mash",
+          "input": "^4_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Mongolian Dynamite",
+          "input": "^2_8_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Mongolian Tackle",
+          "input": "^4_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Mongolian Press",
+          "input": "_2_3_6_+_B"
+        }
+      ]
+    },
+    {
+      "name": "RASPUTIN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Aura Grip",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Handshake",
+          "input": "_4 / _6_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Big Fists",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Fireball",
+          "input": "(_^)_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Thunder Ball",
+          "input": "_4_1_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Axle Spin",
+          "input": "(_^)_2_1_4_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Move",
+          "input": "_4 / _6"
+        },
+        {
+          "category": "_@",
+          "name": "Kossak Dance",
+          "input": "_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Move",
+          "input": "_4 / _6"
+        }
+      ]
+    },
+    {
+      "name": "JANNE D'ARC",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Seoi Nage",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Face Slaps",
+          "input": "_4 / _6_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Step Strike",
+          "input": "_4 / _6_+_X_A"
+        },
+        {
+          "category": "_)",
+          "name": "Ground Slice",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Hop Kick",
+          "input": "_4 / _6_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Slide",
+          "input": "_3_+_X_B"
+        },
+        {
+          "category": "_)",
+          "name": "Strong Slide",
+          "input": "_3_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Mercury Sword",
+          "input": "_^_2_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Aura Bird",
+          "input": "_4_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Flash Sword",
+          "input": "_2_8_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Justice Sword",
+          "input": "_4_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Fire Bird",
+          "input": "_6_2_3_6_9_+_A"
+        }
+      ]
+    },
+    {
+      "name": "BROCKEN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "High Drop Suplex",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Suplex",
+          "input": "_4_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Stretch Arm",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Stretch Roundhouse",
+          "input": "_4 / _6_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Metal Knee close",
+          "input": "_4 / _6_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Rocket Jump",
+          "input": "_^_A_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Control",
+          "input": "_2 / _8"
+        },
+        {
+          "category": "_)",
+          "name": "Rolling Heel Kick",
+          "input": "_^_2_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Spark Thunder",
+          "input": "^*_A"
+        },
+        {
+          "category": "_@",
+          "name": "Long Spark Thunder",
+          "input": "_4_1_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Rocket Punch",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "German Missile",
+          "input": "_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Hurricane Arm",
+          "input": "_2_6_3_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Jack Hammer",
+          "input": "_2_1_4_+_A"
+        }
+      ]
+    },
+    {
+      "name": "MUSCLE POWER",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Knee Drop",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Vertical Suplex",
+          "input": "_4_+_A / _B"
+        },
+        {
+          "category": "_(",
+          "name": "Powerbomb",
+          "input": "_6_+_B"
+        },
+        {
+          "category": "_(",
+          "name": "Choke Hold within throw range",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Headbutt within throw range",
+          "input": "_4 / _6_+_B"
+        },
+        {
+          "category": "_(",
+          "name": "Fireman's Carry",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Elbow Drop",
+          "input": "_^_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Guillotine Drop",
+          "input": "_^_2_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Muscle Bomber",
+          "input": "_4_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Tornado Body Smash close",
+          "input": "_x_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Super Drop Kick",
+          "input": "_2_3_6_9_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Anti-aircraft Jump Swing opponent in air",
+          "input": "_9_+_A_+_B"
+        }
+      ]
+    },
+    {
+      "name": "CAPTAIN KIDD",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "One Arm Toss",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Face Slaps",
+          "input": "_4 / _6_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Quick Punch",
+          "input": "_4 / _6_+_X_A"
+        },
+        {
+          "category": "_)",
+          "name": "Pirate Knuckle",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Flying Kick",
+          "input": "_4 / _6_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Shark Kick",
+          "input": "_^_2_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Shark Knuckle",
+          "input": "^4_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Shark Upper",
+          "input": "^2_8_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Spiral Kick",
+          "input": "^4_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Pirate Ship Blast",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Hyper Dash Kick",
+          "input": "_6_3_2_1_4_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Special Taunt",
+          "input": "_A_+_B_+_C"
+        }
+      ]
+    },
+    {
+      "name": "ERICK",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Arm Press",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Horn Throw",
+          "input": "_4_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "The Viking Crash within throw range",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Straight Shield",
+          "input": "_4 / _6_+_X_A"
+        },
+        {
+          "category": "_)",
+          "name": "Low Axe",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Body Press",
+          "input": "_^_2_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Blizzard Breath",
+          "input": "_4_1_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Thor's Hammer",
+          "input": "_2_1_4_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Aegyr's Halberd",
+          "input": "_2_1_4_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Long Horn",
+          "input": "^4_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Hurricane Drop close",
+          "input": "_6_4_1_2_3_6_+_A"
+        }
+      ]
+    },
+    {
+      "name": "RYOKO IZUMO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Seoi Nage",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Tomoe Nage",
+          "input": "_4 / _6_+_B"
+        },
+        {
+          "category": "_(",
+          "name": "Fireman's Carry",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Strangle Hold within throw range",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Shinkuu Nage",
+          "input": "_^_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Palm Push",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Shoutei Ha",
+          "input": "_3_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Shoutei Kyaku",
+          "input": "_3_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_9"
+        },
+        {
+          "category": "_)",
+          "name": "Hien Ken",
+          "input": "_A"
+        },
+        {
+          "category": "_@",
+          "name": "Bo Satsu Sho",
+          "input": "_2_1_4_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Iakeri",
+          "input": "_6_2_3_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Ni Dan Seoi Nage close",
+          "input": "_4_1_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Kubi Kiri Nage",
+          "input": "_4_1_2_3_6_+_B"
+        }
+      ]
+    },
+    {
+      "name": "SHURA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Knee Bash",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Quick Straight",
+          "input": "_4 / _6_+_X_A"
+        },
+        {
+          "category": "_)",
+          "name": "Back Elbow",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Quick Knee close",
+          "input": "_4 / _6_+_X_B"
+        },
+        {
+          "category": "_@",
+          "name": "Tiger Claw",
+          "input": "^4_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Tiger Fang",
+          "input": "^4_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Muai Thai Kick",
+          "input": "^2_8_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Double Knee Kick",
+          "input": "_2_3_6_+_B"
+        }
+      ]
+    },
+    {
+      "name": "JOHNNY MAXIMUM",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Touchdown",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Back Toss",
+          "input": "_4_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Bearhug within throw range",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Gut Punch",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Short Punt",
+          "input": "_4 / _6_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Slide",
+          "input": "_3_+_X_B"
+        },
+        {
+          "category": "_)",
+          "name": "Strong Slide",
+          "input": "_3_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Johnny Special close",
+          "input": "_4_1_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Lightning Tackle",
+          "input": "_6_2_3_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Shoulder Butt Crash",
+          "input": "_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Head Crash",
+          "input": "^2_8_+_A"
+        }
+      ]
+    },
+    {
+      "name": "MUDMAN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Dakitsuki Punch",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Mask Hooking",
+          "input": "_4_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Mudman Dance",
+          "input": "_4 / _6_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Forward Mask Attack",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Shin Kick",
+          "input": "_4 / _6_+_X_B"
+        },
+        {
+          "category": "_)",
+          "name": "Mud Kick",
+          "input": "_4 / _6_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Mud Slider",
+          "input": "_3_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Mud Attack",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Mud Launcher",
+          "input": "_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Mud Cutter",
+          "input": "_2_1_4_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Move",
+          "input": "_4 / _6"
+        },
+        {
+          "category": "_@",
+          "name": "Mud Gyro",
+          "input": "^2_8_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Mud Dance",
+          "input": "_A_+_B_+_C"
+        }
+      ]
+    },
+    {
+      "name": "JACK",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Flip Slam",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Flip and Claw",
+          "input": "_4 / _6_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Cannonball Blade",
+          "input": "_4 / _6_+_X_B"
+        },
+        {
+          "category": "_)",
+          "name": "Backflip Blade",
+          "input": "_4 / _6_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_9"
+        },
+        {
+          "category": "_@",
+          "name": "Mixer Crush",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Jaws of Death",
+          "input": "_6_2_3_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Iron Crawl",
+          "input": "_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Knee Smasher",
+          "input": "_2_1_4_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Taunt",
+          "input": "_A_+_B_+_C"
+        }
+      ]
+    },
+    {
+      "name": "RYOFU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Spear Intense Destruction",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Pinwheel Murder",
+          "input": "_4_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Long Swipe",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Upward Swipe",
+          "input": "_4 / _6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Sou Geki Ha",
+          "input": "_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Sou Ranbu",
+          "input": "_2_1_4_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Kaen Ken",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Psychic Kick",
+          "input": "_6_3_2_1_4_+_B"
+        }
+      ]
+    },
+    {
+      "name": "ZEUS",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Double Strike",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Hammer Throw",
+          "input": "_4_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Megaton Punch",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Atomic Heat",
+          "input": "^4_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Gigger Smasher",
+          "input": "_2_1_4_1_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Grab and Upper close",
+          "input": "_2_1_4_1_2_3_6_+_B"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_A": "P",
+    "_B": "K",
+    "_C": "TA",
+    "_D": "—",
+    "_S": "ST",
+    "^S": "SL"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "genesis": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "megadrive": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "32x": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "saturn": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "neogeo": {
+      "b": "_A",
+      "y": "_B",
+      "a": "_C",
+      "x": "_D"
+    },
+    "psx": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "ps2": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "gb": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gbc": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gamegear": {
+      "a": "_A",
+      "b": "_B"
+    },
+    "sms": {
+      "a": "_A",
+      "b": "_B"
+    },
+    "gba": {
+      "b": "_A",
+      "a": "_B",
+      "l1": "_C",
+      "r1": "_D"
+    },
+    "ngpc": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "dreamcast": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "n64": {
+      "b": "_A",
+      "a": "_B",
+      "cDown": "_C",
+      "cLeft": "_D"
+    },
+    "wswan": {
+      "b": "_A",
+      "a": "_B"
+    }
+  },
+  "controlGroups": {
+    "_P": [
+      "_A"
+    ],
+    "_K": [
+      "_B"
+    ]
+  }
+}

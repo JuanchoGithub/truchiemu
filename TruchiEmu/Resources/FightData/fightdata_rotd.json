@@ -1,1 +1,1324 @@
-{"schemaVersion":2,"romIds":["rotd","rotdh"],"name":"Rage of the Dragons","year":2002,"manufacturer":"Playmore","credits":"Fabricio Coroquer","controls":{"_A":"Weak Punch","_B":"Weak Kick","_C":"Strong Punch","_D":"Strong Kick","_S":"Taunt","^S":"Select (AES only)"},"controlGroups":{"_P":["_A","_C"],"_K":["_B","_D"]},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves","_*":"Desperation Moves","_&":"Super Desperation Moves","_#":"First Impact Combos","_`":"Special Team Duplex"},"commonCommands":[{"category":"_)","name":"Run","input":"_6^6"},{"category":"_)","name":"Retreat","input":"_4_4"},{"category":"_)","name":"Normal Jump","input":"_8"},{"category":"_)","name":"Low Jump","input":"_X_8"},{"category":"_)","name":"High Jump","input":"_2_8"},{"category":"_)","name":"Long Jump running","input":"_9"},{"category":"_)","name":"Dodge","input":"_A_+_B"},{"category":"_)","name":"Roll Forward","input":"_6_+_A_+_B"},{"category":"_)","name":"Roll Backward","input":"_4_+_A_+_B"},{"category":"_)","name":"Throw Escape when thrown","input":"_4 / _6_+_C"},{"category":"_)","name":"Roll knocked down","input":"_A_+_B"},{"category":"_)","name":"Counter Attack (1LV) blocking","input":"_C_+_D"},{"category":"_)","name":"Character Change","input":"_B_+_C"},{"category":"_)","name":"Tag Out Rush (1LV)","input":"_2_3_6_+_B_+_C"},{"category":"_)","name":"Team Duplex (1LV)","input":"_2_3_6_+_B_+_C"},{"category":"_)","name":"Surrender","input":"_O_A_+_B_+_C_+_D"},{"category":"_#","name":"First Impact Attack","input":"_C_+_D"}],"characters":[{"name":"BILLY LEWIS","moves":[{"category":"_(","name":"Throat Toss","input":"_4 / _6_+_C"},{"category":"_)","name":"Axe Kick","input":"_6_+_B"},{"category":"_@","name":"Single Slash","input":"_2_3_6_+_A"},{"category":"_@","name":"Slashing Cross","input":"_2_3_6_+_P"},{"category":"_@","name":"Double Slash","input":"_2_3_6_+_C"},{"category":"_@","name":"Flaming Cross","input":"_2_3_6_+_P"},{"category":"_@","name":"Ko Ryu Kyaku","input":"_6_2_3_+_K"},{"category":"_@","name":"Lightning Tail","input":"_2_3_6_+_K"},{"category":"_@","name":"Blue Rage","input":"(_^)_2_1_4_+_B"},{"category":"_@","name":"Blue Rage","input":"(_^)_2_1_4_+_D (x3)"},{"category":"_*","name":"Back Slasher","input":"_2_1_4_1_2_3_6_+_B"},{"category":"_&","name":"Double Back Slasher","input":"_2_1_4_1_2_3_6_+_D"},{"category":"_#","name":"Ground Combo","input":"_B_A_C_D_D"},{"category":"_#","name":"Air Combo","input":"_A_B_B_C_D"}]},{"name":"LYNN BAKER","moves":[{"category":"_(","name":"Toss Over","input":"_4 / _6_+_C"},{"category":"_(","name":"Air Toss Over","input":"_^_6_+_C"},{"category":"_)","name":"Down Palm","input":"_6_+_A"},{"category":"_)","name":"Crossup Kick","input":"_^_4_+_B"},{"category":"_@","name":"Ko Ryu Sho Zan","input":"_2_3_6_+_P"},{"category":"_@","name":"Ko Ryu Kyaku","input":"^2_8_+_K"},{"category":"_@","name":"Ryu En Hou","input":"_6_2_3_+_P"},{"category":"_@","name":"Karasu Kyaku","input":"_2_3_6_+_K"},{"category":"_@","name":"Kyaku Binta","input":"_K"},{"category":"_@","name":"Enretsu Ken","input":"_6_3_2_1_4_+_P"},{"category":"_*","name":"Tobi Ryu","input":"_2_1_4_1_2_3_6_+_B"},{"category":"_&","name":"Shin Tobi Ryu","input":"_2_1_4_1_2_3_6_+_D"},{"category":"_#","name":"Ground Combo","input":"_A_A_A_C_C"},{"category":"_#","name":"Air Combo","input":"_A_A_A_C_C"}]},{"name":"JIMMY LEWIS","moves":[{"category":"_(","name":"Grab and Toss","input":"_4 / _6_+_C"},{"category":"_)","name":"Down Elbow","input":"_6_+_A"},{"category":"_)","name":"Step Uppercut","input":"_3_+_A"},{"category":"_@","name":"Red Rage","input":"_2_3_6_+_P"},{"category":"_@","name":"Shouryuu Dan","input":"_6_2_3_+_P"},{"category":"_@","name":"Heat Hurricane","input":"_6_3_2_1_4_+_A"},{"category":"_@","name":"Hurricane Charge","input":"_6_3_2_1_4_+_C"},{"category":"_@","name":"Heat Elbow","input":"_8"},{"category":"_@","name":"Heat Upper","input":"_2"},{"category":"_@","name":"Cannon Kick","input":"_2_1_4_+_K"},{"category":"_*","name":"Gun Blow","input":"_2_1_4_1_2_3_6_+_A"},{"category":"_&","name":"Super Gun Blow","input":"_2_1_4_1_2_3_6_+_C"},{"category":"_#","name":"Ground Combo","input":"_A_A_B_C_C"},{"category":"_#","name":"Air Combo","input":"_B_A_C_D_D"}]},{"name":"SONIA ROMANENKO","moves":[{"category":"_(","name":"Frankensteiner Slam","input":"_4 / _6_+_C"},{"category":"_)","name":"Sliding Axe","input":"_6_+_B"},{"category":"_)","name":"Sliding Snake","input":"_3_+_B"},{"category":"_@","name":"Snake","input":"_2_3_6_+_A"},{"category":"_@","name":"Snake Hold","input":"_2_3_6_+_B / _C / _D"},{"category":"_@","name":"Snake Whip","input":"_6_2_3_+_K"},{"category":"_@","name":"Snake Bite","input":"_2_1_4_+_B"},{"category":"_@","name":"Snake Fangs","input":"_2_1_4_+_D"},{"category":"_@","name":"Fascination Sharp close","input":"_6_3_2_1_4_+_P"},{"category":"_*","name":"Guardian Mercy Short","input":"_2_3_6_2_3_6_+_A"},{"category":"_*","name":"Guardian Mercy Far","input":"_2_3_6_2_3_6_+_B"},{"category":"_&","name":"Guardian Death Short","input":"_2_3_6_2_3_6_+_C"},{"category":"_&","name":"Guardian Death Far","input":"_2_3_6_2_3_6_+_D"},{"category":"_#","name":"Ground Combo","input":"_A_A_C_C_D"},{"category":"_#","name":"Air Combo","input":"_B_A_B_A_C"}]},{"name":"RADEL","moves":[{"category":"_(","name":"Leg Cyclone","input":"_4 / _6_+_C"},{"category":"_)","name":"Double Spike","input":"_3_+_B"},{"category":"_@","name":"Glass Escape","input":"_2_3_6_+_P"},{"category":"_@","name":"Dead Dragon","input":"_6_2_3_+_P"},{"category":"_@","name":"Screw Back","input":"_6_3_2_1_4_+_K"},{"category":"_@","name":"Head Execution close","input":"_6_3_2_1_4_+_P"},{"category":"_@","name":"Glass Smash","input":"_2_1_4_+_P"},{"category":"_*","name":"Shadow Sword","input":"_2_3_6_3_2_1_4_+_A"},{"category":"_&","name":"Shadow Sword Destroyer","input":"_2_3_6_3_2_1_4_+_C"},{"category":"_#","name":"Ground Combo","input":"_A_A_A_C_D"},{"category":"_#","name":"Air Combo","input":"_A_A_A_C_D"}]},{"name":"ANNIE MURAKAMI","moves":[{"category":"_(","name":"Backflip Toss","input":"_4 / _6_+_C"},{"category":"_(","name":"Air Backflip Toss","input":"_^_6_+_C"},{"category":"_)","name":"Double Knee","input":"_6_+_B"},{"category":"_@","name":"Zuum","input":"_2_3_6_+_P"},{"category":"_@","name":"Zuum Cross","input":"_6_2_3_+_P"},{"category":"_@","name":"Ichi Ni Zan","input":"_6_3_2_1_4_+_K"},{"category":"_@","name":"Cat Leap","input":"_6_3_2_1_4_+_P"},{"category":"_@","name":"Magical Comet","input":"_^_2_3_6_+_P"},{"category":"_*","name":"Crossing Wrath","input":"_2_1_4_2_1_4_+_A (_O)"},{"category":"_&","name":"Double Crossing Wrath","input":"_2_1_4_2_1_4_+_C (_O)"},{"category":"_#","name":"Ground Combo","input":"_A_A_B_C_C"},{"category":"_#","name":"Air Combo","input":"_A_A_B_D_C"}]},{"name":"KANG JAE-MO","moves":[{"category":"_(","name":"Somersault Toss","input":"_4 / _6_+_C"},{"category":"_)","name":"Sumo Stomp","input":"_6_+_B"},{"category":"_)","name":"Sumo Charge","input":"_3_+_A"},{"category":"_)","name":"Stomach Set","input":"_3_+_C"},{"category":"_@","name":"Fire Bomb","input":"_2_3_6_+_P"},{"category":"_@","name":"Kang Screw","input":"_6_2_3_+_P"},{"category":"_@","name":"Kang Anger","input":"_4_1_2_3_6_+_K"},{"category":"_@","name":"Rolling Fire","input":"_2_1_4_+_P"},{"category":"_*","name":"Body Press Special close","input":"_6_3_2_1_4_6_3_2_1_4_+_A"},{"category":"_&","name":"Body Press Crush Special close","input":"_6_3_2_1_4_6_3_2_1_4_+_C"},{"category":"_#","name":"Ground Combo","input":"_A_A_A_A_C"},{"category":"_#","name":"Air Combo","input":"_A_A_A_A_C"}]},{"name":"Mr. JONES","moves":[{"category":"_(","name":"Toss to Ground","input":"_4 / _6_+_C"},{"category":"_(","name":"Air Toss to Ground","input":"_^_6_+_C"},{"category":"_)","name":"Down Elbow","input":"_6_+_A"},{"category":"_)","name":"Slide Double","input":"_3_+_B"},{"category":"_@","name":"Gaudy Punch","input":"^*_P"},{"category":"_@","name":"Retro Knuckle","input":"_2_1_4_+_P"},{"category":"_@","name":"Arc Fliegen","input":"_2_1_4_+_K"},{"category":"_@","name":"Funky Impact","input":"_2_3_6_+_P"},{"category":"_*","name":"Groove Master","input":"_2_1_4_2_1_4_+_B"},{"category":"_&","name":"Enter the Groove Master","input":"_2_1_4_2_1_4_+_D"},{"category":"_#","name":"Ground Combo","input":"_A_B_C_D_C"},{"category":"_#","name":"Air Combo","input":"_A_B_B_C_C"}]},{"name":"CASSANDRA MURATA","moves":[{"category":"_(","name":"Powerful Lift","input":"_4 / _6_+_C"},{"category":"_)","name":"Snapping Axe","input":"_6_+_B"},{"category":"_)","name":"Slide Kick","input":"_3_+_B"},{"category":"_@","name":"Illusion","input":"_2_3_6_+_K"},{"category":"_@","name":"Angel Wings","input":"_6_2_3_+_P"},{"category":"_@","name":"Fallen Angel","input":"_^_2_1_4_+_K"},{"category":"_@","name":"Innocence","input":"_6_3_2_1_4_+_P (reverse jump/high/mid)"},{"category":"_*","name":"Ground White Wave","input":"_2_1_4_1_2_3_6_+_A"},{"category":"_*","name":"Air White Wave","input":"_^_2_3_6_3_2_1_4_+_A"},{"category":"_&","name":"Ground White Wave Splash","input":"_2_1_4_1_2_3_6_+_C"},{"category":"_&","name":"Air White Wave Splash","input":"_^_2_3_6_3_2_1_4_+_C"},{"category":"_#","name":"Ground Combo","input":"_A_B_C_C_D"},{"category":"_#","name":"Air Combo","input":"_A_B_C_C_D"}]},{"name":"ONI INOMURA","moves":[{"category":"_(","name":"Death Claw","input":"_4 / _6_+_C"},{"category":"_(","name":"Falling Doom","input":"_^_6_+_C"},{"category":"_)","name":"Spin Claw","input":"_6_+_A"},{"category":"_)","name":"Sky High","input":"_3_+_B"},{"category":"_@","name":"The Ripper","input":"_4_1_2_3_6_+_P"},{"category":"_@","name":"Rising Cutter","input":"_6_2_3_+_P"},{"category":"_@","name":"Cold Steel","input":"_2_1_4_+_P (x3)"},{"category":"_@","name":"Cutting Edge","input":"_^_2_1_4_+_P"},{"category":"_*","name":"Bloody Mess","input":"_2_3_6_2_3_6_+_B"},{"category":"_&","name":"Bloody Mess Charge","input":"_2_3_6_2_3_6_+_D (_O)"},{"category":"_#","name":"Ground Combo","input":"_A_A_C_C_D"},{"category":"_#","name":"Air Combo","input":"_A_B_C_C_D"}]},{"name":"ELIAS PATRICK","moves":[{"category":"_(","name":"Heart Punch","input":"_4 / _6_+_C"},{"category":"_)","name":"Punch Down","input":"_6_+_A"},{"category":"_)","name":"Double Low","input":"_6_+_B"},{"category":"_@","name":"Holy Flare","input":"_2_3_6_+_P"},{"category":"_@","name":"Magnus","input":"_2_1_4_+_P"},{"category":"_@","name":"Hell or Heaven","input":"_4_1_2_3_6_+_K"},{"category":"_@","name":"Sinful close","input":"_6_2_3_+_P"},{"category":"_*","name":"Maximum Delirium","input":"_6_3_2_1_4_6_+_A"},{"category":"_&","name":"Super Maximum Delirium","input":"_6_3_2_1_4_6_+_C"},{"category":"_#","name":"Ground Combo","input":"_A_B_A_C_D"},{"category":"_#","name":"Air Combo","input":"_A_C_D_D_D"}]},{"name":"ALICE CARROL","moves":[{"category":"_(","name":"Energy Blast","input":"_4 / _6_+_C"},{"category":"_)","name":"Orb Charge","input":"_6_+_A"},{"category":"_)","name":"Double Stomp","input":"_^_2_+_B"},{"category":"_@","name":"Twinkle","input":"_2_3_6_+_A"},{"category":"_@","name":"Twinkle Twinkle","input":"_2_3_6_+_C"},{"category":"_@","name":"Rising Hell","input":"_6_2_3_+_P"},{"category":"_@","name":"Eat It","input":"_2_1_4_+_P"},{"category":"_@","name":"Heads Off","input":"_^_2_1_4_+_K"},{"category":"_*","name":"Red Rose of Darkness","input":"_6_3_2_1_4_6_+_A"},{"category":"_&","name":"Red Rose of Destruction","input":"_6_3_2_1_4_6_+_C"},{"category":"_#","name":"Ground Combo","input":"_A_A_C_C_C"},{"category":"_#","name":"Air Combo","input":"_B_A_C_D_D"}]},{"name":"PEPE \"JOSE\" RODRIGUEZ","moves":[{"category":"_(","name":"Frankensteiner","input":"_4 / _6_+_C"},{"category":"_(","name":"Air Frankensteiner","input":"_^_6_+_C"},{"category":"_)","name":"Hopping Fist","input":"_6_+_A"},{"category":"_)","name":"Wind Kicks","input":"_3_+_B"},{"category":"_@","name":"Istak","input":"_2_1_4_+_P"},{"category":"_@","name":"Arriba","input":"_6_2_3_+_B"},{"category":"_@","name":"Arriba Slash","input":"_6_2_3_+_D"},{"category":"_@","name":"Temoc","input":"_^_2_1_4_+_K"},{"category":"_@","name":"Cuautli close","input":"_6_3_2_1_4_+_P"},{"category":"_*","name":"Quetzalcoatl","input":"_2_3_6_2_3_6_+_A"},{"category":"_&","name":"Quetzalcoatl Blast","input":"_2_3_6_2_3_6_+_C"},{"category":"_#","name":"Ground Combo","input":"_A_B_C_D_D"},{"category":"_#","name":"Air Combo","input":"_B_A_C_D_D"}]},{"name":"PUPA SALGUEIRO","moves":[{"category":"_(","name":"Choking Slam","input":"_4 / _6_+_C"},{"category":"_(","name":"Thoughtless Toss","input":"_^_6_+_C"},{"category":"_)","name":"Wrench Blow","input":"_6_+_A"},{"category":"_)","name":"Tricky Feet","input":"_3_+_B"},{"category":"_@","name":"Real Beat","input":"^*_K"},{"category":"_@","name":"Swift Exit","input":"_2_3_6_+_K"},{"category":"_@","name":"Benção","input":"_2_3_6_+_P"},{"category":"_@","name":"Breeze Dancer","input":"_6_2_3_+_K"},{"category":"_@","name":"Wrench Strike","input":"_2_+_P"},{"category":"_@","name":"Parafuso","input":"_6_3_2_1_4_+_K"},{"category":"_@","name":"Queixada","input":"_O_K for 2 seconds"},{"category":"_*","name":"Au Lande","input":"_2_3_6_2_3_6_+_B"},{"category":"_*","name":"Super Queixada","input":"_O_K for 10 seconds"},{"category":"_&","name":"Au Lande Frenzy","input":"_2_3_6_2_3_6_+_D"},{"category":"_&","name":"Ultimate Queixada","input":"_O_K for 30 seconds"},{"category":"_#","name":"Ground Combo","input":"_A_A_B_B_D"},{"category":"_#","name":"Air Combo","input":"_B_B_D_D_D"}]},{"name":"ABUBO RAO","moves":[{"category":"_(","name":"Goodbye","input":"_4 / _6_+_C"},{"category":"_)","name":"Body Splash","input":"_6_+_A"},{"category":"_)","name":"Hammer Crush","input":"_3_+_A"},{"category":"_)","name":"Reaching Fist","input":"_3_+_C"},{"category":"_@","name":"Steel Crusher","input":"_2_3_6_+_A (_O)"},{"category":"_@","name":"Steel Bender","input":"_2_3_6_+_C (_O)"},{"category":"_@","name":"Flea Feint","input":"_6_2_3_+_A"},{"category":"_@","name":"Flea Catch","input":"_6_2_3_+_C"},{"category":"_@","name":"Violent Instinct","input":"_4_1_2_3_6_+_K"},{"category":"_@","name":"Destruction close","input":"_6_3_2_1_4_+_P"},{"category":"_*","name":"War Path close","input":"_6_3_2_1_4_6_3_2_1_4_+_A"},{"category":"_&","name":"Mega War Path close","input":"_6_3_2_1_4_6_3_2_1_4_+_C"},{"category":"_#","name":"Ground Combo","input":"_A_A_B_B_D"},{"category":"_#","name":"Air Combo","input":"_A_A_B_B_D"}]},{"name":"JOHANN","moves":[{"category":"_(","name":"Painful Scream","input":"_4 / _6_+_C"},{"category":"_@","name":"Surge of Anger","input":"_2_1_4_+_A"},{"category":"_@","name":"Signs of Doom","input":"_2_1_4_+_B"},{"category":"_@","name":"Silent Sorrow","input":"_2_1_4_+_C"},{"category":"_@","name":"Painful Scream close","input":"_2_1_4_+_D"},{"category":"_*","name":"Burnt Offering","input":"_2_3_6_3_2_1_4_+_A"},{"category":"_&","name":"Scorched Offering","input":"_2_3_6_3_2_1_4_+_C"}]}],"controlAbbr":{"_A":"LP","_B":"LK","_C":"HP","_D":"HK","_S":"TA","^S":"SL"},"systemControlMappings":{"snes":{"y":"_A","x":"_B","b":"_C","a":"_D"},"genesis":{"b":"_A","a":"_B","y":"_C","x":"_D"},"megadrive":{"b":"_A","a":"_B","y":"_C","x":"_D"},"32x":{"b":"_A","a":"_B","y":"_C","x":"_D"},"saturn":{"b":"_A","a":"_B","y":"_C","x":"_D"},"neogeo":{"b":"_A","y":"_B","a":"_C","x":"_D"},"psx":{"y":"_A","x":"_B","b":"_C","a":"_D"},"ps2":{"y":"_A","x":"_B","b":"_C","a":"_D"},"gb":{"b":"_A","a":"_B"},"gbc":{"b":"_A","a":"_B"},"gamegear":{"a":"_A","b":"_B"},"sms":{"a":"_A","b":"_B"},"gba":{"b":"_A","a":"_B","l1":"_C","r1":"_D"},"ngpc":{"b":"_A","a":"_B","y":"_C","x":"_D"},"dreamcast":{"y":"_A","x":"_B","b":"_C","a":"_D"},"n64":{"b":"_A","a":"_B","cDown":"_C","cLeft":"_D"},"wswan":{"b":"_A","a":"_B"}}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "rotd",
+    "rotdh"
+  ],
+  "name": "Rage of the Dragons",
+  "year": 2002,
+  "manufacturer": "Playmore",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "_A": "Weak Punch",
+    "_B": "Weak Kick",
+    "_C": "Strong Punch",
+    "_D": "Strong Kick",
+    "_S": "Taunt",
+    "^S": "Select (AES only)"
+  },
+  "controlGroups": {
+    "_P": [
+      "_A",
+      "_C"
+    ],
+    "_K": [
+      "_B",
+      "_D"
+    ]
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_*": "Desperation Moves",
+    "_&": "Super Desperation Moves",
+    "_#": "First Impact Combos",
+    "_`": "Special Team Duplex"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Run",
+      "input": "_6^6"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4"
+    },
+    {
+      "category": "_)",
+      "name": "Normal Jump",
+      "input": "_8"
+    },
+    {
+      "category": "_)",
+      "name": "Low Jump",
+      "input": "_X_8"
+    },
+    {
+      "category": "_)",
+      "name": "High Jump",
+      "input": "_2_8"
+    },
+    {
+      "category": "_)",
+      "name": "Long Jump running",
+      "input": "_9"
+    },
+    {
+      "category": "_)",
+      "name": "Dodge",
+      "input": "_A_+_B"
+    },
+    {
+      "category": "_)",
+      "name": "Roll Forward",
+      "input": "_6_+_A_+_B"
+    },
+    {
+      "category": "_)",
+      "name": "Roll Backward",
+      "input": "_4_+_A_+_B"
+    },
+    {
+      "category": "_)",
+      "name": "Throw Escape when thrown",
+      "input": "_4 / _6_+_C"
+    },
+    {
+      "category": "_)",
+      "name": "Roll knocked down",
+      "input": "_A_+_B"
+    },
+    {
+      "category": "_)",
+      "name": "Counter Attack (1LV) blocking",
+      "input": "_C_+_D"
+    },
+    {
+      "category": "_)",
+      "name": "Character Change",
+      "input": "_B_+_C"
+    },
+    {
+      "category": "_)",
+      "name": "Tag Out Rush (1LV)",
+      "input": "_2_3_6_+_B_+_C"
+    },
+    {
+      "category": "_)",
+      "name": "Team Duplex (1LV)",
+      "input": "_2_3_6_+_B_+_C"
+    },
+    {
+      "category": "_)",
+      "name": "Surrender",
+      "input": "_O_A_+_B_+_C_+_D"
+    },
+    {
+      "category": "_#",
+      "name": "First Impact Attack",
+      "input": "_C_+_D"
+    }
+  ],
+  "characters": [
+    {
+      "name": "BILLY LEWIS",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throat Toss",
+          "input": "_4 / _6_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "Axe Kick",
+          "input": "_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Single Slash",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Slashing Cross",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Double Slash",
+          "input": "_2_3_6_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Flaming Cross",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Ko Ryu Kyaku",
+          "input": "_6_2_3_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Lightning Tail",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Blue Rage",
+          "input": "(_^)_2_1_4_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Blue Rage",
+          "input": "(_^)_2_1_4_+_D (x3)"
+        },
+        {
+          "category": "_*",
+          "name": "Back Slasher",
+          "input": "_2_1_4_1_2_3_6_+_B"
+        },
+        {
+          "category": "_&",
+          "name": "Double Back Slasher",
+          "input": "_2_1_4_1_2_3_6_+_D"
+        },
+        {
+          "category": "_#",
+          "name": "Ground Combo",
+          "input": "_B_A_C_D_D"
+        },
+        {
+          "category": "_#",
+          "name": "Air Combo",
+          "input": "_A_B_B_C_D"
+        }
+      ]
+    },
+    {
+      "name": "LYNN BAKER",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Toss Over",
+          "input": "_4 / _6_+_C"
+        },
+        {
+          "category": "_(",
+          "name": "Air Toss Over",
+          "input": "_^_6_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "Down Palm",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Crossup Kick",
+          "input": "_^_4_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Ko Ryu Sho Zan",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Ko Ryu Kyaku",
+          "input": "^2_8_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Ryu En Hou",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Karasu Kyaku",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Kyaku Binta",
+          "input": "_K"
+        },
+        {
+          "category": "_@",
+          "name": "Enretsu Ken",
+          "input": "_6_3_2_1_4_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Tobi Ryu",
+          "input": "_2_1_4_1_2_3_6_+_B"
+        },
+        {
+          "category": "_&",
+          "name": "Shin Tobi Ryu",
+          "input": "_2_1_4_1_2_3_6_+_D"
+        },
+        {
+          "category": "_#",
+          "name": "Ground Combo",
+          "input": "_A_A_A_C_C"
+        },
+        {
+          "category": "_#",
+          "name": "Air Combo",
+          "input": "_A_A_A_C_C"
+        }
+      ]
+    },
+    {
+      "name": "JIMMY LEWIS",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab and Toss",
+          "input": "_4 / _6_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "Down Elbow",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Step Uppercut",
+          "input": "_3_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Red Rage",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Shouryuu Dan",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Heat Hurricane",
+          "input": "_6_3_2_1_4_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Hurricane Charge",
+          "input": "_6_3_2_1_4_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Heat Elbow",
+          "input": "_8"
+        },
+        {
+          "category": "_@",
+          "name": "Heat Upper",
+          "input": "_2"
+        },
+        {
+          "category": "_@",
+          "name": "Cannon Kick",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Gun Blow",
+          "input": "_2_1_4_1_2_3_6_+_A"
+        },
+        {
+          "category": "_&",
+          "name": "Super Gun Blow",
+          "input": "_2_1_4_1_2_3_6_+_C"
+        },
+        {
+          "category": "_#",
+          "name": "Ground Combo",
+          "input": "_A_A_B_C_C"
+        },
+        {
+          "category": "_#",
+          "name": "Air Combo",
+          "input": "_B_A_C_D_D"
+        }
+      ]
+    },
+    {
+      "name": "SONIA ROMANENKO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Frankensteiner Slam",
+          "input": "_4 / _6_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "Sliding Axe",
+          "input": "_6_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Sliding Snake",
+          "input": "_3_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Snake",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Snake Hold",
+          "input": "_2_3_6_+_B / _C / _D"
+        },
+        {
+          "category": "_@",
+          "name": "Snake Whip",
+          "input": "_6_2_3_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Snake Bite",
+          "input": "_2_1_4_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Snake Fangs",
+          "input": "_2_1_4_+_D"
+        },
+        {
+          "category": "_@",
+          "name": "Fascination Sharp close",
+          "input": "_6_3_2_1_4_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Guardian Mercy Short",
+          "input": "_2_3_6_2_3_6_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Guardian Mercy Far",
+          "input": "_2_3_6_2_3_6_+_B"
+        },
+        {
+          "category": "_&",
+          "name": "Guardian Death Short",
+          "input": "_2_3_6_2_3_6_+_C"
+        },
+        {
+          "category": "_&",
+          "name": "Guardian Death Far",
+          "input": "_2_3_6_2_3_6_+_D"
+        },
+        {
+          "category": "_#",
+          "name": "Ground Combo",
+          "input": "_A_A_C_C_D"
+        },
+        {
+          "category": "_#",
+          "name": "Air Combo",
+          "input": "_B_A_B_A_C"
+        }
+      ]
+    },
+    {
+      "name": "RADEL",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Leg Cyclone",
+          "input": "_4 / _6_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "Double Spike",
+          "input": "_3_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Glass Escape",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Dead Dragon",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Screw Back",
+          "input": "_6_3_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Head Execution close",
+          "input": "_6_3_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Glass Smash",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Shadow Sword",
+          "input": "_2_3_6_3_2_1_4_+_A"
+        },
+        {
+          "category": "_&",
+          "name": "Shadow Sword Destroyer",
+          "input": "_2_3_6_3_2_1_4_+_C"
+        },
+        {
+          "category": "_#",
+          "name": "Ground Combo",
+          "input": "_A_A_A_C_D"
+        },
+        {
+          "category": "_#",
+          "name": "Air Combo",
+          "input": "_A_A_A_C_D"
+        }
+      ]
+    },
+    {
+      "name": "ANNIE MURAKAMI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Backflip Toss",
+          "input": "_4 / _6_+_C"
+        },
+        {
+          "category": "_(",
+          "name": "Air Backflip Toss",
+          "input": "_^_6_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "Double Knee",
+          "input": "_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Zuum",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Zuum Cross",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Ichi Ni Zan",
+          "input": "_6_3_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Cat Leap",
+          "input": "_6_3_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Magical Comet",
+          "input": "_^_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Crossing Wrath",
+          "input": "_2_1_4_2_1_4_+_A (_O)"
+        },
+        {
+          "category": "_&",
+          "name": "Double Crossing Wrath",
+          "input": "_2_1_4_2_1_4_+_C (_O)"
+        },
+        {
+          "category": "_#",
+          "name": "Ground Combo",
+          "input": "_A_A_B_C_C"
+        },
+        {
+          "category": "_#",
+          "name": "Air Combo",
+          "input": "_A_A_B_D_C"
+        }
+      ]
+    },
+    {
+      "name": "KANG JAE-MO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Somersault Toss",
+          "input": "_4 / _6_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "Sumo Stomp",
+          "input": "_6_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Sumo Charge",
+          "input": "_3_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Stomach Set",
+          "input": "_3_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Fire Bomb",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Kang Screw",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Kang Anger",
+          "input": "_4_1_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Rolling Fire",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Body Press Special close",
+          "input": "_6_3_2_1_4_6_3_2_1_4_+_A"
+        },
+        {
+          "category": "_&",
+          "name": "Body Press Crush Special close",
+          "input": "_6_3_2_1_4_6_3_2_1_4_+_C"
+        },
+        {
+          "category": "_#",
+          "name": "Ground Combo",
+          "input": "_A_A_A_A_C"
+        },
+        {
+          "category": "_#",
+          "name": "Air Combo",
+          "input": "_A_A_A_A_C"
+        }
+      ]
+    },
+    {
+      "name": "Mr. JONES",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Toss to Ground",
+          "input": "_4 / _6_+_C"
+        },
+        {
+          "category": "_(",
+          "name": "Air Toss to Ground",
+          "input": "_^_6_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "Down Elbow",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Slide Double",
+          "input": "_3_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Gaudy Punch",
+          "input": "^*_P"
+        },
+        {
+          "category": "_@",
+          "name": "Retro Knuckle",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Arc Fliegen",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Funky Impact",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Groove Master",
+          "input": "_2_1_4_2_1_4_+_B"
+        },
+        {
+          "category": "_&",
+          "name": "Enter the Groove Master",
+          "input": "_2_1_4_2_1_4_+_D"
+        },
+        {
+          "category": "_#",
+          "name": "Ground Combo",
+          "input": "_A_B_C_D_C"
+        },
+        {
+          "category": "_#",
+          "name": "Air Combo",
+          "input": "_A_B_B_C_C"
+        }
+      ]
+    },
+    {
+      "name": "CASSANDRA MURATA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Powerful Lift",
+          "input": "_4 / _6_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "Snapping Axe",
+          "input": "_6_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Slide Kick",
+          "input": "_3_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Illusion",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Angel Wings",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Fallen Angel",
+          "input": "_^_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Innocence",
+          "input": "_6_3_2_1_4_+_P (reverse jump/high/mid)"
+        },
+        {
+          "category": "_*",
+          "name": "Ground White Wave",
+          "input": "_2_1_4_1_2_3_6_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Air White Wave",
+          "input": "_^_2_3_6_3_2_1_4_+_A"
+        },
+        {
+          "category": "_&",
+          "name": "Ground White Wave Splash",
+          "input": "_2_1_4_1_2_3_6_+_C"
+        },
+        {
+          "category": "_&",
+          "name": "Air White Wave Splash",
+          "input": "_^_2_3_6_3_2_1_4_+_C"
+        },
+        {
+          "category": "_#",
+          "name": "Ground Combo",
+          "input": "_A_B_C_C_D"
+        },
+        {
+          "category": "_#",
+          "name": "Air Combo",
+          "input": "_A_B_C_C_D"
+        }
+      ]
+    },
+    {
+      "name": "ONI INOMURA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Death Claw",
+          "input": "_4 / _6_+_C"
+        },
+        {
+          "category": "_(",
+          "name": "Falling Doom",
+          "input": "_^_6_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "Spin Claw",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Sky High",
+          "input": "_3_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "The Ripper",
+          "input": "_4_1_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Rising Cutter",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Cold Steel",
+          "input": "_2_1_4_+_P (x3)"
+        },
+        {
+          "category": "_@",
+          "name": "Cutting Edge",
+          "input": "_^_2_1_4_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Bloody Mess",
+          "input": "_2_3_6_2_3_6_+_B"
+        },
+        {
+          "category": "_&",
+          "name": "Bloody Mess Charge",
+          "input": "_2_3_6_2_3_6_+_D (_O)"
+        },
+        {
+          "category": "_#",
+          "name": "Ground Combo",
+          "input": "_A_A_C_C_D"
+        },
+        {
+          "category": "_#",
+          "name": "Air Combo",
+          "input": "_A_B_C_C_D"
+        }
+      ]
+    },
+    {
+      "name": "ELIAS PATRICK",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Heart Punch",
+          "input": "_4 / _6_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "Punch Down",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Double Low",
+          "input": "_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Holy Flare",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Magnus",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Hell or Heaven",
+          "input": "_4_1_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Sinful close",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Maximum Delirium",
+          "input": "_6_3_2_1_4_6_+_A"
+        },
+        {
+          "category": "_&",
+          "name": "Super Maximum Delirium",
+          "input": "_6_3_2_1_4_6_+_C"
+        },
+        {
+          "category": "_#",
+          "name": "Ground Combo",
+          "input": "_A_B_A_C_D"
+        },
+        {
+          "category": "_#",
+          "name": "Air Combo",
+          "input": "_A_C_D_D_D"
+        }
+      ]
+    },
+    {
+      "name": "ALICE CARROL",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Energy Blast",
+          "input": "_4 / _6_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "Orb Charge",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Double Stomp",
+          "input": "_^_2_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Twinkle",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Twinkle Twinkle",
+          "input": "_2_3_6_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Rising Hell",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Eat It",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Heads Off",
+          "input": "_^_2_1_4_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Red Rose of Darkness",
+          "input": "_6_3_2_1_4_6_+_A"
+        },
+        {
+          "category": "_&",
+          "name": "Red Rose of Destruction",
+          "input": "_6_3_2_1_4_6_+_C"
+        },
+        {
+          "category": "_#",
+          "name": "Ground Combo",
+          "input": "_A_A_C_C_C"
+        },
+        {
+          "category": "_#",
+          "name": "Air Combo",
+          "input": "_B_A_C_D_D"
+        }
+      ]
+    },
+    {
+      "name": "PEPE \"JOSE\" RODRIGUEZ",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Frankensteiner",
+          "input": "_4 / _6_+_C"
+        },
+        {
+          "category": "_(",
+          "name": "Air Frankensteiner",
+          "input": "_^_6_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "Hopping Fist",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Wind Kicks",
+          "input": "_3_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Istak",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Arriba",
+          "input": "_6_2_3_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Arriba Slash",
+          "input": "_6_2_3_+_D"
+        },
+        {
+          "category": "_@",
+          "name": "Temoc",
+          "input": "_^_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Cuautli close",
+          "input": "_6_3_2_1_4_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Quetzalcoatl",
+          "input": "_2_3_6_2_3_6_+_A"
+        },
+        {
+          "category": "_&",
+          "name": "Quetzalcoatl Blast",
+          "input": "_2_3_6_2_3_6_+_C"
+        },
+        {
+          "category": "_#",
+          "name": "Ground Combo",
+          "input": "_A_B_C_D_D"
+        },
+        {
+          "category": "_#",
+          "name": "Air Combo",
+          "input": "_B_A_C_D_D"
+        }
+      ]
+    },
+    {
+      "name": "PUPA SALGUEIRO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Choking Slam",
+          "input": "_4 / _6_+_C"
+        },
+        {
+          "category": "_(",
+          "name": "Thoughtless Toss",
+          "input": "_^_6_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "Wrench Blow",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Tricky Feet",
+          "input": "_3_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Real Beat",
+          "input": "^*_K"
+        },
+        {
+          "category": "_@",
+          "name": "Swift Exit",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Benção",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Breeze Dancer",
+          "input": "_6_2_3_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Wrench Strike",
+          "input": "_2_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Parafuso",
+          "input": "_6_3_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Queixada",
+          "input": "_O_K for 2 seconds"
+        },
+        {
+          "category": "_*",
+          "name": "Au Lande",
+          "input": "_2_3_6_2_3_6_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Super Queixada",
+          "input": "_O_K for 10 seconds"
+        },
+        {
+          "category": "_&",
+          "name": "Au Lande Frenzy",
+          "input": "_2_3_6_2_3_6_+_D"
+        },
+        {
+          "category": "_&",
+          "name": "Ultimate Queixada",
+          "input": "_O_K for 30 seconds"
+        },
+        {
+          "category": "_#",
+          "name": "Ground Combo",
+          "input": "_A_A_B_B_D"
+        },
+        {
+          "category": "_#",
+          "name": "Air Combo",
+          "input": "_B_B_D_D_D"
+        }
+      ]
+    },
+    {
+      "name": "ABUBO RAO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Goodbye",
+          "input": "_4 / _6_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "Body Splash",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Hammer Crush",
+          "input": "_3_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Reaching Fist",
+          "input": "_3_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Steel Crusher",
+          "input": "_2_3_6_+_A (_O)"
+        },
+        {
+          "category": "_@",
+          "name": "Steel Bender",
+          "input": "_2_3_6_+_C (_O)"
+        },
+        {
+          "category": "_@",
+          "name": "Flea Feint",
+          "input": "_6_2_3_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Flea Catch",
+          "input": "_6_2_3_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Violent Instinct",
+          "input": "_4_1_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Destruction close",
+          "input": "_6_3_2_1_4_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "War Path close",
+          "input": "_6_3_2_1_4_6_3_2_1_4_+_A"
+        },
+        {
+          "category": "_&",
+          "name": "Mega War Path close",
+          "input": "_6_3_2_1_4_6_3_2_1_4_+_C"
+        },
+        {
+          "category": "_#",
+          "name": "Ground Combo",
+          "input": "_A_A_B_B_D"
+        },
+        {
+          "category": "_#",
+          "name": "Air Combo",
+          "input": "_A_A_B_B_D"
+        }
+      ]
+    },
+    {
+      "name": "JOHANN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Painful Scream",
+          "input": "_4 / _6_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Surge of Anger",
+          "input": "_2_1_4_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Signs of Doom",
+          "input": "_2_1_4_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Silent Sorrow",
+          "input": "_2_1_4_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Painful Scream close",
+          "input": "_2_1_4_+_D"
+        },
+        {
+          "category": "_*",
+          "name": "Burnt Offering",
+          "input": "_2_3_6_3_2_1_4_+_A"
+        },
+        {
+          "category": "_&",
+          "name": "Scorched Offering",
+          "input": "_2_3_6_3_2_1_4_+_C"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_A": "LP",
+    "_B": "LK",
+    "_C": "HP",
+    "_D": "HK",
+    "_S": "TA",
+    "^S": "SL"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "genesis": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "megadrive": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "32x": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "saturn": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "neogeo": {
+      "b": "_A",
+      "y": "_B",
+      "a": "_C",
+      "x": "_D"
+    },
+    "psx": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "ps2": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "gb": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gbc": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gamegear": {
+      "a": "_A",
+      "b": "_B"
+    },
+    "sms": {
+      "a": "_A",
+      "b": "_B"
+    },
+    "gba": {
+      "b": "_A",
+      "a": "_B",
+      "l1": "_C",
+      "r1": "_D"
+    },
+    "ngpc": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "dreamcast": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "n64": {
+      "b": "_A",
+      "a": "_B",
+      "cDown": "_C",
+      "cLeft": "_D"
+    },
+    "wswan": {
+      "b": "_A",
+      "a": "_B"
+    }
+  }
+}

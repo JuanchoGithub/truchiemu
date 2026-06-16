@@ -1,1 +1,693 @@
-{"schemaVersion":2,"romIds":["sf2hf","sf2hfj","sf2hfu"],"name":"Street Fighter II': Hyper Fighting","year":1992,"manufacturer":"Capcom","controls":{"^E":"Weak Punch","^F":"Medium Punch","^G":"Strong Punch","^H":"Weak Kick","^I":"Medium Kick","^J":"Strong Kick","_S":"Start"},"controlGroups":{"_P":["^E","^F","^G"],"_K":["^H","^I","^J"]},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves"},"characters":[{"name":"RYU","moves":[{"category":"_(","name":"Seoi Nage","input":"_4 / _6_+^F / ^G"},{"category":"_(","name":"Tomoe Nage","input":"_4 / _6_+^I / ^J"},{"category":"_@","name":"Hadou Ken","input":"_2_3_6_+_P"},{"category":"_@","name":"Shouryuu Ken","input":"_6_2_3_+_P"},{"category":"_@","name":"Tatsumaki Senpuu Kyaku","input":"(_^)_2_1_4_+_K"}]},{"name":"KEN MASTERS","moves":[{"category":"_(","name":"Seoi Nage","input":"_4 / _6_+^F / ^G"},{"category":"_(","name":"Jigoku Guruma","input":"_4 / _6_+^I / ^J"},{"category":"_@","name":"Hadou Ken","input":"_2_3_6_+_P"},{"category":"_@","name":"Shouryuu Ken","input":"_6_2_3_+_P"},{"category":"_@","name":"Tatsumaki Senpuu Kyaku","input":"(_^)_2_1_4_+_K"}]},{"name":"EDMOND HONDA","moves":[{"category":"_(","name":"Tawara Nage","input":"_4 / _6_+^F"},{"category":"_(","name":"Saba Ori","input":"_4 / _6_+^G"},{"category":"_(","name":"Sekkan Kyaku","input":"_4 / _6_+^J"},{"category":"_)","name":"Hiza Geri close","input":"_4 / _6_+^I"},{"category":"_@","name":"Hyakuretsu Harite","input":"^*_P"},{"category":"_@","name":"Move","input":"_4 / _6"},{"category":"_@","name":"Super Zutsuki","input":"^4_6_+_P"},{"category":"_@","name":"Super Hyakkan Otoshi","input":"^2_8_+_K"}]},{"name":"CHUN-LI","moves":[{"category":"_(","name":"Koshuu Tou","input":"_4 / _6_+^F / ^G"},{"category":"_(","name":"Ryuusei Raku","input":"_^_4 / _6_+^F / ^G"},{"category":"_)","name":"Kouhou Kaiten Kyaku close","input":"_6_+^I"},{"category":"_)","name":"Kaku Kyaku Raku close","input":"_6_+^J"},{"category":"_)","name":"Yousou Kyaku","input":"_^_2_+^I"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_9"},{"category":"_@","name":"Hyakuretsu Kyaku","input":"^*_K"},{"category":"_@","name":"Kikou Ken","input":"_4_1_2_3_6_+_P"},{"category":"_@","name":"Spinning Bird Kick","input":"(_^)^2_8_+_K"}]},{"name":"BLANKA","moves":[{"category":"_(","name":"Wild Fang","input":"_4 / _6_+^G"},{"category":"_)","name":"Rock Crush close","input":"_4 / _6_+^F"},{"category":"_@","name":"Electric Thunder","input":"^*_P"},{"category":"_@","name":"Rolling Attack","input":"^4_6_+_P"},{"category":"_@","name":"Vertical Rolling","input":"^2_8_+_K"}]},{"name":"ZANGIEF","moves":[{"category":"_(","name":"Piledriver","input":"_4 / _6_+^F"},{"category":"_(","name":"Iron Claw within throw range","input":"_4 / _6_+^F"},{"category":"_(","name":"Brainbuster","input":"_4 / _6_+^G"},{"category":"_(","name":"Kamitsuki within throw range","input":"_4 / _6_+^G"},{"category":"_(","name":"German Suplex","input":"_4 / _6_+^I"},{"category":"_(","name":"Thunder Fire Powerbomb","input":"_4 / _6_+^J"},{"category":"_(","name":"Deadly Driver","input":"_2_+^F"},{"category":"_(","name":"Leg Throw","input":"_2_+^G"},{"category":"_(","name":"Stomach Claw within throw range","input":"_2_+^F / ^G"},{"category":"_)","name":"Flying Body Press diagonal jump","input":"_2_+^G"},{"category":"_)","name":"Double Knee Drop diagonal jump","input":"_2_+^H"},{"category":"_)","name":"Air Headbutt vertical jump","input":"_8_+^F / ^G"},{"category":"_@","name":"Double Lariat","input":"^U"},{"category":"_@","name":"Move","input":"_4 / _6"},{"category":"_@","name":"Quick Double Lariat","input":"^T"},{"category":"_@","name":"Move","input":"_4 / _6"},{"category":"_@","name":"Spinning Piledriver close","input":"_x_+_P"}]},{"name":"GUILE","moves":[{"category":"_(","name":"Judo Throw","input":"_4 / _6_+^F"},{"category":"_(","name":"Dragon Suplex","input":"_4 / _6_+^G"},{"category":"_(","name":"Flying Mayor","input":"_^_4 / _6_+^F / ^G"},{"category":"_(","name":"Flying Buster Drop","input":"_^_4 / _6_+^I / ^J"},{"category":"_)","name":"Knee Bazooka","input":"_4 / _6_+^I"},{"category":"_)","name":"Reverse Spin Kick close","input":"_4 / _6_+^J"},{"category":"_@","name":"Sonic Boom","input":"^4_6_+_P"},{"category":"_@","name":"Somersault Kick","input":"^2_8_+_K"}]},{"name":"DHALSIM","moves":[{"category":"_(","name":"Yoga Smash","input":"_4 / _6_+^F"},{"category":"_(","name":"Yoga Throw","input":"_4 / _6_+^G"},{"category":"_)","name":"Drill Zutsuki","input":"_^_2_+^G"},{"category":"_)","name":"Drill Kick","input":"_^_2_+^J"},{"category":"_@","name":"Yoga Fire","input":"_2_3_6_+_P"},{"category":"_@","name":"Yoga Flame","input":"_4_1_2_3_6_+_P"},{"category":"_@","name":"Yoga Teleport: Zenpou","input":"_6_2_3_+^U / ^T"},{"category":"_@","name":"Yoga Teleport: Kouhou","input":"_4_2_1_+^U / ^T"}]},{"name":"BALROG (M. BISON)","moves":[{"category":"_(","name":"Head Bomber","input":"_4 / _6_+^F / ^G"},{"category":"_@","name":"Dash Straight","input":"^4_6_+_P"},{"category":"_@","name":"Dash Upper","input":"^4_6_+_K"},{"category":"_@","name":"Turn Punch","input":"_O^U / ^T"}]},{"name":"VEGA (BALROG)","moves":[{"category":"_(","name":"Rainbow Suplex","input":"_4 / _6_+^F / ^G"},{"category":"_(","name":"Stardust Drop","input":"_^_4 / _6_+^F / ^G"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_9"},{"category":"_@","name":"Rolling Crystal Flash","input":"^4_6_+_P"},{"category":"_@","name":"Wall Leap","input":"^2_8_+_K"},{"category":"_@","name":"Flying Barcelona Attack","input":"_P"},{"category":"_@","name":"Izuna Drop close","input":"_4 / _6_+_P"},{"category":"_@","name":"Backslash","input":"^U"}]},{"name":"SAGAT","moves":[{"category":"_(","name":"Tiger Carry","input":"_4 / _6_+^F / ^G"},{"category":"_@","name":"Tiger Shot","input":"_2_3_6_+_P"},{"category":"_@","name":"Ground Tiger Shot","input":"_2_3_6_+_K"},{"category":"_@","name":"Tiger Uppercut","input":"_6_2_3_+_P"},{"category":"_@","name":"Tiger Crush","input":"_2_3_6_9_+_K"}]},{"name":"M. BISON (VEGA)","moves":[{"category":"_(","name":"Deadly Throw","input":"_4 / _6_+^F / ^G"},{"category":"_@","name":"Psycho Crusher","input":"^4_6_+_P"},{"category":"_@","name":"Double Knee Press","input":"^4_6_+_K"},{"category":"_@","name":"Head Press","input":"^2_8_+_K"},{"category":"_@","name":"Move","input":"_4 / _6"},{"category":"_@","name":"Somersault Skull Diver","input":"_P"}]}],"cheatNotes":["_` Color Select","- 1st Color, select the character with _P / _K","- 2nd Color, select the character with _S (original color)"],"controlAbbr":{"^E":"LP","^F":"MP","^G":"HP","^H":"LK","^I":"MK","^J":"HK","_S":"ST"},"systemControlMappings":{"snes":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"genesis":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"megadrive":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"32x":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"saturn":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"psx":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"ps2":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"gba":{"b":"^E","a":"^F","l1":"^G","y":"^H","x":"^I","r1":"^J"},"pce":{"b":"^E","a":"^H"},"pce6":{"b":"^E","y":"^F","l1":"^G","a":"^H","x":"^I","r1":"^J"},"3do":{"b":"^E","a":"^F","l1":"^G","y":"^H","x":"^I","r1":"^J"},"n64":{"b":"^E","cDown":"^F","cRight":"^G","a":"^H","cLeft":"^I","cUp":"^J"},"dreamcast":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"gb":{"b":"^E","a":"^H","select":"^F"},"gbc":{"b":"^E","a":"^H","select":"^F"},"gamegear":{"a":"^E","b":"^H"},"sms":{"a":"^E","b":"^H"},"ngpc":{"b":"^E","y":"^F","l1":"^G","a":"^H","x":"^I","r1":"^J"},"lynx":{"b":"^E","a":"^F","l1":"^G","y":"^H","x":"^I","r1":"^J"},"wswan":{"b":"^E","a":"^H"}}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "sf2hf",
+    "sf2hfj",
+    "sf2hfu"
+  ],
+  "name": "Street Fighter II': Hyper Fighting",
+  "year": 1992,
+  "manufacturer": "Capcom",
+  "controls": {
+    "^E": "Weak Punch",
+    "^F": "Medium Punch",
+    "^G": "Strong Punch",
+    "^H": "Weak Kick",
+    "^I": "Medium Kick",
+    "^J": "Strong Kick",
+    "_S": "Start"
+  },
+  "controlGroups": {
+    "_P": [
+      "^E",
+      "^F",
+      "^G"
+    ],
+    "_K": [
+      "^H",
+      "^I",
+      "^J"
+    ]
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves"
+  },
+  "characters": [
+    {
+      "name": "RYU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Seoi Nage",
+          "input": "_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_(",
+          "name": "Tomoe Nage",
+          "input": "_4 / _6_+^I / ^J"
+        },
+        {
+          "category": "_@",
+          "name": "Hadou Ken",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Shouryuu Ken",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Tatsumaki Senpuu Kyaku",
+          "input": "(_^)_2_1_4_+_K"
+        }
+      ]
+    },
+    {
+      "name": "KEN MASTERS",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Seoi Nage",
+          "input": "_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_(",
+          "name": "Jigoku Guruma",
+          "input": "_4 / _6_+^I / ^J"
+        },
+        {
+          "category": "_@",
+          "name": "Hadou Ken",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Shouryuu Ken",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Tatsumaki Senpuu Kyaku",
+          "input": "(_^)_2_1_4_+_K"
+        }
+      ]
+    },
+    {
+      "name": "EDMOND HONDA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Tawara Nage",
+          "input": "_4 / _6_+^F"
+        },
+        {
+          "category": "_(",
+          "name": "Saba Ori",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Sekkan Kyaku",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Hiza Geri close",
+          "input": "_4 / _6_+^I"
+        },
+        {
+          "category": "_@",
+          "name": "Hyakuretsu Harite",
+          "input": "^*_P"
+        },
+        {
+          "category": "_@",
+          "name": "Move",
+          "input": "_4 / _6"
+        },
+        {
+          "category": "_@",
+          "name": "Super Zutsuki",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Super Hyakkan Otoshi",
+          "input": "^2_8_+_K"
+        }
+      ]
+    },
+    {
+      "name": "CHUN-LI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Koshuu Tou",
+          "input": "_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_(",
+          "name": "Ryuusei Raku",
+          "input": "_^_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_)",
+          "name": "Kouhou Kaiten Kyaku close",
+          "input": "_6_+^I"
+        },
+        {
+          "category": "_)",
+          "name": "Kaku Kyaku Raku close",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Yousou Kyaku",
+          "input": "_^_2_+^I"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_9"
+        },
+        {
+          "category": "_@",
+          "name": "Hyakuretsu Kyaku",
+          "input": "^*_K"
+        },
+        {
+          "category": "_@",
+          "name": "Kikou Ken",
+          "input": "_4_1_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Spinning Bird Kick",
+          "input": "(_^)^2_8_+_K"
+        }
+      ]
+    },
+    {
+      "name": "BLANKA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Wild Fang",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Rock Crush close",
+          "input": "_4 / _6_+^F"
+        },
+        {
+          "category": "_@",
+          "name": "Electric Thunder",
+          "input": "^*_P"
+        },
+        {
+          "category": "_@",
+          "name": "Rolling Attack",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Vertical Rolling",
+          "input": "^2_8_+_K"
+        }
+      ]
+    },
+    {
+      "name": "ZANGIEF",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Piledriver",
+          "input": "_4 / _6_+^F"
+        },
+        {
+          "category": "_(",
+          "name": "Iron Claw within throw range",
+          "input": "_4 / _6_+^F"
+        },
+        {
+          "category": "_(",
+          "name": "Brainbuster",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Kamitsuki within throw range",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "German Suplex",
+          "input": "_4 / _6_+^I"
+        },
+        {
+          "category": "_(",
+          "name": "Thunder Fire Powerbomb",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_(",
+          "name": "Deadly Driver",
+          "input": "_2_+^F"
+        },
+        {
+          "category": "_(",
+          "name": "Leg Throw",
+          "input": "_2_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Stomach Claw within throw range",
+          "input": "_2_+^F / ^G"
+        },
+        {
+          "category": "_)",
+          "name": "Flying Body Press diagonal jump",
+          "input": "_2_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Double Knee Drop diagonal jump",
+          "input": "_2_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Air Headbutt vertical jump",
+          "input": "_8_+^F / ^G"
+        },
+        {
+          "category": "_@",
+          "name": "Double Lariat",
+          "input": "^U"
+        },
+        {
+          "category": "_@",
+          "name": "Move",
+          "input": "_4 / _6"
+        },
+        {
+          "category": "_@",
+          "name": "Quick Double Lariat",
+          "input": "^T"
+        },
+        {
+          "category": "_@",
+          "name": "Move",
+          "input": "_4 / _6"
+        },
+        {
+          "category": "_@",
+          "name": "Spinning Piledriver close",
+          "input": "_x_+_P"
+        }
+      ]
+    },
+    {
+      "name": "GUILE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Judo Throw",
+          "input": "_4 / _6_+^F"
+        },
+        {
+          "category": "_(",
+          "name": "Dragon Suplex",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_(",
+          "name": "Flying Mayor",
+          "input": "_^_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_(",
+          "name": "Flying Buster Drop",
+          "input": "_^_4 / _6_+^I / ^J"
+        },
+        {
+          "category": "_)",
+          "name": "Knee Bazooka",
+          "input": "_4 / _6_+^I"
+        },
+        {
+          "category": "_)",
+          "name": "Reverse Spin Kick close",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Sonic Boom",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Somersault Kick",
+          "input": "^2_8_+_K"
+        }
+      ]
+    },
+    {
+      "name": "DHALSIM",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Yoga Smash",
+          "input": "_4 / _6_+^F"
+        },
+        {
+          "category": "_(",
+          "name": "Yoga Throw",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Drill Zutsuki",
+          "input": "_^_2_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Drill Kick",
+          "input": "_^_2_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Yoga Fire",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Yoga Flame",
+          "input": "_4_1_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Yoga Teleport: Zenpou",
+          "input": "_6_2_3_+^U / ^T"
+        },
+        {
+          "category": "_@",
+          "name": "Yoga Teleport: Kouhou",
+          "input": "_4_2_1_+^U / ^T"
+        }
+      ]
+    },
+    {
+      "name": "BALROG (M. BISON)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Head Bomber",
+          "input": "_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_@",
+          "name": "Dash Straight",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Dash Upper",
+          "input": "^4_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Turn Punch",
+          "input": "_O^U / ^T"
+        }
+      ]
+    },
+    {
+      "name": "VEGA (BALROG)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Rainbow Suplex",
+          "input": "_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_(",
+          "name": "Stardust Drop",
+          "input": "_^_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_9"
+        },
+        {
+          "category": "_@",
+          "name": "Rolling Crystal Flash",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Wall Leap",
+          "input": "^2_8_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Barcelona Attack",
+          "input": "_P"
+        },
+        {
+          "category": "_@",
+          "name": "Izuna Drop close",
+          "input": "_4 / _6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Backslash",
+          "input": "^U"
+        }
+      ]
+    },
+    {
+      "name": "SAGAT",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Tiger Carry",
+          "input": "_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_@",
+          "name": "Tiger Shot",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Ground Tiger Shot",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Tiger Uppercut",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Tiger Crush",
+          "input": "_2_3_6_9_+_K"
+        }
+      ]
+    },
+    {
+      "name": "M. BISON (VEGA)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Deadly Throw",
+          "input": "_4 / _6_+^F / ^G"
+        },
+        {
+          "category": "_@",
+          "name": "Psycho Crusher",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Double Knee Press",
+          "input": "^4_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Head Press",
+          "input": "^2_8_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Move",
+          "input": "_4 / _6"
+        },
+        {
+          "category": "_@",
+          "name": "Somersault Skull Diver",
+          "input": "_P"
+        }
+      ]
+    }
+  ],
+  "cheatNotes": [
+    "_` Color Select",
+    "- 1st Color, select the character with _P / _K",
+    "- 2nd Color, select the character with _S (original color)"
+  ],
+  "controlAbbr": {
+    "^E": "LP",
+    "^F": "MP",
+    "^G": "HP",
+    "^H": "LK",
+    "^I": "MK",
+    "^J": "HK",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "genesis": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "megadrive": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "32x": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "saturn": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "psx": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "ps2": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "gba": {
+      "b": "^E",
+      "a": "^F",
+      "l1": "^G",
+      "y": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "pce": {
+      "b": "^E",
+      "a": "^H"
+    },
+    "pce6": {
+      "b": "^E",
+      "y": "^F",
+      "l1": "^G",
+      "a": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "3do": {
+      "b": "^E",
+      "a": "^F",
+      "l1": "^G",
+      "y": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "n64": {
+      "b": "^E",
+      "cDown": "^F",
+      "cRight": "^G",
+      "a": "^H",
+      "cLeft": "^I",
+      "cUp": "^J"
+    },
+    "dreamcast": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "gb": {
+      "b": "^E",
+      "a": "^H",
+      "select": "^F"
+    },
+    "gbc": {
+      "b": "^E",
+      "a": "^H",
+      "select": "^F"
+    },
+    "gamegear": {
+      "a": "^E",
+      "b": "^H"
+    },
+    "sms": {
+      "a": "^E",
+      "b": "^H"
+    },
+    "ngpc": {
+      "b": "^E",
+      "y": "^F",
+      "l1": "^G",
+      "a": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "lynx": {
+      "b": "^E",
+      "a": "^F",
+      "l1": "^G",
+      "y": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "wswan": {
+      "b": "^E",
+      "a": "^H"
+    }
+  }
+}

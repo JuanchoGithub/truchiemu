@@ -1,1 +1,921 @@
-{"schemaVersion":2,"romIds":["aodk"],"name":"Aggressors of Dark Kombat","year":1994,"manufacturer":"SNK","controls":{"_A":"Punch","_B":"Kick","_C":"Jump","_D":"No Use","_S":"Start","^S":"Select (AES only)"},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves","_*":"Gan-Gan Moves","_`":"Gan-Gan Moves"},"commonCommands":[{"category":"_)","name":"Dash","input":"_X_6"},{"category":"_)","name":"Retreat","input":"_X_4"},{"category":"_)","name":"Sidestep","input":"_X_2 / _8"},{"category":"_)","name":"Light Punch","input":"_X_A"},{"category":"_)","name":"Strong Punch","input":"_A"},{"category":"_)","name":"Alternative Strong Punch","input":"_6_+_A"},{"category":"_)","name":"Light Kick","input":"_X_B"},{"category":"_)","name":"Strong Kick","input":"_B"},{"category":"_)","name":"Alternative Strong Kick","input":"_6_+_B"},{"category":"_)","name":"Ground Punch Attack opponent knocked down","input":"_A"},{"category":"_)","name":"Ground Kick Attack opponent knocked down","input":"_B"},{"category":"_)","name":"Pick Up Weapon close to weapon","input":"_2_+_A"},{"category":"_)","name":"Special Weapon Attack","input":"_2_3_6_+_A"},{"category":"_)","name":"Drop Weapon","input":"_2_+_C / _A_+_B"},{"category":"_)","name":"Climb on Car close to car hood","input":"_8 (on Bobby's stage)"},{"category":"_)","name":"Jump Attack 1","input":"_8_+_A"},{"category":"_)","name":"Jump Attack 2","input":"_8_+_B"},{"category":"_)","name":"Taunt","input":"_2_+_C"},{"category":"_(","name":"Grapple","input":"_6_+_A_+_B"},{"category":"_(","name":"Normal Throws see CHARACTER move list"},{"category":"_(","name":"Change Side","input":"_C"},{"category":"_(","name":"Head Grab opponent knocked down, close head","input":"_2_+_A"},{"category":"_(","name":"Normal Throws see CHARACTER move list"},{"category":"_(","name":"Change Side","input":"_C"},{"category":"_(","name":"Reverse Throw when grabbed","input":"_A / _B / _C"}],"characters":[{"name":"LEONHALT DOMADOR","moves":[{"category":"_(","name":"Gorilla Press","input":"_A"},{"category":"_(","name":"Face Reaper","input":"_B"},{"category":"_(","name":"Headbutts","input":"_6_+_A"},{"category":"_(","name":"Powerbomb","input":"_6_+_B"},{"category":"_(","name":"Atomic Drop from behind","input":"_A"},{"category":"_(","name":"Release Toss from behind","input":"_B"},{"category":"_(","name":"Face Spike from behind","input":"_6_9_8_7_3_+_B"},{"category":"_(","name":"Earth Toss","input":"_^_4 / _6_+_A"},{"category":"_)","name":"Taunt opponent knocked down","input":"_2_+_A"},{"category":"_@","name":"Bloody Cross","input":"_4_1_2_3_6_+_A"},{"category":"_@","name":"Masakari Kick","input":"_6_1_2_3_+_B"},{"category":"_@","name":"Shin Baku Sassou","input":"_2_1_4_+_A"},{"category":"_*","name":"Tiger Death Blade","input":"_2_1_4_6_+_A"}]},{"name":"SHEEN GENUS","moves":[{"category":"_(","name":"Snap Suplex","input":"_A"},{"category":"_(","name":"Back Breaker","input":"_B"},{"category":"_(","name":"Rug Snap","input":"_6_+_A"},{"category":"_(","name":"D.D.T.","input":"_4_+_B"},{"category":"_(","name":"Choke Slam","input":"_4_7_8_2_+_A"},{"category":"_(","name":"Gigas Buster","input":"_6_9_8_2_+_B"},{"category":"_(","name":"Back Suplex from behind","input":"_A"},{"category":"_(","name":"Gigas Driver from behind","input":"_B"},{"category":"_(","name":"Reverse Clothesline from behind","input":"_6_+_A"},{"category":"_(","name":"Bulldog from behind","input":"_6_+_B"},{"category":"_(","name":"Rolling Cradle from behind","input":"_2_+_A"},{"category":"_(","name":"Arm Lock from behind","input":"_2_+_B"},{"category":"_(","name":"Power Slam opponent dashing","input":"_6_+_A"},{"category":"_(","name":"Air Frankensteiner","input":"_^_4 / _6_+_B"},{"category":"_)","name":"Taunt opponent knocked down","input":"_2_+_A"},{"category":"_@","name":"Flying Kneel Kick","input":"_4_1_2_3_6_+_B"},{"category":"_@","name":"Super Gyakusui Hyoh","input":"_2_1_4_+_A"},{"category":"_@","name":"Kyapuchuudo","input":"_6_9_8_7_4_+_A"},{"category":"_*","name":"Super Dangerous Frankensteiner","input":"_O_B_6"}]},{"name":"GOH KIDOKORO","moves":[{"category":"_(","name":"Knee Destroyer","input":"_A"},{"category":"_(","name":"Rough Toss","input":"_B"},{"category":"_(","name":"Direct Headbutt","input":"_6_+_A"},{"category":"_(","name":"Shin Sweep","input":"_6_+_B"},{"category":"_(","name":"Neck Cracker","input":"_4_+_B"},{"category":"_(","name":"Tiger Bomb","input":"_2_+_A"},{"category":"_(","name":"Coat Pounding","input":"_4_7_8_9_6_+_B"},{"category":"_(","name":"Octopus Hold from behind","input":"_A"},{"category":"_(","name":"Reverse Enzuigiri from behind","input":"_B"},{"category":"_(","name":"Spine Shatter from behind","input":"_6_+_A"},{"category":"_(","name":"The Rack from behind","input":"_8_2_+_B"},{"category":"_@","name":"Flying Cross Chop","input":"_B_+_C"},{"category":"_@","name":"Do Konjou Kick","input":"_2_3_6_+_B"},{"category":"_@","name":"Do Konjou Geta Rush","input":"_4_1_2_3_6_+_A"},{"category":"_*","name":"Osaka Meibutsu Usushi Okuzushi","input":"_6_9_8_7_4_1_2_+_A"}]},{"name":"JOE KUSANAGI","moves":[{"category":"_(","name":"Lifting Toss","input":"_A"},{"category":"_(","name":"Rapid Knees","input":"_B"},{"category":"_(","name":"Direct Headbutt","input":"_6_+_A"},{"category":"_(","name":"Riding Dropkick","input":"_6_+_B"},{"category":"_(","name":"Lariat Takedown","input":"_4_+_B"},{"category":"_(","name":"Cartwheel Toss","input":"_6_9_8_7_4_+_B"},{"category":"_(","name":"Rapid Spine Shatter from behind","input":"_A"},{"category":"_(","name":"Cheap Roundhouse from behind","input":"_B"},{"category":"_(","name":"Reverse Headbutt from behind","input":"_6_+_A"},{"category":"_(","name":"Neck Slam from behind","input":"_4_+_A"},{"category":"_@","name":"Joe Special","input":"_4_1_2_3_6_+_A"},{"category":"_@","name":"Shinkuu Midan Keri","input":"_6_1_2_3_+_B"},{"category":"_@","name":"Kattobi Hyakuretsu Kyaku","input":"_2_1_4_+_B"},{"category":"_@","name":"Gorgeous Throwing","input":"_2_1_4_+_A_+_B_+_C"},{"category":"_*","name":"Yujou-no Gattai Nekketsu Punch","input":"_8_7_4_6_+_A"}]},{"name":"KOTARO FUUMA","moves":[{"category":"_(","name":"Ura Nage","input":"_A"},{"category":"_(","name":"Izuna Otoshi","input":"_B"},{"category":"_(","name":"Shoulder Toss","input":"_4_+_B"},{"category":"_(","name":"Wall Strike","input":"_4_6_+_A"},{"category":"_(","name":"Izuna Drop","input":"_6_9_8_7_4_1_2_+_B"},{"category":"_(","name":"Cross Face Choke from behind","input":"_A"},{"category":"_(","name":"Flipping Cattle Ride from behind","input":"_B"},{"category":"_(","name":"Headstand Bulldog from behind","input":"_6_+_A"},{"category":"_(","name":"Izuna Ochitoshi","input":"_^_4 / _6_+_A"},{"category":"_@","name":"Bakuretsu Hakkei","input":"_4_1_2_3_6_+_A"},{"category":"_@","name":"Enryu Ha","input":"_6_1_2_3_+_A"},{"category":"_@","name":"Denko Shakuhi no Jutsu","input":"_2_1_4_+_A"},{"category":"_*","name":"Koppa Mijin no Jutsu","input":"_6_3_2_1_4_+_A_+_B_+_C"}]},{"name":"LEE HAE GWON","moves":[{"category":"_(","name":"Suplex","input":"_A"},{"category":"_(","name":"Headstand Knee Drop","input":"_B"},{"category":"_(","name":"Direct Slam","input":"_6_+_A"},{"category":"_(","name":"Arm Strain","input":"_4_+_B"},{"category":"_(","name":"Sky Snap","input":"_6_9_8_7_4_3_+_B"},{"category":"_(","name":"Kidney Crush from behind","input":"_A"},{"category":"_(","name":"Reverse Knee Drop from behind","input":"_B"},{"category":"_@","name":"Side Kick","input":"_2_3_6_+_B"},{"category":"_@","name":"Roundhouse","input":"_B"},{"category":"_@","name":"Swipe Kick","input":"_B"},{"category":"_@","name":"Ko Shuu Kyaku","input":"_6_1_2_3_+_B"},{"category":"_@","name":"Bossatsu Sou","input":"_2_1_4_+_A"},{"category":"_@","name":"Seirouga","input":"_2_1_4_+_B"},{"category":"_*","name":"Kyouyousou","input":"_3_9_3_9_+_A"}]},{"name":"KISARAH WESTFIELD","moves":[{"category":"_(","name":"Shoulder Toss","input":"_A"},{"category":"_(","name":"Power Lift Driver","input":"_B"},{"category":"_(","name":"Direct Shoulder Slam","input":"_4_+_A"},{"category":"_(","name":"Layback Toss","input":"_4_+_B"},{"category":"_(","name":"Inverted Atomic Drop","input":"_2_+_B"},{"category":"_(","name":"Swearing Smash from behind","input":"_A"},{"category":"_(","name":"Choke Squeeze from behind","input":"_B"},{"category":"_(","name":"Jumping Roll Slam from behind","input":"_4_+_B"},{"category":"_(","name":"Knee Strangle from behind","input":"_2_+_A"},{"category":"_(","name":"Supreme Inferno from behind","input":"_2_3_6_9_8_+_B"},{"category":"_)","name":"Stomp Kick","input":"_^_2_+_B"},{"category":"_)","name":"Taunt opponent knocked down","input":"_2_+_A"},{"category":"_@","name":"Cutey Rainbow","input":"_A_+_B_+_C"},{"category":"_@","name":"Hip Bazooka","input":"_2_3_6_+_B"},{"category":"_@","name":"Cheerleader Kick","input":"_2_1_4_+_B"},{"category":"_@","name":"Kisarah Ranbu","input":"_1_7_3_9_+_A_+_B"},{"category":"_*","name":"Jealousy Bomber","input":"_4_1_2_3_6_+_A"}]},{"name":"BOBBY NELSON","moves":[{"category":"_(","name":"Slam Dunk","input":"_A"},{"category":"_(","name":"Headstand Dropkick","input":"_B"},{"category":"_(","name":"Climbing Headbutt","input":"_6_+_A"},{"category":"_(","name":"Leg Roll","input":"_6_+_B"},{"category":"_(","name":"Hip Toss","input":"_4_+_A"},{"category":"_(","name":"Basketball Smash from behind","input":"_A"},{"category":"_(","name":"Air Leg Roll from behind","input":"_B"},{"category":"_(","name":"Basketball Low Blow from behind","input":"_6_+_A"},{"category":"_(","name":"Dance Smash from behind","input":"_8_1_3_7_9_2_+_B"},{"category":"_(","name":"Dunk It","input":"_^_4 / _6_+_A"},{"category":"_)","name":"Taunt opponent knocked down","input":"_2_+_A"},{"category":"_@","name":"Offense","input":"_B_+_C"},{"category":"_@","name":"Basketball Upper","input":"_A"},{"category":"_@","name":"Ground Roll","input":"_B"},{"category":"_@","name":"Spinning Attack","input":"_4_1_2_3_6_+_A"},{"category":"_@","name":"Flying Triple Kick","input":"_4_1_2_3_6_+_B"},{"category":"_@","name":"Jet Uppercut","input":"_6_1_2_3_+_A"},{"category":"_*","name":"Big Burn Attack","input":"_2_1_4_7_8_2_+_B"}]}],"controlAbbr":{"_A":"P","_B":"K","_C":"JM","_D":"—","_S":"ST","^S":"SL"},"systemControlMappings":{"snes":{"y":"_A","x":"_B","b":"_C","a":"_D"},"genesis":{"b":"_A","a":"_B","y":"_C","x":"_D"},"megadrive":{"b":"_A","a":"_B","y":"_C","x":"_D"},"32x":{"b":"_A","a":"_B","y":"_C","x":"_D"},"saturn":{"b":"_A","a":"_B","y":"_C","x":"_D"},"neogeo":{"b":"_A","y":"_B","a":"_C","x":"_D"},"psx":{"y":"_A","x":"_B","b":"_C","a":"_D"},"ps2":{"y":"_A","x":"_B","b":"_C","a":"_D"},"gb":{"b":"_A","a":"_B"},"gbc":{"b":"_A","a":"_B"},"gamegear":{"a":"_A","b":"_B"},"sms":{"a":"_A","b":"_B"},"gba":{"b":"_A","a":"_B","l1":"_C","r1":"_D"},"ngpc":{"b":"_A","a":"_B","y":"_C","x":"_D"},"dreamcast":{"y":"_A","x":"_B","b":"_C","a":"_D"},"n64":{"b":"_A","a":"_B","cDown":"_C","cLeft":"_D"},"wswan":{"b":"_A","a":"_B"}},"controlGroups":{"_P":["_A"],"_K":["_B"]}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "aodk"
+  ],
+  "name": "Aggressors of Dark Kombat",
+  "year": 1994,
+  "manufacturer": "SNK",
+  "controls": {
+    "_A": "Punch",
+    "_B": "Kick",
+    "_C": "Jump",
+    "_D": "No Use",
+    "_S": "Start",
+    "^S": "Select (AES only)"
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_*": "Gan-Gan Moves",
+    "_`": "Gan-Gan Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "_X_6"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_X_4"
+    },
+    {
+      "category": "_)",
+      "name": "Sidestep",
+      "input": "_X_2 / _8"
+    },
+    {
+      "category": "_)",
+      "name": "Light Punch",
+      "input": "_X_A"
+    },
+    {
+      "category": "_)",
+      "name": "Strong Punch",
+      "input": "_A"
+    },
+    {
+      "category": "_)",
+      "name": "Alternative Strong Punch",
+      "input": "_6_+_A"
+    },
+    {
+      "category": "_)",
+      "name": "Light Kick",
+      "input": "_X_B"
+    },
+    {
+      "category": "_)",
+      "name": "Strong Kick",
+      "input": "_B"
+    },
+    {
+      "category": "_)",
+      "name": "Alternative Strong Kick",
+      "input": "_6_+_B"
+    },
+    {
+      "category": "_)",
+      "name": "Ground Punch Attack opponent knocked down",
+      "input": "_A"
+    },
+    {
+      "category": "_)",
+      "name": "Ground Kick Attack opponent knocked down",
+      "input": "_B"
+    },
+    {
+      "category": "_)",
+      "name": "Pick Up Weapon close to weapon",
+      "input": "_2_+_A"
+    },
+    {
+      "category": "_)",
+      "name": "Special Weapon Attack",
+      "input": "_2_3_6_+_A"
+    },
+    {
+      "category": "_)",
+      "name": "Drop Weapon",
+      "input": "_2_+_C / _A_+_B"
+    },
+    {
+      "category": "_)",
+      "name": "Climb on Car close to car hood",
+      "input": "_8 (on Bobby's stage)"
+    },
+    {
+      "category": "_)",
+      "name": "Jump Attack 1",
+      "input": "_8_+_A"
+    },
+    {
+      "category": "_)",
+      "name": "Jump Attack 2",
+      "input": "_8_+_B"
+    },
+    {
+      "category": "_)",
+      "name": "Taunt",
+      "input": "_2_+_C"
+    },
+    {
+      "category": "_(",
+      "name": "Grapple",
+      "input": "_6_+_A_+_B"
+    },
+    {
+      "category": "_(",
+      "name": "Normal Throws see CHARACTER move list"
+    },
+    {
+      "category": "_(",
+      "name": "Change Side",
+      "input": "_C"
+    },
+    {
+      "category": "_(",
+      "name": "Head Grab opponent knocked down, close head",
+      "input": "_2_+_A"
+    },
+    {
+      "category": "_(",
+      "name": "Normal Throws see CHARACTER move list"
+    },
+    {
+      "category": "_(",
+      "name": "Change Side",
+      "input": "_C"
+    },
+    {
+      "category": "_(",
+      "name": "Reverse Throw when grabbed",
+      "input": "_A / _B / _C"
+    }
+  ],
+  "characters": [
+    {
+      "name": "LEONHALT DOMADOR",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Gorilla Press",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Face Reaper",
+          "input": "_B"
+        },
+        {
+          "category": "_(",
+          "name": "Headbutts",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Powerbomb",
+          "input": "_6_+_B"
+        },
+        {
+          "category": "_(",
+          "name": "Atomic Drop from behind",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Release Toss from behind",
+          "input": "_B"
+        },
+        {
+          "category": "_(",
+          "name": "Face Spike from behind",
+          "input": "_6_9_8_7_3_+_B"
+        },
+        {
+          "category": "_(",
+          "name": "Earth Toss",
+          "input": "_^_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Taunt opponent knocked down",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Bloody Cross",
+          "input": "_4_1_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Masakari Kick",
+          "input": "_6_1_2_3_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Shin Baku Sassou",
+          "input": "_2_1_4_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Tiger Death Blade",
+          "input": "_2_1_4_6_+_A"
+        }
+      ]
+    },
+    {
+      "name": "SHEEN GENUS",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Snap Suplex",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Back Breaker",
+          "input": "_B"
+        },
+        {
+          "category": "_(",
+          "name": "Rug Snap",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "D.D.T.",
+          "input": "_4_+_B"
+        },
+        {
+          "category": "_(",
+          "name": "Choke Slam",
+          "input": "_4_7_8_2_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Gigas Buster",
+          "input": "_6_9_8_2_+_B"
+        },
+        {
+          "category": "_(",
+          "name": "Back Suplex from behind",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Gigas Driver from behind",
+          "input": "_B"
+        },
+        {
+          "category": "_(",
+          "name": "Reverse Clothesline from behind",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Bulldog from behind",
+          "input": "_6_+_B"
+        },
+        {
+          "category": "_(",
+          "name": "Rolling Cradle from behind",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Arm Lock from behind",
+          "input": "_2_+_B"
+        },
+        {
+          "category": "_(",
+          "name": "Power Slam opponent dashing",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Air Frankensteiner",
+          "input": "_^_4 / _6_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Taunt opponent knocked down",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Kneel Kick",
+          "input": "_4_1_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Super Gyakusui Hyoh",
+          "input": "_2_1_4_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Kyapuchuudo",
+          "input": "_6_9_8_7_4_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Super Dangerous Frankensteiner",
+          "input": "_O_B_6"
+        }
+      ]
+    },
+    {
+      "name": "GOH KIDOKORO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Knee Destroyer",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Rough Toss",
+          "input": "_B"
+        },
+        {
+          "category": "_(",
+          "name": "Direct Headbutt",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Shin Sweep",
+          "input": "_6_+_B"
+        },
+        {
+          "category": "_(",
+          "name": "Neck Cracker",
+          "input": "_4_+_B"
+        },
+        {
+          "category": "_(",
+          "name": "Tiger Bomb",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Coat Pounding",
+          "input": "_4_7_8_9_6_+_B"
+        },
+        {
+          "category": "_(",
+          "name": "Octopus Hold from behind",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Reverse Enzuigiri from behind",
+          "input": "_B"
+        },
+        {
+          "category": "_(",
+          "name": "Spine Shatter from behind",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "The Rack from behind",
+          "input": "_8_2_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Cross Chop",
+          "input": "_B_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Do Konjou Kick",
+          "input": "_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Do Konjou Geta Rush",
+          "input": "_4_1_2_3_6_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Osaka Meibutsu Usushi Okuzushi",
+          "input": "_6_9_8_7_4_1_2_+_A"
+        }
+      ]
+    },
+    {
+      "name": "JOE KUSANAGI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Lifting Toss",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Rapid Knees",
+          "input": "_B"
+        },
+        {
+          "category": "_(",
+          "name": "Direct Headbutt",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Riding Dropkick",
+          "input": "_6_+_B"
+        },
+        {
+          "category": "_(",
+          "name": "Lariat Takedown",
+          "input": "_4_+_B"
+        },
+        {
+          "category": "_(",
+          "name": "Cartwheel Toss",
+          "input": "_6_9_8_7_4_+_B"
+        },
+        {
+          "category": "_(",
+          "name": "Rapid Spine Shatter from behind",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Cheap Roundhouse from behind",
+          "input": "_B"
+        },
+        {
+          "category": "_(",
+          "name": "Reverse Headbutt from behind",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Neck Slam from behind",
+          "input": "_4_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Joe Special",
+          "input": "_4_1_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Shinkuu Midan Keri",
+          "input": "_6_1_2_3_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Kattobi Hyakuretsu Kyaku",
+          "input": "_2_1_4_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Gorgeous Throwing",
+          "input": "_2_1_4_+_A_+_B_+_C"
+        },
+        {
+          "category": "_*",
+          "name": "Yujou-no Gattai Nekketsu Punch",
+          "input": "_8_7_4_6_+_A"
+        }
+      ]
+    },
+    {
+      "name": "KOTARO FUUMA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Ura Nage",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Izuna Otoshi",
+          "input": "_B"
+        },
+        {
+          "category": "_(",
+          "name": "Shoulder Toss",
+          "input": "_4_+_B"
+        },
+        {
+          "category": "_(",
+          "name": "Wall Strike",
+          "input": "_4_6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Izuna Drop",
+          "input": "_6_9_8_7_4_1_2_+_B"
+        },
+        {
+          "category": "_(",
+          "name": "Cross Face Choke from behind",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Flipping Cattle Ride from behind",
+          "input": "_B"
+        },
+        {
+          "category": "_(",
+          "name": "Headstand Bulldog from behind",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Izuna Ochitoshi",
+          "input": "_^_4 / _6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Bakuretsu Hakkei",
+          "input": "_4_1_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Enryu Ha",
+          "input": "_6_1_2_3_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Denko Shakuhi no Jutsu",
+          "input": "_2_1_4_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Koppa Mijin no Jutsu",
+          "input": "_6_3_2_1_4_+_A_+_B_+_C"
+        }
+      ]
+    },
+    {
+      "name": "LEE HAE GWON",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Suplex",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Headstand Knee Drop",
+          "input": "_B"
+        },
+        {
+          "category": "_(",
+          "name": "Direct Slam",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Arm Strain",
+          "input": "_4_+_B"
+        },
+        {
+          "category": "_(",
+          "name": "Sky Snap",
+          "input": "_6_9_8_7_4_3_+_B"
+        },
+        {
+          "category": "_(",
+          "name": "Kidney Crush from behind",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Reverse Knee Drop from behind",
+          "input": "_B"
+        },
+        {
+          "category": "_@",
+          "name": "Side Kick",
+          "input": "_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Roundhouse",
+          "input": "_B"
+        },
+        {
+          "category": "_@",
+          "name": "Swipe Kick",
+          "input": "_B"
+        },
+        {
+          "category": "_@",
+          "name": "Ko Shuu Kyaku",
+          "input": "_6_1_2_3_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Bossatsu Sou",
+          "input": "_2_1_4_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Seirouga",
+          "input": "_2_1_4_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Kyouyousou",
+          "input": "_3_9_3_9_+_A"
+        }
+      ]
+    },
+    {
+      "name": "KISARAH WESTFIELD",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Shoulder Toss",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Power Lift Driver",
+          "input": "_B"
+        },
+        {
+          "category": "_(",
+          "name": "Direct Shoulder Slam",
+          "input": "_4_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Layback Toss",
+          "input": "_4_+_B"
+        },
+        {
+          "category": "_(",
+          "name": "Inverted Atomic Drop",
+          "input": "_2_+_B"
+        },
+        {
+          "category": "_(",
+          "name": "Swearing Smash from behind",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Choke Squeeze from behind",
+          "input": "_B"
+        },
+        {
+          "category": "_(",
+          "name": "Jumping Roll Slam from behind",
+          "input": "_4_+_B"
+        },
+        {
+          "category": "_(",
+          "name": "Knee Strangle from behind",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Supreme Inferno from behind",
+          "input": "_2_3_6_9_8_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Stomp Kick",
+          "input": "_^_2_+_B"
+        },
+        {
+          "category": "_)",
+          "name": "Taunt opponent knocked down",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Cutey Rainbow",
+          "input": "_A_+_B_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Hip Bazooka",
+          "input": "_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Cheerleader Kick",
+          "input": "_2_1_4_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Kisarah Ranbu",
+          "input": "_1_7_3_9_+_A_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Jealousy Bomber",
+          "input": "_4_1_2_3_6_+_A"
+        }
+      ]
+    },
+    {
+      "name": "BOBBY NELSON",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Slam Dunk",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Headstand Dropkick",
+          "input": "_B"
+        },
+        {
+          "category": "_(",
+          "name": "Climbing Headbutt",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Leg Roll",
+          "input": "_6_+_B"
+        },
+        {
+          "category": "_(",
+          "name": "Hip Toss",
+          "input": "_4_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Basketball Smash from behind",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Air Leg Roll from behind",
+          "input": "_B"
+        },
+        {
+          "category": "_(",
+          "name": "Basketball Low Blow from behind",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Dance Smash from behind",
+          "input": "_8_1_3_7_9_2_+_B"
+        },
+        {
+          "category": "_(",
+          "name": "Dunk It",
+          "input": "_^_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Taunt opponent knocked down",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Offense",
+          "input": "_B_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Basketball Upper",
+          "input": "_A"
+        },
+        {
+          "category": "_@",
+          "name": "Ground Roll",
+          "input": "_B"
+        },
+        {
+          "category": "_@",
+          "name": "Spinning Attack",
+          "input": "_4_1_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Triple Kick",
+          "input": "_4_1_2_3_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Jet Uppercut",
+          "input": "_6_1_2_3_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Big Burn Attack",
+          "input": "_2_1_4_7_8_2_+_B"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_A": "P",
+    "_B": "K",
+    "_C": "JM",
+    "_D": "—",
+    "_S": "ST",
+    "^S": "SL"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "genesis": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "megadrive": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "32x": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "saturn": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "neogeo": {
+      "b": "_A",
+      "y": "_B",
+      "a": "_C",
+      "x": "_D"
+    },
+    "psx": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "ps2": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "gb": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gbc": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gamegear": {
+      "a": "_A",
+      "b": "_B"
+    },
+    "sms": {
+      "a": "_A",
+      "b": "_B"
+    },
+    "gba": {
+      "b": "_A",
+      "a": "_B",
+      "l1": "_C",
+      "r1": "_D"
+    },
+    "ngpc": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "dreamcast": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "n64": {
+      "b": "_A",
+      "a": "_B",
+      "cDown": "_C",
+      "cLeft": "_D"
+    },
+    "wswan": {
+      "b": "_A",
+      "a": "_B"
+    }
+  },
+  "controlGroups": {
+    "_P": [
+      "_A"
+    ],
+    "_K": [
+      "_B"
+    ]
+  }
+}

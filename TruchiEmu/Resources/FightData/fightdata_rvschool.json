@@ -1,1 +1,2006 @@
-{"schemaVersion":2,"romIds":["rvschool","rvschoola","rvschoolu","jgakuen","jgakuen1"],"name":"Rival Schools: United By Fate","year":1997,"manufacturer":"Capcom","controls":{"^E":"Weak Punch","^G":"Strong Punch","^H":"Weak Kick","^J":"Strong Kick","_S":"Taunt"},"controlGroups":{"_P":["^E","^G"],"_K":["^H","^J"]},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves","_*":"Burning Vigor Attacks","_#":"Team Up Techniques","_`":"Team Up Techniques"},"commonCommands":[{"category":"_)","name":"Run","input":"_6^6"},{"category":"_)","name":"Retreat","input":"_4_4"},{"category":"_)","name":"Super Jump","input":"_2_8"},{"category":"_)","name":"Background Sidestep","input":"^V"},{"category":"_)","name":"Foreground Sidestep","input":"_2_+^V"},{"category":"_)","name":"Ditch'n Spin close","input":"^V"},{"category":"_)","name":"Tardy Counter blocking, do any move"},{"category":"_)","name":"Throw Escape when thrown","input":"^W"},{"category":"_)","name":"Air Recovery knocked down on air","input":"_P_+_K / ^W / ^V"},{"category":"_)","name":"Ground Recovery being knocked down","input":"_P_+_K / ^W / ^V"},{"category":"_)","name":"Get Up Attack knocked down","input":"_P / _K"},{"category":"_)","name":"Roll and Low Attack knocked down","input":"_2_+_P / _K"}],"characters":[{"name":"BATSU ICHIMONJI","moves":[{"category":"_(","name":"Trip Takedown","input":"^W"},{"category":"_(","name":"Suplex from behind","input":"^W"},{"category":"_(","name":"Takedown Pummel crouching opponent","input":"_2_+^W"},{"category":"_)","name":"Elbow Smash","input":"_6_+^G"},{"category":"_)","name":"Stepping Roundhouse","input":"_6_+^J"},{"category":"_)","name":"Overhead Punch","input":"_4_+^G"},{"category":"_)","name":"Axe Kick","input":"_4_+^J"},{"category":"_)","name":"Upper Kick","input":"_3_+^J"},{"category":"_)","name":"Air Launcher","input":"_3_+^G"},{"category":"_)","name":"Air Combo Finisher","input":"_6_+^G / ^J"},{"category":"_@","name":"Kiai Dan","input":"(_^)_2_3_6_+_P"},{"category":"_@","name":"Guts Upper","input":"_6_2_3_+_P"},{"category":"_@","name":"Mikazuki Kick","input":"_2_1_4_+_K"},{"category":"_@","name":"Ryuusei Kick","input":"_^_2_3_6_+_K"},{"category":"_*","name":"Zenkai Kiai Dan","input":"(_^)_2_3_6_2_3_6_+_P"},{"category":"_*","name":"Air Burst","input":"_2_1_4_2_1_4_+_P (^*)"},{"category":"_#","name":"W Kiai Dan","input":"^E_+^H / ^G_+^J"}],"notes":["TAIYO HIGH SCHOOL"]},{"name":"HINATA WAKABA","moves":[{"category":"_(","name":"Shoulder Slam","input":"^W"},{"category":"_(","name":"Suplex from behind","input":"^W"},{"category":"_(","name":"Boston Crab crouching opponent","input":"_2_+^W"},{"category":"_)","name":"Straight","input":"_6_+^G"},{"category":"_)","name":"Backdoor Roundhouse","input":"_6_+^J"},{"category":"_)","name":"Axe Kick","input":"_4_+^J"},{"category":"_)","name":"Upward Smash","input":"_3_+^G"},{"category":"_)","name":"Air Launcher","input":"_3_+^J"},{"category":"_)","name":"Air Combo Finisher","input":"_6_+^G / ^J"},{"category":"_@","name":"Rengeki Ken","input":"_2_3_6_+_P (^*)"},{"category":"_@","name":"Shouyou Ken","input":"_6_2_3_+_P"},{"category":"_@","name":"Enbu Kyaku","input":"(_^)_2_1_4_+_K"},{"category":"_@","name":"Renkyaku Dan","input":"_^_2_3_6_+_K_K_K"},{"category":"_*","name":"Fire Senpuu Kyaku","input":"(_^)_2_1_4_2_1_4_+_K"},{"category":"_*","name":"Air Burst","input":"_2_1_4_2_1_4_+_P (^*)"},{"category":"_#","name":"Guts Hyakubai","input":"^E_+^H / ^G_+^J (fills 5LVs of Super Bar)"}],"notes":["TAIYO HIGH SCHOOL"]},{"name":"KYOSUKE KAGAMI","moves":[{"category":"_(","name":"Vertical Suplex","input":"^W"},{"category":"_(","name":"Suplex from behind","input":"^W"},{"category":"_(","name":"Leg Toss crouching opponent","input":"_2_+^W"},{"category":"_)","name":"Stepping Palm","input":"_6_+^G"},{"category":"_)","name":"Roundhouse Kick","input":"_6_+^J"},{"category":"_)","name":"Spinning Backfist","input":"_4_+^G"},{"category":"_)","name":"Arc Axe Kick","input":"_4_+^J"},{"category":"_)","name":"Air Launcher","input":"_3_+^J"},{"category":"_)","name":"Air Combo Finisher","input":"_6_+^G / ^J"},{"category":"_@","name":"Cross Cutter","input":"_2_3_6_+_P"},{"category":"_@","name":"Gen'ei Wave","input":"_^_2_3_6_+_P"},{"category":"_@","name":"Gen'ei Kick","input":"(_^)_2_3_6_+_K"},{"category":"_@","name":"Raijin Upper","input":"_6_2_3_+_P"},{"category":"_@","name":"Gen'ei Breaker","input":"_2_1_4_+_P"},{"category":"_*","name":"Kakusan Cross Cutter","input":"_2_3_6_2_3_6_+_P"},{"category":"_*","name":"Double Gen'ei Kick","input":"(_^)_2_3_6_2_3_6_+_K"},{"category":"_#","name":"Last Symphony","input":"^E_+^H / ^G_+^J"}],"notes":["TAIYO HIGH SCHOOL"]},{"name":"SYOMA SAWAMURA","moves":[{"category":"_(","name":"Bat Smash","input":"^W"},{"category":"_(","name":"Suplex from behind","input":"^W"},{"category":"_(","name":"Piledriver crouching opponent","input":"_2_+^W"},{"category":"_)","name":"Bat Swing","input":"_6_+^G"},{"category":"_)","name":"Double Roundhouse","input":"_6_+^J"},{"category":"_)","name":"Overhead Bat Mash","input":"_4_+^G"},{"category":"_)","name":"Air Launcher","input":"_3_+^G"},{"category":"_)","name":"Air Combo Finisher","input":"_6_+^G"},{"category":"_@","name":"Chou Gousoku Kyuu","input":"(_^)_2_3_6_+_P"},{"category":"_@","name":"Dai Kaiten Dapou","input":"_6_2_3_+_P"},{"category":"_@","name":"Satsujin Sliding","input":"_2_3_6_+_K"},{"category":"_@","name":"Goukai Lead","input":"_4_+^V"},{"category":"_@","name":"Goukai Sliding","input":"^H"},{"category":"_@","name":"Goukai Kick","input":"^J"},{"category":"_@","name":"Goukai Cancel _?"},{"category":"_@","name":"Ippon Zuri Dapou","input":"_6_3_2_1_4_+_P (reflect projectile)"},{"category":"_*","name":"Bunshin Makyuu","input":"(_^)_2_3_6_2_3_6_+_P"},{"category":"_*","name":"Homerun Dapou","input":"_2_1_4_2_1_4_+_P"},{"category":"_#","name":"Grand Slam","input":"^E_+^H / ^G_+^J"}],"notes":["GORIN HIGH SCHOOL"]},{"name":"NATSU AYUHARA","moves":[{"category":"_(","name":"Slapfest","input":"^W"},{"category":"_(","name":"Neck Ride from behind","input":"^W"},{"category":"_(","name":"Piledriver crouching opponent","input":"_2_+^W"},{"category":"_)","name":"Stepping Slap","input":"_6_+^G"},{"category":"_)","name":"Overhead Slap","input":"_4_+^G"},{"category":"_)","name":"Spin High Kick","input":"_1_+^J"},{"category":"_)","name":"Air Launcher","input":"_3_+^G"},{"category":"_)","name":"Air Combo Finisher","input":"_6_+^G / _4_+^J"},{"category":"_@","name":"Jumping Serve","input":"(_^)_2_3_6_+_P"},{"category":"_@","name":"Sliding Receive","input":"_6_2_3_+_P"},{"category":"_@","name":"Kaiten Receive","input":"_2_1_4_+_P"},{"category":"_@","name":"Tokkun Spike","input":"_^_2_1_4_+_P"},{"category":"_@","name":"Jikyuujisoku Spike","input":"_6_3_2_1_4_+_K"},{"category":"_*","name":"Senbon Spike","input":"_2_3_6_2_3_6_+_P"},{"category":"_*","name":"Fire Attack","input":"_^_2_3_6_2_3_6_+_P"},{"category":"_#","name":"Fight Hyakubai","input":"^E_+^H / ^G_+^J (fills 5LVs of Super Bar)"}],"notes":["GORIN HIGH SCHOOL"]},{"name":"ROBERTO MIURA","moves":[{"category":"_(","name":"Ground Smashes","input":"^W"},{"category":"_(","name":"Neck Ride from behind","input":"^W"},{"category":"_(","name":"Boston Crab crouching opponent","input":"_2_+^W"},{"category":"_)","name":"Stepping Straight","input":"_6_+^G"},{"category":"_)","name":"Hackey Sack Combination","input":"_6_+^J^J^J^J"},{"category":"_)","name":"Axe Kick","input":"_4_+^J"},{"category":"_)","name":"Air Launcher","input":"_3_+^J"},{"category":"_)","name":"Air Combo Finisher","input":"_6_+^G / ^J"},{"category":"_@","name":"Long Shot","input":"_2_3_6_+_K"},{"category":"_@","name":"Rising Kick","input":"(_^)_6_2_3_+_K"},{"category":"_@","name":"Sliding Kick","input":"_2_1_4_+_K"},{"category":"_@","name":"Bicycle Kick","input":"_^_2_3_6_+_K"},{"category":"_@","name":"Shining Save","input":"(_^)_2_3_6_+_P"},{"category":"_@","name":"Sneak Slide sidestep","input":"_K"},{"category":"_*","name":"Bakuretsu V Goal","input":"_2_3_6_2_3_6_+_K"},{"category":"_*","name":"Air Burst","input":"_2_1_4_2_1_4_+_K (^*)"},{"category":"_#","name":"Trap W Shoot","input":"^E_+^H / ^G_+^J"}],"notes":["GORIN HIGH SCHOOL"]},{"name":"ROY BROMWELL","moves":[{"category":"_(","name":"Neck Twister Slam","input":"^W"},{"category":"_(","name":"Neck Ride from behind","input":"^W"},{"category":"_(","name":"Powerbomb crouching opponent","input":"_2_+^W"},{"category":"_)","name":"Gut Blow","input":"_6_+^G"},{"category":"_)","name":"Stepping High Kick","input":"_6_+^J"},{"category":"_)","name":"Hot Overhead Smash","input":"_4_+^G"},{"category":"_)","name":"Backflip Kick","input":"_4_+^J"},{"category":"_)","name":"Air Launcher","input":"_3_+^G"},{"category":"_)","name":"Air Combo Finisher","input":"_6_+^G / ^J"},{"category":"_@","name":"Dynamite Straight","input":"_2_3_6_+_P"},{"category":"_@","name":"Twister Upper","input":"_6_2_3_+_P"},{"category":"_@","name":"Touchdown Wave","input":"_2_1_4_+_P"},{"category":"_@","name":"Air Dynamite","input":"_^_2_3_6_+_P"},{"category":"_*","name":"Triple Twister","input":"_2_3_6_2_3_6_+_P (^*)"},{"category":"_*","name":"Super Touchdown","input":"_2_1_4_2_1_4_+_P"},{"category":"_#","name":"W Rising Tornado","input":"^E_+^H / ^G_+^J"}],"notes":["PACIFIC HIGH SCHOOL"]},{"name":"TIFFANY LORDS","moves":[{"category":"_(","name":"Neck Twister Slam","input":"^W"},{"category":"_(","name":"Suplex from behind","input":"^W"},{"category":"_(","name":"Takedown Pummel crouching opponent","input":"_2_+^W"},{"category":"_)","name":"Short Upper","input":"_6_+^E"},{"category":"_)","name":"Clap Punch","input":"_6_+^G"},{"category":"_)","name":"Stepping High Kick","input":"_6_+^J"},{"category":"_)","name":"Straight Punch","input":"_4_+^G"},{"category":"_)","name":"Axe Kick","input":"_4_+^J"},{"category":"_)","name":"Forward Low Punch","input":"_1_+^G"},{"category":"_)","name":"Forward Punch","input":"_3_+^E"},{"category":"_)","name":"Splits Kick","input":"_3_+^J"},{"category":"_)","name":"Stamp Kick","input":"_^_2_+_K"},{"category":"_)","name":"Air Launcher","input":"_3_+^G"},{"category":"_)","name":"Air Combo Finisher","input":"_6_+^G / ^J"},{"category":"_@","name":"Groovy Knuckle","input":"_2_3_6_+_P (_O)"},{"category":"_@","name":"Groovy Punch","input":"_2_1_4_+_P (_O)"},{"category":"_@","name":"Beautiful Spin","input":"_6_2_3_+_K"},{"category":"_@","name":"Exciting Kick","input":"(_^)_2_1_4_+_K"},{"category":"_*","name":"Wonderful Kick","input":"_2_3_6_2_3_6_+_K"},{"category":"_*","name":"Air Burst","input":"_2_1_4_2_1_4_+_P (^*)"},{"category":"_#","name":"Love & Peace","input":"^E_+^H / ^G_+^J (restores life)"}],"notes":["PACIFIC HIGH SCHOOL"]},{"name":"BOMAN DELGADO","moves":[{"category":"_(","name":"Shoulder Drop","input":"^W"},{"category":"_(","name":"Suplex from behind","input":"^W"},{"category":"_(","name":"Takedown Pummel crouching opponent","input":"_2_+^W"},{"category":"_)","name":"Stepping Straight","input":"_6_+^G"},{"category":"_)","name":"Axe Kick","input":"_6_+^J"},{"category":"_)","name":"Hop Overhead Punch","input":"_4_+^G"},{"category":"_)","name":"Short Uppercut","input":"_3_+^E"},{"category":"_)","name":"Short Slide","input":"_3_+^J"},{"category":"_)","name":"Air Launcher","input":"_3_+^G"},{"category":"_)","name":"Air Combo Finisher","input":"_6_+^G"},{"category":"_@","name":"God Upper","input":"_2_3_6_+_P (x3)"},{"category":"_@","name":"God Straight","input":"_6_3_2_1_4_+_P"},{"category":"_@","name":"God Rush","input":"_6_2_3_+_P"},{"category":"_@","name":"God Lariat","input":"_^_2_1_4_+_P"},{"category":"_*","name":"Heaven's Rush","input":"_2_3_6_2_3_6_+_P"},{"category":"_*","name":"Heaven's Cross","input":"_2_1_4_2_1_4_+_P"},{"category":"_#","name":"W Power Buster","input":"^E_+^H / ^G_+^J"}],"notes":["PACIFIC HIGH SCHOOL"]},{"name":"EDGE \"EIJI YAMADA\"","moves":[{"category":"_(","name":"Vertical Suplex","input":"^W"},{"category":"_(","name":"Suplex from behind","input":"^W"},{"category":"_(","name":"Takedown Pummel crouching opponent","input":"_2_+^W"},{"category":"_)","name":"Spinning Knife Slash","input":"_6_+^G"},{"category":"_)","name":"Somersault Heel Drop","input":"_6_+^J"},{"category":"_)","name":"Roundhouse Spin Kick","input":"_4_+^J"},{"category":"_)","name":"Air Launcher","input":"_3_+^G / ^J"},{"category":"_)","name":"Air Combo Finisher","input":"_6_+^J"},{"category":"_@","name":"Ura-giri","input":"(_^)_2_3_6_+_P (x2)"},{"category":"_@","name":"Taikuu Ura-giri","input":"_2_1_4_+_P (x2)"},{"category":"_@","name":"Batou","input":"_2_3_6_+_K"},{"category":"_@","name":"Hakai","input":"_2_1_4_+_K"},{"category":"_*","name":"Chi Matsuri","input":"_2_3_6_2_3_6_+_P"},{"category":"_*","name":"Air Burst","input":"_2_1_4_2_1_4_+_P (^*)"},{"category":"_*","name":"Aerial Bursting","input":"_^^V"},{"category":"_#","name":"Jigoku","input":"^E_+^H / ^G_+^J"}],"notes":["GEDO HIGH SCHOOL"]},{"name":"AKIRA KAZAMA","moves":[{"category":"_(","name":"Side Slam","input":"^W"},{"category":"_(","name":"Suplex from behind","input":"^W"},{"category":"_(","name":"Leg Toss crouching opponent","input":"_2_+^W"},{"category":"_)","name":"Stepping Back Chop","input":"_6_+^G"},{"category":"_)","name":"Arc Kick","input":"_6_+^J"},{"category":"_)","name":"Spin Kick","input":"^J"},{"category":"_)","name":"Sweep Kick","input":"_2_+^J"},{"category":"_)","name":"Air Launcher","input":"_3_+^G"},{"category":"_)","name":"Air Combo Finisher","input":"_6_+^J"},{"category":"_@","name":"Ura Rimon","input":"_2_3_6_+_P"},{"category":"_@","name":"Senpuu-bu","input":"_2_3_6_+_K (x3)"},{"category":"_@","name":"Houbu close","input":"_2_1_4_+_K"},{"category":"_@","name":"Haten no Kamae","input":"_2_1_4_+_P"},{"category":"_@","name":"Ryuuga Rengiri","input":"^E^G^J^H^H^H"},{"category":"_@","name":"Sen'en Shippuubu","input":"^G^E^H^J"},{"category":"_@","name":"Bully Beater","input":"^H^E^G^J"},{"category":"_@","name":"Houseidou Geki","input":"^H^H^H^E^G^J"},{"category":"_@","name":"Tenhou no Kyaku","input":"^J^H^H^H^E^G"},{"category":"_*","name":"Ha no Renbu","input":"_2_1_4_2_1_4_+_P"},{"category":"_*","name":"Ten no Renbu","input":"_2_1_4_2_1_4_+_K"},{"category":"_*","name":"Kikou Kai","input":"(_^)_2_3_6_2_3_6_+_P"},{"category":"_#","name":"Rengeki Renbu","input":"^E_+^H / ^G_+^J"}],"notes":["GEDO HIGH SCHOOL"]},{"name":"GAN ISURUGI","moves":[{"category":"_(","name":"Headbutt Slam","input":"^W"},{"category":"_(","name":"Piledriver from behind","input":"^W"},{"category":"_(","name":"Back Ride crouching opponent","input":"_2_+^W"},{"category":"_)","name":"Straight Punch","input":"_6_+^G"},{"category":"_)","name":"Ground Stomp","input":"_4 / _6_+^J"},{"category":"_)","name":"Overhead Smash Punch","input":"_4_+^G"},{"category":"_)","name":"Double Palm Upper","input":"_3_+^E"},{"category":"_)","name":"Air Launcher","input":"_3_+^G"},{"category":"_)","name":"Air Combo Finisher","input":"_6_+^J"},{"category":"_@","name":"Teppou Tsuki","input":"_2_3_6_+_P"},{"category":"_@","name":"Teppou Tsuki","input":"_2_3_6_+^E"},{"category":"_@","name":"Aranami Shiko","input":"_2_3_6_+_K"},{"category":"_@","name":"Iwa Kudaki","input":"_6_2_3_+_P"},{"category":"_@","name":"Kashiwade Yaburi","input":"_2_1_4_+_P"},{"category":"_@","name":"Oo Arashi close","input":"_6_3_2_1_4_+_P"},{"category":"_@","name":"Ganseki Otoshi","input":"_^ close _2_3_6_+_P"},{"category":"_@","name":"Ganseki Kudaki","input":"_^_2_3_6_+_K"},{"category":"_*","name":"Midare Teppou Tsuki","input":"_2_3_6_2_3_6_+_P"},{"category":"_*","name":"Funka Zan close","input":"_2_1_4_2_1_4_+_P"},{"category":"_#","name":"Kakka Zan","input":"^E_+^H / ^G_+^J"}],"notes":["GEDO HIGH SCHOOL"]},{"name":"HIDEO SHIMAZU","moves":[{"category":"_(","name":"Shoulder Slam","input":"^W"},{"category":"_(","name":"Suplex from behind","input":"^W"},{"category":"_(","name":"Leg Toss crouching opponent","input":"_2_+^W"},{"category":"_)","name":"Hook Punch","input":"_6_+^G"},{"category":"_)","name":"Overhead Punch","input":"_4_+^G"},{"category":"_)","name":"Axe Kick","input":"_4_+^J"},{"category":"_)","name":"Air Launcher","input":"_3_+^G"},{"category":"_)","name":"Air Combo Finisher","input":"_6_+^G"},{"category":"_@","name":"Seiha Ken","input":"_2_3_6_+_P"},{"category":"_@","name":"Kuuchuu Seiha Ken","input":"_^_2_3_6_+_P"},{"category":"_@","name":"Double Seiha Ken (with","input":"^G)                                        ^G"},{"category":"_@","name":"Taikuu Seiha Ken","input":"_2_1_4_+_P"},{"category":"_@","name":"Jicchoku Ken","input":"_6_2_3_+_P"},{"category":"_@","name":"Shin'en Kyaku","input":"_2_1_4_+_K"},{"category":"_@","name":"Raiei Shuu","input":"_^_2_3_6 / _2_1_4_+_K"},{"category":"_*","name":"Shimazu-ryuu Jicchoku Ken","input":"_2_3_6_2_3_6_+_P"},{"category":"_*","name":"Shimazu-ryuu Seiha Ken","input":"_2_1_4_2_1_4_+_P"},{"category":"_#","name":"Shimazu-ryuu Shin Seiha Ken","input":"^E_+^H / ^G_+^J"}],"notes":["JUSTICE HIGH SCHOOL"]},{"name":"KYOKO MINAZUKI","moves":[{"category":"_(","name":"Clipboard & Kick","input":"^W"},{"category":"_(","name":"Suplex from behind","input":"^W"},{"category":"_(","name":"Boston Crab crouching opponent","input":"_2_+^W"},{"category":"_)","name":"Stepping Slap","input":"_6_+^G"},{"category":"_)","name":"Backdoor Roundhouse","input":"_6_+^J"},{"category":"_)","name":"Axe Kick","input":"_4_+^J"},{"category":"_)","name":"Air Launcher","input":"_3_+^J"},{"category":"_)","name":"Air Combo Finisher","input":"_6_+^G / ^J"},{"category":"_@","name":"Shusseki Kakunin","input":"_2_1_4_+_P"},{"category":"_@","name":"Kaishin","input":"(_^)_2_1_4_+_K"},{"category":"_@","name":"Shokushin","input":"_2_3_6_+_P_K_K_K_K_K"},{"category":"_@","name":"Shouten Sekkai","input":"_6_2_3_+^H"},{"category":"_@","name":"Shouten Sekkai","input":"_6_2_3_+^J^J"},{"category":"_@","name":"Shinshin","input":"_4_+^V"},{"category":"_@","name":"Katayoku no Kou","input":"_2_3_6_+_K"},{"category":"_@","name":"Leg Inspection","input":"^E"},{"category":"_@","name":"Pulse Inspection","input":"^G"},{"category":"_@","name":"Weight Measurement","input":"^H^H^H"},{"category":"_@","name":"Sitting Height Measurement","input":"^J^J^J"},{"category":"_@","name":"Chest Measurement","input":"^H^H^J"},{"category":"_@","name":"Height Measurement","input":"^J^J^H"},{"category":"_*","name":"Shi no Kaigo","input":"_2_3_6_2_3_6_+_P"},{"category":"_*","name":"Tengoku he no Kaidan","input":"_2_3_6_2_3_6_+_K"},{"category":"_#","name":"Kyuukyoku no Kyousei Jutsu","input":"^E_+^H / ^G_+^J (restores life)"}],"notes":["JUSTICE HIGH SCHOOL"]},{"name":"RAIZO IMAWANO","moves":[{"category":"_(","name":"Trip Slam","input":"^W"},{"category":"_(","name":"Neck Ride from behind","input":"^W"},{"category":"_(","name":"Piledriver crouching opponent","input":"_2_+^W"},{"category":"_)","name":"Stepping Swipe","input":"_6_+^G"},{"category":"_)","name":"Somersault Stomp","input":"_6_+^J"},{"category":"_)","name":"Overhead Slash","input":"_4_+^G"},{"category":"_)","name":"Air Launcher","input":"_3_+^G"},{"category":"_)","name":"Air Combo Finisher","input":"_6_+^G / ^J"},{"category":"_@","name":"Yasha-Guruma","input":"(_^)_2_3_6_+_P, _?_+_P / _K"},{"category":"_@","name":"Suichoku Yasha-Guruma","input":"(_^)_2_3_6_+_K, _?_+_P / _K"},{"category":"_@","name":"Kyoujin Reppa","input":"_6_2_3_+_P"},{"category":"_@","name":"Reppuu Zuki","input":"_2_1_4_+_P"},{"category":"_@","name":"Seki Saiga","input":"_6_3_2_1_4_+_K"},{"category":"_*","name":"Imawano-ryuu Kyoujuu Reppa","input":"_2_3_6_2_3_6_+_P"},{"category":"_*","name":"Imawano-ryuu Roppu Tsuki","input":"_2_1_4_2_1_4_+_P (_O)"},{"category":"_#","name":"Ningen Taiyou","input":"^E_+^H / ^G_+^J"}],"notes":["JUSTICE HIGH SCHOOL"]},{"name":"HYO IMAWANO","moves":[{"category":"_(","name":"Shoulder Slam","input":"^W"},{"category":"_(","name":"Neck Ride from behind","input":"^W"},{"category":"_(","name":"Leg Toss crouching opponent","input":"_2_+^W"},{"category":"_)","name":"Forward Slash","input":"_6_+^E"},{"category":"_)","name":"Straight Slash","input":"_6_+^G"},{"category":"_)","name":"Roundhouse Kick","input":"_6_+^J"},{"category":"_)","name":"Overhead Slash","input":"_4_+^G"},{"category":"_)","name":"Axe Kick","input":"_4_+^J"},{"category":"_)","name":"Air Launcher","input":"_3_+^G / ^J"},{"category":"_)","name":"Air Combo Finisher","input":"_6_+^G"},{"category":"_@","name":"Ichimonji-giri","input":"_2_3_6_+_P"},{"category":"_@","name":"Jyuumonji-giri","input":"_P"},{"category":"_@","name":"Iai-giri","input":"_2_1_4_+_P"},{"category":"_@","name":"Iai-giri Kai","input":"^G"},{"category":"_@","name":"Ouryuu Zan","input":"_6_2_3_+_P"},{"category":"_@","name":"Tenrai Zan","input":"_^_2_3_6_+_P"},{"category":"_@","name":"Gen'ei Shuu","input":"(_^)_2_1_4_+_K"},{"category":"_*","name":"Ankoku Gen'ei Shuu","input":"_2_1_4_2_1_4_+_K"},{"category":"_*","name":"Ankoku Gen'ei Zan","input":"_2_3_6_2_3_6_+_K"},{"category":"_#","name":"Zankoku Zan","input":"^E_+^H / ^G_+^J"}],"notes":["JUSTICE HIGH SCHOOL"]},{"name":"\"UNMASKED\" AKIRA KAZAMA","moves":[{"category":"_(","name":"Side Slam","input":"^W"},{"category":"_(","name":"Suplex from behind","input":"^W"},{"category":"_(","name":"Leg Toss crouching opponent","input":"_2_+^W"},{"category":"_)","name":"Stepping Back Chop","input":"_6_+^G"},{"category":"_)","name":"Arc Kick","input":"_6_+^J"},{"category":"_)","name":"Spin Kick","input":"^J"},{"category":"_)","name":"Sweep Kick","input":"_2_+^J"},{"category":"_)","name":"Air Launcher","input":"_3_+^G"},{"category":"_)","name":"Air Combo Finisher","input":"_6_+^J"},{"category":"_@","name":"Mukuro Rimon","input":"_2_3_6_+_P"},{"category":"_@","name":"Senpuu-bu","input":"_2_3_6_+_K (x3)"},{"category":"_@","name":"Houbu close","input":"_2_1_4_+_K"},{"category":"_@","name":"Haten no Kamae","input":"_2_1_4_+_P"},{"category":"_@","name":"Ryuuga Rengiri","input":"^E^G^J^H^H^H"},{"category":"_@","name":"Sen'en Shippuubu","input":"^G^E^H^J"},{"category":"_@","name":"Bully Beater","input":"^H^E^G^J"},{"category":"_@","name":"Houseidou Geki","input":"^H^H^H^E^G^J"},{"category":"_@","name":"Tenhou no Kyaku","input":"^J^H^H^H^E^G"},{"category":"_*","name":"Ha no Renbu","input":"_2_1_4_2_1_4_+_P"},{"category":"_*","name":"Ten no Renbu","input":"_2_1_4_2_1_4_+_K"},{"category":"_*","name":"Kikou Kai","input":"(_^)_2_3_6_2_3_6_+_P"},{"category":"_#","name":"Kyousou Rengeki Shuu","input":"^E_+^H / ^G_+^J"}],"notes":["GEDO HIGH SCHOOL"]},{"name":"SAKURA KASUGANO","moves":[{"category":"_(","name":"Smash & Kick","input":"^W"},{"category":"_(","name":"Suplex from behind","input":"^W"},{"category":"_(","name":"Takedown Pummel crouching opponent","input":"_2_+^W"},{"category":"_)","name":"Straight Punch","input":"_6_+^G"},{"category":"_)","name":"Backdoor Roundhouse","input":"_6_+^J"},{"category":"_)","name":"Overhead Smash","input":"_4_+^G"},{"category":"_)","name":"Flower Kick","input":"_4_+^J"},{"category":"_)","name":"Air Launcher","input":"_3_+^G / ^J"},{"category":"_)","name":"Air Combo Finisher","input":"_6_+^G / ^J"},{"category":"_@","name":"Hadou Ken","input":"_2_3_6_+_P (_O)"},{"category":"_@","name":"Soukuu Hadou Ken","input":"_^_2_3_6_+_P"},{"category":"_@","name":"Tengyou Hadou Ken","input":"_2_1_4_+_P"},{"category":"_@","name":"Shou'ou Ken","input":"_6_2_3_+_P"},{"category":"_@","name":"Shunpuu Kyaku","input":"_2_1_4_+_K"},{"category":"_*","name":"Midare Zakura","input":"_2_3_6_2_3_6_+_K"},{"category":"_*","name":"Shinkuu Hadou Ken","input":"_2_3_6_2_3_6_+_P"},{"category":"_*","name":"Shinkuu Soukuu Hadou Ken","input":"_^_2_3_6_2_3_6_+_P"},{"category":"_*","name":"Shinkuu Tengyou Hadou Ken","input":"_2_1_4_2_1_4_+_P"},{"category":"_*","name":"Haru Ichiban","input":"_2_1_4_2_1_4_+_K"},{"category":"_#","name":"Shun Goku Satsu","input":"^E_+^H / ^G_+^J"}],"notes":["TAMAGAWA MINAMI HIGH SCHOOL"]}],"cheatNotes":["_` Fight Hyo on Stage 8 (Final Chapter)","- On Stage 7 (Chapter 7), win 1 round with a Team-Up Technique","_` Free Select Mode","- Unlocked after 2 weeks","- After insert coins _O_S","_` Free Select Mode with Operator's Code","- On the Test Menu, go to DOT CROSS HATCH, press _8_8_2_2^H^G on 1P side","- After insert coins _O_S","_` 3rd Color \"Evil\"","- On the Character Select Screen, put the cursor on any character _O_S and press _P / _K","- Free Select Mode must be unlocked first"],"controlAbbr":{"^E":"LP","^G":"HP","^H":"LK","^J":"HK","_S":"TA"},"systemControlMappings":{"snes":{"y":"^G","x":"^E","b":"^J","a":"^H"},"genesis":{"y":"^G","b":"^E","c":"^J","a":"^H"},"megadrive":{"y":"^G","b":"^E","c":"^J","a":"^H"},"32x":{"y":"^G","b":"^E","c":"^J","a":"^H"},"saturn":{"y":"^G","b":"^E","c":"^J","a":"^H"},"psx":{"y":"^G","x":"^E","b":"^J","a":"^H"},"ps2":{"y":"^G","x":"^E","b":"^J","a":"^H"},"gb":{"b":"^G","a":"^J"},"gbc":{"b":"^G","a":"^J"},"gamegear":{"a":"^G","b":"^J"},"sms":{"a":"^G","b":"^J"},"gba":{"b":"^G","a":"^E","y":"^J","x":"^H"},"ngpc":{"b":"^G","a":"^E","y":"^J","x":"^H"}}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "rvschool",
+    "rvschoola",
+    "rvschoolu",
+    "jgakuen",
+    "jgakuen1"
+  ],
+  "name": "Rival Schools: United By Fate",
+  "year": 1997,
+  "manufacturer": "Capcom",
+  "controls": {
+    "^E": "Weak Punch",
+    "^G": "Strong Punch",
+    "^H": "Weak Kick",
+    "^J": "Strong Kick",
+    "_S": "Taunt"
+  },
+  "controlGroups": {
+    "_P": [
+      "^E",
+      "^G"
+    ],
+    "_K": [
+      "^H",
+      "^J"
+    ]
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_*": "Burning Vigor Attacks",
+    "_#": "Team Up Techniques",
+    "_`": "Team Up Techniques"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Run",
+      "input": "_6^6"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4"
+    },
+    {
+      "category": "_)",
+      "name": "Super Jump",
+      "input": "_2_8"
+    },
+    {
+      "category": "_)",
+      "name": "Background Sidestep",
+      "input": "^V"
+    },
+    {
+      "category": "_)",
+      "name": "Foreground Sidestep",
+      "input": "_2_+^V"
+    },
+    {
+      "category": "_)",
+      "name": "Ditch'n Spin close",
+      "input": "^V"
+    },
+    {
+      "category": "_)",
+      "name": "Tardy Counter blocking, do any move"
+    },
+    {
+      "category": "_)",
+      "name": "Throw Escape when thrown",
+      "input": "^W"
+    },
+    {
+      "category": "_)",
+      "name": "Air Recovery knocked down on air",
+      "input": "_P_+_K / ^W / ^V"
+    },
+    {
+      "category": "_)",
+      "name": "Ground Recovery being knocked down",
+      "input": "_P_+_K / ^W / ^V"
+    },
+    {
+      "category": "_)",
+      "name": "Get Up Attack knocked down",
+      "input": "_P / _K"
+    },
+    {
+      "category": "_)",
+      "name": "Roll and Low Attack knocked down",
+      "input": "_2_+_P / _K"
+    }
+  ],
+  "characters": [
+    {
+      "name": "BATSU ICHIMONJI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Trip Takedown",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Suplex from behind",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Takedown Pummel crouching opponent",
+          "input": "_2_+^W"
+        },
+        {
+          "category": "_)",
+          "name": "Elbow Smash",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Stepping Roundhouse",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Overhead Punch",
+          "input": "_4_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Axe Kick",
+          "input": "_4_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Upper Kick",
+          "input": "_3_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Air Launcher",
+          "input": "_3_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Air Combo Finisher",
+          "input": "_6_+^G / ^J"
+        },
+        {
+          "category": "_@",
+          "name": "Kiai Dan",
+          "input": "(_^)_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Guts Upper",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Mikazuki Kick",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Ryuusei Kick",
+          "input": "_^_2_3_6_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Zenkai Kiai Dan",
+          "input": "(_^)_2_3_6_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Air Burst",
+          "input": "_2_1_4_2_1_4_+_P (^*)"
+        },
+        {
+          "category": "_#",
+          "name": "W Kiai Dan",
+          "input": "^E_+^H / ^G_+^J"
+        }
+      ],
+      "notes": [
+        "TAIYO HIGH SCHOOL"
+      ]
+    },
+    {
+      "name": "HINATA WAKABA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Shoulder Slam",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Suplex from behind",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Boston Crab crouching opponent",
+          "input": "_2_+^W"
+        },
+        {
+          "category": "_)",
+          "name": "Straight",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Backdoor Roundhouse",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Axe Kick",
+          "input": "_4_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Upward Smash",
+          "input": "_3_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Air Launcher",
+          "input": "_3_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Air Combo Finisher",
+          "input": "_6_+^G / ^J"
+        },
+        {
+          "category": "_@",
+          "name": "Rengeki Ken",
+          "input": "_2_3_6_+_P (^*)"
+        },
+        {
+          "category": "_@",
+          "name": "Shouyou Ken",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Enbu Kyaku",
+          "input": "(_^)_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Renkyaku Dan",
+          "input": "_^_2_3_6_+_K_K_K"
+        },
+        {
+          "category": "_*",
+          "name": "Fire Senpuu Kyaku",
+          "input": "(_^)_2_1_4_2_1_4_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Air Burst",
+          "input": "_2_1_4_2_1_4_+_P (^*)"
+        },
+        {
+          "category": "_#",
+          "name": "Guts Hyakubai",
+          "input": "^E_+^H / ^G_+^J (fills 5LVs of Super Bar)"
+        }
+      ],
+      "notes": [
+        "TAIYO HIGH SCHOOL"
+      ]
+    },
+    {
+      "name": "KYOSUKE KAGAMI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Vertical Suplex",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Suplex from behind",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Leg Toss crouching opponent",
+          "input": "_2_+^W"
+        },
+        {
+          "category": "_)",
+          "name": "Stepping Palm",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Roundhouse Kick",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Spinning Backfist",
+          "input": "_4_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Arc Axe Kick",
+          "input": "_4_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Air Launcher",
+          "input": "_3_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Air Combo Finisher",
+          "input": "_6_+^G / ^J"
+        },
+        {
+          "category": "_@",
+          "name": "Cross Cutter",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Gen'ei Wave",
+          "input": "_^_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Gen'ei Kick",
+          "input": "(_^)_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Raijin Upper",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Gen'ei Breaker",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Kakusan Cross Cutter",
+          "input": "_2_3_6_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Double Gen'ei Kick",
+          "input": "(_^)_2_3_6_2_3_6_+_K"
+        },
+        {
+          "category": "_#",
+          "name": "Last Symphony",
+          "input": "^E_+^H / ^G_+^J"
+        }
+      ],
+      "notes": [
+        "TAIYO HIGH SCHOOL"
+      ]
+    },
+    {
+      "name": "SYOMA SAWAMURA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Bat Smash",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Suplex from behind",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Piledriver crouching opponent",
+          "input": "_2_+^W"
+        },
+        {
+          "category": "_)",
+          "name": "Bat Swing",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Double Roundhouse",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Overhead Bat Mash",
+          "input": "_4_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Air Launcher",
+          "input": "_3_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Air Combo Finisher",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Chou Gousoku Kyuu",
+          "input": "(_^)_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Dai Kaiten Dapou",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Satsujin Sliding",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Goukai Lead",
+          "input": "_4_+^V"
+        },
+        {
+          "category": "_@",
+          "name": "Goukai Sliding",
+          "input": "^H"
+        },
+        {
+          "category": "_@",
+          "name": "Goukai Kick",
+          "input": "^J"
+        },
+        {
+          "category": "_@",
+          "name": "Goukai Cancel _?"
+        },
+        {
+          "category": "_@",
+          "name": "Ippon Zuri Dapou",
+          "input": "_6_3_2_1_4_+_P (reflect projectile)"
+        },
+        {
+          "category": "_*",
+          "name": "Bunshin Makyuu",
+          "input": "(_^)_2_3_6_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Homerun Dapou",
+          "input": "_2_1_4_2_1_4_+_P"
+        },
+        {
+          "category": "_#",
+          "name": "Grand Slam",
+          "input": "^E_+^H / ^G_+^J"
+        }
+      ],
+      "notes": [
+        "GORIN HIGH SCHOOL"
+      ]
+    },
+    {
+      "name": "NATSU AYUHARA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Slapfest",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Neck Ride from behind",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Piledriver crouching opponent",
+          "input": "_2_+^W"
+        },
+        {
+          "category": "_)",
+          "name": "Stepping Slap",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Overhead Slap",
+          "input": "_4_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Spin High Kick",
+          "input": "_1_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Air Launcher",
+          "input": "_3_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Air Combo Finisher",
+          "input": "_6_+^G / _4_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Jumping Serve",
+          "input": "(_^)_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Sliding Receive",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Kaiten Receive",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Tokkun Spike",
+          "input": "_^_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Jikyuujisoku Spike",
+          "input": "_6_3_2_1_4_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Senbon Spike",
+          "input": "_2_3_6_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Fire Attack",
+          "input": "_^_2_3_6_2_3_6_+_P"
+        },
+        {
+          "category": "_#",
+          "name": "Fight Hyakubai",
+          "input": "^E_+^H / ^G_+^J (fills 5LVs of Super Bar)"
+        }
+      ],
+      "notes": [
+        "GORIN HIGH SCHOOL"
+      ]
+    },
+    {
+      "name": "ROBERTO MIURA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Ground Smashes",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Neck Ride from behind",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Boston Crab crouching opponent",
+          "input": "_2_+^W"
+        },
+        {
+          "category": "_)",
+          "name": "Stepping Straight",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Hackey Sack Combination",
+          "input": "_6_+^J^J^J^J"
+        },
+        {
+          "category": "_)",
+          "name": "Axe Kick",
+          "input": "_4_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Air Launcher",
+          "input": "_3_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Air Combo Finisher",
+          "input": "_6_+^G / ^J"
+        },
+        {
+          "category": "_@",
+          "name": "Long Shot",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Rising Kick",
+          "input": "(_^)_6_2_3_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Sliding Kick",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Bicycle Kick",
+          "input": "_^_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Shining Save",
+          "input": "(_^)_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Sneak Slide sidestep",
+          "input": "_K"
+        },
+        {
+          "category": "_*",
+          "name": "Bakuretsu V Goal",
+          "input": "_2_3_6_2_3_6_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Air Burst",
+          "input": "_2_1_4_2_1_4_+_K (^*)"
+        },
+        {
+          "category": "_#",
+          "name": "Trap W Shoot",
+          "input": "^E_+^H / ^G_+^J"
+        }
+      ],
+      "notes": [
+        "GORIN HIGH SCHOOL"
+      ]
+    },
+    {
+      "name": "ROY BROMWELL",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Neck Twister Slam",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Neck Ride from behind",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Powerbomb crouching opponent",
+          "input": "_2_+^W"
+        },
+        {
+          "category": "_)",
+          "name": "Gut Blow",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Stepping High Kick",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Hot Overhead Smash",
+          "input": "_4_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Backflip Kick",
+          "input": "_4_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Air Launcher",
+          "input": "_3_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Air Combo Finisher",
+          "input": "_6_+^G / ^J"
+        },
+        {
+          "category": "_@",
+          "name": "Dynamite Straight",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Twister Upper",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Touchdown Wave",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Air Dynamite",
+          "input": "_^_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Triple Twister",
+          "input": "_2_3_6_2_3_6_+_P (^*)"
+        },
+        {
+          "category": "_*",
+          "name": "Super Touchdown",
+          "input": "_2_1_4_2_1_4_+_P"
+        },
+        {
+          "category": "_#",
+          "name": "W Rising Tornado",
+          "input": "^E_+^H / ^G_+^J"
+        }
+      ],
+      "notes": [
+        "PACIFIC HIGH SCHOOL"
+      ]
+    },
+    {
+      "name": "TIFFANY LORDS",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Neck Twister Slam",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Suplex from behind",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Takedown Pummel crouching opponent",
+          "input": "_2_+^W"
+        },
+        {
+          "category": "_)",
+          "name": "Short Upper",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Clap Punch",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Stepping High Kick",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Straight Punch",
+          "input": "_4_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Axe Kick",
+          "input": "_4_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Forward Low Punch",
+          "input": "_1_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Forward Punch",
+          "input": "_3_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Splits Kick",
+          "input": "_3_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Stamp Kick",
+          "input": "_^_2_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Air Launcher",
+          "input": "_3_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Air Combo Finisher",
+          "input": "_6_+^G / ^J"
+        },
+        {
+          "category": "_@",
+          "name": "Groovy Knuckle",
+          "input": "_2_3_6_+_P (_O)"
+        },
+        {
+          "category": "_@",
+          "name": "Groovy Punch",
+          "input": "_2_1_4_+_P (_O)"
+        },
+        {
+          "category": "_@",
+          "name": "Beautiful Spin",
+          "input": "_6_2_3_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Exciting Kick",
+          "input": "(_^)_2_1_4_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Wonderful Kick",
+          "input": "_2_3_6_2_3_6_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Air Burst",
+          "input": "_2_1_4_2_1_4_+_P (^*)"
+        },
+        {
+          "category": "_#",
+          "name": "Love & Peace",
+          "input": "^E_+^H / ^G_+^J (restores life)"
+        }
+      ],
+      "notes": [
+        "PACIFIC HIGH SCHOOL"
+      ]
+    },
+    {
+      "name": "BOMAN DELGADO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Shoulder Drop",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Suplex from behind",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Takedown Pummel crouching opponent",
+          "input": "_2_+^W"
+        },
+        {
+          "category": "_)",
+          "name": "Stepping Straight",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Axe Kick",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Hop Overhead Punch",
+          "input": "_4_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Short Uppercut",
+          "input": "_3_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Short Slide",
+          "input": "_3_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Air Launcher",
+          "input": "_3_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Air Combo Finisher",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "God Upper",
+          "input": "_2_3_6_+_P (x3)"
+        },
+        {
+          "category": "_@",
+          "name": "God Straight",
+          "input": "_6_3_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "God Rush",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "God Lariat",
+          "input": "_^_2_1_4_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Heaven's Rush",
+          "input": "_2_3_6_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Heaven's Cross",
+          "input": "_2_1_4_2_1_4_+_P"
+        },
+        {
+          "category": "_#",
+          "name": "W Power Buster",
+          "input": "^E_+^H / ^G_+^J"
+        }
+      ],
+      "notes": [
+        "PACIFIC HIGH SCHOOL"
+      ]
+    },
+    {
+      "name": "EDGE \"EIJI YAMADA\"",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Vertical Suplex",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Suplex from behind",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Takedown Pummel crouching opponent",
+          "input": "_2_+^W"
+        },
+        {
+          "category": "_)",
+          "name": "Spinning Knife Slash",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Somersault Heel Drop",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Roundhouse Spin Kick",
+          "input": "_4_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Air Launcher",
+          "input": "_3_+^G / ^J"
+        },
+        {
+          "category": "_)",
+          "name": "Air Combo Finisher",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Ura-giri",
+          "input": "(_^)_2_3_6_+_P (x2)"
+        },
+        {
+          "category": "_@",
+          "name": "Taikuu Ura-giri",
+          "input": "_2_1_4_+_P (x2)"
+        },
+        {
+          "category": "_@",
+          "name": "Batou",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Hakai",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Chi Matsuri",
+          "input": "_2_3_6_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Air Burst",
+          "input": "_2_1_4_2_1_4_+_P (^*)"
+        },
+        {
+          "category": "_*",
+          "name": "Aerial Bursting",
+          "input": "_^^V"
+        },
+        {
+          "category": "_#",
+          "name": "Jigoku",
+          "input": "^E_+^H / ^G_+^J"
+        }
+      ],
+      "notes": [
+        "GEDO HIGH SCHOOL"
+      ]
+    },
+    {
+      "name": "AKIRA KAZAMA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Side Slam",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Suplex from behind",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Leg Toss crouching opponent",
+          "input": "_2_+^W"
+        },
+        {
+          "category": "_)",
+          "name": "Stepping Back Chop",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Arc Kick",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Spin Kick",
+          "input": "^J"
+        },
+        {
+          "category": "_)",
+          "name": "Sweep Kick",
+          "input": "_2_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Air Launcher",
+          "input": "_3_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Air Combo Finisher",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Ura Rimon",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Senpuu-bu",
+          "input": "_2_3_6_+_K (x3)"
+        },
+        {
+          "category": "_@",
+          "name": "Houbu close",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Haten no Kamae",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Ryuuga Rengiri",
+          "input": "^E^G^J^H^H^H"
+        },
+        {
+          "category": "_@",
+          "name": "Sen'en Shippuubu",
+          "input": "^G^E^H^J"
+        },
+        {
+          "category": "_@",
+          "name": "Bully Beater",
+          "input": "^H^E^G^J"
+        },
+        {
+          "category": "_@",
+          "name": "Houseidou Geki",
+          "input": "^H^H^H^E^G^J"
+        },
+        {
+          "category": "_@",
+          "name": "Tenhou no Kyaku",
+          "input": "^J^H^H^H^E^G"
+        },
+        {
+          "category": "_*",
+          "name": "Ha no Renbu",
+          "input": "_2_1_4_2_1_4_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Ten no Renbu",
+          "input": "_2_1_4_2_1_4_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Kikou Kai",
+          "input": "(_^)_2_3_6_2_3_6_+_P"
+        },
+        {
+          "category": "_#",
+          "name": "Rengeki Renbu",
+          "input": "^E_+^H / ^G_+^J"
+        }
+      ],
+      "notes": [
+        "GEDO HIGH SCHOOL"
+      ]
+    },
+    {
+      "name": "GAN ISURUGI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Headbutt Slam",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Piledriver from behind",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Back Ride crouching opponent",
+          "input": "_2_+^W"
+        },
+        {
+          "category": "_)",
+          "name": "Straight Punch",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Ground Stomp",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Overhead Smash Punch",
+          "input": "_4_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Double Palm Upper",
+          "input": "_3_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Air Launcher",
+          "input": "_3_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Air Combo Finisher",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Teppou Tsuki",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Teppou Tsuki",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Aranami Shiko",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Iwa Kudaki",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Kashiwade Yaburi",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Oo Arashi close",
+          "input": "_6_3_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Ganseki Otoshi",
+          "input": "_^ close _2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Ganseki Kudaki",
+          "input": "_^_2_3_6_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Midare Teppou Tsuki",
+          "input": "_2_3_6_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Funka Zan close",
+          "input": "_2_1_4_2_1_4_+_P"
+        },
+        {
+          "category": "_#",
+          "name": "Kakka Zan",
+          "input": "^E_+^H / ^G_+^J"
+        }
+      ],
+      "notes": [
+        "GEDO HIGH SCHOOL"
+      ]
+    },
+    {
+      "name": "HIDEO SHIMAZU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Shoulder Slam",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Suplex from behind",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Leg Toss crouching opponent",
+          "input": "_2_+^W"
+        },
+        {
+          "category": "_)",
+          "name": "Hook Punch",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Overhead Punch",
+          "input": "_4_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Axe Kick",
+          "input": "_4_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Air Launcher",
+          "input": "_3_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Air Combo Finisher",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Seiha Ken",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Kuuchuu Seiha Ken",
+          "input": "_^_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Double Seiha Ken (with",
+          "input": "^G)                                        ^G"
+        },
+        {
+          "category": "_@",
+          "name": "Taikuu Seiha Ken",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Jicchoku Ken",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Shin'en Kyaku",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Raiei Shuu",
+          "input": "_^_2_3_6 / _2_1_4_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Shimazu-ryuu Jicchoku Ken",
+          "input": "_2_3_6_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Shimazu-ryuu Seiha Ken",
+          "input": "_2_1_4_2_1_4_+_P"
+        },
+        {
+          "category": "_#",
+          "name": "Shimazu-ryuu Shin Seiha Ken",
+          "input": "^E_+^H / ^G_+^J"
+        }
+      ],
+      "notes": [
+        "JUSTICE HIGH SCHOOL"
+      ]
+    },
+    {
+      "name": "KYOKO MINAZUKI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Clipboard & Kick",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Suplex from behind",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Boston Crab crouching opponent",
+          "input": "_2_+^W"
+        },
+        {
+          "category": "_)",
+          "name": "Stepping Slap",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Backdoor Roundhouse",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Axe Kick",
+          "input": "_4_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Air Launcher",
+          "input": "_3_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Air Combo Finisher",
+          "input": "_6_+^G / ^J"
+        },
+        {
+          "category": "_@",
+          "name": "Shusseki Kakunin",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Kaishin",
+          "input": "(_^)_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Shokushin",
+          "input": "_2_3_6_+_P_K_K_K_K_K"
+        },
+        {
+          "category": "_@",
+          "name": "Shouten Sekkai",
+          "input": "_6_2_3_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Shouten Sekkai",
+          "input": "_6_2_3_+^J^J"
+        },
+        {
+          "category": "_@",
+          "name": "Shinshin",
+          "input": "_4_+^V"
+        },
+        {
+          "category": "_@",
+          "name": "Katayoku no Kou",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Leg Inspection",
+          "input": "^E"
+        },
+        {
+          "category": "_@",
+          "name": "Pulse Inspection",
+          "input": "^G"
+        },
+        {
+          "category": "_@",
+          "name": "Weight Measurement",
+          "input": "^H^H^H"
+        },
+        {
+          "category": "_@",
+          "name": "Sitting Height Measurement",
+          "input": "^J^J^J"
+        },
+        {
+          "category": "_@",
+          "name": "Chest Measurement",
+          "input": "^H^H^J"
+        },
+        {
+          "category": "_@",
+          "name": "Height Measurement",
+          "input": "^J^J^H"
+        },
+        {
+          "category": "_*",
+          "name": "Shi no Kaigo",
+          "input": "_2_3_6_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Tengoku he no Kaidan",
+          "input": "_2_3_6_2_3_6_+_K"
+        },
+        {
+          "category": "_#",
+          "name": "Kyuukyoku no Kyousei Jutsu",
+          "input": "^E_+^H / ^G_+^J (restores life)"
+        }
+      ],
+      "notes": [
+        "JUSTICE HIGH SCHOOL"
+      ]
+    },
+    {
+      "name": "RAIZO IMAWANO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Trip Slam",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Neck Ride from behind",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Piledriver crouching opponent",
+          "input": "_2_+^W"
+        },
+        {
+          "category": "_)",
+          "name": "Stepping Swipe",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Somersault Stomp",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Overhead Slash",
+          "input": "_4_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Air Launcher",
+          "input": "_3_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Air Combo Finisher",
+          "input": "_6_+^G / ^J"
+        },
+        {
+          "category": "_@",
+          "name": "Yasha-Guruma",
+          "input": "(_^)_2_3_6_+_P, _?_+_P / _K"
+        },
+        {
+          "category": "_@",
+          "name": "Suichoku Yasha-Guruma",
+          "input": "(_^)_2_3_6_+_K, _?_+_P / _K"
+        },
+        {
+          "category": "_@",
+          "name": "Kyoujin Reppa",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Reppuu Zuki",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Seki Saiga",
+          "input": "_6_3_2_1_4_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Imawano-ryuu Kyoujuu Reppa",
+          "input": "_2_3_6_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Imawano-ryuu Roppu Tsuki",
+          "input": "_2_1_4_2_1_4_+_P (_O)"
+        },
+        {
+          "category": "_#",
+          "name": "Ningen Taiyou",
+          "input": "^E_+^H / ^G_+^J"
+        }
+      ],
+      "notes": [
+        "JUSTICE HIGH SCHOOL"
+      ]
+    },
+    {
+      "name": "HYO IMAWANO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Shoulder Slam",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Neck Ride from behind",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Leg Toss crouching opponent",
+          "input": "_2_+^W"
+        },
+        {
+          "category": "_)",
+          "name": "Forward Slash",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Straight Slash",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Roundhouse Kick",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Overhead Slash",
+          "input": "_4_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Axe Kick",
+          "input": "_4_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Air Launcher",
+          "input": "_3_+^G / ^J"
+        },
+        {
+          "category": "_)",
+          "name": "Air Combo Finisher",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Ichimonji-giri",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Jyuumonji-giri",
+          "input": "_P"
+        },
+        {
+          "category": "_@",
+          "name": "Iai-giri",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Iai-giri Kai",
+          "input": "^G"
+        },
+        {
+          "category": "_@",
+          "name": "Ouryuu Zan",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Tenrai Zan",
+          "input": "_^_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Gen'ei Shuu",
+          "input": "(_^)_2_1_4_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Ankoku Gen'ei Shuu",
+          "input": "_2_1_4_2_1_4_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Ankoku Gen'ei Zan",
+          "input": "_2_3_6_2_3_6_+_K"
+        },
+        {
+          "category": "_#",
+          "name": "Zankoku Zan",
+          "input": "^E_+^H / ^G_+^J"
+        }
+      ],
+      "notes": [
+        "JUSTICE HIGH SCHOOL"
+      ]
+    },
+    {
+      "name": "\"UNMASKED\" AKIRA KAZAMA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Side Slam",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Suplex from behind",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Leg Toss crouching opponent",
+          "input": "_2_+^W"
+        },
+        {
+          "category": "_)",
+          "name": "Stepping Back Chop",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Arc Kick",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Spin Kick",
+          "input": "^J"
+        },
+        {
+          "category": "_)",
+          "name": "Sweep Kick",
+          "input": "_2_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Air Launcher",
+          "input": "_3_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Air Combo Finisher",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Mukuro Rimon",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Senpuu-bu",
+          "input": "_2_3_6_+_K (x3)"
+        },
+        {
+          "category": "_@",
+          "name": "Houbu close",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Haten no Kamae",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Ryuuga Rengiri",
+          "input": "^E^G^J^H^H^H"
+        },
+        {
+          "category": "_@",
+          "name": "Sen'en Shippuubu",
+          "input": "^G^E^H^J"
+        },
+        {
+          "category": "_@",
+          "name": "Bully Beater",
+          "input": "^H^E^G^J"
+        },
+        {
+          "category": "_@",
+          "name": "Houseidou Geki",
+          "input": "^H^H^H^E^G^J"
+        },
+        {
+          "category": "_@",
+          "name": "Tenhou no Kyaku",
+          "input": "^J^H^H^H^E^G"
+        },
+        {
+          "category": "_*",
+          "name": "Ha no Renbu",
+          "input": "_2_1_4_2_1_4_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Ten no Renbu",
+          "input": "_2_1_4_2_1_4_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Kikou Kai",
+          "input": "(_^)_2_3_6_2_3_6_+_P"
+        },
+        {
+          "category": "_#",
+          "name": "Kyousou Rengeki Shuu",
+          "input": "^E_+^H / ^G_+^J"
+        }
+      ],
+      "notes": [
+        "GEDO HIGH SCHOOL"
+      ]
+    },
+    {
+      "name": "SAKURA KASUGANO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Smash & Kick",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Suplex from behind",
+          "input": "^W"
+        },
+        {
+          "category": "_(",
+          "name": "Takedown Pummel crouching opponent",
+          "input": "_2_+^W"
+        },
+        {
+          "category": "_)",
+          "name": "Straight Punch",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Backdoor Roundhouse",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Overhead Smash",
+          "input": "_4_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Flower Kick",
+          "input": "_4_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Air Launcher",
+          "input": "_3_+^G / ^J"
+        },
+        {
+          "category": "_)",
+          "name": "Air Combo Finisher",
+          "input": "_6_+^G / ^J"
+        },
+        {
+          "category": "_@",
+          "name": "Hadou Ken",
+          "input": "_2_3_6_+_P (_O)"
+        },
+        {
+          "category": "_@",
+          "name": "Soukuu Hadou Ken",
+          "input": "_^_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Tengyou Hadou Ken",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Shou'ou Ken",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Shunpuu Kyaku",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Midare Zakura",
+          "input": "_2_3_6_2_3_6_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Shinkuu Hadou Ken",
+          "input": "_2_3_6_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Shinkuu Soukuu Hadou Ken",
+          "input": "_^_2_3_6_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Shinkuu Tengyou Hadou Ken",
+          "input": "_2_1_4_2_1_4_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Haru Ichiban",
+          "input": "_2_1_4_2_1_4_+_K"
+        },
+        {
+          "category": "_#",
+          "name": "Shun Goku Satsu",
+          "input": "^E_+^H / ^G_+^J"
+        }
+      ],
+      "notes": [
+        "TAMAGAWA MINAMI HIGH SCHOOL"
+      ]
+    }
+  ],
+  "cheatNotes": [
+    "_` Fight Hyo on Stage 8 (Final Chapter)",
+    "- On Stage 7 (Chapter 7), win 1 round with a Team-Up Technique",
+    "_` Free Select Mode",
+    "- Unlocked after 2 weeks",
+    "- After insert coins _O_S",
+    "_` Free Select Mode with Operator's Code",
+    "- On the Test Menu, go to DOT CROSS HATCH, press _8_8_2_2^H^G on 1P side",
+    "- After insert coins _O_S",
+    "_` 3rd Color \"Evil\"",
+    "- On the Character Select Screen, put the cursor on any character _O_S and press _P / _K",
+    "- Free Select Mode must be unlocked first"
+  ],
+  "controlAbbr": {
+    "^E": "LP",
+    "^G": "HP",
+    "^H": "LK",
+    "^J": "HK",
+    "_S": "TA"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "^G",
+      "x": "^E",
+      "b": "^J",
+      "a": "^H"
+    },
+    "genesis": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "megadrive": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "32x": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "saturn": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "psx": {
+      "y": "^G",
+      "x": "^E",
+      "b": "^J",
+      "a": "^H"
+    },
+    "ps2": {
+      "y": "^G",
+      "x": "^E",
+      "b": "^J",
+      "a": "^H"
+    },
+    "gb": {
+      "b": "^G",
+      "a": "^J"
+    },
+    "gbc": {
+      "b": "^G",
+      "a": "^J"
+    },
+    "gamegear": {
+      "a": "^G",
+      "b": "^J"
+    },
+    "sms": {
+      "a": "^G",
+      "b": "^J"
+    },
+    "gba": {
+      "b": "^G",
+      "a": "^E",
+      "y": "^J",
+      "x": "^H"
+    },
+    "ngpc": {
+      "b": "^G",
+      "a": "^E",
+      "y": "^J",
+      "x": "^H"
+    }
+  }
+}

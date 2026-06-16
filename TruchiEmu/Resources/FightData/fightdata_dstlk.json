@@ -1,1 +1,1145 @@
-{"schemaVersion":2,"romIds":["dstlk","dstlka","dstlkh","dstlku","dstlkur1","vampj","vampja","vampjr1"],"name":"Darkstalkers: The Night Warriors","year":1994,"manufacturer":"Capcom","controls":{"^E":"Weak Punch","^F":"Medium Punch","^G":"Strong Punch","^H":"Weak Kick","^I":"Medium Kick","^J":"Strong Kick","_S":"Start"},"controlGroups":{"_P":["^E","^F","^G"],"_K":["^H","^I","^J"]},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves","_*":"EX Moves","_`":"EX Moves"},"commonCommands":[{"category":"_)","name":"Dash","input":"_6_6","condition":"──/─"},{"category":"_)","name":"Retreat","input":"_4_4","condition":"──/─"},{"category":"_)","name":"Throw Escape when thrown","input":"_4 / _6_+^F / ^G / ^I / ^J","condition":"──/─"}],"characters":[{"name":"DEMITRI MAXIMOFF","moves":[{"category":"_(","name":"Bat Dive","input":"_4 / _6_+^F / ^G","condition":"──/─"},{"category":"_@","name":"Chaos Flare","input":"(_^)_2_3_6_+_P","condition":"ES/─"},{"category":"_@","name":"Demon Cradle","input":"_6_2_3_+_P","condition":"ES/G"},{"category":"_@","name":"Dash Demon Cradle dashing","input":"_6_2_3_+_P","condition":"ES/─"},{"category":"_@","name":"Bat Spin","input":"(_^)_2_1_4_+_K","condition":"ES/G"},{"category":"_@","name":"Negative Stolen close","input":"_x_+^F /","condition":"──/─"},{"category":"_*","name":"Midnight Pleasure","input":"_2_6_3_+^U","condition":"──/─"}]},{"name":"MORRIGAN AENSLAND","moves":[{"category":"_(","name":"Moon Tracer","input":"_4 / _6_+^F / ^G","condition":"──/─"},{"category":"_@","name":"Soul Fist","input":"_2_3_6_+_P","condition":"ES/─"},{"category":"_@","name":"Air Soul Fist","input":"_^_8_9_6_+_P","condition":"ES/G"},{"category":"_@","name":"Shadow Blade","input":"_6_2_3_+_P","condition":"ES/G"},{"category":"_@","name":"Shell Kick","input":"_^_2_1_4_+_K","condition":"ES/G"},{"category":"_@","name":"Vector Drain close","input":"_6_3_2_1_4_+^F / ^G","condition":"ES/─"},{"category":"_*","name":"Valkyrie Turn","input":"(_^)_6_3_2_1_4_+_K_K","condition":"──/─"},{"category":"_*","name":"Darkness Illusion","input":"^E^E_6^H^G","condition":"──/─"}]},{"name":"ANAKARIS","moves":[{"category":"_)","name":"Seija no Ayumi","input":"_4 / _6_+^I","condition":"──/─"},{"category":"_)","name":"Chi no Gekirin","input":"_4 / _6_+^J","condition":"──/─"},{"category":"_)","name":"Suichoku Fuyuu","input":"_8","condition":"──/─"},{"category":"_)","input":"^!Move                                                       _4 / _6","condition":"──/─"},{"category":"_)","input":"^!Cancel                                                     _2","condition":"──/─"},{"category":"_)","name":"Nidan Jump diagonal jump","input":"_8_8","condition":"──/─"},{"category":"_)","name":"Seinaru Bohi diagonal jump","input":"_2_+_K","condition":"──/─"},{"category":"_)","name":"Ooinaru Bohi diagonal jump","input":"_3_+_K","condition":"──/─"},{"category":"_@","name":"Miira Drop","input":"_2_3_6_+_P","condition":"ES/─"},{"category":"_@","name":"Cobra Blow","input":"_6_4_6_+_P","condition":"ES/─"},{"category":"_@","name":"Hitsugi no Mai","input":"^U / ^T","condition":"ES/─"},{"category":"_@","name":"Ouke no Sabaki","input":"_^_6_1_2_3_+_P","condition":"ES/G"},{"category":"_@","name":"Kotodama Gaeshi: Suu","input":"_6_3_2_1_4_+_P (absorb projectile)","condition":"──/─"},{"category":"_@","input":"^!Kotodama Gaeshi: Haku                                      _2_3_6_+_K","condition":"──/─"},{"category":"_*","name":"Pharaoh Magic","input":"^I^E_2^H^F","condition":"──/─"}]},{"name":"SASQUATCH","moves":[{"category":"_(","name":"Big Bomb","input":"_4 / _6_+^F / ^G","condition":"──/─"},{"category":"_@","name":"Big Snow","input":"_4_1_2_3_6_+_P","condition":"──/─"},{"category":"_@","name":"Big Typhoon","input":"_6_2_3_+_K","condition":"ES/G"},{"category":"_@","name":"Big Towers","input":"_2_2_+^U","condition":"ES/─"},{"category":"_@","name":"Big Shake close","input":"_6_3_2_+^F / ^G","condition":"──/─"},{"category":"_@","name":"Big Brunch close","input":"_2_1_4_+^I / ^J","condition":"──/─"},{"category":"_@","name":"Big Swing close","input":"_x_+^I /","condition":"──/─"},{"category":"_*","name":"Big Freeze","input":"_2_3_6_+^U","condition":"──/─"}]},{"name":"JON TALBAIN (GALLON)","moves":[{"category":"_(","name":"Rapid Crunch","input":"_4 / _6_+^F / ^G","condition":"──/─"},{"category":"_(","name":"Canyon Rounder","input":"_4 / _6_+^I / ^J","condition":"──/─"},{"category":"_(","name":"Canyon Flyer","input":"_^_4 / _6_+^F / ^G","condition":"──/─"},{"category":"_@","name":"Beast Rush: Taichi","input":"_2_3_6_+_P","condition":"ES/─"},{"category":"_@","name":"Beast Rush: Taikuu","input":"_6_2_3_+_P","condition":"ES/G"},{"category":"_@","name":"Beast Rush: Kuuchuu","input":"_^_6_3_2_+_P","condition":"ES/G"},{"category":"_@","name":"Climb Razor","input":"_2_8_+_K","condition":"ES/─"},{"category":"_@","name":"Wild Circular close","input":"_6_3_2_1_4_+^I / ^J","condition":"──/─"},{"category":"_*","name":"Beast Cannon: Taichi","input":"_4_1_2_3_6_+_P","condition":"──/─"},{"category":"_*","input":"^!Cannon Direction Change                                    _?_+_P","condition":"──/─"},{"category":"_*","name":"Beast Cannon: Taikuu","input":"_2_1_9_+_P","condition":"──/G"},{"category":"_*","input":"^!Cannon Direction Change                                    _?_+_P","condition":"──/─"},{"category":"_*","name":"Beast Cannon: Kuuchuu","input":"_^_7_4_1_2_3_+_P","condition":"──/─"},{"category":"_*","input":"^!Cannon Direction Change                                    _?_+_P","condition":"──/─"}]},{"name":"LORD RAPTOR (ZABEL ZAROCK)","moves":[{"category":"_(","name":"Murder Beat","input":"_4 / _6_+^F / ^G","condition":"──/─"},{"category":"_(","name":"Deadly Catapult","input":"_4 / _6_+^I / ^J","condition":"──/─"},{"category":"_(","name":"Air Catastrophe","input":"_^_4 / _6_+^F / ^G","condition":"──/─"},{"category":"_)","name":"Mad Pick","input":"_6_+^E","condition":"──/─"},{"category":"_)","name":"Mad Cutter","input":"_6_+^F","condition":"──/─"},{"category":"_)","name":"Toxic Bone","input":"_6_+^G","condition":"──/─"},{"category":"_)","name":"Hell Edge","input":"_6_+^H","condition":"──/─"},{"category":"_)","name":"Hell Shout","input":"_6_+^I","condition":"──/─"},{"category":"_)","name":"Hell Chainsaw","input":"_6_+^J","condition":"──/─"},{"category":"_)","name":"Crawl Forward","input":"^3","condition":"──/─"},{"category":"_)","name":"Crawl Backward","input":"^1","condition":"──/─"},{"category":"_)","name":"Mad Dagger","input":"_^_2_+^E","condition":"──/─"},{"category":"_)","name":"Mad Bullova","input":"_^_2_+^F","condition":"──/─"},{"category":"_)","name":"Mad Trident","input":"_^_2_+^G","condition":"──/─"},{"category":"_)","name":"Loudness Screw","input":"_^_2_+^I / ^J","condition":"──/─"},{"category":"_)","name":"Air Dash","input":"_^_6_6","condition":"──/─"},{"category":"_)","name":"Air Retreat","input":"_^_4_4","condition":"──/─"},{"category":"_@","name":"Death Hurricane","input":"(_^)_2_1_4_+_K","condition":"ES/G"},{"category":"_@","name":"Hell's Gate","input":"_4_1_2_3_6_+_K","condition":"──/─"},{"category":"_@","name":"Skull Punish close","input":"_2_3_6_9_+^F / ^G","condition":"ES/─"},{"category":"_*","name":"Death Voltage","input":"(_^)_6_3_2_1_4_+_K","condition":"──/─"},{"category":"_*","name":"Evil Scream","input":"_6_4_+^U","condition":"──/─"}]},{"name":"FELICIA","moves":[{"category":"_(","name":"Panic Nail","input":"_4 / _6_+^F / ^G","condition":"──/─"},{"category":"_(","name":"Tumble Cat","input":"_4 / _6_+^I / ^J","condition":"──/─"},{"category":"_(","name":"Flip Cat","input":"_^_4 / _6_+^F / ^G","condition":"──/─"},{"category":"_@","name":"Rolling Buckler","input":"_4_1_2_3_6_+_P","condition":"ES/─"},{"category":"_@","input":"^!Rolling Uppercut                                           _P","condition":"──/─"},{"category":"_@","name":"Rolling Scratch","input":"_6_3_2_1_4_+_P_P","condition":"ES/─"},{"category":"_@","name":"Sand Splash","input":"_2_3_6_+_K","condition":"ES/G"},{"category":"_@","name":"Delta Kick","input":"_4_2_1_+_K","condition":"ES/─"},{"category":"_@","name":"Hell Cat close","input":"_6_3_2_1_4_+^I / ^J","condition":"ES/─"},{"category":"_*","name":"Dancing Flash","input":"_2_3_6_4_1_2_+^U","condition":"──/─"}]},{"name":"RIKUO (AULBATH)","moves":[{"category":"_(","name":"Land Fisher","input":"_4 / _6_+^F / ^G","condition":"──/─"},{"category":"_(","input":"^!Land Fisher x2                                             _4","condition":"──/─"},{"category":"_)","name":"Spinning Current dashing","input":"^G","condition":"──/─"},{"category":"_@","name":"Sonic Wave","input":"_2_3_6_+_P","condition":"──/G"},{"category":"_@","name":"Poison Breath","input":"_4_1_2_3_6_+_K","condition":"ES/─"},{"category":"_@","name":"Screw Jet","input":"_4_6_+_P","condition":"ES/─"},{"category":"_@","name":"Trick Fish retreating","input":"_K","condition":"ES/─"},{"category":"_@","name":"Crystal Lancer close","input":"_6_3_2_1_4_+^F / ^G","condition":"ES/─"},{"category":"_@","name":"Sky Neptune close","input":"_6_3_2_1_4_+^I / ^J","condition":"ES/─"},{"category":"_*","name":"Aqua Spread","input":"_6_3_2_+^U / ^T (_O^U)","condition":"──/─"}]},{"name":"VICTOR VON GERDENHEIM","moves":[{"category":"_(","name":"Jaw Slugger","input":"_4 / _6_+^F / ^G","condition":"──/─"},{"category":"_(","input":"^!Graviton Knuckle                                           _2_8_+_P","condition":"──/─"},{"category":"_(","name":"Mega Strangle","input":"_4 / _6_+^I / ^J","condition":"──/─"},{"category":"_)","name":"Dengeki Touki","input":"_O^G / ^J","condition":"──/─"},{"category":"_)","name":"Low Dengeki Touki","input":"_2_+_O^G","condition":"──/─"},{"category":"_@","name":"Gyro Crush","input":"_2_1_4_6_+_P","condition":"ES/─"},{"category":"_@","name":"Giga Burn","input":"_2_1_4_+_K","condition":"──/G"},{"category":"_@","name":"Giga Hammer","input":"^4_6_+_P","condition":"ES/─"},{"category":"_@","name":"Giga Buster","input":"^4_6_+_K","condition":"ES/─"},{"category":"_@","name":"Hop Kick","input":"_1_9_+_K","condition":"ES/─"},{"category":"_@","name":"Mega Shock close","input":"_2_3_6_+^I / ^J","condition":"──/─"},{"category":"_@","name":"Mega Spike close","condition":"──/─","input":"_x_+^U"},{"category":"_*","name":"Giga Brute","input":"^4_6_+^U","condition":"──/─"},{"category":"_*","name":"Thunder Break","input":"^2_8_+_P / ^U","condition":"──/─"}]},{"name":"BISHAMON","moves":[{"category":"_(","name":"Kesa Nage","input":"_4 / _6_+^F / ^G","condition":"──/─"},{"category":"_)","name":"Kareha Chirashi","input":"_6_+^E","condition":"──/─"},{"category":"_)","input":"^!Kareha Chirashi: Kirikaeshi                                ^E","condition":"──/─"},{"category":"_)","name":"Ichimonji Giri","input":"_6_+^F","condition":"──/─"},{"category":"_)","input":"^!Ichimonji Giri: Kirikaeshi                                 ^F","condition":"──/─"},{"category":"_)","name":"Kawara Kudaki","input":"_6_+^G","condition":"──/─"},{"category":"_)","input":"^!Kawara Kudaki: Kirikaeshi                                  ^G","condition":"──/─"},{"category":"_)","name":"Haya Gatana","input":"_6_+^H","condition":"──/─"},{"category":"_)","name":"Sotoba Ori","input":"_6_+^I","condition":"──/─"},{"category":"_)","name":"Kaina Otoshi","input":"_6_+^J","condition":"──/─"},{"category":"_@","name":"Hane Yaiba","input":"_4_1_2_3_6_+_P","condition":"──/─"},{"category":"_@","input":"^!Tsuji Hayate                                               _2_3_6_+_P","condition":"ES/─"},{"category":"_@","input":"^!Kaeshi Yaiba                                               _2_1_4_+_P","condition":"──/─"},{"category":"_@","input":"^!Kien Zan                                               _6_2_3_+_P","condition":"ES/─"},{"category":"_@","name":"Iai Giri: Joudan","input":"^4_6_+_P","condition":"ES/─"},{"category":"_@","name":"Iai Giri: Gedan","input":"^4_6_+_K","condition":"ES/─"},{"category":"_@","name":"Kien Zan as reversal","input":"_6_2_3_+_P","condition":"ES/G"},{"category":"_@","name":"Mukuro Fuuji","input":"_^_8_9_6_+_P","condition":"ES/─"},{"category":"_@","name":"Kirisute Gomem close","input":"_6_3_2_1_3_+^F / ^G","condition":"ES/─"},{"category":"_*","name":"Kassobaki","input":"^4_6_4_6_+_P / _K","condition":"──/─"},{"category":"_*","name":"Oni Kubi Hineri","input":"_6_3_2_1_+_P","condition":"──/─"}]},{"name":"HUITZIL (PHOBOS)","moves":[{"category":"_(","name":"Magnetic Slam","input":"_4 / _6_+^F / ^G","condition":"──/─"},{"category":"_)","name":"Crawl Forward","input":"^3","condition":"──/─"},{"category":"_)","name":"Crawl Backward","input":"^1","condition":"──/─"},{"category":"_)","name":"Air Dash","input":"_^_6_6","condition":"──/─"},{"category":"_)","name":"Air Retreat","input":"_^_4_4","condition":"──/─"},{"category":"_@","name":"Plasma Beam: Taichi","input":"_2_3_6_+_P","condition":"──/─"},{"category":"_@","name":"Plasma Beam: Shagami","input":"_2_3_6_+_K","condition":"──/─"},{"category":"_@","name":"Might Launcher","input":"_2_1_4_+_K","condition":"──/─"},{"category":"_@","name":"Circuit Scrapper close","input":"_6_3_2_1_4_+^F / ^G","condition":"──/─"}]},{"name":"PYRON","moves":[{"category":"_(","name":"Corona Whip","input":"_4 / _6_+^F / ^G","condition":"──/─"},{"category":"_)","name":"Flame Head","input":"_6_+^E","condition":"──/─"},{"category":"_)","name":"Blast Blaze","input":"_6_+^F","condition":"──/─"},{"category":"_)","name":"Meteor Destroy","input":"_6_+^G","condition":"──/─"},{"category":"_@","name":"Sol Smasher","input":"_2_3_6_+_P","condition":"──/─"},{"category":"_@","name":"Air Sol Smasher","input":"_^_8_9_6_+_P","condition":"──/─"},{"category":"_@","name":"Zodiac Fire","input":"_6_2_3_+_P","condition":"──/─"},{"category":"_@","name":"Orbiter Blaze","input":"_^_2_1_4_+_K","condition":"──/─"},{"category":"_@","name":"Galaxy Trip","input":"(_^)_4_2_1_+_P / _K","condition":"──/─"}]}],"cheatNotes":["_` Color Select","- 1st Color, select the character with _P / _K","- 2nd Color, select the character with _S"],"controlAbbr":{"^E":"LP","^F":"MP","^G":"HP","^H":"LK","^I":"MK","^J":"HK","_S":"ST"},"systemControlMappings":{"snes":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"genesis":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"megadrive":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"32x":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"saturn":{"b":"^E","a":"^F","c":"^G","y":"^H","x":"^I","z":"^J"},"psx":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"ps2":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"gba":{"b":"^E","a":"^F","l1":"^G","y":"^H","x":"^I","r1":"^J"},"pce":{"b":"^E","a":"^H"},"pce6":{"b":"^E","y":"^F","l1":"^G","a":"^H","x":"^I","r1":"^J"},"3do":{"b":"^E","a":"^F","l1":"^G","y":"^H","x":"^I","r1":"^J"},"n64":{"b":"^E","cDown":"^F","cRight":"^G","a":"^H","cLeft":"^I","cUp":"^J"},"dreamcast":{"y":"^E","x":"^F","l1":"^G","b":"^H","a":"^I","r1":"^J"},"gb":{"b":"^E","a":"^H"},"gbc":{"b":"^E","a":"^H"},"gamegear":{"a":"^E","b":"^H"},"sms":{"a":"^E","b":"^H"},"ngpc":{"b":"^E","y":"^F","l1":"^G","a":"^H","x":"^I","r1":"^J"},"lynx":{"b":"^E","a":"^F","l1":"^G","y":"^H","x":"^I","r1":"^J"},"wswan":{"b":"^E","a":"^H"}}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "dstlk",
+    "dstlka",
+    "dstlkh",
+    "dstlku",
+    "dstlkur1",
+    "vampj",
+    "vampja",
+    "vampjr1"
+  ],
+  "name": "Darkstalkers: The Night Warriors",
+  "year": 1994,
+  "manufacturer": "Capcom",
+  "controls": {
+    "^E": "Weak Punch",
+    "^F": "Medium Punch",
+    "^G": "Strong Punch",
+    "^H": "Weak Kick",
+    "^I": "Medium Kick",
+    "^J": "Strong Kick",
+    "_S": "Start"
+  },
+  "controlGroups": {
+    "_P": [
+      "^E",
+      "^F",
+      "^G"
+    ],
+    "_K": [
+      "^H",
+      "^I",
+      "^J"
+    ]
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_*": "EX Moves",
+    "_`": "EX Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "_6_6",
+      "condition": "──/─"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4",
+      "condition": "──/─"
+    },
+    {
+      "category": "_)",
+      "name": "Throw Escape when thrown",
+      "input": "_4 / _6_+^F / ^G / ^I / ^J",
+      "condition": "──/─"
+    }
+  ],
+  "characters": [
+    {
+      "name": "DEMITRI MAXIMOFF",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Bat Dive",
+          "input": "_4 / _6_+^F / ^G",
+          "condition": "──/─"
+        },
+        {
+          "category": "_@",
+          "name": "Chaos Flare",
+          "input": "(_^)_2_3_6_+_P",
+          "condition": "ES/─"
+        },
+        {
+          "category": "_@",
+          "name": "Demon Cradle",
+          "input": "_6_2_3_+_P",
+          "condition": "ES/G"
+        },
+        {
+          "category": "_@",
+          "name": "Dash Demon Cradle dashing",
+          "input": "_6_2_3_+_P",
+          "condition": "ES/─"
+        },
+        {
+          "category": "_@",
+          "name": "Bat Spin",
+          "input": "(_^)_2_1_4_+_K",
+          "condition": "ES/G"
+        },
+        {
+          "category": "_@",
+          "name": "Negative Stolen close",
+          "input": "_x_+^F /",
+          "condition": "──/─"
+        },
+        {
+          "category": "_*",
+          "name": "Midnight Pleasure",
+          "input": "_2_6_3_+^U",
+          "condition": "──/─"
+        }
+      ]
+    },
+    {
+      "name": "MORRIGAN AENSLAND",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Moon Tracer",
+          "input": "_4 / _6_+^F / ^G",
+          "condition": "──/─"
+        },
+        {
+          "category": "_@",
+          "name": "Soul Fist",
+          "input": "_2_3_6_+_P",
+          "condition": "ES/─"
+        },
+        {
+          "category": "_@",
+          "name": "Air Soul Fist",
+          "input": "_^_8_9_6_+_P",
+          "condition": "ES/G"
+        },
+        {
+          "category": "_@",
+          "name": "Shadow Blade",
+          "input": "_6_2_3_+_P",
+          "condition": "ES/G"
+        },
+        {
+          "category": "_@",
+          "name": "Shell Kick",
+          "input": "_^_2_1_4_+_K",
+          "condition": "ES/G"
+        },
+        {
+          "category": "_@",
+          "name": "Vector Drain close",
+          "input": "_6_3_2_1_4_+^F / ^G",
+          "condition": "ES/─"
+        },
+        {
+          "category": "_*",
+          "name": "Valkyrie Turn",
+          "input": "(_^)_6_3_2_1_4_+_K_K",
+          "condition": "──/─"
+        },
+        {
+          "category": "_*",
+          "name": "Darkness Illusion",
+          "input": "^E^E_6^H^G",
+          "condition": "──/─"
+        }
+      ]
+    },
+    {
+      "name": "ANAKARIS",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Seija no Ayumi",
+          "input": "_4 / _6_+^I",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Chi no Gekirin",
+          "input": "_4 / _6_+^J",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Suichoku Fuyuu",
+          "input": "_8",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "input": "^!Move                                                       _4 / _6",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "input": "^!Cancel                                                     _2",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Nidan Jump diagonal jump",
+          "input": "_8_8",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Seinaru Bohi diagonal jump",
+          "input": "_2_+_K",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Ooinaru Bohi diagonal jump",
+          "input": "_3_+_K",
+          "condition": "──/─"
+        },
+        {
+          "category": "_@",
+          "name": "Miira Drop",
+          "input": "_2_3_6_+_P",
+          "condition": "ES/─"
+        },
+        {
+          "category": "_@",
+          "name": "Cobra Blow",
+          "input": "_6_4_6_+_P",
+          "condition": "ES/─"
+        },
+        {
+          "category": "_@",
+          "name": "Hitsugi no Mai",
+          "input": "^U / ^T",
+          "condition": "ES/─"
+        },
+        {
+          "category": "_@",
+          "name": "Ouke no Sabaki",
+          "input": "_^_6_1_2_3_+_P",
+          "condition": "ES/G"
+        },
+        {
+          "category": "_@",
+          "name": "Kotodama Gaeshi: Suu",
+          "input": "_6_3_2_1_4_+_P (absorb projectile)",
+          "condition": "──/─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Kotodama Gaeshi: Haku                                      _2_3_6_+_K",
+          "condition": "──/─"
+        },
+        {
+          "category": "_*",
+          "name": "Pharaoh Magic",
+          "input": "^I^E_2^H^F",
+          "condition": "──/─"
+        }
+      ]
+    },
+    {
+      "name": "SASQUATCH",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Big Bomb",
+          "input": "_4 / _6_+^F / ^G",
+          "condition": "──/─"
+        },
+        {
+          "category": "_@",
+          "name": "Big Snow",
+          "input": "_4_1_2_3_6_+_P",
+          "condition": "──/─"
+        },
+        {
+          "category": "_@",
+          "name": "Big Typhoon",
+          "input": "_6_2_3_+_K",
+          "condition": "ES/G"
+        },
+        {
+          "category": "_@",
+          "name": "Big Towers",
+          "input": "_2_2_+^U",
+          "condition": "ES/─"
+        },
+        {
+          "category": "_@",
+          "name": "Big Shake close",
+          "input": "_6_3_2_+^F / ^G",
+          "condition": "──/─"
+        },
+        {
+          "category": "_@",
+          "name": "Big Brunch close",
+          "input": "_2_1_4_+^I / ^J",
+          "condition": "──/─"
+        },
+        {
+          "category": "_@",
+          "name": "Big Swing close",
+          "input": "_x_+^I /",
+          "condition": "──/─"
+        },
+        {
+          "category": "_*",
+          "name": "Big Freeze",
+          "input": "_2_3_6_+^U",
+          "condition": "──/─"
+        }
+      ]
+    },
+    {
+      "name": "JON TALBAIN (GALLON)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Rapid Crunch",
+          "input": "_4 / _6_+^F / ^G",
+          "condition": "──/─"
+        },
+        {
+          "category": "_(",
+          "name": "Canyon Rounder",
+          "input": "_4 / _6_+^I / ^J",
+          "condition": "──/─"
+        },
+        {
+          "category": "_(",
+          "name": "Canyon Flyer",
+          "input": "_^_4 / _6_+^F / ^G",
+          "condition": "──/─"
+        },
+        {
+          "category": "_@",
+          "name": "Beast Rush: Taichi",
+          "input": "_2_3_6_+_P",
+          "condition": "ES/─"
+        },
+        {
+          "category": "_@",
+          "name": "Beast Rush: Taikuu",
+          "input": "_6_2_3_+_P",
+          "condition": "ES/G"
+        },
+        {
+          "category": "_@",
+          "name": "Beast Rush: Kuuchuu",
+          "input": "_^_6_3_2_+_P",
+          "condition": "ES/G"
+        },
+        {
+          "category": "_@",
+          "name": "Climb Razor",
+          "input": "_2_8_+_K",
+          "condition": "ES/─"
+        },
+        {
+          "category": "_@",
+          "name": "Wild Circular close",
+          "input": "_6_3_2_1_4_+^I / ^J",
+          "condition": "──/─"
+        },
+        {
+          "category": "_*",
+          "name": "Beast Cannon: Taichi",
+          "input": "_4_1_2_3_6_+_P",
+          "condition": "──/─"
+        },
+        {
+          "category": "_*",
+          "input": "^!Cannon Direction Change                                    _?_+_P",
+          "condition": "──/─"
+        },
+        {
+          "category": "_*",
+          "name": "Beast Cannon: Taikuu",
+          "input": "_2_1_9_+_P",
+          "condition": "──/G"
+        },
+        {
+          "category": "_*",
+          "input": "^!Cannon Direction Change                                    _?_+_P",
+          "condition": "──/─"
+        },
+        {
+          "category": "_*",
+          "name": "Beast Cannon: Kuuchuu",
+          "input": "_^_7_4_1_2_3_+_P",
+          "condition": "──/─"
+        },
+        {
+          "category": "_*",
+          "input": "^!Cannon Direction Change                                    _?_+_P",
+          "condition": "──/─"
+        }
+      ]
+    },
+    {
+      "name": "LORD RAPTOR (ZABEL ZAROCK)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Murder Beat",
+          "input": "_4 / _6_+^F / ^G",
+          "condition": "──/─"
+        },
+        {
+          "category": "_(",
+          "name": "Deadly Catapult",
+          "input": "_4 / _6_+^I / ^J",
+          "condition": "──/─"
+        },
+        {
+          "category": "_(",
+          "name": "Air Catastrophe",
+          "input": "_^_4 / _6_+^F / ^G",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Mad Pick",
+          "input": "_6_+^E",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Mad Cutter",
+          "input": "_6_+^F",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Toxic Bone",
+          "input": "_6_+^G",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Hell Edge",
+          "input": "_6_+^H",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Hell Shout",
+          "input": "_6_+^I",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Hell Chainsaw",
+          "input": "_6_+^J",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Crawl Forward",
+          "input": "^3",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Crawl Backward",
+          "input": "^1",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Mad Dagger",
+          "input": "_^_2_+^E",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Mad Bullova",
+          "input": "_^_2_+^F",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Mad Trident",
+          "input": "_^_2_+^G",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Loudness Screw",
+          "input": "_^_2_+^I / ^J",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Air Dash",
+          "input": "_^_6_6",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Air Retreat",
+          "input": "_^_4_4",
+          "condition": "──/─"
+        },
+        {
+          "category": "_@",
+          "name": "Death Hurricane",
+          "input": "(_^)_2_1_4_+_K",
+          "condition": "ES/G"
+        },
+        {
+          "category": "_@",
+          "name": "Hell's Gate",
+          "input": "_4_1_2_3_6_+_K",
+          "condition": "──/─"
+        },
+        {
+          "category": "_@",
+          "name": "Skull Punish close",
+          "input": "_2_3_6_9_+^F / ^G",
+          "condition": "ES/─"
+        },
+        {
+          "category": "_*",
+          "name": "Death Voltage",
+          "input": "(_^)_6_3_2_1_4_+_K",
+          "condition": "──/─"
+        },
+        {
+          "category": "_*",
+          "name": "Evil Scream",
+          "input": "_6_4_+^U",
+          "condition": "──/─"
+        }
+      ]
+    },
+    {
+      "name": "FELICIA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Panic Nail",
+          "input": "_4 / _6_+^F / ^G",
+          "condition": "──/─"
+        },
+        {
+          "category": "_(",
+          "name": "Tumble Cat",
+          "input": "_4 / _6_+^I / ^J",
+          "condition": "──/─"
+        },
+        {
+          "category": "_(",
+          "name": "Flip Cat",
+          "input": "_^_4 / _6_+^F / ^G",
+          "condition": "──/─"
+        },
+        {
+          "category": "_@",
+          "name": "Rolling Buckler",
+          "input": "_4_1_2_3_6_+_P",
+          "condition": "ES/─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Rolling Uppercut                                           _P",
+          "condition": "──/─"
+        },
+        {
+          "category": "_@",
+          "name": "Rolling Scratch",
+          "input": "_6_3_2_1_4_+_P_P",
+          "condition": "ES/─"
+        },
+        {
+          "category": "_@",
+          "name": "Sand Splash",
+          "input": "_2_3_6_+_K",
+          "condition": "ES/G"
+        },
+        {
+          "category": "_@",
+          "name": "Delta Kick",
+          "input": "_4_2_1_+_K",
+          "condition": "ES/─"
+        },
+        {
+          "category": "_@",
+          "name": "Hell Cat close",
+          "input": "_6_3_2_1_4_+^I / ^J",
+          "condition": "ES/─"
+        },
+        {
+          "category": "_*",
+          "name": "Dancing Flash",
+          "input": "_2_3_6_4_1_2_+^U",
+          "condition": "──/─"
+        }
+      ]
+    },
+    {
+      "name": "RIKUO (AULBATH)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Land Fisher",
+          "input": "_4 / _6_+^F / ^G",
+          "condition": "──/─"
+        },
+        {
+          "category": "_(",
+          "input": "^!Land Fisher x2                                             _4",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Spinning Current dashing",
+          "input": "^G",
+          "condition": "──/─"
+        },
+        {
+          "category": "_@",
+          "name": "Sonic Wave",
+          "input": "_2_3_6_+_P",
+          "condition": "──/G"
+        },
+        {
+          "category": "_@",
+          "name": "Poison Breath",
+          "input": "_4_1_2_3_6_+_K",
+          "condition": "ES/─"
+        },
+        {
+          "category": "_@",
+          "name": "Screw Jet",
+          "input": "_4_6_+_P",
+          "condition": "ES/─"
+        },
+        {
+          "category": "_@",
+          "name": "Trick Fish retreating",
+          "input": "_K",
+          "condition": "ES/─"
+        },
+        {
+          "category": "_@",
+          "name": "Crystal Lancer close",
+          "input": "_6_3_2_1_4_+^F / ^G",
+          "condition": "ES/─"
+        },
+        {
+          "category": "_@",
+          "name": "Sky Neptune close",
+          "input": "_6_3_2_1_4_+^I / ^J",
+          "condition": "ES/─"
+        },
+        {
+          "category": "_*",
+          "name": "Aqua Spread",
+          "input": "_6_3_2_+^U / ^T (_O^U)",
+          "condition": "──/─"
+        }
+      ]
+    },
+    {
+      "name": "VICTOR VON GERDENHEIM",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Jaw Slugger",
+          "input": "_4 / _6_+^F / ^G",
+          "condition": "──/─"
+        },
+        {
+          "category": "_(",
+          "input": "^!Graviton Knuckle                                           _2_8_+_P",
+          "condition": "──/─"
+        },
+        {
+          "category": "_(",
+          "name": "Mega Strangle",
+          "input": "_4 / _6_+^I / ^J",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Dengeki Touki",
+          "input": "_O^G / ^J",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Low Dengeki Touki",
+          "input": "_2_+_O^G",
+          "condition": "──/─"
+        },
+        {
+          "category": "_@",
+          "name": "Gyro Crush",
+          "input": "_2_1_4_6_+_P",
+          "condition": "ES/─"
+        },
+        {
+          "category": "_@",
+          "name": "Giga Burn",
+          "input": "_2_1_4_+_K",
+          "condition": "──/G"
+        },
+        {
+          "category": "_@",
+          "name": "Giga Hammer",
+          "input": "^4_6_+_P",
+          "condition": "ES/─"
+        },
+        {
+          "category": "_@",
+          "name": "Giga Buster",
+          "input": "^4_6_+_K",
+          "condition": "ES/─"
+        },
+        {
+          "category": "_@",
+          "name": "Hop Kick",
+          "input": "_1_9_+_K",
+          "condition": "ES/─"
+        },
+        {
+          "category": "_@",
+          "name": "Mega Shock close",
+          "input": "_2_3_6_+^I / ^J",
+          "condition": "──/─"
+        },
+        {
+          "category": "_@",
+          "name": "Mega Spike close",
+          "condition": "──/─",
+          "input": "_x_+^U"
+        },
+        {
+          "category": "_*",
+          "name": "Giga Brute",
+          "input": "^4_6_+^U",
+          "condition": "──/─"
+        },
+        {
+          "category": "_*",
+          "name": "Thunder Break",
+          "input": "^2_8_+_P / ^U",
+          "condition": "──/─"
+        }
+      ]
+    },
+    {
+      "name": "BISHAMON",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Kesa Nage",
+          "input": "_4 / _6_+^F / ^G",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Kareha Chirashi",
+          "input": "_6_+^E",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "input": "^!Kareha Chirashi: Kirikaeshi                                ^E",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Ichimonji Giri",
+          "input": "_6_+^F",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "input": "^!Ichimonji Giri: Kirikaeshi                                 ^F",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Kawara Kudaki",
+          "input": "_6_+^G",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "input": "^!Kawara Kudaki: Kirikaeshi                                  ^G",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Haya Gatana",
+          "input": "_6_+^H",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Sotoba Ori",
+          "input": "_6_+^I",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Kaina Otoshi",
+          "input": "_6_+^J",
+          "condition": "──/─"
+        },
+        {
+          "category": "_@",
+          "name": "Hane Yaiba",
+          "input": "_4_1_2_3_6_+_P",
+          "condition": "──/─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Tsuji Hayate                                               _2_3_6_+_P",
+          "condition": "ES/─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Kaeshi Yaiba                                               _2_1_4_+_P",
+          "condition": "──/─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Kien Zan                                               _6_2_3_+_P",
+          "condition": "ES/─"
+        },
+        {
+          "category": "_@",
+          "name": "Iai Giri: Joudan",
+          "input": "^4_6_+_P",
+          "condition": "ES/─"
+        },
+        {
+          "category": "_@",
+          "name": "Iai Giri: Gedan",
+          "input": "^4_6_+_K",
+          "condition": "ES/─"
+        },
+        {
+          "category": "_@",
+          "name": "Kien Zan as reversal",
+          "input": "_6_2_3_+_P",
+          "condition": "ES/G"
+        },
+        {
+          "category": "_@",
+          "name": "Mukuro Fuuji",
+          "input": "_^_8_9_6_+_P",
+          "condition": "ES/─"
+        },
+        {
+          "category": "_@",
+          "name": "Kirisute Gomem close",
+          "input": "_6_3_2_1_3_+^F / ^G",
+          "condition": "ES/─"
+        },
+        {
+          "category": "_*",
+          "name": "Kassobaki",
+          "input": "^4_6_4_6_+_P / _K",
+          "condition": "──/─"
+        },
+        {
+          "category": "_*",
+          "name": "Oni Kubi Hineri",
+          "input": "_6_3_2_1_+_P",
+          "condition": "──/─"
+        }
+      ]
+    },
+    {
+      "name": "HUITZIL (PHOBOS)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Magnetic Slam",
+          "input": "_4 / _6_+^F / ^G",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Crawl Forward",
+          "input": "^3",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Crawl Backward",
+          "input": "^1",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Air Dash",
+          "input": "_^_6_6",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Air Retreat",
+          "input": "_^_4_4",
+          "condition": "──/─"
+        },
+        {
+          "category": "_@",
+          "name": "Plasma Beam: Taichi",
+          "input": "_2_3_6_+_P",
+          "condition": "──/─"
+        },
+        {
+          "category": "_@",
+          "name": "Plasma Beam: Shagami",
+          "input": "_2_3_6_+_K",
+          "condition": "──/─"
+        },
+        {
+          "category": "_@",
+          "name": "Might Launcher",
+          "input": "_2_1_4_+_K",
+          "condition": "──/─"
+        },
+        {
+          "category": "_@",
+          "name": "Circuit Scrapper close",
+          "input": "_6_3_2_1_4_+^F / ^G",
+          "condition": "──/─"
+        }
+      ]
+    },
+    {
+      "name": "PYRON",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Corona Whip",
+          "input": "_4 / _6_+^F / ^G",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Flame Head",
+          "input": "_6_+^E",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Blast Blaze",
+          "input": "_6_+^F",
+          "condition": "──/─"
+        },
+        {
+          "category": "_)",
+          "name": "Meteor Destroy",
+          "input": "_6_+^G",
+          "condition": "──/─"
+        },
+        {
+          "category": "_@",
+          "name": "Sol Smasher",
+          "input": "_2_3_6_+_P",
+          "condition": "──/─"
+        },
+        {
+          "category": "_@",
+          "name": "Air Sol Smasher",
+          "input": "_^_8_9_6_+_P",
+          "condition": "──/─"
+        },
+        {
+          "category": "_@",
+          "name": "Zodiac Fire",
+          "input": "_6_2_3_+_P",
+          "condition": "──/─"
+        },
+        {
+          "category": "_@",
+          "name": "Orbiter Blaze",
+          "input": "_^_2_1_4_+_K",
+          "condition": "──/─"
+        },
+        {
+          "category": "_@",
+          "name": "Galaxy Trip",
+          "input": "(_^)_4_2_1_+_P / _K",
+          "condition": "──/─"
+        }
+      ]
+    }
+  ],
+  "cheatNotes": [
+    "_` Color Select",
+    "- 1st Color, select the character with _P / _K",
+    "- 2nd Color, select the character with _S"
+  ],
+  "controlAbbr": {
+    "^E": "LP",
+    "^F": "MP",
+    "^G": "HP",
+    "^H": "LK",
+    "^I": "MK",
+    "^J": "HK",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "genesis": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "megadrive": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "32x": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "saturn": {
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
+    },
+    "psx": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "ps2": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "gba": {
+      "b": "^E",
+      "a": "^F",
+      "l1": "^G",
+      "y": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "pce": {
+      "b": "^E",
+      "a": "^H"
+    },
+    "pce6": {
+      "b": "^E",
+      "y": "^F",
+      "l1": "^G",
+      "a": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "3do": {
+      "b": "^E",
+      "a": "^F",
+      "l1": "^G",
+      "y": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "n64": {
+      "b": "^E",
+      "cDown": "^F",
+      "cRight": "^G",
+      "a": "^H",
+      "cLeft": "^I",
+      "cUp": "^J"
+    },
+    "dreamcast": {
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
+    },
+    "gb": {
+      "b": "^E",
+      "a": "^H"
+    },
+    "gbc": {
+      "b": "^E",
+      "a": "^H"
+    },
+    "gamegear": {
+      "a": "^E",
+      "b": "^H"
+    },
+    "sms": {
+      "a": "^E",
+      "b": "^H"
+    },
+    "ngpc": {
+      "b": "^E",
+      "y": "^F",
+      "l1": "^G",
+      "a": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "lynx": {
+      "b": "^E",
+      "a": "^F",
+      "l1": "^G",
+      "y": "^H",
+      "x": "^I",
+      "r1": "^J"
+    },
+    "wswan": {
+      "b": "^E",
+      "a": "^H"
+    }
+  }
+}

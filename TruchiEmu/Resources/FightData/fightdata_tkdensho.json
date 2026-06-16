@@ -1,1 +1,602 @@
-{"schemaVersion":2,"romIds":["tkdensho","tkdenshoa"],"name":"Toukidenshou - Angel Eyes","year":1996,"manufacturer":"Tecmo","credits":"Fabricio Coroquer","controls":{"^E":"Weak Punch","^G":"Strong Punch","^H":"Weak Kick","^J":"Strong Kick","_S":"Start"},"controlGroups":{"_P":["^E","^G"],"_K":["^H","^J"]},"categories":{"_)":"Command Moves","_@":"Special Moves","_*":"Emotion Moves","_`":"Emotion Moves"},"commonCommands":[{"category":"_)","name":"Dash","input":"(_^)_6_6"},{"category":"_)","name":"Super Dash","input":"(_^)^V"},{"category":"_)","name":"Retreat","input":"(_^)_4_4"},{"category":"_)","name":"4 Dan Jump","input":"_^_8_8_8"},{"category":"_)","name":"Mid-air Halt","input":"_^^W"}],"characters":[{"name":"RAIYA","moves":[{"category":"_)","name":"Hop Sidekick","input":"_6_+^J"},{"category":"_)","name":"Heel Launcher","input":"_4_+^J"},{"category":"_)","name":"Flipkick","input":"^*_K"},{"category":"_)","name":"Toe Tap Kick","input":"_^_2_+^H"},{"category":"_)","name":"Angled Headkick","input":"_^_2_+^J"},{"category":"_)","name":"Flipkick Super Dash","input":"^H^J^J"},{"category":"_)","name":"Flipkick Super Dash","input":"^H_2_+^J_2_+_K"},{"category":"_@","name":"Raiko Dan: Straight","input":"(_^)_2_3_6_+^E / ^H"},{"category":"_@","name":"Raiko Dan: Angled Up","input":"(_^)_2_3_6_+^G"},{"category":"_@","name":"Raiko Dan: Angled Down","input":"(_^)_2_3_6_+^J"},{"category":"_@","name":"Lightning Tornado","input":"(_^)_6_2_3_+_P"},{"category":"_*","name":"Goen Shin Kou Ha","input":"_2_3_6_2_3_6_+^W"}]},{"name":"REIKA","moves":[{"category":"_)","name":"Axe Kick","input":"_4 / _6_+^J"},{"category":"_)","name":"Shove Elbow","input":"_6_6_+^G"},{"category":"_)","name":"Double Flying Face Crescent","input":"_6_6_+^H^J"},{"category":"_)","name":"Angled Punch","input":"_^_2_+^G"},{"category":"_)","name":"Face Kick","input":"_^_2_+_K"},{"category":"_@","name":"Mirage Kicks","input":"^*_K"},{"category":"_@","name":"Blaze Punches","input":"_2_3_6_+_P"},{"category":"_@","name":"Flame Smash","input":"_2_3_6_+_K"},{"category":"_@","name":"Can-Can Kick","input":"_6_2_3_+_K"},{"category":"_@","name":"Raging Bolt","input":"_^_2_1_4_+_K"},{"category":"_*","name":"PMS Firestreak","input":"_2_3_6_3_2_1_4_+^W"}]},{"name":"HIGHWAY STAR","moves":[{"category":"_)","name":"Gut Punch","input":"_4 / _6_+^G"},{"category":"_)","name":"Gut Kick","input":"_4 / _6_+^J"},{"category":"_@","name":"Axle Spin","input":"_2_3_6_+_P"},{"category":"_@","name":"High Speed Upper","input":"(_^)_6_2_3_+_P"},{"category":"_@","name":"Rearview Reflector","input":"_6_3_2_1_4_+_P"},{"category":"_@","name":"Crash Course close","input":"_6_3_2_1_4_+_K"},{"category":"_*","name":"Highway Collision","input":"_6_4_1_2_3_6_+^V"}]},{"name":"KIRIKO","moves":[{"category":"_)","name":"Kunai Push","input":"_4 / _6_+^G"},{"category":"_)","name":"Hop Crescent","input":"_4 / _6_+^J"},{"category":"_)","name":"Kunai Shove","input":"_6_6_+^G"},{"category":"_)","name":"Flipkick","input":"_6_6_+^J"},{"category":"_)","name":"Downward Stab","input":"_^_2_+_P"},{"category":"_)","name":"Overhead Kick","input":"_^_2_+_K"},{"category":"_@","name":"Deathspin Kunai","input":"_2_3_6_+_P"},{"category":"_@","name":"Ansatsu","input":"_6_2_3_+_P"},{"category":"_@","name":"Kunoichi Vanish","input":"_2_2_+_P / _K"},{"category":"_*","name":"Kunoichi Plunge","input":"_2_3_6_2_3_6_+^W"}]},{"name":"LINA","moves":[{"category":"_)","name":"Jab Elbow","input":"_6_+^E"},{"category":"_)","name":"Hook Punch","input":"_6_+^G"},{"category":"_)","name":"Straight Mid Kick","input":"_6_+^H"},{"category":"_)","name":"Dashing Knee","input":"_6_+^J"},{"category":"_)","name":"Across Screen Slam","input":"_6_6_+^G"},{"category":"_)","name":"Hopping Knee","input":"_6_6_+^H"},{"category":"_)","name":"Convict Kick","input":"_6_6_+^J"},{"category":"_)","name":"Angled Punch","input":"_^_2_+^E"},{"category":"_@","name":"Double Sided Axe Kick","input":"_2_3_6_+_K"},{"category":"_@","name":"Rocket Upper","input":"_6_2_3_+_P"},{"category":"_@","name":"Heelkick Headbutt","input":"_4_2_1_+_K"},{"category":"_@","name":"Triple Sweep Kick","input":"_6_3_2_1_+_K"},{"category":"_*","name":"Mission Impossible","input":"_6_4_1_2_3_6_+^V"}]},{"name":"MARIE & KING","moves":[{"category":"_)","name":"Extended Bear Limb","input":"_6_+^G"},{"category":"_)","name":"Multi Extended Bear Limb","input":"_6_+^J"},{"category":"_)","name":"Bear Arm Drill","input":"_6_6_+^E"},{"category":"_)","name":"Bear Leg Drill","input":"_6_6_+^H"},{"category":"_)","name":"Frontal Slide: Knockdown","input":"_6_6_+^G"},{"category":"_)","name":"Frontal Slide: Multi-hit","input":"_6_6_+^J"},{"category":"_@","name":"Teddy Transform","input":"_2_3_6_+_P"},{"category":"_@","name":"Honeypot Grab","input":"_4_1_2_3_6_+_P"},{"category":"_@","name":"Beatdown close","input":"_6_3_2_1_4_+_P"},{"category":"_*","name":"Teddy Rainstorm","input":"_2_3_6_+^W"}]},{"name":"CHIBIKO","moves":[{"category":"_)","name":"Forward Tumble","input":"_4 / _6_+^G"},{"category":"_)","name":"Forward Leg Spring","input":"_4 / _6_+^J"},{"category":"_)","name":"Falling Shove","input":"_6_6_+^G"},{"category":"_)","name":"Banana Peel Slip","input":"_6_6_+^J"},{"category":"_)","name":"Gradual Descend","input":"_^^*^E"},{"category":"_)","name":"Skybomber","input":"_^_2_+^E"},{"category":"_)","name":"Forward Fall","input":"_^_2_+^G"},{"category":"_@","name":"Jumprope Assault","input":"(_^)^*_K"},{"category":"_@","name":"Dodge Ball","input":"_2_3_6_+_P"},{"category":"_@","name":"Rising Current","input":"(_^)_6_2_3_+_P"},{"category":"_@","name":"Spike!","input":"_^_2_3_6_+_P"},{"category":"_*","name":"Super Chibiko-Dama","input":"_2_3_6_2_3_6_+^W"}]},{"name":"MYSTERIOUS POWER","moves":[{"category":"_)","name":"Hop Double Fist Smash","input":"_4 / _6_+^G"},{"category":"_)","name":"Spin Hook Kick","input":"_4 / _6_+^J"},{"category":"_)","name":"Flying Foot Shove","input":"_6_6_+^J"},{"category":"_)","name":"Angled Face Kick","input":"_^_2_+^J"},{"category":"_@","name":"Mysterious Bubble: Elec Bubble","input":"(_^)_2_3_6_+^E"},{"category":"_@","name":"Mysterious Bubble: Capture Bubble","input":"(_^)_2_3_6_+^G"},{"category":"_@","name":"Mysterious Snap","input":"_6_2_3_+_P"},{"category":"_@","name":"Dynamite Swing close","input":"_6_3_2_1_4_+_P"},{"category":"_*","name":"\"It's Showtime!\"","input":"_6_4_1_2_3_6_+^W"}]}],"controlAbbr":{"^E":"LP","^G":"HP","^H":"LK","^J":"HK","_S":"ST"},"systemControlMappings":{"snes":{"y":"^G","x":"^E","b":"^J","a":"^H"},"genesis":{"y":"^G","b":"^E","c":"^J","a":"^H"},"megadrive":{"y":"^G","b":"^E","c":"^J","a":"^H"},"32x":{"y":"^G","b":"^E","c":"^J","a":"^H"},"saturn":{"y":"^G","b":"^E","c":"^J","a":"^H"},"psx":{"y":"^G","x":"^E","b":"^J","a":"^H"},"ps2":{"y":"^G","x":"^E","b":"^J","a":"^H"},"gb":{"b":"^G","a":"^J"},"gbc":{"b":"^G","a":"^J"},"gamegear":{"a":"^G","b":"^J"},"sms":{"a":"^G","b":"^J"},"gba":{"b":"^G","a":"^E","y":"^J","x":"^H"},"ngpc":{"b":"^G","a":"^E","y":"^J","x":"^H"}}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "tkdensho",
+    "tkdenshoa"
+  ],
+  "name": "Toukidenshou - Angel Eyes",
+  "year": 1996,
+  "manufacturer": "Tecmo",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "^E": "Weak Punch",
+    "^G": "Strong Punch",
+    "^H": "Weak Kick",
+    "^J": "Strong Kick",
+    "_S": "Start"
+  },
+  "controlGroups": {
+    "_P": [
+      "^E",
+      "^G"
+    ],
+    "_K": [
+      "^H",
+      "^J"
+    ]
+  },
+  "categories": {
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_*": "Emotion Moves",
+    "_`": "Emotion Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "(_^)_6_6"
+    },
+    {
+      "category": "_)",
+      "name": "Super Dash",
+      "input": "(_^)^V"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "(_^)_4_4"
+    },
+    {
+      "category": "_)",
+      "name": "4 Dan Jump",
+      "input": "_^_8_8_8"
+    },
+    {
+      "category": "_)",
+      "name": "Mid-air Halt",
+      "input": "_^^W"
+    }
+  ],
+  "characters": [
+    {
+      "name": "RAIYA",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Hop Sidekick",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Heel Launcher",
+          "input": "_4_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Flipkick",
+          "input": "^*_K"
+        },
+        {
+          "category": "_)",
+          "name": "Toe Tap Kick",
+          "input": "_^_2_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Angled Headkick",
+          "input": "_^_2_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Flipkick Super Dash",
+          "input": "^H^J^J"
+        },
+        {
+          "category": "_)",
+          "name": "Flipkick Super Dash",
+          "input": "^H_2_+^J_2_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Raiko Dan: Straight",
+          "input": "(_^)_2_3_6_+^E / ^H"
+        },
+        {
+          "category": "_@",
+          "name": "Raiko Dan: Angled Up",
+          "input": "(_^)_2_3_6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Raiko Dan: Angled Down",
+          "input": "(_^)_2_3_6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Lightning Tornado",
+          "input": "(_^)_6_2_3_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Goen Shin Kou Ha",
+          "input": "_2_3_6_2_3_6_+^W"
+        }
+      ]
+    },
+    {
+      "name": "REIKA",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Axe Kick",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Shove Elbow",
+          "input": "_6_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Double Flying Face Crescent",
+          "input": "_6_6_+^H^J"
+        },
+        {
+          "category": "_)",
+          "name": "Angled Punch",
+          "input": "_^_2_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Face Kick",
+          "input": "_^_2_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Mirage Kicks",
+          "input": "^*_K"
+        },
+        {
+          "category": "_@",
+          "name": "Blaze Punches",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Flame Smash",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Can-Can Kick",
+          "input": "_6_2_3_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Raging Bolt",
+          "input": "_^_2_1_4_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "PMS Firestreak",
+          "input": "_2_3_6_3_2_1_4_+^W"
+        }
+      ]
+    },
+    {
+      "name": "HIGHWAY STAR",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Gut Punch",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Gut Kick",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Axle Spin",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "High Speed Upper",
+          "input": "(_^)_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Rearview Reflector",
+          "input": "_6_3_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Crash Course close",
+          "input": "_6_3_2_1_4_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Highway Collision",
+          "input": "_6_4_1_2_3_6_+^V"
+        }
+      ]
+    },
+    {
+      "name": "KIRIKO",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Kunai Push",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Hop Crescent",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Kunai Shove",
+          "input": "_6_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Flipkick",
+          "input": "_6_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Downward Stab",
+          "input": "_^_2_+_P"
+        },
+        {
+          "category": "_)",
+          "name": "Overhead Kick",
+          "input": "_^_2_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Deathspin Kunai",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Ansatsu",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Kunoichi Vanish",
+          "input": "_2_2_+_P / _K"
+        },
+        {
+          "category": "_*",
+          "name": "Kunoichi Plunge",
+          "input": "_2_3_6_2_3_6_+^W"
+        }
+      ]
+    },
+    {
+      "name": "LINA",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Jab Elbow",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Hook Punch",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Straight Mid Kick",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Dashing Knee",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Across Screen Slam",
+          "input": "_6_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Hopping Knee",
+          "input": "_6_6_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Convict Kick",
+          "input": "_6_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Angled Punch",
+          "input": "_^_2_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Double Sided Axe Kick",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Rocket Upper",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Heelkick Headbutt",
+          "input": "_4_2_1_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Triple Sweep Kick",
+          "input": "_6_3_2_1_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Mission Impossible",
+          "input": "_6_4_1_2_3_6_+^V"
+        }
+      ]
+    },
+    {
+      "name": "MARIE & KING",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Extended Bear Limb",
+          "input": "_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Multi Extended Bear Limb",
+          "input": "_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Bear Arm Drill",
+          "input": "_6_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Bear Leg Drill",
+          "input": "_6_6_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Frontal Slide: Knockdown",
+          "input": "_6_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Frontal Slide: Multi-hit",
+          "input": "_6_6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Teddy Transform",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Honeypot Grab",
+          "input": "_4_1_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Beatdown close",
+          "input": "_6_3_2_1_4_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Teddy Rainstorm",
+          "input": "_2_3_6_+^W"
+        }
+      ]
+    },
+    {
+      "name": "CHIBIKO",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Forward Tumble",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Forward Leg Spring",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Falling Shove",
+          "input": "_6_6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Banana Peel Slip",
+          "input": "_6_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Gradual Descend",
+          "input": "_^^*^E"
+        },
+        {
+          "category": "_)",
+          "name": "Skybomber",
+          "input": "_^_2_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Forward Fall",
+          "input": "_^_2_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Jumprope Assault",
+          "input": "(_^)^*_K"
+        },
+        {
+          "category": "_@",
+          "name": "Dodge Ball",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Rising Current",
+          "input": "(_^)_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Spike!",
+          "input": "_^_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Super Chibiko-Dama",
+          "input": "_2_3_6_2_3_6_+^W"
+        }
+      ]
+    },
+    {
+      "name": "MYSTERIOUS POWER",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Hop Double Fist Smash",
+          "input": "_4 / _6_+^G"
+        },
+        {
+          "category": "_)",
+          "name": "Spin Hook Kick",
+          "input": "_4 / _6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Flying Foot Shove",
+          "input": "_6_6_+^J"
+        },
+        {
+          "category": "_)",
+          "name": "Angled Face Kick",
+          "input": "_^_2_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Mysterious Bubble: Elec Bubble",
+          "input": "(_^)_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Mysterious Bubble: Capture Bubble",
+          "input": "(_^)_2_3_6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Mysterious Snap",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Dynamite Swing close",
+          "input": "_6_3_2_1_4_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "\"It's Showtime!\"",
+          "input": "_6_4_1_2_3_6_+^W"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "^E": "LP",
+    "^G": "HP",
+    "^H": "LK",
+    "^J": "HK",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "^G",
+      "x": "^E",
+      "b": "^J",
+      "a": "^H"
+    },
+    "genesis": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "megadrive": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "32x": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "saturn": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "psx": {
+      "y": "^G",
+      "x": "^E",
+      "b": "^J",
+      "a": "^H"
+    },
+    "ps2": {
+      "y": "^G",
+      "x": "^E",
+      "b": "^J",
+      "a": "^H"
+    },
+    "gb": {
+      "b": "^G",
+      "a": "^J"
+    },
+    "gbc": {
+      "b": "^G",
+      "a": "^J"
+    },
+    "gamegear": {
+      "a": "^G",
+      "b": "^J"
+    },
+    "sms": {
+      "a": "^G",
+      "b": "^J"
+    },
+    "gba": {
+      "b": "^G",
+      "a": "^E",
+      "y": "^J",
+      "x": "^H"
+    },
+    "ngpc": {
+      "b": "^G",
+      "a": "^E",
+      "y": "^J",
+      "x": "^H"
+    }
+  }
+}

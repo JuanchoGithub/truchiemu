@@ -1,1 +1,940 @@
-{"schemaVersion":2,"romIds":["batcir","batcira","batcirj"],"name":"Battle Circuit","year":1997,"manufacturer":"Capcom","credits":"Fabricio Coroquer","controls":{"_A":"Attack","_B":"Jump","_S":"Start"},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves","_#":"Special Ability","_*":"Desperation Moves","_&":"Super Desperation Move","_`":"Super Desperation Move"},"commonCommands":[{"category":"_)","name":"Run _? _? (same direction)"},{"category":"_)","name":"Pick Up Item close to item","input":"_A"}],"characters":[{"name":"CYBER BLUE","moves":[{"category":"_(","name":"Grab close","input":"_6"},{"category":"_(","name":"Punches","input":"_A_A_A"},{"category":"_(","name":"Jet Drag","input":"_4 / _6_+_A"},{"category":"_(","name":"Tornado","input":"_2_8_+_A"},{"category":"_(","name":"Release Enemy","input":"_B"},{"category":"_(","name":"Pick Off the Ground opponent knocked down","input":"_2"},{"category":"_(","name":"Gorilla Toss","input":"_A"},{"category":"_(","name":"Jumping Carry","input":"_B"},{"category":"_(","name":"Gorilla Toss","input":"_A"},{"category":"_)","name":"Straights","input":"_A_A_A"},{"category":"_)","name":"Flash Flip","input":"_A"},{"category":"_)","name":"Knuckle Shot","input":"_4 / _6_+_A"},{"category":"_)","name":"Jet Drag","input":"_2_+_A"},{"category":"_)","name":"Tornado","input":"_8_+_A"},{"category":"_)","name":"Jump Kick","input":"_B_A"},{"category":"_)","name":"Knee Blade","input":"_B_2_+_A"},{"category":"_)","name":"Reverse Boot dashing","input":"_A"},{"category":"_)","name":"Burning Heel Kick dashing","input":"_A (100 Coins)"},{"category":"_)","name":"Flying Kick dashing","input":"_B_A"},{"category":"_)","name":"Heat Kick dashing","input":"_B_A (200 Coins)"},{"category":"_@","name":"Knuckle Shot","input":"_6_+_A"},{"category":"_@","name":"Tornado","input":"_2_8_+_A"},{"category":"_@","name":"Hyper Tornado","input":"_2_8_+_A (50 Coins)"},{"category":"_@","name":"Cyber Blast","input":"_O_A for 1 second"},{"category":"_@","name":"Cyber Cannon","input":"_O_A for 2 seconds (500 Coins)"},{"category":"_#","name":"Power Up","input":"_^_A_+_B"},{"category":"_*","name":"Electric Crush","input":"_A_+_B"},{"category":"_*","name":"Giga Crush","input":"_A_+_B (300 Coins)"},{"category":"_&","name":"Static Shock with Yello Iris"},{"category":"_&","name":"Rock Tumble with Alien Green"},{"category":"_&","name":"Meteor Shower with Pink Ostrich"},{"category":"_&","name":"Lightning Towers with Captain Silver"}]},{"name":"YELLOW IRIS","moves":[{"category":"_(","name":"Grab close","input":"_6"},{"category":"_(","name":"Cat Scratchs","input":"_A_A_A"},{"category":"_(","name":"Ground Direct","input":"_4 / _6_+_A"},{"category":"_(","name":"Aerial Scratch","input":"_2_8_+_A"},{"category":"_(","name":"Mirage Dance","input":"_2_3_6_+_A (300 Coins)"},{"category":"_(","name":"Release Enemy","input":"_B"},{"category":"_(","name":"Pick Off the Ground opponent knocked down","input":"_2"},{"category":"_(","name":"Fin Toss","input":"_A"},{"category":"_(","name":"Jumping Carry","input":"_B"},{"category":"_(","name":"Fin Toss","input":"_A"},{"category":"_)","name":"Reach Punches","input":"_A_A_A"},{"category":"_)","name":"Swift Roundhouse","input":"_A"},{"category":"_)","name":"Ground Direct","input":"_2_+_A"},{"category":"_)","name":"Aerial Scratch","input":"_8_+_A"},{"category":"_)","name":"Clawed Foot","input":"_B_A"},{"category":"_)","name":"Double Knee Drop","input":"_B_2_+_A"},{"category":"_)","name":"Front Flip dashing","input":"_A"},{"category":"_)","name":"Flying Clawed Foot dashing","input":"_B_A"},{"category":"_)","name":"Triangle Shot dashing","input":"_B_A (100 Coins)"},{"category":"_)","name":"Wall Jump jump against the wall","input":"_B"},{"category":"_)","name":"Clawed Foot","input":"_A"},{"category":"_)","name":"Double Knee Drop","input":"_2_+_A"},{"category":"_@","name":"Whip","input":"_6_+_A"},{"category":"_@","name":"Whip Rush","input":"_6_+^*_A (50 Coins)"},{"category":"_@","name":"Aerial Scratch","input":"_2_8_+_A"},{"category":"_@","name":"Aerial Dance","input":"_2_8_+^*_A (200 Coins)"},{"category":"_@","name":"Fin Attack","input":"_O_A for 1 second"},{"category":"_@","name":"Fin Special","input":"_O_A for 2 seconds (500 Coins)"},{"category":"_#","name":"Speed Up","input":"_^_A_+_B"},{"category":"_*","name":"Beauty Rose","input":"_A_+_B"},{"category":"_&","name":"Static Shock with Cyber Blue"},{"category":"_&","name":"Tornado Winds with Alien Green"},{"category":"_&","name":"Ground Eruption with Pink Ostrich"},{"category":"_&","name":"Ice Storm with Captain Silver"}]},{"name":"ALIEN GREEN","moves":[{"category":"_(","name":"Grab close","input":"_6"},{"category":"_(","name":"Vicious Bites","input":"_A_A_A"},{"category":"_(","name":"Multi Slam","input":"_4 / _6_+_A"},{"category":"_(","name":"Alien Twister","input":"_2_3_6_+_A (50 Coins)"},{"category":"_(","name":"Alien Magic","input":"_x_+_A","condition":"100 Coins"},{"category":"_(","name":"Jump Grapple","input":"_B"},{"category":"_(","name":"Deadly Powerbomb","input":"_A"},{"category":"_(","name":"Pick Off the Ground opponent knocked down","input":"_2"},{"category":"_(","name":"Gorilla Toss","input":"_A"},{"category":"_(","name":"Jumping Carry","input":"_B"},{"category":"_(","name":"Gorilla Toss","input":"_A"},{"category":"_)","name":"Plant Punches","input":"_A_A_A"},{"category":"_)","name":"Plant Uppercut","input":"_A"},{"category":"_)","name":"Quick Slam","input":"_2_+_A"},{"category":"_)","name":"Root Stab","input":"_B_A"},{"category":"_)","name":"Planting","input":"_B_2_+_A"},{"category":"_)","name":"Plant Uppercut dashing","input":"_A"},{"category":"_)","name":"Flying Root Stab dashing","input":"_B_A"},{"category":"_@","name":"Vine Grab","input":"_6_+_A"},{"category":"_@","name":"Green Cyclone","input":"_2_3_6_+_A (200 Coins)"},{"category":"_@","name":"Poison Gas","input":"_O_A for 1 second"},{"category":"_@","name":"Honey Bee Attack","input":"_O_A for 2 seconds (500 Coins)"},{"category":"_#","name":"Vitality Up","input":"_^_A_+_B"},{"category":"_#","name":"Healing Plus","input":"_^_A_+_B (300 Coins)"},{"category":"_*","name":"Plant Frenzy","input":"_A_+_B"},{"category":"_&","name":"Rock Tumble with Cyber Blue"},{"category":"_&","name":"Tornado Winds with Yellow Iris"},{"category":"_&","name":"Floor Burst with Pink Ostrich"},{"category":"_&","name":"Ice Burst with Captain Silver"}]},{"name":"PINK OSTRICH","moves":[{"category":"_(","name":"Grab close","input":"_6"},{"category":"_(","name":"Club Strikes","input":"_A_A_A"},{"category":"_(","name":"Beak Toss","input":"_4 / _6_+_A"},{"category":"_(","name":"Rising Ostrich Kick","input":"_2_8_+_A"},{"category":"_(","name":"Sky Peck","input":"^*_A"},{"category":"_(","name":"Release Enemy","input":"_B"},{"category":"_(","name":"Pick Off the Ground opponent knocked down","input":"_2"},{"category":"_(","name":"Gorilla Toss","input":"_A"},{"category":"_(","name":"Jumping Carry","input":"_B"},{"category":"_(","name":"Gorilla Toss","input":"_A"},{"category":"_)","name":"Beak Pecks","input":"_A_A_A"},{"category":"_)","name":"Dropkick","input":"_A"},{"category":"_)","name":"Beak Toss","input":"_2_+_A"},{"category":"_)","name":"Sharp Kick","input":"_B_A"},{"category":"_)","name":"Head Scratch","input":"_B_2_+_A"},{"category":"_)","name":"Pinky Ball","input":"_B_2_+_B (500 Coins)"},{"category":"_)","name":"Side Kick dashing","input":"_A"},{"category":"_)","name":"Flying Sharp Kick dashing","input":"_B_A"},{"category":"_@","name":"Double Jump","input":"_B_B"},{"category":"_@","name":"Feather Bomber","input":"_A"},{"category":"_@","name":"Triple Feather","input":"_A (300 Coins)"},{"category":"_@","name":"Levitate","input":"_B_8_+_B"},{"category":"_@","name":"Fly Around _?"},{"category":"_@","name":"Stomp Scratching","input":"_A"},{"category":"_@","name":"Sky Capture","input":"_B (200 Coins)"},{"category":"_@","name":"Air Peck Toss","input":"_^ close _A"},{"category":"_@","name":"Rising Ostrich Kick","input":"_2_8_+_A"},{"category":"_@","name":"Sky Peck","input":"^*_A"},{"category":"_@","name":"Sonic Spin","input":"_2_8_+_A (100 Coins)"},{"category":"_@","name":"Fire Arrow","input":"_O_A for 1 second"},{"category":"_@","name":"Burning Arrow","input":"_O_A for 1 second (50 Coins)"},{"category":"_@","name":"Fire Arrow Wave","input":"_O_A for 2 seconds"},{"category":"_@","name":"Burning Arrow Wave","input":"_O_A for 2 seconds (Buy Burning Arrow)"},{"category":"_#","name":"Death Blow","input":"_^_A_+_B"},{"category":"_*","name":"Ostrich Cyclone","input":"_A_+_B"},{"category":"_*","name":"Move _?"},{"category":"_&","name":"Meteor Shower with Cyber Blue"},{"category":"_&","name":"Ground Eruption with Yellow Iris"},{"category":"_&","name":"Floor Burst with Alien Green"},{"category":"_&","name":"Air Raid with Captain Silver"}]},{"name":"CAPTAIN SILVER","moves":[{"category":"_(","name":"Grab close","input":"_6"},{"category":"_(","name":"Stretch Headbutts","input":"_A_A_A"},{"category":"_(","name":"Cannon Blast","input":"_4 / _6_+_A"},{"category":"_(","name":"Slash Upper","input":"_2_8_+_A"},{"category":"_(","name":"Release Enemy","input":"_B"},{"category":"_(","name":"Pick Off the Ground opponent knocked down","input":"_2"},{"category":"_(","name":"One Arm Toss","input":"_A"},{"category":"_(","name":"Jumping Carry","input":"_B"},{"category":"_(","name":"One Arm Toss","input":"_A"},{"category":"_)","name":"Curve Punches","input":"_A_A_A"},{"category":"_)","name":"Sharp Stab","input":"_A"},{"category":"_)","name":"Blast Off","input":"_4 / _6_+_A"},{"category":"_)","name":"Jump Kick","input":"_B_A"},{"category":"_)","name":"Eagle Claw","input":"_B_2_+_A"},{"category":"_)","name":"Rolling Crush","input":"_B_2_+_B (200 Coins)"},{"category":"_)","name":"Silver Rush dashing","input":"_A"},{"category":"_)","name":"Silver Wind dashing","input":"^*_A (50 Coins)"},{"category":"_)","name":"Quad Blade dashing","input":"_B_A"},{"category":"_@","name":"Rocky Cutter","input":"_6_+_A"},{"category":"_@","name":"Slash Upper","input":"_2_8_+_A"},{"category":"_@","name":"Slash Stream","input":"_2_8_+^*_A (100 Coins)"},{"category":"_@","name":"Blast Off","input":"_2_3_6_+_A"},{"category":"_@","name":"Freeze Spear","input":"_O_A for 1 second"},{"category":"_@","name":"Freeze Laser","input":"_O_A for 2 seconds (300 Coins)"},{"category":"_@","name":"Freeze Storm","input":"_O_A for 3 seconds (500 Coins)"},{"category":"_#","name":"Defense Up","input":"_^_A_+_B"},{"category":"_*","name":"Dopple Freezer","input":"_A_+_B"},{"category":"_&","name":"Lightning Towers with Cyber Blue"},{"category":"_&","name":"Ice Storm with Yellow Iris"},{"category":"_&","name":"Ice Burst with Alien Green"},{"category":"_&","name":"Air Raid with Pink Ostrich"}]}],"controlAbbr":{"_A":"AT","_B":"JM","_S":"ST"},"systemControlMappings":{"snes":{"y":"_A","b":"_B"},"genesis":{"b":"_A","a":"_B"},"megadrive":{"b":"_A","a":"_B"},"32x":{"b":"_A","c":"_B"},"saturn":{"b":"_A","a":"_B"},"psx":{"y":"_A","b":"_B"},"ps2":{"y":"_A","b":"_B"},"gb":{"b":"_A","a":"_B"},"gbc":{"b":"_A","a":"_B"},"gamegear":{"a":"_A","b":"_B"},"sms":{"a":"_A","b":"_B"},"gba":{"b":"_A","a":"_B"},"ngpc":{"b":"_A","a":"_B"}},"controlGroups":{"_P":["_A"],"_K":["_B"]}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "batcir",
+    "batcira",
+    "batcirj"
+  ],
+  "name": "Battle Circuit",
+  "year": 1997,
+  "manufacturer": "Capcom",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "_A": "Attack",
+    "_B": "Jump",
+    "_S": "Start"
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_#": "Special Ability",
+    "_*": "Desperation Moves",
+    "_&": "Super Desperation Move",
+    "_`": "Super Desperation Move"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Run _? _? (same direction)"
+    },
+    {
+      "category": "_)",
+      "name": "Pick Up Item close to item",
+      "input": "_A"
+    }
+  ],
+  "characters": [
+    {
+      "name": "CYBER BLUE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6"
+        },
+        {
+          "category": "_(",
+          "name": "Punches",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_(",
+          "name": "Jet Drag",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Tornado",
+          "input": "_2_8_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Release Enemy",
+          "input": "_B"
+        },
+        {
+          "category": "_(",
+          "name": "Pick Off the Ground opponent knocked down",
+          "input": "_2"
+        },
+        {
+          "category": "_(",
+          "name": "Gorilla Toss",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Jumping Carry",
+          "input": "_B"
+        },
+        {
+          "category": "_(",
+          "name": "Gorilla Toss",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Straights",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Flash Flip",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Knuckle Shot",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Jet Drag",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Tornado",
+          "input": "_8_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Jump Kick",
+          "input": "_B_A"
+        },
+        {
+          "category": "_)",
+          "name": "Knee Blade",
+          "input": "_B_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Reverse Boot dashing",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Burning Heel Kick dashing",
+          "input": "_A (100 Coins)"
+        },
+        {
+          "category": "_)",
+          "name": "Flying Kick dashing",
+          "input": "_B_A"
+        },
+        {
+          "category": "_)",
+          "name": "Heat Kick dashing",
+          "input": "_B_A (200 Coins)"
+        },
+        {
+          "category": "_@",
+          "name": "Knuckle Shot",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Tornado",
+          "input": "_2_8_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Hyper Tornado",
+          "input": "_2_8_+_A (50 Coins)"
+        },
+        {
+          "category": "_@",
+          "name": "Cyber Blast",
+          "input": "_O_A for 1 second"
+        },
+        {
+          "category": "_@",
+          "name": "Cyber Cannon",
+          "input": "_O_A for 2 seconds (500 Coins)"
+        },
+        {
+          "category": "_#",
+          "name": "Power Up",
+          "input": "_^_A_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Electric Crush",
+          "input": "_A_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Giga Crush",
+          "input": "_A_+_B (300 Coins)"
+        },
+        {
+          "category": "_&",
+          "name": "Static Shock with Yello Iris"
+        },
+        {
+          "category": "_&",
+          "name": "Rock Tumble with Alien Green"
+        },
+        {
+          "category": "_&",
+          "name": "Meteor Shower with Pink Ostrich"
+        },
+        {
+          "category": "_&",
+          "name": "Lightning Towers with Captain Silver"
+        }
+      ]
+    },
+    {
+      "name": "YELLOW IRIS",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6"
+        },
+        {
+          "category": "_(",
+          "name": "Cat Scratchs",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_(",
+          "name": "Ground Direct",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Aerial Scratch",
+          "input": "_2_8_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Mirage Dance",
+          "input": "_2_3_6_+_A (300 Coins)"
+        },
+        {
+          "category": "_(",
+          "name": "Release Enemy",
+          "input": "_B"
+        },
+        {
+          "category": "_(",
+          "name": "Pick Off the Ground opponent knocked down",
+          "input": "_2"
+        },
+        {
+          "category": "_(",
+          "name": "Fin Toss",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Jumping Carry",
+          "input": "_B"
+        },
+        {
+          "category": "_(",
+          "name": "Fin Toss",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Reach Punches",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Swift Roundhouse",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Ground Direct",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Aerial Scratch",
+          "input": "_8_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Clawed Foot",
+          "input": "_B_A"
+        },
+        {
+          "category": "_)",
+          "name": "Double Knee Drop",
+          "input": "_B_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Front Flip dashing",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Flying Clawed Foot dashing",
+          "input": "_B_A"
+        },
+        {
+          "category": "_)",
+          "name": "Triangle Shot dashing",
+          "input": "_B_A (100 Coins)"
+        },
+        {
+          "category": "_)",
+          "name": "Wall Jump jump against the wall",
+          "input": "_B"
+        },
+        {
+          "category": "_)",
+          "name": "Clawed Foot",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Double Knee Drop",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Whip",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Whip Rush",
+          "input": "_6_+^*_A (50 Coins)"
+        },
+        {
+          "category": "_@",
+          "name": "Aerial Scratch",
+          "input": "_2_8_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Aerial Dance",
+          "input": "_2_8_+^*_A (200 Coins)"
+        },
+        {
+          "category": "_@",
+          "name": "Fin Attack",
+          "input": "_O_A for 1 second"
+        },
+        {
+          "category": "_@",
+          "name": "Fin Special",
+          "input": "_O_A for 2 seconds (500 Coins)"
+        },
+        {
+          "category": "_#",
+          "name": "Speed Up",
+          "input": "_^_A_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Beauty Rose",
+          "input": "_A_+_B"
+        },
+        {
+          "category": "_&",
+          "name": "Static Shock with Cyber Blue"
+        },
+        {
+          "category": "_&",
+          "name": "Tornado Winds with Alien Green"
+        },
+        {
+          "category": "_&",
+          "name": "Ground Eruption with Pink Ostrich"
+        },
+        {
+          "category": "_&",
+          "name": "Ice Storm with Captain Silver"
+        }
+      ]
+    },
+    {
+      "name": "ALIEN GREEN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6"
+        },
+        {
+          "category": "_(",
+          "name": "Vicious Bites",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_(",
+          "name": "Multi Slam",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Alien Twister",
+          "input": "_2_3_6_+_A (50 Coins)"
+        },
+        {
+          "category": "_(",
+          "name": "Alien Magic",
+          "input": "_x_+_A",
+          "condition": "100 Coins"
+        },
+        {
+          "category": "_(",
+          "name": "Jump Grapple",
+          "input": "_B"
+        },
+        {
+          "category": "_(",
+          "name": "Deadly Powerbomb",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Pick Off the Ground opponent knocked down",
+          "input": "_2"
+        },
+        {
+          "category": "_(",
+          "name": "Gorilla Toss",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Jumping Carry",
+          "input": "_B"
+        },
+        {
+          "category": "_(",
+          "name": "Gorilla Toss",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Plant Punches",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Plant Uppercut",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Quick Slam",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Root Stab",
+          "input": "_B_A"
+        },
+        {
+          "category": "_)",
+          "name": "Planting",
+          "input": "_B_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Plant Uppercut dashing",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Flying Root Stab dashing",
+          "input": "_B_A"
+        },
+        {
+          "category": "_@",
+          "name": "Vine Grab",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Green Cyclone",
+          "input": "_2_3_6_+_A (200 Coins)"
+        },
+        {
+          "category": "_@",
+          "name": "Poison Gas",
+          "input": "_O_A for 1 second"
+        },
+        {
+          "category": "_@",
+          "name": "Honey Bee Attack",
+          "input": "_O_A for 2 seconds (500 Coins)"
+        },
+        {
+          "category": "_#",
+          "name": "Vitality Up",
+          "input": "_^_A_+_B"
+        },
+        {
+          "category": "_#",
+          "name": "Healing Plus",
+          "input": "_^_A_+_B (300 Coins)"
+        },
+        {
+          "category": "_*",
+          "name": "Plant Frenzy",
+          "input": "_A_+_B"
+        },
+        {
+          "category": "_&",
+          "name": "Rock Tumble with Cyber Blue"
+        },
+        {
+          "category": "_&",
+          "name": "Tornado Winds with Yellow Iris"
+        },
+        {
+          "category": "_&",
+          "name": "Floor Burst with Pink Ostrich"
+        },
+        {
+          "category": "_&",
+          "name": "Ice Burst with Captain Silver"
+        }
+      ]
+    },
+    {
+      "name": "PINK OSTRICH",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6"
+        },
+        {
+          "category": "_(",
+          "name": "Club Strikes",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_(",
+          "name": "Beak Toss",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Rising Ostrich Kick",
+          "input": "_2_8_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Sky Peck",
+          "input": "^*_A"
+        },
+        {
+          "category": "_(",
+          "name": "Release Enemy",
+          "input": "_B"
+        },
+        {
+          "category": "_(",
+          "name": "Pick Off the Ground opponent knocked down",
+          "input": "_2"
+        },
+        {
+          "category": "_(",
+          "name": "Gorilla Toss",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Jumping Carry",
+          "input": "_B"
+        },
+        {
+          "category": "_(",
+          "name": "Gorilla Toss",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Beak Pecks",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Dropkick",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Beak Toss",
+          "input": "_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Sharp Kick",
+          "input": "_B_A"
+        },
+        {
+          "category": "_)",
+          "name": "Head Scratch",
+          "input": "_B_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Pinky Ball",
+          "input": "_B_2_+_B (500 Coins)"
+        },
+        {
+          "category": "_)",
+          "name": "Side Kick dashing",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Flying Sharp Kick dashing",
+          "input": "_B_A"
+        },
+        {
+          "category": "_@",
+          "name": "Double Jump",
+          "input": "_B_B"
+        },
+        {
+          "category": "_@",
+          "name": "Feather Bomber",
+          "input": "_A"
+        },
+        {
+          "category": "_@",
+          "name": "Triple Feather",
+          "input": "_A (300 Coins)"
+        },
+        {
+          "category": "_@",
+          "name": "Levitate",
+          "input": "_B_8_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Fly Around _?"
+        },
+        {
+          "category": "_@",
+          "name": "Stomp Scratching",
+          "input": "_A"
+        },
+        {
+          "category": "_@",
+          "name": "Sky Capture",
+          "input": "_B (200 Coins)"
+        },
+        {
+          "category": "_@",
+          "name": "Air Peck Toss",
+          "input": "_^ close _A"
+        },
+        {
+          "category": "_@",
+          "name": "Rising Ostrich Kick",
+          "input": "_2_8_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Sky Peck",
+          "input": "^*_A"
+        },
+        {
+          "category": "_@",
+          "name": "Sonic Spin",
+          "input": "_2_8_+_A (100 Coins)"
+        },
+        {
+          "category": "_@",
+          "name": "Fire Arrow",
+          "input": "_O_A for 1 second"
+        },
+        {
+          "category": "_@",
+          "name": "Burning Arrow",
+          "input": "_O_A for 1 second (50 Coins)"
+        },
+        {
+          "category": "_@",
+          "name": "Fire Arrow Wave",
+          "input": "_O_A for 2 seconds"
+        },
+        {
+          "category": "_@",
+          "name": "Burning Arrow Wave",
+          "input": "_O_A for 2 seconds (Buy Burning Arrow)"
+        },
+        {
+          "category": "_#",
+          "name": "Death Blow",
+          "input": "_^_A_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Ostrich Cyclone",
+          "input": "_A_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Move _?"
+        },
+        {
+          "category": "_&",
+          "name": "Meteor Shower with Cyber Blue"
+        },
+        {
+          "category": "_&",
+          "name": "Ground Eruption with Yellow Iris"
+        },
+        {
+          "category": "_&",
+          "name": "Floor Burst with Alien Green"
+        },
+        {
+          "category": "_&",
+          "name": "Air Raid with Captain Silver"
+        }
+      ]
+    },
+    {
+      "name": "CAPTAIN SILVER",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Grab close",
+          "input": "_6"
+        },
+        {
+          "category": "_(",
+          "name": "Stretch Headbutts",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_(",
+          "name": "Cannon Blast",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Slash Upper",
+          "input": "_2_8_+_A"
+        },
+        {
+          "category": "_(",
+          "name": "Release Enemy",
+          "input": "_B"
+        },
+        {
+          "category": "_(",
+          "name": "Pick Off the Ground opponent knocked down",
+          "input": "_2"
+        },
+        {
+          "category": "_(",
+          "name": "One Arm Toss",
+          "input": "_A"
+        },
+        {
+          "category": "_(",
+          "name": "Jumping Carry",
+          "input": "_B"
+        },
+        {
+          "category": "_(",
+          "name": "One Arm Toss",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Curve Punches",
+          "input": "_A_A_A"
+        },
+        {
+          "category": "_)",
+          "name": "Sharp Stab",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Blast Off",
+          "input": "_4 / _6_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Jump Kick",
+          "input": "_B_A"
+        },
+        {
+          "category": "_)",
+          "name": "Eagle Claw",
+          "input": "_B_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Rolling Crush",
+          "input": "_B_2_+_B (200 Coins)"
+        },
+        {
+          "category": "_)",
+          "name": "Silver Rush dashing",
+          "input": "_A"
+        },
+        {
+          "category": "_)",
+          "name": "Silver Wind dashing",
+          "input": "^*_A (50 Coins)"
+        },
+        {
+          "category": "_)",
+          "name": "Quad Blade dashing",
+          "input": "_B_A"
+        },
+        {
+          "category": "_@",
+          "name": "Rocky Cutter",
+          "input": "_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Slash Upper",
+          "input": "_2_8_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Slash Stream",
+          "input": "_2_8_+^*_A (100 Coins)"
+        },
+        {
+          "category": "_@",
+          "name": "Blast Off",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Freeze Spear",
+          "input": "_O_A for 1 second"
+        },
+        {
+          "category": "_@",
+          "name": "Freeze Laser",
+          "input": "_O_A for 2 seconds (300 Coins)"
+        },
+        {
+          "category": "_@",
+          "name": "Freeze Storm",
+          "input": "_O_A for 3 seconds (500 Coins)"
+        },
+        {
+          "category": "_#",
+          "name": "Defense Up",
+          "input": "_^_A_+_B"
+        },
+        {
+          "category": "_*",
+          "name": "Dopple Freezer",
+          "input": "_A_+_B"
+        },
+        {
+          "category": "_&",
+          "name": "Lightning Towers with Cyber Blue"
+        },
+        {
+          "category": "_&",
+          "name": "Ice Storm with Yellow Iris"
+        },
+        {
+          "category": "_&",
+          "name": "Ice Burst with Alien Green"
+        },
+        {
+          "category": "_&",
+          "name": "Air Raid with Pink Ostrich"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_A": "AT",
+    "_B": "JM",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_A",
+      "b": "_B"
+    },
+    "genesis": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "megadrive": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "32x": {
+      "b": "_A",
+      "c": "_B"
+    },
+    "saturn": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "psx": {
+      "y": "_A",
+      "b": "_B"
+    },
+    "ps2": {
+      "y": "_A",
+      "b": "_B"
+    },
+    "gb": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gbc": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gamegear": {
+      "a": "_A",
+      "b": "_B"
+    },
+    "sms": {
+      "a": "_A",
+      "b": "_B"
+    },
+    "gba": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "ngpc": {
+      "b": "_A",
+      "a": "_B"
+    }
+  },
+  "controlGroups": {
+    "_P": [
+      "_A"
+    ],
+    "_K": [
+      "_B"
+    ]
+  }
+}

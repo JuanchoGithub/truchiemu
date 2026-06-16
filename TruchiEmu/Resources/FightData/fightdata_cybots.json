@@ -1,1 +1,1768 @@
-{"schemaVersion":2,"romIds":["cybots","cybotsj","cybotsu"],"name":"Cyberbots: Fullmetal Madness","year":1995,"manufacturer":"Capcom","credits":"Fabricio Coroquer","controls":{"_B":"Boost","_S":"Start"},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves","_#":"Weapon Moves","_*":"Cyber EX","_`":"Cyber EX"},"commonCommands":[{"category":"_)","name":"Dash","input":"_6_6 / _B","condition":"─"},{"category":"_)","name":"Long Dash","input":"_6^6 / _O_B","condition":"─"},{"category":"_)","name":"Retreat","input":"_4_4 / _4_+_B","condition":"─"},{"category":"_)","name":"Long Retreat","input":"_4^4 / _4_+_O_B","condition":"─"},{"category":"_)","name":"Air Dash","input":"_^_6_+_B","condition":"─"},{"category":"_)","name":"Air Retreat","input":"_^_4_+_B","condition":"─"},{"category":"_)","name":"Hover","input":"_^_B","condition":"─"},{"category":"_)","name":"Boost Climb","input":"_^_8_+_B","condition":"─"},{"category":"_)","name":"Slow Landing","input":"_^_2_+_B","condition":"─"},{"category":"_)","name":"Charge Super Gauge","input":"_O_a_+_b","condition":"─"},{"category":"_)","name":"Safe Fall being knocked down","input":"_B","condition":"─"},{"category":"_)","name":"Recover knocked down","input":"^4 / ^6","condition":"─"},{"category":"_)","name":"Giga Crush (FULL) _a_+_b","condition":"─"}],"characters":[{"name":"BLODIA (BX-02)","moves":[{"category":"_(","name":"Punching Bag","input":"_4 / _6_+_a","condition":"A"},{"category":"_(","input":"^!Direct Press                                                  _2_+_a_+_b","condition":"A"},{"category":"_(","name":"Overhead Toss","input":"_4 / _6_+_b","condition":"A"},{"category":"_(","name":"Pick Up and Toss opponent knocked down","input":"_4 / _6_+_a / _b","condition":"A"},{"category":"_)","name":"One-Two","condition":"A","input":"_a_a"},{"category":"_)","name":"Arc Sweep-Quick Pursuit","input":"_2_+_b","condition":"─"},{"category":"_)","input":"^!Quick Pursuit                                                 _8_+_a / _b","condition":"─"},{"category":"_)","name":"Knee Blades","input":"_^_2_+_b","condition":"─"},{"category":"_@","name":"Gatling Rod","input":"_2_1_4_+_a / _b","condition":"A"},{"category":"_@","name":"Break Shaft","input":"_4_1_2_3_6_+_a / _b","condition":"A"},{"category":"_@","name":"Full Metal Charge","input":"_6_2_3_+_a / _b","condition":"─"},{"category":"_@","name":"Direct Press close","input":"_6_3_+_b","condition":"A"},{"category":"_@","name":"Disassemble close","input":"_6_3_2_+_a / _b","condition":"A"},{"category":"_@","name":"Needle Press opponent knocked down","input":"_2_8_+_a / _b","condition":"─"},{"category":"_#","name":"BIT High Blast","input":"(_^)@W-button","condition":"─"},{"category":"_#","name":"BIT Low Blast","input":"_2_+@W-button","condition":"─"},{"category":"_#","name":"BIT Upward Blast","input":"_6_+@W-button","condition":"─"},{"category":"_#","name":"BIT Downward Air Blast","input":"_^_2_+@W-button","condition":"─"},{"category":"_#","name":"BIT Upward Air Blast","input":"_^_8_+@W-button","condition":"─"},{"category":"_*","name":"Planet Smasher","input":"_2_3_6_2_3_6_+_a / _b","condition":"A"}],"notes":["BLODIA TYPE"]},{"name":"SWORDMAN (BX-045)","moves":[{"category":"_(","name":"Death Cutter","input":"_4 / _6_+_a","condition":"A"},{"category":"_(","name":"Overhead Toss","input":"_4 / _6_+_b","condition":"A"},{"category":"_)","name":"Down-Side-Sky Slash","condition":"A","input":"_a_a_b"},{"category":"_)","name":"Down-Sky Slash","condition":"A","input":"_a_b"},{"category":"_)","name":"Default E Slicer dashing","input":"_2_+_a","condition":"─"},{"category":"_)","name":"Giant Drill","input":"_^_2_+_b","condition":"─"},{"category":"_@","name":"G Splasher","input":"_2_3_6_+_a / _b","condition":"─"},{"category":"_@","name":"Slay Sword","input":"_6_3_2_1_4_+_a / _b (_O)","condition":"A"},{"category":"_@","name":"Photon Splash","input":"(_^)_4_2_1_+_a / _b","condition":"─"},{"category":"_@","name":"Verticle Gears","input":"_2_8_+_b","condition":"─"},{"category":"_#","name":"Mid Trap Launcher @W-button","condition":"─"},{"category":"_#","name":"Short Trap Launcher","input":"_2_+@W-button","condition":"─"},{"category":"_#","name":"Far Trap Launcher","input":"_^@W-button","condition":"─"},{"category":"_*","name":"Crescent Tornado","input":"_2_3_6_2_3_6_+_a / _b","condition":"A"}],"notes":["BLODIA TYPE"]},{"name":"RIOT (BX-075)","moves":[{"category":"_(","name":"Mighty Hand","input":"_4 / _6_+_b","condition":"A"},{"category":"_(","name":"Pick Up and Slam opponent knocked down","input":"_4 / _6_+_b","condition":"A"},{"category":"_)","name":"Landing","input":"_^_2_+_b","condition":"─"},{"category":"_@","name":"Dyna Blow","input":"(_^)_2_3_6_+_a / _b","condition":"A"},{"category":"_@","name":"Riot Strike","input":"(_^)_6_2_3_+_a / _b","condition":"─"},{"category":"_@","name":"Super Riot Strike","input":"(_^)_6_2_3_+_a_+_b","condition":"─"},{"category":"_@","name":"Flame Grip","input":"_4_2_1_+_a","condition":"A"},{"category":"_@","name":"Death Grip","input":"_4_2_1_+_b","condition":"A"},{"category":"_@","name":"Death Bolt","input":"_6_3_2_1_4_+_a / _b","condition":"─"},{"category":"_@","name":"Violent Squeeze close","input":"_6_3_2_+_a / _b","condition":"A"},{"category":"_#","name":"Pulse Laser Rain","input":"(_^)@W-button","condition":"─"},{"category":"_#","name":"Sky Pulse Laser","input":"_6_+@W-button","condition":"─"},{"category":"_#","name":"Ducking Pulse Laser","input":"_2_+@W-button","condition":"─"},{"category":"_*","name":"Gravitation Field","input":"_2_3_6_2_3_6_+_a / _b","condition":"─"}],"notes":["BLODIA TYPE"]},{"name":"REPTOS (RF-004)","moves":[{"category":"_(","name":"Punching Bag","input":"_4 / _6_+_a","condition":"A"},{"category":"_(","name":"Overhead Toss","input":"_4 / _6_+_b","condition":"A"},{"category":"_(","name":"Pick Up and Toss opponent knocked down","input":"_4 / _6_+_a / _b","condition":"A"},{"category":"_(","name":"Heavy Drop","input":"_^_4 / _6_+_a / _b","condition":"A"},{"category":"_)","name":"One-Two","condition":"A","input":"_a_a"},{"category":"_)","name":"Drill Blades","input":"_^_2_+_b","condition":"─"},{"category":"_@","name":"Violence Wind","input":"_4_1_2_3_6_+_a","condition":"─"},{"category":"_@","name":"Violence Winds","input":"_4_1_2_3_6_+_b","condition":"─"},{"category":"_@","name":"Risky Nail","input":"_6_2_3_+_a / _b","condition":"A"},{"category":"_@","name":"Satellite Force","input":"_2_1_4_+_a / _b / _a_+_b","condition":"A"},{"category":"_@","name":"Dunk close","input":"_2_2_+_a / _b","condition":"A"},{"category":"_@","name":"Disassemble close","input":"_6_3_2_+_a / _b","condition":"A"},{"category":"_#","name":"Thin Laser Cannon","input":"(_^)@W-button","condition":"─"},{"category":"_#","name":"Thick Laser Cannon","input":"(_^)_O@W-button","condition":"─"},{"category":"_#","name":"Thin Low Laser Cannon","input":"_2_+@W-button","condition":"─"},{"category":"_#","name":"Thick Low Laser Cannon","input":"_2_+_O@W-button","condition":"─"},{"category":"_*","name":"Full Verniern Hurricane","input":"_2_3_6_2_3_6_+_a / _b","condition":"─"}],"notes":["REPTOS TYPE"]},{"name":"LIGHTNING (RF-009)","moves":[{"category":"_(","name":"Shock Punch","input":"_4 / _6_+_a","condition":"A"},{"category":"_(","name":"Overhead Toss","input":"_4 / _6_+_b","condition":"A"},{"category":"_(","name":"Pick Up and Toss opponent knocked down","input":"_4 / _6_+_a / _b","condition":"A"},{"category":"_)","name":"Quick Shock-Punch","condition":"A","input":"_a_a"},{"category":"_)","name":"Upward Heavy Jolt","input":"_6_+_b","condition":"A"},{"category":"_)","name":"Giant Drill","input":"_^_2_+_b","condition":"─"},{"category":"_@","name":"Sparkle Laser","input":"_2_3_6_+_a","condition":"A"},{"category":"_@","name":"Upward Sparkle Laser","input":"_2_3_6_+_b","condition":"A"},{"category":"_@","name":"Rolling Gear","input":"(_^)^2_8_+_a / _b","condition":"─"},{"category":"_@","name":"Vertical Gear","input":"_2_8_+_b","condition":"─"},{"category":"_@","name":"Thunder Rain","input":"_2_2_+_a / _b","condition":"A"},{"category":"_@","name":"Disassemble close","input":"_6_3_2_+_a / _b","condition":"A"},{"category":"_#","name":"Missile Launcher","input":"(_^)@W-button","condition":"─"},{"category":"_#","name":"Ducking Missiles","input":"_2_+@W-button","condition":"─"},{"category":"_*","name":"Thunder Shaking","input":"_2_3_6_2_3_6_+_a / _b","condition":"A"}],"notes":["REPTOS TYPE"]},{"name":"JACKAL (RF-027)","moves":[{"category":"_(","name":"Cross Whip","input":"_4 / _6_+_a","condition":"A"},{"category":"_(","name":"Overhead Toss","input":"_4 / _6_+_b","condition":"A"},{"category":"_(","name":"Pick Up and Toss opponent knocked down","input":"_4 / _6_+_b","condition":"A"},{"category":"_)","name":"Whip Slash-Punch","condition":"A","input":"_a_a"},{"category":"_)","name":"Quad Spikes","input":"_^_2_+_b","condition":"─"},{"category":"_@","name":"Whip Sting","input":"^*_a / _b","condition":"─"},{"category":"_@","name":"Heat Grapple","input":"_2_3_6_+_a","condition":"A"},{"category":"_@","name":"High Heat Grapple","input":"_2_3_6_+_b","condition":"A"},{"category":"_@","name":"Dizzy Boomerang","input":"(_^)_2_1_4_+_a / _b","condition":"─"},{"category":"_@","name":"Jackal Stomp","input":"^2_8_+_a / _b","condition":"─"},{"category":"_@","name":"Disassemble close","input":"_6_3_2_+_a / _b","condition":"A"},{"category":"_#","name":"BIT High Blast","input":"(_^)@W-button","condition":"─"},{"category":"_#","name":"BIT Low Blast","input":"_2_+@W-button","condition":"─"},{"category":"_#","name":"BIT Upward Blast","input":"_6_+@W-button","condition":"─"},{"category":"_#","name":"BIT Downward Air Blast","input":"_^_2_+@W-button","condition":"─"},{"category":"_#","name":"BIT Upward Air Blast","input":"_^_8_+@W-button","condition":"─"},{"category":"_#","name":"Laser Screen High","input":"_2_3_6_+@W-button","condition":"─"},{"category":"_#","name":"Laser Screen Low","input":"_6_2_3_+@W-button","condition":"─"},{"category":"_*","name":"Assault Bits","input":"_2_3_6_2_3_6_+_a / _b","condition":"A"}],"notes":["REPTOS TYPE"]},{"name":"FORDY (FZ 100)","moves":[{"category":"_(","name":"Punching Bag","input":"_4 / _6_+_a","condition":"A"},{"category":"_(","name":"Overhead Toss","input":"_4 / _6_+_b","condition":"A"},{"category":"_(","name":"Pick Up and Toss opponent knocked down","input":"_4 / _6_+_a / _b","condition":"A"},{"category":"_)","name":"Punch-Quick Energy-Mega Upper","condition":"A","input":"_a_a_b"},{"category":"_)","name":"Punch-Mega Upper","condition":"A","input":"_a_b"},{"category":"_)","name":"Hidden Gear","input":"_^_2_+_b","condition":"─"},{"category":"_@","name":"Iron Nail","input":"_2_3_6_+_a / _b","condition":"A"},{"category":"_@","name":"Sunrise Blade","input":"_6_2_3_+_a / _b","condition":"─"},{"category":"_@","name":"Drill Anchor","input":"^4_6_+_a","condition":"A"},{"category":"_@","name":"Spiral Anchor","input":"^4_6_+_b","condition":"A"},{"category":"_@","name":"Fordy Beat","condition":"─","input":"_a @W-button _b"},{"category":"_@","input":"^!Fordy Break                                                   _a @W-button _b _a","condition":"─"},{"category":"_@","name":"Disassemble close","input":"_6_3_2_+_a / _b","condition":"A"},{"category":"_#","name":"Homing Missile","input":"(_^)@W-button","condition":"─"},{"category":"_#","name":"Low Homing Missile","input":"_2_+@W-button","condition":"─"},{"category":"_#","name":"Dual Homing Missile","input":"(_^)_2_3_6_+@W-button","condition":"─"},{"category":"_*","name":"Nebulous Dream","input":"_2_3_6_2_3_6_+_a / _b","condition":"─"}],"notes":["FORDY TYPE"]},{"name":"TARANTULA (FZ 202)","moves":[{"category":"_(","name":"Punching Bag","input":"_4 / _6_+_a","condition":"A"},{"category":"_(","name":"Overhead Toss","input":"_4 / _6_+_b","condition":"A"},{"category":"_(","name":"Pick Up and Toss opponent knocked down","input":"_4 / _6_+_b","condition":"A"},{"category":"_)","name":"Claw-Surprise Energy-Max Push","condition":"A","input":"_a_a_b"},{"category":"_)","name":"Claw-Max Push","condition":"A","input":"_a_b"},{"category":"_)","name":"Quad Spikes","input":"_^_2_+_b","condition":"─"},{"category":"_@","name":"Powered Wrecker","input":"(_^)_2_3_6_+_a / _b / _a_+_b","condition":"A"},{"category":"_@","input":"^!Wrecker Slam                                                  _a / _b","condition":"A"},{"category":"_@","input":"^!Wrecker Missiles                                              _2_1_4_+_a / _b","condition":"A"},{"category":"_@","name":"Air Powered Wrecker","input":"_^_6_3_2_+_a / _b / _a_+_b","condition":"A"},{"category":"_@","input":"^!Wrecker Slam                                                  _a / _b","condition":"A"},{"category":"_@","input":"^!Wrecker Missiles                                              _2_1_4_+_a / _b","condition":"A"},{"category":"_@","name":"Rising Tornado","input":"_6_2_3_+_a / _b","condition":"─"},{"category":"_@","name":"Falling Winds","input":"_4_2_1_+_a / _b","condition":"─"},{"category":"_@","name":"Tarantula Stamp","input":"^2_8_+_a / _b","condition":"─"},{"category":"_@","name":"Disassemble close","input":"_6_3_2_+_a / _b","condition":"A"},{"category":"_#","name":"Missile Launcher","input":"(_^)@W-button","condition":"─"},{"category":"_#","name":"Missile Rain","input":"_2_+@W-button","condition":"─"},{"category":"_*","name":"Falling Destroy","input":"_2_3_6_2_3_6_+_a / _b","condition":"A"}],"notes":["FORDY TYPE"]},{"name":"KILLER BEE (FZ 900J)","moves":[{"category":"_(","name":"Death Cutter","input":"_4 / _6_+_a","condition":"A"},{"category":"_(","name":"Overhead Toss","input":"_4 / _6_+_b","condition":"A"},{"category":"_(","name":"Pick Up and Toss opponent knocked down","input":"_4 / _6_+_b","condition":"A"},{"category":"_(","name":"Air Toss","input":"_^_4 / _6_+_a / _b","condition":"A"},{"category":"_)","name":"Down-Side Slash-Mega Sword Thrust","condition":"A","input":"_a_a_b"},{"category":"_)","name":"Down Slash-Mega Sword Thrust","condition":"A","input":"_a_b"},{"category":"_)","name":"Landing","input":"_^_2_+_b","condition":"─"},{"category":"_@","name":"Killer Screw","input":"(_^)_2_3_6_+_a / _b / _a_+_b","condition":"─"},{"category":"_@","input":"^!Extend                                                        _?_+_a / _b","condition":"─"},{"category":"_@","name":"Killer Bee Strike","input":"_6_2_3_+_a / _b","condition":"─"},{"category":"_@","name":"Slay Sword","input":"_6_3_2_1_4_+_a / _b (_O)","condition":"A"},{"category":"_@","name":"Killer Eye","input":"^4_6_+_a","condition":"─"},{"category":"_@","name":"Killer Eye Trio","input":"^4_6_+_b","condition":"─"},{"category":"_#","name":"High Mine Launch","input":"(_^)@W-button","condition":"─"},{"category":"_#","name":"Far Mine Launch","input":"_6_+@W-button","condition":"─"},{"category":"_#","name":"Ducking Mine Launch","input":"_2_+@W-button","condition":"─"},{"category":"_*","name":"Delta Blast","input":"_2_3_6_2_3_6_+_a / _b","condition":"A"}],"notes":["FORDY TYPE"]},{"name":"GULDIN (GP-N1)","moves":[{"category":"_(","name":"Lifting Press","input":"_4 / _6_+_a","condition":"A"},{"category":"_(","name":"Overhead Toss","input":"_4 / _6_+_b","condition":"A"},{"category":"_(","name":"Pick Up and Toss opponent knocked down","input":"_4 / _6_+_a / _b","condition":"A"},{"category":"_)","name":"One-Two-Double Hammer","condition":"A","input":"_a_a_b"},{"category":"_)","name":"One-Double Hammer","condition":"A","input":"_a_b"},{"category":"_)","name":"Mega Drop","input":"_^_2_+_b","condition":"─"},{"category":"_)","name":"Heavy Dive","input":"_^_B_2_+_b","condition":"─"},{"category":"_@","name":"Gul Lariat","input":"_2_3_6_+_a","condition":"A"},{"category":"_@","name":"Double Gul Lariat","input":"_2_3_6_+_b","condition":"A"},{"category":"_@","name":"Sky Gul Lariat","input":"_2_1_4_+_a / _b","condition":"A"},{"category":"_@","name":"Gul Wheel","input":"_6_2_3_+_a","condition":"─"},{"category":"_@","name":"Double Gul Wheel","input":"_6_2_3_+_b","condition":"─"},{"category":"_@","name":"Disassemble close","input":"_6_3_2_+_a / _b","condition":"A"},{"category":"_#","name":"Flame Thrower @W-button","condition":"─"},{"category":"_#","name":"Flame Thrower Rise","input":"_O@W-button","condition":"─"},{"category":"_#","name":"Low Flame Thrower","input":"_2_+@W-button","condition":"─"},{"category":"_#","name":"Low Flame Thrower Rise","input":"_2_+_O@W-button","condition":"─"},{"category":"_#","name":"Air Flame Thrower","input":"_^@W-button","condition":"─"},{"category":"_#","name":"Air Flame Thrower Rise","input":"_^_O@W-button","condition":"─"},{"category":"_*","name":"Gul Burning","input":"_2_3_6_2_3_6_+_a / _b","condition":"─"}],"notes":["GULDIN TYPE"]},{"name":"VISE (GP-V4)","moves":[{"category":"_(","name":"Punching Bag","input":"_4 / _6_+_a","condition":"A"},{"category":"_(","name":"Overhead Toss","input":"_4 / _6_+_b","condition":"A"},{"category":"_(","name":"Pick Up and Slam opponent knocked down","input":"_4 / _6_+_b","condition":"A"},{"category":"_)","name":"Quick Claw-Poke-Claw Uppercut","condition":"A","input":"_a_a_b"},{"category":"_)","name":"Quick Claw-Claw Uppercut","condition":"A","input":"_a_b"},{"category":"_)","name":"Giant Drill","input":"_^_2_+_b","condition":"─"},{"category":"_@","name":"Capture Device","input":"_2_3_6_+_a / _b / _a_+_b","condition":"A"},{"category":"_@","input":"^!E Typhoon                                                     _2_1_4_+_a / _b","condition":"A"},{"category":"_@","name":"Charge Capture","input":"_4_1_2_3_6_+_a / _b / _a_+_b","condition":"A"},{"category":"_@","input":"^!E Typhoon                                                     _2_1_4_+_a / _b","condition":"A"},{"category":"_@","name":"G Splasher","input":"_2_1_4_+_a","condition":"─"},{"category":"_@","name":"E Pressure","input":"_2_1_4_+_b","condition":"─"},{"category":"_@","name":"Body Scrap close","input":"_6_2_3_+_a / _b","condition":"A"},{"category":"_@","name":"Vertical Gears","input":"_2_8_+_b","condition":"─"},{"category":"_@","name":"Disassemble close","input":"_6_3_2_+_a / _b","condition":"A"},{"category":"_#","name":"Homing Missile","input":"(_^)@W-button","condition":"─"},{"category":"_#","name":"Low Homing Missile","input":"_2_+@W-button","condition":"─"},{"category":"_#","name":"Dual Homing Missile","input":"(_^)_2_3_6_+@W-button","condition":"─"},{"category":"_*","name":"G Typhoon","input":"_2_3_6_2_3_6_+_a / _b","condition":"A"}],"notes":["GULDIN TYPE"]},{"name":"CYCLONE (GP-D2)","moves":[{"category":"_(","name":"Drilling","input":"_4 / _6_+_a","condition":"A"},{"category":"_(","name":"Overhead Toss","input":"_4 / _6_+_b","condition":"A"},{"category":"_(","name":"Pick Up and Toss opponent knocked down","input":"_4 / _6_+_b","condition":"A"},{"category":"_)","name":"Quick-Swipe-Final Drill","condition":"A","input":"_a_a_b"},{"category":"_)","name":"Quick-Final Drill","condition":"A","input":"_a_b"},{"category":"_)","name":"Chain Spike Smasher","input":"_^_a_+_b","condition":"─"},{"category":"_)","name":"Quad Spikes","input":"_^_2_+_b","condition":"─"},{"category":"_@","name":"Drill Cannon","input":"(_^)_2_3_6_+_a","condition":"A"},{"category":"_@","name":"High Drill Cannon","input":"_2_3_6_+_b","condition":"A"},{"category":"_@","name":"Down Air Drill Cannon","input":"_^_2_3_6_+_b","condition":"A"},{"category":"_@","name":"Hyper Death Drill","input":"_6_4_6_+_a / _b","condition":"A"},{"category":"_@","input":"^!Drill Power                                                   ^*_a / _b","condition":"A"},{"category":"_@","name":"Cyclone Stamp","input":"^2_8_+_a / _b","condition":"─"},{"category":"_#","name":"High Mines Launch @W-button","condition":"─"},{"category":"_#","name":"Ducking Mines Launch","input":"_2_+@W-button","condition":"─"},{"category":"_#","name":"Air Mine Launch","input":"_^@W-button","condition":"─"},{"category":"_#","name":"Far D3 Bomb","input":"_2_3_6_+@W-button","condition":"─"},{"category":"_#","name":"Short D3 Bomb","input":"_2_1_4_+@W-button","condition":"─"},{"category":"_*","name":"Final Death Drill","input":"_2_3_6_2_3_6_+_a / _b","condition":"A"}],"notes":["GULDIN TYPE"]},{"name":"GAITS (P-10033)","moves":[{"category":"_(","name":"Punching Bag","input":"_4 / _6_+_a","condition":"A"},{"category":"_(","name":"Overhead Toss","input":"_4 / _6_+_b","condition":"A"},{"category":"_(","name":"Pick Up and Toss opponent knocked down","input":"_4 / _6_+_a / _b","condition":"A"},{"category":"_)","name":"Punch-Down Punch","condition":"A","input":"_a_a"},{"category":"_)","name":"Blast Away","input":"_^^*_b","condition":"─"},{"category":"_)","name":"Plate Bounce","input":"_^_2_+_b","condition":"─"},{"category":"_@","name":"Ikki Tousen","input":"(_^)_2_3_6_+_a / _b","condition":"─"},{"category":"_@","name":"Mondou Muyou","input":"_6_2_3_+_a / _b","condition":"─"},{"category":"_@","name":"Ichimou Dajin close","input":"_2_1_4_+_a / _b","condition":"─"},{"category":"_@","name":"Shogyou Mujou","input":"(_^)^4_6_+_a / _b","condition":"─"},{"category":"_@","name":"Short Shogyou Mujou","input":"^4_6_4_+_a / _b","condition":"─"},{"category":"_@","name":"Disassemble close","input":"_6_3_2_+_a / _b","condition":"A"},{"category":"_#","name":"Double Missile Barrage @W-button","condition":"─"},{"category":"_*","name":"Kuuzen Zetsugo","input":"_2_3_6_2_3_6_+_a / _b","condition":"─"}]},{"name":"SUPER-8 (S-008)","moves":[{"category":"_(","name":"Plasma Destroyer","input":"_4 / _6_+_a / _b","condition":"─"},{"category":"_(","name":"Plasma Destroyer D opponent knocked down","input":"_4 / _6_+_a / _b","condition":"─"},{"category":"_)","name":"Spider Drill","input":"_^_2_+_b","condition":"─"},{"category":"_@","name":"Red Omega","input":"_4_1_2_3_6_+_a / _b","condition":"─"},{"category":"_@","name":"Octopus Jr. Crawler","input":"_6_2_3_+_a","condition":"─"},{"category":"_@","name":"Octopus Jr. Swimmer","input":"_6_2_3_+_b","condition":"─"},{"category":"_@","name":"Octopus Jr. Stinger","input":"_6_2_3_+_a_+_b","condition":"─"},{"category":"_@","name":"Devil X","input":"_2_8_+_a","condition":"─"},{"category":"_@","name":"Final Omicron","input":"_2_8_+_b","condition":"─"},{"category":"_#","name":"Missile Barrage","input":"(_^)@W-button","condition":"─"},{"category":"_#","name":"Hell Delta 1","input":"_4_1_2_3_6_+@W-button","condition":"─"},{"category":"_#","name":"Hell Delta 2","input":"_2_3_6_+@W-button","condition":"─"},{"category":"_#","name":"Hell Delta 3","input":"_6_2_3_+@W-button","condition":"─"},{"category":"_#","name":"Super Gamma","input":"_2_8_+@W-button","condition":"─"},{"category":"_*","name":"Death Satan Sigma","input":"_2_3_6_2_3_6_+_a / _b","condition":"─"}]},{"name":"HELION (UVA-02)","moves":[{"category":"_(","name":"Full On Laser","input":"_4 / _6_+_a / _b","condition":"─"},{"category":"_)","name":"Flight Down","input":"_^_2_+_b","condition":"─"},{"category":"_@","name":"Gott Kugel","input":"_2_3_6_+_a / _b","condition":"─"},{"category":"_@","name":"Himmel Fangel","input":"_^_2_1_4_+_a / _b","condition":"─"},{"category":"_@","name":"Flugel Bogen","input":"_6_3_2_1_4_+_a / _b","condition":"─"},{"category":"_#","name":"Retreat Bombing","input":"_^@W-button","condition":"─"},{"category":"_*","name":"Schlachtfeld Kaval","input":"_2_3_6_2_3_6_+_a / _b","condition":"─"}]},{"name":"WARLOCK (X-0)","moves":[{"category":"_(","name":"Thrust Aside","input":"_4 / _6_+_a / _b","condition":"─"},{"category":"_@","name":"Sacred Stare","input":"_2_3_6_+_a / _b","condition":"─"},{"category":"_@","name":"Forbidden Force","input":"(_^)^4_6_+_a / _b","condition":"─"},{"category":"_@","name":"Energy Drain close","condition":"─","input":"_x_+_a / _b"},{"category":"_@","name":"Imitation Alpha","input":"_4_4_B_6_6_B","condition":"─"},{"category":"_@","name":"Imitation Beta","input":"_6_a_b_a_4","condition":"─"},{"category":"_#","name":"Vulcan Cannon @W-button","condition":"─"},{"category":"_#","name":"Short Vulcan Cannon","input":"_2_+@W-button","condition":"─"},{"category":"_#","name":"Far Vulcan Cannon","input":"_6_+@W-button","condition":"─"},{"category":"_#","name":"Ascension Black","input":"_2_3_6_+@W-button","condition":"─"},{"category":"_*","name":"Final Sacrifice","input":"(_^)_2_3_6_2_3_6_+_a / _b","condition":"─"}]}],"controlAbbr":{"_B":"BT","_S":"ST"},"systemControlMappings":{"snes":{"b":"_B"},"genesis":{"b":"_B"},"megadrive":{"b":"_B"},"psx":{"b":"_B"},"ps2":{"b":"_B"}}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "cybots",
+    "cybotsj",
+    "cybotsu"
+  ],
+  "name": "Cyberbots: Fullmetal Madness",
+  "year": 1995,
+  "manufacturer": "Capcom",
+  "credits": "Fabricio Coroquer",
+  "controls": {
+    "_B": "Boost",
+    "_S": "Start"
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_#": "Weapon Moves",
+    "_*": "Cyber EX",
+    "_`": "Cyber EX"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "_6_6 / _B",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Long Dash",
+      "input": "_6^6 / _O_B",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4 / _4_+_B",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Long Retreat",
+      "input": "_4^4 / _4_+_O_B",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Air Dash",
+      "input": "_^_6_+_B",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Air Retreat",
+      "input": "_^_4_+_B",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Hover",
+      "input": "_^_B",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Boost Climb",
+      "input": "_^_8_+_B",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Slow Landing",
+      "input": "_^_2_+_B",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Charge Super Gauge",
+      "input": "_O_a_+_b",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Safe Fall being knocked down",
+      "input": "_B",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Recover knocked down",
+      "input": "^4 / ^6",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Giga Crush (FULL) _a_+_b",
+      "condition": "─"
+    }
+  ],
+  "characters": [
+    {
+      "name": "BLODIA (BX-02)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Punching Bag",
+          "input": "_4 / _6_+_a",
+          "condition": "A"
+        },
+        {
+          "category": "_(",
+          "input": "^!Direct Press                                                  _2_+_a_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_(",
+          "name": "Overhead Toss",
+          "input": "_4 / _6_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_(",
+          "name": "Pick Up and Toss opponent knocked down",
+          "input": "_4 / _6_+_a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_)",
+          "name": "One-Two",
+          "condition": "A",
+          "input": "_a_a"
+        },
+        {
+          "category": "_)",
+          "name": "Arc Sweep-Quick Pursuit",
+          "input": "_2_+_b",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "input": "^!Quick Pursuit                                                 _8_+_a / _b",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Knee Blades",
+          "input": "_^_2_+_b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Gatling Rod",
+          "input": "_2_1_4_+_a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "name": "Break Shaft",
+          "input": "_4_1_2_3_6_+_a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "name": "Full Metal Charge",
+          "input": "_6_2_3_+_a / _b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Direct Press close",
+          "input": "_6_3_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "name": "Disassemble close",
+          "input": "_6_3_2_+_a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "name": "Needle Press opponent knocked down",
+          "input": "_2_8_+_a / _b",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "BIT High Blast",
+          "input": "(_^)@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "BIT Low Blast",
+          "input": "_2_+@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "BIT Upward Blast",
+          "input": "_6_+@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "BIT Downward Air Blast",
+          "input": "_^_2_+@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "BIT Upward Air Blast",
+          "input": "_^_8_+@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Planet Smasher",
+          "input": "_2_3_6_2_3_6_+_a / _b",
+          "condition": "A"
+        }
+      ],
+      "notes": [
+        "BLODIA TYPE"
+      ]
+    },
+    {
+      "name": "SWORDMAN (BX-045)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Death Cutter",
+          "input": "_4 / _6_+_a",
+          "condition": "A"
+        },
+        {
+          "category": "_(",
+          "name": "Overhead Toss",
+          "input": "_4 / _6_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_)",
+          "name": "Down-Side-Sky Slash",
+          "condition": "A",
+          "input": "_a_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Down-Sky Slash",
+          "condition": "A",
+          "input": "_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Default E Slicer dashing",
+          "input": "_2_+_a",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Giant Drill",
+          "input": "_^_2_+_b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "G Splasher",
+          "input": "_2_3_6_+_a / _b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Slay Sword",
+          "input": "_6_3_2_1_4_+_a / _b (_O)",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "name": "Photon Splash",
+          "input": "(_^)_4_2_1_+_a / _b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Verticle Gears",
+          "input": "_2_8_+_b",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Mid Trap Launcher @W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Short Trap Launcher",
+          "input": "_2_+@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Far Trap Launcher",
+          "input": "_^@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Crescent Tornado",
+          "input": "_2_3_6_2_3_6_+_a / _b",
+          "condition": "A"
+        }
+      ],
+      "notes": [
+        "BLODIA TYPE"
+      ]
+    },
+    {
+      "name": "RIOT (BX-075)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Mighty Hand",
+          "input": "_4 / _6_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_(",
+          "name": "Pick Up and Slam opponent knocked down",
+          "input": "_4 / _6_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_)",
+          "name": "Landing",
+          "input": "_^_2_+_b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Dyna Blow",
+          "input": "(_^)_2_3_6_+_a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "name": "Riot Strike",
+          "input": "(_^)_6_2_3_+_a / _b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Super Riot Strike",
+          "input": "(_^)_6_2_3_+_a_+_b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Flame Grip",
+          "input": "_4_2_1_+_a",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "name": "Death Grip",
+          "input": "_4_2_1_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "name": "Death Bolt",
+          "input": "_6_3_2_1_4_+_a / _b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Violent Squeeze close",
+          "input": "_6_3_2_+_a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_#",
+          "name": "Pulse Laser Rain",
+          "input": "(_^)@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Sky Pulse Laser",
+          "input": "_6_+@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Ducking Pulse Laser",
+          "input": "_2_+@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Gravitation Field",
+          "input": "_2_3_6_2_3_6_+_a / _b",
+          "condition": "─"
+        }
+      ],
+      "notes": [
+        "BLODIA TYPE"
+      ]
+    },
+    {
+      "name": "REPTOS (RF-004)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Punching Bag",
+          "input": "_4 / _6_+_a",
+          "condition": "A"
+        },
+        {
+          "category": "_(",
+          "name": "Overhead Toss",
+          "input": "_4 / _6_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_(",
+          "name": "Pick Up and Toss opponent knocked down",
+          "input": "_4 / _6_+_a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_(",
+          "name": "Heavy Drop",
+          "input": "_^_4 / _6_+_a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_)",
+          "name": "One-Two",
+          "condition": "A",
+          "input": "_a_a"
+        },
+        {
+          "category": "_)",
+          "name": "Drill Blades",
+          "input": "_^_2_+_b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Violence Wind",
+          "input": "_4_1_2_3_6_+_a",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Violence Winds",
+          "input": "_4_1_2_3_6_+_b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Risky Nail",
+          "input": "_6_2_3_+_a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "name": "Satellite Force",
+          "input": "_2_1_4_+_a / _b / _a_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "name": "Dunk close",
+          "input": "_2_2_+_a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "name": "Disassemble close",
+          "input": "_6_3_2_+_a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_#",
+          "name": "Thin Laser Cannon",
+          "input": "(_^)@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Thick Laser Cannon",
+          "input": "(_^)_O@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Thin Low Laser Cannon",
+          "input": "_2_+@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Thick Low Laser Cannon",
+          "input": "_2_+_O@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Full Verniern Hurricane",
+          "input": "_2_3_6_2_3_6_+_a / _b",
+          "condition": "─"
+        }
+      ],
+      "notes": [
+        "REPTOS TYPE"
+      ]
+    },
+    {
+      "name": "LIGHTNING (RF-009)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Shock Punch",
+          "input": "_4 / _6_+_a",
+          "condition": "A"
+        },
+        {
+          "category": "_(",
+          "name": "Overhead Toss",
+          "input": "_4 / _6_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_(",
+          "name": "Pick Up and Toss opponent knocked down",
+          "input": "_4 / _6_+_a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_)",
+          "name": "Quick Shock-Punch",
+          "condition": "A",
+          "input": "_a_a"
+        },
+        {
+          "category": "_)",
+          "name": "Upward Heavy Jolt",
+          "input": "_6_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_)",
+          "name": "Giant Drill",
+          "input": "_^_2_+_b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Sparkle Laser",
+          "input": "_2_3_6_+_a",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "name": "Upward Sparkle Laser",
+          "input": "_2_3_6_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "name": "Rolling Gear",
+          "input": "(_^)^2_8_+_a / _b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Vertical Gear",
+          "input": "_2_8_+_b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Thunder Rain",
+          "input": "_2_2_+_a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "name": "Disassemble close",
+          "input": "_6_3_2_+_a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_#",
+          "name": "Missile Launcher",
+          "input": "(_^)@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Ducking Missiles",
+          "input": "_2_+@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Thunder Shaking",
+          "input": "_2_3_6_2_3_6_+_a / _b",
+          "condition": "A"
+        }
+      ],
+      "notes": [
+        "REPTOS TYPE"
+      ]
+    },
+    {
+      "name": "JACKAL (RF-027)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Cross Whip",
+          "input": "_4 / _6_+_a",
+          "condition": "A"
+        },
+        {
+          "category": "_(",
+          "name": "Overhead Toss",
+          "input": "_4 / _6_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_(",
+          "name": "Pick Up and Toss opponent knocked down",
+          "input": "_4 / _6_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_)",
+          "name": "Whip Slash-Punch",
+          "condition": "A",
+          "input": "_a_a"
+        },
+        {
+          "category": "_)",
+          "name": "Quad Spikes",
+          "input": "_^_2_+_b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Whip Sting",
+          "input": "^*_a / _b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Heat Grapple",
+          "input": "_2_3_6_+_a",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "name": "High Heat Grapple",
+          "input": "_2_3_6_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "name": "Dizzy Boomerang",
+          "input": "(_^)_2_1_4_+_a / _b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Jackal Stomp",
+          "input": "^2_8_+_a / _b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Disassemble close",
+          "input": "_6_3_2_+_a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_#",
+          "name": "BIT High Blast",
+          "input": "(_^)@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "BIT Low Blast",
+          "input": "_2_+@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "BIT Upward Blast",
+          "input": "_6_+@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "BIT Downward Air Blast",
+          "input": "_^_2_+@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "BIT Upward Air Blast",
+          "input": "_^_8_+@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Laser Screen High",
+          "input": "_2_3_6_+@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Laser Screen Low",
+          "input": "_6_2_3_+@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Assault Bits",
+          "input": "_2_3_6_2_3_6_+_a / _b",
+          "condition": "A"
+        }
+      ],
+      "notes": [
+        "REPTOS TYPE"
+      ]
+    },
+    {
+      "name": "FORDY (FZ 100)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Punching Bag",
+          "input": "_4 / _6_+_a",
+          "condition": "A"
+        },
+        {
+          "category": "_(",
+          "name": "Overhead Toss",
+          "input": "_4 / _6_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_(",
+          "name": "Pick Up and Toss opponent knocked down",
+          "input": "_4 / _6_+_a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_)",
+          "name": "Punch-Quick Energy-Mega Upper",
+          "condition": "A",
+          "input": "_a_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Punch-Mega Upper",
+          "condition": "A",
+          "input": "_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Hidden Gear",
+          "input": "_^_2_+_b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Iron Nail",
+          "input": "_2_3_6_+_a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "name": "Sunrise Blade",
+          "input": "_6_2_3_+_a / _b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Drill Anchor",
+          "input": "^4_6_+_a",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "name": "Spiral Anchor",
+          "input": "^4_6_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "name": "Fordy Beat",
+          "condition": "─",
+          "input": "_a @W-button _b"
+        },
+        {
+          "category": "_@",
+          "input": "^!Fordy Break                                                   _a @W-button _b _a",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Disassemble close",
+          "input": "_6_3_2_+_a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_#",
+          "name": "Homing Missile",
+          "input": "(_^)@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Low Homing Missile",
+          "input": "_2_+@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Dual Homing Missile",
+          "input": "(_^)_2_3_6_+@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Nebulous Dream",
+          "input": "_2_3_6_2_3_6_+_a / _b",
+          "condition": "─"
+        }
+      ],
+      "notes": [
+        "FORDY TYPE"
+      ]
+    },
+    {
+      "name": "TARANTULA (FZ 202)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Punching Bag",
+          "input": "_4 / _6_+_a",
+          "condition": "A"
+        },
+        {
+          "category": "_(",
+          "name": "Overhead Toss",
+          "input": "_4 / _6_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_(",
+          "name": "Pick Up and Toss opponent knocked down",
+          "input": "_4 / _6_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_)",
+          "name": "Claw-Surprise Energy-Max Push",
+          "condition": "A",
+          "input": "_a_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Claw-Max Push",
+          "condition": "A",
+          "input": "_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Quad Spikes",
+          "input": "_^_2_+_b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Powered Wrecker",
+          "input": "(_^)_2_3_6_+_a / _b / _a_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "input": "^!Wrecker Slam                                                  _a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "input": "^!Wrecker Missiles                                              _2_1_4_+_a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "name": "Air Powered Wrecker",
+          "input": "_^_6_3_2_+_a / _b / _a_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "input": "^!Wrecker Slam                                                  _a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "input": "^!Wrecker Missiles                                              _2_1_4_+_a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "name": "Rising Tornado",
+          "input": "_6_2_3_+_a / _b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Falling Winds",
+          "input": "_4_2_1_+_a / _b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Tarantula Stamp",
+          "input": "^2_8_+_a / _b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Disassemble close",
+          "input": "_6_3_2_+_a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_#",
+          "name": "Missile Launcher",
+          "input": "(_^)@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Missile Rain",
+          "input": "_2_+@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Falling Destroy",
+          "input": "_2_3_6_2_3_6_+_a / _b",
+          "condition": "A"
+        }
+      ],
+      "notes": [
+        "FORDY TYPE"
+      ]
+    },
+    {
+      "name": "KILLER BEE (FZ 900J)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Death Cutter",
+          "input": "_4 / _6_+_a",
+          "condition": "A"
+        },
+        {
+          "category": "_(",
+          "name": "Overhead Toss",
+          "input": "_4 / _6_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_(",
+          "name": "Pick Up and Toss opponent knocked down",
+          "input": "_4 / _6_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_(",
+          "name": "Air Toss",
+          "input": "_^_4 / _6_+_a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_)",
+          "name": "Down-Side Slash-Mega Sword Thrust",
+          "condition": "A",
+          "input": "_a_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Down Slash-Mega Sword Thrust",
+          "condition": "A",
+          "input": "_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Landing",
+          "input": "_^_2_+_b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Killer Screw",
+          "input": "(_^)_2_3_6_+_a / _b / _a_+_b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Extend                                                        _?_+_a / _b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Killer Bee Strike",
+          "input": "_6_2_3_+_a / _b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Slay Sword",
+          "input": "_6_3_2_1_4_+_a / _b (_O)",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "name": "Killer Eye",
+          "input": "^4_6_+_a",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Killer Eye Trio",
+          "input": "^4_6_+_b",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "High Mine Launch",
+          "input": "(_^)@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Far Mine Launch",
+          "input": "_6_+@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Ducking Mine Launch",
+          "input": "_2_+@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Delta Blast",
+          "input": "_2_3_6_2_3_6_+_a / _b",
+          "condition": "A"
+        }
+      ],
+      "notes": [
+        "FORDY TYPE"
+      ]
+    },
+    {
+      "name": "GULDIN (GP-N1)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Lifting Press",
+          "input": "_4 / _6_+_a",
+          "condition": "A"
+        },
+        {
+          "category": "_(",
+          "name": "Overhead Toss",
+          "input": "_4 / _6_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_(",
+          "name": "Pick Up and Toss opponent knocked down",
+          "input": "_4 / _6_+_a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_)",
+          "name": "One-Two-Double Hammer",
+          "condition": "A",
+          "input": "_a_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "One-Double Hammer",
+          "condition": "A",
+          "input": "_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Mega Drop",
+          "input": "_^_2_+_b",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Heavy Dive",
+          "input": "_^_B_2_+_b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Gul Lariat",
+          "input": "_2_3_6_+_a",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "name": "Double Gul Lariat",
+          "input": "_2_3_6_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "name": "Sky Gul Lariat",
+          "input": "_2_1_4_+_a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "name": "Gul Wheel",
+          "input": "_6_2_3_+_a",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Double Gul Wheel",
+          "input": "_6_2_3_+_b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Disassemble close",
+          "input": "_6_3_2_+_a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_#",
+          "name": "Flame Thrower @W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Flame Thrower Rise",
+          "input": "_O@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Low Flame Thrower",
+          "input": "_2_+@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Low Flame Thrower Rise",
+          "input": "_2_+_O@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Air Flame Thrower",
+          "input": "_^@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Air Flame Thrower Rise",
+          "input": "_^_O@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Gul Burning",
+          "input": "_2_3_6_2_3_6_+_a / _b",
+          "condition": "─"
+        }
+      ],
+      "notes": [
+        "GULDIN TYPE"
+      ]
+    },
+    {
+      "name": "VISE (GP-V4)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Punching Bag",
+          "input": "_4 / _6_+_a",
+          "condition": "A"
+        },
+        {
+          "category": "_(",
+          "name": "Overhead Toss",
+          "input": "_4 / _6_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_(",
+          "name": "Pick Up and Slam opponent knocked down",
+          "input": "_4 / _6_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_)",
+          "name": "Quick Claw-Poke-Claw Uppercut",
+          "condition": "A",
+          "input": "_a_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Quick Claw-Claw Uppercut",
+          "condition": "A",
+          "input": "_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Giant Drill",
+          "input": "_^_2_+_b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Capture Device",
+          "input": "_2_3_6_+_a / _b / _a_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "input": "^!E Typhoon                                                     _2_1_4_+_a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "name": "Charge Capture",
+          "input": "_4_1_2_3_6_+_a / _b / _a_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "input": "^!E Typhoon                                                     _2_1_4_+_a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "name": "G Splasher",
+          "input": "_2_1_4_+_a",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "E Pressure",
+          "input": "_2_1_4_+_b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Body Scrap close",
+          "input": "_6_2_3_+_a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "name": "Vertical Gears",
+          "input": "_2_8_+_b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Disassemble close",
+          "input": "_6_3_2_+_a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_#",
+          "name": "Homing Missile",
+          "input": "(_^)@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Low Homing Missile",
+          "input": "_2_+@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Dual Homing Missile",
+          "input": "(_^)_2_3_6_+@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "G Typhoon",
+          "input": "_2_3_6_2_3_6_+_a / _b",
+          "condition": "A"
+        }
+      ],
+      "notes": [
+        "GULDIN TYPE"
+      ]
+    },
+    {
+      "name": "CYCLONE (GP-D2)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Drilling",
+          "input": "_4 / _6_+_a",
+          "condition": "A"
+        },
+        {
+          "category": "_(",
+          "name": "Overhead Toss",
+          "input": "_4 / _6_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_(",
+          "name": "Pick Up and Toss opponent knocked down",
+          "input": "_4 / _6_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_)",
+          "name": "Quick-Swipe-Final Drill",
+          "condition": "A",
+          "input": "_a_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Quick-Final Drill",
+          "condition": "A",
+          "input": "_a_b"
+        },
+        {
+          "category": "_)",
+          "name": "Chain Spike Smasher",
+          "input": "_^_a_+_b",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Quad Spikes",
+          "input": "_^_2_+_b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Drill Cannon",
+          "input": "(_^)_2_3_6_+_a",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "name": "High Drill Cannon",
+          "input": "_2_3_6_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "name": "Down Air Drill Cannon",
+          "input": "_^_2_3_6_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "name": "Hyper Death Drill",
+          "input": "_6_4_6_+_a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "input": "^!Drill Power                                                   ^*_a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_@",
+          "name": "Cyclone Stamp",
+          "input": "^2_8_+_a / _b",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "High Mines Launch @W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Ducking Mines Launch",
+          "input": "_2_+@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Air Mine Launch",
+          "input": "_^@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Far D3 Bomb",
+          "input": "_2_3_6_+@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Short D3 Bomb",
+          "input": "_2_1_4_+@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Final Death Drill",
+          "input": "_2_3_6_2_3_6_+_a / _b",
+          "condition": "A"
+        }
+      ],
+      "notes": [
+        "GULDIN TYPE"
+      ]
+    },
+    {
+      "name": "GAITS (P-10033)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Punching Bag",
+          "input": "_4 / _6_+_a",
+          "condition": "A"
+        },
+        {
+          "category": "_(",
+          "name": "Overhead Toss",
+          "input": "_4 / _6_+_b",
+          "condition": "A"
+        },
+        {
+          "category": "_(",
+          "name": "Pick Up and Toss opponent knocked down",
+          "input": "_4 / _6_+_a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_)",
+          "name": "Punch-Down Punch",
+          "condition": "A",
+          "input": "_a_a"
+        },
+        {
+          "category": "_)",
+          "name": "Blast Away",
+          "input": "_^^*_b",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Plate Bounce",
+          "input": "_^_2_+_b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Ikki Tousen",
+          "input": "(_^)_2_3_6_+_a / _b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Mondou Muyou",
+          "input": "_6_2_3_+_a / _b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Ichimou Dajin close",
+          "input": "_2_1_4_+_a / _b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Shogyou Mujou",
+          "input": "(_^)^4_6_+_a / _b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Short Shogyou Mujou",
+          "input": "^4_6_4_+_a / _b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Disassemble close",
+          "input": "_6_3_2_+_a / _b",
+          "condition": "A"
+        },
+        {
+          "category": "_#",
+          "name": "Double Missile Barrage @W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Kuuzen Zetsugo",
+          "input": "_2_3_6_2_3_6_+_a / _b",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "SUPER-8 (S-008)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Plasma Destroyer",
+          "input": "_4 / _6_+_a / _b",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Plasma Destroyer D opponent knocked down",
+          "input": "_4 / _6_+_a / _b",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Spider Drill",
+          "input": "_^_2_+_b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Red Omega",
+          "input": "_4_1_2_3_6_+_a / _b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Octopus Jr. Crawler",
+          "input": "_6_2_3_+_a",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Octopus Jr. Swimmer",
+          "input": "_6_2_3_+_b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Octopus Jr. Stinger",
+          "input": "_6_2_3_+_a_+_b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Devil X",
+          "input": "_2_8_+_a",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Final Omicron",
+          "input": "_2_8_+_b",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Missile Barrage",
+          "input": "(_^)@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Hell Delta 1",
+          "input": "_4_1_2_3_6_+@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Hell Delta 2",
+          "input": "_2_3_6_+@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Hell Delta 3",
+          "input": "_6_2_3_+@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Super Gamma",
+          "input": "_2_8_+@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Death Satan Sigma",
+          "input": "_2_3_6_2_3_6_+_a / _b",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "HELION (UVA-02)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Full On Laser",
+          "input": "_4 / _6_+_a / _b",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Flight Down",
+          "input": "_^_2_+_b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Gott Kugel",
+          "input": "_2_3_6_+_a / _b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Himmel Fangel",
+          "input": "_^_2_1_4_+_a / _b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Flugel Bogen",
+          "input": "_6_3_2_1_4_+_a / _b",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Retreat Bombing",
+          "input": "_^@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Schlachtfeld Kaval",
+          "input": "_2_3_6_2_3_6_+_a / _b",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "WARLOCK (X-0)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Thrust Aside",
+          "input": "_4 / _6_+_a / _b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Sacred Stare",
+          "input": "_2_3_6_+_a / _b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Forbidden Force",
+          "input": "(_^)^4_6_+_a / _b",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Energy Drain close",
+          "condition": "─",
+          "input": "_x_+_a / _b"
+        },
+        {
+          "category": "_@",
+          "name": "Imitation Alpha",
+          "input": "_4_4_B_6_6_B",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Imitation Beta",
+          "input": "_6_a_b_a_4",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Vulcan Cannon @W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Short Vulcan Cannon",
+          "input": "_2_+@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Far Vulcan Cannon",
+          "input": "_6_+@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Ascension Black",
+          "input": "_2_3_6_+@W-button",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Final Sacrifice",
+          "input": "(_^)_2_3_6_2_3_6_+_a / _b",
+          "condition": "─"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_B": "BT",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "b": "_B"
+    },
+    "genesis": {
+      "b": "_B"
+    },
+    "megadrive": {
+      "b": "_B"
+    },
+    "psx": {
+      "b": "_B"
+    },
+    "ps2": {
+      "b": "_B"
+    }
+  }
+}

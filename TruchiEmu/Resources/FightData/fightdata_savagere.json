@@ -1,1 +1,707 @@
-{"schemaVersion":2,"romIds":["savagere"],"name":"Savage Reign","year":1995,"manufacturer":"SNK","controls":{"_A":"Punch","_B":"Kick","_C":"Weapon Strike","_D":"Dimensional Attack","_S":"Start","^S":"Select (AES only)"},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves","_*":"Desperation Moves","_`":"Desperation Moves"},"commonCommands":[{"category":"_)","name":"Dash","input":"_6_6"},{"category":"_)","name":"Long Dash","input":"_1_6_6"},{"category":"_)","name":"Retreat","input":"_4_4"},{"category":"_)","name":"Long Retreat","input":"_3_4_4"},{"category":"_)","name":"Light Punch","input":"_X_A"},{"category":"_)","name":"Hard Punch","input":"_A"},{"category":"_)","name":"Light Kick","input":"_X_B"},{"category":"_)","name":"Hard Kick","input":"_B"},{"category":"_)","name":"Dimensional Attack","input":"_D / _A_+_B"},{"category":"_)","name":"Dimensional Retreat Attack","input":"_4_+_D / _A_+_B"},{"category":"_)","name":"Charge Dimensional Attack","input":"_2_3_6_+_D / _A_+_B"},{"category":"_)","name":"Backtrack Dimensional Attack","input":"_2_1_4_+_D / _A_+_B"},{"category":"_)","name":"High Drop Dimensional Attack","input":"_2_8_+_D / _A_+_B"},{"category":"_)","name":"Hyper Dimensional Attack","input":"_6_4_1_2_+_D / _A_+_B"},{"category":"_)","name":"Light Weapon Throw","input":"_B_+_C"},{"category":"_)","name":"Heavy Weapon Throw","input":"_A_+_B_+_C"},{"category":"_)","name":"Throw Escape when thrown","input":"_B"},{"category":"_)","name":"Throw Reverse when thrown","input":"_4 / _6_+_C"},{"category":"_)","name":"Defensive Attack blocking","input":"_6_+_A"}],"characters":[{"name":"SHO HAYATE","moves":[{"category":"_(","name":"Ate Otoshi","input":"_4 / _6_+_C"},{"category":"_)","name":"Reppuu Satsu","input":"_^_2_+_A"},{"category":"_)","name":"Shin Reppuu Satsu","input":"_^_2_+_B"},{"category":"_@","name":"Kyouretsu Zan","input":"_2_3_6_+_C"},{"category":"_@","name":"Hiten Shou Ou Kyaku","input":"_2_1_4_+_A / _B"},{"category":"_@","name":"Gen'ei Hitsue","input":"_6_2_3_+_B_+_C / _A_+_B_+_C"},{"category":"_@","name":"Nendou Hitsue","input":"_6_4_6_+_B_+_C / _A_+_B_+_C"},{"category":"_*","name":"Ougi! Musou Ranbu","input":"_2_1_4_1_2_3_6_+_A"}]},{"name":"MAX EAGLE","moves":[{"category":"_(","name":"German Suplex","input":"_6_+_C"},{"category":"_(","name":"Reverse Power Slam","input":"_4_+_C"},{"category":"_(","name":"Falling Power Slam","input":"_^_6_+_C"},{"category":"_@","name":"American Screw","input":"_2_1_4_+_A / _B"},{"category":"_@","name":"Flash Wing","input":"_2_3_6_9_+_A / _B"},{"category":"_@","name":"Axe Boom","input":"_4_1_2_3_6_+_B_+_C / _A_+_B_+_C"},{"category":"_*","name":"Eagle Special close","input":"_6_3_2_1_4_6_+_C"}]},{"name":"GOZU","moves":[{"category":"_(","name":"Flipping Tiger Bomb","input":"_4 / _6_+_C"},{"category":"_@","name":"Youen Ken","input":"^*_A"},{"category":"_@","name":"Gohten","input":"_2_3_6_9_+_C"},{"category":"_@","name":"Mudoh Goenha","input":"_6_3_2_8_+_A / _B"},{"category":"_@","name":"Gouen Dan","input":"_6_2_3_+_B_+_C / _A_+_B_+_C"},{"category":"_*","name":"Jaga Rangeki Shoh","input":"^1_6_+^*_A"}]},{"name":"MEZU","moves":[{"category":"_(","name":"Flipping Tiger Bomb","input":"_4 / _6_+_C"},{"category":"_@","name":"Youen Kyaku","input":"^*_B"},{"category":"_@","name":"Gohten","input":"_2_3_6_9_+_C"},{"category":"_@","name":"Mudoh Suiryuu Ha","input":"_6_3_2_8_+_A / _B"},{"category":"_@","name":"Move","input":"_4 / _6"},{"category":"_@","name":"Ryuuhyou Dan","input":"_6_2_3_+_B_+_C / _A_+_B_+_C"},{"category":"_*","name":"Jaga Rangeki Kyaku","input":"^1_6_+^*_B"}]},{"name":"NICOLA ZARA","moves":[{"category":"_(","name":"Stomping","input":"_6_+_C"},{"category":"_(","name":"Tornado Driver","input":"_4_+_C"},{"category":"_(","name":"Air Tornado Driver","input":"_^_4_+_C"},{"category":"_@","name":"Galvanic Smash","input":"_2_3_6_9_+_C"},{"category":"_@","name":"Discus Driver","input":"_2_1_4_+_A / _B"},{"category":"_@","name":"Samson Spirit","input":"_6_3_2_1_4_6_+_B_+_C / _A_+_B_+_C"},{"category":"_@","name":"Flying Saucer","input":"_4_2_1_+_B / _A_+_B_+_C"},{"category":"_*","name":"Lazer of Hell","input":"_2_1_2_3_6_9_+_A"}]},{"name":"JOKER","moves":[{"category":"_(","name":"Roller Rage","input":"_4 / _6_+_C"},{"category":"_)","name":"Blood Parasol","input":"_^_2_+_A / _B"},{"category":"_@","name":"Crazy Toy","input":"_2_3_6_9_+_C"},{"category":"_@","name":"Roller Dash","input":"^1_6_+_A / _B"},{"category":"_@","name":"Transporter","input":"_2_2_+_A / _B"},{"category":"_@","name":"Murder Hat Heave","input":"_6_3_2_1_4_6_+_B_+_C / _A_+_B_+_C"},{"category":"_*","name":"Good Face","input":"_2_1_2_3_6_9_+_A"}]},{"name":"CHUNG PAIFU","moves":[{"category":"_(","name":"Cane Toss","input":"_4 / _6_+_C"},{"category":"_)","name":"ANGRY MODE FLASHING Life Bar"},{"category":"_@","name":"Sen Shushou Uchi","input":"_2_3_6_9_+_A / _B"},{"category":"_@","name":"Hakukoh Dan","input":"^1_6_+_A / _B"},{"category":"_@","name":"Kiden Dama hanging on the pipe","input":"_2_8_2_8_+_A / _B (on Chung's stage)"},{"category":"_@","name":"Shien Ryu","input":"_6_2_3_+_B_+_C / _A_+_B_+_C"},{"category":"_@","name":"Senpuu Enbu","input":"_2_1_4_7_+_C (Angry Mode only)"},{"category":"_@","name":"Early Descent","input":"_C"},{"category":"_@","name":"Chocho Henka","input":"_6_4_6_+_B_+_C / _A_+_B_+_C (Angry Mode only)"},{"category":"_*","name":"Sennin Happa","input":"_2_2_2_2_8_+_A (Angry Mode only)"}]},{"name":"GORDON BOWMAN","moves":[{"category":"_(","name":"Backbreaker","input":"_4 / _6_+_C"},{"category":"_(","name":"Ton Press","input":"_^_6_+_C"},{"category":"_@","name":"Friction Heat","input":"_6_3_2_1_4_+_A / _B"},{"category":"_@","name":"Moon-Shot Upper","input":"_1_4_6_+_A / _B"},{"category":"_@","name":"Spark Bolt","input":"_6_4_6_+_B_+_C / _A_+_B_+_C"},{"category":"_*","name":"Mad Police close","input":"_6_3_2_1_4_6_+_C"}]},{"name":"CAROL STANZACK","moves":[{"category":"_(","name":"Twist Toss","input":"_4 / _6_+_C"},{"category":"_)","name":"Dream Angel","input":"_^_2_+_C"},{"category":"_@","name":"Spinning Top","input":"_2_1_4_+_A / _B"},{"category":"_@","name":"Swan Diving","input":"^1_6_+_A"},{"category":"_@","name":"Double Swan Diving","input":"^1_6_+_B"},{"category":"_@","name":"Fast Ball Flash","input":"_4_1_2_3_6_+_B_+_C / _A_+_B_+_C"},{"category":"_@","name":"Rainbow Attack","input":"_6_2_3_+_B_+_C / _A_+_B_+_C"},{"category":"_*","name":"Naughty Ball","input":"_6_4_2_8_+_A"}]},{"name":"KING LION (KAGE SHISHIOH)","moves":[{"category":"_(","name":"Hanging Upper","input":"_4 / _6_+_C"},{"category":"_@","name":"Nightmare Knocker","input":"_2_3_6_9_+_C (reverse high)"},{"category":"_@","name":"Beast Blow","input":"_1_4_6_+_A / _B"},{"category":"_@","name":"Earth Chopper","input":"_2_1_4_7_+_C"},{"category":"_@","name":"Silent Storm","input":"_6_3_2_8_+_B_+_C / _A_+_B_+_C"},{"category":"_@","name":"God Breath","input":"^2_8_+_B_+_C / _A_+_B_+_C"},{"category":"_*","name":"King Straight","input":"_6_3_2_1_4_6_4_6_+_A"}]},{"name":"KING LEO (SHIN SHISHIOH)","moves":[{"category":"_(","name":"Hanging Upper","input":"_4 / _6_+_C"},{"category":"_@","name":"Nightmare Knocker","input":"_2_3_6_9_+_C (reverse high)"},{"category":"_@","name":"Beast Blow","input":"_1_4_6_+_A / _B"},{"category":"_@","name":"Hunter Killer","input":"_2_1_4_+_A / _B"},{"category":"_@","name":"Earth Chopper","input":"_2_1_4_7_+_C"},{"category":"_@","name":"Silent Storm","input":"_6_3_2_8_+_B_+_C / _A_+_B_+_C"},{"category":"_@","name":"God Breath","input":"^2_8_+_B_+_C / _A_+_B_+_C"},{"category":"_@","name":"Thunder God Breath","input":"_4_2_1_+_B / _A_+_B_+_C"},{"category":"_*","name":"Shin King Straight","input":"_6_3_2_1_4_6_4_6_+_A"},{"category":"_*","name":"King Upper","input":"_6_3_2_1_4_6_4_6_+_B"}]}],"controlAbbr":{"_A":"P","_B":"K","_C":"WS","_D":"DA","_S":"ST","^S":"SL"},"systemControlMappings":{"snes":{"y":"_A","x":"_B","b":"_C","a":"_D"},"genesis":{"b":"_A","a":"_B","y":"_C","x":"_D"},"megadrive":{"b":"_A","a":"_B","y":"_C","x":"_D"},"32x":{"b":"_A","a":"_B","y":"_C","x":"_D"},"saturn":{"b":"_A","a":"_B","y":"_C","x":"_D"},"neogeo":{"b":"_A","y":"_B","a":"_C","x":"_D"},"psx":{"y":"_A","x":"_B","b":"_C","a":"_D"},"ps2":{"y":"_A","x":"_B","b":"_C","a":"_D"},"gb":{"b":"_A","a":"_B"},"gbc":{"b":"_A","a":"_B"},"gamegear":{"a":"_A","b":"_B"},"sms":{"a":"_A","b":"_B"},"gba":{"b":"_A","a":"_B","l1":"_C","r1":"_D"},"ngpc":{"b":"_A","a":"_B","y":"_C","x":"_D"},"dreamcast":{"y":"_A","x":"_B","b":"_C","a":"_D"},"n64":{"b":"_A","a":"_B","cDown":"_C","cLeft":"_D"},"wswan":{"b":"_A","a":"_B"}},"controlGroups":{"_P":["_A"],"_K":["_B"]}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "savagere"
+  ],
+  "name": "Savage Reign",
+  "year": 1995,
+  "manufacturer": "SNK",
+  "controls": {
+    "_A": "Punch",
+    "_B": "Kick",
+    "_C": "Weapon Strike",
+    "_D": "Dimensional Attack",
+    "_S": "Start",
+    "^S": "Select (AES only)"
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_*": "Desperation Moves",
+    "_`": "Desperation Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "_6_6"
+    },
+    {
+      "category": "_)",
+      "name": "Long Dash",
+      "input": "_1_6_6"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4"
+    },
+    {
+      "category": "_)",
+      "name": "Long Retreat",
+      "input": "_3_4_4"
+    },
+    {
+      "category": "_)",
+      "name": "Light Punch",
+      "input": "_X_A"
+    },
+    {
+      "category": "_)",
+      "name": "Hard Punch",
+      "input": "_A"
+    },
+    {
+      "category": "_)",
+      "name": "Light Kick",
+      "input": "_X_B"
+    },
+    {
+      "category": "_)",
+      "name": "Hard Kick",
+      "input": "_B"
+    },
+    {
+      "category": "_)",
+      "name": "Dimensional Attack",
+      "input": "_D / _A_+_B"
+    },
+    {
+      "category": "_)",
+      "name": "Dimensional Retreat Attack",
+      "input": "_4_+_D / _A_+_B"
+    },
+    {
+      "category": "_)",
+      "name": "Charge Dimensional Attack",
+      "input": "_2_3_6_+_D / _A_+_B"
+    },
+    {
+      "category": "_)",
+      "name": "Backtrack Dimensional Attack",
+      "input": "_2_1_4_+_D / _A_+_B"
+    },
+    {
+      "category": "_)",
+      "name": "High Drop Dimensional Attack",
+      "input": "_2_8_+_D / _A_+_B"
+    },
+    {
+      "category": "_)",
+      "name": "Hyper Dimensional Attack",
+      "input": "_6_4_1_2_+_D / _A_+_B"
+    },
+    {
+      "category": "_)",
+      "name": "Light Weapon Throw",
+      "input": "_B_+_C"
+    },
+    {
+      "category": "_)",
+      "name": "Heavy Weapon Throw",
+      "input": "_A_+_B_+_C"
+    },
+    {
+      "category": "_)",
+      "name": "Throw Escape when thrown",
+      "input": "_B"
+    },
+    {
+      "category": "_)",
+      "name": "Throw Reverse when thrown",
+      "input": "_4 / _6_+_C"
+    },
+    {
+      "category": "_)",
+      "name": "Defensive Attack blocking",
+      "input": "_6_+_A"
+    }
+  ],
+  "characters": [
+    {
+      "name": "SHO HAYATE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Ate Otoshi",
+          "input": "_4 / _6_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "Reppuu Satsu",
+          "input": "_^_2_+_A"
+        },
+        {
+          "category": "_)",
+          "name": "Shin Reppuu Satsu",
+          "input": "_^_2_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Kyouretsu Zan",
+          "input": "_2_3_6_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Hiten Shou Ou Kyaku",
+          "input": "_2_1_4_+_A / _B"
+        },
+        {
+          "category": "_@",
+          "name": "Gen'ei Hitsue",
+          "input": "_6_2_3_+_B_+_C / _A_+_B_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Nendou Hitsue",
+          "input": "_6_4_6_+_B_+_C / _A_+_B_+_C"
+        },
+        {
+          "category": "_*",
+          "name": "Ougi! Musou Ranbu",
+          "input": "_2_1_4_1_2_3_6_+_A"
+        }
+      ]
+    },
+    {
+      "name": "MAX EAGLE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "German Suplex",
+          "input": "_6_+_C"
+        },
+        {
+          "category": "_(",
+          "name": "Reverse Power Slam",
+          "input": "_4_+_C"
+        },
+        {
+          "category": "_(",
+          "name": "Falling Power Slam",
+          "input": "_^_6_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "American Screw",
+          "input": "_2_1_4_+_A / _B"
+        },
+        {
+          "category": "_@",
+          "name": "Flash Wing",
+          "input": "_2_3_6_9_+_A / _B"
+        },
+        {
+          "category": "_@",
+          "name": "Axe Boom",
+          "input": "_4_1_2_3_6_+_B_+_C / _A_+_B_+_C"
+        },
+        {
+          "category": "_*",
+          "name": "Eagle Special close",
+          "input": "_6_3_2_1_4_6_+_C"
+        }
+      ]
+    },
+    {
+      "name": "GOZU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Flipping Tiger Bomb",
+          "input": "_4 / _6_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Youen Ken",
+          "input": "^*_A"
+        },
+        {
+          "category": "_@",
+          "name": "Gohten",
+          "input": "_2_3_6_9_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Mudoh Goenha",
+          "input": "_6_3_2_8_+_A / _B"
+        },
+        {
+          "category": "_@",
+          "name": "Gouen Dan",
+          "input": "_6_2_3_+_B_+_C / _A_+_B_+_C"
+        },
+        {
+          "category": "_*",
+          "name": "Jaga Rangeki Shoh",
+          "input": "^1_6_+^*_A"
+        }
+      ]
+    },
+    {
+      "name": "MEZU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Flipping Tiger Bomb",
+          "input": "_4 / _6_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Youen Kyaku",
+          "input": "^*_B"
+        },
+        {
+          "category": "_@",
+          "name": "Gohten",
+          "input": "_2_3_6_9_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Mudoh Suiryuu Ha",
+          "input": "_6_3_2_8_+_A / _B"
+        },
+        {
+          "category": "_@",
+          "name": "Move",
+          "input": "_4 / _6"
+        },
+        {
+          "category": "_@",
+          "name": "Ryuuhyou Dan",
+          "input": "_6_2_3_+_B_+_C / _A_+_B_+_C"
+        },
+        {
+          "category": "_*",
+          "name": "Jaga Rangeki Kyaku",
+          "input": "^1_6_+^*_B"
+        }
+      ]
+    },
+    {
+      "name": "NICOLA ZARA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Stomping",
+          "input": "_6_+_C"
+        },
+        {
+          "category": "_(",
+          "name": "Tornado Driver",
+          "input": "_4_+_C"
+        },
+        {
+          "category": "_(",
+          "name": "Air Tornado Driver",
+          "input": "_^_4_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Galvanic Smash",
+          "input": "_2_3_6_9_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Discus Driver",
+          "input": "_2_1_4_+_A / _B"
+        },
+        {
+          "category": "_@",
+          "name": "Samson Spirit",
+          "input": "_6_3_2_1_4_6_+_B_+_C / _A_+_B_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Saucer",
+          "input": "_4_2_1_+_B / _A_+_B_+_C"
+        },
+        {
+          "category": "_*",
+          "name": "Lazer of Hell",
+          "input": "_2_1_2_3_6_9_+_A"
+        }
+      ]
+    },
+    {
+      "name": "JOKER",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Roller Rage",
+          "input": "_4 / _6_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "Blood Parasol",
+          "input": "_^_2_+_A / _B"
+        },
+        {
+          "category": "_@",
+          "name": "Crazy Toy",
+          "input": "_2_3_6_9_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Roller Dash",
+          "input": "^1_6_+_A / _B"
+        },
+        {
+          "category": "_@",
+          "name": "Transporter",
+          "input": "_2_2_+_A / _B"
+        },
+        {
+          "category": "_@",
+          "name": "Murder Hat Heave",
+          "input": "_6_3_2_1_4_6_+_B_+_C / _A_+_B_+_C"
+        },
+        {
+          "category": "_*",
+          "name": "Good Face",
+          "input": "_2_1_2_3_6_9_+_A"
+        }
+      ]
+    },
+    {
+      "name": "CHUNG PAIFU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Cane Toss",
+          "input": "_4 / _6_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "ANGRY MODE FLASHING Life Bar"
+        },
+        {
+          "category": "_@",
+          "name": "Sen Shushou Uchi",
+          "input": "_2_3_6_9_+_A / _B"
+        },
+        {
+          "category": "_@",
+          "name": "Hakukoh Dan",
+          "input": "^1_6_+_A / _B"
+        },
+        {
+          "category": "_@",
+          "name": "Kiden Dama hanging on the pipe",
+          "input": "_2_8_2_8_+_A / _B (on Chung's stage)"
+        },
+        {
+          "category": "_@",
+          "name": "Shien Ryu",
+          "input": "_6_2_3_+_B_+_C / _A_+_B_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Senpuu Enbu",
+          "input": "_2_1_4_7_+_C (Angry Mode only)"
+        },
+        {
+          "category": "_@",
+          "name": "Early Descent",
+          "input": "_C"
+        },
+        {
+          "category": "_@",
+          "name": "Chocho Henka",
+          "input": "_6_4_6_+_B_+_C / _A_+_B_+_C (Angry Mode only)"
+        },
+        {
+          "category": "_*",
+          "name": "Sennin Happa",
+          "input": "_2_2_2_2_8_+_A (Angry Mode only)"
+        }
+      ]
+    },
+    {
+      "name": "GORDON BOWMAN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Backbreaker",
+          "input": "_4 / _6_+_C"
+        },
+        {
+          "category": "_(",
+          "name": "Ton Press",
+          "input": "_^_6_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Friction Heat",
+          "input": "_6_3_2_1_4_+_A / _B"
+        },
+        {
+          "category": "_@",
+          "name": "Moon-Shot Upper",
+          "input": "_1_4_6_+_A / _B"
+        },
+        {
+          "category": "_@",
+          "name": "Spark Bolt",
+          "input": "_6_4_6_+_B_+_C / _A_+_B_+_C"
+        },
+        {
+          "category": "_*",
+          "name": "Mad Police close",
+          "input": "_6_3_2_1_4_6_+_C"
+        }
+      ]
+    },
+    {
+      "name": "CAROL STANZACK",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Twist Toss",
+          "input": "_4 / _6_+_C"
+        },
+        {
+          "category": "_)",
+          "name": "Dream Angel",
+          "input": "_^_2_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Spinning Top",
+          "input": "_2_1_4_+_A / _B"
+        },
+        {
+          "category": "_@",
+          "name": "Swan Diving",
+          "input": "^1_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Double Swan Diving",
+          "input": "^1_6_+_B"
+        },
+        {
+          "category": "_@",
+          "name": "Fast Ball Flash",
+          "input": "_4_1_2_3_6_+_B_+_C / _A_+_B_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Rainbow Attack",
+          "input": "_6_2_3_+_B_+_C / _A_+_B_+_C"
+        },
+        {
+          "category": "_*",
+          "name": "Naughty Ball",
+          "input": "_6_4_2_8_+_A"
+        }
+      ]
+    },
+    {
+      "name": "KING LION (KAGE SHISHIOH)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Hanging Upper",
+          "input": "_4 / _6_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Nightmare Knocker",
+          "input": "_2_3_6_9_+_C (reverse high)"
+        },
+        {
+          "category": "_@",
+          "name": "Beast Blow",
+          "input": "_1_4_6_+_A / _B"
+        },
+        {
+          "category": "_@",
+          "name": "Earth Chopper",
+          "input": "_2_1_4_7_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Silent Storm",
+          "input": "_6_3_2_8_+_B_+_C / _A_+_B_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "God Breath",
+          "input": "^2_8_+_B_+_C / _A_+_B_+_C"
+        },
+        {
+          "category": "_*",
+          "name": "King Straight",
+          "input": "_6_3_2_1_4_6_4_6_+_A"
+        }
+      ]
+    },
+    {
+      "name": "KING LEO (SHIN SHISHIOH)",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Hanging Upper",
+          "input": "_4 / _6_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Nightmare Knocker",
+          "input": "_2_3_6_9_+_C (reverse high)"
+        },
+        {
+          "category": "_@",
+          "name": "Beast Blow",
+          "input": "_1_4_6_+_A / _B"
+        },
+        {
+          "category": "_@",
+          "name": "Hunter Killer",
+          "input": "_2_1_4_+_A / _B"
+        },
+        {
+          "category": "_@",
+          "name": "Earth Chopper",
+          "input": "_2_1_4_7_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Silent Storm",
+          "input": "_6_3_2_8_+_B_+_C / _A_+_B_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "God Breath",
+          "input": "^2_8_+_B_+_C / _A_+_B_+_C"
+        },
+        {
+          "category": "_@",
+          "name": "Thunder God Breath",
+          "input": "_4_2_1_+_B / _A_+_B_+_C"
+        },
+        {
+          "category": "_*",
+          "name": "Shin King Straight",
+          "input": "_6_3_2_1_4_6_4_6_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "King Upper",
+          "input": "_6_3_2_1_4_6_4_6_+_B"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_A": "P",
+    "_B": "K",
+    "_C": "WS",
+    "_D": "DA",
+    "_S": "ST",
+    "^S": "SL"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "genesis": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "megadrive": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "32x": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "saturn": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "neogeo": {
+      "b": "_A",
+      "y": "_B",
+      "a": "_C",
+      "x": "_D"
+    },
+    "psx": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "ps2": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "gb": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gbc": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gamegear": {
+      "a": "_A",
+      "b": "_B"
+    },
+    "sms": {
+      "a": "_A",
+      "b": "_B"
+    },
+    "gba": {
+      "b": "_A",
+      "a": "_B",
+      "l1": "_C",
+      "r1": "_D"
+    },
+    "ngpc": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "dreamcast": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "n64": {
+      "b": "_A",
+      "a": "_B",
+      "cDown": "_C",
+      "cLeft": "_D"
+    },
+    "wswan": {
+      "b": "_A",
+      "a": "_B"
+    }
+  },
+  "controlGroups": {
+    "_P": [
+      "_A"
+    ],
+    "_K": [
+      "_B"
+    ]
+  }
+}

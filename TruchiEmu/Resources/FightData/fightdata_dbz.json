@@ -1,1 +1,297 @@
-{"schemaVersion":2,"romIds":["dbz","dbza"],"name":"Dragon Ball Z","year":1993,"manufacturer":"Banpresto","credits":"by: Fabricio Coroquer (Created by: Minoplis)","controls":{"_P":"Punch","_K":"Kick","_S":"Start"},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves"},"commonCommands":[{"category":"_)","name":"Dash _? _? (same direction)"}],"characters":[{"name":"SON GOKU","moves":[{"category":"_(","name":"Shoulder Throw","input":"_6_+_P"},{"category":"_)","name":"Dashing Punch","input":"_6_+_P"},{"category":"_@","name":"Kame Hame Ha","input":"_2_3_6_+^s"},{"category":"_@","name":"Kaio Ken","input":"_4_1_2_3_6_9_+^s"},{"category":"_@","name":"Flip Kick","input":"_8_9_6_+_K"}]},{"name":"VEGETA","moves":[{"category":"_(","name":"Back Throw","input":"_6_+_P"},{"category":"_)","name":"Run Around close","input":"_6_+_P_+_K"},{"category":"_)","name":"Falling Kick","input":"_^_2_+_K"},{"category":"_@","name":"Final Flash","input":"_2_3_6_+^s"},{"category":"_@","name":"Shoryuken","input":"_6_2_3_+_P"},{"category":"_@","name":"Ki Blast","input":"_4_6_+^s"}]},{"name":"SON GOHAN","moves":[{"category":"_)","name":"Rush Kick","input":"_6_+_K"},{"category":"_@","name":"Masenkou","input":"_8_9_6_+^s"},{"category":"_@","name":"Flurry Punch","input":"^*_P"},{"category":"_@","name":"Ki Blast","input":"_4_6_+^s"},{"category":"_@","name":"Rushing Punch","input":"_4_6_+_P"}]},{"name":"PICCOLO","moves":[{"category":"_)","name":"One-Two Punch","input":"_4_+_P"},{"category":"_)","name":"Roundhouse","input":"_6_+_K"},{"category":"_@","name":"Makankousappou","input":"_8_9_6_+^s"},{"category":"_@","name":"Large Ki Blast","input":"_4_6_+^s"},{"category":"_@","name":"Slap","input":"_6_2_3_+_P"}]},{"name":"RIKUM","moves":[{"category":"_@","name":"Rikum Kaboom","input":"_2_3_6_+^s"},{"category":"_@","name":"Ki Blast","input":"_4_6_+^s"}]},{"name":"BURTA","moves":[{"category":"_(","name":"Spin Around Kick","input":"_6_+_P_+_K"},{"category":"_)","name":"Rapid Kick","input":"_6_+_K"}]},{"name":"CAPTAIN G-NYU","moves":[{"category":"_(","name":"Neck Break","input":"_6_+_P_+_K"},{"category":"_)","name":"Jump Kick","input":"_6_+_K"},{"category":"_@","name":"Large Ki Blast","input":"_4_6_+^s"}]},{"name":"FREEZA","moves":[{"category":"_)","name":"Tail Spin","input":"_2_+_P"},{"category":"_@","name":"Death Ball","input":"_2_3_6_+^s"},{"category":"_@","name":"Finger Blast","input":"_4_6_+^s"},{"category":"_`","name":"Can't use any Moves in 1st round."}]}],"controlAbbr":{"_P":"P","_K":"K","_S":"ST"},"systemControlMappings":{"snes":{"y":"_P","b":"_K"},"genesis":{"b":"_P","y":"_K"},"megadrive":{"b":"_P","y":"_K"},"32x":{"b":"_P","y":"_K"},"saturn":{"b":"_P","y":"_K"},"psx":{"y":"_P","b":"_K"},"ps2":{"y":"_P","b":"_K"},"gb":{"b":"_P","a":"_K"},"gbc":{"b":"_P","a":"_K"},"gamegear":{"a":"_P","b":"_K"},"sms":{"a":"_P","b":"_K"},"gba":{"b":"^E","a":"^H","l1":"^G","r1":"^J"},"ngpc":{"b":"_P","a":"_K"}},"controlGroups":{"_P":["_P"],"_K":["_K"]}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "dbz",
+    "dbza"
+  ],
+  "name": "Dragon Ball Z",
+  "year": 1993,
+  "manufacturer": "Banpresto",
+  "credits": "by: Fabricio Coroquer (Created by: Minoplis)",
+  "controls": {
+    "_P": "Punch",
+    "_K": "Kick",
+    "_S": "Start"
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash _? _? (same direction)"
+    }
+  ],
+  "characters": [
+    {
+      "name": "SON GOKU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Shoulder Throw",
+          "input": "_6_+_P"
+        },
+        {
+          "category": "_)",
+          "name": "Dashing Punch",
+          "input": "_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Kame Hame Ha",
+          "input": "_2_3_6_+^s"
+        },
+        {
+          "category": "_@",
+          "name": "Kaio Ken",
+          "input": "_4_1_2_3_6_9_+^s"
+        },
+        {
+          "category": "_@",
+          "name": "Flip Kick",
+          "input": "_8_9_6_+_K"
+        }
+      ]
+    },
+    {
+      "name": "VEGETA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Back Throw",
+          "input": "_6_+_P"
+        },
+        {
+          "category": "_)",
+          "name": "Run Around close",
+          "input": "_6_+_P_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Falling Kick",
+          "input": "_^_2_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Final Flash",
+          "input": "_2_3_6_+^s"
+        },
+        {
+          "category": "_@",
+          "name": "Shoryuken",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Ki Blast",
+          "input": "_4_6_+^s"
+        }
+      ]
+    },
+    {
+      "name": "SON GOHAN",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Rush Kick",
+          "input": "_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Masenkou",
+          "input": "_8_9_6_+^s"
+        },
+        {
+          "category": "_@",
+          "name": "Flurry Punch",
+          "input": "^*_P"
+        },
+        {
+          "category": "_@",
+          "name": "Ki Blast",
+          "input": "_4_6_+^s"
+        },
+        {
+          "category": "_@",
+          "name": "Rushing Punch",
+          "input": "_4_6_+_P"
+        }
+      ]
+    },
+    {
+      "name": "PICCOLO",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "One-Two Punch",
+          "input": "_4_+_P"
+        },
+        {
+          "category": "_)",
+          "name": "Roundhouse",
+          "input": "_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Makankousappou",
+          "input": "_8_9_6_+^s"
+        },
+        {
+          "category": "_@",
+          "name": "Large Ki Blast",
+          "input": "_4_6_+^s"
+        },
+        {
+          "category": "_@",
+          "name": "Slap",
+          "input": "_6_2_3_+_P"
+        }
+      ]
+    },
+    {
+      "name": "RIKUM",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Rikum Kaboom",
+          "input": "_2_3_6_+^s"
+        },
+        {
+          "category": "_@",
+          "name": "Ki Blast",
+          "input": "_4_6_+^s"
+        }
+      ]
+    },
+    {
+      "name": "BURTA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Spin Around Kick",
+          "input": "_6_+_P_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Rapid Kick",
+          "input": "_6_+_K"
+        }
+      ]
+    },
+    {
+      "name": "CAPTAIN G-NYU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Neck Break",
+          "input": "_6_+_P_+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Jump Kick",
+          "input": "_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Large Ki Blast",
+          "input": "_4_6_+^s"
+        }
+      ]
+    },
+    {
+      "name": "FREEZA",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Tail Spin",
+          "input": "_2_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Death Ball",
+          "input": "_2_3_6_+^s"
+        },
+        {
+          "category": "_@",
+          "name": "Finger Blast",
+          "input": "_4_6_+^s"
+        },
+        {
+          "category": "_`",
+          "name": "Can't use any Moves in 1st round."
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_P": "P",
+    "_K": "K",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_P",
+      "b": "_K"
+    },
+    "genesis": {
+      "b": "_P",
+      "y": "_K"
+    },
+    "megadrive": {
+      "b": "_P",
+      "y": "_K"
+    },
+    "32x": {
+      "b": "_P",
+      "y": "_K"
+    },
+    "saturn": {
+      "b": "_P",
+      "y": "_K"
+    },
+    "psx": {
+      "y": "_P",
+      "b": "_K"
+    },
+    "ps2": {
+      "y": "_P",
+      "b": "_K"
+    },
+    "gb": {
+      "b": "_P",
+      "a": "_K"
+    },
+    "gbc": {
+      "b": "_P",
+      "a": "_K"
+    },
+    "gamegear": {
+      "a": "_P",
+      "b": "_K"
+    },
+    "sms": {
+      "a": "_P",
+      "b": "_K"
+    },
+    "gba": {
+      "b": "^E",
+      "a": "^H",
+      "l1": "^G",
+      "r1": "^J"
+    },
+    "ngpc": {
+      "b": "_P",
+      "a": "_K"
+    }
+  },
+  "controlGroups": {
+    "_P": [
+      "_P"
+    ],
+    "_K": [
+      "_K"
+    ]
+  }
+}

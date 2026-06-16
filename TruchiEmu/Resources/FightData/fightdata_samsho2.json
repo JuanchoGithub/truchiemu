@@ -1,1 +1,1552 @@
-{"schemaVersion":2,"romIds":["samsho2","samsho2k","samsho2ka"],"name":"Samurai Shodown II","year":1994,"manufacturer":"SNK","controls":{"_A":"Weak Slash (^s)","_B":"Medium Slash (^s)","_C":"Weak Kick","_D":"Medium Kick","_S":"Start","^S":"Select (AES only)"},"controlGroups":{"_K":["_C","_D"]},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves","_&":"Hidden Super Specials","_#":"Nuigurumi","_*":"Weapon-Breaking Techniques","_`":"Weapon-Breaking Techniques"},"commonCommands":[{"category":"_)","name":"Run","input":"_6^6","condition":"─"},{"category":"_)","name":"Retreat","input":"_4_4","condition":"─"},{"category":"_)","name":"Run & Roll Forward running","input":"_3","condition":"─"},{"category":"_)","name":"Retreat & Run retreating","input":"^6","condition":"─"},{"category":"_)","name":"Retreat & Lay Down retreating","input":"^2","condition":"─"},{"category":"_)","name":"Retreat & Roll Forward retreating","input":"_3","condition":"─"},{"category":"_)","name":"Lay Down","input":"_2^2","condition":"─"},{"category":"_)","name":"Roll Backward","input":"_1_1","condition":"─"},{"category":"_)","name":"Roll Forward","input":"_3_3","condition":"─"},{"category":"_)","name":"Strong Slash","input":"_A_+_B","condition":"W"},{"category":"_)","name":"Strong Kick","input":"_C_+_D","condition":"─"},{"category":"_)","name":"Hop Away","input":"_B_+_C","condition":"─"},{"category":"_)","name":"Hop Up","input":"_6_+_B_+_C","condition":"─"},{"category":"_)","name":"Barehanded Sword Grab unarmed","input":"_4_1_2_3_6 (reverse all)","condition":"─"},{"category":"_)","name":"Taunt 1 far","input":"_O_A_+_C","condition":"─"},{"category":"_)","name":"Taunt 2 far","input":"_O_B_+_D","condition":"─"},{"category":"_)","name":"Retrieve Weapon close to your weapon","input":"_A / _B","condition":"─"}],"characters":[{"name":"HAOHMARU","moves":[{"category":"_(","name":"Yokonage","input":"_4 / _6_+_B / _A_+_B","condition":"─"},{"category":"_(","name":"Shinkuu Tomoe Nage","input":"_4 / _6_+_D / _C_+_D","condition":"─"},{"category":"_@","name":"Ougi Senpuu Retsu Zan","input":"_2_3_6_+^s","condition":"W"},{"category":"_@","name":"Fake Ougi Senpuu Retsu Zan","input":"_2_3_6_+_K","condition":"W"},{"category":"_@","name":"Ougi Kogetsu Zan","input":"_6_2_3_+^s","condition":"W"},{"category":"_@","name":"Ougi Resshin Zan","input":"_6_2_3_+_K","condition":"W"},{"category":"_@","name":"Sake Kougeki","input":"_2_1_4_+_A (reflect projectile)","condition":"─"},{"category":"_&","name":"Hiougi Tenha Fuujin Zan","input":"_3_4_1_2_3_6_4_2_1_+_B","condition":"W"},{"category":"_#","name":"Nuigurumi","input":"_6_3_2_1_4_6_4_+_B","condition":"─"},{"category":"_*","name":"Tenha Seikou Zan","input":"_6_3_2_1_4_6_+_A","condition":"W"}]},{"name":"GENJURO KIBAGAMI","moves":[{"category":"_(","name":"Budou Oni Fukushimashi","input":"_4 / _6_+_B / _A_+_B / _D / _C_+_D","condition":"─"},{"category":"_@","name":"Sanren Satsu: Kiba","input":"_2_3_6_+^s","condition":"W"},{"category":"_@","input":"^!Sanren Satsu: Tsuno                                           _2_3_6_+^s","condition":"W"},{"category":"_@","input":"^!Sanren Satsu: Rin                                         _2_3_6_+^s","condition":"W"},{"category":"_@","name":"Touha Kouyoku Jin","input":"_6_2_3_+^s","condition":"W"},{"category":"_@","name":"Ouka Zan","input":"_2_1_4_+^s","condition":"W"},{"category":"_#","name":"Nuigurumi","input":"_6_3_2_1_4_6_4_+_B","condition":"─"},{"category":"_*","name":"Gokou Zan","input":"_6_3_2_1_4_6_+_A","condition":"W"}]},{"name":"KYOSHIRO SENRYO","moves":[{"category":"_(","name":"Yari Satsu Nage Mai","input":"_4 / _6_+_B / _A_+_B","condition":"W"},{"category":"_(","name":"Kami Ten Nage","input":"_4 / _6_+_D","condition":"W"},{"category":"_(","name":"Kami Enbu","input":"_4 / _6_+_C_+_D","condition":"W"},{"category":"_(","name":"Kami Ten Nage unarmed","input":"_4 / _6_+_B","condition":"─"},{"category":"_(","name":"Kami Enbu unarmed","input":"_4 / _6_+_A_+_B","condition":"─"},{"category":"_)","name":"Crawl Forward","input":"^3","condition":"─"},{"category":"_)","name":"Crawl Backward","input":"^1","condition":"─"},{"category":"_)","name":"Chikemuri Kuruwa","input":"_^_2_+_A_+_B","condition":"W"},{"category":"_@","name":"Kaen Kyokubu","input":"_2_3_6_+^s","condition":"─"},{"category":"_@","name":"Kaiten Kyokubu: Ten","input":"_6_2_3_+^s","condition":"W"},{"category":"_@","name":"Fuuretsu Sen","input":"_2_1_4_+^s","condition":"─"},{"category":"_@","name":"Choubi Jishi","input":"_2_1_4_+_K","condition":"W"},{"category":"_#","name":"Nuigurumi","input":"_6_4_1_2_3_6_4_+_D","condition":"─"},{"category":"_*","name":"Aragotoshi Kyoshiro \"Ketsuniku no Mai\"","input":"_6_4_1_2_3_6_+_C","condition":"W"},{"category":"_*","input":"^!Move                                                          _4 / _6","condition":"W"}]},{"name":"HANZO HATTORI","moves":[{"category":"_(","name":"Kuuten Nage","input":"_4 / _6_+_B / _A_+_B","condition":"─"},{"category":"_(","name":"Kubinage Kiri","input":"_4 / _6_+_D / _C_+_D","condition":"W"},{"category":"_(","name":"Kubinage unarmed","input":"_4 / _6_+_D / _C_+_D","condition":"─"},{"category":"_(","name":"Kuuten Geki","input":"_^_4 / _6_+_B / _A_+_B","condition":"─"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_9","condition":"─"},{"category":"_@","name":"Ninpou Reppuu Shuriken","input":"_^_4_1_2_3_6_+^s","condition":"─"},{"category":"_@","name":"Ninpou Baku'en Ryuu","input":"_6_3_2_1_4_+^s","condition":"─"},{"category":"_@","name":"Ninpou Mozu Otoshi close","input":"_6_2_3_+_K","condition":"─"},{"category":"_@","name":"Ninpou Mozu Otoshi: Hayate running, close","input":"_6_2_3_+_K","condition":"─"},{"category":"_@","name":"Ninpou Kage Bunshin","input":"_6_4_1_2_3_6_+_A / _B","condition":"─"},{"category":"_@","name":"Ninpou Utsusemi Tenbu","input":"_6_3_2_1_4_+_B_+_C_+_D","condition":"─"},{"category":"_@","name":"Ninpou Migawari no Jutsu: Hotoke being hit","input":"_B_+_C_+_D","condition":"─"},{"category":"_&","name":"Kage Mai","input":"_6_4_6_4_6_4_2_+_B_+_C_+_D","condition":"─"},{"category":"_#","name":"Nuigurumi","input":"_6_4_6_4_6_4_2_+_A","condition":"─"},{"category":"_*","name":"Tenma Rimetsu","input":"_6_3_2_1_4_6_+_D","condition":"W"}]},{"name":"NEINHALT SIEGER","moves":[{"category":"_(","name":"Shudel Arobeling","input":"_4 / _6_+_B / _A_+_B","condition":"─"},{"category":"_(","name":"Labe Shutzan Shutulmangrif","input":"_4 / _6_+_D / _C_+_D","condition":"─"},{"category":"_(","name":"Forest Shivang Smarthnarme","input":"_^_4 / _6_+_B / _A_+_B","condition":"─"},{"category":"_@","name":"Wolf Fangen","input":"_6_4_1_2_3_6_+_A_+_B","condition":"W"},{"category":"_@","name":"Vulcan Weinen","input":"_2_3_6_+_A","condition":"W"},{"category":"_@","input":"^!Vulcan Dryukken                                               ^*_A","condition":"W"},{"category":"_@","input":"^!Vulcan Exploizon                                          ^*_A","condition":"W"},{"category":"_@","name":"Blitz Jaeger","input":"_6_3_2_1_4_+_K","condition":"W"},{"category":"_@","name":"Tigerkopf","input":"_2_3_6_+_C","condition":"─"},{"category":"_@","input":"^!Falkennagel                                                   _2_3_6_+_B","condition":"─"},{"category":"_@","input":"^!Elefantglied                                              _6_3_2_1_4_+_A","condition":"─"},{"category":"_@","name":"Firestorm","input":"_3_+_B_+_C","condition":"W"},{"category":"_#","name":"Nuigurumi","input":"_6_3_2_1_4_6_4_+_A","condition":"─"},{"category":"_*","name":"Operation Tiger","input":"_6_3_2_1_4_6_+_C_+_D","condition":"W"}]},{"name":"CHARLOTTE CHRISTINE DE COLDE","moves":[{"category":"_(","name":"Lion Lance","input":"_4 / _6_+_B / _A_+_B / _D / _C_+_D","condition":"─"},{"category":"_@","name":"Splash Fount","input":"^*^s","condition":"W"},{"category":"_@","name":"Power Gradation","input":"_1_2_3_+^s","condition":"W"},{"category":"_@","name":"Tri-Slash","input":"_6_2_3_+^s","condition":"W"},{"category":"_#","name":"Nuigurumi","input":"_6_3_2_1_4_6_3_2_1_4_+_D","condition":"─"},{"category":"_*","name":"Splash Gradation","input":"_6_3_2_1_4_6_+_B","condition":"W"}]},{"name":"GALFORD D. WELLER","moves":[{"category":"_(","name":"Rolling Drop","input":"_4 / _6_+_B / _A_+_B","condition":"─"},{"category":"_(","name":"Executioner Slash","input":"_6_+_D / _C_+_D","condition":"W"},{"category":"_(","name":"Leg Throw unarmed","input":"_6_+_D / _C_+_D","condition":"─"},{"category":"_(","name":"Stardust Drop","input":"_^_4 / _6_+_B / _A_+_B","condition":"─"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_9","condition":"─"},{"category":"_@","name":"Plasma Blade","input":"_2_3_6_+^s","condition":"─"},{"category":"_@","name":"Rush Dog","input":"_2_1_4_+^s","condition":"─"},{"category":"_@","name":"Machine Gun Dog","input":"_2_1_4_+_C","condition":"─"},{"category":"_@","name":"Replica Dog","input":"_2_1_4_+_D","condition":"─"},{"category":"_@","name":"Strike Heads close","input":"_6_2_3_+_K","condition":"─"},{"category":"_@","name":"Shadow Copy","input":"_6_4_1_2_3_6_+_A / _B","condition":"─"},{"category":"_@","name":"Replica Attack","input":"_6_3_2_1_4_+_B_+_C_+_D","condition":"─"},{"category":"_@","name":"Imitate Replica being hit","input":"_B_+_C_+_D","condition":"─"},{"category":"_&","name":"Invisibility","input":"_6_4_6_4_6_4_2_+_B_+_C_+_D","condition":"─"},{"category":"_#","name":"Nuigurumi","input":"_6_3_2_1_4_6_4_+_C","condition":"─"},{"category":"_*","name":"Mega Strike Dog","input":"_6_3_2_1_4_6_+_D","condition":"─"}]},{"name":"WAN-FU","moves":[{"category":"_(","name":"Satsu Renha","input":"_4 / _6_+_B / _A_+_B","condition":"W"},{"category":"_(","name":"Bikotsu Gekisai","input":"_4 / _6_+_D","condition":"─"},{"category":"_(","name":"Kabeuchi Nage unarmed","input":"_4 / _6_+_B","condition":"─"},{"category":"_(","name":"Zugai Ochi Sai unarmed","input":"_4 / _6_+_A_+_B","condition":"─"},{"category":"_(","name":"Shiri Tsubushi Nedan unarmed","input":"_4 / _6_+_C_+_D","condition":"─"},{"category":"_)","name":"Crawl Forward","input":"^3","condition":"─"},{"category":"_)","name":"Crawl Backward","input":"^1","condition":"─"},{"category":"_@","name":"Shin Kikou Bakutenhoh","input":"_2_1_4_+^s","condition":"W"},{"category":"_@","name":"Kikou Senpuu Geki","input":"_6_2_3_+^s","condition":"W"},{"category":"_@","name":"Benpatsu","input":"_2_1_4_+_C_+_D","condition":"W"},{"category":"_@","name":"Kikou Dai Bokusatsu","input":"_2_3_6_+^s","condition":"W"},{"category":"_#","name":"Nuigurumi","input":"_6_4_1_2_3_6_4_+_D","condition":"─"},{"category":"_*","name":"Shin Kikou Dai Bakuten","input":"_6_4_1_2_3_6_+_B","condition":"W"}]},{"name":"UKYO TACHIBANA","moves":[{"category":"_(","name":"Saishin Kiba","input":"_4 / _6_+_B","condition":"W"},{"category":"_(","name":"Sora Nage Ochi Ten Kiri","input":"_4 / _6_+_A_+_B","condition":"W"},{"category":"_(","name":"Tendo Jigoku Gyo","input":"_4 / _6_+_D / _C_+_D","condition":"W"},{"category":"_(","name":"Tsukami Nage unarmed","input":"_4 / _6_+_B / _A_+_B / _D / _C_+_D","condition":"─"},{"category":"_@","name":"Hiken Sasame Yuki","input":"_2_1_4_+^s","condition":"W"},{"category":"_@","name":"Hiken Sasame Yuki: Damashi","input":"_2_1_4_+_K","condition":"W"},{"category":"_@","name":"Hiken Tsubame Gaeshi","input":"_^_1_2_3_6_+^s","condition":"W"},{"category":"_@","name":"Hiken Oboro Gatana","input":"_2_3_6_+_K","condition":"W"},{"category":"_#","name":"Nuigurumi","input":"_6_3_2_1_4_6_2_3_+_B","condition":"─"},{"category":"_*","name":"Tsubame Rokuren","input":"_6_4_1_2_3_6_+_A_+_B","condition":"W"}]},{"name":"JUBEI YAGYU","moves":[{"category":"_(","name":"Seoi Nage","input":"_4 / _6_+_B / _A_+_B","condition":"─"},{"category":"_(","name":"Kazuguruma Nage","input":"_4 / _6_+_D / _C_+_D","condition":"─"},{"category":"_@","name":"Hassou Happa","input":"^*^s","condition":"W"},{"category":"_@","name":"Kattotsu Suigetsu Tou","input":"_2_3_6_+^s","condition":"W"},{"category":"_@","name":"Nikkaku Ratou","input":"_6_2_3_+^s","condition":"W"},{"category":"_@","name":"Yagyu Shingan Tou: Souha","input":"_2_1_4_6_+_A (reverse jump/high/mid)","condition":"─"},{"category":"_#","name":"Nuigurumi","input":"_6_3_2_1_4_6_4_+_D","condition":"─"},{"category":"_*","name":"Zetsu Suigetsu Tou","input":"_6_3_2_1_4_6_+_C","condition":"W"}]},{"name":"CHAM CHAM","moves":[{"category":"_(","name":"Muruta Unguis Inkrushor","input":"_4 / _6_+_B / _A_+_B / _D / _C_+_D","condition":"─"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_9","condition":"─"},{"category":"_@","name":"Yokoni Nageru Ndazo!","input":"_2_3_6_+^s","condition":"W"},{"category":"_@","name":"Shouni Nageru Ndazo!","input":"_2_1_4_+^s","condition":"W"},{"category":"_@","name":"Tobi Hikkaki","input":"_2_3_6_+_K","condition":"─"},{"category":"_@","name":"Mura Paku Paku","input":"_6_3_2_1_4_+_C","condition":"─"},{"category":"_@","name":"Paku Paku Dios","input":"_6_3_2_1_4_+_D","condition":"─"},{"category":"_@","name":"PakuPaku Gaburu","input":"_6_3_2_1_4_+_C_+_D","condition":"─"},{"category":"_#","name":"Nuigurumi","input":"_6_3_2_1_4_6_3_2_1_4_+_C","condition":"─"},{"category":"_*","name":"Mou Moto Nai Ndakarana","input":"_6_4_1_2_3_6_+_A","condition":"─"}]},{"name":"NAKORURU","moves":[{"category":"_(","name":"Sora Retsu Nage","input":"_4 / _6_+_B","condition":"─"},{"category":"_(","name":"Ruten Mune Gekiha","input":"_4 / _6_+_A_+_B","condition":"W"},{"category":"_(","name":"Jiten Sanren Kyaku","input":"_4 / _6_+_D / _C_+_D","condition":"─"},{"category":"_(","name":"Retsu Satsu Tsume unarmed","input":"_4 / _6_+_A_+_B","condition":"─"},{"category":"_(","name":"Lela Kishima Tek","input":"_^_4 / _6_+_B / _A_+_B","condition":"─"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_9","condition":"─"},{"category":"_@","name":"Annu Mutsube","input":"_4_1_2_+^s","condition":"W"},{"category":"_@","name":"Lela Mutsube","input":"_2_3_6_+^s","condition":"W"},{"category":"_@","name":"Amube Yatoro","input":"_6_3_2_1_4_+^s","condition":"─"},{"category":"_@","name":"Taka ni Tsukamaru","input":"_2_1_4_+_C","condition":"─"},{"category":"_@","input":"^!Kamui Mutsube                                                 ^s / _K","condition":"─"},{"category":"_@","input":"^!Yatoro Pok                                                    _2_+^s / _K","condition":"─"},{"category":"_@","input":"^!Taka ni Oriru                                                 ^2","condition":"─"},{"category":"_@","name":"Kamui Rimse","input":"_2_1_4_+^s","condition":"─"},{"category":"_@","name":"Mamahaha Wo Yobu unarmed","input":"_2_1_4_+_C","condition":"─"},{"category":"_@","name":"Mamahaha Wo Yobu unarmed","input":"_6_3_2_1_4_+^s","condition":"─"},{"category":"_&","name":"Apefuchi Kamui Rimse","input":"_3_2_1_4_6_2_3_+_B_+_C","condition":"─"},{"category":"_#","name":"Nuigurumi","input":"_6_3_2_1_4_6_3_2_1_4_+_D","condition":"─"},{"category":"_*","name":"Irusuka Yatoro Lise","input":"_6_4_1_2_3_6_+_A","condition":"─"}]},{"name":"EARTHQUAKE","moves":[{"category":"_(","name":"Go to Heaven","input":"_4 / _6_+_B / _D","condition":"─"},{"category":"_(","name":"Fat Buster","input":"_4 / _6_+_A_+_B / _C_+_D","condition":"─"},{"category":"_)","name":"Fat Bound","input":"_^_2_+_K","condition":"─"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_9","condition":"─"},{"category":"_@","name":"Fat Chainsaw","input":"^*^s","condition":"W"},{"category":"_@","name":"Fat Breath","input":"_2_1_4_+^s","condition":"─"},{"category":"_@","name":"Fat Copy","input":"_6_4_1_2_3_6_+_A / _B","condition":"─"},{"category":"_@","name":"Fat Replica Attack","input":"_6_3_2_1_4_+_B_+_C_+_D","condition":"─"},{"category":"_#","name":"Nuigurumi","input":"_6_4_6_4_6_4_2_+_B","condition":"─"},{"category":"_*","name":"Earth Got 'Em","input":"_6_4_1_2_3_6_+_C_+_D","condition":"W"},{"category":"_*","input":"^!Move                                                          _4 / _6","condition":"W"}]},{"name":"GEN-AN SHIRANUI","moves":[{"category":"_(","name":"Knee Bash","input":"_4 / _6_+_B / _A_+_B / _D / _C_+_D","condition":"─"},{"category":"_)","name":"Crawl Forward","input":"^3","condition":"─"},{"category":"_)","name":"Crawl Backward","input":"^1","condition":"─"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_9","condition":"─"},{"category":"_@","name":"Doku Fubuki","input":"_2_3_6_+^s","condition":"─"},{"category":"_@","name":"Nikuten Tsuki","input":"_6_2_3_+^s","condition":"─"},{"category":"_@","name":"Tsume Tsunami","input":"_6_3_2_1_4_+^s","condition":"W"},{"category":"_@","name":"Gen-An Utsusemi Dappi","input":"_3_2_1_+_B_+_D","condition":"─"},{"category":"_@","name":"Gen-An Dappi being hit","input":"_B_+_C_+_D","condition":"─"},{"category":"_#","name":"Nuigurumi","input":"_6_3_2_1_4_6_3_2_1_4_+_C","condition":"─"},{"category":"_*","name":"Madou Diving Claw","input":"_6_3_2_1_4_6_+_A_+_B","condition":"W"}]},{"name":"NICOTINE CAFFEINE","moves":[{"category":"_(","name":"Senshuu Nenbutsu Satsu","input":"_4 / _6_+_B","condition":"W"},{"category":"_(","name":"Oujou Gokuraku Geki","input":"_4 / _6_+_A_+_B","condition":"W"},{"category":"_(","name":"Inga Dai Shounetsu","input":"_4 / _6_+_D / _C_+_D","condition":"W"},{"category":"_(","name":"Inga Dai Shounetsu unarmed","input":"_4 / _6_+_B / _A_+_B","condition":"─"},{"category":"_@","name":"Shikigami Reifu Ikazuchi","input":"_2_3_6_+^s","condition":"─"},{"category":"_@","name":"Shikigami Reifu Hanoo","input":"_2_3_6_+_K","condition":"─"},{"category":"_@","name":"Shitsue Rasen Ashi: Kougeki","input":"_^_1_2_3_6_+_K","condition":"W"},{"category":"_@","name":"Rashin Jufu","input":"_4_2_1_+_A_+_B","condition":"─"},{"category":"_@","name":"Bakusa Jougeki","input":"_6_3_2_1_4_+^s","condition":"W"},{"category":"_#","name":"Nuigurumi","input":"_4_1_2_1_4_6_+_D","condition":"─"},{"category":"_*","name":"Niou Furei Satsu","input":"_6_4_1_2_3_6_+_D","condition":"W"}]},{"name":"KUROKO","moves":[{"category":"_(","name":"Ressen Kyaku","input":"_4 / _6_+_B / _A_+_B / _D / _C_+_D","condition":"W"},{"category":"_@","name":"Kuroko Hachigoku Tama Tora Shouken","input":"_2_3_6_+_A","condition":"W"},{"category":"_@","name":"Kuroko Hachigoku Tama Haru Ou Shouken","input":"_6_4_1_2_3_6_+_A","condition":"W"},{"category":"_@","name":"Kuroko Hachigoku Tama Blitz Ball","input":"_2_1_4_+_A","condition":"W"},{"category":"_@","name":"Kuroko Hachigoku Tama Mega Smash","input":"_2_3_6_+_B","condition":"W"},{"category":"_@","name":"Kuroko Gekira","input":"^*_C","condition":"W"},{"category":"_@","name":"Kuroko Hachigoku Tama Zantetsuken Nami","input":"_2_3_6_3_2_1_4_+_A","condition":"W"},{"category":"_@","name":"Kuroko Maruhata Geki","input":"_6_3_2_1_4_+_A","condition":"W"},{"category":"_@","name":"Kuroko Shirahatajin","input":"_6_+_A_+_B_+_C","condition":"W"},{"category":"_@","name":"Kuroko Akahatajin","input":"_6_+_B_+_C_+_D","condition":"W"},{"category":"_@","name":"Kuroko Hachigoku Tama Airball","input":"_2_1_4_1_6_+_B_+_C","condition":"W"},{"category":"_@","name":"Kuroko Hachigoku Tama Bakurai Hou","input":"^1_2_3_6_+_B_+_C","condition":"W"},{"category":"_@","name":"Kuroko Hachigoku Tama Senbei Shuriken","input":"^1_6_+_A","condition":"W"},{"category":"_@","name":"Kuroko Gi Ha Nage confront","input":"^2","condition":"W"},{"category":"_@","name":"Kuroko Bakumai Ude being hit","input":"_A_+_B_+_C","condition":"W"},{"category":"_@","name":"Kuroko Bakumai Kyaku being hit","input":"_B_+_C_+_D","condition":"W"},{"category":"_#","name":"Nuigurumi","input":"_4_1_2_3_6_4_1_2_3_6_+_D","condition":"W"},{"category":"_*","name":"Kuroko Ranbu","input":"_6_3_2_1_4_6_+_A_+_B","condition":"W"},{"category":"_*","name":"Kuroko Tairan Mai","input":"_6_4_1_2_3_6_+_C_+_D","condition":"W"}]},{"name":"MIZUKI RASHOJIN","moves":[{"category":"_(","name":"Kami Ma Messatsujin","input":"_4 / _6_+_B / _D","condition":"W"},{"category":"_)","name":"Sankaku Tobi jump against the wall","input":"_9","condition":"W"},{"category":"_@","name":"Jashin Kyoumei","input":"_2_3_6_+^s","condition":"W"},{"category":"_@","name":"Haki Inmetsu Jin","input":"_2_3_6_+_C_+_D","condition":"W"},{"category":"_@","name":"Ware Kami Eru Baku Kon","input":"_2_1_4_+_A","condition":"W"},{"category":"_@","name":"Ware Kami Kyoumei Kon","input":"_2_1_4_+_B","condition":"W"},{"category":"_@","name":"Ware Kami Henretsu Kon","input":"_2_1_4_+_C","condition":"W"},{"category":"_@","name":"Hokai Tenshou Sen","input":"_2_+_A_+_B_+_C","condition":"W"},{"category":"_@","name":"Hokai Tenshou Ato","input":"_2_+_B_+_C_+_D","condition":"W"},{"category":"_*","name":"Tenchi Makyou Jin","input":"_6_3_2_1_4_6_+_A","condition":"W"}]}],"controlAbbr":{"_A":"SL","_B":"MS","_C":"LK","_D":"MK","_S":"ST","^S":"SL"},"systemControlMappings":{"snes":{"y":"_A","x":"_B","b":"_C","a":"_D"},"genesis":{"b":"_A","a":"_B","y":"_C","x":"_D"},"megadrive":{"b":"_A","a":"_B","y":"_C","x":"_D"},"32x":{"b":"_A","a":"_B","y":"_C","x":"_D"},"saturn":{"b":"_A","a":"_B","y":"_C","x":"_D"},"neogeo":{"b":"_A","y":"_B","a":"_C","x":"_D"},"psx":{"y":"_A","x":"_B","b":"_C","a":"_D"},"ps2":{"y":"_A","x":"_B","b":"_C","a":"_D"},"gb":{"b":"_A","a":"_B"},"gbc":{"b":"_A","a":"_B"},"gamegear":{"a":"_A","b":"_B"},"sms":{"a":"_A","b":"_B"},"gba":{"b":"_A","a":"_B","l1":"_C","r1":"_D"},"ngpc":{"b":"_A","a":"_B","y":"_C","x":"_D"},"dreamcast":{"y":"_A","x":"_B","b":"_C","a":"_D"},"n64":{"b":"_A","a":"_B","cDown":"_C","cLeft":"_D"},"wswan":{"b":"_A","a":"_B"}}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "samsho2",
+    "samsho2k",
+    "samsho2ka"
+  ],
+  "name": "Samurai Shodown II",
+  "year": 1994,
+  "manufacturer": "SNK",
+  "controls": {
+    "_A": "Weak Slash (^s)",
+    "_B": "Medium Slash (^s)",
+    "_C": "Weak Kick",
+    "_D": "Medium Kick",
+    "_S": "Start",
+    "^S": "Select (AES only)"
+  },
+  "controlGroups": {
+    "_K": [
+      "_C",
+      "_D"
+    ]
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_&": "Hidden Super Specials",
+    "_#": "Nuigurumi",
+    "_*": "Weapon-Breaking Techniques",
+    "_`": "Weapon-Breaking Techniques"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Run",
+      "input": "_6^6",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Run & Roll Forward running",
+      "input": "_3",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat & Run retreating",
+      "input": "^6",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat & Lay Down retreating",
+      "input": "^2",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat & Roll Forward retreating",
+      "input": "_3",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Lay Down",
+      "input": "_2^2",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Roll Backward",
+      "input": "_1_1",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Roll Forward",
+      "input": "_3_3",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Strong Slash",
+      "input": "_A_+_B",
+      "condition": "W"
+    },
+    {
+      "category": "_)",
+      "name": "Strong Kick",
+      "input": "_C_+_D",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Hop Away",
+      "input": "_B_+_C",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Hop Up",
+      "input": "_6_+_B_+_C",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Barehanded Sword Grab unarmed",
+      "input": "_4_1_2_3_6 (reverse all)",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Taunt 1 far",
+      "input": "_O_A_+_C",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Taunt 2 far",
+      "input": "_O_B_+_D",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Retrieve Weapon close to your weapon",
+      "input": "_A / _B",
+      "condition": "─"
+    }
+  ],
+  "characters": [
+    {
+      "name": "HAOHMARU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Yokonage",
+          "input": "_4 / _6_+_B / _A_+_B",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Shinkuu Tomoe Nage",
+          "input": "_4 / _6_+_D / _C_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Ougi Senpuu Retsu Zan",
+          "input": "_2_3_6_+^s",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Fake Ougi Senpuu Retsu Zan",
+          "input": "_2_3_6_+_K",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Ougi Kogetsu Zan",
+          "input": "_6_2_3_+^s",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Ougi Resshin Zan",
+          "input": "_6_2_3_+_K",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Sake Kougeki",
+          "input": "_2_1_4_+_A (reflect projectile)",
+          "condition": "─"
+        },
+        {
+          "category": "_&",
+          "name": "Hiougi Tenha Fuujin Zan",
+          "input": "_3_4_1_2_3_6_4_2_1_+_B",
+          "condition": "W"
+        },
+        {
+          "category": "_#",
+          "name": "Nuigurumi",
+          "input": "_6_3_2_1_4_6_4_+_B",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Tenha Seikou Zan",
+          "input": "_6_3_2_1_4_6_+_A",
+          "condition": "W"
+        }
+      ]
+    },
+    {
+      "name": "GENJURO KIBAGAMI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Budou Oni Fukushimashi",
+          "input": "_4 / _6_+_B / _A_+_B / _D / _C_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Sanren Satsu: Kiba",
+          "input": "_2_3_6_+^s",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "input": "^!Sanren Satsu: Tsuno                                           _2_3_6_+^s",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "input": "^!Sanren Satsu: Rin                                         _2_3_6_+^s",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Touha Kouyoku Jin",
+          "input": "_6_2_3_+^s",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Ouka Zan",
+          "input": "_2_1_4_+^s",
+          "condition": "W"
+        },
+        {
+          "category": "_#",
+          "name": "Nuigurumi",
+          "input": "_6_3_2_1_4_6_4_+_B",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Gokou Zan",
+          "input": "_6_3_2_1_4_6_+_A",
+          "condition": "W"
+        }
+      ]
+    },
+    {
+      "name": "KYOSHIRO SENRYO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Yari Satsu Nage Mai",
+          "input": "_4 / _6_+_B / _A_+_B",
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "Kami Ten Nage",
+          "input": "_4 / _6_+_D",
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "Kami Enbu",
+          "input": "_4 / _6_+_C_+_D",
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "Kami Ten Nage unarmed",
+          "input": "_4 / _6_+_B",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Kami Enbu unarmed",
+          "input": "_4 / _6_+_A_+_B",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Crawl Forward",
+          "input": "^3",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Crawl Backward",
+          "input": "^1",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Chikemuri Kuruwa",
+          "input": "_^_2_+_A_+_B",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Kaen Kyokubu",
+          "input": "_2_3_6_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Kaiten Kyokubu: Ten",
+          "input": "_6_2_3_+^s",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Fuuretsu Sen",
+          "input": "_2_1_4_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Choubi Jishi",
+          "input": "_2_1_4_+_K",
+          "condition": "W"
+        },
+        {
+          "category": "_#",
+          "name": "Nuigurumi",
+          "input": "_6_4_1_2_3_6_4_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Aragotoshi Kyoshiro \"Ketsuniku no Mai\"",
+          "input": "_6_4_1_2_3_6_+_C",
+          "condition": "W"
+        },
+        {
+          "category": "_*",
+          "input": "^!Move                                                          _4 / _6",
+          "condition": "W"
+        }
+      ]
+    },
+    {
+      "name": "HANZO HATTORI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Kuuten Nage",
+          "input": "_4 / _6_+_B / _A_+_B",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Kubinage Kiri",
+          "input": "_4 / _6_+_D / _C_+_D",
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "Kubinage unarmed",
+          "input": "_4 / _6_+_D / _C_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Kuuten Geki",
+          "input": "_^_4 / _6_+_B / _A_+_B",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_9",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Ninpou Reppuu Shuriken",
+          "input": "_^_4_1_2_3_6_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Ninpou Baku'en Ryuu",
+          "input": "_6_3_2_1_4_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Ninpou Mozu Otoshi close",
+          "input": "_6_2_3_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Ninpou Mozu Otoshi: Hayate running, close",
+          "input": "_6_2_3_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Ninpou Kage Bunshin",
+          "input": "_6_4_1_2_3_6_+_A / _B",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Ninpou Utsusemi Tenbu",
+          "input": "_6_3_2_1_4_+_B_+_C_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Ninpou Migawari no Jutsu: Hotoke being hit",
+          "input": "_B_+_C_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_&",
+          "name": "Kage Mai",
+          "input": "_6_4_6_4_6_4_2_+_B_+_C_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Nuigurumi",
+          "input": "_6_4_6_4_6_4_2_+_A",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Tenma Rimetsu",
+          "input": "_6_3_2_1_4_6_+_D",
+          "condition": "W"
+        }
+      ]
+    },
+    {
+      "name": "NEINHALT SIEGER",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Shudel Arobeling",
+          "input": "_4 / _6_+_B / _A_+_B",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Labe Shutzan Shutulmangrif",
+          "input": "_4 / _6_+_D / _C_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Forest Shivang Smarthnarme",
+          "input": "_^_4 / _6_+_B / _A_+_B",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Wolf Fangen",
+          "input": "_6_4_1_2_3_6_+_A_+_B",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Vulcan Weinen",
+          "input": "_2_3_6_+_A",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "input": "^!Vulcan Dryukken                                               ^*_A",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "input": "^!Vulcan Exploizon                                          ^*_A",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Blitz Jaeger",
+          "input": "_6_3_2_1_4_+_K",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Tigerkopf",
+          "input": "_2_3_6_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Falkennagel                                                   _2_3_6_+_B",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Elefantglied                                              _6_3_2_1_4_+_A",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Firestorm",
+          "input": "_3_+_B_+_C",
+          "condition": "W"
+        },
+        {
+          "category": "_#",
+          "name": "Nuigurumi",
+          "input": "_6_3_2_1_4_6_4_+_A",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Operation Tiger",
+          "input": "_6_3_2_1_4_6_+_C_+_D",
+          "condition": "W"
+        }
+      ]
+    },
+    {
+      "name": "CHARLOTTE CHRISTINE DE COLDE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Lion Lance",
+          "input": "_4 / _6_+_B / _A_+_B / _D / _C_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Splash Fount",
+          "input": "^*^s",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Power Gradation",
+          "input": "_1_2_3_+^s",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Tri-Slash",
+          "input": "_6_2_3_+^s",
+          "condition": "W"
+        },
+        {
+          "category": "_#",
+          "name": "Nuigurumi",
+          "input": "_6_3_2_1_4_6_3_2_1_4_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Splash Gradation",
+          "input": "_6_3_2_1_4_6_+_B",
+          "condition": "W"
+        }
+      ]
+    },
+    {
+      "name": "GALFORD D. WELLER",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Rolling Drop",
+          "input": "_4 / _6_+_B / _A_+_B",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Executioner Slash",
+          "input": "_6_+_D / _C_+_D",
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "Leg Throw unarmed",
+          "input": "_6_+_D / _C_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Stardust Drop",
+          "input": "_^_4 / _6_+_B / _A_+_B",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_9",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Plasma Blade",
+          "input": "_2_3_6_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Rush Dog",
+          "input": "_2_1_4_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Machine Gun Dog",
+          "input": "_2_1_4_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Replica Dog",
+          "input": "_2_1_4_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Strike Heads close",
+          "input": "_6_2_3_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Shadow Copy",
+          "input": "_6_4_1_2_3_6_+_A / _B",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Replica Attack",
+          "input": "_6_3_2_1_4_+_B_+_C_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Imitate Replica being hit",
+          "input": "_B_+_C_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_&",
+          "name": "Invisibility",
+          "input": "_6_4_6_4_6_4_2_+_B_+_C_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Nuigurumi",
+          "input": "_6_3_2_1_4_6_4_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Mega Strike Dog",
+          "input": "_6_3_2_1_4_6_+_D",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "WAN-FU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Satsu Renha",
+          "input": "_4 / _6_+_B / _A_+_B",
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "Bikotsu Gekisai",
+          "input": "_4 / _6_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Kabeuchi Nage unarmed",
+          "input": "_4 / _6_+_B",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Zugai Ochi Sai unarmed",
+          "input": "_4 / _6_+_A_+_B",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Shiri Tsubushi Nedan unarmed",
+          "input": "_4 / _6_+_C_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Crawl Forward",
+          "input": "^3",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Crawl Backward",
+          "input": "^1",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Shin Kikou Bakutenhoh",
+          "input": "_2_1_4_+^s",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Kikou Senpuu Geki",
+          "input": "_6_2_3_+^s",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Benpatsu",
+          "input": "_2_1_4_+_C_+_D",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Kikou Dai Bokusatsu",
+          "input": "_2_3_6_+^s",
+          "condition": "W"
+        },
+        {
+          "category": "_#",
+          "name": "Nuigurumi",
+          "input": "_6_4_1_2_3_6_4_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Shin Kikou Dai Bakuten",
+          "input": "_6_4_1_2_3_6_+_B",
+          "condition": "W"
+        }
+      ]
+    },
+    {
+      "name": "UKYO TACHIBANA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Saishin Kiba",
+          "input": "_4 / _6_+_B",
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "Sora Nage Ochi Ten Kiri",
+          "input": "_4 / _6_+_A_+_B",
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "Tendo Jigoku Gyo",
+          "input": "_4 / _6_+_D / _C_+_D",
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "Tsukami Nage unarmed",
+          "input": "_4 / _6_+_B / _A_+_B / _D / _C_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Hiken Sasame Yuki",
+          "input": "_2_1_4_+^s",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Hiken Sasame Yuki: Damashi",
+          "input": "_2_1_4_+_K",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Hiken Tsubame Gaeshi",
+          "input": "_^_1_2_3_6_+^s",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Hiken Oboro Gatana",
+          "input": "_2_3_6_+_K",
+          "condition": "W"
+        },
+        {
+          "category": "_#",
+          "name": "Nuigurumi",
+          "input": "_6_3_2_1_4_6_2_3_+_B",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Tsubame Rokuren",
+          "input": "_6_4_1_2_3_6_+_A_+_B",
+          "condition": "W"
+        }
+      ]
+    },
+    {
+      "name": "JUBEI YAGYU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Seoi Nage",
+          "input": "_4 / _6_+_B / _A_+_B",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Kazuguruma Nage",
+          "input": "_4 / _6_+_D / _C_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Hassou Happa",
+          "input": "^*^s",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Kattotsu Suigetsu Tou",
+          "input": "_2_3_6_+^s",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Nikkaku Ratou",
+          "input": "_6_2_3_+^s",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Yagyu Shingan Tou: Souha",
+          "input": "_2_1_4_6_+_A (reverse jump/high/mid)",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Nuigurumi",
+          "input": "_6_3_2_1_4_6_4_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Zetsu Suigetsu Tou",
+          "input": "_6_3_2_1_4_6_+_C",
+          "condition": "W"
+        }
+      ]
+    },
+    {
+      "name": "CHAM CHAM",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Muruta Unguis Inkrushor",
+          "input": "_4 / _6_+_B / _A_+_B / _D / _C_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_9",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Yokoni Nageru Ndazo!",
+          "input": "_2_3_6_+^s",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Shouni Nageru Ndazo!",
+          "input": "_2_1_4_+^s",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Tobi Hikkaki",
+          "input": "_2_3_6_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Mura Paku Paku",
+          "input": "_6_3_2_1_4_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Paku Paku Dios",
+          "input": "_6_3_2_1_4_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "PakuPaku Gaburu",
+          "input": "_6_3_2_1_4_+_C_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Nuigurumi",
+          "input": "_6_3_2_1_4_6_3_2_1_4_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Mou Moto Nai Ndakarana",
+          "input": "_6_4_1_2_3_6_+_A",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "NAKORURU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Sora Retsu Nage",
+          "input": "_4 / _6_+_B",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Ruten Mune Gekiha",
+          "input": "_4 / _6_+_A_+_B",
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "Jiten Sanren Kyaku",
+          "input": "_4 / _6_+_D / _C_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Retsu Satsu Tsume unarmed",
+          "input": "_4 / _6_+_A_+_B",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Lela Kishima Tek",
+          "input": "_^_4 / _6_+_B / _A_+_B",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_9",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Annu Mutsube",
+          "input": "_4_1_2_+^s",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Lela Mutsube",
+          "input": "_2_3_6_+^s",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Amube Yatoro",
+          "input": "_6_3_2_1_4_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Taka ni Tsukamaru",
+          "input": "_2_1_4_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Kamui Mutsube                                                 ^s / _K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Yatoro Pok                                                    _2_+^s / _K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Taka ni Oriru                                                 ^2",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Kamui Rimse",
+          "input": "_2_1_4_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Mamahaha Wo Yobu unarmed",
+          "input": "_2_1_4_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Mamahaha Wo Yobu unarmed",
+          "input": "_6_3_2_1_4_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_&",
+          "name": "Apefuchi Kamui Rimse",
+          "input": "_3_2_1_4_6_2_3_+_B_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Nuigurumi",
+          "input": "_6_3_2_1_4_6_3_2_1_4_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Irusuka Yatoro Lise",
+          "input": "_6_4_1_2_3_6_+_A",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "EARTHQUAKE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Go to Heaven",
+          "input": "_4 / _6_+_B / _D",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Fat Buster",
+          "input": "_4 / _6_+_A_+_B / _C_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Fat Bound",
+          "input": "_^_2_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_9",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Fat Chainsaw",
+          "input": "^*^s",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Fat Breath",
+          "input": "_2_1_4_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Fat Copy",
+          "input": "_6_4_1_2_3_6_+_A / _B",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Fat Replica Attack",
+          "input": "_6_3_2_1_4_+_B_+_C_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Nuigurumi",
+          "input": "_6_4_6_4_6_4_2_+_B",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Earth Got 'Em",
+          "input": "_6_4_1_2_3_6_+_C_+_D",
+          "condition": "W"
+        },
+        {
+          "category": "_*",
+          "input": "^!Move                                                          _4 / _6",
+          "condition": "W"
+        }
+      ]
+    },
+    {
+      "name": "GEN-AN SHIRANUI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Knee Bash",
+          "input": "_4 / _6_+_B / _A_+_B / _D / _C_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Crawl Forward",
+          "input": "^3",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Crawl Backward",
+          "input": "^1",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_9",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Doku Fubuki",
+          "input": "_2_3_6_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Nikuten Tsuki",
+          "input": "_6_2_3_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Tsume Tsunami",
+          "input": "_6_3_2_1_4_+^s",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Gen-An Utsusemi Dappi",
+          "input": "_3_2_1_+_B_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Gen-An Dappi being hit",
+          "input": "_B_+_C_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_#",
+          "name": "Nuigurumi",
+          "input": "_6_3_2_1_4_6_3_2_1_4_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Madou Diving Claw",
+          "input": "_6_3_2_1_4_6_+_A_+_B",
+          "condition": "W"
+        }
+      ]
+    },
+    {
+      "name": "NICOTINE CAFFEINE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Senshuu Nenbutsu Satsu",
+          "input": "_4 / _6_+_B",
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "Oujou Gokuraku Geki",
+          "input": "_4 / _6_+_A_+_B",
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "Inga Dai Shounetsu",
+          "input": "_4 / _6_+_D / _C_+_D",
+          "condition": "W"
+        },
+        {
+          "category": "_(",
+          "name": "Inga Dai Shounetsu unarmed",
+          "input": "_4 / _6_+_B / _A_+_B",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Shikigami Reifu Ikazuchi",
+          "input": "_2_3_6_+^s",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Shikigami Reifu Hanoo",
+          "input": "_2_3_6_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Shitsue Rasen Ashi: Kougeki",
+          "input": "_^_1_2_3_6_+_K",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Rashin Jufu",
+          "input": "_4_2_1_+_A_+_B",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Bakusa Jougeki",
+          "input": "_6_3_2_1_4_+^s",
+          "condition": "W"
+        },
+        {
+          "category": "_#",
+          "name": "Nuigurumi",
+          "input": "_4_1_2_1_4_6_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Niou Furei Satsu",
+          "input": "_6_4_1_2_3_6_+_D",
+          "condition": "W"
+        }
+      ]
+    },
+    {
+      "name": "KUROKO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Ressen Kyaku",
+          "input": "_4 / _6_+_B / _A_+_B / _D / _C_+_D",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Kuroko Hachigoku Tama Tora Shouken",
+          "input": "_2_3_6_+_A",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Kuroko Hachigoku Tama Haru Ou Shouken",
+          "input": "_6_4_1_2_3_6_+_A",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Kuroko Hachigoku Tama Blitz Ball",
+          "input": "_2_1_4_+_A",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Kuroko Hachigoku Tama Mega Smash",
+          "input": "_2_3_6_+_B",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Kuroko Gekira",
+          "input": "^*_C",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Kuroko Hachigoku Tama Zantetsuken Nami",
+          "input": "_2_3_6_3_2_1_4_+_A",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Kuroko Maruhata Geki",
+          "input": "_6_3_2_1_4_+_A",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Kuroko Shirahatajin",
+          "input": "_6_+_A_+_B_+_C",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Kuroko Akahatajin",
+          "input": "_6_+_B_+_C_+_D",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Kuroko Hachigoku Tama Airball",
+          "input": "_2_1_4_1_6_+_B_+_C",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Kuroko Hachigoku Tama Bakurai Hou",
+          "input": "^1_2_3_6_+_B_+_C",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Kuroko Hachigoku Tama Senbei Shuriken",
+          "input": "^1_6_+_A",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Kuroko Gi Ha Nage confront",
+          "input": "^2",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Kuroko Bakumai Ude being hit",
+          "input": "_A_+_B_+_C",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Kuroko Bakumai Kyaku being hit",
+          "input": "_B_+_C_+_D",
+          "condition": "W"
+        },
+        {
+          "category": "_#",
+          "name": "Nuigurumi",
+          "input": "_4_1_2_3_6_4_1_2_3_6_+_D",
+          "condition": "W"
+        },
+        {
+          "category": "_*",
+          "name": "Kuroko Ranbu",
+          "input": "_6_3_2_1_4_6_+_A_+_B",
+          "condition": "W"
+        },
+        {
+          "category": "_*",
+          "name": "Kuroko Tairan Mai",
+          "input": "_6_4_1_2_3_6_+_C_+_D",
+          "condition": "W"
+        }
+      ]
+    },
+    {
+      "name": "MIZUKI RASHOJIN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Kami Ma Messatsujin",
+          "input": "_4 / _6_+_B / _D",
+          "condition": "W"
+        },
+        {
+          "category": "_)",
+          "name": "Sankaku Tobi jump against the wall",
+          "input": "_9",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Jashin Kyoumei",
+          "input": "_2_3_6_+^s",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Haki Inmetsu Jin",
+          "input": "_2_3_6_+_C_+_D",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Ware Kami Eru Baku Kon",
+          "input": "_2_1_4_+_A",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Ware Kami Kyoumei Kon",
+          "input": "_2_1_4_+_B",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Ware Kami Henretsu Kon",
+          "input": "_2_1_4_+_C",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Hokai Tenshou Sen",
+          "input": "_2_+_A_+_B_+_C",
+          "condition": "W"
+        },
+        {
+          "category": "_@",
+          "name": "Hokai Tenshou Ato",
+          "input": "_2_+_B_+_C_+_D",
+          "condition": "W"
+        },
+        {
+          "category": "_*",
+          "name": "Tenchi Makyou Jin",
+          "input": "_6_3_2_1_4_6_+_A",
+          "condition": "W"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_A": "SL",
+    "_B": "MS",
+    "_C": "LK",
+    "_D": "MK",
+    "_S": "ST",
+    "^S": "SL"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "genesis": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "megadrive": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "32x": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "saturn": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "neogeo": {
+      "b": "_A",
+      "y": "_B",
+      "a": "_C",
+      "x": "_D"
+    },
+    "psx": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "ps2": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "gb": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gbc": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gamegear": {
+      "a": "_A",
+      "b": "_B"
+    },
+    "sms": {
+      "a": "_A",
+      "b": "_B"
+    },
+    "gba": {
+      "b": "_A",
+      "a": "_B",
+      "l1": "_C",
+      "r1": "_D"
+    },
+    "ngpc": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "dreamcast": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "n64": {
+      "b": "_A",
+      "a": "_B",
+      "cDown": "_C",
+      "cLeft": "_D"
+    },
+    "wswan": {
+      "b": "_A",
+      "a": "_B"
+    }
+  }
+}

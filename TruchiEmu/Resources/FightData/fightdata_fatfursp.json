@@ -1,1 +1,991 @@
-{"schemaVersion":2,"romIds":["fatfursp","fatfurspa"],"name":"Fatal Fury Special","year":1993,"manufacturer":"SNK","controls":{"_A":"Weak Punch","_B":"Weak Kick","_C":"Strong Punch","_D":"Strong Kick","_S":"Start","^S":"Select (AES only)"},"controlGroups":{"_P":["_A","_C"],"_K":["_B","_D"]},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves","_*":"Desperation Moves","_`":"Desperation Moves"},"commonCommands":[{"category":"_)","name":"Retreat","input":"_4_4","condition":"─"},{"category":"_)","name":"Crawl","input":"^3","condition":"─"},{"category":"_)","name":"Strong Attack","input":"_C_+_D","condition":"P"},{"category":"_)","name":"Defensive Attack blocking","input":"_6_+_A","condition":"─"},{"category":"_)","name":"Taunt far","input":"_C","condition":"─"},{"category":"_)","name":"Change Plane","input":"_A_+_B","condition":"─"},{"category":"_)","name":"Plane Roll opponent in Other Plane","input":"_2 / _8","condition":"─"},{"category":"_)","name":"Plane Attack opponent in Other Plane","input":"_P / _K","condition":"─"}],"commonNotes":["PLANE MOVES"],"characters":[{"name":"TERRY BOGARD","moves":[{"category":"_(","name":"Buster Throw","input":"_4 / _6_+_C","condition":"─"},{"category":"_@","name":"Power Wave","input":"_2_3_6_+_P","condition":"─"},{"category":"_@","name":"Rising Tackle","input":"^2_8_+_P","condition":"─"},{"category":"_@","name":"Burn Knuckle","input":"_2_1_4_+_P","condition":"─"},{"category":"_@","name":"Crack Shoot","input":"_2_1_4_7_+_K","condition":"─"},{"category":"_*","name":"Power Geyser","input":"_2_1_4_1_6_+_B_+_C","condition":"─"}]},{"name":"ANDY BOGARD","moves":[{"category":"_(","name":"Kakaekomi Nage","input":"_4 / _6_+_C","condition":"─"},{"category":"_@","name":"Hishou Ken","input":"_2_1_4_+_P","condition":"─"},{"category":"_@","name":"Shouryuu Dan","input":"_2_3_6_+_P","condition":"─"},{"category":"_@","name":"Kuuha Dan","input":"^1_9_+_K","condition":"─"},{"category":"_@","name":"Zan'ei Ken","input":"_1_6_+_P","condition":"─"},{"category":"_*","name":"Chou Reppa Dan","input":"^2_3_6_+_B_+_D","condition":"─"}]},{"name":"JOE HIGASHI","moves":[{"category":"_(","name":"Leg Throw","input":"_4 / _6_+_C","condition":"─"},{"category":"_(","name":"Hiza Jigoku","input":"_4 / _6_+_D","condition":"─"},{"category":"_@","name":"Bakuretsu Ken","input":"^*_P","condition":"─"},{"category":"_@","name":"Hurricane Upper","input":"_4_1_2_3_6_+_P","condition":"─"},{"category":"_@","name":"Tiger Kick","input":"_2_3_6_9_+_K","condition":"─"},{"category":"_@","name":"Slash Kick","input":"^1_9_+_K","condition":"─"},{"category":"_*","name":"Screw Upper","input":"_6_4_1_2_3_6_+_B_+_C","condition":"─"}]},{"name":"BIG BEAR","moves":[{"category":"_(","name":"Powerbomb","input":"_6_+_C","condition":"─"},{"category":"_(","name":"German Suplex","input":"_4_+_C","condition":"─"},{"category":"_(","name":"Choke Hold","input":"_6_+_D","condition":"─"},{"category":"_(","name":"Headbutts","input":"_4_+_D","condition":"─"},{"category":"_(","name":"Lariot Drop","input":"_3_+_C","condition":"─"},{"category":"_(","name":"Overhead Toss","input":"_3_+_D","condition":"─"},{"category":"_(","name":"Bear Hug","input":"_9_+_D","condition":"─"},{"category":"_@","name":"Giant Bomb","input":"^1_6_+_P","condition":"─"},{"category":"_@","name":"Super Drop Kick","input":"_O_D","condition":"─"},{"category":"_@","name":"Bear Bomber","input":"_6_4_2_8_+_C","condition":"─"},{"category":"_*","name":"Fire Breath","input":"_6_3_2_1_6_+_B_+_C","condition":"─"}]},{"name":"JUBEI YAMADA","moves":[{"category":"_(","name":"Ippon Seoi","input":"_4 / _6_+_C","condition":"─"},{"category":"_(","name":"Benkei Nakashi","input":"_6_+_D","condition":"─"},{"category":"_(","name":"Tomoe Nage","input":"_4_+_D","condition":"─"},{"category":"_(","name":"Tawara Nage","input":"_3_+_C","condition":"─"},{"category":"_(","name":"Kumo Koroshi","input":"_9_+_C","condition":"─"},{"category":"_(","name":"Izuna Otoshi","input":"_^_2_+_D","condition":"─"},{"category":"_@","name":"Nihon Seoi Dash","input":"^4_6_+_K","condition":"─"},{"category":"_@","name":"Ooizuna Otoshi close","input":"^2_8_+_P","condition":"─"},{"category":"_@","name":"Senbe Shuriken","input":"^4_6_+_P","condition":"─"},{"category":"_@","name":"Neko Jarashi close","input":"_6_3_2_1_4_+_C","condition":"─"},{"category":"_*","name":"Dynamite Izuna Otoshi close","input":"^1_2_3_+_B_+_C","condition":"─"}]},{"name":"CHENG SINZAN","moves":[{"category":"_(","name":"Aiki Nage","input":"_4 / _6_+_C","condition":"─"},{"category":"_(","name":"Zutsuki Satsu","input":"_4 / _6_+_D","condition":"─"},{"category":"_@","name":"Kiten Hinzan","input":"_2_3_6_+_P","condition":"─"},{"category":"_@","name":"Dai Taikobara Uchi","input":"^2_8_+_P","condition":"─"},{"category":"_@","name":"Hagan Geki","input":"^4_6_+_K","condition":"─"},{"category":"_*","name":"Bukurai Hoh","input":"^1_2_3_6_+_B_+_C","condition":"─"}]},{"name":"KIM KAPHWAN","moves":[{"category":"_(","name":"Sakkyaku Nage","input":"_4 / _6_+_C","condition":"─"},{"category":"_)","name":"Hishou Kyaku","input":"_^_2_+_K","condition":"─"},{"category":"_@","name":"Hangetsu Zan","input":"_2_1_4_+_K","condition":"─"},{"category":"_@","name":"Hien Zan","input":"^2_8_+_K","condition":"─"},{"category":"_*","name":"Hou'ou Kyaku","input":"_2_1_4_1_6_+_B_+_D","condition":"─"}]},{"name":"MAI SHIRANUI","moves":[{"category":"_(","name":"Fuusha Kuzushi","input":"_4 / _6_+_C","condition":"─"},{"category":"_(","name":"Yume Zakura","input":"_^_2_+_D","condition":"─"},{"category":"_@","name":"Kachou Sen","input":"_2_3_6_+_P","condition":"─"},{"category":"_@","name":"Ryuu Enbu","input":"_2_1_4_+_P","condition":"─"},{"category":"_@","name":"Hissatsu Shinobi Bachi","input":"_4_1_2_3_6_+_K","condition":"─"},{"category":"_@","name":"Musasabi no Mai","input":"^2_8_+_C","condition":"─"},{"category":"_*","name":"Chou Hissatsu Shinobi Bachi","input":"_6_1_6_+_B_+_C","condition":"─"}]},{"name":"DUCK KING","moves":[{"category":"_(","name":"Rolling Neck","input":"_4 / _6_+_C","condition":"─"},{"category":"_(","name":"Reverse Breaker","input":"_^_2_+_C","condition":"─"},{"category":"_)","name":"Needle Low","input":"_3_+_D","condition":"─"},{"category":"_@","name":"Head Spin Attack","input":"^4_6_+_P","condition":"─"},{"category":"_@","name":"Break Storm","input":"_2_3_6_9_+_K","condition":"─"},{"category":"_@","name":"Dancing Dive","input":"_2_1_4_+_K","condition":"─"},{"category":"_@","name":"Beat Rush","input":"_6_4_6_+_C","condition":"─"},{"category":"_*","name":"Break Spiral close","input":"_4_1_2_3_6_9_2_+_B_+_C","condition":"─"}]},{"name":"TUNG FU RUE","moves":[{"category":"_(","name":"Ressen Shou","input":"_4 / _6_+_C","condition":"─"},{"category":"_@","name":"Sen Shippo","input":"_2_1_4_+_P","condition":"─"},{"category":"_@","name":"Shou Ha","input":"^1_6_+_P","condition":"─"},{"category":"_@","name":"Ressen Kyaku close","input":"^1_9_+_K","condition":"─"},{"category":"_@","name":"Gekihou","input":"^*_C","condition":"─"},{"category":"_*","name":"Senpuu Gou Ken","input":"_6_3_2_8_+_B_+_C","condition":"─"}]},{"name":"BILLY KANE","moves":[{"category":"_(","name":"Ippon Zuri Nage","input":"_4 / _6_+_C","condition":"─"},{"category":"_(","name":"Jigoku Otoshi","input":"_4 / _6_+_D","condition":"─"},{"category":"_@","name":"Senpuu Kon","input":"^*_P","condition":"─"},{"category":"_@","name":"Sansetsu Kon: Chuudan Uchi","input":"^4_6_+_P","condition":"─"},{"category":"_@","name":"Kyoushuu Hishou Kon","input":"_1_2_3_6_+_K","condition":"─"},{"category":"_@","input":"^!Move                                                          _4 / _6","condition":"─"},{"category":"_@","name":"Suzume Otoshi","input":"^1_9_+_P","condition":"─"},{"category":"_*","name":"Chou Kaen Senpuu Kon","input":"_2_3_6_3_2_1_4_7_+_A_+_C","condition":"─"}]},{"name":"AXEL HAWK","moves":[{"category":"_(","name":"Hell Bomber","input":"_6_+_D","condition":"─"},{"category":"_(","name":"Head Crush","input":"_4_+_D","condition":"─"},{"category":"_(","name":"Rolling Buster","input":"_9_+_D","condition":"─"},{"category":"_@","name":"Axel Dance","input":"^*_P","condition":"─"},{"category":"_@","name":"Tornado Upper","input":"_2_3_6_+_P","condition":"─"},{"category":"_@","name":"Smash Bomber","input":"^1_6_+_P","condition":"─"},{"category":"_*","name":"Axel Rush","input":"_4_6_3_2_1_4_9_+_B_+_C","condition":"─"}]},{"name":"LAURENCE BLOOD","moves":[{"category":"_(","name":"Poncho Throw","input":"_4 / _6_+_C","condition":"─"},{"category":"_(","name":"Poncho Breaker","input":"_4 / _6_+_D","condition":"─"},{"category":"_(","name":"Flying Buster","input":"_^_2_+_C","condition":"─"},{"category":"_@","name":"Bloody Saber","input":"_4_1_2_3_6_+_P","condition":"─"},{"category":"_@","name":"Bloody Spin","input":"^4_6_+_K","condition":"─"},{"category":"_@","name":"Bloody Cutter","input":"^2_8_+_C","condition":"─"},{"category":"_*","name":"Bloody Flash","input":"_3_4_1_2_3_6_1_6_+_B_+_D","condition":"─"}]},{"name":"GEESE HOWARD","moves":[{"category":"_(","name":"Satsujin Katate Nage","input":"_4 / _6_+_C","condition":"─"},{"category":"_(","name":"Kosatsu Sho","input":"_4 / _6_+_D","condition":"─"},{"category":"_(","name":"Shinkuu Nage","input":"_3_+_C","condition":"─"},{"category":"_@","name":"Reppuu Ken","input":"_2_3_6_+_A","condition":"─"},{"category":"_@","name":"Double Reppuu Ken","input":"_2_3_6_+_C","condition":"─"},{"category":"_@","name":"Shippuu Ken","input":"_^_2_1_4_+_P","condition":"─"},{"category":"_@","name":"Joudan Atemi Nage","input":"_4_1_2_3_6_9_+_B (reverse jump/Specials)","condition":"─"},{"category":"_@","name":"Chuudan Atemi Nage","input":"_4_1_2_3_6_9_+_D (reverse high/mid)","condition":"─"},{"category":"_*","name":"Raging Storm","input":"_1_6_3_2_1_4_3_+_B_+_C","condition":"─"}]},{"name":"WOLFGANG KRAUSER","moves":[{"category":"_(","name":"Knee Smasher","input":"_4 / _6_+_C","condition":"─"},{"category":"_(","name":"Neck Hang Blow","input":"_4 / _6_+_D","condition":"─"},{"category":"_(","name":"Lift Up Blow","input":"_3_+_C","condition":"─"},{"category":"_@","name":"High Blitz Ball","input":"_2_1_4_+_P","condition":"─"},{"category":"_@","name":"Low Blitz Ball","input":"_2_1_4_+_K","condition":"─"},{"category":"_@","name":"Leg Tomahawk","input":"_2_3_6_+_K","condition":"─"},{"category":"_@","name":"Phoenix Thrust","input":"_4_1_2_3_6_+_P (reverse high/mid)","condition":"─"},{"category":"_*","name":"Kaiser Wave","input":"^4_9_+_A_+_C","condition":"─"}]},{"name":"RYO SAKAZAKI","moves":[{"category":"_(","name":"Tomoe Nage","input":"_4 / _6_+_C","condition":"─"},{"category":"_@","name":"Ko'ou Ken","input":"_2_3_6_+_P","condition":"─"},{"category":"_@","name":"Kohou","input":"_6_2_3_+_P","condition":"─"},{"category":"_@","name":"Hien Shippuu Kyaku","input":"_1_6_+_K","condition":"─"},{"category":"_@","name":"Zanretsu Ken","input":"^*_C","condition":"─"},{"category":"_@","name":"Haoh Shoukou Ken","input":"_6_4_1_2_3_6_+_C","condition":"─"},{"category":"_*","name":"Ryuuko Ranbu","input":"_2_1_4_1_6_+_B_+_D","condition":"─"}]}],"cheatNotes":["_` Fight Ryo Sakazaki on Stage 16 (Dream Match!)","- Complete the game without lose a round","_` Sound Test (AES only)","- Pause the game and press _A_B_C_D_A"],"controlAbbr":{"_A":"LP","_B":"LK","_C":"HP","_D":"HK","_S":"ST","^S":"SL"},"systemControlMappings":{"snes":{"y":"_A","x":"_B","b":"_C","a":"_D"},"genesis":{"b":"_A","a":"_B","y":"_C","x":"_D"},"megadrive":{"b":"_A","a":"_B","y":"_C","x":"_D"},"32x":{"b":"_A","a":"_B","y":"_C","x":"_D"},"saturn":{"b":"_A","a":"_B","y":"_C","x":"_D"},"neogeo":{"b":"_A","y":"_B","a":"_C","x":"_D"},"psx":{"y":"_A","x":"_B","b":"_C","a":"_D"},"ps2":{"y":"_A","x":"_B","b":"_C","a":"_D"},"gb":{"b":"_A","a":"_B"},"gbc":{"b":"_A","a":"_B"},"gamegear":{"a":"_A","b":"_B"},"sms":{"a":"_A","b":"_B"},"gba":{"b":"_A","a":"_B","l1":"_C","r1":"_D"},"ngpc":{"b":"_A","a":"_B","y":"_C","x":"_D"},"dreamcast":{"y":"_A","x":"_B","b":"_C","a":"_D"},"n64":{"b":"_A","a":"_B","cDown":"_C","cLeft":"_D"},"wswan":{"b":"_A","a":"_B"}}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "fatfursp",
+    "fatfurspa"
+  ],
+  "name": "Fatal Fury Special",
+  "year": 1993,
+  "manufacturer": "SNK",
+  "controls": {
+    "_A": "Weak Punch",
+    "_B": "Weak Kick",
+    "_C": "Strong Punch",
+    "_D": "Strong Kick",
+    "_S": "Start",
+    "^S": "Select (AES only)"
+  },
+  "controlGroups": {
+    "_P": [
+      "_A",
+      "_C"
+    ],
+    "_K": [
+      "_B",
+      "_D"
+    ]
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_*": "Desperation Moves",
+    "_`": "Desperation Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Crawl",
+      "input": "^3",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Strong Attack",
+      "input": "_C_+_D",
+      "condition": "P"
+    },
+    {
+      "category": "_)",
+      "name": "Defensive Attack blocking",
+      "input": "_6_+_A",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Taunt far",
+      "input": "_C",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Change Plane",
+      "input": "_A_+_B",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Plane Roll opponent in Other Plane",
+      "input": "_2 / _8",
+      "condition": "─"
+    },
+    {
+      "category": "_)",
+      "name": "Plane Attack opponent in Other Plane",
+      "input": "_P / _K",
+      "condition": "─"
+    }
+  ],
+  "commonNotes": [
+    "PLANE MOVES"
+  ],
+  "characters": [
+    {
+      "name": "TERRY BOGARD",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Buster Throw",
+          "input": "_4 / _6_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Power Wave",
+          "input": "_2_3_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Rising Tackle",
+          "input": "^2_8_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Burn Knuckle",
+          "input": "_2_1_4_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Crack Shoot",
+          "input": "_2_1_4_7_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Power Geyser",
+          "input": "_2_1_4_1_6_+_B_+_C",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "ANDY BOGARD",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Kakaekomi Nage",
+          "input": "_4 / _6_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Hishou Ken",
+          "input": "_2_1_4_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Shouryuu Dan",
+          "input": "_2_3_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Kuuha Dan",
+          "input": "^1_9_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Zan'ei Ken",
+          "input": "_1_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Chou Reppa Dan",
+          "input": "^2_3_6_+_B_+_D",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "JOE HIGASHI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Leg Throw",
+          "input": "_4 / _6_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Hiza Jigoku",
+          "input": "_4 / _6_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Bakuretsu Ken",
+          "input": "^*_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Hurricane Upper",
+          "input": "_4_1_2_3_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Tiger Kick",
+          "input": "_2_3_6_9_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Slash Kick",
+          "input": "^1_9_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Screw Upper",
+          "input": "_6_4_1_2_3_6_+_B_+_C",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "BIG BEAR",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Powerbomb",
+          "input": "_6_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "German Suplex",
+          "input": "_4_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Choke Hold",
+          "input": "_6_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Headbutts",
+          "input": "_4_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Lariot Drop",
+          "input": "_3_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Overhead Toss",
+          "input": "_3_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Bear Hug",
+          "input": "_9_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Giant Bomb",
+          "input": "^1_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Super Drop Kick",
+          "input": "_O_D",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Bear Bomber",
+          "input": "_6_4_2_8_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Fire Breath",
+          "input": "_6_3_2_1_6_+_B_+_C",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "JUBEI YAMADA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Ippon Seoi",
+          "input": "_4 / _6_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Benkei Nakashi",
+          "input": "_6_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Tomoe Nage",
+          "input": "_4_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Tawara Nage",
+          "input": "_3_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Kumo Koroshi",
+          "input": "_9_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Izuna Otoshi",
+          "input": "_^_2_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Nihon Seoi Dash",
+          "input": "^4_6_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Ooizuna Otoshi close",
+          "input": "^2_8_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Senbe Shuriken",
+          "input": "^4_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Neko Jarashi close",
+          "input": "_6_3_2_1_4_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Dynamite Izuna Otoshi close",
+          "input": "^1_2_3_+_B_+_C",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "CHENG SINZAN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Aiki Nage",
+          "input": "_4 / _6_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Zutsuki Satsu",
+          "input": "_4 / _6_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Kiten Hinzan",
+          "input": "_2_3_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Dai Taikobara Uchi",
+          "input": "^2_8_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Hagan Geki",
+          "input": "^4_6_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Bukurai Hoh",
+          "input": "^1_2_3_6_+_B_+_C",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "KIM KAPHWAN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Sakkyaku Nage",
+          "input": "_4 / _6_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Hishou Kyaku",
+          "input": "_^_2_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Hangetsu Zan",
+          "input": "_2_1_4_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Hien Zan",
+          "input": "^2_8_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Hou'ou Kyaku",
+          "input": "_2_1_4_1_6_+_B_+_D",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "MAI SHIRANUI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Fuusha Kuzushi",
+          "input": "_4 / _6_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Yume Zakura",
+          "input": "_^_2_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Kachou Sen",
+          "input": "_2_3_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Ryuu Enbu",
+          "input": "_2_1_4_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Hissatsu Shinobi Bachi",
+          "input": "_4_1_2_3_6_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Musasabi no Mai",
+          "input": "^2_8_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Chou Hissatsu Shinobi Bachi",
+          "input": "_6_1_6_+_B_+_C",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "DUCK KING",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Rolling Neck",
+          "input": "_4 / _6_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Reverse Breaker",
+          "input": "_^_2_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_)",
+          "name": "Needle Low",
+          "input": "_3_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Head Spin Attack",
+          "input": "^4_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Break Storm",
+          "input": "_2_3_6_9_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Dancing Dive",
+          "input": "_2_1_4_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Beat Rush",
+          "input": "_6_4_6_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Break Spiral close",
+          "input": "_4_1_2_3_6_9_2_+_B_+_C",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "TUNG FU RUE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Ressen Shou",
+          "input": "_4 / _6_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Sen Shippo",
+          "input": "_2_1_4_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Shou Ha",
+          "input": "^1_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Ressen Kyaku close",
+          "input": "^1_9_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Gekihou",
+          "input": "^*_C",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Senpuu Gou Ken",
+          "input": "_6_3_2_8_+_B_+_C",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "BILLY KANE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Ippon Zuri Nage",
+          "input": "_4 / _6_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Jigoku Otoshi",
+          "input": "_4 / _6_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Senpuu Kon",
+          "input": "^*_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Sansetsu Kon: Chuudan Uchi",
+          "input": "^4_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Kyoushuu Hishou Kon",
+          "input": "_1_2_3_6_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "input": "^!Move                                                          _4 / _6",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Suzume Otoshi",
+          "input": "^1_9_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Chou Kaen Senpuu Kon",
+          "input": "_2_3_6_3_2_1_4_7_+_A_+_C",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "AXEL HAWK",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Hell Bomber",
+          "input": "_6_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Head Crush",
+          "input": "_4_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Rolling Buster",
+          "input": "_9_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Axel Dance",
+          "input": "^*_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Tornado Upper",
+          "input": "_2_3_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Smash Bomber",
+          "input": "^1_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Axel Rush",
+          "input": "_4_6_3_2_1_4_9_+_B_+_C",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "LAURENCE BLOOD",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Poncho Throw",
+          "input": "_4 / _6_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Poncho Breaker",
+          "input": "_4 / _6_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Flying Buster",
+          "input": "_^_2_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Bloody Saber",
+          "input": "_4_1_2_3_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Bloody Spin",
+          "input": "^4_6_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Bloody Cutter",
+          "input": "^2_8_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Bloody Flash",
+          "input": "_3_4_1_2_3_6_1_6_+_B_+_D",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "GEESE HOWARD",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Satsujin Katate Nage",
+          "input": "_4 / _6_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Kosatsu Sho",
+          "input": "_4 / _6_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Shinkuu Nage",
+          "input": "_3_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Reppuu Ken",
+          "input": "_2_3_6_+_A",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Double Reppuu Ken",
+          "input": "_2_3_6_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Shippuu Ken",
+          "input": "_^_2_1_4_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Joudan Atemi Nage",
+          "input": "_4_1_2_3_6_9_+_B (reverse jump/Specials)",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Chuudan Atemi Nage",
+          "input": "_4_1_2_3_6_9_+_D (reverse high/mid)",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Raging Storm",
+          "input": "_1_6_3_2_1_4_3_+_B_+_C",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "WOLFGANG KRAUSER",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Knee Smasher",
+          "input": "_4 / _6_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Neck Hang Blow",
+          "input": "_4 / _6_+_D",
+          "condition": "─"
+        },
+        {
+          "category": "_(",
+          "name": "Lift Up Blow",
+          "input": "_3_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "High Blitz Ball",
+          "input": "_2_1_4_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Low Blitz Ball",
+          "input": "_2_1_4_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Leg Tomahawk",
+          "input": "_2_3_6_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Phoenix Thrust",
+          "input": "_4_1_2_3_6_+_P (reverse high/mid)",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Kaiser Wave",
+          "input": "^4_9_+_A_+_C",
+          "condition": "─"
+        }
+      ]
+    },
+    {
+      "name": "RYO SAKAZAKI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Tomoe Nage",
+          "input": "_4 / _6_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Ko'ou Ken",
+          "input": "_2_3_6_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Kohou",
+          "input": "_6_2_3_+_P",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Hien Shippuu Kyaku",
+          "input": "_1_6_+_K",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Zanretsu Ken",
+          "input": "^*_C",
+          "condition": "─"
+        },
+        {
+          "category": "_@",
+          "name": "Haoh Shoukou Ken",
+          "input": "_6_4_1_2_3_6_+_C",
+          "condition": "─"
+        },
+        {
+          "category": "_*",
+          "name": "Ryuuko Ranbu",
+          "input": "_2_1_4_1_6_+_B_+_D",
+          "condition": "─"
+        }
+      ]
+    }
+  ],
+  "cheatNotes": [
+    "_` Fight Ryo Sakazaki on Stage 16 (Dream Match!)",
+    "- Complete the game without lose a round",
+    "_` Sound Test (AES only)",
+    "- Pause the game and press _A_B_C_D_A"
+  ],
+  "controlAbbr": {
+    "_A": "LP",
+    "_B": "LK",
+    "_C": "HP",
+    "_D": "HK",
+    "_S": "ST",
+    "^S": "SL"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "genesis": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "megadrive": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "32x": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "saturn": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "neogeo": {
+      "b": "_A",
+      "y": "_B",
+      "a": "_C",
+      "x": "_D"
+    },
+    "psx": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "ps2": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "gb": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gbc": {
+      "b": "_A",
+      "a": "_B"
+    },
+    "gamegear": {
+      "a": "_A",
+      "b": "_B"
+    },
+    "sms": {
+      "a": "_A",
+      "b": "_B"
+    },
+    "gba": {
+      "b": "_A",
+      "a": "_B",
+      "l1": "_C",
+      "r1": "_D"
+    },
+    "ngpc": {
+      "b": "_A",
+      "a": "_B",
+      "y": "_C",
+      "x": "_D"
+    },
+    "dreamcast": {
+      "y": "_A",
+      "x": "_B",
+      "b": "_C",
+      "a": "_D"
+    },
+    "n64": {
+      "b": "_A",
+      "a": "_B",
+      "cDown": "_C",
+      "cLeft": "_D"
+    },
+    "wswan": {
+      "b": "_A",
+      "a": "_B"
+    }
+  }
+}

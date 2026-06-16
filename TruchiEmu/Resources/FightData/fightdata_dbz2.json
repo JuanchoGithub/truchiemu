@@ -1,1 +1,673 @@
-{"schemaVersion":2,"romIds":["dbz2"],"name":"Dragon Ball Z 2: Super Battle","year":1994,"manufacturer":"Banpresto","credits":"by: Fabricio Coroquer (Minoplis)","controls":{"^E":"Weak Punch","^G":"Strong Punch","^H":"Weak Kick","^J":"Strong Kick","_S":"Start"},"controlGroups":{"_P":["^E","^G"],"_K":["^H","^J"]},"categories":{"_(":"Normal Throws","_)":"Command Moves","_@":"Special Moves","_*":"Super Moves","_&":"Powered Super Moves","_`":"Powered Super Moves"},"commonCommands":[{"category":"_)","name":"Powerful Punch","input":"^W"},{"category":"_)","name":"Powerful Kick","input":"^V"},{"category":"_)","name":"Charge Ki","input":"_O^E_+^H_+^G"},{"category":"_)","name":"Auto Combo","input":"^E^E^E^E"}],"characters":[{"name":"SON GOKU","moves":[{"category":"_(","name":"Throw","input":"_6_+^W"},{"category":"_)","name":"Retreat","input":"_4_4"},{"category":"_)","name":"Ducking Uppercut","input":"_2_+^W"},{"category":"_)","name":"Axe Kick","input":"_6_+^V"},{"category":"_@","name":"Kame Hame Ha","input":"_2_3_6_+_P"},{"category":"_@","name":"Low Kame Hame Ha","input":"(_^)_2_3_6_+_K"},{"category":"_@","name":"Scatter Shot","input":"_4_2_1_+_P"},{"category":"_@","name":"Flip Kick","input":"(_^)_2_1_4_+_K"},{"category":"_*","name":"Chou Kame Hame Ha","input":"_2_3_6_2_3_6_+^W"},{"category":"_*","name":"Shinron Blast","input":"_6_4_1_2_3_6_+^W"},{"category":"_&","name":"Shinron Blast","input":"_6_4_1_2_3_6_+^W"}]},{"name":"SON GOHAN","moves":[{"category":"_(","name":"Throw","input":"_6_+^W"},{"category":"_)","name":"Dash","input":"_6_6"},{"category":"_)","name":"Retreat","input":"_4_4"},{"category":"_)","name":"Axe Kick","input":"_6_+^V"},{"category":"_@","name":"Kame Hame Ha","input":"_2_3_6_+_P"},{"category":"_@","name":"Low Kame Hame Ha","input":"(_^)_2_3_6_+_K"},{"category":"_@","name":"Dive Punch","input":"^4_6_+_P"},{"category":"_@","name":"Dragon Cartwheel","input":"_2_1_4_+_K"},{"category":"_@","name":"Scatter Shot","input":"_4_2_1_+_P"},{"category":"_@","name":"Rising Ki Wave","input":"_2_6_3_+_K"},{"category":"_*","name":"Chou Kame Hame Ha","input":"_2_3_6_2_3_6_+^W"},{"category":"_*","name":"Super Izumi Drop close","input":"_6_2_3_+^V"},{"category":"_&","name":"Super Izumi Drop close","input":"_6_2_3_+^V"}]},{"name":"VEGETA","moves":[{"category":"_(","name":"Throw","input":"_6_+^W"},{"category":"_)","name":"Dash","input":"_6_6"},{"category":"_)","name":"Retreat","input":"_4_4"},{"category":"_)","name":"Launcher","input":"_2_+^W"},{"category":"_@","name":"Big Bang Attack","input":"_2_3_6_+_P"},{"category":"_@","name":"Low Big Bang Attack","input":"(_^)_2_3_6_+_K"},{"category":"_@","name":"Burning Rage","input":"_6_3_2_1_4_+_P"},{"category":"_@","name":"Burning Kick","input":"_2_1_4_+_K"},{"category":"_@","name":"Scatter Shot","input":"_4_2_1_+_P"},{"category":"_*","name":"Super Galik Ho","input":"_2_3_6_2_3_6_+^W"},{"category":"_*","name":"Final Flash","input":"_6_2_3_+^W"},{"category":"_&","name":"Final Flash","input":"_6_2_3_+^W"}]},{"name":"TRUNKS","moves":[{"category":"_(","name":"Throw","input":"_6_+^W"},{"category":"_)","name":"Dash","input":"_6_6"},{"category":"_@","name":"Flying Grab","input":"^4_6_+_K"},{"category":"_@","name":"Energy Shield","input":"^2_8_+_P"},{"category":"_*","name":"Finish Buster","input":"_2_1_4_6_2_3_+^W"},{"category":"_*","name":"Saber Twin","input":"_6_4_6_+^W"},{"category":"_&","name":"Saber Twin","input":"_6_4_6_+^W"}]},{"name":"PICCOLO","moves":[{"category":"_(","name":"Throw","input":"_6_+^W"},{"category":"_)","name":"Launcher","input":"_2_+^W"},{"category":"_@","name":"Makankousappou","input":"_4_1_2_3_6_+_P"},{"category":"_@","name":"Low Makankousappou","input":"(_^)_4_1_2_3_6_+_K"},{"category":"_@","name":"Rushing Combo","input":"_2_6_3_+_P"},{"category":"_@","name":"Scatter Shot","input":"_4_2_1_+_P"},{"category":"_@","name":"Shocking Dive Kick","input":"_6_2_3_+_K"},{"category":"_*","name":"Hurricane Slam close","input":"_2_1_4_6_+^W"},{"category":"_&","name":"Hurricane Slam close","input":"_2_1_4_6_+^W"}]},{"name":"Mr. SATAN","moves":[{"category":"_(","name":"Throw","input":"_6_+^W"},{"category":"_)","name":"Forward Kick","input":"_6_+^V"},{"category":"_@","name":"Satan Kick","input":"_2_3_6_+_K"},{"category":"_@","name":"Satan Crusher","input":"_4_1_2_3_6_+_P"},{"category":"_@","name":"Rising Twirl","input":"_2_6_3_+_P"},{"category":"_@","name":"Jetpack Burn","input":"_2_1_4_+_P"},{"category":"_*","name":"Satan on the Loose","input":"_2_1_4_7_+^V"},{"category":"_&","name":"Satan on the Loose","input":"_2_1_4_7_+^V"}]},{"name":"ANDROID #20","moves":[{"category":"_(","name":"Tornado Expert","input":"_^_4 / _6_+_P"},{"category":"_)","name":"Dash","input":"_6_6"},{"category":"_)","name":"Retreat","input":"_4_4"},{"category":"_)","name":"Launcher","input":"_2_+^W"},{"category":"_@","name":"Absorb","input":"_2_1_4_+_P"},{"category":"_@","name":"#19 Headbutt","input":"_2_3_6_+_P"},{"category":"_*","name":"Ball Drop","input":"_2_6_3_+^W"},{"category":"_*","name":"Junk Throw","input":"_6_4_6_+^W"},{"category":"_&","name":"Junk Throw","input":"_6_4_6_+^W"}]},{"name":"ANDROID #18","moves":[{"category":"_)","name":"Retreat","input":"_4_4"},{"category":"_)","name":"Launcher","input":"_2_+^V"},{"category":"_@","name":"Fury Attack","input":"^4_6_+_P"},{"category":"_@","name":"Ki Blast","input":"(_^)_2_3_6_+_P"},{"category":"_@","name":"Backhand Smash","input":"_2_1_4_6_+_P"},{"category":"_@","name":"Shoulder Toss close","input":"_6_3_2_1_4_+_P"},{"category":"_@","name":"Spiral Kick","input":"_2_3_6_9_+_K"},{"category":"_*","name":"Death Beam","input":"_2_3_6_2_3_6_+^W"},{"category":"_*","name":"Destruction","input":"_2_1_4_1_2_3_6_+^V"},{"category":"_&","name":"Destruction","input":"_2_1_4_1_2_3_6_+^V"}]},{"name":"ANDROID #16","moves":[{"category":"_(","name":"Throw","input":"_6_+^W"},{"category":"_@","name":"Rocket Punch","input":"_2_1_4_+_P"},{"category":"_@","name":"Running Grab","input":"_1_4_6_+_P"},{"category":"_@","name":"Rapid Shot close","input":"_6_3_2_1_4_+_P"},{"category":"_*","name":"Ground Explosion","input":"_2_3_6_2_3_6_+^W"},{"category":"_*","name":"Rocket Charge","input":"_2_3_6_4_1_2_3_6_+^W"},{"category":"_&","name":"Rocket Charge","input":"_2_3_6_4_1_2_3_6_+^W"}]},{"name":"CELL","moves":[{"category":"_(","name":"Throw","input":"_6_+^W"},{"category":"_)","name":"Retreat","input":"_4_4"},{"category":"_@","name":"Roll of Death","input":"_2_3_6_3_2_1_4_+_P"},{"category":"_@","name":"Rising Phoenix","input":"_2_3_6_9_+_P"},{"category":"_@","name":"Makankousappou close","input":"_2_1_4_6_+_P"},{"category":"_@","name":"Scatter Shot","input":"_4_2_1_+_P"},{"category":"_@","name":"Kamehameha","input":"_2_3_6_+_P"},{"category":"_*","name":"Ki Blast Combo","input":"_6_2_3_+_P"},{"category":"_*","name":"Chou Kamehameha","input":"_2_3_6_2_3_6_+^W"},{"category":"_*","name":"Super Energy Shield","input":"_4_1_2_8_+^W"},{"category":"_&","name":"Super Energy Shield","input":"_4_1_2_8_+^W"}]}],"controlAbbr":{"^E":"LP","^G":"HP","^H":"LK","^J":"HK","_S":"ST"},"systemControlMappings":{"snes":{"y":"^G","x":"^E","b":"^J","a":"^H"},"genesis":{"y":"^G","b":"^E","c":"^J","a":"^H"},"megadrive":{"y":"^G","b":"^E","c":"^J","a":"^H"},"32x":{"y":"^G","b":"^E","c":"^J","a":"^H"},"saturn":{"y":"^G","b":"^E","c":"^J","a":"^H"},"psx":{"y":"^G","x":"^E","b":"^J","a":"^H"},"ps2":{"y":"^G","x":"^E","b":"^J","a":"^H"},"gb":{"b":"^G","a":"^J"},"gbc":{"b":"^G","a":"^J"},"gamegear":{"a":"^G","b":"^J"},"sms":{"a":"^G","b":"^J"},"gba":{"b":"^G","a":"^E","y":"^J","x":"^H"},"ngpc":{"b":"^G","a":"^E","y":"^J","x":"^H"}}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "dbz2"
+  ],
+  "name": "Dragon Ball Z 2: Super Battle",
+  "year": 1994,
+  "manufacturer": "Banpresto",
+  "credits": "by: Fabricio Coroquer (Minoplis)",
+  "controls": {
+    "^E": "Weak Punch",
+    "^G": "Strong Punch",
+    "^H": "Weak Kick",
+    "^J": "Strong Kick",
+    "_S": "Start"
+  },
+  "controlGroups": {
+    "_P": [
+      "^E",
+      "^G"
+    ],
+    "_K": [
+      "^H",
+      "^J"
+    ]
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_*": "Super Moves",
+    "_&": "Powered Super Moves",
+    "_`": "Powered Super Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Powerful Punch",
+      "input": "^W"
+    },
+    {
+      "category": "_)",
+      "name": "Powerful Kick",
+      "input": "^V"
+    },
+    {
+      "category": "_)",
+      "name": "Charge Ki",
+      "input": "_O^E_+^H_+^G"
+    },
+    {
+      "category": "_)",
+      "name": "Auto Combo",
+      "input": "^E^E^E^E"
+    }
+  ],
+  "characters": [
+    {
+      "name": "SON GOKU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+^W"
+        },
+        {
+          "category": "_)",
+          "name": "Retreat",
+          "input": "_4_4"
+        },
+        {
+          "category": "_)",
+          "name": "Ducking Uppercut",
+          "input": "_2_+^W"
+        },
+        {
+          "category": "_)",
+          "name": "Axe Kick",
+          "input": "_6_+^V"
+        },
+        {
+          "category": "_@",
+          "name": "Kame Hame Ha",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Low Kame Hame Ha",
+          "input": "(_^)_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Scatter Shot",
+          "input": "_4_2_1_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Flip Kick",
+          "input": "(_^)_2_1_4_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Chou Kame Hame Ha",
+          "input": "_2_3_6_2_3_6_+^W"
+        },
+        {
+          "category": "_*",
+          "name": "Shinron Blast",
+          "input": "_6_4_1_2_3_6_+^W"
+        },
+        {
+          "category": "_&",
+          "name": "Shinron Blast",
+          "input": "_6_4_1_2_3_6_+^W"
+        }
+      ]
+    },
+    {
+      "name": "SON GOHAN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+^W"
+        },
+        {
+          "category": "_)",
+          "name": "Dash",
+          "input": "_6_6"
+        },
+        {
+          "category": "_)",
+          "name": "Retreat",
+          "input": "_4_4"
+        },
+        {
+          "category": "_)",
+          "name": "Axe Kick",
+          "input": "_6_+^V"
+        },
+        {
+          "category": "_@",
+          "name": "Kame Hame Ha",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Low Kame Hame Ha",
+          "input": "(_^)_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Dive Punch",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Dragon Cartwheel",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Scatter Shot",
+          "input": "_4_2_1_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Rising Ki Wave",
+          "input": "_2_6_3_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Chou Kame Hame Ha",
+          "input": "_2_3_6_2_3_6_+^W"
+        },
+        {
+          "category": "_*",
+          "name": "Super Izumi Drop close",
+          "input": "_6_2_3_+^V"
+        },
+        {
+          "category": "_&",
+          "name": "Super Izumi Drop close",
+          "input": "_6_2_3_+^V"
+        }
+      ]
+    },
+    {
+      "name": "VEGETA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+^W"
+        },
+        {
+          "category": "_)",
+          "name": "Dash",
+          "input": "_6_6"
+        },
+        {
+          "category": "_)",
+          "name": "Retreat",
+          "input": "_4_4"
+        },
+        {
+          "category": "_)",
+          "name": "Launcher",
+          "input": "_2_+^W"
+        },
+        {
+          "category": "_@",
+          "name": "Big Bang Attack",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Low Big Bang Attack",
+          "input": "(_^)_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Burning Rage",
+          "input": "_6_3_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Burning Kick",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Scatter Shot",
+          "input": "_4_2_1_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Super Galik Ho",
+          "input": "_2_3_6_2_3_6_+^W"
+        },
+        {
+          "category": "_*",
+          "name": "Final Flash",
+          "input": "_6_2_3_+^W"
+        },
+        {
+          "category": "_&",
+          "name": "Final Flash",
+          "input": "_6_2_3_+^W"
+        }
+      ]
+    },
+    {
+      "name": "TRUNKS",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+^W"
+        },
+        {
+          "category": "_)",
+          "name": "Dash",
+          "input": "_6_6"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Grab",
+          "input": "^4_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Energy Shield",
+          "input": "^2_8_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Finish Buster",
+          "input": "_2_1_4_6_2_3_+^W"
+        },
+        {
+          "category": "_*",
+          "name": "Saber Twin",
+          "input": "_6_4_6_+^W"
+        },
+        {
+          "category": "_&",
+          "name": "Saber Twin",
+          "input": "_6_4_6_+^W"
+        }
+      ]
+    },
+    {
+      "name": "PICCOLO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+^W"
+        },
+        {
+          "category": "_)",
+          "name": "Launcher",
+          "input": "_2_+^W"
+        },
+        {
+          "category": "_@",
+          "name": "Makankousappou",
+          "input": "_4_1_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Low Makankousappou",
+          "input": "(_^)_4_1_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Rushing Combo",
+          "input": "_2_6_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Scatter Shot",
+          "input": "_4_2_1_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Shocking Dive Kick",
+          "input": "_6_2_3_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Hurricane Slam close",
+          "input": "_2_1_4_6_+^W"
+        },
+        {
+          "category": "_&",
+          "name": "Hurricane Slam close",
+          "input": "_2_1_4_6_+^W"
+        }
+      ]
+    },
+    {
+      "name": "Mr. SATAN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+^W"
+        },
+        {
+          "category": "_)",
+          "name": "Forward Kick",
+          "input": "_6_+^V"
+        },
+        {
+          "category": "_@",
+          "name": "Satan Kick",
+          "input": "_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Satan Crusher",
+          "input": "_4_1_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Rising Twirl",
+          "input": "_2_6_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Jetpack Burn",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Satan on the Loose",
+          "input": "_2_1_4_7_+^V"
+        },
+        {
+          "category": "_&",
+          "name": "Satan on the Loose",
+          "input": "_2_1_4_7_+^V"
+        }
+      ]
+    },
+    {
+      "name": "ANDROID #20",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Tornado Expert",
+          "input": "_^_4 / _6_+_P"
+        },
+        {
+          "category": "_)",
+          "name": "Dash",
+          "input": "_6_6"
+        },
+        {
+          "category": "_)",
+          "name": "Retreat",
+          "input": "_4_4"
+        },
+        {
+          "category": "_)",
+          "name": "Launcher",
+          "input": "_2_+^W"
+        },
+        {
+          "category": "_@",
+          "name": "Absorb",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "#19 Headbutt",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Ball Drop",
+          "input": "_2_6_3_+^W"
+        },
+        {
+          "category": "_*",
+          "name": "Junk Throw",
+          "input": "_6_4_6_+^W"
+        },
+        {
+          "category": "_&",
+          "name": "Junk Throw",
+          "input": "_6_4_6_+^W"
+        }
+      ]
+    },
+    {
+      "name": "ANDROID #18",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Retreat",
+          "input": "_4_4"
+        },
+        {
+          "category": "_)",
+          "name": "Launcher",
+          "input": "_2_+^V"
+        },
+        {
+          "category": "_@",
+          "name": "Fury Attack",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Ki Blast",
+          "input": "(_^)_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Backhand Smash",
+          "input": "_2_1_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Shoulder Toss close",
+          "input": "_6_3_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Spiral Kick",
+          "input": "_2_3_6_9_+_K"
+        },
+        {
+          "category": "_*",
+          "name": "Death Beam",
+          "input": "_2_3_6_2_3_6_+^W"
+        },
+        {
+          "category": "_*",
+          "name": "Destruction",
+          "input": "_2_1_4_1_2_3_6_+^V"
+        },
+        {
+          "category": "_&",
+          "name": "Destruction",
+          "input": "_2_1_4_1_2_3_6_+^V"
+        }
+      ]
+    },
+    {
+      "name": "ANDROID #16",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+^W"
+        },
+        {
+          "category": "_@",
+          "name": "Rocket Punch",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Running Grab",
+          "input": "_1_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Rapid Shot close",
+          "input": "_6_3_2_1_4_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Ground Explosion",
+          "input": "_2_3_6_2_3_6_+^W"
+        },
+        {
+          "category": "_*",
+          "name": "Rocket Charge",
+          "input": "_2_3_6_4_1_2_3_6_+^W"
+        },
+        {
+          "category": "_&",
+          "name": "Rocket Charge",
+          "input": "_2_3_6_4_1_2_3_6_+^W"
+        }
+      ]
+    },
+    {
+      "name": "CELL",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+^W"
+        },
+        {
+          "category": "_)",
+          "name": "Retreat",
+          "input": "_4_4"
+        },
+        {
+          "category": "_@",
+          "name": "Roll of Death",
+          "input": "_2_3_6_3_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Rising Phoenix",
+          "input": "_2_3_6_9_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Makankousappou close",
+          "input": "_2_1_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Scatter Shot",
+          "input": "_4_2_1_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Kamehameha",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Ki Blast Combo",
+          "input": "_6_2_3_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Chou Kamehameha",
+          "input": "_2_3_6_2_3_6_+^W"
+        },
+        {
+          "category": "_*",
+          "name": "Super Energy Shield",
+          "input": "_4_1_2_8_+^W"
+        },
+        {
+          "category": "_&",
+          "name": "Super Energy Shield",
+          "input": "_4_1_2_8_+^W"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "^E": "LP",
+    "^G": "HP",
+    "^H": "LK",
+    "^J": "HK",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "^G",
+      "x": "^E",
+      "b": "^J",
+      "a": "^H"
+    },
+    "genesis": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "megadrive": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "32x": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "saturn": {
+      "y": "^G",
+      "b": "^E",
+      "c": "^J",
+      "a": "^H"
+    },
+    "psx": {
+      "y": "^G",
+      "x": "^E",
+      "b": "^J",
+      "a": "^H"
+    },
+    "ps2": {
+      "y": "^G",
+      "x": "^E",
+      "b": "^J",
+      "a": "^H"
+    },
+    "gb": {
+      "b": "^G",
+      "a": "^J"
+    },
+    "gbc": {
+      "b": "^G",
+      "a": "^J"
+    },
+    "gamegear": {
+      "a": "^G",
+      "b": "^J"
+    },
+    "sms": {
+      "a": "^G",
+      "b": "^J"
+    },
+    "gba": {
+      "b": "^G",
+      "a": "^E",
+      "y": "^J",
+      "x": "^H"
+    },
+    "ngpc": {
+      "b": "^G",
+      "a": "^E",
+      "y": "^J",
+      "x": "^H"
+    }
+  }
+}

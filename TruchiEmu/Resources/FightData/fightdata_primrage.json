@@ -1,1 +1,529 @@
-{"schemaVersion":2,"romIds":["primrage","primrage20","primrageo"],"name":"Primal Rage","credits":"by: Fabricio Coroquer (Created by: Procyon)","controls":{"_S":"Start"},"categories":{"_)":"Command Moves","_@":"Special Moves","_`":"Finishing Moves"},"commonCommands":[{"category":"_)","name":"High Strong _a_+_b"},{"category":"_)","name":"Low Strong _c_+_d"}],"characters":[{"name":"SAURON","moves":[{"category":"_@","name":"Primal Scream","input":"_O_a_+_c_2_8"},{"category":"_@","name":"Earthquake Scream","input":"_O_a_+_b_+_d_8_2"},{"category":"_@","name":"Cranium Crusher","input":"_O_a_+_d_2_8"},{"category":"_@","name":"Leaping Bone Bash","input":"_O_b_+_c_2_8_2"},{"category":"_@","name":"Stun Roar","input":"_O_a_+_c_4_6"},{"category":"_@","name":"Neck Throw","input":"_O_b_+_d_6_4"},{"category":"_@","name":"Air Throw","input":"_O_b_+_d_8"},{"category":"_@","name":"Human Chomp","input":"_O_a_+_b_+_c_+_d_2_2_8"},{"category":"_`","name":"Carnage","input":"_O_a_+_b_+_c_+_d_4_6_4_6_4"},{"category":"_`","name":"Flesh Eating","input":"_O_a_+_c_2_2","condition":", then _O_a_+_b_+_c_+_d_8_8"},{"category":"_`","name":"Grape Crusher","input":"_O_a_+_b_+_c_+_d_8_2_8_2_2"}],"notes":["Finishing Moves"]},{"name":"TALON","moves":[{"category":"_)","name":"Slide","input":"_2_+_c_+_d"},{"category":"_@","name":"Brain Basher","input":"_O_b_+_c_4_8_6"},{"category":"_@","name":"Pounce and Flip","input":"_O_b_+_c_6_2_3"},{"category":"_@","name":"Frantic Fury","input":"_O_a_+_d_2_6"},{"category":"_@","name":"Slasher","input":"_O_a_+_c_+_d_2_6"},{"category":"_@","name":"Face Ripper","input":"_O_b_+_d_2_6"},{"category":"_@","name":"Jugular Bite","input":"_O_b_+_d_4_6"},{"category":"_@","name":"Run","input":"_O_a_+_c_4 / _6"},{"category":"_@","name":"Human Chomp","input":"_O_a_+_b_+_c_+_d_6_2"},{"category":"_`","name":"Heart Wrenching","input":"_O_a_+_c_+_d_6_2_4_8"},{"category":"_`","name":"Shredder","input":"_O_a_+_d_6_2_4_8"},{"category":"_`","name":"Stampede","input":"_O_a_+_b_+_c_+_d_6_4_8_2"}],"notes":["Finishing Moves"]},{"name":"VERTIGO","moves":[{"category":"_@","name":"Slow Venom Spit","input":"_O_a_+_c_6_6"},{"category":"_@","name":"Fast Venom Spit","input":"_O_b_+_d_6_6"},{"category":"_@","name":"Voodoo Spell","input":"_O_b_+_c_4_4"},{"category":"_@","name":"Ground Teleport","input":"_O_b_+_d_2_2"},{"category":"_@","name":"Air Teleport","input":"_O_b_+_d_2_8"},{"category":"_@","name":"Come Slither","input":"_O_a_+_c_4_4"},{"category":"_@","name":"Scorpion Sting","input":"_O_b_+_c_6_6"},{"category":"_@","name":"Human Chomp","input":"_O_a_+_b_+_c_+_d_2_6_8"},{"category":"_`","name":"Petrify","input":"_O_b_+_d_4_4_4","condition":", then _O_a_+_b_+_c_+_d_6_6"},{"category":"_`","name":"Shrink and Eat","input":"_O_b_+_d_4_4_4","condition":", then _O_a_+_b_+_c_+_d_2_8"},{"category":"_`","name":"La Vache Qui Rit","input":"_O_a_+_b_+_c_+_d_4_4_4_2_6"}],"notes":["Finishing Moves"]},{"name":"BLIZZARD","moves":[{"category":"_)","name":"Slide","input":"_2_+_c_+_d"},{"category":"_@","name":"Quick Mega Punch","input":"_O_a_+_c_4_6"},{"category":"_@","name":"Short Mega Punch","input":"_O_a_+_b_+_c_+_d_4_6"},{"category":"_@","name":"Long Mega Punch","input":"_O_b_+_d_4_6"},{"category":"_@","name":"Fake Mega Punch","input":"_O_a_+_c_2_8"},{"category":"_@","name":"Freeze Breath","input":"_O_a_+_b_+_d_4_6"},{"category":"_@","name":"Ice Geyser","input":"_O_a_+_b_+_d_2_8"},{"category":"_@","name":"Punching Bag","input":"_O_a_+_d_6_2_4_8"},{"category":"_@","name":"Throw","input":"_O_b_+_c_6_2_4_8"},{"category":"_@","name":"Air Throw","input":"_O_b_+_c_8"},{"category":"_@","name":"Human Chomp","input":"_O_a_+_b_+_c_+_d_4_8_6_2"},{"category":"_`","name":"Brain Bash","input":"_O_a_+_b_+_d_2_2_4_8_6"},{"category":"_`","name":"To-Da-Moon","input":"_O_a_+_b_+_c_+_d_2_2_2_2_8"},{"category":"_`","name":"Redemption","input":"_O_a_+_b_+_c_+_d_2_6_8_2_8"}],"notes":["Finishing Moves"]},{"name":"CHAOS","moves":[{"category":"_)","name":"Slide","input":"_2_+_c_+_d"},{"category":"_@","name":"Grab-N-Throw","input":"_O_b_+_d_6_4"},{"category":"_@","name":"Slow Power Puke","input":"_O_b_+_c_8_6"},{"category":"_@","name":"Fast Power Puke","input":"_O_a_+_d_8_6"},{"category":"_@","name":"Fart of Fury","input":"_O_b_+_c_2_6_8_4"},{"category":"_@","name":"Ground Shaker","input":"_O_b_+_c_4_7_1"},{"category":"_@","name":"Flying Butt Slam","input":"_O_b_+_d_2_6_8_6_2_4"},{"category":"_@","name":"Battering Ram","input":"_O_a_+_c_6_6"},{"category":"_@","name":"Human Chomp","input":"_O_a_+_b_+_c_+_d_6_2_4"},{"category":"_`","name":"Golden Shower","input":"_O_a_+_c_2_2","condition":", then _O_a_+_b_+_c_+_d_4_6_4_6"},{"category":"_`","name":"Cannonball","input":"_O_a_+_b_+_c_+_d_4_2_6_2_4"},{"category":"_`","name":"The Churl","input":"_O_a_+_b_+_c_+_d_6_6_6_4_4_4"}],"notes":["Finishing Moves"]},{"name":"ARMADON","moves":[{"category":"_@","name":"Bed-O-Nails","input":"_O_b_+_c_2_8"},{"category":"_@","name":"Iron Maiden","input":"_O_b_+_c_4_8_6"},{"category":"_@","name":"Mega Charge","input":"_O_a_+_c_4_2_6"},{"category":"_@","name":"Gut Gouger","input":"_O_a_+_b_+_c_6_4"},{"category":"_@","name":"Hornication Upper","input":"_O_a_+_b_+_c_3_6_9"},{"category":"_@","name":"Spinning Death","input":"_O_a_+_d_4_6_2"},{"category":"_@","name":"Flying Spikes","input":"_O_b_+_d_4_8"},{"category":"_@","name":"Human Chomp","input":"_O_a_+_b_+_c_+_d_8_6_2"},{"category":"_`","name":"Gut Fling","input":"_O_a_+_b_+_c_2_2_2_2_8"},{"category":"_`","name":"Meditation","input":"_O_a_+_b_+_c_+_d_6_2_4_6_6"},{"category":"_`","name":"Falling Spikes","input":"_O_a_+_b_+_c_+_d_2_4_8_2"}],"notes":["Finishing Moves"]},{"name":"DIABLO","moves":[{"category":"_@","name":"Slow Fireball","input":"_O_b_+_d_2_6"},{"category":"_@","name":"Fast Fireball","input":"_O_a_+_c_2_6"},{"category":"_@","name":"Torch","input":"_O_a_+_c_8_6"},{"category":"_@","name":"Hot Foot","input":"_O_b_+_d_7_3"},{"category":"_@","name":"Mega Lunge","input":"_O_a_+_d_4_2_6"},{"category":"_@","name":"The Pulveriser","input":"_O_a_+_d_8_6_2"},{"category":"_@","name":"Inferno Flash","input":"_O_b_+_c_+_d_8"},{"category":"_@","name":"Human Chomp","input":"_O_a_+_b_+_c_+_d_2_8_2"},{"category":"_`","name":"Incinerator","input":"_O_a_+_b_+_c_+_d_7_2_3"},{"category":"_`","name":"Fireball","input":"_O_b_+_c_+_d_6_6_6"},{"category":"_`","name":"Infernal","input":"_O_a_+_c_+_d_8_2_8_2_2"}],"notes":["Finishing Moves"]}],"controlAbbr":{"_S":"ST"},"systemControlMappings":{"snes":{"y":"_a","x":"_b","b":"_c","a":"_d"},"genesis":{"b":"_a","a":"_b","y":"_c","x":"_d"},"megadrive":{"b":"_a","a":"_b","y":"_c","x":"_d"},"psx":{"y":"_a","x":"_b","b":"_c","a":"_d"}}}
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "primrage",
+    "primrage20",
+    "primrageo"
+  ],
+  "name": "Primal Rage",
+  "credits": "by: Fabricio Coroquer (Created by: Procyon)",
+  "controls": {
+    "_S": "Start"
+  },
+  "categories": {
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_`": "Finishing Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "High Strong _a_+_b"
+    },
+    {
+      "category": "_)",
+      "name": "Low Strong _c_+_d"
+    }
+  ],
+  "characters": [
+    {
+      "name": "SAURON",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Primal Scream",
+          "input": "_O_a_+_c_2_8"
+        },
+        {
+          "category": "_@",
+          "name": "Earthquake Scream",
+          "input": "_O_a_+_b_+_d_8_2"
+        },
+        {
+          "category": "_@",
+          "name": "Cranium Crusher",
+          "input": "_O_a_+_d_2_8"
+        },
+        {
+          "category": "_@",
+          "name": "Leaping Bone Bash",
+          "input": "_O_b_+_c_2_8_2"
+        },
+        {
+          "category": "_@",
+          "name": "Stun Roar",
+          "input": "_O_a_+_c_4_6"
+        },
+        {
+          "category": "_@",
+          "name": "Neck Throw",
+          "input": "_O_b_+_d_6_4"
+        },
+        {
+          "category": "_@",
+          "name": "Air Throw",
+          "input": "_O_b_+_d_8"
+        },
+        {
+          "category": "_@",
+          "name": "Human Chomp",
+          "input": "_O_a_+_b_+_c_+_d_2_2_8"
+        },
+        {
+          "category": "_`",
+          "name": "Carnage",
+          "input": "_O_a_+_b_+_c_+_d_4_6_4_6_4"
+        },
+        {
+          "category": "_`",
+          "name": "Flesh Eating",
+          "input": "_O_a_+_c_2_2",
+          "condition": ", then _O_a_+_b_+_c_+_d_8_8"
+        },
+        {
+          "category": "_`",
+          "name": "Grape Crusher",
+          "input": "_O_a_+_b_+_c_+_d_8_2_8_2_2"
+        }
+      ],
+      "notes": [
+        "Finishing Moves"
+      ]
+    },
+    {
+      "name": "TALON",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Slide",
+          "input": "_2_+_c_+_d"
+        },
+        {
+          "category": "_@",
+          "name": "Brain Basher",
+          "input": "_O_b_+_c_4_8_6"
+        },
+        {
+          "category": "_@",
+          "name": "Pounce and Flip",
+          "input": "_O_b_+_c_6_2_3"
+        },
+        {
+          "category": "_@",
+          "name": "Frantic Fury",
+          "input": "_O_a_+_d_2_6"
+        },
+        {
+          "category": "_@",
+          "name": "Slasher",
+          "input": "_O_a_+_c_+_d_2_6"
+        },
+        {
+          "category": "_@",
+          "name": "Face Ripper",
+          "input": "_O_b_+_d_2_6"
+        },
+        {
+          "category": "_@",
+          "name": "Jugular Bite",
+          "input": "_O_b_+_d_4_6"
+        },
+        {
+          "category": "_@",
+          "name": "Run",
+          "input": "_O_a_+_c_4 / _6"
+        },
+        {
+          "category": "_@",
+          "name": "Human Chomp",
+          "input": "_O_a_+_b_+_c_+_d_6_2"
+        },
+        {
+          "category": "_`",
+          "name": "Heart Wrenching",
+          "input": "_O_a_+_c_+_d_6_2_4_8"
+        },
+        {
+          "category": "_`",
+          "name": "Shredder",
+          "input": "_O_a_+_d_6_2_4_8"
+        },
+        {
+          "category": "_`",
+          "name": "Stampede",
+          "input": "_O_a_+_b_+_c_+_d_6_4_8_2"
+        }
+      ],
+      "notes": [
+        "Finishing Moves"
+      ]
+    },
+    {
+      "name": "VERTIGO",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Slow Venom Spit",
+          "input": "_O_a_+_c_6_6"
+        },
+        {
+          "category": "_@",
+          "name": "Fast Venom Spit",
+          "input": "_O_b_+_d_6_6"
+        },
+        {
+          "category": "_@",
+          "name": "Voodoo Spell",
+          "input": "_O_b_+_c_4_4"
+        },
+        {
+          "category": "_@",
+          "name": "Ground Teleport",
+          "input": "_O_b_+_d_2_2"
+        },
+        {
+          "category": "_@",
+          "name": "Air Teleport",
+          "input": "_O_b_+_d_2_8"
+        },
+        {
+          "category": "_@",
+          "name": "Come Slither",
+          "input": "_O_a_+_c_4_4"
+        },
+        {
+          "category": "_@",
+          "name": "Scorpion Sting",
+          "input": "_O_b_+_c_6_6"
+        },
+        {
+          "category": "_@",
+          "name": "Human Chomp",
+          "input": "_O_a_+_b_+_c_+_d_2_6_8"
+        },
+        {
+          "category": "_`",
+          "name": "Petrify",
+          "input": "_O_b_+_d_4_4_4",
+          "condition": ", then _O_a_+_b_+_c_+_d_6_6"
+        },
+        {
+          "category": "_`",
+          "name": "Shrink and Eat",
+          "input": "_O_b_+_d_4_4_4",
+          "condition": ", then _O_a_+_b_+_c_+_d_2_8"
+        },
+        {
+          "category": "_`",
+          "name": "La Vache Qui Rit",
+          "input": "_O_a_+_b_+_c_+_d_4_4_4_2_6"
+        }
+      ],
+      "notes": [
+        "Finishing Moves"
+      ]
+    },
+    {
+      "name": "BLIZZARD",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Slide",
+          "input": "_2_+_c_+_d"
+        },
+        {
+          "category": "_@",
+          "name": "Quick Mega Punch",
+          "input": "_O_a_+_c_4_6"
+        },
+        {
+          "category": "_@",
+          "name": "Short Mega Punch",
+          "input": "_O_a_+_b_+_c_+_d_4_6"
+        },
+        {
+          "category": "_@",
+          "name": "Long Mega Punch",
+          "input": "_O_b_+_d_4_6"
+        },
+        {
+          "category": "_@",
+          "name": "Fake Mega Punch",
+          "input": "_O_a_+_c_2_8"
+        },
+        {
+          "category": "_@",
+          "name": "Freeze Breath",
+          "input": "_O_a_+_b_+_d_4_6"
+        },
+        {
+          "category": "_@",
+          "name": "Ice Geyser",
+          "input": "_O_a_+_b_+_d_2_8"
+        },
+        {
+          "category": "_@",
+          "name": "Punching Bag",
+          "input": "_O_a_+_d_6_2_4_8"
+        },
+        {
+          "category": "_@",
+          "name": "Throw",
+          "input": "_O_b_+_c_6_2_4_8"
+        },
+        {
+          "category": "_@",
+          "name": "Air Throw",
+          "input": "_O_b_+_c_8"
+        },
+        {
+          "category": "_@",
+          "name": "Human Chomp",
+          "input": "_O_a_+_b_+_c_+_d_4_8_6_2"
+        },
+        {
+          "category": "_`",
+          "name": "Brain Bash",
+          "input": "_O_a_+_b_+_d_2_2_4_8_6"
+        },
+        {
+          "category": "_`",
+          "name": "To-Da-Moon",
+          "input": "_O_a_+_b_+_c_+_d_2_2_2_2_8"
+        },
+        {
+          "category": "_`",
+          "name": "Redemption",
+          "input": "_O_a_+_b_+_c_+_d_2_6_8_2_8"
+        }
+      ],
+      "notes": [
+        "Finishing Moves"
+      ]
+    },
+    {
+      "name": "CHAOS",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Slide",
+          "input": "_2_+_c_+_d"
+        },
+        {
+          "category": "_@",
+          "name": "Grab-N-Throw",
+          "input": "_O_b_+_d_6_4"
+        },
+        {
+          "category": "_@",
+          "name": "Slow Power Puke",
+          "input": "_O_b_+_c_8_6"
+        },
+        {
+          "category": "_@",
+          "name": "Fast Power Puke",
+          "input": "_O_a_+_d_8_6"
+        },
+        {
+          "category": "_@",
+          "name": "Fart of Fury",
+          "input": "_O_b_+_c_2_6_8_4"
+        },
+        {
+          "category": "_@",
+          "name": "Ground Shaker",
+          "input": "_O_b_+_c_4_7_1"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Butt Slam",
+          "input": "_O_b_+_d_2_6_8_6_2_4"
+        },
+        {
+          "category": "_@",
+          "name": "Battering Ram",
+          "input": "_O_a_+_c_6_6"
+        },
+        {
+          "category": "_@",
+          "name": "Human Chomp",
+          "input": "_O_a_+_b_+_c_+_d_6_2_4"
+        },
+        {
+          "category": "_`",
+          "name": "Golden Shower",
+          "input": "_O_a_+_c_2_2",
+          "condition": ", then _O_a_+_b_+_c_+_d_4_6_4_6"
+        },
+        {
+          "category": "_`",
+          "name": "Cannonball",
+          "input": "_O_a_+_b_+_c_+_d_4_2_6_2_4"
+        },
+        {
+          "category": "_`",
+          "name": "The Churl",
+          "input": "_O_a_+_b_+_c_+_d_6_6_6_4_4_4"
+        }
+      ],
+      "notes": [
+        "Finishing Moves"
+      ]
+    },
+    {
+      "name": "ARMADON",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Bed-O-Nails",
+          "input": "_O_b_+_c_2_8"
+        },
+        {
+          "category": "_@",
+          "name": "Iron Maiden",
+          "input": "_O_b_+_c_4_8_6"
+        },
+        {
+          "category": "_@",
+          "name": "Mega Charge",
+          "input": "_O_a_+_c_4_2_6"
+        },
+        {
+          "category": "_@",
+          "name": "Gut Gouger",
+          "input": "_O_a_+_b_+_c_6_4"
+        },
+        {
+          "category": "_@",
+          "name": "Hornication Upper",
+          "input": "_O_a_+_b_+_c_3_6_9"
+        },
+        {
+          "category": "_@",
+          "name": "Spinning Death",
+          "input": "_O_a_+_d_4_6_2"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Spikes",
+          "input": "_O_b_+_d_4_8"
+        },
+        {
+          "category": "_@",
+          "name": "Human Chomp",
+          "input": "_O_a_+_b_+_c_+_d_8_6_2"
+        },
+        {
+          "category": "_`",
+          "name": "Gut Fling",
+          "input": "_O_a_+_b_+_c_2_2_2_2_8"
+        },
+        {
+          "category": "_`",
+          "name": "Meditation",
+          "input": "_O_a_+_b_+_c_+_d_6_2_4_6_6"
+        },
+        {
+          "category": "_`",
+          "name": "Falling Spikes",
+          "input": "_O_a_+_b_+_c_+_d_2_4_8_2"
+        }
+      ],
+      "notes": [
+        "Finishing Moves"
+      ]
+    },
+    {
+      "name": "DIABLO",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Slow Fireball",
+          "input": "_O_b_+_d_2_6"
+        },
+        {
+          "category": "_@",
+          "name": "Fast Fireball",
+          "input": "_O_a_+_c_2_6"
+        },
+        {
+          "category": "_@",
+          "name": "Torch",
+          "input": "_O_a_+_c_8_6"
+        },
+        {
+          "category": "_@",
+          "name": "Hot Foot",
+          "input": "_O_b_+_d_7_3"
+        },
+        {
+          "category": "_@",
+          "name": "Mega Lunge",
+          "input": "_O_a_+_d_4_2_6"
+        },
+        {
+          "category": "_@",
+          "name": "The Pulveriser",
+          "input": "_O_a_+_d_8_6_2"
+        },
+        {
+          "category": "_@",
+          "name": "Inferno Flash",
+          "input": "_O_b_+_c_+_d_8"
+        },
+        {
+          "category": "_@",
+          "name": "Human Chomp",
+          "input": "_O_a_+_b_+_c_+_d_2_8_2"
+        },
+        {
+          "category": "_`",
+          "name": "Incinerator",
+          "input": "_O_a_+_b_+_c_+_d_7_2_3"
+        },
+        {
+          "category": "_`",
+          "name": "Fireball",
+          "input": "_O_b_+_c_+_d_6_6_6"
+        },
+        {
+          "category": "_`",
+          "name": "Infernal",
+          "input": "_O_a_+_c_+_d_8_2_8_2_2"
+        }
+      ],
+      "notes": [
+        "Finishing Moves"
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_a",
+      "x": "_b",
+      "b": "_c",
+      "a": "_d"
+    },
+    "genesis": {
+      "b": "_a",
+      "a": "_b",
+      "y": "_c",
+      "x": "_d"
+    },
+    "megadrive": {
+      "b": "_a",
+      "a": "_b",
+      "y": "_c",
+      "x": "_d"
+    },
+    "psx": {
+      "y": "_a",
+      "x": "_b",
+      "b": "_c",
+      "a": "_d"
+    }
+  }
+}
