@@ -199,9 +199,10 @@ enum LibretroThumbnailResolver {
         base: URL,
         systemFolder: String,
         gameTitle: String,
-        priority: LibretroThumbnailPriority
+        priority: LibretroThumbnailPriority,
+        regionSuffix: String? = nil
     ) -> [URL] {
-        return candidateURLs(base: base, systemFolder: systemFolder, gameTitle: gameTitle, knownVariants: [], priority: priority)
+        return candidateURLs(base: base, systemFolder: systemFolder, gameTitle: gameTitle, knownVariants: [], priority: priority, regionSuffix: regionSuffix)
     }
 
     // Generate Roman numeral and text number variants of a title for boxart matching.
@@ -214,12 +215,15 @@ enum LibretroThumbnailResolver {
 
     // All CDN URLs to try, including known DAT variant names.
     // Known variants are tried BEFORE arbitrary suffix guessing to maximize match probability.
+    // When regionSuffix is provided (e.g., "(Spain)"), it is tried FIRST in the suffix variants
+    // so the preferred region's boxart is prioritized over generic fallbacks.
     static func candidateURLs(
         base: URL,
         systemFolder: String,
         gameTitle: String,
         knownVariants: [String],
-        priority: LibretroThumbnailPriority
+        priority: LibretroThumbnailPriority,
+        regionSuffix: String? = nil
     ) -> [URL] {
         let primary = gameTitle.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !primary.isEmpty else {
@@ -283,7 +287,30 @@ enum LibretroThumbnailResolver {
         LoggerService.debug(category: logCategory, "candidateURLs: \(titleVariants.count) title variants to try")
         #endif
 
-        // Step 1: For Named_Boxarts specifically, try the fuzzy (parenthesis-stripped) title FIRST.
+        // Step 0: When regionSuffix is provided, try the region-suffixed title FIRST,
+        // before any undifferentiated fallback. This ensures the user's preferred region
+        // boxart is prioritized (e.g. "(Japan)" over the generic "Title.png").
+        if firstChoiceFolder == "Named_Boxarts", let regionSuffix = regionSuffix, !regionSuffix.isEmpty {
+            let suffixed = " \(regionSuffix)"
+            // Use the fuzzy (parenthesis-stripped) title as the base so we don't double-tag
+            if fuzzy != primary && !fuzzy.isEmpty {
+                #if LOG_DEBUG
+                LoggerService.debug(category: logCategory, "candidateURLs: Step 0 region-suffixed fuzzy — '\(fuzzy)\(suffixed)'")
+                #endif
+                appendUnique(buildThumbnailURL(base: base, systemFolder: systemFolder, typeFolder: "Named_Boxarts", fileName: "\(fuzzy)\(suffixed).png"))
+                let fuzzySafe = libretroFilesystemSafeName(fuzzy)
+                if fuzzySafe != fuzzy {
+                    appendUnique(buildThumbnailURL(base: base, systemFolder: systemFolder, typeFolder: "Named_Boxarts", fileName: "\(fuzzySafe)\(suffixed).png"))
+                }
+            }
+            // Also try with the safe variant of primary if fuzzy didn't vary
+            if fuzzy == primary || fuzzy.isEmpty {
+                let safeBase = safe != primary ? safe : primary
+                appendUnique(buildThumbnailURL(base: base, systemFolder: systemFolder, typeFolder: "Named_Boxarts", fileName: "\(safeBase)\(suffixed).png"))
+            }
+        }
+
+        // Step 1: For Named_Boxarts specifically, try the fuzzy (parenthesis-stripped) title.
         // The Libretro CDN stores boxart under cleaned names (no region tags), so this has
         // the highest chance of matching when the CRC-resolved title includes (USA, En) etc.
         if firstChoiceFolder == "Named_Boxarts" && fuzzy != primary && !fuzzy.isEmpty {
@@ -331,14 +358,27 @@ enum LibretroThumbnailResolver {
             }
         }
 
-        // Step 4: For Named_Boxarts, try arbitrary suffix variants (Beta, Rev, etc.) as fallback.
+        // Step 4: For Named_Boxarts, try arbitrary suffix variants (Beta, Rev, region, etc.) as fallback.
+        // The user's preferred region suffix (if any) is tried FIRST, before generic fallbacks.
         // Also try suffixes on number variants (e.g. "Ecco the Dolphin II (Japan).png")
+        // IMPORTANT: Use the fuzzy (cleaned) title as the base, NOT primary — primary may already
+        // contain region tags (e.g. "(USA)"), which would produce double-tagged names.
         if firstChoiceFolder == "Named_Boxarts" {
             #if LOG_DEBUG
             LoggerService.debug(category: logCategory, "candidateURLs: Step 4 trying arbitrary suffix variants for Named_Boxarts")
             #endif
-            for suffix in boxartSuffixVariants {
-                appendUnique(buildThumbnailURL(base: base, systemFolder: systemFolder, typeFolder: "Named_Boxarts", fileName: "\(primary)\(suffix).png"))
+            let baseForSuffix = (fuzzy != primary && !fuzzy.isEmpty) ? fuzzy : primary
+            // Build suffix list with user's preferred region first
+            var orderedSuffixes = boxartSuffixVariants
+            if let regionSuffix = regionSuffix, !regionSuffix.isEmpty {
+                let prefixed = " \(regionSuffix)"
+                if let idx = orderedSuffixes.firstIndex(of: prefixed) {
+                    orderedSuffixes.remove(at: idx)
+                }
+                orderedSuffixes.insert(prefixed, at: 0)
+            }
+            for suffix in orderedSuffixes {
+                appendUnique(buildThumbnailURL(base: base, systemFolder: systemFolder, typeFolder: "Named_Boxarts", fileName: "\(baseForSuffix)\(suffix).png"))
                 // Try suffixes on number variants too (e.g. "Ecco the Dolphin II (Japan).png")
                 for variant in numberVariants {
                     appendUnique(buildThumbnailURL(base: base, systemFolder: systemFolder, typeFolder: "Named_Boxarts", fileName: "\(variant)\(suffix).png"))
@@ -487,6 +527,97 @@ enum LibretroThumbnailResolver {
             #endif
         }
         return best
+    }
+
+    // Extract the region tag (e.g., "(USA)", "(Spain)") from a boxart URL's filename.
+    // Searches for the LAST parenthesized group that looks like a region tag.
+    static func regionTag(from url: URL) -> String? {
+        let filename = url.deletingPathExtension().lastPathComponent
+        // Find all parenthesized groups, pick the last one that matches known region patterns
+        guard let matches = try? NSRegularExpression(pattern: "\\(([^()]+)\\)")
+            .matches(in: filename, range: NSRange(location: 0, length: filename.utf16.count)),
+              !matches.isEmpty else { return nil }
+        // Try from the end — the last tagged group is most likely the region or revision
+        for match in matches.reversed() {
+            guard let range = Range(match.range(at: 1), in: filename) else { continue }
+            let tag = String(filename[range])
+            // Skip known non-region tags (Beta, Rev, v1.0, etc.) unless they're the only tag
+            let nonRegion = ["Beta", "Rev 1", "Rev 2", "Rev A", "Rev B", "v1.0", "v1.1", "Proto", "Demo", "Sample", "Kiosk", "Virtual Console"]
+            if nonRegion.contains(where: { tag.hasPrefix($0) || tag == $0 }) { continue }
+            return "(\(tag))"
+        }
+        // Fallback: return the last parenthesized group regardless
+        if let last = matches.last, let range = Range(last.range(at: 1), in: filename) {
+            return "(\(String(filename[range])))"
+        }
+        return nil
+    }
+
+    // Score a filename for region preference. Higher = better match.
+    // Returns the 0-based index in regionPreference for the first tag found, or
+    // regionPreference.count if no region matches.
+    static func regionScore(for filename: String, preference: [String]) -> Int {
+        for (idx, tag) in preference.enumerated() {
+            if filename.contains(tag) { return idx }
+        }
+        return preference.count // worst score
+    }
+
+    // Uses the thumbnail manifest to find all matching URLs for a game title.
+    // Searches Named_Boxarts entries matching the fuzzy title prefix, ranks them
+    // by region preference, and returns sorted list of (folder, url, regionTag).
+    // Returns empty if manifest is unavailable (caller should fallback to candidateURLs).
+    static func bestMatchingURLs(
+        for gameTitle: String,
+        systemFolders: [String],
+        base: URL,
+        priority: LibretroThumbnailPriority,
+        regionPreference: [String]
+    ) async -> [(folder: String, url: URL, regionTag: String?)] {
+        // Build normalized prefix: fuzzy (parenthesis-stripped), also try without trailing period
+        let fuzzy = stripParenthesesForFuzzyMatch(gameTitle).trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !fuzzy.isEmpty else { return [] }
+        let prefixNoPeriod = fuzzy.hasSuffix(".") ? String(fuzzy.dropLast()).trimmingCharacters(in: .whitespaces) : fuzzy
+        let prefixes = Set([fuzzy, prefixNoPeriod, libretroFilesystemSafeName(fuzzy), libretroFilesystemSafeName(prefixNoPeriod)]).filter { !$0.isEmpty }
+
+        var results: [(folder: String, url: URL, regionTag: String?, score: Int)] = []
+
+        for folder in systemFolders {
+            let repoName = githubRepoName(for: folder)
+            let fileSet: Set<String>
+            do {
+                fileSet = try await LibretroThumbnailManifestService.shared.getManifestFileSet(for: repoName)
+            } catch {
+                LoggerService.warning(category: logCategory, "Manifest fetch failed for \(repoName): \(error.localizedDescription). Skipping manifest-based match.")
+                continue
+            }
+
+            let orderedTypes = orderedThumbnailTypeFolders(priority: priority)
+            for typeFolder in orderedTypes {
+                let typePrefix = "\(typeFolder)/"
+                let candidates = fileSet.filter { path in
+                    guard path.hasPrefix(typePrefix) else { return false }
+                    let name = path.dropFirst(typePrefix.count)
+                    return prefixes.contains(where: { name.hasPrefix($0) })
+                }.sorted()
+
+                for path in candidates {
+                    let fileName = String(path.dropFirst(typePrefix.count))
+                    let score = regionScore(for: fileName, preference: regionPreference)
+                    let fileURL = buildThumbnailURL(base: base, systemFolder: folder, typeFolder: typeFolder, fileName: fileName)
+                    let regionTag = self.regionTag(from: fileURL)
+                    results.append((folder, fileURL, regionTag, score))
+                }
+            }
+        }
+
+        // Sort: best region score first (lower index = better), then shorter filenames
+        results.sort { a, b in
+            if a.score != b.score { return a.score < b.score }
+            return a.url.lastPathComponent.count < b.url.lastPathComponent.count
+        }
+
+        return results.map { ($0.folder, $0.url, $0.regionTag) }
     }
 }
 

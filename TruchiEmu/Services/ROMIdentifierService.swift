@@ -410,7 +410,7 @@ final class ROMIdentifierService: @unchecked Sendable {
 
     private static func currentEmulatorLanguage() -> EmulatorLanguage {
         let raw = SystemPreferences.shared.systemLanguage.rawValue
-        return EmulatorLanguage(rawValue: raw) ?? .english
+        return EmulatorLanguage(rawValue: raw) ?? .northAmerica
     }
 
     private static let commonRomTags: Set<String> = [
@@ -476,7 +476,7 @@ static func titleFromDatGame(name: String, description: String) -> String {
     }
 
     private static func regionTieBreakOrdinal(fullName: String, language: EmulatorLanguage) -> Int {
-        if language == .japanese {
+        if language == .japan {
             if fullName.contains("(Japan)") || fullName.contains("(JP)") { return 0 }
             return 50
         }

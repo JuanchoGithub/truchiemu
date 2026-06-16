@@ -51,6 +51,14 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
     // nil for regular files and archive-aware systems (MAME, ScummVM, etc.) that use the whole archive.
     var innerROMPath: String?
 
+    // Box art region tracking
+    // Which region was requested when this boxart was downloaded (e.g., "(Spain)")
+    var boxArtRequestedRegion: String?
+    // Which region tag was actually resolved in the URL (e.g., "(USA)" if Spain wasn't available)
+    var boxArtRegionTag: String?
+    // When the boxart was last downloaded/fetched
+    var boxArtFetchedAt: Date?
+
     // RetroAchievements metadata
     var raGameId: Int?
     var raMatchStatus: String?
@@ -139,6 +147,11 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
             return "\(path.path)!\(inner)"
         }
         return path.path
+    }
+
+    var boxArtIsExactRegion: Bool {
+        guard let requested = boxArtRequestedRegion, let resolved = boxArtRegionTag else { return true }
+        return requested == resolved
     }
 }
 

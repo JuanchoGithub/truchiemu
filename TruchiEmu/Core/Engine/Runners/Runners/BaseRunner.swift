@@ -406,7 +406,7 @@ case "scummvm": runner = ScummVMRunner()
         
         isRunning = true
         
-        let selectedLang = SystemPreferences.shared.systemLanguage.rawValue
+        let selectedLang = SystemPreferences.shared.systemLanguage.libretroRawValue
         let selectedLogLevel = LoggerService.shared.currentLevel.coreLogLevelValue
         
         // Track last loaded core so Options view knows which file to persist to

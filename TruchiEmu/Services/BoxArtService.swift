@@ -221,7 +221,9 @@ class BoxArtService: ObservableObject {
 
         // 1. Libretro Thumbnails CDN (primary)
         if useLibretroThumbnails {
-            if let lib = await fetchBoxArtLibretro(for: rom) {
+            let regionSuffix = SystemPreferences.shared.systemLanguage.regionSuffix
+            let (lib, _) = await fetchBoxArtLibretro(for: rom, regionSuffix: regionSuffix)
+            if let lib = lib {
                 return lib
             }
         }
@@ -286,7 +288,9 @@ class BoxArtService: ObservableObject {
 
     // MARK: - Libretro thumbnails CDN
 
-    func fetchBoxArtLibretro(for rom: ROM) async -> URL? {
+    // Returns (localFileURL, resolvedRegionTag). The region tag is extracted from the CDN URL
+    // (e.g., "(USA)"), NOT from the local file path. Returns (nil, nil) on failure.
+    func fetchBoxArtLibretro(for rom: ROM, regionSuffix: String? = nil) async -> (URL?, String?) {
         let romPathKey: String
         if let inner = rom.innerROMPath {
             romPathKey = URL(fileURLWithPath: inner).deletingPathExtension().lastPathComponent
@@ -296,26 +300,29 @@ class BoxArtService: ObservableObject {
         let source = "libretro"
 
         // === OPTIMIZATION 2: Fast Cache Hit ===
-        // Skip heavy CRC hashing completely if we already downloaded this boxart successfully.
-        if let cached = cacheRepo.getBoxArtResolution(romPathKey: romPathKey, source: source),
+        // Skip heavy CRC hashing completely if we already downloaded this boxart successfully
+        // AND the region matches. Bypass cache when the region has changed so we re-download.
+        let regionMatches = rom.boxArtRequestedRegion == regionSuffix
+        if regionMatches,
+           let cached = cacheRepo.getBoxArtResolution(romPathKey: romPathKey, source: source),
            cached.isValid,
            FileManager.default.fileExists(atPath: cached.resolvedURL) {
             LoggerService.info(category: "BoxArt", "Libretro: Fast cache hit for '\(rom.name)'. Skipping CRC.")
-            return URL(fileURLWithPath: cached.resolvedURL)
+            return (URL(fileURLWithPath: cached.resolvedURL), nil)
         }
 
-        guard let sysID = LibretroThumbnailResolver.effectiveThumbnailSystemID(for: rom) else { return nil }
+        guard let sysID = LibretroThumbnailResolver.effectiveThumbnailSystemID(for: rom) else { return (nil, nil) }
 
         // Resolve working folders (probes once, then cached)
         let folders = await LibretroThumbnailResolver.workingFolders(forSystemID: sysID)
-        guard !folders.isEmpty else { return nil }
+        guard !folders.isEmpty else { return (nil, nil) }
 
         // This is the heavy CRC calculation
         guard let gameTitle = await LibretroThumbnailResolver.resolveGameTitle(
             for: rom,
             useCRC: useCRCMatchingForThumbnails,
             fallbackFilename: fallbackToFilenameForThumbnails
-        ), !gameTitle.isEmpty else { return nil }
+        ), !gameTitle.isEmpty else { return (nil, nil) }
 
         let knownVariants: [String]
         if useCRCMatchingForThumbnails, let romSystemID = rom.systemID {
@@ -329,17 +336,46 @@ class BoxArtService: ObservableObject {
 
         for stem in [gameTitle, safeStem] where !stem.isEmpty {
             if let local = LibretroThumbnailResolver.resolveLocalThumbnail(named: stem, in: localBoxArtDir) {
-                if isValidImageFile(at: local) { return local }
+                if isValidImageFile(at: local) { return (local, nil) }
                 else { try? FileManager.default.removeItem(at: local) }
             }
         }
 
-        // Generate candidate URLs across ALL working folders
+        // Step 1: Try manifest-based region-preference matching first.
+        // This finds ALL files in the manifest matching the game title, then picks
+        // the one with the best region match (e.g. "(Japan)" over "(USA)").
+        let regionPreference = SystemPreferences.shared.systemLanguage.noIntroRegionPreference
+        let manifestMatches = await LibretroThumbnailResolver.bestMatchingURLs(
+            for: gameTitle,
+            systemFolders: folders,
+            base: thumbnailServerURL,
+            priority: thumbnailPriority,
+            regionPreference: regionPreference
+        )
+
+        for (folder, url, regionTag) in manifestMatches {
+            if let cached = cacheRepo.getBoxArtResolution(romPathKey: romPathKey, source: source) {
+                if cached.resolvedURL == url.absoluteString && !cached.isValid && cached.httpStatus != 0 { continue }
+            }
+
+            // Skip HEAD check for manifest-confirmed URLs — the manifest is authoritative,
+            // so we avoid an extra CDN hit. Go straight to download.
+            if let saved = await downloadAndCache(artURL: url, for: rom, session: thumbnailURLSession) {
+                cacheRepo.storeBoxArtResolution(romPathKey: romPathKey, systemID: sysID, gameTitle: gameTitle, resolvedURL: saved.path, source: source, httpStatus: 200, isValid: true)
+                return (saved, regionTag)
+            } else {
+                cacheRepo.storeBoxArtResolution(romPathKey: romPathKey, systemID: sysID, gameTitle: gameTitle, resolvedURL: url.absoluteString, source: source, httpStatus: 0, isValid: false)
+            }
+        }
+
+        // Step 2: Fallback to candidate URL generation when manifest is unavailable
+        // or had no matches. This covers edge cases and systems without manifest data.
         var allCandidates: [(folder: String, url: URL)] = []
         for folder in folders {
             let urls = LibretroThumbnailResolver.candidateURLs(
                 base: thumbnailServerURL, systemFolder: folder, gameTitle: gameTitle,
-                knownVariants: knownVariants, priority: thumbnailPriority
+                knownVariants: knownVariants, priority: thumbnailPriority,
+                regionSuffix: regionSuffix
             )
             for url in urls {
                 allCandidates.append((folder, url))
@@ -364,14 +400,15 @@ class BoxArtService: ObservableObject {
             }
 
             if let saved = await downloadAndCache(artURL: url, for: rom, session: thumbnailURLSession) {
+                let resolvedRegionTag = LibretroThumbnailResolver.regionTag(from: url)
                 cacheRepo.storeBoxArtResolution(romPathKey: romPathKey, systemID: sysID, gameTitle: gameTitle, resolvedURL: saved.path, source: source, httpStatus: 200, isValid: true)
-                return saved
+                return (saved, resolvedRegionTag)
             } else {
                 cacheRepo.storeBoxArtResolution(romPathKey: romPathKey, systemID: sysID, gameTitle: gameTitle, resolvedURL: url.absoluteString, source: source, httpStatus: headStatusCode == -1 ? 0 : headStatusCode, isValid: false)
             }
         }
 
-        return nil
+        return (nil, nil)
     }
 
     private func httpStatus(for url: URL, method: String, session: URLSession) async -> Int {
@@ -418,26 +455,83 @@ class BoxArtService: ObservableObject {
 
     func romsNeedingBoxArt(in roms: [ROM]) -> [ROM] { roms.filter { !$0.hasBoxArt } }
 
-    func batchDownloadBoxArtLibretro(for roms: [ROM], library: ROMLibrary, onItemProgress: ((Int, Int, String) -> Void)? = nil) async {
+    // Returns ROMs whose boxart was fetched for a different region than the current one.
+    // ROMs with existing boxart but nil region (pre-region-tracking) are treated as stale.
+    func romsWithStaleRegion(in roms: [ROM], currentRegionSuffix: String?) -> [ROM] {
+        guard let currentRegion = currentRegionSuffix, !currentRegion.isEmpty else { return [] }
+        return roms.filter {
+            guard $0.hasBoxArt else { return false }
+            guard let requested = $0.boxArtRequestedRegion else { return true }
+            return requested != currentRegion
+        }
+    }
+
+    // Returns ROMs whose boxart was fetched recently (within 7 days) for the current region.
+    func romsWithRecentBoxArt(in roms: [ROM], currentRegionSuffix: String?) -> [ROM] {
+        let sevenDaysAgo = Date().addingTimeInterval(-7 * 24 * 3600)
+        return roms.filter {
+            guard $0.hasBoxArt, let fetched = $0.boxArtFetchedAt else { return false }
+            if let region = $0.boxArtRequestedRegion, region == currentRegionSuffix {
+                return fetched > sevenDaysAgo
+            }
+            return false
+        }
+    }
+
+    func batchDownloadBoxArtLibretro(for roms: [ROM], library: ROMLibrary, reDownloadForNewRegion: Bool = false, onItemProgress: ((Int, Int, String, URL?) -> Void)? = nil) async {
         let broken = findBrokenBoxArts(in: roms)
         if !broken.isEmpty { _ = await cleanBrokenBoxArts(for: broken) }
 
-        let needsArt = romsNeedingBoxArt(in: roms)
-        guard !needsArt.isEmpty else { return }
+        let regionSuffix = SystemPreferences.shared.systemLanguage.regionSuffix
+
+        var candidates: [ROM]
+        if reDownloadForNewRegion {
+            let stale = romsWithStaleRegion(in: roms, currentRegionSuffix: regionSuffix)
+            let staleIDs = Set(stale.map { $0.id })
+            candidates = roms.filter { !$0.hasBoxArt || staleIDs.contains($0.id) }
+        } else {
+            // Same region: skip recently fetched ones, only download truly missing
+            let recent = romsWithRecentBoxArt(in: roms, currentRegionSuffix: regionSuffix)
+            let recentIDs = Set(recent.map { $0.id })
+            let needsArt = romsNeedingBoxArt(in: roms)
+            candidates = needsArt.filter { !recentIDs.contains($0.id) }
+        }
+
+        guard !candidates.isEmpty else { return }
+
+        // Pre-warm manifest caches: fetch once per unique system so all individual
+        // fetchBoxArtLibretro calls use cached in-memory data instead of hitting GitHub.
+        // This must run on MainActor since workingFolders uses @MainActor.
+        await withTaskGroup(of: Void.self) { warmupGroup in
+            var seenSystems = Set<String>()
+            for rom in candidates {
+                guard let sysID = LibretroThumbnailResolver.effectiveThumbnailSystemID(for: rom),
+                      !seenSystems.contains(sysID) else { continue }
+                seenSystems.insert(sysID)
+                let folders = await LibretroThumbnailResolver.workingFolders(forSystemID: sysID)
+                for folder in folders {
+                    let repoName = LibretroThumbnailResolver.githubRepoName(for: folder)
+                    warmupGroup.addTask {
+                        _ = try? await LibretroThumbnailManifestService.shared.getManifestFileSet(for: repoName)
+                    }
+                }
+            }
+        }
 
         let maxConcurrent = 2
         var modifiedIDs: [UUID] = []
-        let total = needsArt.count
+        let total = candidates.count
         
-        await withTaskGroup(of: (ROM, URL?).self) { group in
+        await withTaskGroup(of: (ROM, URL?, String?).self) { group in
             var activeTasks = 0
             var completed = 0
-            var iterator = needsArt.makeIterator()
+            var iterator = candidates.makeIterator()
             
             while activeTasks < maxConcurrent, let rom = iterator.next() {
                 group.addTask {
-                    if let local = self.resolveLocalBoxArt(for: rom) { return (rom, local) }
-                    return (rom, await self.fetchBoxArtLibretro(for: rom))
+                    if let local = self.resolveLocalBoxArt(for: rom) { return (rom, local, nil) }
+                    let (url, regionTag) = await self.fetchBoxArtLibretro(for: rom, regionSuffix: regionSuffix)
+                    return (rom, url, regionTag)
                 }
                 activeTasks += 1
             }
@@ -445,18 +539,22 @@ class BoxArtService: ObservableObject {
             for await result in group {
                 activeTasks -= 1
                 completed += 1
-                var (completedRom, url) = result
-                if url != nil {
+                var (completedRom, url, regionTag) = result
+                if let _ = url {
                     completedRom.hasBoxArt = true
+                    completedRom.boxArtRequestedRegion = regionSuffix
+                    completedRom.boxArtRegionTag = regionTag
+                    completedRom.boxArtFetchedAt = Date()
                     modifiedIDs.append(completedRom.id)
                     await MainActor.run { library.updateROM(completedRom, persist: false) }
                 }
-                onItemProgress?(completed, total, completedRom.displayName)
-            if let nextRom = iterator.next() {
-                try? await Task.sleep(nanoseconds: 500_000_000)
-                group.addTask {
-                        if let local = self.resolveLocalBoxArt(for: nextRom) { return (nextRom, local) }
-                        return (nextRom, await self.fetchBoxArtLibretro(for: nextRom))
+                onItemProgress?(completed, total, completedRom.displayName, url)
+                if let nextRom = iterator.next() {
+                    try? await Task.sleep(nanoseconds: 500_000_000)
+                    group.addTask {
+                        if let local = self.resolveLocalBoxArt(for: nextRom) { return (nextRom, local, nil) }
+                        let (url, regionTag) = await self.fetchBoxArtLibretro(for: nextRom, regionSuffix: regionSuffix)
+                        return (nextRom, url, regionTag)
                     }
                     activeTasks += 1
                 }

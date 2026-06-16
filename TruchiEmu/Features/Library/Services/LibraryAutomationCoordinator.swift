@@ -327,13 +327,14 @@ final class LibraryAutomationCoordinator: ObservableObject {
         statusLine = loc.localized("library.automation.downloadingBoxArtStart")
         await BoxArtService.shared.batchDownloadBoxArtLibretro(
             for: artTargets,
-            library: library
-        ) { [weak self] completed, totalCount, fileLabel in
-            guard let self = self else { return }
-            let frac = Double(completed) / max(Double(totalCount), 1)
-            self.progress = frac
-            self.statusLine = self.localizedStatus("library.automation.downloadingBoxArt", "\(Int(frac * 100))", fileLabel)
-        }
+            library: library,
+            onItemProgress: { [weak self] completed, totalCount, fileLabel, _ in
+                guard let self = self else { return }
+                let frac = Double(completed) / max(Double(totalCount), 1)
+                self.progress = frac
+                self.statusLine = self.localizedStatus("library.automation.downloadingBoxArt", "\(Int(frac * 100))", fileLabel)
+            }
+        )
 
         // Brief pause before LaunchBox phase
         try? await Task.sleep(nanoseconds: 500_000_000)

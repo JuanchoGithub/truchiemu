@@ -213,6 +213,11 @@ class LibretroThumbnailManifestService: ObservableObject {
         }
     }
 
+    /// Returns the cached manifest file set for a repo, fetching it if needed.
+    func getManifestFileSet(for repoName: String) async throws -> Set<String> {
+        try await getManifest(for: repoName)
+    }
+
     // Retrieves the file manifest for a specific system repository, with caching.
     private func getManifest(for repoName: String) async throws -> Set<String> {
         if let cached = manifestCache[repoName] {

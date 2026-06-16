@@ -34,6 +34,9 @@ final class ROMEntry {
     var raGameId: Int?
     var raMatchStatus: String?
     var innerROMPath: String?
+    var boxArtRequestedRegion: String?
+    var boxArtRegionTag: String?
+    var boxArtFetchedAt: Date?
 
     // Relationships
     // Note: inverse relationships with @Relationship can cause circular reference issues
@@ -76,7 +79,10 @@ final class ROMEntry {
         enrichmentFailed: Bool = false,
         raGameId: Int? = nil, 
         raMatchStatus: String? = nil,
-        innerROMPath: String? = nil
+        innerROMPath: String? = nil,
+        boxArtRequestedRegion: String? = nil,
+        boxArtRegionTag: String? = nil,
+        boxArtFetchedAt: Date? = nil
 ) {
         self.id = id
         self.name = name
@@ -108,6 +114,9 @@ final class ROMEntry {
         self.raGameId = raGameId
         self.raMatchStatus = raMatchStatus
         self.innerROMPath = innerROMPath
+        self.boxArtRequestedRegion = boxArtRequestedRegion
+        self.boxArtRegionTag = boxArtRegionTag
+        self.boxArtFetchedAt = boxArtFetchedAt
     }
 }
 

@@ -370,6 +370,9 @@ final class ROMRepository {
         )
         rom.mameRomType = entry.mameRomType
         rom.innerROMPath = entry.innerROMPath
+        rom.boxArtRequestedRegion = entry.boxArtRequestedRegion
+        rom.boxArtRegionTag = entry.boxArtRegionTag
+        rom.boxArtFetchedAt = entry.boxArtFetchedAt
         return rom
     }
 
@@ -420,7 +423,10 @@ final class ROMRepository {
             isIdentified: false,
             enrichmentAttempted: rom.enrichmentAttempted,
             enrichmentFailed: rom.enrichmentFailed,
-            innerROMPath: rom.innerROMPath
+            innerROMPath: rom.innerROMPath,
+            boxArtRequestedRegion: rom.boxArtRequestedRegion,
+            boxArtRegionTag: rom.boxArtRegionTag,
+            boxArtFetchedAt: rom.boxArtFetchedAt
         )
     }
 
@@ -449,6 +455,9 @@ final class ROMRepository {
         if entry.enrichmentAttempted != rom.enrichmentAttempted { entry.enrichmentAttempted = rom.enrichmentAttempted }
         if entry.enrichmentFailed != rom.enrichmentFailed { entry.enrichmentFailed = rom.enrichmentFailed }
         if entry.innerROMPath != rom.innerROMPath { entry.innerROMPath = rom.innerROMPath }
+        if entry.boxArtRequestedRegion != rom.boxArtRequestedRegion { entry.boxArtRequestedRegion = rom.boxArtRequestedRegion }
+        if entry.boxArtRegionTag != rom.boxArtRegionTag { entry.boxArtRegionTag = rom.boxArtRegionTag }
+        if entry.boxArtFetchedAt != rom.boxArtFetchedAt { entry.boxArtFetchedAt = rom.boxArtFetchedAt }
 
         // Update JSON fields only if they changed
         let newMetadataJSON: String? = rom.metadata.flatMap {

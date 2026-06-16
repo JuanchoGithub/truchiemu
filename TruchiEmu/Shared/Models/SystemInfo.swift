@@ -474,44 +474,61 @@ class SystemDatabase {
 
 // MARK: - Language and Log Level enums
 enum EmulatorLanguage: Int, CaseIterable, Identifiable {
-    case english = 0, japanese = 1, german = 2, spanish = 3, italian = 4
-    case portuguese = 6, britishEnglish = 7
-    
+    case northAmerica = 0, japan = 1, spain = 3, brazil = 6
+    case world = 8, europe = 9
+
     var id: Int { self.rawValue }
-    
+
+    var libretroRawValue: Int {
+        switch self {
+        case .northAmerica, .world, .europe: return 0  // RETRO_LANGUAGE_ENGLISH
+        case .japan: return 1  // RETRO_LANGUAGE_JAPANESE
+        case .spain: return 3  // RETRO_LANGUAGE_SPANISH
+        case .brazil: return 6 // RETRO_LANGUAGE_PORTUGUESE
+        }
+    }
+
+    var regionSuffix: String? {
+        switch self {
+        case .northAmerica: return "(USA)"
+        case .world: return "(World)"
+        case .europe: return "(Europe)"
+        case .japan: return "(Japan)"
+        case .brazil: return "(Brazil)"
+        case .spain: return "(Spain)"
+        }
+    }
+
     var noIntroRegionPreference: [String] {
         switch self {
-        case .spanish: return ["(Spain)", "(Europe)", "(World)", "(Es,", "(Es)", "(USA)"]
-        case .english: return ["(USA)", "(World)", "(En,", "(En)", "(U)"]
-        case .britishEnglish: return ["(Europe)", "(UK)", "(En,", "(World)"]
-        case .german: return ["(Germany)", "(Europe)", "(World)", "(De,", "(De)"]
-        case .italian: return ["(Italy)", "(Europe)", "(World)", "(It,", "(It)"]
-        case .portuguese: return ["(Brazil)", "(Portugal)", "(Europe)", "(World)"]
-        case .japanese: return ["(Japan)", "(JP)", "(Ja)"]
+        case .northAmerica: return ["(USA)", "(World)", "(Canada)", "(En,", "(En)", "(U)"]
+        case .world: return ["(World)", "(USA)", "(Europe)", "(Japan)"]
+        case .europe: return ["(Europe)", "(World)", "(UK)", "(Germany)", "(Spain)", "(France)", "(Italy)"]
+        case .japan: return ["(Japan)", "(JP)", "(Ja)"]
+        case .brazil: return ["(Brazil)", "(Portugal)", "(Europe)", "(World)"]
+        case .spain: return ["(Spain)", "(Europe)", "(World)", "(Es,", "(Es)", "(USA)"]
         }
     }
-    
+
     var flagEmoji: String {
         switch self {
-        case .spanish: return "🇦🇷"
-        case .english: return "🇺🇸"
-        case .japanese: return "🇯🇵"
-        case .german: return "🇩🇪"
-        case .italian: return "🇮🇹"
-        case .portuguese: return "🇧🇷"
-        case .britishEnglish: return "🇬🇧"
+        case .northAmerica: return "🇺🇸"
+        case .world: return "🌍"
+        case .europe: return "🇪🇺"
+        case .japan: return "🇯🇵"
+        case .brazil: return "🇧🇷"
+        case .spain: return "🇦🇷"
         }
     }
-    
+
     var name: String {
         switch self {
-        case .english: return "English"
-        case .japanese: return "Japanese"
-        case .german: return "German"
-        case .spanish: return "Spanish"
-        case .italian: return "Italian"
-        case .portuguese: return "Portuguese"
-        case .britishEnglish: return "British English"
+        case .northAmerica: return "North America"
+        case .world: return "World"
+        case .europe: return "Europe"
+        case .japan: return "Japan"
+        case .brazil: return "Brazil"
+        case .spain: return "Spain"
         }
     }
 }
@@ -536,7 +553,7 @@ class SystemPreferences: ObservableObject {
         didSet { AppSettings.setBool(Self.keyShowHiddenMAMEFiles, value: showHiddenMAMEFiles); updateTrigger += 1 }
     }
 
-    @Published var systemLanguage: EmulatorLanguage = .english {
+    @Published var systemLanguage: EmulatorLanguage = .northAmerica {
         didSet { AppSettings.set(Self.keySystemLanguage, value: String(systemLanguage.rawValue)); updateTrigger += 1 }
     }
 
@@ -575,7 +592,15 @@ class SystemPreferences: ObservableObject {
         self.showBiosFiles = AppSettings.getBool(Self.keyShowBiosFiles, defaultValue: false)
         self.showHiddenMAMEFiles = AppSettings.getBool(Self.keyShowHiddenMAMEFiles, defaultValue: false)
         let langRaw = Int(AppSettings.get(Self.keySystemLanguage, type: String.self) ?? "0") ?? 0
-        self.systemLanguage = EmulatorLanguage(rawValue: langRaw) ?? .english
+        if let lang = EmulatorLanguage(rawValue: langRaw) {
+            self.systemLanguage = lang
+        } else {
+            // Migration from removed cases: german(2), italian(4), britishEnglish(7) → europe
+            self.systemLanguage = switch langRaw {
+            case 2, 4, 7: .europe
+            default: .northAmerica
+            }
+        }
         self.applyCheatsOnLaunch = AppSettings.getBool(Self.keyApplyCheatsOnLaunch, defaultValue: false)
         self.showCheatNotifications = AppSettings.getBool(Self.keyShowCheatNotifications, defaultValue: true)
     }

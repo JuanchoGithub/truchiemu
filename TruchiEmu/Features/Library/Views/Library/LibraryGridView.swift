@@ -87,7 +87,7 @@ struct LibraryGridView: View {
  }
 
     @ViewBuilder
-    private var languageButtons: some View {
+    private var regionButtons: some View {
         ForEach(EmulatorLanguage.allCases) { lang in
             Button { prefs.systemLanguage = lang } label: {
                 HStack {
@@ -95,6 +95,62 @@ struct LibraryGridView: View {
                     if prefs.systemLanguage == lang { Image(systemName: "checkmark") }
                 }
             }
+        }
+    }
+
+    private var currentRegionName: String {
+        "\(prefs.systemLanguage.flagEmoji) \(prefs.systemLanguage.name)"
+    }
+
+    private func triggerBatchDownload(reDownload: Bool) {
+        Task {
+            guard !viewModel.displayedROMs.isEmpty else { return }
+
+            isDownloading = true
+            downloadProgress = (0, 0)
+            carouselBoxArtURLs = viewModel.displayedROMs.compactMap { rom -> URL? in
+                guard rom.hasBoxArt, FileManager.default.fileExists(atPath: rom.boxArtLocalPath.path) else { return nil }
+                return rom.boxArtLocalPath
+            }
+            marqueeOffset = 0
+
+            let needIdentify = viewModel.displayedROMs.filter { $0.needsAutomaticIdentification && !$0.isHidden }
+            if !needIdentify.isEmpty {
+                for rom in needIdentify {
+                    guard isDownloading else { break }
+                    currentDownloadGameName = rom.displayName
+                    let result = await ROMIdentifierService.shared.identify(rom: rom, preferNameMatch: true)
+                    if let updated = library.applyIdentificationResult(result, to: rom, persist: true, silent: true) {
+                        var refreshed = updated
+                        refreshed.refreshDerivedFields()
+                        if let idx = viewModel.displayedROMs.firstIndex(where: { $0.id == rom.id }) {
+                            viewModel.displayedROMs[idx] = refreshed
+                        }
+                    }
+                }
+            }
+
+            guard isDownloading else { return }
+
+            await BoxArtService.shared.batchDownloadBoxArtLibretro(
+                for: viewModel.displayedROMs,
+                library: library,
+                reDownloadForNewRegion: reDownload,
+                onItemProgress: { current, total, gameName, boxArtURL in
+                    Task { @MainActor in
+                        downloadProgress = (current, total)
+                        currentDownloadGameName = gameName
+                        if let url = boxArtURL, !carouselBoxArtURLs.contains(url) {
+                            carouselBoxArtURLs.append(url)
+                        }
+                    }
+                }
+            )
+
+            isDownloading = false
+            currentDownloadGameName = nil
+            carouselBoxArtURLs = []
+            marqueeOffset = 0
         }
     }
 
@@ -145,6 +201,13 @@ struct LibraryGridView: View {
     @ObservedObject private var notificationHistory = NotificationHistoryManager.shared
     @State private var showNotificationPopover: Bool = false
     @State private var showNotificationCenterSheet: Bool = false
+    @State private var showRegionChangeAlert: Bool = false
+    @State private var isDownloading = false
+    @State private var downloadProgress: (current: Int, total: Int) = (0, 0)
+    @State private var currentDownloadGameName: String? = nil
+    @State private var carouselBoxArtURLs: [URL] = []
+    @State private var marqueeOffset: CGFloat = 0
+    @State private var pendingReDownload: Bool = false
 
     private enum ViewMode: String { case grid, list }
 
@@ -182,6 +245,8 @@ struct LibraryGridView: View {
                 Group {
                     if library.isScanning {
                         scanningOverlay
+                    } else if isDownloading {
+                        boxArtDownloadOverlay
                     } else if viewModel.displayedROMs.isEmpty {
                         emptyState
                     } else if viewMode == .grid {
@@ -328,30 +393,20 @@ struct LibraryGridView: View {
                     Divider()
                     Section(loc.localized("toolbar.download")) {
                         Button {
-                            Task {
-                                guard !viewModel.displayedROMs.isEmpty else { return }
-
-                                let needIdentify = viewModel.displayedROMs.filter { $0.needsAutomaticIdentification && !$0.isHidden }
-                                if !needIdentify.isEmpty {
-                                    for rom in needIdentify {
-                                        let result = await ROMIdentifierService.shared.identify(rom: rom, preferNameMatch: true)
-                                        if let updated = library.applyIdentificationResult(result, to: rom, persist: true, silent: true) {
-                                            var refreshed = updated
-                                            refreshed.refreshDerivedFields()
-                                            if let idx = viewModel.displayedROMs.firstIndex(where: { $0.id == rom.id }) {
-                                                viewModel.displayedROMs[idx] = refreshed
-                                            }
-                                        }
-                                    }
-                                }
-
-                                await BoxArtService.shared.batchDownloadBoxArtLibretro(for: viewModel.displayedROMs, library: library)
+                            guard !isDownloading else { return }
+                            let regionSuffix = SystemPreferences.shared.systemLanguage.regionSuffix
+                            let stale = BoxArtService.shared.romsWithStaleRegion(in: viewModel.displayedROMs, currentRegionSuffix: regionSuffix)
+                            if stale.isEmpty {
+                                triggerBatchDownload(reDownload: false)
+                            } else {
+                                showRegionChangeAlert = true
                             }
                         } label: {
                             Label(loc.localized("toolbar.downloadAllBoxArt"), systemImage: "arrow.down.circle.fill")
                         }
+                        .disabled(isDownloading)
                     }
-        } label: {
+         } label: {
                 Image(systemName: "photo.stack")
             }
             .help(loc.localized("toolbar.boxArtOptions"))
@@ -362,8 +417,8 @@ struct LibraryGridView: View {
                     Section(loc.localized("toolbar.inputDevice")) {
                         inputDeviceButtons
                     }
-                    Section(loc.localized("toolbar.language")) {
-                        languageButtons
+                    Section(loc.localized("toolbar.region")) {
+                        regionButtons
                     }
         } label: {
  HStack(spacing: 4) {
@@ -377,7 +432,7 @@ struct LibraryGridView: View {
  Text(prefs.systemLanguage.flagEmoji)
                 }
             }
-        .help(loc.localized("toolbar.inputDeviceAndLanguage"))
+        .help(loc.localized("toolbar.inputDeviceAndRegion"))
         .tint(ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .primary)
         }
         ToolbarItem(placement: .primaryAction) {
@@ -429,6 +484,17 @@ struct LibraryGridView: View {
             .help(loc.localized("app.settings"))
             .foregroundStyle(ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .primary)
         }
+    }
+    .confirmationDialog(loc.localized("toolbar.regionChangedTitle"), isPresented: $showRegionChangeAlert, titleVisibility: .visible) {
+        Button("\(loc.localized("toolbar.regionReDownload")) (\(prefs.systemLanguage.name))") {
+            triggerBatchDownload(reDownload: true)
+        }
+        Button(loc.localized("toolbar.regionDownloadMissing")) {
+            triggerBatchDownload(reDownload: false)
+        }
+        Button("Cancel", role: .cancel) { }
+    } message: {
+        Text(loc.localized("toolbar.regionChangedMessage"))
     }
     .sheet(item: $manualBoxArtSearchROM) { rom in
         BoxArtPickerView(rom: rom)
@@ -957,6 +1023,113 @@ viewModel.updateFilters(
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
 .clipped()
+    }
+
+    @State private var boxArtDownloadMessageIndex = 0
+
+    private var boxArtDownloadMessages: [String] {[
+        loc.localized("library.boxArtDownloading"),
+        loc.localized("library.boxArtFetchingCovers"),
+        loc.localized("library.boxArtMatchingRegion"),
+        loc.localized("library.boxArtAlmostDone")
+    ]}
+
+    private var boxArtDownloadProgress: Double {
+        guard downloadProgress.total > 0 else { return 0 }
+        return Double(downloadProgress.current) / Double(downloadProgress.total)
+    }
+
+    private var boxArtDownloadOverlay: some View {
+        VStack(spacing: 20) {
+            if carouselBoxArtURLs.isEmpty {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 14)
+                        .stroke(AppColors.brandAccent.opacity(0.3), lineWidth: 2)
+                        .frame(width: 72, height: 72)
+
+                    RoundedRectangle(cornerRadius: 14)
+                        .fill(AppColors.brandAccent.opacity(0.08))
+                        .frame(width: 72, height: 72)
+
+                    Circle()
+                        .stroke(AppColors.brandAccent.opacity(0.3), lineWidth: 2)
+                        .frame(width: 60, height: 60)
+                        .scaleEffect(1.0 + boxArtDownloadProgress * 0.3)
+                        .opacity(1.0 - boxArtDownloadProgress * 0.6)
+
+                    Image(systemName: "photo.artframe")
+                        .font(.system(size: 28))
+                        .foregroundStyle(AppGradients.accent)
+                        .shadow(color: AppColors.brandAccent.opacity(0.4), radius: 6)
+                }
+                .modifier(ScanningPulseAnimation())
+            } else {
+                BoxArtMarquee(urls: carouselBoxArtURLs, offset: $marqueeOffset)
+                    .frame(height: 180)
+                    .padding(.horizontal, -20)
+                    .mask(
+                        HStack(spacing: 0) {
+                            LinearGradient(colors: [.clear, .white], startPoint: .leading, endPoint: .trailing)
+                                .frame(width: 60)
+                            Rectangle().fill(Color.white)
+                            LinearGradient(colors: [.white, .clear], startPoint: .leading, endPoint: .trailing)
+                                .frame(width: 60)
+                        }
+                    )
+            }
+
+            if downloadProgress.total > 0 {
+                ProgressView(value: boxArtDownloadProgress)
+                    .progressViewStyle(.linear)
+                    .tint(AppColors.brandAccent)
+                    .frame(width: 280)
+
+                Text("\(downloadProgress.current)/\(downloadProgress.total)")
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                    .contentTransition(.numericText())
+            } else {
+                BouncingProgressBar()
+                    .frame(width: 280)
+            }
+
+            Group {
+                Text(boxArtDownloadMessages[boxArtDownloadMessageIndex])
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
+                    .contentTransition(.numericText())
+            }
+            .font(.body)
+            .onReceive(Timer.publish(every: 3, on: .main, in: .common).autoconnect()) { _ in
+                if isDownloading {
+                    withAnimation(.easeInOut(duration: 0.45)) {
+                        boxArtDownloadMessageIndex = (boxArtDownloadMessageIndex + 1) % boxArtDownloadMessages.count
+                    }
+                }
+            }
+
+            if let gameName = currentDownloadGameName {
+                Text(verbatim: gameName)
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textTertiary(colorScheme))
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                    .frame(maxWidth: 280)
+                    .contentTransition(.numericText())
+                    .id(gameName)
+            }
+
+            Button(role: .cancel) {
+                isDownloading = false
+                currentDownloadGameName = nil
+                carouselBoxArtURLs = []
+                marqueeOffset = 0
+            } label: {
+                Label("Stop", systemImage: "stop.fill")
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .clipped()
     }
 
     @State private var emptyStateAppeared = false
@@ -1637,6 +1810,106 @@ private struct EmptyStateIllustration: View {
                 .frame(width: 60, height: 44)
         }
         .frame(width: 80, height: 64)
+    }
+}
+
+// MARK: - Box Art Marquee Carousel
+
+private struct BoxArtMarquee: View {
+    let urls: [URL]
+    @Binding var offset: CGFloat
+    @State private var slots: [(url: URL?, vi: Int)] = (0..<6).map { (url: nil, vi: $0) }
+    @State private var timer: Timer?
+    @State private var appeared = false
+
+    private let itemWidth: CGFloat = 150
+    private let spacing: CGFloat = 14
+    private let stride: CGFloat = 164
+    private let speed: CGFloat = 1.4
+    private let slotCount = 6
+    private let visibleSlots = 3
+
+    // Slot is off-screen left when its right edge < -itemWidth (fully past clip)
+    // We recycle when it's past that by at least one stride to guarantee it's invisible.
+    private let leftKillX: CGFloat = -320
+
+    private var viewportWidth: CGFloat { CGFloat(visibleSlots - 1) * stride + itemWidth }
+
+    var body: some View {
+        ZStack(alignment: .leading) {
+            ForEach(0..<slotCount, id: \.self) { i in
+                slotView(at: i)
+            }
+        }
+        .frame(width: viewportWidth, height: 180)
+        .clipped()
+        .onAppear {
+            if slots[0].url == nil { seedSlots() }
+            if !appeared {
+                appeared = true
+                timer = Timer.scheduledTimer(withTimeInterval: 1.0 / 60.0, repeats: true) { _ in
+                    DispatchQueue.main.async { tick() }
+                }
+            }
+        }
+        .onDisappear {
+            timer?.invalidate()
+            timer = nil
+            appeared = false
+            slots = (0..<6).map { (url: nil, vi: $0) }
+        }
+    }
+
+    @ViewBuilder
+    private func slotView(at i: Int) -> some View {
+        if i < slots.count {
+            let xPos = CGFloat(slots[i].vi) * stride - offset
+            if let url = slots[i].url, let nsImage = NSImage(contentsOf: url) {
+                Image(nsImage: nsImage)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: itemWidth, height: 180)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .shadow(color: .black.opacity(0.3), radius: 6, y: 3)
+                    .offset(x: xPos)
+            } else {
+                Color.clear
+                    .frame(width: itemWidth, height: 180)
+                    .offset(x: xPos)
+            }
+        }
+    }
+
+    private func seedSlots() {
+        slots = []
+        var seen = Set<Int>()
+        for i in 0..<slotCount {
+            let url: URL? = urls.isEmpty ? nil : {
+                guard urls.count > seen.count else { return nil }
+                var idx: Int
+                repeat { idx = Int.random(in: 0..<urls.count) } while seen.contains(idx)
+                seen.insert(idx)
+                return urls[idx]
+            }()
+            slots.append((url: url, vi: i))
+        }
+    }
+
+    private func tick() {
+        offset += speed
+        for i in 0..<slotCount {
+            let xPos = CGFloat(slots[i].vi) * stride - offset
+            if xPos < leftKillX {
+                let maxVI = slots.map(\.vi).max() ?? 0
+                slots[i].vi = maxVI + 1
+                slots[i].url = pickRandom()
+            }
+        }
+    }
+
+    private func pickRandom() -> URL? {
+        guard !urls.isEmpty else { return nil }
+        return urls[Int.random(in: 0..<urls.count)]
     }
 }
 

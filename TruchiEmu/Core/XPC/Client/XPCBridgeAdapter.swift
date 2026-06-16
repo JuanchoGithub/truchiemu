@@ -71,7 +71,7 @@ final class XPCBridgeAdapter {
 
         let saveDir = SaveDirectoryBridge.libretroSaveDirectoryPath()
         let sysDir = SaveDirectoryBridge.libretroSystemDirectoryPath()
-        let lang = SystemPreferences.shared.systemLanguage.rawValue
+        let lang = SystemPreferences.shared.systemLanguage.libretroRawValue
         let logLevel = Int(LoggerService.shared.currentLevel.coreLogLevelValue)
 
         guard let proxy = XPCConnectionManager.shared.remoteProxy else {
