@@ -555,6 +555,7 @@
     "controllers.parentModeGotIt": "Entendi",
     "controllers.deadzoneLeft": "Zona Morta Esq.",
     "controllers.deadzoneRight": "Zona Morta Dir.",
+    "controllers.genesisControllerType": "Tipo de Controle",
   "controls.systemControls": "Controles de {0}",
   "controls.resetToDefaults": "Redefinir para Padrões",
   "controls.done": "Concluído",

@@ -331,6 +331,32 @@ enum AppSettings {
             AppSettingsCache.shared.flush()
         }
     }
+
+    // MARK: - Genesis Controller Type
+
+    enum GenesisControllerType: String, Codable {
+        case threeButton = "3button"
+        case sixButton = "6button"
+
+        var isSixButton: Bool { self == .sixButton }
+    }
+
+    enum GenesisControllerKey {
+        static let controllerType = "genesisControllerType"
+    }
+
+    static func getGenesisControllerType() -> GenesisControllerType {
+        guard let data = getData(GenesisControllerKey.controllerType),
+              let type = try? JSONDecoder().decode(GenesisControllerType.self, from: data) else {
+            return .threeButton
+        }
+        return type
+    }
+
+    static func setGenesisControllerType(_ type: GenesisControllerType) {
+        guard let data = try? JSONEncoder().encode(type) else { return }
+        setData(GenesisControllerKey.controllerType, value: data)
+    }
 }
 
 // MARK: - Notification Names

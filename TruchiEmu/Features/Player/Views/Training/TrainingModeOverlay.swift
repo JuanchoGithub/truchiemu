@@ -202,7 +202,7 @@ struct TrainingDummyTab: View {
             if let blockLabel = viewModel.blockButtonLabel {
                 blockButtonInfoSection(blockLabel)
             }
-            if viewModel.isGenesisMidway6 {
+            if viewModel.isGenesisSystem {
                 genesisThreeButtonSection
             }
             facingSection

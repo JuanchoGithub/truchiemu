@@ -582,6 +582,7 @@
     "controllers.parentModeGotIt": "Entendido",
     "controllers.deadzoneLeft": "Zona Muerta Izq.",
     "controllers.deadzoneRight": "Zona Muerta Der.",
+    "controllers.genesisControllerType": "Tipo de Control",
   "controls.systemControls": "Controles - {0}",
   "controls.resetToDefaults": "Restablecer",
   "controls.done": "Listo",

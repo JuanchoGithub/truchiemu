@@ -129,6 +129,14 @@ struct ControllerSettingsView: View {
                     }
                     .frame(maxWidth: 240)
 
+                    if isGenesisSystem {
+                        Picker(loc.localized("controllers.genesisControllerType"), selection: genesisControllerTypeBinding) {
+                            Text(loc.localized("training.genesis.3button")).tag(AppSettings.GenesisControllerType.threeButton)
+                            Text(loc.localized("training.genesis.6button")).tag(AppSettings.GenesisControllerType.sixButton)
+                        }
+                        .frame(maxWidth: 180)
+                    }
+
                     Spacer()
                 }
                 .padding(.horizontal)
@@ -305,6 +313,18 @@ struct ControllerSettingsView: View {
             return controllerService.connectedControllers.first(where: { $0.id == id })
         }
         return controllerService.connectedControllers.first
+    }
+
+    private var isGenesisSystem: Bool {
+        let lower = selectedSystemID.lowercased()
+        return lower == "genesis" || lower == "megadrive" || lower == "32x"
+    }
+
+    private var genesisControllerTypeBinding: Binding<AppSettings.GenesisControllerType> {
+        Binding(
+            get: { AppSettings.getGenesisControllerType() },
+            set: { AppSettings.setGenesisControllerType($0) }
+        )
     }
 
     private func applyPendingControllerSelection() {
@@ -768,12 +788,14 @@ struct ButtonMappingList: View {
             Divider()
 
             List {
+                let disabledButtons = RetroButton.disabledButtons(for: systemID)
                 ForEach(RetroButton.availableButtons(for: systemID), id: \.self) { btn in
                     MappingRowView(
                         button: btn,
                         systemID: systemID,
                         currentMapping: currentMapping.buttons[btn],
                         isListening: listeningFor == btn,
+                        isButtonDisabled: disabledButtons.contains(btn),
                         onStartListening: { startListening(for: btn) },
                         onMappingCaptured: { newMapping in
                             currentMapping.buttons[btn] = newMapping
@@ -907,12 +929,14 @@ struct ControllerMappingDetail: View {
                 Divider()
 
                 List {
+                    let disabledButtons = RetroButton.disabledButtons(for: systemID)
                     ForEach(RetroButton.availableButtons(for: systemID), id: \.self) { btn in
                         MappingRowView(
                             button: btn,
                             systemID: systemID,
                             currentMapping: mapping.buttons[btn],
                             isListening: listeningFor == btn,
+                            isButtonDisabled: disabledButtons.contains(btn),
                             onStartListening: {
                                 listeningFor = btn
                                 startListeningForButton(btn)
@@ -1004,6 +1028,7 @@ struct MappingRowView: View {
     let systemID: String
     let currentMapping: GCButtonMapping?
     let isListening: Bool
+    let isButtonDisabled: Bool
     let onStartListening: () -> Void
     let onMappingCaptured: (GCButtonMapping) -> Void
     @ObservedObject private var loc = LocalizationManager.shared
@@ -1013,17 +1038,20 @@ struct MappingRowView: View {
             Text(button.displayName(for: systemID))
                 .font(.body)
                 .lineLimit(1)
-                .foregroundColor(AppColors.textPrimary(colorScheme))
+                .foregroundColor(isButtonDisabled ? AppColors.textTertiary(colorScheme) : AppColors.textPrimary(colorScheme))
+                .strikethrough(isButtonDisabled)
 
             Spacer(minLength: 4)
 
             Button(isListening ? loc.localized("controllers.press") : (currentMapping?.gcElementAlias ?? "—")) {
-                onStartListening()
+                if !isButtonDisabled { onStartListening() }
             }
             .buttonStyle(.bordered)
             .controlSize(.small)
             .tint(isListening ? AppColors.warning(colorScheme) : AppColors.textSecondary(colorScheme))
             .fixedSize()
+            .opacity(isButtonDisabled ? 0.4 : 1.0)
+            .disabled(isButtonDisabled)
         }
         .padding(.vertical, 4)
         .padding(.horizontal, 8)

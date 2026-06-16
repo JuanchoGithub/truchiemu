@@ -540,7 +540,7 @@ gameGuideViewModel.loadForGame(rom)
         let systemID = rom.systemID ?? "default"
         let trainingGameData = moveListViewModel.moveListService.currentGameData
         let trainingLayout = trainingGameData.map { ArcadeButtonMapper.shared.arcadeLayout(for: $0) } ?? .capcom6
-        trainingManager.activate(for: trainingGameData, systemID: systemID, layout: trainingLayout)
+        trainingManager.activate(for: trainingGameData, systemID: systemID, coreID: coreID, layout: trainingLayout)
         if let runner = self.runner {
             trainingManager.inputManager.attachToRunner(runner)
             trainingManager.syncFrameDriver()

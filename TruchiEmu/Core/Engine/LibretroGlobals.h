@@ -44,6 +44,7 @@ extern NSDictionary<NSString *, NSArray *> *g_inputDescriptors;
 void parseInputDescriptors(const struct retro_input_descriptor *descriptors);
 
 extern BOOL g_variablesUpdated;
+extern unsigned g_genesisDeviceType;
 
 #ifndef XPC_SERVICE
 extern BOOL g_xpcModeActive;

@@ -514,6 +514,30 @@ final class XPCBridgeAdapter {
         XPCConnectionManager.shared.remoteProxy?.setOptionValue(value, forKey: key) {}
     }
 
+    func setControllerPortDevice(_ port: Int, device: Int) {
+        guard useXPC else {
+            LibretroBridgeSwift.setControllerPortDevice(UInt32(port), device: UInt32(device))
+            return
+        }
+        XPCConnectionManager.shared.remoteProxy?.setControllerPortDevice(port: port, device: device) {}
+    }
+
+    func setVariablesUpdated() {
+        guard useXPC else {
+            LibretroBridgeSwift.setVariablesUpdated()
+            return
+        }
+        XPCConnectionManager.shared.remoteProxy?.setVariablesUpdated() {}
+    }
+
+    func setGenesisDeviceType(_ deviceType: UInt32) {
+        guard useXPC else {
+            LibretroBridgeSwift.setGenesisDeviceType(deviceType)
+            return
+        }
+        XPCConnectionManager.shared.remoteProxy?.setGenesisDeviceType(Int(deviceType)) {}
+    }
+
     func setOptions(_ options: [String: String]) {
         guard useXPC else {
             for (key, value) in options {

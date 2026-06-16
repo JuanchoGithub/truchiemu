@@ -432,6 +432,18 @@ g_frame_poll_callback = callback;
     return result;
 }
 
++ (void)setControllerPortDevice:(unsigned)port device:(unsigned)device {
+    if (g_instance) [g_instance setControllerPortDevice:port device:device];
+}
+
++ (void)setVariablesUpdated {
+    g_variablesUpdated = YES;
+}
+
++ (void)setGenesisDeviceType:(unsigned)deviceType {
+    g_genesisDeviceType = deviceType;
+}
+
 + (NSDictionary<NSString *, NSArray *> *)getInputDescriptorsDictionary {
     dispatch_once(&g_optAccessQueueOnce, ^{
         g_optAccessQueue = dispatch_queue_create("com.truchiemu.bridge.options", DISPATCH_QUEUE_SERIAL);

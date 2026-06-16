@@ -68,6 +68,12 @@ typedef void (*FramePollCallbackType)(void);
 /* Controller Port Device — set the device type for a controller port */
 + (void)setControllerPortDevice:(unsigned)port device:(unsigned)device;
 
+/* Signal the core to re-read variables on the next retro_run() call */
++ (void)setVariablesUpdated;
+
+/* Set the Genesis controller device type (0=auto, 513=3-button, 514=6-button) */
++ (void)setGenesisDeviceType:(unsigned)deviceType;
+
 /* Geometry — returns the core-provided display aspect ratio from
  * retro_system_av_info */
 + (float)aspectRatio;

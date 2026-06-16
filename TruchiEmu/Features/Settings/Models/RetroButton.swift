@@ -113,6 +113,17 @@ enum RetroButton: String, Codable, CaseIterable {
         }
     }
 
+    static let genesis6ButtonOnly: Set<RetroButton> = [.x, .y, .z]
+
+    static func disabledButtons(for systemID: String) -> Set<RetroButton> {
+        let lower = systemID.lowercased()
+        guard lower == "genesis" || lower == "megadrive" || lower == "32x" else { return [] }
+        if AppSettings.getGenesisControllerType() == .threeButton {
+            return genesis6ButtonOnly
+        }
+        return []
+    }
+
     func retroID(for systemID: String, coreID: String? = nil) -> Int32 {
         if let coreID = coreID {
             if let descID = InputDescriptorsManager.shared.retroID(for: self, coreID: coreID) {

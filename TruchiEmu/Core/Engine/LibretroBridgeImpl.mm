@@ -205,7 +205,12 @@ LOAD_SYM(retro_get_memory_data)
     } else if ((g_coreID && [[g_coreID lowercaseString] containsString:@"mupen64"]) ||
               (g_coreID && [[g_coreID lowercaseString] containsString:@"parallel_n64"])) {
         device_type = 5; // RETRO_DEVICE_ANALOG for proper N64 analog + digital input
+  } else if (g_coreID && ([[g_coreID lowercaseString] containsString:@"genesis_plus_gx"] ||
+                          [[g_coreID lowercaseString] containsString:@"picodrive"])) {
+    if (g_genesisDeviceType != 0) {
+      device_type = g_genesisDeviceType;
     }
+  }
 
     if (!_retro_load_game) {
     return NO;

@@ -186,19 +186,37 @@ class TrainingModeOverlayViewModel: ObservableObject {
     }
 
     var genesisThreeButtonMode: Bool {
-        get { manager.config.genesisThreeButtonMode }
+        get { !AppSettings.getGenesisControllerType().isSixButton }
         set {
+            let newType: AppSettings.GenesisControllerType = newValue ? .threeButton : .sixButton
+            AppSettings.setGenesisControllerType(newType)
             manager.updateConfig { $0.genesisThreeButtonMode = newValue }
+            let deviceType: UInt32 = newValue ? 513 : 514
+            XPCBridgeAdapter.shared.setControllerPortDevice(0, device: Int(deviceType))
+            XPCBridgeAdapter.shared.setControllerPortDevice(1, device: Int(deviceType))
+            XPCBridgeAdapter.shared.setControllerPortDevice(2, device: Int(deviceType))
+            XPCBridgeAdapter.shared.setControllerPortDevice(3, device: Int(deviceType))
+            let lowerCoreID = manager.currentCoreID.lowercased()
+            if lowerCoreID.contains("picodrive") {
+                let options = CoreOverrideService.shared.picodriveGenesisOptions(sixButton: !newValue)
+                for (key, value) in options {
+                    XPCBridgeAdapter.shared.setOptionValue(value, forKey: key)
+                }
+                XPCBridgeAdapter.shared.setVariablesUpdated()
+            }
             manager.inputManager.rebuildRetroIDMap()
             manager.inputManager.resolveBlockButtonIfNeeded()
             manager.syncFrameDriver()
         }
     }
 
-    var isGenesisMidway6: Bool {
+    var isGenesisSystem: Bool {
         let lowerSystemID = manager.currentSystemID.lowercased()
-        return (lowerSystemID == "genesis" || lowerSystemID == "megadrive" || lowerSystemID == "32x")
-            && manager.currentArcadeLayout == .midway6
+        return lowerSystemID == "genesis" || lowerSystemID == "megadrive" || lowerSystemID == "32x"
+    }
+
+    var isGenesisMidway6: Bool {
+        isGenesisSystem && manager.currentArcadeLayout == .midway6
     }
 
     var blockButtonLabel: String? {

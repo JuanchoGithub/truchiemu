@@ -13,7 +13,8 @@ NSString *g_systemID = nil;
 NSString *g_romFilename = nil;
 NSString *g_shaderDir = nil;
 BOOL g_isPaused = NO;
-BOOL g_variablesUpdated = NO;      
+BOOL g_variablesUpdated = NO;
+unsigned g_genesisDeviceType = 0;
 int g_currentRotation = 0; 
 GLuint g_hwFBO = 0;
 

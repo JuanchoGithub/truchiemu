@@ -20,6 +20,7 @@ class TrainingModeManager: ObservableObject {
     @Published var currentGameData: FightDataGame? = nil
     var currentCharacterName: String? { MoveListService.shared.selectedCharacter?.name }
     var currentArcadeLayout: ArcadeLayout = .capcom6
+    var currentCoreID: String = ""
     var currentSystemID: String = "" {
         didSet { frameDriver.systemID = currentSystemID }
     }
@@ -37,9 +38,10 @@ class TrainingModeManager: ObservableObject {
     private var xpcModeTimer: DispatchSourceTimer?
     private var p2JoinPhaseTimer: Timer?
 
-    func activate(for game: FightDataGame?, systemID: String, layout: ArcadeLayout) {
+    func activate(for game: FightDataGame?, systemID: String, coreID: String = "", layout: ArcadeLayout) {
         currentGameData = game
         currentSystemID = systemID
+        currentCoreID = coreID
         currentArcadeLayout = layout
 
         sequenceRunner.setExpansionContext(SequenceRunner.ExpansionContext(

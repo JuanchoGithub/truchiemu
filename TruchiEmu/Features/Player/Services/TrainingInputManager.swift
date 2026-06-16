@@ -57,7 +57,7 @@ class TrainingInputManager {
 
         if (lowerSystemID == "genesis" || lowerSystemID == "megadrive" || lowerSystemID == "32x"),
            layout == .midway6,
-           manager.config.genesisThreeButtonMode {
+           AppSettings.getGenesisControllerType() == .threeButton {
             blockButton = .start
             return
         }

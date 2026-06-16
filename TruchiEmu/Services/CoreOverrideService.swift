@@ -149,6 +149,11 @@ final class CoreOverrideService {
         return overrides[coreID]?[scope] ?? [:]
     }
 
+    func picodriveGenesisOptions(sixButton: Bool) -> [String: String] {
+        let scope = sixButton ? "genesis_6btn" : "genesis"
+        return getOverrides(for: "picodrive_libretro", scope: scope)
+    }
+
     func getOverride(for coreID: String, optionKey: String) -> String? {
         let all = getOverrides(for: coreID)
         return all[optionKey]

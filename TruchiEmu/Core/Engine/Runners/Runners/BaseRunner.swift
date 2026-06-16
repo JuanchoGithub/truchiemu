@@ -430,8 +430,9 @@ case "scummvm": runner = ScummVMRunner()
         let dylibPath = self.findCoreLib(coreID: coreID) ?? coreID
         let cachedAchievements = self.rcheevosAchievements ?? []
         let resolvedRomPath = self.romPath
+        let genesisControllerType = AppSettings.getGenesisControllerType()
 
-        emulationQueue.async { [cachedAchievements] in
+        emulationQueue.async { [cachedAchievements, genesisControllerType] in
             XPCBridgeAdapter.shared.setLanguage(selectedLang)
             XPCBridgeAdapter.shared.setLogLevel(Int(selectedLogLevel))
 
@@ -442,6 +443,26 @@ case "scummvm": runner = ScummVMRunner()
 
             let romPath = resolvedRomPath
             let systemID = rom.systemID
+
+            let lowerCoreID = coreID.lowercased()
+            let lowerSystemID = systemID?.lowercased() ?? ""
+            let isGenesisCore = lowerCoreID.contains("genesis_plus_gx") || lowerCoreID.contains("picodrive")
+            let isGenesisSystem = lowerSystemID == "genesis" || lowerSystemID == "megadrive" || lowerSystemID == "32x"
+            if isGenesisCore && isGenesisSystem {
+                let deviceType: UInt32 = genesisControllerType == .sixButton ? 514 : 513
+                XPCBridgeAdapter.shared.setGenesisDeviceType(deviceType)
+                if lowerCoreID.contains("picodrive") {
+                    let options = CoreOverrideService.shared.picodriveGenesisOptions(sixButton: genesisControllerType == .sixButton)
+                    for (key, value) in options {
+                        XPCBridgeAdapter.shared.setOptionValue(value, forKey: key)
+                    }
+                    if !options.isEmpty {
+                        XPCBridgeAdapter.shared.setVariablesUpdated()
+                    }
+                }
+            } else {
+                XPCBridgeAdapter.shared.setGenesisDeviceType(0)
+            }
 
             // Set up rcheevos achievement detection. The runtime lives in the
             // XPC service; we just feed triggers in and listen for events.

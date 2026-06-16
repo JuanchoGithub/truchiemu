@@ -304,6 +304,23 @@ static func setKeyState(retroID: Int, pressed: Bool) {
         LibretroBridge.resetAllOptionsToDefaults()
     }
 
+    // MARK: - Controller Port Device
+
+    static func setControllerPortDevice(_ port: UInt32, device: UInt32) {
+        #if LOG_DEBUG
+        LoggerService.debug(category: "LibretroBridge", "Setting controller port \(port) to device \(device)")
+        #endif
+        LibretroBridge.setControllerPortDevice(port, device: device)
+    }
+
+    static func setVariablesUpdated() {
+        LibretroBridge.setVariablesUpdated()
+    }
+
+    static func setGenesisDeviceType(_ deviceType: UInt32) {
+        LibretroBridge.setGenesisDeviceType(deviceType)
+    }
+
     // MARK: - Direct Memory Access
 
     static func getMemoryData(type: UInt32, offset: Int, size: Int) -> Data? {

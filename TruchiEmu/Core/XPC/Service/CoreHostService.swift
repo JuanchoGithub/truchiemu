@@ -388,6 +388,16 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
         reply()
     }
 
+    func setVariablesUpdated(reply: @escaping () -> Void) {
+        LibretroBridge.setVariablesUpdated()
+        reply()
+    }
+
+    func setGenesisDeviceType(_ deviceType: Int, reply: @escaping () -> Void) {
+        LibretroBridge.setGenesisDeviceType(UInt32(deviceType))
+        reply()
+    }
+
     func loadCoreForOptions(dylibPath: String, coreID: String, romPath: String?, reply: @escaping () -> Void) {
         LibretroBridge.loadCore(forOptions: dylibPath, coreID: coreID, romPath: romPath)
         reply()

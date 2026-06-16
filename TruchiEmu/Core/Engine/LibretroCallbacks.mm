@@ -464,9 +464,9 @@ int16_t bridge_input_state(unsigned port, unsigned device, unsigned index, unsig
     if (port >= MAX_PLAYERS) return 0;
 #ifdef XPC_SERVICE
     if (g_xpc_shm) {
-        if (device == RETRO_DEVICE_JOYPAD)
+        if (device == RETRO_DEVICE_JOYPAD || (device >> 16) == (RETRO_DEVICE_JOYPAD + 1))
             return xpc_shm_get_input_state(g_xpc_shm, (int)port, id & 0x1F) ? 1 : 0;
-        if (device == RETRO_DEVICE_ANALOG) {
+        if (device == RETRO_DEVICE_ANALOG || (device >> 16) == (RETRO_DEVICE_ANALOG + 1)) {
             if (xpc_shm_get_analog_mouse_enabled(g_xpc_shm, (int)port) && index < 2) {
                 return 0;
             }
@@ -519,7 +519,7 @@ int16_t bridge_input_state(unsigned port, unsigned device, unsigned index, unsig
         return 0;
     }
 #endif
-    if (device == RETRO_DEVICE_JOYPAD)
+    if (device == RETRO_DEVICE_JOYPAD || (device >> 16) == (RETRO_DEVICE_JOYPAD + 1))
         return g_input_state[port][id & 0x1F] ? 1 : 0;
     if (device == RETRO_DEVICE_ANALOG) {
         if (g_analog_as_mouse_enabled[port] && index < 2) {

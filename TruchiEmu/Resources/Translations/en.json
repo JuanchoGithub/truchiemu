@@ -555,6 +555,7 @@
     "controllers.parentModeGotIt": "Got it",
     "controllers.deadzoneLeft": "Left Dead Zone",
     "controllers.deadzoneRight": "Right Dead Zone",
+    "controllers.genesisControllerType": "Controller Type",
   "controls.systemControls": "{0} Controls",
   "controls.resetToDefaults": "Reset to Defaults",
   "controls.done": "Done",
