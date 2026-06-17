@@ -2620,6 +2620,18 @@
     },
     "ps2": {
       "b": "_K"
+    },
+    "mame": {
+      "a": "_K"
+    },
+    "arcade": {
+      "a": "_K"
+    },
+    "fba": {
+      "a": "_K"
+    },
+    "fbneo": {
+      "a": "_K"
     }
   },
   "controlGroups": {

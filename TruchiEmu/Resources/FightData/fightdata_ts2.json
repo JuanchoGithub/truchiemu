@@ -12,7 +12,21 @@
   "manufacturer": "Capcom",
   "credits": "by: Fabricio Coroquer (Created by: Procyon)",
   "controls": {
-    "_S": "Taunt"
+    "_S": "Taunt",
+    "^E": "Low Punch",
+    "^G": "High Punch",
+    "^H": "Low Kick",
+    "^J": "High Kick"
+  },
+  "controlGroups": {
+    "_P": [
+      "^E",
+      "^G"
+    ],
+    "_K": [
+      "^H",
+      "^J"
+    ]
   },
   "categories": {
     "_(": "Normal Throws",
@@ -771,6 +785,24 @@
     "_S": "TA"
   },
   "systemControlMappings": {
+    "mame": {
+      "b": "^E",
+      "a": "^G",
+      "y": "^H",
+      "x": "^J"
+    },
+    "arcade": {
+      "b": "^E",
+      "a": "^G",
+      "y": "^H",
+      "x": "^J"
+    },
+    "fba": {
+      "b": "^E",
+      "a": "^G",
+      "y": "^H",
+      "x": "^J"
+    },
     "psx": {
       "x": "_b",
       "y": "_c",

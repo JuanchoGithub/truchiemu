@@ -9354,6 +9354,22 @@
     "dreamcast": {
       "a": "_G",
       "b": "_K"
+    },
+    "mame": {
+      "x": "_G",
+      "y": "_K"
+    },
+    "arcade": {
+      "x": "_G",
+      "y": "_K"
+    },
+    "fba": {
+      "x": "_G",
+      "y": "_K"
+    },
+    "fbneo": {
+      "x": "_G",
+      "y": "_K"
     }
   },
   "controlGroups": {

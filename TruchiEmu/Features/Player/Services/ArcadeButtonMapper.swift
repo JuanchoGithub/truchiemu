@@ -26,6 +26,8 @@ class ArcadeButtonMapper {
         let mappings: [SystemMapping]
     }
 
+    private static let arcadeSystemIDs: Set<String> = ["mame", "fba", "fbneo", "arcade", "mame078", "mame2010", "mame2016"]
+
     private var cachedMappings: [String: [ArcadeLayout: [String: RetroButton]]] = [:]
     private var originalKeys: [String: String] = [:]
 
@@ -41,7 +43,7 @@ class ArcadeButtonMapper {
             }
             return key
         }()
-        if let sysMap = systemControlMappings?[mapKey] {
+        if let sysMap = systemControlMappings?[mapKey] ?? (Self.arcadeSystemIDs.contains(mapKey) ? systemControlMappings?["mame"] : nil) {
             for (btnRaw, fdKey) in sysMap where normalizeKey(fdKey) == normalizeKey(resolvedKey) {
                 if let button = RetroButton(rawValue: btnRaw) { return button }
             }
@@ -105,7 +107,8 @@ class ArcadeButtonMapper {
             return key
         }()
         LoggerService.info("FDK: button=\(button.rawValue) systemID=\(systemID) mapKey=\(mapKey) hasCtrlMap=\(systemControlMappings != nil)")
-        if let sysMap = systemControlMappings?[mapKey] {
+        let sysMap = systemControlMappings?[mapKey] ?? (Self.arcadeSystemIDs.contains(mapKey) ? systemControlMappings?["mame"] : nil)
+        if let sysMap {
             if let fdKey = sysMap[button.rawValue] {
                 LoggerService.info("FDK: FOUND fdKey=\(fdKey) for button=\(button.rawValue)")
                 return fdKey
@@ -132,30 +135,30 @@ class ArcadeButtonMapper {
         switch layout {
         case .capcom6:
             switch button {
-            case .y: return "^E"
-            case .x: return "^F"
-            case .l1: return "^G"
-            case .b: return "^H"
-            case .a: return "^I"
+            case .b: return "^E"
+            case .a: return "^F"
+            case .y: return "^G"
+            case .x: return "^H"
             case .r1: return "^J"
+            case .l1: return "^I"
             default: return nil
             }
         case .midway6:
             switch button {
-            case .y: return "^G"
+            case .b: return "^G"
+            case .a: return "_G"
+            case .y: return "^J"
             case .x: return "^E"
-            case .l1: return "_G"
-            case .b: return "^J"
-            case .a: return "^H"
             case .r1: return "_R"
+            case .l1: return "^H"
             default: return nil
             }
         case .snk4:
             switch button {
-            case .y: return "_A"
-            case .x: return "_B"
-            case .b: return "_C"
-            case .a: return "_D"
+            case .b: return "_A"
+            case .a: return "_B"
+            case .y: return "_C"
+            case .x: return "_D"
             default: return nil
             }
         case .capcom4:
@@ -210,32 +213,32 @@ class ArcadeButtonMapper {
         switch layout {
         case .capcom6:
             switch key {
-            case "e": return .y
-            case "f": return .x
-            case "g": return .l1
-            case "h": return .b
-            case "i": return .a
+            case "e": return .b
+            case "f": return .a
+            case "g": return .y
+            case "h": return .x
+            case "i": return .l1
             case "j": return .r1
-            case "_p": return .y
-            case "_k": return .b
+            case "_p": return .b
+            case "_k": return .a
             default: return nil
             }
         case .midway6:
             switch key {
-            case "g": return .y
+            case "g": return .b
             case "e": return .x
-            case "_g": return .l1
-            case "j": return .b
-            case "h": return .a
+            case "_g": return .a
+            case "j": return .y
+            case "h": return .l1
             case "_r": return .r1
             default: return nil
             }
         case .snk4:
             switch key {
-            case "a": return .y
-            case "b": return .x
-            case "c": return .b
-            case "d": return .a
+            case "a": return .b
+            case "b": return .a
+            case "c": return .y
+            case "d": return .x
             default: return nil
             }
         case .capcom4:
