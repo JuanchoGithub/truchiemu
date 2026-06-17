@@ -1003,9 +1003,9 @@
   "systemControlMappings": {
     "snes": {
       "y": "^G",
-      "x": "^E",
+      "x": "^J",
       "l1": "_G",
-      "b": "^J",
+      "b": "^E",
       "a": "^H"
     },
     "genesis": {
@@ -1028,6 +1028,13 @@
       "z": "^J",
       "a": "^E",
       "c": "^H"
+    },
+    "genesis3": {
+      "a": "^E",
+      "b": "^H",
+      "c": "^J",
+      "start": "_G",
+      "start4": "_G"
     },
     "saturn": {
       "y": "^G",

@@ -270,9 +270,9 @@
   "systemControlMappings": {
     "snes": {
       "y": "^G",
-      "x": "^E",
+      "x": "^J",
       "l1": "_G",
-      "b": "^J",
+      "b": "^E",
       "a": "^H"
     },
     "genesis": {

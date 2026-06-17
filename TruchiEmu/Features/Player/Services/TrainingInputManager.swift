@@ -11,8 +11,7 @@ class TrainingInputManager {
     private var retroIDToButtonMap: [Int: RetroButton] = [:]
     private var frameCounter: Int = 0
     private var lastP1ActiveButtons: Set<RetroButton> = []
-    private var blockButton: RetroButton?
-
+    private var blockCombo: String?
     private let p2Player = 1
 
     var onP1InputUpdate: ((Set<RetroButton>, Int) -> Void)?
@@ -22,7 +21,7 @@ class TrainingInputManager {
     }
 
     var blockButtonRawValue: String? {
-        blockButton?.rawValue
+        blockCombo
     }
 
     func detachFromRunner() {
@@ -47,7 +46,7 @@ class TrainingInputManager {
 
     private func resolveBlockButton() {
         guard let game = manager.currentGameData else {
-            blockButton = nil
+            blockCombo = nil
             return
         }
         let layout = manager.currentArcadeLayout
@@ -58,8 +57,26 @@ class TrainingInputManager {
         if (lowerSystemID == "genesis" || lowerSystemID == "megadrive" || lowerSystemID == "32x"),
            layout == .midway6,
            AppSettings.getGenesisControllerType() == .threeButton {
-            blockButton = .start
+            // Check which button maps to _G (Block) in this game's genesis3 mapping
+            if let g3 = game.systemControlMappings?["genesis3"],
+               g3["b"] == "_G" {
+                blockCombo = "b"
+            } else {
+                blockCombo = "start"
+            }
             return
+        }
+
+        // Master System MK1: block = back + punch (b). MK2: block = punch + kick (b,c)
+        if lowerSystemID == "sms" || lowerSystemID == "gamegear" {
+            if game.romIds.contains("mk2") {
+                blockCombo = "b,c"
+                return
+            }
+            if game.romIds.contains("mk") {
+                blockCombo = "back,b"
+                return
+            }
         }
 
         for (fdKey, label) in game.controls {
@@ -70,10 +87,10 @@ class TrainingInputManager {
                 systemControlMappings: systemControlMappings
             ) else { continue }
             if button.isDirectional { continue }
-            blockButton = button
+            blockCombo = button.rawValue
             return
         }
-        blockButton = nil
+        blockCombo = nil
     }
 
     private func recordP1Input(_ state: [Int: Bool]) {
@@ -208,11 +225,18 @@ class TrainingInputManager {
     }
 
     private func applyBlockDirection(adapter: XPCBridgeAdapter, crouching: Bool) {
-        if let block = blockButton {
+        if let combo = blockCombo {
             if crouching {
                 pressP2Button(.down, adapter: adapter)
             }
-            pressP2Button(block, adapter: adapter)
+            for part in combo.split(separator: ",") {
+                let trimmed = part.trimmingCharacters(in: .whitespaces)
+                if trimmed == "back" {
+                    pressP2Button(backDirection, adapter: adapter)
+                } else if let button = RetroButton(rawValue: trimmed) {
+                    pressP2Button(button, adapter: adapter)
+                }
+            }
         } else {
             if crouching {
                 pressP2Button(.down, adapter: adapter)

@@ -615,34 +615,34 @@ final class TrainingFramePollDriver: @unchecked Sendable {
 
             let backDir: RetroButton = cfgFacesRight ? .left : .right
 
+            func pressBlockCombo(_ raw: String?) {
+                if let combo = raw {
+                    for part in combo.split(separator: ",") {
+                        let trimmed = part.trimmingCharacters(in: .whitespaces)
+                        if trimmed == "back" {
+                            pressP2(backDir, systemID: cfgSysID, adapter: adapter)
+                        } else if let button = RetroButton(rawValue: trimmed) {
+                            pressP2(button, systemID: cfgSysID, adapter: adapter)
+                        }
+                    }
+                } else {
+                    pressP2(backDir, systemID: cfgSysID, adapter: adapter)
+                }
+            }
+
             switch cfgGuard {
             case .noBlock: break
             case .allBlock:
-                if let blockRaw = cfgBlockButton, let block = RetroButton(rawValue: blockRaw) {
-                    if cfgStance == .crouch {
-                        pressP2(.down, systemID: cfgSysID, adapter: adapter)
-                    }
-                    pressP2(block, systemID: cfgSysID, adapter: adapter)
-                } else {
-                    if cfgStance == .crouch {
-                        pressP2(.down, systemID: cfgSysID, adapter: adapter)
-                    }
-                    pressP2(backDir, systemID: cfgSysID, adapter: adapter)
+                if cfgStance == .crouch {
+                    pressP2(.down, systemID: cfgSysID, adapter: adapter)
                 }
+                pressBlockCombo(cfgBlockButton)
             case .randomBlock:
                 if Bool.random() {
-                    if let blockRaw = cfgBlockButton, let block = RetroButton(rawValue: blockRaw) {
-                        pressP2(block, systemID: cfgSysID, adapter: adapter)
-                    } else {
-                        pressP2(backDir, systemID: cfgSysID, adapter: adapter)
-                    }
+                    pressBlockCombo(cfgBlockButton)
                 }
             case .firstHitBlock:
-                if let blockRaw = cfgBlockButton, let block = RetroButton(rawValue: blockRaw) {
-                    pressP2(block, systemID: cfgSysID, adapter: adapter)
-                } else {
-                    pressP2(backDir, systemID: cfgSysID, adapter: adapter)
-                }
+                pressBlockCombo(cfgBlockButton)
             }
         case .standby, .human:
             break
@@ -857,11 +857,12 @@ final class TrainingFramePollDriver: @unchecked Sendable {
                     p2JoinFrame = 0
                 }
             case 3:
-                adapter.setKeyState(retroID: Int(Self.start2RetroID), player: 1, pressed: true)
+                let confirmRetroID = RetroButton.a.retroID(for: systemID)
+                adapter.setKeyState(retroID: Int(confirmRetroID), player: 1, pressed: true)
                 if p2JoinFrame >= Self.charSelectHoldFrames {
-                    adapter.setKeyState(retroID: Int(Self.start2RetroID), player: 1, pressed: false)
+                    adapter.setKeyState(retroID: Int(confirmRetroID), player: 1, pressed: false)
                     #if LOG_DEBUG
-                    LoggerService.debug(category: "TrainingP2", "Non-arcade: phase 3 COMPLETE (Start press to pick char)")
+                    LoggerService.debug(category: "TrainingP2", "Non-arcade: phase 3 COMPLETE (A button press to pick char, retroID=\(confirmRetroID))")
                     #endif
                     p2JoinLoggedStart = false
                     finishP2JoinLocked()
