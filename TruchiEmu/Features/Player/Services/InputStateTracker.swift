@@ -18,6 +18,8 @@ class InputStateTracker: ObservableObject {
     private var residualDirectionTimer: Task<Void, Never>? = nil
     private var pendingResidualDirection: FightDataDirection? = nil
     private var chargeGeneration: UInt = 0
+    private(set) var rawDirectionHistory: [FightDataDirection] = []
+    @Published private(set) var detectedMotions: [DetectedMotion] = []
 
     private var inputTimeout: TimeInterval { AppSettings.getDouble("moveListInputTimeout", defaultValue: 1.0) }
     private var chargeThreshold: TimeInterval { AppSettings.getDouble("moveListChargeThreshold", defaultValue: 0.8) }
@@ -104,6 +106,7 @@ class InputStateTracker: ObservableObject {
         }
 
     if isDiagonalDecomposition, let residual = currentDirection {
+        appendRawDirection(residual)
         pendingResidualDirection = residual
         residualDirectionTimer?.cancel()
         let delay = residualDirectionDelay
@@ -112,6 +115,7 @@ class InputStateTracker: ObservableObject {
             guard !Task.isCancelled else { return }
             self?.commitResidualDirection()
         }
+        updateDetectedMotions()
         return
     }
 
@@ -174,6 +178,9 @@ class InputStateTracker: ObservableObject {
             directionHoldStart = Date()
             scheduleChargeCheck()
         }
+
+        appendRawDirection(currentDirection)
+        updateDetectedMotions()
     }
 
     private func resetTimeout() {
@@ -191,6 +198,8 @@ class InputStateTracker: ObservableObject {
             self?.chargeCheckTask?.cancel()
             self?.chargeCheckTask = nil
             self?.lastDirectionStepTime = nil
+            self?.rawDirectionHistory.removeAll()
+            self?.detectedMotions = []
         }
     }
 
@@ -252,6 +261,23 @@ class InputStateTracker: ObservableObject {
         chargeCheckTask?.cancel()
         chargeCheckTask = nil
         lastDirectionStepTime = nil
+        rawDirectionHistory.removeAll()
+        detectedMotions = []
+    }
+
+    private func appendRawDirection(_ dir: FightDataDirection?) {
+        guard let dir else { return }
+        if dir != rawDirectionHistory.last {
+            rawDirectionHistory.append(dir)
+            if rawDirectionHistory.count > 16 {
+                rawDirectionHistory.removeFirst(rawDirectionHistory.count - 16)
+            }
+        }
+    }
+
+    private func updateDetectedMotions() {
+        let raw = rawDirectionHistory
+        detectedMotions = MotionDetector.detect(in: raw)
     }
 }
 

@@ -4,7 +4,6 @@ struct MoveListConfigSection: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
 
-    @State private var diagonalMerge: Double = AppSettings.getDouble("moveListDiagonalMerge", defaultValue: 0.083)
     @State private var residualDelay: Double = AppSettings.getDouble("moveListResidualDelay", defaultValue: 0.25)
     @State private var inputTimeout: Double = AppSettings.getDouble("moveListInputTimeout", defaultValue: 1.0)
     @State private var chargeThreshold: Double = AppSettings.getDouble("moveListChargeThreshold", defaultValue: 0.8)
@@ -13,15 +12,6 @@ struct MoveListConfigSection: View {
     var body: some View {
         Group {
             Section(header: Label(loc.localized("settings.moveList.inputTiming"), systemImage: "timer")) {
-                timingSlider(
-                    label: loc.localized("settings.moveList.diagonalMerge"),
-                    value: $diagonalMerge,
-                    range: 0...0.2,
-                    step: 0.001,
-                    format: { "\(Int($0 * 1000)) ms" },
-                    desc: loc.localized("settings.moveList.diagonalMergeDesc"),
-                    key: "moveListDiagonalMerge"
-                )
                 timingSlider(
                     label: loc.localized("settings.moveList.residualDelay"),
                     value: $residualDelay,
@@ -68,7 +58,6 @@ struct MoveListConfigSection: View {
             }
         }
         .onAppear {
-            diagonalMerge = AppSettings.getDouble("moveListDiagonalMerge", defaultValue: 0.083)
             residualDelay = AppSettings.getDouble("moveListResidualDelay", defaultValue: 0.25)
             inputTimeout = AppSettings.getDouble("moveListInputTimeout", defaultValue: 1.0)
             chargeThreshold = AppSettings.getDouble("moveListChargeThreshold", defaultValue: 0.8)

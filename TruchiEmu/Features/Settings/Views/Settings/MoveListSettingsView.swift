@@ -118,7 +118,6 @@ private struct MoveListOverviewView: View {
     @ObservedObject private var themeManager = ThemeManager.shared
     let onBrowseGames: () -> Void
 
-    @State private var diagonalMerge: Double = AppSettings.getDouble("moveListDiagonalMerge", defaultValue: 0.083)
     @State private var residualDelay: Double = AppSettings.getDouble("moveListResidualDelay", defaultValue: 0.25)
     @State private var inputTimeout: Double = AppSettings.getDouble("moveListInputTimeout", defaultValue: 1.0)
     @State private var chargeThreshold: Double = AppSettings.getDouble("moveListChargeThreshold", defaultValue: 0.8)
@@ -149,23 +148,6 @@ private struct MoveListOverviewView: View {
 
     private var inputTimingSection: some View {
         Section(header: Label(loc.localized("settings.moveList.inputTiming"), systemImage: "timer")) {
-            VStack(alignment: .leading, spacing: AppSpacing.xs) {
-                HStack {
-                    Text(loc.localized("settings.moveList.diagonalMerge"))
-                    Spacer()
-                    Text("\(Int(diagonalMerge * 1000)) ms")
-                        .font(.system(size: 13, weight: .medium, design: .monospaced))
-                        .foregroundStyle(AppColors.textSecondary(colorScheme))
-                }
-                Slider(value: $diagonalMerge, in: 0...0.2, step: 0.001)
-                    .onChange(of: diagonalMerge) { _, newValue in
-                        AppSettings.setDouble("moveListDiagonalMerge", value: newValue)
-                    }
-                Text(loc.localized("settings.moveList.diagonalMergeDesc"))
-                    .font(.caption)
-                    .foregroundStyle(AppColors.textSecondary(colorScheme))
-            }
-
             VStack(alignment: .leading, spacing: AppSpacing.xs) {
                 HStack {
                     Text(loc.localized("settings.moveList.residualDelay"))

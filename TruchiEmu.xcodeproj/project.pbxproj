@@ -255,6 +255,7 @@
 		34217752396C74512B386F03 /* input_coreLabels_flycast.json in Resources */ = {isa = PBXBuildFile; fileRef = 66754553122E2FE54E346479 /* input_coreLabels_flycast.json */; };
 		343EACBC6A235CB451BD350C /* appIcon16.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1AF2065ABAE80F7A13DEE766 /* appIcon16.jpg */; };
 		344C3B2FC92CD9C2453BBF37 /* FC.png in Resources */ = {isa = PBXBuildFile; fileRef = C355064193B4B981A25BE79E /* FC.png */; };
+		34F4C54FC4E78B79BBEB6F7C /* picodrive_libretro_genesis_6btn.json in Resources */ = {isa = PBXBuildFile; fileRef = E49C8FB53FF96B836B711B31 /* picodrive_libretro_genesis_6btn.json */; };
 		3506553C6450AF207476A3D9 /* FLASHBACK.png in Resources */ = {isa = PBXBuildFile; fileRef = 857D78DF34C31AA99698DF6A /* FLASHBACK.png */; };
 		351C7B540C3DC5050729FD3D /* input_coreLabels_beetle_saturn.json in Resources */ = {isa = PBXBuildFile; fileRef = C6B902C8D11765B90604510E /* input_coreLabels_beetle_saturn.json */; };
 		3521349E5001440547982A69 /* input_systemLabels_atari5200.json in Resources */ = {isa = PBXBuildFile; fileRef = 20CB4EE2A4BDA71FE3BC0CA0 /* input_systemLabels_atari5200.json */; };
@@ -368,6 +369,7 @@
 		51315A3F08E40B90B5F97DD6 /* MEGADUCK.png in Resources */ = {isa = PBXBuildFile; fileRef = B5B1D330F958A092AFBD96F0 /* MEGADUCK.png */; };
 		515D1B24DC823EA60E658044 /* LUTRO.png in Resources */ = {isa = PBXBuildFile; fileRef = DF7DEE8C655EE9C9F76AEDD8 /* LUTRO.png */; };
 		516EE8E3C3A02E5129EE30D7 /* input_systemLabels_xrick.json in Resources */ = {isa = PBXBuildFile; fileRef = F931A653951E17D19F105A64 /* input_systemLabels_xrick.json */; };
+		519D7A9BB62BFF6323628C89 /* picodrive_libretro_genesis.json in Resources */ = {isa = PBXBuildFile; fileRef = 2AAB2855FD74E2E82EB51E61 /* picodrive_libretro_genesis.json */; };
 		51D6228376173BD76BE6AB1C /* input_coreLabels_virtual_jaguar.json in Resources */ = {isa = PBXBuildFile; fileRef = 6411DA402E81AB00AD6D3E4D /* input_coreLabels_virtual_jaguar.json */; };
 		5241FD577987B5C9F2E77822 /* fightdata_kof98um.json in Resources */ = {isa = PBXBuildFile; fileRef = 9E9C541D9A3CD5391A7863D6 /* fightdata_kof98um.json */; };
 		527853485CF2C89303596E16 /* input_coreOverrides_opera.json in Resources */ = {isa = PBXBuildFile; fileRef = AA63D6D1D8AD345E7E735488 /* input_coreOverrides_opera.json */; };
@@ -619,6 +621,7 @@
 		86074A8792DD2E47C4AB157C /* input_coreOverrides_same_cdi.json in Resources */ = {isa = PBXBuildFile; fileRef = BD44A60F263E9CFBD97BB16B /* input_coreOverrides_same_cdi.json */; };
 		86332F0E7F7B9D1E2178514D /* SNK - Neo Geo Pocket Color.dat in Resources */ = {isa = PBXBuildFile; fileRef = A26A04A22A351C2AB2EF941E /* SNK - Neo Geo Pocket Color.dat */; };
 		8637F2B8B520A76595A10F08 /* tic@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = FD940B054409FA9EB96E6AD1 /* tic@132w.png */; };
+		86420B5730E63A62710CAFA6 /* picodrive_libretro_megadrive.json in Resources */ = {isa = PBXBuildFile; fileRef = D9B6232A6D7429EBB110422E /* picodrive_libretro_megadrive.json */; };
 		8645542FC33DC6EE43CC8FC6 /* fightdata_aliencha.json in Resources */ = {isa = PBXBuildFile; fileRef = 3537FA7BC650C5F0D0984A76 /* fightdata_aliencha.json */; };
 		8659FD76142AA61568D6983A /* RABadgeCacheService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC7AD157ADE1B455E153FE5 /* RABadgeCacheService.swift */; };
 		86641DD0317EBE4B920FA90B /* CheatManagerViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = F85405AF2804CF2BF04FAD6D /* CheatManagerViews.swift */; };
@@ -865,6 +868,7 @@
 		BA41C9657722249E795D90F7 /* AnalogMouseSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 193ACA41987FBBE48BD98028 /* AnalogMouseSettingsView.swift */; };
 		BAFE65EA13C8BF0C4F90B918 /* SaveManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3BFA1246A6786356AD01A21 /* SaveManagerView.swift */; };
 		BB4CE2FFF63A6ACC6BA7134A /* input_coreOverrides_virtual_jaguar.json in Resources */ = {isa = PBXBuildFile; fileRef = 3459E3228FC584E29B93359B /* input_coreOverrides_virtual_jaguar.json */; };
+		BBE92CD324EF05C6FC3C7DE1 /* MotionDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348FC44E8233983FBBE7319B /* MotionDetector.swift */; };
 		BBFF679698D143C892C3BEAD /* input_coreLabels_doukutsu-rs.json in Resources */ = {isa = PBXBuildFile; fileRef = A178111F73BFF0F62C4D4D53 /* input_coreLabels_doukutsu-rs.json */; };
 		BC275C67C6688C206CB4A202 /* input_systemLabels_amiga.json in Resources */ = {isa = PBXBuildFile; fileRef = DCDBB4B2BAE4809CC656CB3B /* input_systemLabels_amiga.json */; };
 		BC9C57943B2B061E72D6ABA7 /* Cheat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5641DF774B081BEE408A9052 /* Cheat.swift */; };
@@ -1363,6 +1367,7 @@
 		2A22D3CFE0F38F217152AD90 /* ATARI7800.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ATARI7800.png; sourceTree = "<group>"; };
 		2A5F6194C027F95EB23ED33A /* CoreClientProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreClientProtocol.swift; sourceTree = "<group>"; };
 		2A96AAF72C7F18D45D235347 /* BoxArtService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxArtService.swift; sourceTree = "<group>"; };
+		2AAB2855FD74E2E82EB51E61 /* picodrive_libretro_genesis.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = picodrive_libretro_genesis.json; sourceTree = "<group>"; };
 		2AE07BDCFBC75CECDD7E67D7 /* input_coreLabels_dice.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_dice.json; sourceTree = "<group>"; };
 		2AEE13522E270C97DAE418DC /* appIcon512.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon512.jpg; sourceTree = "<group>"; };
 		2B0373818A51E7E098FE635B /* input_coreLabels_vaporspec.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_vaporspec.json; sourceTree = "<group>"; };
@@ -1424,6 +1429,7 @@
 		3438679C8A46772B45D51C7A /* SGB.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SGB.png; sourceTree = "<group>"; };
 		3459E3228FC584E29B93359B /* input_coreOverrides_virtual_jaguar.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_virtual_jaguar.json; sourceTree = "<group>"; };
 		3487BCC158871E9D5EAF669A /* CheatManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatManagerView.swift; sourceTree = "<group>"; };
+		348FC44E8233983FBBE7319B /* MotionDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionDetector.swift; sourceTree = "<group>"; };
 		352DC36DB12EA05E9995055B /* LibretroThumbnailManifestService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroThumbnailManifestService.swift; sourceTree = "<group>"; };
 		3537FA7BC650C5F0D0984A76 /* fightdata_aliencha.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_aliencha.json; sourceTree = "<group>"; };
 		3567A6EA45BB3387444661AA /* fightdata_galaxyfg.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_galaxyfg.json; sourceTree = "<group>"; };
@@ -2166,6 +2172,7 @@
 		D83947E57DE57084797AE330 /* input_coreLabels_bsnes-jg.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "input_coreLabels_bsnes-jg.json"; sourceTree = "<group>"; };
 		D896B5C23A1A5DC2812951B1 /* HotkeyConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyConfig.swift; sourceTree = "<group>"; };
 		D8AD6A0A6955FFF8B544B69B /* MAMEImportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEImportService.swift; sourceTree = "<group>"; };
+		D9B6232A6D7429EBB110422E /* picodrive_libretro_megadrive.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = picodrive_libretro_megadrive.json; sourceTree = "<group>"; };
 		D9CE94667031F54D1573ACBE /* pce@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pce@132w.png"; sourceTree = "<group>"; };
 		DA0E58E94D4CF64992683139 /* input_coreOverrides_crocods.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_crocods.json; sourceTree = "<group>"; };
 		DA8729DB9F6FECA28AB753C1 /* CoreDownloadStatusBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDownloadStatusBar.swift; sourceTree = "<group>"; };
@@ -2214,6 +2221,7 @@
 		E45DB7322B25EB3346B22045 /* fightdata_doapp.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_doapp.json; sourceTree = "<group>"; };
 		E45F87F47B1F2A9E01DD9315 /* CategoryRowButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryRowButton.swift; sourceTree = "<group>"; };
 		E47D0C2017B8EF325DC468DD /* VIC20.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VIC20.png; sourceTree = "<group>"; };
+		E49C8FB53FF96B836B711B31 /* picodrive_libretro_genesis_6btn.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = picodrive_libretro_genesis_6btn.json; sourceTree = "<group>"; };
 		E4BED3A7AFE26FE54B54224B /* input_systemLabels_anarch.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_anarch.json; sourceTree = "<group>"; };
 		E4E4281A31C49D575A930421 /* ARDUBOY.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ARDUBOY.png; sourceTree = "<group>"; };
 		E51DBD3DD1DC68C0749E4F9F /* CheatParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatParser.swift; sourceTree = "<group>"; };
@@ -3581,6 +3589,7 @@
 				0AB9CBE524D093CC6348F7B4 /* GameGuideService.swift */,
 				9ED1634F62412DF880052D27 /* GameLauncher.swift */,
 				8C0A03394D956A91354E3574 /* InputStateTracker.swift */,
+				348FC44E8233983FBBE7319B /* MotionDetector.swift */,
 				A94757847430E98D2FD0C8BC /* MoveListService.swift */,
 				C0D2689389A8F41C564E8983 /* NotationTokenImageCache.swift */,
 				D380F0ACA26A2082BD1DAA08 /* RunningGamesTracker.swift */,
@@ -3823,6 +3832,9 @@
 				18FB8DBEC0B88BDDE5768B78 /* mupen64plus_next_libretro_default.json */,
 				E66F7CAF96BF8C952C315532 /* nestopia_libretro_default.json */,
 				5AE2907879D793D5504FE9FC /* pcsx_rearmed_libretro_default.json */,
+				E49C8FB53FF96B836B711B31 /* picodrive_libretro_genesis_6btn.json */,
+				2AAB2855FD74E2E82EB51E61 /* picodrive_libretro_genesis.json */,
+				D9B6232A6D7429EBB110422E /* picodrive_libretro_megadrive.json */,
 				53A454FEA006A9BC23D6D0B6 /* ppsspp_libretro_default.json */,
 				F6AC9D71CF30D6A8EC6BB1EA /* reicast_libretro_default.json */,
 				EA1AE08A9B777549FF2AE9CC /* sameboy_libretro_default.json */,
@@ -5131,6 +5143,9 @@
 				B1655D2E557AC6FA1F0054EC /* pcecd@132w.png in Resources */,
 				A5A5700F7C1AA1D70851F6DE /* pcsx_rearmed_libretro_default.json in Resources */,
 				0BE28A8B60AC8CBFB100B0BC /* pico@132w.png in Resources */,
+				519D7A9BB62BFF6323628C89 /* picodrive_libretro_genesis.json in Resources */,
+				34F4C54FC4E78B79BBEB6F7C /* picodrive_libretro_genesis_6btn.json in Resources */,
+				86420B5730E63A62710CAFA6 /* picodrive_libretro_megadrive.json in Resources */,
 				6D478C3EDD22F19947D904F5 /* poke@132w.png in Resources */,
 				8B55DD9BEF0575C60B3C0D4C /* ports@132w.png in Resources */,
 				4B0455148E7C00D2645FE37F /* ppsspp_libretro_default.json in Resources */,
@@ -5392,6 +5407,7 @@
 				139F5308F944EC66EAB548BE /* MetalCoordinator.swift in Sources */,
 				114F352AC9144A444E87A3FF /* ModernSaveStateSlotView.swift in Sources */,
 				5B5B9D5378C64F28E2896612 /* ModernSectionCard.swift in Sources */,
+				BBE92CD324EF05C6FC3C7DE1 /* MotionDetector.swift in Sources */,
 				13267C7699DA0893F6EEC72E /* MoveDataCharactersView.swift in Sources */,
 				689BB993F6CD71261D227249 /* MoveDataGamesView.swift in Sources */,
 				C6FF09C1D06E5019E40CEBFE /* MoveDataMovesView.swift in Sources */,

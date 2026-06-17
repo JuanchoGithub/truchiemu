@@ -164,12 +164,12 @@ final class NotationTokenImageCache {
     private func motionAssetName(_ motion: MotionType) -> String {
         switch motion {
         case .quarterCircle(let from):
-            return from == .left ? "NotationQCB" : "NotationQCF"
+            return from == .left ? "NotationQCDL" : "NotationQCDR"
         case .halfCircle(let from):
             switch from {
             case .left: return "NotationHCB"
-            case .right: return "NotationHCF"
-            default: return "NotationHCF"
+            case .right: return "NotationHCR"
+            default: return "NotationHCR"
             }
         case .fullCircle(let direction):
             return direction == .left ? "Notation360CCW" : "Notation360CW"
@@ -433,7 +433,7 @@ extension NotationToken: CustomStringConvertible {
 extension MotionType {
     var assetSuffix: String {
         switch self {
-        case .quarterCircle(let from): return "qc_\(from.rawValue)"
+        case .quarterCircle(let from): return from == .left ? "qc_dl" : "qc_dr"
         case .halfCircle(let from): return "hc_\(from.rawValue)"
         case .fullCircle(let direction): return "360_\(direction.rawValue)"
         }

@@ -1,0 +1,22 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="qcdrGold" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#fef08a" />
+      <stop offset="100%" stop-color="#ca8a04" />
+    </linearGradient>
+  </defs>
+
+  <path d="M 14 32 
+           L 14 44 
+           A 22 22 0 0 0 40 20 
+           M 40 20 
+           L 52 20 
+           L 46 12 
+           L 46 28 
+           L 52 20" 
+        fill="none" 
+        stroke="url(#qcdrGold)" 
+        stroke-width="4" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"/>
+</svg>

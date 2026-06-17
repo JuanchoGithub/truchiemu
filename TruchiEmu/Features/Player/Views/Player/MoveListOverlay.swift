@@ -391,6 +391,8 @@ private var inputSequenceSection: some View {
                         } else {
                             MoveNotationTokenView(token: .direction(dir), isHighlighted: true, compact: true)
                         }
+                    case .motion(let motionType):
+                        MoveNotationTokenView(token: .motion(motionType), isHighlighted: true, compact: true)
                     case .buttons(let btns):
                         let btnTokens = buildInputButtonTokens(btns)
                         ForEach(Array(btnTokens.enumerated()), id: \.offset) { _, token in

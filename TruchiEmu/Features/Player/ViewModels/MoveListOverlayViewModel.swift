@@ -40,6 +40,14 @@ class MoveListOverlayViewModel: ObservableObject {
             }
             .store(in: &cancellables)
 
+        inputStateTracker.$detectedMotions
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self else { return }
+                self.updateFilteredMoves(for: self.inputStateTracker.inputSequence)
+            }
+            .store(in: &cancellables)
+
         moveListService.$selectedCharacter
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
@@ -246,19 +254,41 @@ class MoveListOverlayViewModel: ObservableObject {
             return
         }
 
-        var steps: [InputDisplayStep] = []
-        var directions: [FightDataDirection] = []
-        var directionCharges: [Bool] = []
+        let rawDirections = inputStateTracker.rawDirectionHistory
+        let motions = inputStateTracker.detectedMotions
+
+        var directions: [FightDataDirection] = rawDirections
+        var directionCharges: [Bool] = Array(repeating: false, count: rawDirections.count)
         var buttons: [Set<String>] = []
         for step in sequence {
-            if let dir = step.direction {
-                steps.append(.direction(dir, isCharge: step.isCharge))
-                directions.append(dir)
-                directionCharges.append(step.isCharge)
-            }
             if !step.buttons.isEmpty {
-                steps.append(.buttons(step.buttons))
                 buttons.append(step.buttons)
+            }
+        }
+
+        var steps: [InputDisplayStep] = []
+        if let motion = motions.first {
+            switch motion {
+            case .quarterCircle(let from):
+                steps.append(.motion(.quarterCircle(from: from)))
+            case .halfCircle(let from):
+                steps.append(.motion(.halfCircle(from: from)))
+            case .fullCircle(let direction):
+                steps.append(.motion(.fullCircle(direction: direction)))
+            }
+            if let last = sequence.last, !last.buttons.isEmpty {
+                steps.append(.buttons(last.buttons))
+            } else if sequence.count >= 2, let prev = sequence.dropLast().last, !prev.buttons.isEmpty {
+                steps.append(.buttons(prev.buttons))
+            }
+        } else {
+            for step in sequence {
+                if let dir = step.direction {
+                    steps.append(.direction(dir, isCharge: step.isCharge))
+                }
+                if !step.buttons.isEmpty {
+                    steps.append(.buttons(step.buttons))
+                }
             }
         }
         inputSteps = steps

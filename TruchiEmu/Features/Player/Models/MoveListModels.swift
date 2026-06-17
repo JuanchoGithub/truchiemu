@@ -260,5 +260,6 @@ struct InputSequenceStep: Equatable {
 
 enum InputDisplayStep: Equatable {
     case direction(FightDataDirection, isCharge: Bool)
+    case motion(MotionType)
     case buttons(Set<String>)
 }
