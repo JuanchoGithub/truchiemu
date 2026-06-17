@@ -1137,13 +1137,12 @@ struct TrainingDisplayTab: View {
 
         var tokens: [NotationToken] = []
         let sorted = nonDirButtons.sorted(by: { $0.rawValue < $1.rawValue })
-        for (i, btn) in sorted.enumerated() {
-            if i > 0 { tokens.append(.separator) }
-            if let fdKey = ArcadeButtonMapper.shared.fightDataKey(for: btn, layout: layout, systemID: systemID, systemControlMappings: sysCtrlMap) {
-                tokens.append(.button(MoveNotationRenderer.resolveButtonType(fdKey, gameData: gameData)))
-            } else {
-		tokens.append(.button(MoveNotationRenderer.resolveButtonType(btn.rawValue.lowercased(), gameData: gameData)))
-            }
+        var first = true
+        for btn in sorted {
+            guard let fdKey = ArcadeButtonMapper.shared.fightDataKey(for: btn, layout: layout, systemID: systemID, systemControlMappings: sysCtrlMap) else { continue }
+            if !first { tokens.append(.separator) }
+            first = false
+            tokens.append(.button(MoveNotationRenderer.resolveButtonType(fdKey, gameData: gameData)))
         }
         return tokens
     }

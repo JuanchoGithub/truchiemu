@@ -99,8 +99,6 @@ class InputStateTracker: ObservableObject {
             if !button.isDirectional, !button.isTurbo, button != .start, button != .select {
                 if let fdKey = ArcadeButtonMapper.shared.fightDataKey(for: button, layout: arcadeLayout, systemID: systemID, systemControlMappings: systemControlMappings) {
                     stepButtons.insert(fdKey)
-                } else {
-                    stepButtons.insert(button.rawValue)
                 }
             }
         }
