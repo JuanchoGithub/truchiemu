@@ -811,6 +811,8 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
             let gameName = "\(rom.displayName)__\(rom.id.uuidString.prefix(8))"
             self.didLoadSaveState = false
 
+            var loadedSlot: Int?
+
             if let slotToLoad = slotToLoad {
                 // Load a specific slot
                 let progVersion = self.pendingProgressiveVersion
@@ -823,6 +825,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
                         let success = runner.loadState(from: stateURL)
                         if success {
                             self.didLoadSaveState = true
+                            loadedSlot = slotToLoad
                             LoggerService.info(category: "SaveState", "Successfully loaded save state from slot \(slotToLoad) v\(progVersion)")
                         } else {
                             #if LOG_DEBUG
@@ -850,6 +853,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
                         let success = runner.loadState(from: stateURL)
                         if success {
                             self.didLoadSaveState = true
+                            loadedSlot = slotToLoad
                             runner.osdMessage = "Loaded Slot \(slotToLoad) #\(newestVersion)"
                             LoggerService.info(category: "SaveState", "Successfully loaded save state from slot \(slotToLoad) v\(newestVersion)")
                         } else {
@@ -867,6 +871,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
                         LoggerService.info(category: "SaveState", "Auto-load disabled for Dolphin core (known crash issue)")
                     } else {
                         var mostRecentURL: URL?
+                        var mostRecentSlot: Int?
                         var mostRecentDate: Date = .distantPast
 
                         let allSlots = runner.saveManager.allSlotInfo(gameName: gameName, systemID: systemID)
@@ -876,12 +881,14 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
                                 let info = runner.saveManager.progressiveSlotInfo(gameName: gameName, systemID: systemID, slot: slotInfo.id, version: v)
                                 if info.exists, let date = info.modificationDate, date > mostRecentDate {
                                     mostRecentDate = date
+                                    mostRecentSlot = slotInfo.id
                                     mostRecentURL = runner.saveManager.progressiveStatePath(gameName: gameName, systemID: systemID, slot: slotInfo.id, version: v)
                                 }
                             }
                             // Fallback: check base file if no progressive versions
                             if slotInfo.exists, let date = slotInfo.modificationDate, date > mostRecentDate {
                                 mostRecentDate = date
+                                mostRecentSlot = slotInfo.id
                                 mostRecentURL = runner.saveManager.statePath(gameName: gameName, systemID: systemID, slot: slotInfo.id)
                             }
                         }
@@ -891,6 +898,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
                             let success = runner.loadState(from: url)
                             if success {
                                 self.didLoadSaveState = true
+                                loadedSlot = mostRecentSlot
                                 runner.osdMessage = "Auto-loaded most recent save"
                                 LoggerService.info(category: "SaveState", "Successfully loaded most recent save")
                             }
@@ -904,14 +912,18 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
             }
 
             // Reveal the game: remove black overlay and resume emulation
-            self.revealAfterStateLoad()
+            self.revealAfterStateLoad(loadedSlot: loadedSlot)
         }
     }
 
-    private func revealAfterStateLoad() {
+    private func revealAfterStateLoad(loadedSlot: Int? = nil) {
         // Restore fight overlay state before resuming (only after a save state was loaded)
         if didLoadSaveState {
-            restoreFightOverlayState()
+            if let slot = loadedSlot {
+                restoreFightOverlayStateForSlot(slot)
+            } else {
+                restoreFightOverlayState()
+            }
         }
 
         // Resume emulation
@@ -1348,6 +1360,7 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
         AppSettings.remove("\(key)_moveListVisible")
         AppSettings.remove("\(key)_trainingMenuVisible")
         AppSettings.remove("\(key)_trainingEnabled")
+        AppSettings.remove("\(key)_character")
     }
 
     @MainActor
@@ -1356,9 +1369,15 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
         let moveListVisible = moveListViewModel.isOverlayVisible
         let trainingMenuVisible = trainingModeOverlayView != nil
         let trainingEnabled = TrainingModeManager.shared.config.isEnabled
+        let characterName = moveListViewModel.moveListService.selectedCharacter?.name
         AppSettings.setBool("\(key)_moveListVisible", value: moveListVisible)
         AppSettings.setBool("\(key)_trainingMenuVisible", value: trainingMenuVisible)
         AppSettings.setBool("\(key)_trainingEnabled", value: trainingEnabled)
+        if let name = characterName {
+            AppSettings.set("\(key)_character", value: name)
+        } else {
+            AppSettings.remove("\(key)_character")
+        }
     }
 
     @MainActor
@@ -1384,6 +1403,7 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
         let moveListWasVisible = AppSettings.getBool("\(key)_moveListVisible", defaultValue: false)
         let trainingMenuWasVisible = AppSettings.getBool("\(key)_trainingMenuVisible", defaultValue: false)
         let trainingWasEnabled = AppSettings.getBool("\(key)_trainingEnabled", defaultValue: false)
+        let savedCharacterName: String? = AppSettings.get("\(key)_character", type: String.self)
 
         let manager = TrainingModeManager.shared
 
@@ -1399,7 +1419,14 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
             }
         }
 
-        if moveListWasVisible && !moveListViewModel.isOverlayVisible {
+        if let savedName = savedCharacterName,
+           let character = moveListViewModel.characters.first(where: { $0.name == savedName }),
+           character.name != moveListViewModel.moveListService.selectedCharacter?.name {
+            moveListViewModel.confirmCharacter(character)
+            if !moveListViewModel.isOverlayVisible {
+                installMoveListOverlay()
+            }
+        } else if moveListWasVisible && !moveListViewModel.isOverlayVisible {
             if let character = moveListViewModel.moveListService.selectedCharacter {
                 moveListViewModel.confirmCharacter(character)
                 installMoveListOverlay()

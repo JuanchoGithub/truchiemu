@@ -33,7 +33,15 @@ class ArcadeButtonMapper {
 
     func retroButton(for fightDataKey: String, layout: ArcadeLayout, systemID: String, systemControlMappings: [String: [String: String]]? = nil) -> RetroButton? {
         let resolvedKey = resolveAlias(fightDataKey)
-        if let sysMap = systemControlMappings?[systemID.lowercased()] {
+        let mapKey: String = {
+            let key = systemID.lowercased()
+            if ["genesis", "megadrive", "32x"].contains(key),
+               AppSettings.getGenesisControllerType() == .threeButton {
+                return "genesis3"
+            }
+            return key
+        }()
+        if let sysMap = systemControlMappings?[mapKey] {
             for (btnRaw, fdKey) in sysMap where normalizeKey(fdKey) == normalizeKey(resolvedKey) {
                 if let button = RetroButton(rawValue: btnRaw) { return button }
             }
@@ -88,10 +96,24 @@ class ArcadeButtonMapper {
     }
 
     func fightDataKey(for button: RetroButton, layout: ArcadeLayout, systemID: String, systemControlMappings: [String: [String: String]]? = nil) -> String? {
-        if let sysMap = systemControlMappings?[systemID.lowercased()] {
-            if let fdKey = sysMap[button.rawValue] {
-                return fdKey
+        let mapKey: String = {
+            let key = systemID.lowercased()
+            if ["genesis", "megadrive", "32x"].contains(key),
+               AppSettings.getGenesisControllerType() == .threeButton {
+                return "genesis3"
             }
+            return key
+        }()
+        LoggerService.info("FDK: button=\(button.rawValue) systemID=\(systemID) mapKey=\(mapKey) hasCtrlMap=\(systemControlMappings != nil)")
+        if let sysMap = systemControlMappings?[mapKey] {
+            if let fdKey = sysMap[button.rawValue] {
+                LoggerService.info("FDK: FOUND fdKey=\(fdKey) for button=\(button.rawValue)")
+                return fdKey
+            } else {
+                LoggerService.info("FDK: sysMap keys=\(sysMap.keys.joined(separator: ",")) missing key=\(button.rawValue)")
+            }
+        } else {
+            LoggerService.info("FDK: mapKey \(mapKey) not found in sysCtrlMap, keys=\(systemControlMappings?.keys.joined(separator: ",") ?? "nil")")
         }
 
         let key = systemID.lowercased()
