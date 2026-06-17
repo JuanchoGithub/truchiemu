@@ -88,12 +88,15 @@ private var firstFrameTimer: Timer?
     var hideToolbarTimer: Timer? = nil
     var skipAutoSaveOnClose: Bool = false
     private var gameLoadedObserver: NSObjectProtocol?
+    private var isClosingWindow: Bool = false
+    private var didLoadSaveState: Bool = false
 var moveListOverlayView: NSHostingView<AnyView>?
 var achievementToastOverlayView: NSHostingView<AnyView>?
 var escapeToastOverlayView: SafeHostingView<AnyView>?
 var trainingModeOverlayView: NSHostingView<AnyView>?
 var p2JoinStatusOverlayView: NSHostingView<AnyView>?
 private var p2JoinStatusCancellable: AnyCancellable?
+    private var trainingConfigCancellable: AnyCancellable?
 var guideSidebarView: NSHostingView<AnyView>?
     @MainActor lazy var trainingModeViewModel = TrainingModeOverlayViewModel()
 
@@ -135,6 +138,7 @@ return MoveListOverlayViewModel(runner: runner)
         p2JoinStatusOverlayView?.removeFromSuperview()
         p2JoinStatusOverlayView = nil
         p2JoinStatusCancellable = nil
+        trainingConfigCancellable = nil
         guideSidebarView?.removeFromSuperview()
 guideSidebarView = nil
         loadingOverlayView?.removeFromSuperview()
@@ -196,6 +200,15 @@ guideSidebarView = nil
         
 super.init(window: window)
         window.delegate = self
+
+        runner.onSaveStateSaved = { [weak self] slot in
+            guard let self else { return }
+            self.persistFightOverlayStateForSlot(slot)
+        }
+        runner.onSaveStateLoaded = { [weak self] slot in
+            guard let self else { return }
+            self.restoreFightOverlayStateForSlot(slot)
+        }
 
         setupMetalView()
         setupInputCaptureHotkey()
@@ -570,6 +583,16 @@ gameGuideViewModel.loadForGame(rom)
                 }
             }
 
+        trainingConfigCancellable = TrainingModeManager.shared.$config
+            .receive(on: DispatchQueue.main)
+            .dropFirst()
+            .sink { [weak self] _ in
+                guard let self, !self.isClosingWindow else { return }
+                Task { @MainActor in
+                    self.persistFightOverlayState()
+                }
+            }
+
         // Store progressive version for later use in loadSaveStatesAfterLaunch
         pendingProgressiveVersion = progressiveVersion
 
@@ -786,6 +809,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
             guard let self = self, let runner = self.runner else { return }
             let systemID = rom.systemID ?? "default"
             let gameName = "\(rom.displayName)__\(rom.id.uuidString.prefix(8))"
+            self.didLoadSaveState = false
 
             if let slotToLoad = slotToLoad {
                 // Load a specific slot
@@ -798,6 +822,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
                         LoggerService.info(category: "SaveState", "Found progressive save #\(progVersion) at: \(stateURL.path)")
                         let success = runner.loadState(from: stateURL)
                         if success {
+                            self.didLoadSaveState = true
                             LoggerService.info(category: "SaveState", "Successfully loaded save state from slot \(slotToLoad) v\(progVersion)")
                         } else {
                             #if LOG_DEBUG
@@ -824,6 +849,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
                         let stateURL = runner.saveManager.progressiveStatePath(gameName: gameName, systemID: systemID, slot: slotToLoad, version: newestVersion)
                         let success = runner.loadState(from: stateURL)
                         if success {
+                            self.didLoadSaveState = true
                             runner.osdMessage = "Loaded Slot \(slotToLoad) #\(newestVersion)"
                             LoggerService.info(category: "SaveState", "Successfully loaded save state from slot \(slotToLoad) v\(newestVersion)")
                         } else {
@@ -864,6 +890,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
                             LoggerService.info(category: "SaveState", "Found most recent save at: \(url.path)")
                             let success = runner.loadState(from: url)
                             if success {
+                                self.didLoadSaveState = true
                                 runner.osdMessage = "Auto-loaded most recent save"
                                 LoggerService.info(category: "SaveState", "Successfully loaded most recent save")
                             }
@@ -882,6 +909,11 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
     }
 
     private func revealAfterStateLoad() {
+        // Restore fight overlay state before resuming (only after a save state was loaded)
+        if didLoadSaveState {
+            restoreFightOverlayState()
+        }
+
         // Resume emulation
         runner?.isPaused = false
         XPCBridgeAdapter.shared.setPaused(false)
@@ -990,6 +1022,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
                 XPCBridgeAdapter.shared.setPaused(false)
             }
             showToolbar()
+            persistFightOverlayState()
             return
         }
 
@@ -998,6 +1031,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
 
         moveListViewModel.activate()
         installMoveListOverlay()
+        persistFightOverlayState()
     }
 
     @MainActor
@@ -1008,6 +1042,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
                 runner?.isPaused = false
                 XPCBridgeAdapter.shared.setPaused(false)
             }
+            persistFightOverlayState()
         }
     }
 
@@ -1019,6 +1054,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
                 runner?.isPaused = false
                 XPCBridgeAdapter.shared.setPaused(false)
             }
+            persistFightOverlayState()
         }
     }
 
@@ -1048,6 +1084,11 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         ])
     }
 
+    private func removeMoveListOverlay() {
+        moveListOverlayView?.removeFromSuperview()
+        moveListOverlayView = nil
+    }
+
     @MainActor
     func toggleTrainingModeOverlay() {
         let manager = TrainingModeManager.shared
@@ -1055,6 +1096,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
             manager.toggleMenu()
             trainingModeOverlayView?.removeFromSuperview()
             trainingModeOverlayView = nil
+            persistFightOverlayState()
             return
         }
 
@@ -1062,6 +1104,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         if manager.isMenuVisible {
             installTrainingModeOverlay()
         }
+        persistFightOverlayState()
     }
 
     private func installTrainingModeOverlay() {
@@ -1071,6 +1114,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
             guard let self else { return }
             self.trainingModeOverlayView?.removeFromSuperview()
             self.trainingModeOverlayView = nil
+            self.persistFightOverlayState()
         }
 
         trainingModeViewModel.onSelectCharacterAndShowMoves = { [weak self] in
@@ -1082,6 +1126,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
                     self.installMoveListOverlay()
                 }
             }
+            self.persistFightOverlayState()
         }
 
         let hostingView = SafeHostingView(rootView: AnyView(
@@ -1190,6 +1235,12 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
     func windowWillClose(_ notification: Notification) {
         XPCBridgeAdapter.shared.setPaused(true)
 
+        isClosingWindow = true
+        
+        // Clear per-game fight overlay keys so they don't leak into next launch.
+        // Per-slot keys are intentionally kept (they're tied to specific save states).
+        clearFightOverlayGameState()
+        
         isWaitingForFullscreenAnimation = false
         fullscreenOverlayView?.removeFromSuperview()
         fullscreenOverlayView = nil
@@ -1281,6 +1332,135 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
     }
 
     // MARK: - Helper Functions
+
+    private func fightOverlayGameKey() -> String? {
+        guard let rom = currentGameROM, let gameData = moveListViewModel.moveListService.currentGameData else { return nil }
+        return "fightOverlay_\(gameData.name)"
+    }
+
+    private func fightOverlaySlotKey(slot: Int) -> String? {
+        guard let key = fightOverlayGameKey() else { return nil }
+        return "\(key)_slot\(slot)"
+    }
+
+    private func clearFightOverlayGameState() {
+        guard let key = fightOverlayGameKey() else { return }
+        AppSettings.remove("\(key)_moveListVisible")
+        AppSettings.remove("\(key)_trainingMenuVisible")
+        AppSettings.remove("\(key)_trainingEnabled")
+    }
+
+    @MainActor
+    func persistFightOverlayState() {
+        guard let key = fightOverlayGameKey() else { return }
+        let moveListVisible = moveListViewModel.isOverlayVisible
+        let trainingMenuVisible = trainingModeOverlayView != nil
+        let trainingEnabled = TrainingModeManager.shared.config.isEnabled
+        AppSettings.setBool("\(key)_moveListVisible", value: moveListVisible)
+        AppSettings.setBool("\(key)_trainingMenuVisible", value: trainingMenuVisible)
+        AppSettings.setBool("\(key)_trainingEnabled", value: trainingEnabled)
+    }
+
+    @MainActor
+    func persistFightOverlayStateForSlot(_ slot: Int) {
+        guard let key = fightOverlaySlotKey(slot: slot) else { return }
+        let moveListVisible = moveListViewModel.isOverlayVisible
+        let trainingMenuVisible = trainingModeOverlayView != nil
+        let trainingEnabled = TrainingModeManager.shared.config.isEnabled
+        let characterName = moveListViewModel.moveListService.selectedCharacter?.name
+        AppSettings.setBool("\(key)_moveListVisible", value: moveListVisible)
+        AppSettings.setBool("\(key)_trainingMenuVisible", value: trainingMenuVisible)
+        AppSettings.setBool("\(key)_trainingEnabled", value: trainingEnabled)
+        if let name = characterName {
+            AppSettings.set("\(key)_character", value: name)
+        }
+    }
+
+    @MainActor
+    private func restoreFightOverlayState() {
+        guard let key = fightOverlayGameKey(),
+              trainingModeViewModel.hasGameData else { return }
+
+        let moveListWasVisible = AppSettings.getBool("\(key)_moveListVisible", defaultValue: false)
+        let trainingMenuWasVisible = AppSettings.getBool("\(key)_trainingMenuVisible", defaultValue: false)
+        let trainingWasEnabled = AppSettings.getBool("\(key)_trainingEnabled", defaultValue: false)
+
+        let manager = TrainingModeManager.shared
+
+        if trainingWasEnabled && !manager.config.isEnabled {
+            manager.frameDriver.markP2AsJoined()
+            manager.setEnabled(true)
+        }
+
+        if trainingMenuWasVisible && trainingModeOverlayView == nil {
+            manager.toggleMenu()
+            if manager.isMenuVisible {
+                installTrainingModeOverlay()
+            }
+        }
+
+        if moveListWasVisible && !moveListViewModel.isOverlayVisible {
+            if let character = moveListViewModel.moveListService.selectedCharacter {
+                moveListViewModel.confirmCharacter(character)
+                installMoveListOverlay()
+            } else {
+                moveListViewModel.activate()
+                installMoveListOverlay()
+            }
+        }
+
+        persistFightOverlayState()
+    }
+
+    @MainActor
+    private func restoreFightOverlayStateForSlot(_ slot: Int) {
+        guard let key = fightOverlaySlotKey(slot: slot),
+              trainingModeViewModel.hasGameData else { return }
+
+        let moveListWasVisible = AppSettings.getBool("\(key)_moveListVisible", defaultValue: false)
+        let trainingMenuWasVisible = AppSettings.getBool("\(key)_trainingMenuVisible", defaultValue: false)
+        let trainingWasEnabled = AppSettings.getBool("\(key)_trainingEnabled", defaultValue: false)
+        let savedCharacterName: String? = AppSettings.get("\(key)_character", type: String.self)
+
+        let manager = TrainingModeManager.shared
+
+        let wasAnyOverlayActive = moveListWasVisible || trainingMenuWasVisible || trainingWasEnabled
+        guard wasAnyOverlayActive else { return }
+
+        if trainingWasEnabled && !manager.config.isEnabled {
+            manager.frameDriver.markP2AsJoined()
+            manager.setEnabled(true)
+        }
+
+        if trainingMenuWasVisible && trainingModeOverlayView == nil {
+            manager.toggleMenu()
+            if manager.isMenuVisible {
+                installTrainingModeOverlay()
+            }
+        }
+
+        if let savedName = savedCharacterName,
+           let character = moveListViewModel.characters.first(where: { $0.name == savedName }),
+           character.name != moveListViewModel.moveListService.selectedCharacter?.name {
+            moveListViewModel.confirmCharacter(character)
+            if !moveListViewModel.isOverlayVisible {
+                installMoveListOverlay()
+            }
+        } else if moveListWasVisible && !moveListViewModel.isOverlayVisible {
+            if let character = moveListViewModel.moveListService.selectedCharacter {
+                moveListViewModel.confirmCharacter(character)
+                installMoveListOverlay()
+            } else {
+                moveListViewModel.activate()
+                installMoveListOverlay()
+            }
+        } else if !moveListWasVisible && moveListViewModel.isOverlayVisible {
+            moveListViewModel.deactivate()
+            removeMoveListOverlay()
+        }
+
+        persistFightOverlayState()
+    }
 
     private func isDolphinCore() -> Bool {
         let coreID = AppSettings.get("lastLoadedCoreID", type: String.self) ?? ""

@@ -774,6 +774,16 @@ final class TrainingFramePollDriver: @unchecked Sendable {
         lock.unlock()
     }
 
+    func markP2AsJoined() {
+        lock.lock()
+        _hasP2Joined = true
+        p2JoinPhase = 0
+        p2JoinFrame = 0
+        p2JoinOnly = false
+        p2JoinLoggedStart = false
+        lock.unlock()
+    }
+
     func startCountdown() {
         lock.lock()
         isCountingDown = true

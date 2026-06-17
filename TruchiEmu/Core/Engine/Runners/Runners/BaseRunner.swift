@@ -284,6 +284,8 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     @MainActor @Published var currentSlot: Int = 0
     @MainActor @Published var osdMessage: String?
     var undoBuffer: Data?
+    var onSaveStateLoaded: ((Int) -> Void)?
+    var onSaveStateSaved: ((Int) -> Void)?
     
     var systemID: String = "default"
     var activeCoreID: String = ""
@@ -796,6 +798,8 @@ case "scummvm": runner = ScummVMRunner()
                 osdMessage = "Saved \(slot == -1 ? "Auto" : "Slot \(slot)")"
             }
             
+            onSaveStateSaved?(slot)
+            
             // Clear OSD after 2 seconds
             Task {
                 try? await Task.sleep(nanoseconds: 2_000_000_000)
@@ -926,6 +930,7 @@ case "scummvm": runner = ScummVMRunner()
             rcheevosLock.lock()
             _needsRcheevosReset = true
             rcheevosLock.unlock()
+            onSaveStateLoaded?(slot)
             
             // Clear OSD after 2 seconds
             Task {
