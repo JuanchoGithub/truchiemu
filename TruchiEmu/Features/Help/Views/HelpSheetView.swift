@@ -1,111 +1,69 @@
 import SwiftUI
 
-struct HelpWindowView: View {
+struct HelpSheetView: View {
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.dismiss) private var dismiss
     @ObservedObject private var loc = LocalizationManager.shared
-    @State private var selectedSection: HelpSection = .shortcuts
-
-    enum HelpSection: String, CaseIterable, Identifiable {
-        case shortcuts, faq, quickStart, links
-
-        var id: String { rawValue }
-
-        var icon: String {
-            switch self {
-            case .shortcuts: return "keyboard"
-            case .faq: return "questionmark.circle"
-            case .quickStart: return "bolt.fill"
-            case .links: return "link"
-            }
-        }
-
-        func label(loc: LocalizationManager) -> String {
-            switch self {
-            case .shortcuts: return loc.localized("help.shortcuts")
-            case .faq: return loc.localized("help.faq")
-            case .quickStart: return loc.localized("help.quickStart")
-            case .links: return loc.localized("help.links")
-            }
-        }
-    }
+    @State private var selectedSection: HelpWindowView.HelpSection = .quickStart
 
     var body: some View {
-        HStack(spacing: 0) {
-            sidebar
-            Rectangle()
-                .fill(AppColors.divider(colorScheme))
-                .frame(width: 1)
-            detailContent
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-        }
-        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
-    }
-
-    private var sidebar: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 2) {
-                ForEach(HelpSection.allCases) { section in
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.15)) {
-                            selectedSection = section
-                        }
-                    } label: {
-                        HStack(spacing: 8) {
-                            Image(systemName: section.icon)
-                                .font(.system(size: 14, weight: .medium))
-                                .frame(width: 20)
-                                .fixedSize()
-                                .foregroundColor(selectedSection == section ? AppColors.brandAccent : AppColors.textSecondary(colorScheme))
-                            Text(section.label(loc: loc))
-                                .font(AppTypography.callout)
-                                .foregroundColor(selectedSection == section ? AppColors.textPrimary(colorScheme) : AppColors.textSecondary(colorScheme))
-                                .fontWeight(selectedSection == section ? .medium : .regular)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.vertical, 7)
-                        .padding(.horizontal, 10)
-                        .background(
-                            RoundedRectangle(cornerRadius: 6)
-                                .fill(selectedSection == section ? AppColors.accentBackground(colorScheme) : .clear)
-                        )
-                        .overlay(alignment: .leading) {
-                            if selectedSection == section {
-                                RoundedRectangle(cornerRadius: 2)
-                                    .fill(AppColors.brandAccentSecondary)
-                                    .frame(width: 3, height: 20)
-                                    .padding(.leading, 2)
-                            }
-                        }
-                        .contentShape(Rectangle())
+        VStack(spacing: 0) {
+            sectionPicker
+            Divider()
+            ScrollView {
+                VStack(alignment: .leading, spacing: AppSpacing.xl3) {
+                    switch selectedSection {
+                    case .shortcuts: shortcutsSection
+                    case .faq: faqSection
+                    case .quickStart: quickStartSection
+                    case .links: linksSection
                     }
-                    .buttonStyle(.plain)
                 }
+                .padding(AppSpacing.xl3)
             }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 12)
         }
-        .scrollContentBackground(.hidden)
-        .background(AppColors.sidebarBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
-        .frame(width: 200)
+        .frame(minWidth: 560, minHeight: 440, maxHeight: 600)
+        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+        .background {
+            Button("") { dismiss() }
+                .keyboardShortcut("w", modifiers: .command)
+                .hidden()
+        }
     }
 
-    @ViewBuilder
-    private var detailContent: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: AppSpacing.xl3) {
-                switch selectedSection {
-                case .shortcuts:
-                    shortcutsSection
-                case .faq:
-                    faqSection
-                case .quickStart:
-                    quickStartSection
-                case .links:
-                    linksSection
+    private var sectionPicker: some View {
+        HStack(spacing: AppSpacing.sm) {
+            ForEach(HelpWindowView.HelpSection.allCases) { section in
+                Button {
+                    withAnimation(.easeInOut(duration: 0.15)) {
+                        selectedSection = section
+                    }
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: section.icon)
+                            .font(.system(size: 12, weight: .medium))
+                        Text(section.label(loc: loc))
+                            .font(.system(size: 13, weight: .medium))
+                    }
+                    .padding(.vertical, 6)
+                    .padding(.horizontal, 12)
+                    .background(
+                        RoundedRectangle(cornerRadius: AppRadius.lg)
+                            .fill(selectedSection == section ? AppColors.accentBackground(colorScheme) : .clear)
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: AppRadius.lg)
+                            .stroke(selectedSection == section ? AppColors.brandAccent.opacity(0.3) : AppColors.cardBorder(colorScheme), lineWidth: 1)
+                    )
+                    .foregroundStyle(selectedSection == section ? AppColors.brandAccent : AppColors.textSecondary(colorScheme))
+                    .contentShape(Rectangle())
                 }
+                .buttonStyle(.plain)
             }
-            .padding(AppSpacing.xl3)
+            Spacer()
         }
+        .padding(.horizontal, AppSpacing.xl3)
+        .padding(.vertical, AppSpacing.lg)
     }
 
     private var shortcutsSection: some View {

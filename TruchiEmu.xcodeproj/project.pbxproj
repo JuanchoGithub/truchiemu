@@ -84,6 +84,7 @@
 		0F7D9FF0D51CF611A7BC83B1 /* ATARI800.png in Resources */ = {isa = PBXBuildFile; fileRef = 028968D965BBF8007BE1DC73 /* ATARI800.png */; };
 		0FBBD16D1BC4F6442F8ED6F8 /* input_systemLabels_cpc.json in Resources */ = {isa = PBXBuildFile; fileRef = 5803663F2F57F8B8212A8444 /* input_systemLabels_cpc.json */; };
 		103E5E29437831047C298031 /* 3ds@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 7A59464C7503827DB2909A95 /* 3ds@132w.png */; };
+		104D7496A5BF50D24818AE3E /* HelpSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CAB488D81605318420F701F /* HelpSheetView.swift */; };
 		106C6F516C1E90041496DB9C /* ROMIdentifierService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C30A37AE0117299098C190A1 /* ROMIdentifierService.swift */; };
 		10A813FD9AC06B780E931816 /* FilterChipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65528ABEAB97C567F9B73A1 /* FilterChipView.swift */; };
 		10CAEA190350353BB1B6796B /* 8bGameBoy.metal in Sources */ = {isa = PBXBuildFile; fileRef = 7CC6E52ACF63E0F4B9AD638C /* 8bGameBoy.metal */; };
@@ -1695,6 +1696,7 @@
 		6C4C61168B31EC18C33BE903 /* ResourceCacheRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceCacheRepository.swift; sourceTree = "<group>"; };
 		6C573244D57BD4CCBD762D0F /* EnvironmentDiagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentDiagnostics.swift; sourceTree = "<group>"; };
 		6C6B0BA0A81DA9E4BCBBA1EC /* atarist@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "atarist@132w.png"; sourceTree = "<group>"; };
+		6CAB488D81605318420F701F /* HelpSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpSheetView.swift; sourceTree = "<group>"; };
 		6D1011120B2354F025D56623 /* CPC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CPC.png; sourceTree = "<group>"; };
 		6D7AD632B74E90918C28499F /* input_coreLabels_smsplus.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_smsplus.json; sourceTree = "<group>"; };
 		6DBA26F49EBA684CC3EB3820 /* fightdata_schamp.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_schamp.json; sourceTree = "<group>"; };
@@ -2566,6 +2568,7 @@
 		1C1E3BFC79AD6E4451FA7219 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				6CAB488D81605318420F701F /* HelpSheetView.swift */,
 				2E52D92C70B40646EE074703 /* HelpWindowView.swift */,
 			);
 			path = Views;
@@ -5352,6 +5355,7 @@
 				4596D0538A126CE340A86004 /* Header.swift in Sources */,
 				1467407A77D08682F8195B42 /* HelpContent.swift in Sources */,
 				3B836A8CF8AC9458A417899C /* HelpSettingsView.swift in Sources */,
+				104D7496A5BF50D24818AE3E /* HelpSheetView.swift in Sources */,
 				9E0E1EB96CD993ECBD2873AE /* HelpWindowView.swift in Sources */,
 				1A46304E3641B352E5FA9B18 /* HintTree.swift in Sources */,
 				FDE92E115DEE8FE3BE7318EF /* HotkeyConfig.swift in Sources */,

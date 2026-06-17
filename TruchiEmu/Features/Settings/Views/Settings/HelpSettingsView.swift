@@ -26,11 +26,39 @@ struct HelpSettingsView: View {
                 Section {
                     ForEach(HelpContent.faqItems) { item in
                         DisclosureGroup {
-                            Text(loc.localized(item.answerKey))
-                                .font(.callout)
-                                .foregroundStyle(AppColors.textSecondary(colorScheme))
-                                .fixedSize(horizontal: false, vertical: true)
-                                .padding(.top, AppSpacing.xxs)
+                            VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                                Text(loc.localized(item.answerKey))
+                                    .font(.callout)
+                                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                    .fixedSize(horizontal: false, vertical: true)
+                                if let linkLabelKey = item.linkLabelKey, let page = item.deepLinkPage {
+                                    Button {
+                                        openSettingsPage(page)
+                                    } label: {
+                                        HStack(spacing: 4) {
+                                            Image(systemName: page.icon)
+                                                .font(.system(size: 11, weight: .medium))
+                                            Text(loc.localized(linkLabelKey))
+                                                .font(.callout.weight(.medium))
+                                            Image(systemName: "arrow.right.circle")
+                                                .font(.system(size: 10))
+                                        }
+                                        .foregroundStyle(AppColors.brandAccent)
+                                        .padding(.vertical, 3)
+                                        .padding(.horizontal, 8)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: AppRadius.lg)
+                                                .fill(AppColors.accentBackground(colorScheme))
+                                        )
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: AppRadius.lg)
+                                                .stroke(AppColors.brandAccent.opacity(0.2), lineWidth: 1)
+                                        )
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+                            }
+                            .padding(.top, AppSpacing.xxs)
                         } label: {
                             Text(loc.localized(item.questionKey))
                                 .font(.body.weight(.medium))
@@ -90,5 +118,10 @@ struct HelpSettingsView: View {
                     .foregroundStyle(AppColors.textTertiary(colorScheme))
             }
         }
+    }
+
+    private func openSettingsPage(_ page: SettingsView.Page) {
+        AppSettings.set("pending_settings_page", value: page.rawValue)
+        NotificationCenter.default.post(name: .openAppSettings, object: nil)
     }
 }

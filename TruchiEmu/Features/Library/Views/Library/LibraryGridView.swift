@@ -202,6 +202,7 @@ struct LibraryGridView: View {
     @State private var showNotificationPopover: Bool = false
     @State private var showNotificationCenterSheet: Bool = false
     @State private var showRegionChangeAlert: Bool = false
+    @State private var showHelpSheet: Bool = false
     @State private var isDownloading = false
     @State private var downloadProgress: (current: Int, total: Int) = (0, 0)
     @State private var currentDownloadGameName: String? = nil
@@ -461,6 +462,15 @@ struct LibraryGridView: View {
         }
         ToolbarItem(placement: .primaryAction) {
             Button {
+                showHelpSheet = true
+            } label: {
+                Image(systemName: "questionmark.circle")
+            }
+            .help(loc.localized("toolbar.help"))
+            .foregroundStyle(ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .primary)
+        }
+        ToolbarItem(placement: .primaryAction) {
+            Button {
                 if let mainMenu = NSApp.mainMenu {
                         for item in mainMenu.items {
                             if let submenu = item.submenu {
@@ -501,6 +511,9 @@ struct LibraryGridView: View {
     }
     .sheet(isPresented: $showNotificationCenterSheet) {
         NotificationCenterSheetView()
+    }
+    .sheet(isPresented: $showHelpSheet) {
+        HelpSheetView()
     }
     .sheet(item: $systemPickerItem, onDismiss: { systemPickerItem = nil }) { item in
         SystemPickerView(roms: item.roms, library: library) {
