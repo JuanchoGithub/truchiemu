@@ -46,6 +46,7 @@ struct SidebarRowButton: View {
                     .padding(.vertical, 2)
                     .background(isSelected ? AppColors.accentBackground(colorScheme) : AppColors.cardBackgroundSubtle(colorScheme))
                     .cornerRadius(6)
+                    .padding(.trailing, isHovered && system != nil ? 22 : 0)
             }
             .padding(.horizontal, 6)
             .padding(.vertical, 2)
