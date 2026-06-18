@@ -1514,7 +1514,8 @@ private func removeROMFromLibrary(_ rom: ROM) {
         .padding(.horizontal, 16)
         .padding(.vertical, 6)
     }
-    @State private var isSortHovered = false
+    @State private var isLastPlayedHovered = false
+    @State private var isLastAddedHovered = false
     
     private var filterChips: some View {
         ScrollView(.horizontal, showsIndicators: false) {
@@ -1539,15 +1540,15 @@ private func removeROMFromLibrary(_ rom: ROM) {
                         Text(loc.localized("library.lastPlayed"))
                             .font(.system(size: 11, weight: .medium))
                     }
-.foregroundColor(sortByLastPlayed ? AppColors.textOnAccent(colorScheme) : AppColors.textSecondaryNeutral(colorScheme))
+.foregroundColor(sortByLastPlayed ? AppColors.textOnAccent(colorScheme) : (isLastPlayedHovered ? AppColors.brandAccent : AppColors.textSecondaryNeutral(colorScheme)))
 	.padding(.horizontal, 10)
 	.padding(.vertical, 6)
 	.frame(minHeight: 30)
 	.background(
 		Capsule()
-		.fill(sortByLastPlayed ? AppColors.brandAccent : AppColors.cardBackgroundSubtle(colorScheme))
-		.scaleEffect(isSortHovered ? 1.05 : 1)
-		.shadow(color: sortByLastPlayed ? AppColors.brandAccent.opacity(0.3) : .clear, radius: isSortHovered ? 4 : 0, y: 2)
+		.fill(sortByLastPlayed ? AppColors.brandAccent : (isLastPlayedHovered ? AppColors.brandAccent.opacity(0.12) : AppColors.cardBackgroundSubtle(colorScheme)))
+		.scaleEffect(isLastPlayedHovered ? 1.05 : 1)
+		.shadow(color: sortByLastPlayed ? AppColors.brandAccent.opacity(0.3) : (isLastPlayedHovered ? AppColors.brandAccent.opacity(0.2) : .clear), radius: isLastPlayedHovered ? 4 : 0, y: 2)
 	)
                 }
                 .buttonStyle(.plain)
@@ -1556,10 +1557,10 @@ private func removeROMFromLibrary(_ rom: ROM) {
                     let shouldAnimate = !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
                     if shouldAnimate {
                         withAnimation(.easeOut(duration: 0.15)) {
-                            isSortHovered = hovering
+                            isLastPlayedHovered = hovering
                         }
                     } else {
-                        isSortHovered = hovering
+                        isLastPlayedHovered = hovering
                     }
                 }
                 .animation(.easeOut(duration: 0.2), value: sortByLastPlayed)
@@ -1583,15 +1584,15 @@ private func removeROMFromLibrary(_ rom: ROM) {
                         Text(loc.localized("library.lastAdded"))
                             .font(.system(size: 11, weight: .medium))
                     }
-.foregroundColor(sortByLastAdded ? AppColors.textOnAccent(colorScheme) : AppColors.textSecondaryNeutral(colorScheme))
+.foregroundColor(sortByLastAdded ? AppColors.textOnAccent(colorScheme) : (isLastAddedHovered ? AppColors.brandAccent : AppColors.textSecondaryNeutral(colorScheme)))
 	.padding(.horizontal, 10)
 	.padding(.vertical, 6)
 	.frame(minHeight: 30)
 	.background(
 		Capsule()
-		.fill(sortByLastAdded ? AppColors.brandAccent : AppColors.cardBackgroundSubtle(colorScheme))
-		.scaleEffect(isSortHovered ? 1.05 : 1)
-		.shadow(color: sortByLastAdded ? AppColors.brandAccent.opacity(0.3) : .clear, radius: isSortHovered ? 4 : 0, y: 2)
+		.fill(sortByLastAdded ? AppColors.brandAccent : (isLastAddedHovered ? AppColors.brandAccent.opacity(0.12) : AppColors.cardBackgroundSubtle(colorScheme)))
+		.scaleEffect(isLastAddedHovered ? 1.05 : 1)
+		.shadow(color: sortByLastAdded ? AppColors.brandAccent.opacity(0.3) : (isLastAddedHovered ? AppColors.brandAccent.opacity(0.2) : .clear), radius: isLastAddedHovered ? 4 : 0, y: 2)
 	)
                 }
                 .buttonStyle(.plain)
@@ -1600,10 +1601,10 @@ private func removeROMFromLibrary(_ rom: ROM) {
                     let shouldAnimate = !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
                     if shouldAnimate {
                         withAnimation(.easeOut(duration: 0.15)) {
-                            isSortHovered = hovering
+                            isLastAddedHovered = hovering
                         }
                     } else {
-                        isSortHovered = hovering
+                        isLastAddedHovered = hovering
                     }
                 }
                 .animation(.easeOut(duration: 0.2), value: sortByLastAdded)
