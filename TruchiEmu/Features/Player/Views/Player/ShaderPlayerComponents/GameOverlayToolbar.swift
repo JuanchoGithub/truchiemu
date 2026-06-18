@@ -32,7 +32,7 @@ struct GameOverlayToolbar: View {
 
             PauseResumeButton(runner: runner)
 
-            ReloadButton(runner: runner)
+            RestartButton(runner: runner)
 
             Divider()
                 .frame(height: 30)

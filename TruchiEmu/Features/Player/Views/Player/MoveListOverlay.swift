@@ -465,6 +465,10 @@ struct MoveEntryRow: View {
     let isMatched: Bool
     @Environment(\.colorScheme) private var colorScheme
 
+    private var showMoveNames: Bool {
+        AppSettings.getBool("moveListShowMoveNames", defaultValue: false)
+    }
+
     var body: some View {
         HStack(spacing: 0) {
             MoveNotationTokenRow(
@@ -474,7 +478,7 @@ struct MoveEntryRow: View {
             )
 
         VStack(alignment: .leading, spacing: 1) {
-            if !move.name.isEmpty {
+            if showMoveNames, !move.name.isEmpty {
                 Text(move.name)
                     .font(.system(size: 9, weight: .semibold))
                     .foregroundColor(isMatched ? AppColors.brandAccent : .white)

@@ -218,7 +218,7 @@ struct FullscreenButton: View {
     }
 }
 
-struct ReloadButton: View {
+struct RestartButton: View {
     @ObservedObject var runner: EmulatorRunner
     @ObservedObject private var loc = LocalizationManager.shared
     
@@ -229,7 +229,7 @@ struct ReloadButton: View {
             VStack(spacing: 4) {
                 Image(systemName: "arrow.counterclockwise")
                     .font(.system(size: 16, weight: .semibold))
-                Text(loc.localized("toolbar.reload"))
+                Text(loc.localized("toolbar.restart"))
                     .font(.system(size: 10, weight: .medium))
             }
             .padding(.horizontal, 10)

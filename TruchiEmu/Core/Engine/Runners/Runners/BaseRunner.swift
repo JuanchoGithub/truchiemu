@@ -662,38 +662,36 @@ case "scummvm": runner = ScummVMRunner()
         }
     }
     
-    // Reload the current ROM
     @MainActor
     func reloadGame() {
         guard let gameRom = rom else { return }
         guard gameRom.systemID != nil else { return }
         
-        // Store current core info
         let coreID = AppSettings.get("lastLoadedCoreID", type: String.self) ?? ""
         
-        // Reset pause state
         isPaused = false
         XPCBridgeAdapter.shared.setPaused(false)
-        
-        // Stop current game
-        stop()
-        
-        // Small delay to ensure cleanup
-        Thread.sleep(forTimeInterval: 0.1)
-        
-        // Re-setup controller input after reload
-        setupGamepadInput()
-        
-        // Relaunch
         isRunning = true
+        
         let shaderDir = Bundle.main.resourceURL?.appendingPathComponent("slang").path
+        let romPath = gameRom.path.path
+        let systemID = gameRom.systemID
+        let romFilename = gameRom.path.lastPathComponent
+        let resolvedCoreID = self.findCoreLib(coreID: coreID) ?? coreID
+        
         emulationQueue.async {
+            self.stop()
+            
+            Thread.sleep(forTimeInterval: 0.1)
+            
+            self.setupGamepadInput()
+            
             XPCBridgeAdapter.shared.launch(
-                dylibPath: self.findCoreLib(coreID: coreID) ?? coreID,
-                romPath: gameRom.path.path,
+                dylibPath: resolvedCoreID,
+                romPath: romPath,
                 coreID: coreID,
-                systemID: gameRom.systemID,
-                romFilename: gameRom.path.lastPathComponent,
+                systemID: systemID,
+                romFilename: romFilename,
                 shaderDir: shaderDir,
                 videoCallback: { [weak self] data, width, height, pitch, format in
                     self?.updateFrame(data: data, width: width, height: height, pitch: pitch, format: format)

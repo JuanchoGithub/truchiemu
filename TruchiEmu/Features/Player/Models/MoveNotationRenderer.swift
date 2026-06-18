@@ -12,7 +12,29 @@ enum MoveNotationRenderer {
         var tokens: [NotationToken] = []
         let hitLevelList = hitLevels ?? []
 
-        for (seqIndex, sequence) in sequences.enumerated() {
+        let sequencesToShow: [[ParsedStep]]
+        if sequences.count > 2 {
+            let seed = sequences.first?.first?.direction.hashValue ?? 0
+            var rng = SeededRandomGenerator(seed: seed)
+            let count = rng.nextBool() ? 1 : 2
+            let grouped = Dictionary(grouping: sequences, by: { $0.first?.direction ?? -1 })
+            if grouped.count > 1, count == 2 {
+                var picked: [[ParsedStep]] = []
+                let keys = grouped.keys.sorted().shuffled(using: &rng)
+                for key in keys {
+                    let group = grouped[key]!
+                    picked.append(group[Int(rng.next() % UInt64(group.count))])
+                    if picked.count >= count { break }
+                }
+                sequencesToShow = picked
+            } else {
+                sequencesToShow = Array(sequences.shuffled(using: &rng).prefix(count))
+            }
+        } else {
+            sequencesToShow = sequences
+        }
+
+        for (seqIndex, sequence) in sequencesToShow.enumerated() {
             if seqIndex > 0 {
                 tokens.append(.alternative)
             }
@@ -243,4 +265,19 @@ enum MoveNotationRenderer {
 		default: return .medium
 		}
 	}
+}
+
+private struct SeededRandomGenerator: RandomNumberGenerator {
+    private var state: UInt64
+    init(seed: Int) { state = UInt64(bitPattern: Int64(seed)) &* 6364136223846793005 &+ 1 }
+    mutating func next() -> UInt64 { state = state &* 6364136223846793005 &+ 1; return state }
+    mutating func nextBool() -> Bool { next() & 1 == 1 }
+}
+
+private extension Array {
+    func shuffled(using rng: inout SeededRandomGenerator) -> [Element] {
+        var copy = self
+        copy.shuffle(using: &rng)
+        return copy
+    }
 }

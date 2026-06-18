@@ -55,6 +55,14 @@ struct MoveListConfigSection: View {
                 Text(loc.localized("settings.moveList.maxMovesDesc"))
                     .font(.caption)
                     .foregroundStyle(AppColors.textSecondary(colorScheme))
+
+                Toggle(loc.localized("settings.moveList.showMoveNames"), isOn: Binding(
+                    get: { AppSettings.getBool("moveListShowMoveNames", defaultValue: false) },
+                    set: { AppSettings.setBool("moveListShowMoveNames", value: $0) }
+                ))
+                Text(loc.localized("settings.moveList.showMoveNamesDesc"))
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
             }
         }
         .onAppear {
