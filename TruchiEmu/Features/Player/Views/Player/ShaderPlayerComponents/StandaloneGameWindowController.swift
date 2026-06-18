@@ -209,6 +209,16 @@ super.init(window: window)
             guard let self else { return }
             self.restoreFightOverlayStateForSlot(slot)
         }
+        runner.onGameReset = { [weak self] in
+            guard let self else { return }
+            clearFightOverlayGameState()
+            moveListViewModel.deactivate()
+            removeMoveListOverlay()
+            TrainingModeManager.shared.isMenuVisible = false
+            trainingModeOverlayView?.removeFromSuperview()
+            trainingModeOverlayView = nil
+            TrainingModeManager.shared.setEnabled(false)
+        }
 
         setupMetalView()
         setupInputCaptureHotkey()

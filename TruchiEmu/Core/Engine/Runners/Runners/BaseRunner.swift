@@ -286,6 +286,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     var undoBuffer: Data?
     var onSaveStateLoaded: ((Int) -> Void)?
     var onSaveStateSaved: ((Int) -> Void)?
+    var onGameReset: (() -> Void)?
     
     var systemID: String = "default"
     var activeCoreID: String = ""
@@ -670,6 +671,7 @@ case "scummvm": runner = ScummVMRunner()
         rcheevosLock.lock()
         _needsRcheevosReset = true
         rcheevosLock.unlock()
+        onGameReset?()
     }
 
     // MARK: - Slot-based Save State
