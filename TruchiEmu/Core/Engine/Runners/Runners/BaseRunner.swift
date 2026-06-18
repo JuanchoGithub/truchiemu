@@ -664,40 +664,12 @@ case "scummvm": runner = ScummVMRunner()
     
     @MainActor
     func reloadGame() {
-        guard let gameRom = rom else { return }
-        guard gameRom.systemID != nil else { return }
-        
-        let coreID = AppSettings.get("lastLoadedCoreID", type: String.self) ?? ""
-        
         isPaused = false
         XPCBridgeAdapter.shared.setPaused(false)
-        isRunning = true
-        
-        let shaderDir = Bundle.main.resourceURL?.appendingPathComponent("slang").path
-        let romPath = gameRom.path.path
-        let systemID = gameRom.systemID
-        let romFilename = gameRom.path.lastPathComponent
-        let resolvedCoreID = self.findCoreLib(coreID: coreID) ?? coreID
-        
-        emulationQueue.async {
-            self.stop()
-            
-            Thread.sleep(forTimeInterval: 0.1)
-            
-            self.setupGamepadInput()
-            
-            XPCBridgeAdapter.shared.launch(
-                dylibPath: resolvedCoreID,
-                romPath: romPath,
-                coreID: coreID,
-                systemID: systemID,
-                romFilename: romFilename,
-                shaderDir: shaderDir,
-                videoCallback: { [weak self] data, width, height, pitch, format in
-                    self?.updateFrame(data: data, width: width, height: height, pitch: pitch, format: format)
-                }
-            )
-        }
+        XPCBridgeAdapter.shared.resetGame()
+        rcheevosLock.lock()
+        _needsRcheevosReset = true
+        rcheevosLock.unlock()
     }
 
     // MARK: - Slot-based Save State
