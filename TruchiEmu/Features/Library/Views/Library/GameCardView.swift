@@ -154,6 +154,27 @@ struct GameCardView: View {
                         .padding(4)
                         .transition(.scale.combined(with: .opacity))
                 }
+
+                if isHovered, let menuContent = contextMenu {
+                    VStack {
+                        Spacer()
+                        HStack {
+                            Spacer()
+                            Menu { menuContent() } label: {
+                                Image(systemName: "ellipsis")
+                                    .font(.system(size: 11, weight: .bold))
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 4)
+                                    .background(Color.black.opacity(0.5))
+                                    .clipShape(RoundedRectangle(cornerRadius: AppRadius.xs))
+                            }
+                            .menuIndicator(.hidden)
+                            .padding(6)
+                        }
+                    }
+                    .transition(.opacity)
+                }
             }
 
             VStack(alignment: .leading, spacing: 4) {

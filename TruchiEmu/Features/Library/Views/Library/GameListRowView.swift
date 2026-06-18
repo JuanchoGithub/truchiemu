@@ -9,9 +9,11 @@ struct GameListRowView: View {
     let isEvenRow: Bool
     let zoomLevel: Double
     let filter: LibraryFilter?
+    var contextMenu: (() -> AnyView)?
     @Environment(\.colorScheme) private var colorScheme
     @State private var thumb: NSImage?
     @State private var isHovered = false
+    @State private var raProgress: (earned: Int, total: Int)?
     @EnvironmentObject var library: ROMLibrary
     @EnvironmentObject var categoryManager: CategoryManager
     @ObservedObject private var raService = RetroAchievementsService.shared
@@ -168,11 +170,19 @@ Text(sys.name)
                 .foregroundColor(AppColors.textSecondaryNeutral(colorScheme).opacity(0.7))
             }
 
-            // RetroAchievements compatible
+            // RetroAchievements
             if raService.isEnabled && rom.raMatchStatus == "matched" {
-                Image(systemName: "trophy.fill")
+                HStack(spacing: 3) {
+                    Image(systemName: "trophy.fill")
+                        .font(.system(size: subtitleFontSize - 0.5))
+                    if let progress = raProgress {
+                        Text("\(progress.earned)/\(progress.total)")
+                            .font(.system(size: subtitleFontSize))
+                            .fontWeight(.medium)
+                            .monospacedDigit()
+                    }
+                }
                 .foregroundColor(AppColors.brandAccent)
-                .font(.system(size: subtitleFontSize))
             }
 
             // Favorite indicator
@@ -181,6 +191,18 @@ Text(sys.name)
                         .foregroundColor(.pink)
                         .font(.system(size: subtitleFontSize))
                 }
+            }
+
+            if isHovered, let menuContent = contextMenu {
+                Menu { menuContent() } label: {
+                    Image(systemName: "ellipsis")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(.secondary)
+                        .padding(.horizontal, 4)
+                        .padding(.vertical, 6)
+                }
+                .menuIndicator(.hidden)
+                .transition(.opacity)
             }
         }
         .padding(.vertical, 4)
@@ -203,7 +225,11 @@ Text(sys.name)
                 .frame(width: 2, height: 20)
                 .padding(.leading, 4)
         }
-        .onHover { isHovered = $0 }
+        .onHover { hovering in
+            withAnimation(AppMotion.micro) {
+                isHovered = hovering
+            }
+        }
         .task(id: rom.id) {
             // Lazy-resolve local boxart on-demand if not already set
             if rom.hasBoxArt {
@@ -216,6 +242,10 @@ Text(sys.name)
                 } else {
                     self.thumb = nil
                 }
+            }
+
+            if let raGameId = rom.raGameId, raGameId > 0 {
+                raProgress = RetroAchievementsService.cachedAchievementProgress(for: raGameId)
             }
         }
     }

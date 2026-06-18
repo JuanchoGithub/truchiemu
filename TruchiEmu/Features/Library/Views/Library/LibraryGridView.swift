@@ -846,7 +846,7 @@ viewModel.updateFilters(
         List(selection: $selectedROM) {
             ForEach(Array(viewModel.displayedROMs.enumerated()), id: \.element.id) { index, rom in
                 let isSelected = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
-            GameListRowView(rom: rom, isSelected: isSelected, isEvenRow: index.isMultiple(of: 2), zoomLevel: zoomLevel, filter: filter)
+            GameListRowView(rom: rom, isSelected: isSelected, isEvenRow: index.isMultiple(of: 2), zoomLevel: zoomLevel, filter: filter, contextMenu: { contextMenu(for: rom) })
                 .tag(rom)
                 .listRowBackground(Color.clear)
                 .contentShape(Rectangle())
