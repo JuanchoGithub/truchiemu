@@ -45,9 +45,23 @@ struct UpdateAvailableView: View {
 
             HStack(spacing: AppSpacing.md) {
                 if updateService.isDownloading {
-                    ProgressView(value: updateService.downloadProgress) {
-                        Text(loc.localized("update.downloading"))
-                            .font(.caption)
+                    VStack(spacing: AppSpacing.sm) {
+                        if updateService.downloadProgress >= 0 {
+                            ProgressView(value: updateService.downloadProgress) {
+                                Text(loc.localized("update.downloading"))
+                                    .font(.caption)
+                            }
+                        } else {
+                            ProgressView() {
+                                Text(loc.localized("update.downloading"))
+                                    .font(.caption)
+                            }
+                        }
+                        if updateService.totalBytesWritten > 0 {
+                            Text(ByteCountFormatter.string(fromByteCount: updateService.totalBytesWritten, countStyle: .file) + (updateService.totalBytesExpected > 0 ? " / " + ByteCountFormatter.string(fromByteCount: updateService.totalBytesExpected, countStyle: .file) : ""))
+                                .font(.caption2)
+                                .foregroundStyle(AppColors.textTertiary(colorScheme))
+                        }
                     }
                     .frame(maxWidth: .infinity)
                 } else {

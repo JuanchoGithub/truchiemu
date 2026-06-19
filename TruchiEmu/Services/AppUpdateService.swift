@@ -64,6 +64,8 @@ final class AppUpdateService: ObservableObject {
     @Published var isChecking = false
     @Published var isDownloading = false
     @Published var downloadProgress: Double = 0
+    @Published var totalBytesWritten: Int64 = 0
+    @Published var totalBytesExpected: Int64 = 0
     @Published var allReleases: [AppRelease] = []
 
     var updateAvailable: Bool {
@@ -159,6 +161,8 @@ final class AppUpdateService: ObservableObject {
 
         isDownloading = true
         downloadProgress = 0
+        totalBytesWritten = 0
+        totalBytesExpected = 0
         defer { isDownloading = false; downloadTask = nil; downloadContinuation = nil }
 
         let tempDir = FileManager.default.temporaryDirectory
@@ -166,6 +170,7 @@ final class AppUpdateService: ObservableObject {
         let localURL = tempDir.appendingPathComponent(fileName)
 
         do {
+            updateLog.info("Downloading update from \(url.absoluteString)")
             var request = URLRequest(url: url)
             request.setValue("TruchiEmu/\(AppVersion.current)", forHTTPHeaderField: "User-Agent")
             request.timeoutInterval = 300
@@ -196,8 +201,10 @@ final class AppUpdateService: ObservableObject {
         }
     }
 
-    fileprivate func reportProgress(_ progress: Double) {
+    fileprivate func reportProgress(progress: Double, bytesWritten: Int64, bytesExpected: Int64) {
         downloadProgress = progress
+        totalBytesWritten = bytesWritten
+        totalBytesExpected = bytesExpected
     }
 
     fileprivate func downloadFinished(at location: URL) {
@@ -281,14 +288,20 @@ private struct GitHubRelease: Decodable {
     }
 }
 
-private final class DownloadDelegate: NSObject, URLSessionDownloadDelegate {
+private final class DownloadDelegate: NSObject, URLSessionDownloadDelegate, URLSessionTaskDelegate {
     private let service: AppUpdateService
 
     init(service: AppUpdateService) {
         self.service = service
     }
 
+    func urlSession(_ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse, newRequest request: URLRequest, completionHandler: @escaping (URLRequest?) -> Void) {
+        updateLog.info("Download redirect to \(request.url?.absoluteString ?? "unknown")")
+        completionHandler(request)
+    }
+
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        updateLog.info("Download finished at \(location.path)")
         let safeLocation = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".tmp")
         do {
             try FileManager.default.moveItem(at: location, to: safeLocation)
@@ -304,17 +317,27 @@ private final class DownloadDelegate: NSObject, URLSessionDownloadDelegate {
     }
 
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-        guard totalBytesExpectedToWrite > 0 else { return }
-        let progress = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite)
-        DispatchQueue.main.async {
-            self.service.reportProgress(progress)
+        let progress: Double
+        if totalBytesExpectedToWrite > 0 {
+            progress = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite)
+        } else {
+            progress = -1
+        }
+        let written = totalBytesWritten
+        let expected = totalBytesExpectedToWrite
+        Task { @MainActor in
+            service.reportProgress(progress: progress, bytesWritten: written, bytesExpected: expected)
         }
     }
 
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-        guard let error else { return }
-        Task { @MainActor in
-            service.downloadFailed(error)
+        if let error {
+            updateLog.warning("Download task failed: \(error.localizedDescription)")
+            Task { @MainActor in
+                service.downloadFailed(error)
+            }
+        } else {
+            updateLog.info("Download task completed successfully")
         }
     }
 }
