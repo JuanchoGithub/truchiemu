@@ -112,6 +112,7 @@ struct SystemInfo: Identifiable, Codable, Hashable {
     var database: [String]? = nil
 
     var customDisplayName: String?
+    var customIconPath: String?
     var coreReportedAspectRatio: CGFloat?
 
     // The correct display aspect ratio for this system's output.
@@ -126,7 +127,7 @@ struct SystemInfo: Identifiable, Codable, Hashable {
     enum CodingKeys: String, CodingKey {
         case id, name, pathKeywords, magicHeaders, filenamePatterns, manufacturer
         case extensions, defaultCoreID, defaultShaderPresetID, iconName, emuIconName, year, sortOrder
-        case defaultBoxType, displayInUI, coreReportedAspectRatio, isDiskBased, isRedumpOnly, customDisplayName, database
+        case defaultBoxType, displayInUI, coreReportedAspectRatio, isDiskBased, isRedumpOnly, customDisplayName, customIconPath, database
     }
     
     // Custom Decoder to handle missing JSON fields safely
@@ -155,6 +156,7 @@ struct SystemInfo: Identifiable, Codable, Hashable {
         isRedumpOnly = try container.decodeIfPresent(Bool.self, forKey: .isRedumpOnly) ?? false
         coreReportedAspectRatio = try container.decodeIfPresent(CGFloat.self, forKey: .coreReportedAspectRatio)
         customDisplayName = try container.decodeIfPresent(String.self, forKey: .customDisplayName)
+        customIconPath = try container.decodeIfPresent(String.self, forKey: .customIconPath)
         database = try container.decodeIfPresent([String].self, forKey: .database)
     }
     
@@ -179,12 +181,26 @@ struct SystemInfo: Identifiable, Codable, Hashable {
         self.isRedumpOnly = isRedumpOnly
         self.coreReportedAspectRatio = nil
         self.customDisplayName = nil
+        self.customIconPath = nil
     }
     
-    func emuImage(size: Int) -> NSImage? {
+    func emuImage(size: Int, includeCustom: Bool = true) -> NSImage? {
         #if LOG_EXTREME
         LoggerService.extreme(category: "SystemInfo", "Loading emu image for system: \(id)")
         #endif
+        if includeCustom, let customPath = customIconPath {
+            let cacheKey = "custom-\(id)-\(size)" as NSString
+            if let cached = Self.iconCache.object(forKey: cacheKey) {
+                return cached
+            }
+            let url = URL(fileURLWithPath: customPath)
+            if let img = NSImage(contentsOf: url) {
+                let cost = Int(img.size.width * img.size.height * 4)
+                Self.iconCache.setObject(img, forKey: cacheKey, cost: cost)
+                return img
+            }
+        }
+
         guard let iconName = emuIconName else { return nil }
 
         let cacheKey = "\(iconName)-\(size)" as NSString
@@ -259,6 +275,12 @@ struct SystemInfo: Identifiable, Codable, Hashable {
         cache.totalCostLimit = 10 * 1024 * 1024
         return cache
     }()
+
+    static func invalidateIconCache(forSystemID id: String) {
+        for size in [132, 600, 120] {
+            iconCache.removeObject(forKey: "custom-\(id)-\(size)" as NSString)
+        }
+    }
     
     var sidebarDisplayName: String {
         if let custom = customDisplayName, !custom.isEmpty {
@@ -359,6 +381,7 @@ class SystemDatabase {
             mergedSys.defaultShaderPresetID = cacheSys.defaultShaderPresetID
             mergedSys.defaultCoreID = cacheSys.defaultCoreID
             mergedSys.customDisplayName = cacheSys.customDisplayName
+            mergedSys.customIconPath = cacheSys.customIconPath
 
             // Always take database from bundle (source of truth) — never from stale cache
             mergedSys.database = bundleSys.database

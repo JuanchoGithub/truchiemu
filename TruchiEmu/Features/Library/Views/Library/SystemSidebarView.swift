@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct SystemSidebarView: View {
     @EnvironmentObject var library: ROMLibrary
@@ -432,9 +433,28 @@ struct RenameSystemSheet: View {
     @ObservedObject private var loc = LocalizationManager.shared
     var system: SystemInfo
     var onRename: (String) -> Void
-    
+
     @State private var displayName: String = ""
-    
+    @State private var selectedIconName: String?
+    @State private var customIconPath: String?
+    @State private var showImagePicker = false
+    @State private var showCropView = false
+    @State private var pickedImage: NSImage?
+    @State private var iconSearchText: String = ""
+    @State private var showSFSymbolBrowser = false
+
+    private var defaultIcons: [String] {
+        let catalog = SFSymbolCatalog.shared
+        if let gaming = catalog.categories.first(where: { $0.id == "gaming" }) {
+            return Array(gaming.symbols.prefix(12))
+        }
+        return Array(catalog.allSymbols.prefix(12))
+    }
+
+    private var searchResults: [String] {
+        SFSymbolCatalog.shared.search(iconSearchText)
+    }
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -454,10 +474,70 @@ struct RenameSystemSheet: View {
                         }
                     }
 
+                    Section(loc.localized("app.icon")) {
+                        HStack {
+                            previewIcon()
+                                .frame(width: 32, height: 32)
+                            Text(loc.localized("app.currentIcon"))
+                            Spacer()
+                            Button {
+                                resetIcon()
+                            } label: {
+                                Text(loc.localized("app.reset"))
+                            }
+                            .disabled(selectedIconName == nil && customIconPath == nil)
+                        }
+
+                        TextField(loc.localized("app.searchIcons"), text: $iconSearchText)
+                            .textFieldStyle(.roundedBorder)
+
+                        if iconSearchText.isEmpty {
+                            iconGrid(for: defaultIcons)
+                        } else if searchResults.isEmpty {
+                            Text(loc.localized("app.noIconsFound"))
+                                .font(.caption)
+                                .foregroundStyle(AppColors.textSecondaryNeutral(colorScheme))
+                        } else {
+                            iconGrid(for: searchResults)
+                        }
+
+                        HStack(spacing: 12) {
+                            Button {
+                                showImagePicker = true
+                            } label: {
+                                HStack(spacing: 4) {
+                                    Image(systemName: "plus.circle")
+                                        .font(.system(size: 14))
+                                    Text(loc.localized("app.addYourIcon"))
+                                        .font(.subheadline)
+                                }
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
+
+                            Button {
+                                showSFSymbolBrowser = true
+                            } label: {
+                                HStack(spacing: 4) {
+                                    Image(systemName: "square.grid.2x2")
+                                        .font(.system(size: 14))
+                                    Text(loc.localized("app.browseIcons"))
+                                        .font(.subheadline)
+                                }
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+
                     Section(loc.localized("app.preview")) {
                         HStack {
-                            Image(systemName: system.iconName)
-                                .foregroundStyle(AppColors.brandAccent)
+                            previewIcon()
+                                .frame(width: 22, height: 22)
                             Text(displayName.isEmpty ? system.name : displayName)
                         }
                     }
@@ -477,14 +557,129 @@ struct RenameSystemSheet: View {
                         .disabled(displayName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                     }
                 }
+                .sheet(isPresented: $showCropView) {
+                    if let pickedImage {
+                        ImageCropView(sourceImage: pickedImage) { croppedImage in
+                            saveCustomIcon(croppedImage)
+                        }
+                    }
+                }
+                .sheet(isPresented: $showSFSymbolBrowser) {
+                    SFSymbolBrowserView { selectedName in
+                        selectedIconName = selectedName
+                        customIconPath = nil
+                    }
+                }
             }
         }
-        .frame(width: 360, height: 280)
+        .frame(width: 420, height: 560)
+        .fileImporter(
+            isPresented: $showImagePicker,
+            allowedContentTypes: [.png, .jpeg, .image],
+            allowsMultipleSelection: false
+        ) { result in
+            switch result {
+            case .success(let urls):
+                if let url = urls.first {
+                    if url.startAccessingSecurityScopedResource() {
+                        defer { url.stopAccessingSecurityScopedResource() }
+                        if let img = NSImage(contentsOf: url) {
+                            pickedImage = img
+                            showCropView = true
+                        }
+                    }
+                }
+            case .failure:
+                break
+            }
+        }
         .onAppear {
             displayName = system.customDisplayName ?? system.sidebarDisplayName
+            selectedIconName = nil
+            customIconPath = system.customIconPath
         }
     }
-    
+
+    @ViewBuilder
+    private func iconGrid(for icons: [String]) -> some View {
+        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 6), spacing: 8) {
+            ForEach(icons, id: \.self) { iconName in
+                Button {
+                    selectedIconName = iconName
+                    customIconPath = nil
+                } label: {
+                    Image(systemName: iconName)
+                        .font(.system(size: 16))
+                        .frame(width: 36, height: 36)
+                        .background(
+                            RoundedRectangle(cornerRadius: 6)
+                                .fill(isIconSelected(iconName) ? AppColors.accentBackground(colorScheme) : .clear)
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 6)
+                                .stroke(isIconSelected(iconName) ? AppColors.brandAccent : .clear, lineWidth: 2)
+                        )
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func previewIcon() -> some View {
+        if let customPath = customIconPath,
+           let img = NSImage(contentsOf: URL(fileURLWithPath: customPath)) {
+            Image(nsImage: img)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+        } else if let name = selectedIconName, !name.isEmpty {
+            Image(systemName: name)
+                .foregroundStyle(AppColors.brandAccent)
+        } else if let img = system.emuImage(size: 132, includeCustom: false) {
+            Image(nsImage: img)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+        } else if !system.iconName.isEmpty {
+            Image(systemName: system.iconName)
+                .foregroundStyle(AppColors.brandAccent)
+        }
+    }
+
+    private func isIconSelected(_ iconName: String) -> Bool {
+        selectedIconName == iconName && customIconPath == nil
+    }
+
+    private func resetIcon() {
+        selectedIconName = nil
+        customIconPath = nil
+        SystemInfo.invalidateIconCache(forSystemID: system.id)
+    }
+
+    private func saveCustomIcon(_ image: NSImage) {
+        let outputSize = NSSize(width: 32, height: 32)
+        let resized = NSImage(size: outputSize)
+        resized.lockFocus()
+        NSGraphicsContext.current?.imageInterpolation = .high
+        image.draw(in: NSRect(origin: .zero, size: outputSize))
+        resized.unlockFocus()
+
+        guard let tiffData = resized.tiffRepresentation,
+              let bitmapRep = NSBitmapImageRep(data: tiffData),
+              let pngData = bitmapRep.representation(using: .png, properties: [:]) else { return }
+
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        let iconsDir = appSupport.appendingPathComponent("TruchiEmu/SystemIcons")
+        try? FileManager.default.createDirectory(at: iconsDir, withIntermediateDirectories: true)
+        let fileName = "\(system.id)_icon.png"
+        let fileURL = iconsDir.appendingPathComponent(fileName)
+        do {
+            try pngData.write(to: fileURL, options: .atomic)
+            customIconPath = fileURL.path
+        } catch {
+            LoggerService.error(category: "RenameSystem", "Failed to save custom icon: \(error)")
+        }
+    }
+
     private func saveRename() {
         var systems = SystemDatabase.systems
         if let index = systems.firstIndex(where: { $0.id == system.id }) {
@@ -494,8 +689,92 @@ struct RenameSystemSheet: View {
             } else {
                 systems[index].customDisplayName = trimmed
             }
+
+            if let customPath = customIconPath {
+                systems[index].customIconPath = customPath
+            } else {
+                systems[index].customIconPath = nil
+            }
+
+            if let sfName = selectedIconName, customIconPath == nil {
+                systems[index].iconName = sfName
+            } else if customIconPath == nil && selectedIconName == nil {
+                systems[index].iconName = system.iconName
+            }
+
             SystemDatabase.saveSystems(systems)
+            SystemInfo.invalidateIconCache(forSystemID: system.id)
         }
+    }
+}
+
+// MARK: - SF Symbol Browser
+
+struct SFSymbolBrowserView: View {
+    let onSelect: (String) -> Void
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
+    @ObservedObject private var loc = LocalizationManager.shared
+    @State private var searchText: String = ""
+
+    private let catalog = SFSymbolCatalog.shared
+
+    private var displayedCategories: [SFSymbolCatalog.Category] {
+        if searchText.isEmpty {
+            return catalog.categories
+        }
+        return catalog.categoriesMatching(searchText)
+    }
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled)
+                    .ignoresSafeArea()
+
+                ScrollView {
+                    LazyVStack(alignment: .leading, pinnedViews: [.sectionHeaders]) {
+                        ForEach(displayedCategories, id: \.id) { category in
+                            Section {
+                                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 8), spacing: 8) {
+                                    ForEach(category.symbols, id: \.self) { iconName in
+                                        Button {
+                                            onSelect(iconName)
+                                            dismiss()
+                                        } label: {
+                                            VStack(spacing: 4) {
+                                                Image(systemName: iconName)
+                                                    .font(.system(size: 20))
+                                                    .frame(width: 40, height: 40)
+                                                Text(iconName)
+                                                    .font(.system(size: 8))
+                                                    .lineLimit(1)
+                                                    .foregroundStyle(AppColors.textSecondaryNeutral(colorScheme))
+                                            }
+                                        }
+                                        .buttonStyle(.plain)
+                                    }
+                                }
+                                .padding(.horizontal)
+                            } header: {
+                                Text(category.name)
+                                    .font(.headline)
+                                    .padding(.horizontal)
+                                    .padding(.top, 8)
+                            }
+                        }
+                    }
+                }
+                .searchable(text: $searchText, prompt: loc.localized("app.searchIcons"))
+            }
+            .navigationTitle(loc.localized("app.browseIcons"))
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(loc.localized("app.cancel")) { dismiss() }
+                }
+            }
+        }
+        .frame(width: 520, height: 500)
     }
 }
 
