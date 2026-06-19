@@ -1781,5 +1781,8 @@
     "settings.mergeGBGBC": "Mantener Game Boy y Game Boy Color como un solo sistema",
     "settings.mergeGBGBCDescription": "Cuando está activado, las ROMs de Game Boy y Game Boy Color aparecen juntas como \"Game Boy\" en la barra lateral.",
     "settings.mergeMameFBA": "Mantener MAME y FinalBurn Neo como un solo sistema",
-    "settings.mergeMameFBADescription": "Cuando está activado, las ROMs de MAME y FBNeo aparecen juntas como \"Arcade (MAME / FBNeo)\" en la barra lateral."
+    "settings.mergeMameFBADescription": "Cuando está activado, las ROMs de MAME y FBNeo aparecen juntas como \"Arcade (MAME / FBNeo)\" en la barra lateral.",
+    "settings.confirmDelete": "Toca de nuevo para confirmar",
+    "settings.deleteExplanationArchive": "El archivo de juego se eliminará del zip. Otros juegos en el mismo zip no se verán afectados.",
+    "settings.deleteExplanationFile": "El archivo de juego se moverá a la Papelera. Puedes restaurarlo más tarde si es necesario."
 }

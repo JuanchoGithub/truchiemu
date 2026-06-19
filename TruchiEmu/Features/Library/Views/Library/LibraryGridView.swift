@@ -172,7 +172,7 @@ struct LibraryGridView: View {
     
     // Delete/hide game states
     @State private var gameToDelete: ROM?
-    @State private var showDeleteConfirmation = false
+    @State private var confirmDeleteTap = false
     
     // Smooth pinch-to-zoom state
     @State private var continuousZoom: Double = {
@@ -293,38 +293,23 @@ struct LibraryGridView: View {
                 renamingROM = nil
             }
         }
-        .confirmationDialog(
-            "Delete Game: \(gameToDelete?.displayName ?? "")",
-            isPresented: $showDeleteConfirmation,
-            titleVisibility: .visible
-        ) {
-            Button("Move ROM File to Trash & Remove from Library", role: .destructive) {
-                if let rom = gameToDelete {
+        .sheet(item: $gameToDelete) { rom in
+            DeleteConfirmationView(
+                rom: rom,
+                confirmDeleteTap: $confirmDeleteTap,
+                onDelete: {
                     deleteGameAndROM(rom)
-                }
-                gameToDelete = nil
-            }
-            Button("Hide from Library Only", role: .destructive) {
-                if let rom = gameToDelete {
+                    gameToDelete = nil
+                },
+                onHide: {
                     hideGame(rom)
+                    gameToDelete = nil
+                },
+                onCancel: {
+                    gameToDelete = nil
                 }
-                gameToDelete = nil
-            }
-            Button("Cancel", role: .cancel) {
-                gameToDelete = nil
-            }
-        } message: {
-            if let rom = gameToDelete {
-                Text("""
-                This will remove \"\(rom.displayName)\" from your library.
-
-                • "Move ROM File to Trash & Remove from Library" — The game file (\(rom.path.lastPathComponent)) will be moved to your system Trash, and the game will be removed from your library.
-
-                • "Hide from Library Only" — The game will be hidden from your library view, but the ROM file will remain on disk. You can unhide it later from the Hidden Games section.
-
-                You can restore the ROM file from Trash if you change your mind.
-                """)
-        }
+            )
+            .onDisappear { confirmDeleteTap = false }
         }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
@@ -1334,7 +1319,7 @@ viewModel.updateFilters(
                                 } else {
 			Image(systemName: "plus.circle")
 				.foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
-                                    }
+                                }
                             }
                         }
                     }
@@ -1402,7 +1387,6 @@ viewModel.updateFilters(
                     }
                     Button(role: .destructive) {
                         gameToDelete = rom
-                        showDeleteConfirmation = true
                     } label: {
                         Label(loc.localized("contextMenu.deleteGame"), systemImage: "trash")
                     }
@@ -1436,6 +1420,15 @@ viewModel.updateFilters(
     }
 
     private func deleteGameAndROM(_ rom: ROM) {
+        if let innerPath = rom.innerROMPath,
+           ArchiveExtractor.archiveExtensions.contains(rom.path.pathExtension.lowercased()) {
+            deleteROMInArchive(rom, innerPath: innerPath)
+        } else {
+            deleteRegularFile(rom)
+        }
+    }
+
+    private func deleteRegularFile(_ rom: ROM) {
         var trashURL: URL?
 
         do {
@@ -1466,14 +1459,54 @@ viewModel.updateFilters(
         }
     }
 
-private func removeROMFromLibrary(_ rom: ROM) {
-    library.roms.removeAll { $0.id == rom.id }
-    LibraryMetadataStore.shared.deleteMetadata(for: rom)
-    let repo = ROMRepository(context: SwiftDataContainer.shared.mainContext)
-    repo.deleteROMsByPath([rom.path.path])
-    library.updateCounts()
+    private func deleteROMInArchive(_ rom: ROM, innerPath: String) {
+        let otherLibraryROMs = library.roms.filter {
+            $0.path.path == rom.path.path && $0.id != rom.id
+        }
 
-        // If this ROM was selected, deselect it
+        if otherLibraryROMs.isEmpty {
+            // Cases 1 & 2: No other library games in this archive — trash the whole archive
+            deleteRegularFile(rom)
+        } else {
+            // Case 3: Other library ROMs share this archive — only remove the inner file
+            do {
+                try ArchiveExtractor.removeItem(fromZipAt: rom.path, itemPath: innerPath)
+                removeSingleROMFromLibrary(rom)
+                ArchiveExtractor.shared.removeCacheFor(archiveURL: rom.path)
+                LoggerService.info(category: "LibraryGridView", "Removed '\(innerPath)' from archive: \(rom.path.lastPathComponent)")
+            } catch {
+                LoggerService.error(category: "LibraryGridView", "Failed to remove file from archive: \(error.localizedDescription)")
+                return
+            }
+
+            NotificationHistoryManager.shared.post(
+                icon: "trash",
+                title: loc.localized("pill.gameTrashed"),
+                subtitle: rom.displayName,
+                autoDismissDelay: 5
+            )
+        }
+    }
+
+    private func removeROMFromLibrary(_ rom: ROM) {
+        library.roms.removeAll { $0.id == rom.id }
+        LibraryMetadataStore.shared.deleteMetadata(for: rom)
+        let repo = ROMRepository(context: SwiftDataContainer.shared.mainContext)
+        repo.deleteROMsByPath([rom.path.path])
+        library.updateCounts()
+
+        if selectedROM?.id == rom.id {
+            selectedROM = nil
+        }
+    }
+
+    private func removeSingleROMFromLibrary(_ rom: ROM) {
+        library.roms.removeAll { $0.id == rom.id }
+        LibraryMetadataStore.shared.deleteMetadata(for: rom)
+        let repo = ROMRepository(context: SwiftDataContainer.shared.mainContext)
+        repo.deleteROMs(ids: [rom.id])
+        library.updateCounts()
+
         if selectedROM?.id == rom.id {
             selectedROM = nil
         }
@@ -1854,6 +1887,7 @@ private struct BoxArtMarquee: View {
     let urls: [URL]
     @Binding var offset: CGFloat
     @State private var slots: [(url: URL?, vi: Int)] = (0..<6).map { (url: nil, vi: $0) }
+    @State private var images: [URL: NSImage] = [:]
     @State private var timer: Timer?
     @State private var appeared = false
 
@@ -1864,8 +1898,6 @@ private struct BoxArtMarquee: View {
     private let slotCount = 6
     private let visibleSlots = 3
 
-    // Slot is off-screen left when its right edge < -itemWidth (fully past clip)
-    // We recycle when it's past that by at least one stride to guarantee it's invisible.
     private let leftKillX: CGFloat = -320
 
     private var viewportWidth: CGFloat { CGFloat(visibleSlots - 1) * stride + itemWidth }
@@ -1880,6 +1912,7 @@ private struct BoxArtMarquee: View {
         .clipped()
         .onAppear {
             if slots[0].url == nil { seedSlots() }
+            loadVisibleImages()
             if !appeared {
                 appeared = true
                 timer = Timer.scheduledTimer(withTimeInterval: 1.0 / 60.0, repeats: true) { _ in
@@ -1899,7 +1932,7 @@ private struct BoxArtMarquee: View {
     private func slotView(at i: Int) -> some View {
         if i < slots.count {
             let xPos = CGFloat(slots[i].vi) * stride - offset
-            if let url = slots[i].url, let nsImage = NSImage(contentsOf: url) {
+            if let url = slots[i].url, let nsImage = images[url] {
                 Image(nsImage: nsImage)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
@@ -1911,6 +1944,17 @@ private struct BoxArtMarquee: View {
                 Color.clear
                     .frame(width: itemWidth, height: 180)
                     .offset(x: xPos)
+            }
+        }
+    }
+
+    private func loadVisibleImages() {
+        for slot in slots {
+            guard let url = slot.url, images[url] == nil else { continue }
+            Task {
+                if let img = await ImageCache.shared.thumbnail(for: url, preferredSize: .tiny) {
+                    images[url] = img
+                }
             }
         }
     }
@@ -1928,6 +1972,7 @@ private struct BoxArtMarquee: View {
             }()
             slots.append((url: url, vi: i))
         }
+        loadVisibleImages()
     }
 
     private func tick() {
@@ -1938,6 +1983,13 @@ private struct BoxArtMarquee: View {
                 let maxVI = slots.map(\.vi).max() ?? 0
                 slots[i].vi = maxVI + 1
                 slots[i].url = pickRandom()
+                if let url = slots[i].url, images[url] == nil {
+                    Task {
+                        if let img = await ImageCache.shared.thumbnail(for: url, preferredSize: .tiny) {
+                            images[url] = img
+                        }
+                    }
+                }
             }
         }
     }
@@ -1970,5 +2022,158 @@ private struct ScanningScanLine: View {
         }
     }
 }
-}
 
+// MARK: - Delete Confirmation View
+
+private struct DeleteConfirmationView: View {
+    let rom: ROM
+    @Binding var confirmDeleteTap: Bool
+    let onDelete: () -> Void
+    let onHide: () -> Void
+    let onCancel: () -> Void
+
+    @ObservedObject private var loc = LocalizationManager.shared
+    @Environment(\.colorScheme) private var colorScheme
+    @State private var boxArtImage: NSImage?
+    @State private var hasBoxArt = false
+
+    var body: some View {
+        VStack(spacing: 0) {
+            ZStack {
+                if let img = boxArtImage {
+                    Image(nsImage: img)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 180)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                } else {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(placeholderGradient)
+                        .frame(height: 120)
+                        .overlay(
+                            Image(systemName: systemIcon)
+                                .font(.system(size: 36))
+                                .foregroundColor(.white.opacity(0.7))
+                        )
+                }
+            }
+            .padding(.horizontal, 40)
+            .padding(.top, 24)
+            .padding(.bottom, 16)
+
+            Text(rom.displayName)
+                .font(.title3.weight(.semibold))
+                .foregroundColor(AppColors.textPrimary(colorScheme))
+                .lineLimit(2)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 24)
+
+            if let sysID = rom.systemID, sysID != "unknown" {
+                Text(sysID.uppercased())
+                    .font(.caption.weight(.medium))
+                    .foregroundColor(AppColors.textMuted(colorScheme))
+                    .padding(.top, 2)
+            }
+
+            Text(explanation)
+                .font(.subheadline)
+                .foregroundColor(AppColors.textSecondary(colorScheme))
+                .multilineTextAlignment(.center)
+                .lineLimit(4)
+                .padding(.horizontal, 32)
+                .padding(.top, 12)
+
+            Spacer(minLength: 16)
+
+            VStack(spacing: 8) {
+                Button(role: .destructive) {
+                    if confirmDeleteTap {
+                        onDelete()
+                    } else {
+                        confirmDeleteTap = true
+                    }
+                } label: {
+                    Text(confirmDeleteTap ? loc.localized("settings.confirmDelete") : loc.localized("contextMenu.deleteGame"))
+                        .font(.body.weight(.medium))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 10)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(confirmDeleteTap ? .red : AppColors.brandAccent)
+                .controlSize(.large)
+
+                Button {
+                    onHide()
+                } label: {
+                    Text("Hide from Library Only")
+                        .font(.body.weight(.medium))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 10)
+                }
+                .buttonStyle(.bordered)
+                .tint(AppColors.textSecondary(colorScheme))
+                .controlSize(.large)
+
+                Button(role: .cancel) {
+                    onCancel()
+                } label: {
+                    Text(loc.localized("library.cancel"))
+                        .font(.body.weight(.medium))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 10)
+                }
+                .buttonStyle(.bordered)
+                .tint(AppColors.textSecondary(colorScheme))
+                .controlSize(.large)
+            }
+            .padding(.horizontal, 32)
+            .padding(.bottom, 24)
+        }
+        .frame(width: 320)
+        .background(AppColors.windowBackground(colorScheme, tinted: false))
+        .task {
+            await loadBoxArt()
+        }
+        .onDisappear {
+            confirmDeleteTap = false
+        }
+    }
+
+    private var explanation: String {
+        if rom.innerROMPath != nil {
+            return loc.localized("settings.deleteExplanationArchive")
+        }
+        return loc.localized("settings.deleteExplanationFile")
+    }
+
+    private var systemIcon: String {
+        SystemDatabase.system(forID: rom.systemID ?? "")?.iconName ?? "gamecontroller"
+    }
+
+    private var placeholderGradient: LinearGradient {
+        let hash = abs((rom.systemID ?? "x").hashValue)
+        let palettes: [(Color, Color)] = [
+            (Color(hue: 0.08, saturation: 0.55, brightness: 0.75), Color(hue: 0.06, saturation: 0.40, brightness: 0.55)),
+            (Color(hue: 0.04, saturation: 0.50, brightness: 0.70), Color(hue: 0.03, saturation: 0.35, brightness: 0.50)),
+            (Color(hue: 0.12, saturation: 0.50, brightness: 0.80), Color(hue: 0.10, saturation: 0.35, brightness: 0.60)),
+        ]
+        let colors = palettes[hash % palettes.count]
+        return LinearGradient(colors: [colors.0, colors.1], startPoint: .topLeading, endPoint: .bottomTrailing)
+    }
+
+    private func loadBoxArt() async {
+        var artPath = rom.boxArtLocalPath
+        if !FileManager.default.fileExists(atPath: artPath.path) {
+            if let resolved = BoxArtService.shared.resolveLocalBoxArt(for: rom) {
+                artPath = resolved
+            }
+        }
+        if FileManager.default.fileExists(atPath: artPath.path) {
+            if let img = await ImageCache.shared.thumbnail(for: artPath, preferredSize: .medium) {
+                boxArtImage = img
+                hasBoxArt = true
+            }
+        }
+    }
+}
+}

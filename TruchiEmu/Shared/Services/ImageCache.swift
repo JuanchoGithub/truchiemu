@@ -7,6 +7,7 @@ import ImageIO
 // Image cache with cost-based eviction so memory stays bounded.
 // Uses NSCache with proper cost values for automatic eviction under pressure.
 // Separate caches for thumbnails (small, many) and full images (large, few).
+// Supports pre-generated on-disk thumbnails in .te_thumbs/ directories for fast loading.
 actor ImageCache {
     static let shared = ImageCache()
 
@@ -60,6 +61,48 @@ actor ImageCache {
         return await task.value
     }
 
+    // Size-aware thumbnail loading: checks for pre-generated thumbnail on disk first.
+    // If no disk thumbnail exists, loads the full boxart immediately for display,
+    // then kicks off background thumbnail generation so the next load is fast.
+    func thumbnail(for url: URL, preferredSize: BoxArtThumbnailSize) async -> NSImage? {
+        let sizeKey = thumbKey(url, size: preferredSize)
+
+        if let cached = thumbnailCache.object(forKey: sizeKey as NSString) {
+            return cached
+        }
+
+        if let existing = inFlight[sizeKey] {
+            return await existing.value
+        }
+
+        let task = Task<NSImage?, Never> {
+            let thumbURL = BoxArtThumbnailService.thumbnailURL(for: url, size: preferredSize)
+            var img: NSImage?
+
+            if FileManager.default.fileExists(atPath: thumbURL.path) {
+                img = await self.loadFromFile(at: thumbURL)
+            }
+
+            if img == nil {
+                img = await self.loadAndDecode(at: url, maxPixelSize: preferredSize.maxPixelSize)
+
+                if img != nil {
+                    BoxArtThumbnailService.scheduleGeneration(forOriginal: url)
+                }
+            }
+
+            if let img = img {
+                let c = cost(of: img)
+                self.thumbnailCache.setObject(img, forKey: sizeKey as NSString, cost: c)
+            }
+            self.inFlight.removeValue(forKey: sizeKey)
+            return img
+        }
+
+        inFlight[sizeKey] = task
+        return await task.value
+    }
+
     func cacheThumbnail(_ image: NSImage, for url: URL) {
         let key = thumbKey(url)
         let c = cost(of: image)
@@ -70,6 +113,11 @@ actor ImageCache {
         let key = thumbKey(url)
         thumbnailCache.removeObject(forKey: key as NSString)
         inFlight.removeValue(forKey: key)
+        for size in BoxArtThumbnailSize.allCases {
+            let sizeKey = thumbKey(url, size: size)
+            thumbnailCache.removeObject(forKey: sizeKey as NSString)
+            inFlight.removeValue(forKey: sizeKey)
+        }
     }
 
     // MARK: - Full Image API (detail views)
@@ -165,6 +213,14 @@ actor ImageCache {
 
     // MARK: - Internal Loading Logic
 
+    // Fast path: load a pre-generated JPEG from disk (no downscaling needed).
+    private func loadFromFile(at url: URL) async -> NSImage? {
+        await Task.detached(priority: .userInitiated) {
+            guard let data = try? Data(contentsOf: url) else { return nil }
+            return NSImage(data: data)
+        }.value
+    }
+
     // Loads and decodes an image using CGImageSource for stability and efficiency.
     // maxPixelSize controls the maximum dimension; nil means full resolution.
     private func loadAndDecode(at url: URL, maxPixelSize: CGFloat?) async -> NSImage? {
@@ -194,8 +250,6 @@ actor ImageCache {
             if let maxPx = requestedMaxPx {
                 thumbOptions[kCGImageSourceThumbnailMaxPixelSize] = Int(maxPx)
             } else {
-                // Full resolution: set a very large max pixel size so
-                // CGImageSourceCreateThumbnailAtIndex returns the full image
                 thumbOptions[kCGImageSourceThumbnailMaxPixelSize] = 100_000
             }
 
@@ -219,6 +273,10 @@ actor ImageCache {
 
     private func thumbKey(_ url: URL) -> String {
         "thumb:\(url.path)"
+    }
+
+    private func thumbKey(_ url: URL, size: BoxArtThumbnailSize) -> String {
+        "thumb:\(size.rawValue):\(url.path)"
     }
 
     private func imageKey(_ url: URL) -> String {

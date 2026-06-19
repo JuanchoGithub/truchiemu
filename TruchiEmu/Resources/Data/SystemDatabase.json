@@ -902,9 +902,7 @@
       "ngc",
       "ngp",
       "ngpc",
-      "npc",
-      "zip",
-      "rar"
+      "npc"
     ],
     "emuIconName": "NGP",
     "defaultBoxType": "Vertical",
@@ -934,9 +932,7 @@
       "ngc",
       "ngp",
       "ngpc",
-      "npc",
-      "zip",
-      "rar"
+      "npc"
     ],
     "defaultBoxType": "Vertical",
     "iconName": "iphone",

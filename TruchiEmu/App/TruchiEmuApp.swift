@@ -39,6 +39,7 @@ struct TruchiEmuApp: App {
         _ = ThemeManager.shared
         _ = SaveDirectoryManager.shared
         CoreOverrideService.shared.syncBundledOverridesToAppSupport()
+        BoxArtThumbnailService.shared.migrateOldThumbnailCache()
         
         // MAME dictionary loading is deferred to background tasks in ContentWithPrepopulationView
         // 1. Connect the Bridge to your existing LoggerService

@@ -277,9 +277,10 @@ class BoxArtService: ObservableObject {
                 guard validImageTypes.contains((httpResponse.mimeType ?? "").lowercased()) else { return nil }
             }
             try FileManager.default.moveItem(at: tmpURL, to: localURL)
-            BoxArtPreloaderService.deleteThumbnail(at: localURL)
+            BoxArtThumbnailService.deleteThumbnails(for: localURL)
             await ImageCache.shared.removeImage(for: localURL)
             await ImageCache.shared.removeThumbnail(for: localURL)
+            BoxArtThumbnailService.generateThumbnailsSynchronously(forOriginal: localURL)
             return localURL
         } catch {
             return nil
@@ -614,7 +615,8 @@ class BoxArtService: ObservableObject {
 
     func signalBoxArtUpdated(for romID: UUID, boxArtURL: URL? = nil) {
         if let url = boxArtURL {
-            BoxArtPreloaderService.deleteThumbnail(at: url)
+            BoxArtThumbnailService.deleteThumbnails(for: url)
+            BoxArtThumbnailService.generateThumbnailsSynchronously(forOriginal: url)
             Task { await ImageCache.shared.removeImage(for: url); await ImageCache.shared.removeThumbnail(for: url) }
         }
         boxArtUpdated = UUID()

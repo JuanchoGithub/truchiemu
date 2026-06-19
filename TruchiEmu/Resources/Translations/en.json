@@ -1789,5 +1789,8 @@
     "settings.mergeGBGBC": "Keep Game Boy and Game Boy Color as a single system",
     "settings.mergeGBGBCDescription": "When enabled, Game Boy and Game Boy Color ROMs appear together as \"Game Boy\" in the sidebar.",
     "settings.mergeMameFBA": "Keep MAME and FinalBurn Neo as a single system",
-    "settings.mergeMameFBADescription": "When enabled, MAME and FBNeo ROMs appear together as \"Arcade (MAME / FBNeo)\" in the sidebar."
+    "settings.mergeMameFBADescription": "When enabled, MAME and FBNeo ROMs appear together as \"Arcade (MAME / FBNeo)\" in the sidebar.",
+    "settings.confirmDelete": "Tap again to confirm",
+    "settings.deleteExplanationArchive": "The game file will be removed from the archive. Other games in the same archive are not affected.",
+    "settings.deleteExplanationFile": "The game file will be moved to your system Trash. You can restore it later if needed."
 }

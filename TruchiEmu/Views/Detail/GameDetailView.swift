@@ -620,10 +620,10 @@ struct GameDetailView: View {
         Task {
             if let resolvedPath = BoxArtService.shared.resolveLocalBoxArtIfNeeded(for: currentROM, library: library) {
                 boxArtImageURL = resolvedPath
-                boxArtImage = await ImageCache.shared.image(for: resolvedPath)
+                boxArtImage = await ImageCache.shared.thumbnail(for: resolvedPath, preferredSize: .large)
             } else if currentROM.hasBoxArt {
                 boxArtImageURL = currentROM.boxArtLocalPath
-                boxArtImage = await ImageCache.shared.image(for: currentROM.boxArtLocalPath)
+                boxArtImage = await ImageCache.shared.thumbnail(for: currentROM.boxArtLocalPath, preferredSize: .large)
             } else {
                 boxArtImageURL = nil
                 boxArtImage = nil

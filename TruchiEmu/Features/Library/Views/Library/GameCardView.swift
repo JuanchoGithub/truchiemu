@@ -91,7 +91,7 @@ struct GameCardView: View {
         .animation(AppMotion.micro, value: isHovered)
         .accessibilityLabel(rom.displayName)
         .accessibilityAddTraits(.isButton)
-        .task(id: "\(rom.id)-\(boxArtService.boxArtUpdated)") {
+        .task(id: "\(rom.id)-\(boxArtService.boxArtUpdated)-\(zoomLevel)") {
             var artPath = rom.boxArtLocalPath
             if !FileManager.default.fileExists(atPath: artPath.path) {
                 if let resolved = BoxArtService.shared.resolveLocalBoxArt(for: rom) {
@@ -99,7 +99,8 @@ struct GameCardView: View {
                 }
             }
 
-            if let img = await ImageCache.shared.thumbnail(for: artPath) {
+            let thumbSize = BoxArtThumbnailSize.forGridZoom(zoomLevel)
+            if let img = await ImageCache.shared.thumbnail(for: artPath, preferredSize: thumbSize) {
                 self.image = img
                 await MainActor.run {
                     if !rom.hasBoxArt {

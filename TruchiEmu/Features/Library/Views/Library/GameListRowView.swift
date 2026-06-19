@@ -236,14 +236,13 @@ Text(sys.name)
             }
         }
         .task(id: rom.id) {
-            // Lazy-resolve local boxart on-demand if not already set
             if rom.hasBoxArt {
-                if let thumb = await ImageCache.shared.thumbnail(for: rom.boxArtLocalPath) {
+                if let thumb = await ImageCache.shared.thumbnail(for: rom.boxArtLocalPath, preferredSize: .tiny) {
                     self.thumb = thumb
                 }
             } else {
                 if let resolvedPath = BoxArtService.shared.resolveLocalBoxArtIfNeeded(for: rom, library: library) {
-                    self.thumb = await ImageCache.shared.thumbnail(for: resolvedPath)
+                    self.thumb = await ImageCache.shared.thumbnail(for: resolvedPath, preferredSize: .tiny)
                 } else {
                     self.thumb = nil
                 }
