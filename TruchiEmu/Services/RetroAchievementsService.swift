@@ -1322,6 +1322,20 @@ func parentGameIDForCache(gameID: Int) -> Int? {
     return parentID
 }
 
+nonisolated static func cachedAchievementProgress(for raGameId: Int) -> (earned: Int, total: Int)? {
+    let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+    let fileURL = appSupport
+        .appendingPathComponent("TruchiEmu/RetroAchievements/Games", isDirectory: true)
+        .appendingPathComponent("\(raGameId).json")
+    guard let data = try? Data(contentsOf: fileURL),
+          let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+    else { return nil }
+    let total = json["NumAchievements"] as? Int ?? 0
+    let earned = json["NumAwardedToUser"] as? Int ?? 0
+    guard total > 0 else { return nil }
+    return (earned, total)
+}
+
 @MainActor
 func loadCachedAchievements(gameID: Int, username: String) -> [Achievement]? {
         let fileURL = gameDataFolder.appendingPathComponent("\(gameID).json")

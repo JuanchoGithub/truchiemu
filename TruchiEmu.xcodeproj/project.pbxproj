@@ -249,6 +249,7 @@
 		32B782F66C580947F60779DB /* CoreOverrideService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FF63BFF980BE337C49CF0B7 /* CoreOverrideService.swift */; };
 		32DEF7B459FC0D249B5D2C18 /* input_coreLabels_vaporspec.json in Resources */ = {isa = PBXBuildFile; fileRef = 2B0373818A51E7E098FE635B /* input_coreLabels_vaporspec.json */; };
 		331E5D4313517BFC79FF693A /* itv@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = CB274110F7281D8DBC58FA5C /* itv@132w.png */; };
+		3330BB1C47CDB8E889FAB18C /* ImageCropView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED22E0198CFE81289DAC573E /* ImageCropView.swift */; };
 		335B29C24D19AE3D91F1FCF2 /* input_coreLabels_easyrpg.json in Resources */ = {isa = PBXBuildFile; fileRef = 111A07FE1A09FD6D2E7357C7 /* input_coreLabels_easyrpg.json */; };
 		335C9C413D700D70F6B3245A /* SEGACD.png in Resources */ = {isa = PBXBuildFile; fileRef = BB17C2D1779CEF170931556A /* SEGACD.png */; };
 		33750BAB51750CB698493CB3 /* SetupWizardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBFE3A9E877C2D62FEDDB15E /* SetupWizardView.swift */; };
@@ -487,6 +488,7 @@
 		6ABC82537DE8675B429B507F /* ShaderGameOverrideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FEFB78B210EEFF1E3D41907 /* ShaderGameOverrideView.swift */; };
 		6AC2A12DBC79585029DD9361 /* fightdata_mvsc.json in Resources */ = {isa = PBXBuildFile; fileRef = 1AD2F84014FED34824BC7550 /* fightdata_mvsc.json */; };
 		6AD3511CBFB9BB00BC87D275 /* supervision@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 26FDC27EC587284954CC9370 /* supervision@132w.png */; };
+		6AD683C80FB45850DDA7415D /* SFSymbolCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3CDB21811A3FC4E2F21F791 /* SFSymbolCatalog.swift */; };
 		6B002A44A3B363BB17A9D337 /* fightdata_wof.json in Resources */ = {isa = PBXBuildFile; fileRef = D6A7D0325469C2991B746452 /* fightdata_wof.json */; };
 		6B246ACFE23D55E0330ED6D6 /* GW.png in Resources */ = {isa = PBXBuildFile; fileRef = 47C0E5F83D9F3C91BA7B9595 /* GW.png */; };
 		6B2CECDE2686DCECCFF5E34A /* Nintendo - Game Boy Color.dat in Resources */ = {isa = PBXBuildFile; fileRef = D7F0182BFC9A5EE471604C70 /* Nintendo - Game Boy Color.dat */; };
@@ -2079,6 +2081,7 @@
 		C355064193B4B981A25BE79E /* FC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FC.png; sourceTree = "<group>"; };
 		C360149B8F0532EB65B66AFD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		C3A6C719C78A5090AA56F911 /* fightdata_sftm.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_sftm.json; sourceTree = "<group>"; };
+		C3CDB21811A3FC4E2F21F791 /* SFSymbolCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SFSymbolCatalog.swift; sourceTree = "<group>"; };
 		C3F5A6FF580857DFBAAF22D2 /* prboom-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "prboom-cheats.zip"; sourceTree = "<group>"; };
 		C40150610E36D796206CC5AD /* input_coreOverrides_yabause.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_yabause.json; sourceTree = "<group>"; };
 		C50E20B4080419F263BC42F7 /* SlotPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlotPickerSheet.swift; sourceTree = "<group>"; };
@@ -2261,6 +2264,7 @@
 		EC7C036A06086D5A58906522 /* input_coreLabels_desmume_2015.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_desmume_2015.json; sourceTree = "<group>"; };
 		ECE7CD383238227C5CD11394 /* input_coreLabels_geargrafx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_geargrafx.json; sourceTree = "<group>"; };
 		ECFAE4ADD179727AD7A5BC47 /* fightdata_asurabld.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_asurabld.json; sourceTree = "<group>"; };
+		ED22E0198CFE81289DAC573E /* ImageCropView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCropView.swift; sourceTree = "<group>"; };
 		ED3AE2B819ABCC7CD06A9873 /* WS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = WS.png; sourceTree = "<group>"; };
 		ED79AAA3967EF2BDE34E6240 /* input_systemLabels_jumpnbump.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_jumpnbump.json; sourceTree = "<group>"; };
 		EDC7AD157ADE1B455E153FE5 /* RABadgeCacheService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RABadgeCacheService.swift; sourceTree = "<group>"; };
@@ -2542,6 +2546,7 @@
 				655A4E06046E79930EEE2443 /* LibraryAutomationCoordinator.swift */,
 				930A7FE7A4D56153499E8A64 /* ROMLibrary.swift */,
 				181CF812FAA2BD9DF45042BF /* ROMScanner.swift */,
+				C3CDB21811A3FC4E2F21F791 /* SFSymbolCatalog.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -3194,6 +3199,7 @@
 				07A377CFF1945DD917DC921B /* GameListRowView.swift */,
 				AC76D35E66386E6C5D242961 /* GenrePickerView.swift */,
 				67513DC1F7CC071810CCC098 /* GridCardZoomableFullScreenView.swift */,
+				ED22E0198CFE81289DAC573E /* ImageCropView.swift */,
 				AE6DD9F2D88F252E2CECD2CC /* LibraryAnimations.swift */,
 				44D6E43A22D859720886ECD6 /* LibraryFilterOption.swift */,
 				5C15A861E2696512846B9609 /* LibraryGridView.swift */,
@@ -5362,6 +5368,7 @@
 				C89D895A0684B41688FF2FD4 /* HotkeyConfigSettingsView.swift in Sources */,
 				4C5E02094A7A7692B2C1EC6A /* IOSurfaceVideoManager.swift in Sources */,
 				D3BF624E6D643A9C9E0976FF /* ImageCache.swift in Sources */,
+				3330BB1C47CDB8E889FAB18C /* ImageCropView.swift in Sources */,
 				2B2B0A84C8FA0EC3F94F0ADB /* InputCaptureManager.swift in Sources */,
 				21A571C012E0EEAB3DB1B142 /* InputDescriptorsManager.swift in Sources */,
 				31A2B97F6CD9CA68CAE74088 /* InputDeviceType.swift in Sources */,
@@ -5468,6 +5475,7 @@
 				1D74BFC265809AEF5ED3C30F /* RetroKeycodeMapper.swift in Sources */,
 				85BBBE31E65E1DC39A40EC77 /* RomHasher.swift in Sources */,
 				9D1FE1B871BDDD7FC953E9FF /* RunningGamesTracker.swift in Sources */,
+				6AD683C80FB45850DDA7415D /* SFSymbolCatalog.swift in Sources */,
 				C59DDF27D423766DAF059D49 /* SNESRunner.swift in Sources */,
 				358FCB9C598590064AD72091 /* SaturnRunner.swift in Sources */,
 				415C748D5C83A34B12C70590 /* SaveDirectoriesSection.swift in Sources */,

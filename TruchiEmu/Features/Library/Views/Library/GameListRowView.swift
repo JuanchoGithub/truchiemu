@@ -10,6 +10,7 @@ struct GameListRowView: View {
     let zoomLevel: Double
     let filter: LibraryFilter?
     var contextMenu: (() -> AnyView)?
+    let isScrolling: Bool
     @Environment(\.colorScheme) private var colorScheme
     @State private var thumb: NSImage?
     @State private var isHovered = false
@@ -226,8 +227,12 @@ Text(sys.name)
                 .padding(.leading, 4)
         }
         .onHover { hovering in
-            withAnimation(AppMotion.micro) {
-                isHovered = hovering
+            if isScrolling {
+                if !hovering { isHovered = false }
+            } else {
+                withAnimation(.easeOut(duration: 0.12)) {
+                    isHovered = hovering
+                }
             }
         }
         .task(id: rom.id) {

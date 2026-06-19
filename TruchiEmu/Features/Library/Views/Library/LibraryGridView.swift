@@ -214,6 +214,9 @@ struct LibraryGridView: View {
 
     @State private var columns: [GridItem] = []
     @State private var lastSelectedFilterID: String? = nil
+    @State private var isScrolling = false
+    @State private var scrollMonitor: Any?
+    @State private var scrollDebounceTimer: Timer?
 
     // MARK: - Focused field for Cmd+F
     enum FocusableField: Hashable { case search }
@@ -641,7 +644,9 @@ viewModel.updateFilters(
                 selectedGenres: selectedGenres
             )
         }
-
+        .onChange(of: viewMode) { _, newMode in
+            AppSettings.set("gridViewMode", value: newMode.rawValue)
+        }
         .onDisappear {
             // Save zoom level persistently
             AppSettings.setDouble("gridZoomLevel", value: continuousZoom)
@@ -846,7 +851,7 @@ viewModel.updateFilters(
         List(selection: $selectedROM) {
             ForEach(Array(viewModel.displayedROMs.enumerated()), id: \.element.id) { index, rom in
                 let isSelected = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
-            GameListRowView(rom: rom, isSelected: isSelected, isEvenRow: index.isMultiple(of: 2), zoomLevel: zoomLevel, filter: filter, contextMenu: { contextMenu(for: rom) })
+            GameListRowView(rom: rom, isSelected: isSelected, isEvenRow: index.isMultiple(of: 2), zoomLevel: zoomLevel, filter: filter, contextMenu: { contextMenu(for: rom) }, isScrolling: isScrolling)
                 .tag(rom)
                 .listRowBackground(Color.clear)
                 .contentShape(Rectangle())
@@ -911,6 +916,22 @@ viewModel.updateFilters(
                     lastMagnification = 1.0
                 }
         )
+        .onAppear {
+            scrollMonitor = NSEvent.addLocalMonitorForEvents(matching: [.scrollWheel]) { event in
+                if !isScrolling { isScrolling = true }
+                scrollDebounceTimer?.invalidate()
+                scrollDebounceTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { _ in
+                    isScrolling = false
+                }
+                return event
+            }
+        }
+        .onDisappear {
+            if let monitor = scrollMonitor {
+                NSEvent.removeMonitor(monitor)
+            }
+            scrollDebounceTimer?.invalidate()
+        }
     }
     
     private func handleListTap(on rom: ROM, at index: Int) {
