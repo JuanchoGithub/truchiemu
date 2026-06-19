@@ -51,25 +51,25 @@ actor ROMScanner {
     ]
 
     // MARK: - Bulk MAME Identification
-    func bulkIdentifyMAME(urls: [URL]) async -> (playableMameURLs: Set<URL>, remainingURLs: [URL]) {
+    func bulkIdentifyMAME(urls: [URL]) async -> (playableMameURLs: Set<URL>, mameRejectedURLs: Set<URL>, nonMameURLs: [URL]) {
         await MAMEUnifiedService.shared.ensureLoaded()
 
-        var remainingURLs: [URL] = []
+        var nonMameURLs: [URL] = []
         var playableMameURLs = Set<URL>()
+        var mameRejectedURLs = Set<URL>()
 
         for url in urls {
-            // Ignore AppleDouble metadata files
             if url.lastPathComponent.lowercased().hasPrefix("._") { continue }
         if url.pathExtension.lowercased() == "zip" || url.pathExtension.lowercased() == "7z" {
                 let shortName = url.deletingPathExtension().lastPathComponent.lowercased()
                 let strippedName = MAMEUnifiedService.stripDuplicateSuffix(shortName)
 
-                // Try original name first, then stripped (for macOS duplicate suffixes)
+                var matchedMAME = false
                 for nameToTry in [shortName, strippedName] where !nameToTry.isEmpty {
                     guard MAMEUnifiedService.shared.lookup(shortName: nameToTry) != nil else { continue }
+                    matchedMAME = true
                     if MAMEUnifiedService.shared.isRunnable(shortName: nameToTry)
                         && !MAMEUnifiedService.shared.isBIOS(shortName: nameToTry) {
-                        // Verify this isn't a console ROM in a ZIP (e.g. "batman.zip" with a .nes inside)
                         if ROMIdentifier.archiveContainsConsoleROM(url) { continue }
                         playableMameURLs.insert(url)
                         break
@@ -77,18 +77,22 @@ actor ROMScanner {
                 }
                 
                 if !playableMameURLs.contains(url) {
-                    remainingURLs.append(url)
+                    if matchedMAME {
+                        mameRejectedURLs.insert(url)
+                    } else {
+                        nonMameURLs.append(url)
+                    }
                 }
             } else {
-                remainingURLs.append(url)
+                nonMameURLs.append(url)
             }
         }
 
         #if LOG_DEBUG
-        LoggerService.debug(category: "ROMScanner", "Bulk MAME: \(urls.count) files → \(playableMameURLs.count) playable, \(remainingURLs.count) to deep scan")
+        LoggerService.debug(category: "ROMScanner", "Bulk MAME: \(urls.count) files → \(playableMameURLs.count) playable, \(mameRejectedURLs.count) MAME-rejected, \(nonMameURLs.count) non-MAME to deep scan")
         #endif
 
-        return (playableMameURLs, remainingURLs)
+        return (playableMameURLs, mameRejectedURLs, nonMameURLs)
     }
 
     // MARK: - Core Scanning Logic
@@ -125,7 +129,8 @@ actor ROMScanner {
         }
         
         // 2. MAME Matrix
-        let (playableMameURLs, deepScanURLs) = await bulkIdentifyMAME(urls: urls)
+        let (playableMameURLs, mameRejectedURLs, nonMameURLs) = await bulkIdentifyMAME(urls: urls)
+        let deepScanURLs = nonMameURLs + mameRejectedURLs
         
         let progressTracker = ProgressTracker(total: totalFiles, progressHandler: progress)
         var found: [ROM] = []
@@ -165,7 +170,7 @@ actor ROMScanner {
             // Enqueue initial batch of tasks
             for _ in 0..<maxConcurrentTasks {
                 if let nextURL = iterator.next() {
-                    group.addTask { await self.processSingleFile(url: nextURL, ignoredURLs: ignoredURLs, xmlCache: xmlCache, progressTracker: progressTracker, cancellationToken: cancellationToken) }
+                    group.addTask { await self.processSingleFile(url: nextURL, ignoredURLs: ignoredURLs, xmlCache: xmlCache, progressTracker: progressTracker, cancellationToken: cancellationToken, mameRejectedURLs: mameRejectedURLs) }
                 }
             }
 
@@ -181,7 +186,7 @@ actor ROMScanner {
                 if isCancelled || (cancellationToken?.isCancelled ?? false) { continue }
 
                 if let nextURL = iterator.next() {
-                    group.addTask { await self.processSingleFile(url: nextURL, ignoredURLs: ignoredURLs, xmlCache: xmlCache, progressTracker: progressTracker, cancellationToken: cancellationToken) }
+                    group.addTask { await self.processSingleFile(url: nextURL, ignoredURLs: ignoredURLs, xmlCache: xmlCache, progressTracker: progressTracker, cancellationToken: cancellationToken, mameRejectedURLs: mameRejectedURLs) }
                 }
             }
         }
@@ -200,7 +205,8 @@ actor ROMScanner {
         ignoredURLs: Set<String>,
         xmlCache: [URL: [String: ROMMetadata]],
         progressTracker: ProgressTracker,
-        cancellationToken: ScanCancellationToken?
+        cancellationToken: ScanCancellationToken?,
+        mameRejectedURLs: Set<URL> = []
     ) async -> [ROM] {
         await progressTracker.incrementAndReport()
 
@@ -220,7 +226,8 @@ actor ROMScanner {
         // Ignore specific PS1 BIOS files
         if filename == "scph5500.bin" || filename == "scph5501.bin" || filename == "scph5502.bin" { return [] }
 
-        guard let system = await identifySystem(url: url, extension: ext) else {
+        let skipMAMEScoring = !mameRejectedURLs.contains(url)
+        guard let system = await identifySystem(url: url, extension: ext, skipMAMEScoring: skipMAMEScoring) else {
             return []
         }
 
@@ -283,7 +290,7 @@ actor ROMScanner {
                     if inner.isAmbiguous, let extraction = tempExtraction {
                         let innerFilename = URL(fileURLWithPath: inner.relativePath).lastPathComponent
                         if let extractedURL = extraction.files.first(where: { $0.lastPathComponent == innerFilename }) {
-                            if let identifiedSystem = await ROMIdentifier.identifySystem(url: extractedURL, extension: innerExt, pathContextURL: url) {
+                            if let identifiedSystem = await ROMIdentifier.identifySystem(url: extractedURL, extension: innerExt, pathContextURL: url, skipMAMEScoring: true) {
                                 resolvedSystemID = identifiedSystem.id
                             }
                         }
@@ -469,8 +476,8 @@ actor ROMScanner {
 
     // MARK: - System Identification & Container Logic
     
-    nonisolated private func identifySystem(url: URL, extension ext: String) async -> SystemInfo? {
-        await ROMIdentifier.identifySystem(url: url, extension: ext)
+    nonisolated private func identifySystem(url: URL, extension ext: String, skipMAMEScoring: Bool = false) async -> SystemInfo? {
+        await ROMIdentifier.identifySystem(url: url, extension: ext, skipMAMEScoring: skipMAMEScoring)
     }
 
     nonisolated func getReferencedFiles(in url: URL) ->[URL] {

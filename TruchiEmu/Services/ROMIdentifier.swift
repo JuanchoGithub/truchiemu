@@ -64,7 +64,7 @@ enum ROMIdentifier {
 
     // MARK: - Public Entry Point
 
-    static func identifySystem(url: URL, extension ext: String, pathContextURL: URL? = nil) async -> SystemInfo? {
+    static func identifySystem(url: URL, extension ext: String, pathContextURL: URL? = nil, skipMAMEScoring: Bool = false) async -> SystemInfo? {
         let filename = url.lastPathComponent.lowercased()
         let extLower = normalize(extension: ext)
         
@@ -113,7 +113,8 @@ enum ROMIdentifier {
 
         // 2. MAME & FBNeo Lookup (Potentially slow I/O: 90 pts each)
         // Only perform if we don't have a very strong candidate from metadata matching
-        if currentBestScore < 90 && extLower == "zip" {
+        // and bulk MAME already confirmed this file is not in the MAME database
+        if !skipMAMEScoring && currentBestScore < 90 && extLower == "zip" {
             scoreByMAME(url: url, candidates: &candidates)
             if candidates.isEmpty {
                 #if LOG_DEBUG
@@ -193,13 +194,13 @@ enum ROMIdentifier {
         }
 
         // --- FINAL DECISION ---
-        var sortedCandidates = candidates.sorted { $0.value > $1.value }
+        var sortedCandidates = candidates.sorted { $0.value > $1.value || ($0.value == $1.value && $0.key < $1.key) }
 
         // if the order of candidates is MAME then NeoGeo, choose NeoGeo
         if sortedCandidates.first?.key == "mame", let second = sortedCandidates.dropFirst().first, second.key == "neogeo" {
             // swap scores to prefer Neo Geo
-            candidates["neogeo", default: 0] += candidates["mame", default: 0] + 10 // give Neo Geo a boost over MAME
-            sortedCandidates = candidates.sorted { $0.value > $1.value }
+            candidates["neogeo", default: 0] += candidates["mame", default: 0] + 10
+            sortedCandidates = candidates.sorted { $0.value > $1.value || ($0.value == $1.value && $0.key < $1.key) }
         }
         
         if let winner = sortedCandidates.first, winner.value >= 30 {
@@ -938,7 +939,7 @@ enum ROMIdentifier {
             }
         }
 
-        if let bestMatch = scores.sorted(by: { $0.value > $1.value }).first, bestMatch.value >= 15 {
+        if let bestMatch = scores.sorted(by: { $0.value > $1.value || ($0.value == $1.value && $0.key < $1.key) }).first, bestMatch.value >= 15 {
             #if LOG_DEBUG
             LoggerService.debug(category: "ROMIdentifier", "Fingerprint winner: \(bestMatch.key) (\(bestMatch.value) pts) from \(files.count) files")
             #endif
