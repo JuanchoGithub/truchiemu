@@ -140,6 +140,7 @@
 		1A46304E3641B352E5FA9B18 /* HintTree.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0CCCF7E7B149FD3BD9B3F8B /* HintTree.swift */; };
 		1AD2D874437F12BB4A87B3A1 /* AdventureGuideMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD03CAC3C06FAB737C0F8E04 /* AdventureGuideMapping.swift */; };
 		1B1B7F8F93C0331659D10F5A /* LYNX.png in Resources */ = {isa = PBXBuildFile; fileRef = F57E3C1CFFB6CC7ECC1EB2BE /* LYNX.png */; };
+		1B30AF34E62E318B40D3B0B8 /* BoxArtThumbnailService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2778D64778CA6E77C3190C86 /* BoxArtThumbnailService.swift */; };
 		1B933B00559FCA0F2AD02813 /* analyze_coverage.py in Resources */ = {isa = PBXBuildFile; fileRef = 1153DDB5F84388EB68FCC5AF /* analyze_coverage.py */; };
 		1BB751BA93BC638B4176ED52 /* AccentColorTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = E681371EC4DAB0353DC26FFF /* AccentColorTheme.swift */; };
 		1C2204D9530B77517743DCD2 /* NEOGEO.png in Resources */ = {isa = PBXBuildFile; fileRef = B3DD3B4C59CFC316674ECA82 /* NEOGEO.png */; };
@@ -1356,6 +1357,7 @@
 		26FDC27EC587284954CC9370 /* supervision@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "supervision@132w.png"; sourceTree = "<group>"; };
 		271083824A7E8AC2BD0F6961 /* input_coreLabels_melonds.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_melonds.json; sourceTree = "<group>"; };
 		277669A6BC99D1D9EB64F0F1 /* CheatComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatComponents.swift; sourceTree = "<group>"; };
+		2778D64778CA6E77C3190C86 /* BoxArtThumbnailService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxArtThumbnailService.swift; sourceTree = "<group>"; };
 		278B2E466CEE5561AE793161 /* input_coreLabels_ep128emu.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_ep128emu.json; sourceTree = "<group>"; };
 		27B228925202DC495CE8144E /* input_coreOverrides_mame2010.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_mame2010.json; sourceTree = "<group>"; };
 		27D0B274B9DD6DC3564A70EB /* n64_ique-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "n64_ique-cheats.zip"; sourceTree = "<group>"; };
@@ -3229,6 +3231,7 @@
 				44CE66A9E7C20983A7AD9D5A /* ArchiveExtractor.swift */,
 				7BC9EB4BBB881879FB8BA782 /* BoxArtPreloaderService.swift */,
 				2A96AAF72C7F18D45D235347 /* BoxArtService.swift */,
+				2778D64778CA6E77C3190C86 /* BoxArtThumbnailService.swift */,
 				9DA4F37BD28429972F9DC82D /* CheatAutoLoader.swift */,
 				7D63B93FCBE5E88FCC35FC49 /* CheatDownloadService.swift */,
 				E51DBD3DD1DC68C0749E4F9F /* CheatParser.swift */,
@@ -5269,6 +5272,7 @@
 				22FBDC836930C16AC02CBA03 /* BoxArtPreloaderService.swift in Sources */,
 				49C54B79CA96648E9B9F7069 /* BoxArtService.swift in Sources */,
 				126430C5084506DE1D08831F /* BoxArtSettingsView.swift in Sources */,
+				1B30AF34E62E318B40D3B0B8 /* BoxArtThumbnailService.swift in Sources */,
 				200E556F77878D242022783A /* CDImageParser.swift in Sources */,
 				89999BCF6C86749975156810 /* CLILauncher.swift in Sources */,
 				64452837E2BAEE24CE293F88 /* CLIManager.swift in Sources */,

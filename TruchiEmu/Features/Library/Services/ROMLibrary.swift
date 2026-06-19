@@ -207,7 +207,18 @@ let idsToPurge = orphans.map { $0.id }
     repository.deleteROMs(ids: idsToPurge)
     }
 
+    private func purgeOrphanedROMs() {
+        let orphans = roms.filter {
+            $0.path.lastPathComponent.lowercased().hasPrefix("._") || !FileManager.default.fileExists(atPath: $0.path.path)
+        }
+        guard !orphans.isEmpty else { return }
 
+        let orphanIDs = orphans.map { $0.id }
+        roms.removeAll { orphanIDs.contains($0.id) }
+        repository.deleteROMs(ids: orphanIDs)
+        LibraryMetadataStore.shared.deleteMetadataEntries(Set(orphans.map { LibraryMetadataStore.pathKey(for: $0) }))
+        for path in Set(orphans.map { $0.path.path }) { fileIndex.removeValue(forKey: path) }
+    }
 
     // MARK: - Legacy Migration & Purges
     
@@ -829,8 +840,9 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
 
         roms.removeAll { $0.path.path == subfolderPath || $0.path.path.hasPrefix(prefix) }
         repository.removeLibraryFolder(urlPath: subfolderPath, removeSubfolders: true)
+        repository.deleteROMsByPath([subfolderPath])
         LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryMetadataStore.pathKey(for: $0) }))
-        updateCounts(); saveROMsToDatabase()
+        updateCounts()
     }
 
     @MainActor func addSubfolder(folder: ROMLibraryFolder) {
@@ -1015,6 +1027,7 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
         loadROMsFromRepository()
         roms = roms.map { LibraryMetadataStore.shared.mergedROM($0) }
         purgeROMsOutsideLibraryFolders()
+        purgeOrphanedROMs()
         loadFileIndexFromStorage()
         updateCounts()
         

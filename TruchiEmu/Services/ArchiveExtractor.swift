@@ -266,6 +266,38 @@ final class ArchiveExtractor: ObservableObject {
         try? fileManager.removeItem(at: dir)
     }
 
+    static func removeItem(fromZipAt zipURL: URL, itemPath: String) throws {
+        let ext = zipURL.pathExtension.lowercased()
+        guard ext == "zip" else {
+            throw ArchiveError.unsupportedFormat
+        }
+
+        let tempDir = FileManager.default.temporaryDirectory.appendingPathComponent("TruchiEmu_ZipDelete_\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: tempDir) }
+        try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+
+        let tempZip = tempDir.appendingPathComponent("archive.zip")
+        try FileManager.default.copyItem(at: zipURL, to: tempZip)
+
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/zip")
+        process.arguments = ["-d", tempZip.path, itemPath]
+
+        try process.run()
+        process.waitUntilExit()
+
+        switch process.terminationStatus {
+        case 0:
+            break
+        case 12:
+            return
+        default:
+            throw ArchiveError.zipDeleteFailed("zip -d exited with status \(process.terminationStatus)")
+        }
+
+        _ = try FileManager.default.replaceItemAt(zipURL, withItemAt: tempZip)
+    }
+
     private func cacheDirectory(for archiveURL: URL) -> URL {
         let hash = sha256(archiveURL.path)
         return baseDirectory.appendingPathComponent(hash)
@@ -476,6 +508,9 @@ enum ArchiveError: LocalizedError {
     case emptyArchive
     case extractionFailed(String)
     case passwordProtected
+    case unsupportedFormat
+    case zipDeleteFailed(String)
+    case fileNotFound(String)
 
     var errorDescription: String? {
         switch self {
@@ -483,6 +518,9 @@ enum ArchiveError: LocalizedError {
         case .emptyArchive: return "Archive contains no files"
         case .extractionFailed(let reason): return "Extraction failed: \(reason)"
         case .passwordProtected: return "Archive is password-protected"
+        case .unsupportedFormat: return "Only zip archives are supported for this operation"
+        case .zipDeleteFailed(let reason): return "Failed to remove file from archive: \(reason)"
+        case .fileNotFound(let path): return "File not found inside archive: \(path)"
         }
     }
 }

@@ -58,6 +58,8 @@ actor ROMScanner {
         var playableMameURLs = Set<URL>()
 
         for url in urls {
+            // Ignore AppleDouble metadata files
+            if url.lastPathComponent.lowercased().hasPrefix("._") { continue }
         if url.pathExtension.lowercased() == "zip" || url.pathExtension.lowercased() == "7z" {
                 let shortName = url.deletingPathExtension().lastPathComponent.lowercased()
                 let strippedName = MAMEUnifiedService.stripDuplicateSuffix(shortName)
@@ -109,6 +111,8 @@ actor ROMScanner {
     
     private func unifiedScan(urls:[URL], cancellationToken: ScanCancellationToken?, progress: @escaping (Double) -> Void) async -> [ROM] {
         let scanStart = Date()
+        // Filter out AppleDouble metadata files at the earliest point
+        let urls = urls.filter { !$0.lastPathComponent.lowercased().hasPrefix("._") }
         let totalFiles = urls.count
         
         let uniqueFolders = Set(urls.map { $0.deletingLastPathComponent() })
@@ -210,6 +214,9 @@ actor ROMScanner {
 
         let filename = url.lastPathComponent.lowercased()
 
+        // Ignore AppleDouble metadata files (created by macOS when copying files)
+        if filename.hasPrefix("._") { return [] }
+
         // Ignore specific PS1 BIOS files
         if filename == "scph5500.bin" || filename == "scph5501.bin" || filename == "scph5502.bin" { return [] }
 
@@ -252,9 +259,37 @@ actor ROMScanner {
             let innerROMs = ROMIdentifier.listInnerROMs(url: url)
             if !innerROMs.isEmpty {
                 var results: [ROM] = []
+
+                // Check if any inner file needs full identification (ambiguous extension)
+                let needsFullID = innerROMs.contains(where: { $0.isAmbiguous })
+
+                var tempExtraction: ArchiveExtractor.TemporaryExtraction?
+                if needsFullID {
+                    do {
+                        tempExtraction = try await ArchiveExtractor.shared.extractTemporary(url: url, systemID: system.id)
+                    } catch {
+                        LoggerService.error(category: "ROMScanner", "Failed to extract \(url.lastPathComponent) for identification: \(error.localizedDescription)")
+                    }
+                }
+
                 for inner in innerROMs {
+                    // Skip AppleDouble metadata files inside archives
+                    if URL(fileURLWithPath: inner.relativePath).lastPathComponent.hasPrefix("._") { continue }
+
                     let innerName = URL(fileURLWithPath: inner.relativePath).deletingPathExtension().lastPathComponent
-                    var rom = ROM(id: UUID(), name: innerName, path: url, systemID: inner.systemID, originalSystemID: inner.systemID)
+                    let innerExt = URL(fileURLWithPath: inner.relativePath).pathExtension.lowercased()
+
+                    var resolvedSystemID = inner.systemID
+                    if inner.isAmbiguous, let extraction = tempExtraction {
+                        let innerFilename = URL(fileURLWithPath: inner.relativePath).lastPathComponent
+                        if let extractedURL = extraction.files.first(where: { $0.lastPathComponent == innerFilename }) {
+                            if let identifiedSystem = await ROMIdentifier.identifySystem(url: extractedURL, extension: innerExt, pathContextURL: url) {
+                                resolvedSystemID = identifiedSystem.id
+                            }
+                        }
+                    }
+
+                    var rom = ROM(id: UUID(), name: innerName, path: url, systemID: resolvedSystemID, originalSystemID: resolvedSystemID)
                     rom.innerROMPath = inner.relativePath
 
                     let folder = url.deletingLastPathComponent()
@@ -268,10 +303,15 @@ actor ROMScanner {
                     }
                     results.append(rom)
                 }
+
+                if let temp = tempExtraction {
+                    try? FileManager.default.removeItem(at: temp.tempDirectory)
+                }
+
                 return results
             }
 
-            // Fallback: archive identified but no inner ROMs found (e.g. ambiguous inner extensions)
+            // Fallback: archive identified but no inner ROMs found
             let name = url.deletingPathExtension().lastPathComponent
             var rom = ROM(id: UUID(), name: name, path: url, systemID: system.id, originalSystemID: system.id)
 

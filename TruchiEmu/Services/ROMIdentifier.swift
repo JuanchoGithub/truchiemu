@@ -25,6 +25,7 @@ enum ROMIdentifier {
     struct InnerROMEntry: Sendable {
         let relativePath: String
         let systemID: String
+        let isAmbiguous: Bool
     }
 
     // MARK: - Private Properties
@@ -63,7 +64,7 @@ enum ROMIdentifier {
 
     // MARK: - Public Entry Point
 
-    static func identifySystem(url: URL, extension ext: String) async -> SystemInfo? {
+    static func identifySystem(url: URL, extension ext: String, pathContextURL: URL? = nil) async -> SystemInfo? {
         let filename = url.lastPathComponent.lowercased()
         let extLower = normalize(extension: ext)
         
@@ -99,7 +100,8 @@ enum ROMIdentifier {
         }
         
         // Get all parent folder names for path context (Deferred until after the fast path to save CPU)
-        let parentNames = url.deletingLastPathComponent().pathComponents.map { $0.lowercased() }
+        let pathURL = pathContextURL ?? url
+        let parentNames = pathURL.deletingLastPathComponent().pathComponents.map { $0.lowercased() }
         
         // Dictionary to track potential matches: [SystemID: ConfidenceScore]
         var candidates: [String: Int] = [:]
@@ -287,6 +289,8 @@ enum ROMIdentifier {
         for entry in fileEntries {
             let fileExt = URL(fileURLWithPath: entry).pathExtension.lowercased()
             guard !fileExt.isEmpty, !skipExts.contains(fileExt), !entry.hasSuffix(".metadata.json") else { continue }
+            // Ignore AppleDouble metadata files inside archives
+            if URL(fileURLWithPath: entry).lastPathComponent.hasPrefix("._") { continue }
 
             let normalizedExt = normalize(extension: fileExt)
             let systemsWithExt = cachedSystems.filter { system in
@@ -294,10 +298,10 @@ enum ROMIdentifier {
             }
 
             if systemsWithExt.count == 1 {
-                results.append(InnerROMEntry(relativePath: entry, systemID: systemsWithExt[0].id))
+                results.append(InnerROMEntry(relativePath: entry, systemID: systemsWithExt[0].id, isAmbiguous: false))
             } else if systemsWithExt.count > 1 {
                 if let best = systemsWithExt.first {
-                    results.append(InnerROMEntry(relativePath: entry, systemID: best.id))
+                    results.append(InnerROMEntry(relativePath: entry, systemID: best.id, isAmbiguous: true))
                 }
             }
         }
@@ -616,6 +620,7 @@ enum ROMIdentifier {
             guard !file.hasSuffix("/") else { continue }
             let fileExt = URL(fileURLWithPath: file).pathExtension.lowercased()
             guard !fileExt.isEmpty, !skipExts.contains(fileExt), !file.hasSuffix(".metadata.json") else { continue }
+            if URL(fileURLWithPath: file).lastPathComponent.hasPrefix("._") { continue }
             let normalizedExt = normalize(extension: fileExt)
             let systemsWithExt = cachedSystems.filter { system in
                 system.extensions.contains { normalize(extension: $0) == normalizedExt }
@@ -892,7 +897,8 @@ enum ROMIdentifier {
         let skipInnerExts: Set<String> = ["txt", "nfo", "readme", "xml", "cfg", "ini", "sav", "srm", "bsv", "json", "bps", "ips", "ups", "xdelta", "dat", "html", "htm"]
         let romFileEntries = fileEntries.filter { entry in
             let ext = URL(fileURLWithPath: entry).pathExtension.lowercased()
-            return !ext.isEmpty && !skipInnerExts.contains(ext) && !entry.hasSuffix(".metadata.json")
+            guard !ext.isEmpty, !skipInnerExts.contains(ext), !entry.hasSuffix(".metadata.json") else { return false }
+            return !URL(fileURLWithPath: entry).lastPathComponent.hasPrefix("._")
         }
 
         if !romFileEntries.isEmpty && romFileEntries.count <= 10 {
