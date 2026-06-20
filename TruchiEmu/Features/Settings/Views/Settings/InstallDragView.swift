@@ -121,6 +121,12 @@ struct InstallDragView: View {
                 }
                 try FileManager.default.copyItem(at: sourceURL, to: destURL)
 
+                let process = Process()
+                process.executableURL = URL(fileURLWithPath: "/usr/bin/xattr")
+                process.arguments = ["-cr", destURL.path]
+                try? process.run()
+                process.waitUntilExit()
+
                 DispatchQueue.main.async {
             AppSettings.markVersionCompleted("installDragSkipped_version")
                 let installedAppURL = destURL
@@ -151,7 +157,6 @@ struct InstallDragView: View {
         if AppSettings.isVersionMatch("installDragSkipped_version") { return false }
         let bundlePath = Bundle.main.bundlePath
         if bundlePath.hasPrefix("/Applications/") { return false }
-        if bundlePath.hasPrefix("/private/") { return false }
         if bundlePath.contains("Xcode.app") { return false }
         if bundlePath.contains("DerivedData") { return false }
         return true
