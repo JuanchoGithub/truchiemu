@@ -199,6 +199,10 @@ final class GamepadNavigationManager: ObservableObject {
 
     private func poll() {
         guard NSApp.isActive else { return }
+        guard GamepadNavConfigManager.shared.isEnabled else {
+            if isGamepadActive { isGamepadActive = false }
+            return
+        }
 
         let controllers = ControllerService.shared.connectedControllers
         guard let gc = controllers.first(where: { !$0.isKeyboard })?.gcController,

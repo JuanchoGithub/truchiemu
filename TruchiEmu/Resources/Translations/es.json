@@ -1787,6 +1787,7 @@
     "settings.confirmDelete": "Toca de nuevo para confirmar",
     "settings.deleteExplanationArchive": "El archivo de juego se eliminará del zip. Otros juegos en el mismo zip no se verán afectados.",
     "settings.deleteExplanationFile": "El archivo de juego se moverá a la Papelera. Puedes restaurarlo más tarde si es necesario.",
+    "gamepadNav.enableJoystickNavigation": "Activar navegación con joystick",
     "gamepadNav.section": "Navegación con gamepad",
     "gamepadNav.configureButtonBindings": "Configurar asignaciones de botones",
     "gamepadNav.title": "Navegación con gamepad",

@@ -160,10 +160,20 @@ final class GamepadNavConfigManager: ObservableObject {
     static let shared = GamepadNavConfigManager()
 
     @Published private(set) var config: [GamepadNavAction: GamepadNavConfig]
+    @Published var isEnabled: Bool {
+        didSet {
+            AppSettings.setBool(Self.enabledKey, value: isEnabled)
+            if !isEnabled {
+                GamepadNavigationManager.shared.stopPolling()
+            }
+        }
+    }
 
     private static let storageKey = "gamepadNavConfig"
+    private static let enabledKey = "gamepadNavigationEnabled"
 
     private init() {
+        self.isEnabled = AppSettings.getBool(Self.enabledKey, defaultValue: true)
         if let data = AppSettings.getData(Self.storageKey),
            let decoded = try? JSONDecoder().decode([GamepadNavAction: GamepadNavConfig].self, from: data) {
             self.config = decoded
@@ -178,10 +188,10 @@ final class GamepadNavConfigManager: ObservableObject {
     }
 
     static let defaults: [GamepadNavAction: GamepadNavConfig] = [
-        .navigateUp:       GamepadNavConfig(binding: .unbound),
-        .navigateDown:     GamepadNavConfig(binding: .unbound),
-        .navigateLeft:     GamepadNavConfig(binding: .unbound),
-        .navigateRight:    GamepadNavConfig(binding: .unbound),
+        .navigateUp:       GamepadNavConfig(binding: GamepadNavBinding(button: .dpadUp)),
+        .navigateDown:     GamepadNavConfig(binding: GamepadNavBinding(button: .dpadDown)),
+        .navigateLeft:     GamepadNavConfig(binding: GamepadNavBinding(button: .dpadLeft)),
+        .navigateRight:    GamepadNavConfig(binding: GamepadNavBinding(button: .dpadRight)),
         .focusPrevZone:    GamepadNavConfig(binding: GamepadNavBinding(button: .l1)),
         .focusNextZone:    GamepadNavConfig(binding: GamepadNavBinding(button: .r1)),
         .focusSidebarZone: GamepadNavConfig(binding: GamepadNavBinding(button: .dpadLeft)),

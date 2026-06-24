@@ -1795,6 +1795,7 @@
     "settings.confirmDelete": "Tap again to confirm",
     "settings.deleteExplanationArchive": "The game file will be removed from the archive. Other games in the same archive are not affected.",
     "settings.deleteExplanationFile": "The game file will be moved to your system Trash. You can restore it later if needed.",
+    "gamepadNav.enableJoystickNavigation": "Enable Joystick Navigation",
     "gamepadNav.section": "Gamepad Navigation",
     "gamepadNav.configureButtonBindings": "Configure Button Bindings",
     "gamepadNav.title": "Gamepad Navigation",

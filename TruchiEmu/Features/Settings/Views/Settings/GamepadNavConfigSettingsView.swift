@@ -22,6 +22,12 @@ struct GamepadNavConfigSettingsView: View {
 
     var body: some View {
         Form {
+            if !isSearching || matchesSearch("enable joystick navigation enable disable toggle") {
+                Section(header: Label(loc.localized("gamepadNav.section"), systemImage: "gamecontroller")) {
+                    Toggle(loc.localized("gamepadNav.enableJoystickNavigation"), isOn: $navConfigManager.isEnabled)
+                }
+            }
+
             if !isSearching || matchesSearch("gamepad navigation movement up down left right cursor d-pad stick") {
                 Section(header: Label(loc.localized("gamepadNav.section.navigation"), systemImage: "arrow.up.down.left.right")) {
                     gamepadRow(.navigateUp)
@@ -101,6 +107,7 @@ struct GamepadNavConfigSettingsView: View {
     }
 
     private var hasMatchingSections: Bool {
+        matchesSearch("enable joystick navigation enable disable toggle") ||
         matchesSearch("gamepad navigation movement up down left right cursor d-pad stick") ||
         matchesSearch("gamepad zones focus sidebar content toolbar switch L1 R1") ||
         matchesSearch("gamepad scroll page L2 R2 right stick") ||
