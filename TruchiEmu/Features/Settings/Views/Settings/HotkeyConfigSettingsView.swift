@@ -53,6 +53,16 @@ struct HotkeyConfigSettingsView: View {
                 }
             }
 
+            if !isSearching || matchesSearch("gamepad navigation controller buttons joystick") {
+                Section(header: Label(loc.localized("gamepadNav.section"), systemImage: "gamecontroller")) {
+                    NavigationLink {
+                        GamepadNavConfigSettingsView(searchText: $searchText)
+                    } label: {
+                        Text(loc.localized("gamepadNav.configureButtonBindings"))
+                    }
+                }
+            }
+
             if !isSearching || matchesSearch("reset defaults restore") {
                 Section(header: Label(loc.localized("hotkeys.reset"), systemImage: "arrow.counterclockwise")) {
                     Text(loc.localized("hotkeys.resetDescription"))
@@ -86,6 +96,7 @@ struct HotkeyConfigSettingsView: View {
         matchesSearch("hotkeys keyboard shortcuts save load slot undo training input capture") ||
         matchesSearch("slots 0-9 slot") ||
         matchesSearch("training mode reset recording playback tape") ||
+        matchesSearch("gamepad navigation controller buttons joystick") ||
         matchesSearch("reset defaults restore")
     }
 

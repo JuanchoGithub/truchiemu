@@ -10,6 +10,7 @@ struct SettingsView: View {
     @EnvironmentObject var controllerService: ControllerService
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var gamepadNav = GamepadNavigationManager.shared
     @State private var hoveredPage: Page? = nil
     
     enum Page: Hashable, Codable, RawRepresentable, Identifiable {
@@ -167,6 +168,7 @@ struct SettingsView: View {
     @State private var selectedPage: Page = .general
     @State private var deepLinkID = UUID()
     @State private var searchText: String = ""
+    @State private var settingsNavContext: GamepadTwoZoneContext?
     @State private var hasPendingThemeChanges: Bool = false
     @State private var revertRequest: Int = 0
     @State private var applyRequest: Int = 0
@@ -278,24 +280,53 @@ struct SettingsView: View {
             detailContent
                 .id("\(selectedPage.rawValue)-\(deepLinkID)")
                 .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 4)
+                        .stroke(gamepadNav.isGamepadActive && settingsNavContext?.activeZone == .content ? AppColors.brandAccent.opacity(0.4) : Color.clear, lineWidth: 2)
+                        .padding(2)
+                )
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .environment(SystemDatabaseWrapper.shared)
         .frame(minWidth: 680, minHeight: 400)
         .onAppear {
+            if settingsNavContext == nil {
+                let ctx = GamepadTwoZoneContext()
+                let orderedPages = Self.pageGroups.flatMap(\.pages)
+                ctx.sidebarItemCount = orderedPages.count
+                ctx.contentItemCount = 1
+                ctx.onSelectSidebar = { [self] index in
+                    if index < orderedPages.count {
+                        selectedPage = orderedPages[index]
+                        deepLinkID = UUID()
+                    }
+                }
+                ctx.onDismiss = { NSApp.keyWindow?.close() }
+                ctx.ownedWindow = NSApp.keyWindow
+                settingsNavContext = ctx
+                GamepadNavContextStack.shared.push(ctx)
+            }
             if system != nil {
-                // Only sync if no initialPage was provided
                 if selectedPage == .general && AppSettings.getString("settings_selectedTab", defaultValue: "general") == "general" {
-                    // First appearance, potentially show initialPage from init
                 }
             } else {
                 syncWithStorage()
+            }
+        }
+        .onDisappear {
+            if let ctx = settingsNavContext {
+                GamepadNavContextStack.shared.remove(ctx)
+                settingsNavContext = nil
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .openAppSettings)) { _ in
             syncWithStorage()
         }
         .onChange(of: selectedPage) { _, newValue in
+            if let ctx = settingsNavContext,
+               let idx = Self.pageGroups.flatMap(\.pages).firstIndex(of: newValue) {
+                ctx.sidebarIndex = idx
+            }
             updateStorage()
         }
         .confirmationDialog(
@@ -322,6 +353,7 @@ struct SettingsView: View {
         }
         .sheet(item: $coreManager.pendingDownload) { pending in
             CoreDownloadSheet(pending: pending)
+                .gamepadDismissable { coreManager.pendingDownload = nil }
         }
         .background(WindowCloseInterceptor(
             hasPendingChanges: hasPendingThemeChanges,
@@ -347,6 +379,11 @@ struct SettingsView: View {
     private func sidebarItem(for page: Page) -> some View {
         let isSelected = selectedPage == page
         let isHovered = hoveredPage == page
+        let orderedPages = Self.pageGroups.flatMap(\.pages)
+        let pageIndex = orderedPages.firstIndex(of: page) ?? 0
+        let isGamepadFocused = gamepadNav.isGamepadActive
+            && settingsNavContext?.activeZone == .sidebar
+            && settingsNavContext?.sidebarIndex == pageIndex
 
         return Button {
             if coreManager.isDownloadingCore && page != .cores {
@@ -398,6 +435,10 @@ struct SettingsView: View {
                 }
             }
             .contentShape(Rectangle())
+            .overlay(
+                RoundedRectangle(cornerRadius: 6)
+                    .stroke(isGamepadFocused ? AppColors.brandAccent : Color.clear, lineWidth: 2)
+            )
         }
         .buttonStyle(.plain)
         .onHover { hoveredPage = $0 ? page : nil }

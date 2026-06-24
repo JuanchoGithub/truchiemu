@@ -1,6 +1,13 @@
 import SwiftUI
 import AppKit
 
+private struct GamepadCycleStep: Equatable {
+    let sortByLastPlayed: Bool
+    let sortByLastAdded: Bool
+    let filter: GameFilterOption?
+    let genre: String?
+}
+
 // MARK: - Library Grid View
 
 struct SystemPickerItem: Identifiable {
@@ -163,6 +170,7 @@ struct LibraryGridView: View {
     @State private var renamingROM: ROM? = nil
     @State private var renameText: String = ""
     @StateObject private var gameLauncher = GameLauncher.shared
+    @ObservedObject private var gamepadNav = GamepadNavigationManager.shared
 
     @State private var viewMode: ViewMode = .grid
     @State private var columnCount: Int = 4
@@ -198,6 +206,7 @@ struct LibraryGridView: View {
     @State private var sortByLastAdded: Bool = false
     @State private var selectedGenres: Set<String> = []
     @State private var showGenrePicker: Bool = false
+    @State private var r3CycleIndex: Int = 0
     @ObservedObject private var notificationHistory = NotificationHistoryManager.shared
     @State private var showNotificationPopover: Bool = false
     @State private var showNotificationCenterSheet: Bool = false
@@ -274,6 +283,25 @@ struct LibraryGridView: View {
                 }
 .transition(.opacity.combined(with: .scale(scale: 0.97)))
 }
+.modifier(GamepadNavReceiver(
+    onLaunch: { [self] in if let rom = selectedROM { Task { await launchGame(rom) } } },
+    onFocusSearch: { [self] in focusedField = .search },
+    onNavigateUp: { [self] in handleGamepadNavUp(columnCount: viewMode == .grid ? columnCount : 1, totalCount: viewModel.displayedROMs.count) },
+    onNavigateDown: { [self] in handleGamepadNavDown(columnCount: viewMode == .grid ? columnCount : 1, totalCount: viewModel.displayedROMs.count) },
+    onNavigateLeft: { [self] in handleGamepadNavLeft() },
+    onNavigateRight: { [self] in handleGamepadNavRight(totalCount: viewModel.displayedROMs.count) },
+    onToggleViewMode: { [self] in viewMode = viewMode == .grid ? .list : .grid },
+    onCycleSortOrder: { [self] in handleGamepadCycleSort() },
+    onShowContextMenu: { [self] in handleGamepadContextMenu() },
+    onShowNotifications: { [self] in showNotificationPopover = true }
+))
+.onChange(of: viewModel.displayedROMs.count) { _, newCount in
+    gamepadNav.contentItemCount = newCount
+    gamepadNav.clampCurrentIndex()
+}
+.onAppear {
+    gamepadNav.contentItemCount = viewModel.displayedROMs.count
+}
 }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .alert(loc.localized("library.renameGame"), isPresented: Binding(
@@ -310,6 +338,7 @@ struct LibraryGridView: View {
                 }
             )
             .onDisappear { confirmDeleteTap = false }
+            .gamepadDismissable { gameToDelete = nil }
         }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
@@ -446,6 +475,7 @@ struct LibraryGridView: View {
             .help(loc.localized("toolbar.notifications"))
             .popover(isPresented: $showNotificationPopover, arrowEdge: .bottom) {
                 NotificationPopoverView(showAll: $showNotificationCenterSheet)
+                    .gamepadDismissable { showNotificationPopover = false }
             }
         }
         ToolbarItem(placement: .primaryAction) {
@@ -496,17 +526,21 @@ struct LibraryGridView: View {
     }
     .sheet(item: $manualBoxArtSearchROM) { rom in
         BoxArtPickerView(rom: rom)
+            .gamepadDismissable { manualBoxArtSearchROM = nil }
     }
     .sheet(isPresented: $showNotificationCenterSheet) {
         NotificationCenterSheetView()
+            .gamepadDismissable { showNotificationCenterSheet = false }
     }
     .sheet(isPresented: $showHelpSheet) {
         HelpSheetView()
+            .gamepadDismissable { showHelpSheet = false }
     }
     .sheet(item: $systemPickerItem, onDismiss: { systemPickerItem = nil }) { item in
         SystemPickerView(roms: item.roms, library: library) {
             systemPickerItem = nil
         }
+        .gamepadDismissable { systemPickerItem = nil }
     }
     .onAppear {
             // Recompute columns from saved zoom level
@@ -631,6 +665,7 @@ viewModel.updateFilters(
         }
         .onChange(of: viewMode) { _, newMode in
             AppSettings.set("gridViewMode", value: newMode.rawValue)
+            gamepadNav.columnCount = newMode == .list ? 1 : columnCount
         }
         .onDisappear {
             // Save zoom level persistently
@@ -647,7 +682,6 @@ viewModel.updateFilters(
                 .keyboardShortcut(KeyEquivalent("f"), modifiers: .command)
                 .hidden()
         }
-        .onReceive(NotificationCenter.default.publisher(for: NSWindow.didBecomeKeyNotification)) { _ in }
         // Note: Delete key handling via onKeyPress requires macOS 14+
         // For macOS 13, users can use context menu or confirm delete action
     }
@@ -671,6 +705,7 @@ viewModel.updateFilters(
         let availableWidth = gridWidth - (gridPadding.leading + gridPadding.trailing)
         let computedColumns = max(1, min(8, Int((availableWidth + spacing) / (cardWidth + spacing))))
         columnCount = computedColumns
+        gamepadNav.columnCount = computedColumns
         
         columns = Array(
             repeating: GridItem(.flexible(minimum: 1, maximum: cardWidth), spacing: spacing),
@@ -704,10 +739,12 @@ viewModel.updateFilters(
     }
     
     private var gridView: some View {
+        ScrollViewReader { proxy in
         ScrollView(.vertical) {
             LazyVGrid(columns: columns, spacing: gridSpacing) {
                 ForEach(Array(viewModel.displayedROMs.enumerated()), id: \.element.id) { index, rom in
                     let isSelected = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
+                    let isGamepadFocused = gamepadNav.activeZone == .content && gamepadNav.contentIndex == index
                     
                     let draggedItemsForCard: [ROM] = {
                         if isSelected {
@@ -750,6 +787,14 @@ viewModel.updateFilters(
                 }
             }
         )
+        .id(rom.id)
+        .overlay {
+            if isGamepadFocused {
+                RoundedRectangle(cornerRadius: 6)
+                    .stroke(AppColors.brandAccent, lineWidth: 2)
+                    .allowsHitTesting(false)
+            }
+        }
                 }
             }
             .padding(gridPadding)
@@ -778,8 +823,173 @@ viewModel.updateFilters(
         .onDrop(of:[.url], isTargeted: nil) { items, location in
             return false
         }
+        .onChange(of: gamepadNav.contentIndex) { _, newIndex in
+            guard gamepadNav.activeZone == .content else { return }
+            guard newIndex >= 0, newIndex < viewModel.displayedROMs.count else { return }
+            let rom = viewModel.displayedROMs[newIndex]
+            selectedROM = rom
+            gamepadNav.scrollAnchorIndex = newIndex
+            withAnimation {
+                proxy.scrollTo(rom.id, anchor: .center)
+            }
+        }
+        .onChange(of: gamepadNav.scrollAnchorIndex) { _, newIndex in
+            guard gamepadNav.activeZone == .content else { return }
+            guard newIndex >= 0, newIndex < viewModel.displayedROMs.count else { return }
+            let rom = viewModel.displayedROMs[newIndex]
+            withAnimation(.easeInOut(duration: 0.08)) {
+                proxy.scrollTo(rom.id, anchor: .center)
+            }
+        }
+        }
     }
     
+    // MARK: - Gamepad Navigation Handlers
+
+    private func handleGamepadNavUp(columnCount: Int, totalCount: Int) {
+        guard gamepadNav.activeZone == .content else { return }
+        if gamepadNav.contentIndex >= columnCount {
+            gamepadNav.contentIndex -= columnCount
+        }
+    }
+
+    private func handleGamepadNavDown(columnCount: Int, totalCount: Int) {
+        guard gamepadNav.activeZone == .content else { return }
+        let newIndex = gamepadNav.contentIndex + columnCount
+        guard newIndex < totalCount else { return }
+        gamepadNav.contentIndex = newIndex
+    }
+
+    private func handleGamepadNavLeft() {
+        guard gamepadNav.activeZone == .content else { return }
+        if gamepadNav.contentIndex > 0 {
+            gamepadNav.contentIndex -= 1
+        }
+    }
+
+    private func handleGamepadNavRight(totalCount: Int) {
+        guard gamepadNav.activeZone == .content else { return }
+        if gamepadNav.contentIndex < totalCount - 1 {
+            gamepadNav.contentIndex += 1
+        }
+    }
+
+    private func handleGamepadCycleSort() {
+        let genres = GenreManager.shared.getAllDisplayGenres(from: library.roms)
+
+        let allSteps: [GamepadCycleStep] = [
+            GamepadCycleStep(sortByLastPlayed: false, sortByLastAdded: false, filter: nil, genre: nil),
+            GamepadCycleStep(sortByLastPlayed: true,  sortByLastAdded: false, filter: nil, genre: nil),
+            GamepadCycleStep(sortByLastPlayed: false, sortByLastAdded: true,  filter: nil, genre: nil),
+            GamepadCycleStep(sortByLastPlayed: false, sortByLastAdded: false, filter: .noBoxArt, genre: nil),
+            GamepadCycleStep(sortByLastPlayed: false, sortByLastAdded: false, filter: .neverPlayed, genre: nil),
+            GamepadCycleStep(sortByLastPlayed: false, sortByLastAdded: false, filter: .unscanned, genre: nil),
+            GamepadCycleStep(sortByLastPlayed: false, sortByLastAdded: false, filter: .multiplayer, genre: nil),
+        ] + genres.map { GamepadCycleStep(sortByLastPlayed: false, sortByLastAdded: false, filter: nil, genre: $0) }
+
+        let currentStep = GamepadCycleStep(
+            sortByLastPlayed: sortByLastPlayed,
+            sortByLastAdded: sortByLastAdded,
+            filter: activeFilters.compactMap { GameFilterOption(rawValue: $0) }.first,
+            genre: selectedGenres.count == 1 ? selectedGenres.first : nil
+        )
+
+        let currentIdx: Int = allSteps.firstIndex(of: currentStep) ?? 0
+        let next = (currentIdx + 1) % allSteps.count
+        r3CycleIndex = next
+        applyCycleStep(allSteps[next])
+    }
+
+    private func applyCycleStep(_ step: GamepadCycleStep) {
+        sortByLastPlayed = step.sortByLastPlayed
+        sortByLastAdded = step.sortByLastAdded
+        activeFilters.removeAll()
+        if let f = step.filter { activeFilters.insert(f.rawValue) }
+        selectedGenres.removeAll()
+        if let g = step.genre { selectedGenres.insert(g) }
+
+        AppSettings.setBool("sortByLastPlayed", value: sortByLastPlayed)
+        AppSettings.setBool("sortByLastAdded", value: sortByLastAdded)
+        viewModel.updateFilters(
+            filter: filter,
+            searchText: searchText,
+            activeFilters: activeFilters,
+            sortByLastPlayed: sortByLastPlayed,
+            sortByLastAdded: sortByLastAdded,
+            selectedGenres: selectedGenres
+        )
+    }
+
+    private func handleGamepadContextMenu() {
+        if gamepadNav.activeZone == .sidebar {
+            NotificationCenter.default.post(name: .gamepadSidebarContextMenu, object: nil)
+        } else if gamepadNav.activeZone == .content {
+            handleGamepadContentContextMenu()
+        }
+    }
+
+    private func handleGamepadContentContextMenu() {
+        guard gamepadNav.contentIndex >= 0,
+              gamepadNav.contentIndex < viewModel.displayedROMs.count else { return }
+        let rom = viewModel.displayedROMs[gamepadNav.contentIndex]
+        selectedROM = rom
+        let targetIDs = Array(selectedROMs.union([rom.id]))
+        let targetIDsSet = Set(targetIDs)
+        var items: [GamepadContextMenuItem] = [
+            .init(title: loc.localized("contextMenu.seeGameInfo")) { [self] in openWindow(id: "game-info", value: rom.id) },
+            .init(title: loc.localized("contextMenu.launchGame")) { [self] in Task { await launchGame(rom) } },
+            .separator
+        ]
+        for category in categoryManager.categories {
+            let isInCategory = category.gameIDs.contains(rom.id)
+            if isInCategory {
+                items.append(.init(title: "✓ \(category.name)") { [self] in
+                    categoryManager.removeGamesFromCategory(gameIDs: [rom.id], categoryID: category.id)
+                })
+            } else {
+                items.append(.init(title: category.name) { [self] in
+                    categoryManager.addGamesToCategory(gameIDs: [rom.id], categoryID: category.id)
+                })
+            }
+        }
+        let categoriesForTargetGames = categoryManager.categories.filter { category in
+            category.gameIDs.contains { targetIDsSet.contains($0) }
+        }
+        if !categoriesForTargetGames.isEmpty {
+            items.append(.init(title: loc.localized("contextMenu.removeFromAllCategories")) { [self] in
+                for category in categoriesForTargetGames {
+                    categoryManager.removeGamesFromCategory(gameIDs: targetIDs, categoryID: category.id)
+                }
+            })
+        }
+        items.append(.separator)
+        items.append(.init(title: loc.localized("contextMenu.moveToSystem")) { [self] in
+            let targetROMs = library.roms.filter { targetIDsSet.contains($0.id) }
+            systemPickerItem = SystemPickerItem(roms: targetROMs)
+        })
+        items.append(.separator)
+        let favTitle = rom.isFavorite ? loc.localized("contextMenu.removeFromFavorites") : loc.localized("contextMenu.addToFavorites")
+        items.append(.init(title: favTitle) { [self] in
+            var updated = rom
+            updated.isFavorite.toggle()
+            library.updateROM(updated)
+        })
+        items.append(.init(title: loc.localized("contextMenu.renameGame")) { [self] in
+            renameText = rom.customName ?? rom.metadata?.title ?? rom.name
+            renamingROM = rom
+        })
+        items.append(.init(title: loc.localized("contextMenu.getBoxArt")) { manualBoxArtSearchROM = rom })
+        items.append(.init(title: loc.localized("contextMenu.revealInFinder")) { NSWorkspace.shared.selectFile(rom.path.path, inFileViewerRootedAtPath: "") })
+        items.append(.separator)
+        if rom.isHidden {
+            items.append(.init(title: loc.localized("contextMenu.unhideGame")) { [self] in unhideGame(rom) })
+        } else {
+            items.append(.init(title: loc.localized("contextMenu.hideGame")) { [self] in hideGame(rom) })
+            items.append(.init(title: loc.localized("contextMenu.deleteGame"), isDestructive: true) { gameToDelete = rom })
+        }
+        GamepadContextMenuState.shared.show(items)
+    }
+
     // MARK: - Zoom Calculations
     
     // The scale factor applied to the entire grid content
@@ -833,9 +1043,11 @@ viewModel.updateFilters(
     }
 
     private var listView: some View {
+        ScrollViewReader { proxy in
         List(selection: $selectedROM) {
             ForEach(Array(viewModel.displayedROMs.enumerated()), id: \.element.id) { index, rom in
                 let isSelected = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
+                let isGamepadFocused = gamepadNav.activeZone == .content && gamepadNav.contentIndex == index
             GameListRowView(rom: rom, isSelected: isSelected, isEvenRow: index.isMultiple(of: 2), zoomLevel: zoomLevel, filter: filter, contextMenu: { contextMenu(for: rom) }, isScrolling: isScrolling)
                 .tag(rom)
                 .listRowBackground(Color.clear)
@@ -851,6 +1063,14 @@ viewModel.updateFilters(
             }
         )
         .contextMenu { contextMenu(for: rom) }
+        .overlay {
+            if isGamepadFocused {
+                RoundedRectangle(cornerRadius: 4)
+                    .stroke(AppColors.brandAccent, lineWidth: 2)
+                    .allowsHitTesting(false)
+            }
+        }
+        .id(rom.id)
         .onDrag {
           let items: [ROM]
           if isSelected {
@@ -902,6 +1122,8 @@ viewModel.updateFilters(
                 }
         )
         .onAppear {
+            gamepadNav.columnCount = 1
+            gamepadNav.contentItemCount = viewModel.displayedROMs.count
             scrollMonitor = NSEvent.addLocalMonitorForEvents(matching: [.scrollWheel]) { event in
                 if !isScrolling { isScrolling = true }
                 scrollDebounceTimer?.invalidate()
@@ -916,6 +1138,20 @@ viewModel.updateFilters(
                 NSEvent.removeMonitor(monitor)
             }
             scrollDebounceTimer?.invalidate()
+        }
+        .onChange(of: gamepadNav.contentIndex) { _, newIndex in
+            guard gamepadNav.activeZone == .content, viewMode == .list else { return }
+            guard newIndex >= 0, newIndex < viewModel.displayedROMs.count else { return }
+            let rom = viewModel.displayedROMs[newIndex]
+            selectedROM = rom
+            withAnimation {
+                proxy.scrollTo(rom.id, anchor: .center)
+            }
+        }
+        .onChange(of: viewModel.displayedROMs.count) { _, newCount in
+            gamepadNav.contentItemCount = newCount
+            gamepadNav.clampCurrentIndex()
+        }
         }
     }
     
@@ -1200,6 +1436,7 @@ viewModel.updateFilters(
         .clipped()
         .sheet(item: $manualBoxArtSearchROM) { rom in
             BoxArtPickerView(rom: rom)
+                .gamepadDismissable { manualBoxArtSearchROM = nil }
         }
         .onAppear {
             withAnimation(.easeOut(duration: 0.35).delay(0.1)) {
@@ -1678,11 +1915,17 @@ viewModel.updateFilters(
                     HStack(spacing: 4) {
                         Image(systemName: selectedGenres.isEmpty ? "tag" : "tag.fill")
                             .font(.system(size: 10, weight: .medium))
-                        Text(loc.localized("library.genre"))
-                            .font(.system(size: 11, weight: .medium))
-                        if !selectedGenres.isEmpty {
-                            Text("(\(selectedGenres.count))")
-                                .font(.system(size: 10))
+                        if selectedGenres.count == 1, let genre = selectedGenres.first {
+                            Text(genre)
+                                .font(.system(size: 11, weight: .medium))
+                                .lineLimit(1)
+                        } else {
+                            Text(loc.localized("library.genre"))
+                                .font(.system(size: 11, weight: .medium))
+                            if selectedGenres.count > 1 {
+                                Text("(\(selectedGenres.count))")
+                                    .font(.system(size: 10))
+                            }
                         }
                     }
                     .foregroundColor(selectedGenres.isEmpty ? .secondary : AppColors.textOnAccent(colorScheme))
@@ -1707,6 +1950,7 @@ viewModel.updateFilters(
                             )
                         }
                     )
+                    .gamepadDismissable { showGenrePicker = false }
                 }
 
                 if !activeFilters.isEmpty || !selectedGenres.isEmpty {
@@ -2176,4 +2420,31 @@ private struct DeleteConfirmationView: View {
         }
     }
 }
+}
+
+private struct GamepadNavReceiver: ViewModifier {
+    var onLaunch: () -> Void
+    var onFocusSearch: () -> Void
+    var onNavigateUp: () -> Void
+    var onNavigateDown: () -> Void
+    var onNavigateLeft: () -> Void
+    var onNavigateRight: () -> Void
+    var onToggleViewMode: () -> Void
+    var onCycleSortOrder: () -> Void
+    var onShowContextMenu: (() -> Void)?
+    var onShowNotifications: (() -> Void)?
+
+    func body(content: Content) -> some View {
+        content
+            .onReceive(NotificationCenter.default.publisher(for: .gamepadLaunchGame)) { _ in onLaunch() }
+            .onReceive(NotificationCenter.default.publisher(for: .gamepadFocusSearch)) { _ in onFocusSearch() }
+            .onReceive(NotificationCenter.default.publisher(for: .gamepadNavigateUp)) { _ in onNavigateUp() }
+            .onReceive(NotificationCenter.default.publisher(for: .gamepadNavigateDown)) { _ in onNavigateDown() }
+            .onReceive(NotificationCenter.default.publisher(for: .gamepadNavigateLeft)) { _ in onNavigateLeft() }
+            .onReceive(NotificationCenter.default.publisher(for: .gamepadNavigateRight)) { _ in onNavigateRight() }
+            .onReceive(NotificationCenter.default.publisher(for: .gamepadToggleViewMode)) { _ in onToggleViewMode() }
+              .onReceive(NotificationCenter.default.publisher(for: .gamepadCycleSortOrder)) { _ in onCycleSortOrder() }
+              .onReceive(NotificationCenter.default.publisher(for: .gamepadShowContextMenu)) { _ in onShowContextMenu?() }
+              .onReceive(NotificationCenter.default.publisher(for: .gamepadShowNotifications)) { _ in onShowNotifications?() }
+      }
 }

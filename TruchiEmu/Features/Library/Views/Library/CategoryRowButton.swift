@@ -9,6 +9,7 @@ struct CategoryRowButton: View {
 	let handleDropOnCategory: ([NSItemProvider], String) -> Bool
 	let showEditCategorySheet: (GameCategory) -> Void
 	let onDeleteCategory: (String) -> Void
+    var isGamepadFocused: Bool = false
 
     @State private var isHovered = false
     @State private var isDropTarget = false
@@ -51,6 +52,13 @@ struct CategoryRowButton: View {
 (isSelected ? (Color(hex: category.colorHex) ?? .blue).opacity(0.15) :
                         (isHovered ? AppColors.cardBackgroundSubtle(colorScheme) : .clear)))
         )
+        .overlay {
+            if isGamepadFocused {
+                RoundedRectangle(cornerRadius: 6)
+                    .stroke(AppColors.brandAccent, lineWidth: 2)
+                    .allowsHitTesting(false)
+            }
+        }
         .overlay(alignment: .leading) {
             if isSelected {
                 RoundedRectangle(cornerRadius: 2)

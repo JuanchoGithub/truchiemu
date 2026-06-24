@@ -182,6 +182,7 @@ struct ControllerSettingsView: View {
                         }
                         .padding(20)
                         .frame(width: 400)
+                        .gamepadDismissable { showParentModeHelp = false }
                     }
                 }
                 .padding(.horizontal, 8)

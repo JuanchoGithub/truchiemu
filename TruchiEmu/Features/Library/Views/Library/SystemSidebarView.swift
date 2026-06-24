@@ -9,6 +9,7 @@ struct SystemSidebarView: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var raService = RetroAchievementsService.shared
+    @ObservedObject private var gamepadNav = GamepadNavigationManager.shared
     @Binding var selectedFilter: LibraryFilter
     @Binding var showCreateCategorySheet: Bool
     @Binding var editingCategory: GameCategory?
@@ -143,6 +144,42 @@ struct SystemSidebarView: View {
         .background(AppColors.sidebarBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
         .frame(minWidth: 220, idealWidth: 240)
         .navigationTitle(loc.localized("app.library"))
+        .onReceive(NotificationCenter.default.publisher(for: .gamepadSidebarContextMenu)) { _ in
+            handleGamepadSidebarContextMenu()
+        }
+    }
+
+    private func handleGamepadSidebarContextMenu() {
+        let visible = GamepadNavCoordinator.shared.visibleSidebarFilters
+        guard gamepadNav.sidebarIndex >= 0 && gamepadNav.sidebarIndex < visible.count else { return }
+        let filter = visible[gamepadNav.sidebarIndex]
+        var items: [GamepadContextMenuItem] = []
+        switch filter {
+        case .system(let system):
+            items.append(.init(title: loc.localized("contextMenu.renameSystem")) { onRenameSystem?(system) })
+            if let refresh = onRefresh {
+                items.append(.init(title: loc.localized("contextMenu.refreshSystem")) { refresh(system) })
+            }
+            items.append(.separator)
+            let cores = coreManager.installedCores.filter { core in
+                core.systemIDs.contains(system.id)
+            }
+            if !cores.isEmpty {
+                items.append(.init(title: loc.localized("contextMenu.coreOptions")) { onSettings?(system.id) })
+            }
+            items.append(.init(title: loc.localized("contextMenu.controllers")) { onSettings?(system.id) })
+        case .category(let categoryID):
+            if let category = categoryManager.categories.first(where: { $0.id == categoryID }) {
+                items.append(.init(title: loc.localized("contextMenu.editCategory")) { editingCategory = category })
+                items.append(.init(title: loc.localized("contextMenu.deleteCategory"), isDestructive: true) { categoryManager.deleteCategory(id: category.id) })
+            }
+        default:
+            items.append(.init(title: loc.localized("contextMenu.settings")) {
+                NotificationCenter.default.post(name: .openAppSettings, object: nil)
+            })
+        }
+        guard !items.isEmpty else { return }
+        GamepadContextMenuState.shared.show(items)
     }
 
     @ViewBuilder
@@ -190,6 +227,7 @@ struct SystemSidebarView: View {
 
     @ViewBuilder
     private func sidebarRow(icon: String, label: String, system: SystemInfo? = nil, count: Int, tint: Color = AppColors.brandAccent, filter: LibraryFilter, onRename: ((SystemInfo) -> Void)? = nil) -> some View {
+        let isGamepadFocusedRow = gamepadNav.isGamepadActive && gamepadNav.activeZone == .sidebar && gamepadFocusedFilter?.id == filter.id
         SidebarRowButton(
             icon: icon,
             label: label,
@@ -210,22 +248,50 @@ onSystemAction: system != nil ? { sys, action, targetID in
             onRename: onRename,
             installedCores: system != nil ? coreManager.installedCores.filter { core in
                 core.systemIDs.contains(system!.id)
-            } : nil
+            } : nil,
+            isGamepadFocused: isGamepadFocusedRow
         )
+    }
+
+    private var gamepadFocusedFilter: LibraryFilter? {
+        let visible = GamepadNavCoordinator.shared.visibleSidebarFilters
+        guard gamepadNav.sidebarIndex >= 0 && gamepadNav.sidebarIndex < visible.count else { return nil }
+        return visible[gamepadNav.sidebarIndex]
     }
 
     @StateObject private var dragState = GameDragState.shared
     
     @State private var hoveredCategoryID: String? = nil
     @State private var categoriesHeaderHovered = false
-    @State private var categoriesSectionExpanded = true
-    @State private var systemsSectionExpanded = true
+    @State private var categoriesSectionExpanded = true {
+        didSet {
+            GamepadNavCoordinator.shared.categoriesExpanded = categoriesSectionExpanded
+            GamepadNavCoordinator.shared.updateSidebarItems(
+                GamepadNavCoordinator.shared.sidebarSelectableFilters
+            )
+            if gamepadNav.activeZone == .sidebar {
+                GamepadNavCoordinator.shared.syncSidebarIndex(to: selectedFilter)
+            }
+        }
+    }
+    @State private var systemsSectionExpanded = true {
+        didSet {
+            GamepadNavCoordinator.shared.systemsExpanded = systemsSectionExpanded
+            GamepadNavCoordinator.shared.updateSidebarItems(
+                GamepadNavCoordinator.shared.sidebarSelectableFilters
+            )
+            if gamepadNav.activeZone == .sidebar {
+                GamepadNavCoordinator.shared.syncSidebarIndex(to: selectedFilter)
+            }
+        }
+    }
     
     @ViewBuilder
     private func categoryRow(category: GameCategory) -> some View {
         let count = categoryManager.gamesInCategory(categoryID: category.id, fromROMs: library.roms).count
         let isSelected = selectedFilter.id == LibraryFilter.category(category.id).id
-        
+        let isGamepadFocusedRow = gamepadNav.isGamepadActive && gamepadNav.activeZone == .sidebar && gamepadFocusedFilter?.id == LibraryFilter.category(category.id).id
+
 		CategoryRowButton(
 			category: category,
 			count: count,
@@ -233,7 +299,8 @@ onSystemAction: system != nil ? { sys, action, targetID in
 			selectedFilter: $selectedFilter,
 			handleDropOnCategory: handleDropOnCategory,
 			showEditCategorySheet: showEditCategorySheet,
-			onDeleteCategory: { id in categoryManager.deleteCategory(id: id) }
+			onDeleteCategory: { id in categoryManager.deleteCategory(id: id) },
+            isGamepadFocused: isGamepadFocusedRow
 		)
     }
     
@@ -558,17 +625,21 @@ struct RenameSystemSheet: View {
                     }
                 }
                 .sheet(isPresented: $showCropView) {
-                    if let pickedImage {
-                        ImageCropView(sourceImage: pickedImage) { croppedImage in
-                            saveCustomIcon(croppedImage)
+                    Group {
+                        if let pickedImage {
+                            ImageCropView(sourceImage: pickedImage) { croppedImage in
+                                saveCustomIcon(croppedImage)
+                            }
                         }
                     }
+                    .gamepadDismissable { showCropView = false }
                 }
                 .sheet(isPresented: $showSFSymbolBrowser) {
                     SFSymbolBrowserView { selectedName in
                         selectedIconName = selectedName
                         customIconPath = nil
                     }
+                    .gamepadDismissable { showSFSymbolBrowser = false }
                 }
             }
         }

@@ -396,6 +396,7 @@ struct CoreOptionsView: View {
                             }
                             .padding()
                             .frame(width: 280)
+                            .gamepadDismissable { showSearchTips = false }
                         }
                     }
                     .padding(AppSpacing.sm)

@@ -303,6 +303,7 @@ struct SlotSelectorButton: View {
         .popover(isPresented: $isDropdownShown, arrowEdge: .top) {
             SlotPickerView(selectedSlot: $selectedSlot, onSlotSelect: onSlotChange, runner: runner)
                 .frame(width: 280, height: 400)
+                .gamepadDismissable { isDropdownShown = false }
         }
         .disabled(disabled)
     }

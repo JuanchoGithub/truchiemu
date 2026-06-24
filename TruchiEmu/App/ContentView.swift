@@ -26,6 +26,7 @@ struct ContentView: View {
 @StateObject private var raCacheCoordinator = RAGameCacheCoordinator.shared
 @ObservedObject var notificationPillManager = NotificationPillManager.shared
 @ObservedObject var wizard = SetupWizardState.shared
+@ObservedObject var gamepadNavCoordinator = GamepadNavCoordinator.shared
     
 @State private var selectedFilter: LibraryFilter = .recent
 @State private var selectedROM: ROM? = nil
@@ -223,23 +224,27 @@ case .library:
                           searchText: $searchText,
                           library: library,
                           categoryManager: categoryManager
-                      )
+                       )
                      .navigationTitle(navigationTitle)
                      .onChange(of: selectedFilter) { _, newFilter in
                          AppSettings.setString("lastSelectedFilter", value: newFilter.id)
+                         gamepadNavCoordinator.syncSidebarIndex(to: newFilter)
                      }
                  }
                 .sheet(isPresented: $showCreateCategorySheet) {
                     CreateCategorySheet()
+                        .gamepadDismissable { showCreateCategorySheet = false }
                 }
 .sheet(item: $editingCategory) { category in
                       EditCategorySheet(category: category)
+                          .gamepadDismissable { editingCategory = nil }
                   }
                   .sheet(item: $renamingSystem) { system in
                       RenameSystemSheet(system: system) { newName in
                           // Handle system rename
                           // This would need to be implemented based on the app's requirements
                       }
+                      .gamepadDismissable { renamingSystem = nil }
                   }
   
                  // Core download status bar
@@ -276,9 +281,13 @@ case .library:
 
         // Confetti overlay for celebration moments
             ConfettiOverlay()
+
+        // Gamepad context menu overlay
+        GamepadContextMenuOverlay()
         }
 .sheet(item: $coreManager.pendingDownload) { pending in
 CoreDownloadSheet(pending: pending)
+    .gamepadDismissable { coreManager.pendingDownload = nil }
 }
 .sheet(item: $shaderOverrideData) { data in
 ShaderGameOverrideView(
@@ -288,6 +297,7 @@ games: data.games
 ) { selectedGameIDs in
 applyShaderOverrides(systemID: data.systemID, shaderID: data.newShaderPresetID, selectedGameIDs: selectedGameIDs)
 }
+.gamepadDismissable { shaderOverrideData = nil }
 }
         .task {
             // Initialize the ROM library asynchronously after the view appears.
@@ -299,16 +309,23 @@ applyShaderOverrides(systemID: data.systemID, shaderID: data.newShaderPresetID, 
             // for several seconds while reporting 0% cache hit rate.
         }
         .onAppear {
-            // Restore last selected filter from preferences, or default based on play history.
             if let savedFilterID = AppSettings.getString("lastSelectedFilter"),
                let restoredFilter = restoreFilter(from: savedFilterID) {
                 selectedFilter = restoredFilter
             } else {
-                // First run or no saved filter: start on All Games until at least one game has been played.
                 let hasPlayedGames = library.roms.contains { $0.lastPlayed != nil || $0.timesPlayed > 0 }
                 if !hasPlayedGames {
                     selectedFilter = .all
                 }
+            }
+            configureGamepadNav()
+        }
+        .onChange(of: library.roms.count) { _, _ in
+            configureGamepadNav()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .gamepadSelectFilter)) { notification in
+            if let filter = notification.object as? LibraryFilter {
+                selectedFilter = filter
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .openAppSettings)) { _ in
@@ -417,5 +434,40 @@ LoggerService.info(category: "Shaders", "Updated shader for \(updatedROMIDs.coun
 
         }
     }
-    
+
+    private var gamepadSelectableFilters: [LibraryFilter] {
+        var items: [LibraryFilter] = [.all]
+        if library.romCounts["favorites"] ?? 0 > 0 { items.append(.favorites) }
+        items.append(.recent)
+        if let raCount = library.romCounts["retroAchievements"], raCount > 0 {
+            items.append(.retroAchievements)
+        }
+        for cat in categoryManager.categories {
+            items.append(.category(cat.id))
+        }
+        let ids = Set(library.roms.compactMap { $0.systemID })
+        let displaySystems = systemDatabase.systemsForDisplay
+        let systemFilters: [LibraryFilter] = displaySystems.compactMap { sys in
+            let internalIDs = systemDatabase.allInternalIDs(forDisplayID: sys.id)
+            let total = internalIDs.reduce(0) { sum, id in
+                sum + (ids.contains(id) ? (library.romCounts[id] ?? 0) : 0)
+            }
+            return total > 0 ? .system(sys) : nil
+        }.sorted { lhs, rhs in
+            let lName: String = if case .system(let s) = lhs { s.name } else { "" }
+            let rName: String = if case .system(let s) = rhs { s.name } else { "" }
+            return lName.localizedCaseInsensitiveCompare(rName) == .orderedAscending
+        }
+        items.append(contentsOf: systemFilters)
+        if library.romCounts["hidden"] ?? 0 > 0 { items.append(.hidden) }
+        if library.romCounts["mameNonGames"] ?? 0 > 0 { items.append(.mameNonGames) }
+        return items
+    }
+
+    private func configureGamepadNav() {
+        let filters = gamepadSelectableFilters
+        gamepadNavCoordinator.updateSidebarItems(filters)
+        gamepadNavCoordinator.syncSidebarIndex(to: selectedFilter)
+        GamepadNavigationManager.shared.startPolling()
+    }
 }

@@ -32,11 +32,13 @@ struct DetailBoxArtButton: View {
         .sheet(isPresented: $isPresented) {
             if let img = image {
                 DetailZoomableFullScreenView(image: img, fullResolutionURL: imageURL)
+                    .gamepadDismissable { isPresented = false }
             }
         }
         .sheet(isPresented: $showPicker) {
             if let rom = rom {
                 BoxArtPickerView(rom: rom)
+                    .gamepadDismissable { showPicker = false }
             }
         }
     }

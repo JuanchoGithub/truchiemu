@@ -2,6 +2,7 @@ import SwiftUI
 
 struct GameDetailView: View {
     @EnvironmentObject var library: ROMLibrary
+    @ObservedObject private var gamepadNav = GamepadNavigationManager.shared
     @EnvironmentObject var coreManager: CoreManager
     @EnvironmentObject var controllerService: ControllerService
     @ObservedObject var sysPrefs = SystemPreferences.shared
@@ -66,6 +67,7 @@ struct GameDetailView: View {
     @State var showEnabledOnlyCheats: Bool = false
     @State var isLaunchingGame = false
     @State var showSystemPicker: Bool = false
+    @State var gamepadTwoZoneContext: GamepadTwoZoneContext?
 
 // MARK: - RA Hash Comparison State
 @State var showRAHashComparison = false
@@ -132,6 +134,11 @@ struct GameDetailView: View {
         }
         .scrollContentBackground(.hidden)
         .background(Color.clear)
+        .overlay(
+            RoundedRectangle(cornerRadius: 4)
+                .stroke(gamepadNav.isGamepadActive && gamepadTwoZoneContext?.activeZone == .content ? AppColors.brandAccent.opacity(0.4) : Color.clear, lineWidth: 2)
+                .padding(2)
+        )
     }
 
     @ViewBuilder
@@ -206,6 +213,10 @@ struct GameDetailView: View {
             selectedCoreID = currentROM.selectedCoreID ?? sysPrefs.preferredCoreID(for: currentROM.systemID ?? "") ?? system?.defaultCoreID
     loadGBColorizationSettings()
     loadAchievementViewMode()
+    setupGamepadNavContext()
+  }
+  .onDisappear {
+      teardownGamepadNavContext()
   }
   .onChange(of: currentROM.id) { _, _ in
     clearManualStatus()
@@ -269,13 +280,17 @@ struct GameDetailView: View {
                 isAchievementsLoading = false
             }
         }
-        .sheet(isPresented: $showBoxArtPicker) { BoxArtPickerView(rom: currentROM) }
+        .sheet(isPresented: $showBoxArtPicker) { BoxArtPickerView(rom: currentROM)
+            .gamepadDismissable { showBoxArtPicker = false }
+        }
         .sheet(isPresented: $showRAHashComparison) { raHashComparisonSheet
+            .gamepadDismissable { showRAHashComparison = false }
         }
         .sheet(isPresented: $showSystemPicker) {
             SystemPickerView(roms: [currentROM], library: library) {
                 showSystemPicker = false
             }
+            .gamepadDismissable { showSystemPicker = false }
         }
     }
 
@@ -295,6 +310,10 @@ struct GameDetailView: View {
         achievementsService.isEnabled
             ? [.savedStates, .cheats, .core, .achievements]
             : [.savedStates, .cheats, .core]
+    }
+
+    var allSections: [DetailSection] {
+        primarySections + advancedSections
     }
 
     var sidebarNavigation: some View {
@@ -324,6 +343,11 @@ struct GameDetailView: View {
     func sidebarItem(for section: DetailSection) -> some View {
         let isSelected = selectedSection == section
         let isHovered = hoveredSection == section
+        let allItems = allSections
+        let sectionIndex = allItems.firstIndex(of: section) ?? 0
+        let isGamepadFocused = gamepadNav.isGamepadActive
+            && gamepadTwoZoneContext?.activeZone == .sidebar
+            && gamepadTwoZoneContext?.sidebarIndex == sectionIndex
 
         return AnyView(
             Button {
@@ -363,6 +387,10 @@ struct GameDetailView: View {
                         .padding(.leading, 2)
                 }
             }
+            .overlay(
+                RoundedRectangle(cornerRadius: 6)
+                    .stroke(isGamepadFocused ? AppColors.brandAccent : Color.clear, lineWidth: 2)
+            )
             .onHover { hoveredSection = $0 ? section : nil }
         )
     }
@@ -744,6 +772,32 @@ struct GameDetailView: View {
             await gameLauncher.launchGame(rom: freshROM, coreID: cid, slotToLoad: slotToLoad, progressiveVersion: progressiveVersion, library: library, shaderUniformOverrides: currentShaderUniforms) { _ in
                 self.isLaunchingGame = false
             }
+        }
+    }
+
+    private func setupGamepadNavContext() {
+        let sections = allSections
+        let ctx = GamepadTwoZoneContext()
+        ctx.sidebarItemCount = sections.count
+        ctx.contentItemCount = 1
+        let initialIndex = sections.firstIndex(of: selectedSection) ?? 0
+        ctx.sidebarIndex = initialIndex
+        ctx.onSelectSidebar = { [self] index in
+            guard index >= 0, index < sections.count else { return }
+            withAnimation(.easeInOut(duration: 0.15)) {
+                selectedSection = sections[index]
+            }
+        }
+        ctx.onDismiss = { NSApp.keyWindow?.close() }
+        ctx.ownedWindow = NSApp.keyWindow
+        gamepadTwoZoneContext = ctx
+        GamepadNavContextStack.shared.push(ctx)
+    }
+
+    private func teardownGamepadNavContext() {
+        if let ctx = gamepadTwoZoneContext {
+            GamepadNavContextStack.shared.remove(ctx)
+            gamepadTwoZoneContext = nil
         }
     }
 }

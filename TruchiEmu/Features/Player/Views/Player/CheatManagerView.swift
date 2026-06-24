@@ -144,7 +144,10 @@ Image(systemName: "xmark.circle.fill")
                 .padding()
             }
         }
-        .sheet(isPresented: $showAddCheatWindow) { AddCheatWindow(rom: rom).frame(minWidth: 500, minHeight: 400) }
+        .sheet(isPresented: $showAddCheatWindow) {
+            AddCheatWindow(rom: rom).frame(minWidth: 500, minHeight: 400)
+                .gamepadDismissable { showAddCheatWindow = false }
+        }
         .fileImporter(isPresented: $showImportFile, allowedContentTypes: [.item], allowsMultipleSelection: false) { result in
             if case .success(let urls) = result, let url = urls.first { Task { await cheatManager.importChtFile(url, for: rom) } }
         }

@@ -54,7 +54,9 @@ struct AboutView: View {
                     }
                     .buttonStyle(.bordered)
                     .controlSize(.small)
-                    .popover(isPresented: $showWhatsNew) { WhatsNewView() }
+                    .popover(isPresented: $showWhatsNew) { WhatsNewView()
+                        .gamepadDismissable { showWhatsNew = false }
+                    }
 
                     Button {
                         showChangelog = true
@@ -64,7 +66,9 @@ struct AboutView: View {
                     }
                     .buttonStyle(.bordered)
                     .controlSize(.small)
-                    .popover(isPresented: $showChangelog) { ChangelogView() }
+                    .popover(isPresented: $showChangelog) { ChangelogView()
+                        .gamepadDismissable { showChangelog = false }
+                    }
 
         if isCheckingUpdates {
             ProgressView()

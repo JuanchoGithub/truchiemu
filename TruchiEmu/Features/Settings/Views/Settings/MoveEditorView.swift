@@ -282,6 +282,7 @@ struct MoveEditorView: View {
                 .buttonStyle(.bordered)
                 .popover(isPresented: $showCategoryPicker) {
                     categoryPickerContent
+                        .gamepadDismissable { showCategoryPicker = false }
                 }
             }
         }

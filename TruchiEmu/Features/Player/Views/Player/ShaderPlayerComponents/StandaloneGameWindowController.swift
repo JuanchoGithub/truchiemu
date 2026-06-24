@@ -67,6 +67,10 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     
     // Toolbar auto-hide state
     @MainActor @Published var isToolbarVisible: Bool = true
+    @MainActor @Published var isGamepadToolbarMode: Bool = false
+    @MainActor @Published var gamepadToolbarFocusedIndex: Int?
+    @MainActor var gameToolbarNavContext: GamepadGameToolbarContext?
+    @MainActor var gameRunningNavContext: GamepadGameRunningContext?
     @MainActor @Published var isFullscreen: Bool = false
     @MainActor @Published var autoFullscreenEnabled: Bool = false
     private var isWaitingForFullscreenAnimation = false
@@ -388,6 +392,38 @@ super.init(window: window)
             object: nil
         )
 
+        // Gamepad toolbar navigation
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleGamepadShowToolbar),
+            name: .gamepadShowGameToolbar,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleGamepadToolbarSelect),
+            name: .gamepadToolbarSelect,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleGamepadToolbarLeft),
+            name: .gamepadToolbarNavigateLeft,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleGamepadToolbarRight),
+            name: .gamepadToolbarNavigateRight,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleGamepadToolbarCancel),
+            name: .gamepadToolbarCancel,
+            object: nil
+        )
+
   // Start cursor auto-hide after initial setup delay
   DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
     let isFullscreen = self?.window?.styleMask.contains(.fullScreen) ?? false
@@ -481,6 +517,36 @@ super.init(window: window)
         DispatchQueue.main.async { [weak self] in
             guard let self, self.gameGuideViewModel.hasGuideData else { return }
             self.toggleGuideSidebar()
+        }
+    }
+
+    @objc private func handleGamepadShowToolbar() {
+        DispatchQueue.main.async { [weak self] in
+            self?.showGamepadToolbar()
+        }
+    }
+
+    @objc private func handleGamepadToolbarSelect() {
+        DispatchQueue.main.async { [weak self] in
+            self?.gamepadToolbarActivateFocusedButton()
+        }
+    }
+
+    @objc private func handleGamepadToolbarLeft() {
+        DispatchQueue.main.async { [weak self] in
+            self?.gamepadToolbarNavigateLeft()
+        }
+    }
+
+    @objc private func handleGamepadToolbarRight() {
+        DispatchQueue.main.async { [weak self] in
+            self?.gamepadToolbarNavigateRight()
+        }
+    }
+
+    @objc private func handleGamepadToolbarCancel() {
+        DispatchQueue.main.async { [weak self] in
+            self?.exitGamepadToolbarMode()
         }
     }
     
@@ -635,6 +701,13 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
             if self.isLoading {
                 GameLauncher.shared.launchPhase = .startingGame
             }
+            GamepadNavigationManager.shared.setGameRunning(true)
+            let ctx = GamepadGameRunningContext(onShowToolbar: { [weak self] in
+                self?.showGamepadToolbar()
+            })
+            ctx.ownedWindow = self.window
+            self.gameRunningNavContext = ctx
+            GamepadNavContextStack.shared.push(ctx)
         }
 
         // Core is initializing async — we're now waiting for the first frame
@@ -1302,6 +1375,15 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
             }
         }
         runner?.stop()
+        GamepadNavigationManager.shared.setGameRunning(false)
+        if let ctx = gameRunningNavContext {
+            GamepadNavContextStack.shared.remove(ctx)
+            gameRunningNavContext = nil
+        }
+        if let ctx = gameToolbarNavContext {
+            GamepadNavContextStack.shared.remove(ctx)
+            gameToolbarNavContext = nil
+        }
 
         if RetroAchievementsService.shared.isEnabled {
             RetroAchievementsService.shared.refreshGameCacheAfterGameStop()

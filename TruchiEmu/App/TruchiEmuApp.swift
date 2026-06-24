@@ -504,12 +504,14 @@ var body: some Scene {
           .environmentObject(coreManager)
           .environmentObject(controllerService)
           .environment(systemDatabase)
+          .gamepadDismissable { NSApp.keyWindow?.close() }
       }
     }
 
   WindowGroup(id: "help") {
     HelpWindowView()
       .tint(AppColors.brandAccentSecondary)
+      .gamepadDismissable { NSApp.keyWindow?.close() }
   }
 
   Settings {

@@ -15,6 +15,7 @@ struct SidebarRowButton: View {
     var onSystemAction: ((SystemInfo, SystemAction, String?) -> Void)? = nil
     var onRename: ((SystemInfo) -> Void)? = nil
     var installedCores: [LibretroCore]? = nil
+    var isGamepadFocused: Bool = false
 
     @State private var isHovered = false
     @Environment(\.colorScheme) private var colorScheme
@@ -77,6 +78,13 @@ struct SidebarRowButton: View {
             RoundedRectangle(cornerRadius: 6)
                 .fill(isSelected ? AppColors.accentBackground(colorScheme) : (isHovered ? AppColors.cardBackgroundSubtle(colorScheme) : .clear))
         )
+        .overlay {
+            if isGamepadFocused {
+                RoundedRectangle(cornerRadius: 6)
+                    .stroke(AppColors.brandAccent, lineWidth: 2)
+                    .allowsHitTesting(false)
+            }
+        }
         .overlay(alignment: .leading) {
             if isSelected {
                 RoundedRectangle(cornerRadius: 2)

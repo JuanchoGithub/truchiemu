@@ -398,6 +398,7 @@ struct TrainingDummyTab: View {
         }
         .sheet(isPresented: $showingReversalPicker) {
             ReversalMovePickerSheet(viewModel: viewModel)
+                .gamepadDismissable { showingReversalPicker = false }
         }
     }
 
@@ -651,6 +652,7 @@ struct TrainingSequenceTab: View {
         }
         .sheet(isPresented: $showingMovePicker) {
             SequenceMovePickerSheet(viewModel: viewModel)
+                .gamepadDismissable { showingMovePicker = false }
         }
     }
 

@@ -236,6 +236,7 @@ Text(loc.localized("cheat.importInstructions"))
         .sheet(isPresented: $showAddCheatWindow) {
             AddCheatViewWrapper(rom: rom, cheatManager: cheatManager)
                 .frame(minWidth: 500, minHeight: 400)
+                .gamepadDismissable { showAddCheatWindow = false }
         }
         .fileImporter(
             isPresented: $showImportFile,

@@ -314,6 +314,7 @@ struct SystemCoresView: View {
         )) {
             if let coreID = showOptionsFor {
                 CoreOptionsView(coreID: coreID, systemID: system.id)
+                    .gamepadDismissable { showOptionsFor = nil }
             }
         }
     }

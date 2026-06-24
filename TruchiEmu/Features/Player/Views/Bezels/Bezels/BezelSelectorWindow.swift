@@ -3,6 +3,8 @@ import AppKit
 
 class BezelSelectorWindowController: NSWindowController, NSWindowDelegate {
 
+    private var navContext: GamepadSheetContext?
+
     init(rom: ROM, systemID: String, library: ROMLibrary) {
         let hostingView = NSHostingView(
             rootView: BezelSelectorSheet(rom: rom, systemID: systemID, onBezelSelected: { _ in })
@@ -29,6 +31,20 @@ class BezelSelectorWindowController: NSWindowController, NSWindowDelegate {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override func showWindow(_ sender: Any?) {
+        super.showWindow(sender)
+        if navContext == nil {
+            let ctx = GamepadSheetContext()
+            ctx.onDismiss = { [weak self] in self?.close() }
+            navContext = ctx
+            GamepadNavContextStack.shared.push(ctx)
+        }
+    }
+
     func windowWillClose(_ notification: Notification) {
+        if let ctx = navContext {
+            GamepadNavContextStack.shared.remove(ctx)
+            navContext = nil
+        }
     }
 }

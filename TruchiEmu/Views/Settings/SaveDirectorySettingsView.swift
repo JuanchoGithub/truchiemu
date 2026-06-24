@@ -105,6 +105,7 @@ public struct SaveDirectorySettingsView: View {
           }
         }
       }
+      .gamepadDismissable { showingDirectoryPicker = false }
     }
     .alert(loc.localized("saveDirs.migrateTitle"), isPresented: $showingMigrationAlert) {
       Button(loc.localized("shader.cancel"), role: .cancel) { }

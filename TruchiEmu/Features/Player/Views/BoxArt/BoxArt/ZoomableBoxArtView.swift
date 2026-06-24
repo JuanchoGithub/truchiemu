@@ -156,7 +156,9 @@ struct ZoomableBoxArtButton: View {
         }
         .buttonStyle(.plain)
         .sheet(isPresented: $isPresented) {
-            if let img = image { ZoomableBoxArtFullScreenView(image: img) }
+            if let img = image { ZoomableBoxArtFullScreenView(image: img)
+                .gamepadDismissable { isPresented = false }
+            }
         }
     }
 }
@@ -242,7 +244,9 @@ struct GridCardBoxArtView: View {
         .frame(maxWidth: .infinity)
         .aspectRatio(aspectRatio, contentMode: .fit)
         .sheet(isPresented: $isPresented) {
-            if let img = image { ZoomableBoxArtFullScreenView(image: img) }
+            if let img = image { ZoomableBoxArtFullScreenView(image: img)
+                .gamepadDismissable { isPresented = false }
+            }
         }
     }
     

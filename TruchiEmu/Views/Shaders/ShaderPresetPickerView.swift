@@ -215,13 +215,14 @@ Slider(
 
 
 // MARK: - Shader Window Controller
-class ShaderWindowController: NSWindowController, NSWindowDelegate {
-private var settings: ShaderWindowSettings
-var onPresetChanged: ((String, [String: Float], Set<String>) -> Void)?
-var onWindowWillClose: (() -> Void)?
-private var settingsCancellable: AnyCancellable?
+ class ShaderWindowController: NSWindowController, NSWindowDelegate {
+ private var settings: ShaderWindowSettings
+ var onPresetChanged: ((String, [String: Float], Set<String>) -> Void)?
+ var onWindowWillClose: (() -> Void)?
+ private var settingsCancellable: AnyCancellable?
+ private var navContext: GamepadSheetContext?
 
-static var shared: ShaderWindowController?
+ static var shared: ShaderWindowController?
 
 init(settings: ShaderWindowSettings, onPresetChanged: ((String, [String: Float], Set<String>) -> Void)? = nil) {
         self.settings = settings
@@ -278,6 +279,12 @@ self.onPresetChanged?(self.settings.shaderPresetID, values, [])
         window?.makeKeyAndOrderFront(nil)
         window?.orderFrontRegardless()
         NSApp.activate(ignoringOtherApps: true)
+        if navContext == nil {
+            let ctx = GamepadSheetContext()
+            ctx.onDismiss = { [weak self] in self?.hide() }
+            navContext = ctx
+            GamepadNavContextStack.shared.push(ctx)
+        }
     }
 
     private func positionWindow() {
@@ -286,6 +293,10 @@ self.onPresetChanged?(self.settings.shaderPresetID, values, [])
 
     func hide() {
         window?.orderOut(nil)
+        if let ctx = navContext {
+            GamepadNavContextStack.shared.remove(ctx)
+            navContext = nil
+        }
     }
 
     var isVisible: Bool {
@@ -297,6 +308,10 @@ self.onPresetChanged?(self.settings.shaderPresetID, values, [])
     func windowWillClose(_ notification: Notification) {
         if let window = window {
             ShaderWindowPosition.shared.savePosition(window.frame.origin)
+        }
+        if let ctx = navContext {
+            GamepadNavContextStack.shared.remove(ctx)
+            navContext = nil
         }
         onWindowWillClose?()
     }
@@ -671,6 +686,7 @@ controller.close()
                 AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled)
                     .ignoresSafeArea()
             }
+            .gamepadDismissable { showSaveDialog = false }
         }
         .sheet(isPresented: .init(
             get: { renamePreset != nil },
@@ -705,6 +721,7 @@ controller.close()
                 AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled)
                     .ignoresSafeArea()
             }
+            .gamepadDismissable { renamePreset = nil }
         }
     }
 

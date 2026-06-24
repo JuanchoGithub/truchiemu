@@ -97,6 +97,7 @@ struct SavesSettingsView: View {
                             }
                             .sheet(isPresented: $showSaveManager) {
                                 SaveManagerView()
+                                    .gamepadDismissable { showSaveManager = false }
                             }
                         }
                     }

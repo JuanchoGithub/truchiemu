@@ -160,6 +160,7 @@ var body: some View {
     .navigationTitle(loc.localized("library.title"))
     .sheet(item: $rebuildTargetFolder) { folder in
         RebuildOptionsSheet(folder: folder, library: library, automation: LibraryAutomationCoordinator.shared)
+            .gamepadDismissable { rebuildTargetFolder = nil }
     }
 }
 
