@@ -162,6 +162,21 @@ LoggerService.debug(category: category, message)
             }
 
             if restored {
+                for (index, originalPath) in payload.referencedOriginalPaths.enumerated() {
+                    let key = "pendingTrashRestore_\(payload.romID.uuidString)_ref_\(index)"
+                    guard let trashPath = AppSettings.getString(key) else { continue }
+                    let trashURL = URL(fileURLWithPath: trashPath)
+                    let destination = URL(fileURLWithPath: originalPath)
+                    if FileManager.default.fileExists(atPath: trashURL.path) {
+                        if !FileManager.default.fileExists(atPath: destination.deletingLastPathComponent().path) {
+                            try? FileManager.default.createDirectory(at: destination.deletingLastPathComponent(), withIntermediateDirectories: true)
+                        }
+                        try? FileManager.default.moveItem(at: trashURL, to: destination)
+                        LoggerService.info(category: "NotificationHistory", "Referenced file restored from trash: \(destination.lastPathComponent)")
+                    }
+                    AppSettings.remove(key)
+                }
+
                 if let romData = payload.romJSON.data(using: .utf8),
                    let rom = try? JSONDecoder().decode(ROM.self, from: romData) {
                     lib.roms.append(rom)

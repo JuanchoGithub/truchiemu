@@ -181,6 +181,7 @@ struct LibraryGridView: View {
     // Delete/hide game states
     @State private var gameToDelete: ROM?
     @State private var confirmDeleteTap = false
+    @State private var preloadedDeleteBoxArt: NSImage?
     
     // Smooth pinch-to-zoom state
     @State private var continuousZoom: Double = {
@@ -324,6 +325,7 @@ struct LibraryGridView: View {
         .sheet(item: $gameToDelete) { rom in
             DeleteConfirmationView(
                 rom: rom,
+                preloadedBoxArt: preloadedDeleteBoxArt,
                 confirmDeleteTap: $confirmDeleteTap,
                 onDelete: {
                     deleteGameAndROM(rom)
@@ -337,7 +339,10 @@ struct LibraryGridView: View {
                     gameToDelete = nil
                 }
             )
-            .onDisappear { confirmDeleteTap = false }
+            .onDisappear {
+                confirmDeleteTap = false
+                preloadedDeleteBoxArt = nil
+            }
             .gamepadDismissable { gameToDelete = nil }
         }
         .toolbar {
@@ -985,7 +990,7 @@ viewModel.updateFilters(
             items.append(.init(title: loc.localized("contextMenu.unhideGame")) { [self] in unhideGame(rom) })
         } else {
             items.append(.init(title: loc.localized("contextMenu.hideGame")) { [self] in hideGame(rom) })
-            items.append(.init(title: loc.localized("contextMenu.deleteGame"), isDestructive: true) { gameToDelete = rom })
+            items.append(.init(title: loc.localized("contextMenu.deleteGame"), isDestructive: true) { showDeleteSheet(for: rom) })
         }
         GamepadContextMenuState.shared.show(items)
     }
@@ -1623,7 +1628,7 @@ viewModel.updateFilters(
                         Label(loc.localized("contextMenu.hideGame"), systemImage: "eye.slash")
                     }
                     Button(role: .destructive) {
-                        gameToDelete = rom
+                        showDeleteSheet(for: rom)
                     } label: {
                         Label(loc.localized("contextMenu.deleteGame"), systemImage: "trash")
                     }
@@ -1633,6 +1638,16 @@ viewModel.updateFilters(
     }
 
     // MARK: - Delete/Hide Game Actions
+
+    private func showDeleteSheet(for rom: ROM) {
+        let tinyThumbURL = BoxArtThumbnailService.thumbnailURL(for: rom.boxArtLocalPath, size: .tiny)
+        if FileManager.default.fileExists(atPath: tinyThumbURL.path) {
+            preloadedDeleteBoxArt = NSImage(contentsOf: tinyThumbURL)
+        } else {
+            preloadedDeleteBoxArt = nil
+        }
+        gameToDelete = rom
+    }
 
     private func hideGame(_ rom: ROM) {
         var updated = rom
@@ -1667,6 +1682,11 @@ viewModel.updateFilters(
 
     private func deleteRegularFile(_ rom: ROM) {
         var trashURL: URL?
+        var referencedTrashPairs: [(original: URL, trash: URL)] = []
+
+        let containerExts: Set<String> = ["cue", "m3u", "gdi", "ccd", "toc", "mds"]
+        let isContainer = containerExts.contains(rom.path.pathExtension.lowercased())
+        let referencedFiles = isContainer ? ROMIdentifier.getReferencedFiles(in: rom.path) : []
 
         do {
             var resultingURL: NSURL?
@@ -1675,6 +1695,20 @@ viewModel.updateFilters(
             LoggerService.info(category: "LibraryGridView", "ROM file moved to trash: \(rom.path.lastPathComponent)")
         } catch {
             LoggerService.warning(category: "LibraryGridView", "Failed to move ROM to trash: \(error.localizedDescription). Removing from library anyway.")
+        }
+
+        for refURL in referencedFiles {
+            guard FileManager.default.fileExists(atPath: refURL.path) else { continue }
+            do {
+                var refResult: NSURL?
+                try FileManager.default.trashItem(at: refURL, resultingItemURL: &refResult)
+                if let trashRefURL = refResult as URL? {
+                    referencedTrashPairs.append((refURL, trashRefURL))
+                    LoggerService.info(category: "LibraryGridView", "Referenced file moved to trash: \(refURL.lastPathComponent)")
+                }
+            } catch {
+                LoggerService.warning(category: "LibraryGridView", "Failed to trash referenced file \(refURL.lastPathComponent): \(error.localizedDescription)")
+            }
         }
 
         removeROMFromLibrary(rom)
@@ -1688,11 +1722,19 @@ viewModel.updateFilters(
             autoDismissDelay: 5,
             actionLabel: loc.localized("pill.undo"),
             actionType: "undoTrash",
-            actionPayload: TrashActionPayload(romID: rom.id, originalPath: rom.path.path, romJSON: romJSON)
+            actionPayload: TrashActionPayload(
+                romID: rom.id,
+                originalPath: rom.path.path,
+                romJSON: romJSON,
+                referencedOriginalPaths: referencedTrashPairs.map(\.original.path)
+            )
         )
 
         if let trashURL = trashURL {
             AppSettings.set("pendingTrashRestore_\(rom.id.uuidString)", value: trashURL.path)
+        }
+        for (index, pair) in referencedTrashPairs.enumerated() {
+            AppSettings.set("pendingTrashRestore_\(rom.id.uuidString)_ref_\(index)", value: pair.trash.path)
         }
     }
 
@@ -2271,6 +2313,7 @@ private struct ScanningScanLine: View {
 
 private struct DeleteConfirmationView: View {
     let rom: ROM
+    let preloadedBoxArt: NSImage?
     @Binding var confirmDeleteTap: Bool
     let onDelete: () -> Void
     let onHide: () -> Void
@@ -2279,7 +2322,6 @@ private struct DeleteConfirmationView: View {
     @ObservedObject private var loc = LocalizationManager.shared
     @Environment(\.colorScheme) private var colorScheme
     @State private var boxArtImage: NSImage?
-    @State private var hasBoxArt = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -2375,8 +2417,22 @@ private struct DeleteConfirmationView: View {
         }
         .frame(width: 320)
         .background(AppColors.windowBackground(colorScheme, tinted: false))
+        .onAppear {
+            boxArtImage = preloadedBoxArt
+        }
         .task {
-            await loadBoxArt()
+            guard preloadedBoxArt == nil else { return }
+            var artPath = rom.boxArtLocalPath
+            if !FileManager.default.fileExists(atPath: artPath.path) {
+                if let resolved = BoxArtService.shared.resolveLocalBoxArt(for: rom) {
+                    artPath = resolved
+                }
+            }
+            if FileManager.default.fileExists(atPath: artPath.path) {
+                if let img = await ImageCache.shared.thumbnail(for: artPath, preferredSize: .tiny) {
+                    boxArtImage = img
+                }
+            }
         }
         .onDisappear {
             confirmDeleteTap = false
@@ -2403,21 +2459,6 @@ private struct DeleteConfirmationView: View {
         ]
         let colors = palettes[hash % palettes.count]
         return LinearGradient(colors: [colors.0, colors.1], startPoint: .topLeading, endPoint: .bottomTrailing)
-    }
-
-    private func loadBoxArt() async {
-        var artPath = rom.boxArtLocalPath
-        if !FileManager.default.fileExists(atPath: artPath.path) {
-            if let resolved = BoxArtService.shared.resolveLocalBoxArt(for: rom) {
-                artPath = resolved
-            }
-        }
-        if FileManager.default.fileExists(atPath: artPath.path) {
-            if let img = await ImageCache.shared.thumbnail(for: artPath, preferredSize: .medium) {
-                boxArtImage = img
-                hasBoxArt = true
-            }
-        }
     }
 }
 }

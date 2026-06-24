@@ -9,6 +9,7 @@ struct TrashActionPayload: Codable {
     let romID: UUID
     let originalPath: String
     let romJSON: String
+    let referencedOriginalPaths: [String]
 }
 
 struct SaveDeleteActionPayload: Codable {
