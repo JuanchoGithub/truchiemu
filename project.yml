@@ -36,8 +36,8 @@ targets:
         CFBundleName: TruchiEmu
         CFBundleDisplayName: TruchiEmu
         CFBundleIdentifier: com.TruchiEmu.app
-        CFBundleVersion: '13'
-        CFBundleShortVersionString: "1.3.0"
+        CFBundleVersion: '14'
+        CFBundleShortVersionString: "1.4.0"
         NSHumanReadableCopyright: "© 2026 TruchiEmu"
         NSPrincipalClass: NSApplication
         NSHighResolutionCapable: true
