@@ -1,0 +1,476 @@
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "yyyhsf"
+  ],
+  "name": "Yu Yu Hakusho: Sunset Fighters",
+  "year": 1994,
+  "manufacturer": "Sega",
+  "controls": {
+    "^E": "Punch",
+    "^H": "Kick",
+    "^G": "Special",
+    "_S": "Start"
+  },
+  "controlGroups": {
+    "_P": [
+      "^E"
+    ],
+    "_K": [
+      "^H"
+    ],
+    "_G": [
+      "^G"
+    ]
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Forward Dash",
+      "input": "_6^6"
+    },
+    {
+      "category": "_)",
+      "name": "Back Dash",
+      "input": "_4^4"
+    },
+    {
+      "category": "_)",
+      "name": "Plane Shift (3-Button)",
+      "input": "_8_+^G"
+    },
+    {
+      "category": "_)",
+      "name": "Back Dash (3-Button)",
+      "input": "^H_+^G"
+    },
+    {
+      "category": "_)",
+      "name": "Ki Charge",
+      "input": "Hold ^E or ^H"
+    },
+    {
+      "category": "_)",
+      "name": "Block",
+      "input": "^G"
+    }
+  ],
+  "commonNotes": [
+    "3-BUTTON: A=Punch, B=Kick, C=Block. C+Up=Plane Shift, B+C=Back Dash, Double-Tap Forward=Forward Dash",
+    "6-BUTTON: A=Punch, B=Kick, C=Block, X=Forward Dash, Y=Plane Shift, Z=Back Dash",
+    "Hold any attack button to charge Ki gauge for special moves",
+    "Some projectile specials can be charged by holding the attack button after input",
+    "Matches are single round with no time limit",
+    "Select color: A, B, or C at character select"
+  ],
+  "characters": [
+    {
+      "name": "YUSUKE URAMESHI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Rei Gun (Spirit Gun)",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Shotgun",
+          "input": "_2_1_4_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Spirit Wave",
+          "input": "_4_1_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Rising Punch",
+          "input": "^2_8_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Spirit Kick",
+          "input": "_2_3_6_+^H"
+        }
+      ]
+    },
+    {
+      "name": "KAZUMA KUWABARA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Spirit Sword",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Spirit Sword Thrust",
+          "input": "_2_1_4_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Spirit Sword Extend",
+          "input": "_4_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Dimension Sword",
+          "input": "_4_1_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Spirit Sword Swing",
+          "input": "_1_9_+^H"
+        }
+      ]
+    },
+    {
+      "name": "HIEI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Jao Ensatsu Ken (Black Dragon Wave)",
+          "input": "_4_1_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Ensatsu Rengoku Shou (Fist of the Mortal Flame)",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Sword Slash",
+          "input": "_2_1_4_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Hiei Slash Upper",
+          "input": "^2_8_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Teleport Slash",
+          "input": "_4_6_+^H"
+        }
+      ]
+    },
+    {
+      "name": "KURAMA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Rose Whip",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Whip Lash",
+          "input": "_2_1_4_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Thorn Wheel",
+          "input": "^2_8_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Plant Attack",
+          "input": "_4_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Fox Demon Transformation",
+          "input": "_4_1_2_3_6_+^E"
+        }
+      ]
+    },
+    {
+      "name": "GENKAI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Rei Kou Ha Dou Ken (Spirit Wave Blast)",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Spirit Reflection Blast",
+          "input": "_2_1_4_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Upward Spirit Blast",
+          "input": "^2_8_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Rei Kou Kyuu Shou (Spirit Light Sphere)",
+          "input": "_4_1_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Spirit Shot",
+          "input": "_2_3_6_+^H"
+        }
+      ]
+    },
+    {
+      "name": "JIN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Tornado Punch",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Wind Gust",
+          "input": "_2_1_4_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Double Tornado",
+          "input": "^2_8_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Wind Blade",
+          "input": "_4_6_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Jet Bump",
+          "input": "_1_9_+^H"
+        }
+      ]
+    },
+    {
+      "name": "CHU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Drunken Fist Rush",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Oni Cue Punch",
+          "input": "_2_1_4_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Sake Breath Fire",
+          "input": "_4_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Drunken Upper",
+          "input": "^2_8_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Oni Barrage",
+          "input": "_2_3_6_+^H"
+        }
+      ]
+    },
+    {
+      "name": "SHINOBU SENSUI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Seikouki Blast (Sacred Energy)",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Seikouki Upper",
+          "input": "^2_8_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Energy Reversal",
+          "input": "_2_1_4_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Seikouki Wave",
+          "input": "_4_1_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Holy Kick",
+          "input": "_2_3_6_+^H"
+        }
+      ]
+    },
+    {
+      "name": "ITSUKI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Shadow Attack",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Dimension Bind",
+          "input": "_2_1_4_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Ura Otoko (Devil Mirror)",
+          "input": "_4_1_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Shadow Punch",
+          "input": "_4_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Dimension Slash",
+          "input": "_2_3_6_+^H"
+        }
+      ]
+    },
+    {
+      "name": "YOUNGER TOGURO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Muscle Punch",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Soul Blast",
+          "input": "_2_1_4_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Toguro Smash",
+          "input": "^2_8_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "100% Power",
+          "input": "_4_1_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Elbow Rush",
+          "input": "_4_6_+^H"
+        }
+      ]
+    },
+    {
+      "name": "ELDER TOGURO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Shape-Shift Blade",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Spike Attack",
+          "input": "_2_1_4_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Body Weapon",
+          "input": "_4_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Spikes Up",
+          "input": "^2_8_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Regeneration Rush",
+          "input": "_2_3_6_+^H"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "^E": "P",
+    "^H": "K",
+    "^G": "S",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "genesis": {
+      "b": "^E",
+      "a": "^H",
+      "c": "^G"
+    },
+    "megadrive": {
+      "b": "^E",
+      "a": "^H",
+      "c": "^G"
+    }
+  }
+}

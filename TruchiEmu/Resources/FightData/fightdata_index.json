@@ -31,6 +31,18 @@
       "manufacturer": "Jaleco"
     },
     {
+      "name": "Aggressors of Dark Kombat",
+      "cleanName": "Aggressors of Dark Kombat",
+      "normalizedName": "aggressorsofdarkkombat",
+      "file": "fightdata_aodk.json",
+      "romIds": [
+        "aodk"
+      ],
+      "aliases": [],
+      "year": 1994,
+      "manufacturer": "SNK"
+    },
+    {
       "name": "Alien Challenge",
       "cleanName": "Alien Challenge",
       "normalizedName": "alienchallenge",
@@ -44,16 +56,54 @@
       "manufacturer": "IGS"
     },
     {
-      "name": "Aggressors of Dark Kombat",
-      "cleanName": "Aggressors of Dark Kombat",
-      "normalizedName": "aggressorsofdarkkombat",
-      "file": "fightdata_aodk.json",
+      "name": "Alien vs. Predator",
+      "cleanName": "Alien vs. Predator",
+      "normalizedName": "alienvs.predator",
+      "file": "fightdata_avsp.json",
       "romIds": [
-        "aodk"
+        "avsp",
+        "avspa",
+        "avsph",
+        "avspj",
+        "avspu"
       ],
       "aliases": [],
       "year": 1994,
-      "manufacturer": "SNK"
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Arabian Magic",
+      "cleanName": "Arabian Magic",
+      "normalizedName": "arabianmagic",
+      "file": "fightdata_arabianm.json",
+      "romIds": [
+        "arabianm",
+        "arabianmu",
+        "arabianmj"
+      ],
+      "aliases": [],
+      "year": 1992,
+      "manufacturer": "Taito"
+    },
+    {
+      "name": "Armored Warriors",
+      "cleanName": "Armored Warriors",
+      "normalizedName": "armoredwarriors",
+      "file": "fightdata_armwar.json",
+      "romIds": [
+        "armwar",
+        "armwara",
+        "armwarar1",
+        "armwarb",
+        "armwarr1",
+        "armwaru",
+        "armwaru1",
+        "pgear",
+        "pgearr1"
+      ],
+      "aliases": [],
+      "year": 1994,
+      "manufacturer": "Capcom"
     },
     {
       "name": "Art of Fighting",
@@ -98,40 +148,6 @@
       ],
       "year": 1996,
       "manufacturer": "SNK"
-    },
-    {
-      "name": "Arabian Magic",
-      "cleanName": "Arabian Magic",
-      "normalizedName": "arabianmagic",
-      "file": "fightdata_arabianm.json",
-      "romIds": [
-        "arabianm",
-        "arabianmu",
-        "arabianmj"
-      ],
-      "aliases": [],
-      "year": 1992,
-      "manufacturer": "Taito"
-    },
-    {
-      "name": "Armored Warriors",
-      "cleanName": "Armored Warriors",
-      "normalizedName": "armoredwarriors",
-      "file": "fightdata_armwar.json",
-      "romIds": [
-        "armwar",
-        "armwara",
-        "armwarar1",
-        "armwarb",
-        "armwarr1",
-        "armwaru",
-        "armwaru1",
-        "pgear",
-        "pgearr1"
-      ],
-      "aliases": [],
-      "year": 1994,
-      "manufacturer": "Capcom"
     },
     {
       "name": "Asterix",
@@ -190,19 +206,22 @@
       "manufacturer": null
     },
     {
-      "name": "Alien vs. Predator",
-      "cleanName": "Alien vs. Predator",
-      "normalizedName": "alienvs.predator",
-      "file": "fightdata_avsp.json",
+      "name": "Battle Arena Toshinden 2",
+      "cleanName": "Battle Arena Toshinden 2",
+      "normalizedName": "battlearenatoshinden2",
+      "file": "fightdata_ts2.json",
       "romIds": [
-        "avsp",
-        "avspa",
-        "avsph",
-        "avspj",
-        "avspu"
+        "ts2",
+        "ts2j",
+        "ts2ja",
+        "ts2u",
+        "ts2ua"
       ],
-      "aliases": [],
-      "year": 1994,
+      "aliases": [
+        "battlearenatoshindenii",
+        "battlearenatoshindentwo"
+      ],
+      "year": 1995,
       "manufacturer": "Capcom"
     },
     {
@@ -218,6 +237,19 @@
       "aliases": [],
       "year": 1997,
       "manufacturer": "Capcom"
+    },
+    {
+      "name": "Battle K-Road: Multi Style Fighting Tournament",
+      "cleanName": "Battle K-Road: Multi Style Fighting Tournament",
+      "normalizedName": "battlek-road:multistylefightingtournament",
+      "file": "fightdata_btlkroad.json",
+      "romIds": [
+        "btlkroad",
+        "btlkroadk"
+      ],
+      "aliases": [],
+      "year": 1994,
+      "manufacturer": "Psikyo"
     },
     {
       "name": "Beastorizer",
@@ -259,24 +291,6 @@
       "manufacturer": "Allumer"
     },
     {
-      "name": "Bloody Roar 2: Bringer of the New Age",
-      "cleanName": "Bloody Roar 2: Bringer of the New Age",
-      "normalizedName": "bloodyroar2:bringerofthenewage",
-      "file": "fightdata_bldyror2.json",
-      "romIds": [
-        "bldyror2",
-        "bldyror2a",
-        "bldyror2j",
-        "bldyror2u"
-      ],
-      "aliases": [
-        "bloodyroarii:bringerofthenewage",
-        "bloodyroartwo:bringerofthenewage"
-      ],
-      "year": null,
-      "manufacturer": null
-    },
-    {
       "name": "Blood Storm",
       "cleanName": "Blood Storm",
       "normalizedName": "bloodstorm",
@@ -306,6 +320,24 @@
       "aliases": [],
       "year": 1994,
       "manufacturer": "Kaneko"
+    },
+    {
+      "name": "Bloody Roar 2: Bringer of the New Age",
+      "cleanName": "Bloody Roar 2: Bringer of the New Age",
+      "normalizedName": "bloodyroar2:bringerofthenewage",
+      "file": "fightdata_bldyror2.json",
+      "romIds": [
+        "bldyror2",
+        "bldyror2a",
+        "bldyror2j",
+        "bldyror2u"
+      ],
+      "aliases": [
+        "bloodyroarii:bringerofthenewage",
+        "bloodyroartwo:bringerofthenewage"
+      ],
+      "year": null,
+      "manufacturer": null
     },
     {
       "name": "Breakers",
@@ -345,46 +377,18 @@
       "manufacturer": "Sega"
     },
     {
-      "name": "Battle K-Road: Multi Style Fighting Tournament",
-      "cleanName": "Battle K-Road: Multi Style Fighting Tournament",
-      "normalizedName": "battlek-road:multistylefightingtournament",
-      "file": "fightdata_btlkroad.json",
+      "name": "Cadillacs and Dinosaurs",
+      "cleanName": "Cadillacs and Dinosaurs",
+      "normalizedName": "cadillacsanddinosaurs",
+      "file": "fightdata_dino.json",
       "romIds": [
-        "btlkroad",
-        "btlkroadk"
+        "dino",
+        "dinoa",
+        "dinoj",
+        "dinou"
       ],
       "aliases": [],
-      "year": 1994,
-      "manufacturer": "Psikyo"
-    },
-    {
-      "name": "Capcom vs. SNK: Millennium Fight 2000",
-      "cleanName": "Capcom vs. SNK: Millennium Fight 2000",
-      "normalizedName": "capcomvs.snk:millenniumfight2000",
-      "file": "fightdata_capsnk.json",
-      "romIds": [
-        "capsnk",
-        "capsnka",
-        "capsnkb"
-      ],
-      "aliases": [],
-      "year": 2000,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Captain Commando",
-      "cleanName": "Captain Commando",
-      "normalizedName": "captaincommando",
-      "file": "fightdata_captcomm.json",
-      "romIds": [
-        "captcomm",
-        "captcommj",
-        "captcommjr1",
-        "captcommr1",
-        "captcommu"
-      ],
-      "aliases": [],
-      "year": 1991,
+      "year": 1993,
       "manufacturer": "Capcom"
     },
     {
@@ -404,6 +408,20 @@
       "manufacturer": "Capcom"
     },
     {
+      "name": "Capcom vs. SNK: Millennium Fight 2000",
+      "cleanName": "Capcom vs. SNK: Millennium Fight 2000",
+      "normalizedName": "capcomvs.snk:millenniumfight2000",
+      "file": "fightdata_capsnk.json",
+      "romIds": [
+        "capsnk",
+        "capsnka",
+        "capsnkb"
+      ],
+      "aliases": [],
+      "year": 2000,
+      "manufacturer": "Capcom"
+    },
+    {
       "name": "Capcom vs. SNK: Millennium Fight 2000 Pro",
       "cleanName": "Capcom vs. SNK: Millennium Fight 2000 Pro",
       "normalizedName": "capcomvs.snk:millenniumfight2000pro",
@@ -414,6 +432,38 @@
       "aliases": [],
       "year": 2001,
       "manufacturer": "Capcom"
+    },
+    {
+      "name": "Captain Commando",
+      "cleanName": "Captain Commando",
+      "normalizedName": "captaincommando",
+      "file": "fightdata_captcomm.json",
+      "romIds": [
+        "captcomm",
+        "captcommj",
+        "captcommjr1",
+        "captcommr1",
+        "captcommu"
+      ],
+      "aliases": [],
+      "year": 1991,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "ClayFighter 2: Judgment Clay",
+      "cleanName": "ClayFighter 2: Judgment Clay",
+      "normalizedName": "clayfighter2:judgmentclay",
+      "file": "fightdata_clayftr2.json",
+      "romIds": [
+        "clayftr2"
+      ],
+      "aliases": [
+        "clayfighter2",
+        "judgmentclay",
+        "clayftr2"
+      ],
+      "year": 1995,
+      "manufacturer": "Interplay"
     },
     {
       "name": "Cyberbots: Fullmetal Madness",
@@ -442,16 +492,97 @@
       "manufacturer": "Taito"
     },
     {
-      "name": "The Fallen Angels",
-      "cleanName": "The Fallen Angels",
-      "normalizedName": "thefallenangels",
-      "file": "fightdata_daraku.json",
+      "name": "Darkstalkers: The Night Warriors",
+      "cleanName": "Darkstalkers: The Night Warriors",
+      "normalizedName": "darkstalkers:thenightwarriors",
+      "file": "fightdata_dstlk.json",
       "romIds": [
-        "daraku"
+        "dstlk",
+        "dstlka",
+        "dstlkh",
+        "dstlku",
+        "dstlkur1",
+        "vampj",
+        "vampja",
+        "vampjr1"
+      ],
+      "aliases": [
+        "Vampire: The Night Warriors",
+        "vampire:thenightwarriors"
+      ],
+      "year": 1994,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Dead or Alive",
+      "cleanName": "Dead or Alive",
+      "normalizedName": "deadoralive",
+      "file": "fightdata_doa.json",
+      "romIds": [
+        "doa",
+        "doaa",
+        "doaae",
+        "doaab",
+        "doab"
+      ],
+      "aliases": [],
+      "year": 1996,
+      "manufacturer": "Tecmo"
+    },
+    {
+      "name": "Dead or Alive ++",
+      "cleanName": "Dead or Alive ++",
+      "normalizedName": "deadoralive++",
+      "file": "fightdata_doapp.json",
+      "romIds": [
+        "doapp",
+        "doappk"
       ],
       "aliases": [],
       "year": 1998,
-      "manufacturer": "Psikyo"
+      "manufacturer": "Tecmo"
+    },
+    {
+      "name": "Dead or Alive 2",
+      "cleanName": "Dead or Alive 2",
+      "normalizedName": "deadoralive2",
+      "file": "fightdata_doa2m.json",
+      "romIds": [
+        "doa2m",
+        "doa2",
+        "doa2a"
+      ],
+      "aliases": [
+        "deadoraliveii",
+        "deadoralivetwo"
+      ],
+      "year": 1999,
+      "manufacturer": "Tecmo"
+    },
+    {
+      "name": "Denjin Makai",
+      "cleanName": "Denjin Makai",
+      "normalizedName": "denjinmakai",
+      "file": "fightdata_denjinmk.json",
+      "romIds": [
+        "denjinmk",
+        "denjinmka"
+      ],
+      "aliases": [],
+      "year": 1994,
+      "manufacturer": "Banpresto"
+    },
+    {
+      "name": "Double Dragon",
+      "cleanName": "Double Dragon",
+      "normalizedName": "doubledragon",
+      "file": "fightdata_doubledr.json",
+      "romIds": [
+        "doubledr"
+      ],
+      "aliases": [],
+      "year": 1995,
+      "manufacturer": "Technos"
     },
     {
       "name": "Dragon Ball Z",
@@ -482,6 +613,32 @@
       "manufacturer": "Banpresto"
     },
     {
+      "name": "Dragon Master",
+      "cleanName": "Dragon Master",
+      "normalizedName": "dragonmaster",
+      "file": "fightdata_drgnmst.json",
+      "romIds": [
+        "drgnmst",
+        "drgnmst2"
+      ],
+      "aliases": [],
+      "year": 1994,
+      "manufacturer": "Unico"
+    },
+    {
+      "name": "Dragoon Might",
+      "cleanName": "Dragoon Might",
+      "normalizedName": "dragoonmight",
+      "file": "fightdata_dragoona.json",
+      "romIds": [
+        "dragoona",
+        "dragoonj"
+      ],
+      "aliases": [],
+      "year": 1995,
+      "manufacturer": "Konami"
+    },
+    {
       "name": "Dungeons & Dragons: Shadow Over Mystara",
       "cleanName": "Dungeons & Dragons: Shadow Over Mystara",
       "normalizedName": "dungeons&dragons:shadowovermystara",
@@ -506,140 +663,6 @@
       "manufacturer": "Capcom"
     },
     {
-      "name": "Denjin Makai",
-      "cleanName": "Denjin Makai",
-      "normalizedName": "denjinmakai",
-      "file": "fightdata_denjinmk.json",
-      "romIds": [
-        "denjinmk",
-        "denjinmka"
-      ],
-      "aliases": [],
-      "year": 1994,
-      "manufacturer": "Banpresto"
-    },
-    {
-      "name": "Cadillacs and Dinosaurs",
-      "cleanName": "Cadillacs and Dinosaurs",
-      "normalizedName": "cadillacsanddinosaurs",
-      "file": "fightdata_dino.json",
-      "romIds": [
-        "dino",
-        "dinoa",
-        "dinoj",
-        "dinou"
-      ],
-      "aliases": [],
-      "year": 1993,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Dead or Alive",
-      "cleanName": "Dead or Alive",
-      "normalizedName": "deadoralive",
-      "file": "fightdata_doa.json",
-      "romIds": [
-        "doa",
-        "doaa",
-        "doaae",
-        "doaab",
-        "doab"
-      ],
-      "aliases": [],
-      "year": 1996,
-      "manufacturer": "Tecmo"
-    },
-    {
-      "name": "Dead or Alive 2",
-      "cleanName": "Dead or Alive 2",
-      "normalizedName": "deadoralive2",
-      "file": "fightdata_doa2m.json",
-      "romIds": [
-        "doa2m",
-        "doa2",
-        "doa2a"
-      ],
-      "aliases": [
-        "deadoraliveii",
-        "deadoralivetwo"
-      ],
-      "year": 1999,
-      "manufacturer": "Tecmo"
-    },
-    {
-      "name": "Dead or Alive ++",
-      "cleanName": "Dead or Alive ++",
-      "normalizedName": "deadoralive++",
-      "file": "fightdata_doapp.json",
-      "romIds": [
-        "doapp",
-        "doappk"
-      ],
-      "aliases": [],
-      "year": 1998,
-      "manufacturer": "Tecmo"
-    },
-    {
-      "name": "Double Dragon",
-      "cleanName": "Double Dragon",
-      "normalizedName": "doubledragon",
-      "file": "fightdata_doubledr.json",
-      "romIds": [
-        "doubledr"
-      ],
-      "aliases": [],
-      "year": 1995,
-      "manufacturer": "Technos"
-    },
-    {
-      "name": "Dragoon Might",
-      "cleanName": "Dragoon Might",
-      "normalizedName": "dragoonmight",
-      "file": "fightdata_dragoona.json",
-      "romIds": [
-        "dragoona",
-        "dragoonj"
-      ],
-      "aliases": [],
-      "year": 1995,
-      "manufacturer": "Konami"
-    },
-    {
-      "name": "Dragon Master",
-      "cleanName": "Dragon Master",
-      "normalizedName": "dragonmaster",
-      "file": "fightdata_drgnmst.json",
-      "romIds": [
-        "drgnmst",
-        "drgnmst2"
-      ],
-      "aliases": [],
-      "year": 1994,
-      "manufacturer": "Unico"
-    },
-    {
-      "name": "Darkstalkers: The Night Warriors",
-      "cleanName": "Darkstalkers: The Night Warriors",
-      "normalizedName": "darkstalkers:thenightwarriors",
-      "file": "fightdata_dstlk.json",
-      "romIds": [
-        "dstlk",
-        "dstlka",
-        "dstlkh",
-        "dstlku",
-        "dstlkur1",
-        "vampj",
-        "vampja",
-        "vampjr1"
-      ],
-      "aliases": [
-        "Vampire: The Night Warriors",
-        "vampire:thenightwarriors"
-      ],
-      "year": 1994,
-      "manufacturer": "Capcom"
-    },
-    {
       "name": "Ehrgeiz: God Bless the Ring",
       "cleanName": "Ehrgeiz: God Bless the Ring",
       "normalizedName": "ehrgeiz:godblessthering",
@@ -654,41 +677,16 @@
       "manufacturer": "Namco"
     },
     {
-      "name": "Fatal Fury Special",
-      "cleanName": "Fatal Fury Special",
-      "normalizedName": "fatalfuryspecial",
-      "file": "fightdata_fatfursp.json",
+      "name": "Far East of Eden: Kabuki Klash",
+      "cleanName": "Far East of Eden: Kabuki Klash",
+      "normalizedName": "fareastofeden:kabukiklash",
+      "file": "fightdata_kabukikl.json",
       "romIds": [
-        "fatfursp",
-        "fatfurspa"
+        "kabukikl"
       ],
       "aliases": [],
-      "year": 1993,
-      "manufacturer": "SNK"
-    },
-    {
-      "name": "Fatal Fury: Wild Ambition",
-      "cleanName": "Fatal Fury: Wild Ambition",
-      "normalizedName": "fatalfury:wildambition",
-      "file": "fightdata_fatfurwa.json",
-      "romIds": [
-        "fatfurwa"
-      ],
-      "aliases": [],
-      "year": 1999,
-      "manufacturer": "SNK"
-    },
-    {
-      "name": "Fatal Fury: King of Fighters",
-      "cleanName": "Fatal Fury: King of Fighters",
-      "normalizedName": "fatalfury:kingoffighters",
-      "file": "fightdata_fatfury1.json",
-      "romIds": [
-        "fatfury1"
-      ],
-      "aliases": [],
-      "year": 1991,
-      "manufacturer": "SNK"
+      "year": null,
+      "manufacturer": null
     },
     {
       "name": "Fatal Fury 2",
@@ -719,6 +717,103 @@
       ],
       "year": 1995,
       "manufacturer": "SNK"
+    },
+    {
+      "name": "Fatal Fury: King of Fighters",
+      "cleanName": "Fatal Fury: King of Fighters",
+      "normalizedName": "fatalfury:kingoffighters",
+      "file": "fightdata_fatfury1.json",
+      "romIds": [
+        "fatfury1"
+      ],
+      "aliases": [],
+      "year": 1991,
+      "manufacturer": "SNK"
+    },
+    {
+      "name": "Fatal Fury: Wild Ambition",
+      "cleanName": "Fatal Fury: Wild Ambition",
+      "normalizedName": "fatalfury:wildambition",
+      "file": "fightdata_fatfurwa.json",
+      "romIds": [
+        "fatfurwa"
+      ],
+      "aliases": [],
+      "year": 1999,
+      "manufacturer": "SNK"
+    },
+    {
+      "name": "Fatal Fury Special",
+      "cleanName": "Fatal Fury Special",
+      "normalizedName": "fatalfuryspecial",
+      "file": "fightdata_fatfursp.json",
+      "romIds": [
+        "fatfursp",
+        "fatfurspa"
+      ],
+      "aliases": [],
+      "year": 1993,
+      "manufacturer": "SNK"
+    },
+    {
+      "name": "Fighter's History",
+      "cleanName": "Fighter's History",
+      "normalizedName": "fighter'shistory",
+      "file": "fightdata_fghthist.json",
+      "romIds": [
+        "fghthist",
+        "fghthista",
+        "fghthistb",
+        "fghthistj",
+        "fghthistja",
+        "fghthistjb",
+        "fghthistu",
+        "fghthistua",
+        "fghthistub",
+        "fghthistuc"
+      ],
+      "aliases": [],
+      "year": null,
+      "manufacturer": null
+    },
+    {
+      "name": "Fight Fever",
+      "cleanName": "Fight Fever",
+      "normalizedName": "fightfever",
+      "file": "fightdata_fightfev.json",
+      "romIds": [
+        "fightfev",
+        "fightfeva"
+      ],
+      "aliases": [],
+      "year": 1994,
+      "manufacturer": "Viccom"
+    },
+    {
+      "name": "Fighting Layer",
+      "cleanName": "Fighting Layer",
+      "normalizedName": "fightinglayer",
+      "file": "fightdata_fgtlayer.json",
+      "romIds": [
+        "fgtlayer",
+        "fgtlayerja"
+      ],
+      "aliases": [],
+      "year": 1998,
+      "manufacturer": "Namco"
+    },
+    {
+      "name": "Fighting Vipers",
+      "cleanName": "Fighting Vipers",
+      "normalizedName": "fightingvipers",
+      "file": "fightdata_fvipers.json",
+      "romIds": [
+        "fvipers",
+        "fvipersb"
+      ],
+      "aliases": [],
+      "year": 1995,
+      "manufacturer": "Sega"
     },
     {
       "name": "Final Fight",
@@ -757,53 +852,6 @@
       "manufacturer": "Capcom"
     },
     {
-      "name": "Fighter's History",
-      "cleanName": "Fighter's History",
-      "normalizedName": "fighter'shistory",
-      "file": "fightdata_fghthist.json",
-      "romIds": [
-        "fghthist",
-        "fghthista",
-        "fghthistb",
-        "fghthistj",
-        "fghthistja",
-        "fghthistjb",
-        "fghthistu",
-        "fghthistua",
-        "fghthistub",
-        "fghthistuc"
-      ],
-      "aliases": [],
-      "year": null,
-      "manufacturer": null
-    },
-    {
-      "name": "Fighting Layer",
-      "cleanName": "Fighting Layer",
-      "normalizedName": "fightinglayer",
-      "file": "fightdata_fgtlayer.json",
-      "romIds": [
-        "fgtlayer",
-        "fgtlayerja"
-      ],
-      "aliases": [],
-      "year": 1998,
-      "manufacturer": "Namco"
-    },
-    {
-      "name": "Fight Fever",
-      "cleanName": "Fight Fever",
-      "normalizedName": "fightfever",
-      "file": "fightdata_fightfev.json",
-      "romIds": [
-        "fightfev",
-        "fightfeva"
-      ],
-      "aliases": [],
-      "year": 1994,
-      "manufacturer": "Viccom"
-    },
-    {
       "name": "Fist of the North Star",
       "cleanName": "Fist of the North Star",
       "normalizedName": "fistofthenorthstar",
@@ -813,33 +861,6 @@
       ],
       "aliases": [],
       "year": 2005,
-      "manufacturer": "Sega"
-    },
-    {
-      "name": "Fighting Vipers",
-      "cleanName": "Fighting Vipers",
-      "normalizedName": "fightingvipers",
-      "file": "fightdata_fvipers.json",
-      "romIds": [
-        "fvipers",
-        "fvipersb"
-      ],
-      "aliases": [],
-      "year": 1995,
-      "manufacturer": "Sega"
-    },
-    {
-      "name": "Golden Axe: The Revenge of Death Adder",
-      "cleanName": "Golden Axe: The Revenge of Death Adder",
-      "normalizedName": "goldenaxe:therevengeofdeathadder",
-      "file": "fightdata_ga2.json",
-      "romIds": [
-        "ga2",
-        "ga2j",
-        "ga2u"
-      ],
-      "aliases": [],
-      "year": 1992,
       "manufacturer": "Sega"
     },
     {
@@ -870,6 +891,19 @@
       "manufacturer": "SNK"
     },
     {
+      "name": "Gogetsuji Legends",
+      "cleanName": "Gogetsuji Legends",
+      "normalizedName": "gogetsujilegends",
+      "file": "fightdata_plegends.json",
+      "romIds": [
+        "plegends",
+        "plegendsj"
+      ],
+      "aliases": [],
+      "year": 1995,
+      "manufacturer": "Atlus"
+    },
+    {
       "name": "Golden Axe: The Duel",
       "cleanName": "Golden Axe: The Duel",
       "normalizedName": "goldenaxe:theduel",
@@ -880,6 +914,48 @@
       "aliases": [],
       "year": 1995,
       "manufacturer": "Sega"
+    },
+    {
+      "name": "Golden Axe: The Revenge of Death Adder",
+      "cleanName": "Golden Axe: The Revenge of Death Adder",
+      "normalizedName": "goldenaxe:therevengeofdeathadder",
+      "file": "fightdata_ga2.json",
+      "romIds": [
+        "ga2",
+        "ga2j",
+        "ga2u"
+      ],
+      "aliases": [],
+      "year": 1992,
+      "manufacturer": "Sega"
+    },
+    {
+      "name": "Groove on Fight: Gouketsuji Ichizoku 3",
+      "cleanName": "Groove on Fight: Gouketsuji Ichizoku 3",
+      "normalizedName": "grooveonfight:gouketsujiichizoku3",
+      "file": "fightdata_groovef.json",
+      "romIds": [
+        "groovef"
+      ],
+      "aliases": [
+        "grooveonfight:gouketsujiichizokuiii",
+        "grooveonfight:gouketsujiichizokuthree"
+      ],
+      "year": 1997,
+      "manufacturer": "Atlus"
+    },
+    {
+      "name": "Guardians",
+      "cleanName": "Guardians",
+      "normalizedName": "guardians",
+      "file": "fightdata_grdians.json",
+      "romIds": [
+        "grdians",
+        "grdiansa"
+      ],
+      "aliases": [],
+      "year": 1995,
+      "manufacturer": "Banpresto"
     },
     {
       "name": "Guilty Gear Isuka",
@@ -926,6 +1002,19 @@
       "manufacturer": "Sammy"
     },
     {
+      "name": "Guilty Gear XX #Reload: The Midnight Carnival",
+      "cleanName": "Guilty Gear XX #Reload: The Midnight Carnival",
+      "normalizedName": "guiltygearxx#reload:themidnightcarnival",
+      "file": "fightdata_ggxxrl.json",
+      "romIds": [
+        "ggxxrl",
+        "ggxxrlo"
+      ],
+      "aliases": [],
+      "year": 2003,
+      "manufacturer": "Sammy"
+    },
+    {
       "name": "Guilty Gear XX: The Midnight Carnival",
       "cleanName": "Guilty Gear XX: The Midnight Carnival",
       "normalizedName": "guiltygearxx:themidnightcarnival",
@@ -950,19 +1039,6 @@
       "manufacturer": "Sammy"
     },
     {
-      "name": "Guilty Gear XX #Reload: The Midnight Carnival",
-      "cleanName": "Guilty Gear XX #Reload: The Midnight Carnival",
-      "normalizedName": "guiltygearxx#reload:themidnightcarnival",
-      "file": "fightdata_ggxxrl.json",
-      "romIds": [
-        "ggxxrl",
-        "ggxxrlo"
-      ],
-      "aliases": [],
-      "year": 2003,
-      "manufacturer": "Sammy"
-    },
-    {
       "name": "Guilty Gear XX Slash: The Midnight Carnival",
       "cleanName": "Guilty Gear XX Slash: The Midnight Carnival",
       "normalizedName": "guiltygearxxslash:themidnightcarnival",
@@ -975,43 +1051,15 @@
       "manufacturer": "Sammy"
     },
     {
-      "name": "Voltage Fighter: Gowcaizer",
-      "cleanName": "Voltage Fighter: Gowcaizer",
-      "normalizedName": "voltagefighter:gowcaizer",
-      "file": "fightdata_gowcaizr.json",
+      "name": "Heaven's Gate",
+      "cleanName": "Heaven's Gate",
+      "normalizedName": "heaven'sgate",
+      "file": "fightdata_hvnsgate.json",
       "romIds": [
-        "gowcaizr"
+        "hvnsgate"
       ],
       "aliases": [],
-      "year": 1995,
-      "manufacturer": "Technos"
-    },
-    {
-      "name": "Guardians",
-      "cleanName": "Guardians",
-      "normalizedName": "guardians",
-      "file": "fightdata_grdians.json",
-      "romIds": [
-        "grdians",
-        "grdiansa"
-      ],
-      "aliases": [],
-      "year": 1995,
-      "manufacturer": "Banpresto"
-    },
-    {
-      "name": "Groove on Fight: Gouketsuji Ichizoku 3",
-      "cleanName": "Groove on Fight: Gouketsuji Ichizoku 3",
-      "normalizedName": "grooveonfight:gouketsujiichizoku3",
-      "file": "fightdata_groovef.json",
-      "romIds": [
-        "groovef"
-      ],
-      "aliases": [
-        "grooveonfight:gouketsujiichizokuiii",
-        "grooveonfight:gouketsujiichizokuthree"
-      ],
-      "year": 1997,
+      "year": 1996,
       "manufacturer": "Atlus"
     },
     {
@@ -1059,18 +1107,6 @@
       "manufacturer": "Capcom"
     },
     {
-      "name": "Heaven's Gate",
-      "cleanName": "Heaven's Gate",
-      "normalizedName": "heaven'sgate",
-      "file": "fightdata_hvnsgate.json",
-      "romIds": [
-        "hvnsgate"
-      ],
-      "aliases": [],
-      "year": 1996,
-      "manufacturer": "Atlus"
-    },
-    {
       "name": "Jackie Chan: The Kung-Fu Master",
       "cleanName": "Jackie Chan: The Kung-Fu Master",
       "normalizedName": "jackiechan:thekung-fumaster",
@@ -1094,6 +1130,27 @@
       "aliases": [],
       "year": 1995,
       "manufacturer": "Kaneko"
+    },
+    {
+      "name": "JoJo's Bizarre Adventure",
+      "cleanName": "JoJo's Bizarre Adventure",
+      "normalizedName": "jojo'sbizarreadventure",
+      "file": "fightdata_jojoba.json",
+      "romIds": [
+        "jojoba",
+        "jojobajr1",
+        "jojobajr2",
+        "jojoban",
+        "jojobaner1",
+        "jojobaner2",
+        "jojobanr1",
+        "jojobanr2",
+        "jojobar1",
+        "jojobar2"
+      ],
+      "aliases": [],
+      "year": 1999,
+      "manufacturer": "Capcom"
     },
     {
       "name": "JoJo's Venture",
@@ -1120,39 +1177,6 @@
       "aliases": [],
       "year": 1998,
       "manufacturer": "Capcom"
-    },
-    {
-      "name": "JoJo's Bizarre Adventure",
-      "cleanName": "JoJo's Bizarre Adventure",
-      "normalizedName": "jojo'sbizarreadventure",
-      "file": "fightdata_jojoba.json",
-      "romIds": [
-        "jojoba",
-        "jojobajr1",
-        "jojobajr2",
-        "jojoban",
-        "jojobaner1",
-        "jojobaner2",
-        "jojobanr1",
-        "jojobanr2",
-        "jojobar1",
-        "jojobar2"
-      ],
-      "aliases": [],
-      "year": 1999,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Far East of Eden: Kabuki Klash",
-      "cleanName": "Far East of Eden: Kabuki Klash",
-      "normalizedName": "fareastofeden:kabukiklash",
-      "file": "fightdata_kabukikl.json",
-      "romIds": [
-        "kabukikl"
-      ],
-      "aliases": [],
-      "year": null,
-      "manufacturer": null
     },
     {
       "name": "Kaiser Knuckle",
@@ -1197,35 +1221,6 @@
       "manufacturer": null
     },
     {
-      "name": "Knuckle Bash",
-      "cleanName": "Knuckle Bash",
-      "normalizedName": "knucklebash",
-      "file": "fightdata_kbash.json",
-      "romIds": [
-        "kbash",
-        "kbashk",
-        "kbashp"
-      ],
-      "aliases": [],
-      "year": 1993,
-      "manufacturer": "Toaplan"
-    },
-    {
-      "name": "The Killing Blade",
-      "cleanName": "The Killing Blade",
-      "normalizedName": "thekillingblade",
-      "file": "fightdata_killbld.json",
-      "romIds": [
-        "killbld",
-        "killbld100",
-        "killbld104",
-        "killbld106"
-      ],
-      "aliases": [],
-      "year": 1998,
-      "manufacturer": "IGS"
-    },
-    {
       "name": "Killer Instinct",
       "cleanName": "Killer Instinct",
       "normalizedName": "killerinstinct",
@@ -1267,20 +1262,6 @@
       "manufacturer": "SNK"
     },
     {
-      "name": "Knuckle Heads",
-      "cleanName": "Knuckle Heads",
-      "normalizedName": "knuckleheads",
-      "file": "fightdata_knckhead.json",
-      "romIds": [
-        "knckhead",
-        "knckheadj",
-        "knckheadjp"
-      ],
-      "aliases": [],
-      "year": 1993,
-      "manufacturer": "Namco"
-    },
-    {
       "name": "Knights of the Round",
       "cleanName": "Knights of the Round",
       "normalizedName": "knightsoftheround",
@@ -1296,56 +1277,1402 @@
       "manufacturer": "Capcom"
     },
     {
-      "name": "The King of Fighters 2000",
-      "cleanName": "The King of Fighters 2000",
-      "normalizedName": "thekingoffighters2000",
-      "file": "fightdata_kof2000.json",
+      "name": "Knights of Valour",
+      "cleanName": "Knights of Valour",
+      "normalizedName": "knightsofvalour",
+      "file": "fightdata_kov.json",
       "romIds": [
-        "kof2000",
-        "kof2000n"
+        "kov",
+        "kov111",
+        "kov114",
+        "kov115"
       ],
       "aliases": [],
-      "year": 2000,
-      "manufacturer": "SNK"
+      "year": 1999,
+      "manufacturer": "IGS"
     },
     {
-      "name": "The King of Fighters 2001",
-      "cleanName": "The King of Fighters 2001",
-      "normalizedName": "thekingoffighters2001",
-      "file": "fightdata_kof2001.json",
+      "name": "Knights of Valour 2: Nine Dragons",
+      "cleanName": "Knights of Valour 2: Nine Dragons",
+      "normalizedName": "knightsofvalour2:ninedragons",
+      "file": "fightdata_kov2p.json",
       "romIds": [
-        "kof2001",
-        "kof2001h"
+        "kov2p",
+        "kov2p200",
+        "kov2p202",
+        "kov2p203",
+        "kov2p204"
+      ],
+      "aliases": [
+        "knightsofvalourii:ninedragons",
+        "knightsofvalourtwo:ninedragons"
+      ],
+      "year": 2001,
+      "manufacturer": "IGS"
+    },
+    {
+      "name": "Knights of Valour Plus",
+      "cleanName": "Knights of Valour Plus",
+      "normalizedName": "knightsofvalourplus",
+      "file": "fightdata_kovplus.json",
+      "romIds": [
+        "kovplus",
+        "kovplusa"
+      ],
+      "aliases": [],
+      "year": 1999,
+      "manufacturer": "IGS"
+    },
+    {
+      "name": "Knuckle Bash",
+      "cleanName": "Knuckle Bash",
+      "normalizedName": "knucklebash",
+      "file": "fightdata_kbash.json",
+      "romIds": [
+        "kbash",
+        "kbashk",
+        "kbashp"
+      ],
+      "aliases": [],
+      "year": 1993,
+      "manufacturer": "Toaplan"
+    },
+    {
+      "name": "Knuckle Heads",
+      "cleanName": "Knuckle Heads",
+      "normalizedName": "knuckleheads",
+      "file": "fightdata_knckhead.json",
+      "romIds": [
+        "knckhead",
+        "knckheadj",
+        "knckheadjp"
+      ],
+      "aliases": [],
+      "year": 1993,
+      "manufacturer": "Namco"
+    },
+    {
+      "name": "Mace: The Dark Age",
+      "cleanName": "Mace: The Dark Age",
+      "normalizedName": "mace:thedarkage",
+      "file": "fightdata_mace.json",
+      "romIds": [
+        "mace",
+        "macea"
+      ],
+      "aliases": [],
+      "year": null,
+      "manufacturer": null
+    },
+    {
+      "name": "Martial Champion",
+      "cleanName": "Martial Champion",
+      "normalizedName": "martialchampion",
+      "file": "fightdata_mtlchamp.json",
+      "romIds": [
+        "mtlchamp",
+        "mtlchamp1",
+        "mtlchampa",
+        "mtlchampj",
+        "mtlchampu",
+        "mtlchampu1"
+      ],
+      "aliases": [],
+      "year": 1993,
+      "manufacturer": "Konami"
+    },
+    {
+      "name": "Martial Masters",
+      "cleanName": "Martial Masters",
+      "normalizedName": "martialmasters",
+      "file": "fightdata_martmast.json",
+      "romIds": [
+        "martmast",
+        "martmast102c",
+        "martmast103c",
+        "martmast104c"
       ],
       "aliases": [],
       "year": 2001,
-      "manufacturer": "Eolith"
+      "manufacturer": "IGS"
     },
     {
-      "name": "The King of Fighters 2002",
-      "cleanName": "The King of Fighters 2002",
-      "normalizedName": "thekingoffighters2002",
-      "file": "fightdata_kof2002.json",
+      "name": "Marvel Super Heroes",
+      "cleanName": "Marvel Super Heroes",
+      "normalizedName": "marvelsuperheroes",
+      "file": "fightdata_msh.json",
       "romIds": [
-        "kof2002"
+        "msh",
+        "msha",
+        "mshb",
+        "mshbr1",
+        "mshh",
+        "mshj",
+        "mshjr1",
+        "mshu"
+      ],
+      "aliases": [],
+      "year": 1995,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Marvel Super Heroes vs. Street Fighter",
+      "cleanName": "Marvel Super Heroes vs. Street Fighter",
+      "normalizedName": "marvelsuperheroesvs.streetfighter",
+      "file": "fightdata_mshvsf.json",
+      "romIds": [
+        "mshvsf",
+        "mshvsfa",
+        "mshvsfa1",
+        "mshvsfb",
+        "mshvsfb1",
+        "mshvsfh",
+        "mshvsfj",
+        "mshvsfj1",
+        "mshvsfj2",
+        "mshvsfu",
+        "mshvsfu1"
+      ],
+      "aliases": [],
+      "year": 1997,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Marvel vs. Capcom 2: New Age of Heroes",
+      "cleanName": "Marvel vs. Capcom 2: New Age of Heroes",
+      "normalizedName": "marvelvs.capcom2:newageofheroes",
+      "file": "fightdata_mvsc2.json",
+      "romIds": [
+        "mvsc2",
+        "mvsc2u"
+      ],
+      "aliases": [
+        "marvelvs.capcomii:newageofheroes",
+        "marvelvs.capcomtwo:newageofheroes"
+      ],
+      "year": 2000,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Marvel vs. Capcom: Clash of Super Heroes",
+      "cleanName": "Marvel vs. Capcom: Clash of Super Heroes",
+      "normalizedName": "marvelvs.capcom:clashofsuperheroes",
+      "file": "fightdata_mvsc.json",
+      "romIds": [
+        "mvsc",
+        "mvsca",
+        "mvscar1",
+        "mvscb",
+        "mvsch",
+        "mvscj",
+        "mvscjr1",
+        "mvscjsing",
+        "mvscr1",
+        "mvscu",
+        "mvscur1"
+      ],
+      "aliases": [],
+      "year": 1998,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Matrimelee",
+      "cleanName": "Matrimelee",
+      "normalizedName": "matrimelee",
+      "file": "fightdata_matrim.json",
+      "romIds": [
+        "matrim"
       ],
       "aliases": [],
       "year": 2002,
       "manufacturer": "Playmore"
     },
     {
-      "name": "The King of Fighters 2003",
-      "cleanName": "The King of Fighters 2003",
-      "normalizedName": "thekingoffighters2003",
-      "file": "fightdata_kof2003.json",
+      "name": "Mortal Kombat",
+      "cleanName": "Mortal Kombat",
+      "normalizedName": "mortalkombat",
+      "file": "fightdata_mk.json",
       "romIds": [
-        "kof2003",
-        "kof2003h",
-        "kf2k3pcb"
+        "mk",
+        "mkla1",
+        "mkla2",
+        "mkla3",
+        "mkla4",
+        "mkprot4",
+        "mkprot8",
+        "mkprot9",
+        "mkr4"
+      ],
+      "aliases": [],
+      "year": 1992,
+      "manufacturer": "Midway"
+    },
+    {
+      "name": "Mortal Kombat 3",
+      "cleanName": "Mortal Kombat 3",
+      "normalizedName": "mortalkombat3",
+      "file": "fightdata_mk3.json",
+      "romIds": [
+        "mk3",
+        "mk3r20",
+        "mk3p40",
+        "mk3r10"
+      ],
+      "aliases": [
+        "mortalkombatiii",
+        "mortalkombatthree"
+      ],
+      "year": 1995,
+      "manufacturer": "Midway"
+    },
+    {
+      "name": "Mortal Kombat 4",
+      "cleanName": "Mortal Kombat 4",
+      "normalizedName": "mortalkombat4",
+      "file": "fightdata_mk4.json",
+      "romIds": [
+        "mk4",
+        "mk4a",
+        "mk4b"
+      ],
+      "aliases": [
+        "mortalkombatfour",
+        "mortalkombativ"
+      ],
+      "year": 1997,
+      "manufacturer": "Midway"
+    },
+    {
+      "name": "Mortal Kombat II",
+      "cleanName": "Mortal Kombat II",
+      "normalizedName": "mortalkombatii",
+      "file": "fightdata_mk2.json",
+      "romIds": [
+        "mk2",
+        "mk2r30",
+        "mk2r31e",
+        "mk2r32e",
+        "mk2r11",
+        "mk2r14",
+        "mk2r20",
+        "mk2r21"
+      ],
+      "aliases": [
+        "mortalkombat2"
+      ],
+      "year": 1993,
+      "manufacturer": "Midway"
+    },
+    {
+      "name": "Muscle Bomber Duo: Ultimate Team Battle",
+      "cleanName": "Muscle Bomber Duo: Ultimate Team Battle",
+      "normalizedName": "musclebomberduo:ultimateteambattle",
+      "file": "fightdata_mbombrd.json",
+      "romIds": [
+        "mbombrd",
+        "mbombrdj"
+      ],
+      "aliases": [],
+      "year": 1993,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "NeoGeo Battle Coliseum",
+      "cleanName": "NeoGeo Battle Coliseum",
+      "normalizedName": "neogeobattlecoliseum",
+      "file": "fightdata_ngbc.json",
+      "romIds": [
+        "ngbc",
+        "ngbcj"
       ],
       "aliases": [],
       "year": null,
       "manufacturer": null
+    },
+    {
+      "name": "Night Warriors: Darkstalkers' Revenge",
+      "cleanName": "Night Warriors: Darkstalkers' Revenge",
+      "normalizedName": "nightwarriors:darkstalkers'revenge",
+      "file": "fightdata_nwarr.json",
+      "romIds": [
+        "nwarr",
+        "nwarra",
+        "nwarrb",
+        "nwarrh",
+        "nwarru",
+        "vhuntj",
+        "vhuntjr1",
+        "vhuntjr1s",
+        "vhuntjr2"
+      ],
+      "aliases": [
+        "Vampire Hunter: Darkstalkers' Revenge",
+        "vampirehunter:darkstalkers'revenge"
+      ],
+      "year": 1995,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Ninja Master's: Haoh-ninpo-cho",
+      "cleanName": "Ninja Master's: Haoh-ninpo-cho",
+      "normalizedName": "ninjamaster's:haoh-ninpo-cho",
+      "file": "fightdata_ninjamas.json",
+      "romIds": [
+        "ninjamas"
+      ],
+      "aliases": [],
+      "year": 1996,
+      "manufacturer": "SNK"
+    },
+    {
+      "name": "Plasma Sword: Nightmare of Bilstein",
+      "cleanName": "Plasma Sword: Nightmare of Bilstein",
+      "normalizedName": "plasmasword:nightmareofbilstein",
+      "file": "fightdata_plsmaswd.json",
+      "romIds": [
+        "plsmaswd",
+        "plsmaswda",
+        "stargld2"
+      ],
+      "aliases": [],
+      "year": 1998,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Power Instinct",
+      "cleanName": "Power Instinct",
+      "normalizedName": "powerinstinct",
+      "file": "fightdata_powerins.json",
+      "romIds": [
+        "powerins",
+        "powerinsj",
+        "powerinspj",
+        "powerinspu"
+      ],
+      "aliases": [],
+      "year": 1993,
+      "manufacturer": "Atlus"
+    },
+    {
+      "name": "Power Instinct 2",
+      "cleanName": "Power Instinct 2",
+      "normalizedName": "powerinstinct2",
+      "file": "fightdata_pwrinst2.json",
+      "romIds": [
+        "pwrinst2",
+        "pwrinst2a",
+        "pwrinst2j"
+      ],
+      "aliases": [
+        "powerinstinctii",
+        "powerinstincttwo"
+      ],
+      "year": 1994,
+      "manufacturer": "Atlus"
+    },
+    {
+      "name": "Primal Rage",
+      "cleanName": "Primal Rage",
+      "normalizedName": "primalrage",
+      "file": "fightdata_primrage.json",
+      "romIds": [
+        "primrage",
+        "primrage20",
+        "primrageo"
+      ],
+      "aliases": [],
+      "year": null,
+      "manufacturer": null
+    },
+    {
+      "name": "Primal Rage 2",
+      "cleanName": "Primal Rage 2",
+      "normalizedName": "primalrage2",
+      "file": "fightdata_primrag2.json",
+      "romIds": [
+        "primrag2"
+      ],
+      "aliases": [
+        "primalrageii",
+        "primalragetwo"
+      ],
+      "year": null,
+      "manufacturer": null
+    },
+    {
+      "name": "Project Justice",
+      "cleanName": "Project Justice",
+      "normalizedName": "projectjustice",
+      "file": "fightdata_pjustic.json",
+      "romIds": [
+        "pjustic",
+        "pjustica"
+      ],
+      "aliases": [],
+      "year": 2000,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Rage of the Dragons",
+      "cleanName": "Rage of the Dragons",
+      "normalizedName": "rageofthedragons",
+      "file": "fightdata_rotd.json",
+      "romIds": [
+        "rotd",
+        "rotdh"
+      ],
+      "aliases": [],
+      "year": 2002,
+      "manufacturer": "Playmore"
+    },
+    {
+      "name": "Ragnagard",
+      "cleanName": "Ragnagard",
+      "normalizedName": "ragnagard",
+      "file": "fightdata_ragnagrd.json",
+      "romIds": [
+        "ragnagrd"
+      ],
+      "aliases": [],
+      "year": 1996,
+      "manufacturer": "Saurus"
+    },
+    {
+      "name": "Real Bout Fatal Fury",
+      "cleanName": "Real Bout Fatal Fury",
+      "normalizedName": "realboutfatalfury",
+      "file": "fightdata_rbff1.json",
+      "romIds": [
+        "rbff1",
+        "rbff1a",
+        "rbff1k",
+        "rbff1ka"
+      ],
+      "aliases": [],
+      "year": 1995,
+      "manufacturer": "SNK"
+    },
+    {
+      "name": "Real Bout Fatal Fury 2: The Newcomers",
+      "cleanName": "Real Bout Fatal Fury 2: The Newcomers",
+      "normalizedName": "realboutfatalfury2:thenewcomers",
+      "file": "fightdata_rbff2.json",
+      "romIds": [
+        "rbff2",
+        "rbff2h",
+        "rbff2k"
+      ],
+      "aliases": [
+        "realboutfatalfuryii:thenewcomers",
+        "realboutfatalfurytwo:thenewcomers"
+      ],
+      "year": 1998,
+      "manufacturer": "SNK"
+    },
+    {
+      "name": "Real Bout Fatal Fury Special",
+      "cleanName": "Real Bout Fatal Fury Special",
+      "normalizedName": "realboutfatalfuryspecial",
+      "file": "fightdata_rbffspec.json",
+      "romIds": [
+        "rbffspec",
+        "rbffspeck"
+      ],
+      "aliases": [],
+      "year": 1997,
+      "manufacturer": "SNK"
+    },
+    {
+      "name": "Red Earth",
+      "cleanName": "Red Earth",
+      "normalizedName": "redearth",
+      "file": "fightdata_redearth.json",
+      "romIds": [
+        "redearth",
+        "redearthn",
+        "redearthnr1",
+        "redearthr1",
+        "warzard",
+        "warzardr1"
+      ],
+      "aliases": [],
+      "year": 1996,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Ring of Destruction: Slammasters II",
+      "cleanName": "Ring of Destruction: Slammasters II",
+      "normalizedName": "ringofdestruction:slammastersii",
+      "file": "fightdata_ringdest.json",
+      "romIds": [
+        "ringdest",
+        "ringdesta",
+        "ringdestb",
+        "ringdesth",
+        "smbomb",
+        "smbombr1"
+      ],
+      "aliases": [
+        "ringofdestruction:slammasters2"
+      ],
+      "year": 1994,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Rival Schools: United By Fate",
+      "cleanName": "Rival Schools: United By Fate",
+      "normalizedName": "rivalschools:unitedbyfate",
+      "file": "fightdata_rvschool.json",
+      "romIds": [
+        "rvschool",
+        "rvschoola",
+        "rvschoolu",
+        "jgakuen",
+        "jgakuen1"
+      ],
+      "aliases": [],
+      "year": 1997,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Rumble Fish, The",
+      "cleanName": "Rumble Fish, The",
+      "normalizedName": "rumblefish,the",
+      "file": "fightdata_rumblef.json",
+      "romIds": [
+        "rumblef",
+        "rumblefp"
+      ],
+      "aliases": [],
+      "year": 2004,
+      "manufacturer": "Sammy"
+    },
+    {
+      "name": "S.V.G.: Spectral vs. Generation",
+      "cleanName": "S.V.G.: Spectral vs. Generation",
+      "normalizedName": "s.v.g.:spectralvs.generation",
+      "file": "fightdata_svg.json",
+      "romIds": [
+        "svg",
+        "svghk",
+        "svgpcb",
+        "svgtw"
+      ],
+      "aliases": [
+        "s.5.g.:spectralvs.generation"
+      ],
+      "year": 2005,
+      "manufacturer": "IGS"
+    },
+    {
+      "name": "Samurai Shodown",
+      "cleanName": "Samurai Shodown",
+      "normalizedName": "samuraishodown",
+      "file": "fightdata_samsho.json",
+      "romIds": [
+        "samsho",
+        "samshoh"
+      ],
+      "aliases": [],
+      "year": 1993,
+      "manufacturer": "SNK"
+    },
+    {
+      "name": "Samurai Shodown 64",
+      "cleanName": "Samurai Shodown 64",
+      "normalizedName": "samuraishodown64",
+      "file": "fightdata_sams64.json",
+      "romIds": [
+        "sams64"
+      ],
+      "aliases": [],
+      "year": 1997,
+      "manufacturer": "SNK"
+    },
+    {
+      "name": "Samurai Shodown: Warrior's Rage",
+      "cleanName": "Samurai Shodown: Warrior's Rage",
+      "normalizedName": "samuraishodown:warrior'srage",
+      "file": "fightdata_sams64_2.json",
+      "romIds": [
+        "sams64_2"
+      ],
+      "aliases": [],
+      "year": 1998,
+      "manufacturer": "SNK"
+    },
+    {
+      "name": "Samurai Shodown II",
+      "cleanName": "Samurai Shodown II",
+      "normalizedName": "samuraishodownii",
+      "file": "fightdata_samsho2.json",
+      "romIds": [
+        "samsho2",
+        "samsho2k",
+        "samsho2ka"
+      ],
+      "aliases": [
+        "samuraishodown2"
+      ],
+      "year": 1994,
+      "manufacturer": "SNK"
+    },
+    {
+      "name": "Samurai Shodown III",
+      "cleanName": "Samurai Shodown III",
+      "normalizedName": "samuraishodowniii",
+      "file": "fightdata_samsho3.json",
+      "romIds": [
+        "samsho3",
+        "fswords",
+        "samsho3h"
+      ],
+      "aliases": [
+        "samuraishodown3"
+      ],
+      "year": 1995,
+      "manufacturer": "SNK"
+    },
+    {
+      "name": "Samurai Shodown IV: Amakusa's Revenge",
+      "cleanName": "Samurai Shodown IV: Amakusa's Revenge",
+      "normalizedName": "samuraishodowniv:amakusa'srevenge",
+      "file": "fightdata_samsho4.json",
+      "romIds": [
+        "samsho4",
+        "samsho4k"
+      ],
+      "aliases": [
+        "samuraishodown4:amakusa'srevenge"
+      ],
+      "year": 1996,
+      "manufacturer": "SNK"
+    },
+    {
+      "name": "Samurai Shodown V",
+      "cleanName": "Samurai Shodown V",
+      "normalizedName": "samuraishodownv",
+      "file": "fightdata_samsho5.json",
+      "romIds": [
+        "samsho5",
+        "samsho5a",
+        "samsho5h"
+      ],
+      "aliases": [
+        "samuraishodown5"
+      ],
+      "year": null,
+      "manufacturer": null
+    },
+    {
+      "name": "Samurai Shodown VI",
+      "cleanName": "Samurai Shodown VI",
+      "normalizedName": "samuraishodownvi",
+      "file": "fightdata_samsptk.json",
+      "romIds": [
+        "samsptk"
+      ],
+      "aliases": [
+        "samuraishodown6"
+      ],
+      "year": null,
+      "manufacturer": null
+    },
+    {
+      "name": "Samurai Shodown V Special",
+      "cleanName": "Samurai Shodown V Special",
+      "normalizedName": "samuraishodownvspecial",
+      "file": "fightdata_samsh5sp.json",
+      "romIds": [
+        "samsh5sp",
+        "samsh5sph",
+        "samsh5spho"
+      ],
+      "aliases": [
+        "samuraishodown5special"
+      ],
+      "year": null,
+      "manufacturer": null
+    },
+    {
+      "name": "Saturday Night Slam Masters",
+      "cleanName": "Saturday Night Slam Masters",
+      "normalizedName": "saturdaynightslammasters",
+      "file": "fightdata_slammast.json",
+      "romIds": [
+        "slammast",
+        "mbomberj",
+        "slammastu"
+      ],
+      "aliases": [],
+      "year": 1993,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Savage Reign",
+      "cleanName": "Savage Reign",
+      "normalizedName": "savagereign",
+      "file": "fightdata_savagere.json",
+      "romIds": [
+        "savagere"
+      ],
+      "aliases": [],
+      "year": 1995,
+      "manufacturer": "SNK"
+    },
+    {
+      "name": "SNK vs. Capcom: SVC Chaos",
+      "cleanName": "SNK vs. Capcom: SVC Chaos",
+      "normalizedName": "snkvs.capcom:svcchaos",
+      "file": "fightdata_svc.json",
+      "romIds": [
+        "svc",
+        "svcpcb",
+        "svcpcba"
+      ],
+      "aliases": [],
+      "year": 2003,
+      "manufacturer": "Playmore"
+    },
+    {
+      "name": "Sonic Championship",
+      "cleanName": "Sonic Championship",
+      "normalizedName": "sonicchampionship",
+      "file": "fightdata_schamp.json",
+      "romIds": [
+        "schamp",
+        "sfight"
+      ],
+      "aliases": [],
+      "year": 1996,
+      "manufacturer": "Sega"
+    },
+    {
+      "name": "Soul Calibur",
+      "cleanName": "Soul Calibur",
+      "normalizedName": "soulcalibur",
+      "file": "fightdata_soulclbr.json",
+      "romIds": [
+        "soulclbr",
+        "soulclbrab",
+        "soulclbrac",
+        "soulclbrja2",
+        "soulclbrjb",
+        "soulclbrjc",
+        "soulclbrub",
+        "soulclbruc"
+      ],
+      "aliases": [],
+      "year": 1998,
+      "manufacturer": "Namco"
+    },
+    {
+      "name": "Soul Edge Ver. II",
+      "cleanName": "Soul Edge Ver. II",
+      "normalizedName": "souledgever.ii",
+      "file": "fightdata_souledge.json",
+      "romIds": [
+        "souledge",
+        "souledgea",
+        "souledgeja",
+        "souledgeua",
+        "souledgeuc"
+      ],
+      "aliases": [
+        "souledgever.2"
+      ],
+      "year": 1996,
+      "manufacturer": "Namco"
+    },
+    {
+      "name": "Star Gladiator - Episode I: Final Crusade",
+      "cleanName": "Star Gladiator - Episode I: Final Crusade",
+      "normalizedName": "stargladiator-episodei:finalcrusade",
+      "file": "fightdata_starglad.json",
+      "romIds": [
+        "starglad",
+        "stargladj"
+      ],
+      "aliases": [
+        "stargladiator-episode1:finalcrusade"
+      ],
+      "year": 1996,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Street Fighter",
+      "cleanName": "Street Fighter",
+      "normalizedName": "streetfighter",
+      "file": "fightdata_sf.json",
+      "romIds": [
+        "sf",
+        "sfan",
+        "sfj",
+        "sfjan",
+        "sfp",
+        "sfua",
+        "sfw"
+      ],
+      "aliases": [],
+      "year": 1987,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Street Fighter: The Movie",
+      "cleanName": "Street Fighter: The Movie",
+      "normalizedName": "streetfighter:themovie",
+      "file": "fightdata_sftm.json",
+      "romIds": [
+        "sftm",
+        "sftm110",
+        "sftm111",
+        "sftmj112",
+        "sftmj114",
+        "sftmk112"
+      ],
+      "aliases": [],
+      "year": null,
+      "manufacturer": null
+    },
+    {
+      "name": "Street Fighter Alpha 2",
+      "cleanName": "Street Fighter Alpha 2",
+      "normalizedName": "streetfighteralpha2",
+      "file": "fightdata_sfa2.json",
+      "romIds": [
+        "sfa2",
+        "sfa2u",
+        "sfa2ur1",
+        "sfz2a",
+        "sfz2b",
+        "sfz2br1",
+        "sfz2h",
+        "sfz2j",
+        "sfz2jr1",
+        "sfz2n"
+      ],
+      "aliases": [
+        "Street Fighter Zero 2",
+        "streetfighteralphaii",
+        "streetfighteralphatwo",
+        "streetfighterzero2"
+      ],
+      "year": 1996,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Street Fighter Alpha 3",
+      "cleanName": "Street Fighter Alpha 3",
+      "normalizedName": "streetfighteralpha3",
+      "file": "fightdata_sfa3.json",
+      "romIds": [
+        "sfa3",
+        "sfa3b",
+        "sfa3h",
+        "sfa3hr1",
+        "sfa3u",
+        "sfa3ur1",
+        "sfa3us",
+        "sfz3a",
+        "sfz3ar1",
+        "sfz3j",
+        "sfz3jr1",
+        "sfz3jr2"
+      ],
+      "aliases": [
+        "Street Fighter Zero 3",
+        "streetfighteralphaiii",
+        "streetfighteralphathree",
+        "streetfighterzero3"
+      ],
+      "year": 1998,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Street Fighter Alpha: Warriors' Dreams",
+      "cleanName": "Street Fighter Alpha: Warriors' Dreams",
+      "normalizedName": "streetfighteralpha:warriors'dreams",
+      "file": "fightdata_sfa.json",
+      "romIds": [
+        "sfa",
+        "sfar1",
+        "sfar2",
+        "sfar3",
+        "sfau",
+        "sfza",
+        "sfzar1",
+        "sfzb",
+        "sfzbr1",
+        "sfzh",
+        "sfzhr1",
+        "sfzj",
+        "sfzjr1",
+        "sfzjr2",
+        "sfzch",
+        "sfach",
+        "sfzbch"
+      ],
+      "aliases": [
+        "Street Fighter Zero: Warriors' Dreams",
+        "streetfighterzero:warriors'dreams"
+      ],
+      "year": 1995,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Street Fighter EX",
+      "cleanName": "Street Fighter EX",
+      "normalizedName": "streetfighterex",
+      "file": "fightdata_sfex.json",
+      "romIds": [
+        "sfex",
+        "sfexa",
+        "sfexj",
+        "sfexu"
+      ],
+      "aliases": [],
+      "year": 1996,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Street Fighter EX2",
+      "cleanName": "Street Fighter EX2",
+      "normalizedName": "streetfighterex2",
+      "file": "fightdata_sfex2.json",
+      "romIds": [
+        "sfex2",
+        "sfex2a",
+        "sfex2h",
+        "sfex2j",
+        "sfex2u",
+        "sfex2u1"
+      ],
+      "aliases": [],
+      "year": 1998,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Street Fighter EX2 Plus",
+      "cleanName": "Street Fighter EX2 Plus",
+      "normalizedName": "streetfighterex2plus",
+      "file": "fightdata_sfex2p.json",
+      "romIds": [
+        "sfex2p",
+        "sfex2pa",
+        "sfex2ph",
+        "sfex2pj",
+        "sfex2pu"
+      ],
+      "aliases": [],
+      "year": 1999,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Street Fighter EX Plus",
+      "cleanName": "Street Fighter EX Plus",
+      "normalizedName": "streetfighterexplus",
+      "file": "fightdata_sfexp.json",
+      "romIds": [
+        "sfexp",
+        "sfexpj",
+        "sfexpj1",
+        "sfexpu1"
+      ],
+      "aliases": [],
+      "year": 1997,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Street Fighter II': Champion Edition",
+      "cleanName": "Street Fighter II': Champion Edition",
+      "normalizedName": "streetfighterii':championedition",
+      "file": "fightdata_sf2ce.json",
+      "romIds": [
+        "sf2ce",
+        "sf2ceea",
+        "sf2ceec",
+        "sf2ceja",
+        "sf2cejb",
+        "sf2cejc",
+        "sf2cet",
+        "sf2ceua",
+        "sf2ceub",
+        "sf2ceuc"
+      ],
+      "aliases": [
+        "streetfighter2':championedition"
+      ],
+      "year": 1992,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Street Fighter II': Hyper Fighting",
+      "cleanName": "Street Fighter II': Hyper Fighting",
+      "normalizedName": "streetfighterii':hyperfighting",
+      "file": "fightdata_sf2hf.json",
+      "romIds": [
+        "sf2hf",
+        "sf2hfj",
+        "sf2hfu"
+      ],
+      "aliases": [
+        "streetfighter2':hyperfighting"
+      ],
+      "year": 1992,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Street Fighter II: The World Warrior",
+      "cleanName": "Street Fighter II: The World Warrior",
+      "normalizedName": "streetfighterii:theworldwarrior",
+      "file": "fightdata_sf2.json",
+      "romIds": [
+        "sf2",
+        "sf2ea",
+        "sf2eb",
+        "sf2ed",
+        "sf2ee",
+        "sf2ef",
+        "sf2em",
+        "sf2en",
+        "sf2j",
+        "sf2j17",
+        "sf2ja",
+        "sf2jc",
+        "sf2jf",
+        "sf2jh",
+        "sf2jl",
+        "sf2ua",
+        "sf2ub",
+        "sf2uc",
+        "sf2ud",
+        "sf2ue",
+        "sf2uf",
+        "sf2ug",
+        "sf2uh",
+        "sf2ui",
+        "sf2uk",
+        "sf2um"
+      ],
+      "aliases": [
+        "streetfighter2:theworldwarrior"
+      ],
+      "year": 1991,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Street Fighter III - 2nd Impact: Giant Attack",
+      "cleanName": "Street Fighter III - 2nd Impact: Giant Attack",
+      "normalizedName": "streetfighteriii-2ndimpact:giantattack",
+      "file": "fightdata_sfiii2.json",
+      "romIds": [
+        "sfiii2",
+        "sfiii2h",
+        "sfiii2j",
+        "sfiii2n"
+      ],
+      "aliases": [
+        "streetfighter3-2ndimpact:giantattack"
+      ],
+      "year": 1997,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Street Fighter III - 3rd Strike: Fight for the Future",
+      "cleanName": "Street Fighter III - 3rd Strike: Fight for the Future",
+      "normalizedName": "streetfighteriii-3rdstrike:fightforthefuture",
+      "file": "fightdata_sfiii3.json",
+      "romIds": [
+        "sfiii3",
+        "sfiii3j",
+        "sfiii3jr1",
+        "sfiii3n",
+        "sfiii3nr1",
+        "sfiii3r1",
+        "sfiii3u",
+        "sfiii3ur1"
+      ],
+      "aliases": [
+        "streetfighter3-3rdstrike:fightforthefuture"
+      ],
+      "year": 1999,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Street Fighter III: New Generation",
+      "cleanName": "Street Fighter III: New Generation",
+      "normalizedName": "streetfighteriii:newgeneration",
+      "file": "fightdata_sfiii.json",
+      "romIds": [
+        "sfiii",
+        "sfiiia",
+        "sfiiih",
+        "sfiiij",
+        "sfiiin",
+        "sfiiina",
+        "sfiiiu"
+      ],
+      "aliases": [
+        "streetfighter3:newgeneration"
+      ],
+      "year": 1997,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Street Fighter Zero 2 Alpha",
+      "cleanName": "Street Fighter Zero 2 Alpha",
+      "normalizedName": "streetfighterzero2alpha",
+      "file": "fightdata_sfz2al.json",
+      "romIds": [
+        "sfz2al",
+        "sfz2alb",
+        "sfz2alh",
+        "sfz2alj",
+        "sfz2alr1"
+      ],
+      "aliases": [
+        "streetfighterzeroiialpha",
+        "streetfighterzerotwoalpha"
+      ],
+      "year": 1996,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Street Fighter Zero 3 Upper",
+      "cleanName": "Street Fighter Zero 3 Upper",
+      "normalizedName": "streetfighterzero3upper",
+      "file": "fightdata_sfz3ugd.json",
+      "romIds": [
+        "sfz3ugd"
+      ],
+      "aliases": [
+        "streetfighterzeroiiiupper",
+        "streetfighterzerothreeupper"
+      ],
+      "year": 2001,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Suiko Enbu",
+      "cleanName": "Suiko Enbu",
+      "normalizedName": "suikoenbu",
+      "file": "fightdata_suikoenb.json",
+      "romIds": [
+        "suikoenb"
+      ],
+      "aliases": [],
+      "year": null,
+      "manufacturer": null
+    },
+    {
+      "name": "Super Gem Fighter: Mini Mix",
+      "cleanName": "Super Gem Fighter: Mini Mix",
+      "normalizedName": "supergemfighter:minimix",
+      "file": "fightdata_sgemf.json",
+      "romIds": [
+        "sgemf",
+        "sgemfa",
+        "sgemfh",
+        "pfghtj"
+      ],
+      "aliases": [],
+      "year": 1997,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Superior Soldiers",
+      "cleanName": "Superior Soldiers",
+      "normalizedName": "superiorsoldiers",
+      "file": "fightdata_ssoldier.json",
+      "romIds": [
+        "ssoldier",
+        "psoldier"
+      ],
+      "aliases": [],
+      "year": null,
+      "manufacturer": null
+    },
+    {
+      "name": "Super Street Fighter II: The New Challengers",
+      "cleanName": "Super Street Fighter II: The New Challengers",
+      "normalizedName": "superstreetfighterii:thenewchallengers",
+      "file": "fightdata_ssf2.json",
+      "romIds": [
+        "ssf2",
+        "ssf2a",
+        "ssf2ar1",
+        "ssf2h",
+        "ssf2j",
+        "ssf2jr1",
+        "ssf2jr2",
+        "ssf2r1",
+        "ssf2u",
+        "ssf2tb",
+        "ssf2tba",
+        "ssf2tbh",
+        "ssf2tbj",
+        "ssf2tbj1",
+        "ssf2tbr1",
+        "ssf2tbu"
+      ],
+      "aliases": [
+        "superstreetfighter2:thenewchallengers"
+      ],
+      "year": 1993,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Super Street Fighter II Turbo",
+      "cleanName": "Super Street Fighter II Turbo",
+      "normalizedName": "superstreetfighteriiturbo",
+      "file": "fightdata_ssf2t.json",
+      "romIds": [
+        "ssf2t",
+        "ssf2ta",
+        "ssf2th",
+        "ssf2tu",
+        "ssf2tur1",
+        "ssf2xj",
+        "ssf2xjr1",
+        "ssf2xjr1r"
+      ],
+      "aliases": [
+        "superstreetfighter2turbo"
+      ],
+      "year": 1994,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Survival Arts",
+      "cleanName": "Survival Arts",
+      "normalizedName": "survivalarts",
+      "file": "fightdata_survarts.json",
+      "romIds": [
+        "survarts",
+        "survartsj",
+        "survartsu"
+      ],
+      "aliases": [],
+      "year": null,
+      "manufacturer": null
+    },
+    {
+      "name": "Tattoo Assassins",
+      "cleanName": "Tattoo Assassins",
+      "normalizedName": "tattooassassins",
+      "file": "fightdata_tattass.json",
+      "romIds": [
+        "tattass",
+        "tattassa"
+      ],
+      "aliases": [],
+      "year": null,
+      "manufacturer": null
+    },
+    {
+      "name": "Tekken",
+      "cleanName": "Tekken",
+      "normalizedName": "tekken",
+      "file": "fightdata_tekken.json",
+      "romIds": [
+        "tekken",
+        "tekkenac",
+        "tekkenb",
+        "tekkenjb"
+      ],
+      "aliases": [],
+      "year": 1994,
+      "manufacturer": "Namco"
+    },
+    {
+      "name": "Tekken 2 Ver.B",
+      "cleanName": "Tekken 2 Ver.B",
+      "normalizedName": "tekken2ver.b",
+      "file": "fightdata_tekken2.json",
+      "romIds": [
+        "tekken2",
+        "tekken2a",
+        "tekken2b",
+        "tekken2jb",
+        "tekken2jc",
+        "tekken2ua",
+        "tekken2ub",
+        "tekken2ud"
+      ],
+      "aliases": [
+        "tekkeniiver.b",
+        "tekkentwover.b"
+      ],
+      "year": 1995,
+      "manufacturer": "Namco"
+    },
+    {
+      "name": "Tekken 3",
+      "cleanName": "Tekken 3",
+      "normalizedName": "tekken3",
+      "file": "fightdata_tekken3.json",
+      "romIds": [
+        "tekken3",
+        "tekken3a",
+        "tekken3b",
+        "tekken3c",
+        "tekken3d",
+        "tekken3ja",
+        "tekken3je1",
+        "tekken3ua",
+        "tekken3ud"
+      ],
+      "aliases": [
+        "tekkeniii",
+        "tekkenthree"
+      ],
+      "year": 1997,
+      "manufacturer": "Namco"
+    },
+    {
+      "name": "Tekken Tag Tournament",
+      "cleanName": "Tekken Tag Tournament",
+      "normalizedName": "tekkentagtournament",
+      "file": "fightdata_tektagt.json",
+      "romIds": [
+        "tektagt",
+        "tektagtc1a",
+        "tektagtja3",
+        "tektagtjb",
+        "tektagtjc1",
+        "tektagtub",
+        "tektagtuc1"
+      ],
+      "aliases": [],
+      "year": 1999,
+      "manufacturer": "Namco"
+    },
+    {
+      "name": "The Fallen Angels",
+      "cleanName": "The Fallen Angels",
+      "normalizedName": "thefallenangels",
+      "file": "fightdata_daraku.json",
+      "romIds": [
+        "daraku"
+      ],
+      "aliases": [],
+      "year": 1998,
+      "manufacturer": "Psikyo"
+    },
+    {
+      "name": "The Killing Blade",
+      "cleanName": "The Killing Blade",
+      "normalizedName": "thekillingblade",
+      "file": "fightdata_killbld.json",
+      "romIds": [
+        "killbld",
+        "killbld100",
+        "killbld104",
+        "killbld106"
+      ],
+      "aliases": [],
+      "year": 1998,
+      "manufacturer": "IGS"
     },
     {
       "name": "The King of Fighters '94",
@@ -1447,6 +2774,58 @@
       "manufacturer": "SNK"
     },
     {
+      "name": "The King of Fighters 2000",
+      "cleanName": "The King of Fighters 2000",
+      "normalizedName": "thekingoffighters2000",
+      "file": "fightdata_kof2000.json",
+      "romIds": [
+        "kof2000",
+        "kof2000n"
+      ],
+      "aliases": [],
+      "year": 2000,
+      "manufacturer": "SNK"
+    },
+    {
+      "name": "The King of Fighters 2001",
+      "cleanName": "The King of Fighters 2001",
+      "normalizedName": "thekingoffighters2001",
+      "file": "fightdata_kof2001.json",
+      "romIds": [
+        "kof2001",
+        "kof2001h"
+      ],
+      "aliases": [],
+      "year": 2001,
+      "manufacturer": "Eolith"
+    },
+    {
+      "name": "The King of Fighters 2002",
+      "cleanName": "The King of Fighters 2002",
+      "normalizedName": "thekingoffighters2002",
+      "file": "fightdata_kof2002.json",
+      "romIds": [
+        "kof2002"
+      ],
+      "aliases": [],
+      "year": 2002,
+      "manufacturer": "Playmore"
+    },
+    {
+      "name": "The King of Fighters 2003",
+      "cleanName": "The King of Fighters 2003",
+      "normalizedName": "thekingoffighters2003",
+      "file": "fightdata_kof2003.json",
+      "romIds": [
+        "kof2003",
+        "kof2003h",
+        "kf2k3pcb"
+      ],
+      "aliases": [],
+      "year": null,
+      "manufacturer": null
+    },
+    {
       "name": "The King of Fighters NeoWave",
       "cleanName": "The King of Fighters NeoWave",
       "normalizedName": "thekingoffightersneowave",
@@ -1472,53 +2851,6 @@
       ],
       "year": null,
       "manufacturer": null
-    },
-    {
-      "name": "Knights of Valour",
-      "cleanName": "Knights of Valour",
-      "normalizedName": "knightsofvalour",
-      "file": "fightdata_kov.json",
-      "romIds": [
-        "kov",
-        "kov111",
-        "kov114",
-        "kov115"
-      ],
-      "aliases": [],
-      "year": 1999,
-      "manufacturer": "IGS"
-    },
-    {
-      "name": "Knights of Valour 2: Nine Dragons",
-      "cleanName": "Knights of Valour 2: Nine Dragons",
-      "normalizedName": "knightsofvalour2:ninedragons",
-      "file": "fightdata_kov2p.json",
-      "romIds": [
-        "kov2p",
-        "kov2p200",
-        "kov2p202",
-        "kov2p203",
-        "kov2p204"
-      ],
-      "aliases": [
-        "knightsofvalourii:ninedragons",
-        "knightsofvalourtwo:ninedragons"
-      ],
-      "year": 2001,
-      "manufacturer": "IGS"
-    },
-    {
-      "name": "Knights of Valour Plus",
-      "cleanName": "Knights of Valour Plus",
-      "normalizedName": "knightsofvalourplus",
-      "file": "fightdata_kovplus.json",
-      "romIds": [
-        "kovplus",
-        "kovplusa"
-      ],
-      "aliases": [],
-      "year": 1999,
-      "manufacturer": "IGS"
     },
     {
       "name": "The Last Blade",
@@ -1550,1315 +2882,6 @@
       "manufacturer": "SNK"
     },
     {
-      "name": "Mace: The Dark Age",
-      "cleanName": "Mace: The Dark Age",
-      "normalizedName": "mace:thedarkage",
-      "file": "fightdata_mace.json",
-      "romIds": [
-        "mace",
-        "macea"
-      ],
-      "aliases": [],
-      "year": null,
-      "manufacturer": null
-    },
-    {
-      "name": "Martial Masters",
-      "cleanName": "Martial Masters",
-      "normalizedName": "martialmasters",
-      "file": "fightdata_martmast.json",
-      "romIds": [
-        "martmast",
-        "martmast102c",
-        "martmast103c",
-        "martmast104c"
-      ],
-      "aliases": [],
-      "year": 2001,
-      "manufacturer": "IGS"
-    },
-    {
-      "name": "Matrimelee",
-      "cleanName": "Matrimelee",
-      "normalizedName": "matrimelee",
-      "file": "fightdata_matrim.json",
-      "romIds": [
-        "matrim"
-      ],
-      "aliases": [],
-      "year": 2002,
-      "manufacturer": "Playmore"
-    },
-    {
-      "name": "Muscle Bomber Duo: Ultimate Team Battle",
-      "cleanName": "Muscle Bomber Duo: Ultimate Team Battle",
-      "normalizedName": "musclebomberduo:ultimateteambattle",
-      "file": "fightdata_mbombrd.json",
-      "romIds": [
-        "mbombrd",
-        "mbombrdj"
-      ],
-      "aliases": [],
-      "year": 1993,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Mortal Kombat",
-      "cleanName": "Mortal Kombat",
-      "normalizedName": "mortalkombat",
-      "file": "fightdata_mk.json",
-      "romIds": [
-        "mk",
-        "mkla1",
-        "mkla2",
-        "mkla3",
-        "mkla4",
-        "mkprot4",
-        "mkprot8",
-        "mkprot9",
-        "mkr4"
-      ],
-      "aliases": [],
-      "year": 1992,
-      "manufacturer": "Midway"
-    },
-    {
-      "name": "Mortal Kombat II",
-      "cleanName": "Mortal Kombat II",
-      "normalizedName": "mortalkombatii",
-      "file": "fightdata_mk2.json",
-      "romIds": [
-        "mk2",
-        "mk2r30",
-        "mk2r31e",
-        "mk2r32e",
-        "mk2r11",
-        "mk2r14",
-        "mk2r20",
-        "mk2r21"
-      ],
-      "aliases": [
-        "mortalkombat2"
-      ],
-      "year": 1993,
-      "manufacturer": "Midway"
-    },
-    {
-      "name": "Mortal Kombat 3",
-      "cleanName": "Mortal Kombat 3",
-      "normalizedName": "mortalkombat3",
-      "file": "fightdata_mk3.json",
-      "romIds": [
-        "mk3",
-        "mk3r20",
-        "mk3p40",
-        "mk3r10"
-      ],
-      "aliases": [
-        "mortalkombatiii",
-        "mortalkombatthree"
-      ],
-      "year": 1995,
-      "manufacturer": "Midway"
-    },
-    {
-      "name": "Mortal Kombat 4",
-      "cleanName": "Mortal Kombat 4",
-      "normalizedName": "mortalkombat4",
-      "file": "fightdata_mk4.json",
-      "romIds": [
-        "mk4",
-        "mk4a",
-        "mk4b"
-      ],
-      "aliases": [
-        "mortalkombatfour",
-        "mortalkombativ"
-      ],
-      "year": 1997,
-      "manufacturer": "Midway"
-    },
-    {
-      "name": "Marvel Super Heroes",
-      "cleanName": "Marvel Super Heroes",
-      "normalizedName": "marvelsuperheroes",
-      "file": "fightdata_msh.json",
-      "romIds": [
-        "msh",
-        "msha",
-        "mshb",
-        "mshbr1",
-        "mshh",
-        "mshj",
-        "mshjr1",
-        "mshu"
-      ],
-      "aliases": [],
-      "year": 1995,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Marvel Super Heroes vs. Street Fighter",
-      "cleanName": "Marvel Super Heroes vs. Street Fighter",
-      "normalizedName": "marvelsuperheroesvs.streetfighter",
-      "file": "fightdata_mshvsf.json",
-      "romIds": [
-        "mshvsf",
-        "mshvsfa",
-        "mshvsfa1",
-        "mshvsfb",
-        "mshvsfb1",
-        "mshvsfh",
-        "mshvsfj",
-        "mshvsfj1",
-        "mshvsfj2",
-        "mshvsfu",
-        "mshvsfu1"
-      ],
-      "aliases": [],
-      "year": 1997,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Martial Champion",
-      "cleanName": "Martial Champion",
-      "normalizedName": "martialchampion",
-      "file": "fightdata_mtlchamp.json",
-      "romIds": [
-        "mtlchamp",
-        "mtlchamp1",
-        "mtlchampa",
-        "mtlchampj",
-        "mtlchampu",
-        "mtlchampu1"
-      ],
-      "aliases": [],
-      "year": 1993,
-      "manufacturer": "Konami"
-    },
-    {
-      "name": "Marvel vs. Capcom: Clash of Super Heroes",
-      "cleanName": "Marvel vs. Capcom: Clash of Super Heroes",
-      "normalizedName": "marvelvs.capcom:clashofsuperheroes",
-      "file": "fightdata_mvsc.json",
-      "romIds": [
-        "mvsc",
-        "mvsca",
-        "mvscar1",
-        "mvscb",
-        "mvsch",
-        "mvscj",
-        "mvscjr1",
-        "mvscjsing",
-        "mvscr1",
-        "mvscu",
-        "mvscur1"
-      ],
-      "aliases": [],
-      "year": 1998,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Marvel vs. Capcom 2: New Age of Heroes",
-      "cleanName": "Marvel vs. Capcom 2: New Age of Heroes",
-      "normalizedName": "marvelvs.capcom2:newageofheroes",
-      "file": "fightdata_mvsc2.json",
-      "romIds": [
-        "mvsc2",
-        "mvsc2u"
-      ],
-      "aliases": [
-        "marvelvs.capcomii:newageofheroes",
-        "marvelvs.capcomtwo:newageofheroes"
-      ],
-      "year": 2000,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "NeoGeo Battle Coliseum",
-      "cleanName": "NeoGeo Battle Coliseum",
-      "normalizedName": "neogeobattlecoliseum",
-      "file": "fightdata_ngbc.json",
-      "romIds": [
-        "ngbc",
-        "ngbcj"
-      ],
-      "aliases": [],
-      "year": null,
-      "manufacturer": null
-    },
-    {
-      "name": "Ninja Master's: Haoh-ninpo-cho",
-      "cleanName": "Ninja Master's: Haoh-ninpo-cho",
-      "normalizedName": "ninjamaster's:haoh-ninpo-cho",
-      "file": "fightdata_ninjamas.json",
-      "romIds": [
-        "ninjamas"
-      ],
-      "aliases": [],
-      "year": 1996,
-      "manufacturer": "SNK"
-    },
-    {
-      "name": "Night Warriors: Darkstalkers' Revenge",
-      "cleanName": "Night Warriors: Darkstalkers' Revenge",
-      "normalizedName": "nightwarriors:darkstalkers'revenge",
-      "file": "fightdata_nwarr.json",
-      "romIds": [
-        "nwarr",
-        "nwarra",
-        "nwarrb",
-        "nwarrh",
-        "nwarru",
-        "vhuntj",
-        "vhuntjr1",
-        "vhuntjr1s",
-        "vhuntjr2"
-      ],
-      "aliases": [
-        "Vampire Hunter: Darkstalkers' Revenge",
-        "vampirehunter:darkstalkers'revenge"
-      ],
-      "year": 1995,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Project Justice",
-      "cleanName": "Project Justice",
-      "normalizedName": "projectjustice",
-      "file": "fightdata_pjustic.json",
-      "romIds": [
-        "pjustic",
-        "pjustica"
-      ],
-      "aliases": [],
-      "year": 2000,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Gogetsuji Legends",
-      "cleanName": "Gogetsuji Legends",
-      "normalizedName": "gogetsujilegends",
-      "file": "fightdata_plegends.json",
-      "romIds": [
-        "plegends",
-        "plegendsj"
-      ],
-      "aliases": [],
-      "year": 1995,
-      "manufacturer": "Atlus"
-    },
-    {
-      "name": "Plasma Sword: Nightmare of Bilstein",
-      "cleanName": "Plasma Sword: Nightmare of Bilstein",
-      "normalizedName": "plasmasword:nightmareofbilstein",
-      "file": "fightdata_plsmaswd.json",
-      "romIds": [
-        "plsmaswd",
-        "plsmaswda",
-        "stargld2"
-      ],
-      "aliases": [],
-      "year": 1998,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Power Instinct",
-      "cleanName": "Power Instinct",
-      "normalizedName": "powerinstinct",
-      "file": "fightdata_powerins.json",
-      "romIds": [
-        "powerins",
-        "powerinsj",
-        "powerinspj",
-        "powerinspu"
-      ],
-      "aliases": [],
-      "year": 1993,
-      "manufacturer": "Atlus"
-    },
-    {
-      "name": "Primal Rage 2",
-      "cleanName": "Primal Rage 2",
-      "normalizedName": "primalrage2",
-      "file": "fightdata_primrag2.json",
-      "romIds": [
-        "primrag2"
-      ],
-      "aliases": [
-        "primalrageii",
-        "primalragetwo"
-      ],
-      "year": null,
-      "manufacturer": null
-    },
-    {
-      "name": "Primal Rage",
-      "cleanName": "Primal Rage",
-      "normalizedName": "primalrage",
-      "file": "fightdata_primrage.json",
-      "romIds": [
-        "primrage",
-        "primrage20",
-        "primrageo"
-      ],
-      "aliases": [],
-      "year": null,
-      "manufacturer": null
-    },
-    {
-      "name": "Power Instinct 2",
-      "cleanName": "Power Instinct 2",
-      "normalizedName": "powerinstinct2",
-      "file": "fightdata_pwrinst2.json",
-      "romIds": [
-        "pwrinst2",
-        "pwrinst2a",
-        "pwrinst2j"
-      ],
-      "aliases": [
-        "powerinstinctii",
-        "powerinstincttwo"
-      ],
-      "year": 1994,
-      "manufacturer": "Atlus"
-    },
-    {
-      "name": "Ragnagard",
-      "cleanName": "Ragnagard",
-      "normalizedName": "ragnagard",
-      "file": "fightdata_ragnagrd.json",
-      "romIds": [
-        "ragnagrd"
-      ],
-      "aliases": [],
-      "year": 1996,
-      "manufacturer": "Saurus"
-    },
-    {
-      "name": "Real Bout Fatal Fury",
-      "cleanName": "Real Bout Fatal Fury",
-      "normalizedName": "realboutfatalfury",
-      "file": "fightdata_rbff1.json",
-      "romIds": [
-        "rbff1",
-        "rbff1a",
-        "rbff1k",
-        "rbff1ka"
-      ],
-      "aliases": [],
-      "year": 1995,
-      "manufacturer": "SNK"
-    },
-    {
-      "name": "Real Bout Fatal Fury 2: The Newcomers",
-      "cleanName": "Real Bout Fatal Fury 2: The Newcomers",
-      "normalizedName": "realboutfatalfury2:thenewcomers",
-      "file": "fightdata_rbff2.json",
-      "romIds": [
-        "rbff2",
-        "rbff2h",
-        "rbff2k"
-      ],
-      "aliases": [
-        "realboutfatalfuryii:thenewcomers",
-        "realboutfatalfurytwo:thenewcomers"
-      ],
-      "year": 1998,
-      "manufacturer": "SNK"
-    },
-    {
-      "name": "Real Bout Fatal Fury Special",
-      "cleanName": "Real Bout Fatal Fury Special",
-      "normalizedName": "realboutfatalfuryspecial",
-      "file": "fightdata_rbffspec.json",
-      "romIds": [
-        "rbffspec",
-        "rbffspeck"
-      ],
-      "aliases": [],
-      "year": 1997,
-      "manufacturer": "SNK"
-    },
-    {
-      "name": "Red Earth",
-      "cleanName": "Red Earth",
-      "normalizedName": "redearth",
-      "file": "fightdata_redearth.json",
-      "romIds": [
-        "redearth",
-        "redearthn",
-        "redearthnr1",
-        "redearthr1",
-        "warzard",
-        "warzardr1"
-      ],
-      "aliases": [],
-      "year": 1996,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Ring of Destruction: Slammasters II",
-      "cleanName": "Ring of Destruction: Slammasters II",
-      "normalizedName": "ringofdestruction:slammastersii",
-      "file": "fightdata_ringdest.json",
-      "romIds": [
-        "ringdest",
-        "ringdesta",
-        "ringdestb",
-        "ringdesth",
-        "smbomb",
-        "smbombr1"
-      ],
-      "aliases": [
-        "ringofdestruction:slammasters2"
-      ],
-      "year": 1994,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Rage of the Dragons",
-      "cleanName": "Rage of the Dragons",
-      "normalizedName": "rageofthedragons",
-      "file": "fightdata_rotd.json",
-      "romIds": [
-        "rotd",
-        "rotdh"
-      ],
-      "aliases": [],
-      "year": 2002,
-      "manufacturer": "Playmore"
-    },
-    {
-      "name": "Rumble Fish, The",
-      "cleanName": "Rumble Fish, The",
-      "normalizedName": "rumblefish,the",
-      "file": "fightdata_rumblef.json",
-      "romIds": [
-        "rumblef",
-        "rumblefp"
-      ],
-      "aliases": [],
-      "year": 2004,
-      "manufacturer": "Sammy"
-    },
-    {
-      "name": "Rival Schools: United By Fate",
-      "cleanName": "Rival Schools: United By Fate",
-      "normalizedName": "rivalschools:unitedbyfate",
-      "file": "fightdata_rvschool.json",
-      "romIds": [
-        "rvschool",
-        "rvschoola",
-        "rvschoolu",
-        "jgakuen",
-        "jgakuen1"
-      ],
-      "aliases": [],
-      "year": 1997,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Samurai Shodown 64",
-      "cleanName": "Samurai Shodown 64",
-      "normalizedName": "samuraishodown64",
-      "file": "fightdata_sams64.json",
-      "romIds": [
-        "sams64"
-      ],
-      "aliases": [],
-      "year": 1997,
-      "manufacturer": "SNK"
-    },
-    {
-      "name": "Samurai Shodown: Warrior's Rage",
-      "cleanName": "Samurai Shodown: Warrior's Rage",
-      "normalizedName": "samuraishodown:warrior'srage",
-      "file": "fightdata_sams64_2.json",
-      "romIds": [
-        "sams64_2"
-      ],
-      "aliases": [],
-      "year": 1998,
-      "manufacturer": "SNK"
-    },
-    {
-      "name": "Samurai Shodown V Special",
-      "cleanName": "Samurai Shodown V Special",
-      "normalizedName": "samuraishodownvspecial",
-      "file": "fightdata_samsh5sp.json",
-      "romIds": [
-        "samsh5sp",
-        "samsh5sph",
-        "samsh5spho"
-      ],
-      "aliases": [
-        "samuraishodown5special"
-      ],
-      "year": null,
-      "manufacturer": null
-    },
-    {
-      "name": "Samurai Shodown",
-      "cleanName": "Samurai Shodown",
-      "normalizedName": "samuraishodown",
-      "file": "fightdata_samsho.json",
-      "romIds": [
-        "samsho",
-        "samshoh"
-      ],
-      "aliases": [],
-      "year": 1993,
-      "manufacturer": "SNK"
-    },
-    {
-      "name": "Samurai Shodown II",
-      "cleanName": "Samurai Shodown II",
-      "normalizedName": "samuraishodownii",
-      "file": "fightdata_samsho2.json",
-      "romIds": [
-        "samsho2",
-        "samsho2k",
-        "samsho2ka"
-      ],
-      "aliases": [
-        "samuraishodown2"
-      ],
-      "year": 1994,
-      "manufacturer": "SNK"
-    },
-    {
-      "name": "Samurai Shodown III",
-      "cleanName": "Samurai Shodown III",
-      "normalizedName": "samuraishodowniii",
-      "file": "fightdata_samsho3.json",
-      "romIds": [
-        "samsho3",
-        "fswords",
-        "samsho3h"
-      ],
-      "aliases": [
-        "samuraishodown3"
-      ],
-      "year": 1995,
-      "manufacturer": "SNK"
-    },
-    {
-      "name": "Samurai Shodown IV: Amakusa's Revenge",
-      "cleanName": "Samurai Shodown IV: Amakusa's Revenge",
-      "normalizedName": "samuraishodowniv:amakusa'srevenge",
-      "file": "fightdata_samsho4.json",
-      "romIds": [
-        "samsho4",
-        "samsho4k"
-      ],
-      "aliases": [
-        "samuraishodown4:amakusa'srevenge"
-      ],
-      "year": 1996,
-      "manufacturer": "SNK"
-    },
-    {
-      "name": "Samurai Shodown V",
-      "cleanName": "Samurai Shodown V",
-      "normalizedName": "samuraishodownv",
-      "file": "fightdata_samsho5.json",
-      "romIds": [
-        "samsho5",
-        "samsho5a",
-        "samsho5h"
-      ],
-      "aliases": [
-        "samuraishodown5"
-      ],
-      "year": null,
-      "manufacturer": null
-    },
-    {
-      "name": "Samurai Shodown VI",
-      "cleanName": "Samurai Shodown VI",
-      "normalizedName": "samuraishodownvi",
-      "file": "fightdata_samsptk.json",
-      "romIds": [
-        "samsptk"
-      ],
-      "aliases": [
-        "samuraishodown6"
-      ],
-      "year": null,
-      "manufacturer": null
-    },
-    {
-      "name": "Savage Reign",
-      "cleanName": "Savage Reign",
-      "normalizedName": "savagereign",
-      "file": "fightdata_savagere.json",
-      "romIds": [
-        "savagere"
-      ],
-      "aliases": [],
-      "year": 1995,
-      "manufacturer": "SNK"
-    },
-    {
-      "name": "Sonic Championship",
-      "cleanName": "Sonic Championship",
-      "normalizedName": "sonicchampionship",
-      "file": "fightdata_schamp.json",
-      "romIds": [
-        "schamp",
-        "sfight"
-      ],
-      "aliases": [],
-      "year": 1996,
-      "manufacturer": "Sega"
-    },
-    {
-      "name": "Street Fighter",
-      "cleanName": "Street Fighter",
-      "normalizedName": "streetfighter",
-      "file": "fightdata_sf.json",
-      "romIds": [
-        "sf",
-        "sfan",
-        "sfj",
-        "sfjan",
-        "sfp",
-        "sfua",
-        "sfw"
-      ],
-      "aliases": [],
-      "year": 1987,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Street Fighter II: The World Warrior",
-      "cleanName": "Street Fighter II: The World Warrior",
-      "normalizedName": "streetfighterii:theworldwarrior",
-      "file": "fightdata_sf2.json",
-      "romIds": [
-        "sf2",
-        "sf2ea",
-        "sf2eb",
-        "sf2ed",
-        "sf2ee",
-        "sf2ef",
-        "sf2em",
-        "sf2en",
-        "sf2j",
-        "sf2j17",
-        "sf2ja",
-        "sf2jc",
-        "sf2jf",
-        "sf2jh",
-        "sf2jl",
-        "sf2ua",
-        "sf2ub",
-        "sf2uc",
-        "sf2ud",
-        "sf2ue",
-        "sf2uf",
-        "sf2ug",
-        "sf2uh",
-        "sf2ui",
-        "sf2uk",
-        "sf2um"
-      ],
-      "aliases": [
-        "streetfighter2:theworldwarrior"
-      ],
-      "year": 1991,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Street Fighter II': Champion Edition",
-      "cleanName": "Street Fighter II': Champion Edition",
-      "normalizedName": "streetfighterii':championedition",
-      "file": "fightdata_sf2ce.json",
-      "romIds": [
-        "sf2ce",
-        "sf2ceea",
-        "sf2ceec",
-        "sf2ceja",
-        "sf2cejb",
-        "sf2cejc",
-        "sf2cet",
-        "sf2ceua",
-        "sf2ceub",
-        "sf2ceuc"
-      ],
-      "aliases": [
-        "streetfighter2':championedition"
-      ],
-      "year": 1992,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Street Fighter II': Hyper Fighting",
-      "cleanName": "Street Fighter II': Hyper Fighting",
-      "normalizedName": "streetfighterii':hyperfighting",
-      "file": "fightdata_sf2hf.json",
-      "romIds": [
-        "sf2hf",
-        "sf2hfj",
-        "sf2hfu"
-      ],
-      "aliases": [
-        "streetfighter2':hyperfighting"
-      ],
-      "year": 1992,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Street Fighter Alpha: Warriors' Dreams",
-      "cleanName": "Street Fighter Alpha: Warriors' Dreams",
-      "normalizedName": "streetfighteralpha:warriors'dreams",
-      "file": "fightdata_sfa.json",
-      "romIds": [
-        "sfa",
-        "sfar1",
-        "sfar2",
-        "sfar3",
-        "sfau",
-        "sfza",
-        "sfzar1",
-        "sfzb",
-        "sfzbr1",
-        "sfzh",
-        "sfzhr1",
-        "sfzj",
-        "sfzjr1",
-        "sfzjr2",
-        "sfzch",
-        "sfach",
-        "sfzbch"
-      ],
-      "aliases": [
-        "Street Fighter Zero: Warriors' Dreams",
-        "streetfighterzero:warriors'dreams"
-      ],
-      "year": 1995,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Street Fighter Alpha 2",
-      "cleanName": "Street Fighter Alpha 2",
-      "normalizedName": "streetfighteralpha2",
-      "file": "fightdata_sfa2.json",
-      "romIds": [
-        "sfa2",
-        "sfa2u",
-        "sfa2ur1",
-        "sfz2a",
-        "sfz2b",
-        "sfz2br1",
-        "sfz2h",
-        "sfz2j",
-        "sfz2jr1",
-        "sfz2n"
-      ],
-      "aliases": [
-        "Street Fighter Zero 2",
-        "streetfighteralphaii",
-        "streetfighteralphatwo",
-        "streetfighterzero2"
-      ],
-      "year": 1996,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Street Fighter Alpha 3",
-      "cleanName": "Street Fighter Alpha 3",
-      "normalizedName": "streetfighteralpha3",
-      "file": "fightdata_sfa3.json",
-      "romIds": [
-        "sfa3",
-        "sfa3b",
-        "sfa3h",
-        "sfa3hr1",
-        "sfa3u",
-        "sfa3ur1",
-        "sfa3us",
-        "sfz3a",
-        "sfz3ar1",
-        "sfz3j",
-        "sfz3jr1",
-        "sfz3jr2"
-      ],
-      "aliases": [
-        "Street Fighter Zero 3",
-        "streetfighteralphaiii",
-        "streetfighteralphathree",
-        "streetfighterzero3"
-      ],
-      "year": 1998,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Street Fighter EX",
-      "cleanName": "Street Fighter EX",
-      "normalizedName": "streetfighterex",
-      "file": "fightdata_sfex.json",
-      "romIds": [
-        "sfex",
-        "sfexa",
-        "sfexj",
-        "sfexu"
-      ],
-      "aliases": [],
-      "year": 1996,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Street Fighter EX2",
-      "cleanName": "Street Fighter EX2",
-      "normalizedName": "streetfighterex2",
-      "file": "fightdata_sfex2.json",
-      "romIds": [
-        "sfex2",
-        "sfex2a",
-        "sfex2h",
-        "sfex2j",
-        "sfex2u",
-        "sfex2u1"
-      ],
-      "aliases": [],
-      "year": 1998,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Street Fighter EX2 Plus",
-      "cleanName": "Street Fighter EX2 Plus",
-      "normalizedName": "streetfighterex2plus",
-      "file": "fightdata_sfex2p.json",
-      "romIds": [
-        "sfex2p",
-        "sfex2pa",
-        "sfex2ph",
-        "sfex2pj",
-        "sfex2pu"
-      ],
-      "aliases": [],
-      "year": 1999,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Street Fighter EX Plus",
-      "cleanName": "Street Fighter EX Plus",
-      "normalizedName": "streetfighterexplus",
-      "file": "fightdata_sfexp.json",
-      "romIds": [
-        "sfexp",
-        "sfexpj",
-        "sfexpj1",
-        "sfexpu1"
-      ],
-      "aliases": [],
-      "year": 1997,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Street Fighter III: New Generation",
-      "cleanName": "Street Fighter III: New Generation",
-      "normalizedName": "streetfighteriii:newgeneration",
-      "file": "fightdata_sfiii.json",
-      "romIds": [
-        "sfiii",
-        "sfiiia",
-        "sfiiih",
-        "sfiiij",
-        "sfiiin",
-        "sfiiina",
-        "sfiiiu"
-      ],
-      "aliases": [
-        "streetfighter3:newgeneration"
-      ],
-      "year": 1997,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Street Fighter III - 2nd Impact: Giant Attack",
-      "cleanName": "Street Fighter III - 2nd Impact: Giant Attack",
-      "normalizedName": "streetfighteriii-2ndimpact:giantattack",
-      "file": "fightdata_sfiii2.json",
-      "romIds": [
-        "sfiii2",
-        "sfiii2h",
-        "sfiii2j",
-        "sfiii2n"
-      ],
-      "aliases": [
-        "streetfighter3-2ndimpact:giantattack"
-      ],
-      "year": 1997,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Street Fighter III - 3rd Strike: Fight for the Future",
-      "cleanName": "Street Fighter III - 3rd Strike: Fight for the Future",
-      "normalizedName": "streetfighteriii-3rdstrike:fightforthefuture",
-      "file": "fightdata_sfiii3.json",
-      "romIds": [
-        "sfiii3",
-        "sfiii3j",
-        "sfiii3jr1",
-        "sfiii3n",
-        "sfiii3nr1",
-        "sfiii3r1",
-        "sfiii3u",
-        "sfiii3ur1"
-      ],
-      "aliases": [
-        "streetfighter3-3rdstrike:fightforthefuture"
-      ],
-      "year": 1999,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Street Fighter: The Movie",
-      "cleanName": "Street Fighter: The Movie",
-      "normalizedName": "streetfighter:themovie",
-      "file": "fightdata_sftm.json",
-      "romIds": [
-        "sftm",
-        "sftm110",
-        "sftm111",
-        "sftmj112",
-        "sftmj114",
-        "sftmk112"
-      ],
-      "aliases": [],
-      "year": null,
-      "manufacturer": null
-    },
-    {
-      "name": "Street Fighter Zero 2 Alpha",
-      "cleanName": "Street Fighter Zero 2 Alpha",
-      "normalizedName": "streetfighterzero2alpha",
-      "file": "fightdata_sfz2al.json",
-      "romIds": [
-        "sfz2al",
-        "sfz2alb",
-        "sfz2alh",
-        "sfz2alj",
-        "sfz2alr1"
-      ],
-      "aliases": [
-        "streetfighterzeroiialpha",
-        "streetfighterzerotwoalpha"
-      ],
-      "year": 1996,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Street Fighter Zero 3 Upper",
-      "cleanName": "Street Fighter Zero 3 Upper",
-      "normalizedName": "streetfighterzero3upper",
-      "file": "fightdata_sfz3ugd.json",
-      "romIds": [
-        "sfz3ugd"
-      ],
-      "aliases": [
-        "streetfighterzeroiiiupper",
-        "streetfighterzerothreeupper"
-      ],
-      "year": 2001,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Super Gem Fighter: Mini Mix",
-      "cleanName": "Super Gem Fighter: Mini Mix",
-      "normalizedName": "supergemfighter:minimix",
-      "file": "fightdata_sgemf.json",
-      "romIds": [
-        "sgemf",
-        "sgemfa",
-        "sgemfh",
-        "pfghtj"
-      ],
-      "aliases": [],
-      "year": 1997,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Saturday Night Slam Masters",
-      "cleanName": "Saturday Night Slam Masters",
-      "normalizedName": "saturdaynightslammasters",
-      "file": "fightdata_slammast.json",
-      "romIds": [
-        "slammast",
-        "mbomberj",
-        "slammastu"
-      ],
-      "aliases": [],
-      "year": 1993,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Soul Calibur",
-      "cleanName": "Soul Calibur",
-      "normalizedName": "soulcalibur",
-      "file": "fightdata_soulclbr.json",
-      "romIds": [
-        "soulclbr",
-        "soulclbrab",
-        "soulclbrac",
-        "soulclbrja2",
-        "soulclbrjb",
-        "soulclbrjc",
-        "soulclbrub",
-        "soulclbruc"
-      ],
-      "aliases": [],
-      "year": 1998,
-      "manufacturer": "Namco"
-    },
-    {
-      "name": "Soul Edge Ver. II",
-      "cleanName": "Soul Edge Ver. II",
-      "normalizedName": "souledgever.ii",
-      "file": "fightdata_souledge.json",
-      "romIds": [
-        "souledge",
-        "souledgea",
-        "souledgeja",
-        "souledgeua",
-        "souledgeuc"
-      ],
-      "aliases": [
-        "souledgever.2"
-      ],
-      "year": 1996,
-      "manufacturer": "Namco"
-    },
-    {
-      "name": "Super Street Fighter II: The New Challengers",
-      "cleanName": "Super Street Fighter II: The New Challengers",
-      "normalizedName": "superstreetfighterii:thenewchallengers",
-      "file": "fightdata_ssf2.json",
-      "romIds": [
-        "ssf2",
-        "ssf2a",
-        "ssf2ar1",
-        "ssf2h",
-        "ssf2j",
-        "ssf2jr1",
-        "ssf2jr2",
-        "ssf2r1",
-        "ssf2u",
-        "ssf2tb",
-        "ssf2tba",
-        "ssf2tbh",
-        "ssf2tbj",
-        "ssf2tbj1",
-        "ssf2tbr1",
-        "ssf2tbu"
-      ],
-      "aliases": [
-        "superstreetfighter2:thenewchallengers"
-      ],
-      "year": 1993,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Super Street Fighter II Turbo",
-      "cleanName": "Super Street Fighter II Turbo",
-      "normalizedName": "superstreetfighteriiturbo",
-      "file": "fightdata_ssf2t.json",
-      "romIds": [
-        "ssf2t",
-        "ssf2ta",
-        "ssf2th",
-        "ssf2tu",
-        "ssf2tur1",
-        "ssf2xj",
-        "ssf2xjr1",
-        "ssf2xjr1r"
-      ],
-      "aliases": [
-        "superstreetfighter2turbo"
-      ],
-      "year": 1994,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Superior Soldiers",
-      "cleanName": "Superior Soldiers",
-      "normalizedName": "superiorsoldiers",
-      "file": "fightdata_ssoldier.json",
-      "romIds": [
-        "ssoldier",
-        "psoldier"
-      ],
-      "aliases": [],
-      "year": null,
-      "manufacturer": null
-    },
-    {
-      "name": "Star Gladiator - Episode I: Final Crusade",
-      "cleanName": "Star Gladiator - Episode I: Final Crusade",
-      "normalizedName": "stargladiator-episodei:finalcrusade",
-      "file": "fightdata_starglad.json",
-      "romIds": [
-        "starglad",
-        "stargladj"
-      ],
-      "aliases": [
-        "stargladiator-episode1:finalcrusade"
-      ],
-      "year": 1996,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Suiko Enbu",
-      "cleanName": "Suiko Enbu",
-      "normalizedName": "suikoenbu",
-      "file": "fightdata_suikoenb.json",
-      "romIds": [
-        "suikoenb"
-      ],
-      "aliases": [],
-      "year": null,
-      "manufacturer": null
-    },
-    {
-      "name": "Survival Arts",
-      "cleanName": "Survival Arts",
-      "normalizedName": "survivalarts",
-      "file": "fightdata_survarts.json",
-      "romIds": [
-        "survarts",
-        "survartsj",
-        "survartsu"
-      ],
-      "aliases": [],
-      "year": null,
-      "manufacturer": null
-    },
-    {
-      "name": "SNK vs. Capcom: SVC Chaos",
-      "cleanName": "SNK vs. Capcom: SVC Chaos",
-      "normalizedName": "snkvs.capcom:svcchaos",
-      "file": "fightdata_svc.json",
-      "romIds": [
-        "svc",
-        "svcpcb",
-        "svcpcba"
-      ],
-      "aliases": [],
-      "year": 2003,
-      "manufacturer": "Playmore"
-    },
-    {
-      "name": "S.V.G.: Spectral vs. Generation",
-      "cleanName": "S.V.G.: Spectral vs. Generation",
-      "normalizedName": "s.v.g.:spectralvs.generation",
-      "file": "fightdata_svg.json",
-      "romIds": [
-        "svg",
-        "svghk",
-        "svgpcb",
-        "svgtw"
-      ],
-      "aliases": [
-        "s.5.g.:spectralvs.generation"
-      ],
-      "year": 2005,
-      "manufacturer": "IGS"
-    },
-    {
-      "name": "Tattoo Assassins",
-      "cleanName": "Tattoo Assassins",
-      "normalizedName": "tattooassassins",
-      "file": "fightdata_tattass.json",
-      "romIds": [
-        "tattass",
-        "tattassa"
-      ],
-      "aliases": [],
-      "year": null,
-      "manufacturer": null
-    },
-    {
-      "name": "Tekken",
-      "cleanName": "Tekken",
-      "normalizedName": "tekken",
-      "file": "fightdata_tekken.json",
-      "romIds": [
-        "tekken",
-        "tekkenac",
-        "tekkenb",
-        "tekkenjb"
-      ],
-      "aliases": [],
-      "year": 1994,
-      "manufacturer": "Namco"
-    },
-    {
-      "name": "Tekken 2 Ver.B",
-      "cleanName": "Tekken 2 Ver.B",
-      "normalizedName": "tekken2ver.b",
-      "file": "fightdata_tekken2.json",
-      "romIds": [
-        "tekken2",
-        "tekken2a",
-        "tekken2b",
-        "tekken2jb",
-        "tekken2jc",
-        "tekken2ua",
-        "tekken2ub",
-        "tekken2ud"
-      ],
-      "aliases": [
-        "tekkeniiver.b",
-        "tekkentwover.b"
-      ],
-      "year": 1995,
-      "manufacturer": "Namco"
-    },
-    {
-      "name": "Tekken 3",
-      "cleanName": "Tekken 3",
-      "normalizedName": "tekken3",
-      "file": "fightdata_tekken3.json",
-      "romIds": [
-        "tekken3",
-        "tekken3a",
-        "tekken3b",
-        "tekken3c",
-        "tekken3d",
-        "tekken3ja",
-        "tekken3je1",
-        "tekken3ua",
-        "tekken3ud"
-      ],
-      "aliases": [
-        "tekkeniii",
-        "tekkenthree"
-      ],
-      "year": 1997,
-      "manufacturer": "Namco"
-    },
-    {
-      "name": "Tekken Tag Tournament",
-      "cleanName": "Tekken Tag Tournament",
-      "normalizedName": "tekkentagtournament",
-      "file": "fightdata_tektagt.json",
-      "romIds": [
-        "tektagt",
-        "tektagtc1a",
-        "tektagtja3",
-        "tektagtjb",
-        "tektagtjc1",
-        "tektagtub",
-        "tektagtuc1"
-      ],
-      "aliases": [],
-      "year": 1999,
-      "manufacturer": "Namco"
-    },
-    {
       "name": "Time Killers",
       "cleanName": "Time Killers",
       "normalizedName": "timekillers",
@@ -2877,19 +2900,6 @@
       "manufacturer": "Strata"
     },
     {
-      "name": "Toukidenshou - Angel Eyes",
-      "cleanName": "Toukidenshou - Angel Eyes",
-      "normalizedName": "toukidenshou-angeleyes",
-      "file": "fightdata_tkdensho.json",
-      "romIds": [
-        "tkdensho",
-        "tkdenshoa"
-      ],
-      "aliases": [],
-      "year": 1996,
-      "manufacturer": "Tecmo"
-    },
-    {
       "name": "Top Hunter - Roddy & Cathy",
       "cleanName": "Top Hunter - Roddy & Cathy",
       "normalizedName": "tophunter-roddy&cathy",
@@ -2903,23 +2913,17 @@
       "manufacturer": "SNK"
     },
     {
-      "name": "Battle Arena Toshinden 2",
-      "cleanName": "Battle Arena Toshinden 2",
-      "normalizedName": "battlearenatoshinden2",
-      "file": "fightdata_ts2.json",
+      "name": "Toukidenshou - Angel Eyes",
+      "cleanName": "Toukidenshou - Angel Eyes",
+      "normalizedName": "toukidenshou-angeleyes",
+      "file": "fightdata_tkdensho.json",
       "romIds": [
-        "ts2",
-        "ts2j",
-        "ts2ja",
-        "ts2u",
-        "ts2ua"
+        "tkdensho",
+        "tkdenshoa"
       ],
-      "aliases": [
-        "battlearenatoshindenii",
-        "battlearenatoshindentwo"
-      ],
-      "year": 1995,
-      "manufacturer": "Capcom"
+      "aliases": [],
+      "year": 1996,
+      "manufacturer": "Tecmo"
     },
     {
       "name": "Ultimate Mortal Kombat 3",
@@ -2937,6 +2941,65 @@
       ],
       "year": 1995,
       "manufacturer": "Midway"
+    },
+    {
+      "name": "Vampire Hunter 2: Darkstalkers Revenge",
+      "cleanName": "Vampire Hunter 2: Darkstalkers Revenge",
+      "normalizedName": "vampirehunter2:darkstalkersrevenge",
+      "file": "fightdata_vhunt2.json",
+      "romIds": [
+        "vhunt2",
+        "vhunt2r1"
+      ],
+      "aliases": [
+        "Night Warriors 2: Darkstalkers Revenge",
+        "nightwarriors2:darkstalkersrevenge",
+        "vampirehunterii:darkstalkersrevenge",
+        "vampirehuntertwo:darkstalkersrevenge"
+      ],
+      "year": 1997,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Vampire Savior 2: The Lord of Vampire",
+      "cleanName": "Vampire Savior 2: The Lord of Vampire",
+      "normalizedName": "vampiresavior2:thelordofvampire",
+      "file": "fightdata_vsav2.json",
+      "romIds": [
+        "vsav2"
+      ],
+      "aliases": [
+        "Darkstalkers 3",
+        "Vampire Savior 2",
+        "darkstalkers3",
+        "vampiresavior2",
+        "vampiresaviorii:thelordofvampire",
+        "vampiresaviortwo:thelordofvampire"
+      ],
+      "year": 1997,
+      "manufacturer": "Capcom"
+    },
+    {
+      "name": "Vampire Savior: The Lord of Vampire",
+      "cleanName": "Vampire Savior: The Lord of Vampire",
+      "normalizedName": "vampiresavior:thelordofvampire",
+      "file": "fightdata_vsav.json",
+      "romIds": [
+        "vsav",
+        "vsava",
+        "vsavb",
+        "vsavh",
+        "vsavj",
+        "vsavu"
+      ],
+      "aliases": [
+        "Darkstalkers 3",
+        "Vampire Savior",
+        "darkstalkers3",
+        "vampiresavior"
+      ],
+      "year": 1997,
+      "manufacturer": "Capcom"
     },
     {
       "name": "Virtua Fighter",
@@ -2969,63 +3032,16 @@
       "manufacturer": "Sega"
     },
     {
-      "name": "Vampire Hunter 2: Darkstalkers Revenge",
-      "cleanName": "Vampire Hunter 2: Darkstalkers Revenge",
-      "normalizedName": "vampirehunter2:darkstalkersrevenge",
-      "file": "fightdata_vhunt2.json",
+      "name": "Voltage Fighter: Gowcaizer",
+      "cleanName": "Voltage Fighter: Gowcaizer",
+      "normalizedName": "voltagefighter:gowcaizer",
+      "file": "fightdata_gowcaizr.json",
       "romIds": [
-        "vhunt2",
-        "vhunt2r1"
+        "gowcaizr"
       ],
-      "aliases": [
-        "Night Warriors 2: Darkstalkers Revenge",
-        "nightwarriors2:darkstalkersrevenge",
-        "vampirehunterii:darkstalkersrevenge",
-        "vampirehuntertwo:darkstalkersrevenge"
-      ],
-      "year": 1997,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Vampire Savior: The Lord of Vampire",
-      "cleanName": "Vampire Savior: The Lord of Vampire",
-      "normalizedName": "vampiresavior:thelordofvampire",
-      "file": "fightdata_vsav.json",
-      "romIds": [
-        "vsav",
-        "vsava",
-        "vsavb",
-        "vsavh",
-        "vsavj",
-        "vsavu"
-      ],
-      "aliases": [
-        "Darkstalkers 3",
-        "Vampire Savior",
-        "darkstalkers3",
-        "vampiresavior"
-      ],
-      "year": 1997,
-      "manufacturer": "Capcom"
-    },
-    {
-      "name": "Vampire Savior 2: The Lord of Vampire",
-      "cleanName": "Vampire Savior 2: The Lord of Vampire",
-      "normalizedName": "vampiresavior2:thelordofvampire",
-      "file": "fightdata_vsav2.json",
-      "romIds": [
-        "vsav2"
-      ],
-      "aliases": [
-        "Darkstalkers 3",
-        "Vampire Savior 2",
-        "darkstalkers3",
-        "vampiresavior2",
-        "vampiresaviorii:thelordofvampire",
-        "vampiresaviortwo:thelordofvampire"
-      ],
-      "year": 1997,
-      "manufacturer": "Capcom"
+      "aliases": [],
+      "year": 1995,
+      "manufacturer": "Technos"
     },
     {
       "name": "Waku Waku 7",
@@ -3055,6 +3071,23 @@
       "aliases": [],
       "year": 1996,
       "manufacturer": "Midway"
+    },
+    {
+      "name": "Warriors of Fate",
+      "cleanName": "Warriors of Fate",
+      "normalizedName": "warriorsoffate",
+      "file": "fightdata_wof.json",
+      "romIds": [
+        "wof",
+        "wofa",
+        "wofj",
+        "wofr1",
+        "wofu",
+        "wofch"
+      ],
+      "aliases": [],
+      "year": 1992,
+      "manufacturer": "Capcom"
     },
     {
       "name": "World Heroes",
@@ -3114,23 +3147,6 @@
       "manufacturer": "SNK"
     },
     {
-      "name": "Warriors of Fate",
-      "cleanName": "Warriors of Fate",
-      "normalizedName": "warriorsoffate",
-      "file": "fightdata_wof.json",
-      "romIds": [
-        "wof",
-        "wofa",
-        "wofj",
-        "wofr1",
-        "wofu",
-        "wofch"
-      ],
-      "aliases": [],
-      "year": 1992,
-      "manufacturer": "Capcom"
-    },
-    {
       "name": "X-Men: Children of the Atom",
       "cleanName": "X-Men: Children of the Atom",
       "normalizedName": "x-men:childrenoftheatom",
@@ -3181,6 +3197,100 @@
       "aliases": [],
       "year": 1996,
       "manufacturer": "Capcom"
+    },
+    {
+      "name": "ClayFighter",
+      "cleanName": "ClayFighter",
+      "normalizedName": "clayfighter",
+      "file": "fightdata_clayftr.json",
+      "romIds": [
+        "clayftr"
+      ],
+      "aliases": [
+        "clayfighter"
+      ],
+      "year": 1993,
+      "manufacturer": "Interplay"
+    },
+    {
+      "name": "ClayFighter: Tournament Edition",
+      "cleanName": "ClayFighter: Tournament Edition",
+      "normalizedName": "clayfighter:tournamentedition",
+      "file": "fightdata_clayftrte.json",
+      "romIds": [
+        "clayftrte"
+      ],
+      "aliases": [],
+      "year": 1994,
+      "manufacturer": "Interplay"
+    },
+    {
+      "name": "Dragon Ball Z: Hyper Dimension",
+      "cleanName": "Dragon Ball Z: Hyper Dimension",
+      "normalizedName": "dragonballz:hyperdimension",
+      "file": "fightdata_dbzhd.json",
+      "romIds": [
+        "dbzhd"
+      ],
+      "aliases": [],
+      "year": 1996,
+      "manufacturer": "Bandai"
+    },
+    {
+      "name": "Dragon Ball Z: Super Butouden",
+      "cleanName": "Dragon Ball Z: Super Butouden",
+      "normalizedName": "dragonballz:superbutouden",
+      "file": "fightdata_dbzsb.json",
+      "romIds": [
+        "dbzsb"
+      ],
+      "aliases": [
+        "dragonballz:superbutoden",
+        "dragonballz:superbutouden1"
+      ],
+      "year": 1993,
+      "manufacturer": "Bandai"
+    },
+    {
+      "name": "Power Instinct",
+      "cleanName": "Power Instinct",
+      "normalizedName": "powerinstinct",
+      "file": "fightdata_pwrinstc.json",
+      "romIds": [
+        "pwrinstc"
+      ],
+      "aliases": [],
+      "year": 1993,
+      "manufacturer": "Atlus"
+    },
+    {
+      "name": "Virtua Fighter 2 vs Tekken 2",
+      "cleanName": "Virtua Fighter 2 vs Tekken 2",
+      "normalizedName": "virtuafighter2vstekken2",
+      "file": "fightdata_vf2tk2.json",
+      "romIds": [
+        "vf2tk2"
+      ],
+      "aliases": [
+        "virtuafighter2vstekken2"
+      ],
+      "year": 1996,
+      "manufacturer": "Sega"
+    },
+    {
+      "name": "Yu Yu Hakusho: Sunset Fighters",
+      "cleanName": "Yu Yu Hakusho: Sunset Fighters",
+      "normalizedName": "yuyuhakusho:sunsetfighters",
+      "file": "fightdata_yyyhsf.json",
+      "romIds": [
+        "yyyhsf"
+      ],
+      "aliases": [
+        "yuyuhakusho:makyotoushin",
+        "yuyuhakusho:sunsetfighters"
+      ],
+      "year": 1994,
+      "manufacturer": "Sega"
     }
   ]
 }

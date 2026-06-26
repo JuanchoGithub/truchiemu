@@ -1,0 +1,576 @@
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "dbzhd"
+  ],
+  "name": "Dragon Ball Z: Hyper Dimension",
+  "year": 1996,
+  "manufacturer": "Bandai",
+  "controls": {
+    "^E": "Weak Attack",
+    "^F": "Strong Attack",
+    "^H": "Ki Blast",
+    "^c": "Defend",
+    "_S": "Start"
+  },
+  "controlGroups": {
+    "_A": [
+      "^E",
+      "^F"
+    ],
+    "_K": [
+      "^H"
+    ]
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_*": "Meteor Combos",
+    "_!": "Desperation Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Ki Charge",
+      "input": "_O^c"
+    },
+    {
+      "category": "_)",
+      "name": "Dash Forward",
+      "input": "_6_6"
+    },
+    {
+      "category": "_)",
+      "name": "Dash Backward",
+      "input": "_4_4"
+    },
+    {
+      "category": "_(",
+      "name": "Throw",
+      "input": "_6_+^F"
+    }
+  ],
+  "characters": [
+    {
+      "name": "GOKU",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Heavy Strike",
+          "input": "_6_+^F"
+        },
+        {
+          "category": "_)",
+          "name": "Low Strike",
+          "input": "_2_+^F"
+        },
+        {
+          "category": "_@",
+          "name": "Kamehameha",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Low Kamehameha",
+          "input": "_1_2_3_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Ki Burst",
+          "input": "_4_2_1_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Rushing Attack",
+          "input": "_6_3_2_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Elbow Dash",
+          "input": "_6_2_3_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Super Dragon Fist",
+          "input": "_2_3_6_2_3_6_+^F"
+        },
+        {
+          "category": "_!",
+          "name": "Instant Transmission Kamehameha",
+          "input": "_2_1_4_1_2_3_6_+^F"
+        }
+      ]
+    },
+    {
+      "name": "MAJIN VEGETA",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Heavy Strike",
+          "input": "_6_+^F"
+        },
+        {
+          "category": "_)",
+          "name": "Low Strike",
+          "input": "_2_+^F"
+        },
+        {
+          "category": "_@",
+          "name": "Final Flash",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Big Bang Attack",
+          "input": "_4_2_1_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Ki Burst",
+          "input": "_4_2_1_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Rushing Attack",
+          "input": "_6_3_2_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Atomic Blast",
+          "input": "_6_2_3_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Final Impact",
+          "input": "_2_3_6_2_3_6_+^F"
+        },
+        {
+          "category": "_!",
+          "name": "Self-Destruct",
+          "input": "_4_1_2_8_+^F"
+        }
+      ]
+    },
+    {
+      "name": "GOTENKS",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Heavy Strike",
+          "input": "_6_+^F"
+        },
+        {
+          "category": "_)",
+          "name": "Low Strike",
+          "input": "_2_+^F"
+        },
+        {
+          "category": "_@",
+          "name": "Kamikaze Ghost",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Galactic Donut",
+          "input": "_4_2_1_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Ki Burst",
+          "input": "_4_2_1_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Rushing Attack",
+          "input": "_6_3_2_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Volleyball Attack",
+          "input": "_6_2_3_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Super Ghost Kamikaze Attack",
+          "input": "_2_3_6_2_3_6_+^F"
+        },
+        {
+          "category": "_!",
+          "name": "Super Saiyan 3 Wraith",
+          "input": "_2_1_4_6_+^F"
+        }
+      ]
+    },
+    {
+      "name": "GOHAN",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Heavy Strike",
+          "input": "_6_+^F"
+        },
+        {
+          "category": "_)",
+          "name": "Low Strike",
+          "input": "_2_+^F"
+        },
+        {
+          "category": "_@",
+          "name": "Kamehameha",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Low Kamehameha",
+          "input": "_1_2_3_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Ki Burst",
+          "input": "_4_2_1_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Rushing Attack",
+          "input": "_6_3_2_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Masenko",
+          "input": "_4_2_1_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Ultimate Kamehameha",
+          "input": "_2_3_6_2_3_6_+^F"
+        },
+        {
+          "category": "_!",
+          "name": "Explosive Wave",
+          "input": "_4_1_2_8_+^F"
+        }
+      ]
+    },
+    {
+      "name": "VEGITO",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Heavy Strike",
+          "input": "_6_+^F"
+        },
+        {
+          "category": "_)",
+          "name": "Low Strike",
+          "input": "_2_+^F"
+        },
+        {
+          "category": "_@",
+          "name": "Kamehameha",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Final Flash",
+          "input": "_4_2_1_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Ki Burst",
+          "input": "_4_2_1_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Rushing Attack",
+          "input": "_6_3_2_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Spirit Shot",
+          "input": "_6_2_3_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Final Kamehameha",
+          "input": "_2_3_6_2_3_6_+^F"
+        },
+        {
+          "category": "_!",
+          "name": "Spirit Sword",
+          "input": "_2_1_4_6_+^F"
+        }
+      ]
+    },
+    {
+      "name": "PICCOLO",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Heavy Strike",
+          "input": "_6_+^F"
+        },
+        {
+          "category": "_)",
+          "name": "Low Strike",
+          "input": "_2_+^F"
+        },
+        {
+          "category": "_@",
+          "name": "Special Beam Cannon",
+          "input": "_4_1_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Light Grenade",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Ki Burst",
+          "input": "_4_2_1_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Rushing Attack",
+          "input": "_6_3_2_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Stretching Arms",
+          "input": "_6_2_3_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Hellzone Grenade",
+          "input": "_2_3_6_2_3_6_+^F"
+        },
+        {
+          "category": "_!",
+          "name": "Explosive Demon Wave",
+          "input": "_4_1_2_8_+^F"
+        }
+      ]
+    },
+    {
+      "name": "MAJIN BUU",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Heavy Strike",
+          "input": "_6_+^F"
+        },
+        {
+          "category": "_)",
+          "name": "Low Strike",
+          "input": "_2_+^F"
+        },
+        {
+          "category": "_@",
+          "name": "Mouth Blast",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Body Slam",
+          "input": "_4_2_1_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Ki Burst",
+          "input": "_4_2_1_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Rushing Attack",
+          "input": "_6_3_2_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Stretching Kick",
+          "input": "_6_2_3_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Angry Explosion",
+          "input": "_2_3_6_2_3_6_+^F"
+        },
+        {
+          "category": "_!",
+          "name": "Inside-Out Explosion",
+          "input": "_4_1_2_8_+^F"
+        }
+      ]
+    },
+    {
+      "name": "KID BUU",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Heavy Strike",
+          "input": "_6_+^F"
+        },
+        {
+          "category": "_)",
+          "name": "Low Strike",
+          "input": "_2_+^F"
+        },
+        {
+          "category": "_@",
+          "name": "Kamehameha",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Vanishing Ball",
+          "input": "_4_2_1_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Ki Burst",
+          "input": "_4_2_1_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Rushing Attack",
+          "input": "_6_3_2_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Stretching Arm",
+          "input": "_6_2_3_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Planet Burst",
+          "input": "_2_3_6_2_3_6_+^F"
+        },
+        {
+          "category": "_!",
+          "name": "Human Extinction Attack",
+          "input": "_4_1_2_8_+^F"
+        }
+      ]
+    },
+    {
+      "name": "FRIEZA",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Heavy Strike",
+          "input": "_6_+^F"
+        },
+        {
+          "category": "_)",
+          "name": "Low Strike",
+          "input": "_2_+^F"
+        },
+        {
+          "category": "_@",
+          "name": "Death Beam",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Death Wave",
+          "input": "_4_2_1_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Ki Burst",
+          "input": "_4_2_1_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Rushing Attack",
+          "input": "_6_3_2_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Tail Whip",
+          "input": "_6_2_3_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Death Ball",
+          "input": "_2_3_6_2_3_6_+^F"
+        },
+        {
+          "category": "_!",
+          "name": "Supernova",
+          "input": "_4_1_2_8_+^F"
+        }
+      ]
+    },
+    {
+      "name": "CELL",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Heavy Strike",
+          "input": "_6_+^F"
+        },
+        {
+          "category": "_)",
+          "name": "Low Strike",
+          "input": "_2_+^F"
+        },
+        {
+          "category": "_@",
+          "name": "Kamehameha",
+          "input": "_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Special Beam Cannon",
+          "input": "_4_1_2_3_6_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Ki Burst",
+          "input": "_4_2_1_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Rushing Attack",
+          "input": "_6_3_2_+_A"
+        },
+        {
+          "category": "_@",
+          "name": "Rolling Attack",
+          "input": "_6_2_3_+_A"
+        },
+        {
+          "category": "_*",
+          "name": "Solar Kamehameha",
+          "input": "_2_3_6_2_3_6_+^F"
+        },
+        {
+          "category": "_!",
+          "name": "Self-Destruct",
+          "input": "_4_1_2_8_+^F"
+        },
+        {
+          "category": "_!",
+          "name": "Perfect Barrier",
+          "input": "_2_1_4_6_+^F"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "^E": "WA",
+    "^F": "SA",
+    "^H": "Ki",
+    "^c": "DF",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "a": "^E",
+      "b": "^F",
+      "x": "^H",
+      "y": "^c"
+    }
+  }
+}

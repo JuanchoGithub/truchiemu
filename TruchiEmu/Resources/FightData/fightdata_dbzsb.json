@@ -1,0 +1,460 @@
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "dbzsb"
+  ],
+  "name": "Dragon Ball Z: Super Butouden",
+  "year": 1993,
+  "manufacturer": "Bandai",
+  "controls": {
+    "_P": "Punch",
+    "_K": "Kick",
+    "_S": "Start"
+  },
+  "controlGroups": {
+    "_P": [
+      "_P"
+    ],
+    "_K": [
+      "_K"
+    ]
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash Forward",
+      "input": "_6_6"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4"
+    },
+    {
+      "category": "_)",
+      "name": "Ki Charge",
+      "input": "_2_+_P_+_K"
+    },
+    {
+      "category": "_)",
+      "name": "Guard",
+      "input": "_4_+_P_+_K"
+    }
+  ],
+  "characters": [
+    {
+      "name": "GOKU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+_P"
+        },
+        {
+          "category": "_)",
+          "name": "Uppercut",
+          "input": "_2_+_P"
+        },
+        {
+          "category": "_)",
+          "name": "Axe Kick",
+          "input": "_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Kamehameha",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Low Kamehameha",
+          "input": "(_^)_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Yellow Blast",
+          "input": "_4_2_1_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Meteor Combo",
+          "input": "_2_6_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Flip Kick",
+          "input": "(_^)_2_1_4_+_K"
+        }
+      ]
+    },
+    {
+      "name": "VEGETA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+_P"
+        },
+        {
+          "category": "_)",
+          "name": "Launcher",
+          "input": "_2_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Galick Ho",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Low Galick Ho",
+          "input": "(_^)_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Energy Wave",
+          "input": "_4_2_1_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Burning Attack",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Dashing Knee",
+          "input": "_6_3_2_+_K"
+        }
+      ]
+    },
+    {
+      "name": "GOHAN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+_P"
+        },
+        {
+          "category": "_)",
+          "name": "Axe Kick",
+          "input": "_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Kamehameha",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Low Kamehameha",
+          "input": "(_^)_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Masenko",
+          "input": "_4_2_1_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Dragon Cartwheel",
+          "input": "_2_1_4_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Diving Punch",
+          "input": "^4_6_+_P"
+        }
+      ]
+    },
+    {
+      "name": "PICCOLO",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+_P"
+        },
+        {
+          "category": "_)",
+          "name": "Launcher",
+          "input": "_2_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Makankosappo",
+          "input": "_4_1_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Low Makankosappo",
+          "input": "(_^)_4_1_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Scatter Shot",
+          "input": "_4_2_1_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Rushing Attack",
+          "input": "_2_6_3_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Dive Kick",
+          "input": "_6_2_3_+_K"
+        }
+      ]
+    },
+    {
+      "name": "TRUNKS",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+_P"
+        },
+        {
+          "category": "_)",
+          "name": "Dash",
+          "input": "_6_6"
+        },
+        {
+          "category": "_@",
+          "name": "Burning Attack",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Low Burning Attack",
+          "input": "(_^)_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Grab",
+          "input": "^4_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Energy Wall",
+          "input": "^2_8_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Sliding Kick",
+          "input": "_2_3_6_9_+_K"
+        }
+      ]
+    },
+    {
+      "name": "FRIEZA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+_P"
+        },
+        {
+          "category": "_)",
+          "name": "Tail Sweep",
+          "input": "_2_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Death Beam",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Low Death Beam",
+          "input": "(_^)_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Kienzan",
+          "input": "_4_2_1_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Psycho Beam",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Tail Spin",
+          "input": "_6_3_2_+_K"
+        }
+      ]
+    },
+    {
+      "name": "CELL",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+_P"
+        },
+        {
+          "category": "_)",
+          "name": "Retreat",
+          "input": "_4_4"
+        },
+        {
+          "category": "_@",
+          "name": "Kamehameha",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Low Kamehameha",
+          "input": "(_^)_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Makankosappo",
+          "input": "_2_1_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Scatter Shot",
+          "input": "_4_2_1_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Rising Phoenix",
+          "input": "_2_3_6_9_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Rolling Attack",
+          "input": "_2_3_6_3_2_1_4_+_P"
+        }
+      ]
+    },
+    {
+      "name": "ANDROID #20",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Tornado Throw",
+          "input": "_^_4 / _6_+_P"
+        },
+        {
+          "category": "_)",
+          "name": "Launcher",
+          "input": "_2_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Energy Drain",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Headbutt Launch",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Eye Beam",
+          "input": "_4_2_1_+_P"
+        }
+      ]
+    },
+    {
+      "name": "ANDROID #18",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+_P"
+        },
+        {
+          "category": "_)",
+          "name": "Launcher",
+          "input": "_2_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Ki Blast",
+          "input": "(_^)_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Fury Attack",
+          "input": "^4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Backhand Smash",
+          "input": "_2_1_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Spiral Kick",
+          "input": "_2_3_6_9_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Energy Shield",
+          "input": "_4_1_2_+_P"
+        }
+      ]
+    },
+    {
+      "name": "ANDROID #16",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Rocket Punch",
+          "input": "_2_1_4_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Running Grab",
+          "input": "_1_4_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Hell Flash",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Rapid Shot",
+          "input": "_6_3_2_1_4_+_P"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_P": "P",
+    "_K": "K",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_P",
+      "b": "_K"
+    },
+    "genesis": {
+      "b": "_P",
+      "a": "_K"
+    },
+    "megadrive": {
+      "b": "_P",
+      "a": "_K"
+    }
+  }
+}

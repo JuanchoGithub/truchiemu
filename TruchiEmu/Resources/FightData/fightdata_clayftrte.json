@@ -1,0 +1,408 @@
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "clayftrte"
+  ],
+  "name": "ClayFighter: Tournament Edition",
+  "year": 1994,
+  "manufacturer": "Interplay",
+  "controls": {
+    "_P": "Punch",
+    "_K": "Kick",
+    "_S": "Start"
+  },
+  "controlGroups": {
+    "_P": [
+      "_P"
+    ],
+    "_K": [
+      "_K"
+    ]
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves"
+  },
+  "characters": [
+    {
+      "name": "Bad Mr. Frosty",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Hold",
+          "input": "_P (close)"
+        },
+        {
+          "category": "_@",
+          "name": "Frozen Fist",
+          "input": "_2_6+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Snow Ball",
+          "input": "_O_4_6+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Snow Ball (Air)",
+          "input": "_O_4_6+_P_^"
+        },
+        {
+          "category": "_@",
+          "name": "Ice Ball",
+          "input": "_4_2_6+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Shoulder Charge",
+          "input": "_4_6+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Aerial Snowball",
+          "input": "_O_2_8+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Foot Slide",
+          "input": "_2_6+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Headbutt",
+          "input": "_6_2_3+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Big Arm Sideswipe",
+          "input": "_O_2 (3 sec)_8+_P"
+        }
+      ]
+    },
+    {
+      "name": "Blob",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Hold",
+          "input": "_P (close)"
+        },
+        {
+          "category": "_@",
+          "name": "Vertical Clay Stomp",
+          "input": "_2+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Arcing Clay Stomp",
+          "input": "_6_3+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Clay Spit",
+          "input": "_2_6+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Somersault Headbutt",
+          "input": "_2_4+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Slide Smack",
+          "input": "_4_2_6+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Buzzsaw",
+          "input": "_O_4_6+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Roundhouse",
+          "input": "_4_6_2_3+_K (close)"
+        }
+      ]
+    },
+    {
+      "name": "Blue Suede Goo",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Humming Attack",
+          "input": "_2_6+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Hair Blade",
+          "input": "_2_4+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Song of Pain",
+          "input": "_4_2_6+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Hair Slice",
+          "input": "_6_2+_K"
+        }
+      ]
+    },
+    {
+      "name": "Bonker",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_K (close)"
+        },
+        {
+          "category": "_(",
+          "name": "Hold",
+          "input": "_P (close)"
+        },
+        {
+          "category": "_@",
+          "name": "Pie Low",
+          "input": "_2_6+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Pie High",
+          "input": "_2_6+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Cutting Cartwheel",
+          "input": "_O_4_6+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Clown Dive",
+          "input": "_O_2_8+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Cream Spray",
+          "input": "_4_2_6+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Ground Aerial Shuffle",
+          "input": "_4_2_6+_K (opponent in air)"
+        },
+        {
+          "category": "_@",
+          "name": "Midair Aerial Shuffle",
+          "input": "_O_8 (1 sec)+_K_^ (opponent in air)"
+        },
+        {
+          "category": "_@",
+          "name": "Feet-Forward Butt Dive",
+          "input": "_O_8 (1 sec)+_P_^"
+        }
+      ]
+    },
+    {
+      "name": "Helga",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Viking Ram",
+          "input": "_2_6+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Val-holler Yodel",
+          "input": "_4_2_6+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Armpit of Doom",
+          "input": "_2_6+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Valkyrie's Ride",
+          "input": "_4_2_6+_K"
+        }
+      ]
+    },
+    {
+      "name": "Ickybod Clay",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_K (close)"
+        },
+        {
+          "category": "_(",
+          "name": "Hold",
+          "input": "_P (close)"
+        },
+        {
+          "category": "_@",
+          "name": "Ecto Ball",
+          "input": "_2_6+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Ecto Punch",
+          "input": "_6_3+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Dart Dive",
+          "input": "_O_4_6+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Dart Dive (Air)",
+          "input": "_O_4_6+_P_^"
+        },
+        {
+          "category": "_)",
+          "name": "Teleport Left",
+          "input": "_P+_K"
+        },
+        {
+          "category": "_)",
+          "name": "Teleport Left (Air)",
+          "input": "_P+_K_^"
+        }
+      ]
+    },
+    {
+      "name": "N. Boss",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Strangle Hold",
+          "input": "_P (close)"
+        },
+        {
+          "category": "_@",
+          "name": "Frozen Fist",
+          "input": "_2_6+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Humming Attack",
+          "input": "_2_6+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Pie Throw",
+          "input": "_2_6+_P"
+        }
+      ]
+    },
+    {
+      "name": "Taffy",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Throw",
+          "input": "_K (close)"
+        },
+        {
+          "category": "_(",
+          "name": "Hold",
+          "input": "_P (close)"
+        },
+        {
+          "category": "_@",
+          "name": "Taffy Whack Punch",
+          "input": "_4_4_6+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Taffy Whack Kick",
+          "input": "_4_4_6+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Two-Fisted Charge",
+          "input": "_O_4_6+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Two-Fisted Charge (Air)",
+          "input": "_O_4_6+_P_^"
+        },
+        {
+          "category": "_@",
+          "name": "Taffy Tornado",
+          "input": "_4_2_6+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Aerial Tornado",
+          "input": "_6_3+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Dizzy Fake",
+          "input": "_2_4+_P (hold _P to extend)"
+        }
+      ]
+    },
+    {
+      "name": "Tiny",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Dashing Punch",
+          "input": "_2_3_6+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Backfist Whip",
+          "input": "_2_1_4+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Medicine Ball",
+          "input": "_O_4_6+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Medicine Ball (Air)",
+          "input": "_O_4_6+_P_^"
+        },
+        {
+          "category": "_@",
+          "name": "Arcing Medicine Ball",
+          "input": "_O_2_8+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Air Tackle",
+          "input": "_O_2+_P+_K"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "_P": "P",
+    "_K": "K",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "snes": {
+      "y": "_P",
+      "b": "_K"
+    },
+    "genesis": {
+      "b": "_P",
+      "a": "_K"
+    },
+    "megadrive": {
+      "b": "_P",
+      "a": "_K"
+    }
+  }
+}

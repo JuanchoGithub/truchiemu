@@ -1,0 +1,886 @@
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "vf2tk2"
+  ],
+  "name": "Virtua Fighter 2 vs Tekken 2",
+  "year": 1996,
+  "manufacturer": "Bootleg",
+  "notes": "Unlicensed crossover pirate/bootleg game for Genesis/Mega Drive combining characters from Virtua Fighter 2 and Tekken 2 with simplified 2D gameplay and reduced move sets",
+  "controls": {
+    "^E": "Punch",
+    "^H": "Kick",
+    "^G": "Guard",
+    "_S": "Start"
+  },
+  "controlGroups": {
+    "_P": [
+      "^E"
+    ],
+    "_K": [
+      "^H"
+    ]
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Dash",
+      "input": "_6_6"
+    },
+    {
+      "category": "_)",
+      "name": "Retreat",
+      "input": "_4_4"
+    },
+    {
+      "category": "_)",
+      "name": "Crouch",
+      "input": "_2"
+    },
+    {
+      "category": "_)",
+      "name": "Jump",
+      "input": "_8"
+    },
+    {
+      "category": "_)",
+      "name": "Guard",
+      "input": "^G"
+    }
+  ],
+  "characters": [
+    {
+      "name": "AKIRA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Overhead Throw",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_(",
+          "name": "Leg Throw",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Shoulder Ram",
+          "input": "_6_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Low Punch",
+          "input": "_2_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Low Kick",
+          "input": "_2_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Mid Kick",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Tetsuzankou",
+          "input": "^4_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Byakko Soushouda",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Haketsura",
+          "input": "^2_8_+^H"
+        }
+      ]
+    },
+    {
+      "name": "SARAH",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Hip Throw",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_(",
+          "name": "Neck Throw",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Low Punch",
+          "input": "_2_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Low Kick",
+          "input": "_2_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Side Kick",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Spinning Kick",
+          "input": "_4_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Somersault Kick",
+          "input": "^2_8_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Tornado Kick",
+          "input": "_2_3_6_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Knee Kick",
+          "input": "^6_+^H"
+        }
+      ]
+    },
+    {
+      "name": "JACKY",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Suplex",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_(",
+          "name": "Knee Throw",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Low Punch",
+          "input": "_2_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Low Kick",
+          "input": "_2_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Straight Punch",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "High Kick",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Somersault Kick",
+          "input": "^2_8_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Snap Punch Combo",
+          "input": "^4_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Fireball Kick",
+          "input": "_2_3_6_+^H"
+        }
+      ]
+    },
+    {
+      "name": "PAI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Drop Throw",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_(",
+          "name": "Leg Sweep Throw",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Low Punch",
+          "input": "_2_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Low Kick",
+          "input": "_2_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Palm Strike",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Spin Kick",
+          "input": "_4_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Ensei Renshu",
+          "input": "^4_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Toe Kick",
+          "input": "_2_3_6_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Somersault Heel",
+          "input": "^2_8_+^H"
+        }
+      ]
+    },
+    {
+      "name": "LAU",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Palm Throw",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_(",
+          "name": "Knee Throw",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Low Punch",
+          "input": "_2_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Low Kick",
+          "input": "_2_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Rushing Punch",
+          "input": "_6_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Mid Kick",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Tenshinzan",
+          "input": "^4_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Renkanken",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Swipe Kick",
+          "input": "^2_8_+^H"
+        }
+      ]
+    },
+    {
+      "name": "WOLF",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Neck Breaker",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_(",
+          "name": "Body Slam",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Low Punch",
+          "input": "_2_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Low Kick",
+          "input": "_2_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Lariat",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Dropkick",
+          "input": "_6_6_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Giant Swing",
+          "input": "_4_1_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Power Bomb",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Lariat Rush",
+          "input": "^4_6_+^E"
+        }
+      ]
+    },
+    {
+      "name": "JEFFRY",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Head Throw",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_(",
+          "name": "Leg Grab",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Low Punch",
+          "input": "_2_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Low Kick",
+          "input": "_2_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Power Punch",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Knee",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Splash Mountain",
+          "input": "^4_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Knuckle Buster",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Stomping Kick",
+          "input": "^2_8_+^H"
+        }
+      ]
+    },
+    {
+      "name": "KAGE",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Rolling Throw",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_(",
+          "name": "Leg Sweep Throw",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Low Punch",
+          "input": "_2_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Low Kick",
+          "input": "_2_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Elbow Strike",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Spin Kick",
+          "input": "_4_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Juuji Kaiten",
+          "input": "^4_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Izuna Otoshi",
+          "input": "^2_8_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Hai Geki",
+          "input": "_2_3_6_+^H"
+        }
+      ]
+    },
+    {
+      "name": "KAZUYA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Demon Scissors",
+          "input": "_6_+^E_+^H"
+        },
+        {
+          "category": "_(",
+          "name": "Spinning Demon",
+          "input": "_4_+^E_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Low Punch",
+          "input": "_2_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Low Kick",
+          "input": "_2_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Rising Uppercut",
+          "input": "_6_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Tsunami Kick",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Devil Fist",
+          "input": "^4_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Hell Sweeper",
+          "input": "_2_3_6_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Rising Demon",
+          "input": "^2_8_+^E"
+        }
+      ]
+    },
+    {
+      "name": "PAUL",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Shoulder Throw",
+          "input": "_6_+^E_+^H"
+        },
+        {
+          "category": "_(",
+          "name": "Neck Throw",
+          "input": "_4_+^E_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Low Punch",
+          "input": "_2_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Low Kick",
+          "input": "_2_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Bone Crusher",
+          "input": "_6_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Phoenix Smasher",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Burning Fist",
+          "input": "^4_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Deathfist",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Phoenix Kick",
+          "input": "^2_8_+^H"
+        }
+      ]
+    },
+    {
+      "name": "LAW",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Atomic Drop",
+          "input": "_6_+^E_+^H"
+        },
+        {
+          "category": "_(",
+          "name": "Leg Throw",
+          "input": "_4_+^E_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Low Punch",
+          "input": "_2_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Low Kick",
+          "input": "_2_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Backflip Kick",
+          "input": "_4_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Rapid Punches",
+          "input": "_6_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Dragon Tail",
+          "input": "_2_3_6_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Dragon Punch",
+          "input": "^4_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Somersault Kick",
+          "input": "^2_8_+^H"
+        }
+      ]
+    },
+    {
+      "name": "NINA",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Arm Lock",
+          "input": "_6_+^E_+^H"
+        },
+        {
+          "category": "_(",
+          "name": "Knee Suplex",
+          "input": "_4_+^E_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Low Punch",
+          "input": "_2_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Low Kick",
+          "input": "_2_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Shin Kick",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Spinning Backhand",
+          "input": "_4_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Blonde Bomb",
+          "input": "^4_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Chain Slap",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Canon Drill",
+          "input": "_2_3_6_+^H"
+        }
+      ]
+    },
+    {
+      "name": "KING",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Knee Bash",
+          "input": "_6_+^E_+^H"
+        },
+        {
+          "category": "_(",
+          "name": "Suplex",
+          "input": "_4_+^E_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Low Punch",
+          "input": "_2_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Low Kick",
+          "input": "_2_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Jaguar Punch",
+          "input": "_6_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Jaguar Step",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Jaguar Lariat",
+          "input": "^4_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Stone Cold Stunner",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Jaguar Kick",
+          "input": "^2_8_+^H"
+        }
+      ]
+    },
+    {
+      "name": "HEIHACHI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Headbutt Throw",
+          "input": "_6_+^E_+^H"
+        },
+        {
+          "category": "_(",
+          "name": "Spinning Demon",
+          "input": "_4_+^E_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Low Punch",
+          "input": "_2_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Low Kick",
+          "input": "_2_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Demon Uppercut",
+          "input": "_6_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Hell Axle",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Thunder God Fist",
+          "input": "^2_8_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Demon Breath",
+          "input": "^4_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Hell Sweep",
+          "input": "_2_3_6_+^H"
+        }
+      ]
+    },
+    {
+      "name": "JUN",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Wrist Throw",
+          "input": "_6_+^E_+^H"
+        },
+        {
+          "category": "_(",
+          "name": "Knee Toss",
+          "input": "_4_+^E_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Low Punch",
+          "input": "_2_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Low Kick",
+          "input": "_2_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Palm Strike",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Whip Kick",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Sweep Kick",
+          "input": "_2_3_6_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Spinning Palm",
+          "input": "^4_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Rising Heel",
+          "input": "^2_8_+^H"
+        }
+      ]
+    },
+    {
+      "name": "LEI",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Sleeper Hold",
+          "input": "_6_+^E_+^H"
+        },
+        {
+          "category": "_(",
+          "name": "Tripping",
+          "input": "_4_+^E_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Low Punch",
+          "input": "_2_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Low Kick",
+          "input": "_2_+^H"
+        },
+        {
+          "category": "_)",
+          "name": "Phoenix Illusion",
+          "input": "_4_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Snake Strike",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Phoenix Kick",
+          "input": "_2_3_6_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Dragon Rush",
+          "input": "^4_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Crane Kick",
+          "input": "^2_8_+^H"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "^E": "P",
+    "^H": "K",
+    "^G": "G",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "genesis": {
+      "b": "^E",
+      "a": "^H",
+      "c": "^G"
+    },
+    "megadrive": {
+      "b": "^E",
+      "a": "^H",
+      "c": "^G"
+    },
+    "snes": {
+      "y": "^E",
+      "b": "^H",
+      "a": "^G"
+    },
+    "saturn": {
+      "b": "^E",
+      "a": "^H",
+      "c": "^G"
+    }
+  }
+}
