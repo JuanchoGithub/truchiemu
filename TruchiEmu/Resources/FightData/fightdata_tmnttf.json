@@ -1,0 +1,510 @@
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "tmnttf",
+    "tmnttf1",
+    "tmnttfe",
+    "tmnttfj"
+  ],
+  "name": "Teenage Mutant Ninja Turtles - Tournament Fighters",
+  "year": 1994,
+  "manufacturer": "Konami",
+  "credits": "TruchiEmu",
+  "controls": {
+    "^E": "Attack",
+    "^H": "Jump",
+    "^G": "Special",
+    "_S": "Start"
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_*": "Killer Moves"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Strong Attack (hold toward opponent)",
+      "input": "_6_+^E"
+    },
+    {
+      "category": "_)",
+      "name": "Strong Kick (hold toward opponent)",
+      "input": "_6_+^H"
+    },
+    {
+      "category": "_*",
+      "name": "Killer Attack (low health, red gauge)",
+      "input": "_6_+^G"
+    }
+  ],
+  "characters": [
+    {
+      "name": "Leonardo",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Shoulder Throw",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Sword Slash Combo",
+          "input": "^E^E^E"
+        },
+        {
+          "category": "_)",
+          "name": "Uppercut Slash",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Spin Attack",
+          "input": "_2_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Sword Storm",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Cyclone Slash",
+          "input": "_4_6_+^E"
+        },
+        {
+          "category": "_*",
+          "name": "Killer Blade (low health)",
+          "input": "_6_+^G"
+        }
+      ]
+    },
+    {
+      "name": "Michelangelo",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Nunchaku Strike",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Nunchaku Combo",
+          "input": "^E^E^E"
+        },
+        {
+          "category": "_)",
+          "name": "Low Sweep",
+          "input": "_2_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Hurricane Kick",
+          "input": "_^_2_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Nunchaku Roll",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Shell Shocker",
+          "input": "_4_6_+^E"
+        },
+        {
+          "category": "_*",
+          "name": "Killer Nunchaku (low health)",
+          "input": "_6_+^G"
+        }
+      ]
+    },
+    {
+      "name": "Donatello",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Staff Sweep",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Staff Strike Combo",
+          "input": "^E^E^E"
+        },
+        {
+          "category": "_)",
+          "name": "Low Staff",
+          "input": "_2_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Overhead Strike",
+          "input": "_6_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Bo Staff Spin",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Spring Strike",
+          "input": "_^_2_8_+^E"
+        },
+        {
+          "category": "_*",
+          "name": "Killer Staff (low health)",
+          "input": "_6_+^G"
+        }
+      ]
+    },
+    {
+      "name": "Raphael",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Sai Thrust",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Sai Combo",
+          "input": "^E^E^E"
+        },
+        {
+          "category": "_)",
+          "name": "Low Sai",
+          "input": "_2_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Spin Kick",
+          "input": "_^_2_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Sai Storm",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Drill",
+          "input": "_4_6_+^E"
+        },
+        {
+          "category": "_*",
+          "name": "Killer Sai (low health)",
+          "input": "_6_+^G"
+        }
+      ]
+    },
+    {
+      "name": "Casey Jones",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Mask Slug",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Hockey Stick Swing",
+          "input": "^E^E^E"
+        },
+        {
+          "category": "_)",
+          "name": "Low Strike",
+          "input": "_2_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Flying Elbow",
+          "input": "_^_2_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Power Strike",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Masked Fury",
+          "input": "_4_6_+^E"
+        },
+        {
+          "category": "_*",
+          "name": "Killer Hockey (low health)",
+          "input": "_6_+^G"
+        }
+      ]
+    },
+    {
+      "name": "April O'Neil",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Jump Kick",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Quick Punches",
+          "input": "^E^E^E"
+        },
+        {
+          "category": "_)",
+          "name": "Low Kick",
+          "input": "_2_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Cartwheel Kick",
+          "input": "_^_2_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Reporter Rush",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Camera Flash",
+          "input": "_4_6_+^G"
+        },
+        {
+          "category": "_*",
+          "name": "Killer Kick (low health)",
+          "input": "_6_+^G"
+        }
+      ]
+    },
+    {
+      "name": "Ray Fillet",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Tail Whip",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Claw Swipe Combo",
+          "input": "^E^E^E"
+        },
+        {
+          "category": "_)",
+          "name": "Low Claw",
+          "input": "_2_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Flying Tail",
+          "input": "_^_2_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Aquatic Fury",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Fin Slam",
+          "input": "_4_6_+^E"
+        },
+        {
+          "category": "_*",
+          "name": "Killer Ray (low health)",
+          "input": "_6_+^G"
+        }
+      ]
+    },
+    {
+      "name": "Sisyphus",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Beetle Charge",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Horn Strike Combo",
+          "input": "^E^E^E"
+        },
+        {
+          "category": "_)",
+          "name": "Low Horn",
+          "input": "_2_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Shell Spin",
+          "input": "_^_2_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Beetle Fury",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Horn Drill",
+          "input": "_4_6_+^E"
+        },
+        {
+          "category": "_*",
+          "name": "Killer Beetle (low health)",
+          "input": "_6_+^G"
+        }
+      ]
+    },
+    {
+      "name": "Triceraton",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Trample",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Horn Gore Combo",
+          "input": "^E^E^E"
+        },
+        {
+          "category": "_)",
+          "name": "Tail Swipe",
+          "input": "_2_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Charge Attack",
+          "input": "_^_6_6"
+        },
+        {
+          "category": "_@",
+          "name": "Energy Beam",
+          "input": "_2_3_6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Rage Charge",
+          "input": "_4_6_+^E"
+        },
+        {
+          "category": "_*",
+          "name": "Killer Charge (low health)",
+          "input": "_6_+^G"
+        }
+      ]
+    },
+    {
+      "name": "Krang's Android",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Robot Throw",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Metal Punch Combo",
+          "input": "^E^E^E"
+        },
+        {
+          "category": "_)",
+          "name": "Low Smash",
+          "input": "_2_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Jet Boost",
+          "input": "_^_2_8"
+        },
+        {
+          "category": "_@",
+          "name": "Plasma Blast",
+          "input": "_2_3_6_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Robot Rush",
+          "input": "_4_6_+^E"
+        },
+        {
+          "category": "_*",
+          "name": "Killer Android (low health)",
+          "input": "_6_+^G"
+        }
+      ]
+    },
+    {
+      "name": "Karai",
+      "moves": [
+        {
+          "category": "_(",
+          "name": "Foot Sweep",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Sword Slash Combo",
+          "input": "^E^E^E"
+        },
+        {
+          "category": "_)",
+          "name": "Low Slice",
+          "input": "_2_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Jumping Slash",
+          "input": "_^_2_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Shadow Strike",
+          "input": "_2_3_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Blade Cyclone",
+          "input": "_4_6_+^E"
+        },
+        {
+          "category": "_*",
+          "name": "Killer Blade (low health)",
+          "input": "_6_+^G"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "^E": "AT",
+    "^H": "JP",
+    "^G": "SP",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "genesis": {
+      "b": "^E",
+      "a": "^H",
+      "c": "^G"
+    },
+    "megadrive": {
+      "b": "^E",
+      "a": "^H",
+      "c": "^G"
+    }
+  },
+  "controlGroups": {
+    "_P": [
+      "^E"
+    ],
+    "_K": [
+      "^H"
+    ]
+  }
+}
