@@ -1,6 +1,8 @@
 import Cocoa
 import SwiftUI
 import MetalKit
+import CoreMedia
+import Accelerate
 
 // MARK: - Metal Coordinator
 
@@ -20,6 +22,11 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
     private var resizeTimer: Timer?
     private let resizeSettleInterval: TimeInterval = 0.15 // 150ms
 
+    // Recording support: shared-mode texture for GPU readback
+    private var recordingSharedTexture: MTLTexture?
+    private var recordingFrameCount: Int64 = 0
+    private var recordingStartTime: CFTimeInterval = 0
+
     init(runner: EmulatorRunner) {
         self.runner = runner
     }
@@ -34,6 +41,7 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
         aspectStableTimer = nil
         frameCounter = 0
         innerDrawCount = 0
+        recordingSharedTexture = nil
     }
 
     // MARK: - Viewport Debouncing
@@ -605,6 +613,77 @@ outputHeight: Float(drawHeight)
                         blit?.endEncoding()
                     }
 
+                    // Recording: capture emulator frame for streaming/recording
+                    if StreamRecordingService.shared.isRecording {
+                        if recordingStartTime == 0 {
+                            recordingStartTime = CACurrentMediaTime()
+                            recordingFrameCount = 0
+                        }
+                        let now = CACurrentMediaTime()
+                        let pts = CMTime(seconds: now - recordingStartTime, preferredTimescale: 600)
+                        recordingFrameCount += 1
+
+                        let srcTex = StreamRecordingService.shared.recordWithShaders ? drawable.texture : frameTex
+                        let recW = srcTex.width
+                        let recH = srcTex.height
+                        let srcBPP = Self.bytesPerPixel(srcTex.pixelFormat)
+                        if recordingSharedTexture == nil ||
+                           recordingSharedTexture?.width != recW ||
+                           recordingSharedTexture?.height != recH ||
+                           recordingSharedTexture?.pixelFormat != srcTex.pixelFormat {
+                            let desc = MTLTextureDescriptor.texture2DDescriptor(
+                                pixelFormat: srcTex.pixelFormat,
+                                width: recW, height: recH, mipmapped: false
+                            )
+                            desc.usage = [.shaderRead, .shaderWrite]
+                            desc.storageMode = .shared
+                            recordingSharedTexture = device.makeTexture(descriptor: desc)
+                        }
+                        if let destTex = recordingSharedTexture {
+                            let blit = cmdBuffer.makeBlitCommandEncoder()
+                            blit?.copy(from: srcTex, to: destTex)
+                            blit?.endEncoding()
+
+                            let capturePTS = pts
+                            cmdBuffer.addCompletedHandler { [weak self] _ in
+                                guard let self = self else { return }
+                                let tex = destTex
+                                let w = tex.width
+                                let h = tex.height
+                                let srcBPP = Self.bytesPerPixel(tex.pixelFormat)
+                                let srcBPR = w * srcBPP
+                                var pixels = [UInt8](repeating: 0, count: h * srcBPR)
+                                tex.getBytes(&pixels, bytesPerRow: srcBPR,
+                                             from: MTLRegionMake2D(0, 0, w, h),
+                                             mipmapLevel: 0)
+                                var bgra = Self.convertToBGRA32(pixels, width: w, height: h, srcBPP: srcBPP, srcPixelFormat: tex.pixelFormat)
+                                var outW = Int(w)
+                                var outH = Int(h)
+                                if !StreamRecordingService.shared.recordWithShaders {
+                                    let dar = recordingDAR
+                                    let pixelAR = CGFloat(w) / CGFloat(h)
+                                    if abs(dar - pixelAR) > 0.01 {
+                                        let corrW = max(Int(w), Int(ceil(CGFloat(h) * dar)))
+                                        let corrH = max(Int(h), Int(ceil(CGFloat(w) / dar)))
+                                        outW = corrW & ~1
+                                        outH = corrH & ~1
+                                        if outW != w || outH != h {
+                                            bgra = Self.resizeBGRA32(bgra, from: Int(w), srcH: Int(h), to: outW, dstH: outH)
+                                        }
+                                    }
+                                }
+                                let pixelBuffer = self.makePixelBuffer(from: bgra, width: outW, height: outH)
+                                if let pb = pixelBuffer {
+                                    DispatchQueue.main.async {
+                                        StreamRecordingService.shared.appendVideoFrame(pb, at: capturePTS)
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        recordingStartTime = 0
+                    }
+
                     innerDrawCount += 1
 
                     if innerDrawCount <= 3 {
@@ -631,6 +710,106 @@ outputHeight: Float(drawHeight)
 
         cmdBuffer.present(drawable)
         cmdBuffer.commit()
+    }
+
+    private func makePixelBuffer(from bgra32Pixels: [UInt8], width: Int, height: Int) -> CVPixelBuffer? {
+        var pixelBuffer: CVPixelBuffer?
+        let attrs: [String: Any] = [
+            kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
+            kCVPixelBufferWidthKey as String: width,
+            kCVPixelBufferHeightKey as String: height,
+            kCVPixelBufferIOSurfacePropertiesKey as String: [:]
+        ]
+        let status = CVPixelBufferCreate(kCFAllocatorDefault, width, height,
+                                          kCVPixelFormatType_32BGRA, attrs as CFDictionary,
+                                          &pixelBuffer)
+        guard status == kCVReturnSuccess, let pb = pixelBuffer else { return nil }
+        CVPixelBufferLockBaseAddress(pb, [])
+        defer { CVPixelBufferUnlockBaseAddress(pb, []) }
+        if let dest = CVPixelBufferGetBaseAddress(pb) {
+            memcpy(dest, bgra32Pixels, height * width * 4)
+        }
+        return pb
+    }
+
+    private static func bytesPerPixel(_ format: MTLPixelFormat) -> Int {
+        switch format {
+        case .bgra8Unorm, .rgba8Unorm, .rgba8Unorm_srgb, .bgra8Unorm_srgb:
+            return 4
+        case .b5g6r5Unorm, .a1bgr5Unorm, .bgr5A1Unorm:
+            return 2
+        case .r8Unorm, .r8Unorm_srgb:
+            return 1
+        default:
+            return 4
+        }
+    }
+
+    private static func convertToBGRA32(_ pixels: [UInt8], width: Int, height: Int, srcBPP: Int, srcPixelFormat: MTLPixelFormat) -> [UInt8] {
+        guard width > 0, height > 0 else { return [] }
+        var out = [UInt8](repeating: 0, count: width * height * 4)
+        let total = width * height
+        if srcBPP == 4 {
+            memcpy(&out, pixels, min(pixels.count, total * 4))
+            return out
+        }
+        if srcBPP == 2 {
+            let src = pixels.withUnsafeBytes { $0.bindMemory(to: UInt16.self).baseAddress! }
+            let dst = out.withUnsafeMutableBytes { $0.bindMemory(to: UInt32.self).baseAddress! }
+            for i in 0..<total {
+                let p = src[i]
+                // BGRA32 in little-endian uint32: byte0=B, byte1=G, byte2=R, byte3=A
+                if srcPixelFormat == .b5g6r5Unorm {
+                    // RGB565: R[15:11] G[10:5] B[4:0] → BGRA32 B@0 G@1 R@2 A@3
+                    let b5 = UInt32(p & 0x1F) * 255 / 31
+                    let g6 = UInt32((p >> 5) & 0x3F) * 255 / 63
+                    let r5 = UInt32((p >> 11) & 0x1F) * 255 / 31
+                    dst[i] = b5 | (g6 << 8) | (r5 << 16) | 0xFF000000
+                } else if srcPixelFormat == .a1bgr5Unorm {
+                    // A1BGR5: A[15] B[14:10] G[9:5] R[4:0] → BGRA32 B@0 G@1 R@2 A@3
+                    let b5 = UInt32((p >> 10) & 0x1F) * 255 / 31
+                    let g5 = UInt32((p >> 5) & 0x1F) * 255 / 31
+                    let r5 = UInt32(p & 0x1F) * 255 / 31
+                    dst[i] = b5 | (g5 << 8) | (r5 << 16) | (((p >> 15) & 0x1) != 0 ? 0xFF000000 : 0)
+                } else {
+                    // BGR5A1: B[15:11] G[10:6] R[5:1] A[0] → BGRA32 B@0 G@1 R@2 A@3
+                    let b5 = UInt32((p >> 11) & 0x1F) * 255 / 31
+                    let g5 = UInt32((p >> 6) & 0x1F) * 255 / 31
+                    let r5 = UInt32((p >> 1) & 0x1F) * 255 / 31
+                    dst[i] = b5 | (g5 << 8) | (r5 << 16) | ((p & 0x1) != 0 ? 0xFF000000 : 0)
+                }
+            }
+        } else if srcBPP == 1 {
+            let src = pixels.withUnsafeBytes { $0.bindMemory(to: UInt8.self).baseAddress! }
+            let dst = out.withUnsafeMutableBytes { $0.bindMemory(to: UInt32.self).baseAddress! }
+            for i in 0..<total {
+                let v = UInt32(src[i])
+                dst[i] = v | (v << 8) | (v << 16) | 0xFF000000
+            }
+        }
+        return out
+    }
+
+    private var recordingDAR: CGFloat {
+        if let systemID = runner.rom?.systemID,
+           let info = SystemDatabase.system(forID: systemID) {
+            return info.displayAspectRatio
+        }
+        return 4.0 / 3.0
+    }
+
+    private static func resizeBGRA32(_ pixels: [UInt8], from srcW: Int, srcH: Int, to dstW: Int, dstH: Int) -> [UInt8] {
+        var dst = [UInt8](repeating: 0, count: dstW * dstH * 4)
+        var srcBuf = vImage_Buffer(data: UnsafeMutablePointer(mutating: pixels),
+                                    height: vImagePixelCount(srcH),
+                                    width: vImagePixelCount(srcW),
+                                    rowBytes: srcW * 4)
+        var dstBuf = vImage_Buffer(data: &dst,
+                                    height: vImagePixelCount(dstH),
+                                    width: vImagePixelCount(dstW),
+                                    rowBytes: dstW * 4)
+        vImageScale_ARGB8888(&srcBuf, &dstBuf, nil, 0)
+        return dst
     }
 
     // Load the shader library containing all shaders

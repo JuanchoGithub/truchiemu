@@ -118,6 +118,11 @@ final class SharedMemoryManager {
         shm.pointee.isPaused = paused
     }
 
+    func resetAudioReadPosition() {
+        guard let shm = sharedMemory else { return }
+        xpc_shm_store_audioReadPos(shm, xpc_shm_load_audioWritePos(shm))
+    }
+
     func readAudioSamples(into buffer: UnsafeMutablePointer<Int16>, maxCount: Int) -> Int {
         guard let shm = sharedMemory else { return 0 }
         let readPos = Int(xpc_shm_load_audioReadPos(shm))

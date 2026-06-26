@@ -41,6 +41,7 @@ import Foundation
 
     func getAspectRatio(reply: @escaping (Float) -> Void)
     func getCurrentRotation(reply: @escaping (Int) -> Void)
+    func getAudioSampleRate(reply: @escaping (Double) -> Void)
 
     func setControllerPortDevice(port: Int, device: Int, reply: @escaping () -> Void)
     func setGenesisDeviceType(_ deviceType: Int, reply: @escaping () -> Void)

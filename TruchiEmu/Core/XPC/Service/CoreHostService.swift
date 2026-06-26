@@ -383,6 +383,10 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
         reply(Int(LibretroBridge.currentRotation()))
     }
 
+    func getAudioSampleRate(reply: @escaping (Double) -> Void) {
+        reply(LibretroBridge.audioSampleRate())
+    }
+
     func setControllerPortDevice(port: Int, device: Int, reply: @escaping () -> Void) {
         LibretroBridge.setControllerPortDevice(UInt32(port), device: UInt32(device))
         reply()

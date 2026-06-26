@@ -271,6 +271,10 @@ static func setKeyState(retroID: Int, pressed: Bool) {
         return LibretroBridge.aspectRatio()
     }
 
+    static func audioSampleRate() -> Double {
+        return LibretroBridge.audioSampleRate()
+    }
+
     // MARK: - Core Options Accessors
 
     

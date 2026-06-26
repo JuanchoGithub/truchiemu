@@ -16,7 +16,7 @@ struct SettingsView: View {
     enum Page: Hashable, Codable, RawRepresentable, Identifiable {
         
         var id: String { rawValue }
-        case general, saves, library, cores, controllers, analogMouse, boxArt, display, cheats, bezels, retroAchievements, genre, logging, moveList, hotkeys, help, about
+        case general, saves, library, cores, controllers, analogMouse, boxArt, display, cheats, bezels, retroAchievements, genre, logging, moveList, hotkeys, streaming, help, about
         
         var rawValue: String {
             switch self {
@@ -35,6 +35,7 @@ struct SettingsView: View {
             case .logging: return "logging"
         case .moveList: return "moveList"
         case .hotkeys: return "hotkeys"
+        case .streaming: return "streaming"
         case .help: return "help"
     case .about: return "about"
             }
@@ -57,6 +58,7 @@ struct SettingsView: View {
             case "logging": self = .logging
         case "moveList": self = .moveList
         case "hotkeys": self = .hotkeys
+        case "streaming": self = .streaming
         case "help": self = .help
     case "about": self = .about
             default: return nil
@@ -80,6 +82,7 @@ struct SettingsView: View {
             case .logging: return "doc.text.fill"
         case .moveList: return "figure.martial.arts"
         case .hotkeys: return "keyboard"
+        case .streaming: return "video.fill"
         case .help: return "questionmark.circle.fill"
     case .about: return "info.circle.fill"
             }
@@ -102,6 +105,7 @@ struct SettingsView: View {
             case .logging: return LocalizationManager.shared.localized("settings.logging")
         case .moveList: return LocalizationManager.shared.localized("settings.moveList")
         case .hotkeys: return LocalizationManager.shared.localized("settings.hotkeys")
+        case .streaming: return LocalizationManager.shared.localized("settings.streaming")
         case .help: return LocalizationManager.shared.localized("settings.help")
     case .about: return LocalizationManager.shared.localized("settings.about")
             }
@@ -139,6 +143,8 @@ struct SettingsView: View {
             return "move list moves fighting combo frame data timing input"
         case .hotkeys:
             return "hotkeys keyboard shortcuts save load slot undo training input capture key binding"
+        case .streaming:
+            return "streaming recording twitch youtube stream key credentials quality bitrate"
         case .help:
       return "help keyboard shortcuts faq documentation troubleshooting resources"
     case .about:
@@ -155,13 +161,14 @@ struct SettingsView: View {
     
     static let allPages: [Page] = [
         .analogMouse, .boxArt, .cheats, .controllers, .cores, .bezels, .display,
-        .general, .hotkeys, .saves, .genre, .help, .library, .logging, .moveList, .retroAchievements, .about
+        .general, .hotkeys, .saves, .genre, .help, .library, .logging, .moveList, .retroAchievements,
+        .streaming, .about
     ]
 
     private static let pageGroups: [PageGroup] = [
         PageGroup(id: "general", label: LocalizationManager.shared.localized("settingsGroup.general"), pages: [.general, .library]),
         PageGroup(id: "systems", label: LocalizationManager.shared.localized("settingsGroup.systems"), pages: [.cores, .saves, .controllers, .analogMouse, .hotkeys]),
-        PageGroup(id: "visuals", label: LocalizationManager.shared.localized("settingsGroup.visuals"), pages: [.boxArt, .display, .bezels, .cheats]),
+        PageGroup(id: "visuals", label: LocalizationManager.shared.localized("settingsGroup.visuals"), pages: [.boxArt, .display, .bezels, .cheats, .streaming]),
         PageGroup(id: "advanced", label: LocalizationManager.shared.localized("settingsGroup.advanced"), pages: [.retroAchievements, .genre, .logging, .moveList, .help, .about]),
     ]
     
@@ -478,6 +485,7 @@ struct SettingsView: View {
             case .logging: LoggingSettingsView(searchText: $searchText)
         case .moveList: MoveListSettingsView(searchText: $searchText)
         case .hotkeys: HotkeyConfigSettingsView(searchText: $searchText)
+        case .streaming: StreamingSettingsView(searchText: $searchText)
         case .help: HelpSettingsView(searchText: $searchText)
     case .about: AboutView()
         }

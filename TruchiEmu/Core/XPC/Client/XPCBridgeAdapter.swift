@@ -424,6 +424,18 @@ final class XPCBridgeAdapter {
         return result
     }
 
+    func audioSampleRate() -> Double {
+        guard useXPC else { return LibretroBridgeSwift.audioSampleRate() }
+        var result: Double = 44100.0
+        let sem = DispatchSemaphore(value: 0)
+        XPCConnectionManager.shared.synchronousProxy?.getAudioSampleRate { rate in
+            result = rate
+            sem.signal()
+        }
+        _ = sem.wait(timeout: .now() + .seconds(2))
+        return result
+    }
+
     // MARK: - Save States (XPC async with semaphore for sync needs)
 
     func serializeSize() -> Int {

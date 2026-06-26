@@ -81,13 +81,20 @@ struct GameOverlayToolbar: View {
                 .frame(height: 30)
                 .opacity(0.3)
 
+            RecordStreamButton(runner: runner)
+                .gamepadToolbarFocus(index: 6, focusedIndex: focusedIndex)
+
+            Divider()
+                .frame(height: 30)
+                .opacity(0.3)
+
             ToolbarButton(
                 icon: "wand.and.stars",
                 label: loc.localized("toolbar.cheats")
             ) {
                 windowController.showCheatManager()
             }
-            .gamepadToolbarFocus(index: 6, focusedIndex: focusedIndex)
+            .gamepadToolbarFocus(index: 7, focusedIndex: focusedIndex)
 
             FightTrainingToolbarButton(windowController: windowController)
                 .gamepadToolbarFocus(index: trainingFocusIndex, focusedIndex: focusedIndex)
@@ -111,24 +118,24 @@ struct GameOverlayToolbar: View {
     }
 
     private var trainingFocusIndex: Int {
-        windowController.trainingModeViewModel.hasGameData ? 7 : -1
+        windowController.trainingModeViewModel.hasGameData ? 8 : -1
     }
 
     private var guideFocusIndex: Int {
-        var idx = 7
+        var idx = 8
         if windowController.trainingModeViewModel.hasGameData { idx += 1 }
         return windowController.gameGuideViewModel.hasGuideData ? idx : -1
     }
 
     private var fullscreenFocusIndex: Int {
-        var idx = 8
+        var idx = 9
         if windowController.trainingModeViewModel.hasGameData { idx += 1 }
         if windowController.gameGuideViewModel.hasGuideData { idx += 1 }
         return idx
     }
 
     private var autoFullscreenFocusIndex: Int {
-        var idx = 9
+        var idx = 10
         if windowController.trainingModeViewModel.hasGameData { idx += 1 }
         if windowController.gameGuideViewModel.hasGuideData { idx += 1 }
         return idx

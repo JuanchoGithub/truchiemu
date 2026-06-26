@@ -355,6 +355,11 @@ g_frame_poll_callback = callback;
     return 0.0f;
 }
 
++ (double)audioSampleRate {
+    double rate = g_instance ? g_instance->_avInfo.timing.sample_rate : 0.0;
+    return (rate > 0.0) ? rate : 44100.0;
+}
+
 + (NSString *)getOptionValueForKey:(NSString *)key {
     dispatch_once(&g_optAccessQueueOnce, ^{
         g_optAccessQueue = dispatch_queue_create("com.truchiemu.bridge.options", DISPATCH_QUEUE_SERIAL);

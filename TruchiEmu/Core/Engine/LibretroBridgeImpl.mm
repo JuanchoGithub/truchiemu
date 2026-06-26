@@ -256,7 +256,6 @@ LOAD_SYM(retro_get_memory_data)
     sampleRate = 44100.0;
     _avInfo.timing.sample_rate = sampleRate;
   }
-
   if (_avInfo.timing.fps <= 0.0 || _avInfo.timing.fps > 120.0) {
     _avInfo.timing.fps = 60.0;
   }
@@ -588,6 +587,11 @@ shutdown:
 
 - (void)handleAudioSamples:(const int16_t *)data count:(size_t)count {
   if (_audioBuffer) _audioBuffer->write(data, count);
+#ifdef XPC_SERVICE
+  if (g_xpc_shm) {
+    xpc_shm_write_audio(g_xpc_shm, data, count);
+  }
+#endif
 }
 
 - (void)setKeyState:(int)idx pressed:(BOOL)p {

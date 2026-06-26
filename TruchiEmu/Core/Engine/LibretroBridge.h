@@ -78,6 +78,9 @@ typedef void (*FramePollCallbackType)(void);
  * retro_system_av_info */
 + (float)aspectRatio;
 
+/* Audio — returns the core's audio sample rate from retro_system_av_info */
++ (double)audioSampleRate;
+
 /* Cheat Management */
 + (void)setCheatEnabled:(int)index code:(NSString *)code enabled:(BOOL)enabled;
 + (void)resetCheats;

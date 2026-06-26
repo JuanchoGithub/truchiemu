@@ -123,6 +123,7 @@ return MoveListOverlayViewModel(runner: runner)
     // from accessing deallocated @ObservedObject references.
     @MainActor
     func detachSwiftUI() {
+        StreamRecordingService.shared.stop()
         if let sheetWindow = cheatManagerSheetWindow, let window = window {
             window.endSheet(sheetWindow)
             cheatManagerSheetWindow = nil
@@ -248,6 +249,9 @@ super.init(window: window)
         mtkView.wantsLayer = true
         mtkView.layer?.backgroundColor = CGColor(red: 0, green: 0, blue: 0, alpha: 0)
         mtkView.layer?.isOpaque = false  // Important: layer must be non-opaque for transparency
+        if let metalLayer = mtkView.layer as? CAMetalLayer {
+            metalLayer.framebufferOnly = false  // Required for blit reading drawable texture during recording
+        }
         
         let coord = MetalCoordinator(runner: runner)
         mtkView.delegate = coord

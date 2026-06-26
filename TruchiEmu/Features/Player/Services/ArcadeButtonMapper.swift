@@ -106,17 +106,11 @@ class ArcadeButtonMapper {
             }
             return key
         }()
-        LoggerService.info("FDK: button=\(button.rawValue) systemID=\(systemID) mapKey=\(mapKey) hasCtrlMap=\(systemControlMappings != nil)")
         let sysMap = systemControlMappings?[mapKey] ?? (Self.arcadeSystemIDs.contains(mapKey) ? systemControlMappings?["mame"] : nil)
         if let sysMap {
             if let fdKey = sysMap[button.rawValue] {
-                LoggerService.info("FDK: FOUND fdKey=\(fdKey) for button=\(button.rawValue)")
                 return fdKey
-            } else {
-                LoggerService.info("FDK: sysMap keys=\(sysMap.keys.joined(separator: ",")) missing key=\(button.rawValue)")
-            }
-        } else {
-            LoggerService.info("FDK: mapKey \(mapKey) not found in sysCtrlMap, keys=\(systemControlMappings?.keys.joined(separator: ",") ?? "nil")")
+            } 
         }
 
         let key = systemID.lowercased()
