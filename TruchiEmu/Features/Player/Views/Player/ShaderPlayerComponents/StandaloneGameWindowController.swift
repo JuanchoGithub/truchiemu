@@ -696,6 +696,9 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         // Use pending shader uniforms from launch parameters
         let shaderUniforms = pendingShaderUniforms
         
+        // Enable Game Mode before launching the game (must be set before game process starts)
+        GameModeManager.shared.start()
+
         // Launch the game with current shader uniforms
         runner?.launch(rom: rom, coreID: coreID, shaderUniformOverrides: shaderUniforms)
 
@@ -1378,6 +1381,7 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
                 _ = runner.saveState(slot: -1)
             }
         }
+        GameModeManager.shared.stop()
         runner?.stop()
         GamepadNavigationManager.shared.setGameRunning(false)
         if let ctx = gameRunningNavContext {
