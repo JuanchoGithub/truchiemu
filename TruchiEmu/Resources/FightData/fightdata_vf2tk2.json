@@ -10,7 +10,7 @@
   "controls": {
     "^E": "Punch",
     "^H": "Kick",
-    "^G": "Guard",
+    "^G": "Block",
     "_S": "Start"
   },
   "controlGroups": {
@@ -47,11 +47,11 @@
       "name": "Jump",
       "input": "_8"
     },
-    {
-      "category": "_)",
-      "name": "Guard",
-      "input": "^G"
-    }
+{
+        "category": "_)",
+        "name": "Block",
+        "input": "^G"
+      }
   ],
   "characters": [
     {
@@ -864,13 +864,13 @@
   "systemControlMappings": {
     "genesis": {
       "b": "^E",
-      "a": "^H",
-      "c": "^G"
+      "a": "^G",
+      "c": "^H"
     },
     "megadrive": {
       "b": "^E",
-      "a": "^H",
-      "c": "^G"
+      "a": "^G",
+      "c": "^H"
     },
     "snes": {
       "y": "^E",
