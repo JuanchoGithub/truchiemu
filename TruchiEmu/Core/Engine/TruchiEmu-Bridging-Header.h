@@ -5,6 +5,10 @@
 #import "RcheevosWrapper.h"
 #import "ArchiveReader.h"
 
+#ifndef XPC_SERVICE
+#import "slang_shader_bridge.h"
+#endif
+
 @class LibretroBridgeImpl;
 
 typedef void (*CoreLogCallback)(const char *message, int level);

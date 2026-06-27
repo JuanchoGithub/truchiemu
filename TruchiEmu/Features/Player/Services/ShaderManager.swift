@@ -17,6 +17,9 @@ class ShaderManager: ObservableObject {
     // Current active preset
     @Published var activePreset: ShaderPreset = .defaultPreset
     
+    // Currently active slang preset (if any)
+    @Published var activeSlangPreset: SlangPreset? = nil
+    
     // Current uniform values (updated by UI sliders)
     @Published private(set) var uniformValues: [String: Float] = [:]
     
@@ -57,6 +60,25 @@ class ShaderManager: ObservableObject {
     private var library: MTLLibrary?
     
     
+    func activateSlangPreset(_ preset: SlangPreset) {
+        do {
+            try SlangCompilerService.shared.loadAndActivatePreset(at: preset.path, queue: commandQueue ?? device!.makeCommandQueue()!)
+            activeSlangPreset = preset
+            activePreset = ShaderPreset.defaultPreset
+            clearPipelineCache()
+            Self.parameterStore.updateFragmentFunctionName("slang")
+            LoggerService.info(category: "ShaderManager", "Activated slang shader preset: \(preset.name)")
+        } catch {
+            LoggerService.error(category: "ShaderManager", "Failed to activate slang preset: \(error.localizedDescription)")
+        }
+    }
+
+    func deactivateSlangPreset() {
+        SlangCompilerService.shared.destroyFilterChain()
+        activeSlangPreset = nil
+        resetToDefault()
+    }
+
     func resetToDefault() {
         // Reset to the default preset
         if let defaultPreset = ShaderPreset.preset(id: ShaderPreset.defaultPreset.id) {

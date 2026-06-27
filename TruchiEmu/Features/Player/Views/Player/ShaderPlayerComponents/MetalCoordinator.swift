@@ -197,6 +197,38 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
             return
         }
 
+        let fragmentName = getFragmentFunctionName()
+
+        // Early path for slang shaders - use librashader filter chain
+        if fragmentName == "slang" {
+            if let frameTex = runner.currentFrameTexture {
+                let isRotated = (runner.currentFrameRotation == 1 || runner.currentFrameRotation == 3)
+                let frameW = CGFloat(frameTex.width)
+                let frameH = CGFloat(frameTex.height)
+                var targetAspect: CGFloat = isRotated ? (frameH / frameW) : (frameW / frameH)
+                let coreAspect = XPCBridgeAdapter.shared.aspectRatio()
+                if coreAspect > 0.0 {
+                    targetAspect = isRotated ? (1.0 / CGFloat(coreAspect)) : CGFloat(coreAspect)
+                }
+                let viewWidth = view.drawableSize.width
+                let viewHeight = view.drawableSize.height
+                let slangVP = MTLViewport(originX: 0, originY: 0,
+                                          width: Double(viewWidth), height: Double(viewHeight),
+                                          znear: 0.0, zfar: 1.0)
+                SlangCompilerService.shared.renderFrame(
+                    commandBuffer: cmdBuffer,
+                    inputTexture: frameTex,
+                    outputTexture: drawable.texture,
+                    frameCount: UInt64(frameCounter),
+                    viewport: slangVP,
+                    aspectRatio: Float(targetAspect)
+                )
+            }
+            cmdBuffer.present(drawable)
+            cmdBuffer.commit()
+            return
+        }
+
         let pipeline = getPipelineState(device: device)
         if let pipeline = pipeline {
             if let frameTex = runner.currentFrameTexture {

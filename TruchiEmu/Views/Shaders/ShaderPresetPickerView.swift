@@ -487,6 +487,7 @@ struct ShaderPresetPickerView: View {
 @State private var selectedCategory: CategoryFilter = .all
 @State private var searchText: String = ""
 @State private var savedPresets: [SavedShaderPreset] = []
+@ObservedObject private var slangDiscovery = SlangPresetDiscoveryService.shared
 @State private var showSaveDialog = false
 @State private var savePresetName: String = ""
 @State private var showImportPicker = false
@@ -501,6 +502,7 @@ enum CategoryFilter: Hashable {
     case all
     case builtin(ShaderType)
     case saved
+    case slang
 }
 
     var body: some View {
@@ -778,7 +780,7 @@ controller.close()
     private var categoryTabs: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 6) {
-                categoryChip(title: loc.localized("shader.all"), filter: .all, count: ShaderPreset.allPresets.count + savedPresets.count, isActive: selectedCategory == .all)
+                categoryChip(title: loc.localized("shader.all"), filter: .all, count: ShaderPreset.allPresets.count + savedPresets.count + slangDiscovery.presets.count, isActive: selectedCategory == .all)
 
                 ForEach(ShaderType.allCases, id: \.self) { type in
                     let count = filteredBuiltinPresets(for: type).count
@@ -788,6 +790,10 @@ controller.close()
                 }
 
                 categoryChip(title: loc.localized("shader.saved"), filter: .saved, count: visibleSavedPresets.count, isActive: selectedCategory == .saved)
+
+                if !slangDiscovery.presets.isEmpty {
+                    categoryChip(title: "Slang", filter: .slang, count: visibleSlangPresets.count, isActive: selectedCategory == .slang)
+                }
             }
             .padding(.horizontal, 8)
             .padding(.vertical, 6)
@@ -824,6 +830,8 @@ controller.close()
                 switch selectedCategory {
                 case .saved:
                     savedPresetsListContent
+                case .slang:
+                    slangPresetsListContent
                 case .all:
                     allPresetsListContent
                 default:
@@ -852,7 +860,17 @@ controller.close()
                     presetRow(preset: preset)
                 }
             }
-            if visibleSavedPresets.isEmpty && visibleBuiltinPresets.isEmpty {
+            if !visibleSlangPresets.isEmpty {
+                if !visibleSavedPresets.isEmpty || !visibleBuiltinPresets.isEmpty {
+                    Divider()
+                        .padding(.vertical, 8)
+                }
+                sectionHeader("Slang")
+                ForEach(visibleSlangPresets, id: \.id) { preset in
+                    slangPresetRow(preset: preset)
+                }
+            }
+            if visibleSavedPresets.isEmpty && visibleBuiltinPresets.isEmpty && visibleSlangPresets.isEmpty {
             Text(loc.localized("shader.noShadersFound"))
                     .foregroundColor(AppColors.textSecondary(colorScheme))
                     .padding()
@@ -911,6 +929,22 @@ controller.close()
         }
     }
 
+    private var slangPresetsListContent: some View {
+        Group {
+            if visibleSlangPresets.isEmpty {
+                VStack(spacing: 12) {
+                    Text("No slang shaders found")
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
+                }
+                .padding()
+            } else {
+                ForEach(visibleSlangPresets, id: \.id) { preset in
+                    slangPresetRow(preset: preset)
+                }
+            }
+        }
+    }
+
     // MARK: - Preset Filtering
 
     private var visibleBuiltinPresets: [ShaderPreset] {
@@ -919,7 +953,7 @@ controller.close()
             break
         case .builtin(let type):
             return ShaderPreset.allPresets.filter { $0.shaderType == type }
-        case .saved:
+        case .saved, .slang:
             return []
         }
 
@@ -941,6 +975,16 @@ controller.close()
         let search = searchText.lowercased()
         return savedPresets.filter { preset in
             preset.name.lowercased().contains(search)
+        }
+    }
+
+    private var visibleSlangPresets: [SlangPreset] {
+        if searchText.isEmpty { return slangDiscovery.presets }
+
+        let search = searchText.lowercased()
+        return slangDiscovery.presets.filter { preset in
+            preset.displayName.lowercased().contains(search) ||
+            preset.category.lowercased().contains(search)
         }
     }
 
@@ -1001,6 +1045,64 @@ controller.close()
                     savedPresets = ShaderPresetStorageService.shared.savedPresets
                 }
             )
+
+            Divider()
+                .padding(.leading, 40)
+                .opacity(0.5)
+        }
+    }
+
+    private func slangPresetRow(preset: SlangPreset) -> some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 10) {
+                Image(systemName: "sparkle.magnifyingglass")
+                    .font(.body)
+                    .frame(width: 24)
+                    .foregroundColor(preset.path.path == settings.shaderPresetID ? AppColors.brandAccent : .secondary)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(preset.displayName)
+                        .font(.subheadline.weight(preset.path.path == settings.shaderPresetID ? .semibold : .regular))
+                        .lineLimit(1)
+                        .foregroundColor(preset.path.path == settings.shaderPresetID ? AppColors.brandAccent : .primary)
+                    Text(preset.category)
+                        .font(.caption2)
+                        .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                        .lineLimit(1)
+                }
+
+                Spacer()
+
+                if !preset.parameters.isEmpty {
+                    Text("⚙️ \(preset.parameters.count)")
+                        .font(.caption)
+                        .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(AppColors.cardBackground(colorScheme))
+                        .cornerRadius(4)
+                }
+
+                if preset.path.path == settings.shaderPresetID {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(AppColors.brandAccent)
+                        .font(.body)
+                }
+            }
+            .padding(.vertical, 10)
+            .padding(.horizontal, 12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background {
+                if preset.path.path == settings.shaderPresetID {
+                    AppColors.brandAccent.opacity(0.2).cornerRadius(6)
+                }
+            }
+            .contentShape(Rectangle())
+            .onTapGesture {
+                settings.shaderPresetID = preset.path.path
+                settings.uniformValues = preset.parameterDefaults
+                ShaderManager.shared.activateSlangPreset(preset)
+            }
 
             Divider()
                 .padding(.leading, 40)

@@ -415,8 +415,7 @@ case "scummvm": runner = ScummVMRunner()
         // Track last loaded core so Options view knows which file to persist to
         AppSettings.set("lastLoadedCoreID", value: coreID)
 
-        // Get the bundled slang shader directory path
-        let shaderDir = Bundle.main.resourceURL?.appendingPathComponent("slang").path
+        let shaderDir = Bundle.main.resourceURL?.appendingPathComponent("slang-shaders").path
 
         // Register callback to load SRAM when game is loaded
         XPCBridgeAdapter.shared.registerGameLoadedCallback { [weak self] romPath in

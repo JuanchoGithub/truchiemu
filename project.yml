@@ -42,6 +42,7 @@ targets:
         NSPrincipalClass: NSApplication
         NSHighResolutionCapable: true
         NSSupportsAutomaticGraphicsSwitching: true
+        LSApplicationCategoryType: public.app-category.games
         NSAppTransportSecurity:
           NSAllowsArbitraryLoads: true
 
@@ -66,25 +67,41 @@ targets:
         ENABLE_HARDENED_RUNTIME: NO
         SWIFT_VERSION: "5.9"
         SWIFT_ACTIVE_COMPILATION_CONDITIONS: "LOG_DEBUG LOG_EXTREME"
-        OTHER_LDFLAGS: "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework WebKit -framework OpenGL -framework SwiftData -larchive"
+        OTHER_LDFLAGS: "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework WebKit -framework OpenGL -framework SwiftData -larchive -L$(PROJECT_DIR)/TruchiEmu/lib -llibrashader_capi"
 
     sources:
     - path: TruchiEmu
       excludes:
       - "Library"
       - "Resources"
-      - "Core/Engine/slang/**"
+      - "lib"
       - "Core/Engine/internal/**"
-      - "Core/Shaders/slang/**"
       - "Core/Shaders/internal/**"
       - "Core/Shaders/all_shaders.metal"
       - "Core/XPC/Service/**"
     - path: TruchiEmu/Resources
+      excludes:
+      - "slang-shaders/**"
       buildPhase: resources
     - path: scripts/mame_lookup
       excludes:
       - "mame_unified.json"
       buildPhase: resources
+
+    postBuildScripts:
+      - name: Embed librashader dylib
+        script: |
+          mkdir -p "$TARGET_BUILD_DIR/$EXECUTABLE_FOLDER_PATH"
+          cp -f "$PROJECT_DIR/TruchiEmu/lib/librashader.dylib" "$TARGET_BUILD_DIR/$EXECUTABLE_FOLDER_PATH/"
+        basedOnDependencyAnalysis: false
+      - name: Copy slang-shaders to bundle
+        script: |
+          SRC="$PROJECT_DIR/TruchiEmu/Resources/slang-shaders"
+          DST="$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/slang-shaders"
+          rm -rf "$DST"
+          mkdir -p "$DST"
+          cp -R "$SRC"/ "$DST"
+        basedOnDependencyAnalysis: false
 
   TruchiEmuCoreHost:
     type: xpc-service
@@ -118,6 +135,7 @@ targets:
     - path: TruchiEmu/Core/Engine
       excludes:
       - "slang/**"
+      - "slang_shader_bridge.*"
       - "internal/**"
       - "Runners/**"
       - "LibretroBridgeSwift.swift"

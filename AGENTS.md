@@ -419,6 +419,41 @@ ALL launch paths (double-click, button, save state, CLI) go through `GameLaunche
 3. If adding ObjC++ to the Engine, ensure symbols are exposed through the bridging header
 4. Place feature-specific code in the appropriate `Features/` subdirectory (`Models/Services/Views/`), not in top-level `Views/`
 
+## Slang Shader System
+
+The app supports RetroArch `.slangp` shader presets via **librashader** (Rust library with C API, embedded as dynamic library).
+
+### Architecture
+
+| Component | Path | Responsibility |
+|---|---|---|
+| `librashader.dylib` | `TruchiEmu/lib/` | Runtime GLSL→SPIR-V→MSL compilation, multi-pass filter chain execution |
+| `slang_shader_bridge.mm` | `Core/Engine/` | ObjC++ bridge exposing Metal-specific librashader calls |
+| `SlangCompilerService` | `Features/Player/Services/` | Preset loading, filter chain lifecycle, thread-safe frame rendering |
+| `SlangPresetDiscoveryService` | `Services/` | Scans bundled + user `.slangp` preset directories |
+| `SlangPreset` | `Features/Player/Models/` | Swift model wrapping `libra_shader_preset` and its `#pragma parameter` metadata |
+
+### How it works
+
+1. `ShaderManager.activateSlangPreset()` → `SlangCompilerService.loadAndActivatePreset()` calls `libra_preset_create_with_options()` to load `.slangp`
+2. `libra_preset_get_runtime_params()` reflects `#pragma parameter` into `ShaderUniform` array
+3. `slang_mtl_filter_chain_create()` creates a Metal filter chain handling all passes internally
+4. `MetalCoordinator.draw()` detects `fragmentName == "slang"` and calls `SlangCompilerService.renderFrame()` instead of single-pass pipeline
+5. `renderFrame()` is `nonisolated` with NSLock-protected chain pointer (same threading model as `ShaderParameterStore`)
+
+### Key constraints
+
+- Built-in `.metal` shaders (14 presets) are **unaffected** — they use the original single-pass pipeline
+- Slang shaders bypass `ShaderUniforms.swift` hardcoded structs — librashader owns uniform binding via SPIR-V reflection
+- Only one preset type active at a time (built-in or slang)
+- librashader handles temporal feedback internally; MetalCoordinator's `temporalTextures` array is only for built-in shaders
+
+### Build dependencies
+
+- `librashader.dylib` built from https://github.com/SnowflakePowered/librashader; requires Rust toolchain
+- `Resources/slang-shaders/` is a git submodule for `https://github.com/libretro/slang-shaders`
+- Offline shader cache: `scripts/compile_slang_cache.py` needs `glslangValidator` + `spirv-cross` (`brew install glslang spirv-cross`)
+
 ## Testing
 
 **No test target exists currently.** The `TruchiEmuTests/` directory and scheme referenced in previous versions of this doc have been removed. When adding tests:
