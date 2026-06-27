@@ -26,6 +26,7 @@ class ArcadeButtonMapper {
         let mappings: [SystemMapping]
     }
 
+    private static let genesisSystemIDs: Set<String> = ["genesis", "megadrive", "32x"]
     private static let arcadeSystemIDs: Set<String> = ["mame", "fba", "fbneo", "arcade", "mame078", "mame2010", "mame2016"]
 
     private var cachedMappings: [String: [ArcadeLayout: [String: RetroButton]]] = [:]
@@ -33,17 +34,35 @@ class ArcadeButtonMapper {
 
     private init() {}
 
+    private func resolveSystemControlMap(_ mapKey: String, systemID: String, systemControlMappings: [String: [String: String]]?) -> [String: String]? {
+        if let sysMap = systemControlMappings?[mapKey] {
+            return sysMap
+        }
+        if mapKey == "genesis3" {
+            let lower = systemID.lowercased()
+            for fallback in [lower, "genesis", "megadrive"] {
+                if let sysMap = systemControlMappings?[fallback] {
+                    return sysMap
+                }
+            }
+        }
+        if Self.arcadeSystemIDs.contains(mapKey) {
+            return systemControlMappings?["mame"]
+        }
+        return nil
+    }
+
     func retroButton(for fightDataKey: String, layout: ArcadeLayout, systemID: String, systemControlMappings: [String: [String: String]]? = nil) -> RetroButton? {
         let resolvedKey = resolveAlias(fightDataKey)
         let mapKey: String = {
             let key = systemID.lowercased()
-            if ["genesis", "megadrive", "32x"].contains(key),
+            if Self.genesisSystemIDs.contains(key),
                AppSettings.getGenesisControllerType() == .threeButton {
                 return "genesis3"
             }
             return key
         }()
-        if let sysMap = systemControlMappings?[mapKey] ?? (Self.arcadeSystemIDs.contains(mapKey) ? systemControlMappings?["mame"] : nil) {
+        if let sysMap = resolveSystemControlMap(mapKey, systemID: systemID, systemControlMappings: systemControlMappings) {
             for (btnRaw, fdKey) in sysMap where normalizeKey(fdKey) == normalizeKey(resolvedKey) {
                 if let button = RetroButton(rawValue: btnRaw) { return button }
             }
@@ -100,17 +119,16 @@ class ArcadeButtonMapper {
     func fightDataKey(for button: RetroButton, layout: ArcadeLayout, systemID: String, systemControlMappings: [String: [String: String]]? = nil) -> String? {
         let mapKey: String = {
             let key = systemID.lowercased()
-            if ["genesis", "megadrive", "32x"].contains(key),
+            if Self.genesisSystemIDs.contains(key),
                AppSettings.getGenesisControllerType() == .threeButton {
                 return "genesis3"
             }
             return key
         }()
-        let sysMap = systemControlMappings?[mapKey] ?? (Self.arcadeSystemIDs.contains(mapKey) ? systemControlMappings?["mame"] : nil)
-        if let sysMap {
+        if let sysMap = resolveSystemControlMap(mapKey, systemID: systemID, systemControlMappings: systemControlMappings) {
             if let fdKey = sysMap[button.rawValue] {
                 return fdKey
-            } 
+            }
         }
 
         let key = systemID.lowercased()

@@ -14,21 +14,26 @@ struct MotionDetector {
     static func detect(in raw: [FightDataDirection]) -> [DetectedMotion] {
         guard raw.count >= 3 else { return [] }
 
-        for start in stride(from: raw.count - 3, through: 0, by: -1) {
-            let remaining = raw.count - start
+        var i = raw.count
+        var motions: [DetectedMotion] = []
 
-            if remaining >= 8, let fc = matchFullCircle(raw, start) {
-                return [fc]
-            }
-            if remaining >= 5, let hc = matchHalfCircle(raw, start) {
-                return [hc]
-            }
-            if remaining >= 3, let qc = matchQuarterCircle(raw, start) {
-                return [qc]
+        while i >= 3 {
+            let remaining = i
+            if remaining >= 8, let fc = matchFullCircle(raw, i - 8) {
+                motions.insert(fc, at: 0)
+                i -= 8
+            } else if remaining >= 5, let hc = matchHalfCircle(raw, i - 5) {
+                motions.insert(hc, at: 0)
+                i -= 5
+            } else if remaining >= 3, let qc = matchQuarterCircle(raw, i - 3) {
+                motions.insert(qc, at: 0)
+                i -= 3
+            } else {
+                break
             }
         }
 
-        return []
+        return motions
     }
 
     private static func matchQuarterCircle(_ raw: [FightDataDirection], _ start: Int) -> DetectedMotion? {

@@ -97,8 +97,9 @@ class InputStateTracker: ObservableObject {
         previousDirection = currentDirection
 
         var stepButtons = Set<String>()
+        let disabledButtons = RetroButton.disabledButtons(for: systemID)
         for button in newlyPressed {
-            if !button.isDirectional, !button.isTurbo, button != .start, button != .select {
+            if !button.isDirectional, !button.isTurbo, button != .start, button != .select, !disabledButtons.contains(button) {
                 if let fdKey = ArcadeButtonMapper.shared.fightDataKey(for: button, layout: arcadeLayout, systemID: systemID, systemControlMappings: systemControlMappings) {
                     stepButtons.insert(fdKey)
                 }

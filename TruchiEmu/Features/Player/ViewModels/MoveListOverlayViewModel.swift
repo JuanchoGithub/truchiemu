@@ -295,14 +295,16 @@ class MoveListOverlayViewModel: ObservableObject {
         }
 
         var steps: [InputDisplayStep] = []
-        if let motion = motions.first {
-            switch motion {
-            case .quarterCircle(let from):
-                steps.append(.motion(.quarterCircle(from: from)))
-            case .halfCircle(let from):
-                steps.append(.motion(.halfCircle(from: from)))
-            case .fullCircle(let direction):
-                steps.append(.motion(.fullCircle(direction: direction)))
+        if !motions.isEmpty {
+            for motion in motions {
+                switch motion {
+                case .quarterCircle(let from):
+                    steps.append(.motion(.quarterCircle(from: from)))
+                case .halfCircle(let from):
+                    steps.append(.motion(.halfCircle(from: from)))
+                case .fullCircle(let direction):
+                    steps.append(.motion(.fullCircle(direction: direction)))
+                }
             }
             if let last = sequence.last, !last.buttons.isEmpty {
                 steps.append(.buttons(last.buttons))

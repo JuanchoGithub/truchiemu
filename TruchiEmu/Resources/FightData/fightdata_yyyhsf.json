@@ -462,6 +462,11 @@
     "_S": "ST"
   },
   "systemControlMappings": {
+    "genesis3": {
+      "b": "^E",
+      "a": "^H",
+      "c": "^Z"
+    },
     "genesis": {
       "b": "^E",
       "a": "^H",
