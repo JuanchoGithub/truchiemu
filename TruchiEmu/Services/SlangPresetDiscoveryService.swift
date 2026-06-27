@@ -4,6 +4,27 @@ import Foundation
 class SlangPresetDiscoveryService: ObservableObject {
     static let shared = SlangPresetDiscoveryService()
 
+    static let curatedRelativePaths: Set<String> = [
+        "crt/crt-royale.slangp",
+        "crt/crt-guest-advanced.slangp",
+        "crt/crt-lumes.slangp",
+        "crt/crt-geom.slangp",
+        "crt/crt-aperture.slangp",
+        "crt/crt-easymode.slangp",
+        "crt/crt-pi.slangp",
+        "crt/crt-hyllian.slangp",
+        "handheld/lcd-grid-v2.slangp",
+        "handheld/console-border/dmg-4x.slangp",
+        "handheld/gba-color.slangp",
+        "bezel/Mega_Bezel/presets/MegaBezel_Reflection.slangp",
+        "ntsc/ntsc-svideo.slangp",
+        "ntsc/ntsc-composite.slangp",
+        "crt/crt-blur-luts.slangp",
+        "presets/tvout+scalefx+bloom.slangp",
+        "xbrz/xbrz-freescale.slangp",
+        "crt/crt-super-xbr.slangp",
+    ]
+
     @Published private(set) var presets: [SlangPreset] = []
     @Published private(set) var categories: [String] = []
 
@@ -23,6 +44,20 @@ class SlangPresetDiscoveryService: ObservableObject {
 
         presets = allPresets
         categories = Array(Set(allPresets.map { $0.category })).sorted()
+    }
+
+    var curatedPresets: [SlangPreset] {
+        presets.filter { preset in
+            guard let relPath = relativePath(for: preset.path) else { return false }
+            return Self.curatedRelativePaths.contains(relPath)
+        }
+    }
+
+    private func relativePath(for url: URL) -> String? {
+        let components = url.pathComponents
+        guard let idx = components.lastIndex(of: "slang-shaders"),
+              idx + 1 < components.count else { return nil }
+        return components[(idx + 1)...].joined(separator: "/")
     }
 
     func presetsByCategory() -> [(category: String, presets: [SlangPreset])] {

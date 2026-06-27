@@ -780,7 +780,7 @@ controller.close()
     private var categoryTabs: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 6) {
-                categoryChip(title: loc.localized("shader.all"), filter: .all, count: ShaderPreset.allPresets.count + savedPresets.count + slangDiscovery.presets.count, isActive: selectedCategory == .all)
+                categoryChip(title: loc.localized("shader.all"), filter: .all, count: ShaderPreset.allPresets.count + savedPresets.count + slangDiscovery.curatedPresets.count, isActive: selectedCategory == .all)
 
                 ForEach(ShaderType.allCases, id: \.self) { type in
                     let count = filteredBuiltinPresets(for: type).count
@@ -979,10 +979,16 @@ controller.close()
     }
 
     private var visibleSlangPresets: [SlangPreset] {
-        if searchText.isEmpty { return slangDiscovery.presets }
+        let source: [SlangPreset]
+        if selectedCategory == .all && searchText.isEmpty {
+            source = slangDiscovery.curatedPresets
+        } else {
+            source = slangDiscovery.presets
+        }
+        if searchText.isEmpty { return source }
 
         let search = searchText.lowercased()
-        return slangDiscovery.presets.filter { preset in
+        return source.filter { preset in
             preset.displayName.lowercased().contains(search) ||
             preset.category.lowercased().contains(search)
         }
