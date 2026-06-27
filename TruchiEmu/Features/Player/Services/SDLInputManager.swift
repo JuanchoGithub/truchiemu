@@ -1,0 +1,500 @@
+import Foundation
+import AppKit
+import GameController
+
+extension Notification.Name {
+    static let sdlControllerConnected = Notification.Name("sdlControllerConnected")
+    static let sdlControllerDisconnected = Notification.Name("sdlControllerDisconnected")
+}
+
+@MainActor
+class SDLInputManager: ObservableObject {
+    static let shared = SDLInputManager()
+
+    private let sdlQueue = DispatchQueue(label: "com.truchiemu.sdl", qos: .userInteractive)
+    private let sdlDataLock = NSLock()
+    private var isRunning = false
+
+    private let runnerLock = NSLock()
+    private weak var _activeRunner: EmulatorRunner?
+
+    // SDL_GameController handles — recognized controllers with built-in mappings
+    private var gameControllers: [Int32: OpaquePointer] = [:]
+    // Raw SDL_Joystick handles — unrecognized controllers (fallback path)
+    private var joysticks: [Int32: OpaquePointer] = [:]
+    // Track which instance IDs are game controllers to avoid double-processing
+    private var joystickIsGameController: Set<Int32> = []
+    private var portForInstance: [Int32: Int] = [:]
+    private var nextPort = 0
+
+    // Capture callback for button remapping in settings
+    private var captureCallback: ((Int, String) -> Void)?
+    private var captureInstanceID: Int32?
+
+    private static let deadzone: Int16 = 8000
+    private static let triggerThreshold: Int16 = 16384
+
+    // SDL_GameController button → retroID (used for recognized controllers)
+    private static let buttonMap: [Int32: Int] = [
+        SDL_CONTROLLER_BUTTON_A.rawValue: 8,
+        SDL_CONTROLLER_BUTTON_B.rawValue: 0,
+        SDL_CONTROLLER_BUTTON_X.rawValue: 1,
+        SDL_CONTROLLER_BUTTON_Y.rawValue: 9,
+        SDL_CONTROLLER_BUTTON_BACK.rawValue: 2,
+        SDL_CONTROLLER_BUTTON_START.rawValue: 3,
+        SDL_CONTROLLER_BUTTON_DPAD_UP.rawValue: 4,
+        SDL_CONTROLLER_BUTTON_DPAD_DOWN.rawValue: 5,
+        SDL_CONTROLLER_BUTTON_DPAD_LEFT.rawValue: 6,
+        SDL_CONTROLLER_BUTTON_DPAD_RIGHT.rawValue: 7,
+        SDL_CONTROLLER_BUTTON_LEFTSHOULDER.rawValue: 10,
+        SDL_CONTROLLER_BUTTON_RIGHTSHOULDER.rawValue: 11,
+        SDL_CONTROLLER_BUTTON_LEFTSTICK.rawValue: 14,
+        SDL_CONTROLLER_BUTTON_RIGHTSTICK.rawValue: 15,
+    ]
+
+    // Raw joystick button index → retroID (fallback for unrecognized controllers)
+    // Standard HID gamepad layout: 0=A, 1=B, 2=X, 3=Y, 4=L, 5=R, 6=ZL, 7=ZR,
+    // 8=Select, 9=Start, 10=L3, 11=R3
+    private static let joystickButtonMap: [Int: Int] = [
+        0: 8,   // A (bottom) → RETRO_A
+        1: 0,   // B (right) → RETRO_B
+        2: 1,   // X (left) → RETRO_Y
+        3: 9,   // Y (top) → RETRO_X
+        4: 10,  // L → RETRO_L
+        5: 11,  // R → RETRO_R
+        6: 12,  // ZL → RETRO_L2
+        7: 13,  // ZR → RETRO_R2
+        8: 2,   // Select → RETRO_SELECT
+        9: 3,   // Start → RETRO_START
+        10: 14, // L3 → RETRO_L3
+        11: 15, // R3 → RETRO_R3
+    ]
+
+    // Game controller axis → (stick index, axis id)
+    private static let axisMap: [Int32: (index: Int, id: Int)] = [
+        SDL_CONTROLLER_AXIS_LEFTX.rawValue: (0, 0),
+        SDL_CONTROLLER_AXIS_LEFTY.rawValue: (0, 1),
+        SDL_CONTROLLER_AXIS_RIGHTX.rawValue: (1, 0),
+        SDL_CONTROLLER_AXIS_RIGHTY.rawValue: (1, 1),
+    ]
+
+    // Raw joystick axis index → (stick index, axis id)
+    // Standard HID gamepad: 0=LX, 1=LY, 2=RX, 3=RY, 4=ZL, 5=ZR
+    private static let joystickAxisMap: [Int: (index: Int, id: Int)] = [
+        0: (0, 0),
+        1: (0, 1),
+        2: (1, 0),
+        3: (1, 1),
+    ]
+
+    private init() {}
+
+    // MARK: - Public API
+
+    func start() {
+        guard !isRunning else { return }
+        isRunning = true
+        sdlQueue.async { self.runSDLLoop() }
+    }
+
+    func stop() {
+        isRunning = false
+    }
+
+    func registerRunner(_ runner: EmulatorRunner) {
+        runnerLock.lock()
+        _activeRunner = runner
+        runnerLock.unlock()
+    }
+
+    func unregisterRunner() {
+        runnerLock.lock()
+        _activeRunner = nil
+        runnerLock.unlock()
+    }
+
+    // MARK: - SDL Loop
+
+    private func runSDLLoop() {
+        guard SDL_Init(SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) == 0 else {
+            let err = String(cString: SDL_GetError())
+            LoggerService.warning(category: "SDL", "Failed to init SDL2: \(err)")
+            isRunning = false
+            return
+        }
+
+        SDL_GameControllerEventState(SDL_ENABLE)
+
+        while isRunning {
+            var event = SDL_Event()
+            while SDL_PollEvent(&event) > 0 {
+                handleEvent(event)
+            }
+            Thread.sleep(forTimeInterval: 0.016)
+        }
+
+        shutdownSDL()
+    }
+
+    private func shutdownSDL() {
+        sdlDataLock.lock()
+        for (_, ctrl) in gameControllers {
+            SDL_GameControllerClose(ctrl)
+        }
+        for (_, joy) in joysticks {
+            SDL_JoystickClose(joy)
+        }
+        gameControllers.removeAll()
+        joysticks.removeAll()
+        joystickIsGameController.removeAll()
+        portForInstance.removeAll()
+        sdlDataLock.unlock()
+        SDL_QuitSubSystem(SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER)
+    }
+
+    // MARK: - Event Handling
+
+    private func handleEvent(_ event: SDL_Event) {
+        switch event.type {
+        case SDL_JOYDEVICEADDED.rawValue:
+            handleDeviceAdded(event.jdevice)
+        case SDL_JOYDEVICEREMOVED.rawValue:
+            handleDeviceRemoved(event.jdevice)
+        // Game controller events (only for recognized controllers)
+        case SDL_CONTROLLERBUTTONDOWN.rawValue:
+            handleButtonEvent(event.cbutton, pressed: true)
+        case SDL_CONTROLLERBUTTONUP.rawValue:
+            handleButtonEvent(event.cbutton, pressed: false)
+        case SDL_CONTROLLERAXISMOTION.rawValue:
+            handleAxisEvent(event.caxis)
+        // Raw joystick events (fallback for unrecognized controllers)
+        case SDL_JOYBUTTONDOWN.rawValue:
+            handleJoyButtonEvent(event.jbutton, pressed: true)
+        case SDL_JOYBUTTONUP.rawValue:
+            handleJoyButtonEvent(event.jbutton, pressed: false)
+        case SDL_JOYAXISMOTION.rawValue:
+            handleJoyAxisEvent(event.jaxis)
+        case SDL_JOYHATMOTION.rawValue:
+            handleJoyHatEvent(event.jhat)
+        default:
+            break
+        }
+    }
+
+    // MARK: - Device Connection
+
+    private func handleDeviceAdded(_ event: SDL_JoyDeviceEvent) {
+        let deviceIndex = event.which
+
+        // Skip recognized game controllers — GCController already handles them
+        if SDL_IsGameController(deviceIndex) == SDL_TRUE {
+            LoggerService.info(category: "SDL", "Skipping game controller (device \(deviceIndex)) — already handled by GCController")
+            return
+        }
+
+        // Fallback: open as raw joystick for unrecognized controllers
+        guard let joystick = SDL_JoystickOpen(deviceIndex) else {
+            let err = String(cString: SDL_GetError())
+            LoggerService.warning(category: "SDL", "Failed to open joystick: \(err)")
+            return
+        }
+        let instanceID = SDL_JoystickInstanceID(joystick)
+        let numButtons = Int(SDL_JoystickNumButtons(joystick))
+        let numAxes = Int(SDL_JoystickNumAxes(joystick))
+        let numHats = Int(SDL_JoystickNumHats(joystick))
+
+        sdlDataLock.lock()
+        joysticks[instanceID] = joystick
+        let port = assignPortLocked(for: instanceID)
+        sdlDataLock.unlock()
+
+        if let name = SDL_JoystickName(joystick) {
+            LoggerService.info(category: "SDL", "Joystick '\(String(cString: name))' (instance \(instanceID)) opened as raw joystick on port \(port) — buttons:\(numButtons) axes:\(numAxes) hats:\(numHats)")
+        } else {
+            LoggerService.info(category: "SDL", "Unknown joystick (instance \(instanceID)) opened on port \(port) — buttons:\(numButtons) axes:\(numAxes) hats:\(numHats)")
+        }
+
+        DispatchQueue.main.async {
+            NotificationCenter.default.post(name: .sdlControllerConnected, object: nil)
+        }
+    }
+
+    private func handleDeviceRemoved(_ event: SDL_JoyDeviceEvent) {
+        let instanceID = event.which
+
+        sdlDataLock.lock()
+        if let controller = gameControllers.removeValue(forKey: instanceID) {
+            joystickIsGameController.remove(instanceID)
+            portForInstance.removeValue(forKey: instanceID)
+            sdlDataLock.unlock()
+            SDL_GameControllerClose(controller)
+            LoggerService.info(category: "SDL", "Game controller (instance \(instanceID)) disconnected")
+        } else if let joystick = joysticks.removeValue(forKey: instanceID) {
+            portForInstance.removeValue(forKey: instanceID)
+            sdlDataLock.unlock()
+            SDL_JoystickClose(joystick)
+            LoggerService.info(category: "SDL", "Joystick (instance \(instanceID)) disconnected")
+        } else {
+            sdlDataLock.unlock()
+        }
+
+        DispatchQueue.main.async {
+            NotificationCenter.default.post(name: .sdlControllerDisconnected, object: nil)
+        }
+    }
+
+    // Caller must hold sdlDataLock
+    private func assignPortLocked(for instanceID: Int32) -> Int {
+        if let existing = portForInstance[instanceID] {
+            return existing
+        }
+        let port = nextPort
+        portForInstance[instanceID] = port
+        nextPort += 1
+        LoggerService.debug(category: "SDL", "Assigned port \(port) to instance \(instanceID)")
+        return port
+    }
+
+    // MARK: - Game Controller Events
+
+    private func handleButtonEvent(_ event: SDL_ControllerButtonEvent, pressed: Bool) {
+        if pressed {
+            sdlDataLock.lock()
+            let capID = captureInstanceID
+            let cb = captureCallback
+            if capID != nil { captureInstanceID = nil; captureCallback = nil }
+            sdlDataLock.unlock()
+
+            if event.which == capID, let cb = cb {
+                if let name = SDL_GameControllerGetStringForButton(SDL_GameControllerButton(rawValue: Int32(event.button))) {
+                    cb(Int(event.button), String(cString: name))
+                } else {
+                    cb(Int(event.button), "Button \(event.button)")
+                }
+                return
+            }
+        }
+
+        sdlDataLock.lock()
+        let port = portForInstance[event.which]
+        sdlDataLock.unlock()
+        guard let retroID = Self.buttonMap[Int32(event.button)], let port else { return }
+        dispatchButton(retroID: retroID, player: port, pressed: pressed)
+    }
+
+    private func handleAxisEvent(_ event: SDL_ControllerAxisEvent) {
+        if abs(Int32(event.value)) > Self.triggerThreshold {
+            sdlDataLock.lock()
+            let capID = captureInstanceID
+            let cb = captureCallback
+            if capID != nil { captureInstanceID = nil; captureCallback = nil }
+            sdlDataLock.unlock()
+
+            if event.which == capID, let cb = cb {
+                let axisNames: [Int32: (Int, String)] = [
+                    SDL_CONTROLLER_AXIS_LEFTX.rawValue: (100, "Left Stick X"),
+                    SDL_CONTROLLER_AXIS_LEFTY.rawValue: (101, "Left Stick Y"),
+                    SDL_CONTROLLER_AXIS_RIGHTX.rawValue: (102, "Right Stick X"),
+                    SDL_CONTROLLER_AXIS_RIGHTY.rawValue: (103, "Right Stick Y"),
+                    SDL_CONTROLLER_AXIS_TRIGGERLEFT.rawValue: (104, "Left Trigger"),
+                    SDL_CONTROLLER_AXIS_TRIGGERRIGHT.rawValue: (105, "Right Trigger"),
+                ]
+                if let (idx, name) = axisNames[Int32(event.axis)] { cb(idx, name) }
+                return
+            }
+        }
+
+        sdlDataLock.lock()
+        let port = portForInstance[event.which]
+        sdlDataLock.unlock()
+        guard let port else { return }
+
+        let axis = Int32(event.axis)
+        if axis == SDL_CONTROLLER_AXIS_TRIGGERLEFT.rawValue {
+            let pressed = event.value > Self.triggerThreshold
+            dispatchButton(retroID: 12, player: port, pressed: pressed)
+            dispatchAnalogButton(retroID: 12, value: event.value, player: port)
+            return
+        }
+        if axis == SDL_CONTROLLER_AXIS_TRIGGERRIGHT.rawValue {
+            let pressed = event.value > Self.triggerThreshold
+            dispatchButton(retroID: 13, player: port, pressed: pressed)
+            dispatchAnalogButton(retroID: 13, value: event.value, player: port)
+            return
+        }
+
+        guard let (index, id) = Self.axisMap[axis] else { return }
+        dispatchAnalog(index: index, id: id, value: event.value, player: port)
+    }
+
+    // MARK: - Raw Joystick Events (Fallback)
+
+    private func handleJoyButtonEvent(_ event: SDL_JoyButtonEvent, pressed: Bool) {
+        if pressed {
+            sdlDataLock.lock()
+            let capID = captureInstanceID
+            let cb = captureCallback
+            if capID != nil { captureInstanceID = nil; captureCallback = nil }
+            sdlDataLock.unlock()
+
+            if event.which == capID, let cb = cb {
+                let name = "Button \(event.button)"
+                cb(Int(event.button), name)
+                return
+            }
+        }
+
+        sdlDataLock.lock()
+        let isGC = joystickIsGameController.contains(event.which)
+        let port = portForInstance[event.which]
+        sdlDataLock.unlock()
+
+        guard !isGC, let port else { return }
+        guard let retroID = Self.joystickButtonMap[Int(event.button)] else { return }
+        dispatchButton(retroID: retroID, player: port, pressed: pressed)
+    }
+
+    private func handleJoyAxisEvent(_ event: SDL_JoyAxisEvent) {
+        if abs(Int32(event.value)) > Self.triggerThreshold {
+            sdlDataLock.lock()
+            let capID = captureInstanceID
+            let cb = captureCallback
+            if capID != nil { captureInstanceID = nil; captureCallback = nil }
+            sdlDataLock.unlock()
+
+            if event.which == capID, let cb = cb {
+                let axisNames: [Int: (Int, String)] = [
+                    0: (100, "Left Stick X"), 1: (101, "Left Stick Y"),
+                    2: (102, "Right Stick X"), 3: (103, "Right Stick Y"),
+                    4: (104, "Left Trigger"), 5: (105, "Right Trigger"),
+                ]
+                if let (idx, name) = axisNames[Int(event.axis)] { cb(idx, name) }
+                return
+            }
+        }
+
+        sdlDataLock.lock()
+        let isGC = joystickIsGameController.contains(event.which)
+        let port = portForInstance[event.which]
+        sdlDataLock.unlock()
+        guard !isGC, let port else { return }
+
+        let axis = Int(event.axis)
+        if axis == 4 {
+            let pressed = event.value > Self.triggerThreshold
+            dispatchButton(retroID: 12, player: port, pressed: pressed)
+            dispatchAnalogButton(retroID: 12, value: event.value, player: port)
+            return
+        }
+        if axis == 5 {
+            let pressed = event.value > Self.triggerThreshold
+            dispatchButton(retroID: 13, player: port, pressed: pressed)
+            dispatchAnalogButton(retroID: 13, value: event.value, player: port)
+            return
+        }
+
+        guard let (index, id) = Self.joystickAxisMap[axis] else { return }
+        dispatchAnalog(index: index, id: id, value: event.value, player: port)
+    }
+
+    private func handleJoyHatEvent(_ event: SDL_JoyHatEvent) {
+        if event.value != 0 {
+            sdlDataLock.lock()
+            let capID = captureInstanceID
+            let cb = captureCallback
+            if capID != nil { captureInstanceID = nil; captureCallback = nil }
+            sdlDataLock.unlock()
+
+            if event.which == capID, let cb = cb {
+                let hat = event.value
+                if (hat & UInt8(SDL_HAT_UP)) != 0 { cb(11, "D-Pad Up") }
+                else if (hat & UInt8(SDL_HAT_DOWN)) != 0 { cb(12, "D-Pad Down") }
+                else if (hat & UInt8(SDL_HAT_LEFT)) != 0 { cb(13, "D-Pad Left") }
+                else if (hat & UInt8(SDL_HAT_RIGHT)) != 0 { cb(14, "D-Pad Right") }
+                return
+            }
+        }
+
+        sdlDataLock.lock()
+        let isGC = joystickIsGameController.contains(event.which)
+        let port = portForInstance[event.which]
+        sdlDataLock.unlock()
+        guard !isGC, let port else { return }
+
+        let hat = event.value
+        dispatchButton(retroID: 4, player: port, pressed: (hat & UInt8(SDL_HAT_UP)) != 0)
+        dispatchButton(retroID: 5, player: port, pressed: (hat & UInt8(SDL_HAT_DOWN)) != 0)
+        dispatchButton(retroID: 6, player: port, pressed: (hat & UInt8(SDL_HAT_LEFT)) != 0)
+        dispatchButton(retroID: 7, player: port, pressed: (hat & UInt8(SDL_HAT_RIGHT)) != 0)
+    }
+
+    // MARK: - Input Dispatch
+
+    private func dispatchButton(retroID: Int, player: Int, pressed: Bool) {
+        weak var runner: EmulatorRunner?
+        runnerLock.lock()
+        runner = _activeRunner
+        runnerLock.unlock()
+
+        guard let runner else { return }
+        Task { @MainActor in
+            runner.setKeyState(retroID: retroID, player: player, pressed: pressed)
+        }
+    }
+
+    private func dispatchAnalog(index: Int, id: Int, value: Int16, player: Int) {
+        XPCBridgeAdapter.shared.setAnalogState(index, id: id, value: Int32(value), player: player)
+    }
+
+    private func dispatchAnalogButton(retroID: Int, value: Int16, player: Int) {
+        XPCBridgeAdapter.shared.setAnalogButtonState(retroID: retroID, value: Int32(value), player: player)
+    }
+
+    // MARK: - Thread-safe Query Methods
+
+    func connectedSDLInstanceIDs() -> [Int32] {
+        sdlDataLock.lock()
+        let ids = Array(gameControllers.keys) + Array(joysticks.keys)
+        sdlDataLock.unlock()
+        return ids
+    }
+
+    func sdlControllerName(for instanceID: Int32) -> String? {
+        sdlDataLock.lock()
+        defer { sdlDataLock.unlock() }
+
+        if let controller = gameControllers[instanceID] {
+            if let name = SDL_GameControllerName(controller) {
+                return String(cString: name)
+            }
+            return nil
+        }
+        if let joystick = joysticks[instanceID] {
+            if let name = SDL_JoystickName(joystick) {
+                return String(cString: name)
+            }
+            return nil
+        }
+        return nil
+    }
+
+    func sdlVendorName(for instanceID: Int32) -> String {
+        sdlControllerName(for: instanceID) ?? "SDL Controller"
+    }
+
+    // MARK: - Capture Callback (lock-based, not dispatched to sdlQueue)
+
+    func startCapture(instanceID: Int32, callback: @escaping (Int, String) -> Void) {
+        sdlDataLock.lock()
+        captureInstanceID = instanceID
+        captureCallback = callback
+        sdlDataLock.unlock()
+    }
+
+    func stopCapture() {
+        sdlDataLock.lock()
+        captureInstanceID = nil
+        captureCallback = nil
+        sdlDataLock.unlock()
+    }
+}

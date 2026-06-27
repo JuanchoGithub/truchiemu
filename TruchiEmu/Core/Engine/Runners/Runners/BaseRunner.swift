@@ -406,6 +406,7 @@ case "scummvm": runner = ScummVMRunner()
         self.cachedKeyboardMapping = mapping
         
         setupGamepadInput()
+        SDLInputManager.shared.registerRunner(self)
         
         isRunning = true
         
@@ -559,6 +560,7 @@ case "scummvm": runner = ScummVMRunner()
         hookedControllers.removeAll()
         textureCache = nil
         undoBuffer = nil
+        SDLInputManager.shared.unregisterRunner()
     }
 
 // MARK: - SRAM Save/Load

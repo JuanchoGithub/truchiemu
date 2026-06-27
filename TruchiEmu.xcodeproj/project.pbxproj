@@ -42,6 +42,7 @@
 		0634BC64EC65683842C7C84B /* fightdata_xmcota.json in Resources */ = {isa = PBXBuildFile; fileRef = D38445855A43685B5D9BC652 /* fightdata_xmcota.json */; };
 		065D7916AECBBF8269C66704 /* build_mame_2003_plus.py in Resources */ = {isa = PBXBuildFile; fileRef = F4D0D3C1EDEDB51487ED9CEE /* build_mame_2003_plus.py */; };
 		065DD05DB8027DE68DCAEA5B /* mame2003_plus_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = 91AFAA29AB15660C5C099AEB /* mame2003_plus_libretro_default.json */; };
+		0666565C627C660C02FEC1EF /* SDLControllerMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E6AF76D7552E90F0C9FEAD1 /* SDLControllerMapping.swift */; };
 		0680F2C5DEAC96D48B0B789F /* fightdata_sfiii3.json in Resources */ = {isa = PBXBuildFile; fileRef = 5C1D28A37D8DCC9C22D318D0 /* fightdata_sfiii3.json */; };
 		070FA872D7AF5DCF634D99F0 /* input_coreLabels_picodrive.json in Resources */ = {isa = PBXBuildFile; fileRef = 250932A8207064590D7802DC /* input_coreLabels_picodrive.json */; };
 		07162B9B8CCB6C91E4FE8697 /* intellivision-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 7DBEB5C0B592088AD4E07DEF /* intellivision-cheats.zip */; };
@@ -1000,6 +1001,7 @@
 		D3BF624E6D643A9C9E0976FF /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8861B6D319A016F2FDA15DD /* ImageCache.swift */; };
 		D3CF18A05B713DC547E5DFC4 /* input_coreLabels_genesis_plus_gx.json in Resources */ = {isa = PBXBuildFile; fileRef = B19911BF350A7E2B7C33DAE4 /* input_coreLabels_genesis_plus_gx.json */; };
 		D3F552C743D507635744E501 /* fightdata_wargods.json in Resources */ = {isa = PBXBuildFile; fileRef = 9C414D93A2ECA0F8D6F1A5F3 /* fightdata_wargods.json */; };
+		D42D63A58D1820138112701C /* SDLInputManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA93DD4CAFCA78A240B231A /* SDLInputManager.swift */; };
 		D490EC9D3FDCB61F21443B87 /* fightdata_mtlchamp.json in Resources */ = {isa = PBXBuildFile; fileRef = CA757F0E892B2D610E14129A /* fightdata_mtlchamp.json */; };
 		D4A5C3EA0A548DBEF9EDE4AE /* GenreSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E3E5DB793CCE1800B8C7BE /* GenreSettingsView.swift */; };
 		D5C962D4E99AED1EC8EE1809 /* input_coreLabels_bsnes_mercury_balanced.json in Resources */ = {isa = PBXBuildFile; fileRef = 73BD7423F6C7A07044398C5C /* input_coreLabels_bsnes_mercury_balanced.json */; };
@@ -1889,6 +1891,7 @@
 		8DC3C30FA66CEE1150C45DC5 /* BezelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelManager.swift; sourceTree = "<group>"; };
 		8DEABF20B657D31D6DF07400 /* TI83.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TI83.png; sourceTree = "<group>"; };
 		8E620C09D44B588F017C7B16 /* input_coreLabels_beetle_sgx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_beetle_sgx.json; sourceTree = "<group>"; };
+		8E6AF76D7552E90F0C9FEAD1 /* SDLControllerMapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDLControllerMapping.swift; sourceTree = "<group>"; };
 		8E892D0AA9633E0476542B9F /* input_coreLabels_gw.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_gw.json; sourceTree = "<group>"; };
 		8E9D22D49CF8F9E8909D1BBD /* input_coreLabels_mesen.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_mesen.json; sourceTree = "<group>"; };
 		8EB1089496821919AE109306 /* input_coreLabels_sameboy.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_sameboy.json; sourceTree = "<group>"; };
@@ -2234,6 +2237,7 @@
 		DA8729DB9F6FECA28AB753C1 /* CoreDownloadStatusBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDownloadStatusBar.swift; sourceTree = "<group>"; };
 		DA92FF5F565391B09186FD35 /* es.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = es.json; sourceTree = "<group>"; };
 		DB371ABEE63BE1D87FA4114E /* ScaleSmooth.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ScaleSmooth.metal; sourceTree = "<group>"; };
+		DBA93DD4CAFCA78A240B231A /* SDLInputManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDLInputManager.swift; sourceTree = "<group>"; };
 		DBAE3959233EE2C73659326A /* input_coreOverrides_3d_engine.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_3d_engine.json; sourceTree = "<group>"; };
 		DBBF6B79C3537834CD3E8F90 /* input_coreLabels_crocods.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_crocods.json; sourceTree = "<group>"; };
 		DBFA21A59E5959BCB5A24AE7 /* Nintendo - Super Nintendo Entertainment System.dat */ = {isa = PBXFileReference; path = "Nintendo - Super Nintendo Entertainment System.dat"; sourceTree = "<group>"; };
@@ -3672,6 +3676,7 @@
 				A94757847430E98D2FD0C8BC /* MoveListService.swift */,
 				C0D2689389A8F41C564E8983 /* NotationTokenImageCache.swift */,
 				D380F0ACA26A2082BD1DAA08 /* RunningGamesTracker.swift */,
+				DBA93DD4CAFCA78A240B231A /* SDLInputManager.swift */,
 				F5999F97B4E6C47B228D2F1B /* SequenceRunner.swift */,
 				A46DC124EACC3CBF27EEA315 /* ShaderManager.swift */,
 				75EAFBBDCB8E845AC522DBA6 /* SlangCompilerService.swift */,
@@ -3997,6 +4002,7 @@
 				66AFB541FCD568D3320D18CD /* KeyboardMapping.swift */,
 				8B1DB6C719F5587E47EB2D0D /* PlayerController.swift */,
 				30A8C369BBDB954516046501 /* RetroButton.swift */,
+				8E6AF76D7552E90F0C9FEAD1 /* SDLControllerMapping.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -4392,6 +4398,7 @@
 				D0FF5B24CA26FDA7D958B35D /* CopyFiles */,
 				07B159B797A958807EC15D46 /* Frameworks */,
 				D831D45C4236463C93EAD9BE /* Embed librashader dylib */,
+				42F648486C5306FDB81F2628 /* Embed SDL2 dylib */,
 				1DE6DE6595434E70CA81E6DD /* Copy slang-shaders to bundle */,
 			);
 			buildRules = (
@@ -5333,6 +5340,25 @@
 			shellPath = /bin/sh;
 			shellScript = "SRC=\"$PROJECT_DIR/TruchiEmu/Resources/slang-shaders\"\nDST=\"$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/slang-shaders\"\nrm -rf \"$DST\"\nmkdir -p \"$DST\"\ncp -R \"$SRC\"/ \"$DST\"\n";
 		};
+		42F648486C5306FDB81F2628 /* Embed SDL2 dylib */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Embed SDL2 dylib";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "mkdir -p \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH\"\ncp -f /opt/homebrew/lib/libSDL2-2.0.0.dylib \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/\"\ninstall_name_tool -id @rpath/libSDL2-2.0.0.dylib \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/libSDL2-2.0.0.dylib\"\n";
+		};
 		D831D45C4236463C93EAD9BE /* Embed librashader dylib */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
@@ -5633,6 +5659,8 @@
 				1D74BFC265809AEF5ED3C30F /* RetroKeycodeMapper.swift in Sources */,
 				85BBBE31E65E1DC39A40EC77 /* RomHasher.swift in Sources */,
 				9D1FE1B871BDDD7FC953E9FF /* RunningGamesTracker.swift in Sources */,
+				0666565C627C660C02FEC1EF /* SDLControllerMapping.swift in Sources */,
+				D42D63A58D1820138112701C /* SDLInputManager.swift in Sources */,
 				6AD683C80FB45850DDA7415D /* SFSymbolCatalog.swift in Sources */,
 				C59DDF27D423766DAF059D49 /* SNESRunner.swift in Sources */,
 				358FCB9C598590064AD72091 /* SaturnRunner.swift in Sources */,
@@ -5722,13 +5750,12 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_HARDENED_RUNTIME = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
+				HEADER_SEARCH_PATHS = "/opt/homebrew/include/SDL2 /usr/local/include/SDL2";
 				INFOPLIST_FILE = TruchiEmu/Resources/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = "/opt/homebrew/lib /usr/local/lib";
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				OTHER_LDFLAGS = "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework WebKit -framework OpenGL -framework SwiftData -larchive -L$(PROJECT_DIR)/TruchiEmu/lib -llibrashader_capi";
+				OTHER_LDFLAGS = "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework WebKit -framework OpenGL -framework SwiftData -larchive -L$(PROJECT_DIR)/TruchiEmu/lib -llibrashader_capi -lSDL2";
 				PRODUCT_BUNDLE_IDENTIFIER = com.TruchiEmu.app;
 				PRODUCT_NAME = TruchiEmu;
 				SDKROOT = macosx;
@@ -5845,13 +5872,12 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_HARDENED_RUNTIME = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
+				HEADER_SEARCH_PATHS = "/opt/homebrew/include/SDL2 /usr/local/include/SDL2";
 				INFOPLIST_FILE = TruchiEmu/Resources/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = "/opt/homebrew/lib /usr/local/lib";
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				OTHER_LDFLAGS = "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework WebKit -framework OpenGL -framework SwiftData -larchive -L$(PROJECT_DIR)/TruchiEmu/lib -llibrashader_capi";
+				OTHER_LDFLAGS = "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework WebKit -framework OpenGL -framework SwiftData -larchive -L$(PROJECT_DIR)/TruchiEmu/lib -llibrashader_capi -lSDL2";
 				PRODUCT_BUNDLE_IDENTIFIER = com.TruchiEmu.app;
 				PRODUCT_NAME = TruchiEmu;
 				SDKROOT = macosx;

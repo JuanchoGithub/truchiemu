@@ -1,4 +1,8 @@
 #import <Cocoa/Cocoa.h>
+
+#ifndef XPC_SERVICE
+#import <SDL.h>
+#endif
 #import "LibretroBridge.h"
 #import "XPCSharedMemory.h"
 

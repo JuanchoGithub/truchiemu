@@ -642,6 +642,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         // Set the delegate for notification center to handle foreground notifications
         UNUserNotificationCenter.current().delegate = self
 
+        // Start SDL2 input subsystem for game controller support
+        SDLInputManager.shared.start()
+
         // Set up RetroAchievementsService with SwiftData context
         RetroAchievementsService.shared.setModelContext(SwiftDataContainer.shared.container.mainContext)
 
@@ -705,6 +708,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     }
 
     func applicationWillTerminate(_ notification: Notification) {
+        SDLInputManager.shared.stop()
         XPCConnectionManager.shared.forceKillServiceForAppExit()
     }
     

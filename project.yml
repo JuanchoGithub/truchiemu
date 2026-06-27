@@ -67,7 +67,10 @@ targets:
         ENABLE_HARDENED_RUNTIME: NO
         SWIFT_VERSION: "5.9"
         SWIFT_ACTIVE_COMPILATION_CONDITIONS: "LOG_DEBUG LOG_EXTREME"
-        OTHER_LDFLAGS: "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework WebKit -framework OpenGL -framework SwiftData -larchive -L$(PROJECT_DIR)/TruchiEmu/lib -llibrashader_capi"
+        HEADER_SEARCH_PATHS: "/opt/homebrew/include/SDL2 /usr/local/include/SDL2"
+        LIBRARY_SEARCH_PATHS: "/opt/homebrew/lib /usr/local/lib"
+        LD_RUNPATH_SEARCH_PATHS: "@executable_path/../Frameworks"
+        OTHER_LDFLAGS: "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework WebKit -framework OpenGL -framework SwiftData -larchive -L$(PROJECT_DIR)/TruchiEmu/lib -llibrashader_capi -lSDL2"
 
     sources:
     - path: TruchiEmu
@@ -93,6 +96,12 @@ targets:
         script: |
           mkdir -p "$TARGET_BUILD_DIR/$EXECUTABLE_FOLDER_PATH"
           cp -f "$PROJECT_DIR/TruchiEmu/lib/librashader.dylib" "$TARGET_BUILD_DIR/$EXECUTABLE_FOLDER_PATH/"
+        basedOnDependencyAnalysis: false
+      - name: Embed SDL2 dylib
+        script: |
+          mkdir -p "$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH"
+          cp -f /opt/homebrew/lib/libSDL2-2.0.0.dylib "$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/"
+          install_name_tool -id @rpath/libSDL2-2.0.0.dylib "$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/libSDL2-2.0.0.dylib"
         basedOnDependencyAnalysis: false
       - name: Copy slang-shaders to bundle
         script: |

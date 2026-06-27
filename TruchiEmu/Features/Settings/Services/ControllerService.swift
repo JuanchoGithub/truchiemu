@@ -26,8 +26,12 @@ class ControllerService: ObservableObject {
         }
     }
     private let mappingKey = "controller_mappings_v2"
+    private let sdlMappingKey = "sdl_controller_mappings_v1"
     private let kbMappingKey = "keyboard_mapping_v1"
     private var savedMappings: [String: [String: ControllerGamepadMapping]] = [:]
+    private var savedSDLMappings: [String: [String: SDLControllerMapping]] = [:]
+
+    var sdlSlotAssignments: [Int32: Set<Int>] = [:]
 
     private var cancellables = Set<AnyCancellable>()
 
@@ -75,6 +79,14 @@ class ControllerService: ObservableObject {
             .store(in: &cancellables)
 
         NotificationCenter.default.publisher(for: .GCControllerDidDisconnect)
+            .sink { [weak self] _ in self?.refreshConnectedControllers() }
+            .store(in: &cancellables)
+
+        NotificationCenter.default.publisher(for: .sdlControllerConnected)
+            .sink { [weak self] _ in self?.refreshConnectedControllers() }
+            .store(in: &cancellables)
+
+        NotificationCenter.default.publisher(for: .sdlControllerDisconnected)
             .sink { [weak self] _ in self?.refreshConnectedControllers() }
             .store(in: &cancellables)
     }
@@ -168,10 +180,54 @@ class ControllerService: ObservableObject {
             players.append(player)
         }
 
+        // SDL controllers
+        let sdlIDs = SDLInputManager.shared.connectedSDLInstanceIDs()
+        let existingSDLKeys = Set(sdlSlotAssignments.keys)
+        let removedSDLKeys = existingSDLKeys.subtracting(sdlIDs)
+        for key in removedSDLKeys { sdlSlotAssignments.removeValue(forKey: key) }
+
+        let unassignedSDL = sdlIDs.filter { sdlSlotAssignments[$0] == nil }
+        var sdlNextSlot = 1
+        for instanceID in unassignedSDL {
+            while sdlNextSlot <= 4 && hasControllerAssigned(to: sdlNextSlot) {
+                sdlNextSlot += 1
+            }
+            sdlSlotAssignments[instanceID] = sdlNextSlot <= 4 ? [sdlNextSlot] : [1]
+        }
+
+        for instanceID in sdlIDs {
+            currentIDs.insert("sdl_\(instanceID)")
+
+            let vendorName = SDLInputManager.shared.sdlVendorName(for: instanceID)
+            let sdlMapping = savedSDLMappings[vendorName]?["default"]
+                ?? SDLControllerMapping.defaults(for: "default")
+
+            let sdlControllerName = SDLInputManager.shared.sdlControllerName(for: instanceID) ?? vendorName
+
+            let player = PlayerController(
+                id: Self.stableSDLId(for: instanceID),
+                assignedPlayers: sdlSlotAssignments[instanceID] ?? [1],
+                mapping: ControllerGamepadMapping.defaults(for: vendorName, systemID: "default", handedness: handedness),
+                sortOrder: players.count,
+                sdlInstanceID: instanceID,
+                sdlMapping: sdlMapping,
+                sdlName: sdlControllerName
+            )
+            players.append(player)
+        }
+
         let newIDs = currentIDs.subtracting(previousIDs)
         for player in players where !player.isKeyboard {
+            let loc = LocalizationManager.shared
             if let vendorName = player.gcController?.vendorName, newIDs.contains(vendorName) {
-                let loc = LocalizationManager.shared
+                NotificationPillManager.shared.post(PillNotification(
+                    icon: "gamecontroller",
+                    title: loc.localized("pill.controllerConnected"),
+                    subtitle: player.name,
+                    autoDismissDelay: 4
+                ))
+                break
+            } else if player.isSDL, let sdlID = player.sdlInstanceID, newIDs.contains("sdl_\(sdlID)") {
                 NotificationPillManager.shared.post(PillNotification(
                     icon: "gamecontroller",
                     title: loc.localized("pill.controllerConnected"),
@@ -194,10 +250,12 @@ class ControllerService: ObservableObject {
 
     private func hasControllerAssigned(to slot: Int) -> Bool {
         sessionSlotAssignments.values.contains { $0.contains(slot) }
+            || sdlSlotAssignments.values.contains { $0.contains(slot) }
     }
 
     private func ensureP1Exists() {
         let hasP1 = sessionSlotAssignments.values.contains { $0.contains(1) }
+            || sdlSlotAssignments.values.contains { $0.contains(1) }
         guard !hasP1 else { return }
         for key in sessionSlotAssignments.keys {
             var slots = sessionSlotAssignments[key] ?? []
@@ -282,6 +340,91 @@ class ControllerService: ObservableObject {
     func assignedSlot(for controller: GCController) -> Int? {
         sessionSlotAssignments[ObjectIdentifier(controller)]?.min()
     }
+
+    // MARK: - SDL Controller Management
+
+    private static func stableSDLId(for instanceID: Int32) -> UUID {
+        let hash = Int(instanceID)
+        return UUID(uuid: (
+            UInt8(truncatingIfNeeded: hash >> 24), UInt8(truncatingIfNeeded: hash >> 16),
+            UInt8(truncatingIfNeeded: hash >> 8), UInt8(truncatingIfNeeded: hash),
+            0x02, 0x23, 0x45, 0x67,
+            0x89, 0xAB, 0xCD, 0xEF,
+            UInt8(truncatingIfNeeded: hash), UInt8(truncatingIfNeeded: hash >> 8),
+            UInt8(truncatingIfNeeded: hash >> 16), UInt8(truncatingIfNeeded: hash >> 24)
+        ))
+    }
+
+    func toggleSDLController(_ instanceID: Int32, player slot: Int) {
+        guard slot >= 1 && slot <= 4 else { return }
+        var slots = sdlSlotAssignments[instanceID] ?? []
+        if slots.contains(slot) {
+            if slots.count == 1 && slot == 1 { return }
+            slots.remove(slot)
+            if slots.isEmpty { slots.insert(1) }
+        } else {
+            slots.insert(slot)
+        }
+        if !slots.contains(1) { ensureP1Exists() }
+        sdlSlotAssignments[instanceID] = slots
+        refreshConnectedControllers()
+    }
+
+    func assignSDLController(_ instanceID: Int32, to slot: Int) {
+        guard slot >= 1 && slot <= 4 else { return }
+        var newSlots = sdlSlotAssignments[instanceID] ?? []
+        let oldPrimary = newSlots.min() ?? 1
+        newSlots.remove(oldPrimary)
+        newSlots.insert(slot)
+
+        for (otherID, var otherSlots) in sdlSlotAssignments where otherID != instanceID {
+            otherSlots.remove(slot)
+            if otherSlots.isEmpty { otherSlots.insert(oldPrimary) }
+            sdlSlotAssignments[otherID] = otherSlots
+        }
+        if !newSlots.contains(1) { ensureP1Exists() }
+        sdlSlotAssignments[instanceID] = newSlots
+        refreshConnectedControllers()
+    }
+
+    func assignedSDLSlot(for instanceID: Int32) -> Int? {
+        sdlSlotAssignments[instanceID]?.min()
+    }
+
+    func updateSDLMapping(for vendorName: String, systemID: String, mapping: SDLControllerMapping) {
+        if savedSDLMappings[vendorName] == nil { savedSDLMappings[vendorName] = [:] }
+        savedSDLMappings[vendorName]?[systemID] = mapping
+        refreshConnectedControllers()
+        saveSDLMappings()
+    }
+
+    func sdlMapping(for vendorName: String, systemID: String, gameID: String? = nil) -> SDLControllerMapping {
+        if let saved = savedSDLMappings[vendorName]?[systemID] { return saved }
+        guard systemID != "default" else {
+            return savedSDLMappings[vendorName]?["default"]
+                ?? SDLControllerMapping.defaults(for: "default")
+        }
+        let global = savedSDLMappings[vendorName]?["default"]
+            ?? SDLControllerMapping.defaults(for: "default")
+        return global
+    }
+
+    func removeSDLMapping(for vendorName: String, systemID: String) {
+        savedSDLMappings[vendorName]?.removeValue(forKey: systemID)
+        if savedSDLMappings[vendorName]?.isEmpty == true {
+            savedSDLMappings.removeValue(forKey: vendorName)
+        }
+        refreshConnectedControllers()
+        saveSDLMappings()
+    }
+
+    private func saveSDLMappings() {
+        if let data = try? JSONEncoder().encode(savedSDLMappings) {
+            AppSettings.setData(sdlMappingKey, value: data)
+        }
+    }
+
+    // MARK: - GC Controller Management
 
     func updateMapping(for vendorName: String, systemID: String, mapping: ControllerGamepadMapping) {
         var cleanedButtons = mapping.buttons
@@ -394,6 +537,11 @@ class ControllerService: ObservableObject {
            let saved = try? JSONDecoder().decode([String: [String: ControllerGamepadMapping]].self, from: data) {
             savedMappings = saved
             migrateStaleGenesisMappings()
+        }
+
+        if let data = AppSettings.getData(sdlMappingKey),
+           let saved = try? JSONDecoder().decode([String: [String: SDLControllerMapping]].self, from: data) {
+            savedSDLMappings = saved
         }
 
         if let data = AppSettings.getData(kbMappingKey),

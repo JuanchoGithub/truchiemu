@@ -207,6 +207,8 @@ struct ControllerSettingsView: View {
                                 toggleKeyboardSlot(player: player, slot: slot)
                             } else if let gc = player.gcController {
                                 controllerService.toggleController(gc, player: slot)
+                            } else if player.isSDL, let id = player.sdlInstanceID {
+                                controllerService.toggleSDLController(id, player: slot)
                             }
                         }
                     )
@@ -454,7 +456,7 @@ struct ControllerSettingsView: View {
     }
 
     private func saveCurrentConfig() {
-        guard let player = selectedPlayerController, !player.isKeyboard else { return }
+        guard let player = selectedPlayerController, !player.isKeyboard, !player.isSDL else { return }
         guard !configName.isEmpty else { return }
         let currentMapping = controllerService.mapping(for: player.gcController?.vendorName ?? "Unknown", systemID: selectedSystemID)
         savedConfigs[configName] = currentMapping
@@ -463,7 +465,7 @@ struct ControllerSettingsView: View {
 
     private func loadConfig(name: String) {
         guard let mapping = savedConfigs[name],
-              let player = selectedPlayerController, !player.isKeyboard else { return }
+              let player = selectedPlayerController, !player.isKeyboard, !player.isSDL else { return }
         controllerService.updateMapping(for: player.gcController?.vendorName ?? "Unknown", systemID: selectedSystemID, mapping: mapping)
         configName = name
     }
@@ -750,6 +752,7 @@ struct ButtonMappingList: View {
     let controllerService: ControllerService
     @State private var listeningFor: RetroButton? = nil
     @State private var currentMapping: ControllerGamepadMapping
+    @State private var currentSDKMapping: SDLControllerMapping?
     @ObservedObject private var loc = LocalizationManager.shared
 
     init(systemID: String, player: PlayerController, controllerService: ControllerService) {
@@ -757,6 +760,7 @@ struct ButtonMappingList: View {
         self.player = player
         self.controllerService = controllerService
         _currentMapping = State(initialValue: controllerService.mapping(for: player.gcController?.vendorName ?? "Unknown", systemID: systemID))
+        _currentSDKMapping = State(initialValue: player.sdlMapping ?? SDLControllerMapping.defaults(for: "default"))
     }
 
     var body: some View {
@@ -768,14 +772,26 @@ struct ButtonMappingList: View {
                     .foregroundColor(AppColors.textSecondary(colorScheme))
                 Spacer()
                 Button(loc.localized("controllers.backToDefault")) {
-                    let vendorName = player.gcController?.vendorName ?? "Unknown"
-                    if systemID == "default" {
-                        let defaults = ControllerGamepadMapping.defaults(for: vendorName, systemID: "default", handedness: controllerService.handedness)
-                        currentMapping = defaults
-                        controllerService.updateMapping(for: vendorName, systemID: "default", mapping: defaults)
+                    if player.isSDL {
+                        let vendorName = SDLInputManager.shared.sdlVendorName(for: player.sdlInstanceID ?? 0)
+                        if systemID == "default" {
+                            let defaults = SDLControllerMapping.defaults(for: "default")
+                            currentSDKMapping = defaults
+                            controllerService.updateSDLMapping(for: vendorName, systemID: "default", mapping: defaults)
+                        } else {
+                            controllerService.removeSDLMapping(for: vendorName, systemID: systemID)
+                            currentSDKMapping = controllerService.sdlMapping(for: vendorName, systemID: systemID)
+                        }
                     } else {
-                        controllerService.removeMapping(for: vendorName, systemID: systemID)
-                        currentMapping = controllerService.mapping(for: vendorName, systemID: systemID)
+                        let vendorName = player.gcController?.vendorName ?? "Unknown"
+                        if systemID == "default" {
+                            let defaults = ControllerGamepadMapping.defaults(for: vendorName, systemID: "default", handedness: controllerService.handedness)
+                            currentMapping = defaults
+                            controllerService.updateMapping(for: vendorName, systemID: "default", mapping: defaults)
+                        } else {
+                            controllerService.removeMapping(for: vendorName, systemID: systemID)
+                            currentMapping = controllerService.mapping(for: vendorName, systemID: systemID)
+                        }
                     }
                 }
                 .buttonStyle(.borderedProminent)
@@ -794,15 +810,12 @@ struct ButtonMappingList: View {
                     MappingRowView(
                         button: btn,
                         systemID: systemID,
-                        currentMapping: currentMapping.buttons[btn],
+                        displayAlias: player.isSDL
+                            ? (currentSDKMapping?.buttons[btn]?.sdlButtonAlias ?? "—")
+                            : currentMapping.buttons[btn]?.gcElementAlias,
                         isListening: listeningFor == btn,
                         isButtonDisabled: disabledButtons.contains(btn),
-                        onStartListening: { startListening(for: btn) },
-                        onMappingCaptured: { newMapping in
-                            currentMapping.buttons[btn] = newMapping
-                            listeningFor = nil
-                            saveMapping()
-                        }
+                        onStartListening: { startListening(for: btn) }
                     )
                     .listRowInsets(EdgeInsets(top: 2, leading: 8, bottom: 2, trailing: 8))
                     .listRowSeparator(.hidden)
@@ -820,6 +833,44 @@ struct ButtonMappingList: View {
     @State private var capturedName: String? = nil
 
     private func startListening(for btn: RetroButton) {
+        if player.isSDL {
+            startSDLListening(for: btn)
+        } else {
+            startGCListening(for: btn)
+        }
+    }
+
+    // MARK: SDL Capture
+
+    private func startSDLListening(for btn: RetroButton) {
+        listeningFor = btn
+        capturedName = nil
+        guard let instanceID = player.sdlInstanceID else { return }
+        SDLInputManager.shared.startCapture(instanceID: instanceID) { [self] buttonIndex, buttonName in
+            DispatchQueue.main.async {
+                guard listeningFor == btn else { return }
+                if currentSDKMapping == nil {
+                    currentSDKMapping = SDLControllerMapping.defaults(for: "default")
+                }
+                currentSDKMapping?.buttons[btn] = SDLButtonMapping(sdlButtonIndex: buttonIndex, sdlButtonAlias: buttonName)
+                listeningFor = nil
+                saveSDKMapping()
+            }
+        }
+    }
+
+    private func saveSDKMapping() {
+        guard let mapping = currentSDKMapping else { return }
+        let vendorName = SDLInputManager.shared.sdlVendorName(for: player.sdlInstanceID ?? 0)
+        controllerService.updateSDLMapping(for: vendorName, systemID: systemID, mapping: mapping)
+        if let idx = controllerService.connectedControllers.firstIndex(where: { $0.id == player.id }) {
+            controllerService.connectedControllers[idx].sdlMapping = mapping
+        }
+    }
+
+    // MARK: GC Capture
+
+    private func startGCListening(for btn: RetroButton) {
         listeningFor = btn
         capturedName = nil
         guard let gc = player.gcController else { return }
@@ -869,7 +920,11 @@ struct ButtonMappingList: View {
     }
 
     private func stopListening() {
-        player.gcController?.extendedGamepad?.valueChangedHandler = nil
+        if player.isSDL {
+            SDLInputManager.shared.stopCapture()
+        } else {
+            player.gcController?.extendedGamepad?.valueChangedHandler = nil
+        }
     }
 
     private func saveMapping() {
@@ -935,17 +990,12 @@ struct ControllerMappingDetail: View {
                         MappingRowView(
                             button: btn,
                             systemID: systemID,
-                            currentMapping: mapping.buttons[btn],
+                            displayAlias: mapping.buttons[btn]?.gcElementAlias,
                             isListening: listeningFor == btn,
                             isButtonDisabled: disabledButtons.contains(btn),
                             onStartListening: {
                                 listeningFor = btn
                                 startListeningForButton(btn)
-                            },
-                            onMappingCaptured: { newMapping in
-                                mapping.buttons[btn] = newMapping
-                                listeningFor = nil
-                                saveMapping()
                             }
                         )
                         .listRowInsets(EdgeInsets(top: 2, leading: 8, bottom: 2, trailing: 8))
@@ -1027,11 +1077,10 @@ struct MappingRowView: View {
     @Environment(\.colorScheme) private var colorScheme
     let button: RetroButton
     let systemID: String
-    let currentMapping: GCButtonMapping?
+    let displayAlias: String?
     let isListening: Bool
     let isButtonDisabled: Bool
     let onStartListening: () -> Void
-    let onMappingCaptured: (GCButtonMapping) -> Void
     @ObservedObject private var loc = LocalizationManager.shared
 
     var body: some View {
@@ -1044,7 +1093,7 @@ struct MappingRowView: View {
 
             Spacer(minLength: 4)
 
-            Button(isListening ? loc.localized("controllers.press") : (currentMapping?.gcElementAlias ?? "—")) {
+            Button(isListening ? loc.localized("controllers.press") : (displayAlias ?? "—")) {
                 if !isButtonDisabled { onStartListening() }
             }
             .buttonStyle(.bordered)

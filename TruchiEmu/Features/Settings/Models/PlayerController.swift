@@ -18,10 +18,18 @@ struct PlayerController: Identifiable {
     var sortOrder: Int
     var productCategory: String
     var isKeyboard: Bool
+    var sdlInstanceID: Int32?
+    var sdlMapping: SDLControllerMapping?
+    var sdlName: String?
 
     var primaryPlayer: Int { assignedPlayers.min() ?? 1 }
-    var name: String { isKeyboard ? "Keyboard" : (gcController?.vendorName ?? "Player \(primaryPlayer)") }
-    var isConnected: Bool { gcController != nil || isKeyboard }
+    var isSDL: Bool { sdlInstanceID != nil }
+    var name: String {
+        if isKeyboard { return "Keyboard" }
+        if isSDL { return sdlName ?? "SDL Controller" }
+        return gcController?.vendorName ?? "Player \(primaryPlayer)"
+    }
+    var isConnected: Bool { gcController != nil || isKeyboard || isSDL }
 
     var typeIconName: String {
         if isKeyboard { return "Keyboard" }
@@ -39,7 +47,7 @@ struct PlayerController: Identifiable {
         Bundle.main.image(forResource: typeIconName)?.withTintColor
     }
 
-    init(id: UUID = UUID(), assignedPlayers: Set<Int>, gcController: GCController? = nil, mapping: ControllerGamepadMapping, sortOrder: Int = 0, productCategory: String = "", isKeyboard: Bool = false) {
+    init(id: UUID = UUID(), assignedPlayers: Set<Int>, gcController: GCController? = nil, mapping: ControllerGamepadMapping, sortOrder: Int = 0, productCategory: String = "", isKeyboard: Bool = false, sdlInstanceID: Int32? = nil, sdlMapping: SDLControllerMapping? = nil, sdlName: String? = nil) {
         self.id = id
         self.assignedPlayers = assignedPlayers
         self.gcController = gcController
@@ -47,5 +55,8 @@ struct PlayerController: Identifiable {
         self.sortOrder = sortOrder
         self.productCategory = productCategory
         self.isKeyboard = isKeyboard
+        self.sdlInstanceID = sdlInstanceID
+        self.sdlMapping = sdlMapping
+        self.sdlName = sdlName
     }
 }
