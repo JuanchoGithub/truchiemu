@@ -7,16 +7,24 @@
   "year": 1994,
   "manufacturer": "Interplay",
   "controls": {
-    "_P": "Punch",
-    "_K": "Kick",
+    "^E": "Weak Punch",
+    "^F": "Medium Punch",
+    "^G": "Strong Punch",
+    "^H": "Weak Kick",
+    "^I": "Medium Kick",
+    "^J": "Strong Kick",
     "_S": "Start"
   },
   "controlGroups": {
     "_P": [
-      "_P"
+      "^E",
+      "^F",
+      "^G"
     ],
     "_K": [
-      "_K"
+      "^H",
+      "^I",
+      "^J"
     ]
   },
   "categories": {
@@ -31,7 +39,7 @@
         {
           "category": "_(",
           "name": "Hold",
-          "input": "_P (close)"
+          "input": "^E (close)"
         },
         {
           "category": "_@",
@@ -86,7 +94,7 @@
         {
           "category": "_(",
           "name": "Hold",
-          "input": "_P (close)"
+          "input": "^E (close)"
         },
         {
           "category": "_@",
@@ -156,12 +164,12 @@
         {
           "category": "_(",
           "name": "Throw",
-          "input": "_K (close)"
+          "input": "^H (close)"
         },
         {
           "category": "_(",
           "name": "Hold",
-          "input": "_P (close)"
+          "input": "^E (close)"
         },
         {
           "category": "_@",
@@ -236,12 +244,12 @@
         {
           "category": "_(",
           "name": "Throw",
-          "input": "_K (close)"
+          "input": "^H (close)"
         },
         {
           "category": "_(",
           "name": "Hold",
-          "input": "_P (close)"
+          "input": "^E (close)"
         },
         {
           "category": "_@",
@@ -281,7 +289,7 @@
         {
           "category": "_(",
           "name": "Strangle Hold",
-          "input": "_P (close)"
+          "input": "^E (close)"
         },
         {
           "category": "_@",
@@ -306,12 +314,12 @@
         {
           "category": "_(",
           "name": "Throw",
-          "input": "_K (close)"
+          "input": "^H (close)"
         },
         {
           "category": "_(",
           "name": "Hold",
-          "input": "_P (close)"
+          "input": "^E (close)"
         },
         {
           "category": "_@",
@@ -387,22 +395,38 @@
     }
   ],
   "controlAbbr": {
-    "_P": "P",
-    "_K": "K",
+    "^E": "LP",
+    "^F": "MP",
+    "^G": "HP",
+    "^H": "LK",
+    "^I": "MK",
+    "^J": "HK",
     "_S": "ST"
   },
   "systemControlMappings": {
     "snes": {
-      "y": "_P",
-      "b": "_K"
+      "y": "^E",
+      "x": "^F",
+      "l1": "^G",
+      "b": "^H",
+      "a": "^I",
+      "r1": "^J"
     },
     "genesis": {
-      "b": "_P",
-      "a": "_K"
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
     },
     "megadrive": {
-      "b": "_P",
-      "a": "_K"
+      "b": "^E",
+      "a": "^F",
+      "c": "^G",
+      "y": "^H",
+      "x": "^I",
+      "z": "^J"
     }
   }
 }

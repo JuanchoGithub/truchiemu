@@ -7,7 +7,12 @@ struct MoveNotationTokenView: View {
     var compact: Bool = false
 
     private var nsImage: NSImage {
-        NotationTokenImageCache.shared.image(for: token, highlighted: isHighlighted, compact: compact)
+        switch token {
+        case .buttonKeyLabel(let btnType, let keyLabel):
+            return NotationTokenImageCache.shared.image(for: .button(btnType), highlighted: isHighlighted, compact: compact, keyLabel: keyLabel)
+        default:
+            return NotationTokenImageCache.shared.image(for: token, highlighted: isHighlighted, compact: compact)
+        }
     }
 
     var body: some View {
@@ -41,7 +46,7 @@ struct MoveNotationTokenRow: View {
         var stepIdx = 0
         for (tokenIdx, token) in tokens.enumerated() {
             switch token {
-            case .direction, .motion, .button:
+            case .direction, .motion, .button, .buttonKeyLabel:
                 map[tokenIdx] = stepIdx
                 stepIdx += 1
             case .separator, .wait, .air, .charge, .holdButton, .rapidPress, .hitLevel, .alternative, .motion360, .standClose:

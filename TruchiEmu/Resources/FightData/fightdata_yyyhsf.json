@@ -9,7 +9,7 @@
   "controls": {
     "^E": "Punch",
     "^H": "Kick",
-    "^G": "Special",
+    "^Z": "Block",
     "_S": "Start"
   },
   "controlGroups": {
@@ -19,8 +19,8 @@
     "_K": [
       "^H"
     ],
-    "_G": [
-      "^G"
+    "_W": [
+      "^Z"
     ]
   },
   "categories": {
@@ -42,12 +42,12 @@
     {
       "category": "_)",
       "name": "Plane Shift (3-Button)",
-      "input": "_8_+^G"
+      "input": "_8_+^Z"
     },
     {
       "category": "_)",
       "name": "Back Dash (3-Button)",
-      "input": "^H_+^G"
+      "input": "^H_+^Z"
     },
     {
       "category": "_)",
@@ -57,7 +57,7 @@
     {
       "category": "_)",
       "name": "Block",
-      "input": "^G"
+      "input": "^Z"
     }
   ],
   "commonNotes": [
@@ -458,19 +458,19 @@
   "controlAbbr": {
     "^E": "P",
     "^H": "K",
-    "^G": "S",
+    "^Z": "SP",
     "_S": "ST"
   },
   "systemControlMappings": {
     "genesis": {
       "b": "^E",
       "a": "^H",
-      "c": "^G"
+      "c": "^Z"
     },
     "megadrive": {
       "b": "^E",
       "a": "^H",
-      "c": "^G"
+      "c": "^Z"
     }
   }
 }

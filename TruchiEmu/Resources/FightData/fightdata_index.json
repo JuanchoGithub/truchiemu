@@ -452,16 +452,17 @@
     {
       "name": "Clay Fighter 2 - Judgment Clay",
       "cleanName": "Clay Fighter 2 - Judgment Clay",
-      "normalizedName": "clayfighter2judgmentclay",
+      "normalizedName": "clayfighter2-judgmentclay",
       "file": "fightdata_clayftr2.json",
       "romIds": [
         "clayftr2"
       ],
       "aliases": [
         "clayfighter2",
-        "clayfighter2judgmentclay",
+        "clayfighter2-judgmentclay",
         "c2judgmentclay",
-        "clayfighteriijudgmentclay"
+        "clayfighteriijudgmentclay",
+        "clayfighter2judgmentclay"
       ],
       "year": 1995,
       "manufacturer": "Interplay"
@@ -597,6 +598,23 @@
       "aliases": [],
       "year": 1993,
       "manufacturer": "Banpresto"
+    },
+    {
+      "name": "Dragon Ball Z - Buyuu Retsuden",
+      "cleanName": "Dragon Ball Z - Buyuu Retsuden",
+      "normalizedName": "dragonballz-buyuuretsuden",
+      "file": "fightdata_dbzbr.json",
+      "romIds": [
+        "dbzbr"
+      ],
+      "aliases": [
+        "dragonballz-buyuuretsuden",
+        "dragonballzbuyuuretsuden",
+        "dbzbr",
+        "buyuuretsuden"
+      ],
+      "year": 1994,
+      "manufacturer": "Bandai"
     },
     {
       "name": "Dragon Ball Z 2: Super Battle",
@@ -1642,7 +1660,7 @@
     {
       "name": "Power Instinct",
       "cleanName": "Power Instinct",
-      "normalizedName": "powerinstinct",
+      "normalizedName": "powerinstinctarcade",
       "file": "fightdata_powerins.json",
       "romIds": [
         "powerins",
@@ -1650,7 +1668,9 @@
         "powerinspj",
         "powerinspu"
       ],
-      "aliases": [],
+      "aliases": [
+        "powerinstinctarcade"
+      ],
       "year": 1993,
       "manufacturer": "Atlus"
     },
@@ -3217,7 +3237,7 @@
     {
       "name": "Clay Fighter - Tournament Edition",
       "cleanName": "Clay Fighter - Tournament Edition",
-      "normalizedName": "clayfightertournamentedition",
+      "normalizedName": "clayfighter-tournamentedition",
       "file": "fightdata_clayftrte.json",
       "romIds": [
         "clayftrte"
@@ -3225,7 +3245,8 @@
       "aliases": [
         "clayfightertournamentedition",
         "clayfighterte",
-        "clayfightertournament"
+        "clayfightertournament",
+        "clayfighter-tournamentedition"
       ],
       "year": 1994,
       "manufacturer": "Interplay"
@@ -3233,7 +3254,7 @@
     {
       "name": "Dragon Ball Z - Hyper Dimension",
       "cleanName": "Dragon Ball Z - Hyper Dimension",
-      "normalizedName": "dragonballzhyperdimension",
+      "normalizedName": "dragonballz-hyperdimension",
       "file": "fightdata_dbzhd.json",
       "romIds": [
         "dbzhd"
@@ -3241,7 +3262,10 @@
       "aliases": [
         "dbzhd",
         "dragonballzhyperdimension",
-        "dragonballzultimemenace"
+        "dragonballzultimemenace",
+        "dragonballz-hyperdimension",
+        "dragonballz-ultimemenace",
+        "ultimemenace"
       ],
       "year": 1996,
       "manufacturer": "Bandai"
@@ -3249,7 +3273,7 @@
     {
       "name": "Dragon Ball Z - Super Butouden",
       "cleanName": "Dragon Ball Z - Super Butouden",
-      "normalizedName": "dragonballzsuperbutouden",
+      "normalizedName": "dragonballz-superbutouden",
       "file": "fightdata_dbzsb.json",
       "romIds": [
         "dbzsb"
@@ -3257,7 +3281,8 @@
       "aliases": [
         "dbzsb",
         "dragonballzsuperbutouden",
-        "dragonballzsuperbutoden"
+        "dragonballzsuperbutoden",
+        "dragonballz-superbutouden"
       ],
       "year": 1993,
       "manufacturer": "Bandai"
@@ -3295,7 +3320,7 @@
     {
       "name": "Yu Yu Hakusho - Sunset Fighters",
       "cleanName": "Yu Yu Hakusho - Sunset Fighters",
-      "normalizedName": "yuuyuuhakushosunsetfighters",
+      "normalizedName": "yuuyuuhakusho-sunsetfighters",
       "file": "fightdata_yyyhsf.json",
       "romIds": [
         "yyyhsf"
@@ -3304,11 +3329,8 @@
         "yyyhsf",
         "yuyuhakushosunsetfighters",
         "yuyuhakushomakyotoushin",
-        "yu yu hakusho sunset fighters",
-        "yuyu hakusho sunset fighters",
-        "yuu yuu hakusho sunset fighters",
-        "yuu yu hakusho",
         "yuuyuuhakushosunsetfighters",
+        "yuuyuuhakusho-sunsetfighters",
         "yuuyuuhakusho"
       ],
       "year": 1994,
@@ -3317,7 +3339,7 @@
     {
       "name": "Teenage Mutant Ninja Turtles - Tournament Fighters",
       "cleanName": "Teenage Mutant Ninja Turtles - Tournament Fighters",
-      "normalizedName": "teenagemutantninjaturtlestournamentfighters",
+      "normalizedName": "teenagemutantninjaturtles-tournamentfighters",
       "file": "fightdata_tmnttf.json",
       "romIds": [
         "tmnttf"
@@ -3325,10 +3347,26 @@
       "aliases": [
         "tmnttf",
         "tmnt",
-        "teenagemutantninjaturtlestournamentfighters"
+        "teenagemutantninjaturtlestournamentfighters",
+        "teenagemutantninjaturtles-tournamentfighters"
       ],
       "year": 1994,
       "manufacturer": "Konami"
+    },
+    {
+      "name": "Eternal Champions",
+      "cleanName": "Eternal Champions",
+      "normalizedName": "eternalchampions",
+      "file": "fightdata_eternalchamp.json",
+      "romIds": [
+        "eternalchamp",
+        "eternalchampu"
+      ],
+      "aliases": [
+        "eternalchampions"
+      ],
+      "year": 1993,
+      "manufacturer": "Sega"
     }
   ]
 }

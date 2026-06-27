@@ -227,6 +227,18 @@ enum ButtonStrength: Equatable {
     case high
 }
 
+enum ButtonDisplayMode: String, CaseIterable {
+    case symbol
+    case inputKey
+
+    static let settingsKey = "moveListButtonDisplayMode"
+
+    static var current: ButtonDisplayMode {
+        AppSettings.getString(settingsKey, defaultValue: symbol.rawValue)
+            .flatMap { ButtonDisplayMode(rawValue: $0) } ?? .symbol
+    }
+}
+
 enum WeaponStyle: Equatable {
     case sword
     case axe
@@ -236,6 +248,7 @@ enum NotationToken: Equatable {
     case direction(FightDataDirection)
     case motion(MotionType)
     case button(ButtonTokenType)
+    case buttonKeyLabel(ButtonTokenType, keyLabel: String)
     case separator
     case wait
     case air

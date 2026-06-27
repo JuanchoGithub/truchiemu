@@ -7,7 +7,8 @@ enum MoveNotationRenderer {
         hitLevels: [HitLevel]? = nil,
         controls: [String: String] = [:],
         controlAbbr: [String: String] = [:],
-        controlGroups: [String: [String]] = [:]
+        controlGroups: [String: [String]] = [:],
+        keyLabels: [String: String] = [:]
     ) -> [NotationToken] {
         var tokens: [NotationToken] = []
         let hitLevelList = hitLevels ?? []
@@ -51,7 +52,12 @@ enum MoveNotationRenderer {
             if !step.buttons.isEmpty {
                 for (i, key) in step.buttons.enumerated() {
                     if i > 0 { tokens.append(.separator) }
-                    tokens.append(mapButtonToToken(key, controls: controls, controlAbbr: controlAbbr, controlGroups: controlGroups))
+                    let token = mapButtonToToken(key, controls: controls, controlAbbr: controlAbbr, controlGroups: controlGroups)
+                    if let kl = keyLabels[key], case .button(let btnType) = token {
+                        tokens.append(.buttonKeyLabel(btnType, keyLabel: kl))
+                    } else {
+                        tokens.append(token)
+                    }
                 }
             }
 
@@ -129,7 +135,7 @@ enum MoveNotationRenderer {
         if lower.contains("throw") || lower.contains("grapple") || lower.contains("grab") || lower.contains("suplex") {
             return .button(.grapple)
         }
-        if lower.contains("weapon") || lower.contains("sword") || lower.contains("slash") {
+        if lower.contains("weapon") || lower.contains("sword") || lower.contains("slash") || lower.contains("special") {
             return .button(.weapon(style: .sword))
         }
         if lower.contains("axe") {
@@ -180,7 +186,7 @@ enum MoveNotationRenderer {
         if lower.contains("throw") || lower.contains("grapple") || lower.contains("grab") || lower.contains("suplex") {
             return .button(.grapple)
         }
-        if lower.contains("weapon") || lower.contains("sword") || lower.contains("slash") {
+        if lower.contains("weapon") || lower.contains("sword") || lower.contains("slash") || lower.contains("special") {
             return .button(.weapon(style: .sword))
         }
         if lower.contains("axe") {

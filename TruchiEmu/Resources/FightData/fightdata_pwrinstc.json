@@ -11,6 +11,7 @@
     "^H": "Weak Kick",
     "^F": "Strong Punch",
     "^I": "Strong Kick",
+    "^W": "Special",
     "_S": "Start"
   },
   "controlGroups": {
@@ -360,6 +361,7 @@
     "^F": "SP",
     "^H": "WK",
     "^I": "SK",
+    "^W": "SPC",
     "_S": "ST"
   },
   "systemControlMappings": {

@@ -235,7 +235,13 @@ Text(loc.localized("movelist.saveAndSelect"))
                     ForEach(buttonEntries, id: \.key) { key, a in
                         HStack(spacing: 3) {
                 MoveNotationTokenView(
-                    token: .button(MoveNotationRenderer.resolveButtonType(key, gameData: viewModel.moveListService.currentGameData)),
+                    token: {
+                        let btnType = MoveNotationRenderer.resolveButtonType(key, gameData: viewModel.moveListService.currentGameData)
+                        if let kl = viewModel.buttonKeyLabels[key] {
+                            return .buttonKeyLabel(btnType, keyLabel: kl)
+                        }
+                        return .button(btnType)
+                    }(),
                     isHighlighted: true,
                     compact: true
                 )
@@ -358,6 +364,18 @@ Text(loc.localized("movelist.saveAndSelect"))
             }
 
             Spacer()
+
+            Button(action: {
+                let newMode: ButtonDisplayMode = viewModel.isKeyLabelMode ? .symbol : .inputKey
+                AppSettings.set(ButtonDisplayMode.settingsKey, value: newMode.rawValue)
+                viewModel.refreshButtonKeyLabels()
+            }) {
+                Image(systemName: viewModel.isKeyLabelMode ? "keyboard" : "circle.circle")
+                    .font(.system(size: 10))
+                    .foregroundColor(AppColors.brandAccent)
+            }
+            .buttonStyle(.plain)
+            .help(viewModel.isKeyLabelMode ? loc.localized("movelist.switchToSymbols") : loc.localized("movelist.switchToKeys"))
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 5)
@@ -452,9 +470,15 @@ private var inputSequenceSection: some View {
     private func buildInputButtonTokens(_ buttons: Set<String>) -> [NotationToken] {
         var tokens: [NotationToken] = []
         let sorted = buttons.sorted()
+        let keyLabels = viewModel.buttonKeyLabels
         for (i, key) in sorted.enumerated() {
             if i > 0 { tokens.append(.separator) }
-            tokens.append(.button(MoveNotationRenderer.resolveButtonType(key, gameData: viewModel.moveListService.currentGameData)))
+            let btnType = MoveNotationRenderer.resolveButtonType(key, gameData: viewModel.moveListService.currentGameData)
+            if let kl = keyLabels[key] {
+                tokens.append(.buttonKeyLabel(btnType, keyLabel: kl))
+            } else {
+                tokens.append(.button(btnType))
+            }
         }
         return tokens
     }

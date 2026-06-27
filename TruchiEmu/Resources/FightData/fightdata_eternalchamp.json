@@ -1,0 +1,532 @@
+{
+  "schemaVersion": 2,
+  "romIds": [
+    "eternalchamp"
+  ],
+  "name": "Eternal Champions",
+  "year": 1993,
+  "manufacturer": "Sega",
+  "controls": {
+    "^E": "Weak Punch",
+    "^F": "Medium Punch",
+    "^G": "Strong Punch",
+    "^H": "Weak Kick",
+    "^I": "Medium Kick",
+    "^J": "Strong Kick",
+    "_S": "Start"
+  },
+  "controlGroups": {
+    "_P": [
+      "^E",
+      "^F",
+      "^G"
+    ],
+    "_K": [
+      "^H",
+      "^I",
+      "^J"
+    ]
+  },
+  "categories": {
+    "_(": "Normal Throws",
+    "_)": "Command Moves",
+    "_@": "Special Moves",
+    "_`": "Overkills"
+  },
+  "commonCommands": [
+    {
+      "category": "_)",
+      "name": "Taunt",
+      "input": "^E_+^F_+^G"
+    },
+    {
+      "category": "_(",
+      "name": "Throw (close)",
+      "input": "_6_+^E"
+    },
+    {
+      "category": "_)",
+      "name": "Block",
+      "input": "_4"
+    }
+  ],
+  "commonNotes": [
+    "All special moves consume Inner Strength",
+    "Charge moves: hold back then press forward",
+    "Multi-button moves require simultaneous press"
+  ],
+  "characters": [
+    {
+      "name": "BLADE",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Stun Beam",
+          "input": "_4(hold)_6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Personal Shield",
+          "input": "^E_+^F_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Tracking Blade",
+          "input": "_4(hold)_6_+^E_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Straight Blade",
+          "input": "_4(hold)_6_+^E_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Projectile Containment Field",
+          "input": "^H_+^I"
+        },
+        {
+          "category": "_@",
+          "name": "Wild Fury Attack",
+          "input": "^H_+^I_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Backfire",
+          "input": "^H_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Power Drain",
+          "input": "_4(hold)_6_+^J"
+        }
+      ]
+    },
+    {
+      "name": "JETTA",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Flying Choke Hold",
+          "input": "_4(hold)_6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Phase",
+          "input": "^E_+^F_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Resonate (during Phase)",
+          "input": "^H_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Ricochet Left",
+          "input": "_2_8_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Ricochet Right",
+          "input": "_2_8_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Bladerang (single hit)",
+          "input": "_4(hold)_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Bladerang (double hit)",
+          "input": "_4(hold)_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Ceiling Grab",
+          "input": "_2_8_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Death Dive (after Ceiling Grab)",
+          "input": "^J"
+        },
+        {
+          "category": "_@",
+          "name": "Moving Corkscrew",
+          "input": "^H_+^I / ^H_+^J"
+        }
+      ]
+    },
+    {
+      "name": "LARCEN",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Ceiling Crawl",
+          "input": "_2_8_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Ceiling Drop",
+          "input": "_2_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Air Sweep",
+          "input": "^H_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Long Distance Sweep",
+          "input": "_4(hold)_6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Power Sweep",
+          "input": "^H_+^I_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Reflect Back Projectiles",
+          "input": "_4(hold)_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Sai Throw",
+          "input": "_4(hold)_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Swinging Hammer Fist",
+          "input": "^E_+^F_+^G"
+        }
+      ]
+    },
+    {
+      "name": "MIDKNIGHT",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Life Drain (close)",
+          "input": "_6_+^E_+^F_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Ceiling Ram (close)",
+          "input": "_2_8_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Bedazzle",
+          "input": "^E_+^F_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Dispel",
+          "input": "^H_+^I_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Mist Attack",
+          "input": "^H_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Wall Smash",
+          "input": "_4(hold)_6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Overhead Stomach Punch (close)",
+          "input": "_6_+^H_+^I_+^J"
+        }
+      ]
+    },
+    {
+      "name": "R.A.X.",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Lock and Load",
+          "input": "^H_+^I"
+        },
+        {
+          "category": "_@",
+          "name": "Air Jets",
+          "input": "_2_8_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Cyber Punch",
+          "input": "^E_+^F_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Cyber Kick",
+          "input": "^H_+^I_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Jet Knee Smash",
+          "input": "_4(hold)_6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Overload",
+          "input": "^H_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Turbine",
+          "input": "_4(hold)_6_+^H"
+        }
+      ]
+    },
+    {
+      "name": "SHADOW",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Shadow Mode",
+          "input": "^H_+^I_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Twirling Fan Attack (1 spin)",
+          "input": "_4(hold)_6_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Twirling Fan Attack (2 spins)",
+          "input": "_4(hold)_6_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Twirling Fan Attack (3 spins)",
+          "input": "_4(hold)_6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "High Jump Angle Kick",
+          "input": "_2_8_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Smoke Screen (at opponent)",
+          "input": "^E_+^F_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Smoke Screen (reappear left)",
+          "input": "^E_+^E_+^E_+^H_+^H"
+        },
+        {
+          "category": "_@",
+          "name": "Smoke Screen (reappear right)",
+          "input": "^E_+^E_+^E_+^H_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Ninja Shuriken (slow)",
+          "input": "_4(hold)_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Ninja Shuriken (fast)",
+          "input": "_4(hold)_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Ninja Knife (slow)",
+          "input": "_4(hold)_7_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Ninja Knife (fast)",
+          "input": "_4(hold)_7_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Ninja Smoke Bomb (slow)",
+          "input": "_4(hold)_1_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Ninja Smoke Bomb (fast)",
+          "input": "_4(hold)_1_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Mine Uzume-Bi",
+          "input": "_4(hold)_6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Step (short)",
+          "input": "^H_+^I"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Step (medium)",
+          "input": "^H_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Flying Step (super)",
+          "input": "^H_+^J"
+        }
+      ]
+    },
+    {
+      "name": "SLASH",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Massive Club Swing",
+          "input": "^E_+^F_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Double Footed Swing Kick",
+          "input": "^H_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "De-Claw",
+          "input": "_4(hold)_6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Power Thud Club Swing",
+          "input": "^E_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Spinal Crush (close)",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Running Head Butt",
+          "input": "_4(hold)_6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Bat Back Projectile",
+          "input": "^E_+^F"
+        }
+      ]
+    },
+    {
+      "name": "TRIDENT",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Depth Charge Field",
+          "input": "^E_+^F"
+        },
+        {
+          "category": "_@",
+          "name": "Bio-Drain Field",
+          "input": "^E_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Bio-Stun Field",
+          "input": "^H_+^I"
+        },
+        {
+          "category": "_@",
+          "name": "Repulser Field",
+          "input": "^H_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Spinning Trident",
+          "input": "^E_+^F_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Sliding Spinning Trident",
+          "input": "_4(hold)_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Plasma Bolt",
+          "input": "_4(hold)_6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Liquid Mode",
+          "input": "^H_+^I_+^J"
+        }
+      ]
+    },
+    {
+      "name": "XAVIER",
+      "moves": [
+        {
+          "category": "_@",
+          "name": "Dragon Trap",
+          "input": "_4(hold)_6_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Snap Back",
+          "input": "_4(hold)_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Identity Change",
+          "input": "^E_+^F_+^G"
+        },
+        {
+          "category": "_@",
+          "name": "Midas Touch",
+          "input": "_4(hold)_6_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Attract and Smack",
+          "input": "^H_+^I_+^J"
+        },
+        {
+          "category": "_@",
+          "name": "Swap Spell",
+          "input": "^E_+^F"
+        },
+        {
+          "category": "_@",
+          "name": "Confusion Spell",
+          "input": "^H_+^J"
+        }
+      ]
+    }
+  ],
+  "controlAbbr": {
+    "^E": "LP",
+    "^F": "MP",
+    "^G": "HP",
+    "^H": "LK",
+    "^I": "MK",
+    "^J": "HK",
+    "_S": "ST"
+  },
+  "systemControlMappings": {
+    "genesis": {
+      "x": "^E",
+      "y": "^F",
+      "z": "^G",
+      "a": "^H",
+      "b": "^I",
+      "c": "^J"
+    },
+    "megadrive": {
+      "x": "^E",
+      "y": "^F",
+      "z": "^G",
+      "a": "^H",
+      "b": "^I",
+      "c": "^J"
+    }
+  }
+}

@@ -16,6 +16,7 @@ class MoveListOverlayViewModel: ObservableObject {
     @Published private(set) var matchedDirectionCount: Int = 0
     @Published private(set) var matchedButtonCount: Int = 0
     @Published var expandedCharacterId: String? = nil
+    @Published private(set) var buttonKeyLabels: [String: String] = [:]
 
     let moveListService: MoveListService
     let inputStateTracker: InputStateTracker
@@ -121,7 +122,34 @@ class MoveListOverlayViewModel: ObservableObject {
             inputStateTracker.arcadeLayout = ArcadeButtonMapper.shared.arcadeLayout(for: game)
             inputStateTracker.systemControlMappings = game.systemControlMappings
         }
+        computeButtonKeyLabels(systemID: systemID)
         updateFilteredMoves(for: inputStateTracker.inputSequence)
+    }
+
+    func refreshButtonKeyLabels() {
+        let systemID = inputStateTracker.systemID
+        computeButtonKeyLabels(systemID: systemID)
+        updateFilteredMoves(for: inputStateTracker.inputSequence)
+    }
+
+    var isKeyLabelMode: Bool {
+        ButtonDisplayMode.current == .inputKey
+    }
+
+    private func computeButtonKeyLabels(systemID: String) {
+        guard isKeyLabelMode, let game = moveListService.currentGameData else {
+            buttonKeyLabels = [:]
+            return
+        }
+        let layout = ArcadeButtonMapper.shared.arcadeLayout(for: game)
+        let allKeys = Array(moveListService.controlLabels.keys) + Array(moveListService.controlAbbreviations.keys)
+        let uniqueKeys = Array(Set(allKeys))
+        buttonKeyLabels = ButtonKeyResolver.allKeyLabels(
+            fightDataKeys: uniqueKeys,
+            systemID: systemID,
+            layout: layout,
+            systemControlMappings: game.systemControlMappings
+        )
     }
 
     func selectCharacter(_ character: FightDataCharacter) {
@@ -529,7 +557,8 @@ class MoveListOverlayViewModel: ObservableObject {
             hitLevels: hitLevels.map { HitLevel.parse($0) },
             controls: gameData?.controls ?? [:],
             controlAbbr: moveListService.controlAbbreviations,
-            controlGroups: gameData?.controlGroups ?? [:]
+            controlGroups: gameData?.controlGroups ?? [:],
+            keyLabels: buttonKeyLabels
         )
     }
 

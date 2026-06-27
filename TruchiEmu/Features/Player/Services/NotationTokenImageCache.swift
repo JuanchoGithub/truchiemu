@@ -11,11 +11,11 @@ final class NotationTokenImageCache {
 
     private init() {}
 
-    func image(for token: NotationToken, highlighted: Bool, compact: Bool) -> NSImage {
-        let key = cacheKey(token: token, highlighted: highlighted, compact: compact)
+    func image(for token: NotationToken, highlighted: Bool, compact: Bool, keyLabel: String? = nil) -> NSImage {
+        let key = cacheKey(token: token, highlighted: highlighted, compact: compact, keyLabel: keyLabel)
         if let cached = cache[key] { return cached }
 
-        let img = compose(token: token, highlighted: highlighted, compact: compact)
+        let img = compose(token: token, highlighted: highlighted, compact: compact, keyLabel: keyLabel)
         cache[key] = img
         return img
     }
@@ -35,20 +35,23 @@ final class NotationTokenImageCache {
         cache.removeAll()
     }
 
-    private func cacheKey(token: NotationToken, highlighted: Bool, compact: Bool) -> String {
+    private func cacheKey(token: NotationToken, highlighted: Bool, compact: Bool, keyLabel: String? = nil) -> String {
         let h = highlighted ? "h" : "d"
         let c = compact ? "c" : "n"
-        return "\(token.description)_\(h)_\(c)"
+        let k = keyLabel.map { "_k\($0)" } ?? ""
+        return "\(token.description)_\(h)_\(c)\(k)"
     }
 
-    private func compose(token: NotationToken, highlighted: Bool, compact: Bool) -> NSImage {
+    private func compose(token: NotationToken, highlighted: Bool, compact: Bool, keyLabel: String? = nil) -> NSImage {
         switch token {
         case .direction(let dir):
             return composeDirection(dir, highlighted: highlighted, compact: compact)
         case .motion(let motion):
             return composeMotion(motion, highlighted: highlighted, compact: compact)
         case .button(let btnType):
-            return composeButton(btnType, highlighted: highlighted, compact: compact)
+            return composeButton(btnType, highlighted: highlighted, compact: compact, keyLabel: keyLabel)
+        case .buttonKeyLabel(let btnType, let kl):
+            return composeButton(btnType, highlighted: highlighted, compact: compact, keyLabel: kl)
         case .separator:
             return composeSeparator(highlighted: highlighted, compact: compact)
         case .wait:
@@ -176,7 +179,7 @@ final class NotationTokenImageCache {
         }
     }
 
-    private func composeButton(_ btnType: ButtonTokenType, highlighted: Bool, compact: Bool) -> NSImage {
+    private func composeButton(_ btnType: ButtonTokenType, highlighted: Bool, compact: Bool, keyLabel: String? = nil) -> NSImage {
         let size = sizeFor(compact, NotationMetrics.buttonSize)
         let badgeSize = sizeFor(compact, NotationMetrics.badgeSize)
         let border = NotationMetrics.borderWidth
@@ -187,32 +190,50 @@ final class NotationTokenImageCache {
 
             drawFilledCircle(in: circleRect, color: fillColor, borderWidth: border, borderColor: .white.withAlphaComponent(highlighted ? 0.7 : 0.2), context: ctx)
 
-        if let interior = interiorAsset {
-            let inset = size * 0.15
-            let interiorRect = NSRect(x: inset, y: inset, width: size - inset * 2, height: size - inset * 2)
-            if gradientInteriorAssets.contains(interior) {
-                drawImage(interior, in: interiorRect, alpha: interiorAlpha)
-            } else {
-                drawTemplateImage(interior, color: .white.withAlphaComponent(interiorAlpha), in: interiorRect, context: ctx)
+            if let keyLabel {
+                let paragraphStyle = NSMutableParagraphStyle()
+                paragraphStyle.alignment = .center
+                let fontSize = keyLabel.count > 3 ? size * 0.22 : (keyLabel.count > 2 ? size * 0.28 : size * 0.38)
+                let attrs: [NSAttributedString.Key: Any] = [
+                    .font: NSFont.systemFont(ofSize: fontSize, weight: .bold),
+                    .foregroundColor: NSColor.white.withAlphaComponent(highlighted ? 0.95 : 0.5),
+                    .paragraphStyle: paragraphStyle,
+                ]
+                let str = NSAttributedString(string: keyLabel, attributes: attrs)
+                let textSize = str.size()
+                let textRect = NSRect(
+                    x: (size - textSize.width) / 2,
+                    y: (size - textSize.height) / 2,
+                    width: textSize.width,
+                    height: textSize.height
+                )
+                str.draw(in: textRect)
+            } else if let interior = interiorAsset {
+                let inset = size * 0.15
+                let interiorRect = NSRect(x: inset, y: inset, width: size - inset * 2, height: size - inset * 2)
+                if gradientInteriorAssets.contains(interior) {
+                    drawImage(interior, in: interiorRect, alpha: interiorAlpha)
+                } else {
+                    drawTemplateImage(interior, color: .white.withAlphaComponent(interiorAlpha), in: interiorRect, context: ctx)
+                }
             }
-        }
 
-        if let badge = badgeAsset {
-            let offsetX: CGFloat
-            let offsetY: CGFloat
-            if badge == "NotationBadgeMinus" {
-                offsetX = size - badgeSize * 0.7
-                offsetY = badgeSize * 0.1
-            } else {
-                offsetX = size - badgeSize * 0.7
-                offsetY = size - badgeSize * 0.7
+            if keyLabel == nil, let badge = badgeAsset {
+                let offsetX: CGFloat
+                let offsetY: CGFloat
+                if badge == "NotationBadgeMinus" {
+                    offsetX = size - badgeSize * 0.7
+                    offsetY = badgeSize * 0.1
+                } else {
+                    offsetX = size - badgeSize * 0.7
+                    offsetY = size - badgeSize * 0.7
+                }
+                let badgeRect = NSRect(x: offsetX, y: offsetY, width: badgeSize, height: badgeSize)
+                let badgeColor: NSColor = .white.withAlphaComponent(highlighted ? 0.7 : 0.3)
+                drawTemplateImage(badge, color: badgeColor, in: badgeRect, context: ctx)
             }
-            let badgeRect = NSRect(x: offsetX, y: offsetY, width: badgeSize, height: badgeSize)
-            let badgeColor: NSColor = .white.withAlphaComponent(highlighted ? 0.7 : 0.3)
-            drawTemplateImage(badge, color: badgeColor, in: badgeRect, context: ctx)
-        }
 
-            if case .generic(let label) = btnType, !label.isEmpty {
+            if keyLabel == nil, case .generic(let label) = btnType, !label.isEmpty {
                 let paragraphStyle = NSMutableParagraphStyle()
                 paragraphStyle.alignment = .center
                 let fontSize = label.count > 2 ? size * 0.25 : size * 0.35
@@ -416,6 +437,7 @@ extension NotationToken: CustomStringConvertible {
         case .direction(let dir): return "dir_\(dir.rawValue)"
         case .motion(let m): return "motion_\(m.assetSuffix)"
         case .button(let b): return "btn_\(b.assetSuffix)"
+        case .buttonKeyLabel(let b, let kl): return "btnkl_\(b.assetSuffix)_\(kl)"
         case .separator: return "sep"
         case .wait: return "wait"
         case .air: return "air"

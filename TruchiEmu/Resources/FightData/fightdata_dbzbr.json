@@ -1,22 +1,20 @@
 {
   "schemaVersion": 2,
   "romIds": [
-    "dbzhd"
+    "dbzbr"
   ],
-  "name": "Dragon Ball Z: Hyper Dimension",
-  "year": 1996,
+  "name": "Dragon Ball Z - Buyuu Retsuden",
+  "year": 1994,
   "manufacturer": "Bandai",
   "controls": {
     "^E": "Punch",
     "^H": "Kick",
-    "^c": "Heavy Punch",
-    "^Z": "Special Ki",
+    "^c": "Float",
     "_S": "Start"
   },
   "controlGroups": {
     "_P": [
-      "^E",
-      "^c"
+      "^E"
     ],
     "_K": [
       "^H"
@@ -26,19 +24,13 @@
     "_(": "Normal Throws",
     "_)": "Command Moves",
     "_@": "Special Moves",
-    "_*": "Meteor Combos",
-    "_!": "Desperation Moves"
+    "_*": "Super Moves"
   },
   "commonCommands": [
     {
       "category": "_)",
       "name": "Block",
       "input": "_4"
-    },
-    {
-      "category": "_)",
-      "name": "Ki Charge",
-      "input": "^E_+^H (hold)"
     },
     {
       "category": "_)",
@@ -51,9 +43,19 @@
       "input": "_4_4"
     },
     {
+      "category": "_)",
+      "name": "Ki Charge",
+      "input": "_O^E"
+    },
+    {
+      "category": "_)",
+      "name": "Float / Land",
+      "input": "^c"
+    },
+    {
       "category": "_(",
       "name": "Throw",
-      "input": "_6_+^c"
+      "input": "_6_+^E"
     }
   ],
   "characters": [
@@ -63,12 +65,12 @@
         {
           "category": "_)",
           "name": "Heavy Strike",
-          "input": "_6_+^c"
+          "input": "_6_+^E"
         },
         {
           "category": "_)",
           "name": "Low Strike",
-          "input": "_2_+^c"
+          "input": "_2_+^E"
         },
         {
           "category": "_@",
@@ -78,7 +80,7 @@
         {
           "category": "_@",
           "name": "Low Kamehameha",
-          "input": "_1_2_3_+_P"
+          "input": "(_^)_2_3_6_+_K"
         },
         {
           "category": "_@",
@@ -97,33 +99,78 @@
         },
         {
           "category": "_*",
-          "name": "Super Dragon Fist",
-          "input": "_2_3_6_2_3_6_+^c"
-        },
-        {
-          "category": "_!",
-          "name": "Instant Transmission Kamehameha",
-          "input": "_2_1_4_1_2_3_6_+^Z"
+          "name": "Chou Kamehameha",
+          "input": "_2_3_6_2_3_6_+^E"
         }
       ]
     },
     {
-      "name": "MAJIN VEGETA",
+      "name": "GOHAN",
       "moves": [
         {
           "category": "_)",
           "name": "Heavy Strike",
-          "input": "_6_+^c"
+          "input": "_6_+^E"
         },
         {
           "category": "_)",
           "name": "Low Strike",
-          "input": "_2_+^c"
+          "input": "_2_+^E"
         },
         {
           "category": "_@",
-          "name": "Final Flash",
+          "name": "Kamehameha",
           "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Low Kamehameha",
+          "input": "(_^)_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Masenko",
+          "input": "_4_2_1_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Ki Burst",
+          "input": "_4_2_1_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Rushing Attack",
+          "input": "_6_3_2_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Super Kamehameha",
+          "input": "_2_3_6_2_3_6_+^E"
+        }
+      ]
+    },
+    {
+      "name": "VEGETA",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Heavy Strike",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Low Strike",
+          "input": "_2_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Galick Ho",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Low Galick Ho",
+          "input": "(_^)_2_3_6_+_K"
         },
         {
           "category": "_@",
@@ -141,143 +188,38 @@
           "input": "_6_3_2_+_P"
         },
         {
-          "category": "_@",
-          "name": "Atomic Blast",
-          "input": "_6_2_3_+_P"
-        },
-        {
           "category": "_*",
-          "name": "Final Impact",
-          "input": "_2_3_6_2_3_6_+^c"
-        },
-        {
-          "category": "_!",
-          "name": "Self-Destruct",
-          "input": "_4_1_2_8_+^Z"
-        }
-      ]
-    },
-    {
-      "name": "GOTENKS",
-      "moves": [
-        {
-          "category": "_)",
-          "name": "Heavy Strike",
-          "input": "_6_+^c"
-        },
-        {
-          "category": "_)",
-          "name": "Low Strike",
-          "input": "_2_+^c"
-        },
-        {
-          "category": "_@",
-          "name": "Kamikaze Ghost",
-          "input": "_2_3_6_+_P"
-        },
-        {
-          "category": "_@",
-          "name": "Galactic Donut",
-          "input": "_4_2_1_+_P"
-        },
-        {
-          "category": "_@",
-          "name": "Ki Burst",
-          "input": "_4_2_1_+_K"
-        },
-        {
-          "category": "_@",
-          "name": "Rushing Attack",
-          "input": "_6_3_2_+_P"
-        },
-        {
-          "category": "_@",
-          "name": "Volleyball Attack",
-          "input": "_6_2_3_+_P"
-        },
-        {
-          "category": "_*",
-          "name": "Super Ghost Kamikaze Attack",
-          "input": "_2_3_6_2_3_6_+^c"
-        },
-        {
-          "category": "_!",
-          "name": "Super Saiyan 3 Wraith",
-          "input": "_2_1_4_6_+^Z"
-        }
-      ]
-    },
-    {
-      "name": "GOHAN",
-      "moves": [
-        {
-          "category": "_)",
-          "name": "Heavy Strike",
-          "input": "_6_+^c"
-        },
-        {
-          "category": "_)",
-          "name": "Low Strike",
-          "input": "_2_+^c"
-        },
-        {
-          "category": "_@",
-          "name": "Kamehameha",
-          "input": "_2_3_6_+_P"
-        },
-        {
-          "category": "_@",
-          "name": "Low Kamehameha",
-          "input": "_1_2_3_+_P"
-        },
-        {
-          "category": "_@",
-          "name": "Ki Burst",
-          "input": "_4_2_1_+_K"
-        },
-        {
-          "category": "_@",
-          "name": "Rushing Attack",
-          "input": "_6_3_2_+_P"
-        },
-        {
-          "category": "_@",
-          "name": "Masenko",
-          "input": "_4_2_1_+_P"
-        },
-        {
-          "category": "_*",
-          "name": "Ultimate Kamehameha",
-          "input": "_2_3_6_2_3_6_+^c"
-        },
-        {
-          "category": "_!",
-          "name": "Explosive Wave",
-          "input": "_4_1_2_8_+^Z"
-        }
-      ]
-    },
-    {
-      "name": "VEGITO",
-      "moves": [
-        {
-          "category": "_)",
-          "name": "Heavy Strike",
-          "input": "_6_+^c"
-        },
-        {
-          "category": "_)",
-          "name": "Low Strike",
-          "input": "_2_+^c"
-        },
-        {
-          "category": "_@",
-          "name": "Kamehameha",
-          "input": "_2_3_6_+_P"
-        },
-        {
-          "category": "_@",
           "name": "Final Flash",
+          "input": "_2_3_6_2_3_6_+^E"
+        }
+      ]
+    },
+    {
+      "name": "TRUNKS",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Heavy Strike",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Low Strike",
+          "input": "_2_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Burning Attack",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Low Burning Attack",
+          "input": "(_^)_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Energy Shield",
           "input": "_4_2_1_+_P"
         },
         {
@@ -287,23 +229,13 @@
         },
         {
           "category": "_@",
-          "name": "Rushing Attack",
+          "name": "Sword Rush",
           "input": "_6_3_2_+_P"
         },
         {
-          "category": "_@",
-          "name": "Spirit Shot",
-          "input": "_6_2_3_+_P"
-        },
-        {
           "category": "_*",
-          "name": "Final Kamehameha",
-          "input": "_2_3_6_2_3_6_+^c"
-        },
-        {
-          "category": "_!",
-          "name": "Spirit Sword",
-          "input": "_2_1_4_6_+^Z"
+          "name": "Finish Buster",
+          "input": "_2_3_6_2_3_6_+^E"
         }
       ]
     },
@@ -313,16 +245,16 @@
         {
           "category": "_)",
           "name": "Heavy Strike",
-          "input": "_6_+^c"
+          "input": "_6_+^E"
         },
         {
           "category": "_)",
           "name": "Low Strike",
-          "input": "_2_+^c"
+          "input": "_2_+^E"
         },
         {
           "category": "_@",
-          "name": "Special Beam Cannon",
+          "name": "Makankosappo",
           "input": "_4_1_2_3_6_+_P"
         },
         {
@@ -348,77 +280,22 @@
         {
           "category": "_*",
           "name": "Hellzone Grenade",
-          "input": "_2_3_6_2_3_6_+^c"
-        },
-        {
-          "category": "_!",
-          "name": "Explosive Demon Wave",
-          "input": "_4_1_2_8_+^Z"
+          "input": "_2_3_6_2_3_6_+^E"
         }
       ]
     },
     {
-      "name": "MAJIN BUU",
+      "name": "KRILLIN",
       "moves": [
         {
           "category": "_)",
           "name": "Heavy Strike",
-          "input": "_6_+^c"
+          "input": "_6_+^E"
         },
         {
           "category": "_)",
           "name": "Low Strike",
-          "input": "_2_+^c"
-        },
-        {
-          "category": "_@",
-          "name": "Mouth Blast",
-          "input": "_2_3_6_+_P"
-        },
-        {
-          "category": "_@",
-          "name": "Body Slam",
-          "input": "_4_2_1_+_P"
-        },
-        {
-          "category": "_@",
-          "name": "Ki Burst",
-          "input": "_4_2_1_+_K"
-        },
-        {
-          "category": "_@",
-          "name": "Rushing Attack",
-          "input": "_6_3_2_+_P"
-        },
-        {
-          "category": "_@",
-          "name": "Stretching Kick",
-          "input": "_6_2_3_+_P"
-        },
-        {
-          "category": "_*",
-          "name": "Angry Explosion",
-          "input": "_2_3_6_2_3_6_+^c"
-        },
-        {
-          "category": "_!",
-          "name": "Inside-Out Explosion",
-          "input": "_4_1_2_8_+^Z"
-        }
-      ]
-    },
-    {
-      "name": "KID BUU",
-      "moves": [
-        {
-          "category": "_)",
-          "name": "Heavy Strike",
-          "input": "_6_+^c"
-        },
-        {
-          "category": "_)",
-          "name": "Low Strike",
-          "input": "_2_+^c"
+          "input": "_2_+^E"
         },
         {
           "category": "_@",
@@ -427,7 +304,12 @@
         },
         {
           "category": "_@",
-          "name": "Vanishing Ball",
+          "name": "Low Kamehameha",
+          "input": "(_^)_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Destructo Disc",
           "input": "_4_2_1_+_P"
         },
         {
@@ -441,19 +323,9 @@
           "input": "_6_3_2_+_P"
         },
         {
-          "category": "_@",
-          "name": "Stretching Arm",
-          "input": "_6_2_3_+_P"
-        },
-        {
           "category": "_*",
-          "name": "Planet Burst",
-          "input": "_2_3_6_2_3_6_+^c"
-        },
-        {
-          "category": "_!",
-          "name": "Human Extinction Attack",
-          "input": "_4_1_2_8_+^Z"
+          "name": "Scatter Kienzan",
+          "input": "_2_3_6_2_3_6_+^E"
         }
       ]
     },
@@ -463,12 +335,12 @@
         {
           "category": "_)",
           "name": "Heavy Strike",
-          "input": "_6_+^c"
+          "input": "_6_+^E"
         },
         {
           "category": "_)",
           "name": "Low Strike",
-          "input": "_2_+^c"
+          "input": "_2_+^E"
         },
         {
           "category": "_@",
@@ -498,12 +370,7 @@
         {
           "category": "_*",
           "name": "Death Ball",
-          "input": "_2_3_6_2_3_6_+^c"
-        },
-        {
-          "category": "_!",
-          "name": "Supernova",
-          "input": "_4_1_2_8_+^Z"
+          "input": "_2_3_6_2_3_6_+^E"
         }
       ]
     },
@@ -513,12 +380,12 @@
         {
           "category": "_)",
           "name": "Heavy Strike",
-          "input": "_6_+^c"
+          "input": "_6_+^E"
         },
         {
           "category": "_)",
           "name": "Low Strike",
-          "input": "_2_+^c"
+          "input": "_2_+^E"
         },
         {
           "category": "_@",
@@ -527,7 +394,7 @@
         },
         {
           "category": "_@",
-          "name": "Special Beam Cannon",
+          "name": "Makankosappo",
           "input": "_4_1_2_3_6_+_P"
         },
         {
@@ -548,17 +415,142 @@
         {
           "category": "_*",
           "name": "Solar Kamehameha",
-          "input": "_2_3_6_2_3_6_+^c"
+          "input": "_2_3_6_2_3_6_+^E"
+        }
+      ]
+    },
+    {
+      "name": "ANDROID 18",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Heavy Strike",
+          "input": "_6_+^E"
         },
         {
-          "category": "_!",
-          "name": "Self-Destruct",
-          "input": "_4_1_2_8_+^Z"
+          "category": "_)",
+          "name": "Low Strike",
+          "input": "_2_+^E"
         },
         {
-          "category": "_!",
-          "name": "Perfect Barrier",
-          "input": "_2_1_4_6_+^Z"
+          "category": "_@",
+          "name": "Ki Blast",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Low Ki Blast",
+          "input": "(_^)_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Energy Wave",
+          "input": "_4_2_1_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Ki Burst",
+          "input": "_4_2_1_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Rushing Attack",
+          "input": "_6_3_2_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Accel Dance",
+          "input": "_2_3_6_2_3_6_+^E"
+        }
+      ]
+    },
+    {
+      "name": "CAPTAIN GINYU",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Heavy Strike",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Low Strike",
+          "input": "_2_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Ki Blast",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Low Ki Blast",
+          "input": "(_^)_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Body Change",
+          "input": "_4_2_1_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Ki Burst",
+          "input": "_4_2_1_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Rushing Attack",
+          "input": "_6_3_2_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Milky Cannon",
+          "input": "_2_3_6_2_3_6_+^E"
+        }
+      ]
+    },
+    {
+      "name": "RECOOME",
+      "moves": [
+        {
+          "category": "_)",
+          "name": "Heavy Strike",
+          "input": "_6_+^E"
+        },
+        {
+          "category": "_)",
+          "name": "Low Strike",
+          "input": "_2_+^E"
+        },
+        {
+          "category": "_@",
+          "name": "Recoome Eraser Gun",
+          "input": "_2_3_6_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Low Eraser Gun",
+          "input": "(_^)_2_3_6_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Recoome Kick",
+          "input": "_4_2_1_+_K"
+        },
+        {
+          "category": "_@",
+          "name": "Ki Burst",
+          "input": "_4_2_1_+_P"
+        },
+        {
+          "category": "_@",
+          "name": "Rushing Attack",
+          "input": "_6_3_2_+_P"
+        },
+        {
+          "category": "_*",
+          "name": "Recoome Bomber",
+          "input": "_2_3_6_2_3_6_+^E"
         }
       ]
     }
@@ -566,16 +558,19 @@
   "controlAbbr": {
     "^E": "P",
     "^H": "K",
-    "^c": "HP",
-    "^Z": "KI",
+    "^c": "FL",
     "_S": "ST"
   },
   "systemControlMappings": {
-    "snes": {
-      "y": "^E",
+    "genesis": {
+      "a": "^E",
       "b": "^H",
-      "x": "^c",
-      "a": "^Z"
+      "c": "^c"
+    },
+    "megadrive": {
+      "a": "^E",
+      "b": "^H",
+      "c": "^c"
     }
   }
 }

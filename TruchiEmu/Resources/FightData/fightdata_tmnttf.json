@@ -9,12 +9,13 @@
   "name": "Teenage Mutant Ninja Turtles - Tournament Fighters",
   "year": 1994,
   "manufacturer": "Konami",
-  "credits": "TruchiEmu",
   "controls": {
-    "^E": "Attack",
-    "^H": "Jump",
-    "^G": "Special",
-    "_S": "Start"
+    "^E": "Weak Punch",
+    "^F": "Strong Punch",
+    "^H": "Weak Kick",
+    "^I": "Strong Kick",
+    "_S": "Start",
+    "^Z": "Special Killer"
   },
   "categories": {
     "_(": "Normal Throws",
@@ -25,18 +26,23 @@
   "commonCommands": [
     {
       "category": "_)",
-      "name": "Strong Attack (hold toward opponent)",
-      "input": "_6_+^E"
+      "name": "Block",
+      "input": "_4"
+    },
+    {
+      "category": "_)",
+      "name": "Strong Punch (hold toward opponent)",
+      "input": "_6_+^F"
     },
     {
       "category": "_)",
       "name": "Strong Kick (hold toward opponent)",
-      "input": "_6_+^H"
+      "input": "_6_+^I"
     },
     {
       "category": "_*",
-      "name": "Killer Attack (low health, red gauge)",
-      "input": "_6_+^G"
+      "name": "Killer Attack (low health, L+R)",
+      "input": "^Z"
     }
   ],
   "characters": [
@@ -76,7 +82,7 @@
         {
           "category": "_*",
           "name": "Killer Blade (low health)",
-          "input": "_6_+^G"
+          "input": "^Z"
         }
       ]
     },
@@ -116,7 +122,7 @@
         {
           "category": "_*",
           "name": "Killer Nunchaku (low health)",
-          "input": "_6_+^G"
+          "input": "^Z"
         }
       ]
     },
@@ -156,7 +162,7 @@
         {
           "category": "_*",
           "name": "Killer Staff (low health)",
-          "input": "_6_+^G"
+          "input": "^Z"
         }
       ]
     },
@@ -196,7 +202,7 @@
         {
           "category": "_*",
           "name": "Killer Sai (low health)",
-          "input": "_6_+^G"
+          "input": "^Z"
         }
       ]
     },
@@ -236,7 +242,7 @@
         {
           "category": "_*",
           "name": "Killer Hockey (low health)",
-          "input": "_6_+^G"
+          "input": "^Z"
         }
       ]
     },
@@ -271,12 +277,12 @@
         {
           "category": "_@",
           "name": "Camera Flash",
-          "input": "_4_6_+^G"
+          "input": "_4_6_+^F"
         },
         {
           "category": "_*",
           "name": "Killer Kick (low health)",
-          "input": "_6_+^G"
+          "input": "^Z"
         }
       ]
     },
@@ -316,7 +322,7 @@
         {
           "category": "_*",
           "name": "Killer Ray (low health)",
-          "input": "_6_+^G"
+          "input": "^Z"
         }
       ]
     },
@@ -356,7 +362,7 @@
         {
           "category": "_*",
           "name": "Killer Beetle (low health)",
-          "input": "_6_+^G"
+          "input": "^Z"
         }
       ]
     },
@@ -386,7 +392,7 @@
         {
           "category": "_@",
           "name": "Energy Beam",
-          "input": "_2_3_6_+^G"
+          "input": "_2_3_6_+^F"
         },
         {
           "category": "_@",
@@ -396,7 +402,7 @@
         {
           "category": "_*",
           "name": "Killer Charge (low health)",
-          "input": "_6_+^G"
+          "input": "^Z"
         }
       ]
     },
@@ -426,7 +432,7 @@
         {
           "category": "_@",
           "name": "Plasma Blast",
-          "input": "_2_3_6_+^G"
+          "input": "_2_3_6_+^F"
         },
         {
           "category": "_@",
@@ -436,7 +442,7 @@
         {
           "category": "_*",
           "name": "Killer Android (low health)",
-          "input": "_6_+^G"
+          "input": "^Z"
         }
       ]
     },
@@ -476,35 +482,45 @@
         {
           "category": "_*",
           "name": "Killer Blade (low health)",
-          "input": "_6_+^G"
+          "input": "^Z"
         }
       ]
     }
   ],
   "controlAbbr": {
-    "^E": "AT",
-    "^H": "JP",
-    "^G": "SP",
-    "_S": "ST"
+    "^E": "LP",
+    "^F": "HP",
+    "^H": "LK",
+    "^I": "HK",
+    "_S": "ST",
+    "^Z": "KL"
   },
   "systemControlMappings": {
+    "snes": {
+      "y": "^E",
+      "x": "^F",
+      "b": "^H",
+      "a": "^I"
+    },
     "genesis": {
       "b": "^E",
       "a": "^H",
-      "c": "^G"
+      "c": "^F"
     },
     "megadrive": {
       "b": "^E",
       "a": "^H",
-      "c": "^G"
+      "c": "^F"
     }
   },
   "controlGroups": {
     "_P": [
-      "^E"
+      "^E",
+      "^F"
     ],
     "_K": [
-      "^H"
+      "^H",
+      "^I"
     ]
   }
 }

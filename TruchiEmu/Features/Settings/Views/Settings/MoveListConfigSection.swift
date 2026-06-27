@@ -8,6 +8,7 @@ struct MoveListConfigSection: View {
     @State private var inputTimeout: Double = AppSettings.getDouble("moveListInputTimeout", defaultValue: 1.0)
     @State private var chargeThreshold: Double = AppSettings.getDouble("moveListChargeThreshold", defaultValue: 0.8)
     @State private var maxMoves: Int = AppSettings.getInt("moveListMaxMoves", defaultValue: 5)
+    @State private var buttonDisplayMode: ButtonDisplayMode = ButtonDisplayMode.current
 
     var body: some View {
         Group {
@@ -63,6 +64,19 @@ struct MoveListConfigSection: View {
                 Text(loc.localized("settings.moveList.showMoveNamesDesc"))
                     .font(.caption)
                     .foregroundStyle(AppColors.textSecondary(colorScheme))
+
+                Picker(loc.localized("settings.moveList.buttonDisplayMode"), selection: $buttonDisplayMode) {
+                    ForEach(ButtonDisplayMode.allCases, id: \.self) { mode in
+                        Text(loc.localized("settings.moveList.buttonDisplay.\(mode.rawValue)"))
+                            .tag(mode)
+                    }
+                }
+                .onChange(of: buttonDisplayMode) { _, newValue in
+                    AppSettings.set(ButtonDisplayMode.settingsKey, value: newValue.rawValue)
+                }
+                Text(loc.localized("settings.moveList.buttonDisplayModeDesc"))
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
             }
         }
         .onAppear {
@@ -70,6 +84,7 @@ struct MoveListConfigSection: View {
             inputTimeout = AppSettings.getDouble("moveListInputTimeout", defaultValue: 1.0)
             chargeThreshold = AppSettings.getDouble("moveListChargeThreshold", defaultValue: 0.8)
             maxMoves = AppSettings.getInt("moveListMaxMoves", defaultValue: 5)
+            buttonDisplayMode = ButtonDisplayMode.current
         }
     }
 
