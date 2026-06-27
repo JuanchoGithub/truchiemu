@@ -5,10 +5,8 @@ struct HotkeyConfigSettingsView: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var hotkeyManager = HotkeyConfigManager.shared
-    @ObservedObject private var navConfigManager = GamepadNavConfigManager.shared
     @State private var listeningAction: HotkeyAction?
     @State private var listeningSlot: KeySlot = .primary
-    @State private var listeningGamepadAction: GamepadNavAction?
     @Binding var searchText: String
 
     enum KeySlot { case primary, secondary }
@@ -55,25 +53,6 @@ struct HotkeyConfigSettingsView: View {
                 }
             }
 
-            if !isSearching || matchesSearch("gamepad navigation controller buttons joystick enable") {
-                Section(header: Label(loc.localized("gamepadNav.section"), systemImage: "gamecontroller")) {
-                    Toggle(loc.localized("gamepadNav.enableJoystickNavigation"), isOn: $navConfigManager.isEnabled)
-
-                    gamepadNavRow(.navigateUp)
-                    gamepadNavRow(.navigateDown)
-                    gamepadNavRow(.navigateLeft)
-                    gamepadNavRow(.navigateRight)
-                    gamepadNavRow(.select)
-                    gamepadNavRow(.cancel)
-
-                    NavigationLink {
-                        GamepadNavConfigSettingsView(searchText: $searchText)
-                    } label: {
-                        Text(loc.localized("gamepadNav.configureButtonBindings"))
-                    }
-                }
-            }
-
             if !isSearching || matchesSearch("reset defaults restore") {
                 Section(header: Label(loc.localized("hotkeys.reset"), systemImage: "arrow.counterclockwise")) {
                     Text(loc.localized("hotkeys.resetDescription"))
@@ -107,7 +86,6 @@ struct HotkeyConfigSettingsView: View {
         matchesSearch("hotkeys keyboard shortcuts save load slot undo training input capture") ||
         matchesSearch("slots 0-9 slot") ||
         matchesSearch("training mode reset recording playback tape") ||
-        matchesSearch("gamepad navigation controller buttons joystick enable") ||
         matchesSearch("reset defaults restore")
     }
 
@@ -152,31 +130,6 @@ struct HotkeyConfigSettingsView: View {
                     },
                     onClear: {
                         hotkeyManager.update(action, secondary: .none)
-                    }
-                )
-            }
-        }
-    }
-
-    @ViewBuilder
-    private func gamepadNavRow(_ action: GamepadNavAction) -> some View {
-        let cfg = navConfigManager.config[action] ?? .unbound
-
-        LabeledContent(loc.localized(action.localizationKey)) {
-            HStack(spacing: AppSpacing.xs) {
-                GamepadCaptureButton(
-                    binding: cfg.binding,
-                    isListening: listeningGamepadAction == action,
-                    conflicts: navConfigManager.findConflicts(for: cfg.binding, excluding: action),
-                    onCapture: { captured in
-                        navConfigManager.update(action, binding: captured)
-                        listeningGamepadAction = nil
-                    },
-                    onStartListening: {
-                        listeningGamepadAction = action
-                    },
-                    onClear: {
-                        navConfigManager.update(action, binding: .unbound)
                     }
                 )
             }

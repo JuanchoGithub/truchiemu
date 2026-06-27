@@ -334,7 +334,6 @@
 		452E0E7F7A9630C725D08395 /* RetroAchievementsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 335FB3D776E0D41A27C64844 /* RetroAchievementsSettingsView.swift */; };
 		4596D0538A126CE340A86004 /* Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = 312DD29D6B77A5CC9B13F942 /* Header.swift */; };
 		45B66EECA434F3285FEC8AED /* Shader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CE8DDABCE1ABFA58C62123 /* Shader.swift */; };
-		45B68769E7524D44F479D83F /* GamepadNavConfigSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77D34E53FD49567030C34BD1 /* GamepadNavConfigSettingsView.swift */; };
 		469AF9FDF3E5581B31C6C69C /* input_coreLabels_gw.json in Resources */ = {isa = PBXBuildFile; fileRef = 8E892D0AA9633E0476542B9F /* input_coreLabels_gw.json */; };
 		472E426C725F6C13D0B30C4A /* input_coreLabels_ecwolf.json in Resources */ = {isa = PBXBuildFile; fileRef = 59CBFB7172EA714171C66600 /* input_coreLabels_ecwolf.json */; };
 		47ADA0A8A9AC4FAC0E2E5F63 /* fightdata_tektagt.json in Resources */ = {isa = PBXBuildFile; fileRef = 573ADD6C067C3C9C9F87EE3E /* fightdata_tektagt.json */; };
@@ -1793,7 +1792,6 @@
 		7770154FE83C4EC74BDB3637 /* fightdata_doa2m.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_doa2m.json; sourceTree = "<group>"; };
 		777DF1A6A32231E6384B7DF4 /* input_coreLabels_bluemsx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_bluemsx.json; sourceTree = "<group>"; };
 		77B28CDDCE43182179E6F8EE /* fightdata_bloodstm.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_bloodstm.json; sourceTree = "<group>"; };
-		77D34E53FD49567030C34BD1 /* GamepadNavConfigSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamepadNavConfigSettingsView.swift; sourceTree = "<group>"; };
 		78131EAC3F8B4141AAFC799F /* LOWRESNX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LOWRESNX.png; sourceTree = "<group>"; };
 		782632B65454EB0AC251613D /* duckstation_libretro_default.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = duckstation_libretro_default.json; sourceTree = "<group>"; };
 		794825E4A27DACE1EB61F442 /* easyrpg@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "easyrpg@132w.png"; sourceTree = "<group>"; };
@@ -4049,7 +4047,6 @@
 				50F0C395AC7AC42E3144C256 /* CoreSettingsViewGroup.swift */,
 				2E230D511858D1AC3B20502D /* DisplaySettingsView.swift */,
 				17ACE1CD476919F03307CB20 /* ExtractedROMCacheSettingsView.swift */,
-				77D34E53FD49567030C34BD1 /* GamepadNavConfigSettingsView.swift */,
 				B0135BC846E6477A8389B7FC /* GeneralSettingsView.swift */,
 				B5E3E5DB793CCE1800B8C7BE /* GenreSettingsView.swift */,
 				D12FCF47C4E8A17755ADDBE1 /* HelpSettingsView.swift */,
@@ -5531,7 +5528,6 @@
 				886D1903700E00DE7F11523C /* GameNameFormatter.swift in Sources */,
 				27F9277272450FDAE20B690D /* GameOverlayToolbar.swift in Sources */,
 				D32BA18DB9ED9FDA4A25A07E /* GamepadNavConfig.swift in Sources */,
-				45B68769E7524D44F479D83F /* GamepadNavConfigSettingsView.swift in Sources */,
 				F1076B7F46B13D1B6099B623 /* GamepadNavContext.swift in Sources */,
 				1ACE2B4563E908571208698E /* GamepadNavCoordinator.swift in Sources */,
 				22D45EF6813F1B4ADDD34BAD /* GamepadNavigationManager.swift in Sources */,
