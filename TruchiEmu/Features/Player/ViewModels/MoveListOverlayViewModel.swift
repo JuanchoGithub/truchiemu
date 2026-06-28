@@ -455,7 +455,8 @@ class MoveListOverlayViewModel: ObservableObject {
         lastForestCompleted = completedMoves
 
         let candidateIds = Set(inProgress.keys)
-        let matching = allMoves.filter { candidateIds.contains($0.id) }
+        var matching = allMoves.filter { candidateIds.contains($0.id) }
+        matching = filterSuffixContainedMoves(matching, inProgress: inProgress)
         let sorted = matching.sorted { moveRank($0, isFavorite: favoriteIds.contains($0.id), hasInput: true) > moveRank($1, isFavorite: favoriteIds.contains($1.id), hasInput: true) }
 
         if let longest = allMoves.filter({ completedMoves.contains($0.id) }).max(by: { $0.totalSteps < $1.totalSteps }) {
@@ -607,6 +608,52 @@ class MoveListOverlayViewModel: ObservableObject {
         if steps.contains(where: { $0.isMotion360 }) { return true }
         let dirs = steps.compactMap { $0.direction }
         return dirs.contains { ![5].contains($0) } && dirs.count >= 7
+    }
+
+    private static func isSuffixContained(_ short: ResolvedMove, of long: ResolvedMove) -> Bool {
+        for shortSteps in short.parsedSteps {
+            for longSteps in long.parsedSteps {
+                guard shortSteps.count < longSteps.count else { continue }
+                let suffixStart = longSteps.count - shortSteps.count
+                var match = true
+                for i in 0..<shortSteps.count {
+                    let s = shortSteps[i]
+                    let l = longSteps[suffixStart + i]
+                    if s.direction != l.direction || s.buttons != l.buttons {
+                        match = false
+                        break
+                    }
+                }
+                if match { return true }
+                else {
+                    let suffixStart2 = longSteps.count - shortSteps.count
+                    for i in 0..<shortSteps.count {
+                        let s = shortSteps[i]
+                        let l = longSteps[suffixStart2 + i]
+                        print("[suffixFilter]   step[\(i)] short: dir=\(s.direction ?? -1) btns=\(s.buttons)  long: dir=\(l.direction ?? -1) btns=\(l.buttons)")
+                    }
+                }
+            }
+        }
+        return false
+    }
+
+    private func filterSuffixContainedMoves(_ moves: [ResolvedMove], inProgress: [String: (matched: Int, total: Int)]) -> [ResolvedMove] {
+        var hidden = Set<String>()
+        for short in moves {
+            for long in moves where long.id != short.id {
+                let longMatched = inProgress[long.id]?.matched ?? 0
+                let suffixResult = Self.isSuffixContained(short, of: long)
+                print("[suffixFilter] short='\(short.name)'(\(short.totalSteps)steps) long='\(long.name)'(\(long.totalSteps)steps) longMatched=\(longMatched) suffixResult=\(suffixResult)")
+                guard long.totalSteps > short.totalSteps,
+                      longMatched > 0,
+                      suffixResult else { continue }
+                print("[suffixFilter] HIDING '\(short.name)' — suffix-contained in '\(long.name)'")
+                hidden.insert(short.id)
+                break
+            }
+        }
+        return moves.filter { !hidden.contains($0.id) }
     }
 
     private func buildTokens(for move: FightDataMove) -> [NotationToken] {
