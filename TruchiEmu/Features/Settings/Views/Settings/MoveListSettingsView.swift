@@ -122,6 +122,8 @@ private struct MoveListOverviewView: View {
     @State private var inputTimeout: Double = AppSettings.getDouble("moveListInputTimeout", defaultValue: 1.0)
     @State private var chargeThreshold: Double = AppSettings.getDouble("moveListChargeThreshold", defaultValue: 0.8)
     @State private var maxMoves: Int = AppSettings.getInt("moveListMaxMoves", defaultValue: 5)
+    @State private var buttonDisplayMode: ButtonDisplayMode = ButtonDisplayMode.current
+    @State private var showMoveNames: Bool = AppSettings.getBool("moveListShowMoveNames", defaultValue: false)
 
     var body: some View {
         Form {
@@ -214,6 +216,27 @@ private struct MoveListOverviewView: View {
                 AppSettings.setInt("moveListMaxMoves", value: newValue)
             }
             Text(loc.localized("settings.moveList.maxMovesDesc"))
+                .font(.caption)
+                .foregroundStyle(AppColors.textSecondary(colorScheme))
+
+            Toggle(loc.localized("settings.moveList.showMoveNames"), isOn: $showMoveNames)
+                .onChange(of: showMoveNames) { _, newValue in
+                    AppSettings.setBool("moveListShowMoveNames", value: newValue)
+                }
+            Text(loc.localized("settings.moveList.showMoveNamesDesc"))
+                .font(.caption)
+                .foregroundStyle(AppColors.textSecondary(colorScheme))
+
+            Picker(loc.localized("settings.moveList.buttonDisplayMode"), selection: $buttonDisplayMode) {
+                ForEach(ButtonDisplayMode.allCases, id: \.self) { mode in
+                    Text(loc.localized("settings.moveList.buttonDisplay.\(mode.rawValue)"))
+                        .tag(mode)
+                }
+            }
+            .onChange(of: buttonDisplayMode) { _, newValue in
+                AppSettings.set(ButtonDisplayMode.settingsKey, value: newValue.rawValue)
+            }
+            Text(loc.localized("settings.moveList.buttonDisplayModeDesc"))
                 .font(.caption)
                 .foregroundStyle(AppColors.textSecondary(colorScheme))
         }

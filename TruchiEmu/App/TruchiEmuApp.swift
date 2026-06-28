@@ -24,6 +24,7 @@ static let showChangelogFromMenu = Notification.Name("showChangelogFromMenu")
 	static let openHelpWindow = Notification.Name("openHelpWindow")
 	static let openGameAchievements = Notification.Name("openGameAchievements")
 	static let navigateToAchievements = Notification.Name("navigateToAchievements")
+	static let resetMoveListOverlayPosition = Notification.Name("resetMoveListOverlayPosition")
   }
 
 @main

@@ -9,6 +9,7 @@ class TrainingModeOverlayViewModel: ObservableObject {
     @Published var p2InputHistory: [InputHistoryEntry] = []
     @Published var activeCardInfo: String? = nil
     @Published var p2JoinPhase: Int = 0
+    @Published var enabledCharacterName: String? = nil
 
     private let storageService = MoveListStorageService.shared
     private var joinPhaseTimer: Timer?
@@ -64,6 +65,9 @@ class TrainingModeOverlayViewModel: ObservableObject {
     var isMenuVisible: Bool { manager.isMenuVisible }
 
     var onCloseOverlay: (() -> Void)?
+    var onMoveListSettingsChanged: (() -> Void)?
+    var onResetOverlayPosition: (() -> Void)?
+    var toolbarBottomMargin: CGFloat = 60
 
     var controlMode: TrainingControlMode {
         get { manager.config.controlMode }
@@ -301,6 +305,7 @@ class TrainingModeOverlayViewModel: ObservableObject {
     var hasGameData: Bool { manager.currentGameData != nil }
 
     var onSelectCharacterAndShowMoves: (() -> Void)?
+    var onDeselectCharacter: (() -> Void)?
 
     private var gameName: String? { manager.currentGameData?.name }
 
@@ -358,8 +363,14 @@ class TrainingModeOverlayViewModel: ObservableObject {
     }
 
     func selectCharacterAndShowMoves(_ character: FightDataCharacter) {
+        if enabledCharacterName == character.name {
+            enabledCharacterName = nil
+            MoveListService.shared.clearSelectedCharacter()
+            onDeselectCharacter?()
+            return
+        }
+        enabledCharacterName = character.name
         MoveListService.shared.selectCharacter(character)
-        expandedCharacterId = nil
         onSelectCharacterAndShowMoves?()
     }
 

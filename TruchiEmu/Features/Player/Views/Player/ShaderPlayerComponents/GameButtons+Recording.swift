@@ -69,6 +69,7 @@ struct RecordStreamButton: View {
                 Text(defaultLabel)
                     .font(.system(size: 10, weight: .medium))
                     .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 6)

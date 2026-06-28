@@ -25,7 +25,7 @@ struct TrainingModeOverlay: View {
             .background(AppColors.cardBackground(colorScheme))
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .shadow(color: .black.opacity(0.6), radius: 20, x: 0, y: 10)
-            .padding(.bottom, 48)
+            .padding(.bottom, viewModel.toolbarBottomMargin)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .allowsHitTesting(viewModel.isMenuVisible)
@@ -917,13 +917,50 @@ struct TrainingSettingsTab: View {
     @ObservedObject var viewModel: TrainingModeOverlayViewModel
     @ObservedObject private var loc = LocalizationManager.shared
     @Environment(\.colorScheme) private var colorScheme
+    @State private var buttonDisplayMode: ButtonDisplayMode = ButtonDisplayMode.current
+    @State private var showMoveNames: Bool = AppSettings.getBool("moveListShowMoveNames", defaultValue: false)
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             resetPositionSection
+            overlayPositionSection
             healthRegenSection
             superMeterSection
             hotkeySection
+            buttonDisplaySection
+        }
+    }
+
+    private var buttonDisplaySection: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(loc.localized("settings.moveList.display"))
+                .font(.subheadline)
+                .fontWeight(.semibold)
+                .foregroundColor(AppColors.textPrimary(colorScheme))
+
+            Toggle(loc.localized("settings.moveList.showMoveNames"), isOn: $showMoveNames)
+                .onChange(of: showMoveNames) { _, newValue in
+                    AppSettings.setBool("moveListShowMoveNames", value: newValue)
+                    viewModel.onMoveListSettingsChanged?()
+                }
+
+            Picker(loc.localized("settings.moveList.buttonDisplayMode"), selection: $buttonDisplayMode) {
+                Text(loc.localized("settings.moveList.buttonDisplay.symbol"))
+                    .tag(ButtonDisplayMode.symbol)
+                Text(loc.localized("settings.moveList.buttonDisplay.consoleButton"))
+                    .tag(ButtonDisplayMode.consoleButton)
+                Text(loc.localized("settings.moveList.buttonDisplay.inputKey"))
+                    .tag(ButtonDisplayMode.inputKey)
+            }
+            .pickerStyle(.menu)
+            .tint(AppColors.brandAccent)
+            .onChange(of: buttonDisplayMode) { _, newValue in
+                AppSettings.set(ButtonDisplayMode.settingsKey, value: newValue.rawValue)
+                viewModel.onMoveListSettingsChanged?()
+            }
+            Text(loc.localized("settings.moveList.buttonDisplayModeDesc"))
+                .font(.caption)
+                .foregroundColor(AppColors.textTertiary(colorScheme))
         }
     }
 
@@ -1034,6 +1071,26 @@ struct TrainingSettingsTab: View {
         }
     }
 
+    private var overlayPositionSection: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(loc.localized("training.overlayPosition"))
+                .font(.subheadline)
+                .fontWeight(.semibold)
+                .foregroundColor(AppColors.textPrimary(colorScheme))
+
+            Button {
+                viewModel.onResetOverlayPosition?()
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "arrow.counterclockwise")
+                    Text(loc.localized("training.resetOverlayPosition"))
+                }
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.small)
+        }
+    }
+
     private var hotkeySection: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(loc.localized("training.hotkeys"))
@@ -1136,6 +1193,7 @@ struct TrainingDisplayTab: View {
         let layout = manager.currentArcadeLayout
         let systemID = manager.currentSystemID
         let sysCtrlMap = gameData?.systemControlMappings
+        let displayMode = ButtonDisplayMode.current
 
         var tokens: [NotationToken] = []
         let sorted = nonDirButtons.sorted(by: { $0.rawValue < $1.rawValue })
@@ -1144,7 +1202,19 @@ struct TrainingDisplayTab: View {
             guard let fdKey = ArcadeButtonMapper.shared.fightDataKey(for: btn, layout: layout, systemID: systemID, systemControlMappings: sysCtrlMap) else { continue }
             if !first { tokens.append(.separator) }
             first = false
-            tokens.append(.button(MoveNotationRenderer.resolveButtonType(fdKey, gameData: gameData)))
+            let btnType = MoveNotationRenderer.resolveButtonType(fdKey, gameData: gameData)
+            switch displayMode {
+            case .symbol:
+                tokens.append(.button(btnType))
+            case .consoleButton:
+                tokens.append(.buttonKeyLabel(btnType, keyLabel: btn.rawValue.uppercased()))
+            case .inputKey:
+                if let kl = ButtonKeyResolver.keyLabel(for: fdKey, systemID: systemID, layout: layout, systemControlMappings: sysCtrlMap) {
+                    tokens.append(.buttonKeyLabel(btnType, keyLabel: kl))
+                } else {
+                    tokens.append(.button(btnType))
+                }
+            }
         }
         return tokens
     }
@@ -1243,29 +1313,30 @@ struct TrainingMovesTab: View {
     @ViewBuilder
     private func characterRow(_ character: FightDataCharacter) -> some View {
         let isExpanded = viewModel.expandedCharacterId == character.id
+        let isEnabled = viewModel.enabledCharacterName == character.name
 
         VStack(spacing: 0) {
             HStack(spacing: 8) {
                 Image(systemName: "person.fill")
                     .font(.system(size: 12))
-                    .foregroundColor(AppColors.brandAccent)
-                    .onTapGesture {
-                        viewModel.selectCharacterAndShowMoves(character)
-                    }
+                    .foregroundColor(isEnabled ? AppColors.brandAccent : AppColors.textSecondaryNeutral(colorScheme))
 
                 Text(character.name)
                     .font(.subheadline)
                     .fontWeight(.medium)
-                    .foregroundColor(AppColors.textPrimary(colorScheme))
-                    .onTapGesture {
-                        viewModel.selectCharacterAndShowMoves(character)
-                    }
+                    .foregroundColor(isEnabled ? AppColors.brandAccent : AppColors.textPrimary(colorScheme))
 
                 Spacer()
 
+                if isEnabled {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 11))
+                        .foregroundColor(AppColors.brandAccent)
+                }
+
                 let sections = viewModel.sectionsForCharacter(character)
                 let enabledCount = sections.filter { viewModel.isSectionEnabled(characterName: character.name, section: $0) }.count
-                if enabledCount < sections.count {
+                if enabledCount < sections.count && !isEnabled {
                     Text(verbatim: "\(enabledCount)/\(sections.count)")
                         .font(.caption2)
                         .foregroundColor(AppColors.textTertiary(colorScheme))
@@ -1287,11 +1358,15 @@ struct TrainingMovesTab: View {
                         )
                 }
                 .buttonStyle(.plain)
+                .allowsHitTesting(true)
             }
             .padding(.vertical, 10)
             .padding(.horizontal, 12)
             .contentShape(Rectangle())
-            .background(AppColors.cardBackground(colorScheme).opacity(0.3))
+            .onTapGesture {
+                viewModel.selectCharacterAndShowMoves(character)
+            }
+            .background(isEnabled ? AppColors.brandAccent.opacity(0.15) : AppColors.cardBackground(colorScheme).opacity(0.3))
             .cornerRadius(6)
 
             if isExpanded {

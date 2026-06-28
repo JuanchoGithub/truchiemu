@@ -42,6 +42,36 @@ enum ButtonKeyResolver {
         return labels
     }
 
+    static func consoleButtonLabel(
+        for fightDataKey: String,
+        systemID: String,
+        layout: ArcadeLayout,
+        systemControlMappings: [String: [String: String]]?
+    ) -> String? {
+        let retroBtn = ArcadeButtonMapper.shared.retroButton(
+            for: fightDataKey,
+            layout: layout,
+            systemID: systemID,
+            systemControlMappings: systemControlMappings
+        )
+        return retroBtn?.rawValue.uppercased()
+    }
+
+    static func allConsoleButtonLabels(
+        fightDataKeys: [String],
+        systemID: String,
+        layout: ArcadeLayout,
+        systemControlMappings: [String: [String: String]]?
+    ) -> [String: String] {
+        var labels: [String: String] = [:]
+        for key in fightDataKeys {
+            if let label = consoleButtonLabel(for: key, systemID: systemID, layout: layout, systemControlMappings: systemControlMappings) {
+                labels[key] = label
+            }
+        }
+        return labels
+    }
+
     private static func resolveKeyboardLabel(retroBtn: RetroButton, systemID: String) -> String? {
         let mapping = ControllerService.shared.keyboardMapping(for: systemID)
         guard let keyCode = mapping.buttons[retroBtn] else { return nil }

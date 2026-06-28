@@ -15,6 +15,7 @@ struct MoveDataCharactersView: View {
     @State private var newCharName = ""
     @State private var fightDataGame: FightDataGame?
     @State private var showDeleteConfirmation: String?
+
     var body: some View {
         VStack(spacing: 0) {
             navBar
@@ -75,8 +76,6 @@ struct MoveDataCharactersView: View {
             .buttonStyle(.plain)
             .foregroundStyle(AppColors.brandAccent)
 
-            Spacer()
-
             Text(loc.localized("settings.moveList.charactersTitle"))
                 .font(.system(size: 13, weight: .medium))
                 .foregroundStyle(AppColors.textSecondary(colorScheme))
@@ -90,7 +89,6 @@ struct MoveDataCharactersView: View {
                 }
                 .buttonStyle(.plain)
                 .foregroundStyle(.green)
-
             }
         }
         .padding(.horizontal, AppSpacing.lg)
@@ -131,6 +129,11 @@ struct MoveDataCharactersView: View {
                             .buttonStyle(.plain)
 
                             Menu {
+                                Button {
+                                    onSelectCharacter(character.name)
+                                } label: {
+                                    Label("Edit Moves", systemImage: "square.and.pencil")
+                                }
                                 Button {
                                     storageService.toggleCharacterHidden(gameName: gameName, characterName: character.name)
                                 } label: {
@@ -371,6 +374,7 @@ private struct CharacterRowView: View {
                 .clipShape(Capsule())
         }
         .padding(.vertical, AppSpacing.xxs)
+        .padding(.horizontal, AppSpacing.sm)
         .opacity(isHidden ? 0.5 : 1)
         .contentShape(Rectangle())
     }

@@ -194,9 +194,11 @@ final class NotationTokenImageCache {
                 let paragraphStyle = NSMutableParagraphStyle()
                 paragraphStyle.alignment = .center
                 let fontSize = keyLabel.count > 3 ? size * 0.22 : (keyLabel.count > 2 ? size * 0.28 : size * 0.38)
+                // Use dimmed color when highlighted (fill is bright) for contrast, bright when not highlighted (fill is dim)
+                let textColor = buttonColors(btnType, highlighted: !highlighted).0
                 let attrs: [NSAttributedString.Key: Any] = [
                     .font: NSFont.systemFont(ofSize: fontSize, weight: .bold),
-                    .foregroundColor: NSColor.white.withAlphaComponent(highlighted ? 0.95 : 0.5),
+                    .foregroundColor: textColor.withAlphaComponent(highlighted ? 0.95 : 0.7),
                     .paragraphStyle: paragraphStyle,
                 ]
                 let str = NSAttributedString(string: keyLabel, attributes: attrs)

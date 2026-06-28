@@ -161,6 +161,7 @@ struct ToolbarButton: View {
                 Text(label)
                 .font(.system(size: 10, weight: .medium))
                 .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
@@ -189,6 +190,8 @@ struct PauseResumeButton: View {
                 .font(.system(size: 16, weight: .semibold))
                 Text(runner.isPaused ? loc.localized("toolbar.resume") : loc.localized("toolbar.pause"))
                 .font(.system(size: 10, weight: .medium))
+                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
@@ -211,6 +214,7 @@ struct FullscreenButton: View {
                 Text(windowController.isFullscreen ? loc.localized("toolbar.exitFullscreen") : loc.localized("toolbar.fullscreen"))
                 .font(.system(size: 10, weight: .medium))
                 .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
@@ -231,6 +235,8 @@ struct RestartButton: View {
                     .font(.system(size: 16, weight: .semibold))
                 Text(loc.localized("toolbar.restart"))
                     .font(.system(size: 10, weight: .medium))
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
@@ -253,6 +259,7 @@ struct AutoFullscreenButton: View {
                 Text(loc.localized("toolbar.autoFullscreen"))
                 .font(.system(size: 10, weight: .medium))
                 .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
@@ -438,6 +445,7 @@ struct FightTrainingToolbarButton: View {
                     Text(loc.localized("toolbar.fightTraining"))
                         .font(.system(size: 10, weight: .medium))
                         .lineLimit(1)
+                        .fixedSize(horizontal: true, vertical: false)
                 }
                 .padding(.horizontal, 10)
                 .padding(.vertical, 6)
@@ -464,13 +472,14 @@ VStack(spacing: 4) {
 Image(systemName: "book")
 .font(.system(size: 16, weight: .semibold))
 Text(loc.localized("toolbar.gameGuide"))
-.font(.system(size: 10, weight: .medium))
-.lineLimit(1)
-}
-.padding(.horizontal, 10)
-.padding(.vertical, 6)
-}
-.foregroundColor(isActive ? AppColors.brandAccent : .white)
+                    .font(.system(size: 10, weight: .medium))
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                }
+                .foregroundColor(isActive ? AppColors.brandAccent : .white)
 }
 }
 }

@@ -229,6 +229,7 @@ enum ButtonStrength: Equatable {
 
 enum ButtonDisplayMode: String, CaseIterable {
     case symbol
+    case consoleButton
     case inputKey
 
     static let settingsKey = "moveListButtonDisplayMode"

@@ -6,20 +6,31 @@ struct MoveListOverlay: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var themeManager = ThemeManager.shared
+    @State private var panelOffset = CGSize(
+        width: AppSettings.getDouble("moveListPanelOffsetX"),
+        height: AppSettings.getDouble("moveListPanelOffsetY")
+    )
+    @State private var panelBaseOffset = CGSize(
+        width: AppSettings.getDouble("moveListPanelOffsetX"),
+        height: AppSettings.getDouble("moveListPanelOffsetY")
+    )
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            Color.black.opacity(0)
-                .ignoresSafeArea()
-
+        Group {
             if viewModel.needsCharacterSelection {
-                characterSelectionPanel
+                ZStack {
+                    Color.black.opacity(0.3)
+                        .ignoresSafeArea()
+                        .onTapGesture {
+                            viewModel.showCharacterSelection()
+                        }
+                    characterSelectionPanel
+                }
             } else if viewModel.isOverlayVisible {
                 moveListPanel
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .allowsHitTesting(viewModel.isOverlayVisible || viewModel.needsCharacterSelection)
     }
 
     private var characterSelectionPanel: some View {
@@ -46,10 +57,18 @@ struct MoveListOverlay: View {
 
                 Divider()
 
-                notationLegendSidebar
+                if viewModel.enabledCharacterName != nil {
+                    rightMovePanel
+                } else {
+                    notationLegendSidebar
+                }
             }
 
             Divider()
+
+            inputSequenceSection
+                .padding(.horizontal, 8)
+                .padding(.vertical, 2)
 
             HStack(spacing: 12) {
                 Button(action: {
@@ -70,27 +89,76 @@ struct MoveListOverlay: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
         }
-        .frame(width: 580, height: min(CGFloat(viewModel.characters.count) * 36 + 120, 340))
+        .frame(width: 580, height: min(CGFloat(viewModel.characters.count) * 36 + 160, 380))
         .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(color: .black.opacity(0.6), radius: 20, x: 0, y: 10)
         .padding(.bottom, windowController.toolbarBottomInset)
     }
 
+    private var rightMovePanel: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            inlineHeaderSection
+
+            ScrollView {
+                moveListSection
+            }
+        }
+    }
+
+    private var inlineHeaderSection: some View {
+        HStack(spacing: 6) {
+            if let charName = viewModel.selectedCharacterName {
+                Text(charName)
+                    .font(.caption2)
+                    .fontWeight(.medium)
+                    .foregroundColor(AppColors.brandAccent)
+                    .lineLimit(1)
+            }
+
+            Spacer()
+
+            Picker("", selection: Binding(
+                get: { viewModel.buttonDisplayMode },
+                set: { newValue in
+                    AppSettings.set(ButtonDisplayMode.settingsKey, value: newValue.rawValue)
+                    viewModel.refreshButtonKeyLabels()
+                }
+            )) {
+                Text(loc.localized("settings.moveList.buttonDisplay.symbol"))
+                    .tag(ButtonDisplayMode.symbol)
+                Text(loc.localized("settings.moveList.buttonDisplay.consoleButton"))
+                    .tag(ButtonDisplayMode.consoleButton)
+                Text(loc.localized("settings.moveList.buttonDisplay.inputKey"))
+                    .tag(ButtonDisplayMode.inputKey)
+            }
+            .pickerStyle(.menu)
+            .controlSize(.small)
+            .tint(AppColors.brandAccent)
+            .fixedSize()
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 5)
+    }
+
     @ViewBuilder
     private func characterRow(_ character: FightDataCharacter) -> some View {
         let isExpanded = viewModel.expandedCharacterId == character.id
+        let isEnabled = viewModel.enabledCharacterName == character.name
 
         VStack(spacing: 0) {
             HStack(spacing: 8) {
                 Text(character.name)
                     .font(.system(size: 13, weight: .medium))
-                    .foregroundColor(.white)
-                    .onTapGesture {
-                        windowController.confirmAndShowOverlay(character: character)
-                    }
+                    .foregroundColor(isEnabled ? AppColors.brandAccent : .white)
 
                 Spacer()
+
+                if isEnabled {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 10))
+                        .foregroundColor(AppColors.brandAccent)
+                }
 
                 let sections = viewModel.sectionsForCharacter(character)
                 let enabledCount = sections.filter { viewModel.isSectionEnabled(characterName: character.name, section: $0) }.count
@@ -119,6 +187,14 @@ struct MoveListOverlay: View {
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
+            .background(
+                RoundedRectangle(cornerRadius: 6)
+                    .fill(isEnabled ? AppColors.brandAccent.opacity(0.12) : .clear)
+            )
+            .contentShape(Rectangle())
+            .onTapGesture {
+                viewModel.toggleCharacter(character)
+            }
 
             if isExpanded {
                 characterSectionsView(character)
@@ -340,12 +416,49 @@ Text(loc.localized("movelist.saveAndSelect"))
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(color: .black.opacity(0.6), radius: 20, x: 0, y: 10)
         .padding(.horizontal, 16)
-        .padding(.bottom, windowController.toolbarBottomInset)
+        .padding(.bottom, 8)
+        .offset(panelOffset)
+        .onReceive(NotificationCenter.default.publisher(for: .resetMoveListOverlayPosition)) { _ in
+            let zero = CGSize.zero
+            panelOffset = zero
+            panelBaseOffset = zero
+            AppSettings.setDouble("moveListPanelOffsetX", value: 0)
+            AppSettings.setDouble("moveListPanelOffsetY", value: 0)
+        }
+        .gesture(
+            DragGesture()
+                .onChanged { value in
+                    panelOffset = CGSize(
+                        width: panelBaseOffset.width + value.translation.width,
+                        height: panelBaseOffset.height + value.translation.height
+                    )
+                }
+                .onEnded { value in
+                    let newOffset = CGSize(
+                        width: panelBaseOffset.width + value.translation.width,
+                        height: panelBaseOffset.height + value.translation.height
+                    )
+                    panelOffset = newOffset
+                    panelBaseOffset = newOffset
+                    AppSettings.setDouble("moveListPanelOffsetX", value: Double(newOffset.width))
+                    AppSettings.setDouble("moveListPanelOffsetY", value: Double(newOffset.height))
+                }
+        )
         .animation(.easeInOut(duration: 0.2), value: viewModel.isOverlayVisible)
     }
 
     private var headerSection: some View {
         HStack(spacing: 6) {
+            Button(action: {
+                viewModel.showCharacterSelection()
+            }) {
+                Image(systemName: "arrow.left")
+                    .font(.system(size: 10))
+                    .foregroundColor(AppColors.brandAccent)
+            }
+            .buttonStyle(.plain)
+            .help(loc.localized("movelist.backToCharacters"))
+
             Button(action: {
                 windowController.toggleMoveListOverlay()
             }) {
@@ -355,27 +468,18 @@ Text(loc.localized("movelist.saveAndSelect"))
             }
             .buttonStyle(.plain)
 
-            if let charName = viewModel.selectedCharacterName {
+            if let charName = viewModel.selectedCharacterName, let character = viewModel.characters.first(where: { $0.name == charName }) {
                 Text(charName)
                     .font(.caption2)
                     .fontWeight(.medium)
-                    .foregroundColor(.white.opacity(0.5))
+                    .foregroundColor(AppColors.brandAccent)
                     .lineLimit(1)
+                    .onTapGesture {
+                        windowController.deselectCurrentCharacter()
+                    }
             }
 
             Spacer()
-
-            Button(action: {
-                let newMode: ButtonDisplayMode = viewModel.isKeyLabelMode ? .symbol : .inputKey
-                AppSettings.set(ButtonDisplayMode.settingsKey, value: newMode.rawValue)
-                viewModel.refreshButtonKeyLabels()
-            }) {
-                Image(systemName: viewModel.isKeyLabelMode ? "keyboard" : "circle.circle")
-                    .font(.system(size: 10))
-                    .foregroundColor(AppColors.brandAccent)
-            }
-            .buttonStyle(.plain)
-            .help(viewModel.isKeyLabelMode ? loc.localized("movelist.switchToSymbols") : loc.localized("movelist.switchToKeys"))
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 5)
@@ -386,7 +490,8 @@ Text(loc.localized("movelist.saveAndSelect"))
             ForEach(Array(viewModel.filteredMoves.enumerated()), id: \.offset) { _, move in
                 MoveEntryRow(
                     move: move,
-                    isMatched: viewModel.matchedMoveName == move.name
+                    isMatched: viewModel.matchedMoveName == move.name,
+                    showMoveNames: viewModel.showMoveNames
                 )
             }
 
@@ -487,11 +592,8 @@ private var inputSequenceSection: some View {
 struct MoveEntryRow: View {
     let move: ResolvedMove
     let isMatched: Bool
+    let showMoveNames: Bool
     @Environment(\.colorScheme) private var colorScheme
-
-    private var showMoveNames: Bool {
-        AppSettings.getBool("moveListShowMoveNames", defaultValue: false)
-    }
 
     var body: some View {
         HStack(spacing: 0) {
@@ -502,30 +604,32 @@ struct MoveEntryRow: View {
             )
 
         VStack(alignment: .leading, spacing: 1) {
-            if showMoveNames, !move.name.isEmpty {
-                Text(move.name)
-                    .font(.system(size: 9, weight: .semibold))
-                    .foregroundColor(isMatched ? AppColors.brandAccent : .white)
-            }
-            HStack(spacing: 2) {
-                if move.isAir {
-                    Text(verbatim: "AIR")
-                    .font(.system(size: 6, weight: .bold))
-                    .foregroundColor(.white.opacity(0.4))
+            if showMoveNames {
+                if !move.name.isEmpty {
+                    Text(move.name)
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundColor(isMatched ? AppColors.brandAccent : .white)
                 }
-                if move.isCharge {
-                    Text(verbatim: "CHARGE")
-                    .font(.system(size: 6, weight: .bold))
-                    .foregroundColor(.yellow.opacity(0.6))
-                }
-                if let cond = move.condition {
-                    Text(cond)
+                HStack(spacing: 2) {
+                    if move.isAir {
+                        Text(verbatim: "AIR")
+                        .font(.system(size: 6, weight: .bold))
+                        .foregroundColor(.white.opacity(0.4))
+                    }
+                    if move.isCharge {
+                        Text(verbatim: "CHARGE")
+                        .font(.system(size: 6, weight: .bold))
+                        .foregroundColor(.yellow.opacity(0.6))
+                    }
+                    if let cond = move.condition {
+                        Text(cond)
+                            .font(.system(size: 6))
+                            .foregroundColor(.white.opacity(0.45))
+                    }
+                    Text(move.categoryLabel)
                         .font(.system(size: 6))
-                        .foregroundColor(.white.opacity(0.45))
+                        .foregroundColor(.white.opacity(0.35))
                 }
-                Text(move.categoryLabel)
-                    .font(.system(size: 6))
-                    .foregroundColor(.white.opacity(0.35))
             }
             }
             .padding(.leading, 6)

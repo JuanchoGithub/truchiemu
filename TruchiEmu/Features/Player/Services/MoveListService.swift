@@ -80,6 +80,14 @@ class MoveListService: ObservableObject {
         }
     }
 
+    func clearSelectedCharacter() {
+        if let game = currentGameData {
+            let key = "movelist_\(game.name)_character"
+            AppSettings.remove(key)
+        }
+        selectedCharacter = nil
+    }
+
     func loadIndexEntries() -> [FightDataIndexEntry] {
         loadIndex().games
     }

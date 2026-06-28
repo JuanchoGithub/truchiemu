@@ -11,6 +11,7 @@ import Combine
 // the vulnerable window between crash detection and window cleanup.
 class SafeHostingView<Content: View>: NSHostingView<Content> {
 @objc var isPassThroughOverlay = false
+@objc var passesThroughEmptyAreas = false
 
 override func layout() {
     guard !XPCConnectionManager.isShuttingDown else { return }
@@ -21,7 +22,11 @@ override func hitTest(_ point: NSPoint) -> NSView? {
     if isPassThroughOverlay {
         return nil
     }
-    return super.hitTest(point)
+    let result = super.hitTest(point)
+    if passesThroughEmptyAreas && result === self {
+        return nil
+    }
+    return result
 }
 
 override func acceptsFirstMouse(for event: NSEvent?) -> Bool {
@@ -1116,9 +1121,9 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
     @MainActor
     func toggleMoveListOverlay() {
         if moveListViewModel.isOverlayVisible || moveListViewModel.needsCharacterSelection {
-            moveListViewModel.deactivate()
-            moveListOverlayView?.removeFromSuperview()
-            moveListOverlayView = nil
+            trainingModeViewModel.enabledCharacterName = nil
+            MoveListService.shared.clearSelectedCharacter()
+            removeMoveListOverlay()
             if runner?.isPaused == true {
                 runner?.isPaused = false
                 XPCBridgeAdapter.shared.setPaused(false)
@@ -1139,6 +1144,9 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
     @MainActor
     func confirmPendingCharacter() {
         moveListViewModel.confirmPendingCharacter()
+        if let charName = moveListViewModel.enabledCharacterName {
+            trainingModeViewModel.enabledCharacterName = charName
+        }
         if moveListViewModel.isOverlayVisible {
             if runner?.isPaused == true {
                 runner?.isPaused = false
@@ -1151,6 +1159,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
     @MainActor
     func confirmAndShowOverlay(character: FightDataCharacter) {
         moveListViewModel.confirmAndShowOverlay(character: character)
+        trainingModeViewModel.enabledCharacterName = character.name
         if moveListViewModel.isOverlayVisible {
             if runner?.isPaused == true {
                 runner?.isPaused = false
@@ -1170,8 +1179,11 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         hostingView.translatesAutoresizingMaskIntoConstraints = false
         hostingView.wantsLayer = true
         hostingView.layer?.backgroundColor = .clear
-        // Insert below toolbar so toolbar stays interactive
-        if let toolbar = toolbarView {
+        hostingView.passesThroughEmptyAreas = true
+        // Insert above training overlay so move list panel is never behind it
+        if let trainingView = trainingModeOverlayView {
+            containerView.addSubview(hostingView, positioned: .above, relativeTo: trainingView)
+        } else if let toolbar = toolbarView {
             containerView.addSubview(hostingView, positioned: .below, relativeTo: toolbar)
         } else {
             containerView.addSubview(hostingView, positioned: .above, relativeTo: nil)
@@ -1187,8 +1199,17 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
     }
 
     private func removeMoveListOverlay() {
+        moveListViewModel.deactivate()
         moveListOverlayView?.removeFromSuperview()
         moveListOverlayView = nil
+    }
+
+    @MainActor
+    func deselectCurrentCharacter() {
+        trainingModeViewModel.enabledCharacterName = nil
+        MoveListService.shared.clearSelectedCharacter()
+        removeMoveListOverlay()
+        persistFightOverlayState()
     }
 
     @MainActor
@@ -1221,15 +1242,36 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
 
         trainingModeViewModel.onSelectCharacterAndShowMoves = { [weak self] in
             guard let self else { return }
-            self.toggleTrainingModeOverlay()
+            if self.moveListOverlayView != nil {
+                self.removeMoveListOverlay()
+            }
             if let character = MoveListService.shared.selectedCharacter {
                 self.moveListViewModel.confirmCharacter(character)
-                if self.moveListOverlayView == nil {
-                    self.installMoveListOverlay()
-                }
+                self.installMoveListOverlay()
             }
             self.persistFightOverlayState()
         }
+
+        trainingModeViewModel.onDeselectCharacter = { [weak self] in
+            guard let self else { return }
+            self.removeMoveListOverlay()
+            self.persistFightOverlayState()
+        }
+
+        trainingModeViewModel.onMoveListSettingsChanged = { [weak self] in
+            guard let self else { return }
+            self.moveListViewModel.refreshButtonKeyLabels()
+        }
+
+        trainingModeViewModel.onResetOverlayPosition = { [weak self] in
+            guard let self else { return }
+            AppSettings.setDouble("moveListPanelOffsetX", value: 0)
+            AppSettings.setDouble("moveListPanelOffsetY", value: 0)
+            NotificationCenter.default.post(name: .resetMoveListOverlayPosition, object: nil)
+        }
+
+        let toolbarH = toolbarView?.frame.height ?? 0
+        trainingModeViewModel.toolbarBottomMargin = toolbarH + 20
 
         let hostingView = SafeHostingView(rootView: AnyView(
             TrainingModeOverlay(viewModel: trainingModeViewModel)
@@ -1512,30 +1554,7 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
             manager.setEnabled(true)
         }
 
-        if trainingMenuWasVisible && trainingModeOverlayView == nil {
-            manager.toggleMenu()
-            if manager.isMenuVisible {
-                installTrainingModeOverlay()
-            }
-        }
-
-        if let savedName = savedCharacterName,
-           let character = moveListViewModel.characters.first(where: { $0.name == savedName }),
-           character.name != moveListViewModel.moveListService.selectedCharacter?.name {
-            moveListViewModel.confirmCharacter(character)
-            if !moveListViewModel.isOverlayVisible {
-                installMoveListOverlay()
-            }
-        } else if moveListWasVisible && !moveListViewModel.isOverlayVisible {
-            if let character = moveListViewModel.moveListService.selectedCharacter {
-                moveListViewModel.confirmCharacter(character)
-                installMoveListOverlay()
-            } else {
-                moveListViewModel.activate()
-                installMoveListOverlay()
-            }
-        }
-
+        // No auto-restore of overlays on launch
         persistFightOverlayState()
     }
 
@@ -1559,13 +1578,7 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
             manager.setEnabled(true)
         }
 
-        if trainingMenuWasVisible && trainingModeOverlayView == nil {
-            manager.toggleMenu()
-            if manager.isMenuVisible {
-                installTrainingModeOverlay()
-            }
-        }
-
+        // No auto-restore of TrainingModeOverlay window on slot load
         if let savedName = savedCharacterName,
            let character = moveListViewModel.characters.first(where: { $0.name == savedName }),
            character.name != moveListViewModel.moveListService.selectedCharacter?.name {
