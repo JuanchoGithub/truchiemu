@@ -29,6 +29,9 @@ class MoveListOverlayViewModel: ObservableObject {
     private var lastSequenceLength: Int = 0
     private let storageService = MoveListStorageService.shared
 
+    private let moveForest = MoveForest()
+    private var lastForestCompleted: [String] = []
+
     private var maxMovesToShow: Int { AppSettings.getInt("moveListMaxMoves", defaultValue: 5) }
     private var moveSlotOrder: [String] = []
 
@@ -415,7 +418,7 @@ class MoveListOverlayViewModel: ObservableObject {
         inputButtons = buttons
 
         if lastSequenceLength >= 2 && sequence.isEmpty {
-            recordAttempt(sequence: sequence, character: character)
+            recordAttempt()
         }
         lastSequenceLength = sequence.count
 
@@ -424,6 +427,7 @@ class MoveListOverlayViewModel: ObservableObject {
         }
 
         var allMoves = collectAllMoves(for: character)
+        moveForest.build(with: allMoves)
         let favoriteIds = Set(storageService.getFavorites(gameName: gameName ?? "", characterName: character.name).map(\.moveId))
 
         if directions.isEmpty && buttons.isEmpty {
@@ -445,22 +449,17 @@ class MoveListOverlayViewModel: ObservableObject {
             return
         }
 
-        let matching = allMoves.filter { move in
-            return matchesInputSequence(move: move, sequence: sequence)
-        }
+        let forestResult = moveForest.evaluate(inputs: sequence, controlGroups: moveListService.currentGameData?.controlGroups ?? [:])
+        let inProgress = forestResult.inProgress
+        let completedMoves = forestResult.completed
+        lastForestCompleted = completedMoves
 
-        let nearComplete = allMoves.filter { move in
-            guard move.totalSteps >= 5 else { return false }
-            let matched = computeMoveMatchedSteps(move: move, sequence: sequence)
-            let ratio = Double(matched) / Double(move.totalSteps)
-            return ratio >= 0.5 && !matching.contains(where: { $0.id == move.id })
-        }
+        let candidateIds = Set(inProgress.keys)
+        let matching = allMoves.filter { candidateIds.contains($0.id) }
+        let sorted = matching.sorted { moveRank($0, isFavorite: favoriteIds.contains($0.id), hasInput: true) > moveRank($1, isFavorite: favoriteIds.contains($1.id), hasInput: true) }
 
-        let combined = matching + nearComplete
-        let sorted = combined.sorted { moveRank($0, isFavorite: favoriteIds.contains($0.id), hasInput: true) > moveRank($1, isFavorite: favoriteIds.contains($1.id), hasInput: true) }
-
-        if let exact = sorted.first, isExactMatch(move: exact, sequence: sequence) {
-            matchedMoveName = exact.name
+        if let longest = allMoves.filter({ completedMoves.contains($0.id) }).max(by: { $0.totalSteps < $1.totalSteps }) {
+            matchedMoveName = longest.name
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
                 self?.matchedMoveName = nil
                 self?.inputStateTracker.clearSequence()
@@ -493,7 +492,7 @@ class MoveListOverlayViewModel: ObservableObject {
 
         filteredMoves = moveSlotOrder.compactMap { id -> ResolvedMove? in
             guard let move = moveById[id] else { return nil }
-            let mSteps = computeMoveMatchedSteps(move: move, sequence: sequence)
+            let matched = inProgress[move.id]?.matched ?? 0
             return ResolvedMove(
                 id: move.id, name: move.name, categoryLabel: move.categoryLabel,
                 notation: move.notation, tokens: move.tokens,
@@ -501,7 +500,7 @@ class MoveListOverlayViewModel: ObservableObject {
                 parsedSteps: move.parsedSteps, isAir: move.isAir, isCharge: move.isCharge,
                 isMotion360: move.isMotion360,
                 matchCount: move.matchCount, totalSteps: move.totalSteps,
-                matchedStepCount: mSteps
+                matchedStepCount: matched
             )
         }
     }
@@ -626,13 +625,9 @@ class MoveListOverlayViewModel: ObservableObject {
         )
     }
 
-    private func recordAttempt(sequence: [InputSequenceStep], character: FightDataCharacter) {
-        let allMoves = collectAllMoves(for: character)
-        let bestMatches = allMoves.filter { move in
-            return matchesInputSequence(move: move, sequence: sequence)
-        }
-        for move in bestMatches.prefix(3) {
-            moveAttemptCounts[move.id, default: 0] += 1
+    private func recordAttempt() {
+        for moveId in lastForestCompleted.prefix(3) {
+            moveAttemptCounts[moveId, default: 0] += 1
         }
     }
 
@@ -666,116 +661,6 @@ class MoveListOverlayViewModel: ObservableObject {
         if move.isCharge { rank += 1 }
 
         return rank
-    }
-
-    private func stepDirectionMatches(_ userDir: FightDataDirection?, _ moveDirVal: Int?) -> Bool? {
-        guard let userDir, let moveDirVal, let moveDir = FightDataDirection(rawValue: moveDirVal) else {
-            return nil
-        }
-        if userDir == moveDir { return true }
-        switch (userDir, moveDir) {
-        case (.up, .down), (.down, .up), (.left, .right), (.right, .left),
-            (.upLeft, .downRight), (.downRight, .upLeft),
-            (.upRight, .downLeft), (.downLeft, .upRight):
-            return false
-        default:
-            return nil
-        }
-    }
-
-    private func subsequenceMatch(moveSteps: [ParsedStep], sequence: [InputSequenceStep]) -> Int {
-        if moveSteps.isEmpty { return 0 }
-        var userIdx = 0
-        var matched = 0
-
-        for (stepIdx, moveStep) in moveSteps.enumerated() {
-            let needsDir = moveStep.direction != nil
-            let needsBtns = !moveStep.buttons.isEmpty
-
-            while userIdx < sequence.count {
-                let userStep = sequence[userIdx]
-
-                let dirMatch: Bool
-                if needsDir, let userDir = userStep.direction {
-                    dirMatch = stepDirectionMatches(userDir, moveStep.direction!) == true
-                } else {
-                    dirMatch = !needsDir
-                }
-
-                let btnMatch: Bool
-                if needsBtns, !userStep.buttons.isEmpty {
-                    btnMatch = buttonSetsMatch(userBtns: userStep.buttons, moveBtns: moveStep.buttons)
-                } else {
-                    btnMatch = !needsBtns
-                }
-
-                if dirMatch && btnMatch {
-                    matched += 1
-                    userIdx += 1
-                    break
-                }
-
-                if !userStep.buttons.isEmpty {
-                    for laterIdx in (stepIdx + 1)..<moveSteps.count {
-                        if !moveSteps[laterIdx].buttons.isEmpty,
-                           buttonSetsMatch(userBtns: userStep.buttons, moveBtns: moveSteps[laterIdx].buttons) {
-                            let dirOnlyBefore = (matched..<laterIdx).filter {
-                                moveSteps[$0].direction != nil && moveSteps[$0].buttons.isEmpty
-                            }
-                            if !dirOnlyBefore.isEmpty {
-                                return -1
-                            }
-                        }
-                    }
-                }
-
-                userIdx += 1
-            }
-        }
-
-        return matched
-    }
-
-    private func matchesInputSequence(move: ResolvedMove, sequence: [InputSequenceStep]) -> Bool {
-        guard let moveSteps = move.parsedSteps.first, !moveSteps.isEmpty else { return false }
-        let matched = subsequenceMatch(moveSteps: moveSteps, sequence: sequence)
-        return matched > 0
-    }
-
-    private func computeMoveMatchedSteps(move: ResolvedMove, sequence: [InputSequenceStep]) -> Int {
-        guard let moveSteps = move.parsedSteps.first, !moveSteps.isEmpty else { return 0 }
-        let matched = subsequenceMatch(moveSteps: moveSteps, sequence: sequence)
-        return max(matched, 0)
-    }
-
-    private func isExactMatch(move: ResolvedMove, sequence: [InputSequenceStep]) -> Bool {
-        guard let moveSteps = move.parsedSteps.first, !moveSteps.isEmpty else { return false }
-        let matched = subsequenceMatch(moveSteps: moveSteps, sequence: sequence)
-        return matched == moveSteps.count
-    }
-
-    private func buttonSetsMatch(userBtns: Set<String>, moveBtns: [String]) -> Bool {
-        let controlGroups = moveListService.currentGameData?.controlGroups ?? [:]
-        let userNormalized = Set(userBtns.map { normalizeFightDataKey($0) })
-
-        for moveKey in moveBtns {
-            let moveNorm = normalizeFightDataKey(moveKey)
-            if userNormalized.contains(moveNorm) {
-                return true
-            }
-            if let members = controlGroups[moveKey] {
-                let memberNorms = Set(members.map { normalizeFightDataKey($0) })
-                if !userNormalized.isDisjoint(with: memberNorms) {
-                    return true
-                }
-            }
-        }
-
-        return false
-    }
-
-    private func normalizeFightDataKey(_ key: String) -> String {
-        key.lowercased().replacingOccurrences(of: "^", with: "")
     }
 
     private func isCommonMoveId(_ moveId: String) -> Bool {

@@ -515,6 +515,7 @@
 		6D21C6561E0D7D3635CD591B /* fightdata_tophuntr.json in Resources */ = {isa = PBXBuildFile; fileRef = 0D55AEF3DDD5FB4A3C8F540E /* fightdata_tophuntr.json */; };
 		6D478C3EDD22F19947D904F5 /* poke@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 70B077E4EEFEFF94C0EF6F75 /* poke@132w.png */; };
 		6D92CA8DC0096725EC9520AF /* atari800@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 5049F3EC03369C598CE5BBB2 /* atari800@132w.png */; };
+		6DC791FACC64774AC60FB0B6 /* MoveForest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9069327937C4BD5B3CED4E12 /* MoveForest.swift */; };
 		6E10F7AD982F0C4DF5A5104C /* input_coreLabels_m2000.json in Resources */ = {isa = PBXBuildFile; fileRef = 07068C673E61C6896809ABA9 /* input_coreLabels_m2000.json */; };
 		6E93458B12828DAFC78C4FCC /* NEC - PC Engine - TurboGrafx 16.dat in Resources */ = {isa = PBXBuildFile; fileRef = 866F7E9495192E7531109947 /* NEC - PC Engine - TurboGrafx 16.dat */; };
 		6F05200AEB2CE6B267039BAC /* COLSGM.png in Resources */ = {isa = PBXBuildFile; fileRef = 24667B16B733A9A54FBF645A /* COLSGM.png */; };
@@ -1899,6 +1900,7 @@
 		8F442C51C91A87E9FE4913C0 /* fightdata_mbombrd.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_mbombrd.json; sourceTree = "<group>"; };
 		9002F2B47556DFEE2E9FFDD4 /* fightdata_dstlk.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_dstlk.json; sourceTree = "<group>"; };
 		90136857D881B5C8AEE538D0 /* GameMappingProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameMappingProfile.swift; sourceTree = "<group>"; };
+		9069327937C4BD5B3CED4E12 /* MoveForest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveForest.swift; sourceTree = "<group>"; };
 		911A3096FCEFE2529B858189 /* fightdata_mk3.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_mk3.json; sourceTree = "<group>"; };
 		91841A7C7B2DD9EC9AE7FF7F /* Atari - 7800.dat */ = {isa = PBXFileReference; path = "Atari - 7800.dat"; sourceTree = "<group>"; };
 		918DD5620D5DCC0EA08E81FB /* fightdata_killbld.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_killbld.json; sourceTree = "<group>"; };
@@ -3671,6 +3673,7 @@
 				C9AAF3924EF31E5708D15DD4 /* GamepadNavigationManager.swift */,
 				8C0A03394D956A91354E3574 /* InputStateTracker.swift */,
 				348FC44E8233983FBBE7319B /* MotionDetector.swift */,
+				9069327937C4BD5B3CED4E12 /* MoveForest.swift */,
 				A94757847430E98D2FD0C8BC /* MoveListService.swift */,
 				C0D2689389A8F41C564E8983 /* NotationTokenImageCache.swift */,
 				D380F0ACA26A2082BD1DAA08 /* RunningGamesTracker.swift */,
@@ -5604,6 +5607,7 @@
 				C6FF09C1D06E5019E40CEBFE /* MoveDataMovesView.swift in Sources */,
 				A636A60074D52DB1ED1F37DB /* MoveDataUtilities.swift in Sources */,
 				501683EA49AE6969BC984752 /* MoveEditorView.swift in Sources */,
+				6DC791FACC64774AC60FB0B6 /* MoveForest.swift in Sources */,
 				713E44201EF84E7F455984C6 /* MoveListCharacterPicker.swift in Sources */,
 				DE65A573AD4E1049F78D52F4 /* MoveListConfigSection.swift in Sources */,
 				15300F8312E4D43A32A26757 /* MoveListModels.swift in Sources */,
