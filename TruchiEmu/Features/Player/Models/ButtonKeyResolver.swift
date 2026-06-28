@@ -24,7 +24,8 @@ enum ButtonKeyResolver {
             return gamepadLabel
         }
 
-        return resolveKeyboardLabel(retroBtn: retroBtn, systemID: systemID)
+        let displayButton = resolveDisplayButton(retroBtn, systemID: systemID)
+        return resolveKeyboardLabel(retroBtn: displayButton, systemID: systemID)
     }
 
     static func allKeyLabels(
@@ -70,6 +71,20 @@ enum ButtonKeyResolver {
             }
         }
         return labels
+    }
+
+    private static let disabledToEnabledButton: [RetroButton: RetroButton] = [
+        .x: .a,
+        .y: .b,
+        .z: .c,
+    ]
+
+    static func resolveDisplayButton(_ retroBtn: RetroButton, systemID: String) -> RetroButton {
+        let disabled = RetroButton.disabledButtons(for: systemID)
+        guard disabled.contains(retroBtn), let fallback = disabledToEnabledButton[retroBtn] else {
+            return retroBtn
+        }
+        return fallback
     }
 
     private static func resolveKeyboardLabel(retroBtn: RetroButton, systemID: String) -> String? {

@@ -103,6 +103,14 @@ class InputStateTracker: ObservableObject {
                 if let fdKey = ArcadeButtonMapper.shared.fightDataKey(for: button, layout: arcadeLayout, systemID: systemID, systemControlMappings: systemControlMappings) {
                     stepButtons.insert(fdKey)
                 }
+                if !disabledButtons.isEmpty {
+                    let disabledToEnabled: [(disabled: RetroButton, enabled: RetroButton)] = [(.x, .a), (.y, .b), (.z, .c)]
+                    for (disabled, enabled) in disabledToEnabled where button == enabled {
+                        if let fdKey = ArcadeButtonMapper.shared.fightDataKey(for: disabled, layout: arcadeLayout, systemID: systemID, systemControlMappings: nil) {
+                            stepButtons.insert(fdKey)
+                        }
+                    }
+                }
             }
         }
 
