@@ -181,7 +181,6 @@ struct LibraryGridView: View {
     // Delete/hide game states
     @State private var gameToDelete: ROM?
     @State private var confirmDeleteTap = false
-    @State private var preloadedDeleteBoxArt: NSImage?
     
     // Smooth pinch-to-zoom state
     @State private var continuousZoom: Double = {
@@ -325,7 +324,6 @@ struct LibraryGridView: View {
         .sheet(item: $gameToDelete) { rom in
             DeleteConfirmationView(
                 rom: rom,
-                preloadedBoxArt: preloadedDeleteBoxArt,
                 confirmDeleteTap: $confirmDeleteTap,
                 onDelete: {
                     deleteGameAndROM(rom)
@@ -341,7 +339,6 @@ struct LibraryGridView: View {
             )
             .onDisappear {
                 confirmDeleteTap = false
-                preloadedDeleteBoxArt = nil
             }
             .gamepadDismissable { gameToDelete = nil }
         }
@@ -1640,12 +1637,6 @@ viewModel.updateFilters(
     // MARK: - Delete/Hide Game Actions
 
     private func showDeleteSheet(for rom: ROM) {
-        let tinyThumbURL = BoxArtThumbnailService.thumbnailURL(for: rom.boxArtLocalPath, size: .tiny)
-        if FileManager.default.fileExists(atPath: tinyThumbURL.path) {
-            preloadedDeleteBoxArt = NSImage(contentsOf: tinyThumbURL)
-        } else {
-            preloadedDeleteBoxArt = nil
-        }
         gameToDelete = rom
     }
 
@@ -2313,7 +2304,6 @@ private struct ScanningScanLine: View {
 
 private struct DeleteConfirmationView: View {
     let rom: ROM
-    let preloadedBoxArt: NSImage?
     @Binding var confirmDeleteTap: Bool
     let onDelete: () -> Void
     let onHide: () -> Void
@@ -2418,20 +2408,16 @@ private struct DeleteConfirmationView: View {
         .frame(width: 320)
         .background(AppColors.windowBackground(colorScheme, tinted: false))
         .onAppear {
-            boxArtImage = preloadedBoxArt
-        }
-        .task {
-            guard preloadedBoxArt == nil else { return }
             var artPath = rom.boxArtLocalPath
             if !FileManager.default.fileExists(atPath: artPath.path) {
                 if let resolved = BoxArtService.shared.resolveLocalBoxArt(for: rom) {
                     artPath = resolved
                 }
             }
-            if FileManager.default.fileExists(atPath: artPath.path) {
-                if let img = await ImageCache.shared.thumbnail(for: artPath, preferredSize: .tiny) {
-                    boxArtImage = img
-                }
+            if FileManager.default.fileExists(atPath: artPath.path),
+               let data = try? Data(contentsOf: artPath),
+               let image = NSImage(data: data) {
+                boxArtImage = image
             }
         }
         .onDisappear {
