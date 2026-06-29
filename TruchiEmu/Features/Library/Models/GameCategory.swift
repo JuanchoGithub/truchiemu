@@ -6,6 +6,7 @@ struct GameCategory: Identifiable, Codable, Hashable, Equatable {
     var id: String = UUID().uuidString
     var name: String
     var iconName: String // SF Symbol name
+    var customIconPath: String? // Path to user-uploaded custom icon
     var colorHex: String // Hex color string
     
     // Array of ROM IDs that belong to this category

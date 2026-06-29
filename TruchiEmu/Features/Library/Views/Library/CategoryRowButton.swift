@@ -21,10 +21,8 @@ struct CategoryRowButton: View {
       selectedFilter = .category(category.id)
     } label: {
       HStack(spacing: 6) {
-        Image(systemName: category.iconName)
+        GameCategoryIconView(category: category, size: 22)
         .foregroundColor(Color(hex: category.colorHex) ?? .blue)
-        .font(.system(size: 14))
-        .frame(width: 22, height: 22)
 
         Text(category.name)
         .lineLimit(1)

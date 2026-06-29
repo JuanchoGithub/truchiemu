@@ -1548,7 +1548,7 @@ viewModel.updateFilters(
                             }
                         } label: {
                             HStack {
-                                Image(systemName: category.iconName)
+                                GameCategoryIconView(category: category, size: 18)
                                     .foregroundColor(Color(hex: category.colorHex) ?? .blue)
                                 Text(category.name)
                                 Spacer()

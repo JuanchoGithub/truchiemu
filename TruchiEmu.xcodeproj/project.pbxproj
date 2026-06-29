@@ -103,6 +103,7 @@
 		12C9567A9783BE062829CCFC /* input_systemLabels_msx.json in Resources */ = {isa = PBXBuildFile; fileRef = BBC39C2D92C6F79A18376201 /* input_systemLabels_msx.json */; };
 		12F0820BBFC343E0BE929E16 /* input_coreLabels_xrick.json in Resources */ = {isa = PBXBuildFile; fileRef = 1DCC6B4FBF3F55FE4C182A34 /* input_coreLabels_xrick.json */; };
 		13267C7699DA0893F6EEC72E /* MoveDataCharactersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F5A2C5794BC778659FF41E /* MoveDataCharactersView.swift */; };
+		13909F17DF2385136F4273B8 /* IconPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A1BBAF236A7482126D4923 /* IconPickerView.swift */; };
 		139F5308F944EC66EAB548BE /* MetalCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7617E35BCF8ABD715F148725 /* MetalCoordinator.swift */; };
 		13DB33EDA51711079ED63488 /* fightdata_vhunt2.json in Resources */ = {isa = PBXBuildFile; fileRef = 65C067FA21A2CFE61996BB6F /* fightdata_vhunt2.json */; };
 		140BF0CFF39BA12534FAE0CF /* BezelModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 827E55E978215F285D7F5800 /* BezelModels.swift */; };
@@ -1932,6 +1933,7 @@
 		9F857158D0C94BC7AE97A3B0 /* input_coreOverrides_race.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_race.json; sourceTree = "<group>"; };
 		A022CF62068D4FC4B2E6A7A7 /* fightdata_hook.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_hook.json; sourceTree = "<group>"; };
 		A0711847170DFBC1FEDEEBF3 /* PC88.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PC88.png; sourceTree = "<group>"; };
+		A0A1BBAF236A7482126D4923 /* IconPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconPickerView.swift; sourceTree = "<group>"; };
 		A0FB521B80CE9D31D380EF5A /* fightdata_matrim.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_matrim.json; sourceTree = "<group>"; };
 		A13C2058B733314F54359866 /* fightdata_redearth.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_redearth.json; sourceTree = "<group>"; };
 		A14A3003974DDDF09684961B /* CategoryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryManager.swift; sourceTree = "<group>"; };
@@ -3197,6 +3199,7 @@
 				4C0D8487DF2A9BB2EAB70BAB /* GameCardView.swift */,
 				07A377CFF1945DD917DC921B /* GameListRowView.swift */,
 				AC76D35E66386E6C5D242961 /* GenrePickerView.swift */,
+				A0A1BBAF236A7482126D4923 /* IconPickerView.swift */,
 				ED22E0198CFE81289DAC573E /* ImageCropView.swift */,
 				AE6DD9F2D88F252E2CECD2CC /* LibraryAnimations.swift */,
 				44D6E43A22D859720886ECD6 /* LibraryFilterOption.swift */,
@@ -5457,6 +5460,7 @@
 				FDE92E115DEE8FE3BE7318EF /* HotkeyConfig.swift in Sources */,
 				C89D895A0684B41688FF2FD4 /* HotkeyConfigSettingsView.swift in Sources */,
 				4C5E02094A7A7692B2C1EC6A /* IOSurfaceVideoManager.swift in Sources */,
+				13909F17DF2385136F4273B8 /* IconPickerView.swift in Sources */,
 				D3BF624E6D643A9C9E0976FF /* ImageCache.swift in Sources */,
 				3330BB1C47CDB8E889FAB18C /* ImageCropView.swift in Sources */,
 				2B2B0A84C8FA0EC3F94F0ADB /* InputCaptureManager.swift in Sources */,

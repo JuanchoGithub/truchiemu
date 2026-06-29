@@ -21,10 +21,12 @@ class CategoryManager: ObservableObject {
     
     // MARK: - Category CRUD
     
-    func addCategory(name: String, iconName: String = "gamecontroller.fill", colorHex: String = "007AFF") {
+    func addCategory(name: String, iconName: String = "gamecontroller.fill", customIconPath: String? = nil, colorHex: String = "007AFF", id: String? = nil) {
         let category = GameCategory(
+            id: id ?? UUID().uuidString,
             name: name,
             iconName: iconName,
+            customIconPath: customIconPath,
             colorHex: colorHex,
             sortOrder: categories.count
         )

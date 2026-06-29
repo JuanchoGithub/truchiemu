@@ -1,5 +1,25 @@
 import SwiftUI
 
+// MARK: - Category Icon View
+
+struct GameCategoryIconView: View {
+    let category: GameCategory
+    var size: CGFloat = 22
+
+    var body: some View {
+        if let customPath = category.customIconPath,
+           let img = NSImage(contentsOf: URL(fileURLWithPath: customPath)) {
+            Image(nsImage: img)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: size, height: size)
+        } else {
+            Image(systemName: category.iconName.isEmpty ? "tag" : category.iconName)
+                .font(.system(size: size * 0.65))
+        }
+    }
+}
+
 // MARK: - Category Badge
 
 struct CategoryBadgeView: View {
@@ -10,8 +30,7 @@ struct CategoryBadgeView: View {
 	var body: some View {
         if isCompact {
             // Compact mode: Icon only in a circle
-            Image(systemName: category.iconName.isEmpty ? "tag" : category.iconName)
-                .font(.system(size: 10, weight: .medium))
+            GameCategoryIconView(category: category, size: 14)
                 .padding(4)
         .background(Color(hex: category.colorHex) ?? .blue)
         .foregroundColor(AppColors.textOnAccent(colorScheme))
@@ -19,8 +38,7 @@ struct CategoryBadgeView: View {
         } else {
             // Standard mode: Icon + Text in a capsule/rounded rect
             HStack(spacing: 3) {
-                Image(systemName: category.iconName)
-                    .font(.system(size: 9, weight: .medium))
+                GameCategoryIconView(category: category, size: 12)
                 Text(category.name)
                     .font(.system(size: 10, weight: .medium))
             }
@@ -51,7 +69,7 @@ struct AddToCategorySheet: View {
                         dismiss()
                     } label: {
                         HStack {
-                            Image(systemName: category.iconName)
+                            GameCategoryIconView(category: category, size: 18)
                                 .foregroundColor(Color(hex: category.colorHex) ?? .blue)
                             Text(category.name)
                             Spacer()
