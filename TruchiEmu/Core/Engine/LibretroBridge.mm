@@ -10,13 +10,16 @@
 // --- Cheat Crash Recovery ---
 // PicoDrive's retro_cheat_set reads from unmapped Genesis memory addresses
 // when the cheat lookup table entry is zero. Install a permanent SIGSEGV
-// handler that re-raises for non-cheat faults but recovers gracefully from
-// cheat-related crashes.
+// and SIGBUS handler that re-raises for non-cheat faults but recovers
+// gracefully from cheat-related crashes. Works in the main app process
+// where POSIX signals are delivered. In XPC service processes, Mach
+// exception ports may intercept before POSIX signals — so we also defer
+// cheat application until after the first frame (see
+// StandaloneGameWindowController.onFirstFrameReady).
 static sigjmp_buf g_cheatCrashJmpBuf;
 static volatile sig_atomic_t g_inCheatCall = 0;
 
 static void cheatCrashHandler(int sig) {
-    // NOT in a cheat call — preserve default crash behavior
     if (!g_inCheatCall) {
         signal(sig, SIG_DFL);
         raise(sig);
@@ -34,6 +37,7 @@ static void installCheatSignalHandler(void) {
     sigemptyset(&act.sa_mask);
     act.sa_flags = SA_NODEFER;
     sigaction(SIGSEGV, &act, NULL);
+    sigaction(SIGBUS, &act, NULL);
 }
 
 // --- Global State ---

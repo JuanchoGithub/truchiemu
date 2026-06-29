@@ -751,8 +751,10 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
             return
         }
         
-        // Load and optionally apply cheats after core is up
-        autoLoadAndApplyCheats(for: rom)
+        // Load cheats for the ROM (apply is deferred until after first frame)
+        if cheatsEnabled {
+            CheatManagerService.shared.loadCheatsForROM(rom)
+        }
         
         // Make sure the metal view is the first responder
         DispatchQueue.main.async { [weak self] in
@@ -819,6 +821,24 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
     private func onFirstFrameReady(slotToLoad: Int?, rom: ROM) {
         isLoading = false
         GameLauncher.shared.launchPhase = .idle
+
+        // Apply cheats now that the core has initialized its memory map
+        // (PicoDrive crashes if retro_cheat_set is called before the first retro_run)
+        if cheatsEnabled {
+            let enabledCheats = CheatManagerService.shared.enabledCheats(for: rom)
+            if !enabledCheats.isEmpty {
+                let cheatData = enabledCheats.map { cheat in [
+                    "index": cheat.index,
+                    "code": cheat.code,
+                    "enabled": cheat.enabled
+                ] as [String: Any] }
+                XPCBridgeAdapter.shared.applyCheats(cheatData)
+                CheatManagerService.shared.areCheatsApplied = true
+                if SystemPreferences.shared.showCheatNotifications {
+                    LoggerService.info(category: "Cheats", "Auto-applied \(enabledCheats.count) cheat(s) for \(rom.displayName)")
+                }
+            }
+        }
 
         // Determine if a state will be loaded (specific slot or auto-load enabled with saves)
         let willLoadState: Bool
@@ -1043,33 +1063,6 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
     }
     
     // MARK: - Cheats
-    
-    // Load cheats for the ROM and optionally apply enabled cheats to the running core.
-    // Called after the emulator core has started.
-    private func autoLoadAndApplyCheats(for rom: ROM) {
-        // Always load cheats so they appear in the manager
-        if cheatsEnabled {
-            CheatManagerService.shared.loadCheatsForROM(rom)
-        } else {
-            return
-        }
-        
-        let enabledCheats = CheatManagerService.shared.enabledCheats(for: rom)
-        guard !enabledCheats.isEmpty else { return }
-        
-        let cheatData = enabledCheats.map { cheat in[
-                "index": cheat.index,
-                "code": cheat.code,
-                "enabled": cheat.enabled
-            ] as[String: Any]
-        }
-        XPCBridgeAdapter.shared.applyCheats(cheatData)
-        CheatManagerService.shared.areCheatsApplied = true
-        
-        if SystemPreferences.shared.showCheatNotifications {
-            LoggerService.info(category: "Cheats", "Auto-applied \(enabledCheats.count) cheat(s) for \(rom.displayName)")
-        }
-    }
     
     // Present the cheat manager as a sheet on this game window.
     // Pauses the game while the cheat manager is shown.
