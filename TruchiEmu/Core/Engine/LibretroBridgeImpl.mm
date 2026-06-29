@@ -386,6 +386,7 @@ shutdown:
   }
 
   if (_hwRenderEnabled && _glContext) CGLSetCurrentContext(NULL);
+  if (g_instance == self) g_instance = nil;
   [_coreLock unlock];
 
   if (_audioEngine) {

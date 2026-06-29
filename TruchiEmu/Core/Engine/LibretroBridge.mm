@@ -4,6 +4,38 @@
 #import "LibretroCallbacks.h"
 #import "SaveDirectoryBridge.h"
 
+#include <setjmp.h>
+#include <signal.h>
+
+// --- Cheat Crash Recovery ---
+// PicoDrive's retro_cheat_set reads from unmapped Genesis memory addresses
+// when the cheat lookup table entry is zero. Install a permanent SIGSEGV
+// handler that re-raises for non-cheat faults but recovers gracefully from
+// cheat-related crashes.
+static sigjmp_buf g_cheatCrashJmpBuf;
+static volatile sig_atomic_t g_inCheatCall = 0;
+
+static void cheatCrashHandler(int sig) {
+    // NOT in a cheat call — preserve default crash behavior
+    if (!g_inCheatCall) {
+        signal(sig, SIG_DFL);
+        raise(sig);
+        return;
+    }
+    g_inCheatCall = 0;
+    siglongjmp(g_cheatCrashJmpBuf, 1);
+}
+
+static dispatch_once_t g_cheatSigInitOnce;
+static void installCheatSignalHandler(void) {
+    struct sigaction act;
+    memset(&act, 0, sizeof(act));
+    act.sa_handler = cheatCrashHandler;
+    sigemptyset(&act.sa_mask);
+    act.sa_flags = SA_NODEFER;
+    sigaction(SIGSEGV, &act, NULL);
+}
+
 // --- Global State ---
 static dispatch_queue_t g_bridgeQueue = nil;
 static dispatch_queue_t g_optAccessQueue = nil;
@@ -139,6 +171,7 @@ g_frame_poll_callback = callback;
 + (void)cleanupInstance {
     if (g_instance) {
         [g_instance cleanup];
+        g_instance = nil;
     }
     g_optValues = nil;
     g_optDefinitions = nil;
@@ -461,25 +494,52 @@ g_frame_poll_callback = callback;
 }
 
 + (void)setCheatEnabled:(int)index code:(NSString *)code enabled:(BOOL)enabled {
-    if (!g_instance || !g_instance->_retro_cheat_set) return;
+    if (!g_instance || !g_instance->_retro_cheat_set || ![code isKindOfClass:[NSString class]]) return;
     const char *codeStr = code.UTF8String;
+    if (!codeStr) return;
     [g_instance->_coreLock lock];
-    g_instance->_retro_cheat_set(index, enabled, codeStr); 
+    if (!g_instance || !g_instance->_retro_cheat_set) {
+        [g_instance->_coreLock unlock];
+        return;
+    }
+    dispatch_once(&g_cheatSigInitOnce, ^{ installCheatSignalHandler(); });
+    g_inCheatCall = 1;
+    if (sigsetjmp(g_cheatCrashJmpBuf, 1) == 0) {
+        g_instance->_retro_cheat_set(index, enabled, codeStr);
+    } else {
+        bridge_log_printf(RETRO_LOG_WARN, "[Bridge] SIGSEGV caught in retro_cheat_set — skipping cheat index=%d", index);
+    }
+    g_inCheatCall = 0;
     [g_instance->_coreLock unlock];
 }
 
 + (void)resetCheats {
-if (!g_instance || !g_instance->_retro_cheat_reset) return;
-[g_instance->_coreLock lock];
-g_instance->_retro_cheat_reset();
-[g_instance->_coreLock unlock];
+    if (!g_instance || !g_instance->_retro_cheat_reset) return;
+    [g_instance->_coreLock lock];
+    if (!g_instance || !g_instance->_retro_cheat_reset) {
+        [g_instance->_coreLock unlock];
+        return;
+    }
+    dispatch_once(&g_cheatSigInitOnce, ^{ installCheatSignalHandler(); });
+    g_inCheatCall = 1;
+    if (sigsetjmp(g_cheatCrashJmpBuf, 1) == 0) {
+        g_instance->_retro_cheat_reset();
+    } else {
+        bridge_log_printf(RETRO_LOG_WARN, "[Bridge] SIGSEGV caught in retro_cheat_reset");
+    }
+    g_inCheatCall = 0;
+    [g_instance->_coreLock unlock];
 }
 
 + (void)resetGame {
-if (!g_instance || !g_instance->_retro_reset) return;
-[g_instance->_coreLock lock];
-g_instance->_retro_reset();
-[g_instance->_coreLock unlock];
+    if (!g_instance || !g_instance->_retro_reset) return;
+    [g_instance->_coreLock lock];
+    if (!g_instance || !g_instance->_retro_reset) {
+        [g_instance->_coreLock unlock];
+        return;
+    }
+    g_instance->_retro_reset();
+    [g_instance->_coreLock unlock];
 }
 
 + (void)applyCheats:(NSArray<NSDictionary *> *)cheats {
