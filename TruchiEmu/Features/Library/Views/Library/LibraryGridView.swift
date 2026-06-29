@@ -93,22 +93,6 @@ struct LibraryGridView: View {
  NotificationCenter.default.post(name: .openAppSettings, object: nil)
  }
 
-    @ViewBuilder
-    private var regionButtons: some View {
-        ForEach(EmulatorLanguage.allCases) { lang in
-            Button { prefs.systemLanguage = lang } label: {
-                HStack {
-                    Text("\(lang.flagEmoji) \(lang.name)")
-                    if prefs.systemLanguage == lang { Image(systemName: "checkmark") }
-                }
-            }
-        }
-    }
-
-    private var currentRegionName: String {
-        "\(prefs.systemLanguage.flagEmoji) \(prefs.systemLanguage.name)"
-    }
-
     private func triggerBatchDownload(reDownload: Bool) {
         Task {
             guard !viewModel.displayedROMs.isEmpty else { return }
@@ -210,15 +194,13 @@ struct LibraryGridView: View {
     @ObservedObject private var notificationHistory = NotificationHistoryManager.shared
     @State private var showNotificationPopover: Bool = false
     @State private var showNotificationCenterSheet: Bool = false
-    @State private var showRegionChangeAlert: Bool = false
+    @State private var showBoxArtDownloadSheet: Bool = false
     @State private var showHelpSheet: Bool = false
     @State private var isDownloading = false
     @State private var downloadProgress: (current: Int, total: Int) = (0, 0)
     @State private var currentDownloadGameName: String? = nil
     @State private var carouselBoxArtURLs: [URL] = []
     @State private var marqueeOffset: CGFloat = 0
-    @State private var pendingReDownload: Bool = false
-
     private enum ViewMode: String { case grid, list }
 
     @State private var columns: [GridItem] = []
@@ -414,13 +396,7 @@ struct LibraryGridView: View {
                     Section(loc.localized("toolbar.download")) {
                         Button {
                             guard !isDownloading else { return }
-                            let regionSuffix = SystemPreferences.shared.systemLanguage.regionSuffix
-                            let stale = BoxArtService.shared.romsWithStaleRegion(in: viewModel.displayedROMs, currentRegionSuffix: regionSuffix)
-                            if stale.isEmpty {
-                                triggerBatchDownload(reDownload: false)
-                            } else {
-                                showRegionChangeAlert = true
-                            }
+                            showBoxArtDownloadSheet = true
                         } label: {
                             Label(loc.localized("toolbar.downloadAllBoxArt"), systemImage: "arrow.down.circle.fill")
                         }
@@ -437,10 +413,7 @@ struct LibraryGridView: View {
                     Section(loc.localized("toolbar.inputDevice")) {
                         inputDeviceButtons
                     }
-                    Section(loc.localized("toolbar.region")) {
-                        regionButtons
-                    }
-        } label: {
+            } label: {
  HStack(spacing: 4) {
  let hasControllers = controllerService.connectedControllers.contains(where: { !$0.isKeyboard })
  if hasControllers {
@@ -449,12 +422,11 @@ struct LibraryGridView: View {
  } else {
  Image(systemName: "keyboard")
  }
- Text(prefs.systemLanguage.flagEmoji)
                 }
             }
-        .help(loc.localized("toolbar.inputDeviceAndRegion"))
+        .help(loc.localized("toolbar.inputDevice"))
         .tint(ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .primary)
-        }
+            }
         ToolbarItem(placement: .primaryAction) {
             Button {
                 showNotificationPopover.toggle()
@@ -519,16 +491,13 @@ struct LibraryGridView: View {
             .foregroundStyle(ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .primary)
         }
     }
-    .confirmationDialog(loc.localized("toolbar.regionChangedTitle"), isPresented: $showRegionChangeAlert, titleVisibility: .visible) {
-        Button("\(loc.localized("toolbar.regionReDownload")) (\(prefs.systemLanguage.name))") {
-            triggerBatchDownload(reDownload: true)
-        }
-        Button(loc.localized("toolbar.regionDownloadMissing")) {
-            triggerBatchDownload(reDownload: false)
-        }
-        Button("Cancel", role: .cancel) { }
-    } message: {
-        Text(loc.localized("toolbar.regionChangedMessage"))
+    .sheet(isPresented: $showBoxArtDownloadSheet) {
+        BoxArtDownloadSheet(
+            isPresented: $showBoxArtDownloadSheet,
+            onDownload: { reDownload in
+                triggerBatchDownload(reDownload: reDownload)
+            }
+        )
     }
     .sheet(item: $manualBoxArtSearchROM) { rom in
         BoxArtPickerView(rom: rom)

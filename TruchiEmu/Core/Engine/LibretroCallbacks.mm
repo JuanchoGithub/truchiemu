@@ -164,7 +164,7 @@ bool bridge_environment(unsigned cmd, void *data) {
     return true;
 
   case RETRO_ENVIRONMENT_GET_LANGUAGE:
-    if (data) *(unsigned *)data = RETRO_LANGUAGE_ENGLISH;
+    if (data) *(unsigned *)data = g_selectedLanguage;
     return true;
 
 	case RETRO_ENVIRONMENT_GET_VARIABLE: {

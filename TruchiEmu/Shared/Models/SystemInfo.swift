@@ -506,8 +506,8 @@ enum EmulatorLanguage: Int, CaseIterable, Identifiable {
         switch self {
         case .northAmerica, .world, .europe: return 0  // RETRO_LANGUAGE_ENGLISH
         case .japan: return 1  // RETRO_LANGUAGE_JAPANESE
-        case .spain: return 3  // RETRO_LANGUAGE_SPANISH
-        case .brazil: return 6 // RETRO_LANGUAGE_PORTUGUESE
+        case .spain: return 4  // RETRO_LANGUAGE_SPANISH
+        case .brazil: return 7 // RETRO_LANGUAGE_PORTUGUESE
         }
     }
 

@@ -131,6 +131,7 @@ Button(loc.localized("wizard.skip")) {
         AppSettings.setBool("has_completed_onboarding", value: true)
 
         AppSettings.set("display_default_shader_preset", value: wizard.selectedShaderPresetID)
+        SystemPreferences.shared.systemLanguage = wizard.selectedRegion
 
         for folder in wizard.libraryFolders {
             library.addLibraryFolder(url: folder)
@@ -195,7 +196,10 @@ extension SetupWizardView {
 
                 Picker(loc.localized("settings.selectLanguage"), selection: Binding<String>(
                     get: { loc.currentLanguage },
-                    set: { loc.setLanguage($0) })
+                    set: { newLang in
+                        loc.setLanguage(newLang)
+                        autoSelectRegion(for: newLang)
+                    })
                 ) {
                     ForEach(loc.availableLanguages, id: \.self) { lang in
                         Text("\(languageFlag(for: lang)) \(languageDisplayName(for: lang))")
@@ -203,6 +207,67 @@ extension SetupWizardView {
                     }
                 }
                 .pickerStyle(.menu)
+                .padding(.leading, 4)
+            }
+
+            Divider()
+
+            VStack(alignment: .leading, spacing: 8) {
+                Label(loc.localized("wizard.gameRegion"), systemImage: "map")
+                    .font(.headline)
+
+                Text("wizard.regionDescription")
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
+                    .font(.callout)
+
+                Picker(loc.localized("wizard.selectRegion"), selection: $wizard.selectedRegion) {
+                    ForEach(EmulatorLanguage.allCases) { lang in
+                        Text("\(lang.flagEmoji) \(lang.name)")
+                            .tag(lang)
+                    }
+                }
+                .pickerStyle(.menu)
+                .padding(.leading, 4)
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("wizard.regionExamples")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundStyle(AppColors.textTertiary(colorScheme))
+
+                    HStack(spacing: 6) {
+                        ForEach([EmulatorLanguage.northAmerica, .japan, .europe], id: \.self) { region in
+                            Button {
+                                wizard.selectedRegion = region
+                            } label: {
+                                VStack(spacing: 2) {
+                                    if let img = boxArtSample(for: region) {
+                                        Image(nsImage: img)
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(height: 80)
+                                            .clipShape(RoundedRectangle(cornerRadius: 4))
+                                    }
+                                    Text(region.flagEmoji)
+                                        .font(.caption2)
+                                    Text("wizard.region.\(region.name.lowercased().replacingOccurrences(of: " ", with: ""))")
+                                        .font(.system(size: 9))
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding(6)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 6)
+                                        .fill(wizard.selectedRegion == region ? AppColors.brandAccent.opacity(0.12) : AppColors.cardBackgroundSubtle(colorScheme))
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 6)
+                                        .stroke(wizard.selectedRegion == region ? AppColors.brandAccent : Color.clear, lineWidth: 1.5)
+                                )
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
                 .padding(.leading, 4)
             }
 
@@ -253,6 +318,30 @@ Image(systemName: "trash")
                 }
             }
         }
+    }
+
+    private func autoSelectRegion(for language: String) {
+        switch language.lowercased() {
+        case "en": wizard.selectedRegion = .northAmerica
+        case "es": wizard.selectedRegion = .spain
+        case "pt": wizard.selectedRegion = .brazil
+        default: wizard.selectedRegion = .northAmerica
+        }
+    }
+
+    private func boxArtSample(for region: EmulatorLanguage) -> NSImage? {
+        let name: String
+        switch region {
+        case .northAmerica, .world: name = "super_mario_64_usa"
+        case .japan: name = "super_mario_64_japan"
+        case .europe: name = "super_mario_64_europe"
+        case .brazil: name = "super_mario_64_europe"
+        case .spain: name = "super_mario_64_europe"
+        }
+        guard let url = Bundle.main.url(forResource: name, withExtension: "png") else {
+            return nil
+        }
+        return NSImage(contentsOf: url)
     }
 
     private func pickFolder() {

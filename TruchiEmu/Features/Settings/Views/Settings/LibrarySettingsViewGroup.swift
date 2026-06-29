@@ -22,6 +22,7 @@ struct LibrarySettingsView: View {
     // Define searchable sections with their keywords
 private enum LibrarySection: CaseIterable, Identifiable {
   case displayOptions
+  case region
   case libraryFolders
   case saveDirectories
   case maintenance
@@ -31,6 +32,7 @@ private enum LibrarySection: CaseIterable, Identifiable {
   var title: String {
     switch self {
     case .displayOptions: return "Display Options"
+    case .region: return "Region"
     case .libraryFolders: return "Library Folders"
     case .saveDirectories: return "Save Directories"
     case .maintenance: return "Maintenance"
@@ -41,12 +43,14 @@ private enum LibrarySection: CaseIterable, Identifiable {
     switch self {
     case .displayOptions:
       return "display options show bios files hidden mame game list sidebar merge gbc gb fbneo"
+    case .region:
+      return "region box art cover usa japan europe world language core emulation"
     case .libraryFolders:
       return "library folders roms games scan rescan primary folder subfolders add folder refresh rebuild"
     case .saveDirectories:
       return "save directories states sram files backup location migration"
     case .maintenance:
-      return "maintenance rescan scan refresh full library total games folder"
+      return "maintenance rescan scan refresh full library total games folder setup wizard"
     }
   }
         
@@ -87,10 +91,18 @@ var body: some View {
                              .foregroundStyle(AppColors.textSecondary(colorScheme))
                      }
                      
-                     LabeledContent(loc.localized("library.primaryFolders")) {
-                         Text("\(library.primaryFolders.count)")
-                             .foregroundStyle(AppColors.textSecondary(colorScheme))
-                     }
+                      LabeledContent(loc.localized("library.primaryFolders")) {
+                          Text("\(library.primaryFolders.count)")
+                              .foregroundStyle(AppColors.textSecondary(colorScheme))
+                      }
+                      
+                      Button {
+                          library.hasCompletedOnboarding = false
+                          SetupWizardState.shared.hasCompletedWizard = false
+                          SetupWizardState.shared.currentStep = .getStarted
+                      } label: {
+                          Label { Text(loc.localized("library.runSetupWizard")) } icon: { Image(systemName: "wand.and.stars") }
+                      }
                  } header: {
                      Label { Text(loc.localized("library.maintenance")) } icon: { Image(systemName: "wrench.and.screwdriver") }
                  }
@@ -128,8 +140,24 @@ var body: some View {
                      Label { Text(loc.localized("library.displayOptions")) } icon: { Image(systemName: "eyeglasses") }
                  }
              }
-            
-            // Library Folders Section
+             
+             // Region Section
+             if visibleSections.contains(.region) {
+                 Section {
+                     Picker(loc.localized("library.gameRegion"), selection: $prefs.systemLanguage) {
+                         ForEach(EmulatorLanguage.allCases) { lang in
+                             Text("\(lang.flagEmoji) \(lang.name)").tag(lang)
+                         }
+                     }
+                     Text(loc.localized("library.regionDescription"))
+                         .font(.caption)
+                         .foregroundStyle(AppColors.textSecondary(colorScheme))
+                 } header: {
+                     Label { Text(loc.localized("library.region")) } icon: { Image(systemName: "map") }
+                 }
+             }
+             
+             // Library Folders Section
             if visibleSections.contains(.libraryFolders) {
                 LibraryFoldersSection(
                     scanningFolders: $scanningFolders,

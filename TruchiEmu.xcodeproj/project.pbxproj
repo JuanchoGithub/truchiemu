@@ -113,6 +113,7 @@
 		1471E66EA479C2A887D47B15 /* PCE.png in Resources */ = {isa = PBXBuildFile; fileRef = 764D6A71F6401BE53D60A3FE /* PCE.png */; };
 		14B0E6739ECD3D9180CBBF0C /* SystemDatabase.json in Resources */ = {isa = PBXBuildFile; fileRef = 52EF17FAC9C9F438B0FAC30E /* SystemDatabase.json */; };
 		14C338381382A9CAC6860ECA /* mgba_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = 31496D3D05A64CD62A82B014 /* mgba_libretro_default.json */; };
+		14E2C0C08F45EB8F76C39A80 /* super_mario_64_usa.png in Resources */ = {isa = PBXBuildFile; fileRef = 172791D2FD0C2A8D08F33F65 /* super_mario_64_usa.png */; };
 		14FB8DCADACF67C7B6902B07 /* BoxArtPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40FDC856DB192502B6962553 /* BoxArtPickerView.swift */; };
 		151D372D28A505324152DBB2 /* AnalogDeadZone.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2B0864FA900DBC4BEF891BB /* AnalogDeadZone.swift */; };
 		15300F8312E4D43A32A26757 /* MoveListModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = D16D483A383752A639254DD5 /* MoveListModels.swift */; };
@@ -719,6 +720,7 @@
 		9960784514A579E14913AAD1 /* fightdata_vsav2.json in Resources */ = {isa = PBXBuildFile; fileRef = BAF04CD09DFB8519346C6DC1 /* fightdata_vsav2.json */; };
 		99B049AB137B01676D6EA272 /* InputStateTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C0A03394D956A91354E3574 /* InputStateTracker.swift */; };
 		9A050AB1F0F270546BC90A1E /* input_systemLabels_sms.json in Resources */ = {isa = PBXBuildFile; fileRef = 329419E38C68F3AC2AE5C3D6 /* input_systemLabels_sms.json */; };
+		9A15412EBDC930DB4F3ECD58 /* super_mario_64_japan.png in Resources */ = {isa = PBXBuildFile; fileRef = CC22A0575FAB26831CC547B9 /* super_mario_64_japan.png */; };
 		9A20252FD5A94F429367B691 /* LibraryGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C15A861E2696512846B9609 /* LibraryGridView.swift */; };
 		9A51286BE3E544F3EB1C86E5 /* input_systemLabels_gbc.json in Resources */ = {isa = PBXBuildFile; fileRef = 1E94765F417306042D759EAA /* input_systemLabels_gbc.json */; };
 		9A8549087B5607288432E8CD /* input_coreOverrides_ecwolf.json in Resources */ = {isa = PBXBuildFile; fileRef = 7B9A192F2BDD7DB5E61737FE /* input_coreOverrides_ecwolf.json */; };
@@ -916,6 +918,7 @@
 		C2CC086BC5F14012D941B0C2 /* input_coreOverrides_stella.json in Resources */ = {isa = PBXBuildFile; fileRef = 04750B20FADB6525DAFEEF63 /* input_coreOverrides_stella.json */; };
 		C31BC5A387A1C7CF3C8013F5 /* atari5200@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = A2C16D86692E8B684AC3F8D8 /* atari5200@132w.png */; };
 		C3C647B005F93B2155581A11 /* fightdata_batcir.json in Resources */ = {isa = PBXBuildFile; fileRef = 8383611EAFAFBDD5EBF6D51E /* fightdata_batcir.json */; };
+		C3D307EC5283309D8E1FCAE6 /* BoxArtDownloadSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1890BB84189BD9447665BA03 /* BoxArtDownloadSheet.swift */; };
 		C434589599BCC2A082844B33 /* fightdata_sams64.json in Resources */ = {isa = PBXBuildFile; fileRef = 153FF1E93D7B4F7B1ED3BCF8 /* fightdata_sams64.json */; };
 		C4392182D76DABD7EBA9624D /* MoveNotationRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82BFAF8699B366BF370E079E /* MoveNotationRenderer.swift */; };
 		C49349C4AB1D3108B02189EB /* fightdata_ggisuka.json in Resources */ = {isa = PBXBuildFile; fileRef = E9B9995D972209BB3799ED1F /* fightdata_ggisuka.json */; };
@@ -1058,6 +1061,7 @@
 		E5DF81ECE7A293F0F403D992 /* mame2010_libretro.json in Resources */ = {isa = PBXBuildFile; fileRef = 4AD390216F957165FC9494EE /* mame2010_libretro.json */; };
 		E602AB588AE44CE5C78E87FD /* input_systemLabels_vircon32.json in Resources */ = {isa = PBXBuildFile; fileRef = 0852DBE1836B35F40C72AC9B /* input_systemLabels_vircon32.json */; };
 		E62EBD0220FD96647B367212 /* fightdata_fatfury2.json in Resources */ = {isa = PBXBuildFile; fileRef = BB2C4C158DD334B72241DBD2 /* fightdata_fatfury2.json */; };
+		E66FC435AF2AE3E864ABE0D2 /* super_mario_64_europe.png in Resources */ = {isa = PBXBuildFile; fileRef = C58E9C2F295E1E1E653F103C /* super_mario_64_europe.png */; };
 		E6DA83DD276F510920FF5649 /* ArchiveExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44CE66A9E7C20983A7AD9D5A /* ArchiveExtractor.swift */; };
 		E6DE454D5632941AE8FFC35A /* analyze_unknown_zips.py in Resources */ = {isa = PBXBuildFile; fileRef = 4FD93F149B78AD0F29104AD2 /* analyze_unknown_zips.py */; };
 		E73E127C7D9D53CC6CC9A4E4 /* fightdata_breakers.json in Resources */ = {isa = PBXBuildFile; fileRef = 8B9DBDDFF0888D2FDBE11C8D /* fightdata_breakers.json */; };
@@ -1290,10 +1294,12 @@
 		168A44C10928ECFB8C05A48B /* SUFAMI.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SUFAMI.png; sourceTree = "<group>"; };
 		16B456469AB3E245A4BE1E37 /* input_coreLabels_nestopia.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_nestopia.json; sourceTree = "<group>"; };
 		16C99BD273FC88A6C2D9A000 /* ButtonKeyResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonKeyResolver.swift; sourceTree = "<group>"; };
+		172791D2FD0C2A8D08F33F65 /* super_mario_64_usa.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = super_mario_64_usa.png; sourceTree = "<group>"; };
 		17ACE1CD476919F03307CB20 /* ExtractedROMCacheSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtractedROMCacheSettingsView.swift; sourceTree = "<group>"; };
 		181CF812FAA2BD9DF45042BF /* ROMScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMScanner.swift; sourceTree = "<group>"; };
 		183B1AA28F701CE236CE2B74 /* input_coreLabels_pcsx_rearmed.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_pcsx_rearmed.json; sourceTree = "<group>"; };
 		1873201572A2E05A797162E2 /* TrainingModeOverlayViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingModeOverlayViewModel.swift; sourceTree = "<group>"; };
+		1890BB84189BD9447665BA03 /* BoxArtDownloadSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxArtDownloadSheet.swift; sourceTree = "<group>"; };
 		18973687527A0FA4A857468A /* input_coreLabels_bsnes_balanced.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_bsnes_balanced.json; sourceTree = "<group>"; };
 		1898126C5EF4999C1CE14CC2 /* input_coreLabels_snes9x_2005_plus.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_snes9x_2005_plus.json; sourceTree = "<group>"; };
 		18FB8DBEC0B88BDDE5768B78 /* mupen64plus_next_libretro_default.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = mupen64plus_next_libretro_default.json; sourceTree = "<group>"; };
@@ -2108,6 +2114,7 @@
 		C4BFFB66CF03271089D7FED6 /* slang_shader_bridge.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = slang_shader_bridge.mm; sourceTree = "<group>"; };
 		C517164F656D95C28F9ECC05 /* PALMOS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PALMOS.png; sourceTree = "<group>"; };
 		C527AE4EF195F38238D1FA80 /* megadrive-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "megadrive-cheats.zip"; sourceTree = "<group>"; };
+		C58E9C2F295E1E1E653F103C /* super_mario_64_europe.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = super_mario_64_europe.png; sourceTree = "<group>"; };
 		C5C3E57020AB94499BF98B56 /* fightdata_capsnk.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_capsnk.json; sourceTree = "<group>"; };
 		C604EF864E31A2BD810A2345 /* jaguar-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "jaguar-cheats.zip"; sourceTree = "<group>"; };
 		C61A9A36D430D34E4C3ABDE0 /* GameLoadingOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLoadingOverlay.swift; sourceTree = "<group>"; };
@@ -2140,6 +2147,7 @@
 		CB274110F7281D8DBC58FA5C /* itv@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "itv@132w.png"; sourceTree = "<group>"; };
 		CB6C88486821941C90609217 /* genesis-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "genesis-cheats.zip"; sourceTree = "<group>"; };
 		CBFE3A9E877C2D62FEDDB15E /* SetupWizardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupWizardView.swift; sourceTree = "<group>"; };
+		CC22A0575FAB26831CC547B9 /* super_mario_64_japan.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = super_mario_64_japan.png; sourceTree = "<group>"; };
 		CC6AB7FF503B33DE09A41088 /* DragPreviewStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragPreviewStack.swift; sourceTree = "<group>"; };
 		CC6D983ADA6F2058A430F875 /* appIcon256.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = appIcon256.jpg; sourceTree = "<group>"; };
 		CCCD9FDE272E4A9FC1C382DB /* fightdata_jojo.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_jojo.json; sourceTree = "<group>"; };
@@ -3096,6 +3104,7 @@
 				C360149B8F0532EB65B66AFD /* Info.plist */,
 				B2667AB0DCBF48CAC505C84C /* TruchiEmu.entitlements */,
 				18A378D98313D80173A8B0B0 /* AppIcons */,
+				D0CDC1D3C0773FC9C8698346 /* BoxArtSamples */,
 				FE700291499B346B34E3C68A /* cheats */,
 				D7460AC8093968B54EEAD8B5 /* CoreOverrides */,
 				35AF3E1D0EA8DD7BDA67C06A /* Data */,
@@ -3196,6 +3205,7 @@
 		928F72DDE10F60698F881839 /* Library */ = {
 			isa = PBXGroup;
 			children = (
+				1890BB84189BD9447665BA03 /* BoxArtDownloadSheet.swift */,
 				E45F87F47B1F2A9E01DD9315 /* CategoryRowButton.swift */,
 				3F198CC9640367156C593D71 /* CategoryViews.swift */,
 				E65528ABEAB97C567F9B73A1 /* FilterChipView.swift */,
@@ -3798,6 +3808,16 @@
 				46DE9EB293E2EF4339C372C2 /* MAMEVerificationRecord.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		D0CDC1D3C0773FC9C8698346 /* BoxArtSamples */ = {
+			isa = PBXGroup;
+			children = (
+				C58E9C2F295E1E1E653F103C /* super_mario_64_europe.png */,
+				CC22A0575FAB26831CC547B9 /* super_mario_64_japan.png */,
+				172791D2FD0C2A8D08F33F65 /* super_mario_64_usa.png */,
+			);
+			path = BoxArtSamples;
 			sourceTree = "<group>";
 		};
 		D312A527B5D5559AC4A8B225 /* Shared */ = {
@@ -5221,6 +5241,9 @@
 				1722F9AFF0C43394DFA02AC1 /* snes-cheats.zip in Resources */,
 				F6B9BD179D9E56D72F6EEC41 /* spectrum-cheats.zip in Resources */,
 				9B3B828960D33C81D8E6AF17 /* sufami@132w.png in Resources */,
+				E66FC435AF2AE3E864ABE0D2 /* super_mario_64_europe.png in Resources */,
+				9A15412EBDC930DB4F3ECD58 /* super_mario_64_japan.png in Resources */,
+				14E2C0C08F45EB8F76C39A80 /* super_mario_64_usa.png in Resources */,
 				DEBE1AA24F4A10D04F5838F5 /* supergrafx-cheats.zip in Resources */,
 				6AD3511CBFB9BB00BC87D275 /* supervision@132w.png in Resources */,
 				F63C72BAE0582C9EA6137677 /* swanstation_libretro_default.json in Resources */,
@@ -5360,6 +5383,7 @@
 				9E5D49ECDFC7033FC9928625 /* BezelStorageManager.swift in Sources */,
 				A9A54E51FAF9377B35AC50DB /* BezelSystemMapping.swift in Sources */,
 				D9A89ADCFC6D89C2CDA6F590 /* Bezels.swift in Sources */,
+				C3D307EC5283309D8E1FCAE6 /* BoxArtDownloadSheet.swift in Sources */,
 				14FB8DCADACF67C7B6902B07 /* BoxArtPickerView.swift in Sources */,
 				49C54B79CA96648E9B9F7069 /* BoxArtService.swift in Sources */,
 				126430C5084506DE1D08831F /* BoxArtSettingsView.swift in Sources */,

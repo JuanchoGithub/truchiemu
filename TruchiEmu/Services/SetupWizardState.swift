@@ -68,6 +68,7 @@ final class SetupWizardState: ObservableObject {
     @Published var achievementsUsername: String = ""
     @Published var achievementsPassword: String = ""
     @Published var selectedShaderPresetID: String = ""
+    @Published var selectedRegion: EmulatorLanguage = .northAmerica
     @Published var controllerDetected: Bool = false
     @Published var detectedControllerName: String = ""
     
