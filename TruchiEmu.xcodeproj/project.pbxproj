@@ -927,6 +927,7 @@
 		C5BC1D54B9F97BC51205F65A /* sega_101.bin in Resources */ = {isa = PBXBuildFile; fileRef = D6F776D4F0B80827F6067861 /* sega_101.bin */; };
 		C5D1641BD6B3B412414CFB7F /* ManualActionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE3376B3A01ADAEEAA96F108 /* ManualActionStatus.swift */; };
 		C65A378F28F49FAFF2A631B1 /* CheatManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3487BCC158871E9D5EAF669A /* CheatManagerView.swift */; };
+		BA095D65281E4F849D498E31 /* CheatBrowserList.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA58C4E3C384496F9E99D5EA /* CheatBrowserList.swift */; };
 		C68A4EDD056E972A77C5E2B1 /* fightdata_tkdensho.json in Resources */ = {isa = PBXBuildFile; fileRef = 8B671DBF7EFB14A6A1AF510D /* fightdata_tkdensho.json */; };
 		C6A0CB4679D181B87812E172 /* input_systemLabels_2048.json in Resources */ = {isa = PBXBuildFile; fileRef = 302B0A1EBB01D110481DB6DC /* input_systemLabels_2048.json */; };
 		C6F9D0C4BECBB033F5726AEB /* MoveNotationTokenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F33C63134E9A426481033364 /* MoveNotationTokenView.swift */; };
@@ -1443,6 +1444,7 @@
 		3438679C8A46772B45D51C7A /* SGB.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SGB.png; sourceTree = "<group>"; };
 		3459E3228FC584E29B93359B /* input_coreOverrides_virtual_jaguar.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_virtual_jaguar.json; sourceTree = "<group>"; };
 		3487BCC158871E9D5EAF669A /* CheatManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatManagerView.swift; sourceTree = "<group>"; };
+		BA58C4E3C384496F9E99D5EA /* CheatBrowserList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatBrowserList.swift; sourceTree = "<group>"; };
 		348FC44E8233983FBBE7319B /* MotionDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionDetector.swift; sourceTree = "<group>"; };
 		352DC36DB12EA05E9995055B /* LibretroThumbnailManifestService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroThumbnailManifestService.swift; sourceTree = "<group>"; };
 		3537FA7BC650C5F0D0984A76 /* fightdata_aliencha.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_aliencha.json; sourceTree = "<group>"; };
@@ -3115,6 +3117,7 @@
 				A7B45C4797CC22995053ADA4 /* AchievementToastView.swift */,
 				6B1CC886E59DC123C478AE62 /* BezelBackgroundView.swift */,
 				3487BCC158871E9D5EAF669A /* CheatManagerView.swift */,
+				BA58C4E3C384496F9E99D5EA /* CheatBrowserList.swift */,
 				A47516431097E29AD293A7B5 /* CorePickerView.swift */,
 				812B950A5FCB555990A28D2A /* GameGuideSidebar.swift */,
 				36A9574C25916D8504475C4C /* GameLaunchErrorOverlay.swift */,
@@ -5376,6 +5379,7 @@
 				6527A391D0F338CB5BEB374C /* CheatDownloadService.swift in Sources */,
 				7E1281194B7150DB55497A7A /* CheatManagerService.swift in Sources */,
 				C65A378F28F49FAFF2A631B1 /* CheatManagerView.swift in Sources */,
+				BA095D65281E4F849D498E31 /* CheatBrowserList.swift in Sources */,
 				86641DD0317EBE4B920FA90B /* CheatManagerViews.swift in Sources */,
 				FF4E588A3F4D531D818A8298 /* CheatParser.swift in Sources */,
 				CDC8133D2C03E637999E2155 /* CheatSettingsView.swift in Sources */,

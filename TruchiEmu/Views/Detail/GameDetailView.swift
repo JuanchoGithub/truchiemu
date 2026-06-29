@@ -57,14 +57,6 @@ struct GameDetailView: View {
     @State var fetchBoxArtAutoDismiss: Task<Void, Never>?
     @State var currentBezelImage: NSImage? = nil
     @StateObject var cheatManagerService = CheatManagerService.shared
-    @StateObject var cheatDownloadService = CheatDownloadService.shared
-    @State var cheatCount: Int = 0
-    @State var enabledCheatCount: Int = 0
-    @State var downloadMessage: String? = nil
-    @State var downloadMessageTone: ManualStatusTone = .info
-    @State var cheatsList: [Cheat] = []
-    @State var cheatSearchText: String = ""
-    @State var showEnabledOnlyCheats: Bool = false
     @State var isLaunchingGame = false
     @State var showSystemPicker: Bool = false
     @State var gamepadTwoZoneContext: GamepadTwoZoneContext?

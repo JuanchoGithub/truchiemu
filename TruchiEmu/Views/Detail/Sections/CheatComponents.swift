@@ -15,11 +15,11 @@ struct CheatListRowView: View {
             )) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(cheat.displayName)
-                        .font(.subheadline)
+                        .font(.body)
                         .foregroundColor(AppColors.textPrimary(colorScheme))
                     if !cheat.code.isEmpty {
                         Text(cheat.codePreview)
-                            .font(.system(.caption, design: .monospaced))
+                            .font(.system(.subheadline, design: .monospaced))
                             .foregroundColor(AppColors.textTertiary(colorScheme))
                     }
                 }
@@ -29,7 +29,7 @@ struct CheatListRowView: View {
             Spacer()
 
 Text(cheat.format.displayName)
-      .font(.caption2)
+      .font(.caption)
       .padding(.horizontal, 6)
       .padding(.vertical, 2)
       .background(AppColors.accentTertiary.opacity(0.3))
