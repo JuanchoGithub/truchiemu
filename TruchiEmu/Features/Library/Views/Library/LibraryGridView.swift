@@ -488,6 +488,10 @@ struct LibraryGridView: View {
             }
             .help(loc.localized("toolbar.help"))
             .foregroundStyle(ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .primary)
+            .popover(isPresented: $showHelpSheet, arrowEdge: .bottom) {
+                HelpSheetView()
+                    .gamepadDismissable { showHelpSheet = false }
+            }
         }
         ToolbarItem(placement: .primaryAction) {
             Button {
@@ -533,10 +537,6 @@ struct LibraryGridView: View {
     .sheet(isPresented: $showNotificationCenterSheet) {
         NotificationCenterSheetView()
             .gamepadDismissable { showNotificationCenterSheet = false }
-    }
-    .sheet(isPresented: $showHelpSheet) {
-        HelpSheetView()
-            .gamepadDismissable { showHelpSheet = false }
     }
     .sheet(item: $systemPickerItem, onDismiss: { systemPickerItem = nil }) { item in
         SystemPickerView(roms: item.roms, library: library) {

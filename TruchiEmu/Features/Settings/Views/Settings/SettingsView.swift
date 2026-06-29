@@ -289,6 +289,7 @@ struct SettingsView: View {
         }
         .environment(SystemDatabaseWrapper.shared)
         .frame(minWidth: 680, minHeight: 400)
+        .navigationTitle(loc.localized("app.settings"))
         .onAppear {
             if settingsGamepadContext == nil {
                 let ctx = GamepadSheetContext(itemCount: 0)
@@ -506,6 +507,9 @@ private struct WindowCloseInterceptor: NSViewRepresentable {
         DispatchQueue.main.async {
             if let window = view.window {
                 window.delegate = context.coordinator
+                if !window.styleMask.contains(.resizable) {
+                    window.styleMask.insert(.resizable)
+                }
             }
         }
         return view
@@ -519,6 +523,9 @@ private struct WindowCloseInterceptor: NSViewRepresentable {
         context.coordinator.pendingToolbarAccent = pendingToolbarAccent
         context.coordinator.pendingTintedSurfaces = pendingTintedSurfaces
         context.coordinator.pendingAppearanceMode = pendingAppearanceMode
+        if let window = nsView.window, !window.styleMask.contains(.resizable) {
+            window.styleMask.insert(.resizable)
+        }
     }
 
     func makeCoordinator() -> Coordinator {

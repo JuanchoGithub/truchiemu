@@ -61,6 +61,14 @@ struct HelpSheetView: View {
                 .buttonStyle(.plain)
             }
             Spacer()
+            Button {
+                dismiss()
+            } label: {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.system(size: 16))
+                    .foregroundStyle(AppColors.textTertiary(colorScheme))
+            }
+            .buttonStyle(.plain)
         }
         .padding(.horizontal, AppSpacing.xl3)
         .padding(.vertical, AppSpacing.lg)
