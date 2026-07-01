@@ -4,57 +4,117 @@ title: Sistema de Shaders - Documentación de TruchiEmu
 ---
 
 <div class="feature-docs">
-<h1>Sistema de Shaders</h1>
+    <h1>Sistema de Shaders</h1>
 
-<div class="feature-overview">
-<p class="lead">El sistema avanzado de shaders de TruchiEmu transforma tu experiencia de gaming retro con mejoras visuales en tiempo real, simulación CRT y efectos de post-procesamiento modernos. Construido sobre el framework Metal de Apple, nuestro pipeline de shaders ofrece renderizado pixel-perfect con cero sobrecarga de rendimiento.</p>
-</div>
+    <div class="feature-overview">
+        <p class="lead">Los shaders cambian cómo se ve tu juego en pantalla&mdash;agrega un brillo CRT cálido, convierte los píxeles en una cuadrícula LCD de Game Boy, o limpia todo con un escalado nítido. Elige un preset y funciona al instante.</p>
+    </div>
 
-<section id="service-explanation">
-<h2>Descripción General</h2>
-<p>Los shaders te permiten redefinir lo que llega a la pantalla: convierte píxeles planos en un cálido resplandor CRT, una pantalla LCD de Game Boy fiel a la época, o un escalado moderno y limpio. Todo se ejecuta en la GPU así que el coste es mínimo, y puedes ajustar los parámetros en vivo sin reiniciar el juego.</p>
+    <section id="service-explanation">
+        <h2>Descripción General</h2>
+        <p>TruchiEmu viene con dos tipos de shaders:</p>
+        <ul class="feature-list">
+            <li><strong>Presets integrados</strong> &mdash; 14 efectos listos para usar: CRT, LCD portátil, suavizado y video compuesto. Sin descargas ni configuración.</li>
+            <li><strong>Presets Slang/RetroArch</strong> &mdash; cientos de presets creados por la comunidad del proyecto <a href="https://github.com/libretro/slang-shaders">libretro slang-shaders</a>. Los mejores aparecen en la pestaña "Todos"; todo lo descubierto aparece en la pestaña "Slang".</li>
+        </ul>
+        <p>Todo funciona rápido en cualquier Mac moderno. Elige un preset y juega.</p>
 
-<h3>Lo Que Incluye la Biblioteca</h3>
-<ul class="feature-list">
-<li><strong>14 Presets Integrados:</strong> Organizados en categorías CRT, LCD, Suavizado y Personalizado</li>
-<li><strong>Efectos CRT:</strong> CRT Lottes, CRT Classic, Lite CRT, CRT Multipass: brillo de fósforo, líneas de escaneo, curvatura y distorsión de barril</li>
-<li><strong>Efectos LCD Portátil:</strong> 8b Game Boy, 8b Game Boy Color, GBA (LCD Avanzada), PSP (LCD Avanzada), NDS (LCD Avanzada), 3DS (LCD Avanzada), Dot Matrix LCD</li>
-<li><strong>Escaladores Limpios:</strong> Sharp Bilinear y Smooth Upscale para un look moderno y sin filtrar</li>
-<li><strong>Controles de Color:</strong> Realce de color, corrección de matriz de gamut y controles deslizantes de tinte por preset</li>
-<li><strong>Presets Personalizados:</strong> Guarda tus propios parámetros ajustados como un archivo <code>.truchishader</code> que puedes exportar y reimportar</li>
-</ul>
+        <h3>Lo Que Incluye la Biblioteca</h3>
+        <ul class="feature-list">
+            <li><strong>14 Presets Integrados</strong> &mdash; CRT Lottes, CRT Classic, Lite CRT, CRT Multipass, Sharp Bilinear, Smooth Upscale, 8b Game Boy, 8b Game Boy Color, GBA, PSP, NDS, 3DS, Dot Matrix LCD y Sin Shader. Cubren looks CRT, portátil, suavizado y compuesto.</li>
+            <li><strong>Cientos de Presets Slang/RetroArch</strong> &mdash; CRT, NTSC, cel shading, anti-aliasing, procedural, bezels y más. Una selección curada aparece en la pestaña <strong>Todos</strong>; todos los presets descubiertos están en la pestaña <strong>Slang</strong>. Coloca nuevos archivos <code>.slangp</code> en <code>~/Library/Application Support/TruchiEmu/SlangPresets/</code> y aparecen automáticamente.</li>
+            <li><strong>Tus Propios Presets</strong> &mdash; Guarda cualquier configuración ajustada como archivo <code>.truchishader</code> que puedes exportar, compartir y reimportar. Aparecen en la pestaña <strong>Guardados</strong>.</li>
+            <li><strong>Shaders por Juego</strong> &mdash; Asigna un shader a un juego específico desde su página de detalle, o aplícalo a todos los juegos del mismo sistema.</li>
+        </ul>
+    </section>
 
-<h3>Rendimiento</h3>
-<p>Los shaders se ejecutan en la GPU mediante Metal. El passthrough y los escaladores básicos son prácticamente gratuitos; las simulaciones CRT y LCD usan más tiempo de GPU pero se mantienen a 60fps en cualquier Mac moderno. Si un preset específico se siente pesado en tu hardware, prueba con Lite CRT o Sharp Bilinear como alternativas más ligeras.</p>
-</section>
+    <section id="custom-presets">
+        <h2>Presets Personalizados (.truchishader)</h2>
+        <p>Una vez que tengas el look perfecto, puedes guardarlo como preset personalizado y llevarlo a donde quieras.</p>
+        <ul class="feature-list">
+            <li><strong>Guardar</strong> &mdash; Haz clic en <strong>Guardar</strong> en el editor de shaders después de ajustar los parámetros. Ponle un nombre y aparecerá en la pestaña <strong>Guardados</strong>.</li>
+            <li><strong>Exportar</strong> &mdash; Haz clic derecho en cualquier preset guardado y elige <strong>Exportar</strong> para obtener un archivo <code>.truchishader</code> que puedes compartir o guardar como respaldo.</li>
+            <li><strong>Importar</strong> &mdash; Haz clic en <strong>Importar</strong> en el editor de shaders y selecciona un archivo <code>.truchishader</code> que alguien te haya enviado. Recibe un ID nuevo para no conflictuar con presets existentes.</li>
+            <li><strong>Ubicación</strong> &mdash; Los archivos están en <code>~/Library/Application Support/TruchiEmu/Shaders/</code> por si necesitas encontrarlos o eliminarlos manualmente.</li>
+        </ul>
+    </section>
 
-<section id="step-by-step-guide">
-<h2>Guía de Configuración Paso a Paso</h2>
+    <section id="step-by-step-guide">
+        <h2>Guía Paso a Paso</h2>
 
-<h3>Configuración Básica de Shaders</h3>
-<ol class="setup-steps">
-<li>
-<strong>Acceder a la Configuración de Shaders</strong>
-<p>Abre el Editor de Shaders desde la barra de herramientas de la ventana de juego, o elige un preset rápido en <code>Configuración → Video → Shaders</code>. El editor completo es un panel flotante con búsqueda, pestañas de categoría, controles deslizantes de parámetros, y opciones de guardado/exportación.</p>
-<img src="{{ '/media/screenshots/shader-settings.png' | relative_url }}" alt="Panel de Configuración de Shaders">
-</li>
-<li>
-<strong>Seleccionar un Preset</strong>
-<p>Elige entre 14 presets integrados organizados por categoría:</p>
-<ul>
-<li><strong>CRT:</strong> CRT Lottes, CRT Classic, Lite CRT, CRT Multipass</li>
-<li><strong>LCD:</strong> 8b Game Boy, 8b Game Boy Color, GBA (Advanced LCD), PSP (Advanced LCD), NDS (Advanced LCD), 3DS (Advanced LCD), Dot Matrix LCD</li>
-<li><strong>Suavizado:</strong> Sharp Bilinear, Smooth Upscale (ScaleFX)</li>
-<li><strong>Personalizado:</strong> Sin Shader (passthrough)</li>
-</ul>
-<p>Cada preset incluye parámetros de shader pre-configurados optimizados para diferentes tipos de pantalla.</p>
-</li>
-<li>
-<strong>Ajustar Parámetros del Shader</strong>
-<p>Usa los controles deslizantes de parámetros para ajustar los efectos en tiempo real. Los cambios se aplican inmediatamente sin necesidad de reiniciar.</p>
-<img src="{{ '/media/screenshots/shader-picker.png' | relative_url }}" alt="Controles de Parámetros de Shaders">
-</li>
-</ol>
-</section>
+        <h3>Elegir un Shader</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Abrir el Editor de Shaders</strong>
+                <p>Haz clic en el ícono de shaders en la barra de herramientas de la ventana de juego, o ve a <code>Configuración &rarr; Video &rarr; Shaders</code>. El editor se abre como un panel flotante que puedes dejar abierto mientras juegas.</p>
+                <img src="{{ '/media/screenshots/shader-settings.png' | relative_url }}" alt="Panel de Configuración de Shaders">
+            </li>
+            <li>
+                <strong>Elegir un Preset</strong>
+                <p>Navega por las pestañas de categoría:</p>
+                <ul>
+                    <li><strong>Todos</strong> &mdash; Mezcla curada de los mejores presets integrados y Slang</li>
+                    <li><strong>CRT</strong> &mdash; CRT Lottes, Classic, Lite, Multipass, más presets Slang CRT</li>
+                    <li><strong>LCD</strong> &mdash; Game Boy hasta 3DS, más presets Slang portátiles</li>
+                    <li><strong>Suavizado</strong> &mdash; Sharp Bilinear, Smooth Upscale</li>
+                    <li><strong>Compuesto</strong> &mdash; Efectos de video compuesto</li>
+                    <li><strong>Slang</strong> &mdash; Todos los presets <code>.slangp</code> descubiertos</li>
+                    <li><strong>Guardados</strong> &mdash; Tus presets <code>.truchishader</code> personalizados</li>
+                </ul>
+            </li>
+            <li>
+                <strong>Ajustar el Aspecto</strong>
+                <p>Cada preset incluye controles deslizantes, interruptores y menús desplegables&mdash;scanlines, curvatura, refuerzo de color, brillo y más. Mueve un control y ves el cambio al instante. Sin necesidad de reiniciar.</p>
+                <img src="{{ '/media/screenshots/shader-picker.png' | relative_url }}" alt="Controles de Parámetros de Shaders">
+            </li>
+        </ol>
 
+        <h3>Edición en Vivo de Shaders</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Iniciar con Edición en Vivo</strong>
+                <p>En la página de detalle de cualquier juego, haz clic en <strong>Edición en Vivo</strong>. El juego se inicia y el editor de shaders se abre a su lado.</p>
+            </li>
+            <li>
+                <strong>Ajusta Mientras Juegas</strong>
+                <p>Mueve los controles o cambia de preset&mdash;el juego se actualiza en tiempo real. Compara looks sin cerrar nada.</p>
+            </li>
+            <li>
+                <strong>¿Terminaste? Se Guarda</strong>
+                <p>Cierra el editor y tu configuración se guarda como la predeterminada para ese juego. La próxima vez que lo inicies, lo recordará.</p>
+            </li>
+        </ol>
+
+        <h3>Shaders por Juego y por Sistema</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Asignar un Shader a un Juego</strong>
+                <p>Abre la página de detalle de cualquier juego. La sección de Shaders muestra lo que está activo. Haz clic en <strong>Personalizar</strong> para elegir un preset diferente o ajustar parámetros&mdash;esa configuración se queda solo para ese juego.</p>
+            </li>
+            <li>
+                <strong>Aplicar a Todos los Juegos del Mismo Sistema</strong>
+                <p>Haz clic en <strong>Aplicar a Todos</strong> para establecer un shader como predeterminado para todos los ROMs de ese sistema. Los juegos que ya tienen su propio shader personalizado no se modifican.</p>
+            </li>
+            <li>
+                <strong>Deshacer una Configuración por Juego</strong>
+                <p>Haz clic en <strong>Usar Predeterminado</strong> para limpiar el shader personalizado de un juego. Vuelve al predeterminado del sistema.</p>
+            </li>
+        </ol>
+    </section>
+
+    <section id="references">
+        <h2>Características Relacionadas</h2>
+
+        <div class="related-services">
+            <div class="service-card">
+                <h3><a href="{{ '/features/themes.html' | relative_url }}">Temas y Apariencia</a></h3>
+                <p>Colores de acento personalizados y superficies teñidas para que la app combine con el estilo de tu shader.</p>
+            </div>
+
+            <div class="service-card">
+                <h3><a href="{{ '/features/game-guide.html' | relative_url }}">Ventana de Juego</a></h3>
+                <p>La barra de herramientas de la ventana de juego te da acceso rápido a shaders, estados de guardado, trucos y controles.</p>
+            </div>
+        </div>
+    </section>
 </div>
