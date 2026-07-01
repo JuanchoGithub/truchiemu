@@ -61,7 +61,7 @@ targets:
         CLANG_CXX_LANGUAGE_STANDARD: gnu++17
         CLANG_CXX_LIBRARY: libc++
         MACOSX_DEPLOYMENT_TARGET: "14.0"
-        ARCHS: "$(ARCHS_STANDARD)"
+        ARCHS: "arm64"
         CODE_SIGN_ENTITLEMENTS: TruchiEmu/Resources/TruchiEmu.entitlements
         CODE_SIGN_STYLE: Automatic
         ENABLE_HARDENED_RUNTIME: NO
@@ -129,7 +129,7 @@ targets:
         CLANG_CXX_LANGUAGE_STANDARD: gnu++17
         CLANG_CXX_LIBRARY: libc++
         MACOSX_DEPLOYMENT_TARGET: "14.0"
-        ARCHS: "$(ARCHS_STANDARD)"
+        ARCHS: "arm64"
         CODE_SIGN_STYLE: Manual
         CODE_SIGN_IDENTITY: "-"
         ENABLE_HARDENED_RUNTIME: NO
