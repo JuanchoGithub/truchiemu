@@ -21,10 +21,12 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
             <li><a href="#savestates">Save Features</a></li>
             <li><a href="#themes">Themes &amp; Appearance</a></li>
             <li><a href="#bezels">Bezels &amp; Screen Framing</a></li>
-<li><a href="#analog-mouse">Analog Mouse Support</a></li>
-<li><a href="#game-guide">Game Guide</a></li>
-<li><a href="#training-mode">Training Mode</a></li>
-            <li><a href="#move-lists">Move List Overlay</a></li>
+            <li><a href="#controllers">Controller Support</a></li>
+            <li><a href="#analog-mouse">Analog Mouse Support</a></li>
+            <li><a href="#point-and-click-guide">Point &amp; Click Guide</a></li>
+            <li><a href="#training-mode">Training Mode</a></li>
+            <li><a href="#move-lists">Move List &amp; Fight Data</a></li>
+            <li><a href="#streaming">Stream Recording</a></li>
             <li><a href="#notifications">Notification System</a></li>
             <li><a href="#genre-management">Genre Management</a></li>
             <li><a href="#updates">Update Checker</a></li>
@@ -42,6 +44,9 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
             <img src="{{ '/media/screenshots/shader-picker.png' | relative_url }}" alt="Shader Picker Interface" class="screenshot lightbox-trigger">
             <p class="screenshot-caption">The shader picker interface allows real-time preview and adjustment</p>
         </div>
+
+        <h3>Built-in Metal Shaders</h3>
+        <p>TruchiEmu ships with 14 built-in Metal shaders that work out of the box &mdash; no downloads, no setup:</p>
 
         <div class="shader-grid">
             <div class="shader-card">
@@ -115,6 +120,9 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
             </div>
         </div>
 
+        <h3>Slang Shader Presets</h3>
+        <p>Beyond the built-in Metal shaders, TruchiEmu also runs RetroArch <code>.slangp</code> presets via <strong>librashader</strong>. Hundreds of community-made presets from the <a href="https://github.com/libretro/slang-shaders">libretro slang-shaders</a> project are bundled and discovered automatically. Browse them in the <strong>All</strong> and <strong>Slang</strong> tabs of the shader picker. Drop new <code>.slangp</code> files into <code>~/Library/Application Support/TruchiEmu/SlangPresets/</code> and they appear automatically.</p>
+
         <h3>Shader Customization</h3>
         <p>Each shader includes adjustable parameters to fine-tune the effect:</p>
         <ul class="feature-list">
@@ -125,8 +133,10 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
             <li><strong>Global Defaults:</strong> Set system-wide shader preferences</li>
         </ul>
 
+        <p><a href="{{ '/features/shaders.html' | relative_url }}">Learn more about the Shader System &rarr;</a></p>
+
         <div class="info-box">
-            <p><strong>Performance Impact:</strong> Passthrough and Smooth Upscale have minimal performance impact. CRT shaders (Multipass, Lottes, Classic) and LCD simulations use more GPU resources. Most modern Macs can run any shader at full speed.</p>
+            <p><strong>Performance Impact:</strong> Passthrough and Scale Smooth have minimal performance impact. CRT shaders (Multipass, Lottes, Classic) and LCD simulations use more GPU resources. Most modern Macs can run any shader at full speed.</p>
         </div>
 
         <h3>Recommended Shader Pairings</h3>
@@ -167,30 +177,18 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
                 <tr>
                     <td>Game Boy Advance</td>
                     <td>GBA (Advanced LCD)</td>
-                    <td>Smooth Upscale, Sharp Bilinear</td>
+                    <td>Scale Smooth, Sharp Bilinear</td>
                     <td>Authentic GBA screen</td>
                 </tr>
                 <tr>
                     <td>PSP</td>
                     <td>PSP (Advanced LCD)</td>
-                    <td>Smooth Upscale, Passthrough</td>
+                    <td>Scale Smooth, Passthrough</td>
                     <td>Authentic PSP display</td>
                 </tr>
                 <tr>
-                    <td>NDS</td>
-                    <td>NDS (Advanced LCD)</td>
-                    <td>Smooth Upscale, Passthrough</td>
-                    <td>Authentic DS display</td>
-                </tr>
-                <tr>
-                    <td>3DS</td>
-                    <td>3DS (Advanced LCD)</td>
-                    <td>Smooth Upscale, Passthrough</td>
-                    <td>Clean portable display</td>
-                </tr>
-                <tr>
                     <td>Modern Displays</td>
-                    <td>Smooth Upscale</td>
+                    <td>Scale Smooth</td>
                     <td>Sharp Bilinear, Passthrough</td>
                     <td>Clean, modern look</td>
                 </tr>
@@ -213,7 +211,7 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
         <ul class="feature-list">
             <li><strong>Smart Detection:</strong> Automatically identifies games from ROM file hashes</li>
             <li><strong>Metadata Fetching:</strong> Downloads game descriptions, release dates, and details</li>
-            <li><strong>Cover Art:</strong> Automatically downloads high-quality box art from multiple sources (ScreenScraper, Libretro CDN)</li>
+            <li><strong>Cover Art:</strong> Automatically downloads high-quality box art from multiple sources (ScreenScraper, Libretro CDN). You can also pick alternative artwork per game with the interactive Box Art Picker.</li>
             <li><strong>System Categorization:</strong> Groups games by original console/system</li>
             <li><strong>Achievement Detection:</strong> Identifies games with RetroAchievements support</li>
         </ul>
@@ -237,10 +235,10 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
             </ul>
         </div>
 
-        <h3>Collections &amp; Playlists</h3>
+        <h3>Collections &amp; Categories</h3>
         <p>Organize your games with custom categories and built-in filters:</p>
         <ul class="feature-list">
-            <li><strong>Manual Collections:</strong> Create custom categories to group your favorite games</li>
+            <li><strong>Custom Categories:</strong> Create named categories with SF Symbol icons, custom uploaded icons, and per-category colors</li>
             <li><strong>Favorites:</strong> Quick access to your must-play titles via the favorites filter</li>
             <li><strong>Recently Played:</strong> Automatically tracks and displays your most recent sessions</li>
         </ul>
@@ -409,6 +407,8 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
         <div class="warning-box">
             <p><strong>Important:</strong> Achievements only work with verified ROM files that match the RetroAchievements database hashes. Use No-Intro verified dumps for best compatibility.</p>
         </div>
+
+        <p><a href="{{ '/features/achievements.html' | relative_url }}">Learn more about RetroAchievements &rarr;</a></p>
     </div>
 </section>
 
@@ -465,6 +465,8 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
             <li><strong>Metadata:</strong> View exactly when each state was created</li>
             <li><strong>Automated Paths:</strong> Consistent folder structure for easy backup and migration</li>
         </ul>
+
+        <p><a href="{{ '/features/save-states.html' | relative_url }}">Learn more about Save States &rarr;</a></p>
     </div>
 </section>
 
@@ -509,6 +511,28 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
     </div>
 </section>
 
+<section id="controllers" class="content-section">
+    <div class="container">
+        <h2>Controller Support</h2>
+        <p>Plug in a gamepad and it just works. TruchiEmu supports both Apple's <strong>GCController</strong> framework and <strong>SDL2</strong> for broad controller compatibility.</p>
+
+        <h3>What You Get</h3>
+        <ul class="feature-list">
+            <li><strong>Plug and Play:</strong> USB and Bluetooth controllers are recognized the moment you connect them</li>
+            <li><strong>Dual Driver Support:</strong> Works with GCController-compatible gamepads (Xbox, PlayStation, MFi, Switch Pro) and SDL2-compatible controllers for broader hardware support</li>
+            <li><strong>Smart Defaults:</strong> TruchiEmu picks a sensible button layout based on the controller type and the system you're playing</li>
+            <li><strong>Per-Controller Profiles:</strong> Each controller you connect gets its own mapping, remembered for next time</li>
+            <li><strong>Per-System Overrides:</strong> A PlayStation pad can be SNES-style on one system and Genesis-style on another</li>
+            <li><strong>Deadzone &amp; Sensitivity:</strong> Tune stick response so drift doesn't wander the character</li>
+            <li><strong>Remap Anything:</strong> Swap any button to any other button, including face, shoulder, and stick clicks</li>
+            <li><strong>Analog Mouse Mode:</strong> Use a stick to control the mouse in DOS and ScummVM games &mdash; see the Analog Mouse section for full details</li>
+            <li><strong>Keyboard Shortcuts:</strong> System hotkeys for save states, screenshots, and other common actions</li>
+        </ul>
+
+        <p><a href="{{ '/features/controllers.html' | relative_url }}">Learn more about Controller Support &rarr;</a></p>
+    </div>
+</section>
+
 <section id="analog-mouse" class="content-section">
     <div class="container">
         <h2>Analog Mouse Support</h2>
@@ -532,30 +556,30 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
             <p><strong>Comfort Tip:</strong> Adjust sensitivity and dead zone in Settings &rarr; Analog Mouse. Use the secondary stick for precise pixel targeting, and map mouse buttons to comfortable gamepad buttons for your preferred play style.</p>
         </div>
 
-<p><a href="{{ '/features/analog-mouse.html' | relative_url }}">Learn more about Analog Mouse Support &rarr;</a></p>
-</div>
+        <p><a href="{{ '/features/analog-mouse.html' | relative_url }}">Learn more about Analog Mouse Support &rarr;</a></p>
+    </div>
 </section>
 
-<section id="game-guide" class="content-section">
-<div class="container">
-<h2>Game Guide</h2>
-<p>Stuck on a puzzle? The built-in Game Guide sidebar brings progressive hints and full walkthroughs directly into your game window. It automatically appears for adventure and point-and-click games, pulling content from the Universal Hint System (UHS) and GameFAQs.</p>
+<section id="point-and-click-guide" class="content-section">
+    <div class="container">
+        <h2>Point &amp; Click Guide</h2>
+        <p>Stuck on a puzzle? The built-in Game Guide sidebar brings progressive hints and full walkthroughs directly into your game window. It automatically appears for adventure and point-and-click games, pulling content from the Universal Hint System (UHS) and GameFAQs.</p>
 
-<h3>Key Features</h3>
-<ul class="feature-list">
-<li><strong>Progressive Hints (UHS):</strong> Spoiler-free hints that reveal one at a time &mdash; get just enough help without ruining the puzzle</li>
-<li><strong>Full Walkthroughs (GameFAQs):</strong> Complete text walkthroughs as a fallback when UHS hints aren't available</li>
-<li><strong>Gamepad Navigation:</strong> Browse the guide with your controller &mdash; analog sticks scroll, A/B buttons navigate, R3/L3 toggles the sidebar</li>
-<li><strong>387+ Game Mappings:</strong> Pre-matched UHS guides for classic adventures including Monkey Island, Broken Sword, Grim Fandango, and more</li>
-<li><strong>Automatic Detection:</strong> Adventure and point-and-click games are identified by genre or system (ScummVM games always qualify)</li>
-</ul>
+        <h3>Key Features</h3>
+        <ul class="feature-list">
+            <li><strong>Progressive Hints (UHS):</strong> Spoiler-free hints that reveal one at a time &mdash; get just enough help without ruining the puzzle</li>
+            <li><strong>Full Walkthroughs (GameFAQs):</strong> Complete text walkthroughs as a fallback when UHS hints aren't available</li>
+            <li><strong>Gamepad Navigation:</strong> Browse the guide with your controller &mdash; analog sticks scroll, A/B buttons navigate, R3/L3 toggles the sidebar</li>
+            <li><strong>387+ Game Mappings:</strong> Pre-matched UHS guides for classic adventures including Monkey Island, Broken Sword, Grim Fandango, and more</li>
+            <li><strong>Automatic Detection:</strong> Adventure and point-and-click games are identified by genre or system (ScummVM games always qualify)</li>
+        </ul>
 
-<div class="info-box">
-<p><strong>Quick Access:</strong> Press <code>Cmd+J</code> or click the guide toolbar button to open the sidebar. For DOS and ScummVM games, input capture is automatically released when the guide opens and resumed when it closes.</p>
-</div>
+        <div class="info-box">
+            <p><strong>Quick Access:</strong> Press <code>Cmd+J</code> or click the guide toolbar button to open the sidebar. For DOS and ScummVM games, input capture is automatically released when the guide opens and resumed when it closes.</p>
+        </div>
 
-<p><a href="{{ '/features/game-guide.html' | relative_url }}">Learn more about the Game Guide &rarr;</a></p>
-</div>
+        <p><a href="{{ '/features/game-guide.html' | relative_url }}">Learn more about the Game Guide &rarr;</a></p>
+    </div>
 </section>
 
 <section id="training-mode" class="content-section">
@@ -582,19 +606,37 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
 
 <section id="move-lists" class="content-section">
     <div class="container">
-        <h2>Move List Overlay</h2>
-        <p>Never forget a special move again. The move list overlay displays fighting game move notations directly on screen, helping you learn and execute character-specific combos and special moves during gameplay.</p>
+        <h2>Move List &amp; Fight Data</h2>
+        <p>Never forget a special move again. The move list overlay displays fighting game move notations directly on screen, powered by an extensive library of curated fight data for over 200 fighting games.</p>
 
         <h3>Key Features</h3>
         <ul class="feature-list">
             <li><strong>On-Screen Display:</strong> Move notations are shown as an overlay during gameplay, categorized by type</li>
             <li><strong>Visual Tokens:</strong> Move notations use visual tokens for directional inputs, button combinations, and special conditions</li>
+            <li><strong>Extensive Fight Data Library:</strong> Over 200 curated fight data sets covering classic and modern fighting games across NES, SNES, Genesis, Arcade, PlayStation, and more. Games include Street Fighter II, Mortal Kombat, King of Fighters, Tekken, Samurai Shodown, and dozens more.</li>
             <li><strong>Per-Game Move Sets:</strong> Moves are automatically loaded based on the game being played</li>
-            <li><strong>Common Movesets:</strong> Pre-defined common moveset templates for popular fighting games</li>
             <li><strong>Search &amp; Filter:</strong> Quickly find specific moves by name, input type, or character</li>
         </ul>
 
         <p><a href="{{ '/features/move-lists.html' | relative_url }}">Learn more about Move List Overlay &rarr;</a></p>
+    </div>
+</section>
+
+<section id="streaming" class="content-section">
+    <div class="container">
+        <h2>Stream Recording</h2>
+        <p>Record your gameplay sessions or stream live to Twitch, YouTube, or a custom RTMP server &mdash; all without leaving the game.</p>
+
+        <h3>Key Features</h3>
+        <ul class="feature-list">
+            <li><strong>Local Recording:</strong> Capture gameplay to local files in H.264, HEVC, or lossless ProRes 422/4444</li>
+            <li><strong>Live Streaming:</strong> Stream directly to Twitch or YouTube, or point to any custom RTMP endpoint</li>
+            <li><strong>VideoToolbox Encoding:</strong> Hardware-accelerated encoding via macOS VideoToolbox for minimal performance impact</li>
+            <li><strong>Flexible Quality:</strong> Adjustable bitrate and quality presets to balance file size and fidelity</li>
+            <li><strong>In-Game Controls:</strong> Start/stop recording from the game toolbar without breaking your flow</li>
+        </ul>
+
+        <p><a href="{{ '/features/streaming.html' | relative_url }}">Learn more about Stream Recording &rarr;</a></p>
     </div>
 </section>
 
