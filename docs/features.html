@@ -27,10 +27,6 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
             <li><a href="#training-mode">Training Mode</a></li>
             <li><a href="#move-lists">Move List &amp; Fight Data</a></li>
             <li><a href="#streaming">Stream Recording</a></li>
-            <li><a href="#notifications">Notification System</a></li>
-            <li><a href="#genre-management">Genre Management</a></li>
-            <li><a href="#updates">Update Checker</a></li>
-            <li><a href="#mame">Arcade Management (MAME)</a></li>
         </ul>
     </div>
 </nav>
@@ -60,7 +56,6 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
                     <span class="spec-tag">Sharp Pixels</span>
                     <span class="spec-tag">Low GPU</span>
                 </div>
-                <p><strong>Use Case:</strong> Development, pixel-perfect reproduction, speedrunning</p>
             </div>
 
             <div class="shader-card">
@@ -74,7 +69,6 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
                     <span class="spec-tag">Dynamic Light</span>
                     <span class="spec-tag">Authentic</span>
                 </div>
-                <p><strong>Use Case:</strong> Game Boy games, authentic portable experience</p>
             </div>
 
             <div class="shader-card">
@@ -88,7 +82,6 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
                     <span class="spec-tag">Ghosting</span>
                     <span class="spec-tag">Shell Colors</span>
                 </div>
-                <p><strong>Use Case:</strong> Game Boy Color games, accurate color representation</p>
             </div>
 
             <div class="shader-card">
@@ -102,7 +95,6 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
                     <span class="spec-tag">Ghosting</span>
                     <span class="spec-tag">Reflections</span>
                 </div>
-                <p><strong>Use Case:</strong> GBA games, accurate portable gaming experience</p>
             </div>
 
             <div class="shader-card">
@@ -116,7 +108,6 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
                     <span class="spec-tag">Scanlines</span>
                     <span class="spec-tag">Customizable</span>
                 </div>
-                <p><strong>Use Case:</strong> General retro gaming, consistent look across multiple systems</p>
             </div>
         </div>
 
@@ -138,62 +129,6 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
         <div class="info-box">
             <p><strong>Performance Impact:</strong> Passthrough and Scale Smooth have minimal performance impact. CRT shaders (Multipass, Lottes, Classic) and LCD simulations use more GPU resources. Most modern Macs can run any shader at full speed.</p>
         </div>
-
-        <h3>Recommended Shader Pairings</h3>
-        <table class="recommendation-table">
-            <thead>
-                <tr>
-                    <th>System Type</th>
-                    <th>Primary Shader</th>
-                    <th>Secondary Options</th>
-                    <th>Use Case</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>8-bit Consoles</td>
-                    <td>CRT Multipass</td>
-                    <td>Lite CRT, CRT Lottes</td>
-                    <td>Classic TV experience</td>
-                </tr>
-                <tr>
-                    <td>16-bit Consoles</td>
-                    <td>CRT Lottes</td>
-                    <td>Sharp Bilinear, CRT Classic</td>
-                    <td>Authentic arcade/TV feel</td>
-                </tr>
-                <tr>
-                    <td>Game Boy</td>
-                    <td>8b Game Boy</td>
-                    <td>Dot Matrix LCD, Passthrough</td>
-                    <td>True portable experience</td>
-                </tr>
-                <tr>
-                    <td>Game Boy Color</td>
-                    <td>8b Game Boy Color</td>
-                    <td>Dot Matrix LCD, Passthrough</td>
-                    <td>Authentic GBC screen</td>
-                </tr>
-                <tr>
-                    <td>Game Boy Advance</td>
-                    <td>GBA (Advanced LCD)</td>
-                    <td>Scale Smooth, Sharp Bilinear</td>
-                    <td>Authentic GBA screen</td>
-                </tr>
-                <tr>
-                    <td>PSP</td>
-                    <td>PSP (Advanced LCD)</td>
-                    <td>Scale Smooth, Passthrough</td>
-                    <td>Authentic PSP display</td>
-                </tr>
-                <tr>
-                    <td>Modern Displays</td>
-                    <td>Scale Smooth</td>
-                    <td>Sharp Bilinear, Passthrough</td>
-                    <td>Clean, modern look</td>
-                </tr>
-            </tbody>
-        </table>
     </div>
 </section>
 
@@ -242,76 +177,6 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
             <li><strong>Favorites:</strong> Quick access to your must-play titles via the favorites filter</li>
             <li><strong>Recently Played:</strong> Automatically tracks and displays your most recent sessions</li>
         </ul>
-
-        <h3>Advanced Library Features</h3>
-        <table class="feature-table">
-            <thead>
-                <tr>
-                    <th>Feature</th>
-                    <th>Description</th>
-                    <th>Benefit</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Duplicate Detection</td>
-                    <td>Identifies and prevents duplicate ROM entries during scans</td>
-                    <td>Clean library without duplicates</td>
-                </tr>
-                <tr>
-                    <td>BIOS Detection</td>
-                    <td>Detects and bundles required BIOS files (e.g., Saturn) with the core download</td>
-                    <td>Proper system emulation without manual setup</td>
-                </tr>
-                <tr>
-                    <td>Region Detection</td>
-                    <td>Identifies game region (USA, Europe, Japan) during identification</td>
-                    <td>Sort and filter by region</td>
-                </tr>
-                <tr>
-                    <td>ROM Verification</td>
-                    <td>Validates ROMs against No-Intro/Libretro DAT databases using CRC32</td>
-                    <td>Ensure you have verified dumps</td>
-                </tr>
-                <tr>
-                    <td>Session Tracking</td>
-                    <td>Records total play time and the last played date for every game</td>
-                    <td>Track your gaming progress and activity</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <h3>Search &amp; Filter</h3>
-        <p>Find games instantly with powerful search capabilities:</p>
-        <ul class="feature-list">
-            <li><strong>Text Search:</strong> Search by game name or metadata</li>
-            <li><strong>System Filter:</strong> Show only games from specific consoles</li>
-            <li><strong>Achievement Support:</strong> Show games with RetroAchievements</li>
-            <li><strong>Play Status:</strong> Filter by favorites or recently played</li>
-        </ul>
-
-        <h3>Import &amp; Export</h3>
-        <div class="import-export">
-            <div class="import-section">
-                <h4>Import Options</h4>
-                <ul>
-                    <li>Add library folders including all subfolders</li>
-                    <li>Automatic recursive scanning of ROM directories</li>
-                    <li>Drag and drop support for library management</li>
-                </ul>
-            </div>
-            <div class="export-section">
-                <h4>Export Options</h4>
-                <ul>
-                    <li>Automatic metadata export to games.xml</li>
-                    <li>Backup library metadata for portability</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="tip-box">
-            <p><strong>Organization Tip:</strong> Use the custom categories to group games by genre or project, and leverage the favorites filter for your current rotation of games.</p>
-        </div>
     </div>
 </section>
 
@@ -325,74 +190,7 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
             <p class="screenshot-caption">Track your progress and compare with friends on the global leaderboard</p>
         </div>
 
-        <h3>Getting Started with Achievements</h3>
-        <div class="setup-steps">
-            <div class="step">
-                <h4>Step 1: Create RetroAchievements Account</h4>
-                <p>Visit <a href="https://retroachievements.org/" target="_blank">RetroAchievements.org</a> and create a free account.</p>
-            </div>
-            <div class="step">
-                <h4>Step 2: Link Account in TruchiEmu</h4>
-                <p>Navigate to Settings &rarr; Achievements and enter your RetroAchievements username, password, and Web API key.</p>
-            </div>
-            <div class="step">
-                <h4>Step 3: Connect</h4>
-                <p>Use the &ldquo;Connect&rdquo; button to verify your credentials and sync your profile. A green &ldquo;Connected&rdquo; indicator confirms success.</p>
-            </div>
-            <div class="step">
-                <h4>Step 4: Play Supported Games</h4>
-                <p>Launch any game with achievement support. Your progress will be synced to your global profile.</p>
-            </div>
-        </div>
-
-        <h3>Achievement Types</h3>
-        <p>TruchiEmu supports the variety of achievement types defined by the RetroAchievements community, including progress milestones, skill-based challenges, and completionist goals.</p>
-
-        <h3>Supported Systems</h3>
-        <p>RetroAchievements support varies by system. TruchiEmu provides mapping for all major consoles, including:</p>
-        <table class="systems-table">
-            <thead>
-                <tr>
-                    <th>System</th>
-                    <th>Achievement Support</th>
-                    <th>Games Supported</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>NES / SNES</td>
-                    <td>Full Support</td>
-                    <td>1,000+ games</td>
-                </tr>
-                <tr>
-                    <td>Game Boy / Color / Advance</td>
-                    <td>Full Support</td>
-                    <td>1,000+ games</td>
-                </tr>
-                <tr>
-                    <td>Genesis / Mega Drive</td>
-                    <td>Full Support</td>
-                    <td>500+ games</td>
-                </tr>
-                <tr>
-                    <td>Nintendo 64 / PS1</td>
-                    <td>Limited / Experimental</td>
-                    <td>100+ games</td>
-                </tr>
-                <tr>
-                    <td>PC Engine / TurboGrafx</td>
-                    <td>Full Support</td>
-                    <td>300+ games</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <h3>Integration Features</h3>
-        <ul class="feature-list">
-            <li><strong>Rich Presence:</strong> Automatically updates your profile to show friends which game you are currently playing</li>
-            <li><strong>Leaderboards:</strong> Submit and compare high scores and times on global leaderboards</li>
-            <li><strong>Hardcore Mode:</strong> Option to disable save states, rewind, slow motion, and cheats for a purist experience, required for earning Hardcore-tier achievements</li>
-        </ul>
+        
 
         <div class="info-box">
             <p><strong>Achievement Tips:</strong></p>
@@ -436,26 +234,7 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
                 </ul>
             </div>
 
-            <div class="save-feature">
-                <h4>Optimized Storage</h4>
-                <ul>
-                    <li>LZ4 compression for all state files</li>
-                    <li>Custom TCS2 header for state integrity</li>
-                    <li>Low disk footprint for large libraries</li>
-                    <li>Fast load/save speeds</li>
-                </ul>
             </div>
-
-            <div class="save-feature">
-                <h4>Battery Save Support</h4>
-                <ul>
-                    <li>Dedicated storage for traditional battery saves</li>
-                    <li>Compatibility with original hardware save files</li>
-                    <li>Automatic handling by emulation cores</li>
-                    <li>Separated from snapshot state files</li>
-                </ul>
-            </div>
-        </div>
 
         <h3>Save State Manager</h3>
         <p>The integrated save state browser provides a visual way to manage your progress:</p>
@@ -640,75 +419,3 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
     </div>
 </section>
 
-<section id="notifications" class="content-section">
-    <div class="container">
-        <h2>Notification System</h2>
-        <p>Stay informed with TruchiEmu's built-in notification system. Get real-time alerts for game actions, controller connections, achievements, and system events without interrupting your gameplay.</p>
-
-        <h3>Key Features</h3>
-        <ul class="feature-list">
-            <li><strong>Notification Pills:</strong> Non-intrusive pill-style notifications that appear and fade without blocking your view</li>
-            <li><strong>Controller Alerts:</strong> Visual notifications when controllers connect or disconnect</li>
-            <li><strong>Game Actions:</strong> Save state, screenshot, and other action confirmations</li>
-            <li><strong>Notification History:</strong> Full history panel to review past notifications</li>
-            <li><strong>Localized Messages:</strong> Fully translated notification text for all supported languages</li>
-        </ul>
-
-        <p><a href="{{ '/features/notifications.html' | relative_url }}">Learn more about the Notification System &rarr;</a></p>
-    </div>
-</section>
-
-<section id="genre-management" class="content-section">
-    <div class="container">
-        <h2>Genre Management</h2>
-        <p>Take control of how your games are organized with genre management. Filter, sort, and hide genres to keep your library focused on the types of games you love.</p>
-
-        <h3>Key Features</h3>
-        <ul class="feature-list">
-            <li><strong>Visibility Controls:</strong> Show or hide specific genres in your library view</li>
-            <li><strong>Genre Filtering:</strong> Filter your game collection by one or more genres</li>
-            <li><strong>Automatic Genre Detection:</strong> Games are automatically categorized by genre during metadata enrichment</li>
-            <li><strong>Localized Genre Names:</strong> Genre names are translated into your preferred language</li>
-        </ul>
-
-        <p><a href="{{ '/features/genre-management.html' | relative_url }}">Learn more about Genre Management &rarr;</a></p>
-    </div>
-</section>
-
-<section id="updates" class="content-section">
-    <div class="container">
-        <h2>Update Checker</h2>
-        <p>Stay up to date with the latest TruchiEmu releases. The built-in update checker automatically checks for new versions and notifies you when an update is available.</p>
-
-        <h3>Key Features</h3>
-        <ul class="feature-list">
-            <li><strong>Automatic Checks:</strong> Periodic checks for new TruchiEmu releases in the background</li>
-            <li><strong>In-App Changelog:</strong> View release notes and changelogs directly within the app</li>
-            <li><strong>Update Notifications:</strong> Get notified when a new version is available without interrupting your session</li>
-            <li><strong>Version History:</strong> Browse the complete version history with detailed release notes</li>
-        </ul>
-
-        <p><a href="{{ '/features/updates.html' | relative_url }}">Learn more about the Update Checker &rarr;</a></p>
-    </div>
-</section>
-
-<section id="mame" class="content-section">
-    <div class="container">
-        <h2>Professional Arcade Management (MAME)</h2>
-        <p>Arcade emulation can be complex. TruchiEmu simplifies the process with specialized tools for MAME ROM management.</p>
-        <div class="feature-grid">
-            <div class="feature-card">
-                <h4>ROM Verification</h4>
-                <p>Automatically verify ROM integrity against official databases using CRC32 hashes to ensure zero-corruption playback.</p>
-            </div>
-            <div class="feature-card">
-                <h4>Dependency Tracking</h4>
-                <p>Intelligent detection of parent and child ROM relationships. TruchiEmu alerts you if a required parent ROM is missing before you attempt to launch a game.</p>
-            </div>
-            <div class="feature-card">
-                <h4>Metadata Automation</h4>
-                <p>Integrates with the LaunchBox Games DB and DAT files to automatically populate game descriptions, release dates, and genres.</p>
-            </div>
-        </div>
-    </div>
-</section>

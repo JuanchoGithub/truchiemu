@@ -47,8 +47,6 @@ en:
   url: "/getting-started.html"
 - title: "Features"
   url: "/features.html"
-- title: "Troubleshooting"
-  url: "/troubleshooting.html"
 - title: "Development"
   url: "/development.html"
 es:
@@ -56,8 +54,6 @@ es:
   url: "/getting-started.html"
 - title: "Características"
   url: "/features.html"
-- title: "Solución de Problemas"
-  url: "/troubleshooting.html"
 - title: "Desarrollo"
   url: "/development.html"
 pt:
@@ -65,8 +61,6 @@ pt:
   url: "/getting-started.html"
 - title: "Recursos"
   url: "/features.html"
-- title: "Solução de Problemas"
-  url: "/troubleshooting.html"
 - title: "Desenvolvimento"
   url: "/development.html"
 

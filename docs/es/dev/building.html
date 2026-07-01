@@ -57,19 +57,4 @@ cd truchiemu</code></pre>
 </ul>
 </section>
 
-<section id="troubleshooting">
-<h2>Problemas Comunes de Compilacion</h2>
-
-<h3>XcodeGen No Encontrado</h3>
-<p>Instala via Homebrew: <code>brew install xcodegen</code>. Si ya esta instalado, asegurate de que este en tu PATH.</p>
-
-<h3>Errores del Compilador de Swift</h3>
-<p>Asegurate de tener Xcode 15+ instalado y seleccionado: <code>sudo xcode-select -s /Applications/Xcode.app</code>. Verifica la version de Swift con <code>swift --version</code>.</p>
-
-<h3>Errores del Estandar de C++</h3>
-<p>Este proyecto requiere gnu++17 (no el predeterminado de LLVM). Verifica que <code>project.yml</code> especifique el estandar de C++ correcto en los ajustes del target.</p>
-
-<h3>Bridging Header Faltante</h3>
-<p>Si ves errores de importacion de ObjC en archivos Swift, asegurate de que <code>TruchiEmu-Bridging-Header.h</code> este correctamente configurado en los ajustes de compilacion.</p>
-</section>
 </div>
