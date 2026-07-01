@@ -184,7 +184,7 @@ struct SaveManagerView: View {
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
             .background(AppColors.cardBackgroundSubtle(colorScheme))
-            .cornerRadius(6)
+            .cornerRadius(AppRadius.md)
             .padding(.horizontal, 8)
             .padding(.top, 8)
 
@@ -323,9 +323,9 @@ struct SaveManagerView: View {
                         )
                 }
             }
-            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .clipShape(RoundedRectangle(cornerRadius: AppRadius.md))
             .overlay(
-                RoundedRectangle(cornerRadius: 8)
+                RoundedRectangle(cornerRadius: AppRadius.md)
                     .stroke(slot.slotInfo.exists ? AppColors.brandAccent.opacity(0.3) : Color.clear, lineWidth: 1)
             )
 
@@ -357,7 +357,7 @@ struct SaveManagerView: View {
         }
         .padding(6)
         .background(AppColors.cardBackgroundSubtle(colorScheme))
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .clipShape(RoundedRectangle(cornerRadius: AppRadius.lg))
     }
 
     // MARK: - File Row
@@ -395,7 +395,7 @@ struct SaveManagerView: View {
         }
         .padding()
         .background(AppColors.cardBackgroundSubtle(colorScheme))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .clipShape(RoundedRectangle(cornerRadius: AppRadius.md))
     }
 
     // MARK: - Actions

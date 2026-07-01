@@ -98,7 +98,7 @@ class GameLauncher: ObservableObject {
             #if LOG_EXTREME
             LoggerService.extreme(category: "GameLauncher", "Resolved achievements enabled: \(self.achievementsEnabled)")
             #endif
-            self.hardcoreMode = hardcoreMode ?? false
+            self.hardcoreMode = hardcoreMode ?? HardcoreModeManager.shared.isHardcoreActive(for: rom)
             #if LOG_EXTREME
             LoggerService.extreme(category: "GameLauncher", "Resolved hardcore mode: \(self.hardcoreMode)")
             #endif
@@ -524,10 +524,9 @@ func launchGame(
         // 4. Apply achievements setting
         AppSettings.setBool("ra_enabled", value: config.achievementsEnabled)
         
-        // 5. Apply hardcore mode
-        if config.hardcoreMode != HardcoreModeManager.shared.isHardcoreActive {
-            HardcoreModeManager.shared.isHardcoreActive = config.hardcoreMode
-        }
+        // 5. Apply hardcore mode (snapshot/restore handled by HardcoreModeManager)
+        let systemID = config.rom.systemID ?? "default"
+        HardcoreModeManager.shared.syncState(rom: config.rom, coreID: config.coreID, systemID: systemID)
     }
 
     // MARK: - MAME Missing Files Alert

@@ -23,19 +23,23 @@ struct BezelSettingsView: View {
     }
     
     private var showStorageSection: Bool {
-        searchText.isEmpty || "storage path folder directory".fuzzyMatch(searchText)
+        if SettingsSearchRuntime.pageMatches(.bezels, query: searchText) { return true }
+        return searchText.isEmpty || SettingsIndex.matches(haystack: "storage path folder directory", query: searchText)
     }
-    
+
     private var showDownloadsSection: Bool {
-        searchText.isEmpty || "download bezels project update".fuzzyMatch(searchText)
+        if SettingsSearchRuntime.pageMatches(.bezels, query: searchText) { return true }
+        return searchText.isEmpty || SettingsIndex.matches(haystack: "download bezels project update", query: searchText)
     }
-    
+
     private var showStatisticsSection: Bool {
-        searchText.isEmpty || "statistics files space supported".fuzzyMatch(searchText)
+        if SettingsSearchRuntime.pageMatches(.bezels, query: searchText) { return true }
+        return searchText.isEmpty || SettingsIndex.matches(haystack: "statistics files space supported", query: searchText)
     }
-    
+
     private var showDangerZoneSection: Bool {
-        searchText.isEmpty || "delete remove clear bezels".fuzzyMatch(searchText)
+        if SettingsSearchRuntime.pageMatches(.bezels, query: searchText) { return true }
+        return searchText.isEmpty || SettingsIndex.matches(haystack: "delete remove clear bezels", query: searchText)
     }
     
     private var hasAnyResults: Bool {
@@ -45,19 +49,19 @@ struct BezelSettingsView: View {
     var body: some View {
         Form {
             if searchText.isEmpty {
+                statisticsSection
                 storageSection
                 downloadsSection
-                statisticsSection
                 dangerZoneSection
             } else {
+                if showStatisticsSection {
+                    statisticsSection
+                }
                 if showStorageSection {
                     storageSection
                 }
                 if showDownloadsSection {
                     downloadsSection
-                }
-                if showStatisticsSection {
-                    statisticsSection
                 }
                 if showDangerZoneSection {
                     dangerZoneSection
@@ -173,33 +177,29 @@ VStack(alignment: .leading, spacing: AppSpacing.xs) {
     
     private var statisticsSection: some View {
         Section {
-            HStack(spacing: AppSpacing.xl2) {
-                statTile(
+            StatGroup(
+                AppStatCard(
+                    icon: "photo.fill",
                     value: "\(storageManager.downloadedBezelCount())",
                     label: loc.localized("bezel.files"),
-                    icon: "photo.fill",
-                    color: AppColors.brandAccent
-                )
-                Divider().frame(height: 40)
-                statTile(
+                    accent: AppColors.brandAccent
+                ),
+                AppStatCard(
+                    icon: "internaldrive.fill",
                     value: formatByteSize(storageManager.bezelStorageSize()),
                     label: loc.localized("bezel.storageLabel"),
-                    icon: "internaldrive.fill",
-                    color: AppColors.accentTertiary
-                )
-                Divider().frame(height: 40)
-                statTile(
+                    accent: AppColors.accentTertiary
+                ),
+                AppStatCard(
+                    icon: "gamecontroller.fill",
                     value: "\(BezelSystemMapping.configurations.count)",
                     label: loc.localized("bezel.supported"),
-                    icon: "gamecontroller.fill",
-                    color: AppColors.warning(colorScheme)
+                    accent: AppColors.warning(colorScheme)
                 )
-}
-    .padding(.vertical, AppSpacing.md)
-    .frame(maxWidth: .infinity)
-} header: {
-    Label { Text(loc.localized("bezel.statistics")) } icon: { Image(systemName: "chart.bar.fill") }
-    }
+            )
+        } header: {
+            Label { Text(loc.localized("bezel.statistics")) } icon: { Image(systemName: "chart.bar.fill") }
+        }
     }
 
     private var dangerZoneSection: some View {
@@ -248,36 +248,22 @@ VStack(alignment: .leading, spacing: AppSpacing.sm) {
         }
     }
 
-func statTile(value: String, label: String, icon: String, color: Color) -> some View {
-    VStack(spacing: AppSpacing.xs) {
-            Image(systemName: icon)
-                .font(.title2)
-                .foregroundStyle(color)
-            Text(value)
-                .font(.headline.monospacedDigit())
-            Text(label)
-                .font(.caption)
-                .foregroundStyle(AppColors.textSecondary(colorScheme))
-        }
-        .frame(maxWidth: .infinity)
-    }
-
 func statItem(label: String, value: String, icon: String) -> some View {
     HStack(spacing: AppSpacing.md) {
-            Image(systemName: icon)
-                .font(.title2)
-                .foregroundStyle(AppColors.brandAccent)
+        Image(systemName: icon)
+            .font(.title2)
+            .foregroundStyle(AppColors.brandAccent)
         .frame(width: 30)
 
         VStack(alignment: .leading, spacing: AppSpacing.xxs) {
-                Text(value)
-                    .font(.headline)
-                Text(label)
-                    .font(.caption2)
-                    .foregroundStyle(AppColors.textSecondary(colorScheme))
-            }
+            Text(value)
+                .font(.headline)
+            Text(label)
+                .font(.caption2)
+                .foregroundStyle(AppColors.textSecondary(colorScheme))
         }
     }
+}
 
     var downloadButtonLabel: String {
         if selectedSystem == "all" { return loc.localized("bezel.downloadAll") }
@@ -296,7 +282,7 @@ func statItem(label: String, value: String, icon: String) -> some View {
         }
     .padding(AppSpacing.md)
     .background(AppColors.brandAccent.opacity(0.1))
-    .cornerRadius(AppRadius.sm)
+    .clipShape(RoundedRectangle(cornerRadius: AppRadius.md))
     }
 
     func runDownload() {

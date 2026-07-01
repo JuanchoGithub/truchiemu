@@ -54,7 +54,7 @@ class CheatManagerService: ObservableObject {
     }
     
     // Update a cheat's state (enable/disable)
-    func updateCheat(_ cheat: Cheat, for rom: ROM) {
+    func updateCheat(_ cheat: Cheat, for rom: ROM, showToast: Bool = true) {
         var cheats = allCheats[rom.runningKey] ?? []
         if let index = cheats.firstIndex(where: { $0.id == cheat.id }) {
             cheats[index] = cheat
@@ -64,6 +64,12 @@ class CheatManagerService: ObservableObject {
         allCheats[rom.runningKey] = cheats
         saveEnabledIndices(for: rom, cheats: cheats)
         LoggerService.info(category: "CheatManagerService", "Updated cheat: \(cheat.displayName) for \(rom.displayName)")
+
+        if showToast && SystemPreferences.shared.showCheatNotifications {
+            let key = cheat.enabled ? "cheat.toastEnabled" : "cheat.toastDisabled"
+            let message = LocalizationManager.shared.localized(key, cheat.displayName)
+            CheatToastManager.shared.show(message)
+        }
     }
     
     // Toggle a cheat's enabled state

@@ -99,6 +99,12 @@ enum HotkeyAction: String, Codable, CaseIterable, Identifiable {
             return false
         }
     }
+
+    var searchSectionID: String {
+        if isSlotAction { return "slots" }
+        if isTrainingAction { return "training" }
+        return "general"
+    }
 }
 
 struct HotkeyConfig: Codable, Equatable {

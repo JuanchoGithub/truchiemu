@@ -308,6 +308,11 @@ final class ROMRepository {
         }
     }
 
+    func allPrimaryFolderPaths() -> Set<String> {
+        let paths = loadPrimaryFolders().map { $0.0 }
+        return Set(paths)
+    }
+
     // Load subfolders of a given parent path.
     func loadSubfolders(parentPath: String) -> [(String, Data, String?, Bool)] {
         let descriptor = FetchDescriptor<LibraryFolder>(

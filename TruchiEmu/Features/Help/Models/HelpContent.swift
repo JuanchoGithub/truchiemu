@@ -60,10 +60,10 @@ HelpShortcut(key: "J", modifiers: ["⌘"], descriptionKey: "help.shortcut.toggle
     static var faqItems: [HelpFAQItem] {
         [
             HelpFAQItem(questionKey: "help.faq.addROMs.q", answerKey: "help.faq.addROMs.a", linkLabelKey: "help.faq.addROMs.link", deepLinkPage: .library),
-            HelpFAQItem(questionKey: "help.faq.cores.q", answerKey: "help.faq.cores.a", linkLabelKey: "help.faq.cores.link", deepLinkPage: .cores),
+            HelpFAQItem(questionKey: "help.faq.cores.q", answerKey: "help.faq.cores.a", linkLabelKey: "help.faq.cores.link", deepLinkPage: .perSystem),
             HelpFAQItem(questionKey: "help.faq.controllers.q", answerKey: "help.faq.controllers.a", linkLabelKey: "help.faq.controllers.link", deepLinkPage: .controllers),
             HelpFAQItem(questionKey: "help.faq.saveStates.q", answerKey: "help.faq.saveStates.a", linkLabelKey: "help.faq.saveStates.link", deepLinkPage: .saves),
-            HelpFAQItem(questionKey: "help.faq.shaders.q", answerKey: "help.faq.shaders.a", linkLabelKey: "help.faq.shaders.link", deepLinkPage: .display),
+            HelpFAQItem(questionKey: "help.faq.shaders.q", answerKey: "help.faq.shaders.a", linkLabelKey: "help.faq.shaders.link", deepLinkPage: .perSystem),
             HelpFAQItem(questionKey: "help.faq.cheats.q", answerKey: "help.faq.cheats.a", linkLabelKey: "help.faq.cheats.link", deepLinkPage: .cheats),
             HelpFAQItem(questionKey: "help.faq.bezels.q", answerKey: "help.faq.bezels.a", linkLabelKey: "help.faq.bezels.link", deepLinkPage: .bezels),
             HelpFAQItem(questionKey: "help.faq.achievements.q", answerKey: "help.faq.achievements.a", linkLabelKey: "help.faq.achievements.link", deepLinkPage: .retroAchievements),

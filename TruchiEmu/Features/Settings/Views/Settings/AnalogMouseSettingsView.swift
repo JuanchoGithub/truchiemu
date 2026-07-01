@@ -129,6 +129,7 @@ struct AnalogMouseSettingsView: View {
                         Text(sys.name).tag(sys.id)
                     }
                 }
+                .pickerStyle(.segmented)
             }
 
             VStack(spacing: 12) {
@@ -244,7 +245,7 @@ struct AnalogMouseSettingsView: View {
                 }
             }
         } header: {
-            Label { Text(loc.localized("analogMouse.buttonMapping")) } icon: { Image(systemName: "point.3.filled.connected") }
+            Label { Text(loc.localized("analogMouse.buttonMapping")) } icon: { Image(systemName: "gamecontroller") }
         } footer: {
             Text(loc.localized("analogMouse.buttonMappingDescription"))
         }
@@ -298,8 +299,8 @@ struct AnalogMouseSettingsView: View {
 
     private func matchesSearch(_ keywords: String) -> Bool {
         if searchText.isEmpty { return true }
-        return keywords.localizedLowercase.fuzzyMatch(searchText) ||
-               keywords.localizedLowercase.contains(searchText.lowercased())
+        if SettingsSearchRuntime.pageMatches(.analogMouse, query: searchText) { return true }
+        return SettingsIndex.matches(haystack: keywords, query: searchText)
     }
 
     private var hasMatchingSections: Bool {

@@ -114,8 +114,8 @@ struct GenreSettingsView: View {
 
     private func matchesSearch(_ keywords: String) -> Bool {
         if searchText.isEmpty { return true }
-        return keywords.localizedLowercase.fuzzyMatch(searchText) ||
-               keywords.localizedLowercase.contains(searchText.lowercased())
+        if SettingsSearchRuntime.pageMatches(.genre, query: searchText) { return true }
+        return SettingsIndex.matches(haystack: keywords, query: searchText)
     }
 
     private var hasMatchingSections: Bool {
@@ -152,7 +152,7 @@ struct GenreSettingsView: View {
             expandedID = nil
             isCreatingNew = false
         }
-        .onReceive(library.objectWillChange) { _ in
+        .onReceive(library.$roms) { _ in
             recacheData()
         }
         .confirmationDialog(

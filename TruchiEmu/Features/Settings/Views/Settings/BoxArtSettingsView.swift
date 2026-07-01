@@ -30,30 +30,21 @@ struct BoxArtSettingsView: View {
     
     private func matchesSearch(_ keywords: String) -> Bool {
         if searchText.isEmpty { return true }
-        return keywords.localizedLowercase.fuzzyMatch(searchText) || 
-               keywords.localizedLowercase.contains(searchText.lowercased())
+        if SettingsSearchRuntime.pageMatches(.boxArt, query: searchText) { return true }
+        return SettingsIndex.matches(haystack: keywords, query: searchText)
     }
 
     var body: some View {
         Form {
-            // Libretro Thumbnails Section
-            if !isSearching || matchesSearch("libretro thumbnail CDN CRC No-Intro DAT box art named boxarts named titles named snaps fuzzy name") {
+            // Libretro Thumbnails
+            if !isSearching || matchesSearch("libretro thumbnail CDN URL source") {
                 Section {
                     Toggle(loc.localized("boxArt.useLibretroCDN"), isOn: $useLibretroThumbnails)
-                    TextField(loc.localized("boxArt.cdnBaseURL"), text: $thumbnailBaseURLString)
-                        .textFieldStyle(.plain)
-                        .padding(6)
-                        .background(AppColors.cardBackgroundSubtle(colorScheme))
-                        .cornerRadius(6)
-                        .font(.system(.body, design: .monospaced))
-                    Picker(loc.localized("boxArt.tryFirst"), selection: $thumbnailPriorityRaw) {
-                        ForEach(LibretroThumbnailPriority.allCases) { p in
-                            Text(p.displayName).tag(p.rawValue)
-                        }
+                    if useLibretroThumbnails {
+                        TextField(loc.localized("boxArt.cdnBaseURL"), text: $thumbnailBaseURLString)
+                            .textFieldStyle(.roundedBorder)
+                            .font(.body)
                     }
-                    Toggle(loc.localized("boxArt.matchROMCrc"), isOn: $useCRCMatching)
-                    Toggle(loc.localized("boxArt.fallbackFilename"), isOn: $fallbackFilename)
-                    Toggle(loc.localized("boxArt.useHttpHead"), isOn: $useHeadCheck)
                 } header: {
                     Label { Text(loc.localized("boxArt.libretroThumbnails")) } icon: { Image(systemName: "photo.on.rectangle.angled") }
                 } footer: {
@@ -61,11 +52,13 @@ struct BoxArtSettingsView: View {
                 }
             }
 
-            // LaunchBox GamesDB Section
+            // LaunchBox GamesDB
             if !isSearching || matchesSearch("launchbox gamesdb box art download scan third-party fallback") {
                 Section {
                     Toggle(loc.localized("boxArt.enableLaunchBox"), isOn: $useLaunchBox)
-                    Toggle(loc.localized("boxArt.autoDownloadBoxArt"), isOn: $launchBoxDownloadAfterScan)
+                    if useLaunchBox {
+                        Toggle(loc.localized("boxArt.autoDownloadBoxArt"), isOn: $launchBoxDownloadAfterScan)
+                    }
                 } header: {
                     Label { Text(loc.localized("boxArt.launchBoxGamesDB")) } icon: { Image(systemName: "gamecontroller.fill") }
                 } footer: {
@@ -73,7 +66,7 @@ struct BoxArtSettingsView: View {
                 }
             }
 
-            // ScreenScraper Account Section
+            // ScreenScraper Account
             if !isSearching || matchesSearch("screenscraper account credentials box art free account username password") {
                 Section {
                     TextField(loc.localized("boxArt.username"), text: $username)
@@ -83,41 +76,60 @@ struct BoxArtSettingsView: View {
                             BoxArtService.ScreenScraperCredentials(username: username, password: password))
                         saved = true
                     }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                    if saved {
+                        Label { Text(loc.localized("boxArt.credentialsSaved")) } icon: { Image(systemName: "checkmark.circle.fill") }
+                            .foregroundStyle(AppColors.success(colorScheme))
+                            .font(.caption)
+                    }
                 } header: {
                     Label { Text(loc.localized("boxArt.screenScraperAccount")) } icon: { Image(systemName: "person.badge.key") }
                 } footer: {
                     Text(loc.localized("boxArt.screenScraperDescription"))
                 }
-                if saved {
-                    Label { Text(loc.localized("boxArt.credentialsSaved")) } icon: { Image(systemName: "checkmark.circle.fill") }
-                        .foregroundStyle(AppColors.success(colorScheme))
+            }
+
+            // Matching Section
+            if !isSearching || matchesSearch("priority CRC matching filename fallback HTTP head check box art matching") {
+                Section {
+                    Picker(loc.localized("boxArt.tryFirst"), selection: $thumbnailPriorityRaw) {
+                        ForEach(LibretroThumbnailPriority.allCases) { p in
+                            Text(p.displayName).tag(p.rawValue)
+                        }
+                    }
+                    Toggle(loc.localized("boxArt.matchROMCrc"), isOn: $useCRCMatching)
+                    Toggle(loc.localized("boxArt.fallbackFilename"), isOn: $fallbackFilename)
+                    Toggle(loc.localized("boxArt.useHttpHead"), isOn: $useHeadCheck)
+                } header: {
+                    Label { Text(loc.localized("boxArt.matching")) } icon: { Image(systemName: "arrow.triangle.branch") }
+                } footer: {
+                    Text(loc.localized("boxArt.launchBoxDescription"))
                 }
             }
 
-            // Performance & Indexing Section
+            // Maintenance Section
             if !isSearching || matchesSearch("performance indexing manifest refresh repository library URL 404 check") {
                 Section {
                     let manifestService = LibretroThumbnailManifestService.shared
-    VStack(alignment: .leading, spacing: AppSpacing.md) {
-        HStack {
-        VStack(alignment: .leading, spacing: AppSpacing.xs) {
-            Text(loc.localized("boxArt.assetIndexing"))
-            .font(.body)
-            Text(loc.localized("boxArt.assetIndexingDescription"))
-            .font(.caption)
-            .foregroundStyle(AppColors.textSecondary(colorScheme))
-        }
+                    VStack(alignment: .leading, spacing: AppSpacing.md) {
+                        HStack {
+                            VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                                Text(loc.localized("boxArt.assetIndexing"))
+                                    .font(.body)
+                                Text(loc.localized("boxArt.assetIndexingDescription"))
+                                    .font(.caption)
+                                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                            }
                             Spacer()
                             Button(action: {
-                                Task {
-                                    await manifestService.refreshAllManifests()
-                                }
+                                Task { await manifestService.refreshAllManifests() }
                             }) {
                                 if manifestService.isRefreshing {
-            HStack(spacing: AppSpacing.sm) {
-              ProgressView()
-              .controlSize(.small)
-              Text(loc.localized("boxArt.indexing"))
+                                    HStack(spacing: AppSpacing.sm) {
+                                        ProgressView()
+                                            .controlSize(.small)
+                                        Text(loc.localized("boxArt.indexing"))
                                     }
                                 } else {
                                     Label { Text(loc.localized("boxArt.refreshIndex")) } icon: { Image(systemName: "arrow.clockwise") }
@@ -126,34 +138,32 @@ struct BoxArtSettingsView: View {
                             .buttonStyle(.bordered)
                             .disabled(manifestService.isRefreshing)
                         }
-                        
+
                         if manifestService.isRefreshing {
-        VStack(alignment: .leading, spacing: AppSpacing.xs) {
-            ProgressView(value: manifestService.refreshProgress)
-            .progressViewStyle(.linear)
-            Text("\(loc.localized("boxArt.current")) \(manifestService.currentRepoRefreshing)")
-            .font(.caption2)
-            .foregroundStyle(AppColors.textTertiary(colorScheme))
-            .italic()
-        }
-        .padding(.top, AppSpacing.xs)
+                            VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                                ProgressView(value: manifestService.refreshProgress)
+                                    .progressViewStyle(.linear)
+                                Text("\(loc.localized("boxArt.current")) \(manifestService.currentRepoRefreshing)")
+                                    .font(.caption2)
+                                    .foregroundStyle(AppColors.textTertiary(colorScheme))
+                                    .italic()
+                            }
+                            .padding(.top, AppSpacing.xs)
                         }
                     }
                 } header: {
                     Label { Text(loc.localized("boxArt.performanceIndexing")) } icon: { Image(systemName: "bolt.fill") }
-                } footer: {
-                    Text(loc.localized("boxArt.performanceDescription"))
                 }
             }
-            
+
             // No results message
             if isSearching && !hasMatchingSections {
                 Section {
-      Text("\(loc.localized("boxArt.noMatchingSettings")) \"\(searchText)\"")
-        .font(.caption)
-        .foregroundStyle(AppColors.textSecondary(colorScheme))
-        .frame(maxWidth: .infinity, alignment: .center)
-        .padding(.vertical, AppSpacing.xl2)
+                    Text("\(loc.localized("boxArt.noMatchingSettings")) \"\(searchText)\"")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.vertical, AppSpacing.xl2)
                 }
             }
         }
@@ -196,9 +206,10 @@ struct BoxArtSettingsView: View {
     }
     
     private var hasMatchingSections: Bool {
-        matchesSearch("libretro thumbnail CDN CRC No-Intro DAT box art named boxarts named titles named snaps fuzzy name") ||
+        matchesSearch("libretro thumbnail CDN URL source") ||
         matchesSearch("launchbox gamesdb box art download scan third-party fallback") ||
         matchesSearch("screenscraper account credentials box art free account username password") ||
+        matchesSearch("priority CRC matching filename fallback HTTP head check box art matching") ||
         matchesSearch("performance indexing manifest refresh repository library URL 404 check")
     }
 }

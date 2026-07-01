@@ -13,8 +13,6 @@ struct StreamingSettingsView: View {
     @State private var customURL: String = ""
     @State private var twitchURL: String = ""
     @State private var youtubeURL: String = ""
-    @State private var showTwitchHelp = false
-    @State private var showYoutubeHelp = false
     @State private var showFolderPicker = false
     @State private var outputPath: String = ""
 
@@ -37,8 +35,8 @@ struct StreamingSettingsView: View {
 
     private func matchesSearch(_ keywords: String) -> Bool {
         if searchText.isEmpty { return true }
-        return keywords.localizedLowercase.fuzzyMatch(searchText) ||
-            keywords.localizedLowercase.contains(searchText.lowercased())
+        if SettingsSearchRuntime.pageMatches(.streaming, query: searchText) { return true }
+        return SettingsIndex.matches(haystack: keywords, query: searchText)
     }
 
     init(searchText: Binding<String> = .constant("")) {
@@ -52,6 +50,9 @@ struct StreamingSettingsView: View {
                     get: { recordingService.streamingEnabled },
                     set: { recordingService.streamingEnabled = $0; recordingService.saveSettings() }
                 ))
+                Text(loc.localized("settings.streaming.enableDescription"))
+                    .font(.caption)
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
             } header: {
                 Label(loc.localized("settings.streaming"), systemImage: "record.circle")
             }
@@ -63,225 +64,30 @@ struct StreamingSettingsView: View {
                             get: { recordingService.recordWithShaders },
                             set: { recordingService.recordWithShaders = $0; recordingService.saveSettings() }
                         ))
+                        Text(loc.localized("settings.streaming.recordWithShadersDescription"))
+                            .font(.caption)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
                     }
                 }
 
                 if !isSearching || matchesSearch("twitch stream key url verify") {
-                    Section {
-                        VStack(spacing: 8) {
-                            HStack(spacing: 8) {
-                                SecureField(loc.localized("settings.streaming.twitchKey"), text: $twitchKey)
-                                    .textFieldStyle(.roundedBorder)
-                                    .font(.system(size: 13))
-                                    .onChange(of: twitchKey) { _, newValue in
-                                        StreamRecordingService.twitchStreamKey = newValue.isEmpty ? nil : newValue
-                                    }
-                                Button(action: { showTwitchHelp = true }) {
-                                    Image(systemName: "questionmark.circle")
-                                        .foregroundStyle(AppColors.textSecondary(colorScheme))
-                                }
-                                .buttonStyle(.plain)
-                                .popover(isPresented: $showTwitchHelp) {
-                                    VStack(alignment: .leading, spacing: 8) {
-                                        Text(loc.localized("settings.streaming.twitchHelp"))
-                                            .font(.system(size: 12))
-                                            .foregroundStyle(AppColors.textPrimary(colorScheme))
-                                        Link("dashboard.twitch.tv", destination: URL(string: "https://dashboard.twitch.tv/settings/stream")!)
-                                            .font(.system(size: 12))
-                                    }
-                                    .padding()
-                                    .frame(width: 260)
-                                }
-                            }
-                            HStack(spacing: 8) {
-                                TextField(loc.localized("settings.streaming.streamURL"), text: $twitchURL)
-                                    .textFieldStyle(.roundedBorder)
-                                    .font(.system(size: 12))
-                                    .onChange(of: twitchURL) { _, newValue in
-                                        StreamRecordingService.twitchStreamURL = newValue.isEmpty ? StreamRecordingService.defaultTwitchURL : newValue
-                                    }
-                                verifyButton(state: $twitchVerifyResult, mode: .twitch)
-                            }
-                        }
-                    } header: {
-                        Label("Twitch", systemImage: "antenna.radiowaves.left.and.right")
-                    }
+                    twitchSection
                 }
 
                 if !isSearching || matchesSearch("youtube stream key url verify") {
-                    Section {
-                        VStack(spacing: 8) {
-                            HStack(spacing: 8) {
-                                SecureField(loc.localized("settings.streaming.youtubeKey"), text: $youtubeKey)
-                                    .textFieldStyle(.roundedBorder)
-                                    .font(.system(size: 13))
-                                    .onChange(of: youtubeKey) { _, newValue in
-                                        StreamRecordingService.youtubeStreamKey = newValue.isEmpty ? nil : newValue
-                                    }
-                                Button(action: { showYoutubeHelp = true }) {
-                                    Image(systemName: "questionmark.circle")
-                                        .foregroundStyle(AppColors.textSecondary(colorScheme))
-                                }
-                                .buttonStyle(.plain)
-                                .popover(isPresented: $showYoutubeHelp) {
-                                    VStack(alignment: .leading, spacing: 8) {
-                                        Text(loc.localized("settings.streaming.youtubeHelp"))
-                                            .font(.system(size: 12))
-                                            .foregroundStyle(AppColors.textPrimary(colorScheme))
-                                        Link("studio.youtube.com", destination: URL(string: "https://studio.youtube.com/channel/livestreaming")!)
-                                            .font(.system(size: 12))
-                                    }
-                                    .padding()
-                                    .frame(width: 260)
-                                }
-                            }
-                            HStack(spacing: 8) {
-                                TextField(loc.localized("settings.streaming.streamURL"), text: $youtubeURL)
-                                    .textFieldStyle(.roundedBorder)
-                                    .font(.system(size: 12))
-                                    .onChange(of: youtubeURL) { _, newValue in
-                                        StreamRecordingService.youtubeStreamURL = newValue.isEmpty ? StreamRecordingService.defaultYoutubeURL : newValue
-                                    }
-                                verifyButton(state: $youtubeVerifyResult, mode: .youtube)
-                            }
-                        }
-                    } header: {
-                        Label("YouTube", systemImage: "video.badge.checkmark")
-                    }
+                    youtubeSection
                 }
 
                 if !isSearching || matchesSearch("custom stream key url server name") {
-                    Section {
-                        VStack(spacing: 8) {
-                            TextField(loc.localized("settings.streaming.customName"), text: $customName)
-                                .textFieldStyle(.roundedBorder)
-                                .font(.system(size: 13))
-                                .onChange(of: customName) { _, newValue in
-                                    StreamRecordingService.customStreamName = newValue.isEmpty ? "Custom" : newValue
-                                }
-                            HStack(spacing: 8) {
-                                SecureField(loc.localized("settings.streaming.customKey"), text: $customKey)
-                                    .textFieldStyle(.roundedBorder)
-                                    .font(.system(size: 13))
-                                    .onChange(of: customKey) { _, newValue in
-                                        StreamRecordingService.customStreamKey = newValue.isEmpty ? nil : newValue
-                                    }
-                            }
-                            HStack(spacing: 8) {
-                                TextField(loc.localized("settings.streaming.customURL"), text: $customURL)
-                                    .textFieldStyle(.roundedBorder)
-                                    .font(.system(size: 12))
-                                    .onChange(of: customURL) { _, newValue in
-                                        StreamRecordingService.customStreamURL = newValue
-                                    }
-                                verifyButton(state: $customVerifyResult, mode: .custom)
-                            }
-                        }
-                    } header: {
-                        Label(loc.localized("settings.streaming.customStream"), systemImage: "network")
-                    }
+                    customSection
                 }
 
                 if !isSearching || matchesSearch("save recording as output path file location") {
-                    Section {
-                        HStack(spacing: 8) {
-                            TextField(loc.localized("settings.streaming.outputPath"), text: $outputPath)
-                                .textFieldStyle(.roundedBorder)
-                                .font(.system(size: 13))
-                                .disabled(true)
-                            Button(loc.localized("settings.streaming.browse")) {
-                                showFolderPicker = true
-                            }
-                            .folderDialog(
-                                isPresented: $showFolderPicker,
-                                path: $outputPath
-                            )
-                            .onChange(of: outputPath) { _, newValue in
-                                StreamRecordingService.localOutputPath = newValue
-                            }
-                        }
-                    } header: {
-                        Label(loc.localized("settings.streaming.outputPath"), systemImage: "folder")
-                    }
+                    outputPathSection
                 }
 
                 if !isSearching || matchesSearch("quality low medium high lossless bitrate codec frame rate resolution video audio") {
-                    Section {
-                        Picker(loc.localized("settings.streaming.quality"), selection: Binding(
-                            get: { recordingService.quality },
-                            set: { recordingService.quality = $0; recordingService.applyPreset($0); recordingService.saveSettings() }
-                        )) {
-                            Text(loc.localized("settings.streaming.qualityLow")).tag(RecordingQuality.low)
-                            Text(loc.localized("settings.streaming.qualityMedium")).tag(RecordingQuality.medium)
-                            Text(loc.localized("settings.streaming.qualityHigh")).tag(RecordingQuality.high)
-                            Text(loc.localized("settings.streaming.qualityLossless")).tag(RecordingQuality.lossless)
-                        }
-                    } header: {
-                        Label(loc.localized("settings.streaming.localQuality"), systemImage: "slider.horizontal.3")
-                    } footer: {
-                        Text(loc.localized("settings.streaming.localQualityDescription"))
-                            .font(.caption)
-                            .foregroundStyle(AppColors.textSecondary(colorScheme))
-                    }
-
-                    Section {
-                        Picker(loc.localized("settings.streaming.videoCodec"), selection: Binding(
-                            get: { recordingService.customVideoCodec },
-                            set: { recordingService.customVideoCodec = $0; recordingService.saveSettings() }
-                        )) {
-                            Text("H.264").tag(RecordingVideoCodec.h264)
-                            Text("HEVC").tag(RecordingVideoCodec.hevc)
-                            Text("ProRes 422").tag(RecordingVideoCodec.proRes422)
-                            Text("ProRes 4444").tag(RecordingVideoCodec.proRes4444)
-                        }
-
-                        if recordingService.customVideoCodec.supportsCustomBitrate {
-                            HStack {
-                                Text(loc.localized("settings.streaming.videoBitrate"))
-                                Spacer()
-                                TextField("", value: Binding(
-                                    get: { recordingService.customVideoBitrate / 1_000_000 },
-                                    set: { recordingService.customVideoBitrate = $0 * 1_000_000; recordingService.saveSettings() }
-                                ), format: .number)
-                                .textFieldStyle(.roundedBorder)
-                                .font(.system(size: 13))
-                                .frame(width: 60)
-                                Text("Mbps")
-                                    .font(.system(size: 11))
-                                    .foregroundStyle(AppColors.textSecondary(colorScheme))
-                            }
-                        }
-
-                        HStack {
-                            Text(loc.localized("settings.streaming.audioBitrate"))
-                            Spacer()
-                            TextField("", value: Binding(
-                                get: { recordingService.customAudioBitrate / 1_000 },
-                                set: { recordingService.customAudioBitrate = $0 * 1_000; recordingService.saveSettings() }
-                            ), format: .number)
-                            .textFieldStyle(.roundedBorder)
-                            .font(.system(size: 13))
-                            .frame(width: 60)
-                            Text("kbps")
-                                .font(.system(size: 11))
-                                .foregroundStyle(AppColors.textSecondary(colorScheme))
-                        }
-
-                        HStack {
-                            Text(loc.localized("settings.streaming.frameRate"))
-                            Spacer()
-                            Picker("", selection: Binding(
-                                get: { recordingService.customFrameRate },
-                                set: { recordingService.customFrameRate = $0; recordingService.saveSettings() }
-                            )) {
-                                Text("30 fps").tag(30)
-                                Text("60 fps").tag(60)
-                            }
-                            .frame(width: 80)
-                        }
-                    } header: {
-                        Label(loc.localized("settings.streaming.customQuality"), systemImage: "gearshape")
-                    }
+                    qualitySection
                 }
             }
         }
@@ -301,6 +107,235 @@ struct StreamingSettingsView: View {
         }
     }
 
+    // MARK: - Twitch Section
+
+    private var twitchSection: some View {
+        Section {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 8) {
+                    SecureField(loc.localized("settings.streaming.twitchKey"), text: $twitchKey)
+                        .textFieldStyle(.roundedBorder)
+                        .font(.system(size: 13))
+                        .onChange(of: twitchKey) { _, newValue in
+                            StreamRecordingService.twitchStreamKey = newValue.isEmpty ? nil : newValue
+                        }
+                }
+                HStack(spacing: 8) {
+                    TextField(loc.localized("settings.streaming.streamURL"), text: $twitchURL)
+                        .textFieldStyle(.roundedBorder)
+                        .font(.system(size: 12))
+                        .onChange(of: twitchURL) { _, newValue in
+                            StreamRecordingService.twitchStreamURL = newValue.isEmpty ? StreamRecordingService.defaultTwitchURL : newValue
+                        }
+                    verifyButton(state: $twitchVerifyResult, mode: .twitch)
+                }
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(loc.localized("settings.streaming.twitchDescription"))
+                        .font(.caption)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
+                    Link("dashboard.twitch.tv", destination: URL(string: "https://dashboard.twitch.tv/settings/stream")!)
+                        .font(.caption)
+                }
+            }
+        } header: {
+            Label("Twitch", systemImage: "antenna.radiowaves.left.and.right")
+        }
+    }
+
+    // MARK: - YouTube Section
+
+    private var youtubeSection: some View {
+        Section {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 8) {
+                    SecureField(loc.localized("settings.streaming.youtubeKey"), text: $youtubeKey)
+                        .textFieldStyle(.roundedBorder)
+                        .font(.system(size: 13))
+                        .onChange(of: youtubeKey) { _, newValue in
+                            StreamRecordingService.youtubeStreamKey = newValue.isEmpty ? nil : newValue
+                        }
+                }
+                HStack(spacing: 8) {
+                    TextField(loc.localized("settings.streaming.streamURL"), text: $youtubeURL)
+                        .textFieldStyle(.roundedBorder)
+                        .font(.system(size: 12))
+                        .onChange(of: youtubeURL) { _, newValue in
+                            StreamRecordingService.youtubeStreamURL = newValue.isEmpty ? StreamRecordingService.defaultYoutubeURL : newValue
+                        }
+                    verifyButton(state: $youtubeVerifyResult, mode: .youtube)
+                }
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(loc.localized("settings.streaming.youtubeDescription"))
+                        .font(.caption)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
+                    Link("studio.youtube.com", destination: URL(string: "https://studio.youtube.com/channel/livestreaming")!)
+                        .font(.caption)
+                }
+            }
+        } header: {
+            Label("YouTube", systemImage: "video.badge.checkmark")
+        }
+    }
+
+    // MARK: - Custom Stream Section
+
+    private var customSection: some View {
+        Section {
+            VStack(alignment: .leading, spacing: 8) {
+                TextField(loc.localized("settings.streaming.customName"), text: $customName)
+                    .textFieldStyle(.roundedBorder)
+                    .font(.system(size: 13))
+                    .onChange(of: customName) { _, newValue in
+                        StreamRecordingService.customStreamName = newValue.isEmpty ? "Custom" : newValue
+                    }
+                HStack(spacing: 8) {
+                    SecureField(loc.localized("settings.streaming.customKey"), text: $customKey)
+                        .textFieldStyle(.roundedBorder)
+                        .font(.system(size: 13))
+                        .onChange(of: customKey) { _, newValue in
+                            StreamRecordingService.customStreamKey = newValue.isEmpty ? nil : newValue
+                        }
+                }
+                HStack(spacing: 8) {
+                    TextField(loc.localized("settings.streaming.customURL"), text: $customURL)
+                        .textFieldStyle(.roundedBorder)
+                        .font(.system(size: 12))
+                        .onChange(of: customURL) { _, newValue in
+                            StreamRecordingService.customStreamURL = newValue
+                        }
+                    verifyButton(state: $customVerifyResult, mode: .custom)
+                }
+                Text(loc.localized("settings.streaming.customStreamDescription"))
+                    .font(.caption)
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
+            }
+        } header: {
+            Label(loc.localized("settings.streaming.customStream"), systemImage: "network")
+        }
+    }
+
+    // MARK: - Output Path Section
+
+    private var outputPathSection: some View {
+        Section {
+            HStack(spacing: 8) {
+                Text(outputPath)
+                    .font(.system(size: 12))
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                Button(loc.localized("settings.streaming.browse")) {
+                    showFolderPicker = true
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .folderDialog(
+                    isPresented: $showFolderPicker,
+                    path: $outputPath
+                )
+                .onChange(of: outputPath) { _, newValue in
+                    StreamRecordingService.localOutputPath = newValue
+                }
+            }
+            Text(loc.localized("settings.streaming.outputPathDescription"))
+                .font(.caption)
+                .foregroundColor(AppColors.textSecondary(colorScheme))
+        } header: {
+            Label(loc.localized("settings.streaming.outputPath"), systemImage: "folder")
+        }
+    }
+
+    // MARK: - Quality Sections
+
+    private var qualitySection: some View {
+        Group {
+            Section {
+                Picker(loc.localized("settings.streaming.quality"), selection: Binding(
+                    get: { recordingService.quality },
+                    set: { recordingService.quality = $0; recordingService.applyPreset($0); recordingService.saveSettings() }
+                )) {
+                    Text(loc.localized("settings.streaming.qualityLow")).tag(RecordingQuality.low)
+                    Text(loc.localized("settings.streaming.qualityMedium")).tag(RecordingQuality.medium)
+                    Text(loc.localized("settings.streaming.qualityHigh")).tag(RecordingQuality.high)
+                    Text(loc.localized("settings.streaming.qualityLossless")).tag(RecordingQuality.lossless)
+                }
+            } header: {
+                Label(loc.localized("settings.streaming.localQuality"), systemImage: "slider.horizontal.3")
+            } footer: {
+                Text(loc.localized("settings.streaming.localQualityDescription"))
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+            }
+
+            Section {
+                Picker(loc.localized("settings.streaming.videoCodec"), selection: Binding(
+                    get: { recordingService.customVideoCodec },
+                    set: { recordingService.customVideoCodec = $0; recordingService.saveSettings() }
+                )) {
+                    Text("H.264").tag(RecordingVideoCodec.h264)
+                    Text("HEVC").tag(RecordingVideoCodec.hevc)
+                    Text("ProRes 422").tag(RecordingVideoCodec.proRes422)
+                    Text("ProRes 4444").tag(RecordingVideoCodec.proRes4444)
+                }
+
+                if recordingService.customVideoCodec.supportsCustomBitrate {
+                    HStack {
+                        Text(loc.localized("settings.streaming.videoBitrate"))
+                        Spacer()
+                        TextField("", value: Binding(
+                            get: { recordingService.customVideoBitrate / 1_000_000 },
+                            set: { recordingService.customVideoBitrate = $0 * 1_000_000; recordingService.saveSettings() }
+                        ), format: .number)
+                        .textFieldStyle(.roundedBorder)
+                        .font(.system(size: 13))
+                        .frame(width: 60)
+                        Text("Mbps")
+                            .font(.system(size: 11))
+                            .foregroundStyle(AppColors.textSecondary(colorScheme))
+                    }
+                }
+
+                HStack {
+                    Text(loc.localized("settings.streaming.audioBitrate"))
+                    Spacer()
+                    TextField("", value: Binding(
+                        get: { recordingService.customAudioBitrate / 1_000 },
+                        set: { recordingService.customAudioBitrate = $0 * 1_000; recordingService.saveSettings() }
+                    ), format: .number)
+                    .textFieldStyle(.roundedBorder)
+                    .font(.system(size: 13))
+                    .frame(width: 60)
+                    Text("kbps")
+                        .font(.system(size: 11))
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                }
+
+                HStack {
+                    Text(loc.localized("settings.streaming.frameRate"))
+                    Spacer()
+                    Picker("", selection: Binding(
+                        get: { recordingService.customFrameRate },
+                        set: { recordingService.customFrameRate = $0; recordingService.saveSettings() }
+                    )) {
+                        Text("30 fps").tag(30)
+                        Text("60 fps").tag(60)
+                    }
+                    .pickerStyle(.segmented)
+                    .frame(width: 120)
+                }
+
+                Text(loc.localized("settings.streaming.customQualityDescription"))
+                    .font(.caption)
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
+            } header: {
+                Label(loc.localized("settings.streaming.customQuality"), systemImage: "gearshape")
+            }
+        }
+    }
+
+    // MARK: - Verify Button
+
     @ViewBuilder
     private func verifyButton(state: Binding<VerifyState>, mode: StreamingMode) -> some View {
         switch state.wrappedValue {
@@ -308,11 +343,12 @@ struct StreamingSettingsView: View {
             Button(action: {
                 Task { await performVerify(state: state, mode: mode) }
             }) {
-                Image(systemName: "checkmark.circle")
-                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                Label(loc.localized("settings.streaming.verify"), systemImage: "checkmark.circle")
+                    .font(.system(size: 12))
             }
-            .buttonStyle(.plain)
-            .help("Verify connection")
+            .buttonStyle(.bordered)
+            .controlSize(.small)
+            .help(loc.localized("settings.streaming.verifyDescription"))
         case .verifying:
             ProgressView()
                 .scaleEffect(0.7)

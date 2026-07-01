@@ -178,6 +178,7 @@ struct ROMSettings: Codable, Hashable {
     var bezelFileName: String = ""
 
     var cheatsEnabled: Bool? = nil
+    var hardcoreMode: Bool? = nil
     var analogMouseEnabled: Bool? = nil
 }
 

@@ -9,23 +9,58 @@ struct HotkeyConfigSettingsView: View {
     @State private var listeningSlot: KeySlot = .primary
     @Binding var searchText: String
 
+    enum Scope: Hashable {
+        case all
+        case global
+        case gameplay
+    }
+
     enum KeySlot { case primary, secondary }
 
-    init(searchText: Binding<String> = .constant("")) {
+    let scope: Scope
+
+    init(searchText: Binding<String> = .constant(""), scope: Scope = .all) {
         self._searchText = searchText
+        self.scope = scope
     }
 
     private var isSearching: Bool { !searchText.isEmpty }
 
     private func matchesSearch(_ keywords: String) -> Bool {
         if searchText.isEmpty { return true }
-        return keywords.localizedLowercase.fuzzyMatch(searchText) ||
-               keywords.localizedLowercase.contains(searchText.lowercased())
+        if SettingsSearchRuntime.pageMatches(.hotkeys, query: searchText) { return true }
+        return SettingsIndex.matches(haystack: keywords, query: searchText)
+    }
+
+    private func matchesAnyLabel(_ actions: [HotkeyAction]) -> Bool {
+        guard !searchText.isEmpty else { return true }
+        let loc = LocalizationManager.shared
+        return actions.contains { action in
+            SettingsIndex.matches(haystack: loc.localized(action.localizationKey), query: searchText)
+        }
+    }
+
+    private var showGeneral: Bool {
+        scope == .all || scope == .global
+    }
+
+    private var showSlots: Bool {
+        scope == .all || scope == .global
+    }
+
+    private var showTraining: Bool {
+        scope == .all || scope == .gameplay
+    }
+
+    private var showReset: Bool {
+        scope == .all
     }
 
     var body: some View {
         Form {
-            if !isSearching || matchesSearch("hotkeys keyboard shortcuts save load slot undo training input capture") {
+            if showGeneral && (!isSearching
+                || matchesSearch("hotkeys keyboard shortcuts save load slot undo training input capture")
+                || matchesAnyLabel([.saveState, .loadState, .undoLoadState, .slotNext, .slotPrev, .toggleInputCapture])) {
                 Section(header: Label(loc.localized("hotkeys.general"), systemImage: "keyboard")) {
                     hotkeyRow(.saveState)
                     hotkeyRow(.loadState)
@@ -36,7 +71,9 @@ struct HotkeyConfigSettingsView: View {
                 }
             }
 
-            if !isSearching || matchesSearch("slots 0-9 slot") {
+            if showSlots && (!isSearching
+                || matchesSearch("slots 0-9 slot")
+                || matchesAnyLabel(slotActions)) {
                 Section(header: Label(loc.localized("hotkeys.slots"), systemImage: "square.grid.3x3")) {
                     ForEach(slotActions, id: \.self) { action in
                         hotkeyRow(action)
@@ -44,7 +81,9 @@ struct HotkeyConfigSettingsView: View {
                 }
             }
 
-            if !isSearching || matchesSearch("training mode reset recording playback tape") {
+            if showTraining && (!isSearching
+                || matchesSearch("training mode reset recording playback tape")
+                || matchesAnyLabel([.toggleTrainingMode, .trainingReset, .trainingToggleRecording, .trainingStartPlayback])) {
                 Section(header: Label(loc.localized("hotkeys.training"), systemImage: "figure.martial.arts")) {
                     hotkeyRow(.toggleTrainingMode)
                     hotkeyRow(.trainingReset)
@@ -53,7 +92,7 @@ struct HotkeyConfigSettingsView: View {
                 }
             }
 
-            if !isSearching || matchesSearch("reset defaults restore") {
+            if showReset && (!isSearching || matchesSearch("reset defaults restore")) {
                 Section(header: Label(loc.localized("hotkeys.reset"), systemImage: "arrow.counterclockwise")) {
                     Text(loc.localized("hotkeys.resetDescription"))
                         .font(.caption)
@@ -67,7 +106,14 @@ struct HotkeyConfigSettingsView: View {
                 }
             }
 
-            if isSearching && !hasMatchingSections {
+            if isSearching
+                && !matchesAnyLabel([.saveState, .loadState, .undoLoadState, .slotNext, .slotPrev, .toggleInputCapture])
+                && !matchesAnyLabel(slotActions)
+                && !matchesAnyLabel([.toggleTrainingMode, .trainingReset, .trainingToggleRecording, .trainingStartPlayback])
+                && !matchesSearch("hotkeys keyboard shortcuts save load slot undo training input capture")
+                && !matchesSearch("slots 0-9 slot")
+                && !matchesSearch("training mode reset recording playback tape")
+                && !matchesSearch("reset defaults restore") {
                 Section {
                     Text("\(loc.localized("general.noMatchingSettings")) \"\(searchText)\"")
                         .font(.caption)
@@ -82,13 +128,6 @@ struct HotkeyConfigSettingsView: View {
         .navigationTitle(loc.localized("settings.hotkeys"))
     }
 
-    private var hasMatchingSections: Bool {
-        matchesSearch("hotkeys keyboard shortcuts save load slot undo training input capture") ||
-        matchesSearch("slots 0-9 slot") ||
-        matchesSearch("training mode reset recording playback tape") ||
-        matchesSearch("reset defaults restore")
-    }
-
     private var slotActions: [HotkeyAction] {
         [.slot0, .slot1, .slot2, .slot3, .slot4, .slot5, .slot6, .slot7, .slot8, .slot9]
     }
@@ -97,8 +136,11 @@ struct HotkeyConfigSettingsView: View {
     private func hotkeyRow(_ action: HotkeyAction) -> some View {
         let cfg = hotkeyManager.config[action] ?? .unbound
 
-        LabeledContent(loc.localized(action.localizationKey)) {
-            HStack(spacing: AppSpacing.xs) {
+        HStack {
+            Text(loc.localized(action.localizationKey))
+                .lineLimit(1)
+            Spacer(minLength: 0)
+            HStack(spacing: 6) {
                 HotkeyCaptureButton(
                     binding: cfg.primary,
                     isListening: listeningAction == action && listeningSlot == .primary,
@@ -115,6 +157,10 @@ struct HotkeyConfigSettingsView: View {
                         hotkeyManager.update(action, primary: .none)
                     }
                 )
+
+                Text("·")
+                    .foregroundStyle(AppColors.textTertiary(colorScheme))
+                    .font(.caption2)
 
                 HotkeyCaptureButton(
                     binding: cfg.secondary,
@@ -133,6 +179,11 @@ struct HotkeyConfigSettingsView: View {
                     }
                 )
             }
+        }
+        .padding(.vertical, AppSpacing.xxs)
+        .overlay(alignment: .bottom) {
+            Divider()
+                .overlay(AppColors.divider(colorScheme))
         }
     }
 
@@ -184,7 +235,9 @@ struct HotkeyCaptureButton: NSViewRepresentable {
     }
 
     private var conflictDescription: String {
-        let names = conflicts.map { _, b in b.displayString }
+        let names = conflicts.map { act, b in
+            "\(LocalizationManager.shared.localized(act.localizationKey)) (\(b.displayString))"
+        }
         return String(format: loc.localized("hotkeys.conflictHint"), names.joined(separator: ", "))
     }
 
@@ -219,6 +272,7 @@ private class HotkeyCaptureContainer: NSView {
     let button = NSButton()
     let clearButton = NSButton()
     private let stackView: NSStackView
+    private var widthConstraint: NSLayoutConstraint?
 
     override init(frame frameRect: NSRect) {
         stackView = NSStackView()
@@ -229,12 +283,14 @@ private class HotkeyCaptureContainer: NSView {
         stackView.addView(clearButton, in: .leading)
         stackView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(stackView)
+        button.widthAnchor.constraint(equalToConstant: 80).isActive = true
+        widthConstraint = widthAnchor.constraint(equalToConstant: 200)
+        widthConstraint?.isActive = true
         NSLayoutConstraint.activate([
             stackView.leadingAnchor.constraint(equalTo: leadingAnchor),
             stackView.trailingAnchor.constraint(equalTo: trailingAnchor),
             stackView.topAnchor.constraint(equalTo: topAnchor),
             stackView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            button.widthAnchor.constraint(equalToConstant: 80),
         ])
     }
 

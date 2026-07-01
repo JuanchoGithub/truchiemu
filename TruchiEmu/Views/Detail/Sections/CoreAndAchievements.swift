@@ -120,6 +120,38 @@ extension GameDetailView {
             headerTrailing: viewOnRALinkAnyView
     ) {
         VStack(alignment: .leading, spacing: 0) {
+            if achievementsService.isEnabled, currentROM.raMatchStatus == "matched" {
+                HStack {
+                    Image(systemName: "shield.lefthalf.filled").foregroundColor(AppColors.brandAccent).frame(width: 20)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(loc.localized("hardcore.perGame"))
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .foregroundColor(AppColors.textPrimary(colorScheme))
+                        Text(loc.localized("hardcore.perGameDescription"))
+                            .font(.caption)
+                            .foregroundColor(AppColors.textTertiary(colorScheme))
+                    }
+                    Spacer()
+                    Toggle("", isOn: Binding<Bool>(
+                        get: {
+                            if let override = currentROM.settings.hardcoreMode { return override }
+                            return HardcoreModeManager.shared.isHardcoreActive(for: currentROM)
+                        },
+                        set: { newValue in
+                            updateSettings { settings in
+                                settings.hardcoreMode = newValue
+                            }
+                        }
+                    ))
+                    .toggleStyle(SwitchToggleStyle())
+                    .labelsHidden()
+                }
+                .padding(.vertical, AppSpacing.xs)
+
+                Divider().overlay(AppColors.divider(colorScheme))
+            }
+
             if raVerificationStatus.isVisible {
                 HStack(spacing: AppSpacing.sm) {
                     switch raVerificationStatus {

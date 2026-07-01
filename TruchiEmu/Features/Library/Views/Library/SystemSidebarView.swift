@@ -13,6 +13,7 @@ struct SystemSidebarView: View {
     @Binding var selectedFilter: LibraryFilter
     @Binding var showCreateCategorySheet: Bool
     @Binding var editingCategory: GameCategory?
+    @State private var hiddenCategoryRefreshToggle = false
     var onRefresh: ((SystemInfo) -> Void)? = nil
     var onSettings: ((String) -> Void)? = nil
     var onSystemAction: ((SystemInfo, SystemAction, String?) -> Void)? = nil
@@ -137,6 +138,7 @@ struct SystemSidebarView: View {
 
                 Spacer()
             }
+            .id(hiddenCategoryRefreshToggle)
             .padding(.horizontal, 8)
             .padding(.vertical, 12)
         }
@@ -146,6 +148,9 @@ struct SystemSidebarView: View {
         .navigationTitle(loc.localized("app.library"))
         .onReceive(NotificationCenter.default.publisher(for: .gamepadSidebarContextMenu)) { _ in
             handleGamepadSidebarContextMenu()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .hiddenGamesCategoryChanged)) { _ in
+            hiddenCategoryRefreshToggle.toggle()
         }
     }
 

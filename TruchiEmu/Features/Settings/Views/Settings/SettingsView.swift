@@ -10,105 +10,138 @@ struct SettingsView: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
     @State private var hoveredPage: Page? = nil
-    
-    enum Page: Hashable, Codable, RawRepresentable, Identifiable {
-        
+
+    enum SidebarSection: String, CaseIterable, Identifiable {
+        case general, library, gameplay, systems, advanced
+
         var id: String { rawValue }
-        case general, saves, library, cores, controllers, analogMouse, boxArt, display, cheats, bezels, retroAchievements, genre, logging, moveList, hotkeys, streaming, help, about
-        
+
+        var localizationKey: String {
+            switch self {
+            case .general: return "settingsGroup.general"
+            case .library: return "settingsGroup.library"
+            case .gameplay: return "settingsGroup.gameplay"
+            case .systems: return "settingsGroup.systems"
+            case .advanced: return "settingsGroup.advanced"
+            }
+        }
+
+        var label: String {
+            LocalizationManager.shared.localized(localizationKey)
+        }
+    }
+
+    enum Page: Hashable, Codable, RawRepresentable, Identifiable {
+
+        var id: String { rawValue }
+        case general, saves, library, controllers, analogMouse, boxArt, cheats, bezels, retroAchievements, genre, logging, moveList, hotkeys, perSystem, streaming, help, about, reset
+
         var rawValue: String {
             switch self {
             case .general: return "general"
             case .saves: return "saves"
             case .library: return "library"
-            case .cores: return "cores"
-        case .controllers: return "controllers"
-        case .analogMouse: return "analogMouse"
-        case .boxArt: return "boxArt"
-            case .display: return "display"
+            case .controllers: return "controllers"
+            case .analogMouse: return "analogMouse"
+            case .boxArt: return "boxArt"
             case .cheats: return "cheats"
             case .bezels: return "bezels"
             case .retroAchievements: return "retroAchievements"
             case .genre: return "genre"
             case .logging: return "logging"
-        case .moveList: return "moveList"
-        case .hotkeys: return "hotkeys"
-        case .streaming: return "streaming"
-        case .help: return "help"
-    case .about: return "about"
+            case .moveList: return "moveList"
+            case .hotkeys: return "hotkeys"
+            case .perSystem: return "perSystem"
+            case .streaming: return "streaming"
+            case .help: return "help"
+            case .about: return "about"
+            case .reset: return "reset"
             }
         }
-        
+
         init?(rawValue: String) {
             switch rawValue {
             case "general": self = .general
             case "saves": self = .saves
             case "library": self = .library
-            case "cores": self = .cores
-        case "controllers": self = .controllers
-        case "analogMouse": self = .analogMouse
-        case "boxArt": self = .boxArt
-            case "display": self = .display
+            case "controllers": self = .controllers
+            case "analogMouse": self = .analogMouse
+            case "boxArt": self = .boxArt
             case "cheats": self = .cheats
             case "bezels": self = .bezels
             case "retroAchievements": self = .retroAchievements
             case "genre": self = .genre
             case "logging": self = .logging
-        case "moveList": self = .moveList
-        case "hotkeys": self = .hotkeys
-        case "streaming": self = .streaming
-        case "help": self = .help
-    case "about": self = .about
+            case "moveList": self = .moveList
+            case "hotkeys", "hotkeysGlobal", "hotkeysGameplay": self = .hotkeys
+            case "perSystem": self = .perSystem
+            case "streaming": self = .streaming
+            case "help": self = .help
+            case "about": self = .about
+            case "reset": self = .reset
             default: return nil
             }
         }
-        
+
+        var sidebarSection: SidebarSection {
+            switch self {
+            case .general, .saves, .boxArt, .bezels, .perSystem:
+                return .general
+            case .library, .controllers, .analogMouse, .hotkeys:
+                return .library
+            case .cheats, .streaming, .retroAchievements, .moveList, .genre:
+                return .gameplay
+            case .logging, .help, .about, .reset:
+                return .advanced
+            }
+        }
+
         var icon: String {
             switch self {
             case .general: return "gearshape.fill"
             case .saves: return "externaldrive.fill"
             case .library: return "book.fill"
-            case .cores: return "cpu.fill"
-        case .controllers: return "gamecontroller.fill"
-        case .analogMouse: return "computermouse.fill"
-        case .boxArt: return "photo.stack.fill"
-            case .display: return "tv.fill"
+            case .controllers: return "gamecontroller.fill"
+            case .analogMouse: return "computermouse.fill"
+            case .boxArt: return "photo.stack.fill"
             case .cheats: return "wand.and.stars"
             case .bezels: return "rectangle.on.rectangle"
             case .retroAchievements: return "trophy.fill"
             case .genre: return "tag.fill"
             case .logging: return "doc.text.fill"
-        case .moveList: return "figure.martial.arts"
-        case .hotkeys: return "keyboard"
-        case .streaming: return "video.fill"
-        case .help: return "questionmark.circle.fill"
-    case .about: return "info.circle.fill"
+            case .moveList: return "figure.martial.arts"
+            case .hotkeys: return "keyboard"
+            case .perSystem: return "square.grid.2x2"
+            case .streaming: return "video.fill"
+            case .help: return "questionmark.circle.fill"
+            case .about: return "info.circle.fill"
+            case .reset: return "arrow.uturn.backward"
             }
         }
-        
+
         var label: String {
             switch self {
             case .general: return LocalizationManager.shared.localized("settings.general")
             case .saves: return LocalizationManager.shared.localized("settings.saves")
             case .library: return LocalizationManager.shared.localized("settings.library")
-            case .cores: return LocalizationManager.shared.localized("settings.cores")
-        case .controllers: return LocalizationManager.shared.localized("settings.controllers")
-        case .analogMouse: return LocalizationManager.shared.localized("settings.analogMouse")
-        case .boxArt: return LocalizationManager.shared.localized("settings.boxArt")
-            case .display: return LocalizationManager.shared.localized("settings.display")
+            case .controllers: return LocalizationManager.shared.localized("settings.controllers")
+            case .analogMouse: return LocalizationManager.shared.localized("settings.analogMouse")
+            case .boxArt: return LocalizationManager.shared.localized("settings.boxArt")
             case .cheats: return LocalizationManager.shared.localized("settings.cheats")
             case .bezels: return LocalizationManager.shared.localized("settings.bezels")
             case .retroAchievements: return LocalizationManager.shared.localized("settings.retroAchievements")
             case .genre: return LocalizationManager.shared.localized("settings.genre")
             case .logging: return LocalizationManager.shared.localized("settings.logging")
-        case .moveList: return LocalizationManager.shared.localized("settings.moveList")
-        case .hotkeys: return LocalizationManager.shared.localized("settings.hotkeys")
-        case .streaming: return LocalizationManager.shared.localized("settings.streaming")
-        case .help: return LocalizationManager.shared.localized("settings.help")
-    case .about: return LocalizationManager.shared.localized("settings.about")
+            case .moveList: return LocalizationManager.shared.localized("settings.moveList")
+            case .hotkeys: return LocalizationManager.shared.localized("settings.hotkeys")
+            case .perSystem: return LocalizationManager.shared.localized("settings.perSystem")
+            case .streaming: return LocalizationManager.shared.localized("settings.streaming")
+            case .help: return LocalizationManager.shared.localized("settings.help")
+            case .about: return LocalizationManager.shared.localized("settings.about")
+            case .reset: return LocalizationManager.shared.localized("settings.reset.title")
             }
         }
-        
+
         var searchKeywords: String {
             switch self {
             case .general:
@@ -117,16 +150,12 @@ struct SettingsView: View {
                 return "saves save states files auto progressive slots manager"
             case .library:
                 return "library folders roms games scan rescan hidden bios"
-            case .cores:
-                return "cores emulator download update system"
-        case .controllers:
-            return "controllers gamepad keyboard mapping player buttons input"
-        case .analogMouse:
-            return "analog mouse stick controller sensitivity deadzone dos scummvm pointer cursor"
-        case .boxArt:
+            case .controllers:
+                return "controllers gamepad keyboard mapping player buttons input"
+            case .analogMouse:
+                return "analog mouse stick controller sensitivity deadzone dos scummvm pointer cursor"
+            case .boxArt:
                 return "box art thumbnail images pictures cover"
-            case .display:
-                return "display screen shader preset bezel"
             case .cheats:
                 return "cheats codes cheat code action replay"
             case .bezels:
@@ -137,39 +166,42 @@ struct SettingsView: View {
                 return "genre genres tag categories merge rename"
             case .logging:
                 return "logging log debug console output"
-        case .moveList:
-            return "move list moves fighting combo frame data timing input"
-        case .hotkeys:
-            return "hotkeys keyboard shortcuts save load slot undo training input capture key binding"
-        case .streaming:
-            return "streaming recording twitch youtube stream key credentials quality bitrate"
-        case .help:
-      return "help keyboard shortcuts faq documentation troubleshooting resources"
-    case .about:
+            case .moveList:
+                return "move list moves fighting combo frame data timing input"
+            case .hotkeys:
+                return "hotkeys keyboard shortcuts save load slot undo training recording input capture global gameplay key binding"
+            case .perSystem:
+                return "system per-system bezels cheats controllers core boxart shader preferences per console platform"
+            case .streaming:
+                return "streaming recording twitch youtube stream key credentials quality bitrate"
+            case .help:
+                return "help keyboard shortcuts faq documentation troubleshooting resources"
+            case .about:
                 return "about info version truchie emu emulator"
+            case .reset:
+                return "reset restore defaults factory clear wipe"
             }
         }
     }
-    
-    private struct PageGroup: Identifiable {
-        let id: String
-        let label: String
-        let pages: [Page]
+
+    private var sidebarPages: [SidebarSection: [Page]] {
+        var bucket: [SidebarSection: [Page]] = [:]
+        for section in SidebarSection.allCases {
+            bucket[section] = []
+        }
+        for page in Self.allPages {
+            bucket[page.sidebarSection, default: []].append(page)
+        }
+        return bucket
     }
-    
+
     static let allPages: [Page] = [
-        .analogMouse, .boxArt, .cheats, .controllers, .cores, .bezels, .display,
-        .general, .hotkeys, .saves, .genre, .help, .library, .logging, .moveList, .retroAchievements,
-        .streaming, .about
+        .general, .saves, .boxArt, .bezels, .perSystem,
+        .library, .controllers, .analogMouse, .hotkeys,
+        .cheats, .retroAchievements, .moveList, .streaming, .genre,
+        .logging, .reset, .help, .about
     ]
 
-    private static let pageGroups: [PageGroup] = [
-        PageGroup(id: "general", label: LocalizationManager.shared.localized("settingsGroup.general"), pages: [.general, .library]),
-        PageGroup(id: "systems", label: LocalizationManager.shared.localized("settingsGroup.systems"), pages: [.cores, .saves, .controllers, .analogMouse, .hotkeys]),
-        PageGroup(id: "visuals", label: LocalizationManager.shared.localized("settingsGroup.visuals"), pages: [.boxArt, .display, .bezels, .cheats, .streaming]),
-        PageGroup(id: "advanced", label: LocalizationManager.shared.localized("settingsGroup.advanced"), pages: [.retroAchievements, .genre, .logging, .moveList, .help, .about]),
-    ]
-    
     @State private var selectedPage: Page = .general
     @State private var deepLinkID = UUID()
     @State private var searchText: String = ""
@@ -184,9 +216,9 @@ struct SettingsView: View {
     @State private var activePendingToolbarAccent: Bool = true
     @State private var activePendingTintedSurfaces: Bool = true
     @State private var activePendingAppearanceMode: AppearanceMode = .automatic
-    
+
     let system: SystemInfo?
-    
+
     // Sync state with AppSettings when view appears
     private func syncWithStorage() {
         if let pendingPage = AppSettings.getString("pending_settings_page"),
@@ -198,7 +230,7 @@ struct SettingsView: View {
             selectedPage = page
         }
     }
-    
+
     private var effectiveSystemID: String? {
         if let sid = system?.id { return sid }
         if let pending = AppSettings.getString("pending_settings_system_id") {
@@ -212,21 +244,21 @@ struct SettingsView: View {
     private func updateStorage() {
         AppSettings.set("settings_selectedTab", value: selectedPage.rawValue)
     }
-    
+
     init(system: SystemInfo? = nil, initialPage: SettingsView.Page? = nil) {
         self.system = system
-        
+
         if let initial = initialPage {
             _selectedPage = State(initialValue: initial)
         }
     }
-    
+
     var body: some View {
         HStack(spacing: 0) {
             // Sidebar
             ScrollView {
                 VStack(alignment: .leading, spacing: 2) {
-                    // Search field (replaces .searchable)
+                    // Search field
                     HStack(spacing: 6) {
                         Image(systemName: "magnifyingglass")
                             .font(.system(size: 12, weight: .medium))
@@ -250,20 +282,37 @@ struct SettingsView: View {
                         .padding(.horizontal, 8)
 
                     if searchText.isEmpty {
-                        ForEach(Self.pageGroups) { group in
-                            Text(group.label.uppercased())
-                                .font(AppTypography.sectionHeader)
-                                .foregroundStyle(AppColors.textSecondary(colorScheme))
-                                .padding(.top, 8)
-                                .padding(.bottom, 4)
+                        ForEach(SidebarSection.allCases) { section in
+                            let pages = sidebarPages[section] ?? []
+                            if !pages.isEmpty {
+                                Text(section.label.uppercased())
+                                    .font(AppTypography.sectionHeader)
+                                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                    .padding(.top, 8)
+                                    .padding(.bottom, 4)
 
-                            ForEach(group.pages) { page in
-                                sidebarItem(for: page)
+                                ForEach(pages) { page in
+                                    sidebarItem(for: page)
+                                }
                             }
                         }
                     } else {
-                        ForEach(filteredPages) { page in
-                            sidebarItem(for: page)
+                        let hits = searchResults
+                        if hits.isEmpty {
+                            ForEach(filteredPages) { page in
+                                sidebarItem(for: page)
+                            }
+                        } else {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(loc.localized("settings.searchMatches"))
+                                    .font(AppTypography.sectionHeader)
+                                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                    .padding(.top, 8)
+                                    .padding(.bottom, 4)
+                                ForEach(hits.prefix(60)) { hit in
+                                    searchHitItem(for: hit)
+                                }
+                            }
                         }
                     }
 
@@ -288,7 +337,7 @@ struct SettingsView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .environment(SystemDatabaseWrapper.shared)
-        .frame(minWidth: 680, minHeight: 400)
+        .frame(minWidth: 940, minHeight: 552)
         .navigationTitle(loc.localized("app.settings"))
         .onAppear {
             if settingsGamepadContext == nil {
@@ -353,23 +402,30 @@ struct SettingsView: View {
         pendingAppearanceMode: activePendingAppearanceMode
         ))
     }
-    
+
     private var filteredPages: [Page] {
         if searchText.isEmpty {
             return Self.allPages
         }
         return Self.allPages.filter { page in
-            page.label.localizedLowercase.fuzzyMatch(searchText) ||
-            page.searchKeywords.localizedLowercase.fuzzyMatch(searchText)
+            SettingsIndex.matches(haystack: page.label, query: searchText) ||
+            SettingsIndex.matches(haystack: page.searchKeywords, query: searchText)
         }
     }
-    
+
+    private var searchResults: [SettingsSearchHit] {
+        let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.isEmpty { return [] }
+        SettingsCatalog.bootstrap()
+        return SettingsIndex.shared.search(searchText)
+    }
+
     private func sidebarItem(for page: Page) -> some View {
         let isSelected = selectedPage == page
         let isHovered = hoveredPage == page
         return Button {
-            if coreManager.isDownloadingCore && page != .cores {
-                selectedPage = .cores
+            if coreManager.isDownloadingCore && page != .perSystem {
+                selectedPage = .perSystem
                 return
             }
             if page != .general && hasPendingThemeChanges {
@@ -394,7 +450,7 @@ struct SettingsView: View {
                     .foregroundColor(isSelected ? AppColors.textPrimary(colorScheme) : AppColors.textSecondary(colorScheme))
                     .fontWeight(isSelected ? .medium : .regular)
 
-                if coreManager.isDownloadingCore && page == .cores {
+                if coreManager.isDownloadingCore && page == .perSystem {
                     Spacer()
                     ProgressView()
                         .controlSize(.small)
@@ -404,8 +460,8 @@ struct SettingsView: View {
             .padding(.vertical, 7)
             .padding(.horizontal, 10)
             .background(
-                RoundedRectangle(cornerRadius: 6)
-                    .fill(isSelected ? AppColors.accentBackground(colorScheme) : 
+                RoundedRectangle(cornerRadius: AppRadius.md)
+                    .fill(isSelected ? AppColors.accentBackground(colorScheme) :
                           (isHovered ? AppColors.cardBackgroundSubtle(colorScheme) : .clear))
             )
             .overlay(alignment: .leading) {
@@ -421,7 +477,46 @@ struct SettingsView: View {
         .buttonStyle(.plain)
         .onHover { hoveredPage = $0 ? page : nil }
     }
-    
+
+    private func searchHitItem(for hit: SettingsSearchHit) -> some View {
+        Button {
+            switch hit.kind {
+            case .page(let page):
+                selectedPage = page
+            case .section(let page, _), .option(let page, _, _), .description(let page, _, _):
+                selectedPage = page
+            }
+            updateStorage()
+        } label: {
+            HStack(alignment: .top, spacing: 8) {
+                Image(systemName: hit.icon)
+                    .font(.system(size: 12, weight: .medium))
+                    .frame(width: 18, alignment: .center)
+                    .foregroundColor(AppColors.brandAccent)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(hit.title)
+                        .font(AppTypography.callout)
+                        .foregroundColor(AppColors.textPrimary(colorScheme))
+                        .lineLimit(1)
+                    Text(hit.breadcrumbs.dropLast().joined(separator: " › "))
+                        .font(.caption2)
+                        .foregroundColor(AppColors.textTertiary(colorScheme))
+                        .lineLimit(1)
+                }
+                Spacer()
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, 5)
+            .padding(.horizontal, 10)
+            .background(
+                RoundedRectangle(cornerRadius: AppRadius.md)
+                    .fill(AppColors.cardBackgroundSubtle(colorScheme))
+            )
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+
     // MARK: - Detail Content
     @ViewBuilder
     private var detailContent: some View {
@@ -444,21 +539,21 @@ struct SettingsView: View {
             )
             case .saves:       SavesSettingsView(searchText: $searchText)
             case .library:     LibrarySettingsView(searchText: $searchText)
-            case .cores:       CoreSettingsView(searchText: $searchText)
             case .controllers: ControllerSettingsView(systemID: effectiveSystemID, searchText: $searchText)
             case .analogMouse: AnalogMouseSettingsView(searchText: $searchText)
             case .boxArt: BoxArtSettingsView(searchText: $searchText)
-            case .display:     DisplaySettingsView(searchText: $searchText)
             case .cheats:      CheatSettingsView(systemID: effectiveSystemID, searchText: $searchText)
             case .bezels:     BezelSettingsView(systemID: effectiveSystemID, searchText: $searchText)
             case .retroAchievements: RetroAchievementsSettingsView(searchText: $searchText, system: system)
             case .genre:       GenreSettingsView(searchText: $searchText)
             case .logging: LoggingSettingsView(searchText: $searchText)
         case .moveList: MoveListSettingsView(searchText: $searchText)
-        case .hotkeys: HotkeyConfigSettingsView(searchText: $searchText)
+        case .hotkeys: HotkeyConfigSettingsView(searchText: $searchText, scope: .all)
+        case .perSystem: PerSystemSettingsView(searchText: $searchText)
         case .streaming: StreamingSettingsView(searchText: $searchText)
         case .help: HelpSettingsView(searchText: $searchText)
-    case .about: AboutView()
+        case .about: AboutView()
+            case .reset: ResetSettingsView(searchText: $searchText)
         }
         }
         .frame(minWidth: 450, minHeight: 350)
@@ -468,28 +563,7 @@ struct SettingsView: View {
         }
     }
 }
-}
 
-// MARK: - Fuzzy Search Helper
-extension String {
-    func fuzzyMatch(_ query: String) -> Bool {
-        if query.isEmpty { return true }
-        let lowerString = self.localizedLowercase
-        let lowerQuery = query.localizedLowercase
-        
-        var stringIndex = lowerString.startIndex
-        var queryIndex = lowerQuery.startIndex
-        
-        while stringIndex < lowerString.endIndex && queryIndex < lowerQuery.endIndex {
-            if lowerString[stringIndex] == lowerQuery[queryIndex] {
-                queryIndex = lowerQuery.index(after: queryIndex)
-            }
-            stringIndex = lowerString.index(after: stringIndex)
-        }
-        
-        // If we reached the end of the query, it means all characters were found in order
-        return queryIndex == lowerQuery.endIndex
-    }
 }
 
 // MARK: - Window Close Interceptor

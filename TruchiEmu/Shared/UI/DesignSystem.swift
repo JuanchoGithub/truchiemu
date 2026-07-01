@@ -1222,3 +1222,243 @@ struct AppStatCard: View {
         )
     }
 }
+
+// MARK: - Text Fields
+
+/// A canonical text input with cardinal surface styling.
+/// Use for free-form value entry in settings forms.
+struct AppTextField: View {
+    let title: String
+    let placeholder: String
+    @Binding var text: String
+    var systemImage: String?
+    var monospaced: Bool = false
+    @Environment(\.colorScheme) private var colorScheme
+
+    init(_ title: String, text: Binding<String>, placeholder: String = "", systemImage: String? = nil, monospaced: Bool = false) {
+        self.title = title
+        self._text = text
+        self.placeholder = placeholder
+        self.systemImage = systemImage
+        self.monospaced = monospaced
+    }
+
+    var body: some View {
+        TextField(title, text: $text, prompt: placeholder.isEmpty ? nil : Text(placeholder))
+            .textFieldStyle(.plain)
+            .font(monospaced ? .body.monospaced() : .body)
+            .foregroundColor(AppColors.textPrimary(colorScheme))
+            .padding(.horizontal, AppSpacing.md)
+            .padding(.vertical, AppSpacing.sm)
+            .background(
+                RoundedRectangle(cornerRadius: AppRadius.md)
+                    .fill(AppColors.cardBackgroundSubtle(colorScheme))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: AppRadius.md)
+                            .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
+                    )
+            )
+    }
+}
+
+/// A canonical secure input with cardinal surface styling.
+struct AppSecureField: View {
+    let title: String
+    let placeholder: String
+    @Binding var text: String
+    var systemImage: String?
+    @Environment(\.colorScheme) private var colorScheme
+
+    init(_ title: String, text: Binding<String>, placeholder: String = "", systemImage: String? = nil) {
+        self.title = title
+        self._text = text
+        self.placeholder = placeholder
+        self.systemImage = systemImage
+    }
+
+    var body: some View {
+        SecureField(title, text: $text, prompt: placeholder.isEmpty ? nil : Text(placeholder))
+            .textFieldStyle(.plain)
+            .font(.body)
+            .foregroundColor(AppColors.textPrimary(colorScheme))
+            .padding(.horizontal, AppSpacing.md)
+            .padding(.vertical, AppSpacing.sm)
+            .background(
+                RoundedRectangle(cornerRadius: AppRadius.md)
+                    .fill(AppColors.cardBackgroundSubtle(colorScheme))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: AppRadius.md)
+                            .stroke(AppColors.cardBorder(colorScheme), lineWidth: 1)
+                    )
+            )
+    }
+}
+
+// MARK: - Info Row
+
+/// A label + monospaced value row with an optional trailing button.
+/// Used wherever a settings view needs to display a path, identifier,
+/// or other read-only value with optional actions (Reveal in Finder, Copy, etc.).
+struct AppInfoRow<Trailing: View>: View {
+    let label: String
+    let value: String
+    let valueMonospaced: Bool
+    let truncate: Text.TruncationMode
+    @ViewBuilder let trailing: () -> Trailing
+    @Environment(\.colorScheme) private var colorScheme
+
+    init(_ label: String,
+         value: String,
+         monospaced: Bool = true,
+         truncate: Text.TruncationMode = .middle,
+         @ViewBuilder trailing: @escaping () -> Trailing) {
+        self.label = label
+        self.value = value
+        self.valueMonospaced = monospaced
+        self.truncate = truncate
+        self.trailing = trailing
+    }
+
+    var body: some View {
+        HStack(spacing: AppSpacing.md) {
+            Text(label)
+                .font(.body)
+            Spacer(minLength: AppSpacing.md)
+            Text(value)
+                .font(valueMonospaced ? .callout.monospaced() : .callout)
+                .lineLimit(1)
+                .truncationMode(truncate)
+                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                .help(value)
+            trailing()
+        }
+        .padding(.vertical, AppSpacing.xs)
+    }
+}
+
+/// Convenience: a directory path row with a "Reveal in Finder" trailing button.
+struct AppPathRow: View {
+    let label: String
+    let url: URL
+    let monospaced: Bool
+    @Environment(\.colorScheme) private var colorScheme
+
+    init(_ label: String, url: URL, monospaced: Bool = true) {
+        self.label = label
+        self.url = url
+        self.monospaced = monospaced
+    }
+
+    var body: some View {
+        AppInfoRow(label, value: url.path, monospaced: monospaced) {
+            Button {
+                NSWorkspace.shared.activateFileViewerSelecting([url])
+            } label: {
+                Image(systemName: "folder")
+            }
+            .buttonStyle(.plain)
+            .help("Reveal in Finder")
+        }
+    }
+}
+
+// MARK: - Toast
+
+/// Style variants for `AppToast`.
+enum AppToastStyle {
+    case success
+    case info
+    case warning
+    case error
+
+    func background(_ colorScheme: ColorScheme) -> Color {
+        switch self {
+        case .success: return AppColors.success(colorScheme)
+        case .info:    return AppColors.accentSecondaryForScheme(colorScheme)
+        case .warning: return AppColors.warning(colorScheme)
+        case .error:   return AppColors.error(colorScheme)
+        }
+    }
+
+    func icon() -> String {
+        switch self {
+        case .success: return "checkmark.circle.fill"
+        case .info:    return "info.circle.fill"
+        case .warning: return "exclamationmark.triangle.fill"
+        case .error:   return "xmark.octagon.fill"
+        }
+    }
+}
+
+/// A transient feedback pill rendered as an overlay.
+/// Render inside `.overlay(alignment: .bottom)` and toggle visibility
+/// via `withAnimation`; the toast auto-dismisses after `duration`.
+struct AppToast: View {
+    let message: String
+    let style: AppToastStyle
+    var duration: TimeInterval = 3
+    var onDismiss: (() -> Void)?
+    @Environment(\.colorScheme) private var colorScheme
+    @State private var visible: Bool = true
+
+    var body: some View {
+        if visible {
+            HStack(spacing: AppSpacing.sm) {
+                Image(systemName: style.icon())
+                    .foregroundStyle(.white)
+                Text(message)
+                    .font(.callout)
+                    .foregroundStyle(.white)
+            }
+            .padding(.horizontal, AppSpacing.xl)
+            .padding(.vertical, AppSpacing.lg)
+            .background(style.background(colorScheme).opacity(0.95))
+            .clipShape(Capsule())
+            .shadow(radius: AppRadius.lg)
+            .padding(.bottom, AppSpacing.xl5)
+            .transition(.move(edge: .bottom).combined(with: .opacity))
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
+                    withAnimation {
+                        visible = false
+                        onDismiss?()
+                    }
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Stat Group
+
+/// Horizontal three-up stat group: three equally-spaced `AppStatCard`s
+/// separated by 1pt vertical dividers.
+/// Replaces the hand-rolled three-up stat tiles found in several settings views.
+struct StatGroup: View {
+    let primary: AppStatCard
+    let secondary: AppStatCard
+    let tertiary: AppStatCard
+    @Environment(\.colorScheme) private var colorScheme
+
+    init(_ primary: AppStatCard, _ secondary: AppStatCard, _ tertiary: AppStatCard) {
+        self.primary = primary
+        self.secondary = secondary
+        self.tertiary = tertiary
+    }
+
+    var body: some View {
+        HStack(spacing: AppSpacing.xl) {
+            primary
+            Divider()
+                .frame(height: 40)
+                .overlay(AppColors.divider(colorScheme))
+            secondary
+            Divider()
+                .frame(height: 40)
+                .overlay(AppColors.divider(colorScheme))
+            tertiary
+        }
+        .padding(.vertical, AppSpacing.md)
+        .frame(maxWidth: .infinity)
+    }
+}

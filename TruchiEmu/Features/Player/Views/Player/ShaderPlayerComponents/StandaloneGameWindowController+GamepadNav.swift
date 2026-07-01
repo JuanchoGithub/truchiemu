@@ -75,14 +75,20 @@ extension StandaloneGameWindowController {
         buttonIndex += 1
         if idx == buttonIndex {
             if !saveStatesDisabled {
-                Task { @MainActor in _ = r.saveState(slot: r.currentSlot) }
+                HardcoreModeManager.shared.attemptSaveState { [weak self] in
+                    guard let self else { return }
+                    Task { @MainActor in _ = r.saveState(slot: r.currentSlot) }
+                }
             }
             return
         }
         buttonIndex += 1
         if idx == buttonIndex {
             if !saveStatesDisabled {
-                Task { @MainActor in _ = r.loadState(slot: r.currentSlot) }
+                HardcoreModeManager.shared.attemptLoadState { [weak self] in
+                    guard let self else { return }
+                    Task { @MainActor in _ = r.loadState(slot: r.currentSlot) }
+                }
             }
             return
         }

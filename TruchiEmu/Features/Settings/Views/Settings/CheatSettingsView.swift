@@ -30,8 +30,8 @@ struct CheatSettingsView: View {
 
     private func matchesSearch(_ keywords: String) -> Bool {
         if searchText.isEmpty { return true }
-        return keywords.localizedLowercase.fuzzyMatch(searchText) ||
-            keywords.localizedLowercase.contains(searchText.lowercased())
+        if SettingsSearchRuntime.pageMatches(.cheats, query: searchText) { return true }
+        return SettingsIndex.matches(haystack: keywords, query: searchText)
     }
 
     private var hasAnyResults: Bool {
@@ -54,55 +54,43 @@ struct CheatSettingsView: View {
 
     var body: some View {
         Form {
-            // MARK: - Statistics Dashboard
-            if !isSearching || matchesSearch("Cheat Library Summary files storage custom") {
+            // MARK: - Library Section
+            if !isSearching || matchesSearch("Cheat Library Summary files storage custom last updated") {
                 Section {
-                    HStack(spacing: AppSpacing.xl2) {
-                        statTile(
+                    StatGroup(
+                        AppStatCard(
+                            icon: "doc.on.doc.fill",
                             value: "\(downloadService.getDownloadedCheatCount())",
                             label: loc.localized("cheats.files"),
-                            icon: "doc.on.doc.fill",
-                            color: AppColors.brandAccent
-                        )
-                        Divider().frame(height: 40)
-                        statTile(
+                            accent: AppColors.brandAccent
+                        ),
+                        AppStatCard(
+                            icon: "internaldrive.fill",
                             value: formatByteSize(downloadService.getDownloadedCheatSize()),
                             label: loc.localized("cheats.storage"),
-                            icon: "internaldrive.fill",
-                            color: AppColors.accentTertiary
-                        )
-                        Divider().frame(height: 40)
-                        statTile(
+                            accent: AppColors.accentTertiary
+                        ),
+                        AppStatCard(
+                            icon: "wand.and.stars",
                             value: AppSettings.getData("cheats_v2") != nil ? "Active" : "None",
                             label: loc.localized("cheats.custom"),
-                            icon: "wand.and.stars",
-                            color: AppColors.warning(colorScheme)
+                            accent: AppColors.warning(colorScheme)
                         )
+                    )
+
+                    LabeledContent(loc.localized("cheats.lastUpdated")) {
+                        Text((downloadService.lastDownloadDate ?? Date()).formatted(date: .abbreviated, time: .shortened))
+                            .font(.system(.caption, design: .monospaced))
+                            .foregroundStyle(AppColors.textSecondary(colorScheme))
                     }
-                    .padding(.vertical, AppSpacing.md)
-                    .frame(maxWidth: .infinity)
                 } header: {
                     Label { Text(loc.localized("cheats.librarySummary")) } icon: { Image(systemName: "chart.bar.fill") }
                 }
             }
 
-            // MARK: - Download Section
-            if !isSearching || matchesSearch("Online Database download network") {
+            // MARK: - Behavior Section
+            if !isSearching || matchesSearch("apply on launch notifications behavior") {
                 Section {
-                    VStack(alignment: .leading, spacing: AppSpacing.lg) {
-                        LabeledContent(loc.localized("cheats.lastUpdated")) {
-                            Text((downloadService.lastDownloadDate ?? Date()).formatted(date: .abbreviated, time: .shortened))
-                                .font(.system(.caption, design: .monospaced))
-                                .foregroundStyle(AppColors.textSecondary(colorScheme))
-                        }
-
-                        if downloadService.isDownloading {
-                            downloadProgressView
-                        } else {
-                            downloadActionButtons
-                        }
-                    }
-
                     Toggle(isOn: $prefs.applyCheatsOnLaunch) {
                         VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                             Text(loc.localized("cheats.applyOnLaunch"))
@@ -127,13 +115,26 @@ struct CheatSettingsView: View {
                         AppSettings.setBool("showCheatNotifications", value: prefs.showCheatNotifications)
                     }
                 } header: {
-                    Label(loc.localized("cheats.onlineDatabase"), systemImage: "network")
+                    Label(loc.localized("cheats.behavior"), systemImage: "gearshape")
                 } footer: {
                     Text(loc.localized("cheats.onlineDatabaseDescription"))
                 }
             }
 
-            // MARK: - Maintenance Section
+            // MARK: - Download Section
+            if !isSearching || matchesSearch("Online Database download network update") {
+                Section {
+                    if downloadService.isDownloading {
+                        downloadProgressView
+                    } else {
+                        downloadActionButtons
+                    }
+                } header: {
+                    Label(loc.localized("cheats.onlineDatabase"), systemImage: "network")
+                }
+            }
+
+            // MARK: - Actions Section
             if !isSearching || matchesSearch("Actions Show in Finder Clear Downloaded Cheats") {
                 Section(header: Label(loc.localized("cheats.actions"), systemImage: "hammer")) {
                     Button(action: openCheatDirectory) {
@@ -214,7 +215,7 @@ struct CheatSettingsView: View {
         }
         .overlay(alignment: .bottom) {
             if let result = downloadResult {
-                resultToast(result)
+                AppToast(message: result, style: .info, duration: 3, onDismiss: { downloadResult = nil })
             }
         }
     }
@@ -294,32 +295,6 @@ struct CheatSettingsView: View {
                 }
             }
         }
-    }
-
-    private func statTile(value: String, label: String, icon: String, color: Color) -> some View {
-        VStack(spacing: AppSpacing.xs) {
-            Image(systemName: icon).foregroundStyle(color).font(.title3)
-            Text(value).font(.headline).fontWeight(.bold)
-            Text(label).font(.caption2).foregroundStyle(AppColors.textSecondary(colorScheme)).textCase(.uppercase)
-        }
-        .frame(minWidth: 90)
-    }
-
-    private func resultToast(_ message: String) -> some View {
-        Text(message)
-            .font(.callout)
-            .padding(.horizontal, AppSpacing.xl)
-            .padding(.vertical, AppSpacing.lg)
-            .background(AppColors.cardBackgroundSubtle(colorScheme))
-            .clipShape(Capsule())
-            .shadow(radius: AppRadius.lg)
-            .padding(.bottom, AppSpacing.xl5)
-            .transition(.move(edge: .bottom).combined(with: .opacity))
-            .onAppear {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                    withAnimation { downloadResult = nil }
-                }
-            }
     }
 
     // MARK: - Logic Helpers

@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 
 struct SavesSettingsView: View {
     @Environment(\.colorScheme) private var colorScheme
@@ -13,6 +14,11 @@ struct SavesSettingsView: View {
     @State private var showSaveManager = false
     @State private var contentLoaded = false
 
+    @State private var saveFileSize: Int64 = 0
+    @State private var saveStateSize: Int64 = 0
+    @State private var isCalculatingSize = false
+    @State private var showingMigrationAlert = false
+
     @Binding var searchText: String
 
     init(searchText: Binding<String> = .constant("")) {
@@ -25,15 +31,101 @@ struct SavesSettingsView: View {
 
     private func matchesSearch(_ keywords: String) -> Bool {
         if searchText.isEmpty { return true }
-        return keywords.localizedLowercase.fuzzyMatch(searchText) ||
-               keywords.localizedLowercase.contains(searchText.lowercased())
+        if SettingsSearchRuntime.pageMatches(.saves, query: searchText) { return true }
+        return SettingsIndex.matches(haystack: keywords, query: searchText)
+    }
+
+    private var byteFormatter: ByteCountFormatter {
+        let f = ByteCountFormatter()
+        f.countStyle = .file
+        return f
+    }
+
+    private func byteString(from bytes: Int64) -> String {
+        byteFormatter.string(fromByteCount: bytes)
     }
 
     var body: some View {
         Group {
             if contentLoaded {
                 Form {
-                    // Progressive Saves Section
+                    if !isSearching || matchesSearch("storage path folder directory disk size stats SRAM location migration") {
+                        Section(header: Label(loc.localized("saveDirectories.title"), systemImage: "folder.fill")) {
+                            StatGroup(
+                                AppStatCard(
+                                    icon: "memorychip",
+                                    value: byteString(from: saveFileSize),
+                                    label: loc.localized("saveDirectories.saveFiles"),
+                                    accent: AppColors.brandAccent
+                                ),
+                                AppStatCard(
+                                    icon: "gamecontroller.fill",
+                                    value: byteString(from: saveStateSize),
+                                    label: loc.localized("saveDirectories.saveStates"),
+                                    accent: AppColors.accentTertiary
+                                ),
+                                AppStatCard(
+                                    icon: "externaldrive.fill",
+                                    value: byteString(from: saveFileSize + saveStateSize),
+                                    label: loc.localized("saveDirectories.total"),
+                                    accent: AppColors.warning(colorScheme)
+                                )
+                            )
+
+                            if directoryManager.needsMigration {
+                                Divider()
+                                Label { Text(loc.localized("saveDirectories.existingSavesFound")) } icon: { Image(systemName: "exclamationmark.triangle") }
+                                    .font(.caption)
+                                    .foregroundStyle(AppColors.warning(colorScheme))
+                                Button {
+                                    showingMigrationAlert = true
+                                } label: {
+                                    Label { Text(loc.localized("saveDirectories.migrateSaveFiles")) } icon: { Image(systemName: "arrow.right.doc.on.clipboard") }
+                                }
+                                .buttonStyle(.bordered)
+                                .controlSize(.small)
+                            }
+
+                            Divider()
+
+                            AppPathRow(
+                                loc.localized("saveDirectories.saveFilesSRAM"),
+                                url: directoryManager.savefilesDirectory
+                            )
+
+                            AppPathRow(
+                                loc.localized("saveDirectories.saveStates"),
+                                url: directoryManager.statesDirectory
+                            )
+
+                            AppPathRow(
+                                loc.localized("saveDirectories.systemBIOS"),
+                                url: directoryManager.activeSystemDirectory
+                            )
+
+                            Divider()
+                                .padding(.vertical, AppSpacing.xs)
+
+                            HStack {
+                                Button {
+                                    pickSaveDirectory()
+                                } label: {
+                                    Label { Text(loc.localized("saveDirectories.changeSaveDirectory")) } icon: { Image(systemName: "folder") }
+                                }
+                                .buttonStyle(.bordered)
+                                .controlSize(.small)
+                            }
+                        }
+                    }
+
+                    if !isSearching || matchesSearch("Auto save on exit auto-load compress states LZ4") {
+                        Section(header: Label(loc.localized("settings.saveStates"), systemImage: "doc.badge.clock")) {
+                            Toggle(loc.localized("settings.autoSaveOnExit"), isOn: $autoSaveOnExit)
+                            Toggle(loc.localized("settings.autoLoadOnStart"), isOn: $autoLoadOnStart)
+                            Toggle(loc.localized("settings.compressSaveStates"), isOn: $compressSaveStates)
+                        }
+                    }
+
                     if !isSearching || matchesSearch("Progressive saves auto slot rotation version count") {
                         Section(header: Label(loc.localized("settings.saves.progressiveSaves"), systemImage: "arrow.triangle.2.circlepath")) {
                             Toggle(loc.localized("settings.saves.progressiveSaves"), isOn: $progressiveSaves)
@@ -60,49 +152,21 @@ struct SavesSettingsView: View {
                         }
                     }
 
-                    // Save Behavior Section
-                    if !isSearching || matchesSearch("Auto save on exit auto-load compress states LZ4") {
-                        Section(header: Label(loc.localized("settings.saveStates"), systemImage: "doc.badge.clock")) {
-                            Toggle(loc.localized("settings.autoSaveOnExit"), isOn: $autoSaveOnExit)
-                            Toggle(loc.localized("settings.autoLoadOnStart"), isOn: $autoLoadOnStart)
-                            Toggle(loc.localized("settings.compressSaveStates"), isOn: $compressSaveStates)
-
-                            LabeledContent(loc.localized("settings.saveStatesLocation")) {
-                                Text(directoryManager.statesDirectory.path)
-                                    .font(.caption.monospaced())
-                                    .textSelection(.enabled)
-                            }
-                        }
-                    }
-
-                    // Save Files Location Section
-                    if !isSearching || matchesSearch("Save Files SRAM location") {
-                        Section(header: Label(loc.localized("settings.saveFiles"), systemImage: "doc.on.doc")) {
-                            LabeledContent(loc.localized("settings.gameSavesLocation")) {
-                                Text(directoryManager.savefilesDirectory.path)
-                                    .font(.caption.monospaced())
-                                    .textSelection(.enabled)
-                            }
-                        }
-                    }
-
-                    // Save Manager Section
                     if !isSearching || matchesSearch("Save manager browse delete manage review") {
                         Section {
                             Text(loc.localized("settings.saves.saveManagerDescription"))
                                 .font(.caption)
                                 .foregroundStyle(AppColors.textSecondary(colorScheme))
-                            Button(action: { showSaveManager = true }) {
+                            Button {
+                                showSaveManager = true
+                            } label: {
                                 Label(loc.localized("settings.saves.saveManager"), systemImage: "externaldrive.badge.checkmark")
                             }
-                            .sheet(isPresented: $showSaveManager) {
-                                SaveManagerView()
-                                    .gamepadDismissable { showSaveManager = false }
-                            }
+                        } header: {
+                            Label(loc.localized("settings.saves.manage"), systemImage: "wrench.and.screwdriver")
                         }
                     }
 
-                    // No results message
                     if isSearching && !hasMatchingSections {
                         Section {
                             Text("\(loc.localized("general.noMatchingSettings")) \"\(searchText)\"")
@@ -130,6 +194,7 @@ struct SavesSettingsView: View {
             DispatchQueue.main.async {
                 contentLoaded = true
             }
+            Task { await calculateSizes() }
         }
         .onChange(of: progressiveSaves) { _, newValue in
             AppSettings.setBool("progressiveSaves_enabled", value: newValue)
@@ -146,12 +211,69 @@ struct SavesSettingsView: View {
         .onChange(of: compressSaveStates) { _, newValue in
             AppSettings.setBool("saveState_compress", value: newValue)
         }
+        .sheet(isPresented: $showSaveManager) {
+            SaveManagerView()
+                .gamepadDismissable { showSaveManager = false }
+        }
+        .alert(loc.localized("saveDirectories.migrateSaveFiles"), isPresented: $showingMigrationAlert) {
+            Button(loc.localized("saveDirectories.migrateSaveFiles")) {
+                directoryManager.performMigration { _ in
+                    Task { await calculateSizes() }
+                }
+            }
+            Button(loc.localized("general.cancel"), role: .cancel) {}
+        } message: {
+            Text(loc.localized("saveDirectories.existingSavesFound"))
+        }
     }
 
     private var hasMatchingSections: Bool {
         matchesSearch("Progressive saves auto slot rotation version count") ||
         matchesSearch("Auto save on exit auto-load compress states LZ4") ||
-        matchesSearch("Save Files SRAM location") ||
+        matchesSearch("storage path folder directory disk size stats SRAM location migration") ||
         matchesSearch("Save manager browse delete manage review")
+    }
+
+    private func pickSaveDirectory() {
+        let panel = NSOpenPanel()
+        panel.canChooseDirectories = true
+        panel.canChooseFiles = false
+        panel.prompt = loc.localized("saveDirectories.changeSaveDirectory")
+        panel.message = loc.localized("saveDirectories.chooseDirectoryMessage")
+
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        let needsMigration = directoryManager.setSaveDirectory(url)
+        if needsMigration {
+            showingMigrationAlert = true
+        }
+        Task { await calculateSizes() }
+    }
+
+    private func calculateSizes() async {
+        isCalculatingSize = true
+        let saveDir = directoryManager.savefilesDirectory
+        let stateDir = directoryManager.statesDirectory
+        let saveSize = await Task.detached(priority: .utility) {
+            Self.directorySize(at: saveDir)
+        }.value
+        let stateSize = await Task.detached(priority: .utility) {
+            Self.directorySize(at: stateDir)
+        }.value
+        saveFileSize = saveSize
+        saveStateSize = stateSize
+        isCalculatingSize = false
+    }
+
+    private static func directorySize(at url: URL) -> Int64 {
+        var total: Int64 = 0
+        guard let enumerator = FileManager.default.enumerator(at: url, includingPropertiesForKeys: [.fileSizeKey]) else {
+            return 0
+        }
+        for case let fileURL as URL in enumerator {
+            guard let resourceValues = try? fileURL.resourceValues(forKeys: [.fileSizeKey]),
+                  let fileSize = resourceValues.fileSize else { continue }
+            total += Int64(fileSize)
+        }
+        return total
     }
 }

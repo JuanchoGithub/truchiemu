@@ -88,6 +88,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
 @MainActor @Published var isLoading: Bool = false
 @MainActor @Published var launchError: GameLaunchError?
 var loadingOverlayView: NSHostingView<AnyView>?
+var hardcoreAlertOverlayView: NSHostingView<AnyView>?
 var errorOverlayView: NSHostingView<AnyView>?
 private var firstFrameTimer: Timer?
     var pendingSystemID: String?
@@ -102,6 +103,7 @@ private var firstFrameTimer: Timer?
 var moveListOverlayView: NSHostingView<AnyView>?
 var achievementToastOverlayView: NSHostingView<AnyView>?
 var escapeToastOverlayView: SafeHostingView<AnyView>?
+var cheatToastOverlayView: SafeHostingView<AnyView>?
 var trainingModeOverlayView: NSHostingView<AnyView>?
 var p2JoinStatusOverlayView: NSHostingView<AnyView>?
 private var p2JoinStatusCancellable: AnyCancellable?
@@ -143,6 +145,8 @@ return MoveListOverlayViewModel(runner: runner)
         achievementToastOverlayView = nil
         escapeToastOverlayView?.removeFromSuperview()
         escapeToastOverlayView = nil
+        cheatToastOverlayView?.removeFromSuperview()
+        cheatToastOverlayView = nil
         trainingModeOverlayView?.removeFromSuperview()
         trainingModeOverlayView = nil
         p2JoinStatusOverlayView?.removeFromSuperview()
@@ -153,6 +157,8 @@ return MoveListOverlayViewModel(runner: runner)
 guideSidebarView = nil
         loadingOverlayView?.removeFromSuperview()
         loadingOverlayView = nil
+        hardcoreAlertOverlayView?.removeFromSuperview()
+        hardcoreAlertOverlayView = nil
         errorOverlayView?.removeFromSuperview()
         errorOverlayView = nil
     }
@@ -335,6 +341,22 @@ super.init(window: window)
             escapeToastView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
         ])
 
+        // Separate full-size overlay for cheat toggle toasts (passes through clicks to game below)
+        let cheatToastView = SafeHostingView(rootView: AnyView(CheatToastOverlay()))
+        cheatToastView.translatesAutoresizingMaskIntoConstraints = false
+        cheatToastView.wantsLayer = true
+        cheatToastView.isPassThroughOverlay = true
+        cheatToastView.layer?.backgroundColor = NSColor.clear.cgColor
+        containerView.addSubview(cheatToastView, positioned: .below, relativeTo: hostingView)
+        self.cheatToastOverlayView = cheatToastView
+
+        NSLayoutConstraint.activate([
+            cheatToastView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            cheatToastView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            cheatToastView.topAnchor.constraint(equalTo: containerView.topAnchor),
+            cheatToastView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
+        ])
+
         // Add SwiftUI loading overlay (covers entire window during game launch, on top of everything)
     let loadingView = SafeHostingView(rootView: AnyView(GameLoadingOverlay(
         windowController: self
@@ -433,6 +455,22 @@ super.init(window: window)
             object: nil
         )
 
+        // Pause emulation when hardcore confirmation is shown, show overlay, resume on dismiss
+        NotificationCenter.default.addObserver(
+            forName: .hardcoreConfirmationRequired,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.showHardcoreViolationAlert()
+        }
+        NotificationCenter.default.addObserver(
+            forName: .hardcoreConfirmationDismissed,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.hideHardcoreViolationAlert()
+        }
+
   // Start cursor auto-hide after initial setup delay
   DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
     let isFullscreen = self?.window?.styleMask.contains(.fullScreen) ?? false
@@ -460,7 +498,7 @@ super.init(window: window)
         if slotToLoad != nil {
             willLoadState = true
         } else {
-            let shouldAutoLoad = AppSettings.getBool("saveState_autoLoadOnStart", defaultValue: true)
+            let shouldAutoLoad = AppSettings.getBool("saveState_autoLoadOnStart", defaultValue: true) && !HardcoreModeManager.shared.isHardcoreActive
             if shouldAutoLoad && !isDolphinCore() {
                 willLoadState = true
             } else {
@@ -752,7 +790,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         }
         
         // Load cheats for the ROM (apply is deferred until after first frame)
-        if cheatsEnabled {
+        if cheatsEnabled && !HardcoreModeManager.shared.areCheatsBlocked {
             CheatManagerService.shared.loadCheatsForROM(rom)
         }
         
@@ -824,7 +862,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
 
         // Apply cheats now that the core has initialized its memory map
         // (PicoDrive crashes if retro_cheat_set is called before the first retro_run)
-        if cheatsEnabled {
+        if cheatsEnabled && !HardcoreModeManager.shared.areCheatsBlocked {
             let enabledCheats = CheatManagerService.shared.enabledCheats(for: rom)
             if !enabledCheats.isEmpty {
                 let cheatData = enabledCheats.map { cheat in [
@@ -845,7 +883,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         if slotToLoad != nil {
             willLoadState = true
         } else {
-            let shouldAutoLoad = AppSettings.getBool("saveState_autoLoadOnStart", defaultValue: true)
+            let shouldAutoLoad = AppSettings.getBool("saveState_autoLoadOnStart", defaultValue: true) && !HardcoreModeManager.shared.isHardcoreActive
             if shouldAutoLoad && !isDolphinCore() {
                 let systemID = rom.systemID ?? "default"
                 let gameName = "\(rom.displayName)__\(rom.id.uuidString.prefix(8))"
@@ -928,7 +966,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
 
             var loadedSlot: Int?
 
-            if let slotToLoad = slotToLoad {
+            if let slotToLoad = slotToLoad, !HardcoreModeManager.shared.areSaveStatesBlocked {
                 // Load a specific slot
                 let progVersion = self.pendingProgressiveVersion
                 self.pendingProgressiveVersion = nil
@@ -980,7 +1018,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
                 }
             } else {
                 // Auto-load: find the most recent save across all slots
-                let shouldAutoLoad = AppSettings.getBool("saveState_autoLoadOnStart", defaultValue: true)
+                let shouldAutoLoad = AppSettings.getBool("saveState_autoLoadOnStart", defaultValue: true) && !HardcoreModeManager.shared.isHardcoreActive
                 if shouldAutoLoad {
                     if self.isDolphinCore() {
                         LoggerService.info(category: "SaveState", "Auto-load disabled for Dolphin core (known crash issue)")
@@ -1061,7 +1099,34 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
             }
         }
     }
-    
+
+    // MARK: - Hardcore Mode Confirmation Overlay
+
+    @MainActor
+    private func showHardcoreViolationAlert() {
+        guard let containerView = window?.contentView else { return }
+        runner?.isPaused = true
+        metalView?.isPaused = true
+        XPCBridgeAdapter.shared.setPaused(true)
+
+        let alertView = SafeHostingView(rootView: AnyView(HardcoreViolationAlert().environment(SystemDatabaseWrapper.shared)))
+        alertView.autoresizingMask = [.width, .height]
+        alertView.frame = containerView.bounds
+        alertView.wantsLayer = true
+        containerView.addSubview(alertView, positioned: .above, relativeTo: nil)
+
+        hardcoreAlertOverlayView = alertView
+    }
+
+    @MainActor
+    private func hideHardcoreViolationAlert() {
+        hardcoreAlertOverlayView?.removeFromSuperview()
+        hardcoreAlertOverlayView = nil
+        runner?.isPaused = false
+        metalView?.isPaused = false
+        XPCBridgeAdapter.shared.setPaused(false)
+    }
+
     // MARK: - Cheats
     
     // Present the cheat manager as a sheet on this game window.
@@ -1069,7 +1134,16 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
     @MainActor
     func showCheatManager() {
         guard let rom = currentGameROM, let window = window else { return }
-        
+
+        HardcoreModeManager.shared.attemptUseCheats { [weak self] in
+            self?.presentCheatManagerSheet()
+        }
+    }
+
+    @MainActor
+    func presentCheatManagerSheet() {
+        guard let rom = currentGameROM, let window = window else { return }
+
         // Don't show if already showing
         guard cheatManagerSheetWindow == nil else { return }
         
@@ -1385,6 +1459,8 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
         stateLoadOverlayView = nil
         loadingOverlayView?.removeFromSuperview()
         loadingOverlayView = nil
+        hardcoreAlertOverlayView?.removeFromSuperview()
+        hardcoreAlertOverlayView = nil
         errorOverlayView?.removeFromSuperview()
         errorOverlayView = nil
         p2JoinStatusOverlayView?.removeFromSuperview()
@@ -1406,7 +1482,7 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
         CursorAutoHideManager.shared.stopMonitoring()
         CursorAutoHideManager.shared.showCursor()
 
-        let shouldAutoSave = AppSettings.getBool("saveState_autoSaveOnExit", defaultValue: false) && !skipAutoSaveOnClose
+        let shouldAutoSave = AppSettings.getBool("saveState_autoSaveOnExit", defaultValue: false) && !skipAutoSaveOnClose && !HardcoreModeManager.shared.areSaveStatesBlocked
 
         if shouldAutoSave {
             if isDolphinCore() {

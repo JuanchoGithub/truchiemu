@@ -5,7 +5,12 @@ struct GameOverlayToolbar: View {
     @ObservedObject var windowController: StandaloneGameWindowController
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var themeManager = ThemeManager.shared
+    @ObservedObject private var hardcoreManager = HardcoreModeManager.shared
     @Environment(\.colorScheme) private var colorScheme
+
+    private var saveLoadDisabled: Bool {
+        windowController.saveStatesDisabled
+    }
 
     private var focusedIndex: Int? {
         windowController.isGamepadToolbarMode ? windowController.gamepadToolbarFocusedIndex : nil
@@ -48,10 +53,12 @@ struct GameOverlayToolbar: View {
             ToolbarButton(
                 icon: "square.and.arrow.down",
                 label: loc.localized("toolbar.save"),
-                disabled: windowController.saveStatesDisabled
+                disabled: saveLoadDisabled
             ) {
-                Task { @MainActor in
-                    _ = runner.saveState(slot: runner.currentSlot)
+                HardcoreModeManager.shared.attemptSaveState {
+                    Task { @MainActor in
+                        _ = runner.saveState(slot: runner.currentSlot)
+                    }
                 }
             }
             .gamepadToolbarFocus(index: 3, focusedIndex: focusedIndex)
@@ -59,10 +66,12 @@ struct GameOverlayToolbar: View {
             ToolbarButton(
                 icon: "square.and.arrow.down.on.square",
                 label: loc.localized("toolbar.load"),
-                disabled: windowController.saveStatesDisabled
+                disabled: saveLoadDisabled
             ) {
-                Task { @MainActor in
-                    _ = runner.loadState(slot: runner.currentSlot)
+                HardcoreModeManager.shared.attemptLoadState {
+                    Task { @MainActor in
+                        _ = runner.loadState(slot: runner.currentSlot)
+                    }
                 }
             }
             .gamepadToolbarFocus(index: 4, focusedIndex: focusedIndex)
@@ -73,7 +82,7 @@ struct GameOverlayToolbar: View {
                     runner.currentSlot = newSlot
                 },
                 runner: runner,
-                disabled: windowController.saveStatesDisabled
+                disabled: saveLoadDisabled
             )
             .gamepadToolbarFocus(index: 5, focusedIndex: focusedIndex)
 
@@ -92,7 +101,9 @@ struct GameOverlayToolbar: View {
                 icon: "wand.and.stars",
                 label: loc.localized("toolbar.cheats")
             ) {
-                windowController.showCheatManager()
+                HardcoreModeManager.shared.attemptUseCheats {
+                    windowController.showCheatManager()
+                }
             }
             .gamepadToolbarFocus(index: 7, focusedIndex: focusedIndex)
 

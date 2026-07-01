@@ -53,7 +53,7 @@ struct ControllerRowView: View {
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
         .background(rowBackground)
-        .cornerRadius(6)
+        .cornerRadius(AppRadius.md)
     }
 
     private var rowBackground: Color {
@@ -99,7 +99,9 @@ struct ControllerSettingsView: View {
     @State private var kbListeningFor: RetroButton? = nil
     @State private var showParentModeHelp = false
 
-    @Binding var searchText: String
+@Binding var searchText: String
+
+    @ObservedObject private var themeManager = ThemeManager.shared
 
     static let searchKeywords: String = "controllers gamepad keyboard mapping player buttons input"
 
@@ -116,92 +118,88 @@ struct ControllerSettingsView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 12) {
+        Form {
             if !filteredSystemsForDisplay.isEmpty {
-                HStack(spacing: 12) {
-                    Picker(loc.localized("controllers.system"), selection: $selectedSystemID) {
-                        Text(loc.localized("controllers.globalDefault")).tag("default")
-                        Divider()
-                        ForEach(filteredSystemsForDisplay, id: \.id) { sys in
-                            Text(sys.name).tag(sys.id)
+                Section {
+                    HStack(spacing: 12) {
+                        Picker(loc.localized("controllers.system"), selection: $selectedSystemID) {
+                            Text(loc.localized("controllers.globalDefault")).tag("default")
+                            Divider()
+                            ForEach(filteredSystemsForDisplay, id: \.id) { sys in
+                                Text(sys.name).tag(sys.id)
+                            }
                         }
-                    }
-                    .frame(maxWidth: 240)
+                        .frame(maxWidth: 240)
 
-                    if isGenesisSystem {
-                        Picker(loc.localized("controllers.genesisControllerType"), selection: genesisControllerTypeBinding) {
-                            Text(loc.localized("training.genesis.3button")).tag(AppSettings.GenesisControllerType.threeButton)
-                            Text(loc.localized("training.genesis.6button")).tag(AppSettings.GenesisControllerType.sixButton)
+                        if isGenesisSystem {
+                            Picker(loc.localized("controllers.genesisControllerType"), selection: genesisControllerTypeBinding) {
+                                Text(loc.localized("training.genesis.3button")).tag(AppSettings.GenesisControllerType.threeButton)
+                                Text(loc.localized("training.genesis.6button")).tag(AppSettings.GenesisControllerType.sixButton)
+                            }
+                            .frame(maxWidth: 180)
                         }
-                        .frame(maxWidth: 180)
-                    }
 
-                    Spacer()
+                        Spacer()
+                    }
                 }
-                .padding(.horizontal)
             }
 
             if !searchText.isEmpty {
-                SearchResultIndicator(
-                    searchText: searchText,
-                    sectionKeywords: Self.searchKeywords,
-                    sectionName: loc.localized("controllers.controllers")
-                )
+                Section {
+                    SearchResultIndicator(
+                        searchText: searchText,
+                        sectionKeywords: Self.searchKeywords,
+                        sectionName: loc.localized("controllers.controllers")
+                    )
+                }
             }
 
             if controllerService.isParentModeActive {
-                HStack(spacing: 6) {
-                    Image(systemName: "exclamationmark.triangle.fill")
-                    .foregroundColor(AppColors.warning(colorScheme))
-                    Text(loc.localized("controllers.parentModeWarning"))
-                    .font(.caption)
-                    .foregroundColor(AppColors.warning(colorScheme))
-                    Spacer()
-                    Button(loc.localized("controllers.parentModeWhatIsThis")) {
-                        showParentModeHelp = true
-                    }
-                    .font(.caption)
-                    .foregroundColor(AppColors.accentSecondaryForScheme(colorScheme))
-                    .buttonStyle(.plain)
-                    .sheet(isPresented: $showParentModeHelp) {
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text(loc.localized("controllers.parentModeExplanationTitle"))
-                                .font(.headline)
-                            Text(loc.localized("controllers.parentModeExplanation"))
-                                .font(.body)
-                                .fixedSize(horizontal: false, vertical: true)
-                            HStack {
-                                Spacer()
-                                Button(loc.localized("controllers.parentModeGotIt")) {
-                                    showParentModeHelp = false
-                                }
-                                .buttonStyle(.borderedProminent)
-                                .controlSize(.small)
-                            }
+                Section {
+                    HStack(spacing: 6) {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundColor(AppColors.warning(colorScheme))
+                        Text(loc.localized("controllers.parentModeWarning"))
+                        .font(.caption)
+                        .foregroundColor(AppColors.warning(colorScheme))
+                        Spacer()
+                        Button(loc.localized("controllers.parentModeWhatIsThis")) {
+                            showParentModeHelp = true
                         }
-                        .padding(20)
-                        .frame(width: 400)
-                        .gamepadDismissable { showParentModeHelp = false }
+                        .font(.caption)
+                        .foregroundColor(AppColors.accentSecondaryForScheme(colorScheme))
+                        .buttonStyle(.plain)
+                        .sheet(isPresented: $showParentModeHelp) {
+                            VStack(alignment: .leading, spacing: 12) {
+                                Text(loc.localized("controllers.parentModeExplanationTitle"))
+                                    .font(.headline)
+                                Text(loc.localized("controllers.parentModeExplanation"))
+                                    .font(.body)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                HStack {
+                                    Spacer()
+                                    Button(loc.localized("controllers.parentModeGotIt")) {
+                                        showParentModeHelp = false
+                                    }
+                                    .buttonStyle(.borderedProminent)
+                                    .controlSize(.small)
+                                }
+                            }
+                            .padding(20)
+                            .frame(width: 400)
+                            .gamepadDismissable { showParentModeHelp = false }
+                        }
                     }
                 }
-                .padding(.horizontal, 8)
-                .padding(.vertical, 6)
-                .background(AppColors.warning(colorScheme).opacity(0.1))
-                .cornerRadius(6)
-                .padding(.horizontal)
             }
 
-        // Top area: two panels side by side
-        HStack(spacing: 12) {
-            // Left panel: controller rows
-            VStack(alignment: .leading, spacing: 6) {
+            Section(loc.localized("controllers.connectedControllers")) {
                 ForEach(controllerService.connectedControllers, id: \.id) { player in
-                ControllerRowView(
-                    player: player,
-                    isSelected: selectedControllerId == player.id,
-                    isInParentMode: controllerService.controllerIsInParentMode(player),
-                    onSelect: { selectedControllerId = player.id },
+                    ControllerRowView(
+                        player: player,
+                        isSelected: selectedControllerId == player.id,
+                        isInParentMode: controllerService.controllerIsInParentMode(player),
+                        onSelect: { selectedControllerId = player.id },
                         onToggleSlot: { slot in
                             if player.isKeyboard {
                                 toggleKeyboardSlot(player: player, slot: slot)
@@ -214,19 +212,11 @@ struct ControllerSettingsView: View {
                     )
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(10)
-            .background(AppColors.cardBackground(colorScheme))
-            .cornerRadius(8)
 
-            // Right panel: config management
-            VStack(alignment: .leading, spacing: 8) {
-                HStack(spacing: 6) {
+            Section(loc.localized("controllers.savedConfigs")) {
+                HStack(alignment: .center, spacing: 6) {
                     TextField(loc.localized("controllers.configName"), text: $configName)
-                    .textFieldStyle(.plain)
-                    .padding(6)
-                    .background(AppColors.cardBackgroundSubtle(colorScheme))
-                    .cornerRadius(6)
+                    .textFieldStyle(.roundedBorder)
 
                     Button(loc.localized("controllers.save")) {
                         saveCurrentConfig()
@@ -244,50 +234,49 @@ struct ControllerSettingsView: View {
                     .tint(AppColors.error(colorScheme))
                     .controlSize(.small)
                     .disabled(configName.isEmpty || savedConfigs[configName] == nil)
-                }
 
-                Picker(loc.localized("controllers.savedConfigs"), selection: $configName) {
-                    Text(loc.localized("controllers.selectConfig")).tag("")
-                    ForEach(Array(savedConfigs.keys.sorted()), id: \.self) { name in
-                        Text(name).tag(name)
+                    Picker("", selection: $configName) {
+                        Text(loc.localized("controllers.selectConfig")).tag("")
+                        ForEach(Array(savedConfigs.keys.sorted()), id: \.self) { name in
+                            Text(name).tag(name)
+                        }
                     }
-                }
-                .frame(maxWidth: .infinity)
-                .onChange(of: configName) { _, newValue in
-                    if !newValue.isEmpty && savedConfigs[newValue] != nil {
-                        loadConfig(name: newValue)
+                    .pickerStyle(.menu)
+                    .frame(width: 140)
+                    .onChange(of: configName) { _, newValue in
+                        if !newValue.isEmpty && savedConfigs[newValue] != nil {
+                            loadConfig(name: newValue)
+                        }
                     }
                 }
             }
-            .frame(width: 280)
-            .padding(10)
-            .background(AppColors.cardBackground(colorScheme))
-            .cornerRadius(8)
-        }
-        .padding(.horizontal)
-
-            Divider().padding(.horizontal)
 
             // Main content area
             if let player = selectedPlayerController {
                 if player.isKeyboard {
-                    keyboardMappingContent
-                } else {
-                    HStack(spacing: 0) {
-                        ControllerLeftPanel(systemID: selectedSystemID, width: leftColumnWidth, selectedControllerId: player.id)
-
-                        DraggableDivider(width: $leftColumnWidth)
-
-                        ButtonMappingList(systemID: selectedSystemID, player: player, controllerService: controllerService)
-                            .frame(minWidth: 140)
+                    Section {
+                        keyboardMappingContent
                     }
-                    .id("\(player.id)-\(selectedSystemID)-\(leftColumnWidth)-\(resetTrigger)")
-                    .frame(maxHeight: .infinity, alignment: .top)
+                } else {
+                    Section {
+                        HStack(spacing: 0) {
+                            ControllerLeftPanel(systemID: selectedSystemID, width: leftColumnWidth, selectedControllerId: player.id)
+
+                            DraggableDivider(width: $leftColumnWidth)
+
+                            ButtonMappingList(systemID: selectedSystemID, player: player, controllerService: controllerService)
+                                .frame(minWidth: 140)
+                        }
+                        .id("\(player.id)-\(selectedSystemID)-\(leftColumnWidth)-\(resetTrigger)")
+                        .frame(maxHeight: .infinity, alignment: .top)
+                    }
                 }
             }
         }
-        }
- .onAppear {
+        .scrollContentBackground(.hidden)
+        .formStyle(.grouped)
+        .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
+  .onAppear {
  if initSystemID == nil, let saved = AppSettings.getString("controller_selectedSystemID") {
  selectedSystemID = saved
  }
@@ -530,33 +519,11 @@ struct SearchResultIndicator: View {
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
             .background(AppColors.brandAccent.opacity(0.1))
-            .cornerRadius(6)
+            .cornerRadius(AppRadius.md)
         }
     }
 }
 
-
-// MARK: - Draggable Divider
-struct DraggableDivider: View {
-    @Binding var width: CGFloat
-    @Environment(\.colorScheme) private var colorScheme
-    @State private var isHovered = false
-
-    var body: some View {
-        Rectangle()
-            .fill(isHovered ? AppColors.divider(colorScheme).opacity(0.4) : AppColors.divider(colorScheme).opacity(0.2))
-            .frame(width: 4)
-            .frame(maxHeight: .infinity)
-            .onHover { hovering in isHovered = hovering }
-            .gesture(
-                DragGesture()
-                    .onChanged { value in
-                        let delta = value.location.x - value.startLocation.x
-                        width = max(260, min(420, width + delta))
-                    }
-            )
-    }
-}
 
 // MARK: - Deadzone Sliders Section
 struct DeadzoneSlidersSection: View {
@@ -1190,8 +1157,8 @@ struct StickTesterView: View {
         }
         .padding(12)
         .background(.background.opacity(0.5))
-        .cornerRadius(12)
-        .overlay(RoundedRectangle(cornerRadius: 12).stroke(AppColors.divider(colorScheme).opacity(0.1), lineWidth: 1))
+        .cornerRadius(AppRadius.xl)
+        .overlay(RoundedRectangle(cornerRadius: AppRadius.xl).stroke(AppColors.divider(colorScheme).opacity(0.1), lineWidth: 1))
     }
 }
 

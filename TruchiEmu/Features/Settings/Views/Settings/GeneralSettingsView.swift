@@ -3,12 +3,8 @@ import SwiftUI
 struct GeneralSettingsView: View {
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject var library: ROMLibrary
-    @StateObject private var launchboxService = LaunchBoxGamesDBService.shared
-    @State private var showHiddenGamesCategory: Bool = true
-    @State private var launchboxEnabled: Bool = true
-    @State private var showSyncConfirmation = false
-    @State private var lastSyncText: String = ""
     @State private var autoCheckUpdates: Bool = true
+    @State private var notificationsEnabled: Bool = false
 
     @State private var pendingTheme: AccentColorTheme = .samus
     @State private var pendingAppearanceMode: AppearanceMode = .automatic
@@ -58,8 +54,8 @@ struct GeneralSettingsView: View {
 
     private func matchesSearch(_ keywords: String) -> Bool {
         if searchText.isEmpty { return true }
-        return keywords.localizedLowercase.fuzzyMatch(searchText) ||
-               keywords.localizedLowercase.contains(searchText.lowercased())
+        if SettingsSearchRuntime.pageMatches(.general, query: searchText) { return true }
+        return SettingsIndex.matches(haystack: keywords, query: searchText)
     }
 
     var body: some View {
@@ -86,7 +82,6 @@ struct GeneralSettingsView: View {
             if !isSearching || matchesSearch("Theme accent color appearance mode light dark gaming") {
                 Section(header: Label(loc.localized("settings.theme"), systemImage: "paintpalette")) {
 
-                    // Appearance Mode
                     VStack(alignment: .leading, spacing: AppSpacing.md) {
                         Text(loc.localized("settings.appearance"))
                             .font(.caption)
@@ -175,78 +170,8 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
                 }
             }
 
-            // Hidden Games Section
-            if !isSearching || matchesSearch("Hidden Games category sidebar") {
-                Section(header: Label(loc.localized("settings.hiddenGames"), systemImage: "eye.slash")) {
-                    Toggle(loc.localized("settings.showHiddenGamesCategory"), isOn: $showHiddenGamesCategory)
-                    Text(loc.localized("settings.hiddenGamesDescription"))
-                        .font(.caption)
-                        .foregroundStyle(AppColors.textSecondary(colorScheme))
-                }
-            }
-
-            // LaunchBox GamesDB Section
-            if !isSearching || matchesSearch("LaunchBox GamesDB sync metadata description developer publisher genre players ESRB") {
-                Section(header: Label(loc.localized("settings.launchBoxGamesDB"), systemImage: "cloud.fill")) {
-                    Toggle(loc.localized("settings.enableLaunchBox"), isOn: $launchboxEnabled)
-                    Text(loc.localized("settings.launchBoxDescription"))
-                        .font(.caption)
-                        .foregroundStyle(AppColors.textSecondary(colorScheme))
-
-                    LabeledContent(loc.localized("settings.lastSync")) {
-                        if launchboxService.isSyncing {
-                            HStack(spacing: AppSpacing.md) {
-                                ProgressView()
-                                    .controlSize(.small)
-                                Text(loc.localized("settings.syncing"))
-                                    .font(.caption)
-                                    .foregroundStyle(AppColors.textSecondary(colorScheme))
-                            }
-                        } else {
-                            Text(lastSyncText)
-                                .font(.caption)
-                                .foregroundStyle(AppColors.textTertiary(colorScheme))
-                        }
-                    }
-
-                    if launchboxService.isSyncing {
-                        VStack(spacing: AppSpacing.md) {
-                            ProgressView(value: launchboxService.syncProgress)
-                            Text(launchboxService.syncStatus)
-                                .font(.caption)
-                                .foregroundStyle(AppColors.textSecondary(colorScheme))
-                        }
-                    }
-
-                    Button(loc.localized("settings.syncAllGamesNow")) {
-                        showSyncConfirmation = true
-                    }
-                    .disabled(launchboxService.isSyncing || !launchboxEnabled)
-                    .confirmationDialog(
-                        loc.localized("settings.syncAllGamesTitle"),
-                        isPresented: $showSyncConfirmation,
-                        titleVisibility: .visible
-                    ) {
-                        Button(loc.localized("settings.startSync")) {
-                            Task {
-                                await launchboxService.batchSyncLibrary(library: library) { _, _, _ in }
-                                updateLastSyncText()
-                            }
-                        }
-                        Button("Cancel", role: .cancel) {}
-                    } message: {
-                        Text(loc.localized("settings.syncAllGamesMessage"))
-                    }
-            }
-        }
-
-        // Extracted ROM Cache Section
-        if !isSearching || matchesSearch("Extracted ROM cache archive zip 7z rar") {
-            ExtractedROMCacheSettingsView()
-        }
-
-        // Application Section
-            if !isSearching || matchesSearch("Application version build notifications") {
+            // ★ Application Section
+            if !isSearching || matchesSearch("Application version build notifications updates") {
                 Section(header: Label(loc.localized("settings.application"), systemImage: "app.badge")) {
                     LabeledContent(loc.localized("settings.version")) {
                         Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0")
@@ -255,34 +180,26 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
                         Text(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1")
                     }
 
-        // Notifications Subsection
-        if !isSearching || matchesSearch("Notifications system") {
-            Section(header: Label(loc.localized("settings.notifications"), systemImage: "bell.badge")) {
-                HStack {
-                    Text(loc.localized("settings.systemNotifications"))
-                    Spacer()
-                    Button(NotificationService.shared.isAuthorized ? loc.localized("settings.enabled") : loc.localized("settings.enable")) {
-                        Task {
-                            await NotificationService.shared.requestAuthorization()
-                        }
-                    }
-                    .disabled(NotificationService.shared.isAuthorized)
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
-                }
-            }
-        }
+                    Divider()
 
-        // Updates Subsection
-        if !isSearching || matchesSearch("Updates automatic check new version") {
-            Section(header: Label(loc.localized("settings.updates"), systemImage: "arrow.triangle.2.circlepath")) {
-                Toggle(loc.localized("settings.autoCheckUpdates"), isOn: $autoCheckUpdates)
-                Text(loc.localized("settings.autoCheckUpdatesDescription"))
-                    .font(.caption)
-                    .foregroundStyle(AppColors.textSecondary(colorScheme))
-            }
-        }
-        }
+                    Toggle(loc.localized("settings.autoCheckUpdates"), isOn: $autoCheckUpdates)
+                    Text(loc.localized("settings.autoCheckUpdatesDescription"))
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+
+                    HStack {
+                        Text(loc.localized("settings.systemNotifications"))
+                        Spacer()
+                        Button(NotificationService.shared.isAuthorized ? loc.localized("settings.enabled") : loc.localized("settings.enable")) {
+                            Task {
+                                await NotificationService.shared.requestAuthorization()
+                            }
+                        }
+                        .disabled(NotificationService.shared.isAuthorized)
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                    }
+                }
             }
 
             // No results message
@@ -305,9 +222,8 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
         .formStyle(.grouped)
         .navigationTitle("General")
         .onAppear {
-        showHiddenGamesCategory = AppSettings.getBool("showHiddenGamesCategory", defaultValue: true)
-        launchboxEnabled = launchboxService.isEnabled
         autoCheckUpdates = AppUpdateService.shared.autoCheckEnabled
+        notificationsEnabled = NotificationService.shared.isAuthorized
             pendingTheme = themeManager.currentTheme
             pendingAppearanceMode = themeManager.appearanceMode
             pendingCustomColor = themeManager.customAccentColor
@@ -319,19 +235,12 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
         activePendingToolbarAccent = pendingToolbarAccent
         activePendingTintedSurfaces = pendingTintedSurfaces
         hasPendingChanges = false
-        updateLastSyncText()
         DispatchQueue.main.async {
             contentLoaded = true
         }
         }
-        .onChange(of: showHiddenGamesCategory) { _, newValue in
-            AppSettings.setBool("showHiddenGamesCategory", value: newValue)
-        }
         .onChange(of: autoCheckUpdates) { _, newValue in
             AppUpdateService.shared.autoCheckEnabled = newValue
-        }
-        .onChange(of: launchboxEnabled) { _, newValue in
-            launchboxService.setEnabled(newValue)
         }
         .onChange(of: pendingTheme) { _, _ in
             activePendingTheme = pendingTheme
@@ -488,11 +397,7 @@ private struct CustomThemeButton: View {
     private var hasMatchingSections: Bool {
         matchesSearch("Application Language localization") ||
         matchesSearch("Theme accent color appearance mode light dark gaming tinted surfaces toolbar") ||
-        matchesSearch("Hidden Games category sidebar") ||
-        matchesSearch("LaunchBox GamesDB sync metadata description developer publisher genre players ESRB") ||
-        matchesSearch("Extracted ROM cache archive zip 7z rar") ||
-        matchesSearch("Application version build notifications") ||
-        matchesSearch("Updates automatic check new version")
+        matchesSearch("Application version build notifications updates")
     }
 
     private func languageDisplayName(for lang: String) -> String {
@@ -513,15 +418,6 @@ private struct CustomThemeButton: View {
         }
     }
 
-    private func updateLastSyncText() {
-        if let date = launchboxService.lastSyncDate {
-            let formatter = RelativeDateTimeFormatter()
-            formatter.unitsStyle = .full
-            lastSyncText = formatter.localizedString(for: date, relativeTo: Date())
-        } else {
-            lastSyncText = loc.localized("settings.never")
-        }
-    }
 }
 
 // MARK: - Theme Preview Card

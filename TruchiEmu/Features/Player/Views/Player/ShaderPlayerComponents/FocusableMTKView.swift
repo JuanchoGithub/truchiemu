@@ -130,11 +130,15 @@ class FocusableMTKView: MTKView {
         let hotkeys = HotkeyConfigManager.shared
 
         if hotkeys.matches(.saveState, event: event) {
-            Task { @MainActor in _ = runner?.saveState(slot: runner!.currentSlot) }
+            HardcoreModeManager.shared.attemptSaveState { [weak self] in
+                Task { @MainActor in _ = self?.runner?.saveState(slot: self!.runner!.currentSlot) }
+            }
             return
         }
         if hotkeys.matches(.loadState, event: event) {
-            Task { @MainActor in _ = runner?.loadState(slot: runner!.currentSlot) }
+            HardcoreModeManager.shared.attemptLoadState { [weak self] in
+                Task { @MainActor in _ = self?.runner?.loadState(slot: self!.runner!.currentSlot) }
+            }
             return
         }
         if hotkeys.matches(.undoLoadState, event: event) {

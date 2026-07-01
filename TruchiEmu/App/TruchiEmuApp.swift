@@ -24,7 +24,8 @@ static let showChangelogFromMenu = Notification.Name("showChangelogFromMenu")
 	static let openHelpWindow = Notification.Name("openHelpWindow")
 	static let openGameAchievements = Notification.Name("openGameAchievements")
 	static let navigateToAchievements = Notification.Name("navigateToAchievements")
-	static let resetMoveListOverlayPosition = Notification.Name("resetMoveListOverlayPosition")
+    static let resetMoveListOverlayPosition = Notification.Name("resetMoveListOverlayPosition")
+    static let hiddenGamesCategoryChanged = Notification.Name("hiddenGamesCategoryChanged")
   }
 
 @main
@@ -470,8 +471,8 @@ var body: some Scene {
                 NotificationCenter.default.post(name: .openAppSettings, object: nil)
             }
 
-            Button(loc.localized("app.shadersDisplay")) {
-                AppSettings.set("settings_selectedTab", value: "display")
+            Button(loc.localized("app.boxArtSettings")) {
+                AppSettings.set("settings_selectedTab", value: "boxArt")
                 NotificationCenter.default.post(name: .openAppSettings, object: nil)
             }
 
@@ -488,15 +489,11 @@ var body: some Scene {
             Divider()
 
             Button(loc.localized("app.cores")) {
-                AppSettings.set("settings_selectedTab", value: "cores")
+                AppSettings.set("settings_selectedTab", value: "perSystem")
                 NotificationCenter.default.post(name: .openAppSettings, object: nil)
             }
 
-            Button(loc.localized("app.boxArtSettings")) {
-                AppSettings.set("settings_selectedTab", value: "boxArt")
-                NotificationCenter.default.post(name: .openAppSettings, object: nil)
             }
-                    }
                 }
             }
         }

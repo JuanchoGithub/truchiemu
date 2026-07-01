@@ -110,6 +110,7 @@ class ROMLibrary: ObservableObject {
     @Published var subfolderMap: [String: [ROMLibraryFolder]] = [:]
     @Published var libraryFolders: [URL] = []
     @Published var romCounts: [String: Int] = [:]
+    @Published var folderROMCounts: [String: Int] = [:]
     @Published var lastChangeDate = Date()
     @Published var bezelUpdateToken: Int = 0
     var romFolderURL: URL? { libraryFolders.first }
@@ -286,10 +287,27 @@ let idsToPurge = orphans.map { $0.id }
                 counts[sysID] = visible.count
             }
             self.romCounts = counts
+            self.updateFolderROMCounts()
             return
         }
         self.lastChangeDate = Date()
         self.updateCounts() 
+    }
+
+    private func updateFolderROMCounts() {
+        let allFolderPaths = Set(
+            primaryFolders.map(\.url.path) + subfolderMap.values.flatMap { $0.map(\.url.path) }
+        )
+        var counts = allFolderPaths.reduce(into: [String: Int]()) { $0[$1] = 0 }
+        for rom in roms where !rom.isHidden {
+            let path = rom.path.path
+            for folderPath in allFolderPaths {
+                if path == folderPath || path.hasPrefix(folderPath + "/") {
+                    counts[folderPath, default: 0] += 1
+                }
+            }
+        }
+        folderROMCounts = counts
     }
 
     // MARK: - Onboarding & Library Folders
@@ -773,13 +791,15 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
     private func findParentForPath(_ path: String) -> String? { primaryFolders.first { path.hasPrefix($0.url.path + "/") }?.url.path }
     
     @MainActor func discoverSubfoldersWithROMs(in primaryFolder: ROMLibraryFolder, maxDepth: Int = 2) async -> [ROMLibraryFolder] {
-        await ROMScanner().findFoldersWithROMs(baseURL: primaryFolder.url, maxDepth: maxDepth).map {
-            ROMLibraryFolder(url: $0, parentPath: primaryFolder.url.path, isPrimary: repository.isFolderPrimary(urlPath: $0.path))
+        let primaryPaths = repository.allPrimaryFolderPaths()
+        return await ROMScanner().findFoldersWithROMs(baseURL: primaryFolder.url, maxDepth: maxDepth).map {
+            ROMLibraryFolder(url: $0, parentPath: primaryFolder.url.path, isPrimary: primaryPaths.contains($0.path))
         }
     }
     @MainActor func discoverSubfoldersWithROMsInFolder(folder: ROMLibraryFolder) async -> [ROMLibraryFolder] {
-        await ROMScanner().findFoldersWithROMs(baseURL: folder.url, maxDepth: 1).map {
-            ROMLibraryFolder(url: $0, parentPath: folder.url.path, isPrimary: repository.isFolderPrimary(urlPath: $0.path))
+        let primaryPaths = repository.allPrimaryFolderPaths()
+        return await ROMScanner().findFoldersWithROMs(baseURL: folder.url, maxDepth: 1).map {
+            ROMLibraryFolder(url: $0, parentPath: folder.url.path, isPrimary: primaryPaths.contains($0.path))
         }
     }
 
