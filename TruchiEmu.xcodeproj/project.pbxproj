@@ -5356,7 +5356,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "mkdir -p \"$TARGET_BUILD_DIR/$EXECUTABLE_FOLDER_PATH\"\ncp -f \"$PROJECT_DIR/TruchiEmu/lib/librashader.dylib\" \"$TARGET_BUILD_DIR/$EXECUTABLE_FOLDER_PATH/\"\n";
+			shellScript = "mkdir -p \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH\"\ncp -f \"$PROJECT_DIR/TruchiEmu/lib/librashader.dylib\" \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/\"\ninstall_name_tool -id @rpath/librashader.dylib \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/librashader.dylib\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

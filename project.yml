@@ -94,8 +94,9 @@ targets:
     postBuildScripts:
       - name: Embed librashader dylib
         script: |
-          mkdir -p "$TARGET_BUILD_DIR/$EXECUTABLE_FOLDER_PATH"
-          cp -f "$PROJECT_DIR/TruchiEmu/lib/librashader.dylib" "$TARGET_BUILD_DIR/$EXECUTABLE_FOLDER_PATH/"
+          mkdir -p "$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH"
+          cp -f "$PROJECT_DIR/TruchiEmu/lib/librashader.dylib" "$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/"
+          install_name_tool -id @rpath/librashader.dylib "$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/librashader.dylib"
         basedOnDependencyAnalysis: false
       - name: Embed SDL2 dylib
         script: |
