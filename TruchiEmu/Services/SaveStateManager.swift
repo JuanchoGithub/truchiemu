@@ -207,6 +207,25 @@ return sysDir.appendingPathComponent(fileName)
             }
         }
     }
+
+    func deleteAllSaveFiles(gameName: String) throws -> Int {
+        let savefilesDir = SaveDirectoryManager.shared.savefilesDirectory
+        let fm = FileManager.default
+        var deletedCount = 0
+        let safeName = safeGameStateName(gameName).lowercased()
+
+        guard let files = try? fm.contentsOfDirectory(atPath: savefilesDir.path) else { return 0 }
+
+        for file in files {
+            let baseName = (file as NSString).deletingPathExtension.lowercased()
+            if baseName == gameName.lowercased() || baseName == safeName {
+                let fileURL = savefilesDir.appendingPathComponent(file)
+                try fm.removeItem(at: fileURL)
+                deletedCount += 1
+            }
+        }
+        return deletedCount
+    }
     
     // Returns total size of all save states on disk (in bytes)
     func totalDiskUsage() -> Int64 {
@@ -320,7 +339,7 @@ return sysDir.appendingPathComponent(fileName)
     // MARK: - Helpers
     
     // Sanitize game name to be filesystem-safe
-    private func safeGameStateName(_ name: String) -> String {
+    func safeGameStateName(_ name: String) -> String {
         // Remove dangerous characters and use a consistent format
         let sanitized = name
             .replacingOccurrences(of: "/", with: "_")

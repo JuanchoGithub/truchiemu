@@ -27,6 +27,7 @@
   "settings.saves.stateSlots": "Save State Slots",
   "settings.saves.ramSaves": "RAM / Battery Saves",
   "settings.saves.delete": "Delete",
+  "saveManager.deleteAll": "Delete All",
   "pill.saveDeleted": "Save deleted",
   "pill.ramSaveDeleted": "Save file deleted",
   "pill.allSavesDeleted": "Saves deleted",

@@ -27,6 +27,7 @@
   "settings.saves.stateSlots": "Ranuras de estado",
   "settings.saves.ramSaves": "Partidas RAM / Batería",
   "settings.saves.delete": "Eliminar",
+  "saveManager.deleteAll": "Borrar todo",
   "pill.saveDeleted": "Partida eliminada",
   "pill.ramSaveDeleted": "Archivo de partida eliminado",
   "pill.allSavesDeleted": "Partidas eliminadas",

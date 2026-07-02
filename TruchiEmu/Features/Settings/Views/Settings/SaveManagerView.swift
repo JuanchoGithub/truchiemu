@@ -46,6 +46,9 @@ struct SaveManagerView: View {
     @State private var gameFiles: [SaveManagerFileEntry] = []
     @State private var isDetailLoading = false
     @State private var searchText = ""
+    @State private var confirmingGame: SaveManagerGame.ID?
+    @State private var gameBoxArt: NSImage?
+    @EnvironmentObject var library: ROMLibrary
 
     private static var undoDir: URL {
         let dir = FileManager.default.temporaryDirectory
@@ -215,9 +218,45 @@ struct SaveManagerView: View {
                                 Text(game.displayName)
                                     .font(.body)
                                     .lineLimit(1)
+                                Spacer()
+                                if confirmingGame == game.id {
+                                    Button(loc.localized("saveManager.deleteAll")) {
+                                        deleteAllSavesForGame(game)
+                                    }
+                                    .buttonStyle(.borderedProminent)
+                                    .controlSize(.small)
+                                    .tint(AppColors.error(colorScheme))
+                                    .transition(.asymmetric(
+                                        insertion: .scale.combined(with: .opacity),
+                                        removal: .scale.combined(with: .opacity)
+                                    ))
+                                } else {
+                                    Button {
+                                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                            confirmingGame = game.id
+                                        }
+                                        autoResetConfirm()
+                                    } label: {
+                                        Image(systemName: "trash")
+                                            .font(.system(size: 11, weight: .bold))
+                                            .foregroundStyle(AppColors.textTertiary(colorScheme))
+                                    }
+                                    .buttonStyle(.plain)
+                                    .transition(.asymmetric(
+                                        insertion: .scale.combined(with: .opacity),
+                                        removal: .scale.combined(with: .opacity)
+                                    ))
+                                }
                             }
                             .tag(game)
                             .padding(.vertical, 2)
+                            .onChange(of: selectedGame) { _, _ in
+                                if confirmingGame != nil {
+                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                        confirmingGame = nil
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -238,9 +277,17 @@ struct SaveManagerView: View {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
                 // Game header
                 HStack(spacing: AppSpacing.md) {
-                    Image(systemName: systemIcon(for: game.systemID))
-                        .font(.title)
-                        .foregroundStyle(AppColors.brandAccent)
+                    if let boxArt = gameBoxArt {
+                        Image(nsImage: boxArt)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 60, height: 80)
+                            .clipShape(RoundedRectangle(cornerRadius: AppRadius.sm))
+                    } else {
+                        Image(systemName: systemIcon(for: game.systemID))
+                            .font(.title)
+                            .foregroundStyle(AppColors.brandAccent)
+                    }
                     VStack(alignment: .leading, spacing: 2) {
                         Text(game.displayName)
                             .font(.title2)
@@ -298,6 +345,9 @@ struct SaveManagerView: View {
                 }
             }
             .padding(.vertical)
+        }
+        .task(id: game.id) {
+            await loadBoxArt(for: game)
         }
     }
 
@@ -486,6 +536,68 @@ struct SaveManagerView: View {
     }
 
 
+    private func autoResetConfirm() {
+        Task {
+            try? await Task.sleep(nanoseconds: 4_000_000_000)
+            await MainActor.run {
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                    confirmingGame = nil
+                }
+            }
+        }
+    }
+
+    private func deleteAllSavesForGame(_ game: SaveManagerGame) {
+        let fm = FileManager.default
+        let undoDir = Self.undoDir
+        var allPairs: [[String]] = []
+
+        // Delete all save states
+        let sysDir = saveManager.systemDirectory(systemID: game.systemID)
+        let safeName = saveManager.safeGameStateName(game.gameName)
+        if let contents = try? fm.contentsOfDirectory(atPath: sysDir.path) {
+            for item in contents where item.hasPrefix("\(safeName)__") {
+                let fileURL = sysDir.appendingPathComponent(item)
+                let undoURL = undoDir.appendingPathComponent("\(UUID().uuidString)_\(item)")
+                try? fm.moveItem(at: fileURL, to: undoURL)
+                allPairs.append([fileURL.path, undoURL.path])
+            }
+        }
+
+        // Delete all ROM save files
+        let savefilesDir = SaveDirectoryManager.shared.savefilesDirectory
+        if let files = try? fm.contentsOfDirectory(atPath: savefilesDir.path) {
+            let safeNameLower = saveManager.safeGameStateName(game.gameName).lowercased()
+            for file in files where (file as NSString).deletingPathExtension.lowercased() == safeNameLower {
+                let fileURL = savefilesDir.appendingPathComponent(file)
+                let undoURL = undoDir.appendingPathComponent("\(UUID().uuidString)_\(file)")
+                try? fm.moveItem(at: fileURL, to: undoURL)
+                allPairs.append([fileURL.path, undoURL.path])
+            }
+        }
+
+        postDeleteNotification(
+            title: loc.localized("pill.allSavesDeleted"),
+            subtitle: "\(game.systemID) \u{203A} \(game.displayName)",
+            filePairs: allPairs
+        )
+
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+            confirmingGame = nil
+        }
+
+        withAnimation {
+            games.removeAll { $0.id == game.id }
+        }
+
+        if selectedGame?.id == game.id {
+            selectedGame = nil
+            gameSlots = []
+            gameFiles = []
+            gameBoxArt = nil
+        }
+    }
+
     private func postDeleteNotification(title: String, subtitle: String, filePairs: [[String]]) {
         let payload = SaveDeleteActionPayload(filePairs: filePairs)
         guard let payloadJSON = String(data: try! JSONEncoder().encode(payload), encoding: .utf8) else { return }
@@ -571,10 +683,25 @@ struct SaveManagerView: View {
         isScanning = false
     }
 
+    private func loadBoxArt(for game: SaveManagerGame) async {
+        let matchingROM = library.roms.first { rom in
+            rom.displayName.lowercased() == game.displayName.lowercased() &&
+            (rom.systemID?.lowercased() == game.systemID.lowercased() || rom.thumbnailLookupSystemID?.lowercased() == game.systemID.lowercased())
+        }
+
+        guard let rom = matchingROM, rom.hasBoxArt else {
+            gameBoxArt = nil
+            return
+        }
+
+        gameBoxArt = await ImageCache.shared.thumbnail(for: rom.boxArtLocalPath, preferredSize: .small)
+    }
+
     private func loadGameDetail(_ game: SaveManagerGame) {
         isDetailLoading = true
         gameSlots = []
         gameFiles = []
+        gameBoxArt = nil
 
         let gameName = game.gameName
         let systemID = game.systemID

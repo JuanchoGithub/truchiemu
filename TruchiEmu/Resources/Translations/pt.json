@@ -27,6 +27,7 @@
   "settings.saves.stateSlots": "Slots de estado salvo",
   "settings.saves.ramSaves": "Salvos RAM / Bateria",
   "settings.saves.delete": "Excluir",
+  "saveManager.deleteAll": "Excluir tudo",
   "pill.saveDeleted": "Salvo excluído",
   "pill.ramSaveDeleted": "Arquivo de salvo excluído",
   "pill.allSavesDeleted": "Salvos excluídos",
