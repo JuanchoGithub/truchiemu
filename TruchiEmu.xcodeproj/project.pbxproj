@@ -4377,6 +4377,7 @@
 				D831D45C4236463C93EAD9BE /* Embed librashader dylib */,
 				42F648486C5306FDB81F2628 /* Embed SDL2 dylib */,
 				1DE6DE6595434E70CA81E6DD /* Copy slang-shaders to bundle */,
+				D84330A38C37C03098CA4E4D /* Re-sign dylibs and app bundle */,
 			);
 			buildRules = (
 			);
@@ -5357,6 +5358,25 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "mkdir -p \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH\"\ncp -f \"$PROJECT_DIR/TruchiEmu/lib/librashader.dylib\" \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/\"\ninstall_name_tool -id @rpath/librashader.dylib \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/librashader.dylib\"\n";
+		};
+		D84330A38C37C03098CA4E4D /* Re-sign dylibs and app bundle */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Re-sign dylibs and app bundle";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "FW=\"$CODESIGNING_FOLDER_PATH/Contents/Frameworks\"\nfor dylib in \"$FW\"/*.dylib; do\n  codesign --force --sign - \"$dylib\"\ndone\ncodesign --force --deep --sign - \"$CODESIGNING_FOLDER_PATH\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

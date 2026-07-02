@@ -36,8 +36,8 @@ targets:
         CFBundleName: TruchiEmu
         CFBundleDisplayName: TruchiEmu
         CFBundleIdentifier: com.TruchiEmu.app
-        CFBundleVersion: '15'
-        CFBundleShortVersionString: "1.5.0"
+        CFBundleVersion: '16'
+        CFBundleShortVersionString: "1.5.1"
         NSHumanReadableCopyright: "© 2026 TruchiEmu"
         NSPrincipalClass: NSApplication
         NSHighResolutionCapable: true
@@ -111,6 +111,14 @@ targets:
           rm -rf "$DST"
           mkdir -p "$DST"
           cp -R "$SRC"/ "$DST"
+        basedOnDependencyAnalysis: false
+      - name: Re-sign dylibs and app bundle
+        script: |
+          FW="$CODESIGNING_FOLDER_PATH/Contents/Frameworks"
+          for dylib in "$FW"/*.dylib; do
+            codesign --force --sign - "$dylib"
+          done
+          codesign --force --deep --sign - "$CODESIGNING_FOLDER_PATH"
         basedOnDependencyAnalysis: false
 
   TruchiEmuCoreHost:
