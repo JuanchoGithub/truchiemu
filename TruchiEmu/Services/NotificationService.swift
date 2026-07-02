@@ -12,6 +12,10 @@ public class NotificationService: ObservableObject {
 		checkAuthorizationStatus()
 	}
 
+	func refreshAuthorizationStatus() {
+		checkAuthorizationStatus()
+	}
+
 	func checkAuthorizationStatus() {
 		UNUserNotificationCenter.current().getNotificationSettings { settings in
 			DispatchQueue.main.async {
@@ -39,7 +43,11 @@ public class NotificationService: ObservableObject {
 		content.userInfo = userInfo
 
 		let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
-		UNUserNotificationCenter.current().add(request)
+		UNUserNotificationCenter.current().add(request) { error in
+			if let error {
+				LoggerService.error(category: "Notifications", "sendNotification failed: \(error)")
+			}
+		}
 	}
 
 	func sendNotification(title: String, body: String, image: NSImage, userInfo: [String: Any] = [:]) {
@@ -54,7 +62,11 @@ public class NotificationService: ObservableObject {
 		}
 
 		let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
-		UNUserNotificationCenter.current().add(request)
+		UNUserNotificationCenter.current().add(request) { error in
+			if let error {
+				LoggerService.error(category: "Notifications", "sendNotification failed: \(error)")
+			}
+		}
 	}
 
 	private static func attachment(from image: NSImage) -> UNNotificationAttachment? {

@@ -190,9 +190,25 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
                     HStack {
                         Text(loc.localized("settings.systemNotifications"))
                         Spacer()
+                        if NotificationService.shared.isAuthorized {
+                            Button(loc.localized("settings.notificationsTest")) {
+                                NotificationService.shared.sendNotification(
+                                    title: loc.localized("settings.notificationsTestTitle"),
+                                    body: loc.localized("settings.notificationsTestBody")
+                                )
+                            }
+                            .buttonStyle(.bordered)
+                            .controlSize(.small)
+                        }
                         Button(NotificationService.shared.isAuthorized ? loc.localized("settings.enabled") : loc.localized("settings.enable")) {
                             Task {
-                                await NotificationService.shared.requestAuthorization()
+                                let granted = await NotificationService.shared.requestAuthorization()
+                                if granted {
+                                    NotificationService.shared.sendNotification(
+                                        title: loc.localized("settings.notificationsTestTitle"),
+                                        body: loc.localized("settings.notificationsTestBody")
+                                    )
+                                }
                             }
                         }
                         .disabled(NotificationService.shared.isAuthorized)
@@ -222,6 +238,7 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
         .formStyle(.grouped)
         .navigationTitle("General")
         .onAppear {
+        NotificationService.shared.refreshAuthorizationStatus()
         autoCheckUpdates = AppUpdateService.shared.autoCheckEnabled
         notificationsEnabled = NotificationService.shared.isAuthorized
             pendingTheme = themeManager.currentTheme
