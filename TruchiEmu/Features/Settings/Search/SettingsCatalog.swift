@@ -356,6 +356,12 @@ enum SettingsCatalog {
                 keywords: ["training", "mode", "reset", "recording", "playback", "tape"]
             ),
             SettingsCatalogEntry(
+                page: .hotkeys, sectionID: "screenshots",
+                sectionTitle: "Screenshots",
+                optionTitles: ["Screenshot"],
+                keywords: ["screenshot", "capture", "photo", "picture", "save", "share", "button"]
+            ),
+            SettingsCatalogEntry(
                 page: .hotkeys, sectionID: "reset",
                 sectionTitle: "Reset to Defaults",
                 optionTitles: ["Reset All Hotkeys"],

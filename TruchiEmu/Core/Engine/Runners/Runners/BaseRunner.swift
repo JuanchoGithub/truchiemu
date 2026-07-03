@@ -323,6 +323,8 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     private let _saveManager = SaveStateManager()
     // Keyboard mapping snapshot captured at launch — safe to read from any thread.
     var cachedKeyboardMapping: KeyboardMapping = KeyboardMapping(buttons: [:])
+    // Controller screenshot binding identifier captured at launch.
+    var cachedScreenshotControllerBinding: String? = nil
     private var hookedController: GCController? = nil
     private var hookedControllers: [Int: GCController] = [:]
     
@@ -407,7 +409,7 @@ case "scummvm": runner = ScummVMRunner()
         
         setupGamepadInput()
         SDLInputManager.shared.registerRunner(self)
-        
+
         isRunning = true
         
         let selectedLang = SystemPreferences.shared.systemLanguage.libretroRawValue
@@ -992,6 +994,57 @@ case "scummvm": runner = ScummVMRunner()
         }
     }
 
+weak var metalCoordinator: MetalCoordinator?
+
+    func setMetalCoordinator(_ coord: MetalCoordinator) {
+        metalCoordinator = coord
+    }
+
+    @MainActor
+    func performScreenshot() {
+        let romName = rom?.filenameWithoutExtension ?? "screenshot"
+        let sysID = rom?.systemID ?? systemID
+        let includeNative = AppSettings.getBool("screenshot_include_native", defaultValue: false)
+
+        let displayURL = ScreenshotService.url(for: romName, systemID: sysID, suffix: nil)
+        let nativeURL: URL? = includeNative ? ScreenshotService.url(for: romName, systemID: sysID, suffix: "_native") : nil
+
+        // Haptic feedback
+        let haptic = NSHapticFeedbackManager.defaultPerformer
+        haptic.perform(.generic, performanceTime: .default)
+
+        if let coord = metalCoordinator {
+            coord.requestScreenshotCapture(displayURL: displayURL, nativeURL: nativeURL) { urls in
+                guard !urls.isEmpty else { return }
+                Task { @MainActor in
+                    NotificationCenter.default.post(
+                        name: .screenshotTaken,
+                        object: nil,
+                        userInfo: [
+                            "url": urls[0],
+                            "nativeURL": urls.count > 1 ? urls[1] : URL?.none as Any,
+                        ]
+                    )
+                }
+            }
+        } else {
+            guard let frame = currentFrameTexture else {
+                LoggerService.warning(category: "Screenshot", "No frame available to capture")
+                return
+            }
+            if includeNative {
+                _ = ScreenshotService.capture(from: frame, romName: romName, systemID: sysID, suffix: "_native")
+            }
+            if let result = ScreenshotService.capture(from: frame, romName: romName, systemID: sysID, suffix: nil) {
+                NotificationCenter.default.post(
+                    name: .screenshotTaken,
+                    object: nil,
+                    userInfo: ["url": result.url]
+                )
+            }
+        }
+    }
+
     func setKeyState(retroID: Int, pressed: Bool) {
         MainActor.assumeIsolated {
             currentInputState[retroID] = pressed
@@ -1195,6 +1248,11 @@ case "scummvm": runner = ScummVMRunner()
 
         LoggerService.info(category: "Runner", "setupGamepadInput: connectedControllers=\(cs.connectedControllers.map { $0.name })")
 
+        // Cache screenshot controller binding at launch
+        cachedScreenshotControllerBinding = HotkeyConfigManager.shared.controllerBinding(
+            for: .screenshot, source: .gameController
+        ).identifier
+
         if cs.activePlayerIndex == 0 && !cs.connectedControllers.isEmpty {
             cs.activePlayerIndex = 1
         }
@@ -1216,6 +1274,19 @@ case "scummvm": runner = ScummVMRunner()
 
             extendedGamepad.valueChangedHandler = { [weak self] _, element in
                 guard let self = self else { return }
+
+                // Check controller hotkey bindings before game input
+                if let button = element as? GCControllerButtonInput,
+                   button.isPressed,
+                   let name = element.localizedName,
+                   let boundName = self.cachedScreenshotControllerBinding,
+                   name == boundName {
+                    Task { @MainActor [weak self] in
+                        self?.performScreenshot()
+                    }
+                    return
+                }
+
                 for port in ports {
                     if let dpad = element as? GCControllerDirectionPad {
                         self.updateGamepadButton(dpad.up, in: mapping, player: port)

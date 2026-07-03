@@ -27,6 +27,14 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
     private var recordingFrameCount: Int64 = 0
     private var recordingStartTime: CFTimeInterval = 0
 
+    // Screenshot capture support: shared-mode textures for GPU readback
+    private var screenshotDisplayTexture: MTLTexture?
+    private var screenshotNativeTexture: MTLTexture?
+    private var pendingDisplayURL: URL?
+    private var pendingNativeURL: URL?
+    private var pendingWantsNative: Bool = false
+    private var pendingOnComplete: (([URL]) -> Void)?
+
     init(runner: EmulatorRunner) {
         self.runner = runner
     }
@@ -42,6 +50,25 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
         frameCounter = 0
         innerDrawCount = 0
         recordingSharedTexture = nil
+        screenshotDisplayTexture = nil
+        screenshotNativeTexture = nil
+        pendingDisplayURL = nil
+        pendingNativeURL = nil
+        pendingOnComplete = nil
+    }
+
+    /// Request a screenshot capture on the next drawn frame.
+    /// - Parameters:
+    ///   - displayURL: URL for the shader-applied (drawable) capture.
+    ///   - nativeURL: Optional URL for the raw native frame capture.
+    ///   - onComplete: Called on an arbitrary queue with the saved file URLs (subset of display/native that were requested).
+    func requestScreenshotCapture(displayURL: URL,
+                                  nativeURL: URL?,
+                                  onComplete: @escaping ([URL]) -> Void) {
+        pendingDisplayURL = displayURL
+        pendingNativeURL = nativeURL
+        pendingWantsNative = (nativeURL != nil)
+        pendingOnComplete = onComplete
     }
 
     // MARK: - Viewport Debouncing
@@ -716,6 +743,33 @@ outputHeight: Float(drawHeight)
                         recordingStartTime = 0
                     }
 
+                    // Screenshot capture: copy drawable + (optional) native to shared textures,
+                    //  read bytes in completion handler. Requires frameTex to be available.
+                    if pendingDisplayURL != nil, let frameTex = runner.currentFrameTexture {
+                        let displayURL = pendingDisplayURL
+                        let nativeURL = pendingNativeURL
+                        performScreenshotCapture(
+                            commandBuffer: cmdBuffer,
+                            device: device,
+                            drawable: drawable.texture,
+                            sourceNative: frameTex,
+                            displayURL: displayURL,
+                            nativeURL: nativeURL
+                        )
+                        pendingDisplayURL = nil
+                        pendingNativeURL = nil
+                        pendingWantsNative = false
+                        let cb = pendingOnComplete
+                        pendingOnComplete = nil
+                        if let cb = cb {
+                            cmdBuffer.addCompletedHandler { _ in
+                                var saved: [URL] = []
+                                if let u = displayURL { saved.append(u) }
+                                if let u = nativeURL { saved.append(u) }
+                                cb(saved)
+                            }
+                        }
+                    }
                     innerDrawCount += 1
 
                     if innerDrawCount <= 3 {
@@ -742,6 +796,80 @@ outputHeight: Float(drawHeight)
 
         cmdBuffer.present(drawable)
         cmdBuffer.commit()
+    }
+
+    /// Capture the displayed Metal drawable + (optional) the native frame.
+    /// Reads the data on commandBuffer completion and writes PNGs via ScreenshotService.
+    private func performScreenshotCapture(commandBuffer: MTLCommandBuffer,
+                                          device: MTLDevice,
+                                          drawable: MTLTexture,
+                                          sourceNative: MTLTexture,
+                                          displayURL: URL?,
+                                          nativeURL: URL?) {
+        if let displayURL = displayURL {
+            ensureSharedTexture(
+                target: &screenshotDisplayTexture,
+                matching: drawable,
+                device: device
+            )
+            if let dest = screenshotDisplayTexture {
+                let blit = commandBuffer.makeBlitCommandEncoder()
+                blit?.copy(from: drawable, to: dest)
+                blit?.endEncoding()
+                let w = dest.width
+                let h = dest.height
+                let bpp = Self.bytesPerPixel(dest.pixelFormat)
+                let bpr = w * bpp
+                commandBuffer.addCompletedHandler { _ in
+                    var pixels = [UInt8](repeating: 0, count: h * bpr)
+                    dest.getBytes(&pixels, bytesPerRow: bpr,
+                                  from: MTLRegionMake2D(0, 0, w, h), mipmapLevel: 0)
+                    let bgra = Self.convertToBGRA32(pixels, width: w, height: h, srcBPP: bpp, srcPixelFormat: dest.pixelFormat)
+                    ScreenshotService.writeBGRA(bgra, width: w, height: h, to: displayURL)
+                }
+            }
+        }
+        if let nativeURL = nativeURL {
+            ensureSharedTexture(
+                target: &screenshotNativeTexture,
+                matching: sourceNative,
+                device: device
+            )
+            if let dest = screenshotNativeTexture {
+                let blit = commandBuffer.makeBlitCommandEncoder()
+                blit?.copy(from: sourceNative, to: dest)
+                blit?.endEncoding()
+                let w = dest.width
+                let h = dest.height
+                let bpp = Self.bytesPerPixel(dest.pixelFormat)
+                let bpr = w * bpp
+                commandBuffer.addCompletedHandler { _ in
+                    var pixels = [UInt8](repeating: 0, count: h * bpr)
+                    dest.getBytes(&pixels, bytesPerRow: bpr,
+                                  from: MTLRegionMake2D(0, 0, w, h), mipmapLevel: 0)
+                    let bgra = Self.convertToBGRA32(pixels, width: w, height: h, srcBPP: bpp, srcPixelFormat: dest.pixelFormat)
+                    ScreenshotService.writeBGRA(bgra, width: w, height: h, to: nativeURL)
+                }
+            }
+        }
+    }
+
+    private func ensureSharedTexture(target: inout MTLTexture?,
+                                     matching source: MTLTexture,
+                                     device: MTLDevice) {
+        if let existing = target,
+           existing.width == source.width,
+           existing.height == source.height,
+           existing.pixelFormat == source.pixelFormat {
+            return
+        }
+        let desc = MTLTextureDescriptor.texture2DDescriptor(
+            pixelFormat: source.pixelFormat,
+            width: source.width, height: source.height, mipmapped: false
+        )
+        desc.usage = [.shaderRead, .shaderWrite]
+        desc.storageMode = .shared
+        target = device.makeTexture(descriptor: desc)
     }
 
     private func makePixelBuffer(from bgra32Pixels: [UInt8], width: Int, height: Int) -> CVPixelBuffer? {

@@ -15,6 +15,16 @@ struct PillNotification: Identifiable {
     var messageInterval: Double = 4
     var autoDismissDelay: TimeInterval?
     var action: PillAction?
+    var secondaryAction: PillAction?
+
+    var actions: [PillAction] {
+        var result: [PillAction] = []
+        if let a = action { result.append(a) }
+        if let sa = secondaryAction { result.append(sa) }
+        return result
+    }
+
+    var maxActions: Int { 2 }
 }
 
 @MainActor
@@ -87,25 +97,29 @@ struct NotificationPill: View {
                 }
             }
 
-            if let action = notification.action {
-                Button {
-                    action.handler()
-                } label: {
-                    Text(action.label)
-                        .font(.caption)
-                        .fontWeight(.semibold)
-                        .foregroundColor(AppColors.brandAccent)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 4)
-                        .background(
-                            Capsule()
-                                .fill(AppColors.brandAccent.opacity(isHovering ? 0.15 : 0.08))
-                        )
-                }
-                .buttonStyle(.plain)
-                .onHover { hovering in
-                    withAnimation(AppAnimations.quick) {
-                        isHovering = hovering
+            if !notification.actions.isEmpty {
+                HStack(spacing: 6) {
+                    ForEach(Array(notification.actions.enumerated()), id: \.offset) { index, act in
+                        Button {
+                            act.handler()
+                        } label: {
+                            Text(act.label)
+                                .font(.caption)
+                                .fontWeight(.semibold)
+                                .foregroundColor(AppColors.brandAccent)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 4)
+                                .background(
+                                    Capsule()
+                                        .fill(AppColors.brandAccent.opacity(isHovering ? 0.15 : 0.08))
+                                )
+                        }
+                        .buttonStyle(.plain)
+                        .onHover { hovering in
+                            withAnimation(AppAnimations.quick) {
+                                isHovering = hovering
+                            }
+                        }
                     }
                 }
             }

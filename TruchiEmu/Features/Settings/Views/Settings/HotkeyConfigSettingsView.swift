@@ -5,8 +5,10 @@ struct HotkeyConfigSettingsView: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var hotkeyManager = HotkeyConfigManager.shared
+    @ObservedObject private var controllerCaptureCoordinator = ControllerHotkeyCaptureCoordinator.shared
     @State private var listeningAction: HotkeyAction?
     @State private var listeningSlot: KeySlot = .primary
+    @State private var listeningControllerAction: HotkeyAction?
     @Binding var searchText: String
 
     enum Scope: Hashable {
@@ -52,6 +54,10 @@ struct HotkeyConfigSettingsView: View {
         scope == .all || scope == .gameplay
     }
 
+    private var showScreenshots: Bool {
+        scope == .all || scope == .gameplay
+    }
+
     private var showReset: Bool {
         scope == .all
     }
@@ -62,12 +68,9 @@ struct HotkeyConfigSettingsView: View {
                 || matchesSearch("hotkeys keyboard shortcuts save load slot undo training input capture")
                 || matchesAnyLabel([.saveState, .loadState, .undoLoadState, .slotNext, .slotPrev, .toggleInputCapture])) {
                 Section(header: Label(loc.localized("hotkeys.general"), systemImage: "keyboard")) {
-                    hotkeyRow(.saveState)
-                    hotkeyRow(.loadState)
-                    hotkeyRow(.undoLoadState)
-                    hotkeyRow(.slotNext)
-                    hotkeyRow(.slotPrev)
-                    hotkeyRow(.toggleInputCapture)
+                    hotkeyActionGrid([
+                        .saveState, .loadState, .undoLoadState, .slotNext, .slotPrev, .toggleInputCapture
+                    ])
                 }
             }
 
@@ -75,9 +78,16 @@ struct HotkeyConfigSettingsView: View {
                 || matchesSearch("slots 0-9 slot")
                 || matchesAnyLabel(slotActions)) {
                 Section(header: Label(loc.localized("hotkeys.slots"), systemImage: "square.grid.3x3")) {
-                    ForEach(slotActions, id: \.self) { action in
-                        hotkeyRow(action)
-                    }
+                    hotkeyActionGrid(slotActions)
+                }
+            }
+
+            if showScreenshots && (!isSearching
+                || matchesSearch("screenshot capture photo picture")
+                || matchesSearch("hotkeys keyboard shortcuts save load slot undo training input capture")
+                || matchesAnyLabel([.screenshot])) {
+                Section(header: Label(loc.localized("hotkeys.screenshots"), systemImage: "camera")) {
+                    screenshotActionGrid()
                 }
             }
 
@@ -85,10 +95,9 @@ struct HotkeyConfigSettingsView: View {
                 || matchesSearch("training mode reset recording playback tape")
                 || matchesAnyLabel([.toggleTrainingMode, .trainingReset, .trainingToggleRecording, .trainingStartPlayback])) {
                 Section(header: Label(loc.localized("hotkeys.training"), systemImage: "figure.martial.arts")) {
-                    hotkeyRow(.toggleTrainingMode)
-                    hotkeyRow(.trainingReset)
-                    hotkeyRow(.trainingToggleRecording)
-                    hotkeyRow(.trainingStartPlayback)
+                    hotkeyActionGrid([
+                        .toggleTrainingMode, .trainingReset, .trainingToggleRecording, .trainingStartPlayback
+                    ])
                 }
             }
 
@@ -110,9 +119,11 @@ struct HotkeyConfigSettingsView: View {
                 && !matchesAnyLabel([.saveState, .loadState, .undoLoadState, .slotNext, .slotPrev, .toggleInputCapture])
                 && !matchesAnyLabel(slotActions)
                 && !matchesAnyLabel([.toggleTrainingMode, .trainingReset, .trainingToggleRecording, .trainingStartPlayback])
+                && !matchesAnyLabel([.screenshot])
                 && !matchesSearch("hotkeys keyboard shortcuts save load slot undo training input capture")
                 && !matchesSearch("slots 0-9 slot")
                 && !matchesSearch("training mode reset recording playback tape")
+                && !matchesSearch("screenshot capture photo picture")
                 && !matchesSearch("reset defaults restore") {
                 Section {
                     Text("\(loc.localized("general.noMatchingSettings")) \"\(searchText)\"")
@@ -133,14 +144,22 @@ struct HotkeyConfigSettingsView: View {
     }
 
     @ViewBuilder
-    private func hotkeyRow(_ action: HotkeyAction) -> some View {
-        let cfg = hotkeyManager.config[action] ?? .unbound
+    private func hotkeyActionGrid(_ actions: [HotkeyAction]) -> some View {
+        Grid(alignment: .leading, horizontalSpacing: 16, verticalSpacing: 0) {
+            ForEach(Array(actions.enumerated()), id: \.offset) { index, action in
+                hotkeyGridRow(action: action, isLast: index == actions.count - 1)
+            }
+        }
+    }
 
-        HStack {
+    @ViewBuilder
+    private func hotkeyGridRow(action: HotkeyAction, isLast: Bool) -> some View {
+        let cfg = hotkeyManager.config[action] ?? .unbound
+        GridRow {
             Text(loc.localized(action.localizationKey))
                 .lineLimit(1)
-            Spacer(minLength: 0)
-            HStack(spacing: 6) {
+                .gridColumnAlignment(.leading)
+            HStack(spacing: 8) {
                 HotkeyCaptureButton(
                     binding: cfg.primary,
                     isListening: listeningAction == action && listeningSlot == .primary,
@@ -157,11 +176,6 @@ struct HotkeyConfigSettingsView: View {
                         hotkeyManager.update(action, primary: .none)
                     }
                 )
-
-                Text("·")
-                    .foregroundStyle(AppColors.textTertiary(colorScheme))
-                    .font(.caption2)
-
                 HotkeyCaptureButton(
                     binding: cfg.secondary,
                     isListening: listeningAction == action && listeningSlot == .secondary,
@@ -179,16 +193,170 @@ struct HotkeyConfigSettingsView: View {
                     }
                 )
             }
+            .gridColumnAlignment(.trailing)
         }
         .padding(.vertical, AppSpacing.xxs)
         .overlay(alignment: .bottom) {
-            Divider()
-                .overlay(AppColors.divider(colorScheme))
+            if !isLast {
+                Divider()
+                    .overlay(AppColors.divider(colorScheme))
+            }
         }
     }
 
     private func conflicts(for binding: HotkeyBinding, excluding action: HotkeyAction) -> [(HotkeyAction, HotkeyBinding)] {
         hotkeyManager.findConflicts(for: binding, excluding: action)
+    }
+
+    @ViewBuilder
+    private func screenshotActionGrid() -> some View {
+        let cfg = hotkeyManager.config[.screenshot] ?? .unbound
+        let sources = hotkeyManager.availableControllerSources
+        let activeSource: ControllerHotkeySource = {
+            if cfg.controller.map({ sources.contains($0.source) }) ?? false {
+                return cfg.controller!.source
+            }
+            return sources.first ?? .gameController
+        }()
+        let controllerBinding = hotkeyManager.controllerBinding(for: .screenshot, source: activeSource)
+        let isListening: Bool = {
+            if case .listening(let source, _) = controllerCaptureCoordinator.state,
+               source == activeSource,
+               listeningControllerAction == .screenshot { return true }
+            return false
+        }()
+        let showSourcePicker = sources.count > 1
+
+        Grid(alignment: .leading, horizontalSpacing: 16, verticalSpacing: 0) {
+            GridRow {
+                Text(loc.localized("hotkeys.keyboard"))
+                    .lineLimit(1)
+                    .gridColumnAlignment(.leading)
+                HStack(spacing: 8) {
+                    HotkeyCaptureButton(
+                        binding: cfg.primary,
+                        isListening: listeningAction == .screenshot && listeningSlot == .primary,
+                        conflicts: conflicts(for: cfg.primary, excluding: .screenshot),
+                        onCapture: { captured in
+                            hotkeyManager.update(.screenshot, primary: captured)
+                            listeningAction = nil
+                        },
+                        onStartListening: {
+                            listeningAction = .screenshot
+                            listeningSlot = .primary
+                        },
+                        onClear: {
+                            hotkeyManager.update(.screenshot, primary: .none)
+                        }
+                    )
+                    HotkeyCaptureButton(
+                        binding: cfg.secondary,
+                        isListening: listeningAction == .screenshot && listeningSlot == .secondary,
+                        conflicts: conflicts(for: cfg.secondary, excluding: .screenshot),
+                        onCapture: { captured in
+                            hotkeyManager.update(.screenshot, secondary: captured)
+                            listeningAction = nil
+                        },
+                        onStartListening: {
+                            listeningAction = .screenshot
+                            listeningSlot = .secondary
+                        },
+                        onClear: {
+                            hotkeyManager.update(.screenshot, secondary: .none)
+                        }
+                    )
+                }
+                .gridColumnAlignment(.trailing)
+            }
+            .padding(.vertical, AppSpacing.xxs)
+            .overlay(alignment: .bottom) {
+                Divider()
+                    .overlay(AppColors.divider(colorScheme))
+            }
+
+            GridRow {
+                Text(loc.localized("hotkeys.controller"))
+                    .lineLimit(1)
+                    .gridColumnAlignment(.leading)
+                HStack(spacing: 8) {
+                    ControllerHotkeyCaptureButton(
+                        binding: controllerBinding,
+                        isListening: isListening,
+                        availableSources: showSourcePicker ? sources : [],
+                        onBindingCaptured: { captured in
+                            hotkeyManager.updateControllerBinding(.screenshot, binding: captured)
+                            listeningControllerAction = nil
+                        },
+                        onListenStateChanged: { starting in
+                            if starting {
+                                listeningControllerAction = .screenshot
+                                controllerCaptureCoordinator.startListening(
+                                    source: activeSource,
+                                    currentLabel: controllerBinding.displayLabel,
+                                    onCapture: { captured in
+                                        controllerBindingCaptured(captured)
+                                    }
+                                )
+                            } else {
+                                listeningControllerAction = nil
+                                controllerCaptureCoordinator.cancel()
+                            }
+                        },
+                        onClearRequested: {
+                            hotkeyManager.updateControllerBinding(.screenshot, binding: nil)
+                        },
+                        onSourceChanged: { new in
+                            let next = hotkeyManager.controllerBinding(for: .screenshot, source: new)
+                            hotkeyManager.updateControllerBinding(.screenshot, binding: next)
+                        }
+                    )
+                }
+                .gridColumnAlignment(.trailing)
+            }
+            .padding(.vertical, AppSpacing.xxs)
+            .overlay(alignment: .bottom) {
+                Divider()
+                    .overlay(AppColors.divider(colorScheme))
+            }
+        }
+
+        ScreenshotIncludeNativeToggle()
+            .padding(.vertical, AppSpacing.xxs)
+    }
+
+    private func controllerBindingCaptured(_ captured: ControllerHotkeyBinding) {
+        listeningControllerAction = nil
+        controllerCaptureCoordinator.cancel()
+        hotkeyManager.updateControllerBinding(.screenshot, binding: captured)
+    }
+}
+
+private struct ScreenshotIncludeNativeToggle: View {
+    @Environment(\.colorScheme) private var colorScheme
+    @ObservedObject private var loc = LocalizationManager.shared
+    @State private var includeNative: Bool = AppSettings.getBool("screenshot_include_native", defaultValue: false)
+
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(loc.localized("screenshot.includeNative"))
+                    .lineLimit(1)
+                Text(loc.localized("screenshot.includeNativeHelp"))
+                    .font(.caption2)
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+            }
+            Spacer(minLength: 0)
+            Toggle("", isOn: Binding(
+                get: { includeNative },
+                set: { newValue in
+                    includeNative = newValue
+                    AppSettings.setBool("screenshot_include_native", value: newValue)
+                }
+            ))
+            .toggleStyle(.switch)
+            .labelsHidden()
+        }
+        .padding(.vertical, AppSpacing.xxs)
     }
 }
 
@@ -272,7 +440,9 @@ private class HotkeyCaptureContainer: NSView {
     let button = NSButton()
     let clearButton = NSButton()
     private let stackView: NSStackView
-    private var widthConstraint: NSLayoutConstraint?
+
+    private static let buttonMinWidth: CGFloat = 80
+    private static let clearButtonWidth: CGFloat = 22
 
     override init(frame frameRect: NSRect) {
         stackView = NSStackView()
@@ -283,9 +453,10 @@ private class HotkeyCaptureContainer: NSView {
         stackView.addView(clearButton, in: .leading)
         stackView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(stackView)
-        button.widthAnchor.constraint(equalToConstant: 80).isActive = true
-        widthConstraint = widthAnchor.constraint(equalToConstant: 200)
-        widthConstraint?.isActive = true
+        button.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        button.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        button.widthAnchor.constraint(greaterThanOrEqualToConstant: Self.buttonMinWidth).isActive = true
+        clearButton.widthAnchor.constraint(equalToConstant: Self.clearButtonWidth).isActive = true
         NSLayoutConstraint.activate([
             stackView.leadingAnchor.constraint(equalTo: leadingAnchor),
             stackView.trailingAnchor.constraint(equalTo: trailingAnchor),

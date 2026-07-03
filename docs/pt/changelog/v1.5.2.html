@@ -1,0 +1,58 @@
+---
+layout: default
+title: v1.5.2 - Documentação do TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/pt/changelog.html' | relative_url }}">Registro de mudanças</a>
+        <span class="separator">/</span>
+        <span class="current">v1.5.2</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.5.2</h1>
+        <div class="release-meta">
+            <span class="release-date">2 de julho de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Melhorias na captura de tela em jogo, mapeamento de teclas do controle, gerenciamento de saves e sistema de notificações na tela.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destaques</h2>
+        <ul class="feature-list">
+            <li><strong>Capturas em jogo:</strong> Capture o quadro atual a qualquer momento com um atalho de teclado ou botão do controle. Salva PNGs em <code>~/Pictures/TruchiEmu/<sistema>/</code>, nomeados pela ROM e timestamp, com flash de confirmação e notificação</li>
+            <li><strong>Mapeamento de teclas do controle:</strong> Associe atalhos a botões do gamepad (por identificadores GCController ou índices SDL) diretamente nas configurações de teclas</li>
+            <li><strong>Gerenciador de saves:</strong> Ação em massa "Apagar todos os saves" com diálogo de confirmação explícito</li>
+            <li><strong>Ação de teste de notificação:</strong> Dispare uma notificação de teste para validar permissões e comportamento</li>
+            <li><strong>Melhorias nas notificações:</strong> Visual mais limpo, tempo de descarte mais confiável e melhor fluxo de autorização</li>
+            <li><strong>Textos localizados para teclas:</strong> Novas traduções para captura, controles de treino e a nova UI de teclas em inglês, espanhol e português</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Mudanças detalhadas</h2>
+        <ul>
+            <li>Adicionado <code>ScreenshotService</code> para captura textura Metal → PNG, com estrutura por sistema e nomes de arquivo seguros</li>
+            <li>Adicionado flash overlay e <code>ScreenshotPillOverlay</code> com botões "Abrir" / "Mostrar no Finder"</li>
+            <li>Adicionado atalho de ajuda para <code>⇧⌘S</code> (captura) e textos localizados <code>help.shortcut.screenshot</code></li>
+            <li>Adicionada entrada no catálogo de configurações para capturas e ação de tecla (<code>.screenshot</code>)</li>
+            <li>Adicionado <code>ControllerHotkeyBinding</code>, <code>ControllerHotkeySource</code> e coordenador de captura para associar atalhos a botões do controle</li>
+            <li>Refatorado <code>HotkeyConfigSettingsView</code> com três superfícies de captura (primário, secundário, controle)</li>
+            <li>Adicionado "Apagar todos os saves" com confirmação segura de duas etapas</li>
+            <li>Adicionada ação "Testar notificação" para validar autorização e renderização</li>
+            <li>Ajustes em tempo, hierarquia visual e descarte explícito de notificações no jogo</li>
+            <li>Atualizados <code>en.json</code>, <code>es.json</code> e <code>pt.json</code> com novas chaves</li>
+            <li>Build: a fase de codesign ocorre de forma confiável em Release; o dylib do librashader vai para <code>Frameworks/</code> com o install name correto</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/pt/changelog/v0.8.5.html' | relative_url }}" class="release-prev">&larr; v0.8.5</a>
+        <a href="{{ '/pt/changelog.html' | relative_url }}" class="release-all">Todas as versões</a>
+    </nav>
+</div>

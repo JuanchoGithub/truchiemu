@@ -1,0 +1,58 @@
+---
+layout: default
+title: v1.5.2 - Documentación de TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/es/changelog.html' | relative_url }}">Registro de cambios</a>
+        <span class="separator">/</span>
+        <span class="current">v1.5.2</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.5.2</h1>
+        <div class="release-meta">
+            <span class="release-date">2 de julio de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Mejoras en captura de juego, mapeo de teclas del mando, gestión de guardados y sistema de notificaciones en pantalla.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destacados</h2>
+        <ul class="feature-list">
+            <li><strong>Capturas en juego:</strong> Captura el fotograma actual con un atajo de teclado o botón del mando. Guarda PNGs en <code>~/Pictures/TruchiEmu/<sistema>/</code>, nombrados por ROM y marca de tiempo, con confirmación visual (flash y notificación)</li>
+            <li><strong>Mapeo de teclas del mando:</strong> Asocia atajos a botones del gamepad (vía identificadores GCController o índices SDL) directamente en los ajustes de teclas rápidas</li>
+            <li><strong>Gestor de guardados:</strong> Acción masiva "Borrar todos los guardados" con diálogo de confirmación explícito</li>
+            <li><strong>Acción de prueba de notificación:</strong> Dispara una notificación de muestra desde ajustes para verificar permisos y comportamiento</li>
+            <li><strong>Refinamientos en notificaciones:</strong> Visual más limpio, tiempo de descarte más fiable y mejor flujo de autorización</li>
+            <li><strong>Cadenas localizadas para teclas:</strong> Nuevas traducciones para captura, controles de práctica y la nueva UI de teclas rápidas en inglés, español y portugués</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Cambios detallados</h2>
+        <ul>
+            <li>Añadido <code>ScreenshotService</code> para captura textura Metal → PNG, con estructura por sistema y nombres de archivo seguros</li>
+            <li>Añadido flash overlay y <code>ScreenshotPillOverlay</code> con botones "Abrir" / "Revelar en Finder"</li>
+            <li>Añadido atajo de ayuda para <code>⇧⌘S</code> (captura) y cadenas localizadas <code>help.shortcut.screenshot</code></li>
+            <li>Añadida entrada en el catálogo de ajustes para capturas y acción de tecla rápida (<code>.screenshot</code>)</li>
+            <li>Añadido <code>ControllerHotkeyBinding</code>, <code>ControllerHotkeySource</code> y coordinador de captura para asociar atajos a botones del gamepad</li>
+            <li>Refactorizado <code>HotkeyConfigSettingsView</code> con tres superficies de captura (primario, secundario, mando)</li>
+            <li>Añadido "Borrar todos los guardados" con confirmación segura de dos pasos</li>
+            <li>Añadida acción "Probar notificación" para validar la autorización y render de notificaciones</li>
+            <li>Ajustes en tiempo, jerarquía visual y descarte explícito de notificaciones en el juego</li>
+            <li>Actualizados <code>en.json</code>, <code>es.json</code> y <code>pt.json</code> con nuevas claves</li>
+            <li>Build: la fase de re-firma de codesign se ejecuta de forma fiable en Release; el dylib de librashader se instala en <code>Frameworks/</code> con el nombre correcto</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/es/changelog/v0.8.5.html' | relative_url }}" class="release-prev">&larr; v0.8.5</a>
+        <a href="{{ '/es/changelog.html' | relative_url }}" class="release-all">Todas las versiones</a>
+    </nav>
+</div>

@@ -75,6 +75,7 @@ enum HotkeyAction: String, Codable, CaseIterable, Identifiable {
     case trainingToggleRecording
     case trainingStartPlayback
     case toggleTrainingMode
+    case screenshot
 
     var id: String { rawValue }
 
@@ -103,18 +104,69 @@ enum HotkeyAction: String, Codable, CaseIterable, Identifiable {
     var searchSectionID: String {
         if isSlotAction { return "slots" }
         if isTrainingAction { return "training" }
+        if self == .screenshot { return "screenshots" }
         return "general"
+    }
+}
+
+enum ControllerHotkeySource: String, Codable {
+    case gameController
+    case sdl
+}
+
+struct ControllerHotkeyBinding: Codable, Equatable, Hashable {
+    var source: ControllerHotkeySource
+    var identifier: String
+    var displayLabel: String
+
+    static let unset = ControllerHotkeyBinding(source: .gameController, identifier: "", displayLabel: "")
+
+    var isUnset: Bool { identifier.isEmpty }
+
+    static func gc(_ identifier: String, label: String? = nil) -> ControllerHotkeyBinding {
+        ControllerHotkeyBinding(
+            source: .gameController,
+            identifier: identifier,
+            displayLabel: label ?? identifier
+        )
+    }
+
+    static func sdl(_ index: Int, label: String? = nil) -> ControllerHotkeyBinding {
+        ControllerHotkeyBinding(
+            source: .sdl,
+            identifier: String(index),
+            displayLabel: label ?? "Button \(index)"
+        )
     }
 }
 
 struct HotkeyConfig: Codable, Equatable {
     var primary: HotkeyBinding
     var secondary: HotkeyBinding
+    var controller: ControllerHotkeyBinding?
 
     static let unbound = HotkeyConfig(
         primary: .none,
-        secondary: .none
+        secondary: .none,
+        controller: nil
     )
+
+    private enum CodingKeys: String, CodingKey {
+        case primary, secondary, controller
+    }
+
+    init(primary: HotkeyBinding, secondary: HotkeyBinding, controller: ControllerHotkeyBinding? = nil) {
+        self.primary = primary
+        self.secondary = secondary
+        self.controller = controller
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        primary = try c.decode(HotkeyBinding.self, forKey: .primary)
+        secondary = try c.decode(HotkeyBinding.self, forKey: .secondary)
+        controller = try c.decodeIfPresent(ControllerHotkeyBinding.self, forKey: .controller)
+    }
 }
 
 @MainActor
@@ -161,7 +213,35 @@ final class HotkeyConfigManager: ObservableObject {
         .trainingToggleRecording: HotkeyConfig(primary: .plain(101),   secondary: .none),         // F9
         .trainingStartPlayback:   HotkeyConfig(primary: .plain(109),   secondary: .none),         // F10
         .toggleTrainingMode:      HotkeyConfig(primary: HotkeyBinding(keyCode: 17, modifierFlags: UInt(NSEvent.ModifierFlags.command.rawValue) | UInt(NSEvent.ModifierFlags.shift.rawValue)), secondary: .none), // ⇧⌘T
+        .screenshot:              HotkeyConfig(
+                                       primary: HotkeyBinding(keyCode: 1, modifierFlags: UInt(NSEvent.ModifierFlags.command.rawValue) | UInt(NSEvent.ModifierFlags.shift.rawValue)),
+                                       secondary: .none,
+                                       controller: nil,
+                                   ),
     ]
+
+    func controllerBinding(for action: HotkeyAction, source: ControllerHotkeySource) -> ControllerHotkeyBinding {
+        if let bound = config[action]?.controller, !bound.isUnset {
+            return bound
+        }
+        return Self.defaultControllerBinding(for: action, source: source)
+    }
+
+    func matchesController(_ action: HotkeyAction, gcElementName: String) -> Bool {
+        guard let bound = config[action]?.controller, !bound.isUnset, bound.source == .gameController else {
+            return gcElementName == Self.defaultControllerBinding(for: action, source: .gameController).identifier
+        }
+        return bound.identifier == gcElementName
+    }
+
+    func matchesController(_ action: HotkeyAction, sdlButtonIndex: Int) -> Bool {
+        guard let bound = config[action]?.controller, !bound.isUnset, bound.source == .sdl else {
+            let fallback = Self.defaultControllerBinding(for: action, source: .sdl)
+            guard !fallback.isUnset else { return false }
+            return Int(fallback.identifier) == sdlButtonIndex
+        }
+        return Int(bound.identifier) == sdlButtonIndex
+    }
 
     func update(_ action: HotkeyAction, primary: HotkeyBinding) {
         config[action]?.primary = primary
@@ -171,6 +251,41 @@ final class HotkeyConfigManager: ObservableObject {
     func update(_ action: HotkeyAction, secondary: HotkeyBinding) {
         config[action]?.secondary = secondary
         save()
+    }
+
+    func updateControllerBinding(_ action: HotkeyAction, binding: ControllerHotkeyBinding?) {
+        config[action]?.controller = binding
+        save()
+    }
+
+    func resetHotkeyControllerBinding(_ action: HotkeyAction) {
+        config[action]?.controller = Self.defaults[action]?.controller
+        save()
+    }
+
+    static func defaultControllerBinding(for action: HotkeyAction, source: ControllerHotkeySource) -> ControllerHotkeyBinding {
+        switch (action, source) {
+        case (.screenshot, .gameController):
+            return .gc("Share Button", label: "Share Button")
+        case (.screenshot, .sdl):
+            return .sdl(13)
+        default:
+            return .unset
+        }
+    }
+
+    var availableControllerSources: [ControllerHotkeySource] {
+        var sources: [ControllerHotkeySource] = []
+        if ControllerService.shared.connectedControllers.contains(where: { $0.gcController != nil }) {
+            sources.append(.gameController)
+        }
+        if ControllerService.shared.connectedControllers.contains(where: { $0.isSDL }) {
+            sources.append(.sdl)
+        }
+        if sources.isEmpty {
+            sources = [.gameController, .sdl]
+        }
+        return sources
     }
 
     func resetToDefaults() {

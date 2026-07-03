@@ -129,6 +129,13 @@ class FocusableMTKView: MTKView {
     override func keyDown(with event: NSEvent) {
         let hotkeys = HotkeyConfigManager.shared
 
+        if hotkeys.matches(.screenshot, event: event) {
+            Task { @MainActor in
+                self.runner?.performScreenshot()
+            }
+            return
+        }
+
         if hotkeys.matches(.saveState, event: event) {
             HardcoreModeManager.shared.attemptSaveState { [weak self] in
                 Task { @MainActor in _ = self?.runner?.saveState(slot: self!.runner!.currentSlot) }

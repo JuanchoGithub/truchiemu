@@ -18,6 +18,7 @@ extension Notification.Name {
     static let openSettingsWindow = Notification.Name("openSettingsWindow")
     static let closeAppSettings = Notification.Name("closeAppSettings")
     static let gameLoaded = Notification.Name("gameLoaded")
+    static let screenshotTaken = Notification.Name("screenshotTaken")
     static let checkForUpdatesFromMenu = Notification.Name("checkForUpdatesFromMenu")
     static let showWhatsNewFromMenu = Notification.Name("showWhatsNewFromMenu")
 static let showChangelogFromMenu = Notification.Name("showChangelogFromMenu")
@@ -233,6 +234,8 @@ LoggerService.debug(category: category, message)
             NSWorkspace.shared.open(url)
             return true
         }
+
+        StandaloneGameWindowController.registerScreenshotHistoryHandler()
     }
     
 var body: some Scene {

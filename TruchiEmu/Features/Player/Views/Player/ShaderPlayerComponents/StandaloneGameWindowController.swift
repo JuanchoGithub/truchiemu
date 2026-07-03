@@ -98,12 +98,15 @@ private var firstFrameTimer: Timer?
     var hideToolbarTimer: Timer? = nil
     var skipAutoSaveOnClose: Bool = false
     private var gameLoadedObserver: NSObjectProtocol?
+    private var screenshotObserver: NSObjectProtocol?
     private var isClosingWindow: Bool = false
     private var didLoadSaveState: Bool = false
 var moveListOverlayView: NSHostingView<AnyView>?
 var achievementToastOverlayView: NSHostingView<AnyView>?
-var escapeToastOverlayView: SafeHostingView<AnyView>?
-var cheatToastOverlayView: SafeHostingView<AnyView>?
+    var escapeToastOverlayView: SafeHostingView<AnyView>?
+    var cheatToastOverlayView: SafeHostingView<AnyView>?
+    var screenshotFlashOverlayView: NSView?
+    var screenshotPillOverlayView: SafeHostingView<AnyView>?
 var trainingModeOverlayView: NSHostingView<AnyView>?
 var p2JoinStatusOverlayView: NSHostingView<AnyView>?
 private var p2JoinStatusCancellable: AnyCancellable?
@@ -147,6 +150,10 @@ return MoveListOverlayViewModel(runner: runner)
         escapeToastOverlayView = nil
         cheatToastOverlayView?.removeFromSuperview()
         cheatToastOverlayView = nil
+        screenshotFlashOverlayView?.removeFromSuperview()
+        screenshotFlashOverlayView = nil
+        screenshotPillOverlayView?.removeFromSuperview()
+        screenshotPillOverlayView = nil
         trainingModeOverlayView?.removeFromSuperview()
         trainingModeOverlayView = nil
         p2JoinStatusOverlayView?.removeFromSuperview()
@@ -268,7 +275,8 @@ super.init(window: window)
         mtkView.delegate = coord
         self.coordinator = coord
         self.metalView = mtkView
-        
+        runner.setMetalCoordinator(coord)
+
         // Set runner reference on view
         mtkView.runner = runner
         runner.metalView = mtkView
@@ -355,6 +363,38 @@ super.init(window: window)
             cheatToastView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
             cheatToastView.topAnchor.constraint(equalTo: containerView.topAnchor),
             cheatToastView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
+        ])
+
+        // Screenshot flash backdrop — lightweight NSView (SwiftUI hosting here caused layout issues)
+        let flashView = NSView()
+        flashView.translatesAutoresizingMaskIntoConstraints = false
+        flashView.wantsLayer = true
+        flashView.isHidden = true
+        flashView.layer?.backgroundColor = NSColor.white.withAlphaComponent(0.85).cgColor
+        containerView.addSubview(flashView, positioned: .above, relativeTo: nil)
+        self.screenshotFlashOverlayView = flashView
+
+        NSLayoutConstraint.activate([
+            flashView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            flashView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            flashView.topAnchor.constraint(equalTo: containerView.topAnchor),
+            flashView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
+        ])
+
+        // Screenshot pill overlay (in-game notification)
+        let pillView = SafeHostingView(rootView: AnyView(ScreenshotPillOverlay()))
+        pillView.translatesAutoresizingMaskIntoConstraints = false
+        pillView.wantsLayer = true
+        pillView.isPassThroughOverlay = true
+        pillView.layer?.backgroundColor = NSColor.clear.cgColor
+        containerView.addSubview(pillView, positioned: .below, relativeTo: hostingView)
+        self.screenshotPillOverlayView = pillView
+
+        NSLayoutConstraint.activate([
+            pillView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            pillView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            pillView.topAnchor.constraint(equalTo: containerView.topAnchor),
+            pillView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
         ])
 
         // Add SwiftUI loading overlay (covers entire window during game launch, on top of everything)
@@ -744,7 +784,6 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
 
         // Launch the game with current shader uniforms
         runner?.launch(rom: rom, coreID: coreID, shaderUniformOverrides: shaderUniforms)
-
         // Observe game-loaded notification to update launch phase
         gameLoadedObserver = NotificationCenter.default.addObserver(forName: .gameLoaded, object: nil, queue: .main) { [weak self] _ in
             guard let self else { return }
@@ -758,6 +797,16 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
             ctx.ownedWindow = self.window
             self.gameRunningNavContext = ctx
             GamepadNavContextStack.shared.push(ctx)
+        }
+
+                // Observe screenshot captures to flash + show toast
+        screenshotObserver = NotificationCenter.default.addObserver(forName: .screenshotTaken, object: nil, queue: .main) { [weak self] note in
+            guard let self,
+                  let url = note.userInfo?["url"] as? URL else { return }
+            let nativeURL = note.userInfo?["nativeURL"] as? URL
+            self.flashScreen()
+            self.postScreenshotPill(displayURL: url, nativeURL: nativeURL)
+            self.postScreenshotHistory(displayURL: url, nativeURL: nativeURL)
         }
 
         // Core is initializing async — we're now waiting for the first frame
@@ -1552,6 +1601,10 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
             NotificationCenter.default.removeObserver(observer)
             gameLoadedObserver = nil
         }
+        if let observer = screenshotObserver {
+            NotificationCenter.default.removeObserver(observer)
+            screenshotObserver = nil
+        }
     }
 
     // MARK: - Helper Functions
@@ -1685,6 +1738,75 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
     }
 
     private var inputCaptureHotkeyMonitor: Any?
+
+    private func flashScreen() {
+        guard let flashView = screenshotFlashOverlayView else { return }
+        flashView.isHidden = false
+        flashView.alphaValue = 1.0
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = 0.15
+            context.timingFunction = CAMediaTimingFunction(name: .easeOut)
+            flashView.animator().alphaValue = 0.0
+        } completionHandler: {
+            flashView.isHidden = true
+            flashView.alphaValue = 1.0
+        }
+    }
+
+    private func postScreenshotPill(displayURL: URL, nativeURL: URL?) {
+        let openLabel = LocalizationManager.shared.localized("screenshot.open")
+        let deleteLabel = LocalizationManager.shared.localized("screenshot.delete")
+
+        let notification = PillNotification(
+            icon: "camera.fill",
+            title: LocalizationManager.shared.localized("screenshot.saved"),
+            subtitle: displayURL.lastPathComponent,
+            autoDismissDelay: 6,
+            action: PillAction(label: openLabel) {
+                NSWorkspace.shared.open(displayURL)
+                ScreenshotPillPresenter.shared.dismiss()
+            },
+            secondaryAction: PillAction(label: deleteLabel) {
+                if ScreenshotService.delete(at: displayURL) {
+                    LoggerService.info(category: "Screenshot", "Deleted screenshot: \(displayURL.path)")
+                }
+                if let native = nativeURL {
+                    if ScreenshotService.delete(at: native) {
+                        LoggerService.info(category: "Screenshot", "Deleted native: \(native.path)")
+                    }
+                }
+                ScreenshotPillPresenter.shared.dismiss()
+            }
+        )
+        ScreenshotPillPresenter.shared.present(notification)
+    }
+
+    private func postScreenshotHistory(displayURL: URL, nativeURL: URL?) {
+        var subtitle = displayURL.lastPathComponent
+        if nativeURL != nil {
+            let format = LocalizationManager.shared.localized("screenshot.withNativeFormat")
+            subtitle = String(format: format, displayURL.lastPathComponent)
+        }
+        let payload = OpenURLActionPayload(url: displayURL.path)
+        NotificationHistoryManager.shared.post(
+            icon: "camera.fill",
+            title: LocalizationManager.shared.localized("screenshot.saved"),
+            subtitle: subtitle,
+            autoDismissDelay: 8,
+            actionLabel: LocalizationManager.shared.localized("screenshot.open"),
+            actionType: "open-screenshot",
+            actionPayload: payload
+        )
+    }
+
+    static func registerScreenshotHistoryHandler() {
+        NotificationHistoryManager.shared.registerActionHandler(type: "open-screenshot") { entry in
+            guard let payload: OpenURLActionPayload = entry.decodePayload(OpenURLActionPayload.self),
+                  let url = URL(string: payload.url) else { return false }
+            NSWorkspace.shared.open(url)
+            return true
+        }
+    }
 
     private func setupInputCaptureHotkey() {
         inputCaptureHotkeyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in

@@ -31,6 +31,9 @@ class SDLInputManager: ObservableObject {
     private var captureCallback: ((Int, String) -> Void)?
     private var captureInstanceID: Int32?
 
+    // SDL screenshot button index cached at runner registration
+    var cachedScreenshotButtonIndex: Int? = nil
+
     private static let deadzone: Int16 = 8000
     private static let triggerThreshold: Int16 = 16384
 
@@ -105,6 +108,9 @@ class SDLInputManager: ObservableObject {
         runnerLock.lock()
         _activeRunner = runner
         runnerLock.unlock()
+        // Cache the SDL screenshot button index
+        let binding = HotkeyConfigManager.shared.controllerBinding(for: .screenshot, source: .sdl)
+        cachedScreenshotButtonIndex = Int(binding.identifier)
     }
 
     func unregisterRunner() {
@@ -273,6 +279,12 @@ class SDLInputManager: ObservableObject {
                 }
                 return
             }
+
+            // Check screenshot hotkey after capture check
+            if Int(event.button) == cachedScreenshotButtonIndex {
+                dispatchScreenshot()
+                return
+            }
         }
 
         sdlDataLock.lock()
@@ -340,6 +352,12 @@ class SDLInputManager: ObservableObject {
             if event.which == capID, let cb = cb {
                 let name = "Button \(event.button)"
                 cb(Int(event.button), name)
+                return
+            }
+
+            // Check screenshot hotkey after capture check
+            if Int(event.button) == cachedScreenshotButtonIndex {
+                dispatchScreenshot()
                 return
             }
         }
@@ -448,6 +466,18 @@ class SDLInputManager: ObservableObject {
 
     private func dispatchAnalogButton(retroID: Int, value: Int16, player: Int) {
         XPCBridgeAdapter.shared.setAnalogButtonState(retroID: retroID, value: Int32(value), player: player)
+    }
+
+    private func dispatchScreenshot() {
+        weak var runner: EmulatorRunner?
+        runnerLock.lock()
+        runner = _activeRunner
+        runnerLock.unlock()
+
+        guard let runner else { return }
+        Task { @MainActor in
+            runner.performScreenshot()
+        }
     }
 
     // MARK: - Thread-safe Query Methods

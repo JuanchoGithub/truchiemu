@@ -1,0 +1,58 @@
+---
+layout: default
+title: v1.5.2 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.5.2</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.5.2</h1>
+        <div class="release-meta">
+            <span class="release-date">July 2, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Improvements to gameplay capture, controller hotkey customization, save management, and the in-game notification system.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>In-Game Screenshots:</strong> Capture the current frame at any moment with a keyboard hotkey or controller button. Saves PNGs to <code>~/Pictures/TruchiEmu/<system>/</code>, named after the ROM and timestamp, with a quick-view pill and a flash confirmation</li>
+            <li><strong>Controller Hotkey Mapping:</strong> Bind hotkeys to gamepad buttons (via GCController identifiers or SDL button indices) directly in Hotkey settings. Capture flow listens for the next press on the active controller</li>
+            <li><strong>Save Manager</strong>: Bulk "Delete all saves" action with an explicit confirmation dialog covering every per-game entry</li>
+            <li><strong>Notification Pill Test Action:</strong> Trigger a sample in-app notification from settings to verify permissions, action buttons, and dismiss behavior</li>
+            <li><strong>Notification Pill Refinements:</strong> Cleaner pill visuals, more reliable auto-dismiss timing, and improved authorization flow</li>
+            <li><strong>Localized Hotkey Strings:</strong> New translations for screenshot, training controls, and the new hotkey management UI across English, Spanish, and Portuguese</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>Added <code>ScreenshotService</code> for Metal texture → PNG capture, with per-system directory layout and safe filename sanitization</li>
+            <li>Added screenshot flash overlay and <code>ScreenshotPillOverlay</code> with quick "Open" / "Reveal in Finder"</li>
+            <li>Added Help shortcut entry for <code>⇧⌘S</code> (screenshot) plus localized <code>help.shortcut.screenshot</code> strings</li>
+            <li>Added screenshot settings catalog entry and hotkey action (<code>.screenshot</code>)</li>
+            <li>Added <code>ControllerHotkeyBinding</code>, <code>ControllerHotkeySource</code>, and capture coordinator for binding hotkeys to gamepad buttons</li>
+            <li>Refactored <code>HotkeyConfigSettingsView</code> with three capture surfaces (primary, secondary, controller)</li>
+            <li>Added "Delete all saves" with safe two-step confirmation in the save manager</li>
+            <li>Added "Test notification" affordance so users can validate notification authorization and pill rendering</li>
+            <li>Tweaked in-game notification timing, visual hierarchy, and explicit dismiss handling</li>
+            <li>Updated <code>en.json</code>, <code>es.json</code>, and <code>pt.json</code> with new keys</li>
+            <li>Build: codesign re-sign phase now runs reliably in Release; librashader dylib is staged into <code>Frameworks/</code> with the correct install name</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v0.8.5.html' | relative_url }}" class="release-prev">&larr; v0.8.5</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>

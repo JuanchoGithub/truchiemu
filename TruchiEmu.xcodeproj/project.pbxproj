@@ -205,6 +205,7 @@
 		26C4D46E040DF8B433A63D96 /* input_coreLabels_o2em.json in Resources */ = {isa = PBXBuildFile; fileRef = 0A0B987D3192A6B7AD9E370C /* input_coreLabels_o2em.json */; };
 		26F8A70F65D000DA67AC1095 /* fightdata_samsho5.json in Resources */ = {isa = PBXBuildFile; fileRef = 31D8741D997FF36BBFE4899B /* fightdata_samsho5.json */; };
 		26FEBD6A98CD8D7510E59F40 /* input_systemLabels_wolfenstein3d.json in Resources */ = {isa = PBXBuildFile; fileRef = CE005A57B1B88D3B4EFA25B2 /* input_systemLabels_wolfenstein3d.json */; };
+		27D84DD0993CEDD46E16E0A2 /* ControllerHotkeyCaptureCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AED4234BBEB8FF8BF9F4214E /* ControllerHotkeyCaptureCoordinator.swift */; };
 		27F9277272450FDAE20B690D /* GameOverlayToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9258394F027EC5364CFCE39 /* GameOverlayToolbar.swift */; };
 		2811FBD9D258AEF2FBCF4933 /* SFX.png in Resources */ = {isa = PBXBuildFile; fileRef = 46F6462CAACE85FBE4E9A152 /* SFX.png */; };
 		28369A531757A82F734AA1E0 /* ResourceCacheInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9769C4055F2EEF4740C52157 /* ResourceCacheInterceptor.swift */; };
@@ -682,6 +683,7 @@
 		911153D36F82919C5AC53E2C /* fightdata_sfex2.json in Resources */ = {isa = PBXBuildFile; fileRef = 3163ABB66BACBA8035AE394E /* fightdata_sfex2.json */; };
 		913FD03A767921A285FC98E0 /* fightdata_sftm.json in Resources */ = {isa = PBXBuildFile; fileRef = C3A6C719C78A5090AA56F911 /* fightdata_sftm.json */; };
 		9175C767F01BBA408C2256AA /* CoreDownloadStatusBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA8729DB9F6FECA28AB753C1 /* CoreDownloadStatusBar.swift */; };
+		917EB16799865634EA575E50 /* ScreenshotOverlayViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5367CC043FEB8B24AF51BDA /* ScreenshotOverlayViews.swift */; };
 		91D7A0C32EC24E49171F7544 /* gambatte_libretro_gb.json in Resources */ = {isa = PBXBuildFile; fileRef = 15134742139975273F1F990C /* gambatte_libretro_gb.json */; };
 		920848063764C3CE17286C9F /* input_coreLabels_nside_balanced.json in Resources */ = {isa = PBXBuildFile; fileRef = F3210C3AF65F784A65527FC9 /* input_coreLabels_nside_balanced.json */; };
 		92643ECC54504397054B4E32 /* Sony - PlayStation.dat in Resources */ = {isa = PBXBuildFile; fileRef = 7D83D251D5D40ADD146236DE /* Sony - PlayStation.dat */; };
@@ -937,6 +939,7 @@
 		C5AB2A1C3ECF952779306356 /* FrameExpander.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C840602365DAE69968E5A92 /* FrameExpander.swift */; };
 		C5BC1D54B9F97BC51205F65A /* sega_101.bin in Resources */ = {isa = PBXBuildFile; fileRef = D6F776D4F0B80827F6067861 /* sega_101.bin */; };
 		C5D1641BD6B3B412414CFB7F /* ManualActionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE3376B3A01ADAEEAA96F108 /* ManualActionStatus.swift */; };
+		C5EB2C5F6D1AFCDE534689FB /* ScreenshotService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39DDBB9192D4EC4EC5E94A44 /* ScreenshotService.swift */; };
 		C65A378F28F49FAFF2A631B1 /* CheatManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3487BCC158871E9D5EAF669A /* CheatManagerView.swift */; };
 		C68A4EDD056E972A77C5E2B1 /* fightdata_tkdensho.json in Resources */ = {isa = PBXBuildFile; fileRef = 8B671DBF7EFB14A6A1AF510D /* fightdata_tkdensho.json */; };
 		C6A0CB4679D181B87812E172 /* input_systemLabels_2048.json in Resources */ = {isa = PBXBuildFile; fileRef = 302B0A1EBB01D110481DB6DC /* input_systemLabels_2048.json */; };
@@ -1114,6 +1117,7 @@
 		EF35B2FB2FA08074B9DD84B4 /* input_coreLabels_gam4980.json in Resources */ = {isa = PBXBuildFile; fileRef = E6E60C302C9773D699C09794 /* input_coreLabels_gam4980.json */; };
 		EF969684157ACB120E6F0B9D /* input_systemLabels_arcadia.json in Resources */ = {isa = PBXBuildFile; fileRef = F26ACCBE1AAC7E3BBB973D77 /* input_systemLabels_arcadia.json */; };
 		F01CF4809AA2FE964733CD32 /* turbografx16-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 1D30B17387F52BA76C6998FA /* turbografx16-cheats.zip */; };
+		F0299B17F6EDE2A974A47F61 /* ControllerHotkeyCaptureButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D726A1A82A05EEFA659AF95D /* ControllerHotkeyCaptureButton.swift */; };
 		F0785C87C59C7FA920BF1E2C /* satellaview-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 8EECD5E5425F98599E3FEE0C /* satellaview-cheats.zip */; };
 		F08675BC5F3EB31FCEFE58EA /* fightdata_jchan2.json in Resources */ = {isa = PBXBuildFile; fileRef = 9636292A90DC6F0B1CBAE8D5 /* fightdata_jchan2.json */; };
 		F0AD72CCE4B5E63664FADEB3 /* CorePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47516431097E29AD293A7B5 /* CorePickerView.swift */; };
@@ -1481,6 +1485,7 @@
 		39463E20150756E0CA0D4DFA /* tic80-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "tic80-cheats.zip"; sourceTree = "<group>"; };
 		395F149C0EF853E27D8FA5EC /* MAME2003PLUS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MAME2003PLUS.png; sourceTree = "<group>"; };
 		39AC83150450784449DF3657 /* fightdata_samsho4.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_samsho4.json; sourceTree = "<group>"; };
+		39DDBB9192D4EC4EC5E94A44 /* ScreenshotService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotService.swift; sourceTree = "<group>"; };
 		3ADA8797ACD3483D9EB680FC /* input_coreLabels_bsnes_mercury_accuracy.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_bsnes_mercury_accuracy.json; sourceTree = "<group>"; };
 		3AF1127D67BDBDFCF438209A /* fightdata_xmvsf.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_xmvsf.json; sourceTree = "<group>"; };
 		3B2FDDCFB5D6B47BD7A985D0 /* fightdata_kof95.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_kof95.json; sourceTree = "<group>"; };
@@ -2032,6 +2037,7 @@
 		AE6DD9F2D88F252E2CECD2CC /* LibraryAnimations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryAnimations.swift; sourceTree = "<group>"; };
 		AE88DE36C63C7988B726B538 /* ModernSaveStateSlotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModernSaveStateSlotView.swift; sourceTree = "<group>"; };
 		AECA6A821D5AD2F2FBD719B3 /* SidebarRowButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarRowButton.swift; sourceTree = "<group>"; };
+		AED4234BBEB8FF8BF9F4214E /* ControllerHotkeyCaptureCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerHotkeyCaptureCoordinator.swift; sourceTree = "<group>"; };
 		AF3CADF1ABA18B787DBEA3B2 /* fightdata_ts2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_ts2.json; sourceTree = "<group>"; };
 		AF5178B62127C536CDCCBBF3 /* fightdata_dbzhd.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_dbzhd.json; sourceTree = "<group>"; };
 		AF788D5FF4246D13FC54962E /* MoveListOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveListOverlay.swift; sourceTree = "<group>"; };
@@ -2066,6 +2072,7 @@
 		B4BB50EA857D35B0D3B0FFA2 /* puzzlescript-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "puzzlescript-cheats.zip"; sourceTree = "<group>"; };
 		B503E784CCAA10E87FCC8664 /* input_coreLabels_pd777.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_pd777.json; sourceTree = "<group>"; };
 		B5307A2424529A50C5E6BF26 /* SavesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavesSettingsView.swift; sourceTree = "<group>"; };
+		B5367CC043FEB8B24AF51BDA /* ScreenshotOverlayViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotOverlayViews.swift; sourceTree = "<group>"; };
 		B54516F131621A68EEC7EBC0 /* MAMEDependencyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEDependencyService.swift; sourceTree = "<group>"; };
 		B57968ED5BE5EC0BF7BE93EB /* JaguarBIOSService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JaguarBIOSService.swift; sourceTree = "<group>"; };
 		B58F4D64F1E5008E97CEB40F /* ArcadeButtonMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArcadeButtonMapper.swift; sourceTree = "<group>"; };
@@ -2217,6 +2224,7 @@
 		D6F75CD352F6CF02387F60E0 /* MAMEModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEModels.swift; sourceTree = "<group>"; };
 		D6F776D4F0B80827F6067861 /* sega_101.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = sega_101.bin; sourceTree = "<group>"; };
 		D7216ED9D6BD09B93FFFEEE3 /* fightdata_lastblad.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_lastblad.json; sourceTree = "<group>"; };
+		D726A1A82A05EEFA659AF95D /* ControllerHotkeyCaptureButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerHotkeyCaptureButton.swift; sourceTree = "<group>"; };
 		D72F01C1BA52B012F84B9E9F /* FocusableMTKView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusableMTKView.swift; sourceTree = "<group>"; };
 		D751DC74B037E607A4D77BCC /* mame@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mame@132w.png"; sourceTree = "<group>"; };
 		D755FBFFC3BD76093815B71D /* vdp@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vdp@132w.png"; sourceTree = "<group>"; };
@@ -2569,6 +2577,7 @@
 		1128BD0262A6AA67827DC4DA /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				AED4234BBEB8FF8BF9F4214E /* ControllerHotkeyCaptureCoordinator.swift */,
 				0DF9540BCE224E456A3FA60E /* ControllerService.swift */,
 				007D62D59B68855828E28A77 /* CoreOptionsManager.swift */,
 				81561F32B974014E52E04793 /* InputDescriptorsManager.swift */,
@@ -3431,6 +3440,7 @@
 				A44B26B8EE68C310F60A6D4E /* GameContainerView.swift */,
 				A9258394F027EC5364CFCE39 /* GameOverlayToolbar.swift */,
 				7617E35BCF8ABD715F148725 /* MetalCoordinator.swift */,
+				B5367CC043FEB8B24AF51BDA /* ScreenshotOverlayViews.swift */,
 				5BB097566F19707A4AEDE0BF /* ShaderUniforms.swift */,
 				5F6FCC4037CB225E511FD3F5 /* StandaloneGameWindowController.swift */,
 				4AE14606B8972C36976457FB /* StandaloneGameWindowController+Bezel.swift */,
@@ -3642,6 +3652,7 @@
 				A94757847430E98D2FD0C8BC /* MoveListService.swift */,
 				C0D2689389A8F41C564E8983 /* NotationTokenImageCache.swift */,
 				D380F0ACA26A2082BD1DAA08 /* RunningGamesTracker.swift */,
+				39DDBB9192D4EC4EC5E94A44 /* ScreenshotService.swift */,
 				DBA93DD4CAFCA78A240B231A /* SDLInputManager.swift */,
 				F5999F97B4E6C47B228D2F1B /* SequenceRunner.swift */,
 				A46DC124EACC3CBF27EEA315 /* ShaderManager.swift */,
@@ -4021,6 +4032,7 @@
 				A4F332DF631734D8EED42E6B /* BoxArtSettingsView.swift */,
 				1A3A05A8FA72F563D3261FE1 /* ChangelogView.swift */,
 				FD4DF5D2F13617BDA825F6F3 /* CheatSettingsView.swift */,
+				D726A1A82A05EEFA659AF95D /* ControllerHotkeyCaptureButton.swift */,
 				3230EB435232A6B5AC4FBC1E /* ControllerSettingsViewGroup.swift */,
 				8CFD1DFC1E63A628D89B5DF7 /* CoreOptionsView.swift */,
 				50F0C395AC7AC42E3144C256 /* CoreSettingsViewGroup.swift */,
@@ -5468,6 +5480,8 @@
 				497FF7B2E2F1E1B1A3B6141A /* ConfettiView.swift in Sources */,
 				0A9B92BF3A1DCF3E5BEA3DF9 /* ContentView.swift in Sources */,
 				BF3899C41521C9D716EBDC5D /* ControllerGamepadMapping.swift in Sources */,
+				F0299B17F6EDE2A974A47F61 /* ControllerHotkeyCaptureButton.swift in Sources */,
+				27D84DD0993CEDD46E16E0A2 /* ControllerHotkeyCaptureCoordinator.swift in Sources */,
 				9D37D249654A1647F9276A9E /* ControllerService.swift in Sources */,
 				7B114C2B979B350258054F09 /* ControllerSettingsViewGroup.swift in Sources */,
 				DCB45CB4AFC527F727105206 /* Controls.swift in Sources */,
@@ -5664,6 +5678,8 @@
 				6F40193C9A9BCC936F152ED1 /* SavedStates.swift in Sources */,
 				09A4E91B96AD2C160CB5872B /* SavesSettingsView.swift in Sources */,
 				543B34C593F66B5B4A04DE1A /* ScaleSmooth.metal in Sources */,
+				917EB16799865634EA575E50 /* ScreenshotOverlayViews.swift in Sources */,
+				C5EB2C5F6D1AFCDE534689FB /* ScreenshotService.swift in Sources */,
 				8E2B2255CA91F5BA42CC015D /* ScummVMRunner.swift in Sources */,
 				1764FB5120C4E768BDBB8A50 /* SearchMatch.swift in Sources */,
 				87912707E4459B2DC05487E5 /* SequenceRunner.swift in Sources */,
