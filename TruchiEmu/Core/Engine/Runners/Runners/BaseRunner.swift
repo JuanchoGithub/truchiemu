@@ -323,8 +323,9 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     private let _saveManager = SaveStateManager()
     // Keyboard mapping snapshot captured at launch — safe to read from any thread.
     var cachedKeyboardMapping: KeyboardMapping = KeyboardMapping(buttons: [:])
-    // Controller screenshot binding identifier captured at launch.
-    var cachedScreenshotControllerBinding: String? = nil
+    // Controller share button binding identifiers captured at launch.
+    var cachedShareSinglePressBinding: String? = nil
+    var cachedShareLongPressBinding: String? = nil
     private var hookedController: GCController? = nil
     private var hookedControllers: [Int: GCController] = [:]
     
@@ -1045,6 +1046,126 @@ weak var metalCoordinator: MetalCoordinator?
         }
     }
 
+    // MARK: - Share Button Handling
+
+    @MainActor public var captureSize: CGSize {
+        if StreamRecordingService.shared.recordWithShaders, let view = metalView {
+            let ds = view.drawableSize
+            return CGSize(width: max(1, ds.width), height: max(1, ds.height))
+        }
+        let raw: CGSize
+        if let tex = currentFrameTexture, tex.width > 0, tex.height > 0 {
+            raw = CGSize(width: CGFloat(tex.width), height: CGFloat(tex.height))
+        } else {
+            raw = CGSize(width: 640, height: 480)
+        }
+        guard raw.width > 0, raw.height > 0 else { return raw }
+        let dar: CGFloat
+        if let info = SystemDatabase.system(forID: systemID) {
+            dar = info.displayAspectRatio
+        } else {
+            dar = 4.0 / 3.0
+        }
+        let pixelAR = raw.width / raw.height
+        guard abs(dar - pixelAR) > 0.01 else { return raw }
+        let corrW = max(Int(raw.width), Int(ceil(raw.height * dar)))
+        let corrH = max(Int(raw.height), Int(ceil(raw.width / dar)))
+        return CGSize(width: CGFloat(corrW), height: CGFloat(corrH))
+    }
+
+    @MainActor
+    func handleSharePress(isLongPress: Bool) {
+        LoggerService.info(category: "Runner", "handleSharePress isLongPress=\(isLongPress)")
+        let config = ShareButtonConfig.load()
+        let behavior = isLongPress ? config.longPress : config.singlePress
+        LoggerService.info(category: "Runner", "handleSharePress behavior=\(behavior) isEnabled=\(RollingVideoBufferService.shared.isEnabled)")
+
+        switch behavior {
+        case .screenshot:
+            performScreenshot()
+
+        case .startVideoRecording:
+            if StreamRecordingService.shared.isRecording {
+                StreamRecordingService.shared.stop()
+            } else {
+                let size = captureSize
+                let url = Self.recordingOutputURL(systemID: systemID, rom: rom)
+                StreamRecordingService.shared.startRecording(outputURL: url, width: Int(size.width), height: Int(size.height))
+            }
+
+        case .streamTwitch:
+            if StreamRecordingService.shared.isRecording {
+                StreamRecordingService.shared.stop()
+            } else {
+                StreamRecordingService.shared.videoSize = captureSize
+                StreamRecordingService.shared.startStreaming(mode: .twitch)
+            }
+
+        case .streamYoutube:
+            if StreamRecordingService.shared.isRecording {
+                StreamRecordingService.shared.stop()
+            } else {
+                StreamRecordingService.shared.videoSize = captureSize
+                StreamRecordingService.shared.startStreaming(mode: .youtube)
+            }
+
+        case .streamCustom:
+            if StreamRecordingService.shared.isRecording {
+                StreamRecordingService.shared.stop()
+            } else {
+                StreamRecordingService.shared.videoSize = captureSize
+                StreamRecordingService.shared.startStreaming(mode: .custom)
+            }
+
+        case .saveLastXSeconds:
+            guard RollingVideoBufferService.shared.isEnabled else {
+                osdMessage = "Enable Save Last Moments in Streaming & Media settings"
+                Task { @MainActor in
+                    try? await Task.sleep(nanoseconds: 3_000_000_000)
+                    self.osdMessage = nil
+                }
+                return
+            }
+            osdMessage = "Saving clip..."
+            RollingVideoBufferService.shared.saveBufferToFile { [weak self] url in
+                if let url = url {
+                    self?.osdMessage = "Clip saved"
+                    Task { @MainActor in
+                        try? await Task.sleep(nanoseconds: 2_000_000_000)
+                        self?.osdMessage = nil
+                    }
+                    NotificationCenter.default.post(
+                        name: .clipSaved,
+                        object: nil,
+                        userInfo: ["url": url]
+                    )
+                }
+            }
+        }
+    }
+
+    @MainActor static func recordingOutputURL(systemID: String, rom: ROM?) -> URL {
+        let directory: URL
+        if let saved = StreamRecordingService.localOutputPath, !saved.isEmpty {
+            directory = URL(fileURLWithPath: saved)
+        } else {
+            directory = FileManager.default.urls(for: .moviesDirectory, in: .userDomainMask).first ??
+                FileManager.default.temporaryDirectory
+        }
+        let gameName = sanitizeFilenameComponent(rom?.displayName ?? rom?.filenameWithoutExtension ?? "unknown")
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd_HHmmss"
+        let date = formatter.string(from: Date())
+        let ext = StreamRecordingService.shared.customVideoCodec.isLossless ? "mov" : "mp4"
+        let filename = "TruchiEmu_\(systemID)_\(gameName)_\(date).\(ext)"
+        return directory.appendingPathComponent(filename)
+    }
+
+    private static func sanitizeFilenameComponent(_ str: String) -> String {
+        let allowed = CharacterSet.alphanumerics.union(.whitespaces).union(CharacterSet(charactersIn: ".-_"))
+        return str.components(separatedBy: allowed.inverted).joined()
+    }
+
     func setKeyState(retroID: Int, pressed: Bool) {
         MainActor.assumeIsolated {
             currentInputState[retroID] = pressed
@@ -1248,10 +1369,29 @@ weak var metalCoordinator: MetalCoordinator?
 
         LoggerService.info(category: "Runner", "setupGamepadInput: connectedControllers=\(cs.connectedControllers.map { $0.name })")
 
-        // Cache screenshot controller binding at launch
-        cachedScreenshotControllerBinding = HotkeyConfigManager.shared.controllerBinding(
-            for: .screenshot, source: .gameController
+        // Cache share button bindings at launch
+        cachedShareSinglePressBinding = HotkeyConfigManager.shared.controllerBinding(
+            for: .shareSinglePress, source: .gameController
         ).identifier
+        cachedShareLongPressBinding = HotkeyConfigManager.shared.controllerBinding(
+            for: .shareLongPress, source: .gameController
+        ).identifier
+
+        // Pre-warm rolling buffer so it's continuously recording before share press
+        if RollingVideoBufferService.shared.isEnabled {
+            LoggerService.info(category: "Runner", "Rolling buffer pre-warmed and recording")
+        }
+
+        // Wire long-press detector callbacks
+        let detector = ControllerLongPressDetector.shared
+        detector.onSinglePress = { [weak self] in
+            LoggerService.info(category: "Runner", "onSinglePress fired")
+            self?.handleSharePress(isLongPress: false)
+        }
+        detector.onLongPress = { [weak self] in
+            LoggerService.info(category: "Runner", "onLongPress fired")
+            self?.handleSharePress(isLongPress: true)
+        }
 
         if cs.activePlayerIndex == 0 && !cs.connectedControllers.isEmpty {
             cs.activePlayerIndex = 1
@@ -1275,16 +1415,20 @@ weak var metalCoordinator: MetalCoordinator?
             extendedGamepad.valueChangedHandler = { [weak self] _, element in
                 guard let self = self else { return }
 
-                // Check controller hotkey bindings before game input
+                // Check share button gestures before game input
                 if let button = element as? GCControllerButtonInput,
-                   button.isPressed,
-                   let name = element.localizedName,
-                   let boundName = self.cachedScreenshotControllerBinding,
-                   name == boundName {
-                    Task { @MainActor [weak self] in
-                        self?.performScreenshot()
+                   let name = element.localizedName {
+                    let isSingle = name == self.cachedShareSinglePressBinding
+                    let isLong = name == self.cachedShareLongPressBinding
+                    LoggerService.info(category: "Runner", "GC element: '\(name)' isSingle=\(isSingle) isLong=\(isLong) pressed=\(button.isPressed)")
+                    if isSingle || isLong {
+                        if button.isPressed {
+                            ControllerLongPressDetector.shared.handlePressDown(elementName: name)
+                        } else {
+                            ControllerLongPressDetector.shared.handlePressUp(elementName: name)
+                        }
+                        return
                     }
-                    return
                 }
 
                 for port in ports {

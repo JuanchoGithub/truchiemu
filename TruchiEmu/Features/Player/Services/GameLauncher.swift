@@ -450,9 +450,17 @@ func launchGame(
         let controller = StandaloneGameWindowController(runner: runner)
         controller.library = library
         controller.cheatsEnabled = config.cheatsEnabled
-        
+
         // Track the controller
         activeControllers[rom.id] = controller
+
+        // Hand the runner to the rolling-buffer service so chunk size decisions
+        // can match a manual record (display vs. core resolution, DAR
+        // letterboxing) and so the buffer can start capturing once the user
+        // has enabled it (rather than burning 60s of black before any game
+        // window opens).
+        RollingVideoBufferService.shared.activeRunner = runner
+        RollingVideoBufferService.shared.didAssignActiveRunner()
 
         // Launch the game (window will be shown by controller when ready)
         controller.launch(rom: rom, coreID: coreID, slotToLoad: slotToLoad, progressiveVersion: progressiveVersion, shaderUniformOverrides: config.shaderUniformOverrides)
@@ -642,6 +650,13 @@ func launchGame(
     
     // Remove a controller from tracking when its window closes
     func removeController(for romID: UUID) {
+        if let controller = activeControllers[romID],
+           RollingVideoBufferService.shared.activeRunner === controller.runner {
+            RollingVideoBufferService.shared.activeRunner = nil
+            // If the buffer was rolling, stop now that the game window is
+            // gone so we don't keep feeding it black frames.
+            RollingVideoBufferService.shared.stopRollingForNoRunner()
+        }
         activeControllers.removeValue(forKey: romID)
     }
 

@@ -76,6 +76,8 @@ enum HotkeyAction: String, Codable, CaseIterable, Identifiable {
     case trainingStartPlayback
     case toggleTrainingMode
     case screenshot
+    case shareSinglePress
+    case shareLongPress
 
     var id: String { rawValue }
 
@@ -105,6 +107,7 @@ enum HotkeyAction: String, Codable, CaseIterable, Identifiable {
         if isSlotAction { return "slots" }
         if isTrainingAction { return "training" }
         if self == .screenshot { return "screenshots" }
+        if self == .shareSinglePress || self == .shareLongPress { return "share" }
         return "general"
     }
 }
@@ -218,6 +221,16 @@ final class HotkeyConfigManager: ObservableObject {
                                        secondary: .none,
                                        controller: nil,
                                    ),
+        .shareSinglePress:        HotkeyConfig(
+                                       primary: .none,
+                                       secondary: .none,
+                                       controller: nil,
+                                   ),
+        .shareLongPress:          HotkeyConfig(
+                                       primary: .none,
+                                       secondary: .none,
+                                       controller: nil,
+                                   ),
     ]
 
     func controllerBinding(for action: HotkeyAction, source: ControllerHotkeySource) -> ControllerHotkeyBinding {
@@ -268,6 +281,10 @@ final class HotkeyConfigManager: ObservableObject {
         case (.screenshot, .gameController):
             return .gc("Share Button", label: "Share Button")
         case (.screenshot, .sdl):
+            return .sdl(13)
+        case (.shareSinglePress, .gameController), (.shareLongPress, .gameController):
+            return .gc("Share Button", label: "Share Button")
+        case (.shareSinglePress, .sdl), (.shareLongPress, .sdl):
             return .sdl(13)
         default:
             return .unset

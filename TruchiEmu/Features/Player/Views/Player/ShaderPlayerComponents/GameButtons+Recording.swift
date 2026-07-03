@@ -8,40 +8,12 @@ struct RecordStreamButton: View {
     @State private var isDropdownShown = false
     @State private var isHovered = false
 
-    private var frameSize: CGSize {
-        if let tex = runner.currentFrameTexture, tex.width > 0, tex.height > 0 {
-            CGSize(width: CGFloat(tex.width), height: CGFloat(tex.height))
-        } else {
-            CGSize(width: 640, height: 480)
-        }
-    }
-
-    private var captureSize: CGSize {
-        if recordingService.recordWithShaders, let view = runner.metalView {
-            let ds = view.drawableSize
-            return CGSize(width: max(1, ds.width), height: max(1, ds.height))
-        }
-        let raw = frameSize
-        guard raw.width > 0, raw.height > 0 else { return raw }
-        let dar: CGFloat = {
-            if let info = SystemDatabase.system(forID: runner.systemID) {
-                return info.displayAspectRatio
-            }
-            return 4.0 / 3.0
-        }()
-        let pixelAR = raw.width / raw.height
-        guard abs(dar - pixelAR) > 0.01 else { return raw }
-        let corrW = max(Int(raw.width), Int(ceil(raw.height * dar)))
-        let corrH = max(Int(raw.height), Int(ceil(raw.width / dar)))
-        return CGSize(width: CGFloat(corrW), height: CGFloat(corrH))
-    }
-
     private var defaultIcon: String {
-        recordingService.isRecording ? "stop.circle.fill" : "record.circle"
+        recordingService.isUserRecording ? "stop.circle.fill" : "record.circle"
     }
 
     private var defaultLabel: String {
-        if recordingService.isRecording {
+        if recordingService.isUserRecording {
             return loc.localized("toolbar.stopRecording")
         }
         return loc.localized("toolbar.record")
@@ -73,7 +45,7 @@ struct RecordStreamButton: View {
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
-            .foregroundColor(recordingService.isRecording ? .red : .white)
+            .foregroundColor(recordingService.isUserRecording ? .red : .white)
             .background(
                 RoundedRectangle(cornerRadius: 8)
                     .fill(Color.white.opacity(isHovered ? 0.08 : 0))
@@ -85,7 +57,7 @@ struct RecordStreamButton: View {
                 }
             }
             .onTapGesture {
-                if recordingService.isRecording {
+                if recordingService.isUserRecording {
                     recordingService.stop()
                 } else {
                     isDropdownShown = true
@@ -96,7 +68,7 @@ struct RecordStreamButton: View {
                     isDropdownShown: $isDropdownShown,
                     runner: runner,
                     recordingService: recordingService,
-                    captureSize: captureSize,
+                    captureSize: runner.captureSize,
                     hasTwitchKey: hasTwitchKey,
                     hasYoutubeKey: hasYoutubeKey,
                     hasCustomKey: hasCustomKey
@@ -121,13 +93,13 @@ private struct StreamPickerView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Text(recordingService.isRecording
+            Text(recordingService.isUserRecording
                  ? loc.localized("toolbar.stopRecording")
                  : loc.localized("toolbar.record"))
                 .font(.headline)
                 .padding()
             Divider()
-            if recordingService.isRecording {
+            if recordingService.isUserRecording {
                 Button(action: {
                     recordingService.stop()
                     isDropdownShown = false
@@ -201,7 +173,7 @@ private struct StreamPickerView: View {
     }
 
     private func startMode(_ mode: StreamingMode) {
-        let size = captureSize
+        let size = runner.captureSize
         switch mode {
         case .twitch, .youtube, .custom:
             recordingService.videoSize = size

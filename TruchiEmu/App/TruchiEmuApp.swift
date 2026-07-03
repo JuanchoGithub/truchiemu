@@ -27,6 +27,7 @@ static let showChangelogFromMenu = Notification.Name("showChangelogFromMenu")
 	static let navigateToAchievements = Notification.Name("navigateToAchievements")
     static let resetMoveListOverlayPosition = Notification.Name("resetMoveListOverlayPosition")
     static let hiddenGamesCategoryChanged = Notification.Name("hiddenGamesCategoryChanged")
+    static let clipSaved = Notification.Name("clipSaved")
   }
 
 @main

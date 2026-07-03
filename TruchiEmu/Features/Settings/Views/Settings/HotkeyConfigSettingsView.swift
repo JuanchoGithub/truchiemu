@@ -54,10 +54,6 @@ struct HotkeyConfigSettingsView: View {
         scope == .all || scope == .gameplay
     }
 
-    private var showScreenshots: Bool {
-        scope == .all || scope == .gameplay
-    }
-
     private var showReset: Bool {
         scope == .all
     }
@@ -79,15 +75,6 @@ struct HotkeyConfigSettingsView: View {
                 || matchesAnyLabel(slotActions)) {
                 Section(header: Label(loc.localized("hotkeys.slots"), systemImage: "square.grid.3x3")) {
                     hotkeyActionGrid(slotActions)
-                }
-            }
-
-            if showScreenshots && (!isSearching
-                || matchesSearch("screenshot capture photo picture")
-                || matchesSearch("hotkeys keyboard shortcuts save load slot undo training input capture")
-                || matchesAnyLabel([.screenshot])) {
-                Section(header: Label(loc.localized("hotkeys.screenshots"), systemImage: "camera")) {
-                    screenshotActionGrid()
                 }
             }
 
@@ -119,7 +106,6 @@ struct HotkeyConfigSettingsView: View {
                 && !matchesAnyLabel([.saveState, .loadState, .undoLoadState, .slotNext, .slotPrev, .toggleInputCapture])
                 && !matchesAnyLabel(slotActions)
                 && !matchesAnyLabel([.toggleTrainingMode, .trainingReset, .trainingToggleRecording, .trainingStartPlayback])
-                && !matchesAnyLabel([.screenshot])
                 && !matchesSearch("hotkeys keyboard shortcuts save load slot undo training input capture")
                 && !matchesSearch("slots 0-9 slot")
                 && !matchesSearch("training mode reset recording playback tape")
@@ -208,155 +194,11 @@ struct HotkeyConfigSettingsView: View {
         hotkeyManager.findConflicts(for: binding, excluding: action)
     }
 
-    @ViewBuilder
-    private func screenshotActionGrid() -> some View {
-        let cfg = hotkeyManager.config[.screenshot] ?? .unbound
-        let sources = hotkeyManager.availableControllerSources
-        let activeSource: ControllerHotkeySource = {
-            if cfg.controller.map({ sources.contains($0.source) }) ?? false {
-                return cfg.controller!.source
-            }
-            return sources.first ?? .gameController
-        }()
-        let controllerBinding = hotkeyManager.controllerBinding(for: .screenshot, source: activeSource)
-        let isListening: Bool = {
-            if case .listening(let source, _) = controllerCaptureCoordinator.state,
-               source == activeSource,
-               listeningControllerAction == .screenshot { return true }
-            return false
-        }()
-        let showSourcePicker = sources.count > 1
-
-        Grid(alignment: .leading, horizontalSpacing: 16, verticalSpacing: 0) {
-            GridRow {
-                Text(loc.localized("hotkeys.keyboard"))
-                    .lineLimit(1)
-                    .gridColumnAlignment(.leading)
-                HStack(spacing: 8) {
-                    HotkeyCaptureButton(
-                        binding: cfg.primary,
-                        isListening: listeningAction == .screenshot && listeningSlot == .primary,
-                        conflicts: conflicts(for: cfg.primary, excluding: .screenshot),
-                        onCapture: { captured in
-                            hotkeyManager.update(.screenshot, primary: captured)
-                            listeningAction = nil
-                        },
-                        onStartListening: {
-                            listeningAction = .screenshot
-                            listeningSlot = .primary
-                        },
-                        onClear: {
-                            hotkeyManager.update(.screenshot, primary: .none)
-                        }
-                    )
-                    HotkeyCaptureButton(
-                        binding: cfg.secondary,
-                        isListening: listeningAction == .screenshot && listeningSlot == .secondary,
-                        conflicts: conflicts(for: cfg.secondary, excluding: .screenshot),
-                        onCapture: { captured in
-                            hotkeyManager.update(.screenshot, secondary: captured)
-                            listeningAction = nil
-                        },
-                        onStartListening: {
-                            listeningAction = .screenshot
-                            listeningSlot = .secondary
-                        },
-                        onClear: {
-                            hotkeyManager.update(.screenshot, secondary: .none)
-                        }
-                    )
-                }
-                .gridColumnAlignment(.trailing)
-            }
-            .padding(.vertical, AppSpacing.xxs)
-            .overlay(alignment: .bottom) {
-                Divider()
-                    .overlay(AppColors.divider(colorScheme))
-            }
-
-            GridRow {
-                Text(loc.localized("hotkeys.controller"))
-                    .lineLimit(1)
-                    .gridColumnAlignment(.leading)
-                HStack(spacing: 8) {
-                    ControllerHotkeyCaptureButton(
-                        binding: controllerBinding,
-                        isListening: isListening,
-                        availableSources: showSourcePicker ? sources : [],
-                        onBindingCaptured: { captured in
-                            hotkeyManager.updateControllerBinding(.screenshot, binding: captured)
-                            listeningControllerAction = nil
-                        },
-                        onListenStateChanged: { starting in
-                            if starting {
-                                listeningControllerAction = .screenshot
-                                controllerCaptureCoordinator.startListening(
-                                    source: activeSource,
-                                    currentLabel: controllerBinding.displayLabel,
-                                    onCapture: { captured in
-                                        controllerBindingCaptured(captured)
-                                    }
-                                )
-                            } else {
-                                listeningControllerAction = nil
-                                controllerCaptureCoordinator.cancel()
-                            }
-                        },
-                        onClearRequested: {
-                            hotkeyManager.updateControllerBinding(.screenshot, binding: nil)
-                        },
-                        onSourceChanged: { new in
-                            let next = hotkeyManager.controllerBinding(for: .screenshot, source: new)
-                            hotkeyManager.updateControllerBinding(.screenshot, binding: next)
-                        }
-                    )
-                }
-                .gridColumnAlignment(.trailing)
-            }
-            .padding(.vertical, AppSpacing.xxs)
-            .overlay(alignment: .bottom) {
-                Divider()
-                    .overlay(AppColors.divider(colorScheme))
-            }
-        }
-
-        ScreenshotIncludeNativeToggle()
-            .padding(.vertical, AppSpacing.xxs)
-    }
 
     private func controllerBindingCaptured(_ captured: ControllerHotkeyBinding) {
         listeningControllerAction = nil
         controllerCaptureCoordinator.cancel()
         hotkeyManager.updateControllerBinding(.screenshot, binding: captured)
-    }
-}
-
-private struct ScreenshotIncludeNativeToggle: View {
-    @Environment(\.colorScheme) private var colorScheme
-    @ObservedObject private var loc = LocalizationManager.shared
-    @State private var includeNative: Bool = AppSettings.getBool("screenshot_include_native", defaultValue: false)
-
-    var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(loc.localized("screenshot.includeNative"))
-                    .lineLimit(1)
-                Text(loc.localized("screenshot.includeNativeHelp"))
-                    .font(.caption2)
-                    .foregroundStyle(AppColors.textSecondary(colorScheme))
-            }
-            Spacer(minLength: 0)
-            Toggle("", isOn: Binding(
-                get: { includeNative },
-                set: { newValue in
-                    includeNative = newValue
-                    AppSettings.setBool("screenshot_include_native", value: newValue)
-                }
-            ))
-            .toggleStyle(.switch)
-            .labelsHidden()
-        }
-        .padding(.vertical, AppSpacing.xxs)
     }
 }
 

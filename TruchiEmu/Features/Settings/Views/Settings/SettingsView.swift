@@ -135,7 +135,7 @@ struct SettingsView: View {
             case .moveList: return LocalizationManager.shared.localized("settings.moveList")
             case .hotkeys: return LocalizationManager.shared.localized("settings.hotkeys")
             case .perSystem: return LocalizationManager.shared.localized("settings.perSystem")
-            case .streaming: return LocalizationManager.shared.localized("settings.streaming")
+             case .streaming: return LocalizationManager.shared.localized("settings.streamingAndMedia")
             case .help: return LocalizationManager.shared.localized("settings.help")
             case .about: return LocalizationManager.shared.localized("settings.about")
             case .reset: return LocalizationManager.shared.localized("settings.reset.title")
@@ -172,8 +172,8 @@ struct SettingsView: View {
                 return "hotkeys keyboard shortcuts save load slot undo training recording input capture global gameplay key binding"
             case .perSystem:
                 return "system per-system bezels cheats controllers core boxart shader preferences per console platform"
-            case .streaming:
-                return "streaming recording twitch youtube stream key credentials quality bitrate"
+             case .streaming:
+                return "streaming recording twitch youtube stream key credentials quality bitrate screenshot share button clip buffer badge rec indicator"
             case .help:
                 return "help keyboard shortcuts faq documentation troubleshooting resources"
             case .about:
@@ -550,7 +550,7 @@ struct SettingsView: View {
         case .moveList: MoveListSettingsView(searchText: $searchText)
         case .hotkeys: HotkeyConfigSettingsView(searchText: $searchText, scope: .all)
         case .perSystem: PerSystemSettingsView(searchText: $searchText)
-        case .streaming: StreamingSettingsView(searchText: $searchText)
+         case .streaming: StreamingMediaSettingsView(searchText: $searchText)
         case .help: HelpSettingsView(searchText: $searchText)
         case .about: AboutView()
             case .reset: ResetSettingsView(searchText: $searchText)

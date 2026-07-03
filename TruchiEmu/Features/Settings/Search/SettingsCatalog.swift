@@ -324,6 +324,30 @@ enum SettingsCatalog {
                 optionTitles: ["Low", "Medium", "High", "Lossless", "H.264", "HEVC", "ProRes 422", "ProRes 4444", "Bitrate", "Frame rate"],
                 keywords: ["quality", "low", "medium", "high", "lossless", "bitrate", "codec", "frame", "rate", "resolution", "video", "audio"]
             ),
+            SettingsCatalogEntry(
+                page: .streaming, sectionID: "screenshots",
+                sectionTitle: "Screenshots",
+                optionTitles: ["Include native frame"],
+                keywords: ["screenshot", "capture", "native", "include", "frame"]
+            ),
+            SettingsCatalogEntry(
+                page: .streaming, sectionID: "shareButton",
+                sectionTitle: "Share Button",
+                optionTitles: ["Single press", "Long press"],
+                keywords: ["share", "button", "single", "long", "press", "behavior", "screenshot", "recording", "stream"]
+            ),
+            SettingsCatalogEntry(
+                page: .streaming, sectionID: "saveLastMoments",
+                sectionTitle: "Save Last Moments",
+                optionTitles: ["Enable game clip buffer", "Clip duration", "30 seconds", "60 seconds", "2 minutes", "5 minutes", "10 minutes", "15 minutes", "Custom"],
+                keywords: ["save", "last", "moments", "clip", "buffer", "retro", "game", "rolling", "duration"]
+            ),
+            SettingsCatalogEntry(
+                page: .streaming, sectionID: "recordingBadge",
+                sectionTitle: "Recording Overlay",
+                optionTitles: ["Show REC badge", "Top Left", "Top Right", "Bottom Left", "Bottom Right", "Top Center", "Bottom Center"],
+                keywords: ["recording", "badge", "overlay", "rec", "indicator", "live", "position"]
+            ),
 
             SettingsCatalogEntry(
                 page: .hotkeys, sectionID: "general",

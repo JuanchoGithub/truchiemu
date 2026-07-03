@@ -94,6 +94,18 @@ enum RecordingQuality: String, Codable, CaseIterable {
     }
 }
 
+enum RecordingInitiator {
+    /// Recording started in response to a user action (toolbar record button,
+    /// share button with startVideoRecording/stream*, etc). UI shows the
+    /// recording badge and the stop button when set.
+    case user
+    /// Recording started by the rolling-clip-buffer background loop. The user
+    /// hasn't asked for a recording — the buffer is just continuously
+    /// rotating chunks to disk so "save last X seconds" can produce a clip.
+    /// UI suppresses the recording badge and stop button in this case.
+    case rollingBuffer
+}
+
 @MainActor
 class StreamRecordingService: ObservableObject {
     static let shared = StreamRecordingService()
@@ -101,6 +113,13 @@ class StreamRecordingService: ObservableObject {
     @Published var isRecording = false {
         didSet { isRecordingFlag = isRecording }
     }
+    /// True when an active writer session was started by the user (not by
+    /// the rolling-clip-buffer's background loop). Drives UI like the
+    /// recording badge and the toolbar's Stop Recording button.
+    @Published var isUserRecording: Bool = false
+    /// What initiated the currently active writer session, if any.
+    private(set) var currentInitiator: RecordingInitiator?
+    @Published var recordingStartTime: Date?
     @Published var mode: StreamingMode = .localFile
     @Published var streamingEnabled = false
     @Published var quality: RecordingQuality = .high
@@ -111,11 +130,11 @@ class StreamRecordingService: ObservableObject {
     @Published var customFrameRate: Int = 60
     @Published var customVideoCodec: RecordingVideoCodec = .h264
 
-    private var assetWriter: AVAssetWriter?
-    private var videoInput: AVAssetWriterInput?
-    private var audioInput: AVAssetWriterInput?
-    private var pixelBufferAdaptor: AVAssetWriterInputPixelBufferAdaptor?
-    private var outputURL: URL?
+    var assetWriter: AVAssetWriter?
+    var videoInput: AVAssetWriterInput?
+    var audioInput: AVAssetWriterInput?
+    var pixelBufferAdaptor: AVAssetWriterInputPixelBufferAdaptor?
+    var outputURL: URL?
     nonisolated(unsafe) private var frameCount: Int64 = 0
     nonisolated(unsafe) private var isRecordingFlag: Bool = false
     nonisolated(unsafe) private var videoPipeFD: Int32 = -1
@@ -132,7 +151,11 @@ class StreamRecordingService: ObservableObject {
     private let writingQueue = DispatchQueue(label: "com.truchiemu.recording", qos: .userInitiated)
     private let videoWritingQueue = DispatchQueue(label: "com.truchiemu.recording.video", qos: .userInteractive)
     private var audioTimer: DispatchSourceTimer?
-    private var audioFramePosition: Int64 = 0
+    nonisolated(unsafe) private var audioFramePosition: Int64 = 0
+    // Wall-clock anchor set when the session starts. Audio PTS is derived from
+    // this (matching video's CACurrentMediaTime scheme in MetalCoordinator) so
+    // the two streams stay aligned regardless of how the audio timer lags.
+    nonisolated(unsafe) private var audioSessionAnchor: CFTimeInterval = 0
 
     // Audio capture
     private var coreAudioSampleRate: Double = 44100
@@ -142,11 +165,11 @@ class StreamRecordingService: ObservableObject {
         8000, 11025, 12000, 16000, 22050, 24000, 32000, 44100, 48000, 64000, 88200, 96000
     ]
 
-    private static func nearestValidAACSampleRate(for rate: Double) -> Double {
+    nonisolated static func nearestValidAACSampleRate(for rate: Double) -> Double {
         validAACSampleRates.min(by: { abs($0 - rate) < abs($1 - rate) }) ?? 44100
     }
 
-    private static func resampleInterleaved16(_ input: [Int16], from inputRate: Double, to outputRate: Double) -> [Int16] {
+    nonisolated static func resampleInterleaved16(_ input: [Int16], from inputRate: Double, to outputRate: Double) -> [Int16] {
         guard inputRate > 0, outputRate > 0, !input.isEmpty else { return input }
         let ratio = inputRate / outputRate
         let outputCount = Int(Double(input.count) / ratio)
@@ -348,8 +371,25 @@ class StreamRecordingService: ObservableObject {
         }
     }
 
-    func startRecording(outputURL: URL, width: Int, height: Int, fps: Int = 60) {
+    func startRecording(outputURL: URL, width: Int, height: Int, fps: Int = 60, initiator: RecordingInitiator = .user) {
+        // User-initiated recording preempts any active rolling-buffer capture.
+        if initiator == .user, StreamRecordingService.shared.isRecording {
+            // Rolling buffer (or any pre-existing session) is in the writer.
+            // Close it cleanly so the user's recording can take over the
+            // writer. This produces a finalized chunk file at the buffer's
+            // temp URL — preserved on disk for "Save Last X Seconds".
+            let buffer = RollingVideoBufferService.shared
+            if buffer.isEnabled {
+                buffer.suspendActiveCapture()
+            } else {
+                // Generic teardown in case something else holds the writer.
+                StreamRecordingService.shared.stop()
+            }
+        }
         guard !isRecording else { return }
+        self.mode = .localFile
+        self.currentInitiator = initiator
+        self.isUserRecording = (initiator == .user)
         self.outputURL = outputURL
         self.videoSize = CGSize(width: width, height: height)
         self.frameCount = 0
@@ -445,6 +485,8 @@ class StreamRecordingService: ObservableObject {
         if writer.startWriting() {
             writer.startSession(atSourceTime: .zero)
             isRecording = true
+            recordingStartTime = Date()
+            audioSessionAnchor = CACurrentMediaTime()
             LoggerService.info(category: "Recording", "Started recording to \(outputURL.path)")
 
             startAudioCapture()
@@ -457,10 +499,20 @@ class StreamRecordingService: ObservableObject {
         }
     }
 
-    func startStreaming(mode: StreamingMode) {
+    func startStreaming(mode: StreamingMode, initiator: RecordingInitiator = .user) {
+        if initiator == .user, isRecording {
+            let buffer = RollingVideoBufferService.shared
+            if buffer.isEnabled {
+                buffer.suspendActiveCapture()
+            } else {
+                StreamRecordingService.shared.stop()
+            }
+        }
         guard !isRecording else { return }
         guard mode != .localFile else { return }
         self.mode = mode
+        self.currentInitiator = initiator
+        self.isUserRecording = (initiator == .user)
         coreAudioSampleRate = XPCBridgeAdapter.shared.audioSampleRate()
         outputAudioSampleRate = Self.nearestValidAACSampleRate(for: coreAudioSampleRate)
 
@@ -558,6 +610,8 @@ class StreamRecordingService: ObservableObject {
         do {
             try process.run()
             isRecording = true
+            recordingStartTime = Date()
+            audioSessionAnchor = CACurrentMediaTime()
             LoggerService.info(category: "Recording", "Started streaming to \(mode.rawValue)")
         } catch {
             LoggerService.error(category: "Recording", "Failed to launch ffmpeg: \(error.localizedDescription)")
@@ -568,7 +622,12 @@ class StreamRecordingService: ObservableObject {
     func stop() {
         guard isRecording else { return }
 
+        let wasUserInitiated = (currentInitiator == .user)
         isRecording = false
+        isUserRecording = false
+        currentInitiator = nil
+        recordingStartTime = nil
+        audioSessionAnchor = 0
 
         stopAudioCapture()
 
@@ -582,6 +641,14 @@ class StreamRecordingService: ObservableObject {
             return
         }
 
+        // If the user-initiated session was preempting an enabled rolling
+        // buffer, restart capture so chunks continue to roll.
+        if wasUserInitiated, RollingVideoBufferService.shared.isEnabled {
+            MainActor.assumeIsolated {
+                RollingVideoBufferService.shared.startCaptureIfReady()
+            }
+        }
+
         LoggerService.info(category: "Recording", "Recording stopped")
     }
 
@@ -592,18 +659,22 @@ class StreamRecordingService: ObservableObject {
         audioInput?.markAsFinished()
 
         let writerRef = writer
+        let prevAssetWriter = assetWriter
+        let prevVideoInput = videoInput
+        let prevAudioInput = audioInput
+        let prevAdaptor = pixelBufferAdaptor
+        assetWriter = nil
+        videoInput = nil
+        audioInput = nil
+        pixelBufferAdaptor = nil
+
         writer.finishWriting {
-            Task { @MainActor in
-                if let error = writerRef.error {
-                    LoggerService.error(category: "Recording", "AVAssetWriter error: \(error.localizedDescription)")
-                } else {
-                    LoggerService.info(category: "Recording", "Recording saved")
-                }
-                StreamRecordingService.shared.assetWriter = nil
-                StreamRecordingService.shared.videoInput = nil
-                StreamRecordingService.shared.audioInput = nil
-                StreamRecordingService.shared.pixelBufferAdaptor = nil
+            if let error = writerRef.error {
+                LoggerService.error(category: "Recording", "AVAssetWriter error: \(error.localizedDescription)")
+            } else {
+                LoggerService.info(category: "Recording", "Recording saved")
             }
+            _ = prevAssetWriter; _ = prevVideoInput; _ = prevAudioInput; _ = prevAdaptor
         }
     }
 
@@ -831,9 +902,16 @@ class StreamRecordingService: ObservableObject {
         guard blockStatus == kCMBlockBufferNoErr, let bb = blockBuffer else { return }
         CMBlockBufferReplaceDataBytes(with: bytes, blockBuffer: bb, offsetIntoDestination: 0, dataLength: bytes.count)
 
-        let pts = CMTime(value: CMTimeValue(audioFramePosition), timescale: Int32(outputAudioSampleRate))
+        // Derive PTS from a wall-clock anchor that's synchronized with video
+        // (which uses CACurrentMediaTime() in MetalCoordinator). Without this
+        // the audio and video PTS streams were aligned to different time bases
+        // (audioFramePosition/sampleRate vs. now - recordingStartTime), causing
+        // the two tracks to drift or split into separate timelines in the
+        // output file. Duration is the actual sample run length so the muxer
+        // lays out samples over the correct wall-clock window.
+        let pts = CMTime(seconds: CACurrentMediaTime() - audioSessionAnchor, preferredTimescale: 600)
         var timing = CMSampleTimingInfo(
-            duration: CMTime(value: 1, timescale: Int32(outputAudioSampleRate)),
+            duration: CMTime(value: Int64(sampleCount), timescale: Int32(outputAudioSampleRate)),
             presentationTimeStamp: pts,
             decodeTimeStamp: .invalid
         )

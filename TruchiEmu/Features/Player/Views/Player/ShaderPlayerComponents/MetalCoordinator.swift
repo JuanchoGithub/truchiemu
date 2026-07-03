@@ -26,6 +26,13 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
     private var recordingSharedTexture: MTLTexture?
     private var recordingFrameCount: Int64 = 0
     private var recordingStartTime: CFTimeInterval = 0
+    // Track the previous frame's isRecording state so we can detect a fresh
+    // recording session (e.g., after RollingVideoBufferService rotates a
+    // chunk) and re-anchor the video PTS to the new session start. Without
+    // this, video PTS keeps advancing from the first recording ever started,
+    // making it diverge from the audio side which gets a fresh anchor at each
+    // startRecording() call.
+    private var wasRecordingFlag: Bool = false
 
     // Screenshot capture support: shared-mode textures for GPU readback
     private var screenshotDisplayTexture: MTLTexture?
@@ -673,16 +680,27 @@ outputHeight: Float(drawHeight)
                     }
 
                     // Recording: capture emulator frame for streaming/recording
-                    if StreamRecordingService.shared.isRecording {
-                        if recordingStartTime == 0 {
+                    let isRecording = StreamRecordingService.shared.isRecording
+                    let needFrameCapture = isRecording || RollingVideoBufferService.shared.isEnabled
+                    if needFrameCapture {
+                        if isRecording && !wasRecordingFlag {
+                            // Fresh recording session — first-ever capture, or
+                            // a new writer session after
+                            // RollingVideoBufferService rotated a chunk /
+                            // user toggled recording. Re-anchor so this frame's
+                            // PTS starts at zero, matching the new writer
+                            // session and the audio PTS anchor set in
+                            // StreamRecordingService.startRecording.
                             recordingStartTime = CACurrentMediaTime()
                             recordingFrameCount = 0
                         }
+                        wasRecordingFlag = isRecording
                         let now = CACurrentMediaTime()
                         let pts = CMTime(seconds: now - recordingStartTime, preferredTimescale: 600)
                         recordingFrameCount += 1
 
-                        let srcTex = StreamRecordingService.shared.recordWithShaders ? drawable.texture : frameTex
+                        let useDisplayRes = isRecording ? StreamRecordingService.shared.recordWithShaders : RollingVideoBufferService.shared.recordDisplayResolution
+                        let srcTex = useDisplayRes ? drawable.texture : frameTex
                         let recW = srcTex.width
                         let recH = srcTex.height
                         let srcBPP = Self.bytesPerPixel(srcTex.pixelFormat)
@@ -718,7 +736,7 @@ outputHeight: Float(drawHeight)
                                 var bgra = Self.convertToBGRA32(pixels, width: w, height: h, srcBPP: srcBPP, srcPixelFormat: tex.pixelFormat)
                                 var outW = Int(w)
                                 var outH = Int(h)
-                                if !StreamRecordingService.shared.recordWithShaders {
+                                if isRecording && !StreamRecordingService.shared.recordWithShaders {
                                     let dar = recordingDAR
                                     let pixelAR = CGFloat(w) / CGFloat(h)
                                     if abs(dar - pixelAR) > 0.01 {
@@ -734,13 +752,19 @@ outputHeight: Float(drawHeight)
                                 let pixelBuffer = self.makePixelBuffer(from: bgra, width: outW, height: outH)
                                 if let pb = pixelBuffer {
                                     DispatchQueue.main.async {
-                                        StreamRecordingService.shared.appendVideoFrame(pb, at: capturePTS)
+                                        if isRecording {
+                                            if RollingVideoBufferService.shared.isEnabled {
+                                                RollingVideoBufferService.shared.ensureRecordingMatches(width: outW, height: outH)
+                                            }
+                                            StreamRecordingService.shared.appendVideoFrame(pb, at: capturePTS)
+                                        }
                                     }
                                 }
                             }
                         }
                     } else {
                         recordingStartTime = 0
+                        wasRecordingFlag = false
                     }
 
                     // Screenshot capture: copy drawable + (optional) native to shared textures,

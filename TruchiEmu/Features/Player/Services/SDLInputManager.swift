@@ -31,8 +31,9 @@ class SDLInputManager: ObservableObject {
     private var captureCallback: ((Int, String) -> Void)?
     private var captureInstanceID: Int32?
 
-    // SDL screenshot button index cached at runner registration
-    var cachedScreenshotButtonIndex: Int? = nil
+    // SDL share button indices cached at runner registration
+    var cachedShareSinglePressButtonIndex: Int? = nil
+    var cachedShareLongPressButtonIndex: Int? = nil
 
     private static let deadzone: Int16 = 8000
     private static let triggerThreshold: Int16 = 16384
@@ -108,9 +109,11 @@ class SDLInputManager: ObservableObject {
         runnerLock.lock()
         _activeRunner = runner
         runnerLock.unlock()
-        // Cache the SDL screenshot button index
-        let binding = HotkeyConfigManager.shared.controllerBinding(for: .screenshot, source: .sdl)
-        cachedScreenshotButtonIndex = Int(binding.identifier)
+        // Cache the SDL share button indices
+        let singleBinding = HotkeyConfigManager.shared.controllerBinding(for: .shareSinglePress, source: .sdl)
+        let longBinding = HotkeyConfigManager.shared.controllerBinding(for: .shareLongPress, source: .sdl)
+        cachedShareSinglePressButtonIndex = Int(singleBinding.identifier)
+        cachedShareLongPressButtonIndex = Int(longBinding.identifier)
     }
 
     func unregisterRunner() {
@@ -280,9 +283,14 @@ class SDLInputManager: ObservableObject {
                 return
             }
 
-            // Check screenshot hotkey after capture check
-            if Int(event.button) == cachedScreenshotButtonIndex {
-                dispatchScreenshot()
+            // Check share button gestures after capture check
+            let btn = Int(event.button)
+            if btn == cachedShareSinglePressButtonIndex || btn == cachedShareLongPressButtonIndex {
+                if pressed {
+                    DispatchQueue.main.async { ControllerLongPressDetector.shared.handleSDLPressDown(buttonIndex: btn) }
+                } else {
+                    DispatchQueue.main.async { ControllerLongPressDetector.shared.handleSDLPressUp(buttonIndex: btn) }
+                }
                 return
             }
         }
@@ -355,9 +363,14 @@ class SDLInputManager: ObservableObject {
                 return
             }
 
-            // Check screenshot hotkey after capture check
-            if Int(event.button) == cachedScreenshotButtonIndex {
-                dispatchScreenshot()
+            // Check share button gestures after capture check
+            let btn = Int(event.button)
+            if btn == cachedShareSinglePressButtonIndex || btn == cachedShareLongPressButtonIndex {
+                if pressed {
+                    DispatchQueue.main.async { ControllerLongPressDetector.shared.handleSDLPressDown(buttonIndex: btn) }
+                } else {
+                    DispatchQueue.main.async { ControllerLongPressDetector.shared.handleSDLPressUp(buttonIndex: btn) }
+                }
                 return
             }
         }
@@ -466,18 +479,6 @@ class SDLInputManager: ObservableObject {
 
     private func dispatchAnalogButton(retroID: Int, value: Int16, player: Int) {
         XPCBridgeAdapter.shared.setAnalogButtonState(retroID: retroID, value: Int32(value), player: player)
-    }
-
-    private func dispatchScreenshot() {
-        weak var runner: EmulatorRunner?
-        runnerLock.lock()
-        runner = _activeRunner
-        runnerLock.unlock()
-
-        guard let runner else { return }
-        Task { @MainActor in
-            runner.performScreenshot()
-        }
     }
 
     // MARK: - Thread-safe Query Methods

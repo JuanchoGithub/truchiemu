@@ -99,6 +99,7 @@ private var firstFrameTimer: Timer?
     var skipAutoSaveOnClose: Bool = false
     private var gameLoadedObserver: NSObjectProtocol?
     private var screenshotObserver: NSObjectProtocol?
+    private var clipSavedObserver: NSObjectProtocol?
     private var isClosingWindow: Bool = false
     private var didLoadSaveState: Bool = false
 var moveListOverlayView: NSHostingView<AnyView>?
@@ -107,7 +108,9 @@ var achievementToastOverlayView: NSHostingView<AnyView>?
     var cheatToastOverlayView: SafeHostingView<AnyView>?
     var screenshotFlashOverlayView: NSView?
     var screenshotPillOverlayView: SafeHostingView<AnyView>?
-var trainingModeOverlayView: NSHostingView<AnyView>?
+    var recordingBadgeOverlayView: SafeHostingView<AnyView>?
+    var osdOverlayView: SafeHostingView<AnyView>?
+    var trainingModeOverlayView: NSHostingView<AnyView>?
 var p2JoinStatusOverlayView: NSHostingView<AnyView>?
 private var p2JoinStatusCancellable: AnyCancellable?
     private var trainingConfigCancellable: AnyCancellable?
@@ -395,6 +398,39 @@ super.init(window: window)
             pillView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
             pillView.topAnchor.constraint(equalTo: containerView.topAnchor),
             pillView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
+        ])
+
+        // Recording badge overlay (REC indicator with timer)
+        let badgePosition = BadgePosition(rawValue: AppSettings.getInt("recording_badge_position", defaultValue: 1)) ?? .topRight
+        let badgeView = SafeHostingView(rootView: AnyView(RecordingBadgeOverlay(alignment: badgePosition.alignment)))
+        badgeView.translatesAutoresizingMaskIntoConstraints = false
+        badgeView.wantsLayer = true
+        badgeView.isPassThroughOverlay = true
+        badgeView.layer?.backgroundColor = NSColor.clear.cgColor
+        containerView.addSubview(badgeView, positioned: .below, relativeTo: hostingView)
+        self.recordingBadgeOverlayView = badgeView
+
+        NSLayoutConstraint.activate([
+            badgeView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            badgeView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            badgeView.topAnchor.constraint(equalTo: containerView.topAnchor),
+            badgeView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
+        ])
+
+        // OSD message overlay (centered top, shows runner.osdMessage)
+        let osdView = SafeHostingView(rootView: AnyView(GameOSDOverlay(runner: runner)))
+        osdView.translatesAutoresizingMaskIntoConstraints = false
+        osdView.wantsLayer = true
+        osdView.isPassThroughOverlay = true
+        osdView.layer?.backgroundColor = NSColor.clear.cgColor
+        containerView.addSubview(osdView, positioned: .above, relativeTo: nil)
+        self.osdOverlayView = osdView
+
+        NSLayoutConstraint.activate([
+            osdView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            osdView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            osdView.topAnchor.constraint(equalTo: containerView.topAnchor),
+            osdView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
         ])
 
         // Add SwiftUI loading overlay (covers entire window during game launch, on top of everything)
@@ -807,6 +843,12 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
             self.flashScreen()
             self.postScreenshotPill(displayURL: url, nativeURL: nativeURL)
             self.postScreenshotHistory(displayURL: url, nativeURL: nativeURL)
+        }
+
+        // Observe clip saved to show toast
+        clipSavedObserver = NotificationCenter.default.addObserver(forName: .clipSaved, object: nil, queue: .main) { [weak self] note in
+            guard let url = note.userInfo?["url"] as? URL else { return }
+            self?.postClipSavedPill(url: url)
         }
 
         // Core is initializing async — we're now waiting for the first frame
@@ -1797,6 +1839,21 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
             actionType: "open-screenshot",
             actionPayload: payload
         )
+    }
+
+    private func postClipSavedPill(url: URL) {
+        let openLabel = LocalizationManager.shared.localized("screenshot.open")
+        let notification = PillNotification(
+            icon: "video.badge.checkmark",
+            title: LocalizationManager.shared.localized("media.clipSaved"),
+            subtitle: url.lastPathComponent,
+            autoDismissDelay: 6,
+            action: PillAction(label: openLabel) {
+                NSWorkspace.shared.open(url)
+                ScreenshotPillPresenter.shared.dismiss()
+            }
+        )
+        ScreenshotPillPresenter.shared.present(notification)
     }
 
     static func registerScreenshotHistoryHandler() {
