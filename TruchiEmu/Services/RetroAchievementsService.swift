@@ -150,7 +150,13 @@ class RetroAchievementsService: ObservableObject {
                 }
             }
 
-            Task { try? await fetchAndCacheGameList() }
+            Task {
+                try? await fetchAndCacheGameList()
+                if await needsHashDownload() {
+                    LoggerService.info(category: "RetroAchievements", "Hash data missing, auto-triggering game list download with hashes...")
+                    try? await fetchAndCacheAllGames()
+                }
+            }
 
         } catch {
             await MainActor.run {
@@ -521,6 +527,32 @@ class RetroAchievementsService: ObservableObject {
         }
 
         return result
+    }
+
+    /// Checks whether local hash JSON files exist for the user's library consoles.
+    /// Returns `true` if any relevant hash file is missing.
+    @MainActor
+    func needsHashDownload() -> Bool {
+        guard let context = modelContext else { return true }
+        let romDescriptor = FetchDescriptor<ROMEntry>()
+        guard let userRoms = try? context.fetch(romDescriptor) else { return true }
+        let userSystemIDs = Set(userRoms.compactMap { $0.systemID })
+        let userRAConsoleIDs = userSystemIDs.map { Self.systemIDToRAConsoleID($0) }
+        guard !userRAConsoleIDs.isEmpty else { return false }
+
+        let listFolder = listDataFolder
+        guard FileManager.default.fileExists(atPath: listFolder.path) else { return true }
+
+        guard let jsonFiles = try? FileManager.default.contentsOfDirectory(at: listFolder, includingPropertiesForKeys: nil) else { return true }
+
+        for consoleID in userRAConsoleIDs where consoleID > 0 {
+            let hasFile = jsonFiles.contains { url in
+                let prefix = url.lastPathComponent.components(separatedBy: "_").first
+                return prefix == String(consoleID)
+            }
+            if !hasFile { return true }
+        }
+        return false
     }
 
     /// Pure mapping from system ID to RA console ID — no MainActor required.

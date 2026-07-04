@@ -11,6 +11,8 @@ struct RAHashComparisonContent: View {
     let error: String?
     let isLoading: Bool
     let nameMatches: [NameMatchItem]
+    let showDownloadOption: Bool
+    let onDownload: (() -> Void)?
 
     struct NameMatchItem: Identifiable {
         let id: Int
@@ -21,9 +23,11 @@ struct RAHashComparisonContent: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.colorScheme) var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var raCacheCoordinator = RAGameCacheCoordinator.shared
     @State private var showCopied = false
 
     private var gameFoundByName: Bool { !nameMatches.isEmpty }
+    private var isDownloading: Bool { raCacheCoordinator.isActive }
 
     var body: some View {
         NavigationStack {
@@ -32,6 +36,10 @@ struct RAHashComparisonContent: View {
                     loadingView
                 } else if let error = error {
                     errorView(error)
+                } else if isDownloading {
+                    downloadingView
+                } else if showDownloadOption {
+                    needsDownloadView
                 } else if gameFoundByName {
                     hashMismatchView
                 } else {
@@ -45,7 +53,7 @@ struct RAHashComparisonContent: View {
                 }
             }
         }
-        .frame(width: 600, height: 520)
+        .frame(width: 600, height: isDownloading || showDownloadOption ? 400 : 520)
     }
 
     private var loadingView: some View {
@@ -66,6 +74,64 @@ struct RAHashComparisonContent: View {
                 .foregroundColor(AppColors.textSecondary(colorScheme))
         }
         .padding()
+    }
+
+    // MARK: - Downloading (hash download in progress)
+
+    private var downloadingView: some View {
+        VStack(spacing: 20) {
+            ProgressView()
+                .controlSize(.large)
+            Text(raCacheCoordinator.statusLine)
+                .font(.caption)
+                .foregroundColor(AppColors.textSecondary(colorScheme))
+                .lineLimit(2)
+                .multilineTextAlignment(.center)
+            if raCacheCoordinator.totalSteps > 0 {
+                Text("\(raCacheCoordinator.currentStep)/\(raCacheCoordinator.totalSteps)")
+                    .font(.caption)
+                    .foregroundColor(AppColors.textTertiary(colorScheme))
+                    .monospacedDigit()
+            }
+            if raCacheCoordinator.progress > 0 {
+                ProgressView(value: raCacheCoordinator.progress)
+                    .progressViewStyle(.linear)
+                    .frame(maxWidth: 300)
+            }
+            Text(loc.localized("raHash.downloadingKeepOpen"))
+                .font(.caption2)
+                .foregroundColor(AppColors.textTertiary(colorScheme))
+        }
+        .padding()
+    }
+
+    // MARK: - Needs Download (hash data missing, prompt to download)
+
+    private var needsDownloadView: some View {
+        VStack(spacing: 20) {
+            Image(systemName: "arrow.down.circle.fill")
+                .font(.system(size: 40))
+                .foregroundColor(AppColors.brandAccent)
+
+            Text(loc.localized("raHash.missingHashDataTitle"))
+                .font(.headline)
+
+            Text(loc.localized("raHash.missingHashDataExplanation"))
+                .font(.caption)
+                .foregroundColor(AppColors.textSecondary(colorScheme))
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Button {
+                onDownload?()
+            } label: {
+                Label(loc.localized("raHash.downloadGameLists"), systemImage: "arrow.down.circle")
+                    .font(.subheadline)
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
+        }
+        .padding(40)
     }
 
     // MARK: - Game Not Found (no name matches at all)
@@ -337,7 +403,9 @@ struct RAHashComparisonContent: View {
         nameMatches: [
             RAHashComparisonContent.NameMatchItem(id: 1234, title: "Super Mario World (USA)", hashes: ["abc123def456", "def456abc789"]),
             RAHashComparisonContent.NameMatchItem(id: 1235, title: "Super Mario World (Europe)", hashes: ["789xyz123", "aaa111bbb222"])
-        ]
+        ],
+        showDownloadOption: false,
+        onDownload: nil
     )
 }
 
@@ -351,6 +419,8 @@ struct RAHashComparisonContent: View {
         raGameId: nil,
         error: nil,
         isLoading: false,
-        nameMatches: []
+        nameMatches: [],
+        showDownloadOption: false,
+        onDownload: nil
     )
 }

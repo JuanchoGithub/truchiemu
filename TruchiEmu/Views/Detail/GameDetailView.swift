@@ -73,6 +73,7 @@ struct GameDetailView: View {
 @State var raComparisonNameMatches: [RAHashComparisonContent.NameMatchItem] = []
 @State var raVerificationStatus: ManualActionStatus = .hidden
 @State var raVerificationAutoDismiss: Task<Void, Never>?
+@State var raComparisonShowDownloadOption = false
 
     var currentROM: ROM {
         library.roms.first { $0.id == rom.id } ?? rom
@@ -163,7 +164,17 @@ struct GameDetailView: View {
             raGameId: raComparisonRAGameId,
             error: raComparisonError,
             isLoading: isFindingRAGame,
-            nameMatches: raComparisonNameMatches
+            nameMatches: raComparisonNameMatches,
+            showDownloadOption: raComparisonShowDownloadOption,
+            onDownload: {
+                Task {
+                    showRAHashComparison = false
+                    try? await achievementsService.fetchAndCacheAllGames()
+                    // Short delay to let the sheet dismiss before re-triggering
+                    try? await Task.sleep(nanoseconds: 400_000_000)
+                    findInRA()
+                }
+            }
         )
     }
 
@@ -472,6 +483,7 @@ struct GameDetailView: View {
         isFindingRAGame = true
         raComparisonError = nil
         raComparisonTitle = currentROM.displayName
+        raComparisonShowDownloadOption = false
         raVerificationStatus = .working(loc.localized("achievement.loadingAchievements"))
 
         let raConsoleID = achievementsService.mapSystemIDToRAConsoleID(systemID)
@@ -581,6 +593,18 @@ struct GameDetailView: View {
                     )
                 }
             } else {
+                // Check if the real problem is missing hash data
+                let needsDownload = await achievementsService.needsHashDownload()
+                if needsDownload {
+                    await MainActor.run {
+                        raComparisonShowDownloadOption = true
+                        isFindingRAGame = false
+                        raVerificationStatus = .hidden
+                        showRAHashComparison = true
+                    }
+                    return
+                }
+
                 let nameMatches = await achievementsService.findAllRAGamesByName(title: currentROM.displayName, consoleID: raConsoleID)
                 await MainActor.run {
                     if let firstMatch = nameMatches.first {
@@ -592,6 +616,7 @@ struct GameDetailView: View {
                     raComparisonNameMatches = nameMatches.map { RAHashComparisonContent.NameMatchItem(id: $0.id, title: $0.title, hashes: $0.hashes) }
                     isFindingRAGame = false
                     raVerificationStatus = .hidden
+                    raComparisonShowDownloadOption = false
                     showRAHashComparison = true
 
                     if nameMatches.isEmpty {
