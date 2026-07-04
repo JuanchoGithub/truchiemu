@@ -995,6 +995,7 @@
   "bezel.browseBezels": "Browse Bezels",
   "bezel.autoMatchBezel": "Auto-Match Bezel",
   "bezel.clearBezel": "Clear Bezel",
+  "bezel.enableBezels": "Enable Bezels",
   "bezel.bezelsPreDownloaded": "Bezels are pre-downloaded before gameplay. Browse available bezels from The Bezel Project or import your own.",
   "bezel.settings": "Bezel Settings",
   "bezel.deleteBezelsTitle": "Delete All Bezels",

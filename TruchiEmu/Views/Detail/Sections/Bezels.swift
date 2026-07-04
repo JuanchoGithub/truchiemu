@@ -51,6 +51,19 @@ Text(loc.localized("bezel.browseBezels"))
 }
 .padding(.vertical, AppSpacing.xs)
 
+                Toggle(isOn: isBezelEnabledBinding) {
+                    HStack {
+                        Image(systemName: "eye").frame(width: 20)
+                        Text(loc.localized("bezel.enableBezels"))
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .foregroundColor(AppColors.textPrimary(colorScheme))
+                        Spacer()
+                    }
+                }
+                .toggleStyle(.switch)
+                .padding(.vertical, AppSpacing.xs)
+
             Divider().overlay(AppColors.divider(colorScheme))
 
 VStack(spacing: 8) {
@@ -68,6 +81,7 @@ Spacer()
     .cornerRadius(AppRadius.sm)
             }
             .buttonStyle(.plain)
+            .disabled(currentROM.settings.bezelFileName == "none")
 
             Button { clearBezel() } label: {
                 HStack {
@@ -83,6 +97,7 @@ Spacer()
                 .cornerRadius(AppRadius.sm)
             }
             .buttonStyle(.plain)
+            .disabled(currentROM.settings.bezelFileName == "none")
 }
 .padding(.vertical, AppSpacing.xs)
 
@@ -164,10 +179,45 @@ Text(loc.localized("bezel.bezelsPreDownloaded"))
         }
     }
 
+    @MainActor
     func clearBezel() {
         var updated = currentROM
         updated.settings.bezelFileName = ""
         library.updateROM(updated)
+        Task { await loadCurrentBezelImage() }
+        showManualResult("Bezel selection cleared — using auto-match", tone: .info)
+    }
+
+    var isBezelEnabledBinding: Binding<Bool> {
+        Binding(
+            get: { currentROM.settings.bezelFileName != "none" },
+            set: { enabled in
+                if enabled {
+                    restoreBezel()
+                } else {
+                    disableBezel()
+                }
+            }
+        )
+    }
+
+    @MainActor
+    func disableBezel() {
+        AppSettings.setString("bezelPrevious_\(currentROM.id.uuidString)", value: currentROM.settings.bezelFileName)
+        var updated = currentROM
+        updated.settings.bezelFileName = "none"
+        library.updateROM(updated)
+        currentBezelImage = nil
+    }
+
+    @MainActor
+    func restoreBezel() {
+        let previous = AppSettings.getString("bezelPrevious_\(currentROM.id.uuidString)") ?? ""
+        AppSettings.remove("bezelPrevious_\(currentROM.id.uuidString)")
+        var updated = currentROM
+        updated.settings.bezelFileName = previous
+        library.updateROM(updated)
+        Task { await loadCurrentBezelImage() }
     }
 
     @MainActor

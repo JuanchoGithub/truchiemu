@@ -987,6 +987,7 @@
   "bezel.browseBezels": "Buscar marcos",
   "bezel.autoMatchBezel": "Autoasignar",
   "bezel.clearBezel": "Quitar marco",
+  "bezel.enableBezels": "Activar marcos",
   "bezel.bezelsPreDownloaded": "Los marcos se bajan antes de jugar. Explora en The Bezel Project o usa los tuyos.",
   "bezel.settings": "Ajustes",
   "bezel.deleteBezelsTitle": "Borrar todos",
