@@ -24,8 +24,17 @@ struct GenreSettingsView: View {
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject var library: ROMLibrary
     @Binding var searchText: String
+    @Binding var focusedSectionID: String?
+    @Binding var scopedSectionID: String?
     @ObservedObject private var loc = LocalizationManager.shared
     private let genreManager = GenreManager.shared
+
+    init(searchText: Binding<String> = .constant(""), focusedSectionID: Binding<String?> = .constant(nil),
+         scopedSectionID: Binding<String?> = .constant(nil)) {
+        self._searchText = searchText
+        self._focusedSectionID = focusedSectionID
+        self._scopedSectionID = scopedSectionID
+    }
 
     @State private var expandedID: String? = nil
     @State private var showNewCategoryField: Bool = false
@@ -126,24 +135,35 @@ struct GenreSettingsView: View {
 
     // MARK: - Body
 
+    private func sectionVisible(_ id: String) -> Bool {
+        guard let scope = scopedSectionID else { return true }
+        return scope == id || scope == id.replacingOccurrences(of: "section-", with: "")
+    }
+
     var body: some View {
         Group {
             if contentLoaded {
-                Form {
-                    overviewSection
-                    genresSection
-                    newGenreSection
-                    noResultsSection
+                ScrollViewReader { proxy in
+                    Form {
+                        overviewSection
+                        genresSection
+                        newGenreSection
+                        noResultsSection
+                    }
+                    .scrollContentBackground(.hidden)
+                    .formStyle(.grouped)
+                    .onChange(of: focusedSectionID) { _, newID in
+                        guard let id = newID else { return }
+                        withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+                    }
                 }
+                .id(refreshID)
             } else {
                 Color.clear
                     .frame(maxWidth: .infinity, minHeight: 400)
             }
         }
-        .scrollContentBackground(.hidden)
-        .formStyle(.grouped)
         .navigationTitle(loc.localized("genre.title"))
-        .id(refreshID)
         .onAppear {
             recacheData()
             DispatchQueue.main.async { contentLoaded = true }
@@ -177,7 +197,7 @@ struct GenreSettingsView: View {
 
     @ViewBuilder
     private var overviewSection: some View {
-        if !isSearching || matchesSearch("overview total merged custom hidden") {
+        if (!isSearching || matchesSearch("overview total merged custom hidden")) && sectionVisible("section-overview") {
             Section(header: Label(loc.localized("genre.overview"), systemImage: "tag.fill")) {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))], spacing: AppSpacing.lg) {
                     AppStatCard(
@@ -208,6 +228,7 @@ struct GenreSettingsView: View {
                 }
                 .padding(.vertical, AppSpacing.sm)
             }
+            .id("section-overview")
         }
     }
 
@@ -215,7 +236,7 @@ struct GenreSettingsView: View {
 
     @ViewBuilder
     private var genresSection: some View {
-        if !isSearching || matchesSearch("genres") {
+        if (!isSearching || matchesSearch("genres")) && sectionVisible("section-genres") {
             Section(header: Label(loc.localized("genre.mappings"), systemImage: "arrow.triangle.branch")) {
                 if cachedGroups.isEmpty && !isCreatingNew {
                     Text(loc.localized("genre.noResults"))
@@ -234,6 +255,7 @@ struct GenreSettingsView: View {
                     }
                 }
             }
+            .id("section-genres")
         }
     }
 

@@ -28,6 +28,8 @@ struct AnalogMouseSettingsView: View {
     @State private var monitorTimer: Timer? = nil
 
     @Binding var searchText: String
+    @Binding var focusedSectionID: String?
+    @Binding var scopedSectionID: String?
 
     static let searchKeywords: String = "analog mouse stick controller gamepad sensitivity deadzone dos scummvm pointer cursor"
 
@@ -53,8 +55,11 @@ struct AnalogMouseSettingsView: View {
         ("start", "Start"), ("select", "Select")
     ]
 
-    init(searchText: Binding<String> = .constant("")) {
+    init(searchText: Binding<String> = .constant(""), focusedSectionID: Binding<String?> = .constant(nil),
+         scopedSectionID: Binding<String?> = .constant(nil)) {
         self._searchText = searchText
+        self._focusedSectionID = focusedSectionID
+        self._scopedSectionID = scopedSectionID
     }
 
     var body: some View {

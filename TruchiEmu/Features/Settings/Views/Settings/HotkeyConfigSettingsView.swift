@@ -10,6 +10,8 @@ struct HotkeyConfigSettingsView: View {
     @State private var listeningSlot: KeySlot = .primary
     @State private var listeningControllerAction: HotkeyAction?
     @Binding var searchText: String
+    @Binding var focusedSectionID: String?
+    @Binding var scopedSectionID: String?
 
     enum Scope: Hashable {
         case all
@@ -21,8 +23,11 @@ struct HotkeyConfigSettingsView: View {
 
     let scope: Scope
 
-    init(searchText: Binding<String> = .constant(""), scope: Scope = .all) {
+    init(searchText: Binding<String> = .constant(""), focusedSectionID: Binding<String?> = .constant(nil),
+         scopedSectionID: Binding<String?> = .constant(nil), scope: Scope = .all) {
         self._searchText = searchText
+        self._focusedSectionID = focusedSectionID
+        self._scopedSectionID = scopedSectionID
         self.scope = scope
     }
 
@@ -58,70 +63,85 @@ struct HotkeyConfigSettingsView: View {
         scope == .all
     }
 
+    private func sectionVisible(_ id: String) -> Bool {
+        guard let scope = scopedSectionID else { return true }
+        return scope == id || scope == id.replacingOccurrences(of: "section-", with: "")
+    }
+
     var body: some View {
-        Form {
-            if showGeneral && (!isSearching
-                || matchesSearch("hotkeys keyboard shortcuts save load slot undo training input capture")
-                || matchesAnyLabel([.saveState, .loadState, .undoLoadState, .slotNext, .slotPrev, .toggleInputCapture])) {
-                Section(header: Label(loc.localized("hotkeys.general"), systemImage: "keyboard")) {
-                    hotkeyActionGrid([
-                        .saveState, .loadState, .undoLoadState, .slotNext, .slotPrev, .toggleInputCapture
-                    ])
-                }
-            }
-
-            if showSlots && (!isSearching
-                || matchesSearch("slots 0-9 slot")
-                || matchesAnyLabel(slotActions)) {
-                Section(header: Label(loc.localized("hotkeys.slots"), systemImage: "square.grid.3x3")) {
-                    hotkeyActionGrid(slotActions)
-                }
-            }
-
-            if showTraining && (!isSearching
-                || matchesSearch("training mode reset recording playback tape")
-                || matchesAnyLabel([.toggleTrainingMode, .trainingReset, .trainingToggleRecording, .trainingStartPlayback])) {
-                Section(header: Label(loc.localized("hotkeys.training"), systemImage: "figure.martial.arts")) {
-                    hotkeyActionGrid([
-                        .toggleTrainingMode, .trainingReset, .trainingToggleRecording, .trainingStartPlayback
-                    ])
-                }
-            }
-
-            if showReset && (!isSearching || matchesSearch("reset defaults restore")) {
-                Section(header: Label(loc.localized("hotkeys.reset"), systemImage: "arrow.counterclockwise")) {
-                    Text(loc.localized("hotkeys.resetDescription"))
-                        .font(.caption)
-                        .foregroundStyle(AppColors.textSecondary(colorScheme))
-
-                    Button(loc.localized("hotkeys.resetToDefaults")) {
-                        hotkeyManager.resetToDefaults()
+        ScrollViewReader { proxy in
+            Form {
+                if showGeneral && (!isSearching
+                    || matchesSearch("hotkeys keyboard shortcuts save load slot undo training input capture")
+                    || matchesAnyLabel([.saveState, .loadState, .undoLoadState, .slotNext, .slotPrev, .toggleInputCapture])) {
+                    Section(header: Label(loc.localized("hotkeys.general"), systemImage: "keyboard")) {
+                        hotkeyActionGrid([
+                            .saveState, .loadState, .undoLoadState, .slotNext, .slotPrev, .toggleInputCapture
+                        ])
                     }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
+                    .id("section-general")
+                }
+
+                if showSlots && (!isSearching
+                    || matchesSearch("slots 0-9 slot")
+                    || matchesAnyLabel(slotActions)) {
+                    Section(header: Label(loc.localized("hotkeys.slots"), systemImage: "square.grid.3x3")) {
+                        hotkeyActionGrid(slotActions)
+                    }
+                    .id("section-slots")
+                }
+
+                if showTraining && (!isSearching
+                    || matchesSearch("training mode reset recording playback tape")
+                    || matchesAnyLabel([.toggleTrainingMode, .trainingReset, .trainingToggleRecording, .trainingStartPlayback])) {
+                    Section(header: Label(loc.localized("hotkeys.training"), systemImage: "figure.martial.arts")) {
+                        hotkeyActionGrid([
+                            .toggleTrainingMode, .trainingReset, .trainingToggleRecording, .trainingStartPlayback
+                        ])
+                    }
+                    .id("section-training")
+                }
+
+                if showReset && (!isSearching || matchesSearch("reset defaults restore")) {
+                    Section(header: Label(loc.localized("hotkeys.reset"), systemImage: "arrow.counterclockwise")) {
+                        Text(loc.localized("hotkeys.resetDescription"))
+                            .font(.caption)
+                            .foregroundStyle(AppColors.textSecondary(colorScheme))
+
+                        Button(loc.localized("hotkeys.resetToDefaults")) {
+                            hotkeyManager.resetToDefaults()
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                    }
+                    .id("section-reset")
+                }
+
+                if isSearching
+                    && !matchesAnyLabel([.saveState, .loadState, .undoLoadState, .slotNext, .slotPrev, .toggleInputCapture])
+                    && !matchesAnyLabel(slotActions)
+                    && !matchesAnyLabel([.toggleTrainingMode, .trainingReset, .trainingToggleRecording, .trainingStartPlayback])
+                    && !matchesSearch("hotkeys keyboard shortcuts save load slot undo training input capture")
+                    && !matchesSearch("slots 0-9 slot")
+                    && !matchesSearch("training mode reset recording playback tape")
+                    && !matchesSearch("screenshot capture photo picture")
+                    && !matchesSearch("reset defaults restore") {
+                    Section {
+                        Text("\(loc.localized("general.noMatchingSettings")) \"\(searchText)\"")
+                            .font(.caption)
+                            .foregroundStyle(AppColors.textSecondary(colorScheme))
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.vertical, AppSpacing.xl2)
+                    }
                 }
             }
-
-            if isSearching
-                && !matchesAnyLabel([.saveState, .loadState, .undoLoadState, .slotNext, .slotPrev, .toggleInputCapture])
-                && !matchesAnyLabel(slotActions)
-                && !matchesAnyLabel([.toggleTrainingMode, .trainingReset, .trainingToggleRecording, .trainingStartPlayback])
-                && !matchesSearch("hotkeys keyboard shortcuts save load slot undo training input capture")
-                && !matchesSearch("slots 0-9 slot")
-                && !matchesSearch("training mode reset recording playback tape")
-                && !matchesSearch("screenshot capture photo picture")
-                && !matchesSearch("reset defaults restore") {
-                Section {
-                    Text("\(loc.localized("general.noMatchingSettings")) \"\(searchText)\"")
-                        .font(.caption)
-                        .foregroundStyle(AppColors.textSecondary(colorScheme))
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .padding(.vertical, AppSpacing.xl2)
-                }
+            .scrollContentBackground(.hidden)
+            .formStyle(.grouped)
+            .onChange(of: focusedSectionID) { _, newID in
+                guard let id = newID else { return }
+                withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
             }
         }
-        .scrollContentBackground(.hidden)
-        .formStyle(.grouped)
         .navigationTitle(loc.localized("settings.hotkeys"))
     }
 

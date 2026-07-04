@@ -13,18 +13,29 @@ struct BezelSettingsView: View {
     @State private var selectedSystem: String = "all"
     
     @Binding var searchText: String
+    @Binding var focusedSectionID: String?
+    @Binding var scopedSectionID: String?
     let searchKeywords: String = "bezel frame overlay monitor"
 
-    init(systemID: String? = nil, searchText: Binding<String> = .constant("")) {
+    init(systemID: String? = nil, searchText: Binding<String> = .constant(""), focusedSectionID: Binding<String?> = .constant(nil),
+         scopedSectionID: Binding<String?> = .constant(nil)) {
         self._searchText = searchText
+        self._focusedSectionID = focusedSectionID
+        self._scopedSectionID = scopedSectionID
         if let sid = systemID {
             _selectedSystem = State(initialValue: sid)
         }
     }
     
     private var showStorageSection: Bool {
+
         if SettingsSearchRuntime.pageMatches(.bezels, query: searchText) { return true }
         return searchText.isEmpty || SettingsIndex.matches(haystack: "storage path folder directory", query: searchText)
+    }
+
+    private func sectionVisible(_ id: String) -> Bool {
+        guard let scope = scopedSectionID else { return true }
+        return scope == id || scope == id.replacingOccurrences(of: "section-", with: "")
     }
 
     private var showDownloadsSection: Bool {
@@ -47,33 +58,45 @@ struct BezelSettingsView: View {
     }
     
     var body: some View {
-        Form {
-            if searchText.isEmpty {
-                statisticsSection
-                storageSection
-                downloadsSection
-                dangerZoneSection
-            } else {
-                if showStatisticsSection {
-                    statisticsSection
+        ScrollViewReader { proxy in
+            Form {
+                if searchText.isEmpty {
+                    if sectionVisible("section-statistics") { statisticsSection }
+                    if sectionVisible("section-storage") { storageSection }
+                    if sectionVisible("section-downloads") { downloadsSection }
+                    if sectionVisible("section-dangerZone") { dangerZoneSection }
+                } else {
+                    if showStatisticsSection && sectionVisible("section-statistics") {
+                        statisticsSection
+                    }
+                    if showStorageSection && sectionVisible("section-storage") {
+                        storageSection
+                    }
+                    if showDownloadsSection && sectionVisible("section-downloads") {
+                        downloadsSection
+                    }
+                    if showDangerZoneSection && sectionVisible("section-dangerZone") {
+                        dangerZoneSection
+                    }
+
+                    if !hasAnyResults {
+                        noResultsView
+                    }
                 }
-                if showStorageSection {
-                    storageSection
-                }
-                if showDownloadsSection {
-                    downloadsSection
-                }
-                if showDangerZoneSection {
-                    dangerZoneSection
-                }
-                
-                if !hasAnyResults {
-                    noResultsView
+            }
+            .scrollContentBackground(.hidden)
+            .formStyle(.grouped)
+            .onChange(of: focusedSectionID) { _, newID in
+                guard let id = newID else { return }
+                withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+            }
+            .onChange(of: scopedSectionID) { _, newScope in
+                guard let id = newScope else { return }
+                DispatchQueue.main.async {
+                    withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
                 }
             }
         }
-        .scrollContentBackground(.hidden)
-        .formStyle(.grouped)
         .frame(minWidth: 500)
         .navigationTitle(loc.localized("bezel.settings"))
         .confirmationDialog(loc.localized("bezel.deleteBezelsTitle"), isPresented: $showClearConfirmation) {
@@ -120,6 +143,7 @@ struct BezelSettingsView: View {
         } header: {
             Label { Text(loc.localized("bezel.storage")) } icon: { Image(systemName: "folder.fill") }
         }
+        .id("section-storage")
     }
     
     private var downloadsSection: some View {
@@ -173,6 +197,7 @@ VStack(alignment: .leading, spacing: AppSpacing.xs) {
         } header: {
             Label { Text(loc.localized("bezel.downloads")) } icon: { Image(systemName: "arrow.down.circle.fill") }
         }
+        .id("section-downloads")
     }
     
     private var statisticsSection: some View {
@@ -200,6 +225,7 @@ VStack(alignment: .leading, spacing: AppSpacing.xs) {
         } header: {
             Label { Text(loc.localized("bezel.statistics")) } icon: { Image(systemName: "chart.bar.fill") }
         }
+        .id("section-statistics")
     }
 
     private var dangerZoneSection: some View {
@@ -215,6 +241,7 @@ VStack(alignment: .leading, spacing: AppSpacing.xs) {
         } header: {
             Label { Text(loc.localized("bezel.dangerZone")) } icon: { Image(systemName: "exclamationmark.triangle.fill") }
         }
+        .id("section-dangerZone")
     }
     
     private var noResultsView: some View {

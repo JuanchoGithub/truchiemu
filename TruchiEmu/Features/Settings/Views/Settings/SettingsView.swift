@@ -205,6 +205,9 @@ struct SettingsView: View {
     @State private var selectedPage: Page = .general
     @State private var deepLinkID = UUID()
     @State private var searchText: String = ""
+    @State private var focusedSectionID: String? = nil
+    @State private var scopedSectionID: String? = nil
+    @State private var pendingSystemSelection: String? = nil
     @State private var settingsGamepadContext: GamepadNavContext?
     @State private var hasPendingThemeChanges: Bool = false
     @State private var revertRequest: Int = 0
@@ -420,6 +423,41 @@ struct SettingsView: View {
         return SettingsIndex.shared.search(searchText)
     }
 
+    private func tryMatchSystem(_ query: String) -> String? {
+        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+        let lower = trimmed.lowercased()
+
+        // Exact ID match (e.g., "NES" -> system with id "nes", "SNES" -> "snes")
+        if let exact = SystemDatabaseWrapper.shared.systemsForDisplay.first(where: { $0.id.lowercased() == lower }) {
+            return exact.id
+        }
+
+        // Name token match (e.g., "NES" -> "Nintendo Entertainment System" via acronym pattern token)
+        // Prefer systems whose tokenized name contains the query as a token,
+        // before falling back to substring/fuzzy matches (which can be ambiguous).
+        var tokenMatch: SystemInfo?
+        var substringMatch: SystemInfo?
+        var fuzzyMatch: SystemInfo?
+        for system in SystemDatabaseWrapper.shared.systemsForDisplay {
+            let sysName = system.name.lowercased()
+            let queryTokens = lower.split(whereSeparator: { !$0.isLetter }).map { String($0) }
+            let nameTokens = sysName.split(whereSeparator: { !$0.isLetter }).map { String($0) }
+            if queryTokens.contains(where: { nameTokens.contains($0) }) {
+                if tokenMatch == nil { tokenMatch = system }
+                continue
+            }
+            if sysName.contains(lower) || lower.contains(sysName) {
+                if substringMatch == nil { substringMatch = system }
+                continue
+            }
+            if sysName.fuzzyMatch(lower) || system.id.lowercased().fuzzyMatch(lower) {
+                if fuzzyMatch == nil { fuzzyMatch = system }
+            }
+        }
+        return (tokenMatch ?? substringMatch ?? fuzzyMatch)?.id
+    }
+
     private func sidebarItem(for page: Page) -> some View {
         let isSelected = selectedPage == page
         let isHovered = hoveredPage == page
@@ -483,8 +521,33 @@ struct SettingsView: View {
             switch hit.kind {
             case .page(let page):
                 selectedPage = page
-            case .section(let page, _), .option(let page, _, _), .description(let page, _, _):
+                scopedSectionID = nil
+                deepLinkID = UUID()
+            case .section(let page, let sectionID):
                 selectedPage = page
+                scopedSectionID = nil
+                deepLinkID = UUID()
+                pendingSystemSelection = tryMatchSystem(searchText)
+                DispatchQueue.main.async {
+                    focusedSectionID = sectionID
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                        if focusedSectionID == sectionID { focusedSectionID = nil }
+                    }
+                }
+            case .option(let page, let parentSection, _, let subID), .description(let page, let parentSection, _, let subID):
+                let targetID = subID ?? parentSection
+                selectedPage = page
+                scopedSectionID = targetID
+                deepLinkID = UUID()
+                if page == .perSystem {
+                    pendingSystemSelection = tryMatchSystem(searchText)
+                }
+                DispatchQueue.main.async {
+                    focusedSectionID = targetID
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                        if focusedSectionID == targetID { focusedSectionID = nil }
+                    }
+                }
             }
             updateStorage()
         } label: {
@@ -528,6 +591,8 @@ struct SettingsView: View {
             switch selectedPage {
             case .general: GeneralSettingsView(
                 searchText: $searchText,
+                focusedSectionID: $focusedSectionID,
+                scopedSectionID: $scopedSectionID,
                 hasPendingChanges: $hasPendingThemeChanges,
                 revertRequest: $revertRequest,
                 applyRequest: $applyRequest,
@@ -537,33 +602,63 @@ struct SettingsView: View {
                 activePendingTintedSurfaces: $activePendingTintedSurfaces,
                 activePendingAppearanceMode: $activePendingAppearanceMode
             )
-            case .saves:       SavesSettingsView(searchText: $searchText)
-            case .library:     LibrarySettingsView(searchText: $searchText)
-            case .controllers: ControllerSettingsView(systemID: effectiveSystemID, searchText: $searchText)
-            case .analogMouse: AnalogMouseSettingsView(searchText: $searchText)
-            case .boxArt: BoxArtSettingsView(searchText: $searchText)
-            case .cheats:      CheatSettingsView(systemID: effectiveSystemID, searchText: $searchText)
-            case .bezels:     BezelSettingsView(systemID: effectiveSystemID, searchText: $searchText)
-            case .retroAchievements: RetroAchievementsSettingsView(searchText: $searchText, system: system)
-            case .genre:       GenreSettingsView(searchText: $searchText)
-            case .logging: LoggingSettingsView(searchText: $searchText)
-        case .moveList: MoveListSettingsView(searchText: $searchText)
-        case .hotkeys: HotkeyConfigSettingsView(searchText: $searchText, scope: .all)
-        case .perSystem: PerSystemSettingsView(searchText: $searchText)
-         case .streaming: StreamingMediaSettingsView(searchText: $searchText)
-        case .help: HelpSettingsView(searchText: $searchText)
-        case .about: AboutView()
-            case .reset: ResetSettingsView(searchText: $searchText)
-        }
+            case .saves:       SavesSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
+            case .library:     LibrarySettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
+            case .controllers: ControllerSettingsView(systemID: effectiveSystemID, searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
+            case .analogMouse: AnalogMouseSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
+            case .boxArt: BoxArtSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
+            case .cheats:      CheatSettingsView(systemID: effectiveSystemID, searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
+            case .bezels:     BezelSettingsView(systemID: effectiveSystemID, searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
+            case .retroAchievements: RetroAchievementsSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID, system: system)
+            case .genre:       GenreSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
+            case .logging: LoggingSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
+            case .moveList: MoveListSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
+            case .hotkeys: HotkeyConfigSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID, scope: .all)
+            case .perSystem: PerSystemSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID, pendingSystemID: $pendingSystemSelection)
+            case .streaming: StreamingMediaSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
+            case .help: HelpSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
+            case .about: AboutView(focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
+            case .reset: ResetSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
+            }
         }
         .frame(minWidth: 450, minHeight: 350)
+        .overlay(alignment: .topTrailing) {
+            if scopedSectionID != nil {
+                scopeBackChip
+            }
+        }
 
         if coreManager.isDownloadingCore {
             CoreDownloadStatusBar(coreManager: coreManager)
         }
     }
-}
+    }
 
+    private var scopeBackChip: some View {
+        Button {
+            scopedSectionID = nil
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 11, weight: .semibold))
+                Text(loc.localized("settings.backToSection"))
+                    .font(.system(size: 12, weight: .medium))
+            }
+            .padding(.vertical, 6)
+            .padding(.horizontal, 10)
+            .background(
+                Capsule().fill(AppColors.accentBackground(colorScheme))
+            )
+            .overlay(
+                Capsule().stroke(AppColors.brandAccent.opacity(0.4), lineWidth: 1)
+            )
+            .foregroundStyle(AppColors.brandAccent)
+        }
+        .buttonStyle(.plain)
+        .padding(.top, 12)
+        .padding(.trailing, 14)
+        .help(loc.localized("settings.backToSectionHelp"))
+    }
 }
 
 // MARK: - Window Close Interceptor

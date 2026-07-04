@@ -8,10 +8,15 @@ struct LoggingSettingsView: View {
     @StateObject private var viewModel = LoggingSettingsViewModel()
 
     @Binding var searchText: String
+    @Binding var focusedSectionID: String?
+    @Binding var scopedSectionID: String?
     @ObservedObject private var loc = LocalizationManager.shared
 
-    init(searchText: Binding<String> = .constant("")) {
+    init(searchText: Binding<String> = .constant(""), focusedSectionID: Binding<String?> = .constant(nil),
+         scopedSectionID: Binding<String?> = .constant(nil)) {
         self._searchText = searchText
+        self._focusedSectionID = focusedSectionID
+        self._scopedSectionID = scopedSectionID
     }
 
     private var isSearching: Bool {
@@ -24,141 +29,155 @@ struct LoggingSettingsView: View {
         return SettingsIndex.matches(haystack: keywords, query: searchText)
     }
 
+    private func sectionVisible(_ id: String) -> Bool {
+        guard let scope = scopedSectionID else { return true }
+        return scope == id || scope == id.replacingOccurrences(of: "section-", with: "")
+    }
+
     var body: some View {
-        Form {
-            if !isSearching || matchesSearch("logging log debug console output level verbosity info extreme") {
-                Section {
-                    Picker(loc.localized("logging.logLevel"), selection: $selectedLevel) {
-                        ForEach(LogLevel.allCases, id: \.self) { level in
-                            Text(level.description).tag(level)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-
-                    logLevelDescription
-                } header: {
-                    Label { Text(loc.localized("logging.logLevel")) } icon: { Image(systemName: "slider.vertical.3") }
-                } footer: {
-                    Text(loc.localized("logging.logLevelDescription"))
-                }
-            }
-
-            if !isSearching || matchesSearch("logging file folder location path size archive") {
-                Section {
-                    LabeledContent(loc.localized("logging.location")) {
-                        HStack(spacing: AppSpacing.sm) {
-                            Text(viewModel.currentLogFilePath)
-                                .font(.caption)
-                                .foregroundStyle(AppColors.textSecondary(colorScheme))
-                                .lineLimit(1)
-                                .truncationMode(.middle)
-                            Button(loc.localized("logging.showInFinder")) {
-                                viewModel.showLogInFinder()
+        ScrollViewReader { proxy in
+            Form {
+                if (!isSearching || matchesSearch("logging log debug console output level verbosity info extreme")) && sectionVisible("section-levels") {
+                    Section {
+                        Picker(loc.localized("logging.logLevel"), selection: $selectedLevel) {
+                            ForEach(LogLevel.allCases, id: \.self) { level in
+                                Text(level.description).tag(level)
                             }
-                            .buttonStyle(.bordered)
-                            .controlSize(.small)
                         }
-                    }
+                        .pickerStyle(.segmented)
 
-                    LabeledContent(loc.localized("logging.currentFile")) {
-                        Text(viewModel.currentLogFileSize)
-                            .font(.caption)
-                            .foregroundStyle(AppColors.textTertiary(colorScheme))
+                        logLevelDescription
+                    } header: {
+                        Label { Text(loc.localized("logging.logLevel")) } icon: { Image(systemName: "slider.vertical.3") }
+                    } footer: {
+                        Text(loc.localized("logging.logLevelDescription"))
                     }
+                    .id("section-levels")
+                }
 
-                    LabeledContent(loc.localized("logging.totalLogSize")) {
-                        Text(viewModel.totalLogFileSize)
-                            .font(.caption)
-                            .foregroundStyle(AppColors.textTertiary(colorScheme))
-                    }
-
-                    if viewModel.hasCustomLogFolder {
-                        Text(loc.localized("logging.customLocationDescription"))
-                            .font(.caption)
-                            .foregroundStyle(AppColors.brandAccent)
-                    }
-
-                    HStack {
-                        Button(loc.localized("logging.changeLocation")) {
-                            viewModel.changeLogFolder()
+                if (!isSearching || matchesSearch("logging file folder location path size archive")) && sectionVisible("section-files") {
+                    Section {
+                        LabeledContent(loc.localized("logging.location")) {
+                            HStack(spacing: AppSpacing.sm) {
+                                Text(viewModel.currentLogFilePath)
+                                    .font(.caption)
+                                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                    .lineLimit(1)
+                                    .truncationMode(.middle)
+                                Button(loc.localized("logging.showInFinder")) {
+                                    viewModel.showLogInFinder()
+                                }
+                                .buttonStyle(.bordered)
+                                .controlSize(.small)
+                            }
                         }
-                        .buttonStyle(.bordered)
-                        .controlSize(.small)
+
+                        LabeledContent(loc.localized("logging.currentFile")) {
+                            Text(viewModel.currentLogFileSize)
+                                .font(.caption)
+                                .foregroundStyle(AppColors.textTertiary(colorScheme))
+                        }
+
+                        LabeledContent(loc.localized("logging.totalLogSize")) {
+                            Text(viewModel.totalLogFileSize)
+                                .font(.caption)
+                                .foregroundStyle(AppColors.textTertiary(colorScheme))
+                        }
 
                         if viewModel.hasCustomLogFolder {
-                            Button(loc.localized("logging.reset")) {
-                                viewModel.resetToDefaultFolder()
+                            Text(loc.localized("logging.customLocationDescription"))
+                                .font(.caption)
+                                .foregroundStyle(AppColors.brandAccent)
+                        }
+
+                        HStack {
+                            Button(loc.localized("logging.changeLocation")) {
+                                viewModel.changeLogFolder()
+                            }
+                            .buttonStyle(.bordered)
+                            .controlSize(.small)
+
+                            if viewModel.hasCustomLogFolder {
+                                Button(loc.localized("logging.reset")) {
+                                    viewModel.resetToDefaultFolder()
+                                }
+                                .buttonStyle(.bordered)
+                                .controlSize(.small)
+                            }
+                        }
+                    } header: {
+                        Label { Text(loc.localized("logging.logFileLocation")) } icon: { Image(systemName: "folder") }
+                    }
+                    .id("section-files")
+                }
+
+                if (!isSearching || matchesSearch("logging maintenance clear trim delete archive rotation size")) && sectionVisible("section-maintenance") {
+                    Section {
+                        LabeledContent(loc.localized("logging.maxFileSize")) {
+                            Text(loc.localized("logging.fiveMB"))
+                                .font(.caption)
+                                .foregroundStyle(AppColors.textTertiary(colorScheme))
+                        }
+
+                        LabeledContent(loc.localized("logging.autoRotation")) {
+                            Text(loc.localized("logging.enabled"))
+                                .font(.caption)
+                                .foregroundStyle(AppColors.textTertiary(colorScheme))
+                        }
+
+                        LabeledContent(loc.localized("logging.ageLimit")) {
+                            Text(loc.localized("logging.sevenDays"))
+                                .font(.caption)
+                                .foregroundStyle(AppColors.textTertiary(colorScheme))
+                        }
+
+                        Divider()
+                            .padding(.vertical, AppSpacing.xs)
+
+                        HStack {
+                            Button(loc.localized("logging.trimOldEntries")) {
+                                viewModel.trimOldLogs()
+                            }
+                            .buttonStyle(.bordered)
+                            .controlSize(.small)
+
+                            Button(loc.localized("logging.clearAllLogs")) {
+                                viewModel.clearAllLogs()
                             }
                             .buttonStyle(.bordered)
                             .controlSize(.small)
                         }
+                    } header: {
+                        Label { Text(loc.localized("logging.logMaintenance")) } icon: { Image(systemName: "trash") }
+                    } footer: {
+                        Text(loc.localized("logging.maintenanceDescription"))
                     }
-                } header: {
-                    Label { Text(loc.localized("logging.logFileLocation")) } icon: { Image(systemName: "folder") }
+                    .id("section-maintenance")
+                }
+
+                if isSearching && !hasMatchingSections {
+                    Section {
+                        Text(loc.localized("logging.noMatchingSettings") + " \"\(searchText)\"")
+                            .font(.caption)
+                            .foregroundStyle(AppColors.textSecondary(colorScheme))
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.vertical, AppSpacing.xl2)
+                    }
                 }
             }
-
-            if !isSearching || matchesSearch("logging maintenance clear trim delete archive rotation size") {
-                Section {
-                    LabeledContent(loc.localized("logging.maxFileSize")) {
-                        Text(loc.localized("logging.fiveMB"))
-                            .font(.caption)
-                            .foregroundStyle(AppColors.textTertiary(colorScheme))
-                    }
-
-                    LabeledContent(loc.localized("logging.autoRotation")) {
-                        Text(loc.localized("logging.enabled"))
-                            .font(.caption)
-                            .foregroundStyle(AppColors.textTertiary(colorScheme))
-                    }
-
-                    LabeledContent(loc.localized("logging.ageLimit")) {
-                        Text(loc.localized("logging.sevenDays"))
-                            .font(.caption)
-                            .foregroundStyle(AppColors.textTertiary(colorScheme))
-                    }
-
-                    Divider()
-                        .padding(.vertical, AppSpacing.xs)
-
-                    HStack {
-                        Button(loc.localized("logging.trimOldEntries")) {
-                            viewModel.trimOldLogs()
-                        }
-                        .buttonStyle(.bordered)
-                        .controlSize(.small)
-
-                        Button(loc.localized("logging.clearAllLogs")) {
-                            viewModel.clearAllLogs()
-                        }
-                        .buttonStyle(.bordered)
-                        .controlSize(.small)
-                    }
-                } header: {
-                    Label { Text(loc.localized("logging.logMaintenance")) } icon: { Image(systemName: "trash") }
-                } footer: {
-                    Text(loc.localized("logging.maintenanceDescription"))
-                }
+            .scrollContentBackground(.hidden)
+            .formStyle(.grouped)
+            .onAppear {
+                let rawLevel = AppSettings.get("log_level", type: String.self) ?? "info"
+                selectedLevel = LogLevel(rawValue: rawLevel) ?? .info
+                viewModel.refreshInfo()
             }
-
-            if isSearching && !hasMatchingSections {
-                Section {
-                    Text(loc.localized("logging.noMatchingSettings") + " \"\(searchText)\"")
-                        .font(.caption)
-                        .foregroundStyle(AppColors.textSecondary(colorScheme))
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .padding(.vertical, AppSpacing.xl2)
-                }
+            .onChange(of: focusedSectionID) { _, newID in
+                guard let id = newID else { return }
+                withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
             }
         }
-        .scrollContentBackground(.hidden)
-        .formStyle(.grouped)
         .navigationTitle(loc.localized("logging.title"))
-        .onAppear {
-            let rawLevel = AppSettings.get("log_level", type: String.self) ?? "info"
-            selectedLevel = LogLevel(rawValue: rawLevel) ?? .info
-            viewModel.refreshInfo()
-        }
         .onChange(of: selectedLevel) { _, newValue in
             LoggerService.shared.setLevel(newValue)
             AppSettings.set("log_level", value: newValue.rawValue)

@@ -21,10 +21,15 @@ struct RetroAchievementsSettingsView: View {
     @State private var isMatching = false
     
     @Binding var searchText: String
+    @Binding var focusedSectionID: String?
+    @Binding var scopedSectionID: String?
     let system: SystemInfo?
 
-    init(searchText: Binding<String> = .constant(""), system: SystemInfo? = nil) {
+    init(searchText: Binding<String> = .constant(""), focusedSectionID: Binding<String?> = .constant(nil),
+         scopedSectionID: Binding<String?> = .constant(nil), system: SystemInfo? = nil) {
         self._searchText = searchText
+        self._focusedSectionID = focusedSectionID
+        self._scopedSectionID = scopedSectionID
         self.system = system
     }
     
@@ -40,169 +45,193 @@ struct RetroAchievementsSettingsView: View {
     private func highlightText(_ text: String) -> String {
         return text
     }
-    
+
+    private func sectionVisible(_ id: String) -> Bool {
+        guard let scope = scopedSectionID else { return true }
+        return scope == id || scope == id.replacingOccurrences(of: "section-", with: "")
+    }
+
     var body: some View {
-        Form {
-            // Enable
-            if !isSearching || matchesSearch("RetroAchievements enable disable") {
-                Section {
-                    Toggle(loc.localized("retroAchievements.enable"), isOn: Binding(
-                        get: { raService.isEnabled },
-                        set: { raService.setEnabled($0) }
-                    ))
-                    if !raService.isEnabled {
-                        Text(loc.localized("retroAchievements.enableDescription"))
+        ScrollViewReader { proxy in
+            Form {
+                // Enable
+                if (!isSearching || matchesSearch("RetroAchievements enable disable")) && sectionVisible("section-enable") {
+                    Section {
+                        Toggle(loc.localized("retroAchievements.enable"), isOn: Binding(
+                            get: { raService.isEnabled },
+                            set: { raService.setEnabled($0) }
+                        ))
+                        if !raService.isEnabled {
+                            Text(loc.localized("retroAchievements.enableDescription"))
+                                .font(.caption)
+                                .foregroundColor(AppColors.textSecondary(colorScheme))
+                        }
+                    } header: {
+                        Label(loc.localized("retroAchievements.title"), systemImage: "trophy.fill")
+                    }
+                    .id("section-enable")
+                }
+
+                // Account
+                if (!isSearching || matchesSearch("account username login logout connect api key")) && sectionVisible("section-account") {
+                    Section {
+                        if raService.isLoggedIn {
+                            LoggedInAccountContent()
+                        } else {
+                            LoginFormContent(
+                                username: $username,
+                                password: $password,
+                                webApiKey: $webApiKey,
+                                showApiKey: $showApiKey,
+                                loginError: loginError,
+                                isLoggingIn: isLoggingIn,
+                                onLogin: login
+                            )
+                        }
+                    } header: {
+                        Label(loc.localized("retroAchievements.account"), systemImage: "person.badge.key")
+                    }
+                    .id("section-account")
+                }
+
+                // Hardcore Mode
+                if (!isSearching || matchesSearch("hardcore mode")) && sectionVisible("section-hardcore") {
+                    Section {
+                        Toggle(loc.localized("retroAchievements.enabled"), isOn: Binding(
+                            get: { raService.hardcoreMode },
+                            set: { newValue in
+                                if newValue {
+                                    raService.setHardcoreMode(true)
+                                    HardcoreModeManager.shared.activateHardcore()
+                                } else {
+                                    HardcoreModeManager.shared.deactivateHardcore()
+                                    raService.setHardcoreMode(false)
+                                }
+                            }
+                        ))
+                        .disabled(!raService.isEnabled)
+
+                        Text(loc.localized("retroAchievements.hardcoreModeDescription"))
                             .font(.caption)
                             .foregroundColor(AppColors.textSecondary(colorScheme))
-                    }
-                } header: {
-                    Label(loc.localized("retroAchievements.title"), systemImage: "trophy.fill")
-                }
-            }
 
-            // Account
-            if !isSearching || matchesSearch("account username login logout connect api key") {
-                Section {
-                    if raService.isLoggedIn {
-                        LoggedInAccountContent()
-                    } else {
-                        LoginFormContent(
-                            username: $username,
-                            password: $password,
-                            webApiKey: $webApiKey,
-                            showApiKey: $showApiKey,
-                            loginError: loginError,
-                            isLoggingIn: isLoggingIn,
-                            onLogin: login
-                        )
-                    }
-                } header: {
-                    Label(loc.localized("retroAchievements.account"), systemImage: "person.badge.key")
-                }
-            }
+                        VStack(alignment: .leading, spacing: 4) {
+                            hardcoreRule(loc.localized("retroAchievements.saveStatesDisabled"))
+                            hardcoreRule(loc.localized("retroAchievements.rewindDisabled"))
+                            hardcoreRule(loc.localized("retroAchievements.slowMotionDisabled"))
+                            hardcoreRule(loc.localized("retroAchievements.cheatCodesDisabled"))
+                        }
 
-            // Hardcore Mode
-            if !isSearching || matchesSearch("hardcore mode") {
-                Section {
-                    Toggle(loc.localized("retroAchievements.enabled"), isOn: Binding(
-                        get: { raService.hardcoreMode },
-                        set: { newValue in
-                            if newValue {
-                                raService.setHardcoreMode(true)
-                                HardcoreModeManager.shared.activateHardcore()
-                            } else {
-                                HardcoreModeManager.shared.deactivateHardcore()
-                                raService.setHardcoreMode(false)
+                        Text(loc.localized("retroAchievements.softcoreModeWarning"))
+                            .font(.caption)
+                            .foregroundColor(AppColors.warning(colorScheme))
+                    } header: {
+                        Label(loc.localized("retroAchievements.hardcoreMode"), systemImage: "shield.lefthalf.filled")
+                    }
+                    .id("section-hardcore")
+                }
+
+                // Display
+                if (!isSearching || matchesSearch("display view grid list achievements")) && sectionVisible("section-display") {
+                    Section {
+                        Picker(loc.localized("achievement.defaultViewMode"), selection: Binding<AchievementViewMode>(
+                            get: {
+                                if let raw = AppSettings.getString("achievementViewMode") {
+                                    AchievementViewMode(rawValue: raw) ?? .grid
+                                } else { .grid }
+                            },
+                            set: { newMode in
+                                AppSettings.setString("achievementViewMode", value: newMode.rawValue)
+                            }
+                        )) {
+                            ForEach(AchievementViewMode.allCases, id: \.self) { mode in
+                                Text(mode.localizedName).tag(mode)
                             }
                         }
-                    ))
-                    .disabled(!raService.isEnabled)
+                        .pickerStyle(.segmented)
 
-                    Text(loc.localized("retroAchievements.hardcoreModeDescription"))
-                        .font(.caption)
-                        .foregroundColor(AppColors.textSecondary(colorScheme))
-
-                    VStack(alignment: .leading, spacing: 4) {
-                        hardcoreRule(loc.localized("retroAchievements.saveStatesDisabled"))
-                        hardcoreRule(loc.localized("retroAchievements.rewindDisabled"))
-                        hardcoreRule(loc.localized("retroAchievements.slowMotionDisabled"))
-                        hardcoreRule(loc.localized("retroAchievements.cheatCodesDisabled"))
+                        Text(loc.localized("achievement.defaultViewModeDescription"))
+                            .font(.caption)
+                            .foregroundColor(AppColors.textTertiary(colorScheme))
+                    } header: {
+                        Label(loc.localized("achievement.display"), systemImage: "eye")
                     }
-
-                    Text(loc.localized("retroAchievements.softcoreModeWarning"))
-                        .font(.caption)
-                        .foregroundColor(AppColors.warning(colorScheme))
-                } header: {
-                    Label(loc.localized("retroAchievements.hardcoreMode"), systemImage: "shield.lefthalf.filled")
+                    .id("section-display")
                 }
-            }
 
-            // Display
-            if !isSearching || matchesSearch("display view grid list achievements") {
-                Section {
-                    Picker(loc.localized("achievement.defaultViewMode"), selection: Binding<AchievementViewMode>(
-                        get: {
-                            if let raw = AppSettings.getString("achievementViewMode") {
-                                AchievementViewMode(rawValue: raw) ?? .grid
-                            } else { .grid }
-                        },
-                        set: { newMode in
-                            AppSettings.setString("achievementViewMode", value: newMode.rawValue)
+                // Rich Presence
+                if (!isSearching || matchesSearch("rich presence game active")) && sectionVisible("section-richPresence") {
+                    Section {
+                        if let richPresence = raService.richPresence {
+                            Text(richPresence)
+                                .font(.caption)
+                                .foregroundColor(AppColors.textSecondary(colorScheme))
+                        } else {
+                            Text(loc.localized("retroAchievements.noGameActive"))
+                                .font(.caption)
+                                .foregroundColor(AppColors.textMuted(colorScheme))
                         }
-                    )) {
-                        ForEach(AchievementViewMode.allCases, id: \.self) { mode in
-                            Text(mode.localizedName).tag(mode)
-                        }
+                    } header: {
+                        Label(loc.localized("retroAchievements.richPresence"), systemImage: "text.bubble.fill")
                     }
-                    .pickerStyle(.segmented)
-
-                    Text(loc.localized("achievement.defaultViewModeDescription"))
-                        .font(.caption)
-                        .foregroundColor(AppColors.textTertiary(colorScheme))
-                } header: {
-                    Label(loc.localized("achievement.display"), systemImage: "eye")
+                    .id("section-richPresence")
                 }
-            }
 
-            // Rich Presence
-            if !isSearching || matchesSearch("rich presence game active") {
-                Section {
-                    if let richPresence = raService.richPresence {
-                        Text(richPresence)
+                // Game Cache
+                if (!isSearching || matchesSearch("refresh cache systems games data")) && sectionVisible("section-refresh") {
+                    Section {
+                        CacheSectionContent(
+                            isCacheRefreshing: $isCacheRefreshing,
+                            isMatching: $isMatching,
+                            cacheRefreshError: cacheRefreshError,
+                            matchingStatus: matchingStatus,
+                            onRefreshConsoles: refreshConsoles,
+                            onRefreshGames: refreshGames,
+                            onMatchAllGames: matchAllGames
+                        )
+                    } header: {
+                        Label(loc.localized("retroAchievements.gameCache"), systemImage: "internaldrive")
+                    }
+                    .id("section-refresh")
+                }
+
+                // About
+                if (!isSearching || matchesSearch("about info")) && sectionVisible("section-about") {
+                    Section {
+                        Text(loc.localized("retroAchievements.aboutDescription"))
                             .font(.caption)
                             .foregroundColor(AppColors.textSecondary(colorScheme))
-                    } else {
-                        Text(loc.localized("retroAchievements.noGameActive"))
+                        Link(loc.localized("retroAchievements.visitWebsite"), destination: URL(string: "https://retroachievements.org")!)
                             .font(.caption)
-                            .foregroundColor(AppColors.textMuted(colorScheme))
+                    } header: {
+                        Label(loc.localized("retroAchievements.about"), systemImage: "info.circle")
                     }
-                } header: {
-                    Label(loc.localized("retroAchievements.richPresence"), systemImage: "text.bubble.fill")
+                    .id("section-about")
+                }
+
+                if isSearching && !hasAnyResults {
+                    Section {
+                        ContentUnavailableView(
+                            loc.localized("retroAchievements.noResults"),
+                            systemImage: "magnifyingglass",
+                            description: Text(loc.localized("retroAchievements.tryAdjustingSearch"))
+                        )
+                    }
                 }
             }
-
-            // Game Cache
-            if !isSearching || matchesSearch("refresh cache systems games data") {
-                Section {
-                    CacheSectionContent(
-                        isCacheRefreshing: $isCacheRefreshing,
-                        isMatching: $isMatching,
-                        cacheRefreshError: cacheRefreshError,
-                        matchingStatus: matchingStatus,
-                        onRefreshConsoles: refreshConsoles,
-                        onRefreshGames: refreshGames,
-                        onMatchAllGames: matchAllGames
-                    )
-                } header: {
-                    Label(loc.localized("retroAchievements.gameCache"), systemImage: "internaldrive")
-                }
+            .scrollContentBackground(.hidden)
+            .formStyle(.grouped)
+            .onChange(of: focusedSectionID) { _, newID in
+                guard let id = newID else { return }
+                withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
             }
-
-            // About
-            if !isSearching || matchesSearch("about info") {
-                Section {
-                    Text(loc.localized("retroAchievements.aboutDescription"))
-                        .font(.caption)
-                        .foregroundColor(AppColors.textSecondary(colorScheme))
-                    Link(loc.localized("retroAchievements.visitWebsite"), destination: URL(string: "https://retroachievements.org")!)
-                        .font(.caption)
-                } header: {
-                    Label(loc.localized("retroAchievements.about"), systemImage: "info.circle")
-                }
-            }
-
-            if isSearching && !hasAnyResults {
-                Section {
-                    ContentUnavailableView(
-                        loc.localized("retroAchievements.noResults"),
-                        systemImage: "magnifyingglass",
-                        description: Text(loc.localized("retroAchievements.tryAdjustingSearch"))
-                    )
+            .onChange(of: scopedSectionID) { _, newScope in
+                guard let id = newScope else { return }
+                DispatchQueue.main.async {
+                    withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
                 }
             }
         }
-        .scrollContentBackground(.hidden)
-        .formStyle(.grouped)
         .navigationTitle(loc.localized("retroAchievements.title"))
     }
 

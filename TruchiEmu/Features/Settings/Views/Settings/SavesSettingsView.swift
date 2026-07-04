@@ -20,9 +20,15 @@ struct SavesSettingsView: View {
     @State private var showingMigrationAlert = false
 
     @Binding var searchText: String
+    @Binding var focusedSectionID: String?
+    @Binding var scopedSectionID: String?
 
-    init(searchText: Binding<String> = .constant("")) {
+    init(searchText: Binding<String> = .constant(""),
+         focusedSectionID: Binding<String?> = .constant(nil),
+         scopedSectionID: Binding<String?> = .constant(nil)) {
         self._searchText = searchText
+        self._focusedSectionID = focusedSectionID
+        self._scopedSectionID = scopedSectionID
     }
 
     private var isSearching: Bool {
@@ -45,135 +51,163 @@ struct SavesSettingsView: View {
         byteFormatter.string(fromByteCount: bytes)
     }
 
+    private func sectionVisible(_ id: String) -> Bool {
+        guard let scope = scopedSectionID else { return true }
+        return scope == id || scope == id.replacingOccurrences(of: "section-", with: "")
+    }
+
+    @ViewBuilder
+    private var progressiveSavesSection: some View {
+        Section(header: Label(loc.localized("settings.saves.progressiveSaves"), systemImage: "arrow.triangle.2.circlepath")) {
+            Toggle(loc.localized("settings.saves.progressiveSaves"), isOn: $progressiveSaves)
+            Text(loc.localized("settings.saves.progressiveSavesDescription"))
+                .font(.caption)
+                .foregroundStyle(AppColors.textSecondary(colorScheme))
+
+            if progressiveSaves {
+                HStack {
+                    Text(loc.localized("settings.saves.autoSlotCount"))
+                    Spacer()
+                    Picker("", selection: $autoSlotCount) {
+                        ForEach(1...5, id: \.self) { count in
+                            Text("\(count)").tag(count)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .frame(width: 200)
+                }
+                Text(loc.localized("settings.saves.slotCountDescription"))
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+            }
+        }
+        .id("section-progressiveSaves")
+    }
+
+    @ViewBuilder
+    private var formContent: some View {
+        if (!isSearching || matchesSearch("storage path folder directory disk size stats SRAM location migration")) && sectionVisible("section-saveDirectories") {
+            Section(header: Label(loc.localized("saveDirectories.title"), systemImage: "folder.fill")) {
+                StatGroup(
+                    AppStatCard(
+                        icon: "memorychip",
+                        value: byteString(from: saveFileSize),
+                        label: loc.localized("saveDirectories.saveFiles"),
+                        accent: AppColors.brandAccent
+                    ),
+                    AppStatCard(
+                        icon: "gamecontroller.fill",
+                        value: byteString(from: saveStateSize),
+                        label: loc.localized("saveDirectories.saveStates"),
+                        accent: AppColors.accentTertiary
+                    ),
+                    AppStatCard(
+                        icon: "externaldrive.fill",
+                        value: byteString(from: saveFileSize + saveStateSize),
+                        label: loc.localized("saveDirectories.total"),
+                        accent: AppColors.warning(colorScheme)
+                    )
+                )
+
+                if directoryManager.needsMigration {
+                    Divider()
+                    Label { Text(loc.localized("saveDirectories.existingSavesFound")) } icon: { Image(systemName: "exclamationmark.triangle") }
+                        .font(.caption)
+                        .foregroundStyle(AppColors.warning(colorScheme))
+                    Button {
+                        showingMigrationAlert = true
+                    } label: {
+                        Label { Text(loc.localized("saveDirectories.migrateSaveFiles")) } icon: { Image(systemName: "arrow.right.doc.on.clipboard") }
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                }
+
+                Divider()
+
+                AppPathRow(
+                    loc.localized("saveDirectories.saveFilesSRAM"),
+                    url: directoryManager.savefilesDirectory
+                )
+
+                AppPathRow(
+                    loc.localized("saveDirectories.saveStates"),
+                    url: directoryManager.statesDirectory
+                )
+
+                AppPathRow(
+                    loc.localized("saveDirectories.systemBIOS"),
+                    url: directoryManager.activeSystemDirectory
+                )
+
+                Divider()
+                    .padding(.vertical, AppSpacing.xs)
+
+                HStack {
+                    Button {
+                        pickSaveDirectory()
+                    } label: {
+                        Label { Text(loc.localized("saveDirectories.changeSaveDirectory")) } icon: { Image(systemName: "folder") }
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                }
+            }
+            .id("section-saveDirectories")
+        }
+
+        if (!isSearching || matchesSearch("Auto save on exit auto-load compress states LZ4")) && sectionVisible("section-saveStates") {
+            Section(header: Label(loc.localized("settings.saveStates"), systemImage: "doc.badge.clock")) {
+                Toggle(loc.localized("settings.autoSaveOnExit"), isOn: $autoSaveOnExit)
+                Toggle(loc.localized("settings.autoLoadOnStart"), isOn: $autoLoadOnStart)
+                Toggle(loc.localized("settings.compressSaveStates"), isOn: $compressSaveStates)
+            }
+            .id("section-saveStates")
+        }
+
+        if (!isSearching || matchesSearch("Progressive saves auto slot rotation version count")) && sectionVisible("section-progressiveSaves") {
+            progressiveSavesSection
+        }
+
+        if (!isSearching || matchesSearch("Save manager browse delete manage review")) && sectionVisible("section-saveManager") {
+            Section {
+                Text(loc.localized("settings.saves.saveManagerDescription"))
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+            } header: {
+                Label(loc.localized("settings.saves.manage"), systemImage: "wrench.and.screwdriver")
+            }
+            .id("section-saveManager")
+        }
+
+        if isSearching && !hasMatchingSections {
+            Section {
+                Text(loc.localized("boxArt.noMatchingSettings"))
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                    .frame(maxWidth: .infinity, alignment: .center)
+                     .padding(.vertical, AppSpacing.xl2)
+            }
+        }
+    }
+
     var body: some View {
         Group {
             if contentLoaded {
-                Form {
-                    if !isSearching || matchesSearch("storage path folder directory disk size stats SRAM location migration") {
-                        Section(header: Label(loc.localized("saveDirectories.title"), systemImage: "folder.fill")) {
-                            StatGroup(
-                                AppStatCard(
-                                    icon: "memorychip",
-                                    value: byteString(from: saveFileSize),
-                                    label: loc.localized("saveDirectories.saveFiles"),
-                                    accent: AppColors.brandAccent
-                                ),
-                                AppStatCard(
-                                    icon: "gamecontroller.fill",
-                                    value: byteString(from: saveStateSize),
-                                    label: loc.localized("saveDirectories.saveStates"),
-                                    accent: AppColors.accentTertiary
-                                ),
-                                AppStatCard(
-                                    icon: "externaldrive.fill",
-                                    value: byteString(from: saveFileSize + saveStateSize),
-                                    label: loc.localized("saveDirectories.total"),
-                                    accent: AppColors.warning(colorScheme)
-                                )
-                            )
-
-                            if directoryManager.needsMigration {
-                                Divider()
-                                Label { Text(loc.localized("saveDirectories.existingSavesFound")) } icon: { Image(systemName: "exclamationmark.triangle") }
-                                    .font(.caption)
-                                    .foregroundStyle(AppColors.warning(colorScheme))
-                                Button {
-                                    showingMigrationAlert = true
-                                } label: {
-                                    Label { Text(loc.localized("saveDirectories.migrateSaveFiles")) } icon: { Image(systemName: "arrow.right.doc.on.clipboard") }
-                                }
-                                .buttonStyle(.bordered)
-                                .controlSize(.small)
-                            }
-
-                            Divider()
-
-                            AppPathRow(
-                                loc.localized("saveDirectories.saveFilesSRAM"),
-                                url: directoryManager.savefilesDirectory
-                            )
-
-                            AppPathRow(
-                                loc.localized("saveDirectories.saveStates"),
-                                url: directoryManager.statesDirectory
-                            )
-
-                            AppPathRow(
-                                loc.localized("saveDirectories.systemBIOS"),
-                                url: directoryManager.activeSystemDirectory
-                            )
-
-                            Divider()
-                                .padding(.vertical, AppSpacing.xs)
-
-                            HStack {
-                                Button {
-                                    pickSaveDirectory()
-                                } label: {
-                                    Label { Text(loc.localized("saveDirectories.changeSaveDirectory")) } icon: { Image(systemName: "folder") }
-                                }
-                                .buttonStyle(.bordered)
-                                .controlSize(.small)
-                            }
-                        }
+                ScrollViewReader { proxy in
+                    Form {
+                        formContent
                     }
-
-                    if !isSearching || matchesSearch("Auto save on exit auto-load compress states LZ4") {
-                        Section(header: Label(loc.localized("settings.saveStates"), systemImage: "doc.badge.clock")) {
-                            Toggle(loc.localized("settings.autoSaveOnExit"), isOn: $autoSaveOnExit)
-                            Toggle(loc.localized("settings.autoLoadOnStart"), isOn: $autoLoadOnStart)
-                            Toggle(loc.localized("settings.compressSaveStates"), isOn: $compressSaveStates)
-                        }
+                    .scrollContentBackground(.hidden)
+                    .formStyle(.grouped)
+                    .onChange(of: focusedSectionID) { _, newID in
+                        guard let id = newID else { return }
+                        withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
                     }
-
-                    if !isSearching || matchesSearch("Progressive saves auto slot rotation version count") {
-                        Section(header: Label(loc.localized("settings.saves.progressiveSaves"), systemImage: "arrow.triangle.2.circlepath")) {
-                            Toggle(loc.localized("settings.saves.progressiveSaves"), isOn: $progressiveSaves)
-                            Text(loc.localized("settings.saves.progressiveSavesDescription"))
-                                .font(.caption)
-                                .foregroundStyle(AppColors.textSecondary(colorScheme))
-
-                            if progressiveSaves {
-                                HStack {
-                                    Text(loc.localized("settings.saves.autoSlotCount"))
-                                    Spacer()
-                                    Picker("", selection: $autoSlotCount) {
-                                        ForEach(1...5, id: \.self) { count in
-                                            Text("\(count)").tag(count)
-                                        }
-                                    }
-                                    .pickerStyle(.segmented)
-                                    .frame(width: 200)
-                                }
-                                Text(loc.localized("settings.saves.slotCountDescription"))
-                                    .font(.caption)
-                                    .foregroundStyle(AppColors.textSecondary(colorScheme))
-                            }
-                        }
-                    }
-
-                    if !isSearching || matchesSearch("Save manager browse delete manage review") {
-                        Section {
-                            Text(loc.localized("settings.saves.saveManagerDescription"))
-                                .font(.caption)
-                                .foregroundStyle(AppColors.textSecondary(colorScheme))
-                            Button {
-                                showSaveManager = true
-                            } label: {
-                                Label(loc.localized("settings.saves.saveManager"), systemImage: "externaldrive.badge.checkmark")
-                            }
-                        } header: {
-                            Label(loc.localized("settings.saves.manage"), systemImage: "wrench.and.screwdriver")
-                        }
-                    }
-
-                    if isSearching && !hasMatchingSections {
-                        Section {
-                            Text("\(loc.localized("general.noMatchingSettings")) \"\(searchText)\"")
-                                .font(.caption)
-                                .foregroundStyle(AppColors.textSecondary(colorScheme))
-                                .frame(maxWidth: .infinity, alignment: .center)
-                                .padding(.vertical, AppSpacing.xl2)
+                    .onChange(of: scopedSectionID) { _, newScope in
+                        guard let id = newScope else { return }
+                        DispatchQueue.main.async {
+                            withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
                         }
                     }
                 }
@@ -182,8 +216,6 @@ struct SavesSettingsView: View {
                     .frame(maxWidth: .infinity, minHeight: 400)
             }
         }
-        .scrollContentBackground(.hidden)
-        .formStyle(.grouped)
         .navigationTitle(loc.localized("settings.saves"))
         .onAppear {
             progressiveSaves = AppSettings.getBool("progressiveSaves_enabled", defaultValue: false)

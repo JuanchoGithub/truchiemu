@@ -8,12 +8,46 @@ struct StreamingMediaSettingsView: View {
     @State private var tab: MediaTab = MediaTab.load()
     @State private var config: MediaConfig = MediaConfig.load()
     @Binding var searchText: String
+    @Binding var focusedSectionID: String?
+    @Binding var scopedSectionID: String?
 
-    init(searchText: Binding<String> = .constant("")) {
+    init(searchText: Binding<String> = .constant(""),
+         focusedSectionID: Binding<String?> = .constant(nil),
+         scopedSectionID: Binding<String?> = .constant(nil)) {
         self._searchText = searchText
+        self._focusedSectionID = focusedSectionID
+        self._scopedSectionID = scopedSectionID
     }
 
     private var isSearching: Bool { !searchText.isEmpty }
+
+    private func applyTarget(_ id: String, proxy: ScrollViewProxy) {
+        switch id {
+        case "tabRecording",
+             "recordingBadge", "recording-badge",
+             "recordingEnable", "recording-enable",
+             "qualitySection", "quality",
+             "qualitySection", "customQuality",
+             "outputPath", "output-path",
+             "recordWithShaders":
+            tab = .recording
+        case "tabStreaming",
+             "streamingBadge", "streaming-badge",
+             "streamingEnable", "streaming-enable":
+            tab = .streaming
+        case "tabScreenshots":
+            tab = .screenshots
+        case "tabSharing":
+            tab = .sharing
+        case "tabHotkeys":
+            tab = .hotkeys
+        default:
+            break
+        }
+        DispatchQueue.main.async {
+            withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+        }
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -36,23 +70,38 @@ struct StreamingMediaSettingsView: View {
                 .padding(.bottom, AppSpacing.sm)
             }
 
-            ScrollView {
-                Group {
-                    switch tab {
-                    case .recording:
-                        RecordingTabView(config: $config, searchText: $searchText)
-                    case .streaming:
-                        StreamingTabView(config: $config, searchText: $searchText)
-                    case .screenshots:
-                        ScreenshotsTabView(config: $config, searchText: $searchText)
-                    case .sharing:
-                        SharingTabView(config: $config, searchText: $searchText)
-                    case .hotkeys:
-                        HotkeysTabView(searchText: $searchText)
+            ScrollViewReader { proxy in
+                ScrollView {
+                    Group {
+                        switch tab {
+                        case .recording:
+                            RecordingTabView(config: $config, searchText: $searchText, scopedSectionID: $scopedSectionID)
+                                .id("section-tabRecording")
+                        case .streaming:
+                            StreamingTabView(config: $config, searchText: $searchText, scopedSectionID: $scopedSectionID)
+                                .id("section-tabStreaming")
+                        case .screenshots:
+                            ScreenshotsTabView(config: $config, searchText: $searchText)
+                                .id("section-tabScreenshots")
+                        case .sharing:
+                            SharingTabView(config: $config, searchText: $searchText)
+                                .id("section-tabSharing")
+                        case .hotkeys:
+                            HotkeysTabView(searchText: $searchText)
+                                .id("section-tabHotkeys")
+                        }
                     }
+                    .padding(.horizontal)
+                    .padding(.bottom, AppSpacing.xl2)
                 }
-                .padding(.horizontal)
-                .padding(.bottom, AppSpacing.xl2)
+                .onChange(of: focusedSectionID) { _, newID in
+                    guard let id = newID else { return }
+                    applyTarget(id, proxy: proxy)
+                }
+                .onChange(of: scopedSectionID) { _, newScope in
+                    guard let id = newScope else { return }
+                    applyTarget(id, proxy: proxy)
+                }
             }
         }
         .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))

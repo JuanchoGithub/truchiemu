@@ -9,10 +9,18 @@ struct AboutView: View {
     @State private var showWhatsNew = false
     @State private var isCheckingUpdates = false
     @State private var upToDateMessage: String?
+    @Binding var focusedSectionID: String?
+    @Binding var scopedSectionID: String?
 
     private let checkForUpdatesFromMenu = NotificationCenter.default.publisher(for: .checkForUpdatesFromMenu)
     private let showWhatsNewFromMenu = NotificationCenter.default.publisher(for: .showWhatsNewFromMenu)
     private let showChangelogFromMenu = NotificationCenter.default.publisher(for: .showChangelogFromMenu)
+
+    init(focusedSectionID: Binding<String?> = .constant(nil),
+    scopedSectionID: Binding<String?> = .constant(nil)) {
+        self._focusedSectionID = focusedSectionID
+        self._scopedSectionID = scopedSectionID
+    }
     
     var body: some View {
 

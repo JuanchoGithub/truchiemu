@@ -14,6 +14,9 @@ struct PerSystemSettingsView: View {
     @StateObject private var shaderManager = ShaderManager.shared
 
     @Binding var searchText: String
+    @Binding var focusedSectionID: String?
+    @Binding var scopedSectionID: String?
+    @Binding var pendingSystemID: String?
     @State private var showAvailableSystems = true
     @State private var forceShowTabs = false
 
@@ -40,8 +43,13 @@ struct PerSystemSettingsView: View {
         }
     }
 
-    init(searchText: Binding<String> = .constant("")) {
+    init(searchText: Binding<String> = .constant(""), focusedSectionID: Binding<String?> = .constant(nil),
+         scopedSectionID: Binding<String?> = .constant(nil),
+         pendingSystemID: Binding<String?> = .constant(nil)) {
         self._searchText = searchText
+        self._focusedSectionID = focusedSectionID
+        self._scopedSectionID = scopedSectionID
+        self._pendingSystemID = pendingSystemID
     }
 
     var body: some View {
@@ -49,22 +57,12 @@ struct PerSystemSettingsView: View {
         let all = systemDB.systemsForDisplay
         let active = all.filter { activeIDs.contains($0.id) }.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
         let inactive = all.filter { !activeIDs.contains($0.id) }.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
-        let filteredActive: [SystemInfo] = {
-            if searchText.isEmpty { return active }
-            if SettingsSearchRuntime.pageMatches(.perSystem, query: searchText) { return active }
-            return active.filter {
-                $0.name.localizedLowercase.fuzzyMatch(searchText) ||
-                $0.id.localizedLowercase.fuzzyMatch(searchText)
-            }
-        }()
-        let filteredInactive: [SystemInfo] = {
-            if searchText.isEmpty { return inactive }
-            if SettingsSearchRuntime.pageMatches(.perSystem, query: searchText) { return inactive }
-            return inactive.filter {
-                $0.name.localizedLowercase.fuzzyMatch(searchText) ||
-                $0.id.localizedLowercase.fuzzyMatch(searchText)
-            }
-        }()
+        let filteredActive: [SystemInfo] = searchText.isEmpty
+            ? active
+            : active.filter { systemMatchesQuery($0, query: searchText) }
+        let filteredInactive: [SystemInfo] = searchText.isEmpty
+            ? inactive
+            : inactive.filter { systemMatchesQuery($0, query: searchText) }
 
         return HStack(spacing: 0) {
             // System list (left)
@@ -113,8 +111,21 @@ struct PerSystemSettingsView: View {
         }
         .onAppear {
             forceShowTabs = false
-            if selectedSystemID == nil {
+            if let pending = pendingSystemID,
+               let sys = systemDB.system(forID: pending) {
+                selectedSystemID = sys.id
+                pendingSystemID = nil
+                forceShowTabs = true
+            } else if selectedSystemID == nil {
                 selectedSystemID = active.first?.id ?? inactive.first?.id
+            }
+        }
+        .onChange(of: pendingSystemID) { _, newValue in
+            guard let pid = newValue else { return }
+            if let sys = systemDB.system(forID: pid) {
+                selectedSystemID = sys.id
+                forceShowTabs = true
+                pendingSystemID = nil
             }
         }
         .onChange(of: selectedSystemID) { _, _ in
@@ -138,6 +149,21 @@ struct PerSystemSettingsView: View {
             }
         }
         return result
+    }
+
+    private func systemMatchesQuery(_ system: SystemInfo, query: String) -> Bool {
+        let q = query.lowercased()
+        guard !q.isEmpty else { return true }
+        let sysName = system.name.lowercased()
+        let sysId = system.id.lowercased()
+        if sysId == q { return true }
+        let queryTokens = q.split(whereSeparator: { !$0.isLetter }).map { String($0) }
+        let nameTokens = sysName.split(whereSeparator: { !$0.isLetter }).map { String($0) }
+        let idTokens = sysId.split(whereSeparator: { !$0.isLetter }).map { String($0) }
+        if queryTokens.contains(where: { nameTokens.contains($0) || idTokens.contains($0) }) { return true }
+        if nameTokens.contains(where: { $0.hasPrefix(q) || $0.contains(q) }) { return true }
+        if idTokens.contains(where: { $0.hasPrefix(q) || $0.contains(q) }) { return true }
+        return false
     }
 
     // MARK: - System List

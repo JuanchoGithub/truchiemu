@@ -19,6 +19,8 @@ struct CheatSettingsView: View {
     @State private var isExporting = false
 
     @Binding var searchText: String
+    @Binding var focusedSectionID: String?
+    @Binding var scopedSectionID: String?
 
     let systemID: String?
 
@@ -47,15 +49,24 @@ struct CheatSettingsView: View {
             .sorted { $0.name < $1.name }
     }
 
-    init(systemID: String? = nil, searchText: Binding<String> = .constant("")) {
+    init(systemID: String? = nil, searchText: Binding<String> = .constant(""), focusedSectionID: Binding<String?> = .constant(nil),
+         scopedSectionID: Binding<String?> = .constant(nil)) {
         self.systemID = systemID
         self._searchText = searchText
+        self._focusedSectionID = focusedSectionID
+        self._scopedSectionID = scopedSectionID
+    }
+
+    private func sectionVisible(_ id: String) -> Bool {
+        guard let scope = scopedSectionID else { return true }
+        return scope == id || scope == id.replacingOccurrences(of: "section-", with: "")
     }
 
     var body: some View {
+        ScrollViewReader { proxy in
         Form {
             // MARK: - Library Section
-            if !isSearching || matchesSearch("Cheat Library Summary files storage custom last updated") {
+            if (!isSearching || matchesSearch("Cheat Library Summary files storage custom last updated")) && sectionVisible("section-librarySummary") {
                 Section {
                     StatGroup(
                         AppStatCard(
@@ -86,10 +97,11 @@ struct CheatSettingsView: View {
                 } header: {
                     Label { Text(loc.localized("cheats.librarySummary")) } icon: { Image(systemName: "chart.bar.fill") }
                 }
+                .id("section-librarySummary")
             }
 
             // MARK: - Behavior Section
-            if !isSearching || matchesSearch("apply on launch notifications behavior") {
+            if (!isSearching || matchesSearch("apply on launch notifications behavior")) && sectionVisible("section-behavior") {
                 Section {
                     Toggle(isOn: $prefs.applyCheatsOnLaunch) {
                         VStack(alignment: .leading, spacing: AppSpacing.xxs) {
@@ -119,10 +131,11 @@ struct CheatSettingsView: View {
                 } footer: {
                     Text(loc.localized("cheats.onlineDatabaseDescription"))
                 }
+                .id("section-behavior")
             }
 
             // MARK: - Download Section
-            if !isSearching || matchesSearch("Online Database download network update") {
+            if (!isSearching || matchesSearch("Online Database download network update")) && sectionVisible("section-onlineDatabase") {
                 Section {
                     if downloadService.isDownloading {
                         downloadProgressView
@@ -132,10 +145,11 @@ struct CheatSettingsView: View {
                 } header: {
                     Label(loc.localized("cheats.onlineDatabase"), systemImage: "network")
                 }
+                .id("section-onlineDatabase")
             }
 
             // MARK: - Actions Section
-            if !isSearching || matchesSearch("Actions Show in Finder Clear Downloaded Cheats") {
+            if (!isSearching || matchesSearch("Actions Show in Finder Clear Downloaded Cheats")) && sectionVisible("section-actions") {
                 Section(header: Label(loc.localized("cheats.actions"), systemImage: "hammer")) {
                     Button(action: openCheatDirectory) {
                         Label { Text(loc.localized("cheats.showInFinder")) } icon: { Image(systemName: "folder") }
@@ -148,6 +162,7 @@ struct CheatSettingsView: View {
                             .foregroundStyle(AppColors.error(colorScheme))
                     }
                 }
+                .id("section-actions")
             }
 
             // MARK: - No Results
@@ -170,13 +185,17 @@ struct CheatSettingsView: View {
                         Spacer()
                     }
                 }
-            }
+        }
         }
         .scrollContentBackground(.hidden)
         .formStyle(.grouped)
-        .navigationTitle(loc.localized("cheats.title"))
-        .confirmationDialog(
-            loc.localized("cheats.clearDownloadedCheats"),
+        .onChange(of: focusedSectionID) { _, newID in
+            guard let id = newID else { return }
+            withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+        }
+    .navigationTitle(loc.localized("cheats.title"))
+    .confirmationDialog(
+        loc.localized("cheats.clearDownloadedCheats"),
             isPresented: $showClearConfirmation,
             titleVisibility: .visible
         ) {
@@ -219,9 +238,10 @@ struct CheatSettingsView: View {
             }
         }
     }
+    }
 
     // MARK: - Improved Download Progress (No Layout Shifts)
-
+    
     private var downloadProgressView: some View {
         VStack(alignment: .leading, spacing: AppSpacing.md) {
             HStack {

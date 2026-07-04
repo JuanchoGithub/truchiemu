@@ -15,9 +15,15 @@ struct LibrarySettingsView: View {
     
     // Search text passed from parent view (SettingsView)
     @Binding var searchText: String
+    @Binding var focusedSectionID: String?
+    @Binding var scopedSectionID: String?
     
-    init(searchText: Binding<String> = .constant("")) {
+    init(searchText: Binding<String> = .constant(""),
+         focusedSectionID: Binding<String?> = .constant(nil),
+         scopedSectionID: Binding<String?> = .constant(nil)) {
         self._searchText = searchText
+        self._focusedSectionID = focusedSectionID
+        self._scopedSectionID = scopedSectionID
     }
     
     // Define searchable sections with their keywords
@@ -79,6 +85,7 @@ private enum LibrarySection: CaseIterable, Identifiable {
     }
     
 var body: some View {
+        ScrollViewReader { proxy in
         Form {
              // Display Options Section
              if visibleSections.contains(.displayOptions) {
@@ -108,9 +115,10 @@ var body: some View {
                       Text(loc.localized("settings.mergeMameFBADescription"))
                           .font(.caption)
                           .foregroundStyle(AppColors.textSecondary(colorScheme))
-                  } header: {
+                    } header: {
                      Label { Text(loc.localized("library.displayOptions")) } icon: { Image(systemName: "eyeglasses") }
                  }
+                 .id("section-displayOptions")
              }
              
              // Hide Rules Section
@@ -123,6 +131,7 @@ var body: some View {
                  } header: {
                      Label { Text(loc.localized("settings.hiddenGames")) } icon: { Image(systemName: "eye.slash") }
                  }
+                 .id("section-hideRules")
              }
              
              // Region Section
@@ -139,22 +148,25 @@ var body: some View {
                  } header: {
                      Label { Text(loc.localized("library.region")) } icon: { Image(systemName: "map") }
                  }
+                 .id("section-region")
              }
              
              // Library Folders Section
-            if visibleSections.contains(.libraryFolders) {
-                LibraryFoldersSection(
-                    scanningFolders: $scanningFolders,
-                    rebuildTargetFolder: $rebuildTargetFolder,
-                    searchText: searchText
-                )
-            }
-            
+             if visibleSections.contains(.libraryFolders) {
+                 LibraryFoldersSection(
+                     scanningFolders: $scanningFolders,
+                     rebuildTargetFolder: $rebuildTargetFolder,
+                     searchText: searchText
+                 )
+                 .id("section-libraryFolders")
+             }
+             
              // Cache Section
              if visibleSections.contains(.cache) {
                  ExtractedROMCacheSettingsView()
+                 .id("section-cache")
              }
-            
+             
              // Maintenance Section - put at bottom
              if visibleSections.contains(.maintenance) {
                  Section {
@@ -185,6 +197,7 @@ var body: some View {
                  } header: {
                      Label { Text(loc.localized("library.maintenance")) } icon: { Image(systemName: "wrench.and.screwdriver") }
                  }
+                 .id("section-maintenance")
              }
              
              // Show "No results" message when searching and no sections match
@@ -195,24 +208,29 @@ var body: some View {
                      } description: {
                          Text(loc.localized("library.noSettingsMatch"))
 }
-            .padding(.vertical, AppSpacing.xl2)
+             .padding(.vertical, AppSpacing.xl2)
             }
         }
     }
     .scrollContentBackground(.hidden)
     .formStyle(.grouped)
-    .navigationTitle(loc.localized("library.title"))
-    .onAppear {
-        showHiddenGamesCategory = AppSettings.getBool("showHiddenGamesCategory", defaultValue: true)
+    .onChange(of: focusedSectionID) { _, newID in
+        guard let id = newID else { return }
+        withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
     }
-    .onChange(of: showHiddenGamesCategory) { _, newValue in
-        AppSettings.setBool("showHiddenGamesCategory", value: newValue)
-        NotificationCenter.default.post(name: .hiddenGamesCategoryChanged, object: nil)
-    }
-    .sheet(item: $rebuildTargetFolder) { folder in
-        RebuildOptionsSheet(folder: folder, library: library, automation: LibraryAutomationCoordinator.shared)
-            .gamepadDismissable { rebuildTargetFolder = nil }
-    }
+}
+.navigationTitle(loc.localized("library.title"))
+.onAppear {
+    showHiddenGamesCategory = AppSettings.getBool("showHiddenGamesCategory", defaultValue: true)
+}
+.onChange(of: showHiddenGamesCategory) { _, newValue in
+    AppSettings.setBool("showHiddenGamesCategory", value: newValue)
+    NotificationCenter.default.post(name: .hiddenGamesCategoryChanged, object: nil)
+}
+.sheet(item: $rebuildTargetFolder) { folder in
+    RebuildOptionsSheet(folder: folder, library: library, automation: LibraryAutomationCoordinator.shared)
+        .gamepadDismissable { rebuildTargetFolder = nil }
+}
 }
 
 private func addLibraryFolder() {

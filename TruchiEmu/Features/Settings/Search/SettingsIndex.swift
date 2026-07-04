@@ -4,8 +4,8 @@ struct SettingsSearchHit: Identifiable, Hashable {
     enum Kind: Hashable {
         case page(SettingsView.Page)
         case section(page: SettingsView.Page, sectionID: String)
-        case option(page: SettingsView.Page, sectionID: String, label: String)
-        case description(page: SettingsView.Page, sectionID: String, label: String)
+        case option(page: SettingsView.Page, sectionID: String, label: String, subSectionID: String?)
+        case description(page: SettingsView.Page, sectionID: String, label: String, subSectionID: String?)
     }
 
     let id: String
@@ -45,7 +45,9 @@ final class SettingsIndex {
         keywords: String,
         sectionTitle: String = "",
         optionTitles: [String] = [],
-        descriptionFragments: [String] = []
+        optionSubSectionIDs: [String: String] = [:],
+        descriptionFragments: [String] = [],
+        descriptionSubSectionIDs: [String: String] = [:]
     ) -> Bool {
         let key = "\(page.rawValue)::\(sectionID)"
         guard !registeredKeys.contains(key) else {
@@ -56,7 +58,9 @@ final class SettingsIndex {
                     sectionTitle: sectionTitle,
                     keywords: keywords,
                     optionTitles: optionTitles,
-                    descriptionFragments: descriptionFragments
+                    optionSubSectionIDs: optionSubSectionIDs,
+                    descriptionFragments: descriptionFragments,
+                    descriptionSubSectionIDs: descriptionSubSectionIDs
                 )
             }
             return false
@@ -79,7 +83,9 @@ final class SettingsIndex {
             profile: SettingsSectionSearchProfile(
                 sectionTitle: resolvedTitle,
                 optionTitles: optionTitles,
+                optionSubSectionIDs: optionSubSectionIDs,
                 descriptionFragments: descriptionFragments,
+                descriptionSubSectionIDs: descriptionSubSectionIDs,
                 keywords: entries
             )
         )
@@ -92,14 +98,20 @@ final class SettingsIndex {
         sectionTitle: String,
         keywords: String,
         optionTitles: [String],
-        descriptionFragments: [String]
+        optionSubSectionIDs: [String: String],
+        descriptionFragments: [String],
+        descriptionSubSectionIDs: [String: String]
     ) {
         guard var existing = sectionsByPage[page],
               let idx = existing.firstIndex(where: { $0.id == sectionID }) else { return }
         var profile = existing[idx].profile
-        if !sectionTitle.isEmpty, profile.sectionTitle.isEmpty { profile = SettingsSectionSearchProfile(sectionTitle: sectionTitle, optionTitles: profile.optionTitles, descriptionFragments: profile.descriptionFragments, keywords: profile.keywords) }
+        if !sectionTitle.isEmpty, profile.sectionTitle.isEmpty { profile = SettingsSectionSearchProfile(sectionTitle: sectionTitle, optionTitles: profile.optionTitles, optionSubSectionIDs: profile.optionSubSectionIDs, descriptionFragments: profile.descriptionFragments, descriptionSubSectionIDs: profile.descriptionSubSectionIDs, keywords: profile.keywords) }
         let mergedOptions = profile.optionTitles + optionTitles.filter { opt in !profile.optionTitles.contains(opt) }
+        var mergedOptionSubs = profile.optionSubSectionIDs
+        for (k, v) in optionSubSectionIDs where mergedOptionSubs[k] == nil { mergedOptionSubs[k] = v }
         let mergedDescriptions = profile.descriptionFragments + descriptionFragments.filter { d in !profile.descriptionFragments.contains(d) }
+        var mergedDescSubs = profile.descriptionSubSectionIDs
+        for (k, v) in descriptionSubSectionIDs where mergedDescSubs[k] == nil { mergedDescSubs[k] = v }
         var mergedKeywords = profile.keywords
         if !keywords.isEmpty {
             let incoming = keywords.split(separator: " ").map(String.init)
@@ -112,7 +124,9 @@ final class SettingsIndex {
             profile: SettingsSectionSearchProfile(
                 sectionTitle: profile.sectionTitle,
                 optionTitles: mergedOptions,
+                optionSubSectionIDs: mergedOptionSubs,
                 descriptionFragments: mergedDescriptions,
+                descriptionSubSectionIDs: mergedDescSubs,
                 keywords: mergedKeywords
             )
         )
@@ -206,9 +220,10 @@ final class SettingsIndex {
 
                 for option in sect.profile.optionTitles {
                     if SettingsIndex.matches(haystack: option, query: q) {
+                        let subID = sect.profile.optionSubSectionIDs[option]
                         pageSectionHits.append(SettingsSearchHit(
                             id: "option-\(page.rawValue)-\(sect.id)-\(option)",
-                            kind: .option(page: page, sectionID: sect.id, label: option),
+                            kind: .option(page: page, sectionID: sect.id, label: option, subSectionID: subID),
                             title: option,
                             icon: page.icon,
                             breadcrumbs: [page.label, label, option],
@@ -219,9 +234,10 @@ final class SettingsIndex {
 
                 for desc in sect.profile.descriptionFragments {
                     if SettingsIndex.matches(haystack: desc, query: q) {
+                        let subID = sect.profile.descriptionSubSectionIDs[desc]
                         pageSectionHits.append(SettingsSearchHit(
                             id: "desc-\(page.rawValue)-\(sect.id)-\(desc.prefix(40))",
-                            kind: .description(page: page, sectionID: sect.id, label: desc),
+                            kind: .description(page: page, sectionID: sect.id, label: desc, subSectionID: subID),
                             title: String(desc.prefix(80)),
                             icon: page.icon,
                             breadcrumbs: [page.label, label],
@@ -252,7 +268,32 @@ final class SettingsIndex {
             }
         }
 
-        return hits
+        return dedupeHits(hits)
+    }
+
+    private func dedupeHits(_ hits: [SettingsSearchHit]) -> [SettingsSearchHit] {
+        var seen = Set<String>()
+        var result: [SettingsSearchHit] = []
+        for hit in hits {
+            let key: String
+            switch hit.kind {
+            case .page(let page):
+                key = "page-\(page.rawValue)"
+            case .section(let page, let sectionID):
+                key = "section-\(page.rawValue)-\(sectionID)"
+            case .option(_, _, _, let subID), .description(_, _, _, let subID):
+                let trimmed = subID?.trimmingCharacters(in: .whitespaces) ?? ""
+                if !trimmed.isEmpty {
+                    key = "scope-\(trimmed)"
+                } else {
+                    key = "title-\(hit.title.lowercased())"
+                }
+            }
+            if seen.insert(key).inserted {
+                result.append(hit)
+            }
+        }
+        return result
     }
 
     func matchingSidebarPages(for query: String) -> [SettingsView.Page] {

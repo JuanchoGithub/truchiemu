@@ -100,6 +100,8 @@ struct ControllerSettingsView: View {
     @State private var showParentModeHelp = false
 
 @Binding var searchText: String
+    @Binding var focusedSectionID: String?
+    @Binding var scopedSectionID: String?
 
     @ObservedObject private var themeManager = ThemeManager.shared
 
@@ -107,9 +109,12 @@ struct ControllerSettingsView: View {
 
     private let initSystemID: String?
 
-    init(systemID: String? = nil, searchText: Binding<String> = .constant("")) {
+    init(systemID: String? = nil, searchText: Binding<String> = .constant(""), focusedSectionID: Binding<String?> = .constant(nil),
+         scopedSectionID: Binding<String?> = .constant(nil)) {
         self.initSystemID = systemID
         _searchText = searchText
+        self._focusedSectionID = focusedSectionID
+        self._scopedSectionID = scopedSectionID
         if let sid = systemID {
             _selectedSystemID = State(initialValue: sid)
         } else {

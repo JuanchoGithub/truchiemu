@@ -97,6 +97,8 @@
   "settings.theme.applyAndRestart": "Apply & Restart",
   "settings.theme.discardChanges": "Discard Changes",
   "settings.theme.cancelNavigation": "Cancel",
+  "settings.backToSection": "Back to section",
+  "settings.backToSectionHelp": "Return to the full settings view",
   "settings.theme.samus": "Samus",
   "settings.theme.chocobo": "Chocobo",
   "settings.theme.protoss": "Protoss",

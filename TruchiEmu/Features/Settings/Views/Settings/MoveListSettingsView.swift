@@ -34,9 +34,18 @@ struct MoveListSettingsView: View {
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var storageService = MoveListStorageService.shared
     @Binding var searchText: String
+    @Binding var focusedSectionID: String?
+    @Binding var scopedSectionID: String?
     @State private var navLevel: NavLevel = .overview
     @State private var editorMove: FightDataMove?
     @State private var editorGameData: FightDataGame?
+
+    init(searchText: Binding<String> = .constant(""), focusedSectionID: Binding<String?> = .constant(nil),
+         scopedSectionID: Binding<String?> = .constant(nil)) {
+        self._searchText = searchText
+        self._focusedSectionID = focusedSectionID
+        self._scopedSectionID = scopedSectionID
+    }
 
     var body: some View {
         Group {

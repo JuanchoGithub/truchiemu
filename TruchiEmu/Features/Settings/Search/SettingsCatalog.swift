@@ -5,7 +5,9 @@ struct SettingsCatalogEntry {
     let sectionID: String
     let sectionTitle: String
     let optionTitles: [String]
+    let optionSubSectionIDs: [String: String]
     let descriptionFragments: [String]
+    let descriptionSubSectionIDs: [String: String]
     let keywords: [String]
 
     init(
@@ -13,14 +15,18 @@ struct SettingsCatalogEntry {
         sectionID: String,
         sectionTitle: String,
         optionTitles: [String] = [],
+        optionSubSectionIDs: [String: String] = [:],
         descriptionFragments: [String] = [],
+        descriptionSubSectionIDs: [String: String] = [:],
         keywords: [String] = []
     ) {
         self.page = page
         self.sectionID = sectionID
         self.sectionTitle = sectionTitle
         self.optionTitles = optionTitles
+        self.optionSubSectionIDs = optionSubSectionIDs
         self.descriptionFragments = descriptionFragments
+        self.descriptionSubSectionIDs = descriptionSubSectionIDs
         self.keywords = keywords
     }
 }
@@ -32,18 +38,33 @@ enum SettingsCatalog {
                 page: .general, sectionID: "language",
                 sectionTitle: "Language",
                 optionTitles: ["English", "Spanish", "Portuguese"],
+                optionSubSectionIDs: [
+                    "English": "language",
+                    "Spanish": "language",
+                    "Portuguese": "language"
+                ],
                 keywords: ["language", "localization", "translation"]
             ),
             SettingsCatalogEntry(
                 page: .general, sectionID: "theme",
                 sectionTitle: "Theme",
                 optionTitles: ["Accent color", "Light", "Dark", "Automatic"],
+                optionSubSectionIDs: [
+                    "Accent color": "theme",
+                    "Light": "theme",
+                    "Dark": "theme",
+                    "Automatic": "theme"
+                ],
                 keywords: ["theme", "accent", "color", "appearance", "mode", "light", "dark", "gaming", "tinted", "surfaces", "toolbar", "preset"]
             ),
             SettingsCatalogEntry(
                 page: .general, sectionID: "application",
                 sectionTitle: "Application",
                 optionTitles: ["Check updates automatically", "Enable system notifications"],
+                optionSubSectionIDs: [
+                    "Check updates automatically": "application",
+                    "Enable system notifications": "application"
+                ],
                 keywords: ["application", "version", "build", "notifications", "updates"]
             ),
 
@@ -108,8 +129,8 @@ enum SettingsCatalog {
             SettingsCatalogEntry(
                 page: .perSystem, sectionID: "systemList",
                 sectionTitle: "Per-System List",
-                optionTitles: ["Nintendo", "Sony", "Sega", "Arcade", "Game Boy", "Game Boy Advance", "SNES", "NES", "N64", "Genesis", "PlayStation"],
-                keywords: ["system", "per-system", "nes", "snes", "n64", "genesis", "gba", "ps1"]
+                optionTitles: ["Nintendo Entertainment System", "Super Nintendo", "Sony PlayStation", "Sega Genesis", "Sega Mega Drive", "Colecovision", "Nintendo 64", "Nintendo Game Boy", "Game Boy Advance", "Arcade", "SNES", "NES", "N64", "Genesis", "PlayStation", "PS1"],
+                keywords: ["system", "per-system", "nes", "snes", "n64", "genesis", "gba", "ps1", "nintendo", "sega", "sony", "playstation"]
             ),
             SettingsCatalogEntry(
                 page: .perSystem, sectionID: "tabBoxes",
@@ -248,8 +269,8 @@ enum SettingsCatalog {
             SettingsCatalogEntry(
                 page: .perSystem, sectionID: "systems",
                 sectionTitle: "Systems",
-                optionTitles: ["Nintendo", "Sony", "Sega", "Arcade", "Game Boy", "Game Boy Advance", "SNES", "NES", "N64", "Genesis", "PlayStation"],
-                keywords: ["system", "systems", "nes", "snes", "n64", "genesis", "gba", "ps1"]
+                optionTitles: ["Nintendo Entertainment System", "Super Nintendo", "Sony PlayStation", "Sega Genesis", "Sega Mega Drive", "Colecovision", "Nintendo 64", "Nintendo Game Boy", "Game Boy Advance", "Arcade", "SNES", "NES", "N64", "Genesis", "PlayStation", "PS1"],
+                keywords: ["system", "systems", "nes", "snes", "n64", "genesis", "gba", "ps1", "nintendo", "sega", "sony", "playstation"]
             ),
             SettingsCatalogEntry(
                 page: .perSystem, sectionID: "coreList",
@@ -261,6 +282,12 @@ enum SettingsCatalog {
                 page: .logging, sectionID: "levels",
                 sectionTitle: "Log Levels",
                 optionTitles: ["None", "Info", "Debug", "Extreme"],
+                optionSubSectionIDs: [
+                    "None": "levels",
+                    "Info": "levels",
+                    "Debug": "levels",
+                    "Extreme": "levels"
+                ],
                 keywords: ["logging", "log", "debug", "console", "output", "level", "verbosity", "info", "extreme"]
             ),
             SettingsCatalogEntry(
@@ -272,6 +299,10 @@ enum SettingsCatalog {
                 page: .logging, sectionID: "maintenance",
                 sectionTitle: "Log Maintenance",
                 optionTitles: ["Clear logs", "Trim logs"],
+                optionSubSectionIDs: [
+                    "Clear logs": "maintenance",
+                    "Trim logs": "maintenance"
+                ],
                 keywords: ["logging", "maintenance", "clear", "trim", "delete", "archive", "rotation", "size"]
             ),
 
@@ -285,13 +316,29 @@ enum SettingsCatalog {
             SettingsCatalogEntry(
                 page: .streaming, sectionID: "tabRecording",
                 sectionTitle: "Recording",
-                optionTitles: ["Enable local recording", "Record with shaders", "Recording badge", "Badge position", "Quality: Low/Medium/High/Lossless", "Video codec: H.264/HEVC/ProRes", "Bitrate", "Frame rate", "Audio bitrate", "Output folder"],
+                optionTitles: ["Enable local recording", "Record with shaders", "Recording badge", "Recording overlay", "Badge overlay", "Badge position", "Quality: Low/Medium/High/Lossless", "Video codec: H.264/HEVC/ProRes", "Bitrate", "Frame rate", "Audio bitrate", "Output folder"],
+                optionSubSectionIDs: [
+                    "Enable local recording": "recordingEnable",
+                    "Record with shaders": "recordWithShaders",
+                    "Recording badge": "recordingBadge",
+                    "Recording overlay": "recordingBadge",
+                    "Badge overlay": "recordingBadge",
+                    "Badge position": "recordingBadge",
+                    "Output folder": "outputPath"
+                ],
                 keywords: ["recording", "record", "local", "file", "quality", "preset", "low", "medium", "high", "lossless", "bitrate", "codec", "frame", "rate", "resolution", "video", "audio", "h264", "hevc", "prores", "customize", "output", "path", "folder", "file", "location", "shaders", "applied", "gpu", "badge", "overlay"]
             ),
             SettingsCatalogEntry(
                 page: .streaming, sectionID: "tabStreaming",
                 sectionTitle: "Streaming",
-                optionTitles: ["Enable streaming", "Record with shaders", "Stream badge", "Twitch stream key", "YouTube stream key", "Custom stream", "Output folder"],
+                optionTitles: ["Enable streaming", "Record with shaders", "Stream badge", "Streaming overlay", "Stream overlay", "Twitch stream key", "YouTube stream key", "Custom stream", "Output folder"],
+                optionSubSectionIDs: [
+                    "Enable streaming": "streamingEnable",
+                    "Record with shaders": "recordWithShaders",
+                    "Stream badge": "streamingBadge",
+                    "Streaming overlay": "streamingBadge",
+                    "Stream overlay": "streamingBadge"
+                ],
                 keywords: ["streaming", "record", "twitch", "youtube", "custom", "stream", "key", "url", "server", "credentials", "rtmp", "verify", "destination", "configure", "bitrate", "frame", "rate", "quality", "overlay"]
             ),
             SettingsCatalogEntry(
@@ -324,12 +371,26 @@ enum SettingsCatalog {
                     "Previous Slot",
                     "Toggle Input Capture"
                 ],
+                optionSubSectionIDs: [
+                    "Quick Save": "general",
+                    "Quick Load": "general",
+                    "Undo Load": "general",
+                    "Next Slot": "general",
+                    "Previous Slot": "general",
+                    "Toggle Input Capture": "general"
+                ],
                 keywords: ["hotkeys", "keyboard", "shortcuts", "save", "load", "slot", "undo", "training", "input", "capture", "quick"]
             ),
             SettingsCatalogEntry(
                 page: .hotkeys, sectionID: "slots",
                 sectionTitle: "Slot Shortcuts",
                 optionTitles: ["Slot 0", "Slot 1", "Slot 2", "Slot 3", "Slot 4", "Slot 5", "Slot 6", "Slot 7", "Slot 8", "Slot 9"],
+                optionSubSectionIDs: [
+                    "Slot 0": "slots",
+                    "Slot 1": "slots",
+                    "Slot 2": "slots",
+                    "Slot 3": "slots"
+                ],
                 keywords: ["slots", "slot", "0-9", "shortcut"]
             ),
             SettingsCatalogEntry(
@@ -341,18 +402,30 @@ enum SettingsCatalog {
                     "Toggle Tape Recording",
                     "Start Tape Playback"
                 ],
+                optionSubSectionIDs: [
+                    "Toggle Training Mode": "training",
+                    "Training Instant Reset": "training",
+                    "Toggle Tape Recording": "training",
+                    "Start Tape Playback": "training"
+                ],
                 keywords: ["training", "mode", "reset", "recording", "playback", "tape"]
             ),
             SettingsCatalogEntry(
                 page: .hotkeys, sectionID: "screenshots",
                 sectionTitle: "Screenshots",
                 optionTitles: ["Screenshot"],
+                optionSubSectionIDs: [
+                    "Screenshot": "screenshots"
+                ],
                 keywords: ["screenshot", "capture", "photo", "picture", "save", "share", "button"]
             ),
             SettingsCatalogEntry(
                 page: .hotkeys, sectionID: "reset",
                 sectionTitle: "Reset to Defaults",
                 optionTitles: ["Reset All Hotkeys"],
+                optionSubSectionIDs: [
+                    "Reset All Hotkeys": "reset"
+                ],
                 keywords: ["reset", "defaults", "restore"]
             ),
 
@@ -372,6 +445,10 @@ enum SettingsCatalog {
                 page: .help, sectionID: "resources",
                 sectionTitle: "Resources",
                 optionTitles: ["Documentation", "GitHub"],
+                optionSubSectionIDs: [
+                    "Documentation": "resources",
+                    "GitHub": "resources"
+                ],
                 keywords: ["resources", "links", "documentation", "troubleshooting", "github"]
             ),
 
@@ -397,7 +474,9 @@ enum SettingsCatalog {
                 keywords: entry.keywords.joined(separator: " "),
                 sectionTitle: entry.sectionTitle,
                 optionTitles: entry.optionTitles,
-                descriptionFragments: entry.descriptionFragments
+                optionSubSectionIDs: entry.optionSubSectionIDs,
+                descriptionFragments: entry.descriptionFragments,
+                descriptionSubSectionIDs: entry.descriptionSubSectionIDs
             )
         }
     }

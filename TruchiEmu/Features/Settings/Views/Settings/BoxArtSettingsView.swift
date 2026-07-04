@@ -17,11 +17,17 @@ struct BoxArtSettingsView: View {
     @State private var launchBoxDownloadAfterScan = true
     
     @Binding var searchText: String
+    @Binding var focusedSectionID: String?
+    @Binding var scopedSectionID: String?
     
     @ObservedObject private var loc = LocalizationManager.shared
     
-    init(searchText: Binding<String> = .constant("")) {
+    init(searchText: Binding<String> = .constant(""),
+         focusedSectionID: Binding<String?> = .constant(nil),
+         scopedSectionID: Binding<String?> = .constant(nil)) {
         self._searchText = searchText
+        self._focusedSectionID = focusedSectionID
+        self._scopedSectionID = scopedSectionID
     }
     
     private var isSearching: Bool {
@@ -35,9 +41,10 @@ struct BoxArtSettingsView: View {
     }
 
     var body: some View {
+        ScrollViewReader { proxy in
         Form {
             // Libretro Thumbnails
-            if !isSearching || matchesSearch("libretro thumbnail CDN URL source") {
+            if (!isSearching || matchesSearch("libretro thumbnail CDN URL source")) && sectionVisible("section-libretroCDN") {
                 Section {
                     Toggle(loc.localized("boxArt.useLibretroCDN"), isOn: $useLibretroThumbnails)
                     if useLibretroThumbnails {
@@ -50,10 +57,11 @@ struct BoxArtSettingsView: View {
                 } footer: {
                     Text(loc.localized("boxArt.libretroDescription"))
                 }
+                .id("section-libretroCDN")
             }
 
             // LaunchBox GamesDB
-            if !isSearching || matchesSearch("launchbox gamesdb box art download scan third-party fallback") {
+            if (!isSearching || matchesSearch("launchbox gamesdb box art download scan third-party fallback")) && sectionVisible("section-launchbox") {
                 Section {
                     Toggle(loc.localized("boxArt.enableLaunchBox"), isOn: $useLaunchBox)
                     if useLaunchBox {
@@ -64,10 +72,11 @@ struct BoxArtSettingsView: View {
                 } footer: {
                     Text(loc.localized("boxArt.launchBoxDescription"))
                 }
+                .id("section-launchbox")
             }
 
             // ScreenScraper Account
-            if !isSearching || matchesSearch("screenscraper account credentials box art free account username password") {
+            if (!isSearching || matchesSearch("screenscraper account credentials box art free account username password")) && sectionVisible("section-screenscraper") {
                 Section {
                     TextField(loc.localized("boxArt.username"), text: $username)
                     SecureField(loc.localized("boxArt.password"), text: $password)
@@ -88,10 +97,11 @@ struct BoxArtSettingsView: View {
                 } footer: {
                     Text(loc.localized("boxArt.screenScraperDescription"))
                 }
+                .id("section-screenscraper")
             }
 
             // Matching Section
-            if !isSearching || matchesSearch("priority CRC matching filename fallback HTTP head check box art matching") {
+            if (!isSearching || matchesSearch("priority CRC matching filename fallback HTTP head check box art matching")) && sectionVisible("section-priority") {
                 Section {
                     Picker(loc.localized("boxArt.tryFirst"), selection: $thumbnailPriorityRaw) {
                         ForEach(LibretroThumbnailPriority.allCases) { p in
@@ -106,10 +116,11 @@ struct BoxArtSettingsView: View {
                 } footer: {
                     Text(loc.localized("boxArt.launchBoxDescription"))
                 }
+                .id("section-priority")
             }
 
             // Maintenance Section
-            if !isSearching || matchesSearch("performance indexing manifest refresh repository library URL 404 check") {
+            if (!isSearching || matchesSearch("performance indexing manifest refresh repository library URL 404 check")) && sectionVisible("section-performance") {
                 Section {
                     let manifestService = LibretroThumbnailManifestService.shared
                     VStack(alignment: .leading, spacing: AppSpacing.md) {
@@ -154,6 +165,7 @@ struct BoxArtSettingsView: View {
                 } header: {
                     Label { Text(loc.localized("boxArt.performanceIndexing")) } icon: { Image(systemName: "bolt.fill") }
                 }
+                .id("section-performance")
             }
 
             // No results message
@@ -165,12 +177,23 @@ struct BoxArtSettingsView: View {
                         .frame(maxWidth: .infinity, alignment: .center)
                         .padding(.vertical, AppSpacing.xl2)
                 }
-            }
+        }
         }
         .scrollContentBackground(.hidden)
         .formStyle(.grouped)
-        .onAppear {
-            username = BoxArtService.shared.credentials?.username ?? ""
+        .onChange(of: focusedSectionID) { _, newID in
+            guard let id = newID else { return }
+            withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+        }
+        .onChange(of: scopedSectionID) { _, newScope in
+            guard let id = newScope else { return }
+            DispatchQueue.main.async {
+                withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+            }
+        }
+    }
+    .onAppear {
+        username = BoxArtService.shared.credentials?.username ?? ""
             useLibretroThumbnails = BoxArtService.shared.useLibretroThumbnails
             thumbnailServerURLStorage = BoxArtService.shared.thumbnailServerURL.absoluteString
             // Use rawValue directly (e.g., "boxart") to match the Picker tags
@@ -211,5 +234,10 @@ struct BoxArtSettingsView: View {
         matchesSearch("screenscraper account credentials box art free account username password") ||
         matchesSearch("priority CRC matching filename fallback HTTP head check box art matching") ||
         matchesSearch("performance indexing manifest refresh repository library URL 404 check")
+    }
+
+    private func sectionVisible(_ id: String) -> Bool {
+        guard let scope = scopedSectionID else { return true }
+        return scope == id || scope == id.replacingOccurrences(of: "section-", with: "")
     }
 }

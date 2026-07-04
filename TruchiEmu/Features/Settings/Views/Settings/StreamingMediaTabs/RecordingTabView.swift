@@ -5,34 +5,60 @@ struct RecordingTabView: View {
     @ObservedObject private var loc = LocalizationManager.shared
     @Binding var config: MediaConfig
     @Binding var searchText: String
+    @Binding var scopedSectionID: String?
 
     @State private var outputPath: String = ""
     @State private var showFolderPicker = false
     @State private var qualityExpanded: Bool = false
     @State private var recordingEnabled: Bool = AppSettings.getBool("recording_local_enabled", defaultValue: true)
 
+    init(config: Binding<MediaConfig>,
+         searchText: Binding<String>,
+         scopedSectionID: Binding<String?> = .constant(nil)) {
+        self._config = config
+        self._searchText = searchText
+        self._scopedSectionID = scopedSectionID
+    }
+
+    private func sectionVisible(_ id: String) -> Bool {
+        guard let scope = scopedSectionID else { return true }
+        return scope == id || scope == id.replacingOccurrences(of: "section-", with: "") || scope == "tabRecording"
+    }
+
     var body: some View {
         Form {
-            Section {
-                Toggle(loc.localized("settings.media.recording.enable"), isOn: Binding(
-                    get: { recordingEnabled },
-                    set: { newValue in
-                        recordingEnabled = newValue
-                        AppSettings.setBool("recording_local_enabled", value: newValue)
-                    }
-                ))
-                Text(loc.localized("settings.media.recording.enableDescription"))
-                    .font(.caption)
-                    .foregroundColor(AppColors.textSecondary(colorScheme))
-            } header: {
-                Label(loc.localized("settings.media.recording.enable"), systemImage: "record.circle")
+            if sectionVisible("section-recordingEnable") {
+                Section {
+                    Toggle(loc.localized("settings.media.recording.enable"), isOn: Binding(
+                        get: { recordingEnabled },
+                        set: { newValue in
+                            recordingEnabled = newValue
+                            AppSettings.setBool("recording_local_enabled", value: newValue)
+                        }
+                    ))
+                    Text(loc.localized("settings.media.recording.enableDescription"))
+                        .font(.caption)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
+                } header: {
+                    Label(loc.localized("settings.media.recording.enable"), systemImage: "record.circle")
+                }
+                .id("section-recordingEnable")
             }
 
             if recordingEnabled {
-                recordWithShadersSection
-                qualitySection
-                outputPathSection
-            } else {
+                if sectionVisible("section-recordWithShaders") {
+                    recordWithShadersSection
+                        .id("section-recordWithShaders")
+                }
+                if sectionVisible("section-qualitySection") {
+                    qualitySection
+                        .id("section-qualitySection")
+                }
+                if sectionVisible("section-outputPath") {
+                    outputPathSection
+                        .id("section-outputPath")
+                }
+            } else if sectionVisible("section-recordingOff") {
                 Section {
                     VStack(alignment: .leading, spacing: 6) {
                         HStack(spacing: 4) {
@@ -56,9 +82,13 @@ struct RecordingTabView: View {
                 } header: {
                     Label(loc.localized("settings.media.recordingOff.summary"), systemImage: "info.circle")
                 }
+                .id("section-recordingOff")
             }
 
-            recordingBadgeSection
+            if sectionVisible("section-recordingBadge") {
+                recordingBadgeSection
+                    .id("section-recordingBadge")
+            }
         }
         .scrollContentBackground(.hidden)
         .formStyle(.grouped)
@@ -193,6 +223,7 @@ struct RecordingTabView: View {
                 } header: {
                     Label(loc.localized("settings.streaming.customQuality"), systemImage: "gearshape")
                 }
+                .id("section-customQuality")
             }
         }
     }

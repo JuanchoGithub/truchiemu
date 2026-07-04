@@ -3,18 +3,24 @@ import Foundation
 struct SettingsSectionSearchProfile {
     let sectionTitle: String
     let optionTitles: [String]
+    let optionSubSectionIDs: [String: String]
     let descriptionFragments: [String]
+    let descriptionSubSectionIDs: [String: String]
     let keywords: [String]
 
     init(
         sectionTitle: String = "",
         optionTitles: [String] = [],
+        optionSubSectionIDs: [String: String] = [:],
         descriptionFragments: [String] = [],
+        descriptionSubSectionIDs: [String: String] = [:],
         keywords: [String] = []
     ) {
         self.sectionTitle = sectionTitle
         self.optionTitles = optionTitles
+        self.optionSubSectionIDs = optionSubSectionIDs
         self.descriptionFragments = descriptionFragments
+        self.descriptionSubSectionIDs = descriptionSubSectionIDs
         self.keywords = keywords
     }
 

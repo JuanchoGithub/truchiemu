@@ -24,11 +24,15 @@ struct GeneralSettingsView: View {
     @State private var contentLoaded = false
 
     @Binding var searchText: String
+    @Binding var focusedSectionID: String?
+    @Binding var scopedSectionID: String?
 
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var themeManager = ThemeManager.shared
 
     init(searchText: Binding<String> = .constant(""),
+         focusedSectionID: Binding<String?> = .constant(nil),
+         scopedSectionID: Binding<String?> = .constant(nil),
          hasPendingChanges: Binding<Bool> = .constant(false),
          revertRequest: Binding<Int> = .constant(0),
          applyRequest: Binding<Int> = .constant(0),
@@ -38,6 +42,8 @@ struct GeneralSettingsView: View {
         activePendingTintedSurfaces: Binding<Bool> = .constant(true),
         activePendingAppearanceMode: Binding<AppearanceMode> = .constant(.automatic)) {
         self._searchText = searchText
+        self._focusedSectionID = focusedSectionID
+        self._scopedSectionID = scopedSectionID
         self._hasPendingChanges = hasPendingChanges
         self._revertRequest = revertRequest
         self._applyRequest = applyRequest
@@ -52,6 +58,11 @@ struct GeneralSettingsView: View {
         !searchText.isEmpty
     }
 
+    private func sectionVisible(_ id: String) -> Bool {
+        guard let scope = scopedSectionID else { return true }
+        return scope == id || scope == id.replacingOccurrences(of: "section-", with: "")
+    }
+
     private func matchesSearch(_ keywords: String) -> Bool {
         if searchText.isEmpty { return true }
         if SettingsSearchRuntime.pageMatches(.general, query: searchText) { return true }
@@ -61,9 +72,10 @@ struct GeneralSettingsView: View {
     var body: some View {
         Group {
             if contentLoaded {
-                Form {
+                ScrollViewReader { proxy in
+                    Form {
                     // ★ Language picker
-            if !isSearching || matchesSearch("Application Language localization") {
+            if (!isSearching || matchesSearch("Application Language localization")) && sectionVisible("section-language") {
                 Section(header: Label(loc.localized("settings.language"), systemImage: "globe")) {
                     Picker(loc.localized("settings.selectLanguage"), selection: Binding<String>(
                         get: { loc.currentLanguage },
@@ -76,10 +88,11 @@ struct GeneralSettingsView: View {
                     }
                     .pickerStyle(.menu)
                 }
+                .id("section-language")
             }
 
             // ★ Theme section
-            if !isSearching || matchesSearch("Theme accent color appearance mode light dark gaming") {
+            if (!isSearching || matchesSearch("Theme accent color appearance mode light dark gaming")) && sectionVisible("section-theme") {
                 Section(header: Label(loc.localized("settings.theme"), systemImage: "paintpalette")) {
 
                     VStack(alignment: .leading, spacing: AppSpacing.md) {
@@ -168,10 +181,11 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
                         Text(loc.localized("settings.theme.restartMessage"))
                     }
                 }
+                .id("section-theme")
             }
 
             // ★ Application Section
-            if !isSearching || matchesSearch("Application version build notifications updates") {
+            if (!isSearching || matchesSearch("Application version build notifications updates")) && sectionVisible("section-application") {
                 Section(header: Label(loc.localized("settings.application"), systemImage: "app.badge")) {
                     LabeledContent(loc.localized("settings.version")) {
                         Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0")
@@ -216,6 +230,7 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
                         .controlSize(.small)
                     }
                 }
+                .id("section-application")
             }
 
             // No results message
@@ -228,7 +243,18 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
                         .padding(.vertical, AppSpacing.xl2)
                 }
             }
-            }
+                }
+                    .onChange(of: focusedSectionID) { _, newID in
+                        guard let id = newID else { return }
+                        withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+                    }
+                    .onChange(of: scopedSectionID) { _, newScope in
+                        guard let id = newScope else { return }
+                        DispatchQueue.main.async {
+                            withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+                        }
+                    }
+                }
         } else {
             Color.clear
                 .frame(maxWidth: .infinity, minHeight: 400)

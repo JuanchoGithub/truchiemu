@@ -5,6 +5,7 @@ struct StreamingTabView: View {
     @ObservedObject private var loc = LocalizationManager.shared
     @Binding var config: MediaConfig
     @Binding var searchText: String
+    @Binding var scopedSectionID: String?
 
     @State private var twitchKey: String = ""
     @State private var youtubeKey: String = ""
@@ -18,28 +19,52 @@ struct StreamingTabView: View {
     @State private var youtubeVerifyResult: VerifyState = .idle
     @State private var customVerifyResult: VerifyState = .idle
 
+    init(config: Binding<MediaConfig>,
+         searchText: Binding<String>,
+         scopedSectionID: Binding<String?> = .constant(nil)) {
+        self._config = config
+        self._searchText = searchText
+        self._scopedSectionID = scopedSectionID
+    }
+
+    private func sectionVisible(_ id: String) -> Bool {
+        guard let scope = scopedSectionID else { return true }
+        return scope == id || scope == id.replacingOccurrences(of: "section-", with: "") || scope == "tabStreaming"
+    }
+
     var body: some View {
         Form {
-            Section {
-                Toggle(loc.localized("settings.streaming.enable"), isOn: Binding(
-                    get: { config.streaming.enabled },
-                    set: { config.streaming.enabled = $0; config.streaming.save() }
-                ))
-                Text(loc.localized("settings.streaming.enableDescription"))
-                    .font(.caption)
-                    .foregroundColor(AppColors.textSecondary(colorScheme))
-            } header: {
-                Label(loc.localized("settings.streaming.enable"), systemImage: "antenna.radiowaves.left.and.right")
+            if sectionVisible("section-streamingEnable") {
+                Section {
+                    Toggle(loc.localized("settings.streaming.enable"), isOn: Binding(
+                        get: { config.streaming.enabled },
+                        set: { config.streaming.enabled = $0; config.streaming.save() }
+                    ))
+                    Text(loc.localized("settings.streaming.enableDescription"))
+                        .font(.caption)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
+                } header: {
+                    Label(loc.localized("settings.streaming.enable"), systemImage: "antenna.radiowaves.left.and.right")
+                }
+                .id("section-streamingEnable")
             }
 
             if config.streaming.enabled {
-                recordWithShadersSection
-                destinationsGroup
+                if sectionVisible("section-recordWithShaders") {
+                    recordWithShadersSection
+                }
+                if sectionVisible("section-destinations") {
+                    destinationsGroup
+                }
             } else {
-                streamingOffSummary
+                if sectionVisible("section-streamingOff") {
+                    streamingOffSummary
+                }
             }
 
-            streamingBadgeSection
+            if sectionVisible("section-streamingBadge") {
+                streamingBadgeSection
+            }
         }
         .scrollContentBackground(.hidden)
         .formStyle(.grouped)
@@ -65,6 +90,7 @@ struct StreamingTabView: View {
                 .font(.caption)
                 .foregroundColor(AppColors.textSecondary(colorScheme))
         }
+        .id("section-recordWithShaders")
     }
 
     private var destinationsGroup: some View {
@@ -147,5 +173,6 @@ struct StreamingTabView: View {
         } header: {
             Label(loc.localized("media.streamingBadge"), systemImage: "circlebadge")
         }
+        .id("section-streamingBadge")
     }
 }
