@@ -37,14 +37,22 @@ struct RecordingBadgeOverlay: View {
     @ObservedObject private var recordingService = StreamRecordingService.shared
     @Environment(\.colorScheme) private var colorScheme
 
-    let alignment: Alignment
-
     @State private var elapsedString: String = "00:00"
+    @State private var badgeEnabled: Bool = true
+    @State private var positionRaw: Int = 1
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
+    private var currentPrefix: String {
+        recordingService.mode == .localFile ? "recording_badge" : "streaming_badge"
+    }
+
+    private var currentAlignment: Alignment {
+        BadgePosition(rawValue: positionRaw)?.alignment ?? .topTrailing
+    }
 
     var body: some View {
         Group {
-            if recordingService.isUserRecording {
+            if recordingService.isUserRecording && badgeEnabled {
                 HStack(spacing: 6) {
                     Circle()
                         .fill(Color.red)
@@ -91,11 +99,12 @@ struct RecordingBadgeOverlay: View {
                 .transition(.opacity)
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: alignment)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: currentAlignment)
         .allowsHitTesting(false)
         .onReceive(timer) { _ in
             guard recordingService.isRecording, let start = recordingService.recordingStartTime else {
                 elapsedString = "00:00"
+                badgeEnabled = true
                 return
             }
             let interval = -start.timeIntervalSinceNow
@@ -103,6 +112,9 @@ struct RecordingBadgeOverlay: View {
             let mins = seconds / 60
             let secs = seconds % 60
             elapsedString = String(format: "%02d:%02d", mins, secs)
+            let prefix = currentPrefix
+            badgeEnabled = AppSettings.getBool("\(prefix)_enabled", defaultValue: true)
+            positionRaw = AppSettings.getInt("\(prefix)_position", defaultValue: 1)
         }
     }
 }

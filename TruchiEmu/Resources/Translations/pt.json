@@ -1867,6 +1867,8 @@
     "hotkeys.action.trainingStartPlayback": "Iniciar Reprodução de Fita",
     "hotkeys.action.toggleTrainingMode": "Alternar Modo de Treinamento",
     "hotkeys.action.screenshot": "Captura de tela",
+    "hotkeys.action.shareSinglePress": "Botão Compartilhar (pressionar uma vez)",
+    "hotkeys.action.shareLongPress": "Botão Compartilhar (pressionar e segurar)",
     "hotkeys.screenshots": "Capturas",
     "hotkeys.screenshotHelp": "Captura o quadro atual na sua pasta Imagens.",
     "hotkeys.keyboard": "Teclado",
@@ -1926,7 +1928,6 @@
     "gamepadNav.action.showGameToolbar": "Mostrar barra do jogo",
 
     "settings.streamingAndMedia": "Streaming & Mídia",
-    "settings.streaming.outputMode": "Modo de saída",
     "settings.streaming.localFile": "Arquivo local",
     "settings.streaming.quality": "Qualidade de gravação",
     "settings.streaming.qualityLow": "Baixa",
@@ -1936,9 +1937,7 @@
     "settings.streaming.twitchKey": "Chave da Twitch",
     "settings.streaming.youtubeKey": "Chave do YouTube",
     "settings.streaming.twitchDescription": "Insira sua chave de stream da Twitch e verifique a URL RTMP para habilitar a transmissão ao vivo para a Twitch.",
-    "settings.streaming.twitchHelp": "Abra seu painel da Twitch → Configurações → Chave de stream. Copie a chave aqui. Mantenha em segredo!",
     "settings.streaming.youtubeDescription": "Insira sua chave de stream do YouTube e verifique a URL RTMP para habilitar a transmissão ao vivo para o YouTube.",
-    "settings.streaming.youtubeHelp": "Vá para YouTube Studio → Ao vivo → Transmissão. Copie sua chave de stream aqui.",
     "settings.streaming.outputPath": "Salvar gravação como…",
     "settings.streaming.outputPathDescription": "Escolha onde as gravações locais são salvas no disco.",
     "settings.streaming.browse": "Procurar…",
@@ -1946,7 +1945,6 @@
     "settings.streaming.recordWithShadersDescription": "Quando ativado, o preset de shader atual é incorporado à gravação. Desative para uma captura bruta e sem processamento com menor uso de CPU.",
     "settings.streaming.enable": "Habilitar gravação / transmissão",
     "settings.streaming.enableDescription": "Grave a jogabilidade em um arquivo local ou transmita ao vivo para Twitch, YouTube ou um servidor RTMP personalizado.",
-    "settings.streaming.defaultMethod": "Método padrão",
     "settings.streaming.streamURL": "URL de transmissão",
     "settings.streaming.videoCodec": "Codec de vídeo",
     "settings.streaming.videoBitrate": "Taxa de bits de vídeo",
@@ -1968,7 +1966,7 @@
 
     "media.shareButton": "Botão Compartilhar",
     "media.shareSinglePress": "Pressionar uma vez",
-    "media.shareLongPress": "Pressionar e segurar (2 segundos)",
+    "media.shareLongPress": "Pressionar e segurar",
     "media.behavior.screenshot": "Tirar captura de tela",
     "media.behavior.startVideoRecording": "Iniciar gravação de vídeo",
     "media.behavior.streamTwitch": "Transmitir para Twitch",
@@ -1976,6 +1974,8 @@
     "media.behavior.streamCustom": "Transmitir para servidor personalizado",
     "media.behavior.saveLastXSeconds": "Salvar últimos momentos em vídeo",
     "media.shareDescription": "Pressionar uma vez: %@. Pressionar e segurar: %@.",
+
+    "media.behavior.none": "Nada",
 
     "media.saveLastMoments": "Salvar Últimos Momentos",
     "media.saveLastMomentsEnable": "Ativar buffer de clipe do jogo",
@@ -2028,5 +2028,29 @@
     "hardcore.confirmTitle": "Desativar o Modo Hardcore?",
     "hardcore.confirmMessage": "Esta ação cancelará o Modo Hardcore para esta sessão. Você não poderá ganhar conquistas hardcore até reiniciar o jogo.",
     "hardcore.confirmProceed": "Cancelar Modo Hardcore",
-    "hardcore.confirmCancel": "Manter Modo Hardcore"
+    "hardcore.confirmCancel": "Manter Modo Hardcore",
+
+    "settings.media.tab.recording": "Gravação",
+    "settings.media.tab.streaming": "Transmissão",
+    "settings.media.tab.screenshots": "Capturas",
+    "settings.media.tab.sharing": "Compartilhar",
+    "settings.media.tab.hotkeys": "Atalhos",
+    "settings.media.customize": "Personalizar…",
+    "settings.media.customized": "Personalizado",
+    "settings.media.reset": "Redefinir",
+    "settings.media.recording.enable": "Ativar Gravação Local",
+    "settings.media.recording.enableDescription": "Salva a jogabilidade em um arquivo local. A transmissão ao vivo é configurada na aba Transmissão.",
+    "settings.media.recordingOff.summary": "Gravação e transmissão desativadas — ao ativar:",
+    "settings.media.recordingOff.osdHint": "Ative Salvar Últimos Momentos nas configurações de Streaming & Mídia",
+    "settings.media.streamingOff.summary": "Transmissão desativada — os destinos já configurados estarão prontos para usar:",
+    "settings.media.destinations.configured": "Destinos configurados:",
+    "settings.media.rolling.disabledHint": "Ative Salvar Últimos Momentos na aba Compartilhar das configurações de Streaming & Mídia",
+    "settings.media.screenshotPath": "Pasta de Capturas",
+    "settings.media.screenshotPathDescription": "Escolha onde as capturas são salvas. Deixe vazio para usar a pasta Imagens padrão.",
+    "settings.media.hotkeys.allShortcuts": "Todos os atalhos → Página de Atalhos",
+    "settings.media.hotkeys.captureOnly": "Atalhos de Captura",
+
+    "media.streamingBadge": "Sobreposição de transmissão",
+    "media.streamingBadgeEnable": "Mostrar selo LIVE durante transmissão",
+    "media.streamingBadgePosition": "Posição"
 }

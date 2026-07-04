@@ -1,6 +1,7 @@
 import Foundation
 
 enum ShareBehavior: String, Codable, CaseIterable, Identifiable {
+    case none
     case screenshot
     case startVideoRecording
     case streamTwitch
@@ -23,5 +24,9 @@ enum ShareBehavior: String, Codable, CaseIterable, Identifiable {
         case .streamTwitch, .streamYoutube, .streamCustom: return true
         default: return false
         }
+    }
+
+    var isNone: Bool {
+        self == .none
     }
 }

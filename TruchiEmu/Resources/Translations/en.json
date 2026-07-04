@@ -1869,6 +1869,8 @@
     "hotkeys.action.trainingStartPlayback": "Start Tape Playback",
     "hotkeys.action.toggleTrainingMode": "Toggle Training Mode",
     "hotkeys.action.screenshot": "Screenshot",
+    "hotkeys.action.shareSinglePress": "Share Button (Single Press)",
+    "hotkeys.action.shareLongPress": "Share Button (Long Press)",
     "hotkeys.screenshots": "Screenshots",
     "hotkeys.screenshotHelp": "Captures the current frame to your Pictures folder.",
     "hotkeys.keyboard": "Keyboard",
@@ -1928,7 +1930,6 @@
     "gamepadNav.action.showGameToolbar": "Show Game Toolbar",
 
     "settings.streamingAndMedia": "Streaming & Media",
-    "settings.streaming.outputMode": "Output Mode",
     "settings.streaming.localFile": "Local File",
     "settings.streaming.quality": "Recording Quality",
     "settings.streaming.qualityLow": "Low",
@@ -1938,9 +1939,7 @@
     "settings.streaming.twitchKey": "Twitch Stream Key",
     "settings.streaming.youtubeKey": "YouTube Stream Key",
     "settings.streaming.twitchDescription": "Enter your Twitch stream key and verify the RTMP URL to enable live streaming to Twitch.",
-    "settings.streaming.twitchHelp": "Open your Twitch Dashboard → Settings → Stream Key. Copy the key here. Keep it secret!",
     "settings.streaming.youtubeDescription": "Enter your YouTube stream key and verify the RTMP URL to enable live streaming to YouTube.",
-    "settings.streaming.youtubeHelp": "Go to YouTube Studio → Go Live → Stream. Copy your stream key here.",
     "settings.streaming.outputPath": "Save Recording As…",
     "settings.streaming.outputPathDescription": "Choose where local recordings are saved on disk.",
     "settings.streaming.browse": "Browse…",
@@ -1948,7 +1947,6 @@
     "settings.streaming.recordWithShadersDescription": "When enabled, the current shader preset is baked into the recording. Disable for a raw, unprocessed capture with lower CPU usage.",
     "settings.streaming.enable": "Enable Recording / Streaming",
     "settings.streaming.enableDescription": "Record gameplay to a local file or stream live to Twitch, YouTube, or a custom RTMP server.",
-    "settings.streaming.defaultMethod": "Default Method",
     "settings.streaming.streamURL": "Stream URL",
     "settings.streaming.videoCodec": "Video Codec",
     "settings.streaming.videoBitrate": "Video Bitrate",
@@ -1970,7 +1968,7 @@
 
     "media.shareButton": "Share Button",
     "media.shareSinglePress": "Single press",
-    "media.shareLongPress": "Long press (2 seconds)",
+    "media.shareLongPress": "Long press",
     "media.behavior.screenshot": "Take screenshot",
     "media.behavior.startVideoRecording": "Start video recording",
     "media.behavior.streamTwitch": "Stream to Twitch",
@@ -1978,6 +1976,8 @@
     "media.behavior.streamCustom": "Stream to custom server",
     "media.behavior.saveLastXSeconds": "Save last moments to video",
     "media.shareDescription": "Single press: %@. Long press: %@.",
+
+    "media.behavior.none": "Nothing",
 
     "media.saveLastMoments": "Save Last Moments",
     "media.saveLastMomentsEnable": "Enable game clip buffer",
@@ -2030,5 +2030,29 @@
     "hardcore.confirmTitle": "Disable Hardcore Mode?",
     "hardcore.confirmMessage": "This action will cancel Hardcore Mode for this session. You will not be able to earn hardcore achievements until you restart the game.",
     "hardcore.confirmProceed": "Cancel Hardcore Mode",
-    "hardcore.confirmCancel": "Keep Hardcore Mode"
+    "hardcore.confirmCancel": "Keep Hardcore Mode",
+
+    "settings.media.tab.recording": "Recording",
+    "settings.media.tab.streaming": "Streaming",
+    "settings.media.tab.screenshots": "Screenshots",
+    "settings.media.tab.sharing": "Sharing",
+    "settings.media.tab.hotkeys": "Hotkeys",
+    "settings.media.customize": "Customize…",
+    "settings.media.customized": "Customized",
+    "settings.media.reset": "Reset",
+    "settings.media.recording.enable": "Enable Local Recording",
+    "settings.media.recording.enableDescription": "Save gameplay to a local file. Live streaming is configured in the Streaming tab.",
+    "settings.media.recordingOff.summary": "Recording & Streaming is off — what will activate:",
+    "settings.media.recordingOff.osdHint": "Enable Save Last Moments in Streaming & Media settings",
+    "settings.media.streamingOff.summary": "Streaming is off — destinations already configured will be ready to use:",
+    "settings.media.destinations.configured": "Destinations configured:",
+    "settings.media.rolling.disabledHint": "Enable Save Last Moments in the Sharing tab of Streaming & Media settings",
+    "settings.media.screenshotPath": "Screenshot Folder",
+    "settings.media.screenshotPathDescription": "Choose where screenshots are saved. Leave empty to use the default Pictures folder.",
+    "settings.media.hotkeys.allShortcuts": "All shortcuts → Hotkeys page",
+    "settings.media.hotkeys.captureOnly": "Capture Shortcuts",
+
+    "media.streamingBadge": "Streaming Overlay",
+    "media.streamingBadgeEnable": "Show LIVE badge during streaming",
+    "media.streamingBadgePosition": "Position"
 }

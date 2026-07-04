@@ -1,8 +1,8 @@
 import Foundation
 
 struct ShareButtonConfig: Codable, Equatable {
-    var singlePress: ShareBehavior = .screenshot
-    var longPress: ShareBehavior = .startVideoRecording
+    var singlePress: ShareBehavior = .none
+    var longPress: ShareBehavior = .none
 
     private static let storageKey = "shareButtonConfig"
 

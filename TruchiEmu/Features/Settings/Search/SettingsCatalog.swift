@@ -283,70 +283,34 @@ enum SettingsCatalog {
             ),
 
             SettingsCatalogEntry(
-                page: .streaming, sectionID: "enable",
+                page: .streaming, sectionID: "tabRecording",
+                sectionTitle: "Recording",
+                optionTitles: ["Enable local recording", "Record with shaders", "Recording badge", "Badge position", "Quality: Low/Medium/High/Lossless", "Video codec: H.264/HEVC/ProRes", "Bitrate", "Frame rate", "Audio bitrate", "Output folder"],
+                keywords: ["recording", "record", "local", "file", "quality", "preset", "low", "medium", "high", "lossless", "bitrate", "codec", "frame", "rate", "resolution", "video", "audio", "h264", "hevc", "prores", "customize", "output", "path", "folder", "file", "location", "shaders", "applied", "gpu", "badge", "overlay"]
+            ),
+            SettingsCatalogEntry(
+                page: .streaming, sectionID: "tabStreaming",
                 sectionTitle: "Streaming",
-                optionTitles: ["Enable streaming"],
-                keywords: ["streaming", "recording", "twitch", "youtube", "stream", "key", "credentials"]
+                optionTitles: ["Enable streaming", "Record with shaders", "Stream badge", "Twitch stream key", "YouTube stream key", "Custom stream", "Output folder"],
+                keywords: ["streaming", "record", "twitch", "youtube", "custom", "stream", "key", "url", "server", "credentials", "rtmp", "verify", "destination", "configure", "bitrate", "frame", "rate", "quality", "overlay"]
             ),
             SettingsCatalogEntry(
-                page: .streaming, sectionID: "recordWithShaders",
-                sectionTitle: "Record with Shaders",
-                optionTitles: ["Record with shaders applied"],
-                keywords: ["record", "shaders", "applied", "gpu"]
-            ),
-            SettingsCatalogEntry(
-                page: .streaming, sectionID: "twitch",
-                sectionTitle: "Twitch",
-                optionTitles: ["Twitch stream key", "Twitch stream URL", "Verify Twitch"],
-                keywords: ["twitch", "stream", "key", "url", "verify"]
-            ),
-            SettingsCatalogEntry(
-                page: .streaming, sectionID: "youtube",
-                sectionTitle: "YouTube",
-                optionTitles: ["YouTube stream key", "YouTube stream URL", "Verify YouTube"],
-                keywords: ["youtube", "stream", "key", "url", "verify"]
-            ),
-            SettingsCatalogEntry(
-                page: .streaming, sectionID: "custom",
-                sectionTitle: "Custom Stream",
-                optionTitles: ["Custom stream name", "Custom stream key", "Custom stream URL", "Verify custom"],
-                keywords: ["custom", "stream", "key", "url", "server", "name"]
-            ),
-            SettingsCatalogEntry(
-                page: .streaming, sectionID: "output",
-                sectionTitle: "Output Path",
-                optionTitles: ["Output folder", "Browse"],
-                keywords: ["save", "recording", "output", "path", "file", "location"]
-            ),
-            SettingsCatalogEntry(
-                page: .streaming, sectionID: "quality",
-                sectionTitle: "Quality",
-                optionTitles: ["Low", "Medium", "High", "Lossless", "H.264", "HEVC", "ProRes 422", "ProRes 4444", "Bitrate", "Frame rate"],
-                keywords: ["quality", "low", "medium", "high", "lossless", "bitrate", "codec", "frame", "rate", "resolution", "video", "audio"]
-            ),
-            SettingsCatalogEntry(
-                page: .streaming, sectionID: "screenshots",
+                page: .streaming, sectionID: "tabScreenshots",
                 sectionTitle: "Screenshots",
-                optionTitles: ["Include native frame"],
-                keywords: ["screenshot", "capture", "native", "include", "frame"]
+                optionTitles: ["Include native frame", "Screenshot output folder"],
+                keywords: ["screenshot", "capture", "native", "include", "frame", "path", "folder", "save", "pictures"]
             ),
             SettingsCatalogEntry(
-                page: .streaming, sectionID: "shareButton",
-                sectionTitle: "Share Button",
-                optionTitles: ["Single press", "Long press"],
-                keywords: ["share", "button", "single", "long", "press", "behavior", "screenshot", "recording", "stream"]
+                page: .streaming, sectionID: "tabSharing",
+                sectionTitle: "Share Button & Save Last Moments",
+                optionTitles: ["Single press", "Long press", "Nothing", "Enable game clip buffer", "Clip duration", "30 seconds", "60 seconds", "2 minutes", "5 minutes", "10 minutes", "15 minutes", "Custom", "Use display resolution"],
+                keywords: ["share", "button", "single", "long", "press", "behavior", "nothing", "screenshot", "recording", "stream", "save", "last", "moments", "clip", "buffer", "retro", "game", "rolling", "duration", "size", "estimate"]
             ),
             SettingsCatalogEntry(
-                page: .streaming, sectionID: "saveLastMoments",
-                sectionTitle: "Save Last Moments",
-                optionTitles: ["Enable game clip buffer", "Clip duration", "30 seconds", "60 seconds", "2 minutes", "5 minutes", "10 minutes", "15 minutes", "Custom"],
-                keywords: ["save", "last", "moments", "clip", "buffer", "retro", "game", "rolling", "duration"]
-            ),
-            SettingsCatalogEntry(
-                page: .streaming, sectionID: "recordingBadge",
-                sectionTitle: "Recording Overlay",
-                optionTitles: ["Show REC badge", "Top Left", "Top Right", "Bottom Left", "Bottom Right", "Top Center", "Bottom Center"],
-                keywords: ["recording", "badge", "overlay", "rec", "indicator", "live", "position"]
+                page: .streaming, sectionID: "tabHotkeys",
+                sectionTitle: "Capture Hotkeys",
+                optionTitles: ["Screenshot shortcut", "Share single-press shortcut", "Share long-press shortcut"],
+                keywords: ["hotkeys", "keyboard", "shortcut", "screenshot", "share", "single", "long", "press", "capture", "key", "binding"]
             ),
 
             SettingsCatalogEntry(

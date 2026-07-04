@@ -12,12 +12,18 @@ struct ScreenshotResult {
 
 enum ScreenshotService {
     static var baseDirectory: URL {
+        if let customPath = AppSettings.getString("screenshot_output_path"), !customPath.isEmpty {
+            return URL(fileURLWithPath: customPath)
+        }
         let pictures = FileManager.default.urls(for: .picturesDirectory, in: .userDomainMask).first
             ?? FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Pictures")
         return pictures.appendingPathComponent("TruchiEmu", isDirectory: true)
     }
 
     static func directory(for systemID: String) -> URL {
+        if let customPath = AppSettings.getString("screenshot_output_path"), !customPath.isEmpty {
+            return URL(fileURLWithPath: customPath)
+        }
         let safeSystem = sanitizeFilename(systemID.isEmpty ? "default" : systemID)
         return baseDirectory.appendingPathComponent(safeSystem, isDirectory: true)
     }

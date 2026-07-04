@@ -1081,6 +1081,9 @@ weak var metalCoordinator: MetalCoordinator?
         LoggerService.info(category: "Runner", "handleSharePress behavior=\(behavior) isEnabled=\(RollingVideoBufferService.shared.isEnabled)")
 
         switch behavior {
+        case .none:
+            break
+
         case .screenshot:
             performScreenshot()
 
@@ -1119,7 +1122,7 @@ weak var metalCoordinator: MetalCoordinator?
 
         case .saveLastXSeconds:
             guard RollingVideoBufferService.shared.isEnabled else {
-                osdMessage = "Enable Save Last Moments in Streaming & Media settings"
+                osdMessage = LocalizationManager.shared.localized("settings.media.rolling.disabledHint")
                 Task { @MainActor in
                     try? await Task.sleep(nanoseconds: 3_000_000_000)
                     self.osdMessage = nil

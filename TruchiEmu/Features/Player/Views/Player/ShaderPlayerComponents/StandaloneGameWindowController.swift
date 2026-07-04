@@ -401,8 +401,7 @@ super.init(window: window)
         ])
 
         // Recording badge overlay (REC indicator with timer)
-        let badgePosition = BadgePosition(rawValue: AppSettings.getInt("recording_badge_position", defaultValue: 1)) ?? .topRight
-        let badgeView = SafeHostingView(rootView: AnyView(RecordingBadgeOverlay(alignment: badgePosition.alignment)))
+        let badgeView = SafeHostingView(rootView: AnyView(RecordingBadgeOverlay()))
         badgeView.translatesAutoresizingMaskIntoConstraints = false
         badgeView.wantsLayer = true
         badgeView.isPassThroughOverlay = true
