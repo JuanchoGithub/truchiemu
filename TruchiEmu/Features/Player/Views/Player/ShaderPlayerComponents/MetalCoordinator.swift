@@ -911,7 +911,20 @@ outputHeight: Float(drawHeight)
         CVPixelBufferLockBaseAddress(pb, [])
         defer { CVPixelBufferUnlockBaseAddress(pb, []) }
         if let dest = CVPixelBufferGetBaseAddress(pb) {
-            memcpy(dest, bgra32Pixels, height * width * 4)
+            let dstBPR = CVPixelBufferGetBytesPerRow(pb)
+            let srcBPR = width * 4
+            if dstBPR == srcBPR {
+                memcpy(dest, bgra32Pixels, height * srcBPR)
+            } else {
+                bgra32Pixels.withUnsafeBufferPointer { srcBuf in
+                    guard let srcBase = srcBuf.baseAddress else { return }
+                    for row in 0..<height {
+                        memcpy(dest.advanced(by: row * dstBPR),
+                               srcBase + row * srcBPR,
+                               srcBPR)
+                    }
+                }
+            }
         }
         return pb
     }
