@@ -1,0 +1,55 @@
+---
+layout: default
+title: v1.5.1 - Documentación de TruchiEmu
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/es/changelog.html' | relative_url }}">Registro de cambios</a>
+        <span class="separator">/</span>
+        <span class="current">v1.5.1</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.5.1</h1>
+        <div class="release-meta">
+            <span class="release-date">2 de julio de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Parche de emergencia que corrige el embedding del dylib de librashader en builds de release y añade funcionalidad de prueba de notificaciones, borrado masivo del gestor de guardados y pulido de documentación.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destacados</h2>
+        <ul class="feature-list">
+            <li><strong>Corrección de emergencia de librashader:</strong> el dylib ahora se copia a <code>Frameworks/</code> con el install name correcto, ARCHS bloqueado a arm64 — los builds de release ya no fallan al iniciar</li>
+            <li><strong>Notificaciones:</strong> añadida funcionalidad de prueba de notificaciones y manejo mejorado de autorización</li>
+            <li><strong>Gestor de guardados:</strong> acción "Borrar todos los guardados" con confirmación de UI mejorada</li>
+            <li><strong>Shaders:</strong> se eliminaron especificaciones de shaders para mayor claridad y concisión</li>
+            <li><strong>Documentación:</strong> eliminadas secciones de solución de problemas en todos los idiomas; docs de características mejoradas con soporte de control, streaming y guía de juego actualizada</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Cambios detallados</h2>
+        <ul>
+            <li>Corregido el embedding del dylib de librashader: ahora se copia a la carpeta <code>Frameworks</code> con el install name correcto</li>
+            <li>Bloqueado <code>ARCHS</code> a <code>arm64</code> (librashader es solo arm64)</li>
+            <li>Añadida acción de prueba de notificación y mejor manejo de autorización en <code>NotificationPill</code></li>
+            <li>Implementada funcionalidad "Borrar todos los guardados" con mejora en la confirmación de UI en el gestor de guardados</li>
+            <li>Refactorizados shaders: se eliminaron especificaciones para mayor claridad y concisión</li>
+            <li>Actualizada la documentación de shaders con nuevas funciones y descripciones mejoradas</li>
+            <li>Eliminadas secciones de solución de problemas en todas las variantes de idioma y eliminadas las páginas dedicadas de solución de problemas</li>
+            <li>Mejorada la documentación de características con nuevas secciones para soporte de control, streaming y guía de juego actualizada</li>
+            <li>Simplificadas las docs de características y reorganizados los enlaces de navegación</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/es/changelog/v1.5.2.html' | relative_url }}" class="release-next">v1.5.2 &rarr;</a>
+        <a href="{{ '/es/changelog/v1.5.0.html' | relative_url }}" class="release-prev">&larr; v1.5.0</a>
+        <a href="{{ '/es/changelog.html' | relative_url }}" class="release-all">Todas las versiones</a>
+    </nav>
+</div>

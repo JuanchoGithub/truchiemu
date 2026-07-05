@@ -1,0 +1,64 @@
+---
+layout: default
+title: v1.4.0 - TruchiEmu Documentation
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.4.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.4.0</h1>
+        <div class="release-meta">
+            <span class="release-date">June 23, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Major release introducing full gamepad navigation for the entire app interface, smarter ROM deletion with referenced file restoration and preloaded box art, and library grid polish.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>Gamepad Navigation:</strong> Navigate the entire app interface using a gamepad, with configurable button bindings and dismiss functionality for popovers and sheets</li>
+            <li><strong>Smart ROM Deletion:</strong> Referenced files can be restored when deleting a ROM; preloaded box art shows visual context before the confirmation dialog</li>
+            <li><strong>Joystick Navigation Toggle:</strong> New setting to enable/disable joystick-based navigation, with updated button bindings</li>
+            <li><strong>GameCardView Context Menus:</strong> Right-click context menus on game cards for quick actions</li>
+            <li><strong>LibraryGridView Scroll State:</strong> Improved scroll position tracking and persistence across sessions</li>
+            <li><strong>New Gamepad Navigation Strings:</strong> Localized for English, Spanish, and Portuguese</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>Added <code>GamepadNavCoordinator</code>: centralized gamepad navigation system for the library interface</li>
+            <li>Added <code>GamepadNavConfigSettingsView</code>: configure gamepad button bindings for navigation</li>
+            <li>Made all popovers and sheets in settings/library views dismissable with a gamepad button</li>
+            <li>Added <code>GamepadNavigationManager</code>: powers gamepad navigation in game windows and standalone windows</li>
+            <li>Added gamepad navigation support to <code>StandaloneGameWindowController</code></li>
+            <li>Added smart context-aware navigation in <code>GameDetailView</code> and <code>ShaderWindowController</code></li>
+            <li>Added referenced file restoration when deleting a ROM</li>
+            <li>Preloaded box art before the deletion confirmation dialog</li>
+            <li>Added joystick navigation toggle in settings</li>
+            <li>Updated button bindings to support the new joystick navigation system</li>
+            <li>Added right-click context menus on <code>GameCardView</code></li>
+            <li>Improved scroll position tracking and persistence in <code>LibraryGridView</code></li>
+            <li>Enhanced hover effects with dynamic trailing padding on <code>CategoryRowButton</code> and <code>SidebarRowButton</code></li>
+            <li>Improved <code>ShaderPresetPickerView</code> for better shader preset selection</li>
+            <li>Integrated <code>NotificationHistoryManager</code> across game views</li>
+            <li>Restructured <code>SettingsView</code> for better organization</li>
+            <li>Added new translations for gamepad navigation strings in English, Spanish, and Portuguese</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.5.0.html' | relative_url }}" class="release-next">v1.5.0 &rarr;</a>
+        <a href="{{ '/changelog/v1.3.0.html' | relative_url }}" class="release-prev">&larr; v1.3.0</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>

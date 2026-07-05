@@ -1,0 +1,56 @@
+---
+layout: default
+title: v1.2.0 - Documentación de TruchiEmu
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/es/changelog.html' | relative_url }}">Registro de cambios</a>
+        <span class="separator">/</span>
+        <span class="current">v1.2.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.2.0</h1>
+        <div class="release-meta">
+            <span class="release-date">12 de junio de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Versión importante que añade soporte de ROMs comprimidas (ZIP, 7z, RAR), desambiguación MAME/FBNeo, identificación CRC de sistema, identificación de sector de arranque, fusión de sistemas y extensas correcciones de errores.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destacados</h2>
+        <ul class="feature-list">
+            <li><strong>Soporte de ROMs comprimidas:</strong> Ejecuta ROMs ZIP, 7z y RAR directamente. Los núcleos que soportan archivos reciben el archivo tal cual; otros reciben extracción automática con caché persistente y limpieza configurable por TTL</li>
+            <li><strong>Desambiguación MAME/FBNeo:</strong> Las ROMs Arcade ahora se identifican correctamente como conjuntos MAME o FBNeo mediante validación basada en base de datos</li>
+            <li><strong>Desambiguación CRC de sistema:</strong> Coincidencia CRC32 completa con bases de datos Libretro DAT cuando los dos candidatos principales están cerca</li>
+            <li><strong>Identificación de sector de arranque:</strong> Cabeceras mágicas positivas para Dreamcast, 3DO, Xbox, CD-i, GameCube, Wii, PC Engine CD y Atari 7800</li>
+            <li><strong>Fusión de sistemas:</strong> Fusionar GB+GBC en una sola entrada "Game Boy"; fusionar MAME+FBNeo en "Arcade (MAME / FBNeo)" en la barra lateral</li>
+            <li><strong>Mejoras en miniaturas:</strong> Investigar todos los nombres de carpeta de la base de datos para un sistema, almacenando en caché las carpetas funcionales</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Correcciones detalladas</h2>
+        <ul>
+            <li>Eliminado <code>.bin</code> de las listas de extensión NES/SNES/N64/GBA/GB/DS/SMS (gran fuente de falsos positivos)</li>
+            <li>Eliminado <code>"/"</code> como extensión en Amiga/C64 (causaba errores de escaneo de directorio)</li>
+            <li>Eliminado <code>.cue</code> de las extensiones de Genesis (identificación falsa de juego CD)</li>
+            <li>Eliminadas extensiones GB/GBC/SGB de NES/SNES/GBA (ROMs del sistema incorrecto filtrándose)</li>
+            <li>MAME ahora valida solo dependencias del núcleo activo</li>
+            <li>Eliminación de categoría ahora funciona (era un no-op antes)</li>
+            <li>ROMs escaneados se auto-seleccionan en la biblioteca después de completarse</li>
+            <li>Metadatos y trucos ahora claveados por <code>runningKey</code> (ruta del archivo + ruta interna)</li>
+            <li>Caché SwiftData descartada automáticamente después de actualizaciones de la app</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/es/changelog/v1.3.0.html' | relative_url }}" class="release-next">v1.3.0 &rarr;</a>
+        <a href="{{ '/es/changelog/v1.1.0.html' | relative_url }}" class="release-prev">&larr; v1.1.0</a>
+        <a href="{{ '/es/changelog.html' | relative_url }}" class="release-all">Todas las versiones</a>
+    </nav>
+</div>

@@ -1,0 +1,67 @@
+---
+layout: default
+title: v1.0.0 - TruchiEmu Documentation
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.0.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.0.0</h1>
+        <div class="release-meta">
+            <span class="release-date">June 10, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>First stable release! Full RetroAchievements integration, game guide sidebar, controller deadzone settings, Jaguar BIOS service, ISO scanning overhaul, and more.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>RetroAchievements Integration:</strong> Full rcheevos runtime with achievement tracking, rich presence, and exclusive achievement handling</li>
+            <li><strong>Game Guide Sidebar:</strong> Built-in progressive hints (UHS) and walkthroughs (GameFAQs) for adventure and point-and-click games, with full gamepad navigation</li>
+            <li><strong>Achievement Display Settings:</strong> New view mode settings and enhanced achievement sections in GameDetailView</li>
+            <li><strong>Jaguar BIOS Service:</strong> Automatic BIOS extraction for Atari Jaguar games</li>
+            <li><strong>Controller Deadzone Settings:</strong> Per-controller deadzone configuration with UI sliders</li>
+            <li><strong>Escape Toast Overlay:</strong> Visual feedback during keyboard/mouse input capture</li>
+            <li><strong>ISO Scanning Improvements:</strong> Sector format detection, LBN size retrieval, CUE/MDS/CCD descriptor file support</li>
+            <li><strong>Notification Pill Improvements:</strong> Tap-to-dismiss and configurable auto-dismiss delay</li>
+            <li><strong>Progressive Save State Expansion:</strong> Expandable save state slots in GameDetailView</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>Fixed: proper ISO9660 directory record parser (replaces heuristic)</li>
+            <li>Fixed: correct PSP ROM hashing for RetroAchievements</li>
+            <li>Fixed: handle CD-ROM Mode 2 subheader and PC-FX sector offsets</li>
+            <li>Fixed: ISO9660 data length offset and PSP version suffix handling</li>
+            <li>Fixed: default shader presets for Game Boy and Game Boy Color</li>
+            <li>Fixed: enhanced local box art resolution with file existence check</li>
+            <li>Switched to MD5 hashing for ROM identification in RetroAchievements (replaces CRC32)</li>
+            <li>Enhanced RA game auto-detection with notification handling</li>
+            <li>Achievement badge prefetching improvements</li>
+            <li>Game Boy colorization settings compatibility</li>
+            <li>Hotkey settings layout simplification and search</li>
+            <li>Help settings search functionality</li>
+            <li>Logging system refactored to use LoggerService</li>
+            <li>Analog mouse settings refactored</li>
+            <li>Training mode overlay improvements</li>
+            <li>Localization updates for English, Spanish, and Portuguese</li>
+            <li>Game Guide documentation added in all three languages</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.1.0.html' | relative_url }}" class="release-next">v1.1.0 &rarr;</a>
+        <a href="{{ '/changelog/v0.8.5.html' | relative_url }}" class="release-prev">&larr; v0.8.5</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>

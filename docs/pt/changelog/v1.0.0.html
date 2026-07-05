@@ -1,0 +1,61 @@
+---
+layout: default
+title: v1.0.0 - Documentação do TruchiEmu
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/pt/changelog.html' | relative_url }}">Registro de alterações</a>
+        <span class="separator">/</span>
+        <span class="current">v1.0.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.0.0</h1>
+        <div class="release-meta">
+            <span class="release-date">10 de junho de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Primeira versão estável! Integração completa com RetroAchievements, painel lateral do guia de jogo, configurações de deadzone do controle, serviço de BIOS Jaguar, reformulação do escaneamento ISO e muito mais.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destaques</h2>
+        <ul class="feature-list">
+            <li><strong>Integração RetroAchievements:</strong> Runtime rcheevos completo com rastreamento de conquistas, rich presence e manuseio de conquistas exclusivas</li>
+            <li><strong>Painel lateral do guia de jogo:</strong> Dicas progressivas (UHS) e walkthroughs (GameFAQs) para jogos de aventura e point-and-click, com navegação completa por gamepad</li>
+            <li><strong>Configurações de exibição de conquistas:</strong> Novos modos de visualização e seções de conquistas aprimoradas em GameDetailView</li>
+            <li><strong>Serviço de BIOS Jaguar:</strong> Extração automática de BIOS para jogos de Atari Jaguar</li>
+            <li><strong>Configurações de deadzone do controle:</strong> Configuração de deadzone por controle com controles deslizantes na UI</li>
+            <li><strong>Escape Toast Overlay:</strong> Feedback visual durante captura de entrada de teclado/mouse</li>
+            <li><strong>Melhorias no escaneamento ISO:</strong> Detecção de formato de setor, recuperação de tamanho LBN, suporte a arquivos descritores CUE/MDS/CCD</li>
+            <li><strong>Melhorias no Notification Pill:</strong> Dispensar com toque e atraso de dispensa automática configurável</li>
+            <li><strong>Expansão progressiva de save states:</strong> Slots de save state expansíveis em GameDetailView</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Alterações detalhadas</h2>
+        <ul>
+            <li>Corrigido: analisador de registro de diretório ISO9660 adequado (substitui heurística)</li>
+            <li>Corrigido: hashing correto de ROM PSP para RetroAchievements</li>
+            <li>Corrigido: manuseio de subcabeçalho CD-ROM Mode 2 e deslocamentos de setor PC-FX</li>
+            <li>Corrigido: deslocamento de comprimento de dados ISO9660 e manuseio de sufixo de versão PSP</li>
+            <li>Corrigido: presets de shader padrão para Game Boy e Game Boy Color</li>
+            <li>Corrigida: resolução aprimorada de capas locais com verificação de existência de arquivo</li>
+            <li>Trocado para hashing MD5 para identificação de ROM em RetroAchievements (substitui CRC32)</li>
+            <li>Detecção automática de jogo RA aprimorada com manuseio de notificações</li>
+            <li>Melhorias de pré-carregamento de badges de conquistas</li>
+            <li>Localização atualizada em inglês, espanhol e português</li>
+            <li>Documentação do Guia de Jogo adicionada nos três idiomas</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/pt/changelog/v1.1.0.html' | relative_url }}" class="release-next">v1.1.0 &rarr;</a>
+        <a href="{{ '/pt/changelog/v0.8.5.html' | relative_url }}" class="release-prev">&larr; v0.8.5</a>
+        <a href="{{ '/pt/changelog.html' | relative_url }}" class="release-all">Todas as versões</a>
+    </nav>
+</div>

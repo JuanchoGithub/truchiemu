@@ -6,7 +6,7 @@ repository: "JuanchoGithub/truchiemu"
 
 markdown: kramdown
 highlighter: rouge
-permalink: /:name.html
+# permalink: /:name.html
 
 plugins:
 - jekyll-sitemap

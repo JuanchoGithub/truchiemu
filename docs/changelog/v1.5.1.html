@@ -1,0 +1,55 @@
+---
+layout: default
+title: v1.5.1 - TruchiEmu Documentation
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.5.1</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.5.1</h1>
+        <div class="release-meta">
+            <span class="release-date">July 2, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Emergency patch that fixes the librashader dylib embedding in release builds and adds notification test functionality, save manager bulk-delete, and documentation polish.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>Emergency librashader fix:</strong> dylib now copies to <code>Frameworks/</code> with correct install name, ARCHS locked to arm64 — release builds no longer crash at launch</li>
+            <li><strong>Notifications:</strong> Added test notification functionality and improved authorization handling</li>
+            <li><strong>Save Manager:</strong> "Delete all saves" bulk action with enhanced UI confirmation</li>
+            <li><strong>Shaders:</strong> Removed shader specifications for clarity and conciseness</li>
+            <li><strong>Documentation:</strong> Removed troubleshooting sections across all languages; enhanced features docs with controller support, streaming, and updated game guide</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>Fixed librashader dylib embedding: now copied to <code>Frameworks</code> folder with the correct install name</li>
+            <li>Locked <code>ARCHS</code> to <code>arm64</code> (librashader is arm64-only)</li>
+            <li>Added test notification action and improved authorization handling in <code>NotificationPill</code></li>
+            <li>Implemented "Delete all saves" functionality with enhancement to UI confirmation in the save manager</li>
+            <li>Refactored shaders: removed shader specifications for clarity and conciseness</li>
+            <li>Updated shader documentation with new features and improved descriptions</li>
+            <li>Removed troubleshooting sections across all language variants and deleted the dedicated troubleshooting pages</li>
+            <li>Enhanced features documentation with new sections for controller support, streaming, and updated game guide</li>
+            <li>Streamlined features docs and reorganized navigation links</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.5.2.html' | relative_url }}" class="release-next">v1.5.2 &rarr;</a>
+        <a href="{{ '/changelog/v1.5.0.html' | relative_url }}" class="release-prev">&larr; v1.5.0</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>

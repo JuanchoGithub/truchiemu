@@ -1,0 +1,55 @@
+---
+layout: default
+title: v1.5.1 - Documentação do TruchiEmu
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/pt/changelog.html' | relative_url }}">Registro de alterações</a>
+        <span class="separator">/</span>
+        <span class="current">v1.5.1</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.5.1</h1>
+        <div class="release-meta">
+            <span class="release-date">2 de julho de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Patch de emergência que corrige o embedding do dylib librashader em builds de release e adiciona funcionalidade de teste de notificação, exclusão em massa do gerenciador de saves e polimento da documentação.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destaques</h2>
+        <ul class="feature-list">
+            <li><strong>Correção de emergência do librashader:</strong> dylib agora copiado para <code>Frameworks/</code> com install name correto, ARCHS bloqueado para arm64 — builds de release não travam mais ao iniciar</li>
+            <li><strong>Notificações:</strong> adicionada funcionalidade de teste de notificação e manuseio de autorização melhorado</li>
+            <li><strong>Gerenciador de saves:</strong> ação "Excluir todos os saves" em massa com confirmação de UI melhorada</li>
+            <li><strong>Shaders:</strong> removidas especificações de shaders para maior clareza e concisão</li>
+            <li><strong>Documentação:</strong> removidas seções de solução de problemas em todos os idiomas; docs de recursos melhoradas com suporte a controles, streaming e guia de jogo atualizado</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Alterações detalhadas</h2>
+        <ul>
+            <li>Corrigido o embedding do dylib librashader: agora copiado para a pasta <code>Frameworks</code> com o install name correto</li>
+            <li>Bloqueado <code>ARCHS</code> para <code>arm64</code> (librashader é somente arm64)</li>
+            <li>Adicionada ação de teste de notificação e manuseio de autorização melhorado no <code>NotificationPill</code></li>
+            <li>Implementada funcionalidade "Excluir todos os saves" com melhoria na confirmação de UI no gerenciador de saves</li>
+            <li>Refatorados shaders: especificações removidas para maior clareza e concisão</li>
+            <li>Atualizada a documentação de shaders com novos recursos e descrições melhores</li>
+            <li>Removidas seções de solução de problemas em todas as variantes de idioma e deletadas as páginas dedicadas de solução de problemas</li>
+            <li>Melhorada a documentação de recursos com novas seções para suporte a controles, streaming e guia de jogo atualizado</li>
+            <li>Simplificadas as docs de recursos e reorganizados os links de navegação</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/pt/changelog/v1.5.2.html' | relative_url }}" class="release-next">v1.5.2 &rarr;</a>
+        <a href="{{ '/pt/changelog/v1.5.0.html' | relative_url }}" class="release-prev">&larr; v1.5.0</a>
+        <a href="{{ '/pt/changelog.html' | relative_url }}" class="release-all">Todas as versões</a>
+    </nav>
+</div>

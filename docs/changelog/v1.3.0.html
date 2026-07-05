@@ -1,0 +1,69 @@
+---
+layout: default
+title: v1.3.0 - TruchiEmu Documentation
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.3.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.3.0</h1>
+        <div class="release-meta">
+            <span class="release-date">June 19, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Major release with training mode overhaul, region-specific box art, in-app help sheet, system icon improvements, and an extensive set of input, save state, and identification fixes.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>Training Mode Overhaul:</strong> P2 join support, motion detection, block button auto-detection, facing direction controls; MAME/FBNeo control mappings across all arcade titles; corrected Mortal Kombat move data</li>
+            <li><strong>Region-Specific Box Art:</strong> Libretro thumbnail resolver prioritizes region-suffixed titles; ROM entries track requested region, region tag, and fetch date</li>
+            <li><strong>Help & FAQ:</strong> new in-app Help Sheet with deep links to relevant settings pages and FAQ items with link labels and navigation</li>
+            <li><strong>System Icons:</strong> new <code>SFSymbolCatalog</code> service, image cropping for custom icons, and <code>BoxArtThumbnailService</code> for generated thumbnails</li>
+            <li><strong>Shader Unsaved-Changes Dialog:</strong> new confirmation dialog prevents accidental loss of shader preset edits</li>
+            <li><strong>Cheat Download Improvements:</strong> enhanced flow with confirmation dialogs and localized messages</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>Enhanced MAME identification with rejection tracking and improved scoring logic</li>
+            <li>Orphaned ROMs purging with improved metadata management</li>
+            <li>Added context menu support to <code>GameCardView</code> and <code>GameListRowView</code></li>
+            <li>Dynamic trailing padding on <code>SidebarRowButton</code> based on hover state</li>
+            <li>Scroll state management in <code>GameListRowView</code> and <code>LibraryGridView</code></li>
+            <li>Cached achievement progress retrieval in <code>RetroAchievementsService</code></li>
+            <li>Enhanced save state handling with callbacks for loading and saving states</li>
+            <li>Added Genesis controller type handling and options for Picodrive core</li>
+            <li>Debug logging gated with <code>LOG_DEBUG</code> / <code>LOG_EXTREME</code> compilation conditions — no longer noisy in Release builds</li>
+            <li>Replaced <code>print</code> statements with <code>LoggerService</code> calls throughout</li>
+            <li>Reformatted fight data JSON files to multiline for easier maintenance</li>
+            <li>Updated fight data with MAME, Arcade, FBA, and FBNeo control mappings across 200+ titles</li>
+            <li>Added system-level input overrides for Sega systems (Master System, Genesis, Game Gear, SG-1000, Sega CD, Sega Pico)</li>
+            <li>Dynamic retroID resolution via label matching in <code>InputDescriptorsManager</code></li>
+            <li>Updated <code>ControllerService</code> for per-system button detection</li>
+            <li>Added <code>CoreButtonOverride</code> and <code>RetroButton</code> models for system-aware button mapping</li>
+            <li>Improved hover effects for last played / last added filters in <code>LibraryGridView</code></li>
+            <li>Game reset handling now clears overlays and deactivates move list</li>
+            <li>Simplified sidebar context menu with enhanced hover effects</li>
+            <li>Improved shader editor title and Bezel/Controller settings initialization with localization</li>
+            <li>Fixed: in-app update download now shows progress correctly (was stuck at 0% for redirected downloads)</li>
+            <li>Fixed: extended attributes stripped from app bundle during installation (quarantine/com.apple.metadata removed)</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.4.0.html' | relative_url }}" class="release-next">v1.4.0 &rarr;</a>
+        <a href="{{ '/changelog/v1.2.0.html' | relative_url }}" class="release-prev">&larr; v1.2.0</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>

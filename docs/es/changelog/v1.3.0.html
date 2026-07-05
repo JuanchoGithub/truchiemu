@@ -1,0 +1,69 @@
+---
+layout: default
+title: v1.3.0 - Documentación de TruchiEmu
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/es/changelog.html' | relative_url }}">Registro de cambios</a>
+        <span class="separator">/</span>
+        <span class="current">v1.3.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.3.0</h1>
+        <div class="release-meta">
+            <span class="release-date">19 de junio de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Versión importante con una revisión completa del modo de práctica, arte de caja específico por región, hoja de ayuda en la app, mejoras de iconos del sistema y un conjunto extenso de correcciones de entrada, estados guardados e identificación.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destacados</h2>
+        <ul class="feature-list">
+            <li><strong>Revisión del modo de práctica:</strong> soporte de unión de P2, detección de movimiento, autodetección del botón de bloqueo y controles de dirección; mapeos de controles MAME/FBNeo en todos los títulos arcade; datos de movimientos de Mortal Kombat corregidos</li>
+            <li><strong>Arte de caja por región:</strong> el resolvedor de miniaturas Libretro prioriza títulos con sufijo de región; las entradas de ROM rastrean la región solicitada, etiqueta de región y fecha de descarga</li>
+            <li><strong>Ayuda y FAQ:</strong> nueva Hoja de ayuda en la app con enlaces profundos a páginas de ajustes relevantes y elementos de FAQ con etiquetas de enlace y navegación</li>
+            <li><strong>Iconos del sistema:</strong> nuevo servicio <code>SFSymbolCatalog</code>, recorte de imágenes para iconos personalizados y <code>BoxArtThumbnailService</code> para miniaturas generadas</li>
+            <li><strong>Diálogo de cambios no guardados en shaders:</strong> nuevo diálogo de confirmación que previene la pérdida accidental de ediciones en presets de shaders</li>
+            <li><strong>Mejoras en descarga de trucos:</strong> flujo mejorado con diálogos de confirmación y mensajes localizados</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Cambios detallados</h2>
+        <ul>
+            <li>Mejorada la identificación MAME con seguimiento de rechazo y lógica de puntuación mejorada</li>
+            <li>Purga de ROMs huérfanos con mejor manejo de metadatos</li>
+            <li>Añadido soporte de menú contextual a <code>GameCardView</code> y <code>GameListRowView</code></li>
+            <li>Padding trailing dinámico en <code>SidebarRowButton</code> basado en estado hover</li>
+            <li>Manejo de estado de desplazamiento en <code>GameListRowView</code> y <code>LibraryGridView</code></li>
+            <li>Recuperación en caché del progreso de logros en <code>RetroAchievementsService</code></li>
+            <li>Mejorado el manejo de estados guardados con callbacks para cargar y guardar estados</li>
+            <li>Añadido manejo del tipo de control Genesis y opciones para el núcleo Picodrive</li>
+            <li>Logging de debug condicionado por <code>LOG_DEBUG</code> / <code>LOG_EXTREME</code> — ya no es ruidoso en builds de Release</li>
+            <li>Reemplazadas las llamadas a <code>print</code> por <code>LoggerService</code> en toda la app</li>
+            <li>Reformateados los archivos JSON de datos de lucha a multilínea para mantenimiento más fácil</li>
+            <li>Actualizados datos de lucha con mapeos de controles MAME, Arcade, FBA y FBNeo en más de 200 títulos</li>
+            <li>Añadidas anulaciones de entrada a nivel de sistema para sistemas Sega (Master System, Genesis, Game Gear, SG-1000, Sega CD, Sega Pico)</li>
+            <li>Resolución dinámica de retroID vía coincidencia de etiquetas en <code>InputDescriptorsManager</code></li>
+            <li>Actualizado <code>ControllerService</code> para detección de botones por sistema</li>
+            <li>Añadidos modelos <code>CoreButtonOverride</code> y <code>RetroButton</code> para mapeo de botones consciente del sistema</li>
+            <li>Mejorados efectos hover para filtros de último jugado/último añadido en <code>LibraryGridView</code></li>
+            <li>El manejo de reset del juego ahora limpia overlays y desactiva la lista de movimientos</li>
+            <li>Menú contextual del sidebar simplificado con efectos hover mejorados</li>
+            <li>Mejorado el título del editor de shaders e inicialización de Bezels/Controles con localización</li>
+            <li>Corregido: la descarga de actualización dentro de la app ahora muestra el progreso correctamente (antes quedaba atascada en 0% para descargas redirigidas)</li>
+            <li>Corregido: atributos extendidos eliminados del bundle de la app durante instalación (quarantine/com.apple.metadata eliminado)</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/es/changelog/v1.4.0.html' | relative_url }}" class="release-next">v1.4.0 &rarr;</a>
+        <a href="{{ '/es/changelog/v1.2.0.html' | relative_url }}" class="release-prev">&larr; v1.2.0</a>
+        <a href="{{ '/es/changelog.html' | relative_url }}" class="release-all">Todas las versiones</a>
+    </nav>
+</div>

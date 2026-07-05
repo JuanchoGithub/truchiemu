@@ -1,0 +1,64 @@
+---
+layout: default
+title: v1.4.0 - Documentação do TruchiEmu
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/pt/changelog.html' | relative_url }}">Registro de alterações</a>
+        <span class="separator">/</span>
+        <span class="current">v1.4.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.4.0</h1>
+        <div class="release-meta">
+            <span class="release-date">23 de junho de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Versão importante introduzindo navegação completa por gamepad para toda a interface do app, exclusão de ROM mais inteligente com restauração de arquivos referenciados e capas pré-carregadas, e refinamentos da grade da biblioteca.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destaques</h2>
+        <ul class="feature-list">
+            <li><strong>Navegação por gamepad:</strong> navegue por toda a interface do app usando um gamepad, com bindings de botões configuráveis e funcionalidade de dispensar para popovers e folhas</li>
+            <li><strong>Exclusão inteligente de ROM:</strong> arquivos referenciados podem ser restaurados ao excluir uma ROM; capas pré-carregadas mostram contexto visual antes do diálogo de confirmação</li>
+            <li><strong>Toggle de navegação por joystick:</strong> nova configuração para ativar/desativar a navegação baseada em joystick, com bindings de botões atualizados</li>
+            <li><strong>Menus de contexto em GameCardView:</strong> menus de contexto com clique direito em cartões de jogo para ações rápidas</li>
+            <li><strong>Estado de rolagem do LibraryGridView:</strong> rastreamento e persistência melhorados da posição de rolagem entre sessões</li>
+            <li><strong>Novas strings de navegação por gamepad:</strong> localizadas para inglês, espanhol e português</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Alterações detalhadas</h2>
+        <ul>
+            <li>Adicionado <code>GamepadNavCoordinator</code>: sistema centralizado de navegação por gamepad para a interface de biblioteca</li>
+            <li>Adicionada <code>GamepadNavConfigSettingsView</code>: configure bindings de botões do gamepad para navegação</li>
+            <li>Feitos dispensáveis com botão do gamepad todos os popovers e folhas nas visualizações de biblioteca/configurações</li>
+            <li>Adicionado <code>GamepadNavigationManager</code>: ativa a navegação por gamepad em janelas de jogo e standalone</li>
+            <li>Adicionado suporte a navegação por gamepad a <code>StandaloneGameWindowController</code></li>
+            <li>Adicionada navegação context-aware inteligente em <code>GameDetailView</code> e <code>ShaderWindowController</code></li>
+            <li>Adicionada restauração de arquivos referenciados ao excluir uma ROM</li>
+            <li>Pré-carregadas as capas antes do diálogo de confirmação de exclusão</li>
+            <li>Adicionado toggle de navegação por joystick em configurações</li>
+            <li>Atualizados os bindings de botões para suportar o novo sistema de navegação por joystick</li>
+            <li>Adicionados menus de contexto com clique direito em <code>GameCardView</code></li>
+            <li>Melhorado o rastreamento e a persistência da posição de rolagem em <code>LibraryGridView</code></li>
+            <li>Melhorados os efeitos hover com padding trailing dinâmico em <code>CategoryRowButton</code> e <code>SidebarRowButton</code></li>
+            <li>Melhorada <code>ShaderPresetPickerView</code> para melhor seleção de presets de shaders</li>
+            <li>Integrado <code>NotificationHistoryManager</code> em todas as visualizações de jogo</li>
+            <li>Reestruturada <code>SettingsView</code> para melhor organização</li>
+            <li>Adicionadas novas traduções para strings de navegação por gamepad em inglês, espanhol e português</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/pt/changelog/v1.5.0.html' | relative_url }}" class="release-next">v1.5.0 &rarr;</a>
+        <a href="{{ '/pt/changelog/v1.3.0.html' | relative_url }}" class="release-prev">&larr; v1.3.0</a>
+        <a href="{{ '/pt/changelog.html' | relative_url }}" class="release-all">Todas as versões</a>
+    </nav>
+</div>

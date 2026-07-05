@@ -1,0 +1,68 @@
+---
+layout: default
+title: v1.2.0 - TruchiEmu Documentation
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.2.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.2.0</h1>
+        <div class="release-meta">
+            <span class="release-date">June 12, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Major release adding compressed ROM support (ZIP, 7z, RAR), MAME/FBNeo disambiguation, CRC-based system identification, boot-sector disc identification, system merging, and extensive bug fixes.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>Compressed ROM Support:</strong> Launch ZIP, 7z, and RAR ROMs directly. Archive-aware cores get the archive as-is; all others get automatic extraction with persistent disk caching and configurable TTL cleanup</li>
+            <li><strong>MAME/FBNeo Disambiguation:</strong> Arcade ROMs now correctly identified as MAME or FBNeo romsets via database-backed validation</li>
+            <li><strong>CRC-based System Disambiguation:</strong> Full CRC32 matching against Libretro DAT databases when the top two system candidates are close</li>
+            <li><strong>Boot-Sector Disc Identification:</strong> Positive magic headers for Dreamcast, 3DO, Xbox, CD-i, GameCube, Wii, PC Engine CD, and Atari 7800</li>
+            <li><strong>System Merging:</strong> Merge GB+GBC into a single "Game Boy" entry; merge MAME+FBNeo into "Arcade (MAME / FBNeo)" in the sidebar</li>
+            <li><strong>Thumbnail Resolution Improvements:</strong> Probe all database folder names for a system, caching working folders</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Bug Fixes</h2>
+        <ul>
+            <li>Removed <code>.bin</code> from NES/SNES/N64/GBA/GB/DS/SMS extension lists (major false positive source)</li>
+            <li>Removed <code>"/"</code> as extension in Amiga/C64 (caused directory-scanning bugs)</li>
+            <li>Removed <code>.cue</code> from Genesis extensions (false CD game identification)</li>
+            <li>Removed GB/GBC/SGB extensions from NES/SNES/GBA (wrong-system ROMs leaking)</li>
+            <li>Removed overlapping extensions from 32X (already covered by Genesis)</li>
+            <li>MAME dependency checks now only validate the active core's dependencies</li>
+            <li>Category deletion now works (was a no-op before)</li>
+            <li>Adding a library folder from settings now closes settings and shows scan progress immediately</li>
+            <li>Newly scanned ROMs auto-selected in library after scan completes</li>
+            <li>ROM metadata and cheats now keyed by <code>runningKey</code> (archive path + inner path)</li>
+            <li>Deleting a library folder now properly cleans up associated metadata entries</li>
+            <li>macOS duplicate file suffixes (1), (2) etc. handled in MAME/FBNeo ZIP lookups</li>
+            <li>MAME BIOS/unplayable entries no longer leak through to other systems</li>
+            <li>Unknown archives with weak identification dropped instead of leaking to random systems</li>
+            <li><code>ROMScanner</code> crash risk from force-unwrapping nil system guarded</li>
+            <li><code>LibraryGridView</code> now properly re-renders on scan state changes</li>
+            <li>Stale <code>lastAddedROMs</code> from previous scans cleared on new scan</li>
+            <li>Stale SwiftData system cache auto-discarded after app updates</li>
+            <li>Box art search now includes <code>rar</code> in extension stripping</li>
+            <li>ScummVM runner now supports 7z/RAR archives (was ZIP-only)</li>
+            <li>Saturn, Dreamcast, Neo Geo Pocket, DOS, Amiga, Intellivision: added <code>rar</code> as a supported extension</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.3.0.html' | relative_url }}" class="release-next">v1.3.0 &rarr;</a>
+        <a href="{{ '/changelog/v1.1.0.html' | relative_url }}" class="release-prev">&larr; v1.1.0</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>
