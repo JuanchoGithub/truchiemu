@@ -1,0 +1,62 @@
+---
+layout: default
+title: v1.6.0 - Documentación de TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/es/changelog.html' | relative_url }}">Registro de cambios</a>
+        <span class="separator">/</span>
+        <span class="current">v1.6.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.6.0</h1>
+        <div class="release-meta">
+            <span class="release-date">4 de julio de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Renovación de la configuración de streaming, integración de botón de compartir, activación/desactivación de bezels, descarga de datos hash y una importante reorganización de la navegación en ajustes.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destacados</h2>
+        <ul class="feature-list">
+            <li><strong>Interfaz de Streaming y Verificación de Claves:</strong> Nueva vista con pestañas para Twitch, YouTube y streams personalizados. Botón de verificación con retroalimentación en tiempo real</li>
+            <li><strong>Botón Compartir y Guardar Últimos Momentos:</strong> Nuevas acciones de teclas rápidas para compartir con pulsación simple y prolongada, con un servicio de búfer de video para capturar juego reciente</li>
+            <li><strong>Reorganización de Navegación en Ajustes:</strong> IDs de sección enfocadas, chip de navegación hacia atrás y visibilidad condicional de secciones</li>
+            <li><strong>Activación de Bezels:</strong> Activa o desactiva los bezels por juego desde la vista de detalle</li>
+            <li><strong>Descarga de Datos Hash:</strong> Descarga datos hash faltantes con indicaciones en la interfaz para mejor identificación de ROMs</li>
+            <li><strong>Reestructuración de Opciones del Núcleo:</strong> Manejo de opciones actualizado para usar <code>CoreOptionsContext</code></li>
+            <li><strong>Optimización de Búfer de Píxeles:</strong> Copia de memoria más rápida en capturas para distintos bytes por fila</li>
+            <li><strong>Corrección de Frecuencias AAC:</strong> Eliminadas frecuencias de muestreo inválidas de la lista de AAC</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Cambios detallados</h2>
+        <ul>
+            <li>Añadido <code>StreamingTabView</code> con pestañas para configuración de Twitch, YouTube y streams personalizados</li>
+            <li>Creado <code>VerifyButton</code> con retroalimentación visual para estados de verificación exitosa y fallida</li>
+            <li>Añadido <code>StreamingMediaSettingsView</code> gestionando comportamiento del botón compartir y búfer continuo</li>
+            <li>Añadidas nuevas acciones de teclas rápidas: compartir con pulsación simple y prolongada</li>
+            <li>Actualizado <code>HotkeyConfigManager</code> para manejar acciones de compartir</li>
+            <li>Añadido <code>RollingVideoBufferService</code> para capturar jugabilidad reciente</li>
+            <li>Añadida activación de bezels en la vista de detalle del juego (<code>Bezels.swift</code>)</li>
+            <li>Añadida funcionalidad de descarga de datos hash con indicaciones en la interfaz</li>
+            <li>Refactorizada la navegación de ajustes con IDs de sección enfocadas y chip de navegación hacia atrás</li>
+            <li>Refactorizado el manejo de opciones del núcleo para usar <code>CoreOptionsContext</code></li>
+            <li>Optimizada la copia de memoria del búfer de píxeles para distintos bytes por fila</li>
+            <li>Eliminadas frecuencias de muestreo inválidas de la lista de AAC</li>
+            <li>Actualizados <code>en.json</code>, <code>es.json</code> y <code>pt.json</code> con más de 88 nuevas claves de traducción cada uno</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/es/changelog/v1.5.2.html' | relative_url }}" class="release-prev">&larr; v1.5.2</a>
+        <a href="{{ '/es/changelog.html' | relative_url }}" class="release-all">Todas las versiones</a>
+    </nav>
+</div>

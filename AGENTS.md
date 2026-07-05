@@ -412,6 +412,11 @@ ALL launch paths (double-click, button, save state, CLI) go through `GameLaunche
 - No lint/typecheck tools configured. Build the project with `xcodebuild` to verify changes
 - `TruchiEmu/Library/` is empty and excluded from build. Do not add files there
 
+## Release Process
+
+See `RELEASE_PROCESS.md` at the project root for the complete step-by-step release guide.
+When asked to "release", "cut a release", or "bump version", follow that document.
+
 ## When Adding Source Files
 
 1. **No project.yml edits for new files**: Sources under `TruchiEmu/` and resources under `TruchiEmu/Resources/` are auto-included via recursive paths. See "Build System" above.

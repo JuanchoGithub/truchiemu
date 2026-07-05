@@ -1,0 +1,62 @@
+---
+layout: default
+title: v1.6.0 - Documentação do TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/pt/changelog.html' | relative_url }}">Registro de mudanças</a>
+        <span class="separator">/</span>
+        <span class="current">v1.6.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.6.0</h1>
+        <div class="release-meta">
+            <span class="release-date">4 de julho de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Reformulação das configurações de streaming, integração do botão de compartilhar, alternância de bezels, download de dados hash e uma grande reorganização da navegação nas configurações.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destaques</h2>
+        <ul class="feature-list">
+            <li><strong>Interface de Streaming e Verificação de Chaves:</strong> Nova visualização com abas para Twitch, YouTube e streams personalizados. Botão de verificação com feedback em tempo real</li>
+            <li><strong>Botão Compartilhar e Salvar Últimos Momentos:</strong> Novas ações de teclas para compartilhar com pressionamento simples e prolongado, com serviço de buffer de vídeo para capturar jogabilidade recente</li>
+            <li><strong>Reformulação da Navegação em Configurações:</strong> IDs de seção focadas, chip de navegação de volta e visibilidade condicional de seções</li>
+            <li><strong>Alternância de Bezels:</strong> Ative ou desative bezels por jogo diretamente na visualização de detalhes</li>
+            <li><strong>Download de Dados Hash:</strong> Baixe dados hash ausentes com prompts na interface para melhor identificação de ROMs</li>
+            <li><strong>Reestruturação de Opções do Núcleo:</strong> Gerenciamento de opções atualizado para usar <code>CoreOptionsContext</code></li>
+            <li><strong>Otimização de Buffer de Pixel:</strong> Cópia de memória mais rápida em capturas para diferentes bytes por linha</li>
+            <li><strong>Correção de Frequências AAC:</strong> Removidas frequências de amostragem inválidas da lista de AAC</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Mudanças detalhadas</h2>
+        <ul>
+            <li>Adicionado <code>StreamingTabView</code> com abas para configuração de Twitch, YouTube e streams personalizados</li>
+            <li>Criado <code>VerifyButton</code> com feedback visual para estados de verificação bem-sucedida e falha</li>
+            <li>Adicionado <code>StreamingMediaSettingsView</code> gerenciando comportamento do botão compartilhar e buffer contínuo</li>
+            <li>Adicionadas novas ações de teclas: compartilhar com pressionamento simples e prolongado</li>
+            <li>Atualizado <code>HotkeyConfigManager</code> para lidar com ações de compartilhar</li>
+            <li>Adicionado <code>RollingVideoBufferService</code> para capturar jogabilidade recente</li>
+            <li>Adicionada alternância de bezels na visualização de detalhes do jogo (<code>Bezels.swift</code>)</li>
+            <li>Adicionada funcionalidade de download de dados hash com prompts na interface</li>
+            <li>Refatorada a navegação de configurações com IDs de seção focadas e chip de navegação de volta</li>
+            <li>Refatorado o gerenciamento de opções do núcleo para usar <code>CoreOptionsContext</code></li>
+            <li>Otimizada a cópia de memória do buffer de pixel para diferentes bytes por linha</li>
+            <li>Removidas frequências de amostragem inválidas da lista de AAC</li>
+            <li>Atualizados <code>en.json</code>, <code>es.json</code> e <code>pt.json</code> com mais de 88 novas chaves de tradução cada</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/pt/changelog/v1.5.2.html' | relative_url }}" class="release-prev">&larr; v1.5.2</a>
+        <a href="{{ '/pt/changelog.html' | relative_url }}" class="release-all">Todas as versões</a>
+    </nav>
+</div>

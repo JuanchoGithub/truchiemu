@@ -1,0 +1,62 @@
+---
+layout: default
+title: v1.6.0 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.6.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.6.0</h1>
+        <div class="release-meta">
+            <span class="release-date">July 4, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Streaming settings overhaul, share button integration, bezel toggle, hash data downloads, and a major settings navigation rework.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>Streaming Settings UI &amp; Key Verification:</strong> New dedicated streaming tab view for Twitch, YouTube, and custom streams. Verify button with real-time success/failure feedback for stream keys</li>
+            <li><strong>Share Button &amp; Save Last Moments:</strong> New hotkey actions for single-press and long-press share with a rolling video buffer service to capture and save recent gameplay</li>
+            <li><strong>Settings Navigation Overhaul:</strong> Scoped section IDs, back navigation chip, and conditional section visibility for a much improved settings browsing experience</li>
+            <li><strong>Bezel Toggle:</strong> Enable or disable bezels per-game directly from the game detail view</li>
+            <li><strong>Hash Data Download:</strong> Download missing hash data with UI prompts for improved ROM identification</li>
+            <li><strong>Core Options Refactor:</strong> Core options handling updated to use <code>CoreOptionsContext</code> for improved data management</li>
+            <li><strong>Pixel Buffer Optimization:</strong> Faster memory copy in screenshot capture for varying bytes per row</li>
+            <li><strong>AAC Sample Rate Fix:</strong> Removed invalid sample rates from the valid AAC sample rates list</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>Added <code>StreamingTabView</code> with tabs for Twitch, YouTube, and custom stream configuration</li>
+            <li>Created <code>VerifyButton</code> with visual feedback for stream key verification success and failure states</li>
+            <li>Added <code>StreamingMediaSettingsView</code> managing share button behavior and rolling buffer configuration</li>
+            <li>Added new hotkey actions: single-press share and long-press share</li>
+            <li>Updated <code>HotkeyConfigManager</code> to handle share actions</li>
+            <li>Added <code>RollingVideoBufferService</code> for capturing recent gameplay footage</li>
+            <li>Added bezel toggle in game detail view (<code>Bezels.swift</code>)</li>
+            <li>Added hash data download functionality with missing-data UI prompts</li>
+            <li>Refactored settings navigation with focused/scoped section IDs and back navigation chip</li>
+            <li>Refactored core-options handling to use <code>CoreOptionsContext</code></li>
+            <li>Optimized pixel buffer memory copy for varying bytes per row</li>
+            <li>Removed invalid sample rates from valid AAC sample rates list</li>
+            <li>Updated <code>en.json</code>, <code>es.json</code>, and <code>pt.json</code> with 88+ new translation keys each</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.5.2.html' | relative_url }}" class="release-prev">&larr; v1.5.2</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>
