@@ -72,7 +72,8 @@ struct ContentView: View {
                              }
                          },
             onSettings: { systemID in
-                openWindow(id: "core-options", value: systemID)
+                let coreID = SystemDatabase.system(forID: systemID)?.defaultCoreID ?? ""
+                openWindow(id: "core-options", value: CoreOptionsContext(coreID: coreID, systemID: systemID, gameFilename: nil))
             },
                           onSystemAction: { system, action, targetID in
                               let resolvedSystemID = targetID ?? system.id
@@ -86,9 +87,11 @@ struct ContentView: View {
                                       }
                                   }
             case .settings(let coreID):
-                openWindow(id: "core-options", value: resolvedSystemID)
+                let coreID = SystemDatabase.system(forID: resolvedSystemID)?.defaultCoreID ?? ""
+                openWindow(id: "core-options", value: CoreOptionsContext(coreID: coreID, systemID: resolvedSystemID, gameFilename: nil))
             case .selectCore(let system):
-                openWindow(id: "core-options", value: resolvedSystemID)
+                let coreID = SystemDatabase.system(forID: resolvedSystemID)?.defaultCoreID ?? ""
+                openWindow(id: "core-options", value: CoreOptionsContext(coreID: coreID, systemID: resolvedSystemID, gameFilename: nil))
                                case .cheats:
                                     if let target = SystemDatabase.system(forID: resolvedSystemID) {
                                         AppSettings.set("pending_settings_system_id", value: target.id)

@@ -23,6 +23,14 @@ enum CoreOptionsLoadingPhase: Equatable {
     }
 }
 
+// MARK: - Core Options Context
+/// Payload for the core-options WindowGroup, carrying all needed context.
+struct CoreOptionsContext: Codable, Hashable {
+    var coreID: String
+    var systemID: String?
+    var gameFilename: String?
+}
+
 // MARK: - View Model
 @MainActor
 class CoreOptionsViewModel: ObservableObject {

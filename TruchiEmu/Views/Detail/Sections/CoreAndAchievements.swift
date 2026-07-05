@@ -60,7 +60,8 @@ extension GameDetailView {
                     Spacer()
                     Button {
                         if let coreID = activeCoreID {
-                            openWindow(id: "core-options", value: coreID)
+                            let context = CoreOptionsContext(coreID: coreID, systemID: currentROM.systemID, gameFilename: currentROM.filenameWithoutExtension)
+                            openWindow(id: "core-options", value: context)
                         }
                     } label: {
                         HStack(spacing: 6) {

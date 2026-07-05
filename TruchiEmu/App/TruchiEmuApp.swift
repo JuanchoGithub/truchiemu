@@ -512,9 +512,9 @@ var body: some Scene {
             .environment(systemDatabase)
     }
 
-  WindowGroup(id: "core-options", for: String.self) { $coreID in
-      if let coreID = coreID {
-        CoreOptionsView(coreID: coreID)
+  WindowGroup(id: "core-options", for: CoreOptionsContext.self) { $context in
+      if let context = context {
+        CoreOptionsView(coreID: context.coreID, systemID: context.systemID, gameFilename: context.gameFilename)
           .tint(AppColors.brandAccentSecondary)
           .environmentObject(library)
           .environmentObject(categoryManager)
