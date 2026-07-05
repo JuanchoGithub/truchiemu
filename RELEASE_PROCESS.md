@@ -164,23 +164,24 @@ git commit -m "chore: bump version to <version>"
 xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Release build
 ```
 
-Verify build succeeds (exit code 0).
+Verify build succeeds (exit code 0). Note the path of the built `.app` from the last few lines of output (look for `TruchiEmu.app` under `Build/Products/Release/`).
 
-### Step 7 — Tag
+### Step 7 — Package the app
+
+Zip the built `.app` bundle for distribution. Use the build output path from Step 6:
+
+```bash
+# Replace <build-dir> with the actual DerivedData path from Step 6 output
+ditto -c -k --sequesterRsrc --keepParent \
+  "<build-dir>/Build/Products/Release/TruchiEmu.app" \
+  "/tmp/TruchiEmu-v<version>.zip"
+```
+
+### Step 8 — Tag
 
 ```bash
 git tag v<version>
 ```
-
-### Step 8 — Create GitHub Release
-
-```bash
-# Create a temporary changelog notes file for the GitHub release (English only)
-# Use the Highlights and Description sections from the English changelog
-gh release create v<version> --title "v<version>" --notes-file <path-to-notes-file>
-```
-
-The GitHub release title and notes should match `v<version>` with the English changelog content.
 
 ### Step 9 — Push
 
@@ -188,7 +189,18 @@ The GitHub release title and notes should match `v<version>` with the English ch
 git push origin main --tags
 ```
 
-This publishes the tag and triggers the GitHub Release to appear on the repo.
+### Step 10 — Create GitHub Release with app asset
+
+Create a temporary changelog notes file for the GitHub release (English only). Use the Highlights and Description sections from the English changelog. Then create the release and upload the zip in a single command:
+
+```bash
+gh release create v<version> \
+  --title "v<version>" \
+  --notes-file <path-to-notes-file> \
+  "/tmp/TruchiEmu-v<version>.zip"
+```
+
+The GitHub release title and notes should match `v<version>` with the English changelog content. The `.zip` is uploaded as a release asset so users can download the app directly from the release page.
 
 ## Version scheme
 
