@@ -29,6 +29,7 @@
 		044A3D49AD77CC38624D183B /* fightdata_hook.json in Resources */ = {isa = PBXBuildFile; fileRef = A022CF62068D4FC4B2E6A7A7 /* fightdata_hook.json */; };
 		04961661863DFA1705CF8482 /* md@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = D364FBBF3C523EEE767B3D65 /* md@132w.png */; };
 		04D67759F2C403FFB88B92DE /* input_coreOverrides_vaporspec.json in Resources */ = {isa = PBXBuildFile; fileRef = FE20A8D60B9961BB05585D59 /* input_coreOverrides_vaporspec.json */; };
+		04E8B2A0070A1E062C3E1B4C /* GameTimeBarOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6354038E06133B8DF61EA36B /* GameTimeBarOverlay.swift */; };
 		052AC3296E7E0DA38E769D4B /* input_coreLabels_yabause.json in Resources */ = {isa = PBXBuildFile; fileRef = E6D1223A82D9977C5E92EEE2 /* input_coreLabels_yabause.json */; };
 		052E986328B10BB77F968567 /* input_coreOverrides_beetle_neopop.json in Resources */ = {isa = PBXBuildFile; fileRef = 0AD514FC205ED798BF0C5C4E /* input_coreOverrides_beetle_neopop.json */; };
 		0534376041F4D70FCA2D9893 /* UZEBOX.png in Resources */ = {isa = PBXBuildFile; fileRef = 55C2586F126544666FE181BC /* UZEBOX.png */; };
@@ -373,6 +374,7 @@
 		4D2F1B0F53DA6F60C45FFE43 /* fightdata_gaxeduel.json in Resources */ = {isa = PBXBuildFile; fileRef = 84C04444191200BA087DA7D9 /* fightdata_gaxeduel.json */; };
 		4D4664A1623B36B70808D323 /* input_coreOverrides_dinothawr.json in Resources */ = {isa = PBXBuildFile; fileRef = E93B62D39151BD618BC1A455 /* input_coreOverrides_dinothawr.json */; };
 		4D74B4BA42478AA007837FAF /* fightdata_sf.json in Resources */ = {isa = PBXBuildFile; fileRef = 00E666D1118167F817DB6B88 /* fightdata_sf.json */; };
+		4DD1329F99229306455B3B86 /* TimeMachineBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1AC2FA87FF10BF53D20A3F6 /* TimeMachineBuffer.swift */; };
 		4DE4616CC04E04F0BF73AC72 /* TYRQUAKE.png in Resources */ = {isa = PBXBuildFile; fileRef = EA7858DE5D0204111DF21E0B /* TYRQUAKE.png */; };
 		4DEE2C30ADE3947FB6150436 /* SettingsSearchRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC9C9C8CC3711B5A6CFBD425 /* SettingsSearchRuntime.swift */; };
 		4E93A064340B0F4FC5C03E9D /* input_coreOverrides_beetle_saturn.json in Resources */ = {isa = PBXBuildFile; fileRef = 64A6F0BB825AED8CC80514FE /* input_coreOverrides_beetle_saturn.json */; };
@@ -410,6 +412,7 @@
 		5657896F66E1C3999BCF43EB /* colecovision-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 341EDCE22CD79FCDF7272153 /* colecovision-cheats.zip */; };
 		5660C42EA9A8DCEC31B09197 /* jaguar.zip in Resources */ = {isa = PBXBuildFile; fileRef = 4DE11F72B1FCEFAC8D11A276 /* jaguar.zip */; };
 		56A325BB0A274D0C2CBCC7EE /* fightdata_xmvsf.json in Resources */ = {isa = PBXBuildFile; fileRef = 3AF1127D67BDBDFCF438209A /* fightdata_xmvsf.json */; };
+		56EF78D2B7AEFAED9582F023 /* TimeMachineSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059B489FC9D5EFEFA26D850F /* TimeMachineSettingsView.swift */; };
 		5700DB6B00604296E718D6F7 /* input_systemLabels_music.json in Resources */ = {isa = PBXBuildFile; fileRef = 1AEDEDEAC70418CF23543150 /* input_systemLabels_music.json */; };
 		57533AEB750F78AD9C7CF4B7 /* fightdata_asurabus.json in Resources */ = {isa = PBXBuildFile; fileRef = EF4135ED85E866B1A29BCC2F /* fightdata_asurabus.json */; };
 		577236FCF8C8485864E8CA87 /* AnalogMouse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3307D4E5C3106806CF45492A /* AnalogMouse.swift */; };
@@ -1249,6 +1252,7 @@
 		037D149BE1ADE5FB4FDC4054 /* fightdata_jchan.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_jchan.json; sourceTree = "<group>"; };
 		047139B91B642624AEC2480F /* LibretroBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LibretroBridge.h; sourceTree = "<group>"; };
 		04750B20FADB6525DAFEEF63 /* input_coreOverrides_stella.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_stella.json; sourceTree = "<group>"; };
+		059B489FC9D5EFEFA26D850F /* TimeMachineSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeMachineSettingsView.swift; sourceTree = "<group>"; };
 		068B7C5B921F37A7073E9DBF /* 7vYdW.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 7vYdW.jpg; sourceTree = "<group>"; };
 		06CB43CF61ABD00AC829DE64 /* Sega - Game Gear.dat */ = {isa = PBXFileReference; path = "Sega - Game Gear.dat"; sourceTree = "<group>"; };
 		06F8D392772FF18175464C4F /* input_coreOverrides_pd777.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_pd777.json; sourceTree = "<group>"; };
@@ -1705,6 +1709,7 @@
 		631ADA78528F78E63F5A2A5E /* IOSurfaceVideoManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSurfaceVideoManager.swift; sourceTree = "<group>"; };
 		631DBE9A82934122CB458925 /* fightdata_aodk.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_aodk.json; sourceTree = "<group>"; };
 		632520A7FB69D6AA71C8C09A /* input_coreOverrides_desmume_2015.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_desmume_2015.json; sourceTree = "<group>"; };
+		6354038E06133B8DF61EA36B /* GameTimeBarOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameTimeBarOverlay.swift; sourceTree = "<group>"; };
 		638A1FCC0831BF3791E37183 /* DraggableDivider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraggableDivider.swift; sourceTree = "<group>"; };
 		6411DA402E81AB00AD6D3E4D /* input_coreLabels_virtual_jaguar.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_virtual_jaguar.json; sourceTree = "<group>"; };
 		641895B5DD73F3D186CB7A63 /* INTELLIVISION.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = INTELLIVISION.png; sourceTree = "<group>"; };
@@ -1991,6 +1996,7 @@
 		A14A3003974DDDF09684961B /* CategoryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryManager.swift; sourceTree = "<group>"; };
 		A15C813DB04B6B840363A592 /* swanstation_libretro_default.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = swanstation_libretro_default.json; sourceTree = "<group>"; };
 		A178111F73BFF0F62C4D4D53 /* input_coreLabels_doukutsu-rs.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "input_coreLabels_doukutsu-rs.json"; sourceTree = "<group>"; };
+		A1AC2FA87FF10BF53D20A3F6 /* TimeMachineBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeMachineBuffer.swift; sourceTree = "<group>"; };
 		A1B3EC564C3D64802CEE6E0A /* Sony_-_PlayStation.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Sony_-_PlayStation.json"; sourceTree = "<group>"; };
 		A208B8C6B2BCD2197F46362D /* SCUMMVM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SCUMMVM.png; sourceTree = "<group>"; };
 		A227DD8C889C0589D944D5B2 /* dolphin_libretro_default.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = dolphin_libretro_default.json; sourceTree = "<group>"; };
@@ -3488,6 +3494,7 @@
 				A44B26B8EE68C310F60A6D4E /* GameContainerView.swift */,
 				94CA0D3AC8E6419DFF67D363 /* GameOSDOverlay.swift */,
 				A9258394F027EC5364CFCE39 /* GameOverlayToolbar.swift */,
+				6354038E06133B8DF61EA36B /* GameTimeBarOverlay.swift */,
 				7617E35BCF8ABD715F148725 /* MetalCoordinator.swift */,
 				EDF406E92B96D340152A60BA /* RecordingBadgeOverlay.swift */,
 				B5367CC043FEB8B24AF51BDA /* ScreenshotOverlayViews.swift */,
@@ -3664,6 +3671,7 @@
 				4DAB30E2932C1B1075A8FD59 /* SaturnRunner.swift */,
 				C2D54794F1A800DF2053B9C1 /* ScummVMRunner.swift */,
 				647C312CCE09FD47E4D89EBA /* SNESRunner.swift */,
+				A1AC2FA87FF10BF53D20A3F6 /* TimeMachineBuffer.swift */,
 			);
 			path = Runners;
 			sourceTree = "<group>";
@@ -4109,6 +4117,7 @@
 				B5307A2424529A50C5E6BF26 /* SavesSettingsView.swift */,
 				7FE2570126C33B65ED8FBC84 /* SettingsView.swift */,
 				4077D568E47AFA32B755F967 /* StreamingMediaSettingsView.swift */,
+				059B489FC9D5EFEFA26D850F /* TimeMachineSettingsView.swift */,
 				C6E39A1DA6685C2C22E7F0E9 /* UpdateAvailableView.swift */,
 				B868CBCF190918C4BD72EA68 /* WhatsNewView.swift */,
 				908E8F99C005A448E3842E3F /* StreamingMediaTabs */,
@@ -5594,6 +5603,7 @@
 				886D1903700E00DE7F11523C /* GameNameFormatter.swift in Sources */,
 				74F46215A747AC988E2C1921 /* GameOSDOverlay.swift in Sources */,
 				27F9277272450FDAE20B690D /* GameOverlayToolbar.swift in Sources */,
+				04E8B2A0070A1E062C3E1B4C /* GameTimeBarOverlay.swift in Sources */,
 				D32BA18DB9ED9FDA4A25A07E /* GamepadNavConfig.swift in Sources */,
 				F1076B7F46B13D1B6099B623 /* GamepadNavContext.swift in Sources */,
 				1ACE2B4563E908571208698E /* GamepadNavCoordinator.swift in Sources */,
@@ -5788,6 +5798,8 @@
 				1226E683B4C6974386DAAC65 /* SystemSidebarView.swift in Sources */,
 				03186CB22B055CEA9CB16028 /* TapeDeck.swift in Sources */,
 				A65710823C4D0A6B42F7EA87 /* ThemeManager.swift in Sources */,
+				4DD1329F99229306455B3B86 /* TimeMachineBuffer.swift in Sources */,
+				56EF78D2B7AEFAED9582F023 /* TimeMachineSettingsView.swift in Sources */,
 				1CBE8E9BE89FB1A446E9757E /* TrainingInputManager.swift in Sources */,
 				C7B614C0D64568EA01CC5C75 /* TrainingModeManager.swift in Sources */,
 				EEA23D26837A6E53183BF1DC /* TrainingModeModels.swift in Sources */,

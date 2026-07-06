@@ -374,12 +374,119 @@ final class XPCBridgeAdapter {
         XPCConnectionManager.shared.remoteProxy?.setPaused(paused) {}
     }
 
+    func setSpeedMultiplier(_ multiplier: Float) {
+        guard useXPC else {
+            LibretroBridgeSwift.setSpeedMultiplier(multiplier)
+            return
+        }
+        ensureXPCConnection()
+        let sem = DispatchSemaphore(value: 0)
+        var ackReceived = false
+        XPCConnectionManager.shared.remoteProxy?.setSpeedMultiplier(multiplier) {
+            ackReceived = true
+            sem.signal()
+        }
+        if sem.wait(timeout: .now() + .milliseconds(500)) == .timedOut {
+            LoggerService.warning(category: "TimeMachine", "setSpeedMultiplier XPC reply timed out")
+        } else if !ackReceived {
+            LoggerService.warning(category: "TimeMachine", "setSpeedMultiplier XPC reply: proxy returned nil")
+        } else {
+            LoggerService.debug(category: "TimeMachine", "setSpeedMultiplier reply ok")
+        }
+    }
+
     func resetGame() {
         guard useXPC else {
             LibretroBridgeSwift.resetGame()
             return
         }
         XPCConnectionManager.shared.remoteProxy?.resetGame {}
+    }
+
+    func setRewindEnabled(_ enabled: Bool, captureInterval: UInt32) {
+        guard useXPC else {
+            LibretroBridgeSwift.setRewindEnabled(enabled, captureInterval: captureInterval)
+            return
+        }
+        ensureXPCConnection()
+        XPCConnectionManager.shared.remoteProxy?.setRewindEnabled(enabled, captureInterval: captureInterval) {}
+    }
+
+    func setStateCaptureCallback(_ callback: ((Data, UInt64) -> Void)?) {
+        if !useXPC {
+            if let callback {
+                LibretroBridgeSwift.setStateCaptureCallback(callback)
+            }
+            return
+        }
+
+        capturedStatePollTimer?.invalidate()
+        capturedStatePollTimer = nil
+        capturedStateLastFrame = 0
+
+        if let callback {
+            capturedStateCallback = callback
+            ensureXPCConnection()
+            // Poll the XPC service at ~20Hz for newly captured states. This is
+            // less frequent than the per-frame capture interval (typically 3
+            // frames), so the XPC traffic stays bounded. The XPC service
+            // overwrites its latest slot each frame; we coalesce here.
+            let timer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { [weak self] _ in
+                self?.pollCapturedState()
+            }
+            RunLoop.main.add(timer, forMode: .common)
+            capturedStatePollTimer = timer
+        } else {
+            capturedStateCallback = nil
+            XPCConnectionManager.shared.remoteProxy?.setRewindEnabled(false, captureInterval: 3) {}
+        }
+    }
+
+    private var capturedStatePollTimer: Timer?
+    private var capturedStateCallback: ((Data, UInt64) -> Void)?
+    private var capturedStateLastFrame: UInt64 = 0
+
+    private func pollCapturedState() {
+        guard let callback = capturedStateCallback else { return }
+        XPCConnectionManager.shared.remoteProxy?.consumeCapturedState { [weak self] state, frameIndex in
+            guard let self else { return }
+            guard let state, frameIndex > self.capturedStateLastFrame else { return }
+            self.capturedStateLastFrame = frameIndex
+            callback(state, frameIndex)
+        }
+    }
+
+    func flushAudio() {
+        guard useXPC else {
+            LibretroBridgeSwift.flushAudio()
+            return
+        }
+        ensureXPCConnection()
+        XPCConnectionManager.shared.remoteProxy?.flushAudio() {}
+    }
+
+    func runSingleFrame() {
+        guard useXPC else {
+            LibretroBridgeSwift.runSingleFrame()
+            return
+        }
+        ensureXPCConnection()
+        XPCConnectionManager.shared.remoteProxy?.runSingleFrame() {}
+    }
+
+    func setFrameCount(_ frameCount: UInt64) {
+        guard useXPC else {
+            LibretroBridgeSwift.setFrameCount(frameCount)
+            return
+        }
+        ensureXPCConnection()
+        XPCConnectionManager.shared.remoteProxy?.setFrameCount(frameCount) {}
+    }
+
+    private func ensureXPCConnection() {
+        if !XPCConnectionManager.shared.isConnected {
+            XPCConnectionManager.shared.connect()
+        }
     }
 
     func isPaused() -> Bool {

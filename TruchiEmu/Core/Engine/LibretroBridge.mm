@@ -194,7 +194,16 @@ g_frame_poll_callback = callback;
 + (size_t)serializeSize {
     if (g_instance) {
         if (g_instance->_cachedSerializeSize == 0 && g_instance->_retro_serialize_size) {
-            g_instance->_cachedSerializeSize = g_instance->_retro_serialize_size();
+            // Dolphin's retro_serialize_size runs the full State::DoState on the
+            // CPU thread via Core::RunOnCPUThread. Without _coreLock it races
+            // against the live emulation loop, corrupting SI/buffer state and
+            // crashing SerialInterfaceManager::DoState on Wii/GC. Match the
+            // locking used by serializeState/unserializeState/saveState.
+            [g_instance->_coreLock lock];
+            if (g_instance->_cachedSerializeSize == 0 && g_instance->_retro_serialize_size) {
+                g_instance->_cachedSerializeSize = g_instance->_retro_serialize_size();
+            }
+            [g_instance->_coreLock unlock];
         }
         return g_instance->_cachedSerializeSize;
     }
@@ -227,6 +236,12 @@ g_frame_poll_callback = callback;
 + (void)setLogLevel:(int)level { g_logLevel = level; }
 + (void)setPaused:(BOOL)paused { g_isPaused = paused; }
 + (BOOL)isPaused { return g_isPaused; }
++ (void)setSpeedMultiplier:(float)multiplier { if (g_instance) [g_instance setSpeedMultiplier:multiplier]; }
++ (void)setRewindEnabled:(BOOL)enabled captureInterval:(unsigned)frames { if (g_instance) [g_instance setRewindEnabled:enabled captureInterval:frames]; }
++ (void)setStateCaptureCallback:(nullable void (^)(NSData *, uint64_t))callback { if (g_instance) [g_instance setStateCaptureCallback:callback]; }
++ (void)flushAudio { if (g_instance) [g_instance flushAudio]; }
++ (void)runSingleFrame { if (g_instance) [g_instance runSingleFrame]; }
++ (void)setFrameCount:(uint64_t)frameCount { if (g_instance) [g_instance setFrameCount:frameCount]; }
 
 // --- Load a core to initialize its options (Headless Mode) ---
 + (void)loadCoreForOptions:(NSString *)dylibPath coreID:(NSString *)coreID romPath:(nullable NSString *)romPath {

@@ -326,11 +326,18 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     // Controller share button binding identifiers captured at launch.
     var cachedShareSinglePressBinding: String? = nil
     var cachedShareLongPressBinding: String? = nil
+    // Time machine controller binding identifiers captured at launch.
+    var cachedRewindBinding: String? = nil
+    var cachedSlowMotionBinding: String? = nil
+    var cachedFastForwardBinding: String? = nil
     private var hookedController: GCController? = nil
     private var hookedControllers: [Int: GCController] = [:]
     
     // Turbo button state tracking
     private var activeTurboButtons: Set<RetroButton> = []
+
+    // Time machine / rewind buffer
+    var timeMachineBuffer: TimeMachineBuffer = TimeMachineBuffer()
 
     // rcheevos achievement detection — the actual RcheevosRuntime lives in
     // the XPC service (so its peek callback can read libretro memory). This
@@ -421,11 +428,48 @@ case "scummvm": runner = ScummVMRunner()
 
         let shaderDir = Bundle.main.resourceURL?.appendingPathComponent("slang-shaders").path
 
-        // Register callback to load SRAM when game is loaded
+        let capturedMemoryBudgetMB = AppSettings.getInt("timeMachine_memoryMB", defaultValue: 256)
+        let capturedMasterEnabled = AppSettings.getBool("timeMachine_enabled", defaultValue: true)
+        let capturedRewindEnabled = capturedMasterEnabled && AppSettings.getBool("timeMachine_rewindEnabled", defaultValue: true)
+
+        // Register callback to load SRAM when game is loaded. We also
+        // finish setting up the time machine buffer from here — running it
+        // post-launch guarantees the XPC service is fully up and accepting
+        // state-capture requests. Trying earlier races against launch
+        // handshake and gets silently dropped.
         XPCBridgeAdapter.shared.registerGameLoadedCallback { [weak self] romPath in
             self?.loadSRAMOnGameLoad(romPath: romPath)
             DispatchQueue.main.async {
                 NotificationCenter.default.post(name: .gameLoaded, object: nil)
+            }
+            DispatchQueue.main.async {
+                guard let self else { return }
+                guard capturedRewindEnabled else {
+                    // Time Machine (or rewind) is disabled — don't allocate or capture.
+                    LoggerService.info(category: "TimeMachine", "Rewind disabled in settings — buffer not allocated")
+                    return
+                }
+                // Dolphin's retro_serialize runs the full State::DoState on its own
+                // internal CPU thread, which has no GL context current. The GL state
+                // serializer (OGL::OGLStagingTexture::Create) calls glGenBuffers there
+                // and crashes. Save states are already disabled for dolphin
+                // (see isDolphinCore()); skip rewind for the same reason.
+                if coreID.lowercased().contains("dolphin") {
+                    LoggerService.warning(category: "TimeMachine", "Rewind not supported for Dolphin cores — buffer not allocated")
+                    return
+                }
+                let memoryBudget = capturedMemoryBudgetMB * 1024 * 1024
+                self.timeMachineBuffer = TimeMachineBuffer(maxMemoryBytes: memoryBudget)
+                let coreStateSize = XPCBridgeAdapter.shared.serializeSize()
+                if coreStateSize > 0 {
+                    self.timeMachineBuffer.configure(stateSize: coreStateSize)
+                    XPCBridgeAdapter.shared.setRewindEnabled(true, captureInterval: UInt32(self.timeMachineBuffer.captureInterval))
+                    XPCBridgeAdapter.shared.setStateCaptureCallback { [weak self] state, frameIndex in
+                        self?.timeMachineBuffer.push(frameIndex: frameIndex, data: state)
+                    }
+                } else {
+                    LoggerService.warning(category: "TimeMachine", "serializeSize returned 0 after game loaded — rewind disabled")
+                }
             }
         }
 
@@ -438,7 +482,7 @@ case "scummvm": runner = ScummVMRunner()
         let resolvedRomPath = self.romPath
         let genesisControllerType = AppSettings.getGenesisControllerType()
 
-        emulationQueue.async { [cachedAchievements, genesisControllerType] in
+        emulationQueue.async { [cachedAchievements, genesisControllerType, capturedMemoryBudgetMB] in
             XPCBridgeAdapter.shared.setLanguage(selectedLang)
             XPCBridgeAdapter.shared.setLogLevel(Int(selectedLogLevel))
 
@@ -544,6 +588,10 @@ case "scummvm": runner = ScummVMRunner()
         isRunning = false
 
         saveSRAMIfAvailable()
+
+        timeMachineBuffer.clear()
+        XPCBridgeAdapter.shared.setRewindEnabled(false, captureInterval: 3)
+        XPCBridgeAdapter.shared.setStateCaptureCallback(nil)
 
         XPCBridgeAdapter.shared.deactivateRcheevos()
         XPCBridgeAdapter.shared.onRcheevosAchievementTriggered = nil
@@ -676,6 +724,310 @@ case "scummvm": runner = ScummVMRunner()
         _needsRcheevosReset = true
         rcheevosLock.unlock()
         onGameReset?()
+    }
+
+    // MARK: - Time Machine & Speed Control
+
+    @MainActor @Published var speedMultiplier: Float = 1.0
+    @MainActor @Published var isRewinding: Bool = false
+
+    /// Live playhead frame index while in Time Machine scrub mode. The
+    /// timeline overlay reads this; left/right arrows on the keyboard or
+    /// the in-game left/right bindings move it.
+    @MainActor @Published var timeMachineScrubFrameIndex: UInt64 = 0
+
+    // Mirror of `isRewinding` for the GCController valueChangedHandler, which
+    // fires on a non-MainActor queue. The main-actor `@Published` is poorly
+    // suited for cross-thread reads; this `nonisolated(unsafe)` Bool is set
+    // in lockstep with `isRewinding` on the main actor and read atomically
+    // from the gamepad thread. This matches how `ShaderParameterStore` and
+    // MAME lookup tables expose data to non-MainActor code.
+    nonisolated(unsafe) var isRewindingStorage: Bool = false
+
+    // Settings availability helpers. Read at action time so mid-game
+    // settings changes take effect for the next key/gamepad press.
+    @MainActor
+    static func timeMachineMasterEnabled() -> Bool {
+        AppSettings.getBool("timeMachine_enabled", defaultValue: true)
+    }
+    @MainActor
+    static func rewindFeatureEnabled() -> Bool {
+        timeMachineMasterEnabled() && AppSettings.getBool("timeMachine_rewindEnabled", defaultValue: true)
+    }
+    @MainActor
+    static func fastForwardFeatureEnabled() -> Bool {
+        timeMachineMasterEnabled() && AppSettings.getBool("timeMachine_fastForwardEnabled", defaultValue: true)
+    }
+    @MainActor
+    static func slowMotionFeatureEnabled() -> Bool {
+        timeMachineMasterEnabled() && AppSettings.getBool("timeMachine_slowMotionEnabled", defaultValue: true)
+    }
+
+    /// Blink an OSD hint then clear it after a short delay.
+    @MainActor
+    private func showDisabledOSD(_ message: String) {
+        osdMessage = message
+        Task {
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            await MainActor.run { if self.osdMessage == message { self.osdMessage = nil } }
+        }
+    }
+
+    @MainActor
+    private func applyState(_ data: Data, resumeAfter: Bool) -> Bool {
+        let success = XPCBridgeAdapter.shared.unserializeState(data)
+        if success {
+            XPCBridgeAdapter.shared.flushAudio()
+            // Run one retro_run so the restored state actually renders to
+            // the framebuffer. Otherwise the user steps the scrubber and sees
+            // nothing visibly change until emulation resumes.
+            XPCBridgeAdapter.shared.runSingleFrame()
+            rcheevosLock.lock()
+            _needsRcheevosReset = true
+            rcheevosLock.unlock()
+            XPCBridgeAdapter.shared.setPaused(!resumeAfter)
+            speedMultiplier = 1.0
+            XPCBridgeAdapter.shared.setSpeedMultiplier(1.0)
+        }
+        return success
+    }
+
+    /// Enter (or exit) Time Machine scrub mode. While active, emulation is
+    /// paused and left/right inputs step the playhead across saved snapshots.
+    /// Pressing the rewind key again resumes emulation from the current
+    /// playhead position.
+    @MainActor
+    func toggleTimeMachineMode() {
+        guard Self.rewindFeatureEnabled() else {
+            showDisabledOSD(LocalizationManager.shared.localized("settings.timeMachine.rewindDisabledHint"))
+            return
+        }
+        if isRewinding {
+            exitTimeMachineMode()
+        } else {
+            enterTimeMachineMode()
+        }
+    }
+
+    @MainActor
+    private func enterTimeMachineMode() {
+        guard let newest = timeMachineBuffer.newestFrameIndex,
+              timeMachineBuffer.entryCount > 1 else {
+            osdMessage = "No rewind data"
+            Task {
+                try? await Task.sleep(nanoseconds: 1_000_000_000)
+                await MainActor.run { self.osdMessage = nil }
+            }
+            return
+        }
+        isRewinding = true
+        isRewindingStorage = true
+        speedMultiplier = 1.0
+        XPCBridgeAdapter.shared.setSpeedMultiplier(1.0)
+        XPCBridgeAdapter.shared.setPaused(true)
+        timeMachineScrubFrameIndex = newest
+        osdMessage = "Rewind"
+        LoggerService.info(category: "TimeMachine", "Entered scrub mode at frame \(newest)")
+    }
+
+    @MainActor
+    func exitTimeMachineMode() {
+        guard isRewinding else { return }
+        let exitScrubFrame = timeMachineScrubFrameIndex
+        let preTruncateOldest = timeMachineBuffer.oldestFrameIndex ?? 0
+        let preTruncateNewest = timeMachineBuffer.newestFrameIndex ?? 0
+        let preTruncateCount = timeMachineBuffer.entryCount
+        isRewinding = false
+        isRewindingStorage = false
+        speedMultiplier = 1.0
+        XPCBridgeAdapter.shared.setSpeedMultiplier(1.0)
+        XPCBridgeAdapter.shared.setPaused(false)
+        // Drop entries past the playhead so the timeline's total duration
+        // reflects only the remaining history after rewinding. Without this
+        // the overlay keeps reporting the pre-rewind total (e.g., 20s even
+        // though we scrubbed back to 10s and resumed from there).
+        timeMachineBuffer.truncate(after: exitScrubFrame)
+        // Reset the engine's internal capture-indexing clock so the next
+        // captures are indexed at exitScrubFrame+1, +2, … instead of the
+        // pre-rewind frame number. Without this the engine still thinks
+        // we're at the original "now", captures new entries with high
+        // frameIndex values, and overlays see the total climb back to 20s
+        // even though the actual game state is mid-history.
+        XPCBridgeAdapter.shared.setFrameCount(exitScrubFrame)
+        let postTruncateOldest = timeMachineBuffer.oldestFrameIndex ?? 0
+        let postTruncateNewest = timeMachineBuffer.newestFrameIndex ?? 0
+        let postTruncateCount = timeMachineBuffer.entryCount
+        osdMessage = nil
+        LoggerService.info(category: "TimeMachine", "Exited scrub mode — scrubFrame=\(exitScrubFrame) preTruncate [oldest=\(preTruncateOldest) newest=\(preTruncateNewest) count=\(preTruncateCount)] postTruncate [oldest=\(postTruncateOldest) newest=\(postTruncateNewest) count=\(postTruncateCount)]")
+    }
+
+    /// Step the playhead one snapshot toward the past (direction < 0) or
+    /// toward the present (direction > 0). Used by keyboard arrows, the
+    /// user's in-game left/right bindings, and the gamepad dpad while in
+    /// Time Machine scrub mode.
+    @MainActor
+    func stepTimeMachine(direction: Int) {
+        guard isRewinding else { return }
+        let scrub = timeMachineScrubFrameIndex
+        let target: UInt64
+        if direction < 0 {
+            // Find a snapshot *strictly* before the playhead. nearestEntry
+            // (before:) returns entries with frameIndex <= arg, so when the
+            // playhead sits on an existing snapshot the query would match that
+            // same entry — producing frameIndex == scrub and "no step". Step
+            // back to the entry before scrub by querying scrub-1 in that case.
+            guard scrub > 0 else { return }
+            let nearest = timeMachineBuffer.nearestEntry(before: scrub)
+            guard let nearest else {
+                LoggerService.debug(category: "TimeMachine", "step back: no snapshots (scrub=\(scrub))")
+                return
+            }
+            if nearest.frameIndex < scrub {
+                target = nearest.frameIndex
+            } else {
+                // nearest.frameIndex == scrub → query one frame earlier.
+                guard let prev = timeMachineBuffer.nearestEntry(before: scrub - 1) else {
+                    LoggerService.debug(category: "TimeMachine", "step back: no earlier snapshot (scrub=\(scrub))")
+                    return
+                }
+                target = prev.frameIndex
+            }
+        } else if direction > 0 {
+            // Find a snapshot *strictly* after the playhead. nearestEntry
+            // (after:) returns entries with frameIndex >= arg.
+            guard let nearest = timeMachineBuffer.nearestEntry(after: scrub) else {
+                LoggerService.debug(category: "TimeMachine", "step forward: no snapshots (scrub=\(scrub))")
+                return
+            }
+            if nearest.frameIndex > scrub {
+                target = nearest.frameIndex
+            } else {
+                // nearest.frameIndex == scrub → query scrub+1.
+                guard let next = timeMachineBuffer.nearestEntry(after: scrub + 1) else {
+                    LoggerService.debug(category: "TimeMachine", "step forward: no later snapshot (scrub=\(scrub))")
+                    return
+                }
+                target = next.frameIndex
+            }
+        } else {
+            return
+        }
+        guard let entry = timeMachineBuffer.entry(at: target) else {
+            LoggerService.warning(category: "TimeMachine", "stepTimeMachine: target \(target) has no entry")
+            return
+        }
+        let success = applyState(entry.data, resumeAfter: false)
+        if success {
+            timeMachineScrubFrameIndex = target
+        } else {
+            LoggerService.warning(category: "TimeMachine", "step direction \(direction) failed at frame \(target)")
+        }
+    }
+
+    @MainActor
+    func toggleFastForward() {
+        guard Self.fastForwardFeatureEnabled() else {
+            showDisabledOSD(LocalizationManager.shared.localized("settings.timeMachine.fastForwardDisabledHint"))
+            return
+        }
+        if isRewinding { exitTimeMachineMode(); return }
+        let speeds: [Float] = [2.0, 4.0, 8.0]
+        let idx = speeds.firstIndex { $0 == speedMultiplier } ?? -1
+        let next = (idx + 1) % (speeds.count + 1)
+        speedMultiplier = next < speeds.count ? speeds[next] : 1.0
+        let label = speedMultiplier > 1.0 ? "\(Int(speedMultiplier))x" : "Normal Speed"
+        osdMessage = label
+        LoggerService.info(category: "TimeMachine", "toggleFastForward → \(speedMultiplier)")
+        XPCBridgeAdapter.shared.setSpeedMultiplier(speedMultiplier)
+        Task {
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            await MainActor.run { if self.speedMultiplier == 1.0 { self.osdMessage = nil } }
+        }
+    }
+
+    @MainActor
+    func toggleSlowMotion() {
+        guard Self.slowMotionFeatureEnabled() else {
+            showDisabledOSD(LocalizationManager.shared.localized("settings.timeMachine.slowMotionDisabledHint"))
+            return
+        }
+        if isRewinding { exitTimeMachineMode(); return }
+        let speeds: [Float] = [0.5, 0.25]
+        let idx = speeds.firstIndex { $0 == speedMultiplier } ?? -1
+        let next = (idx + 1) % (speeds.count + 1)
+        speedMultiplier = next < speeds.count ? speeds[next] : 1.0
+        let label = speedMultiplier < 1.0 ? "\(Int(1.0 / speedMultiplier))x Slow" : "Normal Speed"
+        osdMessage = label
+        LoggerService.info(category: "TimeMachine", "toggleSlowMotion → \(speedMultiplier)")
+        XPCBridgeAdapter.shared.setSpeedMultiplier(speedMultiplier)
+        Task {
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            await MainActor.run { if self.speedMultiplier == 1.0 { self.osdMessage = nil } }
+        }
+    }
+
+    /// Seek to a specific frame (used by the slider in GameTimeBarOverlay).
+    /// Returns emulation to 1x and does NOT leave scrub mode.
+    @MainActor
+    func rewindToFrame(_ frameIndex: UInt64) -> Bool {
+        guard Self.rewindFeatureEnabled() else { return false }
+        guard let entry = timeMachineBuffer.entry(at: frameIndex) ?? timeMachineBuffer.nearestEntry(before: frameIndex) else {
+            return false
+        }
+        let success = XPCBridgeAdapter.shared.unserializeState(entry.data)
+        if success {
+            XPCBridgeAdapter.shared.flushAudio()
+            // Render the unserialized state to the framebuffer so the user
+            // sees the snapshot at the seeked position instead of the last
+            // emulated frame.
+            XPCBridgeAdapter.shared.runSingleFrame()
+            rcheevosLock.lock()
+            _needsRcheevosReset = true
+            rcheevosLock.unlock()
+            speedMultiplier = 1.0
+            XPCBridgeAdapter.shared.setSpeedMultiplier(1.0)
+            if isRewinding {
+                timeMachineScrubFrameIndex = entry.frameIndex
+                // Stay paused while scrubbing.
+                XPCBridgeAdapter.shared.setPaused(true)
+            } else {
+                XPCBridgeAdapter.shared.setPaused(false)
+            }
+        }
+        return success
+    }
+
+    // Legacy single-shot toggle (settings/HUD). Now equivalent to a one-shot
+    // jump back without entering scrub mode.
+    @MainActor
+    func toggleRewind() {
+        guard Self.rewindFeatureEnabled() else {
+            showDisabledOSD(LocalizationManager.shared.localized("settings.timeMachine.rewindDisabledHint"))
+            return
+        }
+        if isRewinding { exitTimeMachineMode(); return }
+        speedMultiplier = 1.0
+        XPCBridgeAdapter.shared.setSpeedMultiplier(1.0)
+        guard let newest = timeMachineBuffer.newestFrameIndex,
+              let nearest = timeMachineBuffer.nearestEntry(before: newest - 1),
+              nearest.frameIndex < newest else {
+            osdMessage = "No rewind data"
+            Task {
+                try? await Task.sleep(nanoseconds: 1_000_000_000)
+                await MainActor.run { self.osdMessage = nil }
+            }
+            return
+        }
+        let success = applyState(nearest.data, resumeAfter: true)
+        if success {
+            osdMessage = "Rewound"
+        } else {
+            osdMessage = "Rewind failed"
+        }
+        Task {
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            await MainActor.run { self.osdMessage = nil }
+        }
     }
 
     // MARK: - Slot-based Save State
@@ -1380,6 +1732,16 @@ weak var metalCoordinator: MetalCoordinator?
             for: .shareLongPress, source: .gameController
         ).identifier
 
+        cachedRewindBinding = HotkeyConfigManager.shared.controllerBinding(
+            for: .rewind, source: .gameController
+        ).identifier
+        cachedSlowMotionBinding = HotkeyConfigManager.shared.controllerBinding(
+            for: .slowMotion, source: .gameController
+        ).identifier
+        cachedFastForwardBinding = HotkeyConfigManager.shared.controllerBinding(
+            for: .fastForward, source: .gameController
+        ).identifier
+
         // Pre-warm rolling buffer so it's continuously recording before share press
         if RollingVideoBufferService.shared.isEnabled {
             LoggerService.info(category: "Runner", "Rolling buffer pre-warmed and recording")
@@ -1432,6 +1794,61 @@ weak var metalCoordinator: MetalCoordinator?
                         }
                         return
                     }
+
+                    // Time machine controller bindings
+                    if name == self.cachedRewindBinding {
+                        if button.isPressed {
+                            HardcoreModeManager.shared.attemptRewind {
+                                Task { @MainActor in self.toggleTimeMachineMode() }
+                            }
+                        }
+                        // Toggle semantics — no action on release.
+                        return
+                    }
+                    if name == self.cachedSlowMotionBinding && button.isPressed {
+                        HardcoreModeManager.shared.attemptSlowMotion {
+                            Task { @MainActor in self.toggleSlowMotion() }
+                        }
+                        return
+                    }
+                    if name == self.cachedFastForwardBinding && button.isPressed {
+                        HardcoreModeManager.shared.attemptFastForward {
+                            Task { @MainActor in self.toggleFastForward() }
+                        }
+                        return
+                    }
+                }
+
+                // Time Machine scrub mode: intercept directional inputs to
+                // step the playhead. The dpad element arrives as a
+                // GCControllerDirectionPad (read dpad.left/right sub-buttons
+                // directly); analog stick events arrive as their own
+                // GCControllerAxisInput/GCControllerButtonInput and route
+                // through timeMachineScrubDirection via the user's
+                // .lStickLeft/.lStickRight mappings. Inputs are NOT forwarded
+                // to the core while scrubbing.
+                if self.isRewindingStorage {
+                    let dir: Int
+                    if let dpad = element as? GCControllerDirectionPad {
+                        let lPressed = dpad.left.isPressed
+                        let rPressed = dpad.right.isPressed
+                        LoggerService.debug(category: "TimeMachine", "Gamepad dpad element: left pressed=\(lPressed) right pressed=\(rPressed)")
+                        if lPressed { dir = -1 }
+                        else if rPressed { dir = 1 }
+                        else { dir = 0 }
+                    } else {
+                        let nameForLog = element.localizedName ?? "<nil>"
+                        let kindForLog = String(describing: type(of: element))
+                        let computedDir = self.timeMachineScrubDirection(for: element, mapping: mapping)
+                        LoggerService.debug(category: "TimeMachine", "Gamepad non-dpad element: name='\(nameForLog)' kind=\(kindForLog) computedDir=\(computedDir)")
+                        dir = computedDir
+                    }
+                    if dir != 0 {
+                        let capturedDir = dir
+                        LoggerService.info(category: "TimeMachine", "Stepping gamepad → dir=\(capturedDir)")
+                        Task { @MainActor in self.stepTimeMachine(direction: capturedDir) }
+                        return
+                    }
                 }
 
                 for port in ports {
@@ -1454,6 +1871,26 @@ weak var metalCoordinator: MetalCoordinator?
         if let sf = element.sfSymbolsName, sf == name { return true }
         if let unmapped = element.unmappedLocalizedName, unmapped == name { return true }
         return false
+    }
+
+    /// While in Time Machine scrub mode, return -1 (left) / +1 (right) / 0
+    /// (no match) for the dpad/stick element the user pressed, according to
+    /// whatever they've bound to RetroButton.left / .right / .lStickLeft /
+    /// .lStickRight for the current core. Non-isolated — matches how
+    /// updateGamepadButton is invoked from the GCController valueChangedHandler
+    /// (which fires on a non-main queue).
+    func timeMachineScrubDirection(for element: GCControllerElement, mapping: ControllerGamepadMapping) -> Int {
+        for (btn, btnMapping) in mapping.buttons {
+            guard btn == .left || btn == .right || btn == .lStickLeft || btn == .lStickRight ||
+                  btn == .rStickLeft || btn == .rStickRight else { continue }
+            if !elementMatches(element, name: btnMapping.gcElementName) { continue }
+            switch btn {
+            case .left, .lStickLeft, .rStickLeft: return -1
+            case .right, .lStickRight, .rStickRight: return 1
+            default: return 0
+            }
+        }
+        return 0
     }
 
     func updateGamepadButton(_ element: GCControllerElement, in mapping: ControllerGamepadMapping, player: Int = 0) {
@@ -1541,10 +1978,8 @@ weak var metalCoordinator: MetalCoordinator?
     private func handleSystemAction(for btn: RetroButton) {
         switch btn {
         case .pause:
-            // Trigger your emulator pause logic
             break
         case .reset:
-            // Trigger your emulator reset logic
             break
         default:
             break

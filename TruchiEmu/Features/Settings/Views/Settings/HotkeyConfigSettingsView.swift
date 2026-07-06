@@ -59,6 +59,10 @@ struct HotkeyConfigSettingsView: View {
         scope == .all || scope == .gameplay
     }
 
+    private var showGameplay: Bool {
+        scope == .all || scope == .gameplay
+    }
+
     private var showReset: Bool {
         scope == .all
     }
@@ -102,6 +106,17 @@ struct HotkeyConfigSettingsView: View {
                     .id("section-training")
                 }
 
+                if showGameplay && (!isSearching
+                    || matchesSearch("speed rewind fast forward slow motion time machine")
+                    || matchesAnyLabel([.rewind, .slowMotion, .fastForward])) {
+                    Section(header: Label(loc.localized("hotkeys.speedRewind"), systemImage: "clock.arrow.circlepath")) {
+                        hotkeyActionGrid([
+                            .rewind, .slowMotion, .fastForward
+                        ])
+                    }
+                    .id("section-speedRewind")
+                }
+
                 if showReset && (!isSearching || matchesSearch("reset defaults restore")) {
                     Section(header: Label(loc.localized("hotkeys.reset"), systemImage: "arrow.counterclockwise")) {
                         Text(loc.localized("hotkeys.resetDescription"))
@@ -121,10 +136,12 @@ struct HotkeyConfigSettingsView: View {
                     && !matchesAnyLabel([.saveState, .loadState, .undoLoadState, .slotNext, .slotPrev, .toggleInputCapture])
                     && !matchesAnyLabel(slotActions)
                     && !matchesAnyLabel([.toggleTrainingMode, .trainingReset, .trainingToggleRecording, .trainingStartPlayback])
+                    && !matchesAnyLabel([.rewind, .slowMotion, .fastForward])
                     && !matchesSearch("hotkeys keyboard shortcuts save load slot undo training input capture")
                     && !matchesSearch("slots 0-9 slot")
                     && !matchesSearch("training mode reset recording playback tape")
                     && !matchesSearch("screenshot capture photo picture")
+                    && !matchesSearch("speed rewind fast forward slow motion time machine")
                     && !matchesSearch("reset defaults restore") {
                     Section {
                         Text("\(loc.localized("general.noMatchingSettings")) \"\(searchText)\"")
@@ -178,6 +195,9 @@ struct HotkeyConfigSettingsView: View {
                         listeningAction = action
                         listeningSlot = .primary
                     },
+                    onCancel: {
+                        listeningAction = nil
+                    },
                     onClear: {
                         hotkeyManager.update(action, primary: .none)
                     }
@@ -193,6 +213,9 @@ struct HotkeyConfigSettingsView: View {
                     onStartListening: {
                         listeningAction = action
                         listeningSlot = .secondary
+                    },
+                    onCancel: {
+                        listeningAction = nil
                     },
                     onClear: {
                         hotkeyManager.update(action, secondary: .none)
@@ -228,6 +251,7 @@ struct HotkeyCaptureButton: NSViewRepresentable {
     var conflicts: [(HotkeyAction, HotkeyBinding)]
     var onCapture: (HotkeyBinding) -> Void
     var onStartListening: () -> Void
+    var onCancel: () -> Void
     var onClear: () -> Void
 
     @ObservedObject private var loc = LocalizationManager.shared
@@ -273,27 +297,100 @@ struct HotkeyCaptureButton: NSViewRepresentable {
 
     func makeCoordinator() -> Coordinator { Coordinator(parent: self) }
 
-    class Coordinator: NSObject {
+    final class Coordinator: NSObject {
         var parent: HotkeyCaptureButton
         private var monitor: Any?
+        private var monitorGeneration: Int = 0
+        private var pendingModifierFlags: UInt = 0
+        private var justCaptured: Bool = false
+        private var postCaptureWorkItem: DispatchWorkItem?
+
+        private static let modifierKeyCodes: Set<UInt16> = [
+            55, 56, 60, 59, 58, 57
+        ]
+        private static let captureCreditWindow: TimeInterval = 0.3
+
         init(parent: HotkeyCaptureButton) { self.parent = parent }
 
+        deinit {
+            removeMonitorLocked()
+            postCaptureWorkItem?.cancel()
+        }
+
         @objc func clicked() {
+            removeMonitorLocked()
+            postCaptureWorkItem?.cancel()
+            postCaptureWorkItem = nil
+            justCaptured = false
+            pendingModifierFlags = 0
+
             parent.onStartListening()
+
+            monitorGeneration &+= 1
+            let generation = monitorGeneration
             monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
-                let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
-                let captured = HotkeyBinding(
-                    keyCode: event.keyCode,
-                    modifierFlags: UInt(flags.rawValue)
-                )
-                DispatchQueue.main.async { self?.parent.onCapture(captured) }
-                if let m = self?.monitor { NSEvent.removeMonitor(m); self?.monitor = nil }
-                return nil
+                guard let self else { return event }
+                return self.handleKeyDown(event, generation: generation)
             }
         }
 
         @objc func clearClicked() {
             parent.onClear()
+        }
+
+        private func handleKeyDown(_ event: NSEvent, generation: Int) -> NSEvent? {
+            if generation != monitorGeneration { return event }
+
+            if justCaptured {
+                return nil
+            }
+
+            if event.keyCode == 53 {
+                monitorGeneration &+= 1
+                removeMonitorLocked()
+                DispatchQueue.main.async { [weak self] in
+                    self?.parent.onCancel()
+                }
+                return nil
+            }
+
+            let rawFlags = event.modifierFlags.intersection(.deviceIndependentFlagsMask).rawValue
+            let isModifierOnly = Self.modifierKeyCodes.contains(event.keyCode)
+
+            if isModifierOnly {
+                pendingModifierFlags = UInt(rawFlags)
+                return nil
+            }
+
+            let captured = HotkeyBinding(
+                keyCode: event.keyCode,
+                modifierFlags: pendingModifierFlags != 0 ? pendingModifierFlags : UInt(rawFlags)
+            )
+            pendingModifierFlags = 0
+
+            monitorGeneration &+= 1
+            removeMonitorLocked()
+
+            justCaptured = true
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                self.parent.onCapture(captured)
+                let work = DispatchWorkItem { [weak self] in
+                    self?.justCaptured = false
+                }
+                self.postCaptureWorkItem?.cancel()
+                self.postCaptureWorkItem = work
+                DispatchQueue.main.asyncAfter(deadline: .now() + Self.captureCreditWindow, execute: work)
+            }
+
+            return nil
+        }
+
+        private func removeMonitorLocked() {
+            if let m = monitor {
+                NSEvent.removeMonitor(m)
+                monitor = nil
+            }
         }
     }
 }

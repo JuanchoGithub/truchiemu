@@ -34,7 +34,7 @@ struct SettingsView: View {
     enum Page: Hashable, Codable, RawRepresentable, Identifiable {
 
         var id: String { rawValue }
-        case general, saves, library, controllers, analogMouse, boxArt, cheats, bezels, retroAchievements, genre, logging, moveList, hotkeys, perSystem, streaming, help, about, reset
+        case general, saves, library, controllers, analogMouse, boxArt, cheats, bezels, retroAchievements, genre, logging, moveList, hotkeys, timeMachine, perSystem, streaming, help, about, reset
 
         var rawValue: String {
             switch self {
@@ -51,6 +51,7 @@ struct SettingsView: View {
             case .logging: return "logging"
             case .moveList: return "moveList"
             case .hotkeys: return "hotkeys"
+            case .timeMachine: return "timeMachine"
             case .perSystem: return "perSystem"
             case .streaming: return "streaming"
             case .help: return "help"
@@ -74,6 +75,7 @@ struct SettingsView: View {
             case "logging": self = .logging
             case "moveList": self = .moveList
             case "hotkeys", "hotkeysGlobal", "hotkeysGameplay": self = .hotkeys
+            case "timeMachine": self = .timeMachine
             case "perSystem": self = .perSystem
             case "streaming": self = .streaming
             case "help": self = .help
@@ -89,7 +91,7 @@ struct SettingsView: View {
                 return .general
             case .library, .controllers, .analogMouse, .hotkeys:
                 return .library
-            case .cheats, .streaming, .retroAchievements, .moveList, .genre:
+            case .cheats, .streaming, .retroAchievements, .moveList, .genre, .timeMachine:
                 return .gameplay
             case .logging, .help, .about, .reset:
                 return .advanced
@@ -111,6 +113,7 @@ struct SettingsView: View {
             case .logging: return "doc.text.fill"
             case .moveList: return "figure.martial.arts"
             case .hotkeys: return "keyboard"
+            case .timeMachine: return "clock.arrow.circlepath"
             case .perSystem: return "square.grid.2x2"
             case .streaming: return "video.fill"
             case .help: return "questionmark.circle.fill"
@@ -134,6 +137,7 @@ struct SettingsView: View {
             case .logging: return LocalizationManager.shared.localized("settings.logging")
             case .moveList: return LocalizationManager.shared.localized("settings.moveList")
             case .hotkeys: return LocalizationManager.shared.localized("settings.hotkeys")
+            case .timeMachine: return LocalizationManager.shared.localized("settings.timeMachine")
             case .perSystem: return LocalizationManager.shared.localized("settings.perSystem")
              case .streaming: return LocalizationManager.shared.localized("settings.streamingAndMedia")
             case .help: return LocalizationManager.shared.localized("settings.help")
@@ -170,6 +174,8 @@ struct SettingsView: View {
                 return "move list moves fighting combo frame data timing input"
             case .hotkeys:
                 return "hotkeys keyboard shortcuts save load slot undo training recording input capture global gameplay key binding"
+            case .timeMachine:
+                return "time machine rewind fast forward slow motion speed scrub timeline buffer memory"
             case .perSystem:
                 return "system per-system bezels cheats controllers core boxart shader preferences per console platform"
              case .streaming:
@@ -198,11 +204,17 @@ struct SettingsView: View {
     static let allPages: [Page] = [
         .general, .saves, .boxArt, .bezels, .perSystem,
         .library, .controllers, .analogMouse, .hotkeys,
-        .cheats, .retroAchievements, .moveList, .streaming, .genre,
+        .cheats, .retroAchievements, .moveList, .streaming, .genre, .timeMachine,
         .logging, .reset, .help, .about
     ]
 
     @State private var selectedPage: Page = .general
+    var selectedPageBinding: Binding<Page> {
+        Binding(
+            get: { self.selectedPage },
+            set: { self.selectedPage = $0 }
+        )
+    }
     @State private var deepLinkID = UUID()
     @State private var searchText: String = ""
     @State private var focusedSectionID: String? = nil
@@ -614,6 +626,7 @@ struct SettingsView: View {
             case .logging: LoggingSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
             case .moveList: MoveListSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
             case .hotkeys: HotkeyConfigSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID, scope: .all)
+            case .timeMachine: TimeMachineSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID, selectedPage: selectedPageBinding)
             case .perSystem: PerSystemSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID, pendingSystemID: $pendingSystemSelection)
             case .streaming: StreamingMediaSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
             case .help: HelpSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)

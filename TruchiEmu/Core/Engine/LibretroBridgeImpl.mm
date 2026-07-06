@@ -273,66 +273,132 @@ LOAD_SYM(retro_get_memory_data)
   }
 
   _running = YES;
+  _speedMultiplier = 1.0f;
+  _frameCount = 0;
+  _lastCaptureFrame = 0;
 
   while (_running) {
     if (g_isPaused) {
-      [NSThread sleepForTimeInterval:0.05]; 
+      [NSThread sleepForTimeInterval:0.05];
       continue;
     }
 
+    // Audio back-pressure: wait if buffer is too full. Disabled entirely in
+    // fast-forward — we want emulation to outrun audio output (excess samples
+    // are dropped at the ring buffer's write head), matching RetroArch's
+    // fast-forward behavior. Keeping back-pressure on at >1x would throttle
+    // emulation to the audio consumer's real-time rate, making the speed-up
+    // inaudible (the original 2x-sounds-normal bug).
     @autoreleasepool {
-      size_t availableSamples = _audioBuffer->available();
-      size_t capacity = _audioBuffer->capacity();
-      float fillRatio = (float)availableSamples / (float)capacity;
+      if (_speedMultiplier <= 1.0f) {
+        size_t availableSamples = _audioBuffer->available();
+        size_t capacity = _audioBuffer->capacity();
+        float fillRatio = (float)availableSamples / (float)capacity;
 
-      while (fillRatio > 0.50f && _running && !g_isPaused) {
-        [NSThread sleepForTimeInterval:0.001];
-        availableSamples = _audioBuffer->available();
-        fillRatio = (float)availableSamples / (float)capacity;
+        while (fillRatio > 0.50f && _running && !g_isPaused) {
+          [NSThread sleepForTimeInterval:0.001];
+          availableSamples = _audioBuffer->available();
+          fillRatio = (float)availableSamples / (float)capacity;
+        }
       }
     }
 
-    [_coreLock lock];
+    int runCount = 1;
+    if (_speedMultiplier > 1.5f) {
+      // Multi-step per loop iter so game time actually advances N times.
+      // 2x -> 2 retro_runs per iter, 4x -> 4, 8x -> 8.
+      int target = (int)(_speedMultiplier + 0.5f);
+      runCount = target > 8 ? 8 : target;
+    }
+
     uint64_t start = 0;
     uint64_t end = 0;
-    @try {
-      if (_hwRenderEnabled && _glContext) CGLSetCurrentContext(_glContext);
-      start = mach_absolute_time();
-      if (_retro_run) {
-          _retro_run();
-      }
-      end = mach_absolute_time();
-      if (_hwRenderEnabled && _glContext) CGLSetCurrentContext(NULL);
-    } @catch (NSException *exception) {
-      _running = NO;
-    } @catch (...) {
-      _running = NO;
-    }
-    [_coreLock unlock];
+    for (int rc = 0; rc < runCount && _running && !g_isPaused; rc++) {
+      // Wrap each frame iteration in an autoreleasepool: serializeState returns
+      // an autoreleased NSData (dataWithBytesNoCopy:freeWhenDone:YES) that the
+      // state-capture callback marshals to Swift. Without a pool here the
+      // autoreleased NSData from every capture (~20/sec when rewind is on)
+      // accumulates against the emulation thread's stack-allocator until the
+      // run loop exits — unbounded growth that jetsam kills. The pool drains
+      // at end of iteration after the callback has captured its own copy.
+      @autoreleasepool {
+        [_coreLock lock];
+        @try {
+          if (_hwRenderEnabled && _glContext) CGLSetCurrentContext(_glContext);
+          if (rc == 0) start = mach_absolute_time();
+          if (_retro_run) {
+              _retro_run();
+          }
+          if (rc == runCount - 1) end = mach_absolute_time();
+          if (_hwRenderEnabled && _glContext) CGLSetCurrentContext(NULL);
+        } @catch (NSException *exception) {
+          _running = NO;
+        } @catch (...) {
+          _running = NO;
+        }
+        [_coreLock unlock];
 
+        _frameCount++;
+
+        if (_stateCaptureCallback && _rewindEnabled && _speedMultiplier == 1.0f) {
+          if (_frameCount - _lastCaptureFrame >= 3) {
+            _lastCaptureFrame = _frameCount;
+            NSData *state = [self serializeState];
+            if (state) _stateCaptureCallback(state, _frameCount);
+          }
+        }
+      }
+    }
+
+    // Frame pacing
     static mach_timebase_info_data_t s_tb = {0, 0};
     if (s_tb.denom == 0) mach_timebase_info(&s_tb);
     uint64_t elapsed_ns = (end - start) * s_tb.numer / s_tb.denom;
     double elapsed = (double)elapsed_ns / 1e9;
 
-    double targetFPS = _avInfo.timing.fps;
-    if (targetFPS <= 0.0 || targetFPS > 120.0) targetFPS = 60.0;
+    float mult = (_speedMultiplier < 0.01f) ? 0.01f : _speedMultiplier;
+    double targetFPS = _avInfo.timing.fps * mult;
+    if (targetFPS <= 0.0 || targetFPS > 120.0 * mult) targetFPS = 60.0 * mult;
     double idealFrameTime = 1.0 / targetFPS;
 
-    frameError += (idealFrameTime - elapsed);
+    // One loop iteration produces runCount frames of game time. The pacing
+    // budget must scale with runCount or fast-forward accumulates negative
+    // frameError every iteration and effectively runs unbounded — making
+    // 2x/4x indistinguishable and only 8x noticing because runCount caps the
+    // frame production rate.
+    double idealIterTime = idealFrameTime * (double)runCount;
+
+    frameError += (idealIterTime - elapsed);
 
     if (frameError > 0.001) {
+      // Drain accumulated frame error with measured-actual-time sleeps so we
+      // don't accumulate oversleep error across chunks. At 1.0x the audio
+      // back-pressure block above is the wall-clock master — by the time we
+      // get here the buffer is at ~50% and the audio consumer is keeping up,
+      // so we only need a minor top-up. At <1.0x (slow-mo) we produce samples
+      // slower than the hardware consumes them, so the buffer is near-empty
+      // and the fill gate would defeat slow-mo — bypass it then. At >1.0x
+      // there's no audio back-pressure (disabled above), so we always gate on
+      // fill unless fast-forwarding.
+      BOOL gateOnAudioFill = (_speedMultiplier == 1.0f);
       @autoreleasepool {
         size_t avail = _audioBuffer->available();
         size_t cap = _audioBuffer->capacity();
         float fill = (float)avail / (float)cap;
-
-        if (fill > 0.10f) {
-          double sleepTime = frameError > 0.008 ? 0.008 : frameError;[NSThread sleepForTimeInterval:sleepTime];
-          frameError -= sleepTime;
-          if (frameError < 0) frameError = 0;
-        } else {
+        if (gateOnAudioFill && fill <= 0.10f) {
+          // Audio consumer caught up — no need to pad pacing further.
           frameError = 0;
+        } else {
+          while (frameError > 0.001 && _running && !g_isPaused) {
+            double sleepTime = frameError > 0.008 ? 0.008 : frameError;
+            if (sleepTime <= 0.0) break;
+            uint64_t sleepStart = mach_absolute_time();
+            [NSThread sleepForTimeInterval:sleepTime];
+            uint64_t sleepEnd = mach_absolute_time();
+            double actualNs = (double)(sleepEnd - sleepStart) * s_tb.numer / s_tb.denom;
+            frameError -= actualNs / 1e9;
+            if (frameError < 0) frameError = 0;
+          }
         }
       }
     } else {
@@ -518,21 +584,27 @@ shutdown:
 }
 
 - (NSData *)serializeState {
-  if (_cachedSerializeSize == 0 && _retro_serialize_size) {
-    _cachedSerializeSize = _retro_serialize_size();
+  // Some cores (PPSSPP, Dolphin) report a different serialize size mid-session
+  // than at startup because decoder state (e.g. MpegContext map) is allocated
+  // lazily. Always re-query and don't trust a previously cached value — a too-
+  // small buffer makes retro_serialize overrun it during PointerWrap::DoVoid.
+  size_t serializeSize = 0;
+  if (_retro_serialize_size) {
+    serializeSize = _retro_serialize_size();
   }
+  _cachedSerializeSize = serializeSize;
 
-  if (!_cachedSerializeSize || !_retro_serialize) return nil;
+  if (!serializeSize || !_retro_serialize) return nil;
 
   [_coreLock lock];
   if (_hwRenderEnabled && _glContext) CGLSetCurrentContext(_glContext);
 
-  void *buf = malloc(_cachedSerializeSize);
+  void *buf = malloc(serializeSize);
   NSData *data = nil;
   if (buf) {
     @try {
-        if (_retro_serialize(buf, _cachedSerializeSize)) {
-          data =[NSData dataWithBytesNoCopy:buf length:_cachedSerializeSize freeWhenDone:YES];
+        if (_retro_serialize(buf, serializeSize)) {
+          data =[NSData dataWithBytesNoCopy:buf length:serializeSize freeWhenDone:YES];
         } else {
           free(buf);
         }
@@ -562,17 +634,21 @@ shutdown:
 }
 
 - (void)saveState {
-  if (_cachedSerializeSize == 0 && _retro_serialize_size) {
-    _cachedSerializeSize = _retro_serialize_size();
+  // Same rationale as serializeState: serialize size can grow mid-session
+  // (e.g. PPSSPP allocating MpegContext during FMVs), so re-query each call.
+  size_t serializeSize = 0;
+  if (_retro_serialize_size) {
+    serializeSize = _retro_serialize_size();
   }
+  _cachedSerializeSize = serializeSize;
 
-  if (!_cachedSerializeSize || !_retro_serialize) return;[_coreLock lock];
+  if (!serializeSize || !_retro_serialize) return;[_coreLock lock];
   if (_hwRenderEnabled && _glContext) CGLSetCurrentContext(_glContext);
 
-  void *buf = malloc(_cachedSerializeSize);
+  void *buf = malloc(serializeSize);
   if (buf) {
-    if (_retro_serialize(buf, _cachedSerializeSize)) {
-      NSData *data =[NSData dataWithBytesNoCopy:buf length:_cachedSerializeSize];[data writeToFile:_saveStatePath atomically:YES];
+    if (_retro_serialize(buf, serializeSize)) {
+      NSData *data =[NSData dataWithBytesNoCopy:buf length:serializeSize];[data writeToFile:_saveStatePath atomically:YES];
     } else {
       free(buf);
     }
@@ -803,6 +879,53 @@ shutdown:
   }
 
   return _hwReadbackBuffer;
+}
+
+// MARK: - Speed & Rewind Control
+
+- (void)setSpeedMultiplier:(float)multiplier {
+    _speedMultiplier = multiplier;
+}
+
+- (void)setRewindEnabled:(BOOL)enabled captureInterval:(unsigned)frames {
+    _rewindEnabled = enabled;
+}
+
+- (void)setStateCaptureCallback:(void (^)(NSData *state, uint64_t frameIndex))callback {
+    @synchronized (self) {
+        _stateCaptureCallback = callback;
+    }
+}
+
+- (void)flushAudio {
+    if (_audioBuffer) {
+        _audioBuffer->clear();
+    }
+}
+
+- (void)runSingleFrame {
+    // Render one frame under the core lock so an unserialized snapshot
+    // becomes visible. Safe while the run loop is parked in its paused
+    // branch (it sleeps outside the core lock).
+    [_coreLock lock];
+    @try {
+        if (_hwRenderEnabled && _glContext) CGLSetCurrentContext(_glContext);
+        if (_retro_run) {
+            _retro_run();
+        }
+        if (_hwRenderEnabled && _glContext) CGLSetCurrentContext(NULL);
+    } @catch (...) {}
+    [_coreLock unlock];
+}
+
+- (void)setFrameCount:(uint64_t)frameCount {
+    // Reset the internal capture-indexing clock so post-scrub captures are
+    // indexed contiguously with the truncated buffer. Grab the core lock
+    // briefly so we don't race with the run loop bumping _frameCount.
+    [_coreLock lock];
+    _frameCount = frameCount;
+    _lastCaptureFrame = frameCount;
+    [_coreLock unlock];
 }
 
 - (void)dealloc {

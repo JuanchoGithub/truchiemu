@@ -182,6 +182,53 @@ class FocusableMTKView: MTKView {
             }
         }
 
+        if hotkeys.matches(.rewind, event: event) {
+            HardcoreModeManager.shared.attemptRewind { [weak self] in
+                Task { @MainActor in self?.runner?.toggleTimeMachineMode() }
+            }
+            return
+        }
+        // While in Time Machine scrub mode, left/right arrow keys step the
+        // playhead across saved snapshots. Any other key the user has bound
+        // to the core's left/right (e.g., A/D) is also intercepted —
+        // see mapKey below. Uses isRewindingStorage for a non-isolated read.
+        if let runner = self.runner, runner.isRewindingStorage {
+            if event.keyCode == 123 { // kVK_LeftArrow
+                LoggerService.info(category: "TimeMachine", "Keyboard ← arrow → stepping back")
+                Task { @MainActor in runner.stepTimeMachine(direction: -1) }
+                return
+            }
+            if event.keyCode == 124 { // kVK_RightArrow
+                LoggerService.info(category: "TimeMachine", "Keyboard → arrow → stepping forward")
+                Task { @MainActor in runner.stepTimeMachine(direction: 1) }
+                return
+            }
+            if let mapped = runner.mapKey(event.keyCode),
+               mapped.retroID == 6 || mapped.retroID == 7 {
+                let dir = mapped.retroID == 6 ? -1 : 1
+                LoggerService.info(category: "TimeMachine", "Keyboard bound key keyCode=\(event.keyCode) retroID=\(mapped.retroID) → stepping dir=\(dir)")
+                Task { @MainActor in runner.stepTimeMachine(direction: dir) }
+                return
+            } else if runner.mapKey(event.keyCode) != nil {
+                // Log the bind to figure out why left/right binding not match.
+                if let mapped = runner.mapKey(event.keyCode) {
+                    LoggerService.debug(category: "TimeMachine", "Keyboard mapped keyCode=\(event.keyCode) → retroID=\(mapped.retroID) (NOT 6/7, ignored in scrub mode)")
+                }
+            }
+        }
+        if hotkeys.matches(.slowMotion, event: event) {
+            HardcoreModeManager.shared.attemptSlowMotion { [weak self] in
+                Task { @MainActor in self?.runner?.toggleSlowMotion() }
+            }
+            return
+        }
+        if hotkeys.matches(.fastForward, event: event) {
+            HardcoreModeManager.shared.attemptFastForward { [weak self] in
+                Task { @MainActor in self?.runner?.toggleFastForward() }
+            }
+            return
+        }
+
         if hotkeys.matches(.toggleTrainingMode, event: event) {
             if let windowCtrl = windowController {
                 Task { @MainActor in TrainingModeManager.shared.setEnabled(!windowCtrl.trainingModeViewModel.isTrainingEnabled) }
@@ -245,6 +292,11 @@ class FocusableMTKView: MTKView {
     }
 
     override func keyUp(with event: NSEvent) {
+        let hotkeys = HotkeyConfigManager.shared
+
+        // Rewind is now a toggle (press once to enter, again to exit). No
+        // key-up handling needed.
+
         // For DOS/ScummVM games, bypass ALL TruchiEmu keyboard handling and send properly mapped keys to DOSBOX
         if shouldCaptureInputForCurrentGame() {
             #if LOG_DEBUG

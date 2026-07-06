@@ -131,6 +131,32 @@ down:(BOOL)down;
 + (void)setAnalogAsMouseDeadzone:(float)deadzone forPlayer:(int)player;
 + (void)setAnalogAsMouseStick:(int)stickIndex forPlayer:(int)player;
 + (void)setAnalogMouseDeltaX:(int16_t)dx Y:(int16_t)dy;
+
+/* Speed Control — multiplier applied to frame pacing (1.0 = normal) */
++ (void)setSpeedMultiplier:(float)multiplier;
+
+/* Rewind — enable periodic state capture for time machine buffer */
++ (void)setRewindEnabled:(BOOL)enabled captureInterval:(unsigned)frames;
+
+/* Rewind state capture callback — called from the emulation thread. Pass nil to clear. */
++ (void)setStateCaptureCallback:(nullable void (^)(NSData *state, uint64_t frameIndex))callback;
+
+/* Audio — flush pending audio buffer after rewind state load */
++ (void)flushAudio;
+
+    /* Time Machine — run exactly one retro_run() under the core lock while paused so the
+       unserialized state gets rendered to the framebuffer. Safe to call while the run loop
+       is parked in its paused branch (it sleeps without holding _coreLock). */
++ (void)runSingleFrame;
+
+/* Time Machine — reset the internal frame counter (used for capture frame
+   indexing) to `frameCount`. Called after scrubbing back so that future
+   captures are indexed contiguously with the truncated buffer. Without this,
+   resume from frame N keeps _frameCount at its pre-rewind value, and new
+   captures are indexed at 1200+ even though the game state corresponds to
+   the post-rewind "now" — making the timeline total appear to grow back to
+   the pre-rewind duration instantly. */
++ (void)setFrameCount:(uint64_t)frameCount;
 @end
 
 NS_ASSUME_NONNULL_END

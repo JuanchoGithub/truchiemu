@@ -462,6 +462,18 @@ enum SettingsCatalog {
                 sectionTitle: "Genres",
                 keywords: ["genres", "genre", "tag", "categories", "merge", "rename"]
             ),
+
+            SettingsCatalogEntry(
+                page: .timeMachine, sectionID: "features",
+                sectionTitle: "Features",
+                optionTitles: [
+                    "Enable Time Machine",
+                    "Enable Rewind",
+                    "Enable Fast Forward",
+                    "Enable Slow Motion"
+                ],
+                keywords: ["time", "machine", "rewind", "fast", "forward", "slow", "motion", "speed", "buffer", "disable", "enable", "master"]
+            ),
         ]
     }
 

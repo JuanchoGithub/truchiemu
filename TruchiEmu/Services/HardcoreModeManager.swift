@@ -31,6 +31,7 @@ class HardcoreModeManager: ObservableObject {
         case loadState = "loadState"
         case rewind = "rewind"
         case slowMotion = "slowMotion"
+        case fastForward = "fastForward"
         case cheats = "cheats"
 
         func localizedName() -> String {
@@ -40,6 +41,7 @@ class HardcoreModeManager: ObservableObject {
             case .loadState: return loc.localized("hardcore.loadStates")
             case .rewind: return loc.localized("hardcore.rewind")
             case .slowMotion: return loc.localized("hardcore.slowMotion")
+            case .fastForward: return loc.localized("hardcore.fastForward")
             case .cheats: return loc.localized("hardcore.cheats")
             }
         }
@@ -100,6 +102,7 @@ class HardcoreModeManager: ObservableObject {
     var areSaveStatesBlocked: Bool { isHardcoreActive }
     var isRewindBlocked: Bool { isHardcoreActive }
     var isSlowMotionBlocked: Bool { isHardcoreActive }
+    var isFastForwardBlocked: Bool { isHardcoreActive }
     var areCheatsBlocked: Bool { isHardcoreActive }
 
     // If hardcore is active, presents a confirmation dialog. If not, executes immediately.
@@ -145,6 +148,10 @@ class HardcoreModeManager: ObservableObject {
 
     func attemptSlowMotion(action: @escaping () -> Void) -> Bool {
         attemptFeature(.slowMotion, action: action)
+    }
+
+    func attemptFastForward(action: @escaping () -> Void) -> Bool {
+        attemptFeature(.fastForward, action: action)
     }
 
     func attemptUseCheats(action: @escaping () -> Void) -> Bool {

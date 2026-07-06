@@ -126,6 +126,36 @@ import Foundation
         return paused
     }
 
+    static func setSpeedMultiplier(_ multiplier: Float) {
+        LibretroBridge.setSpeedMultiplier(multiplier)
+    }
+
+    static func setRewindEnabled(_ enabled: Bool, captureInterval: UInt32 = 3) {
+        LibretroBridge.setRewindEnabled(enabled, captureInterval: captureInterval)
+    }
+
+    static func flushAudio() {
+        LibretroBridge.flushAudio()
+    }
+
+    static func runSingleFrame() {
+        LibretroBridge.runSingleFrame()
+    }
+
+    static func setFrameCount(_ frameCount: UInt64) {
+        LibretroBridge.setFrameCount(frameCount)
+    }
+
+    static func setStateCaptureCallback(_ callback: ((Data, UInt64) -> Void)?) {
+        if let callback {
+            LibretroBridge.setStateCaptureCallback { state, frameIndex in
+                callback(state as Data, frameIndex)
+            }
+        } else {
+            LibretroBridge.setStateCaptureCallback(nil)
+        }
+    }
+
 // MARK: - Save States
 
 static func resetGame() {

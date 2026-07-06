@@ -75,6 +75,9 @@ enum HotkeyAction: String, Codable, CaseIterable, Identifiable {
     case trainingToggleRecording
     case trainingStartPlayback
     case toggleTrainingMode
+    case rewind
+    case slowMotion
+    case fastForward
     case screenshot
     case shareSinglePress
     case shareLongPress
@@ -221,16 +224,19 @@ final class HotkeyConfigManager: ObservableObject {
                                        secondary: .none,
                                        controller: nil,
                                    ),
+        .rewind:                  HotkeyConfig(primary: .plain(15),    secondary: .none),         // R
+        .slowMotion:              HotkeyConfig(primary: .plain(41),    secondary: .none),         // ;
+        .fastForward:             HotkeyConfig(primary: .plain(3),     secondary: .none),         // F
         .shareSinglePress:        HotkeyConfig(
-                                       primary: .none,
-                                       secondary: .none,
-                                       controller: nil,
-                                   ),
+                                        primary: .none,
+                                        secondary: .none,
+                                        controller: nil,
+                                    ),
         .shareLongPress:          HotkeyConfig(
-                                       primary: .none,
-                                       secondary: .none,
-                                       controller: nil,
-                                   ),
+                                        primary: .none,
+                                        secondary: .none,
+                                        controller: nil,
+                                    ),
     ]
 
     func controllerBinding(for action: HotkeyAction, source: ControllerHotkeySource) -> ControllerHotkeyBinding {

@@ -110,10 +110,12 @@ var achievementToastOverlayView: NSHostingView<AnyView>?
     var screenshotPillOverlayView: SafeHostingView<AnyView>?
     var recordingBadgeOverlayView: SafeHostingView<AnyView>?
     var osdOverlayView: SafeHostingView<AnyView>?
+    var timeBarOverlayView: SafeHostingView<AnyView>?
     var trainingModeOverlayView: NSHostingView<AnyView>?
 var p2JoinStatusOverlayView: NSHostingView<AnyView>?
 private var p2JoinStatusCancellable: AnyCancellable?
     private var trainingConfigCancellable: AnyCancellable?
+    private var timeMachineCancellable: AnyCancellable?
 var guideSidebarView: NSHostingView<AnyView>?
     @MainActor lazy var trainingModeViewModel = TrainingModeOverlayViewModel()
 
@@ -171,6 +173,8 @@ guideSidebarView = nil
         hardcoreAlertOverlayView = nil
         errorOverlayView?.removeFromSuperview()
         errorOverlayView = nil
+        timeBarOverlayView?.removeFromSuperview()
+        timeBarOverlayView = nil
     }
 
     @MainActor
@@ -430,6 +434,25 @@ super.init(window: window)
             osdView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
             osdView.topAnchor.constraint(equalTo: containerView.topAnchor),
             osdView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
+        ])
+
+        // Time machine / rewind bar overlay (bottom, shows scrubber + speed indicator)
+        let timeBarView = SafeHostingView(rootView: AnyView(GameTimeBarOverlay(runner: runner)))
+        timeBarView.translatesAutoresizingMaskIntoConstraints = false
+        timeBarView.wantsLayer = true
+        // Allow the slider/buttons in this overlay to receive clicks while
+        // empty regions pass through to the game view below.
+        timeBarView.isPassThroughOverlay = false
+        timeBarView.passesThroughEmptyAreas = true
+        timeBarView.layer?.backgroundColor = NSColor.clear.cgColor
+        containerView.addSubview(timeBarView, positioned: .above, relativeTo: osdView)
+        self.timeBarOverlayView = timeBarView
+
+        NSLayoutConstraint.activate([
+            timeBarView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            timeBarView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            timeBarView.topAnchor.constraint(equalTo: containerView.topAnchor),
+            timeBarView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
         ])
 
         // Add SwiftUI loading overlay (covers entire window during game launch, on top of everything)
@@ -767,6 +790,18 @@ gameGuideViewModel.loadForGame(rom)
                     self.trainingModeViewModel.p1InputHistory.removeFirst()
                 }
             }
+
+            // While Time Machine scrub mode is active, hide the game toolbar so
+            // it doesn't overlap the timeline. When scrub mode exits, the
+            // toolbar auto-shows on the next mouse move via onMouseActivity.
+            timeMachineCancellable = runner.$isRewinding
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] isRewinding in
+                    guard let self else { return }
+                    if isRewinding {
+                        self.hideToolbarImmediateForCapture()
+                    }
+                }
         }
 
         // Observe P2 join state to show/hide status overlay on game window

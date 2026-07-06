@@ -19,6 +19,10 @@ extension StandaloneGameWindowController {
     func showToolbar() {
         guard !InputCaptureManager.shared.isCapturing else { return }
 
+        // Hide the game toolbar while in Time Machine scrub mode so it
+        // doesn't overlap the timeline overlay and steal clicks.
+        if let r = self.runner, r.isRewinding { return }
+
         if isToolbarVisible {
             scheduleHideToolbar()
             return

@@ -58,6 +58,9 @@ struct HotkeysTabView: View {
                         listeningAction = action
                         listeningSlot = .primary
                     },
+                    onCancel: {
+                        listeningAction = nil
+                    },
                     onClear: {
                         hotkeyManager.update(action, primary: .none)
                     }
@@ -73,6 +76,9 @@ struct HotkeysTabView: View {
                     onStartListening: {
                         listeningAction = action
                         listeningSlot = .secondary
+                    },
+                    onCancel: {
+                        listeningAction = nil
                     },
                     onClear: {
                         hotkeyManager.update(action, secondary: .none)

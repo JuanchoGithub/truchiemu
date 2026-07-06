@@ -119,6 +119,7 @@ struct RetroAchievementsSettingsView: View {
                             hardcoreRule(loc.localized("retroAchievements.saveStatesDisabled"))
                             hardcoreRule(loc.localized("retroAchievements.rewindDisabled"))
                             hardcoreRule(loc.localized("retroAchievements.slowMotionDisabled"))
+                            hardcoreRule(loc.localized("retroAchievements.fastForwardDisabled"))
                             hardcoreRule(loc.localized("retroAchievements.cheatCodesDisabled"))
                         }
 

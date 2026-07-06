@@ -15,6 +15,7 @@ import Foundation
 
     func stop(reply: @escaping () -> Void)
     func setPaused(_ paused: Bool, reply: @escaping () -> Void)
+    func setSpeedMultiplier(_ multiplier: Float, reply: @escaping () -> Void)
     func resetGame(reply: @escaping () -> Void)
     func setLanguage(_ language: Int, reply: @escaping () -> Void)
     func setLogLevel(_ level: Int, reply: @escaping () -> Void)
@@ -23,6 +24,14 @@ import Foundation
     func serializeSize(reply: @escaping (Int) -> Void)
     func serializeState(reply: @escaping (Data?) -> Void)
     func unserializeState(_ data: Data, reply: @escaping (Bool) -> Void)
+
+    // Time machine / rewind — XPC service holds the latest captured state for polling.
+    func setRewindEnabled(_ enabled: Bool, captureInterval: UInt32, reply: @escaping () -> Void)
+    // Returns the most recent captured state + frame index, or (nil, 0) when no new data.
+    func consumeCapturedState(reply: @escaping (Data?, UInt64) -> Void)
+    func flushAudio(reply: @escaping () -> Void)
+    func runSingleFrame(reply: @escaping () -> Void)
+    func setFrameCount(_ frameCount: UInt64, reply: @escaping () -> Void)
 
     func getSaveRAMData(reply: @escaping (Data?) -> Void)
     func loadSaveRAMData(_ data: Data, reply: @escaping (Bool) -> Void)

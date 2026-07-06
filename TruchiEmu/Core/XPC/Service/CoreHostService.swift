@@ -67,6 +67,19 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
     private var pendingRcheevosTriggers: [RcheevosAchievementTrigger]?
     private var pendingRichPresenceScript: String?
 
+    private let capturedStateLock = NSLock()
+    private var pendingCapturedStates: [(Data, UInt64)] = []
+    // Small cap: the client polls at 20Hz and consumes one state per poll, and
+    // the emulation produces ~20 states/sec (every 3 frames at 60fps), so this
+    // buffer only holds a brief surplus during polling jitter. Capping by
+    // count is fine here because each captured state can be several MB (e.g.
+    // PPSSPP with FMV state), and a large cap bursts the XPC service's memory
+    // whenever serialization outpaces the poll rate. The poller drains in
+    // FIFO order, so a small cap retains ordering without losing snapshots
+    // in steady state — and bounds memory instead of letting the queue grow
+    // toward the full rewind window.
+    private let maxPendingStates = 4
+
     private static func logMemoryFootprint(label: String) {
         var info = task_basic_info()
         var count = mach_msg_type_number_t(MemoryLayout<task_basic_info>.size / MemoryLayout<natural_t>.size)
@@ -281,6 +294,12 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
         reply()
     }
 
+    func setSpeedMultiplier(_ multiplier: Float, reply: @escaping () -> Void) {
+        LoggerService.info(category: "TimeMachine", "XPC: setSpeedMultiplier(\(multiplier))")
+        LibretroBridge.setSpeedMultiplier(multiplier)
+        reply()
+    }
+
     func resetGame(reply: @escaping () -> Void) {
         LibretroBridge.resetGame()
         reply()
@@ -317,6 +336,54 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
 
     func unserializeState(_ data: Data, reply: @escaping (Bool) -> Void) {
         reply(LibretroBridge.unserializeState(data))
+    }
+
+    func setRewindEnabled(_ enabled: Bool, captureInterval: UInt32, reply: @escaping () -> Void) {
+        LoggerService.info(category: "TimeMachine", "XPC: setRewindEnabled enabled=\(enabled) interval=\(captureInterval)")
+        LibretroBridge.setRewindEnabled(enabled, captureInterval: captureInterval)
+        if enabled {
+            LibretroBridge.setStateCaptureCallback { [weak self] state, frameIndex in
+                guard let self else { return }
+                self.capturedStateLock.lock()
+                self.pendingCapturedStates.append((state, frameIndex))
+                while self.pendingCapturedStates.count > self.maxPendingStates {
+                    self.pendingCapturedStates.removeFirst()
+                }
+                self.capturedStateLock.unlock()
+            }
+        } else {
+            LibretroBridge.setStateCaptureCallback(nil)
+            capturedStateLock.lock()
+            pendingCapturedStates.removeAll(keepingCapacity: true)
+            capturedStateLock.unlock()
+        }
+        reply()
+    }
+
+    func consumeCapturedState(reply: @escaping (Data?, UInt64) -> Void) {
+        capturedStateLock.lock()
+        defer { capturedStateLock.unlock() }
+        if let oldest = pendingCapturedStates.first {
+            pendingCapturedStates.removeFirst()
+            reply(oldest.0, oldest.1)
+        } else {
+            reply(nil, 0)
+        }
+    }
+
+    func flushAudio(reply: @escaping () -> Void) {
+        LibretroBridge.flushAudio()
+        reply()
+    }
+
+    func runSingleFrame(reply: @escaping () -> Void) {
+        LibretroBridge.runSingleFrame()
+        reply()
+    }
+
+    func setFrameCount(_ frameCount: UInt64, reply: @escaping () -> Void) {
+        LibretroBridge.setFrameCount(frameCount)
+        reply()
     }
 
     func getSaveRAMData(reply: @escaping (Data?) -> Void) {

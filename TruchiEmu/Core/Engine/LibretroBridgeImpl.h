@@ -72,6 +72,11 @@ fn_retro_get_memory_data _retro_get_memory_data;
 
   NSLock *_coreLock;
   size_t _cachedSerializeSize;
+  float _speedMultiplier;
+  uint64_t _frameCount;
+  uint64_t _lastCaptureFrame;
+  BOOL _rewindEnabled;
+  void (^_stateCaptureCallback)(NSData *state, uint64_t frameIndex);
 }
 
 - (BOOL)loadDylib:(NSString *)path;
@@ -96,5 +101,11 @@ fn_retro_get_memory_data _retro_get_memory_data;
 - (void)setupHWRender:(struct retro_hw_render_callback *)cb;
 - (const void *)readHWRenderedPixels:(int)w height:(int)h;
 - (void)setControllerPortDevice:(unsigned)port device:(unsigned)device;
+- (void)setSpeedMultiplier:(float)multiplier;
+- (void)setRewindEnabled:(BOOL)enabled captureInterval:(unsigned)frames;
+- (void)setStateCaptureCallback:(nullable void (^)(NSData *state, uint64_t frameIndex))callback;
+- (void)flushAudio;
+- (void)runSingleFrame;
+- (void)setFrameCount:(uint64_t)frameCount;
 
 @end
