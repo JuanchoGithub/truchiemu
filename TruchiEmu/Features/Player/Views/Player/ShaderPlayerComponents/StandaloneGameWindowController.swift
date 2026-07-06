@@ -1179,6 +1179,13 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
                                 loadedSlot = mostRecentSlot
                                 runner.osdMessage = "Auto-loaded most recent save"
                                 LoggerService.info(category: "SaveState", "Successfully loaded most recent save")
+                            } else if self.isDOSCore() {
+                                runner.osdMessage = LocalizationManager.shared.localized("slot.dosAutoLoadFailed")
+                                LoggerService.info(category: "SaveState", "DOS auto-load failed: DOSBox Pure start menu is enabled")
+                                Task { [weak self] in
+                                    try? await Task.sleep(nanoseconds: 15_000_000_000)
+                                    await MainActor.run { self?.runner?.osdMessage = nil }
+                                }
                             }
                         } else {
                             #if LOG_DEBUG
@@ -1803,6 +1810,10 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
     private func isDolphinCore() -> Bool {
         let coreID = AppSettings.get("lastLoadedCoreID", type: String.self) ?? ""
         return coreID.lowercased().contains("dolphin")
+    }
+
+    private func isDOSCore() -> Bool {
+        return runner is DOSRunner
     }
 
     // MARK: - Input Capture

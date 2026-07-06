@@ -218,6 +218,7 @@
   "slot.compressSaveStatesInfo": "Reduce el tamaño usando compresión LZ4",
   "slot.saveStatesUnavailable": "Estados no disponibles",
   "slot.saveStatesUnavailableDetail": "Este núcleo no admite estados de guardado. Usa el guardado interno del juego.",
+  "slot.dosAutoLoadFailed": "Auto-carga fallida: DOSBox Pure inició con el menú de inicio abierto. Pulsa DERECHA en el ejecutable que quieras fijar como predeterminado; el estado se cargará correctamente en el próximo lanzamiento.",
   "slot.previous": "Anterior",
   "slot.next": "Siguiente",
   "slot.previewUnavailable": "Sin vista previa",

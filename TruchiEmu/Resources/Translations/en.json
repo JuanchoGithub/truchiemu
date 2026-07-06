@@ -218,6 +218,7 @@
   "slot.compressSaveStatesInfo": "Reduce file size using LZ4 compression",
   "slot.saveStatesUnavailable": "Save States Unavailable",
   "slot.saveStatesUnavailableDetail": "This emulation core doesn't support save states. Try using the game's built-in save feature instead.",
+  "slot.dosAutoLoadFailed": "Auto-load failed: DOSBox Pure started with the start menu open. Press RIGHT on the executable you want to set as default; the save will load normally on the next launch.",
   "slot.previous": "Previous Slot",
   "slot.next": "Next Slot",
   "slot.previewUnavailable": "Preview unavailable",

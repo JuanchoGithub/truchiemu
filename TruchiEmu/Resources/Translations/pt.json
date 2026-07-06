@@ -218,6 +218,7 @@
   "slot.compressSaveStatesInfo": "Reduzir o tamanho do arquivo usando compressão LZ4",
   "slot.saveStatesUnavailable": "Estados Salvos Indisponíveis",
   "slot.saveStatesUnavailableDetail": "Este núcleo de emulação não suporta estados salvos. Tente usar a função de salvar interna do jogo.",
+  "slot.dosAutoLoadFailed": "Carregamento automático falhou: DOSBox Pure iniciou com o menu de início aberto. Pressione DIREITA no executável que deseja definir como padrão; o estado será carregado normalmente na próxima inicialização.",
   "slot.previous": "Espaço Anterior",
   "slot.next": "Próximo Espaço",
   "slot.previewUnavailable": "Pré-visualização indisponível",
