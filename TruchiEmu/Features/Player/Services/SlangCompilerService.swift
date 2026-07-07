@@ -101,15 +101,40 @@ class SlangCompilerService: ObservableObject {
             LoggerService.debug(category: "Slang", "renderFrame: no chain")
             return
         }
-        LoggerService.debug(category: "Slang", "renderFrame sizes: in=\(inputTexture.width)x\(inputTexture.height) out=\(outputTexture.width)x\(outputTexture.height) vp=\(UInt32(viewport.width))x\(UInt32(viewport.height))")
+        LoggerService.debug(category: "Slang", "renderFrame sizes: in=\(inputTexture.width)x\(inputTexture.height) out=\(outputTexture.width)x\(outputTexture.height) vp=\(UInt32(viewport.width))x\(UInt32(viewport.height)) ar=\(aspectRatio)")
+
+        let libraVP = libra_viewport_t(
+            x: Float(viewport.originX),
+            y: Float(viewport.originY),
+            width: UInt32(viewport.width),
+            height: UInt32(viewport.height)
+        )
+        var frameOpts = frame_mtl_opt_t(
+            version: 5,
+            clear_history: false,
+            frame_direction: 1,
+            rotation: 0,
+            total_subframes: 1,
+            current_subframe: 1,
+            aspect_ratio: aspectRatio,
+            frames_per_second: 0,
+            frametime_delta: 0,
+            color_space: LIBRA_COLOR_SPACE_SDR.rawValue,
+            brightness_nits: 200.0,
+            expand_gamut: 0,
+            gyroscope: (Float(0), Float(0), Float(0)),
+            accelerometer: (Float(0), Float(0), Float(0)),
+            accelerometer_rest: (Float(0), Float(0), Float(0))
+        )
 
         var chainVar: OpaquePointer? = chain
+        var libraVPVar = libraVP
         let renderErr = slang_mtl_filter_chain_frame(
             &chainVar, commandBuffer, Int(frameCount),
             inputTexture, outputTexture,
+            &libraVPVar,
             nil,
-            nil,
-            nil
+            &frameOpts
         )
         if renderErr != nil {
             var errStr: UnsafeMutablePointer<CChar>?

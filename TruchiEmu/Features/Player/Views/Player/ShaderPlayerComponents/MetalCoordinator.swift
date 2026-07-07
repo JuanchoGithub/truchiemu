@@ -239,15 +239,34 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
                 let isRotated = (runner.currentFrameRotation == 1 || runner.currentFrameRotation == 3)
                 let frameW = CGFloat(frameTex.width)
                 let frameH = CGFloat(frameTex.height)
-                var targetAspect: CGFloat = isRotated ? (frameH / frameW) : (frameW / frameH)
+                var targetAspect: CGFloat
+
                 let coreAspect = XPCBridgeAdapter.shared.aspectRatio()
                 if coreAspect > 0.0 {
                     targetAspect = isRotated ? (1.0 / CGFloat(coreAspect)) : CGFloat(coreAspect)
+                } else {
+                    targetAspect = isRotated ? (frameH / frameW) : (frameW / frameH)
                 }
+
+                if let systemID = runner.rom?.systemID,
+                   SystemDatabase.system(forID: systemID) != nil,
+                   targetAspect > 1.7 {
+                    targetAspect = 1.6
+                }
+
                 let viewWidth = view.drawableSize.width
                 let viewHeight = view.drawableSize.height
-                let slangVP = MTLViewport(originX: 0, originY: 0,
-                                          width: Double(viewWidth), height: Double(viewHeight),
+                var drawWidth = viewWidth
+                var drawHeight = viewWidth / targetAspect
+                if drawHeight > viewHeight {
+                    drawHeight = viewHeight
+                    drawWidth = viewHeight * targetAspect
+                }
+                let slangX = (viewWidth - drawWidth) / 2.0
+                let slangY = (viewHeight - drawHeight) / 2.0
+
+                let slangVP = MTLViewport(originX: Double(slangX), originY: Double(slangY),
+                                          width: Double(drawWidth), height: Double(drawHeight),
                                           znear: 0.0, zfar: 1.0)
                 SlangCompilerService.shared.renderFrame(
                     commandBuffer: cmdBuffer,
