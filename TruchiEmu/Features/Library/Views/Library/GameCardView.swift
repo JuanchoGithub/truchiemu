@@ -244,7 +244,7 @@ struct GameCardView: View {
             radius: isSelected ? 8 : (isHovered ? 14 : 0),
             y: isSelected ? 0 : (isHovered ? 8 : 0)
         )
-        .offset(y: isHovered ? -4 : 0)
+        .offset(y: isPressed ? -4 : 0)
     }
 
     private var artworkView: some View {
@@ -255,19 +255,17 @@ struct GameCardView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: geometry.size.width, height: geometry.size.height)
-                        .scaleEffect(isHovered ? 1.05 : 1)
-                        .animation(.interpolatingSpring(stiffness: 200, damping: 25), value: isHovered)
+                        .scaleEffect(isPressed ? 1.05 : 1)
                 } else {
                     placeholderArt
-                         .scaleEffect(isHovered ? 1.02 : 1)
-                         .animation(.interpolatingSpring(stiffness: 200, damping: 25), value: isHovered)
+                         .scaleEffect(isPressed ? 1.02 : 1)
                 }
             }
         }
         .frame(maxWidth: .infinity)
         .aspectRatio(boxType.aspectRatio, contentMode: .fit)
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .shadow(color: Color.black.opacity(isHovered ? 0.35 : 0.25), radius: isHovered ? 8 : 4, x: 0, y: isHovered ? 4 : 2)
+        .shadow(color: Color.black.opacity(isPressed ? 0.35 : 0.25), radius: isPressed ? 8 : 4, x: 0, y: isPressed ? 4 : 2)
     }
 
     private var placeholderArt: some View {

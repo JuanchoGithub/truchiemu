@@ -772,7 +772,7 @@ viewModel.updateFilters(
             .animation(.none, value: continuousZoom) // No animation during live zoom for responsiveness
         }
         .clipped() // Prevent content from drawing outside bounds (e.g., behind sidebar)
-        .gesture(
+        .highPriorityGesture(
             MagnificationGesture()
             .onChanged { value in
                 let scale = value / lastMagnification
@@ -1077,7 +1077,7 @@ viewModel.updateFilters(
         .listStyle(.inset(alternatesRowBackgrounds: false))
         .scrollContentBackground(.hidden)
         .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
-        .gesture(
+        .highPriorityGesture(
             MagnificationGesture()
                 .onChanged { value in
                     let scale = value / lastMagnification
