@@ -257,6 +257,32 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
                     viewport: slangVP,
                     aspectRatio: Float(targetAspect)
                 )
+
+                // Recording / rolling-buffer capture: built-in-shader path
+                // runs in the enc-scope block below; the slang path early-
+                // returns, so we capture here. Shares the helper with the
+                // built-in path so slang presets also produce a recorded
+                // stream (and the centered-sub-rect crop applies the same way,
+                // removing the alpha=0 black bars from the encoded frame).
+                let isRecording = StreamRecordingService.shared.isRecording
+                let needFrameCapture = isRecording || RollingVideoBufferService.shared.isEnabled
+                if needFrameCapture {
+                    if isRecording && !wasRecordingFlag {
+                        recordingStartTime = CACurrentMediaTime()
+                        recordingFrameCount = 0
+                    }
+                    wasRecordingFlag = isRecording
+                    recordingFrameCount += 1
+                    performFrameCapture(
+                        commandBuffer: cmdBuffer,
+                        device: device,
+                        drawableTexture: drawable.texture,
+                        frameTex: frameTex
+                    )
+                } else {
+                    recordingStartTime = 0
+                    wasRecordingFlag = false
+                }
             }
             cmdBuffer.present(drawable)
             cmdBuffer.commit()
@@ -699,69 +725,12 @@ outputHeight: Float(drawHeight)
                         let pts = CMTime(seconds: now - recordingStartTime, preferredTimescale: 600)
                         recordingFrameCount += 1
 
-                        let useDisplayRes = isRecording ? StreamRecordingService.shared.recordWithShaders : RollingVideoBufferService.shared.recordDisplayResolution
-                        let srcTex = useDisplayRes ? drawable.texture : frameTex
-                        let recW = srcTex.width
-                        let recH = srcTex.height
-                        let srcBPP = Self.bytesPerPixel(srcTex.pixelFormat)
-                        if recordingSharedTexture == nil ||
-                           recordingSharedTexture?.width != recW ||
-                           recordingSharedTexture?.height != recH ||
-                           recordingSharedTexture?.pixelFormat != srcTex.pixelFormat {
-                            let desc = MTLTextureDescriptor.texture2DDescriptor(
-                                pixelFormat: srcTex.pixelFormat,
-                                width: recW, height: recH, mipmapped: false
-                            )
-                            desc.usage = [.shaderRead, .shaderWrite]
-                            desc.storageMode = .shared
-                            recordingSharedTexture = device.makeTexture(descriptor: desc)
-                        }
-                        if let destTex = recordingSharedTexture {
-                            let blit = cmdBuffer.makeBlitCommandEncoder()
-                            blit?.copy(from: srcTex, to: destTex)
-                            blit?.endEncoding()
-
-                            let capturePTS = pts
-                            cmdBuffer.addCompletedHandler { [weak self] _ in
-                                guard let self = self else { return }
-                                let tex = destTex
-                                let w = tex.width
-                                let h = tex.height
-                                let srcBPP = Self.bytesPerPixel(tex.pixelFormat)
-                                let srcBPR = w * srcBPP
-                                var pixels = [UInt8](repeating: 0, count: h * srcBPR)
-                                tex.getBytes(&pixels, bytesPerRow: srcBPR,
-                                             from: MTLRegionMake2D(0, 0, w, h),
-                                             mipmapLevel: 0)
-                                var bgra = Self.convertToBGRA32(pixels, width: w, height: h, srcBPP: srcBPP, srcPixelFormat: tex.pixelFormat)
-                                var outW = Int(w)
-                                var outH = Int(h)
-                                if isRecording && !StreamRecordingService.shared.recordWithShaders {
-                                    let dar = recordingDAR
-                                    let pixelAR = CGFloat(w) / CGFloat(h)
-                                    if abs(dar - pixelAR) > 0.01 {
-                                        let corrW = max(Int(w), Int(ceil(CGFloat(h) * dar)))
-                                        let corrH = max(Int(h), Int(ceil(CGFloat(w) / dar)))
-                                        outW = corrW & ~1
-                                        outH = corrH & ~1
-                                        if outW != w || outH != h {
-                                            bgra = Self.resizeBGRA32(bgra, from: Int(w), srcH: Int(h), to: outW, dstH: outH)
-                                        }
-                                    }
-                                }
-                                let pixelBuffer = self.makePixelBuffer(from: bgra, width: outW, height: outH)
-                                if let pb = pixelBuffer {
-                                    DispatchQueue.main.async {
-                                        if isRecording {
-                                            if RollingVideoBufferService.shared.isEnabled {
-                                                RollingVideoBufferService.shared.ensureRecordingMatches(width: outW, height: outH)
-                                            }
-                                            StreamRecordingService.shared.appendVideoFrame(pb, at: capturePTS)
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        performFrameCapture(
+                            commandBuffer: cmdBuffer,
+                            device: device,
+                            drawableTexture: drawable.texture,
+                            frameTex: frameTex
+                        )
                     } else {
                         recordingStartTime = 0
                         wasRecordingFlag = false
@@ -993,6 +962,158 @@ outputHeight: Float(drawHeight)
             return info.displayAspectRatio
         }
         return 4.0 / 3.0
+    }
+
+    /// Capture the current frame into `recordingSharedTexture` and append it
+    /// to the active recording (user-initiated record or rolling buffer).
+    /// Shared by the built-in-shader path and the slang-shader path so that
+    /// slang presets also produce a captured video stream.
+    /// - When `useDisplayRes == true`, the baked-in-shader (or slang) drawable
+    ///   is the source. We blit only the centered game sub-rect so the encoded
+    ///   frame has no opaque-black pillarbox/letterbox bars around the game
+    ///   (the drawable's bar region is RGB(0,0,0) alpha=0; H.264/HEVC encoders
+    ///   have no alpha channel and would otherwise bake those pixels into
+    ///   opaque black).
+    /// - When `useDisplayRes == false`, the raw core frame texture is the
+    ///   source and is optionally DAR-padded to match the system's display
+    ///   aspect ratio.
+    private func performFrameCapture(
+        commandBuffer: MTLCommandBuffer,
+        device: MTLDevice,
+        drawableTexture: MTLTexture,
+        frameTex: MTLTexture
+    ) {
+        let isRecording = StreamRecordingService.shared.isRecording
+        let useDisplayRes = isRecording ? StreamRecordingService.shared.recordWithShaders : RollingVideoBufferService.shared.recordDisplayResolution
+        let srcTex = useDisplayRes ? drawableTexture : frameTex
+        let cropRect: MTLRegion?
+        if useDisplayRes {
+            cropRect = Self.computeCenteredGameSubRect(
+                drawable: srcTex,
+                frameTex: frameTex,
+                isRotated: runner.currentFrameRotation == 1 || runner.currentFrameRotation == 3,
+                coreAspect: Double(XPCBridgeAdapter.shared.aspectRatio()),
+                systemID: runner.rom?.systemID
+            )
+        } else {
+            cropRect = nil
+        }
+        let recW = cropRect?.size.width ?? srcTex.width
+        let recH = cropRect?.size.height ?? srcTex.height
+        if recordingSharedTexture == nil ||
+            recordingSharedTexture?.width != recW ||
+            recordingSharedTexture?.height != recH ||
+            recordingSharedTexture?.pixelFormat != srcTex.pixelFormat {
+            let desc = MTLTextureDescriptor.texture2DDescriptor(
+                pixelFormat: srcTex.pixelFormat,
+                width: recW, height: recH, mipmapped: false
+            )
+            desc.usage = [.shaderRead, .shaderWrite]
+            desc.storageMode = .shared
+            recordingSharedTexture = device.makeTexture(descriptor: desc)
+        }
+        guard let destTex = recordingSharedTexture else { return }
+        let blit = commandBuffer.makeBlitCommandEncoder()
+        if let crop = cropRect {
+            blit?.copy(
+                from: srcTex,
+                sourceSlice: 0, sourceLevel: 0,
+                sourceOrigin: crop.origin,
+                sourceSize: crop.size,
+                to: destTex,
+                destinationSlice: 0, destinationLevel: 0,
+                destinationOrigin: MTLOrigin(x: 0, y: 0, z: 0)
+            )
+        } else {
+            blit?.copy(from: srcTex, to: destTex)
+        }
+        blit?.endEncoding()
+
+        let capturePTS = CMTime(seconds: CACurrentMediaTime() - recordingStartTime, preferredTimescale: 600)
+        commandBuffer.addCompletedHandler { [weak self] _ in
+            guard let self = self else { return }
+            let tex = destTex
+            let w = tex.width
+            let h = tex.height
+            let srcBPP = Self.bytesPerPixel(tex.pixelFormat)
+            let srcBPR = w * srcBPP
+            var pixels = [UInt8](repeating: 0, count: h * srcBPR)
+            tex.getBytes(&pixels, bytesPerRow: srcBPR,
+                         from: MTLRegionMake2D(0, 0, w, h),
+                         mipmapLevel: 0)
+            var bgra = Self.convertToBGRA32(pixels, width: w, height: h, srcBPP: srcBPP, srcPixelFormat: tex.pixelFormat)
+            var outW = Int(w)
+            var outH = Int(h)
+            if isRecording && !StreamRecordingService.shared.recordWithShaders {
+                let dar = self.recordingDAR
+                let pixelAR = CGFloat(w) / CGFloat(h)
+                if abs(dar - pixelAR) > 0.01 {
+                    let corrW = max(Int(w), Int(ceil(CGFloat(h) * dar)))
+                    let corrH = max(Int(h), Int(ceil(CGFloat(w) / dar)))
+                    outW = corrW & ~1
+                    outH = corrH & ~1
+                    if outW != w || outH != h {
+                        bgra = Self.resizeBGRA32(bgra, from: Int(w), srcH: Int(h), to: outW, dstH: outH)
+                    }
+                }
+            }
+            let pixelBuffer = self.makePixelBuffer(from: bgra, width: outW, height: outH)
+            if let pb = pixelBuffer {
+                DispatchQueue.main.async {
+                    if isRecording {
+                        if RollingVideoBufferService.shared.isEnabled {
+                            RollingVideoBufferService.shared.ensureRecordingMatches(width: outW, height: outH)
+                        }
+                        StreamRecordingService.shared.appendVideoFrame(pb, at: capturePTS)
+                    }
+                }
+            }
+        }
+    }
+
+    /// Compute the centered sub-rect of `drawable` that contains the rendered
+    /// game, mirroring the viewport letterboxing logic from the built-in
+    /// shader path (`draw(in:)`) so the recorder can crop the black bars out
+    /// of the captured frame. Returns a `MTLRegion` in pixel coordinates.
+    static func computeCenteredGameSubRect(
+        drawable: MTLTexture,
+        frameTex: MTLTexture,
+        isRotated: Bool,
+        coreAspect: Double,
+        systemID: String?
+    ) -> MTLRegion {
+        let viewWidth = CGFloat(drawable.width)
+        let viewHeight = CGFloat(drawable.height)
+        let frameW = CGFloat(frameTex.width)
+        let frameH = CGFloat(frameTex.height)
+        var targetAspect: CGFloat
+        if coreAspect > 0.0 {
+            targetAspect = isRotated ? (1.0 / CGFloat(coreAspect)) : CGFloat(coreAspect)
+        } else {
+            targetAspect = isRotated ? (frameH / frameW) : (frameW / frameH)
+        }
+        // Mirror the renderer's safety clamp: if the chosen aspect ratio is
+        // wider than 16:10, cap it to 16:10 (see the FIXME-comment block in
+        // `draw(in:)`).
+        if let sid = systemID,
+           SystemDatabase.system(forID: sid) != nil,
+           targetAspect > 1.7 {
+            targetAspect = 1.6
+        }
+        var drawWidth = viewWidth
+        var drawHeight = viewWidth / targetAspect
+        if drawHeight > viewHeight {
+            drawHeight = viewHeight
+            drawWidth = viewHeight * targetAspect
+        }
+        let x = ((viewWidth - drawWidth) / 2.0).rounded(.toNearestOrEven)
+        let y = ((viewHeight - drawHeight) / 2.0).rounded(.toNearestOrEven)
+        let w = drawWidth.rounded(.toNearestOrEven)
+        let h = drawHeight.rounded(.toNearestOrEven)
+        return MTLRegion(
+            origin: MTLOrigin(x: max(0, Int(x)), y: max(0, Int(y)), z: 0),
+            size: MTLSize(width: max(1, Int(w)), height: max(1, Int(h)), depth: 1)
+        )
     }
 
     private static func resizeBGRA32(_ pixels: [UInt8], from srcW: Int, srcH: Int, to dstW: Int, dstH: Int) -> [UInt8] {

@@ -1402,6 +1402,29 @@ weak var metalCoordinator: MetalCoordinator?
 
     @MainActor public var captureSize: CGSize {
         if StreamRecordingService.shared.recordWithShaders, let view = metalView {
+            // Match the recorder's drawing: the recorder crops the centered
+            // game sub-rect out of the baked-in-shader drawable (see
+            // MetalCoordinator.computeCenteredGameSubRect) so the encoded
+            // frame has no black pillarbox/letterbox bars. Use the same
+            // sub-rect dimensions here so AVAssetWriter / RollingVideoBuffer
+            // chunk sizes match what the recorder actually emits.
+            if let frameTex = currentFrameTexture, frameTex.width > 0, frameTex.height > 0 {
+                // MTKView.drawableSize is in pixels; build a scratch
+                // descriptor-less lookup by computing the sub-rect via the
+                // shared helper, which only needs the texture dims.
+                let drawableTex = view.currentDrawable?.texture
+                if let dt = drawableTex {
+                    let region = MetalCoordinator.computeCenteredGameSubRect(
+                        drawable: dt,
+                        frameTex: frameTex,
+                        isRotated: currentFrameRotation == 1 || currentFrameRotation == 3,
+                        coreAspect: Double(XPCBridgeAdapter.shared.aspectRatio()),
+                        systemID: systemID
+                    )
+                    return CGSize(width: max(1, CGFloat(region.size.width)),
+                                  height: max(1, CGFloat(region.size.height)))
+                }
+            }
             let ds = view.drawableSize
             return CGSize(width: max(1, ds.width), height: max(1, ds.height))
         }

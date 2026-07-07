@@ -184,7 +184,16 @@ class ROMLibrary: ObservableObject {
         let refreshedROMs = repository.roms(ids: ids)
         for refreshed in refreshedROMs {
             if let idx = roms.firstIndex(where: { $0.id == refreshed.id }) {
-                roms[idx] = refreshed
+                // Repository re-constructs ROM structs from SwiftData, which
+                // leaves derived fields (displayName, boxArtLocalPath, etc.)
+                // at their empty defaults. Recompute them before swapping
+                // back into the in-memory library so callers that read
+                // `rom.displayName`, `rom.boxArtLocalPath`, etc. (e.g. game
+                // launch window, library grid tiles) don't briefly see an
+                // empty name and a non-existent boxart path.
+                var visible = refreshed
+                visible.refreshDerivedFields()
+                roms[idx] = visible
             }
         }
     }

@@ -131,11 +131,13 @@ LoggerService.debug(category: "ShaderPicker", "=== CONTENTVIEW CALLBACK ===")
 LoggerService.debug(category: "ShaderPicker", "newPresetID=\(newPresetID), targetSystemID=\(targetSystem.id)")
 #endif
 
-// Activate the shader - check both built-in and saved presets
+// Activate the shader - check built-in, saved, and slang presets
 if let preset = ShaderPreset.preset(id: newPresetID) {
     ShaderManager.shared.activatePreset(preset)
 } else if let savedPreset = ShaderPresetStorageService.shared.savedPresets.first(where: { $0.id.uuidString == newPresetID }) {
     ShaderManager.shared.activatePresetWithOverrides(presetID: savedPreset.basePresetID, overrides: savedPreset.uniformValues)
+} else if let slangPreset = SlangPresetDiscoveryService.shared.presets.first(where: { $0.path.path == newPresetID }) {
+    ShaderManager.shared.activateSlangPreset(slangPreset)
 }
 for (name, value) in newUniforms {
     ShaderManager.shared.updateUniform(name, value: value)

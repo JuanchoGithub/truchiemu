@@ -92,7 +92,7 @@ Text(currentShaderName(for: game))
 
                 Spacer()
 
-                Button(loc.localized("gameOverride.updateGames")) {
+                Button(loc.localized("gameOverride.updateGames", selectedGameIDs.count)) {
                     onApply(selectedGameIDs)
                     dismiss()
                 }

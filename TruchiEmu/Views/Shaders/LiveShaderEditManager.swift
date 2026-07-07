@@ -21,7 +21,7 @@ class LiveShaderEditManager: ObservableObject {
             return
         }
 
-        // Set up the shader preset before launching - check both built-in and saved presets
+        // Set up the shader preset before launching - check built-in, saved, and slang presets
         let presetID = rom.settings.shaderPresetID
         if !presetID.isEmpty {
             if let preset = ShaderPreset.preset(id: presetID) {
@@ -32,6 +32,8 @@ class LiveShaderEditManager: ObservableObject {
                     if merged[name] == nil { merged[name] = value }
                 }
                 ShaderManager.shared.activatePresetWithOverrides(presetID: savedPreset.basePresetID, overrides: merged)
+            } else if let slangPreset = SlangPresetDiscoveryService.shared.presets.first(where: { $0.path.path == presetID }) {
+                ShaderManager.shared.activateSlangPreset(slangPreset)
             }
         }
 
@@ -92,6 +94,10 @@ class LiveShaderEditManager: ObservableObject {
             // Apply to the running game immediately via ShaderManager
             if let preset = ShaderPreset.preset(id: newPresetID) {
                 ShaderManager.shared.activatePresetWithOverrides(presetID: newPresetID, overrides: newUniformValues)
+            } else if let savedPreset = ShaderPresetStorageService.shared.savedPresets.first(where: { $0.id.uuidString == newPresetID }) {
+                ShaderManager.shared.activatePresetWithOverrides(presetID: savedPreset.basePresetID, overrides: newUniformValues)
+            } else if let slangPreset = SlangPresetDiscoveryService.shared.presets.first(where: { $0.path.path == newPresetID }) {
+                ShaderManager.shared.activateSlangPreset(slangPreset)
             }
 
             // Persist to ROM settings

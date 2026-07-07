@@ -147,6 +147,18 @@ LoggerService.debug(category: "ShaderPicker", "Received: presetID=\(newPresetID)
 LoggerService.debug(category: "ShaderPicker", "Settings context: systemID=\(String(describing: shaderWindowSettings?.systemID)), initialPresetID=\(shaderWindowSettings?.shaderPresetID ?? "nil")")
 #endif
 
+// Activate the shader if a game is currently running with this runner
+if let preset = ShaderPreset.preset(id: newPresetID) {
+    ShaderManager.shared.activatePreset(preset)
+} else if let savedPreset = ShaderPresetStorageService.shared.savedPresets.first(where: { $0.id.uuidString == newPresetID }) {
+    ShaderManager.shared.activatePresetWithOverrides(presetID: savedPreset.basePresetID, overrides: savedPreset.uniformValues)
+} else if let slangPreset = SlangPresetDiscoveryService.shared.presets.first(where: { $0.path.path == newPresetID }) {
+    ShaderManager.shared.activateSlangPreset(slangPreset)
+}
+for (name, value) in newUniformValues {
+    ShaderManager.shared.updateUniform(name, value: value)
+}
+
 updateSettings { romSettings in
     romSettings.shaderPresetID = newPresetID
     romSettings.shaderUniformOverrides = newUniformValues

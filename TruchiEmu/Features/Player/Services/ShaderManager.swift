@@ -313,7 +313,11 @@ preset.recommendedSystems.contains(systemID)
     
     // Get a human-readable display name for a preset
     static func displayName(for presetID: String) -> String {
-        ShaderPreset.preset(id: presetID)?.name ?? "None"
+        if let p = ShaderPreset.preset(id: presetID) { return p.name }
+        if SlangPresetDiscoveryService.shared.presets.contains(where: { $0.path.path == presetID }) {
+            return URL(fileURLWithPath: presetID).deletingPathExtension().lastPathComponent
+        }
+        return "None"
     }
 }
 

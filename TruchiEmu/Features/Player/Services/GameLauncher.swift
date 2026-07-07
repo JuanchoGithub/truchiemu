@@ -501,6 +501,11 @@ func launchGame(
                     #if LOG_DEBUG
                     LoggerService.debug(category: "GameLauncher", "Activated custom shader: \(savedPreset.name)")
                     #endif
+                } else if let slangPreset = SlangPresetDiscoveryService.shared.presets.first(where: { $0.path.path == config.shaderPresetID }) {
+                    ShaderManager.shared.activateSlangPreset(slangPreset)
+                    #if LOG_DEBUG
+                    LoggerService.debug(category: "GameLauncher", "Activated slang shader: \(slangPreset.name)")
+                    #endif
                 } else {
                     // Preset not found, reset to default
                     ShaderManager.shared.resetToDefault()
