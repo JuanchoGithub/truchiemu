@@ -369,7 +369,8 @@ enum SettingsCatalog {
                     "Undo Load",
                     "Next Slot",
                     "Previous Slot",
-                    "Toggle Input Capture"
+                    "Toggle Input Capture",
+                    "Toggle Game Guide"
                 ],
                 optionSubSectionIDs: [
                     "Quick Save": "general",
@@ -377,9 +378,10 @@ enum SettingsCatalog {
                     "Undo Load": "general",
                     "Next Slot": "general",
                     "Previous Slot": "general",
-                    "Toggle Input Capture": "general"
+                    "Toggle Input Capture": "general",
+                    "Toggle Game Guide": "general"
                 ],
-                keywords: ["hotkeys", "keyboard", "shortcuts", "save", "load", "slot", "undo", "training", "input", "capture", "quick"]
+                keywords: ["hotkeys", "keyboard", "shortcuts", "save", "load", "slot", "undo", "training", "input", "capture", "quick", "guide", "sidebar"]
             ),
             SettingsCatalogEntry(
                 page: .hotkeys, sectionID: "slots",

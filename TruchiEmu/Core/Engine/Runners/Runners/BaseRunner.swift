@@ -330,6 +330,12 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     var cachedRewindBinding: String? = nil
     var cachedSlowMotionBinding: String? = nil
     var cachedFastForwardBinding: String? = nil
+    // Quick save / quick load controller binding identifiers captured at
+    // launch (per-system cache; only populated when the per-system override
+    // or global default assigns a controller button).
+    var cachedSaveStateBinding: String? = nil
+    var cachedLoadStateBinding: String? = nil
+    var cachedToggleGuideSidebarBinding: String? = nil
     private var hookedController: GCController? = nil
     private var hookedControllers: [Int: GCController] = [:]
     
@@ -1747,23 +1753,25 @@ weak var metalCoordinator: MetalCoordinator?
 
         LoggerService.info(category: "Runner", "setupGamepadInput: connectedControllers=\(cs.connectedControllers.map { $0.name })")
 
-        // Cache share button bindings at launch
-        cachedShareSinglePressBinding = HotkeyConfigManager.shared.controllerBinding(
-            for: .shareSinglePress, source: .gameController
-        ).identifier
-        cachedShareLongPressBinding = HotkeyConfigManager.shared.controllerBinding(
-            for: .shareLongPress, source: .gameController
-        ).identifier
-
-        cachedRewindBinding = HotkeyConfigManager.shared.controllerBinding(
-            for: .rewind, source: .gameController
-        ).identifier
-        cachedSlowMotionBinding = HotkeyConfigManager.shared.controllerBinding(
-            for: .slowMotion, source: .gameController
-        ).identifier
-        cachedFastForwardBinding = HotkeyConfigManager.shared.controllerBinding(
-            for: .fastForward, source: .gameController
-        ).identifier
+        // Cache gamepad hotkey bindings at launch (per-system resolved).
+        // All caches fall back to the global binding when no per-system
+        // override exists for that action.
+        let hotkeys = HotkeyConfigManager.shared
+        func cachedGC(_ action: HotkeyAction, systemID: String?) -> String? {
+            let b = hotkeys.controllerBinding(for: action, systemID: systemID, source: .gameController)
+            return b.isUnset ? nil : b.identifier
+        }
+        // sysID gets resolved later (line ~1794) from rom?.systemID ?? "default"; pass it
+        // through here once, so the cache is built before gamepad input is wired.
+        let resolvedSysID = rom?.systemID
+        cachedShareSinglePressBinding = cachedGC(.shareSinglePress, systemID: resolvedSysID)
+        cachedShareLongPressBinding   = cachedGC(.shareLongPress,   systemID: resolvedSysID)
+        cachedRewindBinding           = cachedGC(.rewind,           systemID: resolvedSysID)
+        cachedSlowMotionBinding       = cachedGC(.slowMotion,       systemID: resolvedSysID)
+        cachedFastForwardBinding      = cachedGC(.fastForward,      systemID: resolvedSysID)
+        cachedSaveStateBinding        = cachedGC(.saveState,        systemID: resolvedSysID)
+        cachedLoadStateBinding        = cachedGC(.loadState,        systemID: resolvedSysID)
+        cachedToggleGuideSidebarBinding = cachedGC(.toggleGuideSidebar, systemID: resolvedSysID)
 
         // Pre-warm rolling buffer so it's continuously recording before share press
         if RollingVideoBufferService.shared.isEnabled {
@@ -1839,6 +1847,28 @@ weak var metalCoordinator: MetalCoordinator?
                             Task { @MainActor in self.toggleFastForward() }
                         }
                         return
+                    }
+
+                    // Quick save / quick load controller hotkeys.
+                    if button.isPressed {
+                        if name == self.cachedSaveStateBinding {
+                            HardcoreModeManager.shared.attemptSaveState {
+                                Task { @MainActor in _ = self.saveState(slot: self.currentSlot) }
+                            }
+                            return
+                        }
+                        if name == self.cachedLoadStateBinding {
+                            HardcoreModeManager.shared.attemptLoadState {
+                                Task { @MainActor in _ = self.loadState(slot: self.currentSlot) }
+                            }
+                            return
+                        }
+                        if name == self.cachedToggleGuideSidebarBinding {
+                            DispatchQueue.main.async {
+                                NotificationCenter.default.post(name: .toggleGuideSidebar, object: nil)
+                            }
+                            return
+                        }
                     }
                 }
 

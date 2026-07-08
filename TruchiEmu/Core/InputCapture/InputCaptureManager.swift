@@ -189,11 +189,10 @@ class InputCaptureManager: NSObject, ObservableObject {
                 self.handleEscapePress()
                 return nil
             }
-            if event.modifierFlags.contains(.command) && event.keyCode == 46 {
-                self.stopCapture(reason: "Cmd-M shortcut")
-                self.showEscapeToast(captured: false)
-                return nil
-            }
+            // `.toggleInputCapture` (default Cmd-M) is handled by
+            // StandaloneGameWindowController.setupInputCaptureHotkey via
+            // HotkeyConfigManager; we don't duplicate it here so that
+            // rebinds to a different key still toggle both directions.
             return event
         }
         localEventMonitors.append(escapeHandle)

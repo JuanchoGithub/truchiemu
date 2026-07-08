@@ -71,6 +71,7 @@ enum HotkeyAction: String, Codable, CaseIterable, Identifiable {
     case slot8
     case slot9
     case toggleInputCapture
+    case toggleGuideSidebar
     case trainingReset
     case trainingToggleRecording
     case trainingStartPlayback
@@ -180,10 +181,20 @@ final class HotkeyConfigManager: ObservableObject {
     static let shared = HotkeyConfigManager()
 
     @Published private(set) var config: [HotkeyAction: HotkeyConfig]
+    @Published private(set) var perSystemConfig: [String: [HotkeyAction: HotkeyConfig]]
 
     private static let storageKey = "hotkeyConfig"
+    private static let perSystemStorageKey = "hotkeyConfig_perSystem"
 
     private init() {
+        // perSystemConfig must be initialized before any other `self` access.
+        if let perData = AppSettings.getData(Self.perSystemStorageKey),
+           let perDecoded = try? JSONDecoder().decode([String: [HotkeyAction: HotkeyConfig]].self, from: perData) {
+            self.perSystemConfig = perDecoded
+        } else {
+            self.perSystemConfig = [:]
+        }
+
         if let data = AppSettings.getData(Self.storageKey),
            let decoded = try? JSONDecoder().decode([HotkeyAction: HotkeyConfig].self, from: data) {
             self.config = decoded
@@ -215,6 +226,7 @@ final class HotkeyConfigManager: ObservableObject {
         .slot8:                   HotkeyConfig(primary: .command(25),  secondary: .none),         // ⌘8
         .slot9:                   HotkeyConfig(primary: .command(26),  secondary: .none),         // ⌘9
         .toggleInputCapture:      HotkeyConfig(primary: .command(46),  secondary: .none),         // ⌘M
+        .toggleGuideSidebar:      HotkeyConfig(primary: .command(9),   secondary: .none),         // ⌘V
         .trainingReset:           HotkeyConfig(primary: .command(17),  secondary: .plain(100)),   // ⌘T, F8
         .trainingToggleRecording: HotkeyConfig(primary: .plain(101),   secondary: .none),         // F9
         .trainingStartPlayback:   HotkeyConfig(primary: .plain(109),   secondary: .none),         // F10
@@ -244,6 +256,18 @@ final class HotkeyConfigManager: ObservableObject {
             return bound
         }
         return Self.defaultControllerBinding(for: action, source: source)
+    }
+
+    /// Per-system controller binding for an action. Returns `.unset` if no
+    /// per-system override is configured (so callers can fall back to global).
+    func controllerBinding(for action: HotkeyAction, systemID: String?, source: ControllerHotkeySource) -> ControllerHotkeyBinding {
+        guard let sid = systemID, !sid.isEmpty, sid != "default" else {
+            return controllerBinding(for: action, source: source)
+        }
+        if let bound = perSystemConfig[sid]?[action]?.controller, !bound.isUnset {
+            return bound
+        }
+        return controllerBinding(for: action, source: source)
     }
 
     func matchesController(_ action: HotkeyAction, gcElementName: String) -> Bool {
@@ -314,6 +338,117 @@ final class HotkeyConfigManager: ObservableObject {
     func resetToDefaults() {
         config = Self.defaults
         save()
+        perSystemConfig.removeAll()
+        savePerSystem()
+    }
+
+    /// Resolves the effective HotkeyConfig for `action` given an optional
+    /// `systemID`. Falls back to the global config when no per-system
+    /// override exists for that action.
+    func config(for action: HotkeyAction, systemID: String?) -> HotkeyConfig {
+        guard let sid = systemID, !sid.isEmpty, sid != "default" else {
+            return config[action] ?? .unbound
+        }
+        if let perSystem = perSystemConfig[sid]?[action] {
+            return perSystem
+        }
+        return config[action] ?? .unbound
+    }
+
+    /// True when a per-system override exists for this action+system.
+    func hasSystemOverride(_ action: HotkeyAction, systemID: String) -> Bool {
+        perSystemConfig[systemID]?[action] != nil
+    }
+
+    func matches(_ action: HotkeyAction, systemID: String?, event: NSEvent) -> Bool {
+        let cfg = config(for: action, systemID: systemID)
+        return cfg.primary.matches(event) || cfg.secondary.matches(event)
+    }
+
+    func matchesController(_ action: HotkeyAction, systemID: String?, gcElementName: String) -> Bool {
+        let cfg = config(for: action, systemID: systemID)
+        if let bound = cfg.controller, !bound.isUnset, bound.source == .gameController {
+            return bound.identifier == gcElementName
+        }
+        return false
+    }
+
+    func matchesController(_ action: HotkeyAction, systemID: String?, sdlButtonIndex: Int) -> Bool {
+        let cfg = config(for: action, systemID: systemID)
+        if let bound = cfg.controller, !bound.isUnset, bound.source == .sdl {
+            return Int(bound.identifier) == sdlButtonIndex
+        }
+        return false
+    }
+
+    // MARK: - Per-system mutators (only .saveState / .loadState surfaced in UI today,
+    // but the storage is generic so other actions can be per-system too).
+    //
+    // When systemID is "default" (or empty/nil), these route to the global
+    // mutators — so callers can write `hotkeyManager.update(action, systemID:
+    // selectedSystemID, ...)` whether the user picked a real system or the
+    // "global default" entry, and the right thing happens either way.
+
+    private func isDefaultScope(_ systemID: String) -> Bool {
+        systemID.isEmpty || systemID == "default"
+    }
+
+    func update(_ action: HotkeyAction, systemID: String, primary: HotkeyBinding) {
+        if isDefaultScope(systemID) {
+            update(action, primary: primary)
+            return
+        }
+        var perSystem = perSystemConfig[systemID] ?? [:]
+        var cfg = perSystem[action] ?? (config[action] ?? .unbound)
+        cfg.primary = primary
+        perSystem[action] = cfg
+        perSystemConfig[systemID] = perSystem
+        savePerSystem()
+    }
+
+    func update(_ action: HotkeyAction, systemID: String, secondary: HotkeyBinding) {
+        if isDefaultScope(systemID) {
+            update(action, secondary: secondary)
+            return
+        }
+        var perSystem = perSystemConfig[systemID] ?? [:]
+        var cfg = perSystem[action] ?? (config[action] ?? .unbound)
+        cfg.secondary = secondary
+        perSystem[action] = cfg
+        perSystemConfig[systemID] = perSystem
+        savePerSystem()
+    }
+
+    func updateControllerBinding(_ action: HotkeyAction, systemID: String, binding: ControllerHotkeyBinding?) {
+        if isDefaultScope(systemID) {
+            updateControllerBinding(action, binding: binding)
+            return
+        }
+        var perSystem = perSystemConfig[systemID] ?? [:]
+        var cfg = perSystem[action] ?? (config[action] ?? .unbound)
+        if let binding, binding.isUnset {
+            cfg.controller = nil
+        } else {
+            cfg.controller = binding
+        }
+        perSystem[action] = cfg
+        perSystemConfig[systemID] = perSystem
+        savePerSystem()
+    }
+
+    /// Clears the per-system override for `action` in `systemID`, falling
+    /// back to the global binding. No-op when systemID is "default" (since
+    /// there's no per-system layer to clear — the global binding applies).
+    func resetSystemOverride(_ action: HotkeyAction, systemID: String) {
+        if isDefaultScope(systemID) { return }
+        guard var perSystem = perSystemConfig[systemID] else { return }
+        perSystem.removeValue(forKey: action)
+        if perSystem.isEmpty {
+            perSystemConfig.removeValue(forKey: systemID)
+        } else {
+            perSystemConfig[systemID] = perSystem
+        }
+        savePerSystem()
     }
 
     func matches(_ action: HotkeyAction, event: NSEvent) -> Bool {
@@ -335,6 +470,12 @@ final class HotkeyConfigManager: ObservableObject {
     private func save() {
         if let data = try? JSONEncoder().encode(config) {
             AppSettings.setData(Self.storageKey, value: data)
+        }
+    }
+
+    private func savePerSystem() {
+        if let data = try? JSONEncoder().encode(perSystemConfig) {
+            AppSettings.setData(Self.perSystemStorageKey, value: data)
         }
     }
 }

@@ -128,61 +128,62 @@ class FocusableMTKView: MTKView {
 
     override func keyDown(with event: NSEvent) {
         let hotkeys = HotkeyConfigManager.shared
+        let systemID = runner?.systemID
 
-        if hotkeys.matches(.screenshot, event: event) {
+        if hotkeys.matches(.screenshot, systemID: systemID, event: event) {
             Task { @MainActor in
                 self.runner?.performScreenshot()
             }
             return
         }
 
-        if hotkeys.matches(.saveState, event: event) {
+        if hotkeys.matches(.saveState, systemID: systemID, event: event) {
             HardcoreModeManager.shared.attemptSaveState { [weak self] in
                 Task { @MainActor in _ = self?.runner?.saveState(slot: self!.runner!.currentSlot) }
             }
             return
         }
-        if hotkeys.matches(.loadState, event: event) {
+        if hotkeys.matches(.loadState, systemID: systemID, event: event) {
             HardcoreModeManager.shared.attemptLoadState { [weak self] in
                 Task { @MainActor in _ = self?.runner?.loadState(slot: self!.runner!.currentSlot) }
             }
             return
         }
-        if hotkeys.matches(.undoLoadState, event: event) {
+        if hotkeys.matches(.undoLoadState, systemID: systemID, event: event) {
             Task { @MainActor in _ = runner?.undoLoadState() }
             return
         }
-        if hotkeys.matches(.slotNext, event: event) {
+        if hotkeys.matches(.slotNext, systemID: systemID, event: event) {
             Task { @MainActor in runner?.nextSlot() }
             return
         }
-        if hotkeys.matches(.slotPrev, event: event) {
+        if hotkeys.matches(.slotPrev, systemID: systemID, event: event) {
             Task { @MainActor in runner?.previousSlot() }
             return
         }
         for slot in 0...9 {
-            if hotkeys.matches(Self.slotActions[slot], event: event) {
+            if hotkeys.matches(Self.slotActions[slot], systemID: systemID, event: event) {
                 Task { @MainActor in runner?.currentSlot = slot }
                 return
             }
         }
 
         if let windowCtrl = windowController, windowCtrl.trainingModeViewModel.isTrainingEnabled {
-            if hotkeys.matches(.trainingReset, event: event) {
+            if hotkeys.matches(.trainingReset, systemID: systemID, event: event) {
                 Task { @MainActor in windowCtrl.trainingModeViewModel.performReset() }
                 return
             }
-            if hotkeys.matches(.trainingToggleRecording, event: event) {
+            if hotkeys.matches(.trainingToggleRecording, systemID: systemID, event: event) {
                 Task { @MainActor in windowCtrl.trainingModeViewModel.toggleRecording() }
                 return
             }
-            if hotkeys.matches(.trainingStartPlayback, event: event) {
+            if hotkeys.matches(.trainingStartPlayback, systemID: systemID, event: event) {
                 Task { @MainActor in TrainingModeManager.shared.startTapePlayback() }
                 return
             }
         }
 
-        if hotkeys.matches(.rewind, event: event) {
+        if hotkeys.matches(.rewind, systemID: systemID, event: event) {
             HardcoreModeManager.shared.attemptRewind { [weak self] in
                 Task { @MainActor in self?.runner?.toggleTimeMachineMode() }
             }
@@ -216,20 +217,20 @@ class FocusableMTKView: MTKView {
                 }
             }
         }
-        if hotkeys.matches(.slowMotion, event: event) {
+        if hotkeys.matches(.slowMotion, systemID: systemID, event: event) {
             HardcoreModeManager.shared.attemptSlowMotion { [weak self] in
                 Task { @MainActor in self?.runner?.toggleSlowMotion() }
             }
             return
         }
-        if hotkeys.matches(.fastForward, event: event) {
+        if hotkeys.matches(.fastForward, systemID: systemID, event: event) {
             HardcoreModeManager.shared.attemptFastForward { [weak self] in
                 Task { @MainActor in self?.runner?.toggleFastForward() }
             }
             return
         }
 
-        if hotkeys.matches(.toggleTrainingMode, event: event) {
+        if hotkeys.matches(.toggleTrainingMode, systemID: systemID, event: event) {
             if let windowCtrl = windowController {
                 Task { @MainActor in TrainingModeManager.shared.setEnabled(!windowCtrl.trainingModeViewModel.isTrainingEnabled) }
             }

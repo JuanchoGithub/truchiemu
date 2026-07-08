@@ -1919,13 +1919,15 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
                     return nil
                 }
             }
-        if HotkeyConfigManager.shared.matches(.toggleInputCapture, event: event) {
+        let hotkeys = HotkeyConfigManager.shared
+        let systemID = self?.runner?.systemID
+        if hotkeys.matches(.toggleInputCapture, systemID: systemID, event: event) {
             if let window = self?.window {
                 InputCaptureManager.shared.handleToggleHotkey(window: window)
             }
             return nil
         }
-        if event.modifierFlags.contains(.command) && event.keyCode == 9 {
+        if hotkeys.matches(.toggleGuideSidebar, systemID: systemID, event: event) {
             if let self, self.gameGuideViewModel.hasGuideData {
                 self.toggleGuideSidebar()
                 return nil

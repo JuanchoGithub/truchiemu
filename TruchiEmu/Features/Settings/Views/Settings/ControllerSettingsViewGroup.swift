@@ -92,12 +92,15 @@ struct ControllerSettingsView: View {
     @State private var selectedSystemID: String
     @State private var configName: String = ""
     @State private var savedConfigs: [String: ControllerGamepadMapping] = [:]
-    @State private var leftColumnWidth: CGFloat = 340
     @State private var showDeleteConfirmation = false
-    @State private var resetTrigger = UUID()
     @State private var selectedKeyboardPlayer: Int = 1
     @State private var kbListeningFor: RetroButton? = nil
     @State private var showParentModeHelp = false
+    @ObservedObject private var hotkeyManager = HotkeyConfigManager.shared
+    @ObservedObject private var controllerCaptureCoordinator = ControllerHotkeyCaptureCoordinator.shared
+    @State private var quickHotkeyListeningAction: HotkeyAction?
+    @State private var quickHotkeyListeningSlot: HotkeySlot = .primary
+    @State private var quickHotkeyListeningControllerAction: HotkeyAction?
 
 @Binding var searchText: String
     @Binding var focusedSectionID: String?
@@ -264,18 +267,19 @@ struct ControllerSettingsView: View {
                     }
                 } else {
                     Section {
-                        HStack(spacing: 0) {
-                            ControllerLeftPanel(systemID: selectedSystemID, width: leftColumnWidth, selectedControllerId: player.id)
-
-                            DraggableDivider(width: $leftColumnWidth)
-
-                            ButtonMappingList(systemID: selectedSystemID, player: player, controllerService: controllerService)
-                                .frame(minWidth: 140)
-                        }
-                        .id("\(player.id)-\(selectedSystemID)-\(leftColumnWidth)-\(resetTrigger)")
-                        .frame(maxHeight: .infinity, alignment: .top)
+                        ButtonMappingList(systemID: selectedSystemID, player: player, controllerService: controllerService)
                     }
                 }
+            }
+
+            // Quick Save / Quick Load hotkeys. Always shown: when a real
+            // system is selected this edits the per-system override (the
+            // global fallback is unchanged); when "Global Default" is
+            // selected this edits the global binding directly (mirrors the
+            // Hotkeys settings page). Intentionally at the bottom — it's
+            // the least important section of the Controls tab.
+            Section(loc.localized("controllers.quickHotkeys")) {
+                quickHotkeysContent
             }
         }
         .scrollContentBackground(.hidden)
@@ -336,6 +340,149 @@ struct ControllerSettingsView: View {
     }
 
     // MARK: - Keyboard mapping content (inline, no tab)
+
+    enum HotkeySlot { case primary, secondary }
+
+    @ViewBuilder
+    private var quickHotkeysContent: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 6) {
+                Image(systemName: "square.and.arrow.down.on.square")
+                    .foregroundStyle(AppColors.accentForScheme(colorScheme))
+                Text(loc.localized("controllers.quickHotkeysHint"))
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                Spacer()
+            }
+            .padding(.bottom, AppSpacing.sm)
+
+            Grid(alignment: .leading, horizontalSpacing: 16, verticalSpacing: 0) {
+                quickHotkeyRow(action: .saveState, isLast: false)
+                quickHotkeyRow(action: .loadState, isLast: true)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func quickHotkeyRow(action: HotkeyAction, isLast: Bool) -> some View {
+        let systemID = selectedSystemID
+        let cfg = hotkeyManager.config(for: action, systemID: systemID)
+        let hasOverride = hotkeyManager.hasSystemOverride(action, systemID: systemID)
+        GridRow {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(loc.localized(action.localizationKey))
+                    .lineLimit(1)
+                if hasOverride {
+                    Text(loc.localized("controllers.overrideBadge"))
+                        .font(.caption2)
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                }
+            }
+            .gridColumnAlignment(.leading)
+
+            HStack(spacing: 8) {
+                HotkeyCaptureButton(
+                    binding: cfg.primary,
+                    isListening: quickHotkeyListeningAction == action && quickHotkeyListeningSlot == .primary,
+                    conflicts: [],
+                    onCapture: { captured in
+                        hotkeyManager.update(action, systemID: systemID, primary: captured)
+                        quickHotkeyListeningAction = nil
+                    },
+                    onStartListening: {
+                        quickHotkeyListeningAction = action
+                        quickHotkeyListeningSlot = .primary
+                    },
+                    onCancel: {
+                        quickHotkeyListeningAction = nil
+                    },
+                    onClear: {
+                        hotkeyManager.update(action, systemID: systemID, primary: .none)
+                    }
+                )
+                HotkeyCaptureButton(
+                    binding: cfg.secondary,
+                    isListening: quickHotkeyListeningAction == action && quickHotkeyListeningSlot == .secondary,
+                    conflicts: [],
+                    onCapture: { captured in
+                        hotkeyManager.update(action, systemID: systemID, secondary: captured)
+                        quickHotkeyListeningAction = nil
+                    },
+                    onStartListening: {
+                        quickHotkeyListeningAction = action
+                        quickHotkeyListeningSlot = .secondary
+                    },
+                    onCancel: {
+                        quickHotkeyListeningAction = nil
+                    },
+                    onClear: {
+                        hotkeyManager.update(action, systemID: systemID, secondary: .none)
+                    }
+                )
+                ControllerHotkeyCaptureButton(
+                    binding: cfg.controller ?? .unset,
+                    isListening: quickHotkeyListeningControllerAction == action,
+                    availableSources: hotkeyManager.availableControllerSources,
+                    onBindingCaptured: { captured in
+                        hotkeyManager.updateControllerBinding(action, systemID: systemID, binding: captured)
+                        quickHotkeyListeningControllerAction = nil
+                    },
+                    onListenStateChanged: { listening in
+                        if listening {
+                            quickHotkeyListeningAction = nil
+                            if let src = hotkeyManager.availableControllerSources.first {
+                                quickHotkeyListeningControllerAction = action
+                                controllerCaptureCoordinator.startListening(
+                                    source: src,
+                                    currentLabel: loc.localized("hotkeys.pressButton")
+                                ) { captured in
+                                    hotkeyManager.updateControllerBinding(action, systemID: systemID, binding: captured)
+                                    quickHotkeyListeningControllerAction = nil
+                                }
+                            }
+                        } else {
+                            controllerCaptureCoordinator.cancel()
+                            quickHotkeyListeningControllerAction = nil
+                        }
+                    },
+                    onClearRequested: {
+                        hotkeyManager.updateControllerBinding(action, systemID: systemID, binding: nil)
+                    },
+                    onSourceChanged: { src in
+                        if quickHotkeyListeningControllerAction == action {
+                            controllerCaptureCoordinator.cancel()
+                            quickHotkeyListeningControllerAction = action
+                            controllerCaptureCoordinator.startListening(
+                                source: src,
+                                currentLabel: loc.localized("hotkeys.pressButton")
+                            ) { captured in
+                                hotkeyManager.updateControllerBinding(action, systemID: systemID, binding: captured)
+                                quickHotkeyListeningControllerAction = nil
+                            }
+                        }
+                    }
+                )
+                Button {
+                    hotkeyManager.resetSystemOverride(action, systemID: systemID)
+                } label: {
+                    Image(systemName: "arrow.uturn.backward")
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .help(loc.localized("controllers.resetToGlobal"))
+                .disabled(!hasOverride)
+            }
+            .gridColumnAlignment(.trailing)
+        }
+        .padding(.vertical, AppSpacing.xxs)
+        .overlay(alignment: .bottom) {
+            if !isLast {
+                Divider()
+                    .overlay(AppColors.divider(colorScheme))
+            }
+        }
+    }
+
     @ViewBuilder
     private var keyboardMappingContent: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -643,31 +790,6 @@ struct ControllerDeadzoneSliders: View {
 }
 
 // MARK: - Controller Left Panel (icon + sticks)
-struct ControllerLeftPanel: View {
-    @Environment(\.colorScheme) private var colorScheme
-    @EnvironmentObject var controllerService: ControllerService
-    let systemID: String
-    let width: CGFloat
-    let selectedControllerId: UUID
-
-    var body: some View {
-        VStack(spacing: 4) {
-            ControllerIconView(systemID: systemID)
-                .frame(maxHeight: 60)
-
-            Divider()
-
-            StickVisualizerView(systemID: systemID, selectedControllerId: selectedControllerId)
-
-            Divider()
-
-            DeadzoneSlidersSection(systemID: systemID, selectedControllerId: selectedControllerId)
-        }
-        .frame(width: width)
-        .frame(maxHeight: .infinity, alignment: .top)
-    }
-}
-
 // MARK: - Stick Visualizer with live state
 struct StickVisualizerView: View {
     @Environment(\.colorScheme) private var colorScheme
@@ -739,8 +861,7 @@ struct ButtonMappingList: View {
         VStack(spacing: 0) {
             HStack(spacing: 6) {
                 Text("\(loc.localized("controllers.buttonMapping")) (P\(player.primaryPlayer))")
-                    .font(.caption2)
-                    .fontWeight(.semibold)
+                    .font(.title3.weight(.semibold))
                     .foregroundColor(AppColors.textSecondary(colorScheme))
                 Spacer()
                 Button(loc.localized("controllers.backToDefault")) {
@@ -776,28 +897,47 @@ struct ButtonMappingList: View {
 
             Divider()
 
-            List {
+            ScrollView {
+                let buttons = RetroButton.availableButtons(for: systemID)
                 let disabledButtons = RetroButton.disabledButtons(for: systemID)
-                ForEach(RetroButton.availableButtons(for: systemID), id: \.self) { btn in
-                    MappingRowView(
-                        button: btn,
-                        systemID: systemID,
-                        displayAlias: player.isSDL
-                            ? (currentSDKMapping?.buttons[btn]?.sdlButtonAlias ?? "—")
-                            : currentMapping.buttons[btn]?.gcElementAlias,
-                        isListening: listeningFor == btn,
-                        isButtonDisabled: disabledButtons.contains(btn),
-                        onStartListening: { startListening(for: btn) }
-                    )
-                    .listRowInsets(EdgeInsets(top: 2, leading: 8, bottom: 2, trailing: 8))
-                    .listRowSeparator(.hidden)
+
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+                    ForEach(buttons, id: \.self) { btn in
+                        MappingRowView(
+                            button: btn,
+                            systemID: systemID,
+                            displayAlias: player.isSDL
+                                ? (currentSDKMapping?.buttons[btn]?.sdlButtonAlias ?? "—")
+                                : currentMapping.buttons[btn]?.gcElementAlias,
+                            isListening: listeningFor == btn,
+                            isButtonDisabled: disabledButtons.contains(btn),
+                            onStartListening: { startListening(for: btn) }
+                        )
+                    }
+                }
+                .padding(.vertical, 12)
+
+                // Stick visualizer + deadzone sliders. Only relevant for
+                // gamepads — keyboard player would never end up in this view
+                // (the parent switch routes keyboard to keyboardMappingContent).
+                if !player.isSDL {
+                    Divider()
+                        .padding(.horizontal, 12)
+
+                    StickVisualizerView(systemID: systemID, selectedControllerId: player.id)
+                        .padding(.vertical, 8)
+
+                    Divider()
+                        .padding(.horizontal, 12)
+
+                    DeadzoneSlidersSection(systemID: systemID, selectedControllerId: player.id)
+                        .padding(.vertical, 8)
                 }
             }
-            .listStyle(.plain)
             .scrollContentBackground(.hidden)
             .background(AppColors.cardBackground(colorScheme))
         }
-        .frame(minWidth: 140)
+        .frame(maxWidth: .infinity)
         .frame(maxHeight: .infinity, alignment: .top)
         .onDisappear { stopListening() }
     }
@@ -901,146 +1041,6 @@ struct ButtonMappingList: View {
 
     private func saveMapping() {
         controllerService.updateMapping(for: currentMapping.vendorName, systemID: systemID, mapping: currentMapping)
-    }
-}
-
-struct ControllerMappingDetail: View {
-    @Environment(\.colorScheme) private var colorScheme
-    @EnvironmentObject var controllerService: ControllerService
-    let player: PlayerController
-    let systemID: String
-    @State private var listeningFor: RetroButton? = nil
-    @State private var mapping: ControllerGamepadMapping
-    @ObservedObject private var loc = LocalizationManager.shared
-
-    init(player: PlayerController, systemID: String) {
-        self.player = player
-        self.systemID = systemID
-        _mapping = State(initialValue: ControllerService.shared.mapping(for: player.gcController?.vendorName ?? "Unknown", systemID: systemID))
-    }
-
-    var body: some View {
-        HStack(spacing: 0) {
-            VStack(spacing: 8) {
-                ControllerIconView(systemID: systemID)
-                    .frame(maxHeight: 60)
-                Divider().padding(.horizontal, 12)
-                VStack(spacing: 8) {
-                    Text(loc.localized("controllers.sticks"))
-                        .font(.caption)
-                        .fontWeight(.semibold)
-                        .foregroundColor(AppColors.textSecondary(colorScheme))
-                    HStack(spacing: 8) {
-                        CompactStickView(x: lStickState.x, y: lStickState.y, label: "L", deadZone: Double(mapping.leftStickDeadzone))
-                        CompactStickView(x: rStickState.x, y: rStickState.y, label: "R", deadZone: Double(mapping.rightStickDeadzone))
-                    }
-                }
-                .padding(.bottom, 8)
-                Divider()
-                ControllerDeadzoneSliders(mapping: $mapping, systemID: systemID)
-            }
-            .frame(width: 180)
-            .padding(.vertical, 8)
-        .padding(.vertical, 8)
-
-            Divider()
-
-            VStack(spacing: 0) {
-                Text(loc.localized("controllers.buttonMapping"))
-                    .font(.caption2)
-                    .fontWeight(.semibold)
-                    .foregroundColor(AppColors.textSecondary(colorScheme))
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-
-                Divider()
-
-                List {
-                    let disabledButtons = RetroButton.disabledButtons(for: systemID)
-                    ForEach(RetroButton.availableButtons(for: systemID), id: \.self) { btn in
-                        MappingRowView(
-                            button: btn,
-                            systemID: systemID,
-                            displayAlias: mapping.buttons[btn]?.gcElementAlias,
-                            isListening: listeningFor == btn,
-                            isButtonDisabled: disabledButtons.contains(btn),
-                            onStartListening: {
-                                listeningFor = btn
-                                startListeningForButton(btn)
-                            }
-                        )
-                        .listRowInsets(EdgeInsets(top: 2, leading: 8, bottom: 2, trailing: 8))
-                        .listRowSeparator(.hidden)
-                    }
-                }
-                .listStyle(.plain)
-                .scrollContentBackground(.hidden)
-                .background(AppColors.cardBackground(colorScheme))
-            }
-            .frame(minWidth: 300, maxWidth: 380)
-        }
-        .onAppear { startStickVisualizer() }
-        .onDisappear { stopListening() }
-        .onChange(of: mapping.leftStickDeadzone) { _, _ in saveMapping() }
-        .onChange(of: mapping.rightStickDeadzone) { _, _ in saveMapping() }
-    }
-
-    private func startListeningForButton(_ btn: RetroButton) {
-        guard let gc = player.gcController else { return }
-        var pendingName: String? = nil
-        gc.extendedGamepad?.valueChangedHandler = { [self] pad, element in
-            let threshold: Float = 0.5
-            if let dpad = element as? GCControllerDirectionPad {
-                let up = dpad.up.value; let down = dpad.down.value
-                let left = dpad.left.value; let right = dpad.right.value
-                let maxVal = max(max(up, down), max(left, right))
-                if maxVal > threshold {
-                    let sub: GCControllerElement
-                    if maxVal == up { sub = dpad.up }
-                    else if maxVal == down { sub = dpad.down }
-                    else if maxVal == left { sub = dpad.left }
-                    else { sub = dpad.right }
-                    let name = sub.localizedName ?? "Button"
-                    pendingName = name
-                    DispatchQueue.main.async {
-                        guard listeningFor == btn else { return }
-                        self.mapping.buttons[btn] = GCButtonMapping(gcElementName: name, gcElementAlias: name)
-                    }
-                } else if maxVal == 0, pendingName != nil {
-                    pendingName = nil
-                    DispatchQueue.main.async { self.listeningFor = nil; self.stopListening(); self.saveMapping() }
-                }
-            } else if let button = element as? GCControllerButtonInput {
-                if button.value > threshold {
-                    let name = button.localizedName ?? "Button"
-                    pendingName = name
-                    DispatchQueue.main.async {
-                        guard listeningFor == btn else { return }
-                        self.mapping.buttons[btn] = GCButtonMapping(gcElementName: name, gcElementAlias: name)
-                    }
-                } else if pendingName != nil {
-                    pendingName = nil
-                    DispatchQueue.main.async { self.listeningFor = nil; self.stopListening(); self.saveMapping() }
-                }
-            }
-        }
-    }
-
-    private func stopListening() { player.gcController?.extendedGamepad?.valueChangedHandler = nil }
-    private func saveMapping() { controllerService.updateMapping(for: mapping.vendorName, systemID: systemID, mapping: mapping) }
-
-    @State private var lStickState: (x: Double, y: Double) = (0, 0)
-    @State private var rStickState: (x: Double, y: Double) = (0, 0)
-
-    private func startStickVisualizer() {
-        guard let gc = player.gcController else { return }
-        gc.extendedGamepad?.leftThumbstick.valueChangedHandler = { _, x, y in
-            DispatchQueue.main.async { lStickState = (Double(x), Double(y)) }
-        }
-        gc.extendedGamepad?.rightThumbstick.valueChangedHandler = { _, x, y in
-            DispatchQueue.main.async { rStickState = (Double(x), Double(y)) }
-        }
     }
 }
 
@@ -1164,137 +1164,6 @@ struct StickTesterView: View {
         .background(.background.opacity(0.5))
         .cornerRadius(AppRadius.xl)
         .overlay(RoundedRectangle(cornerRadius: AppRadius.xl).stroke(AppColors.divider(colorScheme).opacity(0.1), lineWidth: 1))
-    }
-}
-
-struct ControllerIconView: View {
-    @Environment(\.colorScheme) private var colorScheme
-    let systemID: String
-
-    var body: some View {
-        Group {
-            if let image = loadIcon(for: systemID) {
-                Image(nsImage: image)
-                    .resizable()
-                    .interpolation(.high)
-                    .aspectRatio(contentMode: .fit)
-            } else {
-                ControllerDrawingView()
-            }
-        }
-    }
-
-    private func loadIcon(for id: String) -> NSImage? {
-        let name = id.lowercased()
-        let bundle = Bundle.main
-
-        if let url = bundle.url(forResource: name, withExtension: "ico", subdirectory: "ControllerIcons") {
-            return scaleUp(trimTransparentEdges(NSImage(contentsOf: url)))
-        }
-        if let url = bundle.url(forResource: name, withExtension: "png", subdirectory: "ControllerIcons") {
-            return scaleUp(trimTransparentEdges(NSImage(contentsOf: url)))
-        }
-
-        if let sys = SystemDatabase.systems.first(where: { $0.id == id }) {
-            return sys.emuImage(size: 600)
-        }
-
-        return nil
-    }
-
-    private func scaleUp(_ image: NSImage?) -> NSImage? {
-        guard let image else { return nil }
-        let size = NSSize(width: image.size.width * 1.7, height: image.size.height * 1.7)
-        let scaled = NSImage(size: size)
-        scaled.lockFocus()
-        NSGraphicsContext.current?.imageInterpolation = .high
-        image.draw(in: NSRect(origin: .zero, size: size))
-        scaled.unlockFocus()
-        return scaled
-    }
-
-    private func trimTransparentEdges(_ image: NSImage?) -> NSImage? {
-        guard let image else { return nil }
-        guard let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else { return image }
-        guard let dataProvider = cgImage.dataProvider else { return image }
-        guard let pixelData = dataProvider.data else { return image }
-
-        let width = cgImage.width
-        let height = cgImage.height
-        let bpp = cgImage.bitsPerPixel / 8
-        let row = cgImage.bytesPerRow
-        guard let ptr = CFDataGetBytePtr(pixelData) else { return image }
-
-        let alphaOff: Int
-        switch cgImage.alphaInfo {
-        case .first, .premultipliedFirst: alphaOff = 0
-        default: alphaOff = bpp - 1
-        }
-
-        var top = 0, bottom = 0, left = 0, right = 0
-
-        topLoop: for y in 0..<height {
-            for x in 0..<width { if ptr[Int(y * row + x * bpp + alphaOff)] > 5 { break topLoop } }
-            top = y + 1
-        }
-        bottomLoop: for y in (0..<height).reversed() {
-            for x in 0..<width { if ptr[Int(y * row + x * bpp + alphaOff)] > 5 { break bottomLoop } }
-            bottom = height - y
-        }
-        leftLoop: for x in 0..<width {
-            for y in 0..<height { if ptr[Int(y * row + x * bpp + alphaOff)] > 5 { break leftLoop } }
-            left = x + 1
-        }
-        rightLoop: for x in (0..<width).reversed() {
-            for y in 0..<height { if ptr[Int(y * row + x * bpp + alphaOff)] > 5 { break rightLoop } }
-            right = width - x
-        }
-
-        if top >= height || left >= width { return image }
-
-        let cropRect = CGRect(x: left, y: top, width: width - left - right, height: height - top - bottom)
-        guard cropRect.width > 0, cropRect.height > 0 else { return image }
-        guard let cropped = cgImage.cropping(to: cropRect) else { return image }
-
-        return NSImage(cgImage: cropped, size: NSSize(width: cropRect.width, height: cropRect.height))
-    }
-}
-
-struct ControllerDrawingView: View {
-    @Environment(\.colorScheme) private var colorScheme
-    var body: some View {
-        ZStack {
-            Capsule()
-                .fill(AppColors.divider(colorScheme).opacity(0.15))
-                .frame(width: 200, height: 120)
-                .overlay(Capsule().stroke(AppColors.divider(colorScheme).opacity(0.2), lineWidth: 1))
-
-            HStack(spacing: 120) {
-                Circle().fill(AppColors.divider(colorScheme).opacity(0.08)).frame(width: 60)
-                Circle().fill(AppColors.divider(colorScheme).opacity(0.08)).frame(width: 60)
-            }
-
-            HStack(spacing: 60) {
-                Circle().fill(AppColors.divider(colorScheme).opacity(0.2)).frame(width: 30)
-                Circle().fill(AppColors.divider(colorScheme).opacity(0.2)).frame(width: 30)
-            }
-            .offset(y: 20)
-
-            HStack(spacing: 100) {
-                Image(systemName: "plus.circle.fill").font(.title2).foregroundColor(AppColors.divider(colorScheme).opacity(0.3))
-                VStack(spacing: 5) {
-                    HStack(spacing: 5) { Circle().frame(width: 10); Circle().frame(width: 10) }
-                    HStack(spacing: 5) { Circle().frame(width: 10); Circle().frame(width: 10) }
-                }
-                .foregroundColor(AppColors.divider(colorScheme).opacity(0.3))
-            }
-            .offset(y: -15)
-
-            Text("INPUT PREVIEW").font(.system(size: 8, weight: .black)).tracking(2)
-                .foregroundColor(AppColors.divider(colorScheme).opacity(0.5))
-                .offset(y: -50)
-        }
-        .padding()
     }
 }
 

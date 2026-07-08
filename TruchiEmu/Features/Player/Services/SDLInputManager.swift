@@ -109,9 +109,11 @@ class SDLInputManager: ObservableObject {
         runnerLock.lock()
         _activeRunner = runner
         runnerLock.unlock()
-        // Cache the SDL share button indices
-        let singleBinding = HotkeyConfigManager.shared.controllerBinding(for: .shareSinglePress, source: .sdl)
-        let longBinding = HotkeyConfigManager.shared.controllerBinding(for: .shareLongPress, source: .sdl)
+        // Cache the SDL share button indices (per-system resolved, falling
+        // back to the global binding when no per-system override exists).
+        let sysID = runner.rom?.systemID
+        let singleBinding = HotkeyConfigManager.shared.controllerBinding(for: .shareSinglePress, systemID: sysID, source: .sdl)
+        let longBinding = HotkeyConfigManager.shared.controllerBinding(for: .shareLongPress, systemID: sysID, source: .sdl)
         cachedShareSinglePressButtonIndex = Int(singleBinding.identifier)
         cachedShareLongPressButtonIndex = Int(longBinding.identifier)
     }

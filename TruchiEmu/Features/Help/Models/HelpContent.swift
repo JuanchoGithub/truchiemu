@@ -50,7 +50,7 @@ enum HelpContent {
             HelpShortcut(key: "F6", modifiers: [], descriptionKey: "help.shortcut.slotPlus"),
             HelpShortcut(key: "F4", modifiers: [], descriptionKey: "help.shortcut.slotMinus"),
             HelpShortcut(key: "M", modifiers: ["⌘"], descriptionKey: "help.shortcut.toggleInputCapture"),
-HelpShortcut(key: "J", modifiers: ["⌘"], descriptionKey: "help.shortcut.toggleGameGuide"),
+            HelpShortcut(key: "V", modifiers: ["⌘"], descriptionKey: "help.shortcut.toggleGameGuide"),
             HelpShortcut(key: "T", modifiers: ["⇧", "⌘"], descriptionKey: "help.shortcut.toggleTrainingMode"),
             HelpShortcut(key: "T", modifiers: ["⌘"], descriptionKey: "help.shortcut.trainingReset"),
             HelpShortcut(key: "S", modifiers: ["⇧", "⌘"], descriptionKey: "help.shortcut.screenshot"),
