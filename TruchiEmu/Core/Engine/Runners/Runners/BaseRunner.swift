@@ -1799,7 +1799,12 @@ weak var metalCoordinator: MetalCoordinator?
             guard let controller = player.gcController,
                   let extendedGamepad = controller.extendedGamepad else { continue }
 
-            let mapping = cs.mapping(for: controller.vendorName ?? "Unknown", systemID: sysID)
+            let mapping: ControllerGamepadMapping
+            if let identity = player.identityKey {
+                mapping = cs.mapping(forIdentity: identity, systemID: sysID)
+            } else {
+                mapping = cs.mapping(for: controller.vendorName ?? "Unknown", systemID: sysID)
+            }
             let ports = player.assignedPlayers.map { $0 - 1 }
 
             for port in ports {
@@ -1892,7 +1897,7 @@ weak var metalCoordinator: MetalCoordinator?
                     } else {
                         let nameForLog = element.localizedName ?? "<nil>"
                         let kindForLog = String(describing: type(of: element))
-                        let computedDir = self.timeMachineScrubDirection(for: element, mapping: mapping)
+                        let computedDir = self.timeMachineScrubDirection(for: element, mapping: mapping, extendedGamepad: extendedGamepad)
                         LoggerService.debug(category: "TimeMachine", "Gamepad non-dpad element: name='\(nameForLog)' kind=\(kindForLog) computedDir=\(computedDir)")
                         dir = computedDir
                     }
@@ -1906,13 +1911,13 @@ weak var metalCoordinator: MetalCoordinator?
 
                 for port in ports {
                     if let dpad = element as? GCControllerDirectionPad {
-                        self.updateGamepadButton(dpad.up, in: mapping, player: port)
-                        self.updateGamepadButton(dpad.down, in: mapping, player: port)
-                        self.updateGamepadButton(dpad.left, in: mapping, player: port)
-                        self.updateGamepadButton(dpad.right, in: mapping, player: port)
-                        self.updateGamepadButton(dpad, in: mapping, player: port)
+                        self.updateGamepadButton(dpad.up, in: mapping, extendedGamepad: extendedGamepad, player: port)
+                        self.updateGamepadButton(dpad.down, in: mapping, extendedGamepad: extendedGamepad, player: port)
+                        self.updateGamepadButton(dpad.left, in: mapping, extendedGamepad: extendedGamepad, player: port)
+                        self.updateGamepadButton(dpad.right, in: mapping, extendedGamepad: extendedGamepad, player: port)
+                        self.updateGamepadButton(dpad, in: mapping, extendedGamepad: extendedGamepad, player: port)
                     } else {
-                        self.updateGamepadButton(element, in: mapping, player: port)
+                        self.updateGamepadButton(element, in: mapping, extendedGamepad: extendedGamepad, player: port)
                     }
                 }
             }
@@ -1926,17 +1931,27 @@ weak var metalCoordinator: MetalCoordinator?
         return false
     }
 
+    func elementMatches(_ element: GCControllerElement, mapping: GCButtonMapping, extendedGamepad: GCExtendedGamepad?) -> Bool {
+        if let identifier = mapping.identifier, identifier != .vendorSpecific {
+            if identifier.matches(element: element, extendedGamepad: extendedGamepad) { return true }
+        }
+        if let name = mapping.gcElementName, !name.isEmpty {
+            return elementMatches(element, name: name)
+        }
+        return false
+    }
+
     /// While in Time Machine scrub mode, return -1 (left) / +1 (right) / 0
     /// (no match) for the dpad/stick element the user pressed, according to
     /// whatever they've bound to RetroButton.left / .right / .lStickLeft /
     /// .lStickRight for the current core. Non-isolated — matches how
     /// updateGamepadButton is invoked from the GCController valueChangedHandler
     /// (which fires on a non-main queue).
-    func timeMachineScrubDirection(for element: GCControllerElement, mapping: ControllerGamepadMapping) -> Int {
+    func timeMachineScrubDirection(for element: GCControllerElement, mapping: ControllerGamepadMapping, extendedGamepad: GCExtendedGamepad?) -> Int {
         for (btn, btnMapping) in mapping.buttons {
             guard btn == .left || btn == .right || btn == .lStickLeft || btn == .lStickRight ||
                   btn == .rStickLeft || btn == .rStickRight else { continue }
-            if !elementMatches(element, name: btnMapping.gcElementName) { continue }
+            if !elementMatches(element, mapping: btnMapping, extendedGamepad: extendedGamepad) { continue }
             switch btn {
             case .left, .lStickLeft, .rStickLeft: return -1
             case .right, .lStickRight, .rStickRight: return 1
@@ -1946,9 +1961,9 @@ weak var metalCoordinator: MetalCoordinator?
         return 0
     }
 
-    func updateGamepadButton(_ element: GCControllerElement, in mapping: ControllerGamepadMapping, player: Int = 0) {
+    func updateGamepadButton(_ element: GCControllerElement, in mapping: ControllerGamepadMapping, extendedGamepad: GCExtendedGamepad? = nil, player: Int = 0) {
         for (btn, btnMapping) in mapping.buttons {
-            guard elementMatches(element, name: btnMapping.gcElementName) else { continue }
+            guard elementMatches(element, mapping: btnMapping, extendedGamepad: extendedGamepad) else { continue }
             
             if let info = btn.analogInfo {
                 var value: Float = 0.0

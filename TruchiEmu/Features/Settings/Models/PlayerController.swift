@@ -21,6 +21,7 @@ struct PlayerController: Identifiable {
     var sdlInstanceID: Int32?
     var sdlMapping: SDLControllerMapping?
     var sdlName: String?
+    var identityKey: ControllerIdentityKey?
 
     var primaryPlayer: Int { assignedPlayers.min() ?? 1 }
     var isSDL: Bool { sdlInstanceID != nil }
@@ -47,7 +48,7 @@ struct PlayerController: Identifiable {
         Bundle.main.image(forResource: typeIconName)?.withTintColor
     }
 
-    init(id: UUID = UUID(), assignedPlayers: Set<Int>, gcController: GCController? = nil, mapping: ControllerGamepadMapping, sortOrder: Int = 0, productCategory: String = "", isKeyboard: Bool = false, sdlInstanceID: Int32? = nil, sdlMapping: SDLControllerMapping? = nil, sdlName: String? = nil) {
+    init(id: UUID = UUID(), assignedPlayers: Set<Int>, gcController: GCController? = nil, mapping: ControllerGamepadMapping, sortOrder: Int = 0, productCategory: String = "", isKeyboard: Bool = false, sdlInstanceID: Int32? = nil, sdlMapping: SDLControllerMapping? = nil, sdlName: String? = nil, identityKey: ControllerIdentityKey? = nil) {
         self.id = id
         self.assignedPlayers = assignedPlayers
         self.gcController = gcController
@@ -58,5 +59,6 @@ struct PlayerController: Identifiable {
         self.sdlInstanceID = sdlInstanceID
         self.sdlMapping = sdlMapping
         self.sdlName = sdlName
+        self.identityKey = identityKey
     }
 }

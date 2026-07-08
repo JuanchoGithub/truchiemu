@@ -114,7 +114,12 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
         for player in cs.connectedControllers {
             guard let controller = player.gcController,
                   let extendedGamepad = controller.extendedGamepad else { continue }
-            let mapping = cs.mapping(for: controller.vendorName ?? "Unknown", systemID: sysID)
+            let mapping: ControllerGamepadMapping
+            if let identity = player.identityKey {
+                mapping = cs.mapping(forIdentity: identity, systemID: sysID)
+            } else {
+                mapping = cs.mapping(for: controller.vendorName ?? "Unknown", systemID: sysID)
+            }
             let ports = player.assignedPlayers.map { $0 - 1 }
             let dpad = extendedGamepad.dpad
 
@@ -148,13 +153,13 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
                     }
                 }
                 for port in ports {
-                    self.handleDOSButtons(element, in: mapping, player: port, dpad: dpad)
+                    self.handleDOSButtons(element, in: mapping, player: port, dpad: dpad, extendedGamepad: extendedGamepad)
                 }
             }
         }
     }
 
-    private func handleDOSButtons(_ element: GCControllerElement, in mapping: ControllerGamepadMapping, player: Int, dpad: GCControllerDirectionPad) {
+    private func handleDOSButtons(_ element: GCControllerElement, in mapping: ControllerGamepadMapping, player: Int, dpad: GCControllerDirectionPad, extendedGamepad: GCExtendedGamepad) {
         if let dirPad = element as? GCControllerDirectionPad {
             if dirPad === dpad {
                 XPCBridgeAdapter.shared.dispatchKeyboardEvent(keycode: 273, character: 0, modifiers: 0, down: dpad.up.isPressed)
@@ -167,7 +172,7 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
 
         guard let btn = element as? GCControllerButtonInput else { return }
         for (retroBtn, btnMapping) in mapping.buttons {
-            guard elementMatches(element, name: btnMapping.gcElementName) else { continue }
+            guard elementMatches(element, mapping: btnMapping, extendedGamepad: extendedGamepad) else { continue }
             let raw = retroBtn.rawValue
 
             if retroBtn == .r3 || retroBtn == .l3 {

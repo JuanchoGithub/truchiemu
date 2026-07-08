@@ -82,7 +82,6 @@ final class ControllerHotkeyCaptureCoordinator: ObservableObject {
 
     private func handle(element: GCControllerElement) {
         let name = element.localizedName ?? ""
-        guard !name.isEmpty else { return }
         if let dpad = element as? GCControllerDirectionPad {
             let dir = identifyDPad(dpad)
             if let identifier = dir {
@@ -90,6 +89,7 @@ final class ControllerHotkeyCaptureCoordinator: ObservableObject {
             }
             return
         }
+        guard !name.isEmpty else { return }
         if let button = element as? GCControllerButtonInput {
             if button.value > threshold {
                 finishGC(name: name, label: name)

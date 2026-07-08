@@ -3,7 +3,7 @@ import GameController
 import Combine
 
 private let mappingVersionKey = "controller_mapping_version"
-private let currentMappingVersion = 4
+private let currentMappingVersion = 5
 
 @MainActor
 class ControllerService: ObservableObject {
@@ -28,8 +28,12 @@ class ControllerService: ObservableObject {
     private let mappingKey = "controller_mappings_v2"
     private let sdlMappingKey = "sdl_controller_mappings_v1"
     private let kbMappingKey = "keyboard_mapping_v1"
+    private let identityMappingKey = "controller_identities_v1"
+    private let identitySDLMappingKey = "sdl_controller_identities_v1"
     private var savedMappings: [String: [String: ControllerGamepadMapping]] = [:]
     private var savedSDLMappings: [String: [String: SDLControllerMapping]] = [:]
+    private var savedIdentityMappings: [String: [String: ControllerGamepadMapping]] = [:]
+    private var savedIdentitySDLMappings: [String: [String: SDLControllerMapping]] = [:]
 
     var sdlSlotAssignments: [Int32: Set<Int>] = [:]
 
@@ -64,6 +68,7 @@ class ControllerService: ObservableObject {
         guard storedVersion < currentMappingVersion else { return }
         if storedVersion < 3 { migrateFromV2toV3() }
         if storedVersion < 4 { migrateFromV3toV4() }
+        if storedVersion < 5 { migrateFromV4toV5() }
         AppSettings.setInt(mappingVersionKey, value: currentMappingVersion)
     }
 
@@ -71,6 +76,9 @@ class ControllerService: ObservableObject {
     }
 
     private func migrateFromV3toV4() {
+    }
+
+    private func migrateFromV4toV5() {
     }
 
     private func setupControllerNotifications() {
@@ -158,8 +166,15 @@ class ControllerService: ObservableObject {
 
             LoggerService.info(category: "ControllerService", "Detected controller: vendorName=\(baseName), productCategory=\(category)")
 
-            let mapping = savedMappings[baseName]?["default"]
-            ?? ControllerGamepadMapping.defaults(for: baseName, systemID: "default", handedness: handedness)
+            let identity = self.identityKey(for: gc)
+            let mapping: ControllerGamepadMapping
+            if let saved = savedIdentityMappings[identity.compositeKey]?["default"] {
+                mapping = saved
+            } else if let saved = savedMappings[baseName]?["default"] {
+                mapping = saved
+            } else {
+                mapping = ControllerGamepadMapping.defaults(for: baseName, systemID: "default", handedness: handedness)
+            }
 
             let displayName: String
             if nameCounts[baseName, default: 0] > 1 {
@@ -168,14 +183,15 @@ class ControllerService: ObservableObject {
             } else {
                 displayName = baseName
             }
-
-            var player = PlayerController(
+            _ = displayName
+            let player = PlayerController(
                 id: Self.stableId(for: gc),
                 assignedPlayers: assigned,
                 gcController: gc,
                 mapping: mapping,
                 sortOrder: players.count,
-                productCategory: category
+                productCategory: category,
+                identityKey: identity
             )
             players.append(player)
         }
@@ -199,8 +215,15 @@ class ControllerService: ObservableObject {
             currentIDs.insert("sdl_\(instanceID)")
 
             let vendorName = SDLInputManager.shared.sdlVendorName(for: instanceID)
-            let sdlMapping = savedSDLMappings[vendorName]?["default"]
-                ?? SDLControllerMapping.defaults(for: "default")
+            let sdlIdentity = self.identityKey(forSDL: instanceID)
+            let sdlMapping: SDLControllerMapping
+            if let identity = sdlIdentity, let saved = savedIdentitySDLMappings[identity.compositeKey]?["default"] {
+                sdlMapping = saved
+            } else if let saved = savedSDLMappings[vendorName]?["default"] {
+                sdlMapping = saved
+            } else {
+                sdlMapping = SDLControllerMapping.defaults(for: "default")
+            }
 
             let sdlControllerName = SDLInputManager.shared.sdlControllerName(for: instanceID) ?? vendorName
 
@@ -211,7 +234,8 @@ class ControllerService: ObservableObject {
                 sortOrder: players.count,
                 sdlInstanceID: instanceID,
                 sdlMapping: sdlMapping,
-                sdlName: sdlControllerName
+                sdlName: sdlControllerName,
+                identityKey: sdlIdentity
             )
             players.append(player)
         }
@@ -428,12 +452,13 @@ class ControllerService: ObservableObject {
 
     func updateMapping(for vendorName: String, systemID: String, mapping: ControllerGamepadMapping) {
         var cleanedButtons = mapping.buttons
-        var seenNames = Set<String>()
+        var seenKeys = Set<String>()
         for (btn, btnMapping) in mapping.buttons {
-            if seenNames.contains(btnMapping.gcElementName) {
+            let dedupKey = btnMapping.identifier?.rawValue ?? btnMapping.gcElementName ?? UUID().uuidString
+            if seenKeys.contains(dedupKey) {
                 cleanedButtons.removeValue(forKey: btn)
             } else {
-                seenNames.insert(btnMapping.gcElementName)
+                seenKeys.insert(dedupKey)
             }
         }
         var cleaned = mapping
@@ -448,6 +473,160 @@ class ControllerService: ObservableObject {
     func deadzone(for vendorName: String, systemID: String) -> (left: Float, right: Float) {
         let m = mapping(for: vendorName, systemID: systemID)
         return (left: m.leftStickDeadzone, right: m.rightStickDeadzone)
+    }
+
+    // MARK: - Identity-based mappings
+
+    func identityKey(for gc: GCController) -> ControllerIdentityKey {
+        let vendor = gc.vendorName ?? "Unknown Apple Controller"
+        return ControllerIdentityKey(
+            inputSystem: .apple,
+            productKey: vendor,
+            vendorName: gc.vendorName
+        )
+    }
+
+    func identityKey(forSDL instanceID: Int32) -> ControllerIdentityKey? {
+        let vendor = SDLInputManager.shared.sdlVendorName(for: instanceID)
+        if let guid = SDLInputManager.shared.sdlControllerGUID(for: instanceID), !guid.isEmpty {
+            return ControllerIdentityKey(inputSystem: .sdl, productKey: guid, vendorName: vendor)
+        }
+        if let vp = SDLInputManager.shared.sdlVendorProductID(for: instanceID) {
+            let product = "v:\(String(format: "%04X", vp.vendor))|p:\(String(format: "%04X", vp.product))"
+            return ControllerIdentityKey(inputSystem: .sdl, productKey: product, vendorName: vendor)
+        }
+        return ControllerIdentityKey(inputSystem: .sdl, productKey: vendor, vendorName: vendor)
+    }
+
+    func mapping(forIdentity identity: ControllerIdentityKey, systemID: String, gameID: String? = nil) -> ControllerGamepadMapping {
+        if let gid = gameID, let profile = GameMappingStorage.shared.load(for: gid),
+           let overrides = profile.gamepadOverrides {
+            var base = mapping(forIdentity: identity, systemID: systemID)
+            for (btn, btnMapping) in overrides {
+                base.buttons[btn] = btnMapping
+            }
+            return base
+        }
+
+        let key = identity.compositeKey
+        if let saved = savedIdentityMappings[key]?[systemID] { return saved }
+        if let saved = savedIdentityMappings[key]?["default"] {
+            return resolveForSystem(saved, vendorName: identity.vendorName ?? "Unknown", systemID: systemID)
+        }
+
+        if let vendor = identity.vendorName, let legacy = savedMappings[vendor]?[systemID] {
+            return legacy
+        }
+        if let vendor = identity.vendorName, let legacy = savedMappings[vendor]?["default"] {
+            return resolveForSystem(legacy, vendorName: vendor, systemID: systemID)
+        }
+
+        return resolveDefault(vendorName: identity.vendorName ?? "Unknown", systemID: systemID)
+    }
+
+    func updateMapping(forIdentity identity: ControllerIdentityKey, systemID: String, mapping: ControllerGamepadMapping) {
+        var cleanedButtons = mapping.buttons
+        var seenKeys = Set<String>()
+        for (btn, btnMapping) in mapping.buttons {
+            let dedupKey = btnMapping.identifier?.rawValue ?? btnMapping.gcElementName ?? UUID().uuidString
+            if seenKeys.contains(dedupKey) {
+                cleanedButtons.removeValue(forKey: btn)
+            } else {
+                seenKeys.insert(dedupKey)
+            }
+        }
+        var cleaned = mapping
+        cleaned.buttons = cleanedButtons
+        let key = identity.compositeKey
+        if savedIdentityMappings[key] == nil { savedIdentityMappings[key] = [:] }
+        savedIdentityMappings[key]?[systemID] = cleaned
+        refreshConnectedControllers()
+        saveIdentityMappings()
+    }
+
+    func sdlMapping(forIdentity identity: ControllerIdentityKey, systemID: String, gameID: String? = nil) -> SDLControllerMapping {
+        let key = identity.compositeKey
+        if let saved = savedIdentitySDLMappings[key]?[systemID] { return saved }
+        if let saved = savedIdentitySDLMappings[key]?["default"] { return saved }
+        if let vendor = identity.vendorName, let legacy = savedSDLMappings[vendor]?[systemID] { return legacy }
+        if let vendor = identity.vendorName, let legacy = savedSDLMappings[vendor]?["default"] { return legacy }
+        return SDLControllerMapping.defaults(for: systemID)
+    }
+
+    func updateSDLMapping(forIdentity identity: ControllerIdentityKey, systemID: String, mapping: SDLControllerMapping) {
+        let key = identity.compositeKey
+        if savedIdentitySDLMappings[key] == nil { savedIdentitySDLMappings[key] = [:] }
+        savedIdentitySDLMappings[key]?[systemID] = mapping
+        refreshConnectedControllers()
+        saveIdentitySDLMappings()
+    }
+
+    func removeMapping(forIdentity identity: ControllerIdentityKey, systemID: String) {
+        let key = identity.compositeKey
+        savedIdentityMappings[key]?.removeValue(forKey: systemID)
+        if savedIdentityMappings[key]?.isEmpty == true {
+            savedIdentityMappings.removeValue(forKey: key)
+        }
+        refreshConnectedControllers()
+        saveIdentityMappings()
+    }
+
+    func removeSDLMapping(forIdentity identity: ControllerIdentityKey, systemID: String) {
+        let key = identity.compositeKey
+        savedIdentitySDLMappings[key]?.removeValue(forKey: systemID)
+        if savedIdentitySDLMappings[key]?.isEmpty == true {
+            savedIdentitySDLMappings.removeValue(forKey: key)
+        }
+        refreshConnectedControllers()
+        saveIdentitySDLMappings()
+    }
+
+    private func resolveForSystem(_ globalMapping: ControllerGamepadMapping, vendorName: String, systemID: String) -> ControllerGamepadMapping {
+        guard systemID != "default" else { return globalMapping }
+        let availableButtons = RetroButton.availableButtons(for: systemID)
+        let oldDefaults = ControllerGamepadMapping.defaults(for: vendorName, systemID: systemID, handedness: handedness)
+
+        var retroIDToIdentity: [Int32: RetroButton] = [:]
+        for btn in RetroButton.allCases {
+            if let rid = CoreButtonOverride.identityID(for: btn) {
+                retroIDToIdentity[rid] = btn
+            }
+        }
+
+        var result = ControllerGamepadMapping(vendorName: vendorName, buttons: [:])
+        for btn in availableButtons {
+            let rid = btn.retroID(for: systemID)
+            if rid >= 0, let identityBtn = retroIDToIdentity[rid],
+               let gcMapping = globalMapping.buttons[identityBtn] {
+                result.buttons[btn] = gcMapping
+            } else if let gcMapping = globalMapping.buttons[btn] {
+                result.buttons[btn] = gcMapping
+            } else if let gcMapping = oldDefaults.buttons[btn] {
+                result.buttons[btn] = gcMapping
+            }
+        }
+        return result
+    }
+
+    private func resolveDefault(vendorName: String, systemID: String) -> ControllerGamepadMapping {
+        guard systemID != "default" else {
+            return ControllerGamepadMapping.defaults(for: vendorName, systemID: "default", handedness: handedness)
+        }
+        let globalDefault = savedMappings[vendorName]?["default"]
+            ?? ControllerGamepadMapping.defaults(for: vendorName, systemID: "default", handedness: handedness)
+        return resolveForSystem(globalDefault, vendorName: vendorName, systemID: systemID)
+    }
+
+    private func saveIdentityMappings() {
+        if let data = try? JSONEncoder().encode(savedIdentityMappings) {
+            AppSettings.setData(identityMappingKey, value: data)
+        }
+    }
+
+    private func saveIdentitySDLMappings() {
+        if let data = try? JSONEncoder().encode(savedIdentitySDLMappings) {
+            AppSettings.setData(identitySDLMappingKey, value: data)
+        }
     }
 
     func mapping(for vendorName: String, systemID: String, gameID: String? = nil) -> ControllerGamepadMapping {
@@ -542,6 +721,16 @@ class ControllerService: ObservableObject {
         if let data = AppSettings.getData(sdlMappingKey),
            let saved = try? JSONDecoder().decode([String: [String: SDLControllerMapping]].self, from: data) {
             savedSDLMappings = saved
+        }
+
+        if let data = AppSettings.getData(identityMappingKey),
+           let saved = try? JSONDecoder().decode([String: [String: ControllerGamepadMapping]].self, from: data) {
+            savedIdentityMappings = saved
+        }
+
+        if let data = AppSettings.getData(identitySDLMappingKey),
+           let saved = try? JSONDecoder().decode([String: [String: SDLControllerMapping]].self, from: data) {
+            savedIdentitySDLMappings = saved
         }
 
         if let data = AppSettings.getData(kbMappingKey),

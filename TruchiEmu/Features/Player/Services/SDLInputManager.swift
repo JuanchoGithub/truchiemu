@@ -515,6 +515,47 @@ class SDLInputManager: ObservableObject {
         sdlControllerName(for: instanceID) ?? "SDL Controller"
     }
 
+    func sdlControllerGUID(for instanceID: Int32) -> String? {
+        sdlDataLock.lock()
+        defer { sdlDataLock.unlock() }
+
+        let joystick: OpaquePointer?
+        if let controller = gameControllers[instanceID] {
+            joystick = SDL_GameControllerGetJoystick(controller)
+        } else {
+            joystick = joysticks[instanceID]
+        }
+        guard let joy = joystick else { return nil }
+
+        var guid: SDL_JoystickGUID = SDL_JoystickGetGUID(joy)
+        return Self.formatGUID(&guid)
+    }
+
+    func sdlVendorProductID(for instanceID: Int32) -> (vendor: UInt16, product: UInt16)? {
+        sdlDataLock.lock()
+        defer { sdlDataLock.unlock() }
+
+        let joystick: OpaquePointer?
+        if let controller = gameControllers[instanceID] {
+            joystick = SDL_GameControllerGetJoystick(controller)
+        } else {
+            joystick = joysticks[instanceID]
+        }
+        guard let joy = joystick else { return nil }
+
+        let vendor = SDL_JoystickGetVendor(joy)
+        let product = SDL_JoystickGetProduct(joy)
+        if vendor == 0 && product == 0 { return nil }
+        return (UInt16(vendor), UInt16(product))
+    }
+
+    private static func formatGUID(_ guid: inout SDL_JoystickGUID) -> String {
+        return withUnsafeBytes(of: &guid) { rawBuf -> String in
+            let bytes = Array(rawBuf)
+            return bytes.map { String(format: "%02X", $0) }.joined()
+        }
+    }
+
     // MARK: - Capture Callback (lock-based, not dispatched to sdlQueue)
 
     func startCapture(instanceID: Int32, callback: @escaping (Int, String) -> Void) {

@@ -607,7 +607,12 @@ struct ControllerSettingsView: View {
     private func loadConfig(name: String) {
         guard let mapping = savedConfigs[name],
               let player = selectedPlayerController, !player.isKeyboard, !player.isSDL else { return }
-        controllerService.updateMapping(for: player.gcController?.vendorName ?? "Unknown", systemID: selectedSystemID, mapping: mapping)
+        let vendorName = player.gcController?.vendorName ?? "Unknown"
+        if let identity = player.identityKey {
+            controllerService.updateMapping(forIdentity: identity, systemID: selectedSystemID, mapping: mapping)
+        } else {
+            controllerService.updateMapping(for: vendorName, systemID: selectedSystemID, mapping: mapping)
+        }
         configName = name
     }
 
@@ -716,12 +721,22 @@ struct DeadzoneSlidersSection: View {
     }
 
     private func updateDeadzone(left: Float?, right: Float?) {
-        guard let player = controllerService.connectedControllers.first(where: { $0.id == selectedControllerId }),
-              let vendorName = player.gcController?.vendorName else { return }
-        var mapping = controllerService.mapping(for: vendorName, systemID: systemID)
+        guard let player = controllerService.connectedControllers.first(where: { $0.id == selectedControllerId }) else { return }
+        var mapping: ControllerGamepadMapping
+        if let identity = player.identityKey {
+            mapping = controllerService.mapping(forIdentity: identity, systemID: systemID)
+        } else {
+            let vendorName = player.gcController?.vendorName ?? "Unknown"
+            mapping = controllerService.mapping(for: vendorName, systemID: systemID)
+        }
         if let left { mapping.leftStickDeadzone = left }
         if let right { mapping.rightStickDeadzone = right }
-        controllerService.updateMapping(for: vendorName, systemID: systemID, mapping: mapping)
+        if let identity = player.identityKey {
+            controllerService.updateMapping(forIdentity: identity, systemID: systemID, mapping: mapping)
+        } else {
+            let vendorName = player.gcController?.vendorName ?? "Unknown"
+            controllerService.updateMapping(for: vendorName, systemID: systemID, mapping: mapping)
+        }
     }
 }
 
@@ -853,7 +868,13 @@ struct ButtonMappingList: View {
         self.systemID = systemID
         self.player = player
         self.controllerService = controllerService
-        _currentMapping = State(initialValue: controllerService.mapping(for: player.gcController?.vendorName ?? "Unknown", systemID: systemID))
+        let initialMapping: ControllerGamepadMapping
+        if let identity = player.identityKey {
+            initialMapping = controllerService.mapping(forIdentity: identity, systemID: systemID)
+        } else {
+            initialMapping = controllerService.mapping(for: player.gcController?.vendorName ?? "Unknown", systemID: systemID)
+        }
+        _currentMapping = State(initialValue: initialMapping)
         _currentSDKMapping = State(initialValue: player.sdlMapping ?? SDLControllerMapping.defaults(for: "default"))
     }
 
@@ -867,23 +888,43 @@ struct ButtonMappingList: View {
                 Button(loc.localized("controllers.backToDefault")) {
                     if player.isSDL {
                         let vendorName = SDLInputManager.shared.sdlVendorName(for: player.sdlInstanceID ?? 0)
+                        let sdlIdentity = player.identityKey
                         if systemID == "default" {
                             let defaults = SDLControllerMapping.defaults(for: "default")
                             currentSDKMapping = defaults
-                            controllerService.updateSDLMapping(for: vendorName, systemID: "default", mapping: defaults)
+                            if let identity = sdlIdentity {
+                                controllerService.updateSDLMapping(forIdentity: identity, systemID: "default", mapping: defaults)
+                            } else {
+                                controllerService.updateSDLMapping(for: vendorName, systemID: "default", mapping: defaults)
+                            }
                         } else {
-                            controllerService.removeSDLMapping(for: vendorName, systemID: systemID)
-                            currentSDKMapping = controllerService.sdlMapping(for: vendorName, systemID: systemID)
+                            if let identity = sdlIdentity {
+                                controllerService.removeSDLMapping(forIdentity: identity, systemID: systemID)
+                                currentSDKMapping = controllerService.sdlMapping(forIdentity: identity, systemID: systemID)
+                            } else {
+                                controllerService.removeSDLMapping(for: vendorName, systemID: systemID)
+                                currentSDKMapping = controllerService.sdlMapping(for: vendorName, systemID: systemID)
+                            }
                         }
                     } else {
                         let vendorName = player.gcController?.vendorName ?? "Unknown"
+                        let identity = player.identityKey
                         if systemID == "default" {
                             let defaults = ControllerGamepadMapping.defaults(for: vendorName, systemID: "default", handedness: controllerService.handedness)
                             currentMapping = defaults
-                            controllerService.updateMapping(for: vendorName, systemID: "default", mapping: defaults)
+                            if let identity = identity {
+                                controllerService.updateMapping(forIdentity: identity, systemID: "default", mapping: defaults)
+                            } else {
+                                controllerService.updateMapping(for: vendorName, systemID: "default", mapping: defaults)
+                            }
                         } else {
-                            controllerService.removeMapping(for: vendorName, systemID: systemID)
-                            currentMapping = controllerService.mapping(for: vendorName, systemID: systemID)
+                            if let identity = identity {
+                                controllerService.removeMapping(forIdentity: identity, systemID: systemID)
+                                currentMapping = controllerService.mapping(forIdentity: identity, systemID: systemID)
+                            } else {
+                                controllerService.removeMapping(for: vendorName, systemID: systemID)
+                                currentMapping = controllerService.mapping(for: vendorName, systemID: systemID)
+                            }
                         }
                     }
                 }
@@ -974,7 +1015,11 @@ struct ButtonMappingList: View {
     private func saveSDKMapping() {
         guard let mapping = currentSDKMapping else { return }
         let vendorName = SDLInputManager.shared.sdlVendorName(for: player.sdlInstanceID ?? 0)
-        controllerService.updateSDLMapping(for: vendorName, systemID: systemID, mapping: mapping)
+        if let identity = player.identityKey {
+            controllerService.updateSDLMapping(forIdentity: identity, systemID: systemID, mapping: mapping)
+        } else {
+            controllerService.updateSDLMapping(for: vendorName, systemID: systemID, mapping: mapping)
+        }
         if let idx = controllerService.connectedControllers.firstIndex(where: { $0.id == player.id }) {
             controllerService.connectedControllers[idx].sdlMapping = mapping
         }
@@ -1015,9 +1060,11 @@ struct ButtonMappingList: View {
     private func capture(_ element: GCControllerElement) {
         let name = element.localizedName ?? "Button"
         capturedName = name
+        let extendedGamepad = player.gcController?.extendedGamepad
+        let (identifier, canonicalLabel) = GCButtonIdentifier.identify(element: element, extendedGamepad: extendedGamepad)
         DispatchQueue.main.async {
             guard let btn = listeningFor else { return }
-            currentMapping.buttons[btn] = GCButtonMapping(gcElementName: name, gcElementAlias: name)
+            currentMapping.buttons[btn] = GCButtonMapping(identifier: identifier, gcElementName: name, gcElementAlias: canonicalLabel.isEmpty ? name : canonicalLabel)
         }
     }
 
@@ -1040,7 +1087,11 @@ struct ButtonMappingList: View {
     }
 
     private func saveMapping() {
-        controllerService.updateMapping(for: currentMapping.vendorName, systemID: systemID, mapping: currentMapping)
+        if let identity = player.identityKey {
+            controllerService.updateMapping(forIdentity: identity, systemID: systemID, mapping: currentMapping)
+        } else {
+            controllerService.updateMapping(for: currentMapping.vendorName, systemID: systemID, mapping: currentMapping)
+        }
     }
 }
 

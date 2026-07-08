@@ -98,10 +98,15 @@ enum ButtonKeyResolver {
         guard let player = cs.connectedControllers.first(where: { !$0.isKeyboard && $0.gcController != nil }) else {
             return nil
         }
-        let mapping = cs.mapping(for: player.mapping.vendorName, systemID: systemID)
+        let mapping: ControllerGamepadMapping
+        if let identity = player.identityKey {
+            mapping = cs.mapping(forIdentity: identity, systemID: systemID)
+        } else {
+            mapping = cs.mapping(for: player.mapping.vendorName, systemID: systemID)
+        }
         guard let btnMapping = mapping.buttons[retroBtn] else { return nil }
         if let alias = btnMapping.gcElementAlias, !alias.isEmpty { return alias }
-        return simplifyGamepadName(btnMapping.gcElementName)
+        return simplifyGamepadName(btnMapping.gcElementName ?? "")
     }
 
     private static func simplifyGamepadName(_ name: String) -> String {
