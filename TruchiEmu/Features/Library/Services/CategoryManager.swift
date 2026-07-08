@@ -35,10 +35,8 @@ class CategoryManager: ObservableObject {
     }
     
     func updateCategory(_ category: GameCategory) {
-        if let index = categories.firstIndex(where: { $0.id == category.id }) {
-            categories[index] = category
-            saveCategories()
-        }
+        categories = categories.map { $0.id == category.id ? category : $0 }
+        saveCategories()
     }
     
     func deleteCategory(id: String) {

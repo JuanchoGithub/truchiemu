@@ -21,6 +21,7 @@ var sortByLastPlayed: Bool = false
     var selectedGenres: Set<String> = []
 
     private var cancellables = Set<AnyCancellable>()
+    private var refreshTask: Task<Void, Never>?
     
     init(
         library: ROMLibrary,
@@ -74,40 +75,35 @@ func updateFilters(filter: LibraryFilter, searchText: String, activeFilters: Set
     }
     
     private func refreshData() {
-        Task {
-            // Wait until not processing
-            while isProcessing {
-                try? await Task.sleep(nanoseconds: 50_000_000) // 0.05s
-            }
-            
-            // Re-check because another task might have started while we were sleeping
-            guard !isProcessing else { return }
-            
-            isProcessing = true
-            
-// Capture current state
-        let filter = currentFilter
-        let searchText = currentSearchText
-        let activeFilters = activeFilters
-        let sortByLastPlayed = sortByLastPlayed
-        let sortByLastAdded = sortByLastAdded
-        let selectedGenres = selectedGenres
-        let allRoms = library.roms
-        let categories = categoryManager.categories
+        refreshTask?.cancel()
+        refreshTask = Task { @MainActor [weak self] in
+            guard let self = self else { return }
 
-        let filtered = computeFilteredAndSorted(
-            roms: allRoms,
-            categories: categories,
-            filter: filter,
-            searchText: searchText,
-            activeFilters: activeFilters,
-            sortByLastPlayed: sortByLastPlayed,
-            sortByLastAdded: sortByLastAdded,
-            selectedGenres: selectedGenres
-        )
-            
+            let filter = self.currentFilter
+            let searchText = self.currentSearchText
+            let activeFilters = self.activeFilters
+            let sortByLastPlayed = self.sortByLastPlayed
+            let sortByLastAdded = self.sortByLastAdded
+            let selectedGenres = self.selectedGenres
+            let allRoms = self.library.roms
+            let categories = self.categoryManager.categories
+
+            try? await Task.sleep(nanoseconds: 50_000_000)
+            if Task.isCancelled { return }
+
+            let filtered = self.computeFilteredAndSorted(
+                roms: allRoms,
+                categories: categories,
+                filter: filter,
+                searchText: searchText,
+                activeFilters: activeFilters,
+                sortByLastPlayed: sortByLastPlayed,
+                sortByLastAdded: sortByLastAdded,
+                selectedGenres: selectedGenres
+            )
+
+            if Task.isCancelled { return }
             self.displayedROMs = filtered
-            self.isProcessing = false
         }
     }
     

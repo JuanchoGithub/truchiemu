@@ -7,16 +7,18 @@ struct GameCategoryIconView: View {
     var size: CGFloat = 22
 
     var body: some View {
-        if let customPath = category.customIconPath,
-           let img = NSImage(contentsOf: URL(fileURLWithPath: customPath)) {
-            Image(nsImage: img)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: size, height: size)
-        } else {
-            Image(systemName: category.iconName.isEmpty ? "tag" : category.iconName)
-                .font(.system(size: size * 0.65))
+        Group {
+            if let customPath = category.customIconPath,
+               let img = NSImage(contentsOf: URL(fileURLWithPath: customPath)) {
+                Image(nsImage: img)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+            } else {
+                Image(systemName: category.iconName.isEmpty ? "tag" : category.iconName)
+                    .font(.system(size: size * 0.55))
+            }
         }
+        .frame(width: size, height: size)
     }
 }
 

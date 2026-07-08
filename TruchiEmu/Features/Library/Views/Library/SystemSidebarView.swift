@@ -14,6 +14,7 @@ struct SystemSidebarView: View {
     @Binding var showCreateCategorySheet: Bool
     @Binding var editingCategory: GameCategory?
     @State private var hiddenCategoryRefreshToggle = false
+    @State private var categoriesRefreshToggle = false
     var onRefresh: ((SystemInfo) -> Void)? = nil
     var onSettings: ((String) -> Void)? = nil
     var onSystemAction: ((SystemInfo, SystemAction, String?) -> Void)? = nil
@@ -78,11 +79,14 @@ struct SystemSidebarView: View {
                     showAction: categoriesHeaderHovered
                 )
 
-                if categoriesSectionExpanded {
-                    ForEach(categoryManager.categories) { category in
-                        categoryRow(category: category)
+                Group {
+                    if categoriesSectionExpanded {
+                        ForEach(categoryManager.categories) { category in
+                            categoryRow(category: category)
+                        }
                     }
                 }
+                .id("categories-\(categoriesRefreshToggle)")
 
                 if !combinedSystemsWithROMs.isEmpty {
                     sectionHeader(
@@ -151,6 +155,9 @@ struct SystemSidebarView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: .hiddenGamesCategoryChanged)) { _ in
             hiddenCategoryRefreshToggle.toggle()
+        }
+        .onReceive(categoryManager.objectWillChange) { _ in
+            categoriesRefreshToggle.toggle()
         }
     }
 
@@ -501,9 +508,11 @@ struct EditCategorySheet: View {
                     }
                     ToolbarItem(placement: .confirmationAction) {
                         Button(loc.localized("app.save")) {
-                            category.iconName = selectedIconName ?? category.iconName
-                            category.customIconPath = customIconPath
-                            categoryManager.updateCategory(category)
+                            var updated = category
+                            updated.iconName = selectedIconName ?? category.iconName
+                            updated.customIconPath = customIconPath
+                            updated.colorHex = selectedColor
+                            categoryManager.updateCategory(updated)
                             dismiss()
                         }
                     }

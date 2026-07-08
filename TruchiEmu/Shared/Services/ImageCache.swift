@@ -214,10 +214,16 @@ actor ImageCache {
     // MARK: - Internal Loading Logic
 
     // Fast path: load a pre-generated JPEG from disk (no downscaling needed).
+    // Uses CGImageSource with ShouldCacheImmediately so the JPEG decode happens
+    // off the main thread, avoiding main-thread stalls when SwiftUI renders the image.
     private func loadFromFile(at url: URL) async -> NSImage? {
         await Task.detached(priority: .userInitiated) {
-            guard let data = try? Data(contentsOf: url) else { return nil }
-            return NSImage(data: data)
+            guard let source = CGImageSourceCreateWithURL(url as CFURL, nil) else { return nil }
+            let options: [CFString: Any] = [
+                kCGImageSourceShouldCacheImmediately: true
+            ]
+            guard let cgImage = CGImageSourceCreateImageAtIndex(source, 0, options as CFDictionary) else { return nil }
+            return NSImage(cgImage: cgImage, size: .zero)
         }.value
     }
 
@@ -288,12 +294,15 @@ actor ImageCache {
     }
 
     init() {
-        // Thumbnail cache: 100MB, 500 items (small images for grid views)
-        thumbnailCache.totalCostLimit = 100 * 1024 * 1024
-        thumbnailCache.countLimit = 500
+        // Thumbnail cache: count-based eviction only; cost limit disabled (0 = no limit).
+        // Decoded thumbnails are ~120KB–2.5MB depending on size. 2000 items allows
+        // holding roughly every visible card plus a generous scroll buffer.
+        // Under memory pressure NSCache evicts automatically regardless of limits.
+        thumbnailCache.countLimit = 2000
+        thumbnailCache.totalCostLimit = 0
 
-        // Full image cache: 400MB, 300 items (larger images for detail/zoom)
-        imageCache.totalCostLimit = 400 * 1024 * 1024
-        imageCache.countLimit = 300
+        // Full image cache: 500 items for detail/zoom images
+        imageCache.countLimit = 500
+        imageCache.totalCostLimit = 0
     }
 }

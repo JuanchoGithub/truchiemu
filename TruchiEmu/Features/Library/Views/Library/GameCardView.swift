@@ -8,8 +8,10 @@ struct GameCardView: View {
     let isMultiSelected: Bool
     let zoomLevel: Double
     let filter: LibraryFilter?
-    let onTap: () -> Void
+    let onTap: (() -> Void)?
+    let onDoubleClick: (() -> Void)?
     var contextMenu: (() -> AnyView)?
+    var selectedIDsProvider: (() -> Set<UUID>)?
 
     @State private var isHovered = false
     @State private var isPressed = false
@@ -65,7 +67,7 @@ struct GameCardView: View {
     }
 
     private var cardStrokeWidth: CGFloat {
-        isHiddenItem ? 1 : (isSelected || isHovered ? 1.5 : 0)
+        1.5
     }
 
     private var titleColor: Color {
@@ -73,22 +75,31 @@ struct GameCardView: View {
     }
 
     var body: some View {
-        Button(action: onTap) {
-            cardContent
-                .scaleEffect(isPressed ? 0.97 : 1.0)
-                .animation(AppMotion.feedback, value: isPressed)
-        }
-    .buttonStyle(.plain)
+        cardContent
+        .scaleEffect(isPressed ? 0.97 : 1.0)
+        .animation(AppMotion.feedback, value: isPressed)
     .onHover { isHovered = $0 }
-    .simultaneousGesture(
-            DragGesture(minimumDistance: 0)
-                .onChanged { _ in isPressed = true }
-                .onEnded { _ in isPressed = false }
+    .onDrag {
+            let draggedIDs: [UUID]
+            if isSelected, let provider = selectedIDsProvider {
+                draggedIDs = Array(provider())
+            } else {
+                draggedIDs = [rom.id]
+            }
+            GameDragState.shared.startDrag(gameIDs: draggedIDs)
+            let uuidString = draggedIDs.map(\.uuidString).joined(separator: ",")
+            return NSItemProvider(object: uuidString as NSString)
+        }
+        .onTapGesture {
+            onTap?()
+        }
+        .simultaneousGesture(
+            TapGesture(count: 2)
+                .onEnded { onDoubleClick?() }
         )
         .contextMenu {
             contextMenu?()
         }
-        .animation(AppMotion.micro, value: isHovered)
         .accessibilityLabel(rom.displayName)
         .accessibilityAddTraits(.isButton)
         .task(id: "\(rom.id)-\(boxArtService.boxArtUpdated)-\(zoomLevel)") {
@@ -100,23 +111,25 @@ struct GameCardView: View {
             }
 
             let thumbSize = BoxArtThumbnailSize.forGridZoom(zoomLevel)
+
+            if thumbSize != .tiny {
+                if let tiny = await ImageCache.shared.thumbnail(for: artPath, preferredSize: .tiny) {
+                    self.image = tiny
+                }
+            }
+
             if let img = await ImageCache.shared.thumbnail(for: artPath, preferredSize: thumbSize) {
                 self.image = img
-                await MainActor.run {
-                    if !rom.hasBoxArt {
-                        var updated = rom
-                        updated.hasBoxArt = true
-                        library.updateROM(updated, persist: false, silent: true)
-                    }
+                if !rom.hasBoxArt {
+                    var updated = rom
+                    updated.hasBoxArt = true
+                    library.updateROM(updated, persist: false, silent: true)
                 }
-            } else {
-                await MainActor.run {
-                    if rom.hasBoxArt {
-                        var updated = rom
-                        updated.hasBoxArt = false
-                        library.updateROM(updated, persist: false, silent: true)
-                    }
-                    self.image = nil
+            } else if self.image == nil {
+                if rom.hasBoxArt {
+                    var updated = rom
+                    updated.hasBoxArt = false
+                    library.updateROM(updated, persist: false, silent: true)
                 }
             }
         }
@@ -124,13 +137,13 @@ struct GameCardView: View {
 
     @ViewBuilder
     private var cardContent: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 6) {
             ZStack(alignment: .topTrailing) {
                 artworkView
                 .clipped()
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.black.opacity(isHovered ? 0.08 : 0))
+                        .fill(Color.black.opacity(isHovered ? 0.08 : 0))
                 )
                 .grayscale(artworkGrayscale)
                 .opacity(artworkOpacity)
@@ -156,44 +169,40 @@ struct GameCardView: View {
                         .transition(.scale.combined(with: .opacity))
                 }
 
+            }
+            .overlay(alignment: .bottomTrailing) {
                 if isHovered, let menuContent = contextMenu {
-                    VStack {
-                        Spacer()
-                        HStack {
-                            Spacer()
-                            Menu { menuContent() } label: {
-                                Image(systemName: "ellipsis")
-                                    .font(.system(size: 11, weight: .bold))
-                                    .foregroundColor(.white)
-                                    .padding(.horizontal, 6)
-                                    .padding(.vertical, 4)
-                                    .background(Color.black.opacity(0.5))
-                                    .clipShape(RoundedRectangle(cornerRadius: AppRadius.xs))
-                            }
-                            .menuIndicator(.hidden)
-                            .padding(6)
-                        }
+                    Menu { menuContent() } label: {
+                        Image(systemName: "ellipsis")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 4)
+                            .background(Color.black.opacity(0.5))
+                            .clipShape(RoundedRectangle(cornerRadius: AppRadius.xs))
                     }
+                    .menuIndicator(.hidden)
+                    .padding(6)
                     .transition(.opacity)
                 }
             }
+            .overlay(alignment: .bottom) {
+                if !categoryBadges.isEmpty {
+                    CategoryBadgesRow(badges: categoryBadges)
+                        .padding(.horizontal, 4)
+                        .padding(.vertical, 4)
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
 
             VStack(alignment: .leading, spacing: 4) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(rom.displayName)
-                        .font(.system(size: titleFontSize, weight: .semibold, design: .rounded))
-                        .lineLimit(2)
-                        .multilineTextAlignment(.leading)
-                        .foregroundColor(titleColor)
-                    
-                    if let systemID = rom.systemID, systemID != "unknown", let _ = SystemDatabase.system(forID: systemID), !(filter?.isSystemView ?? false) {
-                        Text(systemID.uppercased())
-                            .font(.system(size: titleFontSize * 0.7, weight: .regular, design: .rounded))
-                            .foregroundColor(AppColors.textMuted(colorScheme))
-                            .lineLimit(1)
-                    }
-                }
-                .frame(minHeight: titleLineHeight * 3, alignment: .top)
+                Text(rom.displayName)
+                    .font(.system(size: titleFontSize, weight: .semibold, design: .rounded))
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+                    .foregroundColor(titleColor)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .frame(minHeight: titleFontSize * 3, alignment: .top)
 
                 if isHiddenItem, let mameType = rom.mameRomType {
                     HStack(spacing: 4) {
@@ -206,12 +215,13 @@ struct GameCardView: View {
                     }
                 }
             }
-
-            if !categoryBadges.isEmpty {
-                CategoryBadgesRow(badges: categoryBadges)
-            }
+            .padding(.horizontal, 4)
+            .padding(.bottom, 4)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(8)
+        .padding(.horizontal, 8)
+        .padding(.top, 8)
+        .padding(.bottom, 4)
         .background(
             RoundedRectangle(cornerRadius: 12)
                 .fill(cardBackground)
@@ -241,15 +251,15 @@ struct GameCardView: View {
         )
         .shadow(
             color: isSelected ? AppColors.brandAccentSecondary.opacity(0.25) : (isHovered ? AppColors.brandAccentSecondary.opacity(0.2) : .clear),
-            radius: isSelected ? 8 : (isHovered ? 14 : 0),
-            y: isSelected ? 0 : (isHovered ? 8 : 0)
+            radius: 6
         )
         .offset(y: isPressed ? -4 : 0)
     }
 
     private var artworkView: some View {
         GeometryReader { geometry in
-            ZStack {
+            ZStack(alignment: .topLeading) {
+                Color.clear
                 if let nsImage = image {
                     Image(nsImage: nsImage)
                         .resizable()
@@ -261,8 +271,9 @@ struct GameCardView: View {
                          .scaleEffect(isPressed ? 1.02 : 1)
                 }
             }
+            .frame(width: geometry.size.width, height: geometry.size.height)
         }
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, alignment: .center)
         .aspectRatio(boxType.aspectRatio, contentMode: .fit)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .shadow(color: Color.black.opacity(isPressed ? 0.35 : 0.25), radius: isPressed ? 8 : 4, x: 0, y: isPressed ? 4 : 2)

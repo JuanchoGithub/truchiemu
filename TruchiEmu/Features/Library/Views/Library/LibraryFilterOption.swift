@@ -54,4 +54,7 @@ enum GameFilterOption: String, CaseIterable, Identifiable {
     var activeColor: Color {
         return AppColors.brandAccent
     }
+
+    static let primaryFilters: [GameFilterOption] = [.multiplayer]
+    static let otherFilters: [GameFilterOption] = [.noBoxArt, .neverPlayed, .unscanned]
 }

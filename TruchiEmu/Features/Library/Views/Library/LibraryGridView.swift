@@ -183,6 +183,8 @@ struct LibraryGridView: View {
     
     // Drag and drop
     @State private var draggedROMs: [ROM] = []
+    // Scroll target for gamepad navigation
+    @State private var gridScrollTarget: Int?
     
     // Filter chips
     @State private var activeFilters: Set<String> = []
@@ -190,6 +192,7 @@ struct LibraryGridView: View {
     @State private var sortByLastAdded: Bool = false
     @State private var selectedGenres: Set<String> = []
     @State private var showGenrePicker: Bool = false
+    @State private var showOtherFilters: Bool = false
     @State private var r3CycleIndex: Int = 0
     @ObservedObject private var notificationHistory = NotificationHistoryManager.shared
     @State private var showNotificationPopover: Bool = false
@@ -203,7 +206,6 @@ struct LibraryGridView: View {
     @State private var marqueeOffset: CGFloat = 0
     private enum ViewMode: String { case grid, list }
 
-    @State private var columns: [GridItem] = []
     @State private var lastSelectedFilterID: String? = nil
     @State private var isScrolling = false
     @State private var scrollMonitor: Any?
@@ -246,19 +248,6 @@ struct LibraryGridView: View {
                         emptyState
                     } else if viewMode == .grid {
                         gridView
-                            .background(
-                                GeometryReader { geometry in
-                                    Color.clear
-                                        .onAppear {
-                                            gridWidth = geometry.size.width
-                                            updateColumns()
-                                        }
-                                        .onChange(of: geometry.size.width) { _, newWidth in
-                                            gridWidth = newWidth
-                                            updateColumns()
-                                        }
-                                }
-                            )
                     } else {
                         listView
                     }
@@ -277,6 +266,21 @@ struct LibraryGridView: View {
     onShowContextMenu: { [self] in handleGamepadContextMenu() },
     onShowNotifications: { [self] in showNotificationPopover = true }
 ))
+.highPriorityGesture(
+    MagnificationGesture()
+        .onChanged { value in
+            let scale = value / lastMagnification
+            let zoomDelta = (scale - 1.0) * 0.8
+            continuousZoom = max(0, min(1, continuousZoom + zoomDelta))
+            lastMagnification = value
+        }
+        .onEnded { _ in
+            let snapped = round(continuousZoom * 7.0) / 7.0
+            continuousZoom = snapped
+            columnCount = max(1, min(8, Int(round((1.0 - snapped) * 7.0) + 1)))
+            lastMagnification = 1.0
+        }
+)
 .onChange(of: viewModel.displayedROMs.count) { _, newCount in
     gamepadNav.contentItemCount = newCount
     gamepadNav.clampCurrentIndex()
@@ -346,15 +350,10 @@ struct LibraryGridView: View {
                            onEditingChanged: { isEditing in
                                if viewMode == .grid, !isEditing {
                                    withAnimation(.interpolatingSpring(stiffness: 150, damping: 20)) {
-                                       applyZoomToColumnCount(animate: true)
+                                       updateColumnCountFromZoom()
                                    }
                                }
                            })
-                .onChange(of: continuousZoom) { _, _ in
-                    if viewMode == .grid {
-                        updateColumns()
-                    }
-                }
 .frame(width: 160)
                     Image(systemName: "plus.magnifyingglass")
                         .font(.system(size: 12))
@@ -515,7 +514,7 @@ struct LibraryGridView: View {
     }
     .onAppear {
             // Recompute columns from saved zoom level
-            applyZoomToColumnCount(animate: false)
+            updateColumnCountFromZoom()
             sortByLastPlayed = AppSettings.getBool("sortByLastPlayed", defaultValue: false)
             sortByLastAdded = AppSettings.getBool("sortByLastAdded", defaultValue: false)
             
@@ -595,7 +594,7 @@ viewModel.updateFilters(
                     break
                 }
             }
-            applyZoomToColumnCount(animate: true)
+            updateColumnCountFromZoom()
         }
         .onReceive(NotificationCenter.default.publisher(for: .languageChanged)) { _ in
             // Language changes are handled by SystemPreferences automatically via AppSettings
@@ -657,31 +656,19 @@ viewModel.updateFilters(
         // For macOS 13, users can use context menu or confirm delete action
     }
 
-    @State private var gridWidth: CGFloat = 800
-
     // Whether the current filter is a system view (used to enable/disable box art style).
     private var isSystemView: Bool {
         if case .system = filter { return true }
         return false
     }
 
-    private func updateColumns() {
-        // Card width must be fixed for all columns to ensure uniform card sizes.
-        // Using the same value for min and max prevents columns from stretching independently.
+    private func updateColumnCount(width: CGFloat) {
         let cardWidth: CGFloat = 80 + (continuousZoom * 200)
-        // Spacing shrinks as cards get bigger
         let spacing: CGFloat = max(6, 16 - (continuousZoom * 8))
-        
-        // Calculate how many columns fit in the current grid width
-        let availableWidth = gridWidth - (gridPadding.leading + gridPadding.trailing)
+        let availableWidth = width - (gridPadding.leading + gridPadding.trailing)
         let computedColumns = max(1, min(8, Int((availableWidth + spacing) / (cardWidth + spacing))))
         columnCount = computedColumns
         gamepadNav.columnCount = computedColumns
-        
-        columns = Array(
-            repeating: GridItem(.flexible(minimum: 1, maximum: cardWidth), spacing: spacing),
-            count: columnCount
-        )
     }
     
     private func setupMenuNotificationObservers() {
@@ -710,109 +697,35 @@ viewModel.updateFilters(
     }
     
     private var gridView: some View {
-        ScrollViewReader { proxy in
-        ScrollView(.vertical) {
-            LazyVGrid(columns: columns, spacing: gridSpacing) {
-                ForEach(Array(viewModel.displayedROMs.enumerated()), id: \.element.id) { index, rom in
-                    let isSelected = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
-                    let isGamepadFocused = gamepadNav.activeZone == .content && gamepadNav.contentIndex == index
-                    
-                    let draggedItemsForCard: [ROM] = {
-                        if isSelected {
-                            var dragIDs = selectedROMs
-                            if let singleSelection = selectedROM {
-                                dragIDs.insert(singleSelection.id)
-                            }
-                            return viewModel.displayedROMs.filter { dragIDs.contains($0.id) }
-                        } else {
-                            return [rom]
-                        }
-                    }()
-
-        GameCardView(
-          rom: rom,
-          isSelected: isSelected,
-          isMultiSelected: selectedROMs.contains(rom.id),
-          zoomLevel: continuousZoom,
-          filter: filter,
-          onTap: { handleTap(on: rom, at: index) },
-          contextMenu: { contextMenu(for: rom) }
+        GridCollectionViewRepresentable(
+            roms: $viewModel.displayedROMs,
+            selection: $selectedROMs,
+            primarySelection: Binding(
+                get: { selectedROM },
+                set: { selectedROM = $0 }
+            ),
+            zoomLevel: continuousZoom,
+            filter: filter,
+            gridPadding: gridPadding,
+            onDoubleClick: { rom in
+                Task { await launchGame(rom) }
+            },
+            onTap: { [self] rom, index in
+                handleTap(on: rom, at: index)
+            },
+            contextMenuProvider: { [self] rom in contextMenu(for: rom) },
+            library: library,
+            categoryManager: categoryManager
         )
-        .onDrag {
-          draggedROMs = draggedItemsForCard
-          dragState.startDrag(gameIDs: draggedItemsForCard.map { $0.id })
-          let provider = NSItemProvider(object: NSString(string: draggedItemsForCard.map { $0.id.uuidString }.joined(separator: ",")))
-          return provider
-        } preview: {
-          DragPreviewStack(
-            mainROM: rom,
-            mainImage: nil,
-            draggedROMs: draggedItemsForCard.filter { $0.id != rom.id },
-            zoomLevel: continuousZoom
-          )
-        }
-        .simultaneousGesture(
-            TapGesture(count: 2).onEnded {
-                Task {
-                    await launchGame(rom)
-                }
-            }
-        )
-        .id(rom.id)
-        .overlay {
-            if isGamepadFocused {
-                RoundedRectangle(cornerRadius: 6)
-                    .stroke(AppColors.brandAccent, lineWidth: 2)
-                    .allowsHitTesting(false)
-            }
-        }
-                }
-            }
-            .padding(gridPadding)
-            .animation(.none, value: continuousZoom) // No animation during live zoom for responsiveness
-        }
-        .clipped() // Prevent content from drawing outside bounds (e.g., behind sidebar)
-        .highPriorityGesture(
-            MagnificationGesture()
-            .onChanged { value in
-                let scale = value / lastMagnification
-                let zoomDelta = (scale - 1.0) * 0.15
-                let newZoom = max(0, min(1, continuousZoom + zoomDelta))
-                continuousZoom = newZoom
-                updateColumns()
-                lastMagnification = value
-            }
-            .onEnded { _ in
-                let snapped = round(continuousZoom * 7.0) / 7.0
-                withAnimation(.interpolatingSpring(stiffness: 150, damping: 20)) {
-                    continuousZoom = snapped
-                    updateColumns()
-                }
-                lastMagnification = 1.0
-            }
-        )
-        .onDrop(of:[.url], isTargeted: nil) { items, location in
-            return false
-        }
         .onChange(of: gamepadNav.contentIndex) { _, newIndex in
             guard gamepadNav.activeZone == .content else { return }
-            guard newIndex >= 0, newIndex < viewModel.displayedROMs.count else { return }
-            let rom = viewModel.displayedROMs[newIndex]
-            selectedROM = rom
-            gamepadNav.scrollAnchorIndex = newIndex
-            withAnimation {
-                proxy.scrollTo(rom.id, anchor: .center)
-            }
+            gridScrollTarget = newIndex
         }
-        .onChange(of: gamepadNav.scrollAnchorIndex) { _, newIndex in
-            guard gamepadNav.activeZone == .content else { return }
-            guard newIndex >= 0, newIndex < viewModel.displayedROMs.count else { return }
-            let rom = viewModel.displayedROMs[newIndex]
-            withAnimation(.easeInOut(duration: 0.08)) {
-                proxy.scrollTo(rom.id, anchor: .center)
-            }
+        .onChange(of: gridScrollTarget) { _, newIndex in
+            guard let idx = newIndex else { return }
+            gridScrollTarget = nil
         }
-        }
+        .id("grid-\(zoomLevel)-\(continuousZoom)")
     }
     
     // MARK: - Gamepad Navigation Handlers
@@ -1077,21 +990,6 @@ viewModel.updateFilters(
         .listStyle(.inset(alternatesRowBackgrounds: false))
         .scrollContentBackground(.hidden)
         .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
-        .highPriorityGesture(
-            MagnificationGesture()
-                .onChanged { value in
-                    let scale = value / lastMagnification
-                    let zoomDelta = (scale - 1.0) * 0.8
-                    continuousZoom = max(0, min(1, continuousZoom + zoomDelta))
-                    lastMagnification = value
-                }
-                .onEnded { _ in
-                    let snapped = round(continuousZoom * 7.0) / 7.0
-                    continuousZoom = snapped
-                    columnCount = max(1, min(8, Int(round((1.0 - snapped) * 7.0) + 1)))
-                    lastMagnification = 1.0
-                }
-        )
         .onAppear {
             gamepadNav.columnCount = 1
             gamepadNav.contentItemCount = viewModel.displayedROMs.count
@@ -1158,16 +1056,12 @@ viewModel.updateFilters(
         continuousZoom
     }
     
-    // Applies the current continuousZoom value to columnCount and updates the grid.
-    // Shared between slider, pinch gesture, and onAppear restoration.
-    private func applyZoomToColumnCount(animate: Bool = false) {
-        if animate {
-            withAnimation(.interpolatingSpring(stiffness: 150, damping: 20)) {
-                updateColumns()
-            }
-        } else {
-            updateColumns()
-        }
+    private func updateColumnCountFromZoom() {
+        let cardWidth: CGFloat = 80 + (continuousZoom * 200)
+        let spacing: CGFloat = max(6, 16 - (continuousZoom * 8))
+        let cols = max(1, min(8, Int((800 + spacing) / (cardWidth + spacing))))
+        columnCount = cols
+        gamepadNav.columnCount = cols
     }
 
     @State private var scanningMessageIndex = 0
@@ -1787,9 +1681,8 @@ viewModel.updateFilters(
 		Slider(value: $continuousZoom, in: 0...1, step: 1.0/7.0,
 			onEditingChanged: { isEditing in
 			if !isEditing {
-				// On release, snap to nearest step
 				withAnimation(.interpolatingSpring(stiffness: 150, damping: 20)) {
-				applyZoomToColumnCount(animate: true)
+				updateColumnCountFromZoom()
 				}
 			}
 			})
@@ -1902,12 +1795,41 @@ viewModel.updateFilters(
                 }
                 .animation(.easeOut(duration: 0.2), value: sortByLastAdded)
 
-                ForEach(GameFilterOption.allCases) { option in
+                ForEach(GameFilterOption.primaryFilters) { option in
                     FilterChipView(
                         option: option,
                         isActive: activeFilters.contains(option.rawValue),
                         action: { toggleFilter(option) }
                     )
+                }
+
+                let otherActiveCount = GameFilterOption.otherFilters.filter { activeFilters.contains($0.rawValue) }.count
+                Button {
+                    showOtherFilters.toggle()
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: otherActiveCount > 0 ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
+                            .font(.system(size: 10, weight: .medium))
+                        Text(loc.localized("library.otherFilters"))
+                            .font(.system(size: 11, weight: .medium))
+                        if otherActiveCount > 0 {
+                            Text("(\(otherActiveCount))")
+                                .font(.system(size: 10))
+                        }
+                    }
+                    .foregroundColor(otherActiveCount > 0 ? AppColors.textOnAccent(colorScheme) : .secondary)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .frame(minHeight: 30)
+                    .background(Capsule().fill(otherActiveCount > 0 ? AppColors.brandAccent : AppColors.cardBackgroundSubtle(colorScheme)))
+                }
+                .buttonStyle(.plain)
+                .popover(isPresented: $showOtherFilters) {
+                    OtherFiltersPopover(
+                        activeFilters: $activeFilters,
+                        onToggle: { toggleFilter($0) }
+                    )
+                    .gamepadDismissable { showOtherFilters = false }
                 }
 
                 // Genre filter chip
@@ -1941,7 +1863,7 @@ viewModel.updateFilters(
                     GenrePickerView(
                         selectedGenres: $selectedGenres,
                         allGenres: GenreManager.shared.getAllDisplayGenres(from: library.roms),
-                        onApply: {
+                        onChange: {
                             viewModel.updateFilters(
                                 filter: filter,
                                 searchText: searchText,
