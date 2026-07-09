@@ -1976,23 +1976,36 @@ viewModel.updateFilters(
         if case .system = filter {
             let missingArt = viewModel.displayedROMs.filter { !$0.hasBoxArt }
             guard !missingArt.isEmpty else { return }
-            
+
+            // Capture the filter id we *just* switched to. If the user switches again
+            // before the background lookup completes, we'll discard the result — both
+            // because those ROMs are no longer visible AND because the write-back to
+            // library.roms would otherwise re-publish on $roms and re-trigger a
+            // filter storm during navigation.
+            let targetFilterID = viewModel.currentFilterID
             let service = BoxArtService.shared
-            Task {
-                let resolved = await Task.detached(priority: .background) {
-                    return service.resolveLocalBoxArtBatch(for: missingArt)
-                }.value
-                
-                if !resolved.isEmpty {
-                    let modifiedIDs = resolved.map { $0.id }
-                    await MainActor.run {
-                        for rom in resolved {
-                            library.updateROM(rom, persist: false)
-                        }
-                        library.saveROMsToDatabase(only: modifiedIDs)
+            Task.detached(priority: .background) {
+                let resolved = service.resolveLocalBoxArtBatch(for: missingArt)
+                guard !resolved.isEmpty else { return }
+
+                // Hop back to MainActor briefly just to read currentFilterID; if the
+                // user has already moved on, drop the work without touching anything.
+                let stillRelevant = await MainActor.run { viewModel.currentFilterID == targetFilterID }
+                guard stillRelevant else { return }
+
+                // We deliberately avoid `library.saveROMsToDatabase` here: this runs
+                // mid-navigation and forces a full FetchDescriptor over the entire
+                // library plus per-ROM XML writes on MainActor. The next time we land
+                // on this system, the in-memory `roms` are already correct (because
+                // we still update them in-memory below); persistence coalesces on
+                // the next regular save path (e.g. ROMLibrary finalizers, scanners,
+                // or settings persistence).
+                MainActor.assumeIsolated {
+                    for rom in resolved {
+                        library.updateROM(rom, persist: false, silent: true)
                     }
                 }
-        }
+            }
         }
     }
 

@@ -27,6 +27,8 @@ struct ContentView: View {
 @ObservedObject var notificationPillManager = NotificationPillManager.shared
 @ObservedObject var wizard = SetupWizardState.shared
 @ObservedObject var gamepadNavCoordinator = GamepadNavCoordinator.shared
+@State private var cachedGamepadFilters: [LibraryFilter]? = nil
+@State private var cachedGamepadFiltersKey: Int = 0
     
 @State private var selectedFilter: LibraryFilter = .recent
 @State private var selectedROM: ROM? = nil
@@ -440,7 +442,46 @@ LoggerService.info(category: "Shaders", "Updated shader for \(updatedROMIDs.coun
         }
     }
 
-    private var gamepadSelectableFilters: [LibraryFilter] {
+    private func configureGamepadNav() {
+        // Only recompute when the input fingerprint actually changed. The previous
+        // computed-property implementation ran a O(N)-over-library system-id walk +
+        // (2 × AppSettings reads × every display system) on EVERY RENDER of the
+        // sidebar during a system switch — the dominant cause of the post-switch
+        // stall we just removed.
+        let key = gamepadFiltersFingerprint()
+        if let cached = cachedGamepadFilters, cachedGamepadFiltersKey == key {
+            let filters = cached
+            gamepadNavCoordinator.updateSidebarItems(filters)
+            gamepadNavCoordinator.syncSidebarIndex(to: selectedFilter)
+            GamepadNavigationManager.shared.startPolling()
+            return
+        }
+
+        let items = computeGamepadFilters()
+        cachedGamepadFilters = items
+        cachedGamepadFiltersKey = key
+        gamepadNavCoordinator.updateSidebarItems(items)
+        gamepadNavCoordinator.syncSidebarIndex(to: selectedFilter)
+        GamepadNavigationManager.shared.startPolling()
+    }
+
+    private func gamepadFiltersFingerprint() -> Int {
+        var hasher = Hasher()
+        hasher.combine(library.romCounts.count)
+        for key in library.romCounts.keys.sorted() {
+            hasher.combine(key)
+            hasher.combine(library.romCounts[key] ?? 0)
+        }
+        hasher.combine(library.roms.count)
+        hasher.combine(categoryManager.categories.count)
+        for count in categoryManager.categories.map({ $0.id }).sorted() {
+            hasher.combine(count)
+        }
+        hasher.combine(systemDatabase.systemsForDisplay.count)
+        return hasher.finalize()
+    }
+
+    private func computeGamepadFilters() -> [LibraryFilter] {
         var items: [LibraryFilter] = [.all]
         if library.romCounts["favorites"] ?? 0 > 0 { items.append(.favorites) }
         items.append(.recent)
@@ -450,12 +491,15 @@ LoggerService.info(category: "Shaders", "Updated shader for \(updatedROMIDs.coun
         for cat in categoryManager.categories {
             items.append(.category(cat.id))
         }
-        let ids = Set(library.roms.compactMap { $0.systemID })
+
+        // Build "which systems have ROMs" from `romCounts` (an O(display systems)
+        // walk), not from `library.roms.compactMap` (an O(total ROMs) walk).
+        let presentIDs = Set(library.romCounts.keys)
         let displaySystems = systemDatabase.systemsForDisplay
         let systemFilters: [LibraryFilter] = displaySystems.compactMap { sys in
             let internalIDs = systemDatabase.allInternalIDs(forDisplayID: sys.id)
             let total = internalIDs.reduce(0) { sum, id in
-                sum + (ids.contains(id) ? (library.romCounts[id] ?? 0) : 0)
+                presentIDs.contains(id) ? sum + (library.romCounts[id] ?? 0) : sum
             }
             return total > 0 ? .system(sys) : nil
         }.sorted { lhs, rhs in
@@ -467,12 +511,5 @@ LoggerService.info(category: "Shaders", "Updated shader for \(updatedROMIDs.coun
         if library.romCounts["hidden"] ?? 0 > 0 { items.append(.hidden) }
         if library.romCounts["mameNonGames"] ?? 0 > 0 { items.append(.mameNonGames) }
         return items
-    }
-
-    private func configureGamepadNav() {
-        let filters = gamepadSelectableFilters
-        gamepadNavCoordinator.updateSidebarItems(filters)
-        gamepadNavCoordinator.syncSidebarIndex(to: selectedFilter)
-        GamepadNavigationManager.shared.startPolling()
     }
 }

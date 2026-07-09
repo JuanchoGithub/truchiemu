@@ -15,31 +15,42 @@ struct SystemSidebarView: View {
     @Binding var editingCategory: GameCategory?
     @State private var hiddenCategoryRefreshToggle = false
     @State private var categoriesRefreshToggle = false
+
+    // Memoized sidebar list. The cache is updated through `.onChange`/`.onReceive`
+    // listeners (NOT inside a computed property) so we never mutate @State while
+    // SwiftUI is mid-render — which would otherwise emit
+    // "Modifying state during view update, this will cause undefined behavior."
+    @State private var cachedCombinedSystems: [(system: SystemInfo, combinedCount: Int)] = []
+
     var onRefresh: ((SystemInfo) -> Void)? = nil
     var onSettings: ((String) -> Void)? = nil
     var onSystemAction: ((SystemInfo, SystemAction, String?) -> Void)? = nil
     var onRenameSystem: ((SystemInfo) -> Void)? = nil
-    
-    // Combined system entries for the sidebar. Game Boy (gb) absorbs Game Boy Color (gbc)
-    // into a single "Game Boy" display entry while keeping internal systemIDs intact.
-    private var combinedSystemsWithROMs: [(system: SystemInfo, combinedCount: Int)] {
-        let ids = Set(library.roms.compactMap { $0.systemID })
-        // Only include display-visible systems (gb visible, gbc hidden)
+
+    // Pure: returns the next value without touching @State. Caller decides when to apply.
+    private func computeCombinedSystems() -> [(system: SystemInfo, combinedCount: Int)] {
+        // Build set of present IDs from `romCounts` keys (cheap) instead of walking
+        // every ROM. `romCounts` is maintained alongside `roms` by `ROMLibrary`.
+        let presentIDs = Set(library.romCounts.keys)
         let displaySystems = systemDatabase.systemsForDisplay
-        
+
         var result: [(SystemInfo, Int)] = []
         for sys in displaySystems {
-            // Check if any ROM exists for this system or its merged partners
             let internalIDs = systemDatabase.allInternalIDs(forDisplayID: sys.id)
             let total = internalIDs.reduce(0) { sum, id in
-                sum + (ids.contains(id) ? (library.romCounts[id] ?? 0) : 0)
+                presentIDs.contains(id) ? sum + (library.romCounts[id] ?? 0) : sum
             }
             if total > 0 {
                 result.append((sys, total))
             }
         }
-        
+
         return result.sorted(by: { $0.0.name.localizedCaseInsensitiveCompare($1.0.name) == .orderedAscending })
+    }
+
+    // Read-only accessor used by the view body. Pure read; never mutates @State.
+    private var combinedSystemsWithROMs: [(system: SystemInfo, combinedCount: Int)] {
+        cachedCombinedSystems
     }
 
     var body: some View {
@@ -158,6 +169,20 @@ struct SystemSidebarView: View {
         }
         .onReceive(categoryManager.objectWillChange) { _ in
             categoriesRefreshToggle.toggle()
+        }
+        .onChange(of: library.romCounts) { _, _ in
+            cachedCombinedSystems = computeCombinedSystems()
+        }
+        .onChange(of: library.lastChangeDate) { _, _ in
+            cachedCombinedSystems = computeCombinedSystems()
+        }
+        .onChange(of: systemDatabase.systems) { _, _ in
+            cachedCombinedSystems = computeCombinedSystems()
+        }
+        .onAppear {
+            // Seed the cache on first appearance; subsequent invalidations
+            // arrive through the .onChange listeners above.
+            cachedCombinedSystems = computeCombinedSystems()
         }
     }
 

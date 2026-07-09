@@ -128,8 +128,26 @@ class BoxArtService: ObservableObject {
     // Returns the local file URL if found, nil otherwise. Does NOT download from CDN.
     nonisolated func resolveLocalBoxArt(for rom: ROM) -> URL? {
         let localBoxArtDir = rom.path.deletingLastPathComponent().appendingPathComponent("boxart", isDirectory: true)
-        let imageExtensions = ["png", "jpg", "jpeg", "webp", "gif", "bmp"]
-        
+        let imageExtensions: Set<String> = ["png", "jpg", "jpeg", "webp", "gif", "bmp"]
+
+        // Listing the directory once (1 syscall) is dramatically cheaper than N×1 syscalls
+        // where N is the number of candidate (stem, extension) pairs. For a single
+        // ROM, that's typically 30+ FileManager.fileExists() calls; across 30 visible
+        // cards that's 900+ sequential stat calls. One directory read replaces all of it.
+        let dirContents: [URL]
+        do {
+            dirContents = try FileManager.default.contentsOfDirectory(
+                at: localBoxArtDir,
+                includingPropertiesForKeys: nil,
+                options: [.skipsSubdirectoryDescendants]
+            )
+        } catch {
+            // Fall through: dir doesn't exist (very common — most ROMs have no /boxart).
+            dirContents = []
+        }
+
+        let dirNamesLowercase: Set<String> = Set(dirContents.map { $0.lastPathComponent.lowercased() })
+
         var candidateStems: [String] = []
         if let inner = rom.innerROMPath {
             let innerStem = URL(fileURLWithPath: inner).deletingPathExtension().lastPathComponent
@@ -156,7 +174,7 @@ class BoxArtService: ObservableObject {
                 candidateStems.append("\(sanitized)_boxart")
             }
         }
-        
+
         var seen = Set<String>()
         let uniqueStems = candidateStems.filter { stem in
             let normalized = stem.lowercased()
@@ -164,21 +182,29 @@ class BoxArtService: ObservableObject {
             seen.insert(normalized)
             return true
         }
-        
+
+        // Match: for each stem, find any file in the directory whose name matches
+        // "{stem}.{png|jpg|jpeg|webp|gif|bmp}" (case-insensitive). Validate magic bytes
+        // on the first hit only (rather than one read per candidate).
         for stem in uniqueStems {
             for ext in imageExtensions {
-                let candidate = localBoxArtDir.appendingPathComponent("\(stem).\(ext)")
-                if FileManager.default.fileExists(atPath: candidate.path), isValidImageFile(at: candidate) {
-                    return candidate
+                let targetLower = "\(stem).\(ext)".lowercased()
+                if dirNamesLowercase.contains(targetLower),
+                   let match = dirContents.first(where: { $0.lastPathComponent.lowercased() == targetLower }),
+                   isValidImageFile(at: match) {
+                    return match
                 }
             }
         }
-        
-        // Fallback: check the app's own naming convention
-        if FileManager.default.fileExists(atPath: rom.boxArtLocalPath.path), isValidImageFile(at: rom.boxArtLocalPath) {
-            return rom.boxArtLocalPath
+
+        // Fallback: the app's own naming convention (`rom.boxArtLocalPath`).
+        // That path may live outside the /boxart directory (e.g. a flat sidecar
+        // image next to the ROM), so check it explicitly with one stat + validate.
+        let fallback = rom.boxArtLocalPath
+        if FileManager.default.fileExists(atPath: fallback.path), isValidImageFile(at: fallback) {
+            return fallback
         }
-        
+
         return nil
     }
 
