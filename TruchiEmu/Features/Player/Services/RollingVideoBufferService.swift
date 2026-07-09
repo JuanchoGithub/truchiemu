@@ -285,11 +285,15 @@ final class RollingVideoBufferService: ObservableObject {
         }
 
         let asset = AVURLAsset(url: chunk)
-        if let v = asset.tracks(withMediaType: .video).first {
-            try videoTrack.insertTimeRange(CMTimeRange(start: .zero, duration: v.timeRange.duration), of: v, at: .zero)
+        let videoTracks = try await asset.loadTracks(withMediaType: .video)
+        if let v = videoTracks.first {
+            let vDur = try await v.load(.timeRange).duration
+            try videoTrack.insertTimeRange(CMTimeRange(start: .zero, duration: vDur), of: v, at: .zero)
         }
-        if let a = asset.tracks(withMediaType: .audio).first {
-            try audioTrack.insertTimeRange(CMTimeRange(start: .zero, duration: a.timeRange.duration), of: a, at: .zero)
+        let audioTracks = try await asset.loadTracks(withMediaType: .audio)
+        if let a = audioTracks.first {
+            let aDur = try await a.load(.timeRange).duration
+            try audioTrack.insertTimeRange(CMTimeRange(start: .zero, duration: aDur), of: a, at: .zero)
         }
 
         if !audioTrack.timeRange.duration.isValid || audioTrack.timeRange.duration <= .zero {
@@ -411,7 +415,7 @@ final class RollingVideoBufferService: ObservableObject {
             srs.isUserRecording = false
             srs.recordingStartTime = nil
 
-            writer.finishWriting {
+            writer.finishWriting { [weak v, weak a, weak adaptor] in
                 _ = v; _ = a; _ = adaptor
                 cont.resume()
             }
@@ -433,20 +437,21 @@ final class RollingVideoBufferService: ObservableObject {
         var audioCursor = CMTime.zero
         for url in chunks {
             let asset = AVURLAsset(url: url)
-            let assetDuration = asset.duration
+            let assetDuration = try await asset.load(.duration)
 
-            let videoDuration: CMTime
-            if let v = asset.tracks(withMediaType: .video).first {
-                let vDur = v.timeRange.duration
-                videoDuration = (vDur < assetDuration) ? vDur : assetDuration
+            let videoTracks = try await asset.loadTracks(withMediaType: .video)
+            if let v = videoTracks.first {
+                let vDur = try await v.load(.timeRange).duration
+                let videoDuration = (vDur < assetDuration) ? vDur : assetDuration
                 try videoTrack.insertTimeRange(CMTimeRange(start: .zero, duration: videoDuration), of: v, at: videoCursor)
                 videoCursor = videoCursor + videoDuration
             } else {
                 videoCursor = videoCursor + assetDuration
             }
 
-            if let a = asset.tracks(withMediaType: .audio).first {
-                let aDur = a.timeRange.duration
+            let audioTracks = try await asset.loadTracks(withMediaType: .audio)
+            if let a = audioTracks.first {
+                let aDur = try await a.load(.timeRange).duration
                 let audioLen = (aDur < assetDuration) ? aDur : assetDuration
                 let insertAt = audioCursor
                 try audioTrack.insertTimeRange(CMTimeRange(start: .zero, duration: audioLen), of: a, at: insertAt)
