@@ -741,7 +741,7 @@ outputHeight: Float(drawHeight)
                         }
                         wasRecordingFlag = isRecording
                         let now = CACurrentMediaTime()
-                        let pts = CMTime(seconds: now - recordingStartTime, preferredTimescale: 600)
+                        _ = CMTime(seconds: now - recordingStartTime, preferredTimescale: 600)
                         recordingFrameCount += 1
 
                         performFrameCapture(
@@ -832,11 +832,14 @@ outputHeight: Float(drawHeight)
                 let h = dest.height
                 let bpp = Self.bytesPerPixel(dest.pixelFormat)
                 let bpr = w * bpp
+                let pixelFormat = dest.pixelFormat
+                let destHandle = UInt(bitPattern: Unmanaged.passRetained(dest as AnyObject).toOpaque())
                 commandBuffer.addCompletedHandler { _ in
+                    let tex = Unmanaged<AnyObject>.fromOpaque(UnsafeMutableRawPointer(bitPattern: destHandle)!).takeRetainedValue() as! MTLTexture
                     var pixels = [UInt8](repeating: 0, count: h * bpr)
-                    dest.getBytes(&pixels, bytesPerRow: bpr,
+                    tex.getBytes(&pixels, bytesPerRow: bpr,
                                   from: MTLRegionMake2D(0, 0, w, h), mipmapLevel: 0)
-                    let bgra = Self.convertToBGRA32(pixels, width: w, height: h, srcBPP: bpp, srcPixelFormat: dest.pixelFormat)
+                    let bgra = Self.convertToBGRA32(pixels, width: w, height: h, srcBPP: bpp, srcPixelFormat: pixelFormat)
                     ScreenshotService.writeBGRA(bgra, width: w, height: h, to: displayURL)
                 }
             }
@@ -855,11 +858,14 @@ outputHeight: Float(drawHeight)
                 let h = dest.height
                 let bpp = Self.bytesPerPixel(dest.pixelFormat)
                 let bpr = w * bpp
+                let pixelFormat = dest.pixelFormat
+                let destHandle = UInt(bitPattern: Unmanaged.passRetained(dest as AnyObject).toOpaque())
                 commandBuffer.addCompletedHandler { _ in
+                    let tex = Unmanaged<AnyObject>.fromOpaque(UnsafeMutableRawPointer(bitPattern: destHandle)!).takeRetainedValue() as! MTLTexture
                     var pixels = [UInt8](repeating: 0, count: h * bpr)
-                    dest.getBytes(&pixels, bytesPerRow: bpr,
+                    tex.getBytes(&pixels, bytesPerRow: bpr,
                                   from: MTLRegionMake2D(0, 0, w, h), mipmapLevel: 0)
-                    let bgra = Self.convertToBGRA32(pixels, width: w, height: h, srcBPP: bpp, srcPixelFormat: dest.pixelFormat)
+                    let bgra = Self.convertToBGRA32(pixels, width: w, height: h, srcBPP: bpp, srcPixelFormat: pixelFormat)
                     ScreenshotService.writeBGRA(bgra, width: w, height: h, to: nativeURL)
                 }
             }
@@ -884,7 +890,7 @@ outputHeight: Float(drawHeight)
         target = device.makeTexture(descriptor: desc)
     }
 
-    private func makePixelBuffer(from bgra32Pixels: [UInt8], width: Int, height: Int) -> CVPixelBuffer? {
+    nonisolated private func makePixelBuffer(from bgra32Pixels: [UInt8], width: Int, height: Int) -> CVPixelBuffer? {
         var pixelBuffer: CVPixelBuffer?
         let attrs: [String: Any] = [
             kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
@@ -917,7 +923,7 @@ outputHeight: Float(drawHeight)
         return pb
     }
 
-    private static func bytesPerPixel(_ format: MTLPixelFormat) -> Int {
+    nonisolated private static func bytesPerPixel(_ format: MTLPixelFormat) -> Int {
         switch format {
         case .bgra8Unorm, .rgba8Unorm, .rgba8Unorm_srgb, .bgra8Unorm_srgb:
             return 4
@@ -930,7 +936,7 @@ outputHeight: Float(drawHeight)
         }
     }
 
-    private static func convertToBGRA32(_ pixels: [UInt8], width: Int, height: Int, srcBPP: Int, srcPixelFormat: MTLPixelFormat) -> [UInt8] {
+    nonisolated private static func convertToBGRA32(_ pixels: [UInt8], width: Int, height: Int, srcBPP: Int, srcPixelFormat: MTLPixelFormat) -> [UInt8] {
         guard width > 0, height > 0 else { return [] }
         var out = [UInt8](repeating: 0, count: width * height * 4)
         let total = width * height
@@ -1049,22 +1055,27 @@ outputHeight: Float(drawHeight)
         blit?.endEncoding()
 
         let capturePTS = CMTime(seconds: CACurrentMediaTime() - recordingStartTime, preferredTimescale: 600)
+        let recordWithShaders = StreamRecordingService.shared.recordWithShaders
+        let dar = recordingDAR
+        let dstW = Int(destTex.width)
+        let dstH = Int(destTex.height)
+        let dstPixelFormat = destTex.pixelFormat
+        let destHandle = UInt(bitPattern: Unmanaged.passRetained(destTex as AnyObject).toOpaque())
         commandBuffer.addCompletedHandler { [weak self] _ in
             guard let self = self else { return }
-            let tex = destTex
-            let w = tex.width
-            let h = tex.height
-            let srcBPP = Self.bytesPerPixel(tex.pixelFormat)
+            let tex = Unmanaged<AnyObject>.fromOpaque(UnsafeMutableRawPointer(bitPattern: destHandle)!).takeRetainedValue() as! MTLTexture
+            let w = dstW
+            let h = dstH
+            let srcBPP = Self.bytesPerPixel(dstPixelFormat)
             let srcBPR = w * srcBPP
             var pixels = [UInt8](repeating: 0, count: h * srcBPR)
             tex.getBytes(&pixels, bytesPerRow: srcBPR,
                          from: MTLRegionMake2D(0, 0, w, h),
                          mipmapLevel: 0)
-            var bgra = Self.convertToBGRA32(pixels, width: w, height: h, srcBPP: srcBPP, srcPixelFormat: tex.pixelFormat)
+            var bgra = Self.convertToBGRA32(pixels, width: w, height: h, srcBPP: srcBPP, srcPixelFormat: dstPixelFormat)
             var outW = Int(w)
             var outH = Int(h)
-            if isRecording && !StreamRecordingService.shared.recordWithShaders {
-                let dar = self.recordingDAR
+            if isRecording && !recordWithShaders {
                 let pixelAR = CGFloat(w) / CGFloat(h)
                 if abs(dar - pixelAR) > 0.01 {
                     let corrW = max(Int(w), Int(ceil(CGFloat(h) * dar)))
@@ -1135,17 +1146,25 @@ outputHeight: Float(drawHeight)
         )
     }
 
-    private static func resizeBGRA32(_ pixels: [UInt8], from srcW: Int, srcH: Int, to dstW: Int, dstH: Int) -> [UInt8] {
+    nonisolated private static func resizeBGRA32(_ pixels: [UInt8], from srcW: Int, srcH: Int, to dstW: Int, dstH: Int) -> [UInt8] {
         var dst = [UInt8](repeating: 0, count: dstW * dstH * 4)
-        var srcBuf = vImage_Buffer(data: UnsafeMutablePointer(mutating: pixels),
-                                    height: vImagePixelCount(srcH),
-                                    width: vImagePixelCount(srcW),
-                                    rowBytes: srcW * 4)
-        var dstBuf = vImage_Buffer(data: &dst,
-                                    height: vImagePixelCount(dstH),
-                                    width: vImagePixelCount(dstW),
-                                    rowBytes: dstW * 4)
-        vImageScale_ARGB8888(&srcBuf, &dstBuf, nil, 0)
+        pixels.withUnsafeBytes { srcRawPtr in
+            dst.withUnsafeMutableBytes { dstRawPtr in
+                var srcBuf = vImage_Buffer(
+                    data: UnsafeMutablePointer(mutating: srcRawPtr.bindMemory(to: UInt8.self).baseAddress!),
+                    height: vImagePixelCount(srcH),
+                    width: vImagePixelCount(srcW),
+                    rowBytes: srcW * 4
+                )
+                var dstBuf = vImage_Buffer(
+                    data: dstRawPtr.baseAddress!,
+                    height: vImagePixelCount(dstH),
+                    width: vImagePixelCount(dstW),
+                    rowBytes: dstW * 4
+                )
+                vImageScale_ARGB8888(&srcBuf, &dstBuf, nil, 0)
+            }
+        }
         return dst
     }
 
