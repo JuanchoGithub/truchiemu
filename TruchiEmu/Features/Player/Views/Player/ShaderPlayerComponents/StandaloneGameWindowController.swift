@@ -559,14 +559,18 @@ super.init(window: window)
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            self?.showHardcoreViolationAlert()
+            Task { @MainActor in
+                self?.showHardcoreViolationAlert()
+            }
         }
         NotificationCenter.default.addObserver(
             forName: .hardcoreConfirmationDismissed,
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            self?.hideHardcoreViolationAlert()
+            Task { @MainActor in
+                self?.hideHardcoreViolationAlert()
+            }
         }
 
   // Start cursor auto-hide after initial setup delay
@@ -856,17 +860,19 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         runner?.launch(rom: rom, coreID: coreID, shaderUniformOverrides: shaderUniforms)
         // Observe game-loaded notification to update launch phase
         gameLoadedObserver = NotificationCenter.default.addObserver(forName: .gameLoaded, object: nil, queue: .main) { [weak self] _ in
-            guard let self else { return }
-            if self.isLoading {
-                GameLauncher.shared.launchPhase = .startingGame
+            Task { @MainActor in
+                guard let self else { return }
+                if self.isLoading {
+                    GameLauncher.shared.launchPhase = .startingGame
+                }
+                GamepadNavigationManager.shared.setGameRunning(true)
+                let ctx = GamepadGameRunningContext(onShowToolbar: { [weak self] in
+                    self?.showGamepadToolbar()
+                })
+                ctx.ownedWindow = self.window
+                self.gameRunningNavContext = ctx
+                GamepadNavContextStack.shared.push(ctx)
             }
-            GamepadNavigationManager.shared.setGameRunning(true)
-            let ctx = GamepadGameRunningContext(onShowToolbar: { [weak self] in
-                self?.showGamepadToolbar()
-            })
-            ctx.ownedWindow = self.window
-            self.gameRunningNavContext = ctx
-            GamepadNavContextStack.shared.push(ctx)
         }
 
                 // Observe screenshot captures to flash + show toast
@@ -1067,7 +1073,9 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
                 self.pendingSlotToLoad = slotToLoad
                 self.pendingROMForState = rom
                 self.isWaitingForFullscreenAnimation = true
-                self.toggleFullscreen()
+                Task { @MainActor in
+                    self.toggleFullscreen()
+                }
             }
             return
         }
@@ -1265,9 +1273,9 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
     // Pauses the game while the cheat manager is shown.
     @MainActor
     func showCheatManager() {
-        guard let rom = currentGameROM, let window = window else { return }
+        guard currentGameROM != nil, window != nil else { return }
 
-        HardcoreModeManager.shared.attemptUseCheats { [weak self] in
+        _ = HardcoreModeManager.shared.attemptUseCheats { [weak self] in
             self?.presentCheatManagerSheet()
         }
     }
@@ -1463,7 +1471,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         }
 
         trainingModeViewModel.onResetOverlayPosition = { [weak self] in
-            guard let self else { return }
+            guard self != nil else { return }
             AppSettings.setDouble("moveListPanelOffsetX", value: 0)
             AppSettings.setDouble("moveListPanelOffsetY", value: 0)
             NotificationCenter.default.post(name: .resetMoveListOverlayPosition, object: nil)
@@ -1693,7 +1701,7 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
     // MARK: - Helper Functions
 
     private func fightOverlayGameKey() -> String? {
-        guard let rom = currentGameROM, let gameData = moveListViewModel.moveListService.currentGameData else { return nil }
+        guard currentGameROM != nil, let gameData = moveListViewModel.moveListService.currentGameData else { return nil }
         return "fightOverlay_\(gameData.name)"
     }
 
@@ -1747,10 +1755,10 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
         guard let key = fightOverlayGameKey(),
               trainingModeViewModel.hasGameData else { return }
 
-        let moveListWasVisible = AppSettings.getBool("\(key)_moveListVisible", defaultValue: false)
-        let trainingMenuWasVisible = AppSettings.getBool("\(key)_trainingMenuVisible", defaultValue: false)
+        _ = AppSettings.getBool("\(key)_moveListVisible", defaultValue: false)
+        _ = AppSettings.getBool("\(key)_trainingMenuVisible", defaultValue: false)
         let trainingWasEnabled = AppSettings.getBool("\(key)_trainingEnabled", defaultValue: false)
-        let savedCharacterName: String? = AppSettings.get("\(key)_character", type: String.self)
+        _ = AppSettings.get("\(key)_character", type: String.self)
 
         let manager = TrainingModeManager.shared
 
