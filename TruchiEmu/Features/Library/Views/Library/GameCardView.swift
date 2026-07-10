@@ -36,6 +36,27 @@ struct GameCardView: View {
         titleFontSize * 1.2
     }
 
+    private var textRowHeight: CGFloat {
+        ceil(titleFontSize * 1.3)
+    }
+
+    private var textBlockMinHeight: CGFloat {
+        textRowHeight * 2 + 4
+    }
+
+    private var textBlockFixedPadding: CGFloat {
+        switch boxType {
+        case .vertical: return 8
+        case .box: return 4
+        case .landscape: return 4
+        }
+    }
+
+    private var isSingleBoxTypeView: Bool {
+        if case .system = filter { return true }
+        return false
+    }
+
     private var categoryBadges: [GameCategory] {
         categoryManager.categories.filter { $0.gameIDs.contains(rom.id) }
     }
@@ -137,7 +158,7 @@ struct GameCardView: View {
 
     @ViewBuilder
     private var cardContent: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(spacing: 0) {
             ZStack(alignment: .topTrailing) {
                 artworkView
                 .clipped()
@@ -147,6 +168,8 @@ struct GameCardView: View {
                 )
                 .grayscale(artworkGrayscale)
                 .opacity(artworkOpacity)
+                .padding(.horizontal, 8)
+                .padding(.top, 8)
 
                 if raService.isEnabled && rom.raMatchStatus == "matched" {
                     Image(systemName: "trophy.fill")
@@ -168,7 +191,6 @@ struct GameCardView: View {
                         .padding(4)
                         .transition(.scale.combined(with: .opacity))
                 }
-
             }
             .overlay(alignment: .bottomTrailing) {
                 if isHovered, let menuContent = contextMenu {
@@ -193,16 +215,20 @@ struct GameCardView: View {
                         .padding(.vertical, 4)
                 }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .aspectRatio(boxType.aspectRatio, contentMode: .fit)
+            .frame(maxWidth: .infinity)
+
+            Spacer()
+                .frame(height: textBlockFixedPadding)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(rom.displayName)
                     .font(.system(size: titleFontSize, weight: .semibold, design: .rounded))
                     .lineLimit(2)
-                    .multilineTextAlignment(.leading)
+                    .multilineTextAlignment(.center)
                     .foregroundColor(titleColor)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .frame(minHeight: titleFontSize * 3, alignment: .top)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .frame(minHeight: textBlockMinHeight, alignment: .top)
 
                 if isHiddenItem, let mameType = rom.mameRomType {
                     HStack(spacing: 4) {
@@ -218,10 +244,17 @@ struct GameCardView: View {
             .padding(.horizontal, 4)
             .padding(.bottom, 4)
             .frame(maxWidth: .infinity, alignment: .leading)
+
+            if isSingleBoxTypeView {
+                Spacer(minLength: 0)
+            } else {
+                Spacer()
+            }
         }
         .padding(.horizontal, 8)
         .padding(.top, 8)
         .padding(.bottom, 4)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: isSingleBoxTypeView ? .top : .center)
         .background(
             RoundedRectangle(cornerRadius: 12)
                 .fill(cardBackground)
@@ -273,8 +306,6 @@ struct GameCardView: View {
             }
             .frame(width: geometry.size.width, height: geometry.size.height)
         }
-        .frame(maxWidth: .infinity, alignment: .center)
-        .aspectRatio(boxType.aspectRatio, contentMode: .fit)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .shadow(color: Color.black.opacity(isPressed ? 0.35 : 0.25), radius: isPressed ? 8 : 4, x: 0, y: isPressed ? 4 : 2)
     }

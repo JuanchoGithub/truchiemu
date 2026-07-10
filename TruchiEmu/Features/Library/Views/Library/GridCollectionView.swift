@@ -141,14 +141,23 @@ final class GridCollectionViewCoordinator: NSObject {
 
     func updateItemSizes() {
         guard let cv = collectionView else { return }
-        let cardWidth: CGFloat = 80 + (zoomLevel * 200)
+        let cardWidth: CGFloat = (80 + (zoomLevel * 200)) * 1.25
         let spacing: CGFloat = max(6, 16 - (zoomLevel * 8))
         gridSpacing = spacing
 
         _ = max(1, min(8, Int((cv.bounds.width - (gridPadding.leading + gridPadding.trailing) + spacing) / (cardWidth + spacing))))
 
+        let boxType: BoxType?
+        if case .system(let system) = filter {
+            boxType = SystemPreferences.shared.boxType(for: system.id)
+        } else {
+            boxType = nil
+        }
+
+        let cardHeight = cardHeightForBoxType(boxType, cardWidth: cardWidth, zoomLevel: zoomLevel)
+
         let layout = cv.collectionViewLayout as? NSCollectionViewFlowLayout
-        layout?.itemSize = CGSize(width: cardWidth, height: cardWidth * 1.4)
+        layout?.itemSize = CGSize(width: cardWidth, height: cardHeight)
         layout?.minimumInteritemSpacing = spacing
         layout?.minimumLineSpacing = spacing
         layout?.sectionInset = NSEdgeInsets(
@@ -182,6 +191,35 @@ final class GridCollectionViewCoordinator: NSObject {
         layout.minimumInteritemSpacing = gridSpacing
         layout.minimumLineSpacing = gridSpacing
         return layout
+    }
+
+    private func cardHeightForBoxType(_ boxType: BoxType?, cardWidth: CGFloat, zoomLevel: Double) -> CGFloat {
+        let titleSize = 10.0 + zoomLevel * 6.0
+        let textRowHeight = ceil(titleSize * 1.3)
+        let textBlockHeight = textRowHeight * 2.0 + 4.0
+        let topPadding: CGFloat = 8
+        let bottomPadding: CGFloat = 4
+
+        let artHeight: CGFloat
+        let gap: CGFloat
+        if let boxType {
+            switch boxType {
+            case .vertical:
+                artHeight = cardWidth / 0.75
+                gap = 8
+            case .box:
+                artHeight = cardWidth
+                gap = 4
+            case .landscape:
+                artHeight = cardWidth / 1.333
+                gap = 4
+            }
+        } else {
+            artHeight = cardWidth / 0.75
+            gap = 8
+        }
+
+        return ceil(artHeight + textBlockHeight + gap + topPadding + bottomPadding)
     }
 }
 
