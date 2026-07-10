@@ -1,12 +1,15 @@
 #include "RcheevosWrapper.h"
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include "rc_runtime.h"
 #include "rc_runtime_types.h"
 #include "rc_error.h"
 #include "rc_api_runtime.h"
 #include "rc_api_request.h"
 #include "rc_api_user.h"
+#include "rc_hash.h"
+#include "RcheevosCDReader.h"
 
 // The event handler in rcheevos v12.3.0 does not pass userdata.
 // Use thread-local storage to route events back to the Swift caller,
@@ -277,6 +280,26 @@ RcheevosAwardResponse rcheevos_api_process_award_response(const char* json_body,
 
     rc_api_destroy_award_achievement_response(&resp);
     return award_resp;
+}
+
+// --- Hash generation ---
+
+int rcheevos_hash_generate(const char* path, uint32_t console_id, char* out_hash, size_t out_hash_size) {
+    if (!path || !out_hash || out_hash_size < 33) return 0;
+
+    // Check if this is a .cdi file that needs the custom CD reader
+    const char* dot = strrchr(path, '.');
+    int is_cdi = (dot && strcasecmp(dot, ".cdi") == 0);
+
+    if (is_cdi)
+        rcheevos_cdreader_register();
+
+    int result = (rc_hash_generate_from_file(out_hash, console_id, path) != 0) ? 1 : 0;
+
+    if (is_cdi)
+        rc_hash_init_custom_cdreader(NULL);
+
+    return result;
 }
 
 void rcheevos_api_destroy_award_response(RcheevosAwardResponse* response) {

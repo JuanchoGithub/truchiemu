@@ -113,4 +113,11 @@ RcheevosAwardResponse rcheevos_api_process_award_response(const char* json_body,
 // Free the response allocated by rcheevos_api_process_award_response.
 void rcheevos_api_destroy_award_response(RcheevosAwardResponse* response);
 
+// --- Hash generation (delegates to rcheevos rc_hash) ---
+
+// Generates a RetroAchievements hash for a given file path and console ID.
+// out_hash must be at least 33 bytes (32 hex chars + null terminator).
+// Returns 1 on success, 0 on failure.
+int rcheevos_hash_generate(const char* path, uint32_t console_id, char* out_hash, size_t out_hash_size);
+
 #endif /* RcheevosWrapper_h */

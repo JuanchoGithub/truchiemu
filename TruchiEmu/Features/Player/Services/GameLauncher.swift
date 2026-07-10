@@ -426,6 +426,19 @@ func launchGame(
                         totalPoints: achievements.reduce(0) { $0 + $1.points },
                         parentGameID: RetroAchievementsService.shared.parentGameIDForCache(gameID: raGameId)
                     )
+
+                    // Achievements loaded successfully at runtime — upgrade match status to "matched"
+                    // so the library UI reflects that the game is properly identified, even when
+                    // the initial hash-based or name-based lookup was inconclusive (e.g. .cdi files).
+                    if rom.raMatchStatus != "matched" {
+                        rom.raMatchStatus = "matched"
+                        let ctx = SwiftDataContainer.shared.mainContext
+                        let desc = FetchDescriptor<ROMEntry>(predicate: #Predicate { $0.id == rom.id })
+                        if let entry = try? ctx.fetch(desc).first {
+                            entry.raMatchStatus = "matched"
+                            try? ctx.save()
+                        }
+                    }
                 } else {
                     LoggerService.info(category: "GameLauncher", "No cached achievements found for gameID=\(raGameId)")
 

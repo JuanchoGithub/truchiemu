@@ -1,706 +1,92 @@
 import Foundation
-import CommonCrypto
+
+// Console IDs matching rcheevos' rc_consoles.h. These are the identifiers
+// used by RetroAchievements to determine the hash algorithm for each system.
+private let consoleIDForSystem: [String: UInt32] = {
+    // Full mapping from systemID (lowercased) to RC_CONSOLE_* values.
+    // Multiple aliases often map to the same console (e.g. "psx" and "ps1").
+    let pairs: [(String, UInt32)] = [
+        ("nes", 7),
+        ("snes", 3),
+        ("snes-msu", 3),
+        ("sufami", 3),
+        ("satellaview", 3),
+        ("n64", 2),
+        ("gamecube", 16),
+        ("wii", 19),
+        ("nds", 18),
+        ("gb", 4),
+        ("gbc", 6),
+        ("gba", 5),
+        ("virtualboy", 28),
+        ("pokemonmini", 24),
+        ("fds", 81),
+        ("psx", 12),
+        ("ps1", 12),
+        ("ps2", 21),
+        ("psp", 41),
+        ("dreamcast", 40),
+        ("saturn", 39),
+        ("genesis", 1),
+        ("megadrive", 1),
+        ("sms", 11),
+        ("gamegear", 15),
+        ("32x", 10),
+        ("sg-1000", 33),
+        ("mame", 27),
+        ("arcade", 27),
+        ("mess", 27),
+        ("ume", 27),
+        ("3do", 43),
+        ("atari2600", 25),
+        ("atari7800", 51),
+        ("jaguar", 17),
+        ("jaguarcd", 77),
+        ("lynx", 13),
+        ("pce", 8),
+        ("tg16", 8),
+        ("supergrafx", 8),
+        ("pcecd", 76),
+        ("tgcd", 76),
+        ("pcfx", 49),
+        ("amstradcpc", 37),
+        ("apple2", 38),
+        ("apple2gs", 38),
+        ("msx", 29),
+        ("msx2", 29),
+        ("wonderswan", 53),
+        ("wonderswancolor", 53),
+        ("coleco", 44),
+        ("intellivision", 45),
+        ("channelf", 57),
+        ("channelF", 57),
+        ("vectrex", 46),
+        ("odyssey2", 23),
+        ("ngp", 14),
+        ("ngpc", 14),
+        ("neocd", 56),
+        ("neocdz", 56),
+        ("arduboy", 71),
+        ("wasm4", 72),
+        ("megaduck", 69),
+        ("supervision", 63),
+    ]
+    return Dictionary(uniqueKeysWithValues: pairs)
+}()
 
 enum RomHasher {
 
+    /// Computes the RetroAchievements hash for a ROM at the given path.
+    /// Delegates to rcheevos' `rc_hash_generate_from_file` which handles
+    /// all disc image formats (CHD, GDI, CUE/BIN, ISO, etc.) and uses the
+    /// correct per-system algorithm that matches the RA server.
     static func hashRom(at path: String, systemID: String) -> String? {
-        let url = URL(fileURLWithPath: path)
-        let resolvedURL = CDImageParser.resolve(url) ?? url
+        guard let consoleID = consoleIDForSystem[systemID.lowercased()] else { return nil }
 
-        switch systemID.lowercased() {
-        case "nes":
-            return hashNES(url: resolvedURL)
-        case "snes", "snes-msu", "sufami", "satellaview":
-            return hashSNES(url: resolvedURL)
-        case "n64":
-            return hashN64(url: resolvedURL)
-        case "gamecube", "wii":
-            return hashGameCube(url: resolvedURL)
-        case "nds":
-            return hashNDS(url: resolvedURL)
-        case "gb", "gbc", "gba", "virtualboy", "pokemonmini":
-            return md5File(url: resolvedURL)
-        case "fds":
-            return hashFDS(url: resolvedURL)
-        case "psx", "ps1":
-            return hashPS1(url: resolvedURL)
-        case "ps2":
-            return hashPS2(url: resolvedURL)
-        case "psp":
-            return hashPSP(url: resolvedURL)
-        case "dreamcast":
-            return hashDreamcast(url: resolvedURL)
-        case "saturn":
-            return hashSaturn(url: resolvedURL)
-        case "genesis", "megadrive", "sms", "gamegear", "32x", "sg-1000":
-            return hashGenesis(url: resolvedURL)
-        case "mame", "arcade", "mess", "ume":
-            return hashMAME(url: resolvedURL)
-        case "3do":
-            return hash3DO(url: resolvedURL)
-        case "atari2600":
-            return md5File(url: resolvedURL)
-        case "atari7800":
-            return hashAtari7800(url: resolvedURL)
-        case "jaguar", "jaguarcd":
-            return md5File(url: resolvedURL)
-        case "lynx":
-            return hashLynx(url: resolvedURL)
-        case "pce", "tg16", "supergrafx":
-            return hashPCEngine(url: resolvedURL)
-        case "pcecd", "tgcd":
-            return hashPCEngineCD(url: resolvedURL)
-        case "pcfx":
-            return hashPCFX(url: resolvedURL)
-        case "amstradcpc", "apple2", "apple2GS", "msx", "msx2":
-            return md5File(url: resolvedURL)
-        case "wonderswan", "wonderswancolor":
-            return md5File(url: resolvedURL)
-        case "coleco", "intellivision", "channelF", "channelf", "vectrex", "odyssey2":
-            return md5File(url: resolvedURL)
-        case "ngp", "ngpc":
-            return md5File(url: resolvedURL)
-        case "neocd", "neocdz":
-            return hashNeoGeoCD(url: resolvedURL)
-        case "arduboy", "wasm4":
-            return hashNormalizedTextFile(url: resolvedURL)
-        case "megaduck", "supervision":
-            return md5File(url: resolvedURL)
-        default:
-            return nil
-        }
-    }
+        var hashBytes = [CChar](repeating: 0, count: 33)
+        let result = rcheevos_hash_generate(path, consoleID, &hashBytes, 33)
+        guard result != 0 else { return nil }
 
-    // MARK: - MD5 Helpers
-
-    private static func md5Data(_ data: Data) -> String {
-        var digest = [UInt8](repeating: 0, count: Int(CC_MD5_DIGEST_LENGTH))
-        data.withUnsafeBytes { buffer in
-            _ = CC_MD5(buffer.baseAddress, CC_LONG(data.count), &digest)
-        }
-        return digest.map { String(format: "%02x", $0) }.joined()
-    }
-
-    private static func md5File(url: URL) -> String? {
-        guard let data = try? Data(contentsOf: url) else { return nil }
-        return md5Data(data)
-    }
-
-    private static func md5Update(context: inout CC_MD5_CTX, data: Data) {
-        data.withUnsafeBytes { buffer in
-            _ = CC_MD5_Update(&context, buffer.baseAddress, CC_LONG(data.count))
-        }
-    }
-
-    private static func md5Final(context: inout CC_MD5_CTX) -> String {
-        var digest = [UInt8](repeating: 0, count: Int(CC_MD5_DIGEST_LENGTH))
-        _ = CC_MD5_Final(&digest, &context)
-        return digest.map { String(format: "%02x", $0) }.joined()
-    }
-
-    // MARK: - NES / Famicom
-
-    private static func hashNES(url: URL) -> String? {
-        guard let handle = try? FileHandle(forReadingFrom: url) else { return nil }
-        defer { try? handle.close() }
-
-        guard let header = try? handle.read(upToCount: 16), header.count >= 4 else {
-            return md5File(url: url)
-        }
-
-        // iNES magic: "NES\x1A"
-        let isINES = header[0] == 0x4E && header[1] == 0x45 && header[2] == 0x53 && header[3] == 0x1A
-        if isINES {
-            try? handle.seek(toOffset: 16)
-        } else {
-            try? handle.seek(toOffset: 0)
-        }
-
-        var context = CC_MD5_CTX()
-        CC_MD5_Init(&context)
-        let bufferSize = 128 * 1024
-        while let data = try? handle.read(upToCount: bufferSize), !data.isEmpty {
-            md5Update(context: &context, data: data)
-        }
-        return md5Final(context: &context)
-    }
-
-    // MARK: - SNES / Sufami Turbo / Satellaview
-
-    private static func hashSNES(url: URL) -> String? {
-        guard let attributes = try? FileManager.default.attributesOfItem(atPath: url.path),
-              let fileSize = attributes[.size] as? UInt64 else { return nil }
-
-        let headerSize: UInt64 = (fileSize % (8 * 1024) == 512) ? 512 : 0
-
-        guard let handle = try? FileHandle(forReadingFrom: url) else { return nil }
-        defer { try? handle.close() }
-
-        if headerSize > 0 {
-            try? handle.seek(toOffset: headerSize)
-        }
-
-        var context = CC_MD5_CTX()
-        CC_MD5_Init(&context)
-
-        let bufferSize = 128 * 1024
-        while let data = try? handle.read(upToCount: bufferSize), !data.isEmpty {
-            md5Update(context: &context, data: data)
-        }
-
-        return md5Final(context: &context)
-    }
-
-    // MARK: - N64
-
-    private static func hashN64(url: URL) -> String? {
-        let ext = url.pathExtension.lowercased()
-        let needsByteSwap = ext == "v64" || ext == "n64"
-
-        guard var data = try? Data(contentsOf: url) else { return nil }
-
-        if needsByteSwap {
-            let count = data.count
-            for i in stride(from: 0, to: count, by: 2) {
-                data[i] = data[i + 1]
-                data[i + 1] = data[i]
-            }
-        }
-
-        return md5Data(data)
-    }
-
-    // MARK: - GameCube
-
-    // Known limitation: RA's full spec also requires hashing each DOL segment
-    // (code and data) referenced in the apploader. Parsing the apploader bytecode
-    // to discover those segments is out of scope here, so this hashes the
-    // apploader code only. This is a reasonable approximation for single-DOL
-    // games (the common case) but will not match RA for multi-segment titles.
-    private static func hashGameCube(url: URL) -> String? {
-        guard let handle = try? FileHandle(forReadingFrom: url) else { return nil }
-        defer { try? handle.close() }
-
-        try? handle.seek(toOffset: 0)
-
-        guard let apploaderData = try? handle.read(upToCount: 32 * 1024), apploaderData.count >= 8 else {
-            return nil
-        }
-
-        let codeOffset = apploaderData.subdata(in: 0..<4).withUnsafeBytes { $0.load(as: UInt32.self) }
-        let codeSize = apploaderData.subdata(in: 4..<8).withUnsafeBytes { $0.load(as: UInt32.self) }
-
-        try? handle.seek(toOffset: UInt64(codeOffset))
-
-        var buffer = apploaderData
-        var remaining = Int(codeSize)
-
-        while remaining > 0 {
-            let toRead = min(remaining, 128 * 1024)
-            guard let chunk = try? handle.read(upToCount: toRead) else { break }
-            if chunk.isEmpty { break }
-            buffer.append(chunk)
-            remaining -= chunk.count
-        }
-
-        return buffer.isEmpty ? nil : md5Data(buffer)
-    }
-
-    // MARK: - NDS
-
-    private static func hashNDS(url: URL) -> String? {
-        guard let handle = try? FileHandle(forReadingFrom: url) else { return nil }
-        defer { try? handle.close() }
-
-        guard let header = try? handle.read(upToCount: 0x160), header.count == 0x160 else { return nil }
-
-        let iconTitleOffset = header.subdata(in: 0x68..<0x6C).withUnsafeBytes { $0.load(as: UInt32.self) }
-        let arm9Offset = header.subdata(in: 0x20..<0x24).withUnsafeBytes { $0.load(as: UInt32.self) }
-        let arm9Size = header.subdata(in: 0x2C..<0x30).withUnsafeBytes { $0.load(as: UInt32.self) }
-        let arm7Offset = header.subdata(in: 0x30..<0x34).withUnsafeBytes { $0.load(as: UInt32.self) }
-        let arm7Size = header.subdata(in: 0x3C..<0x40).withUnsafeBytes { $0.load(as: UInt32.self) }
-
-        var buffer = Data()
-
-        if iconTitleOffset > 0 {
-            try? handle.seek(toOffset: UInt64(iconTitleOffset))
-            if let iconData = try? handle.read(upToCount: 0xA00), !iconData.isEmpty {
-                buffer.append(iconData)
-            }
-        }
-
-        if arm9Offset > 0 {
-            try? handle.seek(toOffset: UInt64(arm9Offset))
-            var remaining = Int(arm9Size)
-            while remaining > 0 {
-                let toRead = min(remaining, 128 * 1024)
-                if let chunk = try? handle.read(upToCount: toRead), !chunk.isEmpty {
-                    buffer.append(chunk)
-                    remaining -= chunk.count
-                } else { break }
-            }
-        }
-
-        if arm7Offset > 0 {
-            try? handle.seek(toOffset: UInt64(arm7Offset))
-            var remaining = Int(arm7Size)
-            while remaining > 0 {
-                let toRead = min(remaining, 128 * 1024)
-                if let chunk = try? handle.read(upToCount: toRead), !chunk.isEmpty {
-                    buffer.append(chunk)
-                    remaining -= chunk.count
-                } else { break }
-            }
-        }
-
-        return buffer.isEmpty ? nil : md5Data(buffer)
-    }
-
-    // MARK: - Famicom Disk System
-
-    private static func hashFDS(url: URL) -> String? {
-        guard let handle = try? FileHandle(forReadingFrom: url) else { return nil }
-        defer { try? handle.close() }
-
-        guard let header = try? handle.read(upToCount: 16), header.count >= 4 else {
-            return md5File(url: url)
-        }
-
-        let isFDS = header[0] == 0x46 && header[1] == 0x44 && header[2] == 0x53 && header[3] == 0x1A
-        if isFDS {
-            try? handle.seek(toOffset: 16)
-        }
-
-        var context = CC_MD5_CTX()
-        CC_MD5_Init(&context)
-
-        let bufferSize = 128 * 1024
-        while let data = try? handle.read(upToCount: bufferSize), !data.isEmpty {
-            md5Update(context: &context, data: data)
-        }
-
-        return md5Final(context: &context)
-    }
-
-    // MARK: - PlayStation (PS1)
-
-    private static func hashPS1(url: URL) -> String? {
-        guard let config = ROMIdentifier.ISOScanner.extractSystemConfig(from: url),
-              let bootLine = config.components(separatedBy: .newlines).first(where: { $0.contains("BOOT") }) else {
-            return nil
-        }
-
-        let exeName: String
-        if let range = bootLine.range(of: "BOOT2?\\s*=", options: .regularExpression) {
-            let after = String(bootLine[range.upperBound...])
-            exeName = after.components(separatedBy: ";").first?.trimmingCharacters(in: .whitespaces) ?? after
-        } else {
-            return nil
-        }
-
-        guard !exeName.isEmpty else { return nil }
-        return hashPSXExe(url: url, exeName: exeName)
-    }
-
-    // MARK: - PlayStation 2
-
-    private static func hashPS2(url: URL) -> String? {
-        guard let config = ROMIdentifier.ISOScanner.extractSystemConfig(from: url),
-              let bootLine = config.components(separatedBy: .newlines).first(where: { $0.contains("BOOT2") }) else {
-            return nil
-        }
-
-        let exeName: String
-        if let range = bootLine.range(of: "BOOT2\\s*=", options: .regularExpression) {
-            let after = String(bootLine[range.upperBound...])
-            exeName = after.components(separatedBy: ";").first?.trimmingCharacters(in: .whitespaces) ?? after
-        } else {
-            return nil
-        }
-
-        guard !exeName.isEmpty else { return nil }
-        return hashPSXExe(url: url, exeName: exeName)
-    }
-
-    private static func hashPSXExe(url: URL, exeName: String) -> String? {
-        guard let handle = try? FileHandle(forReadingFrom: url) else { return nil }
-        defer { try? handle.close() }
-
-        let scanRange = 8 * 1024 * 1024
-        guard let scanData = try? handle.read(upToCount: scanRange) else { return nil }
-
-        // BOOT= paths look like "cdrom:\SLUS_006.45;1" — strip the drive prefix and version
-        // to get the leaf filename that actually appears in the ISO9660 directory records.
-        // exeName uses backslash separators, so split on "\" (NSString.lastPathComponent
-        // only handles "/" and would return the whole path).
-        let stripped = exeName.replacingOccurrences(of: ";1", with: "")
-        let leaf = stripped.split(separator: "\\").last.map(String.init) ?? stripped
-        let leafName = leaf.uppercased() + ";1"
-        guard let info = ROMIdentifier.ISOScanner.locateLBNAndSize(in: scanData, forLeafName: leafName) else { return nil }
-        let lbn = info.lbn
-        let exeSize = Int(info.size)
-
-        let format = ROMIdentifier.ISOScanner.detectFormat(at: url)
-        try? handle.seek(toOffset: format.lbnToFileOffset(lbn))
-
-        var exeData = Data()
-        var totalRead = 0
-        let bufferSize = 128 * 1024
-        while totalRead < exeSize,
-              let chunk = try? handle.read(upToCount: min(bufferSize, exeSize - totalRead)),
-              !chunk.isEmpty {
-            exeData.append(chunk)
-            totalRead += chunk.count
-        }
-        guard !exeData.isEmpty else { return nil }
-
-        var nameData = exeName.data(using: .ascii) ?? Data()
-        nameData.append(exeData)
-        return md5Data(nameData)
-    }
-
-    // MARK: - PSP
-
-    private static func hashPSP(url: URL) -> String? {
-        guard let handle = try? FileHandle(forReadingFrom: url) else { return nil }
-        defer { try? handle.close() }
-
-        // ISO9660 directory records contain leaf filenames with version suffix (e.g. "PARAM.SFO;1"),
-        // not the full path. Scan the first 16MB to find the SFO and EBOOT directory entries.
-        // PSP UMD images often omit the ";1" version suffix, so try both forms.
-        let scanRange = 16 * 1024 * 1024
-        guard let scanData = try? handle.read(upToCount: scanRange) else { return nil }
-
-        guard let sfoInfo = ROMIdentifier.ISOScanner.locateLBNAndSize(in: scanData, forLeafName: "PARAM.SFO;1")
-                ?? ROMIdentifier.ISOScanner.locateLBNAndSize(in: scanData, forLeafName: "PARAM.SFO") else { return nil }
-        guard let ebootInfo = ROMIdentifier.ISOScanner.locateLBNAndSize(in: scanData, forLeafName: "EBOOT.BIN;1")
-                ?? ROMIdentifier.ISOScanner.locateLBNAndSize(in: scanData, forLeafName: "EBOOT.BIN") else { return nil }
-
-        let format = ROMIdentifier.ISOScanner.detectFormat(at: url)
-
-        try? handle.seek(toOffset: format.lbnToFileOffset(sfoInfo.lbn))
-        let sfoReadSize = min(Int(sfoInfo.size), 4096)
-        guard let sfoData = try? handle.read(upToCount: sfoReadSize) else { return nil }
-
-        try? handle.seek(toOffset: format.lbnToFileOffset(ebootInfo.lbn))
-        var ebootData = Data()
-        var totalRead = 0
-        let ebootSize = Int(ebootInfo.size)
-        let bufferSize = 128 * 1024
-        while totalRead < ebootSize,
-              let chunk = try? handle.read(upToCount: min(bufferSize, ebootSize - totalRead)),
-              !chunk.isEmpty {
-            ebootData.append(chunk)
-            totalRead += chunk.count
-        }
-        guard !ebootData.isEmpty else { return nil }
-
-        var buffer = sfoData
-        buffer.append(ebootData)
-        return md5Data(buffer)
-    }
-
-    // MARK: - Dreamcast
-
-    private static func hashDreamcast(url: URL) -> String? {
-        guard let handle = try? FileHandle(forReadingFrom: url) else { return nil }
-        defer { try? handle.close() }
-
-        guard let sector0 = try? handle.read(upToCount: 512), sector0.count == 512 else { return nil }
-
-        let marker = "SEGA SEGAKATANA ".data(using: .ascii)!
-        guard sector0.prefix(16).elementsEqual(marker) else { return nil }
-
-        let primaryExeOffset = sector0.subdata(in: 0x80..<0x84).withUnsafeBytes { $0.load(as: UInt32.self) }
-        let primaryExeSize = sector0.subdata(in: 0x84..<0x88).withUnsafeBytes { $0.load(as: UInt32.self) }
-
-        try? handle.seek(toOffset: UInt64(primaryExeOffset))
-        var buffer = sector0
-        var remaining = Int(primaryExeSize)
-
-        while remaining > 0 {
-            let toRead = min(remaining, 128 * 1024)
-            if let chunk = try? handle.read(upToCount: toRead), !chunk.isEmpty {
-                buffer.append(chunk)
-                remaining -= chunk.count
-            } else { break }
-        }
-
-        return md5Data(buffer)
-    }
-
-    // MARK: - Saturn
-
-    private static func hashSaturn(url: URL) -> String? {
-        guard let data = try? Data(contentsOf: url), data.count >= 512 else { return nil }
-
-        let marker1 = "SEGA SEGASATURN ".data(using: .ascii)!
-        let marker2 = "SEGADISCSYSTEM ".data(using: .ascii)!
-
-        let isSaturn = data.prefix(16).elementsEqual(marker1) || data.prefix(16).elementsEqual(marker2)
-        guard isSaturn else { return nil }
-
-        return md5Data(data.prefix(512))
-    }
-
-    // MARK: - MAME / Arcade
-
-    private static func hashMAME(url: URL) -> String? {
-        let filename = url.deletingPathExtension().lastPathComponent
-        return md5Data(filename.data(using: .ascii) ?? Data())
-    }
-
-    // MARK: - 3DO Interactive Multiplayer
-
-    private static func hash3DO(url: URL) -> String? {
-        guard let handle = try? FileHandle(forReadingFrom: url) else { return nil }
-        defer { try? handle.close() }
-
-        guard let sector0 = try? handle.read(upToCount: 512), sector0.count >= 132 else { return nil }
-
-        let scanRange = 8 * 1024 * 1024
-        guard let scanData = try? handle.read(upToCount: scanRange) else { return nil }
-
-        guard let lbn = ROMIdentifier.ISOScanner.locateLBN(in: scanData, forLeafName: "LaunchMe") else { return nil }
-
-        var buffer = Data(sector0.prefix(132))
-        let launchMeOffset = ROMIdentifier.ISOScanner.detectFormat(at: url).lbnToFileOffset(lbn)
-
-        try? handle.seek(toOffset: launchMeOffset)
-        let bufferSize = 128 * 1024
-        while let chunk = try? handle.read(upToCount: bufferSize), !chunk.isEmpty {
-            buffer.append(chunk)
-        }
-
-        return buffer.isEmpty ? nil : md5Data(buffer)
-    }
-
-    // MARK: - Atari 7800
-
-    private static func hashAtari7800(url: URL) -> String? {
-        guard let handle = try? FileHandle(forReadingFrom: url) else { return nil }
-        defer { try? handle.close() }
-
-        guard let header = try? handle.read(upToCount: 128), header.count >= 8 else {
-            return md5File(url: url)
-        }
-
-        let isAtari7800 = header[0] == 0x01 && header[1] == 0x41 && header[2] == 0x54 && header[3] == 0x41 && header[4] == 0x52 && header[5] == 0x49 && header[6] == 0x37 && header[7] == 0x38
-
-        if isAtari7800 {
-            try? handle.seek(toOffset: 128)
-        }
-
-        var context = CC_MD5_CTX()
-        CC_MD5_Init(&context)
-
-        let bufferSize = 128 * 1024
-        while let data = try? handle.read(upToCount: bufferSize), !data.isEmpty {
-            md5Update(context: &context, data: data)
-        }
-
-        return md5Final(context: &context)
-    }
-
-    // MARK: - Atari Lynx
-
-    private static func hashLynx(url: URL) -> String? {
-        guard let handle = try? FileHandle(forReadingFrom: url) else { return nil }
-        defer { try? handle.close() }
-
-        guard let header = try? handle.read(upToCount: 64), header.count >= 5 else {
-            return md5File(url: url)
-        }
-
-        let isLynx = header[0] == 0x4C && header[1] == 0x59 && header[2] == 0x4E && header[3] == 0x58 && header[4] == 0x00
-
-        if isLynx {
-            try? handle.seek(toOffset: 64)
-        }
-
-        var context = CC_MD5_CTX()
-        CC_MD5_Init(&context)
-
-        let bufferSize = 128 * 1024
-        while let data = try? handle.read(upToCount: bufferSize), !data.isEmpty {
-            md5Update(context: &context, data: data)
-        }
-
-        return md5Final(context: &context)
-    }
-
-    // MARK: - PC Engine / TurboGrafx-16 / SuperGrafx
-
-    private static func hashPCEngine(url: URL) -> String? {
-        guard let attributes = try? FileManager.default.attributesOfItem(atPath: url.path),
-              let fileSize = attributes[.size] as? UInt64 else { return nil }
-
-        let headerSize: UInt64 = (fileSize % (128 * 1024) == 512) ? 512 : 0
-
-        guard let handle = try? FileHandle(forReadingFrom: url) else { return nil }
-        defer { try? handle.close() }
-
-        if headerSize > 0 {
-            try? handle.seek(toOffset: headerSize)
-        }
-
-        var context = CC_MD5_CTX()
-        CC_MD5_Init(&context)
-
-        let bufferSize = 128 * 1024
-        while let data = try? handle.read(upToCount: bufferSize), !data.isEmpty {
-            md5Update(context: &context, data: data)
-        }
-
-        return md5Final(context: &context)
-    }
-
-    // MARK: - PC Engine CD / TurboGrafx-CD
-
-    private static func hashPCEngineCD(url: URL) -> String? {
-        guard let handle = try? FileHandle(forReadingFrom: url) else { return nil }
-        defer { try? handle.close() }
-
-        let format = ROMIdentifier.ISOScanner.detectFormat(at: url)
-        try? handle.seek(toOffset: format.lbnToFileOffset(1))
-        guard let sector1 = try? handle.read(upToCount: 128), sector1.count == 128 else { return nil }
-
-        let marker = "PC Engine CD-ROM SYSTEM".data(using: .ascii)!
-        guard let range = sector1.range(of: marker), range.lowerBound >= 32 && range.lowerBound < 54 else { return nil }
-
-        var buffer = Data(sector1.suffix(22))
-
-        let sectorIndex = UInt32(sector1[0]) | (UInt32(sector1[1]) << 8) | (UInt32(sector1[2]) << 16)
-        let sectorCount = sector1[3]
-
-        try? handle.seek(toOffset: format.lbnToFileOffset(sectorIndex))
-        var remaining = Int(sectorCount)
-        while remaining > 0 {
-            let toRead = min(remaining, 64)
-            if let chunk = try? handle.read(upToCount: toRead * 2048), !chunk.isEmpty {
-                buffer.append(chunk)
-                remaining -= chunk.count
-            } else { break }
-        }
-
-        return md5Data(buffer)
-    }
-
-    // MARK: - PC-FX
-
-    private static func hashPCFX(url: URL) -> String? {
-        guard let handle = try? FileHandle(forReadingFrom: url) else { return nil }
-        defer { try? handle.close() }
-
-        let format = ROMIdentifier.ISOScanner.detectFormat(at: url)
-
-        try? handle.seek(toOffset: format.lbnToFileOffset(0))
-        guard let sector0 = try? handle.read(upToCount: 2048), sector0.count >= 32 else { return nil }
-
-        let marker = "PC-FX:Hu_CD-ROM".data(using: .ascii)!
-        guard sector0.prefix(15).elementsEqual(marker) else { return nil }
-
-        try? handle.seek(toOffset: format.lbnToFileOffset(1))
-        guard let sector1 = try? handle.read(upToCount: 128), sector1.count == 128 else { return nil }
-
-        var buffer = Data(sector0.prefix(32))
-        buffer.append(sector1)
-
-        let sectorIndex = sector1.subdata(in: 0x20..<0x24).withUnsafeBytes { $0.load(as: UInt32.self) }
-        let sectorCount = sector1.subdata(in: 0x24..<0x28).withUnsafeBytes { $0.load(as: UInt32.self) }
-
-        try? handle.seek(toOffset: format.lbnToFileOffset(sectorIndex))
-        var remaining = Int(sectorCount)
-        while remaining > 0 {
-            let toRead = min(remaining, 64)
-            if let chunk = try? handle.read(upToCount: toRead * 2048), !chunk.isEmpty {
-                buffer.append(chunk)
-                remaining -= chunk.count
-            } else { break }
-        }
-
-        return md5Data(buffer)
-    }
-
-    // MARK: - Neo Geo CD
-
-    private static func hashNeoGeoCD(url: URL) -> String? {
-        guard let handle = try? FileHandle(forReadingFrom: url) else { return nil }
-        defer { try? handle.close() }
-
-        let scanRange = 16 * 1024 * 1024
-        guard let scanData = try? handle.read(upToCount: scanRange) else { return nil }
-
-        // Read IPL.TXT, parse out the .PRG file list, and concatenate their contents.
-        let format = ROMIdentifier.ISOScanner.detectFormat(at: url)
-        guard let iplLbn = ROMIdentifier.ISOScanner.locateLBN(in: scanData, forLeafName: "IPL.TXT;1") else { return nil }
-        try? handle.seek(toOffset: format.lbnToFileOffset(iplLbn))
-        guard let iplData = try? handle.read(upToCount: 4096),
-              let iplText = String(data: iplData, encoding: .ascii) else { return nil }
-
-        let prgLeafNames = iplText
-            .components(separatedBy: .newlines)
-            .map { $0.trimmingCharacters(in: .whitespaces) }
-            .filter { !$0.isEmpty && !$0.hasPrefix("//") }
-            .map { (($0 as NSString).lastPathComponent as String).uppercased() }
-            .filter { $0.hasSuffix(".PRG") }
-            .map { $0 + ";1" }
-
-        var buffer = Data()
-        let readBufferSize = 128 * 1024
-        for leafName in prgLeafNames {
-            guard let lbn = ROMIdentifier.ISOScanner.locateLBN(in: scanData, forLeafName: leafName) else { continue }
-            try? handle.seek(toOffset: format.lbnToFileOffset(lbn))
-            while let chunk = try? handle.read(upToCount: readBufferSize), !chunk.isEmpty {
-                buffer.append(chunk)
-            }
-        }
-
-        return buffer.isEmpty ? nil : md5Data(buffer)
-    }
-
-    // MARK: - Arduboy / WASM-4 (normalize line endings)
-
-    private static func hashNormalizedTextFile(url: URL) -> String? {
-        guard let data = try? Data(contentsOf: url) else { return nil }
-
-        if let string = String(data: data, encoding: .utf8) {
-            let normalized = string.replacingOccurrences(of: "\r\n", with: "\n").replacingOccurrences(of: "\r", with: "\n")
-            if let normalizedData = normalized.data(using: .ascii) {
-                return md5Data(normalizedData)
-            }
-        }
-
-        return md5File(url: url)
-    }
-
-    // MARK: - Genesis / Mega Drive / SMS / Game Gear
-    
-    private static func hashGenesis(url: URL) -> String? {
-        guard let attributes = try? FileManager.default.attributesOfItem(atPath: url.path),
-              let fileSize = attributes[.size] as? UInt64 else { return md5File(url: url) }
-        
-        // RetroAchievements expects MD5 of the raw ROM.
-        // If the file has a 512-byte SMD header, we skip it.
-        let isPowerOfTwo = { (n: UInt64) -> Bool in n > 0 && (n & (n - 1) == 0) }
-        let hasHeader = (fileSize > 512) && (fileSize % 16384 == 512 || isPowerOfTwo(fileSize - 512))
-        let offset: UInt64 = hasHeader ? 512 : 0
-        
-        guard let handle = try? FileHandle(forReadingFrom: url) else { return md5File(url: url) }
-        defer { try? handle.close() }
-        
-        if offset > 0 {
-            try? handle.seek(toOffset: offset)
-        }
-        
-        var context = CC_MD5_CTX()
-        CC_MD5_Init(&context)
-        
-        let bufferSize = 128 * 1024
-        while let data = try? handle.read(upToCount: bufferSize), !data.isEmpty {
-            md5Update(context: &context, data: data)
-        }
-        
-        return md5Final(context: &context)
+        return String(cString: hashBytes)
     }
 }

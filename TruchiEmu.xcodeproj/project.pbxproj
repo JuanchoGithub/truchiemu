@@ -173,9 +173,9 @@
 		1F27DBFA36013FEE49C79FC4 /* fightdata_samsptk.json in Resources */ = {isa = PBXBuildFile; fileRef = 0332CB1FAB59B41322608406 /* fightdata_samsptk.json */; };
 		1F78DA68429EEE70B308C499 /* psp@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = F5324FC711713455B3AFAC54 /* psp@132w.png */; };
 		1FAE94BFDF65CF2154B39875 /* ws@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = F54FE75C7494DC94970ADDC0 /* ws@132w.png */; };
+		1FC2666DC75E56A5C0EBF2D4 /* RcheevosCDReader.c in Sources */ = {isa = PBXBuildFile; fileRef = 8614000262ED93A0CCA2760E /* RcheevosCDReader.c */; };
 		1FD9FD22B9145F459A110233 /* fightdata_kov.json in Resources */ = {isa = PBXBuildFile; fileRef = A793A00298090EE8A712F944 /* fightdata_kov.json */; };
 		200CE510F205AAD9599C098E /* atarist@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 6C6B0BA0A81DA9E4BCBBA1EC /* atarist@132w.png */; };
-		200E556F77878D242022783A /* CDImageParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBFDAA4D12430D6C4E31164D /* CDImageParser.swift */; };
 		2082B4CF543FB884F8E2733D /* input_coreLabels_mupen64plus.json in Resources */ = {isa = PBXBuildFile; fileRef = 20B274974EC3017DD61EE9B4 /* input_coreLabels_mupen64plus.json */; };
 		2092982EBE4E3207136DC2C0 /* ExtractedROMCacheSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17ACE1CD476919F03307CB20 /* ExtractedROMCacheSettingsView.swift */; };
 		2093675B94C4153A1497D7BA /* input_systemLabels_genesis.json in Resources */ = {isa = PBXBuildFile; fileRef = A7600CDEC80018D914D43596 /* input_systemLabels_genesis.json */; };
@@ -1087,6 +1087,7 @@
 		E4F9A52A6FA2E0250A99FD0E /* fightdata_kinst.json in Resources */ = {isa = PBXBuildFile; fileRef = 53AC42011A292C817EC9DBDC /* fightdata_kinst.json */; };
 		E51CDE2C230FBBFE9AA8A980 /* LibraryAutomationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 655A4E06046E79930EEE2443 /* LibraryAutomationCoordinator.swift */; };
 		E5519A0880D1360BA2982973 /* es.json in Resources */ = {isa = PBXBuildFile; fileRef = DA92FF5F565391B09186FD35 /* es.json */; };
+		E5CC519C7E8FD26D9228AA3C /* RcheevosCDReader.c in Sources */ = {isa = PBXBuildFile; fileRef = 8614000262ED93A0CCA2760E /* RcheevosCDReader.c */; };
 		E5DF81ECE7A293F0F403D992 /* mame2010_libretro.json in Resources */ = {isa = PBXBuildFile; fileRef = 4AD390216F957165FC9494EE /* mame2010_libretro.json */; };
 		E602AB588AE44CE5C78E87FD /* input_systemLabels_vircon32.json in Resources */ = {isa = PBXBuildFile; fileRef = 0852DBE1836B35F40C72AC9B /* input_systemLabels_vircon32.json */; };
 		E62EBD0220FD96647B367212 /* fightdata_fatfury2.json in Resources */ = {isa = PBXBuildFile; fileRef = BB2C4C158DD334B72241DBD2 /* fightdata_fatfury2.json */; };
@@ -1685,6 +1686,7 @@
 		5C71FA314D9C45318540B2DB /* LibretroBridgeImpl.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = LibretroBridgeImpl.mm; sourceTree = "<group>"; };
 		5C78737C16238997BD9148EF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		5CDC3C79BAFC397D5CB8E5ED /* doom@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "doom@132w.png"; sourceTree = "<group>"; };
+		5CF1824416794F0D6E5938A5 /* RcheevosCDReader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RcheevosCDReader.h; sourceTree = "<group>"; };
 		5D2ACABD070C032CF81B99A6 /* Nintendo - Family Computer Disk System.dat */ = {isa = PBXFileReference; path = "Nintendo - Family Computer Disk System.dat"; sourceTree = "<group>"; };
 		5D70975DBD07119CF82935ED /* fightdata_sf2ce.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_sf2ce.json; sourceTree = "<group>"; };
 		5DD14108CB59DFA0DA852B43 /* PORTS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PORTS.png; sourceTree = "<group>"; };
@@ -1878,6 +1880,7 @@
 		84D2D65163527E606B9A8023 /* XPCSharedMemory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XPCSharedMemory.h; sourceTree = "<group>"; };
 		857D78DF34C31AA99698DF6A /* FLASHBACK.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FLASHBACK.png; sourceTree = "<group>"; };
 		85B3B44BBDB415B6AD99E93B /* fightdata_sams64_2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_sams64_2.json; sourceTree = "<group>"; };
+		8614000262ED93A0CCA2760E /* RcheevosCDReader.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = RcheevosCDReader.c; sourceTree = "<group>"; };
 		866F7E9495192E7531109947 /* NEC - PC Engine - TurboGrafx 16.dat */ = {isa = PBXFileReference; path = "NEC - PC Engine - TurboGrafx 16.dat"; sourceTree = "<group>"; };
 		86D467EC70EF33E265BAF765 /* ResourceCacheModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceCacheModels.swift; sourceTree = "<group>"; };
 		8700FB3B470B3289AFACE878 /* ARCADE_FBNEO.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ARCADE_FBNEO.png; sourceTree = "<group>"; };
@@ -2431,7 +2434,6 @@
 		FA897462D8DF8DDA8C9792CB /* gw@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "gw@132w.png"; sourceTree = "<group>"; };
 		FAE59479082A912BBCECFEAA /* mame2000_libretro_default.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = mame2000_libretro_default.json; sourceTree = "<group>"; };
 		FB4F7ED2498E23BD3734F7B6 /* input_coreOverrides_handy.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_handy.json; sourceTree = "<group>"; };
-		FBFDAA4D12430D6C4E31164D /* CDImageParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CDImageParser.swift; sourceTree = "<group>"; };
 		FC4A009791FC6C0F1975F092 /* amstrad-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "amstrad-cheats.zip"; sourceTree = "<group>"; };
 		FC4E8825B2405239AC1C5F70 /* ShareBehavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareBehavior.swift; sourceTree = "<group>"; };
 		FCAB65F47C4E26FC16B426CF /* MDMSU.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MDMSU.png; sourceTree = "<group>"; };
@@ -3322,7 +3324,6 @@
 		994AE121AC2997DDFCDDC992 /* Hashing */ = {
 			isa = PBXGroup;
 			children = (
-				FBFDAA4D12430D6C4E31164D /* CDImageParser.swift */,
 				72DFDF6462D09B051A7093FE /* RomHasher.swift */,
 			);
 			path = Hashing;
@@ -3436,6 +3437,8 @@
 				C0F5DA53816F3DA50BB5CBF4 /* LibretroCallbacks.mm */,
 				9351B675335D9BA7F783E15B /* LibretroGlobals.h */,
 				AE2C09D3C56810B2B9CCD08F /* LibretroGlobals.mm */,
+				8614000262ED93A0CCA2760E /* RcheevosCDReader.c */,
+				5CF1824416794F0D6E5938A5 /* RcheevosCDReader.h */,
 				DE8AA314424647A2DC895F81 /* RcheevosRuntime.swift */,
 				C6A669A1E4230EBBC0D9A2F4 /* RcheevosWrapper.c */,
 				6BD6E0283998C75AE2DADDC4 /* RcheevosWrapper.h */,
@@ -5479,6 +5482,7 @@
 				4F3969EB015D6B1606BBEE59 /* LibretroGlobals.mm in Sources */,
 				E77642038E0B1B138CE591BB /* LogManager.swift in Sources */,
 				08724A1C5294340425F2DA9A /* LoggerService.swift in Sources */,
+				E5CC519C7E8FD26D9228AA3C /* RcheevosCDReader.c in Sources */,
 				969EEC66C98A3CCBD21B86E1 /* RcheevosRuntime.swift in Sources */,
 				49A82C18C949F5D5838AEA50 /* RcheevosWrapper.c in Sources */,
 				4F5D20FFA67634F67EDC299E /* SaveDirectoryBridge.swift in Sources */,
@@ -5527,7 +5531,6 @@
 				126430C5084506DE1D08831F /* BoxArtSettingsView.swift in Sources */,
 				1B30AF34E62E318B40D3B0B8 /* BoxArtThumbnailService.swift in Sources */,
 				9848C59D1C12F39F2D7C6625 /* ButtonKeyResolver.swift in Sources */,
-				200E556F77878D242022783A /* CDImageParser.swift in Sources */,
 				89999BCF6C86749975156810 /* CLILauncher.swift in Sources */,
 				EEFB801BD3A80132FB475EB6 /* CRTFilter.metal in Sources */,
 				5C15E6B7D2E89E337CB85B84 /* CRTFilter_multipass.metal in Sources */,
@@ -5732,6 +5735,7 @@
 				A34A0B9B6CA7EB7F06872311 /* ROMLibrary.swift in Sources */,
 				6541937F9DC60F8102F9A1E3 /* ROMRepository.swift in Sources */,
 				B2322506F68F6E94D30D8EA9 /* ROMScanner.swift in Sources */,
+				1FC2666DC75E56A5C0EBF2D4 /* RcheevosCDReader.c in Sources */,
 				EAA8BB735B42D56113CE8902 /* RcheevosRuntime.swift in Sources */,
 				FDB673FBF6AA9921EDFA3337 /* RcheevosWrapper.c in Sources */,
 				39BBB51DD676ABF50F2A4653 /* RecordingBadgeOverlay.swift in Sources */,
