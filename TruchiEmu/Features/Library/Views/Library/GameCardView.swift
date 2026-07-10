@@ -97,7 +97,8 @@ struct GameCardView: View {
 
     var body: some View {
         cardContent
-        .scaleEffect(isPressed ? 0.97 : 1.0)
+        .scaleEffect(isPressed ? 0.97 : (isHovered ? 1.02 : 1.0))
+        .animation(AppMotion.micro, value: isHovered)
         .animation(AppMotion.feedback, value: isPressed)
     .onHover { isHovered = $0 }
     .onDrag {
@@ -283,8 +284,8 @@ struct GameCardView: View {
                 .allowsHitTesting(false)
         )
         .shadow(
-            color: isSelected ? AppColors.brandAccentSecondary.opacity(0.25) : (isHovered ? AppColors.brandAccentSecondary.opacity(0.2) : .clear),
-            radius: 6
+            color: isSelected ? AppColors.brandAccentSecondary.opacity(0.25) : (isHovered ? AppColors.brandAccentSecondary.opacity(0.25) : .clear),
+            radius: isSelected ? 6 : (isHovered ? 10 : 6)
         )
         .offset(y: isPressed ? -4 : 0)
     }
