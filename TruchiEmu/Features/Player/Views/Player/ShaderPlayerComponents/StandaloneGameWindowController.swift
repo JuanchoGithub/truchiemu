@@ -492,6 +492,7 @@ super.init(window: window)
 
     window?.contentView = containerView
         window?.acceptsMouseMovedEvents = true
+        updateWindowContentSize()
         
         // Update fullscreen state on window changes
         NotificationCenter.default.addObserver(

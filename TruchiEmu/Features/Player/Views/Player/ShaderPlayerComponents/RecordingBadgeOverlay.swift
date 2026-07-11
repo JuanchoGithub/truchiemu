@@ -52,57 +52,20 @@ struct RecordingBadgeOverlay: View {
 
     var body: some View {
         Group {
-            if recordingService.isUserRecording && badgeEnabled {
-                HStack(spacing: 6) {
-                    Circle()
-                        .fill(Color.red)
-                        .frame(width: 8, height: 8)
-                    Text(elapsedString)
-                        .font(.system(size: 12, weight: .bold, design: .monospaced))
-                        .foregroundColor(.white)
-                        .monospacedDigit()
-                    if recordingService.mode == .localFile {
-                        Text("REC")
-                            .font(.system(size: 9, weight: .bold))
-                            .foregroundColor(.red)
-                    } else if recordingService.mode == .twitch {
-                        AsyncImage(url: URL(string: "https://www.twitch.tv/favicon.ico")) { phase in
-                            if let image = phase.image {
-                                image.resizable().frame(width: 12, height: 12)
-                            }
-                        }
-                        Text("LIVE")
-                            .font(.system(size: 9, weight: .bold))
-                            .foregroundColor(.red)
-                    } else if recordingService.mode == .youtube {
-                        AsyncImage(url: URL(string: "https://www.youtube.com/favicon.ico")) { phase in
-                            if let image = phase.image {
-                                image.resizable().frame(width: 12, height: 12)
-                            }
-                        }
-                        Text("LIVE")
-                            .font(.system(size: 9, weight: .bold))
-                            .foregroundColor(.red)
-                    } else if recordingService.mode == .custom {
-                        Text("LIVE")
-                            .font(.system(size: 9, weight: .bold))
-                            .foregroundColor(.red)
-                    }
-                }
-                .padding(.horizontal, 10)
-                .padding(.vertical, 5)
-                .background(
-                    Capsule()
-                        .fill(Color.black.opacity(0.7))
-                )
-                .padding(12)
-                .transition(.opacity)
+            if let error = recordingService.streamError {
+                errorBadge(error)
+            } else if !badgeEnabled { EmptyView() }
+            else if case .connecting = recordingService.streamStatus {
+                connectingBadge
+            } else if recordingService.isUserRecording {
+                recordingBadge
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: currentAlignment)
         .allowsHitTesting(false)
         .onReceive(timer) { _ in
-            guard recordingService.isRecording, let start = recordingService.recordingStartTime else {
+            guard recordingService.streamStatus == .streaming || recordingService.mode == .localFile,
+                  let start = recordingService.recordingStartTime else {
                 elapsedString = "00:00"
                 badgeEnabled = true
                 return
@@ -116,5 +79,85 @@ struct RecordingBadgeOverlay: View {
             badgeEnabled = AppSettings.getBool("\(prefix)_enabled", defaultValue: true)
             positionRaw = AppSettings.getInt("\(prefix)_position", defaultValue: 1)
         }
+    }
+
+    @ViewBuilder
+    private func errorBadge(_ message: String) -> some View {
+        HStack(spacing: 6) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 10))
+                .foregroundColor(.orange)
+            Text(message)
+                .font(.system(size: 10, weight: .medium))
+                .foregroundColor(.orange)
+                .lineLimit(1)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 5)
+        .background(Capsule().fill(Color.black.opacity(0.8)))
+        .padding(12)
+        .transition(.opacity)
+    }
+
+    @ViewBuilder
+    private var connectingBadge: some View {
+        HStack(spacing: 6) {
+            Circle()
+                .fill(Color.orange)
+                .frame(width: 8, height: 8)
+            Text("CONNECTING")
+                .font(.system(size: 9, weight: .bold))
+                .foregroundColor(.orange)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 5)
+        .background(Capsule().fill(Color.black.opacity(0.7)))
+        .padding(12)
+        .transition(.opacity)
+    }
+
+    @ViewBuilder
+    private var recordingBadge: some View {
+        HStack(spacing: 6) {
+            Circle()
+                .fill(Color.red)
+                .frame(width: 8, height: 8)
+            Text(elapsedString)
+                .font(.system(size: 12, weight: .bold, design: .monospaced))
+                .foregroundColor(.white)
+                .monospacedDigit()
+            if recordingService.mode == .localFile {
+                Text("REC")
+                    .font(.system(size: 9, weight: .bold))
+                    .foregroundColor(.red)
+            } else if recordingService.mode == .twitch {
+                AsyncImage(url: URL(string: "https://www.twitch.tv/favicon.ico")) { phase in
+                    if let image = phase.image {
+                        image.resizable().frame(width: 12, height: 12)
+                    }
+                }
+                Text("LIVE")
+                    .font(.system(size: 9, weight: .bold))
+                    .foregroundColor(.red)
+            } else if recordingService.mode == .youtube {
+                AsyncImage(url: URL(string: "https://www.youtube.com/favicon.ico")) { phase in
+                    if let image = phase.image {
+                        image.resizable().frame(width: 12, height: 12)
+                    }
+                }
+                Text("LIVE")
+                    .font(.system(size: 9, weight: .bold))
+                    .foregroundColor(.red)
+            } else if recordingService.mode == .custom {
+                Text("LIVE")
+                    .font(.system(size: 9, weight: .bold))
+                    .foregroundColor(.red)
+            }
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 5)
+        .background(Capsule().fill(Color.black.opacity(0.7)))
+        .padding(12)
+        .transition(.opacity)
     }
 }

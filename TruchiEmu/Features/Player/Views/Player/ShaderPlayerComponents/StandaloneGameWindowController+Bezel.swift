@@ -33,7 +33,7 @@ extension StandaloneGameWindowController {
         }
     }
 
-    private func updateWindowContentSize() {
+    func updateWindowContentSize() {
         guard let contentView = window?.contentView else { return }
         let newSize: NSSize
         if isFullscreen {

@@ -2,7 +2,7 @@ import Cocoa
 import SwiftUI
 import MetalKit
 import CoreMedia
-import Accelerate
+import CoreVideo
 
 // MARK: - Metal Coordinator
 
@@ -22,8 +22,21 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
     private var resizeTimer: Timer?
     private let resizeSettleInterval: TimeInterval = 0.15 // 150ms
 
-    // Recording support: shared-mode texture for GPU readback
-    private var recordingSharedTexture: MTLTexture?
+    // Recording support: a CoreVideo texture cache that lets us bind a
+    // pool-allocated IOSurface-backed CVPixelBuffer (handed out by
+    // StreamRecordingService) as a Metal texture; the GPU blits or
+    // render-converts into that texture, and `appendVideoFrame` then passes
+    // the same pixel buffer straight to `AVAssetWriterInputPixelBufferAdaptor`
+    // (or raw-bytes to the ffmpeg pipe). No `getBytes`, no `[UInt8]` allocation,
+    // no main-thread hop. The cache persists across frames but is invalidated
+    // and rebuilt when the underlying MTLDevice or its contents change.
+    private var recordingTextureCache: CVMetalTextureCache?
+    // Cached pipeline used by the render-convert path when the source frame's
+    // pixel format isn't directly blittable into a `.bgra8Unorm` pool texture
+    // (e.g. `.a1bgr5Unorm`, `.b5g6r5Unorm`, `.r8Unorm` core frame textures).
+    // The Metal passthrough shader samples texture(0) directly so this works
+    // for any source pixel format Metal can read.
+    private var recordingPassthroughPipeline: MTLRenderPipelineState?
     private var recordingFrameCount: Int64 = 0
     private var recordingStartTime: CFTimeInterval = 0
     // Track the previous frame's isRecording state so we can detect a fresh
@@ -56,7 +69,8 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
         aspectStableTimer = nil
         frameCounter = 0
         innerDrawCount = 0
-        recordingSharedTexture = nil
+        recordingTextureCache = nil
+        recordingPassthroughPipeline = nil
         screenshotDisplayTexture = nil
         screenshotNativeTexture = nil
         pendingDisplayURL = nil
@@ -890,39 +904,6 @@ outputHeight: Float(drawHeight)
         target = device.makeTexture(descriptor: desc)
     }
 
-    nonisolated private func makePixelBuffer(from bgra32Pixels: [UInt8], width: Int, height: Int) -> CVPixelBuffer? {
-        var pixelBuffer: CVPixelBuffer?
-        let attrs: [String: Any] = [
-            kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
-            kCVPixelBufferWidthKey as String: width,
-            kCVPixelBufferHeightKey as String: height,
-            kCVPixelBufferIOSurfacePropertiesKey as String: [:]
-        ]
-        let status = CVPixelBufferCreate(kCFAllocatorDefault, width, height,
-                                          kCVPixelFormatType_32BGRA, attrs as CFDictionary,
-                                          &pixelBuffer)
-        guard status == kCVReturnSuccess, let pb = pixelBuffer else { return nil }
-        CVPixelBufferLockBaseAddress(pb, [])
-        defer { CVPixelBufferUnlockBaseAddress(pb, []) }
-        if let dest = CVPixelBufferGetBaseAddress(pb) {
-            let dstBPR = CVPixelBufferGetBytesPerRow(pb)
-            let srcBPR = width * 4
-            if dstBPR == srcBPR {
-                memcpy(dest, bgra32Pixels, height * srcBPR)
-            } else {
-                bgra32Pixels.withUnsafeBufferPointer { srcBuf in
-                    guard let srcBase = srcBuf.baseAddress else { return }
-                    for row in 0..<height {
-                        memcpy(dest.advanced(by: row * dstBPR),
-                               srcBase + row * srcBPR,
-                               srcBPR)
-                    }
-                }
-            }
-        }
-        return pb
-    }
-
     nonisolated private static func bytesPerPixel(_ format: MTLPixelFormat) -> Int {
         switch format {
         case .bgra8Unorm, .rgba8Unorm, .rgba8Unorm_srgb, .bgra8Unorm_srgb:
@@ -981,27 +962,31 @@ outputHeight: Float(drawHeight)
         return out
     }
 
-    private var recordingDAR: CGFloat {
-        if let systemID = runner.rom?.systemID,
-           let info = SystemDatabase.system(forID: systemID) {
-            return info.displayAspectRatio
-        }
-        return 4.0 / 3.0
-    }
-
-    /// Capture the current frame into `recordingSharedTexture` and append it
-    /// to the active recording (user-initiated record or rolling buffer).
-    /// Shared by the built-in-shader path and the slang-shader path so that
-    /// slang presets also produce a captured video stream.
-    /// - When `useDisplayRes == true`, the baked-in-shader (or slang) drawable
-    ///   is the source. We blit only the centered game sub-rect so the encoded
-    ///   frame has no opaque-black pillarbox/letterbox bars around the game
-    ///   (the drawable's bar region is RGB(0,0,0) alpha=0; H.264/HEVC encoders
-    ///   have no alpha channel and would otherwise bake those pixels into
-    ///   opaque black).
-    /// - When `useDisplayRes == false`, the raw core frame texture is the
-    ///   source and is optionally DAR-padded to match the system's display
-    ///   aspect ratio.
+    /// Capture the current frame into a pool-allocated IOSurface-backed
+    /// `CVPixelBuffer` and append it to the active recording (user-initiated
+    /// record or rolling buffer). Shared by the built-in-shader path and the
+    /// slang-shader path so that slang presets also produce a captured video
+    /// stream.
+    ///
+    /// Architecture (zero-copy):
+    /// 1. Pull an IOSurface-backed `CVPixelBuffer` from the recording
+    ///    session's `CVPixelBufferPool` (sized to `captureSize`/`streamingSize`).
+    /// 2. Bind its IOSurface to a Metal texture via `CVMetalTextureCache` so
+    ///    the GPU can write into it.
+    /// 3. GPU: blit (for `.bgra8Unorm` sources like the drawable) OR render
+    ///    through `fragmentPassthrough` (for non-BGRA core frame formats).
+    ///    For shader-on recordings: blit only the centered game sub-rect to
+    ///    strip the alpha=0 pillarbox/letterbox bars the encoder can't handle.
+    /// 4. On command-buffer completion, hand the same `CVPixelBuffer` to
+    ///    `StreamRecordingService.appendVideoFrame` on the recording queue.
+    ///
+    /// What no longer happens per frame (compared to the previous pipeline):
+    /// - `getBytes` GPU→CPU readback (was the single biggest stall source).
+    /// - `[UInt8]` allocation(s) for raw pixel buffers.
+    /// - `convertToBGRA32` format-conversion allocations.
+    /// - `resizeBGRA32` / `vImageScale` CPU-side DAR padding.
+    /// - `makePixelBuffer` / `CVPixelBufferCreate` per frame.
+    /// - `DispatchQueue.main.async` hop to call `appendVideoFrame`.
     private func performFrameCapture(
         commandBuffer: MTLCommandBuffer,
         device: MTLDevice,
@@ -1036,83 +1021,186 @@ outputHeight: Float(drawHeight)
         } else {
             cropRect = nil
         }
+
+        // Pull a pooled IOSurface-backed BGRA buffer that the encoder will
+        // consume. If the session was torn down between the early "need frame
+        // capture" gate and this call (rare: chunk rotation during record),
+        // or the pool is at capacity (encoder backpressure), drop the frame.
+        guard let pixelBuffer = StreamRecordingService.shared.acquireFramePixelBuffer() else {
+            #if LOG_DEBUG
+            LoggerService.debug(category: "Recording", "performFrameCapture: acquireFramePixelBuffer returned nil — session not ready or pool exhausted; frame dropped")
+            #endif
+            return
+        }
+
+        // Bind the IOSurface-backed CVPixelBuffer to a Metal texture via the
+        // per-coordinator CoreVideo texture cache. The cache is created lazily
+        // on first use and rebuilt when the MTLDevice changes.
+        if recordingTextureCache == nil {
+            var cache: CVMetalTextureCache?
+            CVMetalTextureCacheCreate(kCFAllocatorDefault, nil, device, nil, &cache)
+            recordingTextureCache = cache
+        }
+        guard let cache = recordingTextureCache else {
+            #if LOG_DEBUG
+            LoggerService.debug(category: "Recording", "performFrameCapture: CVMetalTextureCacheCreate failed; frame dropped")
+            #endif
+            return
+        }
+
+        let poolW = CVPixelBufferGetWidth(pixelBuffer)
+        let poolH = CVPixelBufferGetHeight(pixelBuffer)
+        // The pool is sized to `videoSize` (== captureSize / streamingSize).
+        // The srcTex + cropRect should produce the same dimensions in normal
+        // operation. Bail (and leak the pulled pool buffer back to its pool
+        // via CVPixelBufferRelease at scope exit) if there's a mismatch —
+        // shouldn't happen, but a GLES/drawable resize under a live recording
+        // could force the recorder's chunk rotation.
         let recW = cropRect?.size.width ?? srcTex.width
         let recH = cropRect?.size.height ?? srcTex.height
-        if recordingSharedTexture == nil ||
-            recordingSharedTexture?.width != recW ||
-            recordingSharedTexture?.height != recH ||
-            recordingSharedTexture?.pixelFormat != srcTex.pixelFormat {
-            let desc = MTLTextureDescriptor.texture2DDescriptor(
-                pixelFormat: srcTex.pixelFormat,
-                width: recW, height: recH, mipmapped: false
-            )
-            desc.usage = [.shaderRead, .shaderWrite]
-            desc.storageMode = .shared
-            recordingSharedTexture = device.makeTexture(descriptor: desc)
-        }
-        guard let destTex = recordingSharedTexture else { return }
-        let blit = commandBuffer.makeBlitCommandEncoder()
-        if let crop = cropRect {
-            blit?.copy(
-                from: srcTex,
-                sourceSlice: 0, sourceLevel: 0,
-                sourceOrigin: crop.origin,
-                sourceSize: crop.size,
-                to: destTex,
-                destinationSlice: 0, destinationLevel: 0,
-                destinationOrigin: MTLOrigin(x: 0, y: 0, z: 0)
-            )
-        } else {
-            blit?.copy(from: srcTex, to: destTex)
-        }
-        blit?.endEncoding()
-
-        let capturePTS = CMTime(seconds: CACurrentMediaTime() - recordingStartTime, preferredTimescale: 600)
-        let recordWithShaders = StreamRecordingService.shared.recordWithShaders
-        let dar = recordingDAR
-        let dstW = Int(destTex.width)
-        let dstH = Int(destTex.height)
-        let dstPixelFormat = destTex.pixelFormat
-        let destHandle = UInt(bitPattern: Unmanaged.passRetained(destTex as AnyObject).toOpaque())
-        commandBuffer.addCompletedHandler { [weak self] _ in
-            guard let self = self else { return }
-            let tex = Unmanaged<AnyObject>.fromOpaque(UnsafeMutableRawPointer(bitPattern: destHandle)!).takeRetainedValue() as! MTLTexture
-            let w = dstW
-            let h = dstH
-            let srcBPP = Self.bytesPerPixel(dstPixelFormat)
-            let srcBPR = w * srcBPP
-            var pixels = [UInt8](repeating: 0, count: h * srcBPR)
-            tex.getBytes(&pixels, bytesPerRow: srcBPR,
-                         from: MTLRegionMake2D(0, 0, w, h),
-                         mipmapLevel: 0)
-            var bgra = Self.convertToBGRA32(pixels, width: w, height: h, srcBPP: srcBPP, srcPixelFormat: dstPixelFormat)
-            var outW = Int(w)
-            var outH = Int(h)
-            if isRecording && !recordWithShaders {
-                let pixelAR = CGFloat(w) / CGFloat(h)
-                if abs(dar - pixelAR) > 0.01 {
-                    let corrW = max(Int(w), Int(ceil(CGFloat(h) * dar)))
-                    let corrH = max(Int(h), Int(ceil(CGFloat(w) / dar)))
-                    outW = corrW & ~1
-                    outH = corrH & ~1
-                    if outW != w || outH != h {
-                        bgra = Self.resizeBGRA32(bgra, from: Int(w), srcH: Int(h), to: outW, dstH: outH)
-                    }
+        guard recW == poolW, recH == poolH else {
+            // The frame doesn't match the active session's dimensions —
+            // signal the rolling buffer / recorder to rotate (next frame will
+            // go to a freshly-sized session). Drop this frame rather than
+            // appending to encoder with wrong dimensions.
+            LoggerService.info(category: "Recording", "performFrameCapture: dim mismatch (src=\(recW)x\(recH) pool=\(poolW)x\(poolH)); rotating chunk / dropping frame")
+            if RollingVideoBufferService.shared.isEnabled, isRecording {
+                DispatchQueue.main.async {
+                    RollingVideoBufferService.shared.ensureRecordingMatches(width: recW, height: recH)
                 }
             }
-            let pixelBuffer = self.makePixelBuffer(from: bgra, width: outW, height: outH)
-            if let pb = pixelBuffer {
-                DispatchQueue.main.async {
-                    if isRecording {
-                        if RollingVideoBufferService.shared.isEnabled {
-                            RollingVideoBufferService.shared.ensureRecordingMatches(width: outW, height: outH)
-                        }
-                        StreamRecordingService.shared.appendVideoFrame(pb, at: capturePTS)
+            return
+        }
+
+        // Wrap the IOSurface into a Metal texture. The cache performs this
+        // at zero cost (no GPU upload, no allocation — it just binds the
+        // pre-existing IOSurface storage). Pool-backed buffers are BGRA so
+        // the texture's pixel format is always `.bgra8Unorm`.
+        var cvTexture: CVMetalTexture?
+        let status = CVMetalTextureCacheCreateTextureFromImage(
+            kCFAllocatorDefault,
+            cache,
+            pixelBuffer,
+            nil,
+            MTLPixelFormat.bgra8Unorm,
+            poolW, poolH,
+            0,
+            &cvTexture
+        )
+        guard status == kCVReturnSuccess, let cvTex = cvTexture,
+              let destTex = CVMetalTextureGetTexture(cvTex) else {
+            #if LOG_DEBUG
+            LoggerService.debug(category: "Recording", "performFrameCapture: CVMetalTextureCacheCreateTextureFromImage failed status=\(status); frame dropped")
+            #endif
+            return
+        }
+
+        // GPU encode: blit if source is already `.bgra8Unorm`, otherwise
+        // render-convert through `fragmentPassthrough`. The drawable (shader
+        // path) is always `.bgra8Unorm` per the pipeline's color attachment
+        // pixel format. Raw core frame textures can be `.a1bgr5Unorm` /
+        // `.b5g6r5Unorm` / `.r8Unorm`, requiring a render pass via the cached
+        // passthrough pipeline to convert into the pool's BGRA destination.
+        if srcTex.pixelFormat == .bgra8Unorm || srcTex.pixelFormat == .bgra8Unorm_srgb {
+            guard let blit = commandBuffer.makeBlitCommandEncoder() else { return }
+            if let crop = cropRect {
+                blit.copy(
+                    from: srcTex,
+                    sourceSlice: 0, sourceLevel: 0,
+                    sourceOrigin: crop.origin,
+                    sourceSize: crop.size,
+                    to: destTex,
+                    destinationSlice: 0, destinationLevel: 0,
+                    destinationOrigin: MTLOrigin(x: 0, y: 0, z: 0)
+                )
+            } else {
+                blit.copy(from: srcTex, to: destTex)
+            }
+            blit.endEncoding()
+        } else {
+            // Render-convert path. Build (or reuse) a passthrough pipeline
+            // whose color-attachment pixel format matches the pool texture.
+            if recordingPassthroughPipeline == nil {
+                recordingPassthroughPipeline = makeRecordingPassthroughPipeline(device: device)
+            }
+            guard let pipeline = recordingPassthroughPipeline,
+                  let rpd = makeRecordingRenderPassDescriptor(destination: destTex) else {
+                return
+            }
+            guard let enc = commandBuffer.makeRenderCommandEncoder(descriptor: rpd) else { return }
+            enc.setRenderPipelineState(pipeline)
+            enc.setFragmentTexture(srcTex, index: 0)
+            // Fullscreen triangle strip — vertexPassthrough already covers
+            // the [-1,1] x [-1,1] quad with UVs [0,1] x [0,1].
+            enc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
+            enc.endEncoding()
+        }
+
+        // Stash references for the completion handler. The cache holds the
+        // CVMetalTexture — keep it alive until the GPU finishes by stashing a
+        // retained ref. Pixel buffer is unretained here because
+        // `acquireFramePixelBuffer` returns a +1 reference that the closure
+        // will balance with CVPixelBufferRelease at scope exit (the encoder
+        // retains it as needed during append).
+        let capturePTS = CMTime(seconds: CACurrentMediaTime() - recordingStartTime, preferredTimescale: 600)
+        // The CVMetalTexture binding and pixel buffer are retained across the
+        // GPU submit/release cycle by passing them as Unmanaged handles to
+        // the completion handler, which consumes them with takeRetainedValue.
+        let cvTextureHandle = UInt(bitPattern: Unmanaged.passRetained(cvTex).toOpaque())
+        let pixelBufferHandle = UInt(bitPattern: Unmanaged.passRetained(pixelBuffer).toOpaque())
+        let needsRollingChunkCheck = RollingVideoBufferService.shared.isEnabled && isRecording
+        commandBuffer.addCompletedHandler { _ in
+            // Release the cache-binding CVMetalTexture — the GPU is done with
+            // the Metal texture by the time the completion handler fires, so
+            // the binding can return to the cache for the next frame. The
+            // underlying IOSurface is still alive via `pb`.
+            _ = Unmanaged<CVMetalTexture>.fromOpaque(UnsafeMutableRawPointer(bitPattern: cvTextureHandle)!).takeRetainedValue()
+            let pb = Unmanaged<CVPixelBuffer>.fromOpaque(UnsafeMutableRawPointer(bitPattern: pixelBufferHandle)!).takeRetainedValue()
+            StreamRecordingService.shared.runOnRecordingQueue {
+                if needsRollingChunkCheck {
+                    DispatchQueue.main.async {
+                        RollingVideoBufferService.shared.ensureRecordingMatches(width: poolW, height: poolH)
                     }
                 }
+                StreamRecordingService.shared.appendVideoFrame(pb, at: capturePTS)
             }
         }
     }
+
+    /// Render-pipeline descriptor for the render-convert path: loads/stores
+    /// the destination texture as the color attachment, no depth/stencil.
+    private func makeRecordingRenderPassDescriptor(destination: MTLTexture) -> MTLRenderPassDescriptor? {
+        let rpd = MTLRenderPassDescriptor()
+        rpd.colorAttachments[0].texture = destination
+        rpd.colorAttachments[0].loadAction = .dontCare
+        rpd.colorAttachments[0].storeAction = .store
+        return rpd
+    }
+
+    /// Build (once per coordinator) the Metal pipeline used to render-convert
+    /// non-BGRA source frames into the pool's BGRA destination texture.
+    /// Reuses the shader library's `vertexPassthrough` + `fragmentPassthrough`
+    /// functions. The destination pixel format matches the pool's
+    /// `.bgra8Unorm`.
+    private func makeRecordingPassthroughPipeline(device: MTLDevice) -> MTLRenderPipelineState? {
+        guard let library = loadShaderLibrary(device: device),
+              let vertexFunction = library.makeFunction(name: "vertexPassthrough"),
+              let fragmentFunction = library.makeFunction(name: "fragmentPassthrough") else {
+            LoggerService.error(category: "Recording", "Failed to load passthrough shader for recording conversion")
+            return nil
+        }
+        let desc = MTLRenderPipelineDescriptor()
+        desc.colorAttachments[0].pixelFormat = .bgra8Unorm
+        desc.vertexFunction = vertexFunction
+        desc.fragmentFunction = fragmentFunction
+        do {
+            return try device.makeRenderPipelineState(descriptor: desc)
+        } catch {
+            LoggerService.error(category: "Recording", "Failed to build recording passthrough pipeline: \(error)")
+            return nil
+        }
+    }
+
 
     /// Compute the centered sub-rect of `drawable` that contains the rendered
     /// game, mirroring the viewport letterboxing logic from the built-in
@@ -1157,28 +1245,6 @@ outputHeight: Float(drawHeight)
             origin: MTLOrigin(x: max(0, Int(x)), y: max(0, Int(y)), z: 0),
             size: MTLSize(width: max(1, Int(w)), height: max(1, Int(h)), depth: 1)
         )
-    }
-
-    nonisolated private static func resizeBGRA32(_ pixels: [UInt8], from srcW: Int, srcH: Int, to dstW: Int, dstH: Int) -> [UInt8] {
-        var dst = [UInt8](repeating: 0, count: dstW * dstH * 4)
-        pixels.withUnsafeBytes { srcRawPtr in
-            dst.withUnsafeMutableBytes { dstRawPtr in
-                var srcBuf = vImage_Buffer(
-                    data: UnsafeMutablePointer(mutating: srcRawPtr.bindMemory(to: UInt8.self).baseAddress!),
-                    height: vImagePixelCount(srcH),
-                    width: vImagePixelCount(srcW),
-                    rowBytes: srcW * 4
-                )
-                var dstBuf = vImage_Buffer(
-                    data: dstRawPtr.baseAddress!,
-                    height: vImagePixelCount(dstH),
-                    width: vImagePixelCount(dstW),
-                    rowBytes: dstW * 4
-                )
-                vImageScale_ARGB8888(&srcBuf, &dstBuf, nil, 0)
-            }
-        }
-        return dst
     }
 
     // Load the shader library containing all shaders

@@ -9,10 +9,14 @@ struct RecordStreamButton: View {
     @State private var isHovered = false
 
     private var defaultIcon: String {
-        recordingService.isUserRecording ? "stop.circle.fill" : "record.circle"
+        if case .connecting = recordingService.streamStatus { return "antenna.radiowaves.left.and.right" }
+        if recordingService.streamError != nil { return "exclamationmark.triangle.fill" }
+        return recordingService.isUserRecording ? "stop.circle.fill" : "record.circle"
     }
 
     private var defaultLabel: String {
+        if case .connecting = recordingService.streamStatus { return "CONNECTING" }
+        if recordingService.streamError != nil { return recordingService.streamError! }
         if recordingService.isUserRecording {
             return loc.localized("toolbar.stopRecording")
         }
@@ -35,20 +39,11 @@ struct RecordStreamButton: View {
         if !recordingService.streamingEnabled {
             EmptyView()
         } else {
-            VStack(spacing: 4) {
-                Image(systemName: defaultIcon)
-                    .font(.system(size: 16, weight: .semibold))
-                Text(defaultLabel)
-                    .font(.system(size: 10, weight: .medium))
-                    .lineLimit(1)
-                    .fixedSize(horizontal: true, vertical: false)
-            }
-            .padding(.horizontal, 10)
-            .padding(.vertical, 6)
-            .foregroundColor(recordingService.isUserRecording ? .red : .white)
-            .background(
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.white.opacity(isHovered ? 0.08 : 0))
+            RecordStreamButtonContent(
+                icon: defaultIcon,
+                label: defaultLabel,
+                isRecording: recordingService.isUserRecording,
+                isHovered: $isHovered
             )
             .contentShape(Rectangle())
             .onHover { hovering in
@@ -57,7 +52,11 @@ struct RecordStreamButton: View {
                 }
             }
             .onTapGesture {
-                if recordingService.isUserRecording {
+                if recordingService.streamError != nil {
+                    recordingService.streamError = nil
+                } else if case .connecting = recordingService.streamStatus {
+                    recordingService.stop()
+                } else if recordingService.isUserRecording {
                     recordingService.stop()
                 } else {
                     isDropdownShown = true
@@ -76,6 +75,53 @@ struct RecordStreamButton: View {
                 .frame(width: 220)
             }
         }
+    }
+}
+
+private struct RecordStreamButtonContent: View {
+    let icon: String
+    let label: String
+    let isRecording: Bool
+    @Binding var isHovered: Bool
+    @Environment(\.toolbarCompactMode) private var mode
+
+    var body: some View {
+        Group {
+            switch mode {
+            case .full:
+                VStack(spacing: 4) {
+                    Image(systemName: icon)
+                        .font(.system(size: 16, weight: .semibold))
+                    Text(label)
+                        .font(.system(size: 10, weight: .medium))
+                        .lineLimit(1)
+                        .fixedSize(horizontal: true, vertical: false)
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+            case .compact:
+                VStack(spacing: 2) {
+                    Image(systemName: icon)
+                        .font(.system(size: 13, weight: .semibold))
+                    Text(label)
+                        .font(.system(size: 9, weight: .medium))
+                        .lineLimit(1)
+                        .fixedSize(horizontal: true, vertical: false)
+                }
+                .padding(.horizontal, 6)
+                .padding(.vertical, 4)
+            case .iconOnly:
+                Image(systemName: icon)
+                    .font(.system(size: 14, weight: .semibold))
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 8)
+            }
+        }
+        .foregroundColor(isRecording ? .red : .white)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color.white.opacity(isHovered ? 0.08 : 0))
+        )
     }
 }
 
@@ -173,12 +219,12 @@ private struct StreamPickerView: View {
     }
 
     private func startMode(_ mode: StreamingMode) {
-        let size = runner.captureSize
         switch mode {
         case .twitch, .youtube, .custom:
-            recordingService.videoSize = size
+            recordingService.videoSize = runner.streamingSize
             recordingService.startStreaming(mode: mode)
         case .localFile:
+            let size = runner.captureSize
             let url = recordingOutputURL()
             recordingService.startRecording(outputURL: url, width: Int(size.width), height: Int(size.height))
         }
