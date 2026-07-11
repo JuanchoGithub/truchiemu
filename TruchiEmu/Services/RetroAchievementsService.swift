@@ -1971,7 +1971,7 @@ func refreshGameCacheAfterGameStop() {
         }
 
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            LoggerService.error(category: "RetroAchievements", "Patch fetch HTTP error: \(response?.statusCode ?? 0)")
+            LoggerService.error(category: "RetroAchievements", "Patch fetch HTTP error: \((response as? HTTPURLResponse)?.statusCode ?? 0)")
             return nil
         }
 
