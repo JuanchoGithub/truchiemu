@@ -11,7 +11,9 @@
 #define RETRO_DEVICE_WIIMOTE_CC 513
 #endif
 
-typedef void (^VideoFrameCallback)(const void *data, int width, int height, int pitch, int format);
+typedef void (^VideoFrameCallback)(const void * _Nonnull data, int width, int height, int pitch, int format);
+
+NS_ASSUME_NONNULL_BEGIN
 
 @interface LibretroBridgeImpl : NSObject {
 @public
@@ -109,3 +111,5 @@ fn_retro_get_memory_data _retro_get_memory_data;
 - (void)setFrameCount:(uint64_t)frameCount;
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -2,7 +2,7 @@ import Foundation
 
 /// A property wrapper that attempts to decode an Int from either an Int or a String.
 @propertyWrapper
-public struct SafeInt: Codable, Hashable {
+public struct SafeInt: Codable, Hashable, Sendable {
     public var wrappedValue: Int
     
     public init(wrappedValue: Int) {

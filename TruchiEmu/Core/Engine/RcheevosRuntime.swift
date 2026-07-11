@@ -241,8 +241,10 @@ final class RcheevosRuntime {
     private static func readValue(from data: Data, numBytes: Int) -> UInt32 {
         var value: UInt32 = 0
         let copyCount = min(data.count, min(numBytes, MemoryLayout<UInt32>.size))
-        data.withUnsafeBytes { src in
-            UnsafeMutableRawPointer(&value).copyMemory(from: src.baseAddress!, byteCount: copyCount)
+        withUnsafeMutableBytes(of: &value) { dst in
+            data.withUnsafeBytes { src in
+                dst.copyMemory(from: UnsafeRawBufferPointer(start: src.baseAddress, count: copyCount))
+            }
         }
         return value
     }

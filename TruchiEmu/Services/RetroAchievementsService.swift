@@ -152,7 +152,7 @@ class RetroAchievementsService: ObservableObject {
 
             Task {
                 try? await fetchAndCacheGameList()
-                if await needsHashDownload() {
+                if needsHashDownload() {
                     LoggerService.info(category: "RetroAchievements", "Hash data missing, auto-triggering game list download with hashes...")
                     try? await fetchAndCacheAllGames()
                 }
@@ -556,7 +556,7 @@ class RetroAchievementsService: ObservableObject {
     }
 
     /// Pure mapping from system ID to RA console ID — no MainActor required.
-    private static let raConsoleIDMapping: [String: Int] = [
+    private nonisolated static let raConsoleIDMapping: [String: Int] = [
         "nes": 7, "snes": 3, "genesis": 1, "megadrive": 1,
         "gb": 4, "gba": 5, "gbc": 6, "n64": 2,
         "pce": 8, "tg16": 8, "segacd": 9, "32x": 10,
@@ -1376,8 +1376,6 @@ func loadCachedAchievements(gameID: Int, username: String) -> [Achievement]? {
         guard let achDict = response?.Achievements, !achDict.isEmpty else { return nil }
 
         let patchTriggers = loadPatchDataFromDisk(gameID: gameID)
-        let patchHasData = (patchTriggers?.achievements.isEmpty == false)
-
         var achievements = achDict.values.map { ach -> Achievement in
             let patchDef = patchTriggers?.achievements.first(where: { $0.id == ach.ID })?.definition
             let hasPatch = (patchDef?.isEmpty == false)
@@ -1620,9 +1618,7 @@ func loadCachedAchievements(gameID: Int, username: String) -> [Achievement]? {
 					AchievementToastManager.shared.showAchievement(achievement)
 
 					let gameTitle = self.currentGame?.title ?? ""
-					let systemName = self.currentGame?.consoleName ?? ""
-
-					NotificationHistoryManager.shared.post(
+NotificationHistoryManager.shared.post(
 						icon: "trophy.fill",
 						title: achievement.title,
 						subtitle: "\(achievement.points) points — \(gameTitle)",
@@ -1700,7 +1696,7 @@ func loadCachedAchievements(gameID: Int, username: String) -> [Achievement]? {
 
         for gameID in candidateIDs {
             let fileURL = gameDataFolder.appendingPathComponent("\(gameID).json")
-            guard var data = try? Data(contentsOf: fileURL),
+            guard let data = try? Data(contentsOf: fileURL),
                   var json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                   var achievements = json["Achievements"] as? [String: Any] else { continue }
 
@@ -1916,7 +1912,6 @@ func refreshGameCacheAfterGameStop() {
             return nil
         }
 
-        let patchFileURL = patchDataFolder.appendingPathComponent("\(gameID).json")
         if let existing = loadPatchDataFromDisk(gameID: gameID) {
             if let fetchedAt = existing.fetchedAt as Date?,
                Date().timeIntervalSince(fetchedAt) < 24 * 3600 {
@@ -1976,7 +1971,7 @@ func refreshGameCacheAfterGameStop() {
         }
 
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            LoggerService.error(category: "RetroAchievements", "Patch fetch HTTP error: \(response)")
+            LoggerService.error(category: "RetroAchievements", "Patch fetch HTTP error: \(response?.statusCode ?? 0)")
             return nil
         }
 
@@ -2045,7 +2040,7 @@ func refreshGameCacheAfterGameStop() {
 
     // MARK: - API Request Helpers
     
-    private struct RARAGameListResponse: Decodable {
+    private struct RARAGameListResponse: Decodable, Sendable {
         @SafeInt var ID: Int
         let Title: String
         @SafeInt var ConsoleID: Int
