@@ -58,7 +58,7 @@ struct WhatsNewView: View {
             return
         }
         isLoading = true
-        await updateService.checkForUpdates()
+        _ = await updateService.checkForUpdates()
         if let latest = updateService.allReleases.first {
             releaseBody = latest.body
             releaseName = latest.name

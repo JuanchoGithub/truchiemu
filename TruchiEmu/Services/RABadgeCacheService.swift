@@ -9,7 +9,7 @@ class RABadgeCacheService: ObservableObject {
     
     private let fileManager = FileManager.default
     
-    private static let badgeFolder: URL = {
+    private nonisolated static let badgeFolder: URL = {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         let folder = appSupport.appendingPathComponent("TruchiEmu/RetroAchievements/Badges", isDirectory: true)
         try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)

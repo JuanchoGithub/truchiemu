@@ -52,7 +52,6 @@ struct MoveEditorView: View {
         _moveHitLevels = State(initialValue: editingMove?.hitLevels ?? "")
         _moveCondition = State(initialValue: editingMove?.condition ?? "")
 
-        var detectedAir = false
         var preSteps: [EditorStep] = []
         if let move = editingMove {
             let parsed = InputParser.parse(move.input ?? "")

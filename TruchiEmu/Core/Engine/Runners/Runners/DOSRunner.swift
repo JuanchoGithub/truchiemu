@@ -134,7 +134,7 @@ class DOSRunner: EmulatorRunner, @unchecked Sendable {
                 if GameGuideViewModel.isGuideSidebarOpen,
                    let btn = element as? GCControllerButtonInput {
                     #if LOG_DEBUG
-                    LoggerService.debug(category: "DOSRunner", "Sidebar button: element=\(element.localizedName) isPressed=\(btn.isPressed) btnA=\(btn === extendedGamepad.buttonA) btnB=\(btn === extendedGamepad.buttonB)")
+                    LoggerService.debug(category: "DOSRunner", "Sidebar button: element=\(String(describing: element.localizedName)) isPressed=\(btn.isPressed) btnA=\(btn === extendedGamepad.buttonA) btnB=\(btn === extendedGamepad.buttonB)")
                     #endif
                     if btn === extendedGamepad.buttonA {
                         LoggerService.info(category: "DOSRunner", "A button → left click down=\(btn.isPressed)")

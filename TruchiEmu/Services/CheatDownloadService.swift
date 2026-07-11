@@ -386,7 +386,7 @@ class CheatDownloadService: ObservableObject {
     // Fetch remote cheat files for a system folder using GitHub Trees API
     private func fetchRemoteCheatFiles(systemFolderName: String) async throws -> [String] {
         // Don't URL-encode for tree API - use raw folder name
-        let prefix = "cht/\(systemFolderName)/"
+        let _ = "cht/\(systemFolderName)/"
         
         let urlString = "https://api.github.com/repos/libretro/libretro-database/git/trees/master?recursive=1"
         

@@ -19,7 +19,7 @@ struct Achievement: Identifiable, Codable, Hashable {
         URL(string: "https://media.retroachievements.org/Badge/\(badgeName).png")
     }
     
-    var localBadgeURL: URL? {
+    @MainActor var localBadgeURL: URL? {
         RABadgeCacheService.shared.localURL(for: badgeName)
     }
     

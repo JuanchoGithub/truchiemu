@@ -594,7 +594,7 @@ struct GameDetailView: View {
                 }
             } else {
                 // Check if the real problem is missing hash data
-                let needsDownload = await achievementsService.needsHashDownload()
+                let needsDownload = achievementsService.needsHashDownload()
                 if needsDownload {
                     await MainActor.run {
                         raComparisonShowDownloadOption = true

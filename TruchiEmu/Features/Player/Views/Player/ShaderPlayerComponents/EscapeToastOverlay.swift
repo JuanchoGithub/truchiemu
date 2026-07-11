@@ -37,10 +37,10 @@ struct EscapeToastOverlay: View {
         .animation(.easeInOut(duration: 0.3), value: captureManager.lastEscapeToastMessage != nil)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .allowsHitTesting(false)
-        .onChange(of: captureManager.captureStartTime) { newValue in
+        .onChange(of: captureManager.captureStartTime) {
             hideTimer?.invalidate()
             movedToCorner = false
-            if newValue != nil {
+            if captureManager.captureStartTime != nil {
                 hideTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false) { _ in
                     withAnimation(.easeInOut(duration: 0.6)) {
                         movedToCorner = true

@@ -482,7 +482,7 @@ enum SettingsCatalog {
     @MainActor
     static func bootstrap(into index: SettingsIndex = .shared) {
         for entry in entries() {
-            index.registerIfNeeded(
+            _ = index.registerIfNeeded(
                 page: entry.page,
                 sectionID: entry.sectionID,
                 keywords: entry.keywords.joined(separator: " "),

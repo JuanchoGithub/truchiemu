@@ -293,7 +293,6 @@ class FocusableMTKView: MTKView {
     }
 
     override func keyUp(with event: NSEvent) {
-        let hotkeys = HotkeyConfigManager.shared
 
         // Rewind is now a toggle (press once to enter, again to exit). No
         // key-up handling needed.

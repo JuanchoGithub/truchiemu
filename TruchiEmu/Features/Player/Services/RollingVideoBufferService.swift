@@ -400,10 +400,6 @@ final class RollingVideoBufferService: ObservableObject {
                 return
             }
 
-            let v = srs.videoInput
-            let a = srs.audioInput
-            let adaptor = srs.pixelBufferAdaptor
-
             srs.videoInput?.markAsFinished()
             srs.audioInput?.markAsFinished()
 
@@ -415,8 +411,7 @@ final class RollingVideoBufferService: ObservableObject {
             srs.isUserRecording = false
             srs.recordingStartTime = nil
 
-            writer.finishWriting { [weak v, weak a, weak adaptor] in
-                _ = v; _ = a; _ = adaptor
+            writer.finishWriting {
                 cont.resume()
             }
         }

@@ -244,7 +244,6 @@ final class XPCConnectionManager: ObservableObject {
         lock.lock()
         connection = nil
         _hostProxy = nil
-        let wasConnected = _isConnected
         _isConnected = false
         lock.unlock()
         servicePID = 0

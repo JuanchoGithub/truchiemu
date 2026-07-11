@@ -380,7 +380,7 @@ class BoxArtService: ObservableObject {
             regionPreference: regionPreference
         )
 
-        for (folder, url, regionTag) in manifestMatches {
+        for (_, url, regionTag) in manifestMatches {
             if let cached = cacheRepo.getBoxArtResolution(romPathKey: romPathKey, source: source) {
                 if cached.resolvedURL == url.absoluteString && !cached.isValid && cached.httpStatus != 0 { continue }
             }

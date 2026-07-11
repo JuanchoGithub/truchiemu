@@ -468,7 +468,7 @@ Text(loc.localized("movelist.saveAndSelect"))
             }
             .buttonStyle(.plain)
 
-            if let charName = viewModel.selectedCharacterName, let character = viewModel.characters.first(where: { $0.name == charName }) {
+            if let charName = viewModel.selectedCharacterName, viewModel.characters.first(where: { $0.name == charName }) != nil {
                 Text(charName)
                     .font(.caption2)
                     .fontWeight(.medium)

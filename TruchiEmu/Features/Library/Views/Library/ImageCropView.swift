@@ -274,7 +274,7 @@ struct ImageCropView: View {
         case .topRight, .right:
             sq.origin.x = max(min(newRect.minX, imageDisplayRect.maxX - side), imageDisplayRect.minX)
             sq.origin.y = max(newRect.maxY - side, imageDisplayRect.minY)
-        case .bottomLeft, .bottom, .left:
+        case .bottomLeft, .bottom:
             sq.origin.x = max(newRect.maxX - side, imageDisplayRect.minX)
             sq.origin.y = max(min(newRect.minY, imageDisplayRect.maxY - side), imageDisplayRect.minY)
         case .bottomRight:

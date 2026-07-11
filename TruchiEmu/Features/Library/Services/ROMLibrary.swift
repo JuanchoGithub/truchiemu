@@ -663,7 +663,6 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
             case .databaseUnavailable, .noSystem, .romReadFailed: 
                 return nil
         }
-        return nil
     }
     
     private func correctGBCExtensionSystem(rom: ROM) -> ROM {

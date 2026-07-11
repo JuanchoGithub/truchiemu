@@ -220,7 +220,7 @@ guideSidebarView = nil
         // Load auto-fullscreen setting
         autoFullscreenEnabled = AppSettings.getBool("autoFullscreenEnabled", defaultValue: false)
         
-        let systemID = runner.systemID ?? "default"
+        let systemID = runner.systemID
         let systemInfo = SystemDatabase.system(forID: systemID)
         let defaultAspect = systemInfo?.displayAspectRatio ?? (4.0 / 3.0)
         

@@ -62,7 +62,7 @@ class ShaderManager: ObservableObject {
     
     func activateSlangPreset(_ preset: SlangPreset) {
         do {
-            try SlangCompilerService.shared.loadAndActivatePreset(at: preset.path, queue: commandQueue ?? device!.makeCommandQueue()!)
+            _ = try SlangCompilerService.shared.loadAndActivatePreset(at: preset.path, queue: commandQueue ?? device!.makeCommandQueue()!)
             activeSlangPreset = preset
             activePreset = ShaderPreset.defaultPreset
             clearPipelineCache()

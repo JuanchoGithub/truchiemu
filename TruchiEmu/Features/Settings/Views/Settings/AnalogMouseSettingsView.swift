@@ -331,9 +331,9 @@ struct AnalogMouseSettingsView: View {
 
     private func startMonitorTimer() {
         monitorTimer?.invalidate()
-        let controllerService = self.controllerService
+        let connectedControllers = self.controllerService.connectedControllers
         monitorTimer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { _ in
-            guard let gc = controllerService.connectedControllers.first?.gcController,
+            guard let gc = connectedControllers.first?.gcController,
                   let gamepad = gc.extendedGamepad else { return }
             let lx = Double(gamepad.leftThumbstick.xAxis.value)
             let ly = Double(gamepad.leftThumbstick.yAxis.value)

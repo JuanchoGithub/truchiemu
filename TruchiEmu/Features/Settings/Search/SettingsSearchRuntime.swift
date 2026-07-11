@@ -11,7 +11,7 @@ enum SettingsSearchRuntime {
         optionTitles: [String] = [],
         descriptionFragments: [String] = []
     ) {
-        SettingsIndex.shared.registerIfNeeded(
+        _ = SettingsIndex.shared.registerIfNeeded(
             page: page,
             sectionID: sectionID,
             keywords: keywords,

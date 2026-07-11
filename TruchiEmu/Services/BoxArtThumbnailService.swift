@@ -280,7 +280,11 @@ class BoxArtThumbnailService: ObservableObject {
     private func handleDirectoryChange(at directory: URL) {
         debounceTimers[directory]?.invalidate()
         debounceTimers[directory] = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { [weak self] _ in
-            self?.processDirectoryChanges(at: directory)
+            if let self = self {
+                Task { @MainActor in
+                    self.processDirectoryChanges(at: directory)
+                }
+            }
         }
     }
 

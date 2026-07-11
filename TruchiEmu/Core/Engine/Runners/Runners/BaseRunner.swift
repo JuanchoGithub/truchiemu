@@ -488,7 +488,7 @@ case "scummvm": runner = ScummVMRunner()
         let resolvedRomPath = self.romPath
         let genesisControllerType = AppSettings.getGenesisControllerType()
 
-        emulationQueue.async { [cachedAchievements, genesisControllerType, capturedMemoryBudgetMB] in
+        emulationQueue.async { [cachedAchievements, genesisControllerType] in
             XPCBridgeAdapter.shared.setLanguage(selectedLang)
             XPCBridgeAdapter.shared.setLogLevel(Int(selectedLogLevel))
 

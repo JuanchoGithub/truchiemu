@@ -134,26 +134,32 @@ class HardcoreModeManager: ObservableObject {
 
     // MARK: - Compatibility Shorthands
 
+    @discardableResult
     func attemptSaveState(action: @escaping () -> Void) -> Bool {
         attemptFeature(.saveState, action: action)
     }
 
+    @discardableResult
     func attemptLoadState(action: @escaping () -> Void) -> Bool {
         attemptFeature(.loadState, action: action)
     }
 
+    @discardableResult
     func attemptRewind(action: @escaping () -> Void) -> Bool {
         attemptFeature(.rewind, action: action)
     }
 
+    @discardableResult
     func attemptSlowMotion(action: @escaping () -> Void) -> Bool {
         attemptFeature(.slowMotion, action: action)
     }
 
+    @discardableResult
     func attemptFastForward(action: @escaping () -> Void) -> Bool {
         attemptFeature(.fastForward, action: action)
     }
 
+    @discardableResult
     func attemptUseCheats(action: @escaping () -> Void) -> Bool {
         attemptFeature(.cheats, action: action)
     }

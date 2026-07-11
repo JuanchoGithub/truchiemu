@@ -98,7 +98,7 @@ class SDLInputManager: ObservableObject {
     func start() {
         guard !isRunning else { return }
         isRunning = true
-        sdlQueue.async { self.runSDLLoop() }
+        sdlQueue.async { MainActor.assumeIsolated { self.runSDLLoop() } }
     }
 
     func stop() {
