@@ -1009,7 +1009,20 @@ outputHeight: Float(drawHeight)
         frameTex: MTLTexture
     ) {
         let isRecording = StreamRecordingService.shared.isRecording
-        let useDisplayRes = isRecording ? StreamRecordingService.shared.recordWithShaders : RollingVideoBufferService.shared.recordDisplayResolution
+        // Streaming routes data through a separate ffmpeg process whose
+        // VideoToolbox encoder contends with the Metal renderer when reading
+        // back a full-retina drawable on every frame. Force the raw core
+        // frame (e.g. 256×224 for NES) for streaming regardless of the
+        // `recordWithShaders` setting — the visual on stream will show the
+        // unprocessed game image instead of the post-shader drawable, but
+        // it streams reliably. Local recordings still honor the toggle.
+        let isStreaming = isRecording && StreamRecordingService.shared.mode != .localFile
+        let useDisplayRes: Bool
+        if isStreaming {
+            useDisplayRes = false
+        } else {
+            useDisplayRes = isRecording ? StreamRecordingService.shared.recordWithShaders : RollingVideoBufferService.shared.recordDisplayResolution
+        }
         let srcTex = useDisplayRes ? drawableTexture : frameTex
         let cropRect: MTLRegion?
         if useDisplayRes {

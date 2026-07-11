@@ -54,6 +54,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     
     // The currently running game's ROM. Published so the toolbar can observe it.
     @MainActor @Published public var currentGameROM: ROM?
+    @MainActor @Published public var windowContentSize: NSSize = .zero
     
     // Whether the cheats overlay is currently shown.
     @MainActor @Published public var showCheatsView: Bool = false
@@ -138,7 +139,7 @@ return MoveListOverlayViewModel(runner: runner)
     // from accessing deallocated @ObservedObject references.
     @MainActor
     func detachSwiftUI() {
-        StreamRecordingService.shared.stop()
+        StreamRecordingService.shared.forceStop()
         if let sheetWindow = cheatManagerSheetWindow, let window = window {
             window.endSheet(sheetWindow)
             cheatManagerSheetWindow = nil
@@ -219,11 +220,29 @@ guideSidebarView = nil
         // Load auto-fullscreen setting
         autoFullscreenEnabled = AppSettings.getBool("autoFullscreenEnabled", defaultValue: false)
         
+        let systemID = runner.systemID ?? "default"
+        let systemInfo = SystemDatabase.system(forID: systemID)
+        let defaultAspect = systemInfo?.displayAspectRatio ?? (4.0 / 3.0)
+        
+        let savedWidth = AppSettings.getDouble("gameWindowWidth_\(systemID)", defaultValue: 0)
+        let savedHeight = AppSettings.getDouble("gameWindowHeight_\(systemID)", defaultValue: 0)
+        
+        var initialWidth: CGFloat = 1024
+        var initialHeight: CGFloat = 768
+        if savedWidth > 0, savedHeight > 0 {
+            initialWidth = savedWidth
+            initialHeight = savedHeight
+        } else {
+            // Determine initial size from system aspect ratio using a base width of 1024
+            initialHeight = initialWidth / defaultAspect
+        }
+        
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 1024, height: 768),
+            contentRect: NSRect(x: 0, y: 0, width: initialWidth, height: initialHeight),
             styleMask:[.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
             backing: .buffered, defer: false)
         
+        window.contentAspectRatio = NSSize(width: defaultAspect, height: 1)
         window.center()
         window.backgroundColor = .black
         window.isReleasedWhenClosed = false
@@ -635,6 +654,8 @@ super.init(window: window)
         }
     }
 
+private var pendingCloseAfterFullscreenExit = false
+
     @objc private func windowDidChangeScreen() {
         DispatchQueue.main.async { [weak self] in
             let isFullscreen = self?.window?.styleMask.contains(.fullScreen) ?? false
@@ -642,6 +663,23 @@ super.init(window: window)
 
             // Update cursor auto-hide fullscreen state
             CursorAutoHideManager.shared.updateFullscreenState(isFullscreen: isFullscreen)
+
+            // Restore aspect ratio constraint when returning from fullscreen
+            if !isFullscreen {
+                let coreAspect = Float(XPCBridgeAdapter.shared.aspectRatio())
+                let systemID = self?.runner?.systemID ?? "default"
+                if coreAspect > 0 {
+                    self?.window?.contentAspectRatio = NSSize(width: CGFloat(coreAspect), height: 1)
+                } else if let info = SystemDatabase.system(forID: systemID), info.displayAspectRatio > 0 {
+                    self?.window?.contentAspectRatio = NSSize(width: info.displayAspectRatio, height: 1)
+                }
+
+                if self?.pendingCloseAfterFullscreenExit == true {
+                    self?.pendingCloseAfterFullscreenExit = false
+                    self?.window?.close()
+                    return
+                }
+            }
 
             // Rescale bezel for new screen
             self?.onWindowMoved()
@@ -704,6 +742,15 @@ super.init(window: window)
     func toggleFullscreen() {
         window?.toggleFullScreen(nil)
         isFullscreen = window?.styleMask.contains(.fullScreen) ?? false
+    }
+
+    func windowShouldClose(_ sender: NSWindow) -> Bool {
+        if isFullscreen {
+            pendingCloseAfterFullscreenExit = true
+            sender.toggleFullScreen(nil)
+            return false
+        }
+        return true
     }
     
     // Toggle auto-fullscreen setting
@@ -990,6 +1037,14 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
     private func onFirstFrameReady(slotToLoad: Int?, rom: ROM) {
         isLoading = false
         GameLauncher.shared.launchPhase = .idle
+
+        let coreAspect = Float(XPCBridgeAdapter.shared.aspectRatio())
+        let systemID = rom.systemID ?? runner?.systemID ?? "default"
+        if coreAspect > 0 {
+            window?.contentAspectRatio = NSSize(width: CGFloat(coreAspect), height: 1)
+        } else if let info = SystemDatabase.system(forID: systemID), info.displayAspectRatio > 0 {
+            window?.contentAspectRatio = NSSize(width: info.displayAspectRatio, height: 1)
+        }
 
         // Apply cheats now that the core has initialized its memory map
         // (PicoDrive crashes if retro_cheat_set is called before the first retro_run)
@@ -1587,6 +1642,14 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
         XPCBridgeAdapter.shared.setPaused(true)
 
         isClosingWindow = true
+
+        // Persist windowed size per-system (only when not in fullscreen)
+        if !isFullscreen, let window = window {
+            let systemID = runner?.systemID ?? "default"
+            let frame = window.frame
+            AppSettings.setDouble("gameWindowWidth_\(systemID)", value: frame.width)
+            AppSettings.setDouble("gameWindowHeight_\(systemID)", value: frame.height)
+        }
         
         // Clear per-game fight overlay keys so they don't leak into next launch.
         // Per-slot keys are intentionally kept (they're tied to specific save states).

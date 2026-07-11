@@ -8,7 +8,10 @@ extension StandaloneGameWindowController {
     // Called when the window is resized. Dynamically scales bezel to fit new window size.
     func onWindowResized() {
         guard let containerView = window?.contentView as? GameContainerView,
-              let bezelLayer = bezelBackgroundLayer else { return }
+              let bezelLayer = bezelBackgroundLayer else {
+            updateWindowContentSize()
+            return
+        }
 
         // Update bezel layer frame to match container
         bezelLayer.frame = containerView.bounds
@@ -22,9 +25,24 @@ extension StandaloneGameWindowController {
         // Update Metal view frame to match bezel playable area
         updateMetalViewFrameForBezel()
 
+        updateWindowContentSize()
+
         // Re-assert focus on the metal view after frame changes to prevent loss of keyboard input
         DispatchQueue.main.async { [weak self] in
             self?.window?.makeFirstResponder(self?.metalView)
+        }
+    }
+
+    private func updateWindowContentSize() {
+        guard let contentView = window?.contentView else { return }
+        let newSize: NSSize
+        if isFullscreen {
+            newSize = contentView.bounds.size
+        } else {
+            newSize = window?.frame.size ?? contentView.bounds.size
+        }
+        if windowContentSize != newSize {
+            windowContentSize = newSize
         }
     }
 
@@ -92,6 +110,11 @@ extension StandaloneGameWindowController {
                 // Use scaled bezel image to prevent oversized window
                 bezelBackgroundLayer?.setBezelImageForScreen(bezelImage, screenSize: screenBounds.size)
 
+                // Update window contentAspectRatio to match bezel's playable area
+                if let result = bezelViewModel?.bezelResolutionResult, result.aspectRatio > 0 {
+                    window?.contentAspectRatio = NSSize(width: result.aspectRatio, height: 1)
+                }
+
                 // Constrain window to screen bounds if bezel would make it larger
                 constrainWindowToScreenBounds()
 
@@ -134,7 +157,7 @@ extension StandaloneGameWindowController {
         }
 
         // Set window size constraints to prevent future resizing beyond screen bounds
-        window.minSize = NSSize(width: 640, height: 480)
+        window.minSize = NSSize(width: 100, height: 100)
         window.maxSize = NSSize(width: screenFrame.width, height: screenFrame.height)
     }
 }

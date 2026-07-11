@@ -1,6 +1,66 @@
 import SwiftUI
 import Cocoa
 
+// MARK: - Toolbar Compact Mode
+
+enum ToolbarCompactMode {
+    case full        // icon + label, normal spacing
+    case compact     // icon + label, tighter spacing, smaller fonts
+    case iconOnly    // icon only, minimal spacing
+}
+
+private struct ToolbarCompactModeKey: EnvironmentKey {
+    static let defaultValue: ToolbarCompactMode = .full
+}
+
+extension EnvironmentValues {
+    var toolbarCompactMode: ToolbarCompactMode {
+        get { self[ToolbarCompactModeKey.self] }
+        set { self[ToolbarCompactModeKey.self] = newValue }
+    }
+}
+
+// Shared inner content for toolbar buttons — adapts icon/label/padding based on compact mode.
+struct ToolbarButtonContent: View {
+    let icon: String
+    let label: String
+    @Environment(\.toolbarCompactMode) private var mode
+
+    var body: some View {
+        Group {
+            switch mode {
+            case .full:
+                VStack(spacing: 4) {
+                    Image(systemName: icon)
+                        .font(.system(size: 16, weight: .semibold))
+                    Text(label)
+                        .font(.system(size: 10, weight: .medium))
+                        .lineLimit(1)
+                        .fixedSize(horizontal: true, vertical: false)
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+            case .compact:
+                VStack(spacing: 2) {
+                    Image(systemName: icon)
+                        .font(.system(size: 13, weight: .semibold))
+                    Text(label)
+                        .font(.system(size: 9, weight: .medium))
+                        .lineLimit(1)
+                        .fixedSize(horizontal: true, vertical: false)
+                }
+                .padding(.horizontal, 6)
+                .padding(.vertical, 4)
+            case .iconOnly:
+                Image(systemName: icon)
+                    .font(.system(size: 14, weight: .semibold))
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 8)
+            }
+        }
+    }
+}
+
 class MouseDownButton: NSButton {
     override func mouseDown(with event: NSEvent) {
         if let target = self.target, let action = self.action {
@@ -155,16 +215,7 @@ struct ToolbarButton: View {
 
   var body: some View {
         HoverButton(action: action) {
-            VStack(spacing: 4) {
-                Image(systemName: icon)
-                .font(.system(size: 16, weight: .semibold))
-                Text(label)
-                .font(.system(size: 10, weight: .medium))
-                .lineLimit(1)
-                .fixedSize(horizontal: true, vertical: false)
-            }
-            .padding(.horizontal, 10)
-            .padding(.vertical, 6)
+            ToolbarButtonContent(icon: icon, label: label)
             .foregroundColor(disabled ? .white.opacity(0.3) : (danger ? AppColors.error(colorScheme).opacity(0.9) : .white.opacity(0.9)))
             .background(
                 RoundedRectangle(cornerRadius: 8)
@@ -185,39 +236,21 @@ struct PauseResumeButton: View {
         HoverButton(action: {
             runner.togglePause()
         }) {
-            VStack(spacing: 4) {
-                Image(systemName: runner.isPaused ? "play.fill" : "pause.fill")
-                .font(.system(size: 16, weight: .semibold))
-                Text(runner.isPaused ? loc.localized("toolbar.resume") : loc.localized("toolbar.pause"))
-                .font(.system(size: 10, weight: .medium))
-                .lineLimit(1)
-                .fixedSize(horizontal: true, vertical: false)
-            }
-            .padding(.horizontal, 10)
-            .padding(.vertical, 6)
+            ToolbarButtonContent(icon: runner.isPaused ? "play.fill" : "pause.fill", label: runner.isPaused ? loc.localized("toolbar.resume") : loc.localized("toolbar.pause"))
         }
         .foregroundColor(runner.isPaused ? .green : .white)
     }
 }
 
 struct FullscreenButton: View {
-    @ObservedObject var windowController: StandaloneGameWindowController
-    @ObservedObject private var loc = LocalizationManager.shared
+  @ObservedObject var windowController: StandaloneGameWindowController
+  @ObservedObject private var loc = LocalizationManager.shared
 
-    var body: some View {
+  var body: some View {
         HoverButton(action: {
             windowController.toggleFullscreen()
         }) {
-            VStack(spacing: 4) {
-                Image(systemName: windowController.isFullscreen ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
-                .font(.system(size: 16, weight: .semibold))
-                Text(windowController.isFullscreen ? loc.localized("toolbar.exitFullscreen") : loc.localized("toolbar.fullscreen"))
-                .font(.system(size: 10, weight: .medium))
-                .lineLimit(1)
-                .fixedSize(horizontal: true, vertical: false)
-            }
-            .padding(.horizontal, 10)
-            .padding(.vertical, 6)
+            ToolbarButtonContent(icon: windowController.isFullscreen ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right", label: windowController.isFullscreen ? loc.localized("toolbar.exitFullscreen") : loc.localized("toolbar.fullscreen"))
         }
     }
 }
@@ -230,16 +263,7 @@ struct RestartButton: View {
         MouseDownButtonActionStyled(action: {
             runner.reloadGame()
         }) {
-            VStack(spacing: 4) {
-                Image(systemName: "arrow.counterclockwise")
-                    .font(.system(size: 16, weight: .semibold))
-                Text(loc.localized("toolbar.restart"))
-                    .font(.system(size: 10, weight: .medium))
-                    .lineLimit(1)
-                    .fixedSize(horizontal: true, vertical: false)
-            }
-            .padding(.horizontal, 10)
-            .padding(.vertical, 6)
+            ToolbarButtonContent(icon: "arrow.counterclockwise", label: loc.localized("toolbar.restart"))
         }
     }
 }
@@ -253,16 +277,7 @@ struct AutoFullscreenButton: View {
         HoverButton(action: {
             windowController.toggleAutoFullscreen()
         }) {
-            VStack(spacing: 4) {
-                Image(systemName: windowController.autoFullscreenEnabled ? "rectangle.expand.vertical" : "rectangle")
-                .font(.system(size: 16, weight: .semibold))
-                Text(loc.localized("toolbar.autoFullscreen"))
-                .font(.system(size: 10, weight: .medium))
-                .lineLimit(1)
-                .fixedSize(horizontal: true, vertical: false)
-            }
-            .padding(.horizontal, 10)
-            .padding(.vertical, 6)
+            ToolbarButtonContent(icon: windowController.autoFullscreenEnabled ? "rectangle.expand.vertical" : "rectangle", label: loc.localized("toolbar.autoFullscreen"))
         }
         .foregroundColor(windowController.autoFullscreenEnabled ? .green : .white)
     }
@@ -280,18 +295,11 @@ struct SlotSelectorButton: View {
     var disabled: Bool = false
 
     var body: some View {
-        VStack(spacing: 4) {
-            Image(systemName: "number.circle")
-            .font(.system(size: 16, weight: .semibold))
-            Text("Slot \(currentSlot == -1 ? loc.localized("toolbar.slotAuto") : "\(abs(currentSlot))")")
-            .font(.system(size: 10, weight: .medium))
-        }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
-        .foregroundColor(disabled ? .white.opacity(0.3) : .white)
-        .background(
-            RoundedRectangle(cornerRadius: 8)
-                .fill(Color.white.opacity(isHovered && !disabled ? 0.08 : 0))
+        SlotSelectorContent(
+            currentSlot: currentSlot,
+            disabled: disabled,
+            isHovered: $isHovered,
+            loc: loc
         )
         .contentShape(Rectangle())
         .onHover { hovering in
@@ -313,6 +321,49 @@ struct SlotSelectorButton: View {
                 .gamepadDismissable { isDropdownShown = false }
         }
         .disabled(disabled)
+    }
+}
+
+private struct SlotSelectorContent: View {
+    let currentSlot: Int
+    let disabled: Bool
+    @Binding var isHovered: Bool
+    let loc: LocalizationManager
+    @Environment(\.toolbarCompactMode) private var mode
+
+    var body: some View {
+        Group {
+            switch mode {
+            case .full:
+                VStack(spacing: 4) {
+                    Image(systemName: "number.circle")
+                    .font(.system(size: 16, weight: .semibold))
+                    Text("Slot \(currentSlot == -1 ? loc.localized("toolbar.slotAuto") : "\(abs(currentSlot))")")
+                    .font(.system(size: 10, weight: .medium))
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+            case .compact:
+                VStack(spacing: 2) {
+                    Image(systemName: "number.circle")
+                    .font(.system(size: 13, weight: .semibold))
+                    Text("Slot \(currentSlot == -1 ? loc.localized("toolbar.slotAuto") : "\(abs(currentSlot))")")
+                    .font(.system(size: 9, weight: .medium))
+                }
+                .padding(.horizontal, 6)
+                .padding(.vertical, 4)
+            case .iconOnly:
+                Image(systemName: "\(abs(currentSlot)).circle")
+                    .font(.system(size: 14, weight: .semibold))
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 8)
+            }
+        }
+        .foregroundColor(disabled ? .white.opacity(0.3) : .white)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color.white.opacity(isHovered && !disabled ? 0.08 : 0))
+        )
     }
 }
 
@@ -439,20 +490,11 @@ struct FightTrainingToolbarButton: View {
             HoverButton(action: {
                 windowController.toggleTrainingModeOverlay()
             }) {
-                VStack(spacing: 4) {
-                    Image(systemName: "figure.martial.arts")
-                        .font(.system(size: 16, weight: .semibold))
-                    Text(loc.localized("toolbar.fightTraining"))
-                        .font(.system(size: 10, weight: .medium))
-                        .lineLimit(1)
-                        .fixedSize(horizontal: true, vertical: false)
-                }
-                .padding(.horizontal, 10)
-                .padding(.vertical, 6)
+                ToolbarButtonContent(icon: "figure.martial.arts", label: loc.localized("toolbar.fightTraining"))
             }
-.foregroundColor(isActive ? AppColors.brandAccent : .white)
-}
-}
+            .foregroundColor(isActive ? AppColors.brandAccent : .white)
+        }
+    }
 }
 
 struct GameGuideToolbarButton: View {
@@ -468,16 +510,7 @@ if windowController.gameGuideViewModel.hasGuideData {
 HoverButton(action: {
 windowController.toggleGuideSidebar()
 }) {
-VStack(spacing: 4) {
-Image(systemName: "book")
-.font(.system(size: 16, weight: .semibold))
-Text(loc.localized("toolbar.gameGuide"))
-                    .font(.system(size: 10, weight: .medium))
-                    .lineLimit(1)
-                    .fixedSize(horizontal: true, vertical: false)
-                }
-                .padding(.horizontal, 10)
-                .padding(.vertical, 6)
+ToolbarButtonContent(icon: "book", label: loc.localized("toolbar.gameGuide"))
                 }
                 .foregroundColor(isActive ? AppColors.brandAccent : .white)
 }

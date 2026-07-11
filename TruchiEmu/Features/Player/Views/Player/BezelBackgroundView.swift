@@ -250,6 +250,7 @@ class BezelViewModel: ObservableObject {
     @Published var bezelImage: NSImage?
     @Published var playableAreaRect: CGRect?
     @Published var isLoading = false
+    @Published var bezelResolutionResult: BezelResolutionResult?
     
     private let bezelManager: BezelManager
     
@@ -269,6 +270,7 @@ class BezelViewModel: ObservableObject {
         // The auto-match button already saves its result to rom.settings.bezelFileName,
         // so we should respect whatever bezel is configured for this ROM.
         let result = bezelManager.resolveBezel(systemID: systemID, rom: rom, preferAutoMatch: false)
+        self.bezelResolutionResult = result
         
         if let entry = result.entry, let localURL = entry.localURL {
             if let image = bezelManager.loadBezelImage(at: localURL) {

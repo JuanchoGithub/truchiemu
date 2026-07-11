@@ -21,12 +21,20 @@ struct GameOverlayToolbar: View {
             VStack {
                 Spacer()
                 toolbarContent
+                    .environment(\.toolbarCompactMode, compactMode)
             }
         }
     }
 
+    private var compactMode: ToolbarCompactMode {
+        let w = windowController.windowContentSize.width
+        if w >= 850 { return .full }
+        if w >= 480 { return .compact }
+        return .iconOnly
+    }
+
     private var toolbarContent: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: spacing) {
             ToolbarButton(
                 icon: "power",
                 label: loc.localized("toolbar.stop"),
@@ -36,9 +44,7 @@ struct GameOverlayToolbar: View {
             }
             .gamepadToolbarFocus(index: 0, focusedIndex: focusedIndex)
 
-            Divider()
-                .frame(height: 30)
-                .opacity(0.3)
+            toolbarDivider
 
             PauseResumeButton(runner: runner)
                 .gamepadToolbarFocus(index: 1, focusedIndex: focusedIndex)
@@ -46,9 +52,7 @@ struct GameOverlayToolbar: View {
             RestartButton(runner: runner)
                 .gamepadToolbarFocus(index: 2, focusedIndex: focusedIndex)
 
-            Divider()
-                .frame(height: 30)
-                .opacity(0.3)
+            toolbarDivider
 
             ToolbarButton(
                 icon: "square.and.arrow.down",
@@ -86,16 +90,12 @@ struct GameOverlayToolbar: View {
             )
             .gamepadToolbarFocus(index: 5, focusedIndex: focusedIndex)
 
-            Divider()
-                .frame(height: 30)
-                .opacity(0.3)
+            toolbarDivider
 
             RecordStreamButton(runner: runner)
                 .gamepadToolbarFocus(index: 6, focusedIndex: focusedIndex)
 
-            Divider()
-                .frame(height: 30)
-                .opacity(0.3)
+            toolbarDivider
 
             ToolbarButton(
                 icon: "wand.and.stars",
@@ -119,13 +119,46 @@ struct GameOverlayToolbar: View {
             AutoFullscreenButton(windowController: windowController)
                 .gamepadToolbarFocus(index: autoFullscreenFocusIndex, focusedIndex: focusedIndex)
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 10)
+        .padding(.horizontal, containerPaddingH)
+        .padding(.vertical, containerPaddingV)
         .background(
             RoundedRectangle(cornerRadius: 12)
                 .fill(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled).opacity(0.85))
                 .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
         )
+    }
+
+    @ViewBuilder
+    private var toolbarDivider: some View {
+        if compactMode != .iconOnly {
+            Divider()
+                .frame(height: 30)
+                .opacity(0.3)
+        }
+    }
+
+    private var spacing: CGFloat {
+        switch compactMode {
+        case .full: return 12
+        case .compact: return 6
+        case .iconOnly: return 2
+        }
+    }
+
+    private var containerPaddingH: CGFloat {
+        switch compactMode {
+        case .full: return 16
+        case .compact: return 8
+        case .iconOnly: return 4
+        }
+    }
+
+    private var containerPaddingV: CGFloat {
+        switch compactMode {
+        case .full: return 10
+        case .compact: return 6
+        case .iconOnly: return 4
+        }
     }
 
     private var trainingFocusIndex: Int {
