@@ -287,7 +287,6 @@
 		36BCFA5CE92E1BA8EE9CD75C /* Nintendo - Nintendo Entertainment System.dat in Resources */ = {isa = PBXBuildFile; fileRef = 55A0C232023C7657365528C8 /* Nintendo - Nintendo Entertainment System.dat */; };
 		36D578BB6E05F95B2B13543C /* SystemPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B2F7AE141392E7AA767BF3 /* SystemPickerView.swift */; };
 		374324E43AD46F029502E45E /* appIcon1024.jpg in Resources */ = {isa = PBXBuildFile; fileRef = F20EF6C414682B78AE383860 /* appIcon1024.jpg */; };
-		377AAB6E43FC8DF2CB22024D /* TruchiEmu.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = B2667AB0DCBF48CAC505C84C /* TruchiEmu.entitlements */; };
 		378F817B232C785B2764C3C5 /* input_coreOverrides_mame.json in Resources */ = {isa = PBXBuildFile; fileRef = 57D2E2F6CB71E8188AA78090 /* input_coreOverrides_mame.json */; };
 		37960EC714E081D43F165C71 /* input_coreOverrides_dolphin.json in Resources */ = {isa = PBXBuildFile; fileRef = E8C0B309CDF7F5C3FA06E6B7 /* input_coreOverrides_dolphin.json */; };
 		37E503A31525F302675202E8 /* tic80-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 39463E20150756E0CA0D4DFA /* tic80-cheats.zip */; };
@@ -1174,7 +1173,6 @@
 		F6487E3CD98C473D58ABBD61 /* fightdata_primrag2.json in Resources */ = {isa = PBXBuildFile; fileRef = C0349B304BE92D91285B9433 /* fightdata_primrag2.json */; };
 		F6940452FE8E911CC75503F1 /* input_coreLabels_eightyone.json in Resources */ = {isa = PBXBuildFile; fileRef = 3EAB9E08EEDB12D7EDCFB53E /* input_coreLabels_eightyone.json */; };
 		F6B1CD58B333E79E40B72069 /* GBA.png in Resources */ = {isa = PBXBuildFile; fileRef = 7E33AFDB51F5FB63B2E72CDC /* GBA.png */; };
-		F6B24761F120277A21DFDA8B /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C360149B8F0532EB65B66AFD /* Info.plist */; };
 		F6B9BD179D9E56D72F6EEC41 /* spectrum-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 6507532DEC958CE142EDD972 /* spectrum-cheats.zip */; };
 		F6BCD9E30F0D6EC1CA4B9F0C /* LibretroRDBParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553202E8BACC113D608625E6 /* LibretroRDBParser.swift */; };
 		F6C6FBCE05B3CD0E06B557BD /* CoreOverrideService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FF63BFF980BE337C49CF0B7 /* CoreOverrideService.swift */; };
@@ -2096,7 +2094,6 @@
 		B173126E8CA26EE063086241 /* XPCBridgeAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XPCBridgeAdapter.swift; sourceTree = "<group>"; };
 		B19911BF350A7E2B7C33DAE4 /* input_coreLabels_genesis_plus_gx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_genesis_plus_gx.json; sourceTree = "<group>"; };
 		B1B0C5B0C75C0BC4460C2913 /* input_systemLabels_snes.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_snes.json; sourceTree = "<group>"; };
-		B2667AB0DCBF48CAC505C84C /* TruchiEmu.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TruchiEmu.entitlements; sourceTree = "<group>"; };
 		B28F30933735D61D9F280392 /* merge_sources.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = merge_sources.py; sourceTree = "<group>"; };
 		B2A931CA2A371018760BC6F6 /* SharpBilinear.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = SharpBilinear.metal; sourceTree = "<group>"; };
 		B2B270A2A2E79100CB5BD105 /* Nintendo_-_Super_Nintendo_Entertainment_System.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Nintendo_-_Super_Nintendo_Entertainment_System.json"; sourceTree = "<group>"; };
@@ -2167,7 +2164,6 @@
 		C30A37AE0117299098C190A1 /* ROMIdentifierService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROMIdentifierService.swift; sourceTree = "<group>"; };
 		C31F0AA882132918E8CE3FA6 /* build_mame_unified.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = build_mame_unified.py; sourceTree = "<group>"; };
 		C355064193B4B981A25BE79E /* FC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FC.png; sourceTree = "<group>"; };
-		C360149B8F0532EB65B66AFD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		C3A6C719C78A5090AA56F911 /* fightdata_sftm.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_sftm.json; sourceTree = "<group>"; };
 		C3CDB21811A3FC4E2F21F791 /* SFSymbolCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SFSymbolCatalog.swift; sourceTree = "<group>"; };
 		C3F5A6FF580857DFBAAF22D2 /* prboom-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "prboom-cheats.zip"; sourceTree = "<group>"; };
@@ -3178,8 +3174,6 @@
 				72D05223C8556C9B000996DC /* AdventureGuideMapping.json */,
 				46789EEF6D67F1A3F1C20E60 /* arcade_button_mappings.json */,
 				2CE4818DFC09EC160E87FC48 /* Assets.xcassets */,
-				C360149B8F0532EB65B66AFD /* Info.plist */,
-				B2667AB0DCBF48CAC505C84C /* TruchiEmu.entitlements */,
 				18A378D98313D80173A8B0B0 /* AppIcons */,
 				D0CDC1D3C0773FC9C8698346 /* BoxArtSamples */,
 				FE700291499B346B34E3C68A /* cheats */,
@@ -4579,7 +4573,6 @@
 				EC3C1249162F7E8A7EDCD48F /* GG.png in Resources */,
 				6B246ACFE23D55E0330ED6D6 /* GW.png in Resources */,
 				82BFF9BA859EF36AE8B0FDFA /* INTELLIVISION.png in Resources */,
-				F6B24761F120277A21DFDA8B /* Info.plist in Resources */,
 				4ABA13771D06AE503D7724CE /* LOWRESNX.png in Resources */,
 				515D1B24DC823EA60E658044 /* LUTRO.png in Resources */,
 				1B1B7F8F93C0331659D10F5A /* LYNX.png in Resources */,
@@ -4666,7 +4659,6 @@
 				6BD6BF15F314107230D2070E /* TI83.png in Resources */,
 				B28BAC855B3AE12F271C2CE4 /* TIC.png in Resources */,
 				4DE4616CC04E04F0BF73AC72 /* TYRQUAKE.png in Resources */,
-				377AAB6E43FC8DF2CB22024D /* TruchiEmu.entitlements in Resources */,
 				0534376041F4D70FCA2D9893 /* UZEBOX.png in Resources */,
 				97CCC29A6F7E7CD81BB53C1A /* VB.png in Resources */,
 				4B94C244C68FFB5B7611ED77 /* VECTREX.png in Resources */,

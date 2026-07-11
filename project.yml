@@ -85,6 +85,8 @@ targets:
     - path: TruchiEmu/Resources
       excludes:
       - "slang-shaders/**"
+      - "Info.plist"
+      - "TruchiEmu.entitlements"
       buildPhase: resources
     - path: scripts/mame_lookup
       excludes:
