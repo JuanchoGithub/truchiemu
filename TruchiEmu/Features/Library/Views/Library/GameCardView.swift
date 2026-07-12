@@ -15,6 +15,7 @@ struct GameCardView: View {
 
     @State private var isHovered = false
     @State private var isPressed = false
+    @State private var isLaunching = false
     @State private var image: NSImage?
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var prefs = SystemPreferences.shared
@@ -97,9 +98,10 @@ struct GameCardView: View {
 
     var body: some View {
         cardContent
-        .scaleEffect(isPressed ? 0.97 : (isHovered ? 1.02 : 1.0))
+        .scaleEffect(isPressed ? 0.97 : (isLaunching ? 1.05 : (isHovered ? 1.02 : 1.0)))
         .animation(AppMotion.micro, value: isHovered)
         .animation(AppMotion.feedback, value: isPressed)
+        .animation(nil, value: isLaunching)
     .onHover { isHovered = $0 }
     .onDrag {
             let draggedIDs: [UUID]
@@ -117,7 +119,10 @@ struct GameCardView: View {
         }
         .simultaneousGesture(
             TapGesture(count: 2)
-                .onEnded { onDoubleClick?() }
+                .onEnded {
+                    isLaunching = true
+                    onDoubleClick?()
+                }
         )
         .contextMenu {
             contextMenu?()
@@ -154,6 +159,16 @@ struct GameCardView: View {
                     library.updateROM(updated, persist: false, silent: true)
                 }
             }
+        }
+        .onReceive(RunningGamesTracker.shared.$runningGames) { games in
+            if isLaunching && games[rom.runningKey] != nil {
+                isLaunching = false
+            }
+        }
+        .task(id: isLaunching) {
+            guard isLaunching else { return }
+            try? await Task.sleep(nanoseconds: 10_000_000_000)
+            isLaunching = false
         }
     }
 
@@ -262,7 +277,11 @@ struct GameCardView: View {
         )
         .overlay(
             Group {
-                if isSelected {
+                if isLaunching {
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(AppColors.brandAccent, lineWidth: 3)
+                        .shadow(color: AppColors.brandAccent.opacity(0.5), radius: 8)
+                } else if isSelected {
                     RoundedRectangle(cornerRadius: 12)
                         .stroke(AppColors.brandAccentSecondary.opacity(0.4), lineWidth: 1.5)
                         .shadow(color: AppColors.brandAccentSecondary.opacity(0.35), radius: 4)
@@ -272,6 +291,13 @@ struct GameCardView: View {
                 }
             }
         )
+        .overlay(alignment: .center) {
+            if isLaunching {
+                ProgressView()
+                    .scaleEffect(0.8)
+                    .tint(AppColors.brandAccent)
+            }
+        }
         .overlay(
             RoundedRectangle(cornerRadius: 12)
                 .fill(
@@ -284,8 +310,8 @@ struct GameCardView: View {
                 .allowsHitTesting(false)
         )
         .shadow(
-            color: isSelected ? AppColors.brandAccentSecondary.opacity(0.25) : (isHovered ? AppColors.brandAccentSecondary.opacity(0.25) : .clear),
-            radius: isSelected ? 6 : (isHovered ? 10 : 6)
+            color: isLaunching ? AppColors.brandAccent.opacity(0.4) : (isSelected ? AppColors.brandAccentSecondary.opacity(0.25) : (isHovered ? AppColors.brandAccentSecondary.opacity(0.25) : .clear)),
+            radius: isLaunching ? 12 : (isSelected ? 6 : (isHovered ? 10 : 6))
         )
         .offset(y: isPressed ? -4 : 0)
     }
