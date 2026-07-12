@@ -35,11 +35,11 @@ class SDLInputManager: ObservableObject {
     nonisolated(unsafe) var cachedShareSinglePressButtonIndex: Int? = nil
     nonisolated(unsafe) var cachedShareLongPressButtonIndex: Int? = nil
 
-    private static let deadzone: Int16 = 8000
-    private static let triggerThreshold: Int16 = 16384
+    private nonisolated static let deadzone: Int16 = 8000
+    private nonisolated static let triggerThreshold: Int16 = 16384
 
     // SDL_GameController button → retroID (used for recognized controllers)
-    private static let buttonMap: [Int32: Int] = [
+    private nonisolated static let buttonMap: [Int32: Int] = [
         SDL_CONTROLLER_BUTTON_A.rawValue: 8,
         SDL_CONTROLLER_BUTTON_B.rawValue: 0,
         SDL_CONTROLLER_BUTTON_X.rawValue: 1,
@@ -59,7 +59,7 @@ class SDLInputManager: ObservableObject {
     // Raw joystick button index → retroID (fallback for unrecognized controllers)
     // Standard HID gamepad layout: 0=A, 1=B, 2=X, 3=Y, 4=L, 5=R, 6=ZL, 7=ZR,
     // 8=Select, 9=Start, 10=L3, 11=R3
-    private static let joystickButtonMap: [Int: Int] = [
+    private nonisolated static let joystickButtonMap: [Int: Int] = [
         0: 8,   // A (bottom) → RETRO_A
         1: 0,   // B (right) → RETRO_B
         2: 1,   // X (left) → RETRO_Y
@@ -75,7 +75,7 @@ class SDLInputManager: ObservableObject {
     ]
 
     // Game controller axis → (stick index, axis id)
-    private static let axisMap: [Int32: (index: Int, id: Int)] = [
+    private nonisolated static let axisMap: [Int32: (index: Int, id: Int)] = [
         SDL_CONTROLLER_AXIS_LEFTX.rawValue: (0, 0),
         SDL_CONTROLLER_AXIS_LEFTY.rawValue: (0, 1),
         SDL_CONTROLLER_AXIS_RIGHTX.rawValue: (1, 0),
@@ -84,7 +84,7 @@ class SDLInputManager: ObservableObject {
 
     // Raw joystick axis index → (stick index, axis id)
     // Standard HID gamepad: 0=LX, 1=LY, 2=RX, 3=RY, 4=ZL, 5=ZR
-    private static let joystickAxisMap: [Int: (index: Int, id: Int)] = [
+    private nonisolated static let joystickAxisMap: [Int: (index: Int, id: Int)] = [
         0: (0, 0),
         1: (0, 1),
         2: (1, 0),
