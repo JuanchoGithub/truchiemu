@@ -50,6 +50,9 @@ struct StreamingTabView: View {
             }
 
             if config.streaming.enabled {
+                if sectionVisible("section-streamingResolution") {
+                    streamResolutionSection
+                }
                 if sectionVisible("section-recordWithShaders") {
                     recordWithShadersSection
                 }
@@ -91,6 +94,26 @@ struct StreamingTabView: View {
                 .foregroundColor(AppColors.textSecondary(colorScheme))
         }
         .id("section-recordWithShaders")
+    }
+
+    private var streamResolutionSection: some View {
+        Section {
+            Picker(loc.localized("settings.streaming.resolution"), selection: Binding(
+                get: { config.streaming.resolution },
+                set: { config.streaming.resolution = $0; config.streaming.save() }
+            )) {
+                ForEach(StreamResolution.allCases) { res in
+                    Text(loc.localized(res.localizationKey)).tag(res)
+                }
+            }
+        } header: {
+            Label(loc.localized("settings.streaming.resolution"), systemImage: "rectangle.expand.vertical")
+        } footer: {
+            Text(loc.localized("settings.streaming.resolutionDescription"))
+                .font(.caption)
+                .foregroundColor(AppColors.textSecondary(colorScheme))
+        }
+        .id("section-streamingResolution")
     }
 
     private var destinationsGroup: some View {

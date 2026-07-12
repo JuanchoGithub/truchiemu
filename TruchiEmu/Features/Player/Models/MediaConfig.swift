@@ -29,17 +29,20 @@ struct MediaConfig {
     struct StreamingSection: Equatable {
         var enabled: Bool
         var recordWithShaders: Bool
+        var resolution: StreamResolution
 
         static func load() -> StreamingSection {
             StreamingSection(
                 enabled: AppSettings.getBool("streaming_enabled", defaultValue: false),
-                recordWithShaders: AppSettings.getBool("streaming_record_with_shaders", defaultValue: true)
+                recordWithShaders: AppSettings.getBool("streaming_record_with_shaders", defaultValue: true),
+                resolution: StreamResolution.load()
             )
         }
 
         func save() {
             AppSettings.setBool("streaming_enabled", value: enabled)
             AppSettings.setBool("streaming_record_with_shaders", value: recordWithShaders)
+            resolution.save()
         }
     }
 
@@ -263,6 +266,52 @@ extension RecordingVideoCodec {
         case .proRes422: return "ProRes 422"
         case .proRes4444: return "ProRes 4444"
         }
+    }
+}
+
+enum StreamResolution: String, CaseIterable, Identifiable {
+    case native
+    case p720
+    case p1080
+    case p1440
+    case p4k
+
+    var id: String { rawValue }
+
+    /// Returns the stream's pixel dimensions, or `nil` for `.native` (size
+    /// follows the raw core frame / post-shader drawable).
+    var size: CGSize? {
+        switch self {
+        case .native: return nil
+        case .p720:   return CGSize(width: 1280, height: 720)
+        case .p1080:  return CGSize(width: 1920, height: 1080)
+        case .p1440:  return CGSize(width: 2560, height: 1440)
+        case .p4k:    return CGSize(width: 3840, height: 2160)
+        }
+    }
+
+    var localizationKey: String {
+        switch self {
+        case .native: return "settings.streaming.resolution.native"
+        case .p720:   return "settings.streaming.resolution.720p"
+        case .p1080:  return "settings.streaming.resolution.1080p"
+        case .p1440:  return "settings.streaming.resolution.1440p"
+        case .p4k:    return "settings.streaming.resolution.4k"
+        }
+    }
+
+    private static let storageKey = "streaming_resolution"
+
+    static func load() -> StreamResolution {
+        guard let raw = AppSettings.getString(storageKey),
+              let res = StreamResolution(rawValue: raw) else {
+            return .p1080
+        }
+        return res
+    }
+
+    func save() {
+        AppSettings.setString(Self.storageKey, value: rawValue)
     }
 }
 

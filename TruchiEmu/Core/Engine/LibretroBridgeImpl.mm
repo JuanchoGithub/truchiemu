@@ -588,16 +588,20 @@ shutdown:
   // than at startup because decoder state (e.g. MpegContext map) is allocated
   // lazily. Always re-query and don't trust a previously cached value — a too-
   // small buffer makes retro_serialize overrun it during PointerWrap::DoVoid.
+  [_coreLock lock];
+  if (_hwRenderEnabled && _glContext) CGLSetCurrentContext(_glContext);
+
   size_t serializeSize = 0;
   if (_retro_serialize_size) {
     serializeSize = _retro_serialize_size();
   }
   _cachedSerializeSize = serializeSize;
 
-  if (!serializeSize || !_retro_serialize) return nil;
-
-  [_coreLock lock];
-  if (_hwRenderEnabled && _glContext) CGLSetCurrentContext(_glContext);
+  if (!serializeSize || !_retro_serialize) {
+    if (_hwRenderEnabled && _glContext) CGLSetCurrentContext(NULL);
+    [_coreLock unlock];
+    return nil;
+  }
 
   void *buf = malloc(serializeSize);
   NSData *data = nil;
@@ -636,14 +640,20 @@ shutdown:
 - (void)saveState {
   // Same rationale as serializeState: serialize size can grow mid-session
   // (e.g. PPSSPP allocating MpegContext during FMVs), so re-query each call.
+  [_coreLock lock];
+  if (_hwRenderEnabled && _glContext) CGLSetCurrentContext(_glContext);
+
   size_t serializeSize = 0;
   if (_retro_serialize_size) {
     serializeSize = _retro_serialize_size();
   }
   _cachedSerializeSize = serializeSize;
 
-  if (!serializeSize || !_retro_serialize) return;[_coreLock lock];
-  if (_hwRenderEnabled && _glContext) CGLSetCurrentContext(_glContext);
+  if (!serializeSize || !_retro_serialize) {
+    if (_hwRenderEnabled && _glContext) CGLSetCurrentContext(NULL);
+    [_coreLock unlock];
+    return;
+  }
 
   void *buf = malloc(serializeSize);
   if (buf) {

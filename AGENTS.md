@@ -207,6 +207,8 @@ The following are excluded from the source build phase:
 | `AppSettingsCache.shared` | `Shared/Utilities/` | In-memory `[String: Data]` cache backed by SwiftData `SettingsEntry` |
 | `LocalizationManager.shared` | `Shared/Localization/` | JSON-based UI translations; `setLanguage()` for runtime changes |
 | `ThemeManager.shared` | `Shared/UI/` | Theme/appearance management (see Themes section) |
+| `StreamRecordingService.shared` | `Features/Player/Services/` | Local recording (AVAssetWriter) + live RTMP streaming entry point; owns `RTMPStreamingService` instance for non-`.localFile` modes |
+| `RTMPStreamingService` | `Features/Player/Services/` | In-process RTMP publishing via HaishinKit's `RTMPConnection`/`RTMPStream` actors; VideoToolbox H.264/HEVC encode + AAC + FLV/RTMP mux |
 
 `AppSettings` is an `enum` (not a class) with static convenience methods wrapping `AppSettingsCache.shared`. Uses `MainActor.assumeIsolated` for thread safety.
 
@@ -309,6 +311,18 @@ ALL launch paths (double-click, button, save state, CLI) go through `GameLaunche
 3. **`ROMIdentifier`**: Weighted scoring enum (magic headers > unique extensions > filename patterns > path context)
 4. **`LibraryAutomationCoordinator`**: Post-scan pipeline (identify, enrich with LaunchBox metadata, download art). Respects `RunningGamesTracker` to pause during gameplay. 2-second warm-up delay.
 5. **`MetadataSyncCoordinator`**: Background LaunchBox metadata sync; 1-at-a-time concurrency; respects `RunningGamesTracker`
+
+### Live Streaming Pipeline
+
+Owned by `StreamRecordingService` when its `mode != .localFile`. Live RTMP publish via HaishinKit's in-process `RTMPConnection`/`RTMPStream` actors (replaces the older ffmpeg-subprocess + raw-BGRA-pipe path that suffered from silent frame drops under backpressure):
+
+1. **`MetalCoordinator.performFrameCapture`** — already runs on every render frame. For streaming it selects the post-shader drawable (or raw core frame) per `recordWithShaders`, blits/copies into an IOSurface-backed CVPixelBuffer from the active `pixelBufferPool` (sized to the user-selected `StreamResolution`).
+2. **`CVPixelBufferPool`** — created at session start with the user-selected resolution (e.g. 1920×1080). When the source frame is smaller (NES 256×224 → 1080p), the existing GPU blit/passthrough stretches source UVs [0,1] to fill the destination; VideoToolbox then handles final upscale via `scalingMode = .letterbox` in `VideoCodecSettings`.
+3. **`RTMPStreamingService.submitVideoFrame(_:presentationTime:)`** — wraps the CVPixelBuffer in a `CMSampleBuffer`, calls `RTMPStream.append(_:)` on its actor.
+4. **Audio** — same `SharedMemoryManager.readAudioSamples()` → resample to AAC rate → build s16le `CMSampleBuffer` → `RTMPStreamingService.submitAudio(<sampleBuffer>)`.
+5. **HaishinKit (`RTMPConnection` + `RTMPStream`)** — performs real RTMP handshake, AMF0 messaging, FLV mux, VideoToolbox hardware H.264/HEVC encode, AAC encode, then publishes over TCP. `RTMPStatus` events flow through `AsyncStream<RTMPStatus>` to `RTMPStreamingService.handleConnectionStatus`/`.handleStreamStatus`, which translate to `StreamRecordingService.streamStatus` (`.connecting` → `.streaming`, or `.failed("...")` with localized reason).
+6. **`StreamResolution`** — picker in Streaming settings (`native` / `720p` / `1080p` / `1440p` / `4K`) persisted at `AppSettings["streaming_resolution"]`, default `.p1080`. ProRes encoders are demoted to H.264 for streaming (FLV/RTMP doesn't support ProRes).
+7. **No external processes, no pipes, no FIFOs** — entire pipeline runs in-process. Backpressure flows synchronously through `RTMPStream.append()` without silent frame drops.
 
 ## Core Options System
 

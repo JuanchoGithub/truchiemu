@@ -1,6 +1,24 @@
 {
-  "originHash" : "5ee9d1daeacdb22c0c7ef60eb858ff0064335ba431be9f6ff502012129e433a1",
+  "originHash" : "ed76b7650cbe32e0b94035e3be01b2ebd697f904ce340fafa1134615614c8cf6",
   "pins" : [
+    {
+      "identity" : "haishinkit.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/HaishinKit/HaishinKit.swift",
+      "state" : {
+        "revision" : "dc880cb540b8feeb98f64e8b7dcfaaf320b6b2bd",
+        "version" : "2.2.5"
+      }
+    },
+    {
+      "identity" : "logboard",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/shogo4405/Logboard.git",
+      "state" : {
+        "revision" : "8f41c63afb903040b77049ee2efa8c257b8c0d50",
+        "version" : "2.6.0"
+      }
+    },
     {
       "identity" : "rcheevos",
       "kind" : "remoteSourceControl",

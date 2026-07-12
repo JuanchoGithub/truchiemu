@@ -221,7 +221,9 @@ private struct StreamPickerView: View {
     private func startMode(_ mode: StreamingMode) {
         switch mode {
         case .twitch, .youtube, .custom:
-            recordingService.videoSize = runner.streamingSize
+            // Stream target dims are derived inside `startStreaming` from the
+            // `streaming_resolution` setting (720p / 1080p / …) — no per-call
+            // size hint required anymore.
             recordingService.startStreaming(mode: mode)
         case .localFile:
             let size = runner.captureSize

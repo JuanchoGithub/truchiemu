@@ -27,15 +27,6 @@ enum RecordingVideoCodec: String, Codable, CaseIterable {
         }
     }
 
-    var ffmpegCodec: String {
-        switch self {
-        case .h264: return "h264_videotoolbox"
-        case .hevc: return "hevc_videotoolbox"
-        case .proRes422: return "prores_videotoolbox"
-        case .proRes4444: return "prores_videotoolbox"
-        }
-    }
-
     var isLossless: Bool {
         switch self {
         case .proRes422, .proRes4444: return true
@@ -131,6 +122,7 @@ class StreamRecordingService: ObservableObject {
     @Published var streamingEnabled = false
     @Published var quality: RecordingQuality = .high
     @Published var recordWithShaders = true
+    @Published var streamResolution: StreamResolution = .p1080
     @Published var streamStatus: StreamStatus = .idle
     @Published var streamError: String?
 
@@ -161,7 +153,6 @@ class StreamRecordingService: ObservableObject {
     var outputURL: URL?
     nonisolated(unsafe) private var frameCount: Int64 = 0
     nonisolated(unsafe) private var isRecordingFlag: Bool = false
-    nonisolated(unsafe) private var videoPipeFD: Int32 = -1
 
     /// Video dims used by the streaming pipe-write path. Set at session start
     /// (MainActor), read on the recording thread to compute row stride for
@@ -191,9 +182,8 @@ class StreamRecordingService: ObservableObject {
     /// allocations on the audio timer's hot path.
     nonisolated(unsafe) private var audioReadScratch: [Int16] = []
     nonisolated(unsafe) private var audioResampleScratch: [Int16] = []
-    nonisolated(unsafe) private var audioFifoWriteScratch: Data = Data()
 
-    private static let validAACSampleRates: [Double] = [
+    nonisolated private static let validAACSampleRates: [Double] = [
         8000, 11025, 12000, 16000, 22050, 24000, 32000, 44100, 48000
     ]
 
@@ -274,13 +264,15 @@ class StreamRecordingService: ObservableObject {
 
     private let audioChannels: Int = 2
 
-    // ffmpeg streaming. The video pipe fd is read on the per-frame recording
-    // thread (`appendVideoFrame`); the other 3 are written at session
-    // start/stop on MainActor and only read by the same recording thread.
-    private var ffmpegProcess: Process?
-    private var ffmpegVideoPipe: Pipe?
-    nonisolated(unsafe) private var audioFifoPath: String?
-    nonisolated(unsafe) private var audioFifoHandle: FileHandle?
+    // RTMPHaishinKit-backed live streaming. Owned only while a non-.localFile
+    // mode is active; nil for local recording. Created at startStreaming, torn
+    // down at stopStreaming/forceStop. All RTMP handshake + RTMPStatus events
+    // live inside this object; we just translate them to our streamStatus enum.
+    // Marked `nonisolated(unsafe)` because the per-frame append path runs on
+    // the recording queue and reads this to dispatch frames — the same protocol
+    // as `videoPipeFD`/`pixelBufferPool`: written on MainActor at session
+    // boundaries, read on the recording queue mid-frame.
+    nonisolated(unsafe) private(set) var streamingService: RTMPStreamingService?
 
     private init() {
         signal(SIGPIPE, SIG_IGN)
@@ -305,6 +297,7 @@ class StreamRecordingService: ObservableObject {
         if let raw = AppSettings.getString("streaming_video_codec") {
             customVideoCodec = RecordingVideoCodec(rawValue: raw) ?? .h264
         }
+        streamResolution = StreamResolution.load()
     }
 
     func saveSettings() {
@@ -369,18 +362,18 @@ class StreamRecordingService: ObservableObject {
     }
 
     static func verifyStreamKey(mode: StreamingMode) async -> Result<String, VerifyError> {
-        let rtmpURL: String
+        let rtmpURLString: String
         switch mode {
         case .twitch:
             guard let key = twitchStreamKey, !key.isEmpty else {
                 return .failure(.noKey("Twitch"))
             }
-            rtmpURL = "\(twitchStreamURL)\(key)"
+            rtmpURLString = "\(twitchStreamURL)\(key)"
         case .youtube:
             guard let key = youtubeStreamKey, !key.isEmpty else {
                 return .failure(.noKey("YouTube"))
             }
-            rtmpURL = "\(youtubeStreamURL)\(key)"
+            rtmpURLString = "\(youtubeStreamURL)\(key)"
         case .custom:
             guard let key = customStreamKey, !key.isEmpty else {
                 return .failure(.noKey("custom"))
@@ -389,52 +382,17 @@ class StreamRecordingService: ObservableObject {
             guard !url.isEmpty else {
                 return .failure(.noURL)
             }
-            rtmpURL = "\(url)\(key)"
+            rtmpURLString = "\(url)\(key)"
         case .localFile:
             return .failure(.localRecording)
         }
 
-        guard let url = URL(string: rtmpURL), let host = url.host, !host.isEmpty else {
+        guard let url = URL(string: rtmpURLString), let host = url.host, !host.isEmpty,
+              url.scheme == "rtmp" || url.scheme == "rtmps" else {
             return .failure(.invalidURL)
         }
 
-        let port: UInt16
-        if let explicitPort = url.port {
-            port = UInt16(explicitPort)
-        } else {
-            port = 1935
-        }
-
-        return await withUnsafeContinuation { continuation in
-            var didResume = false
-            let connection = NWConnection(host: NWEndpoint.Host(host), port: NWEndpoint.Port(rawValue: port)!, using: .tcp)
-            connection.stateUpdateHandler = { state in
-                switch state {
-                case .ready:
-                    guard !didResume else { return }
-                    didResume = true
-                    connection.cancel()
-                    continuation.resume(returning: .success("Connected to \(host):\(port)"))
-                case .failed(let error):
-                    guard !didResume else { return }
-                    didResume = true
-                    connection.cancel()
-                    continuation.resume(returning: .failure(.connectionFailed(error.localizedDescription)))
-                case .cancelled:
-                    break
-                default:
-                    break
-                }
-            }
-            connection.start(queue: DispatchQueue.global(qos: .utility))
-
-            DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + 5) {
-                guard !didResume else { return }
-                didResume = true
-                connection.cancel()
-                continuation.resume(returning: .failure(.timeout))
-            }
-        }
+        return await RTMPStreamingService.verify(rtmpURL: url)
     }
 
     enum VerifyError: LocalizedError {
@@ -658,155 +616,147 @@ class StreamRecordingService: ObservableObject {
             return
         }
 
-        guard let ffmpegPath = Self.ffmpegPath() else {
-            LoggerService.error(category: "Recording", "ffmpeg not found")
+        guard let url = URL(string: rtmpURL) else {
+            LoggerService.error(category: "Recording", "Invalid stream URL: \(rtmpURL)")
             return
         }
 
-        let fifoPath = NSTemporaryDirectory() + "truchiemu_audio_\(UUID().uuidString).pcm"
-        self.audioFifoPath = fifoPath
-        mkfifo(fifoPath, 0o666)
-
-        // Open the FIFO with O_RDWR before launching ffmpeg — this returns
-        // immediately (no blocking), and the handle acts as a persistent writer
-        // so ffmpeg's O_RDONLY open also won't block during init.
-        let fifoFD = open(fifoPath, O_RDWR)
-        if fifoFD >= 0 {
-            audioFifoHandle = FileHandle(fileDescriptor: fifoFD, closeOnDealloc: true)
-        }
-
+        // Resolve the desired stream target dims. ProRes is demoted to H.264
+        // for streaming (FLV/RTMP doesn't support ProRes); lossless bitrate is
+        // bumped to the lossy default so we don't try to RTMP-publish 500Mbps.
         let streamCodec = customVideoCodec.isLossless ? RecordingVideoCodec.h264 : customVideoCodec
         let streamBitrate = customVideoCodec.isLossless ? 12_000_000 : customVideoBitrate
 
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: ffmpegPath)
-
-        process.arguments = [
-            "-f", "rawvideo", "-pix_fmt", "bgra",
-            "-s", "\(Int(videoSize.width))x\(Int(videoSize.height))",
-            "-r", "\(customFrameRate > 0 ? customFrameRate : 60)",
-            "-use_wallclock_as_timestamps", "1",
-            "-i", "pipe:0",
-            "-f", "s16le", "-ar", "\(Int(coreAudioSampleRate))", "-ac", "2",
-            "-use_wallclock_as_timestamps", "1",
-            "-i", fifoPath,
-            "-c:v", streamCodec.ffmpegCodec,
-            "-b:v", "\(streamBitrate)",
-            "-c:a", "aac",
-            "-b:a", "\(customAudioBitrate)",
-            "-f", "flv",
-            "-flvflags", "no_duration_filesize",
-            rtmpURL
-        ]
-
-        let videoPipe = Pipe()
-        let stderrPath = NSTemporaryDirectory() + "truchiemu_ffmpeg_\(UUID().uuidString.prefix(8)).log"
-        let stderrFD = open(stderrPath, O_CREAT | O_WRONLY | O_TRUNC, 0o644)
-        if stderrFD >= 0 {
-            process.standardError = FileHandle(fileDescriptor: stderrFD, closeOnDealloc: true)
+        // Pool size matches the core's aspect ratio at the user's chosen stream
+        // resolution so the GPU render-convert pass fills the pool without
+        // stretching (Twitch's player letterboxes non-16:9 streams itself).
+        // For `.native` we fall back to a 640-wide liquidated size.
+        let coreAspect = Double(XPCBridgeAdapter.shared.aspectRatio())
+        let poolSize: CGSize
+        if let target = streamResolution.size {
+            poolSize = Self.aspectPoolSize(target: target, coreAspect: coreAspect)
+        } else {
+            poolSize = Self.defaultCoreFrameSize(coreAspect: coreAspect)
         }
-        process.standardInput = videoPipe
-        self.ffmpegVideoPipe = videoPipe
-        self.ffmpegProcess = process
-        self.videoPipeFD = videoPipe.fileHandleForWriting.fileDescriptor
-        // Mark the video pipe write end non-blocking. If ffmpeg stalls (RTMP
-        // handshake, slow VideoToolbox, crashed), `write()` returns EAGAIN
-        // instead of blocking the dispatcher frame loop (and freezing stop()).
-        let videoFlags = fcntl(self.videoPipeFD, F_GETFL)
-        if videoFlags != -1 {
-            _ = fcntl(self.videoPipeFD, F_SETFL, videoFlags | O_NONBLOCK)
+        pixelBufferPool = Self.makePixelBufferPool(width: Int(poolSize.width), height: Int(poolSize.height))
+
+        // Set up the recording session's audio scratch buffers up-front so the
+        // capture timer can't allocate mid-stream.
+        audioReadScratch = [Int16](repeating: 0, count: 4096)
+
+        let service = RTMPStreamingService(
+            resolution: poolSize,
+            fps: customFrameRate > 0 ? customFrameRate : 60,
+            videoCodec: streamCodec,
+            videoBitrate: streamBitrate,
+            audioBitrate: customAudioBitrate,
+            audioSampleRate: coreAudioSampleRate
+        )
+        streamingService = service
+        service.onStatus = { [weak self] status in
+            self?.applyStreamStatus(status)
         }
-        LoggerService.info(category: "Recording", "ffmpeg stderr -> \(stderrPath)")
-
-        process.terminationHandler = { [weak self] process in
-            Task { @MainActor in
-                guard let self = self else { return }
-                let exitCode = process.terminationStatus
-                guard self.isRecording else { return }
-                LoggerService.info(category: "Recording", "ffmpeg terminated (code \(exitCode)): connection dropped, bad key, etc.")
-                if exitCode != 0 {
-                    self.streamError = "Stream stopped unexpectedly (code \(exitCode))"
-                    self.clearStreamError()
-                }
-                // Full session reset: matching stop()'s state clearance, then
-                // offload blocking cleanup to the background queue.
-                let wasUserInitiated = (self.currentInitiator == .user)
-                let processKill = self.ffmpegProcess
-                let pipeClose = self.ffmpegVideoPipe
-                let fifoPathClean = self.audioFifoPath
-                let fifoHandleClean = self.audioFifoHandle
-
-                self.isUserRecording = false
-                self.currentInitiator = nil
-                self.isRecording = false
-                self.streamStatus = .idle
-                self.recordingStartTime = nil
-                self.audioSessionAnchor = 0
-                self.ffmpegProcess = nil
-                self.ffmpegVideoPipe = nil
-                self.videoPipeFD = -1
-                self.audioFifoPath = nil
-                self.audioFifoHandle = nil
-                self.pixelBufferPool = nil
-                self.audioReadScratch = []
-                self.audioResampleScratch = []
-                self.audioFifoWriteScratch = Data()
-                self.stopAudioCapture()
-
-                self.writingQueue.async {
-                    pipeClose?.fileHandleForWriting.closeFile()
-                    // ffmpeg already dead; just kill-strike if still alive
-                    if let pid = processKill?.processIdentifier, pid > 0 {
-                        let dead = (processKill == nil) || !processKill!.isRunning
-                        if !dead {
-                            Darwin.kill(pid, SIGKILL)
-                        }
-                    }
-                    fifoHandleClean?.closeFile()
-                    if let path = fifoPathClean {
-                        try? FileManager.default.removeItem(atPath: path)
-                    }
-                }
-
-                if wasUserInitiated, RollingVideoBufferService.shared.isEnabled {
-                    RollingVideoBufferService.shared.startCaptureIfReady()
-                }
-            }
+        service.onDisconnect = { [weak self] reason in
+            self?.applyStreamDisconnect(reason: reason)
         }
 
-        do {
-            try process.run()
-            // Set up the recording session's audio scratch buffers and pixel
-            // pool up-front so the capture timer / renderer can't allocate
-            // mid-stream. There's no AVAssetWriter for streaming (ffmpeg owns
-            // the encoder side), so pixelBufferPool stays nil here; the
-            // IOSurface-backed pool is only needed for the AVAssetWriter path.
-            audioReadScratch = [Int16](repeating: 0, count: 4096)
-            isRecording = true
-            recordingStartTime = Date()
-            audioSessionAnchor = CACurrentMediaTime()
+        isRecording = true
+        recordingStartTime = Date()
+        audioSessionAnchor = CACurrentMediaTime()
+        streamStatus = .connecting
+        LoggerService.info(category: "Recording", "Started streaming to \(mode.rawValue) at \(Int(poolSize.width))x\(Int(poolSize.height)) via HaishinKit")
+
+        Task { @MainActor in
+            await service.start(rtmpURL: url)
+        }
+    }
+
+    private func applyStreamStatus(_ status: RTMPStreamingService.Status) {
+        switch status {
+        case .idle:
+            streamStatus = .idle
+        case .connecting:
+            // Only meaningful if we haven't already moved on; let .streaming
+            // and .failed override.
+            if case .streaming = streamStatus { return }
+            if case .failed = streamStatus { return }
             streamStatus = .connecting
-            LoggerService.info(category: "Recording", "Started streaming to \(mode.rawValue), ffmpeg pid \(process.processIdentifier)")
-            Task { [weak self] in
-                try? await Task.sleep(nanoseconds: 3_000_000_000)
-                await MainActor.run {
-                    guard let self = self, case .connecting = self.streamStatus else { return }
-                    LoggerService.info(category: "Recording", "Stream assumed connected after 3s")
-                    self.streamStatus = .streaming
-                }
-            }
-        } catch {
-            streamStatus = .failed("Failed to launch ffmpeg: \(error.localizedDescription)")
-            LoggerService.error(category: "Recording", "Failed to launch ffmpeg: \(error.localizedDescription)")
-            ffmpegProcess = nil
-            ffmpegVideoPipe = nil
-            videoPipeFD = -1
-            audioFifoHandle?.closeFile()
-            audioFifoHandle = nil
-            if let path = audioFifoPath {
-                try? FileManager.default.removeItem(atPath: path)
-                audioFifoPath = nil
-            }
+        case .streaming:
+            streamStatus = .streaming
+        case .failed(let message):
+            streamStatus = .failed(message)
+            streamError = message
+            clearStreamError()
+        }
+    }
+
+    private func applyStreamDisconnect(reason: RTMPStreamingService.DisconnectReason) {
+        guard isRecordingFlag else { return }
+        // Mirrors the old ffmpeg terminationHandler's session teardown but is
+        // triggered by a real RTMP failure (rejected key, network drop,
+        // timeout) instead of an opaque exit code.
+        LoggerService.info(category: "Recording", "stream disconnected: \(reason)")
+        if case .userInitiated = reason {
+            return
+        }
+        let wasUserInitiated = (currentInitiator == .user)
+        isRecording = false
+        isUserRecording = false
+        currentInitiator = nil
+        streamStatus = .idle
+        recordingStartTime = nil
+        audioSessionAnchor = 0
+        streamingService = nil
+        pixelBufferPool = nil
+        audioReadScratch = []
+        audioResampleScratch = []
+        stopAudioCapture()
+        if wasUserInitiated, RollingVideoBufferService.shared.isEnabled {
+            RollingVideoBufferService.shared.startCaptureIfReady()
+        }
+    }
+
+    /// Liquidated stream resolution when the user picks `.native`: 640 wide
+    /// scaled to the requested core aspect ratio, falling back to 640×480
+    /// when no aspect info is available. Caller can always pass a fixed
+    /// `videoSize` instead.
+    private static func defaultCoreFrameSize(coreAspect: Double) -> CGSize {
+        guard coreAspect > 0 else { return CGSize(width: 640, height: 480) }
+        let width: CGFloat = 640
+        let height = (width / CGFloat(coreAspect)).rounded()
+        return CGSize(width: width, height: max(64, height))
+    }
+
+    /// Computes the stream pixel-buffer pool size for a user-chosen stream
+    /// resolution (720p / 1080p / 1440p / 4K) and the running core's aspect
+    /// ratio. The pool's aspect ratio matches the core's so the GPU render-
+    /// convert pass scales source UVs `[0,1]` to fill the pool without
+    /// stretching — Twitch's player letterboxes any non-16:9 stream itself,
+    /// so we don't pad on our side. The longer side of `target` is preserved
+    /// and the shorter side is shrunk by the core aspect, so we never use
+    /// more pixels than the chosen resolution target.
+    ///
+    /// Examples:
+    /// - NES (aspect 256:224 ≈ 1.143) at 1080p (1920×1080) → 1235×1080
+    /// - SNES (4:3 ≈ 1.333) at 1080p                  → 1440×1080
+    /// - N64 (4:3) at 1080p                            → 1440×1080
+    /// - Generic 16:9 system at 1080p                  → 1920×1080 (unchanged)
+    /// - Game Boy (10:9 ≈ 1.111) at 1080p              → 1200×1080
+    /// - Portrait Game Boy (1:1) at 1080p              → 1080×1080
+    private static func aspectPoolSize(target: CGSize, coreAspect: Double) -> CGSize {
+        guard coreAspect > 0 else { return target }
+        let resAspect = target.width / target.height
+        let coreAspect = CGFloat(coreAspect)
+        if coreAspect > resAspect {
+            // Core is wider than the stream target → width-bound.
+            let width = target.width
+            let height = (width / coreAspect).rounded(.toNearestOrEven)
+            return CGSize(width: width, height: max(64, height))
+        } else {
+            // Core is narrower than (or equal to) the stream target → height-bound.
+            let height = target.height
+            let width = (height * coreAspect).rounded(.toNearestOrEven)
+            return CGSize(width: max(64, width), height: height)
         }
     }
 
@@ -815,28 +765,13 @@ class StreamRecordingService: ObservableObject {
             stop()
             return
         }
-        guard ffmpegProcess != nil || assetWriter != nil else { return }
-        if let p = ffmpegProcess, p.isRunning {
-            LoggerService.info(category: "Recording", "forceStop: sending SIGKILL to pid \(p.processIdentifier)")
-            let processToKill = p
-            let pipeToClose = ffmpegVideoPipe
-            let fifoPathClean = audioFifoPath
-            let fifoHandleClean = audioFifoHandle
-            ffmpegProcess = nil
-            ffmpegVideoPipe = nil
-            videoPipeFD = -1
-            audioFifoPath = nil
-            audioFifoHandle = nil
-            pixelBufferPool = nil
-            streamStatus = .idle
-            stopAudioCapture()
-            writingQueue.async {
-                pipeToClose?.fileHandleForWriting.closeFile()
-                Darwin.kill(processToKill.processIdentifier, SIGKILL)
-                fifoHandleClean?.closeFile()
-                if let path = fifoPathClean {
-                    try? FileManager.default.removeItem(atPath: path)
-                }
+        guard streamingService != nil || assetWriter != nil else { return }
+        if streamingService != nil {
+            LoggerService.info(category: "Recording", "forceStop: tearing down RTMP stream service")
+            Task { @MainActor in
+                await streamingService?.stop()
+                streamingService = nil
+                streamStatus = .idle
             }
         }
         if let writer = assetWriter {
@@ -862,7 +797,6 @@ class StreamRecordingService: ObservableObject {
         pixelBufferPool = nil
         audioReadScratch = []
         audioResampleScratch = []
-        audioFifoWriteScratch = Data()
         streamStatus = .idle
     }
 
@@ -882,7 +816,7 @@ class StreamRecordingService: ObservableObject {
 
         stopAudioCapture()
 
-        if ffmpegProcess != nil {
+        if streamingService != nil {
             stopStreaming()
         } else if assetWriter != nil {
             stopLocalRecording()
@@ -912,7 +846,6 @@ class StreamRecordingService: ObservableObject {
         pixelBufferPool = nil
         audioReadScratch = []
         audioResampleScratch = []
-        audioFifoWriteScratch = Data()
 
         writer.finishWriting {
             if let error = writerRef.error {
@@ -924,68 +857,18 @@ class StreamRecordingService: ObservableObject {
     }
 
     private func stopStreaming() {
-        // Capture everything the background cleanup needs; nil out `@MainActor`
-        // references immediately so in-flight frame/audio handlers bail early
-        // via `guard isRecording` / `guard fd >= 0`.
-        let processToKill = ffmpegProcess
-        let pipeToClose = ffmpegVideoPipe
-        let fifoPathToClean = audioFifoPath
-        let fifoHandleToClean = audioFifoHandle
-
-        ffmpegProcess = nil
-        ffmpegVideoPipe = nil
-        videoPipeFD = -1
-        audioFifoPath = nil
-        audioFifoHandle = nil
+        // Capture the service reference, drop our MainActor handle so in-flight
+        // frame/audio appenders bail on the next `isRecordingFlag` check (the
+        // HaishinKit service's `stop()` is async; cleanly closing both actors
+        // takes an unbounded time depending on RTMP server-side finalize).
+        guard let service = streamingService else { return }
+        streamingService = nil
         pixelBufferPool = nil
         audioReadScratch = []
         audioResampleScratch = []
-        audioFifoWriteScratch = Data()
 
-        // Offload all work that may touch file descriptors to a background
-        // queue. Closing the video pipe, interrupting ffmpeg, and cleaning the
-        // audio FIFO all involve kernel-level syscalls that can block on a
-        // congested or zombie process. Doing them on the writingQueue (which
-        // already services audio/video writes) keeps the main thread
-        // responsive and prevents the deadlock where close() races with an
-        // in-flight write() from the per-frame pipe writer.
-        writingQueue.async {
-            // Tell ffmpeg we're done feeding frames; this sends EOF to stdin
-            // so it can finalize its RTMP stream and exit.
-            pipeToClose?.fileHandleForWriting.closeFile()
-
-            // Ask ffmpeg to shutdown. SIGINT is part of a graceful exit; if
-            // the process is hung in a non-interruptible VideoToolbox or RTMP
-            // operation it may not respond immediately. The cancellation
-            // observer below enforces a deadline.
-            processToKill?.interrupt()
-
-            // If ffmpeg is unresponsive, forcibly kill it after a short grace
-            // period so the pipe/FIFO file descriptors don't sit around open.
-            if let pid = processToKill?.processIdentifier, pid > 0 {
-                let deadline = DispatchTime.now() + .milliseconds(750)
-                let killObserver = DispatchWorkItem {
-                    let dead: Bool
-                    if let p = processToKill {
-                        dead = !p.isRunning
-                    } else {
-                        dead = true
-                    }
-                    if !dead {
-                        LoggerService.info(category: "Recording", "ffmpeg unresponsive — sending SIGKILL to pid \(pid)")
-                        Darwin.kill(pid, SIGKILL)
-                    }
-                }
-                DispatchQueue.global(qos: .default).asyncAfter(deadline: deadline, execute: killObserver)
-            }
-
-            // Clean FIFO: close the writer handle and remove the temp file.
-            fifoHandleToClean?.closeFile()
-            if let path = fifoPathToClean {
-                try? FileManager.default.removeItem(atPath: path)
-            }
-
-            LoggerService.info(category: "Recording", "Streaming cleanup complete")
+        Task { @MainActor in
+            await service.stop()
         }
     }
 
@@ -999,29 +882,20 @@ class StreamRecordingService: ObservableObject {
     nonisolated func appendVideoFrame(_ pixelBuffer: CVPixelBuffer, at time: CMTime) {
         guard isRecordingFlag else { return }
 
-        // Streaming: stream raw BGRA bytes to ffmpeg's stdin pipe. The buffer
-        // is already IOSurface-backed; lock for CPU read, write straight to
-        // the fd, unlock. No Swift `[UInt8]` buffer, no double-buffer swap.
-        if videoPipeFD >= 0 {
-            let fd = videoPipeFD
-            CVPixelBufferLockBaseAddress(pixelBuffer, .readOnly)
-            if let base = CVPixelBufferGetBaseAddress(pixelBuffer) {
-                let bpr = CVPixelBufferGetBytesPerRow(pixelBuffer)
-                let h = CVPixelBufferGetHeight(pixelBuffer)
-                let rowBytes = Int(videoSize.width) * 4
-                writeFrameToPipe(fd, base: base, bytesPerRow: bpr, rowBytes: rowBytes, height: h)
-            }
-            CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly)
-
+        // Streaming: hand the IOSurface-backed pixel buffer straight to the
+        // RTMPHaishinKit service. No CPU readback, no `[UInt8]` swap, no pipe
+        // write. HaishinKit's MediaMixer/VideoCodec handles the encode (H.264
+        // / HEVC) and FLV/RTMP mux on its own actor.
+        if let streamService = streamingService {
             if frameCount == 0 {
-                // First frame written synchronously — ffmpeg blocks on
-                // pipe:0 until data arrives and won't open the audio FIFO
-                // otherwise. Start audio capture now so audio data doesn't
-                // accumulate in the FIFO before ffmpeg is ready to read it.
-                // `startAudioCapture` mutates MainActor-owned `audioTimer`,
-                // so hop to MainActor for this one-time kick.
+                // Kick the audio capture timer from MainActor once the first
+                // video frame is in flight. The audio sample buffer path
+                // (captureAudioSamples → streamService.submitAudio) runs on
+                // the same writingQueue.
+                LoggerService.info(category: "Recording", "appendVideoFrame: first streaming frame received, kicking audio capture")
                 Task { @MainActor in self.startAudioCapture() }
             }
+            streamService.submitVideoFrame(pixelBuffer, presentationTime: time)
             frameCount &+= 1
             return
         }
@@ -1047,55 +921,6 @@ class StreamRecordingService: ObservableObject {
         }
         adaptor.append(pixelBuffer, withPresentationTime: time)
         frameCount &+= 1
-    }
-
-    /// Write the raw BGRA frame bytes to the ffmpeg video pipe (`write(2)`).
-    /// Handles EINTR/EAGAIN and drops the rest of a frame on EAGAIN so a
-    /// stalled ffmpeg backpressures the publisher rather than blocking it.
-    nonisolated private func writeFrameToPipe(_ fd: Int32,
-                                             base: UnsafeMutableRawPointer,
-                                             bytesPerRow: Int,
-                                             rowBytes: Int,
-                                             height: Int) {
-        if bytesPerRow == rowBytes {
-            // Tight layout — single writev span.
-            var iov = iovec(iov_base: base, iov_len: Int(rowBytes * height))
-            var written = 0
-            let total = rowBytes * height
-            while written < total {
-                let n = writev(fd, &iov, 1)
-                if n > 0 {
-                    written += n
-                    iov.iov_base = base.advanced(by: written)
-                    iov.iov_len = total - written
-                } else if n < 0 {
-                    if errno == EINTR { continue }
-                    // EAGAIN/EWOULDBLOCK or any other error: drop the rest
-                    // of this frame so the publisher isn't blocked.
-                    return
-                } else {
-                    return
-                }
-            }
-        } else {
-            // Padded rows — write each row, skipping the per-row padding.
-            let src = base.assumingMemoryBound(to: UInt8.self)
-            for row in 0..<height {
-                let rowPtr = src.advanced(by: row * bytesPerRow)
-                var remaining = rowBytes
-                var off = 0
-                while remaining > 0 {
-                    let n = write(fd, rowPtr.advanced(by: off), remaining)
-                    if n > 0 { off += n; remaining -= n }
-                    else if n < 0 {
-                        if errno == EINTR { continue }
-                        return
-                    } else {
-                        return
-                    }
-                }
-            }
-        }
     }
 
     private func startAudioCapture() {
@@ -1132,26 +957,6 @@ class StreamRecordingService: ObservableObject {
         }
         guard count > 0 else { return }
 
-        // Write to ffmpeg FIFO for streaming (uses raw core-rate data,
-        // persistent handle). Skip the per-tick `Data(bytes:count:)` alloc
-        // by using `FileHandle.write(_:)` with a raw buffer view; the FIFO
-        // write path doesn't need to copy the bytes into a Data wrapper.
-        if audioFifoPath != nil, let handle = audioFifoHandle {
-            audioFifoWriteScratch.withUnsafeMutableBytes { _ in /* ensure capacity */ }
-            audioFifoWriteScratch.count = count * 2
-            audioReadScratch.withUnsafeBufferPointer { srcPtr in
-                audioFifoWriteScratch.withUnsafeMutableBytes { dstPtr in
-                    dstPtr.copyBytes(from: UnsafeRawBufferPointer(start: srcPtr.baseAddress!, count: count * 2))
-                }
-            }
-            do {
-                try handle.write(contentsOf: audioFifoWriteScratch)
-            } catch {
-                LoggerService.error(category: "Recording", "Audio FIFO write error: \(error.localizedDescription)")
-            }
-            return
-        }
-
         // Resample to valid AAC rate if needed. Grows `audioResampleScratch`
         // lazily rather than allocating a fresh `[Int16]` per tick.
         let resampledCount: Int
@@ -1184,9 +989,64 @@ class StreamRecordingService: ObservableObject {
         let sampleCount = resampledCount / audioChannels
         guard sampleCount > 0 else { return }
 
-        // Write to AVAssetWriter for local recording
-        guard let input = audioInput, input.isReadyForMoreMediaData else { return }
+        // Streaming destination: build an AVAudioPCMBuffer of interleaved
+        // s16le PCM and hand it to HaishinKit's RTMPStream via
+        // `append(_:when:)`. HaishinKit's AudioCodec re-encodes to AAC using
+        // the AudioCodecSettings configured at session start. The CMSampleBuffer
+        // path below is only used for local AVAssetWriter recording.
+        if let streamService = streamingService {
+            if let pcmBuffer = buildAVAudioPCMBuffer(sampleCount: sampleCount) {
+                let pts = AVAudioTime(sampleTime: AVAudioFramePosition(audioFramePosition),
+                                      atRate: outputAudioSampleRate)
+                streamService.submitAudio(pcmBuffer, when: pts)
+                audioFramePosition += Int64(sampleCount)
+            }
+            return
+        }
 
+        // Local recording destination: build the PCM s16le CMSampleBuffer only
+        // when actually recording to file (avoids CMAudioFormatDescription /
+        // CMBlockBuffer alloc on every tick when streaming).
+        let sampleBuffer: CMSampleBuffer? = buildAudioSampleBuffer(
+            sampleCount: sampleCount,
+            byteCount: resampledCount * 2
+        )
+        guard let sbuf = sampleBuffer else { return }
+
+        // Local recording destination: AVAssetWriter video/audio tracks.
+        guard let input = audioInput, input.isReadyForMoreMediaData else { return }
+        input.append(sbuf)
+        audioFramePosition += Int64(sampleCount)
+    }
+
+    /// Build an `AVAudioPCMBuffer` of interleaved s16le PCM at
+    /// `outputAudioSampleRate` for HaishinKit's `RTMPStream.append(_:when:)`.
+    /// Copy is direct from `audioResampleScratch` into the buffer's
+    /// `int16ChannelData`. Caller hands the resulting buffer to
+    /// `RTMPStreamingService.submitAudio(_:when:)`.
+    nonisolated private func buildAVAudioPCMBuffer(sampleCount: Int) -> AVAudioPCMBuffer? {
+        guard let format = AVAudioFormat(
+            commonFormat: .pcmFormatInt16,
+            sampleRate: outputAudioSampleRate,
+            channels: AVAudioChannelCount(audioChannels),
+            interleaved: true
+        ) else { return nil }
+        guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: AVAudioFrameCount(sampleCount)) else { return nil }
+        buffer.frameLength = AVAudioFrameCount(sampleCount)
+        let frameByteCount = sampleCount * audioChannels * 2
+        audioResampleScratch.withUnsafeBufferPointer { src in
+            buffer.int16ChannelData?.pointee.withMemoryRebound(to: UInt8.self, capacity: frameByteCount) { dst in
+                dst.update(from: src.baseAddress!.withMemoryRebound(to: UInt8.self, capacity: frameByteCount) { $0 }, count: frameByteCount)
+            }
+        }
+        return buffer
+    }
+
+    /// Build a `CMSampleBuffer` of uncompressed interleaved s16le PCM at
+    /// `outputAudioSampleRate`, with PTS wall-clock-aligned to the video
+    /// stream. Caller owns no additional state — both streaming and local
+    /// recording consume the same buffer.
+    nonisolated private func buildAudioSampleBuffer(sampleCount: Int, byteCount: Int) -> CMSampleBuffer? {
         var asbd = AudioStreamBasicDescription(
             mSampleRate: outputAudioSampleRate,
             mFormatID: kAudioFormatLinearPCM,
@@ -1210,14 +1070,11 @@ class StreamRecordingService: ObservableObject {
             extensions: nil,
             formatDescriptionOut: &formatDesc
         )
-        guard let fd = formatDesc else { return }
+        guard let fd = formatDesc else { return nil }
 
         // Allocate the CMBlockBuffer at the resampled sample byte size and
         // copy directly from the scratch buffer — no per-tick Data / [UInt8]
-        // allocations. The blockBuffer owns its own allocated memory block
-        // since we pass `memoryBlock: nil` (allocator-owned), so it's safe
-        // to release the scratch buffer immediately after the copy.
-        let byteCount = resampledCount * 2
+        // allocations.
         var blockBuffer: CMBlockBuffer?
         let blockStatus = CMBlockBufferCreateWithMemoryBlock(
             allocator: kCFAllocatorDefault,
@@ -1230,7 +1087,7 @@ class StreamRecordingService: ObservableObject {
             flags: 0,
             blockBufferOut: &blockBuffer
         )
-        guard blockStatus == kCMBlockBufferNoErr, let bb = blockBuffer else { return }
+        guard blockStatus == kCMBlockBufferNoErr, let bb = blockBuffer else { return nil }
         audioResampleScratch.withUnsafeBufferPointer { srcPtr in
             _ = srcPtr.baseAddress!.withMemoryRebound(to: UInt8.self, capacity: byteCount) { srcBytes in
                 CMBlockBufferReplaceDataBytes(
@@ -1242,13 +1099,6 @@ class StreamRecordingService: ObservableObject {
             }
         }
 
-        // Derive PTS from a wall-clock anchor that's synchronized with video
-        // (which uses CACurrentMediaTime() in MetalCoordinator). Without this
-        // the audio and video PTS streams were aligned to different time bases
-        // (audioFramePosition/sampleRate vs. now - recordingStartTime), causing
-        // the two tracks to drift or split into separate timelines in the
-        // output file. Duration is the actual sample run length so the muxer
-        // lays out samples over the correct wall-clock window.
         let pts = CMTime(seconds: CACurrentMediaTime() - audioSessionAnchor, preferredTimescale: 600)
         var timing = CMSampleTimingInfo(
             duration: CMTime(value: Int64(sampleCount), timescale: Int32(outputAudioSampleRate)),
@@ -1271,33 +1121,6 @@ class StreamRecordingService: ObservableObject {
             sampleSizeArray: nil,
             sampleBufferOut: &sampleBuffer
         )
-        if let sbuf = sampleBuffer {
-            input.append(sbuf)
-            audioFramePosition += Int64(sampleCount)
-        }
-    }
-
-    // MARK: - ffmpeg Path
-
-    static func ffmpegPath() -> String? {
-        if let bundled = Bundle.main.path(forResource: "ffmpeg", ofType: nil) {
-            return bundled
-        }
-        let which = Process()
-        which.executableURL = URL(fileURLWithPath: "/usr/bin/env")
-        which.arguments = ["which", "ffmpeg"]
-        let pipe = Pipe()
-        which.standardOutput = pipe
-        try? which.run()
-        which.waitUntilExit()
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        if let path = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines), !path.isEmpty {
-            return path
-        }
-        return nil
-    }
-
-    static func isFfmpegAvailable() -> Bool {
-        ffmpegPath() != nil
+        return sampleBuffer
     }
 }

@@ -994,17 +994,26 @@ outputHeight: Float(drawHeight)
         frameTex: MTLTexture
     ) {
         let isRecording = StreamRecordingService.shared.isRecording
-        // Streaming routes data through a separate ffmpeg process whose
-        // VideoToolbox encoder contends with the Metal renderer when reading
-        // back a full-retina drawable on every frame. Force the raw core
-        // frame (e.g. 256×224 for NES) for streaming regardless of the
-        // `recordWithShaders` setting — the visual on stream will show the
-        // unprocessed game image instead of the post-shader drawable, but
-        // it streams reliably. Local recordings still honor the toggle.
+        // Diagnostic: log entry once per ~1s of capture (throttled by
+        // recordingFrameCount which is reset on session start). Without this
+        // we can't tell whether `performFrameCapture` is being called at all
+        // when streaming shows connected-but-no-frames-arriving symptoms.
+        if recordingFrameCount % 60 == 0 {
+            let mode = StreamRecordingService.shared.mode
+            LoggerService.info(category: "Recording",
+                "performFrameCapture frame#\(recordingFrameCount) isRecording=\(isRecording) mode=\(mode.rawValue) src=\(StreamRecordingService.shared.recordWithShaders ? "drawable" : "core")")
+        }
+        // Streaming uses the in-process HaishinKit pipeline (VideoToolbox encoder),
+        // so the GPU contention with the renderer that did force the old ffmpeg
+        // subprocess to bypass shaders is gone. Honor `recordWithShaders` like
+        // local recording: true = stream the post-shader drawable, false = stream
+        // the raw core frame. VideoToolbox scales the captured pool buffer up to
+        // the StreamResolution (720p / 1080p / …) during encode via
+        // `VideoCodecSettings.scalingMode = .letterbox`.
         let isStreaming = isRecording && StreamRecordingService.shared.mode != .localFile
         let useDisplayRes: Bool
         if isStreaming {
-            useDisplayRes = false
+            useDisplayRes = StreamRecordingService.shared.recordWithShaders
         } else {
             useDisplayRes = isRecording ? StreamRecordingService.shared.recordWithShaders : RollingVideoBufferService.shared.recordDisplayResolution
         }
@@ -1051,14 +1060,20 @@ outputHeight: Float(drawHeight)
         let poolW = CVPixelBufferGetWidth(pixelBuffer)
         let poolH = CVPixelBufferGetHeight(pixelBuffer)
         // The pool is sized to `videoSize` (== captureSize / streamingSize).
-        // The srcTex + cropRect should produce the same dimensions in normal
-        // operation. Bail (and leak the pulled pool buffer back to its pool
-        // via CVPixelBufferRelease at scope exit) if there's a mismatch —
-        // shouldn't happen, but a GLES/drawable resize under a live recording
-        // could force the recorder's chunk rotation.
+        // For streaming the pool may be larger than the source (e.g. 1280×720
+        // pool with 256×224 NES frame) — the render-convert path scales the
+        // source UVs [0,1] to fill the destination, so expand-only mismatches
+        // are routine. The render path also handles shrink mismatches
+        // (drawable larger than pool, e.g. 1802×1472 source → 1920×1080 pool),
+        // which are the common case when streaming on a HiDPI display.
+        //
+        // Bail only for LOCAL recording when the source exceeds the pool
+        // (sized mismatch signals a chunk rotation that should swap to a new
+        // AVAssetWriter session). Streaming never bails on size — the
+        // render-convert path scales in both directions.
         let recW = cropRect?.size.width ?? srcTex.width
         let recH = cropRect?.size.height ?? srcTex.height
-        guard recW == poolW, recH == poolH else {
+        if !isStreaming, !(recW <= poolW && recH <= poolH) {
             // The frame doesn't match the active session's dimensions —
             // signal the rolling buffer / recorder to rotate (next frame will
             // go to a freshly-sized session). Drop this frame rather than
@@ -1095,13 +1110,38 @@ outputHeight: Float(drawHeight)
             return
         }
 
-        // GPU encode: blit if source is already `.bgra8Unorm`, otherwise
-        // render-convert through `fragmentPassthrough`. The drawable (shader
-        // path) is always `.bgra8Unorm` per the pipeline's color attachment
-        // pixel format. Raw core frame textures can be `.a1bgr5Unorm` /
-        // `.b5g6r5Unorm` / `.r8Unorm`, requiring a render pass via the cached
-        // passthrough pipeline to convert into the pool's BGRA destination.
-        if srcTex.pixelFormat == .bgra8Unorm || srcTex.pixelFormat == .bgra8Unorm_srgb {
+        // GPU encode: blit if source is already `.bgra8Unorm` AND we're not
+        // streaming (where the source pool may not exactly match the source
+        // frame dimensions — blit can't scale but the render-convert path
+        // can via the [0,1] UV quad → fullscreen triangle strip). Otherwise
+        // render-convert through `fragmentPassthrough` (handles pixel-format
+        // conversion AND any size mismatch by scaling source UVs to fill
+        // the destination quad).
+        let useRenderPath = isStreaming
+            || (srcTex.pixelFormat != .bgra8Unorm && srcTex.pixelFormat != .bgra8Unorm_srgb)
+        if useRenderPath {
+            // Render-convert path. Build (or reuse) a passthrough pipeline
+            // whose color-attachment pixel format matches the pool texture.
+            if recordingPassthroughPipeline == nil {
+                recordingPassthroughPipeline = makeRecordingPassthroughPipeline(device: device)
+            }
+            guard let pipeline = recordingPassthroughPipeline,
+                  let rpd = makeRecordingRenderPassDescriptor(destination: destTex) else {
+                return
+            }
+            guard let enc = commandBuffer.makeRenderCommandEncoder(descriptor: rpd) else { return }
+            enc.setRenderPipelineState(pipeline)
+            enc.setFragmentTexture(srcTex, index: 0)
+            // Fullscreen triangle strip — vertexPassthrough already covers
+            // the [-1,1] x [-1,1] quad with UVs [0,1] x [0,1]. Samples the
+            // entire source and writes it into the entire destination, so
+            // any source/dest size ratio is multiplicative-scaled by the
+            // hardware's texture sampler. `cropRect` is NOT applied here for
+            // streaming — letterboxing is handled later by
+            // `VideoCodecSettings.scalingMode = .letterbox` during encode.
+            enc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
+            enc.endEncoding()
+        } else {
             guard let blit = commandBuffer.makeBlitCommandEncoder() else { return }
             if let crop = cropRect {
                 blit.copy(
@@ -1117,23 +1157,6 @@ outputHeight: Float(drawHeight)
                 blit.copy(from: srcTex, to: destTex)
             }
             blit.endEncoding()
-        } else {
-            // Render-convert path. Build (or reuse) a passthrough pipeline
-            // whose color-attachment pixel format matches the pool texture.
-            if recordingPassthroughPipeline == nil {
-                recordingPassthroughPipeline = makeRecordingPassthroughPipeline(device: device)
-            }
-            guard let pipeline = recordingPassthroughPipeline,
-                  let rpd = makeRecordingRenderPassDescriptor(destination: destTex) else {
-                return
-            }
-            guard let enc = commandBuffer.makeRenderCommandEncoder(descriptor: rpd) else { return }
-            enc.setRenderPipelineState(pipeline)
-            enc.setFragmentTexture(srcTex, index: 0)
-            // Fullscreen triangle strip — vertexPassthrough already covers
-            // the [-1,1] x [-1,1] quad with UVs [0,1] x [0,1].
-            enc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
-            enc.endEncoding()
         }
 
         // Stash references for the completion handler. The cache holds the

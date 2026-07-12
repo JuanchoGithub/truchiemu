@@ -4,7 +4,7 @@ options:
   deploymentTarget:
     macOS: "14.0"
   createIntermediateGroups: true
-  xcodeVersion: "15"
+  xcodeVersion: "16"
 schemes:
   TruchiEmu:
     build:
@@ -15,6 +15,12 @@ packages:
   rcheevos:
     url: https://github.com/RetroAchievements/rcheevos
     from: 12.3.0
+  haishinkit:
+    url: https://github.com/HaishinKit/HaishinKit.swift
+    from: 2.2.0
+  logboard:
+    url: https://github.com/shogo4405/Logboard.git
+    from: 2.6.0
 
 targets:
   TruchiEmu:
@@ -26,6 +32,12 @@ targets:
     - target: TruchiEmuCoreHost
       embed: true
     - package: rcheevos
+    - package: haishinkit
+      product: RTMPHaishinKit
+    - package: haishinkit
+      product: HaishinKit
+    - package: logboard
+      product: Logboard
 
     frameworks:
     - SwiftData
@@ -65,12 +77,12 @@ targets:
         CODE_SIGN_ENTITLEMENTS: TruchiEmu/Resources/TruchiEmu.entitlements
         CODE_SIGN_STYLE: Automatic
         ENABLE_HARDENED_RUNTIME: NO
-        SWIFT_VERSION: "5.9"
+        SWIFT_VERSION: "5"
         SWIFT_ACTIVE_COMPILATION_CONDITIONS: "LOG_DEBUG LOG_EXTREME"
         HEADER_SEARCH_PATHS: "/opt/homebrew/include/SDL2 /usr/local/include/SDL2"
         LIBRARY_SEARCH_PATHS: "/opt/homebrew/lib /usr/local/lib"
         LD_RUNPATH_SEARCH_PATHS: "@executable_path/../Frameworks"
-        OTHER_LDFLAGS: "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework WebKit -framework OpenGL -framework SwiftData -larchive -L$(PROJECT_DIR)/TruchiEmu/lib -llibrashader_capi -lSDL2"
+        OTHER_LDFLAGS: "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework WebKit -framework OpenGL -framework Network -framework SwiftData -larchive -L$(PROJECT_DIR)/TruchiEmu/lib -llibrashader_capi -lSDL2"
 
     sources:
     - path: TruchiEmu
@@ -144,7 +156,7 @@ targets:
         CODE_SIGN_STYLE: Manual
         CODE_SIGN_IDENTITY: "-"
         ENABLE_HARDENED_RUNTIME: NO
-        SWIFT_VERSION: "5.9"
+        SWIFT_VERSION: "5"
         SWIFT_OBJC_BRIDGING_HEADER: TruchiEmu/Core/Engine/TruchiEmu-Bridging-Header.h
         OTHER_LDFLAGS: "-framework AVFoundation -framework OpenGL -framework IOSurface"
         SWIFT_ACTIVE_COMPILATION_CONDITIONS: "XPC_SERVICE LOG_DEBUG LOG_EXTREME"

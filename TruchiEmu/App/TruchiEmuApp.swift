@@ -1,6 +1,8 @@
 import SwiftUI
 import AppKit
 import UserNotifications
+import HaishinKit
+import RTMPHaishinKit
 
 // MARK: - Notification Names for Menu Commands
 
@@ -643,6 +645,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Set the delegate for notification center to handle foreground notifications
         UNUserNotificationCenter.current().delegate = self
+
+        // Register HaishinKit's RTMP session factory so SessionBuilderFactory
+        // can build RTMPSession instances from rtmp:// / rtmps:// URLs. Also
+        // route HaishinKit's internal LBLogger output through LoggerService
+        // so VideoToolbox/socket/codec warnings are surfaced to our log file.
+        Task {
+            await SessionBuilderFactory.shared.register(RTMPSessionFactory())
+            await HaishinKitLogger.installAppender()
+        }
 
         // Start SDL2 input subsystem for game controller support
         SDLInputManager.shared.start()

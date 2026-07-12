@@ -1457,22 +1457,6 @@ weak var metalCoordinator: MetalCoordinator?
         return CGSize(width: 640, height: 480)
     }
 
-    /// Size to use for live RTMP streaming. Always returns the raw core
-    /// frame dimensions, bypassing the drawable / shader-rendered path.
-    /// Streaming goes through a separate ffmpeg process whose VideoToolbox
-    /// encoder competes with the Metal renderer for GPU/CPU; capturing the
-    /// full retina drawable (e.g. 1802×1472 on a 4:3 game) reads back ~10MB
-    /// per frame and stalls the encoder. Local recording uses `captureSize`
-    /// instead, which can scale up since AVAssetWriter encodes locally.
-    /// Records at native pixel grid; see `captureSize` for the
-    /// `recordWithShaders` rationale.
-    @MainActor public var streamingSize: CGSize {
-        if let tex = currentFrameTexture, tex.width > 0, tex.height > 0 {
-            return CGSize(width: CGFloat(tex.width), height: CGFloat(tex.height))
-        }
-        return CGSize(width: 640, height: 480)
-    }
-
     @MainActor
     func handleSharePress(isLongPress: Bool) {
         LoggerService.info(category: "Runner", "handleSharePress isLongPress=\(isLongPress)")
@@ -1500,7 +1484,6 @@ weak var metalCoordinator: MetalCoordinator?
             if StreamRecordingService.shared.isRecording {
                 StreamRecordingService.shared.stop()
             } else {
-                StreamRecordingService.shared.videoSize = streamingSize
                 StreamRecordingService.shared.startStreaming(mode: .twitch)
             }
 
@@ -1508,7 +1491,6 @@ weak var metalCoordinator: MetalCoordinator?
             if StreamRecordingService.shared.isRecording {
                 StreamRecordingService.shared.stop()
             } else {
-                StreamRecordingService.shared.videoSize = streamingSize
                 StreamRecordingService.shared.startStreaming(mode: .youtube)
             }
 
@@ -1516,7 +1498,6 @@ weak var metalCoordinator: MetalCoordinator?
             if StreamRecordingService.shared.isRecording {
                 StreamRecordingService.shared.stop()
             } else {
-                StreamRecordingService.shared.videoSize = streamingSize
                 StreamRecordingService.shared.startStreaming(mode: .custom)
             }
 

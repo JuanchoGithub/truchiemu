@@ -285,6 +285,7 @@
 		367438AF41A2E4277D7605FE /* input_coreOverrides_pd777.json in Resources */ = {isa = PBXBuildFile; fileRef = 06F8D392772FF18175464C4F /* input_coreOverrides_pd777.json */; };
 		3699BC8E1AF90F686AA00486 /* fightdata_sfz3ugd.json in Resources */ = {isa = PBXBuildFile; fileRef = 33D4B52F0853356C3AA57C59 /* fightdata_sfz3ugd.json */; };
 		36BCFA5CE92E1BA8EE9CD75C /* Nintendo - Nintendo Entertainment System.dat in Resources */ = {isa = PBXBuildFile; fileRef = 55A0C232023C7657365528C8 /* Nintendo - Nintendo Entertainment System.dat */; };
+		36C6CDE1F4E34A950B5CDC64 /* Logboard in Frameworks */ = {isa = PBXBuildFile; productRef = F2FB6D032347AAC1FFC676F8 /* Logboard */; };
 		36D578BB6E05F95B2B13543C /* SystemPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B2F7AE141392E7AA767BF3 /* SystemPickerView.swift */; };
 		374324E43AD46F029502E45E /* appIcon1024.jpg in Resources */ = {isa = PBXBuildFile; fileRef = F20EF6C414682B78AE383860 /* appIcon1024.jpg */; };
 		378F817B232C785B2764C3C5 /* input_coreOverrides_mame.json in Resources */ = {isa = PBXBuildFile; fileRef = 57D2E2F6CB71E8188AA78090 /* input_coreOverrides_mame.json */; };
@@ -339,6 +340,7 @@
 		452E0E7F7A9630C725D08395 /* RetroAchievementsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 335FB3D776E0D41A27C64844 /* RetroAchievementsSettingsView.swift */; };
 		4596D0538A126CE340A86004 /* Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = 312DD29D6B77A5CC9B13F942 /* Header.swift */; };
 		45B66EECA434F3285FEC8AED /* Shader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CE8DDABCE1ABFA58C62123 /* Shader.swift */; };
+		468C4859F176F6A621F5E335 /* RTMPStreamingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFCF99B1E8C5D1C076C32D31 /* RTMPStreamingService.swift */; };
 		469AF9FDF3E5581B31C6C69C /* input_coreLabels_gw.json in Resources */ = {isa = PBXBuildFile; fileRef = 8E892D0AA9633E0476542B9F /* input_coreLabels_gw.json */; };
 		472E426C725F6C13D0B30C4A /* input_coreLabels_ecwolf.json in Resources */ = {isa = PBXBuildFile; fileRef = 59CBFB7172EA714171C66600 /* input_coreLabels_ecwolf.json */; };
 		47ADA0A8A9AC4FAC0E2E5F63 /* fightdata_tektagt.json in Resources */ = {isa = PBXBuildFile; fileRef = 573ADD6C067C3C9C9F87EE3E /* fightdata_tektagt.json */; };
@@ -682,6 +684,7 @@
 		8C8A32CFEF6A3E43EBF8AB4A /* input_systemLabels_wii.json in Resources */ = {isa = PBXBuildFile; fileRef = 948CE21AAEB52DD0237AA592 /* input_systemLabels_wii.json */; };
 		8D4E3566D305DE95CB7DEF13 /* sgfx@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 1ACE75A9B6A3EAF2C173E097 /* sgfx@132w.png */; };
 		8D82F1A6F1A1038A90CD46AA /* fightdata_garou.json in Resources */ = {isa = PBXBuildFile; fileRef = 455DBBFEAE8603E856A7D2D9 /* fightdata_garou.json */; };
+		8D86271749065720D1A63F61 /* HaishinKit in Frameworks */ = {isa = PBXBuildFile; productRef = 49E474BBA25302DCEC501745 /* HaishinKit */; };
 		8D894493EAB054556D39E80B /* input_systemOverrides_genesis.json in Resources */ = {isa = PBXBuildFile; fileRef = 96DFD5A0C66CAC4675FBBC1C /* input_systemOverrides_genesis.json */; };
 		8E0EB93A290F75850098FAE4 /* fightdata_eternalchamp.json in Resources */ = {isa = PBXBuildFile; fileRef = 51F962D9DC604A656DD5560D /* fightdata_eternalchamp.json */; };
 		8E10154DA5D4489221754134 /* fightdata_ffight.json in Resources */ = {isa = PBXBuildFile; fileRef = 8CF5A186A1763848B74DF099 /* fightdata_ffight.json */; };
@@ -885,6 +888,7 @@
 		B63B46E7193AA335087ADFF7 /* SharingTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8938D4FC0C24D516AFA27CDA /* SharingTabView.swift */; };
 		B667FA6C6ABF04EF4023FA2F /* dosbox_pure_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = 204B48E4B91C7B1E31CF2EEF /* dosbox_pure_libretro_default.json */; };
 		B689C9C1AC33E7756271A5D5 /* input_coreLabels_vecx.json in Resources */ = {isa = PBXBuildFile; fileRef = 8809A1EF4FB044C098318CC6 /* input_coreLabels_vecx.json */; };
+		B6D65ED10DFC44D614E093F0 /* RTMPHaishinKit in Frameworks */ = {isa = PBXBuildFile; productRef = DC74D16AE80CA370A1A276F7 /* RTMPHaishinKit */; };
 		B7050B3786A9E28FE1DC1E38 /* input_systemLabels_vaporspec.json in Resources */ = {isa = PBXBuildFile; fileRef = D4C7D63785273E2BA0B32028 /* input_systemLabels_vaporspec.json */; };
 		B718BCDCD6944F8B8F72847D /* input_coreOverrides_genesis_plus_gx.json in Resources */ = {isa = PBXBuildFile; fileRef = 76131C3FA3902ED858B92820 /* input_coreOverrides_genesis_plus_gx.json */; };
 		B71B0B319E2C77DC5A10ECF7 /* GameGuideService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB9CBE524D093CC6348F7B4 /* GameGuideService.swift */; };
@@ -1038,6 +1042,7 @@
 		D9F02751DFA405E5A38D309D /* input_coreLabels_melonds.json in Resources */ = {isa = PBXBuildFile; fileRef = 271083824A7E8AC2BD0F6961 /* input_coreLabels_melonds.json */; };
 		DA12CA0CE740B3B1C4A8E2D4 /* Sega - Dreamcast.dat in Resources */ = {isa = PBXBuildFile; fileRef = 380B3A9A0CDC45FD5FE88630 /* Sega - Dreamcast.dat */; };
 		DA1BD7C12BD1AE016850890D /* fightdata_kof2003.json in Resources */ = {isa = PBXBuildFile; fileRef = 4B23BA806E6D40A1C97D5758 /* fightdata_kof2003.json */; };
+		DA7758EF636546C3E8211BFF /* HaishinKitLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775DB753C52AB2118F1AD9E1 /* HaishinKitLogger.swift */; };
 		DA94BAE9800BC86097DC6138 /* sfc@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D9174F064E6B3F316C9AFDB /* sfc@132w.png */; };
 		DAA7D00D03C90DDF0DD7D031 /* AchievementToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B45C4797CC22995053ADA4 /* AchievementToastView.swift */; };
 		DB0A6A98E6E40A9838E49ECD /* input_systemLabels_colecovision.json in Resources */ = {isa = PBXBuildFile; fileRef = 0131AF2732320A89574B49A3 /* input_systemLabels_colecovision.json */; };
@@ -1817,6 +1822,7 @@
 		76AA9026EF2024FE01AA7B4E /* mednafen_psx_hw_libretro_default.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = mednafen_psx_hw_libretro_default.json; sourceTree = "<group>"; };
 		773ACBC3221E440B0363F02D /* cps3@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cps3@132w.png"; sourceTree = "<group>"; };
 		7745F5C3FF3C2D8BDD161129 /* input_systemLabels_chailove.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_chailove.json; sourceTree = "<group>"; };
+		775DB753C52AB2118F1AD9E1 /* HaishinKitLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HaishinKitLogger.swift; sourceTree = "<group>"; };
 		7770154FE83C4EC74BDB3637 /* fightdata_doa2m.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_doa2m.json; sourceTree = "<group>"; };
 		777DF1A6A32231E6384B7DF4 /* input_coreLabels_bluemsx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_bluemsx.json; sourceTree = "<group>"; };
 		77B28CDDCE43182179E6F8EE /* fightdata_bloodstm.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_bloodstm.json; sourceTree = "<group>"; };
@@ -2152,6 +2158,7 @@
 		BF5AE1A4D1424CE50BD0AE2D /* input_coreLabels_lutro.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_lutro.json; sourceTree = "<group>"; };
 		BF7A3D8D17275C396BE21173 /* DotMatrixLCD.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = DotMatrixLCD.metal; sourceTree = "<group>"; };
 		BF992D170DE90C459EFC58C2 /* fightdata_pwrinst2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_pwrinst2.json; sourceTree = "<group>"; };
+		BFCF99B1E8C5D1C076C32D31 /* RTMPStreamingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RTMPStreamingService.swift; sourceTree = "<group>"; };
 		BFD65EF82DE36060CB9098BC /* fightdata_hvnsgate.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_hvnsgate.json; sourceTree = "<group>"; };
 		BFFA6A6134513A45C82E8D49 /* fightdata_kof98.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_kof98.json; sourceTree = "<group>"; };
 		C0349B304BE92D91285B9433 /* fightdata_primrag2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_primrag2.json; sourceTree = "<group>"; };
@@ -2463,6 +2470,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				F7AE20F51D41E33FE6104234 /* rcheevos in Frameworks */,
+				B6D65ED10DFC44D614E093F0 /* RTMPHaishinKit in Frameworks */,
+				8D86271749065720D1A63F61 /* HaishinKit in Frameworks */,
+				36C6CDE1F4E34A950B5CDC64 /* Logboard in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3128,6 +3138,7 @@
 		52EDC9798950574A123C0EA1 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				775DB753C52AB2118F1AD9E1 /* HaishinKitLogger.swift */,
 				C8861B6D319A016F2FDA15DD /* ImageCache.swift */,
 				30CC526A551953B4E9BB08C9 /* LoggerService.swift */,
 				DDA440915145AB1C4D850872 /* LogManager.swift */,
@@ -3716,6 +3727,7 @@
 				A94757847430E98D2FD0C8BC /* MoveListService.swift */,
 				C0D2689389A8F41C564E8983 /* NotationTokenImageCache.swift */,
 				076672C41168A7989D90F677 /* RollingVideoBufferService.swift */,
+				BFCF99B1E8C5D1C076C32D31 /* RTMPStreamingService.swift */,
 				D380F0ACA26A2082BD1DAA08 /* RunningGamesTracker.swift */,
 				39DDBB9192D4EC4EC5E94A44 /* ScreenshotService.swift */,
 				DBA93DD4CAFCA78A240B231A /* SDLInputManager.swift */,
@@ -4467,6 +4479,9 @@
 			name = TruchiEmu;
 			packageProductDependencies = (
 				D2E9BF1074610561D0152456 /* rcheevos */,
+				DC74D16AE80CA370A1A276F7 /* RTMPHaishinKit */,
+				49E474BBA25302DCEC501745 /* HaishinKit */,
+				F2FB6D032347AAC1FFC676F8 /* Logboard */,
 			);
 			productName = TruchiEmu;
 			productReference = 823B1FD3E319074A9926700C /* TruchiEmu.app */;
@@ -4479,7 +4494,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 1500;
+				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					0AB0DC95D0C31F5C3530F08A = {
 						ProvisioningStyle = Manual;
@@ -4499,6 +4514,8 @@
 			mainGroup = 506758847A6693C7EC49B415;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				3F899B38F7D2B48CDFA0DF51 /* XCRemoteSwiftPackageReference "HaishinKit.swift" */,
+				F6F9529E472C4F7004F1A61B /* XCRemoteSwiftPackageReference "Logboard" */,
 				C54ED9FB72F98EE7C187B853 /* XCRemoteSwiftPackageReference "rcheevos" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -5619,6 +5636,7 @@
 				D4A5C3EA0A548DBEF9EDE4AE /* GenreSettingsView.swift in Sources */,
 				A09C8307DE97887156851C76 /* GitHubAPIModels.swift in Sources */,
 				40235C6A5048EAABFCDA1EB0 /* GridCollectionView.swift in Sources */,
+				DA7758EF636546C3E8211BFF /* HaishinKitLogger.swift in Sources */,
 				BCF6E7FD69063759D0607C29 /* HardcoreModeManager.swift in Sources */,
 				4596D0538A126CE340A86004 /* Header.swift in Sources */,
 				1467407A77D08682F8195B42 /* HelpContent.swift in Sources */,
@@ -5727,6 +5745,7 @@
 				A34A0B9B6CA7EB7F06872311 /* ROMLibrary.swift in Sources */,
 				6541937F9DC60F8102F9A1E3 /* ROMRepository.swift in Sources */,
 				B2322506F68F6E94D30D8EA9 /* ROMScanner.swift in Sources */,
+				468C4859F176F6A621F5E335 /* RTMPStreamingService.swift in Sources */,
 				1FC2666DC75E56A5C0EBF2D4 /* RcheevosCDReader.c in Sources */,
 				EAA8BB735B42D56113CE8902 /* RcheevosRuntime.swift in Sources */,
 				FDB673FBF6AA9921EDFA3337 /* RcheevosWrapper.c in Sources */,
@@ -5851,13 +5870,13 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = "/opt/homebrew/lib /usr/local/lib";
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				OTHER_LDFLAGS = "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework WebKit -framework OpenGL -framework SwiftData -larchive -L$(PROJECT_DIR)/TruchiEmu/lib -llibrashader_capi -lSDL2";
+				OTHER_LDFLAGS = "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework WebKit -framework OpenGL -framework Network -framework SwiftData -larchive -L$(PROJECT_DIR)/TruchiEmu/lib -llibrashader_capi -lSDL2";
 				PRODUCT_BUNDLE_IDENTIFIER = com.TruchiEmu.app;
 				PRODUCT_NAME = TruchiEmu;
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "LOG_DEBUG LOG_EXTREME";
 				SWIFT_OBJC_BRIDGING_HEADER = "TruchiEmu/Core/Engine/TruchiEmu-Bridging-Header.h";
-				SWIFT_VERSION = 5.9;
+				SWIFT_VERSION = 5;
 			};
 			name = Release;
 		};
@@ -5951,7 +5970,7 @@
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "XPC_SERVICE LOG_DEBUG LOG_EXTREME";
 				SWIFT_OBJC_BRIDGING_HEADER = "TruchiEmu/Core/Engine/TruchiEmu-Bridging-Header.h";
-				SWIFT_VERSION = 5.9;
+				SWIFT_VERSION = 5;
 			};
 			name = Debug;
 		};
@@ -5973,13 +5992,13 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = "/opt/homebrew/lib /usr/local/lib";
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				OTHER_LDFLAGS = "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework WebKit -framework OpenGL -framework SwiftData -larchive -L$(PROJECT_DIR)/TruchiEmu/lib -llibrashader_capi -lSDL2";
+				OTHER_LDFLAGS = "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework WebKit -framework OpenGL -framework Network -framework SwiftData -larchive -L$(PROJECT_DIR)/TruchiEmu/lib -llibrashader_capi -lSDL2";
 				PRODUCT_BUNDLE_IDENTIFIER = com.TruchiEmu.app;
 				PRODUCT_NAME = TruchiEmu;
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "LOG_DEBUG LOG_EXTREME";
 				SWIFT_OBJC_BRIDGING_HEADER = "TruchiEmu/Core/Engine/TruchiEmu-Bridging-Header.h";
-				SWIFT_VERSION = 5.9;
+				SWIFT_VERSION = 5;
 			};
 			name = Debug;
 		};
@@ -6010,7 +6029,7 @@
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "XPC_SERVICE LOG_DEBUG LOG_EXTREME";
 				SWIFT_OBJC_BRIDGING_HEADER = "TruchiEmu/Core/Engine/TruchiEmu-Bridging-Header.h";
-				SWIFT_VERSION = 5.9;
+				SWIFT_VERSION = 5;
 			};
 			name = Release;
 		};
@@ -6103,6 +6122,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		3F899B38F7D2B48CDFA0DF51 /* XCRemoteSwiftPackageReference "HaishinKit.swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/HaishinKit/HaishinKit.swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.2.0;
+			};
+		};
 		C54ED9FB72F98EE7C187B853 /* XCRemoteSwiftPackageReference "rcheevos" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/RetroAchievements/rcheevos";
@@ -6111,18 +6138,41 @@
 				minimumVersion = 12.3.0;
 			};
 		};
+		F6F9529E472C4F7004F1A61B /* XCRemoteSwiftPackageReference "Logboard" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/shogo4405/Logboard.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.6.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		49E474BBA25302DCEC501745 /* HaishinKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3F899B38F7D2B48CDFA0DF51 /* XCRemoteSwiftPackageReference "HaishinKit.swift" */;
+			productName = HaishinKit;
+		};
 		D2E9BF1074610561D0152456 /* rcheevos */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C54ED9FB72F98EE7C187B853 /* XCRemoteSwiftPackageReference "rcheevos" */;
 			productName = rcheevos;
 		};
+		DC74D16AE80CA370A1A276F7 /* RTMPHaishinKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3F899B38F7D2B48CDFA0DF51 /* XCRemoteSwiftPackageReference "HaishinKit.swift" */;
+			productName = RTMPHaishinKit;
+		};
 		EE0A5937A7A33AF8C414E16E /* rcheevos */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C54ED9FB72F98EE7C187B853 /* XCRemoteSwiftPackageReference "rcheevos" */;
 			productName = rcheevos;
+		};
+		F2FB6D032347AAC1FFC676F8 /* Logboard */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F6F9529E472C4F7004F1A61B /* XCRemoteSwiftPackageReference "Logboard" */;
+			productName = Logboard;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
