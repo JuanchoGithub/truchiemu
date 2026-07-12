@@ -473,6 +473,12 @@ class StreamRecordingService: ObservableObject {
             }
         }
         guard !isRecording else { return }
+        // Re-read user-controlled recording settings (codec, bitrate, fps,
+        // quality preset) at session start. `loadSettings()` runs once at
+        // singleton init, but the user can change these in Settings after
+        // the singleton is already constructed — without this, recordings
+        // silently use stale settings from launch-time.
+        loadSettings()
         self.mode = .localFile
         self.currentInitiator = initiator
         self.isUserRecording = (initiator == .user)
@@ -607,6 +613,11 @@ class StreamRecordingService: ObservableObject {
         }
         guard !isRecording else { return }
         guard mode != .localFile else { return }
+        // Re-read user settings (codec, bitrate, fps) at session start so
+        // changes made in Settings after the singleton's first init take
+        // effect for the next recording/stream. See `startRecording` for
+        // the same rationale.
+        loadSettings()
         self.mode = mode
         self.currentInitiator = initiator
         self.isUserRecording = (initiator == .user)

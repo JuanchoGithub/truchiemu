@@ -341,8 +341,8 @@ class MoveListOverlayViewModel: ObservableObject {
         let rawDirections = inputStateTracker.rawDirectionHistory
         let motions = inputStateTracker.detectedMotions
 
-        var directions: [FightDataDirection] = rawDirections
-        var directionCharges: [Bool] = Array(repeating: false, count: rawDirections.count)
+        let directions: [FightDataDirection] = rawDirections
+        let directionCharges: [Bool] = Array(repeating: false, count: rawDirections.count)
         var buttons: [Set<String>] = []
         for step in sequence {
             if !step.buttons.isEmpty {

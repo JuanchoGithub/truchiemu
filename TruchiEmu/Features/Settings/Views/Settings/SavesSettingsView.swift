@@ -296,7 +296,7 @@ struct SavesSettingsView: View {
         isCalculatingSize = false
     }
 
-    private static func directorySize(at url: URL) -> Int64 {
+    private nonisolated static func directorySize(at url: URL) -> Int64 {
         var total: Int64 = 0
         guard let enumerator = FileManager.default.enumerator(at: url, includingPropertiesForKeys: [.fileSizeKey]) else {
             return 0

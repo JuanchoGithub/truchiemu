@@ -98,7 +98,7 @@ class CoreButtonOverride {
     private func ensureSystemLabelLoaded(_ key: String) {
         let lower = key.lowercased()
         if cachedSystemLabels[lower] != nil || missingSystemLabels.contains(lower) { return }
-        loadSystemLabel(for: lower)
+        _ = loadSystemLabel(for: lower)
     }
 
     private func loadSystemOverride(for key: String) -> [String: OverrideEntry]? {

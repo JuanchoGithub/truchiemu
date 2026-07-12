@@ -105,7 +105,7 @@ enum ScreenshotService {
         }
     }
 
-    nonisolated(unsafe) static func writeBGRA(_ bgra: [UInt8], width: Int, height: Int, to url: URL) {
+    nonisolated static func writeBGRA(_ bgra: [UInt8], width: Int, height: Int, to url: URL) {
         guard width > 0, height > 0, !bgra.isEmpty else { return }
         let dir = url.deletingLastPathComponent()
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)

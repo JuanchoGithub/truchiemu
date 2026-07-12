@@ -722,7 +722,7 @@ viewModel.updateFilters(
             gridScrollTarget = newIndex
         }
         .onChange(of: gridScrollTarget) { _, newIndex in
-            guard let idx = newIndex else { return }
+            guard newIndex != nil else { return }
             gridScrollTarget = nil
         }
         .id("grid-\(zoomLevel)-\(continuousZoom)")
@@ -2000,7 +2000,7 @@ viewModel.updateFilters(
                 // we still update them in-memory below); persistence coalesces on
                 // the next regular save path (e.g. ROMLibrary finalizers, scanners,
                 // or settings persistence).
-                MainActor.assumeIsolated {
+                await MainActor.run {
                     for rom in resolved {
                         library.updateROM(rom, persist: false, silent: true)
                     }

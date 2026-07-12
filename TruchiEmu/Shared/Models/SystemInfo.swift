@@ -884,10 +884,10 @@ class LibretroInfoManager: ObservableObject {
                         LibretroInfoManager.coreToSystemMap[coreID] = Set(ids)
                         
                         // Extract human-readable names and manufacturer
-                        let names = infoDict["systemname"]?.components(separatedBy: "|") ?? []
+                        _ = infoDict["systemname"]?.components(separatedBy: "|") ?? []
                         let mfg = infoDict["manufacturer"] ?? "Various"
                         
-                        for (index, id) in ids.enumerated() {
+                        for (_, id) in ids.enumerated() {
                             if systemNamesFromInfo[id] == nil {
                                 // Use the canonical name from SystemDatabase if available
                                 if let system = SystemDatabase.systems.first(where: { $0.id == id }) {

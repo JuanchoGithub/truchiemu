@@ -88,10 +88,10 @@ struct ContentView: View {
                                           await library.refreshFolder(at: folder)
                                       }
                                   }
-            case .settings(let coreID):
+            case .settings:
                 let coreID = SystemDatabase.system(forID: resolvedSystemID)?.defaultCoreID ?? ""
                 openWindow(id: "core-options", value: CoreOptionsContext(coreID: coreID, systemID: resolvedSystemID, gameFilename: nil))
-            case .selectCore(let system):
+            case .selectCore:
                 let coreID = SystemDatabase.system(forID: resolvedSystemID)?.defaultCoreID ?? ""
                 openWindow(id: "core-options", value: CoreOptionsContext(coreID: coreID, systemID: resolvedSystemID, gameFilename: nil))
                                case .cheats:

@@ -13,27 +13,27 @@ class SDLInputManager: ObservableObject {
 
     private let sdlQueue = DispatchQueue(label: "com.truchiemu.sdl", qos: .userInteractive)
     private let sdlDataLock = NSLock()
-    private var isRunning = false
+    private nonisolated(unsafe) var isRunning = false
 
     private let runnerLock = NSLock()
-    private weak var _activeRunner: EmulatorRunner?
+    private nonisolated(unsafe) weak var _activeRunner: EmulatorRunner?
 
     // SDL_GameController handles — recognized controllers with built-in mappings
-    private var gameControllers: [Int32: OpaquePointer] = [:]
+    private nonisolated(unsafe) var gameControllers: [Int32: OpaquePointer] = [:]
     // Raw SDL_Joystick handles — unrecognized controllers (fallback path)
-    private var joysticks: [Int32: OpaquePointer] = [:]
+    private nonisolated(unsafe) var joysticks: [Int32: OpaquePointer] = [:]
     // Track which instance IDs are game controllers to avoid double-processing
-    private var joystickIsGameController: Set<Int32> = []
-    private var portForInstance: [Int32: Int] = [:]
-    private var nextPort = 0
+    private nonisolated(unsafe) var joystickIsGameController: Set<Int32> = []
+    private nonisolated(unsafe) var portForInstance: [Int32: Int] = [:]
+    private nonisolated(unsafe) var nextPort = 0
 
     // Capture callback for button remapping in settings
-    private var captureCallback: ((Int, String) -> Void)?
-    private var captureInstanceID: Int32?
+    private nonisolated(unsafe) var captureCallback: ((Int, String) -> Void)?
+    private nonisolated(unsafe) var captureInstanceID: Int32?
 
     // SDL share button indices cached at runner registration
-    var cachedShareSinglePressButtonIndex: Int? = nil
-    var cachedShareLongPressButtonIndex: Int? = nil
+    nonisolated(unsafe) var cachedShareSinglePressButtonIndex: Int? = nil
+    nonisolated(unsafe) var cachedShareLongPressButtonIndex: Int? = nil
 
     private static let deadzone: Int16 = 8000
     private static let triggerThreshold: Int16 = 16384
@@ -98,7 +98,7 @@ class SDLInputManager: ObservableObject {
     func start() {
         guard !isRunning else { return }
         isRunning = true
-        sdlQueue.async { MainActor.assumeIsolated { self.runSDLLoop() } }
+        sdlQueue.async { self.runSDLLoop() }
     }
 
     func stop() {
@@ -126,7 +126,7 @@ class SDLInputManager: ObservableObject {
 
     // MARK: - SDL Loop
 
-    private func runSDLLoop() {
+    private nonisolated func runSDLLoop() {
         guard SDL_Init(SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) == 0 else {
             let err = String(cString: SDL_GetError())
             LoggerService.warning(category: "SDL", "Failed to init SDL2: \(err)")
@@ -147,7 +147,7 @@ class SDLInputManager: ObservableObject {
         shutdownSDL()
     }
 
-    private func shutdownSDL() {
+    private nonisolated func shutdownSDL() {
         sdlDataLock.lock()
         for (_, ctrl) in gameControllers {
             SDL_GameControllerClose(ctrl)
@@ -165,7 +165,7 @@ class SDLInputManager: ObservableObject {
 
     // MARK: - Event Handling
 
-    private func handleEvent(_ event: SDL_Event) {
+    private nonisolated func handleEvent(_ event: SDL_Event) {
         switch event.type {
         case SDL_JOYDEVICEADDED.rawValue:
             handleDeviceAdded(event.jdevice)
@@ -194,7 +194,7 @@ class SDLInputManager: ObservableObject {
 
     // MARK: - Device Connection
 
-    private func handleDeviceAdded(_ event: SDL_JoyDeviceEvent) {
+    private nonisolated func handleDeviceAdded(_ event: SDL_JoyDeviceEvent) {
         let deviceIndex = event.which
 
         // Skip recognized game controllers — GCController already handles them
@@ -230,7 +230,7 @@ class SDLInputManager: ObservableObject {
         }
     }
 
-    private func handleDeviceRemoved(_ event: SDL_JoyDeviceEvent) {
+    private nonisolated func handleDeviceRemoved(_ event: SDL_JoyDeviceEvent) {
         let instanceID = event.which
 
         sdlDataLock.lock()
@@ -255,7 +255,7 @@ class SDLInputManager: ObservableObject {
     }
 
     // Caller must hold sdlDataLock
-    private func assignPortLocked(for instanceID: Int32) -> Int {
+    private nonisolated func assignPortLocked(for instanceID: Int32) -> Int {
         if let existing = portForInstance[instanceID] {
             return existing
         }
@@ -268,7 +268,7 @@ class SDLInputManager: ObservableObject {
 
     // MARK: - Game Controller Events
 
-    private func handleButtonEvent(_ event: SDL_ControllerButtonEvent, pressed: Bool) {
+    private nonisolated func handleButtonEvent(_ event: SDL_ControllerButtonEvent, pressed: Bool) {
         if pressed {
             sdlDataLock.lock()
             let capID = captureInstanceID
@@ -304,7 +304,7 @@ class SDLInputManager: ObservableObject {
         dispatchButton(retroID: retroID, player: port, pressed: pressed)
     }
 
-    private func handleAxisEvent(_ event: SDL_ControllerAxisEvent) {
+    private nonisolated func handleAxisEvent(_ event: SDL_ControllerAxisEvent) {
         if abs(Int32(event.value)) > Self.triggerThreshold {
             sdlDataLock.lock()
             let capID = captureInstanceID
@@ -351,7 +351,7 @@ class SDLInputManager: ObservableObject {
 
     // MARK: - Raw Joystick Events (Fallback)
 
-    private func handleJoyButtonEvent(_ event: SDL_JoyButtonEvent, pressed: Bool) {
+    private nonisolated func handleJoyButtonEvent(_ event: SDL_JoyButtonEvent, pressed: Bool) {
         if pressed {
             sdlDataLock.lock()
             let capID = captureInstanceID
@@ -387,7 +387,7 @@ class SDLInputManager: ObservableObject {
         dispatchButton(retroID: retroID, player: port, pressed: pressed)
     }
 
-    private func handleJoyAxisEvent(_ event: SDL_JoyAxisEvent) {
+    private nonisolated func handleJoyAxisEvent(_ event: SDL_JoyAxisEvent) {
         if abs(Int32(event.value)) > Self.triggerThreshold {
             sdlDataLock.lock()
             let capID = captureInstanceID
@@ -430,7 +430,7 @@ class SDLInputManager: ObservableObject {
         dispatchAnalog(index: index, id: id, value: event.value, player: port)
     }
 
-    private func handleJoyHatEvent(_ event: SDL_JoyHatEvent) {
+    private nonisolated func handleJoyHatEvent(_ event: SDL_JoyHatEvent) {
         if event.value != 0 {
             sdlDataLock.lock()
             let capID = captureInstanceID
@@ -463,7 +463,7 @@ class SDLInputManager: ObservableObject {
 
     // MARK: - Input Dispatch
 
-    private func dispatchButton(retroID: Int, player: Int, pressed: Bool) {
+    private nonisolated func dispatchButton(retroID: Int, player: Int, pressed: Bool) {
         weak var runner: EmulatorRunner?
         runnerLock.lock()
         runner = _activeRunner
@@ -475,11 +475,11 @@ class SDLInputManager: ObservableObject {
         }
     }
 
-    private func dispatchAnalog(index: Int, id: Int, value: Int16, player: Int) {
+    private nonisolated func dispatchAnalog(index: Int, id: Int, value: Int16, player: Int) {
         XPCBridgeAdapter.shared.setAnalogState(index, id: id, value: Int32(value), player: player)
     }
 
-    private func dispatchAnalogButton(retroID: Int, value: Int16, player: Int) {
+    private nonisolated func dispatchAnalogButton(retroID: Int, value: Int16, player: Int) {
         XPCBridgeAdapter.shared.setAnalogButtonState(retroID: retroID, value: Int32(value), player: player)
     }
 

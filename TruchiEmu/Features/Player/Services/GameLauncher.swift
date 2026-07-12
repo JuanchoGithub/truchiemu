@@ -320,7 +320,7 @@ func launchGame(
              let loc = LocalizationManager.shared
 
              if let updatedId = updatedRAGameId, updatedId > 0 {
-                 var updated = rom
+                 let updated = rom
                  library?.updateROM(updated)
                  LoggerService.info(category: "GameLauncher", "Auto-detected RA game: \(rom.displayName) → raGameId=\(updatedId)")
 

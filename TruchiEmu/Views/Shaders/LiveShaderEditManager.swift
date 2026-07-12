@@ -24,7 +24,7 @@ class LiveShaderEditManager: ObservableObject {
         // Set up the shader preset before launching - check built-in, saved, and slang presets
         let presetID = rom.settings.shaderPresetID
         if !presetID.isEmpty {
-            if let preset = ShaderPreset.preset(id: presetID) {
+            if ShaderPreset.preset(id: presetID) != nil {
                 ShaderManager.shared.activatePresetWithOverrides(presetID: presetID, overrides: shaderUniformOverrides)
             } else if let savedPreset = ShaderPresetStorageService.shared.savedPresets.first(where: { $0.id.uuidString == presetID }) {
                 var merged = shaderUniformOverrides
@@ -92,7 +92,7 @@ class LiveShaderEditManager: ObservableObject {
             guard let self = self else { return }
 
             // Apply to the running game immediately via ShaderManager
-            if let preset = ShaderPreset.preset(id: newPresetID) {
+            if ShaderPreset.preset(id: newPresetID) != nil {
                 ShaderManager.shared.activatePresetWithOverrides(presetID: newPresetID, overrides: newUniformValues)
             } else if let savedPreset = ShaderPresetStorageService.shared.savedPresets.first(where: { $0.id.uuidString == newPresetID }) {
                 ShaderManager.shared.activatePresetWithOverrides(presetID: savedPreset.basePresetID, overrides: newUniformValues)

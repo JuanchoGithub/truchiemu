@@ -2,8 +2,8 @@ import Foundation
 
 @MainActor
 class TapeDeck: ObservableObject {
-    static let maxSlots = 3
-    static let countdownFrames = 3
+    nonisolated static let maxSlots = 3
+    nonisolated static let countdownFrames = 3
 
     @Published var slots: [TapeRecording?] = [nil, nil, nil]
     @Published var isRecording = false

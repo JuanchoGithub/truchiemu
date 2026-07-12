@@ -20,7 +20,7 @@ struct ChangelogView: View {
                     Button(loc.localized("update.refresh")) {
                         Task {
                             isLoading = true
-                            await updateService.checkForUpdates()
+                            _ = await updateService.checkForUpdates()
                             isLoading = false
                         }
                     }
@@ -69,7 +69,7 @@ struct ChangelogView: View {
     private func loadReleasesIfNeeded() async {
         guard updateService.allReleases.isEmpty else { return }
         isLoading = true
-        await updateService.checkForUpdates()
+        _ = await updateService.checkForUpdates()
         isLoading = false
     }
 }
@@ -143,7 +143,7 @@ struct MarkdownBodyView: View {
     }
 
     private func renderMarkdown(_ source: String) -> AttributedString {
-        var processed = source
+        let processed = source
             .replacingOccurrences(of: "\r\n", with: "\n")
 
         if let attributed = try? AttributedString(

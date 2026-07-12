@@ -182,7 +182,7 @@ class TrainingInputManager {
 
     private func applyGuard(config: TrainingModeConfig, adapter: XPCBridgeAdapter) {
         let isP1Attacking = detectP1Attack()
-        let systemID = manager.currentSystemID
+        _ = manager.currentSystemID
 
         switch config.guard {
         case .noBlock:

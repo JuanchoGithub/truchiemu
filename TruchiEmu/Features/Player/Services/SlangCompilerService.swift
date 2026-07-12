@@ -146,12 +146,13 @@ class SlangCompilerService: ObservableObject {
     }
 
     nonisolated func setParameter(name: String, value: Float) {
-        guard let chain: OpaquePointer? = Self.shared.chainLock.withLock({
+        guard let chain = Self.shared.chainLock.withLock({
             Self.shared._filterChain
-        }), let chain = chain else { return }
+        }) else { return }
         var chainVar: OpaquePointer? = chain
         name.withCString { cname in
             slang_mtl_filter_chain_set_param(&chainVar, cname, value)
+            return ()
         }
     }
 

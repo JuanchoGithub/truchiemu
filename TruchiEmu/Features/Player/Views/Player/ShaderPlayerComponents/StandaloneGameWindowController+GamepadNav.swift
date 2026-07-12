@@ -75,8 +75,7 @@ extension StandaloneGameWindowController {
         buttonIndex += 1
         if idx == buttonIndex {
             if !saveStatesDisabled {
-                HardcoreModeManager.shared.attemptSaveState { [weak self] in
-                    guard let self else { return }
+                HardcoreModeManager.shared.attemptSaveState {
                     Task { @MainActor in _ = r.saveState(slot: r.currentSlot) }
                 }
             }
@@ -85,8 +84,7 @@ extension StandaloneGameWindowController {
         buttonIndex += 1
         if idx == buttonIndex {
             if !saveStatesDisabled {
-                HardcoreModeManager.shared.attemptLoadState { [weak self] in
-                    guard let self else { return }
+                HardcoreModeManager.shared.attemptLoadState {
                     Task { @MainActor in _ = r.loadState(slot: r.currentSlot) }
                 }
             }

@@ -26,8 +26,7 @@ struct StreamingMediaSettingsView: View {
         case "tabRecording",
              "recordingBadge", "recording-badge",
              "recordingEnable", "recording-enable",
-             "qualitySection", "quality",
-             "qualitySection", "customQuality",
+"qualitySection", "quality", "customQuality",
              "outputPath", "output-path",
              "recordWithShaders":
             tab = .recording

@@ -837,7 +837,7 @@ struct StickVisualizerView: View {
             }
         }
         .onAppear { monitorSelectedController() }
-        .onChange(of: selectedControllerId) { _ in monitorSelectedController() }
+        .onChange(of: selectedControllerId) { monitorSelectedController() }
     }
 
     private func monitorSelectedController() {
