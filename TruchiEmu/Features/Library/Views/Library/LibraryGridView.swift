@@ -167,11 +167,7 @@ struct LibraryGridView: View {
     @State private var confirmDeleteTap = false
     
     // Smooth pinch-to-zoom state
-    @State private var continuousZoom: Double = {
-        // Read saved zoom level at init time
-        let saved = AppSettings.getDouble("gridZoomLevel", defaultValue: 0.0)
-        return saved != 0.0 ? saved : 0.5
-    }()
+    @State private var continuousZoom: Double = AppSettings.getDouble("gridZoomLevel", defaultValue: 0.5)
     @State private var lastMagnification: Double = 1.0
     
     // Multi-select state
@@ -228,6 +224,12 @@ struct LibraryGridView: View {
     
     var body: some View {
         VStack(spacing: 0) {
+            Color.clear
+                .frame(height: 0)
+                .onChange(of: continuousZoom) { _, newValue in
+                    AppSettings.setDouble("gridZoomLevel", value: newValue)
+                }
+            
             searchField
                 .focused($focusedField, equals: .search)
             
@@ -638,7 +640,7 @@ viewModel.updateFilters(
             gamepadNav.columnCount = newMode == .list ? 1 : columnCount
         }
         .onDisappear {
-            // Save zoom level persistently
+            // Save zoom level persistently (backup)
             AppSettings.setDouble("gridZoomLevel", value: continuousZoom)
         }
         // Refresh grid when box art is updated from elsewhere (e.g., game info page)
