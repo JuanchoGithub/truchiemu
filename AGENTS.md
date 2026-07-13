@@ -376,6 +376,14 @@ Owned by `StreamRecordingService` when its `mode != .localFile`. Live RTMP publi
 - **Usage**: `LoggerService.info("message")`, `LoggerService.debug("message")`, etc.
 - Many services use private enum wrappers (e.g., `ROMScannerLog`, `containerLog`) to route through `LoggerService` with category prefixes.
 
+### Compile-time flags: `LOG_DEBUG` vs `DEBUG`
+
+The project defines **`LOG_DEBUG` and `LOG_EXTREME`** as Swift active compilation conditions in `project.yml:81` (and via `xcshareddata` xcconfigs in the `.xcodeproj`). These flags gate the **509** debug-logging call sites scattered throughout the codebase — outside a `LOG_DEBUG` block, debug-level log messages compile to no-ops.
+
+The standard Swift **`DEBUG` flag is NOT defined** in this project's compilation conditions. Only **one** of multiple Debug build configurations in the xcodeproj actually sets `SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;` — the rest use `LOG_DEBUG LOG_EXTREME`. As a result, any `#if DEBUG` block in this codebase is **dead code** in most build configurations.
+
+**Footgun:** If you write `#if DEBUG`, your debug guard never compiles in. Use `#if LOG_DEBUG` instead for runtime debug-only branches (logging, test hooks, dev presets). The only existing `#if DEBUG` blocks at the time of writing are in `AppUpdateService.swift:75,130` (legacy test path) and `Core/Engine/Runners/Runners/BaseRunner.swift:1690` (n64 debug probe); favor `LOG_DEBUG` for any new conditional compilation.
+
 ## Project Structure
 
 | Directory | Purpose |
