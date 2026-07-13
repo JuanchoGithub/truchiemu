@@ -56,7 +56,7 @@ The codebase has **two separate language systems**. Do not confuse them:
 | UI Localization | `LocalizationManager.shared` | `AppSettings["systemLanguage"]` (String: `"en"`, `"es"`, `"pt"`) | UI string translations |
 | Core Language | `SystemPreferences.systemLanguage` | `AppSettings` (Int: `EmulatorLanguage` raw value) | Language passed to libretro cores via `LibretroBridge.setLanguage(Int32)` |
 
-Changing one does NOT affect the other. `LocalizationManager.setLanguage()` posts `Notification.Name.languageChanged` (defined in `TruchiEmuApp.swift`, not in `LocalizationManager`).
+Changing one does NOT affect the other. `Notification.Name.languageChanged` is defined in `TruchiEmuApp.swift:17` and is posted from two sites: `LocalizationManager.setLanguage()` at `Shared/Localization/LocalizationManager.swift:106` (primary path when the settings UI calls `setLanguage` directly) and `TruchiEmuApp.swift:365` (the legacy/system-triggered path). Both must fire for SwiftUI views observing the change to refresh.
 
 ## 1. Think Before Coding
 
@@ -129,22 +129,37 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 
 ### Source exclusions in project.yml
 
-The following are excluded from the source build phase:
+The `TruchiEmu` source target excludes (matches `project.yml:88-96`):
 - `TruchiEmu/Library/` (empty placeholder)
-- `Core/Engine/slang/**`, `Core/Engine/internal/**`
-- `Core/Shaders/slang/**`, `Core/Shaders/internal/**`, `Core/Shaders/all_shaders.metal`
+- `TruchiEmu/Resources/` (handled by resources build phase, not sources)
+- `TruchiEmu/lib/` (librashader dylib lives here at runtime, not built)
+- `Core/Engine/internal/**`
+- `Core/Shaders/internal/**`
+- `Core/Shaders/all_shaders.metal`
+- `Core/XPC/Service/**` (compiled into `TruchiEmuCoreHost` target, not the app)
+
+The `TruchiEmuCoreHost` XPC target additionally excludes (`project.yml:165-178`):
+- `slang/`, `slang_shader_bridge.*`, `Runners/**`, `LibretroBridgeSwift.swift`, `Hashing/**`, `CoreOverrideBridge.mm`
 
 ### Resource build phases
 
-- `TruchiEmu/Resources/`: includes all resources recursively (auto-bundled)
-- `scripts/mame_lookup/`: included as resources (except `mame_unified.json`)
+- `TruchiEmu/Resources/`: includes all resources recursively, excluding `slang-shaders/**` (copied by postBuildScript instead), `Info.plist`, `TruchiEmu.entitlements`
+- `scripts/mame_lookup/`: included as resources, excluding `mame_unified.json` (loaded at runtime, not bundled)
+
+### Post-build scripts
+
+- Copies `librashader.dylib` and `libSDL2-2.0.0.dylib` into `Contents/Frameworks` and re-signs them ad-hoc
+- Copies `Resources/slang-shaders/` into the bundle preserving directory structure (necessary because the build phase flattens resources, but slang presets depend on path layout)
+- Re-signs the app bundle after script copies
 
 ## Architecture
 
 - **App entrypoint**: `TruchiEmu/App/TruchiEmuApp.swift` + `ContentView.swift`
 - **Emulation engine**: `TruchiEmu/Core/Engine/` (mixed Objective-C++/C with a Swift bridging header `TruchiEmu-Bridging-Header.h`). Hosts libretro core integration.
 - **Swift<->ObjC bridge**: `LibretroBridge.mm` / `LibretroBridgeSwift.swift` for calling libretro from Swift
-- **Data layer**: SwiftData models in `TruchiEmu/Core/Models/`
+- **XPC service layer**: `TruchiEmu/Core/XPC/Service/` (target `TruchiEmuCoreHost`, embedded into the app via `embed: true` in `project.yml`). `TruchiEmu/Core/XPC/Shared/` holds code shared between host and app. Used for sandboxed libretro hosting.
+- **Data layer**: SwiftData models in `TruchiEmu/Core/Models/`, with additional shared models in `TruchiEmu/Shared/Models/SwiftDataModels.swift`
+- **libarchive linkage**: `TruchiEmu/Core/LibArchive/` (linked via `-larchive` for ROM/asset extraction)
 - **Metal shaders**: `TruchiEmu/Core/Shaders/` (runtime shaders, excludes `slang/**`, `internal/**`, `all_shaders.metal` from build)
 - **Save/state management**: `SaveDirectoryManager` and `SaveMigrationService` in `TruchiEmu/Services/`
 - **System-specific runners**: `TruchiEmu/Core/Engine/Runners/Runners/` with `EmulatorRunner` base class and subclasses: `NESRunner`, `SNESRunner`, `N64Runner`, `DOSRunner`, `ScummVMRunner`, `SaturnRunner`
@@ -159,8 +174,9 @@ The following are excluded from the source build phase:
 | MAME | `Features/MAME/` | MAME-specific ROM handling, dependency management, verification |
 | Player | `Features/Player/` | Game launching, shaders, cheats, bezels, achievements, input |
 | Settings | `Features/Settings/` | Controller config, core options, input descriptors, all settings UI |
+| Help | `Features/Help/` | In-app help sheet and quick-reference content |
 
-`Views/` at the top level contains shared/reusable views not tied to a single feature (e.g., `CoreDownload/`, `Detail/`, `Settings/` shared components, `Shaders/`). When adding feature-specific code, place it in the appropriate `Features/` subdirectory, not in `Views/`.
+`Views/` at the top level contains shared/reusable views not tied to a single feature (e.g., `CoreDownload/`, `Detail/`, `NotificationCenter/`, `Shaders/`, `Settings/` shared components). When adding feature-specific code, place it in the appropriate `Features/` subdirectory, not in `Views/`.
 
 ### Concurrency model
 
@@ -215,7 +231,7 @@ The following are excluded from the source build phase:
 ## Themes & Appearance
 
 - **ThemeManager** (`TruchiEmu/Shared/UI/ThemeManager.swift`): Singleton `@MainActor ObservableObject` that owns current theme, appearance mode, custom accent color, toolbar accent, and tinted surfaces. Persists all state via `AppSettings` (SwiftData).
-- **AccentColorTheme** (`TruchiEmu/Shared/UI/AccentColorTheme.swift`): Enum with 17 cases. Each defines accent/dimmed/dark/secondary colors for light and dark modes. Includes migration logic for renamed themes (e.g., `cyan` → `samus`, `amber` → `chocobo`, `pokemon` → `pikachu`).
+- **AccentColorTheme** (`TruchiEmu/Shared/UI/AccentColorTheme.swift`): Enum with 17 cases. Each defines accent/dimmed/dark/secondary colors for light and dark modes. Includes migration logic for renamed themes (`cyan`/`aquatic` → `samus`, `amber`/`solar` → `chocobo`, `pokemon` → `pikachu`).
 - **AppearanceMode** (`TruchiEmu/Shared/UI/AppearanceMode.swift`): Enum with 3 cases: `automatic`, `light`, `dark`. Controls `NSApp.appearance`.
 - **DesignSystem** (`TruchiEmu/Shared/UI/DesignSystem.swift`): `AppColors` struct with static color tokens that views consume. ThemeManager sets these at init and on theme change.
 
@@ -281,14 +297,14 @@ AppColors.accentSecondaryForScheme(colorScheme)
 
 ## SwiftData & Persistence
 
-- **SwiftDataContainer** (`Shared/Infrastructure/Persistence/`): Singleton owning the `ModelContainer`; registers 20+ model types at init; store at `~/Library/Application Support/TruchiEmu/TruchiEmu.sqlite`
+- **SwiftDataContainer** (`Shared/Infrastructure/Persistence/`): Singleton owning the `ModelContainer`; registers 25+ model types at init; store at `~/Library/Application Support/TruchiEmu/TruchiEmu.sqlite`
 - **Repository pattern**: Structured data access through repositories:
   - `ROMRepository`: ROM CRUD, system queries, library folder management
   - `GameDBRepository`: ROM identification DB lookups
   - `CoreOptionsRepository`: Core option persistence with override hierarchy
   - `ResourceCacheRepository`: HTTP cache with expiry/access tracking
 - **AppSettings**: `enum` with static convenience methods (`get`/`set`/`remove`) wrapping `AppSettingsCache.shared` (in-memory `[String: Data]` dictionary backed by SwiftData `SettingsEntry`). Uses `MainActor.assumeIsolated`.
-- **Registered model types** (in `SwiftDataContainer`): `ROMEntry`, `ROMMetadataEntry`, `GameDBEntry`, `LibraryFolder`, `InstalledCore`, `AvailableCore`, `ControllerMapping`, `AchievementConfig`, `CheatStore`, `GameCategoryEntry`, `BezelPreferences`, `BoxArtPreferences`, `CoreOptionEntry`, `ShaderPresetEntry`, `ResourceCacheEntryModel`, `DATIngestionEntry`, `BoxArtResolutionEntry`, `MAMERomEntry`, `MAMEDatabaseInfo`, `MAMEVerificationRecord`, `SettingsEntry`, `RAGameCacheEntry`
+- **Registered model types** (in `SwiftDataContainer`): `ROMEntry`, `ROMMetadataEntry`, `GameDBEntry`, `LibraryFolder`, `InstalledCore`, `AvailableCore`, `ControllerMapping`, `AchievementConfig`, `CheatStore`, `GameCategoryEntry`, `BezelPreferences`, `BoxArtPreferences`, `CoreOptionEntry`, `ShaderPresetEntry`, `ResourceCacheEntryModel`, `DATIngestionEntry`, `BoxArtResolutionEntry`, `MAMERomEntry`, `MAMEDatabaseInfo`, `MAMEVerificationRecord`, `SettingsEntry`, `RAGameCacheEntry`, `NotificationEntry`, `MoveListEntry`, `CustomGameDataEntry`
 - **`PersistenceMigrationFlag`**: Tracks whether migration from old SQLite schema has completed.
 
 ## Pipelines
@@ -382,7 +398,7 @@ The project defines **`LOG_DEBUG` and `LOG_EXTREME`** as Swift active compilatio
 
 The standard Swift **`DEBUG` flag is NOT defined** in this project's compilation conditions. Only **one** of multiple Debug build configurations in the xcodeproj actually sets `SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;` — the rest use `LOG_DEBUG LOG_EXTREME`. As a result, any `#if DEBUG` block in this codebase is **dead code** in most build configurations.
 
-**Footgun:** If you write `#if DEBUG`, your debug guard never compiles in. Use `#if LOG_DEBUG` instead for runtime debug-only branches (logging, test hooks, dev presets). The only existing `#if DEBUG` blocks at the time of writing are in `AppUpdateService.swift:75,130` (legacy test path) and `Core/Engine/Runners/Runners/BaseRunner.swift:1690` (n64 debug probe); favor `LOG_DEBUG` for any new conditional compilation.
+**Footgun:** If you write `#if DEBUG`, your debug guard never compiles in. Use `#if LOG_DEBUG` instead for runtime debug-only branches (logging, test hooks, dev presets). At the time of writing, the only real `#if DEBUG` block in the codebase is at `Core/Engine/Runners/Runners/BaseRunner.swift:1690` (N64 debug probe); favor `LOG_DEBUG` for any new conditional compilation.
 
 ## Project Structure
 
@@ -392,18 +408,21 @@ The standard Swift **`DEBUG` flag is NOT defined** in this project's compilation
 | `TruchiEmu/Core/Engine/` | Libretro bridge, callbacks, runners |
 | `TruchiEmu/Core/Engine/Runners/Runners/` | System-specific emulator runners (NES, SNES, N64, DOS, ScummVM, Saturn) |
 | `TruchiEmu/Core/InputCapture/` | Keyboard/mouse capture for game windows, keycode mapping |
+| `TruchiEmu/Core/LibArchive/` | libarchive linkage (`-larchive`) for ROM/asset extraction |
 | `TruchiEmu/Core/Models/` | SwiftData models |
 | `TruchiEmu/Core/Shaders/` | Metal shader files |
+| `TruchiEmu/Core/XPC/Service/` | XPC service target source (sandboxed libretro hosting) |
+| `TruchiEmu/Core/XPC/Shared/` | XPC service shared code (between service and app) |
 | `TruchiEmu/Features/Library/` | ROM library management, scanning, categories, genres (`Models/Services/Views/`) |
 | `TruchiEmu/Features/MAME/` | MAME-specific ROM handling, dependency/verification services (`Models/Services/Views/`) |
 | `TruchiEmu/Features/Player/` | Game launching, shaders, cheats, bezels, achievements, game window (`Models/Services/Views/`) |
 | `TruchiEmu/Features/Settings/` | Controller config, core options, input descriptors, all settings UI (`Models/Services/Views/`) |
+| `TruchiEmu/Features/Help/` | In-app help sheet, quick-reference UI (`Models/Views/`). |
 | `TruchiEmu/Services/` | Cross-cutting business logic (core management, save dirs, achievements, cheats, metadata sync, box art, CLI) |
 | `TruchiEmu/Views/` | Shared/reusable SwiftUI views not tied to a single feature |
 | `TruchiEmu/Shared/Infrastructure/` | SwiftData container, persistence, repositories |
 | `TruchiEmu/Shared/Localization/` | LocalizationManager, translation loading |
-| `TruchiEmu/Shared/Models/` | Shared models (SystemInfo, SystemDatabaseWrapper, SystemPreferences) |
-| `TruchiEmu/Shared/Protocols/` | Shared protocols (SettingsSearchable) |
+| `TruchiEmu/Shared/Models/` | Shared models (SystemInfo, SystemDatabaseWrapper, SystemPreferences, **and the consolidated `SwiftDataModels.swift` file**) |
 | `TruchiEmu/Shared/Services/` | Shared services (ImageCache, ResourceCacheInterceptor, LoggerService, LogManager) |
 | `TruchiEmu/Shared/UI/` | ThemeManager, AccentColorTheme, AppearanceMode, DesignSystem, AppColors |
 | `TruchiEmu/Shared/Utilities/` | AppSettings enum, AppSettingsCache, utility extensions |
@@ -411,6 +430,8 @@ The standard Swift **`DEBUG` flag is NOT defined** in this project's compilation
 | `TruchiEmu_Resources/` | Runtime-only resources (core_shaders, retroarch_images), NOT in Xcode build |
 | `TruchiEmu/Library/` | Empty placeholder, excluded from build |
 | `scripts/` | Standalone Python tools (ROM lookup, DAT downloads), not part of the app build |
+
+> **Note:** `TruchiEmu/Shared/Protocols/` does not currently exist. The `SettingsSearchable` protocol lives at `Features/Settings/Models/SettingsSearchable.swift`, not under Shared.
 
 ## Runtime vs Bundled Resources
 
@@ -433,6 +454,7 @@ The standard Swift **`DEBUG` flag is NOT defined** in this project's compilation
 - `NSAllowsArbitraryLoads: true` set in Info.plist for network access
 - No lint/typecheck tools configured. Build the project with `xcodebuild` to verify changes
 - `TruchiEmu/Library/` is empty and excluded from build. Do not add files there
+- App and core dylibs (`librashader`, `libSDL2`) are linked via `OTHER_LDFLAGS`/`LD_RUNPATH_SEARCH_PATHS` and copied into `Contents/Frameworks` by postBuildScripts (`project.yml:108`). If linking against a new third-party dylib, add a parallel script + ad-hoc re-sign.
 
 ## Release Process
 
