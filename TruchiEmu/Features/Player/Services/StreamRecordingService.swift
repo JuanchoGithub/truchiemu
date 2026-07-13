@@ -650,7 +650,7 @@ class StreamRecordingService: ObservableObject {
             videoCodec: streamCodec,
             videoBitrate: streamBitrate,
             audioBitrate: customAudioBitrate,
-            audioSampleRate: coreAudioSampleRate
+            audioSampleRate: outputAudioSampleRate
         )
         streamingService = service
         service.onStatus = { [weak self] status in
@@ -887,13 +887,20 @@ class StreamRecordingService: ObservableObject {
         // write. HaishinKit's MediaMixer/VideoCodec handles the encode (H.264
         // / HEVC) and FLV/RTMP mux on its own actor.
         if let streamService = streamingService {
-            if frameCount == 0 {
-                // Kick the audio capture timer from MainActor once the first
-                // video frame is in flight. The audio sample buffer path
-                // (captureAudioSamples → streamService.submitAudio) runs on
-                // the same writingQueue.
+            // Kick the audio capture timer once per streaming session. We use
+            // `audioTimer == nil` (not `frameCount == 0`) as the discriminator
+            // so this also fires on the SECOND+ stream session in the same
+            // app lifetime — frameCount carries over from the previous session
+            // because `startStreaming` doesn't reset it.
+            //
+            // `audioTimer` is MainActor-isolated, so we hop to the MainActor
+            // for both the read and the call. `startAudioCapture` itself
+            // reschedules, so a redundant Task launch is benign (the second
+            // Task that loses the race sees `audioTimer != nil` and no-ops).
+            Task { @MainActor in
+                guard self.audioTimer == nil else { return }
                 LoggerService.info(category: "Recording", "appendVideoFrame: first streaming frame received, kicking audio capture")
-                Task { @MainActor in self.startAudioCapture() }
+                self.startAudioCapture()
             }
             streamService.submitVideoFrame(pixelBuffer, presentationTime: time)
             frameCount &+= 1
