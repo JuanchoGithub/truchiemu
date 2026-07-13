@@ -111,23 +111,6 @@ LoggerService.debug(category: category, message)
         }
     }
 
-    private func checkForAppUpdates() {
-        Task { @MainActor in
-            guard AppUpdateService.shared.shouldAutoCheck() else { return }
-            if let release = await AppUpdateService.shared.checkForUpdates() {
-                NotificationHistoryManager.shared.post(
-                    icon: "arrow.down.circle.fill",
-                    title: loc.localized("update.availableTitle"),
-                    subtitle: loc.localized("update.availableSubtitle") + " \(release.version)",
-                    autoDismissDelay: 15,
-                    actionLabel: loc.localized("update.viewUpdate"),
-                    actionType: "viewUpdate",
-                    actionPayload: release.version
-                )
-            }
-        }
-    }
-
     private func registerNotificationActionHandlers() {
         let historyManager = NotificationHistoryManager.shared
         historyManager.library = library
@@ -255,7 +238,6 @@ var body: some Scene {
         .onAppear {
           startMAMEVerificationIfNeeded()
           registerNotificationActionHandlers()
-          checkForAppUpdates()
         }
         .onDisappear {
           // Pause verification when leaving the app
@@ -564,7 +546,9 @@ struct ContentWithPrepopulationView: View {
   @State private var isPrepopulated: Bool
   @State private var isRunningPrepopulation = false
   @State private var showInstallDrag = false
+  @State private var startupUpdateCheckComplete: Bool
   @ObservedObject private var loc = LocalizationManager.shared
+  @ObservedObject private var updateService = AppUpdateService.shared
   @EnvironmentObject var library: ROMLibrary
   @Environment(\.openWindow) private var openWindow
     
@@ -580,6 +564,7 @@ struct ContentWithPrepopulationView: View {
         // Check synchronously so we skip the loading view on subsequent launches
         _isPrepopulated = State(initialValue: AppSettings.getBool("dat_prepopulation_done_v1", defaultValue: false))
         _showInstallDrag = State(initialValue: InstallDragView.shouldShow())
+        _startupUpdateCheckComplete = State(initialValue: !AppUpdateService.shared.shouldAutoCheck())
     }
     
     // Whether we need to show the loading view
@@ -594,17 +579,28 @@ struct ContentWithPrepopulationView: View {
                     .onReceive(NotificationCenter.default.publisher(for: .installDragCompleted)) { _ in
                         showInstallDrag = false
                     }
-            } else if !needsLoading {
-                ContentView()
-                    .environmentObject(library)
-            } else {
+            } else if !startupUpdateCheckComplete || needsLoading {
                 ProgressView(loc.localized("app.initializingDatabase"))
                     .frame(width: 200)
                     .task {
                         await performInitialization()
                     }
-      }
-    }
+            } else if let update = updateService.pendingStartupUpdate {
+                UpdateWizardView(release: update) {
+                    updateService.pendingStartupUpdate = nil
+                }
+            } else {
+                ContentView()
+                    .environmentObject(library)
+            }
+        }
+        .task {
+            guard !startupUpdateCheckComplete else { return }
+            if let release = await AppUpdateService.shared.checkForUpdates() {
+                updateService.pendingStartupUpdate = release
+            }
+            startupUpdateCheckComplete = true
+        }
 	.onReceive(NotificationCenter.default.publisher(for: .openHelpWindow)) { _ in
 			openWindow(id: "help")
 		}

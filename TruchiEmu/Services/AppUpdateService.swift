@@ -61,8 +61,10 @@ final class AppUpdateService: ObservableObject {
     private let changelogURL = "https://github.com/JuanchoGithub/truchiemu/releases"
 
     @Published var latestRelease: AppRelease?
+    @Published var pendingStartupUpdate: AppRelease?
     @Published var isChecking = false
     @Published var isDownloading = false
+    @Published var isInstalling = false
     @Published var downloadProgress: Double = 0
     @Published var totalBytesWritten: Int64 = 0
     @Published var totalBytesExpected: Int64 = 0
@@ -70,11 +72,15 @@ final class AppUpdateService: ObservableObject {
 
     var updateAvailable: Bool {
         guard latestRelease != nil else { return false }
-        #if DEBUG
+        #if LOG_DEBUG
         return true
         #else
         return latestRelease!.isNewer
         #endif
+    }
+
+    var newerReleases: [AppRelease] {
+        allReleases.filter { AppVersion.compare($0.version, AppVersion.current) == .orderedDescending }
     }
 
     private init() {}
@@ -121,10 +127,10 @@ final class AppUpdateService: ObservableObject {
 
             AppSettings.setDate("lastUpdateCheckDate", value: Date())
 
-            #if DEBUG
+            #if LOG_DEBUG
             if let latest = appReleases.first {
                 latestRelease = latest
-                updateLog.info("[DEBUG] Presenting latest release for testing: \(latest.version)")
+                updateLog.info("[LOG_DEBUG] Presenting latest release for testing: \(latest.version)")
                 return latest
             }
             return nil
@@ -154,9 +160,15 @@ final class AppUpdateService: ObservableObject {
     private var downloadContinuation: CheckedContinuation<URL, Error>?
 
     func downloadAndInstall(release: AppRelease) async {
+        let installURL = await downloadUpdateOnly(release: release)
+        guard installURL != nil else { return }
+        relaunchAfterUpdate(at: installURL!)
+    }
+
+    func downloadUpdateOnly(release: AppRelease) async -> URL? {
         guard let assetURL = release.assetDownloadURL, let url = URL(string: assetURL) else {
             updateLog.warning("No download URL for release \(release.tagName)")
-            return
+            return nil
         }
 
         isDownloading = true
@@ -191,14 +203,19 @@ final class AppUpdateService: ObservableObject {
             try FileManager.default.moveItem(at: downloadURL, to: localURL)
             updateLog.info("Downloaded to \(localURL.path)")
 
+            isDownloading = false
+            isInstalling = true
+            defer { isInstalling = false }
+
             if fileName.hasSuffix(".zip") {
-                try extractAndMoveZip(at: localURL)
+                return try installFromZip(at: localURL)
             } else if fileName.hasSuffix(".dmg") {
-                NSWorkspace.shared.open(localURL)
+                return try installFromDMG(at: localURL)
             }
         } catch {
             updateLog.warning("Download failed: \(error.localizedDescription)")
         }
+        return nil
     }
 
     fileprivate func reportProgress(progress: Double, bytesWritten: Int64, bytesExpected: Int64) {
@@ -215,24 +232,80 @@ final class AppUpdateService: ObservableObject {
         downloadContinuation?.resume(throwing: error)
     }
 
-    private func extractAndMoveZip(at zipURL: URL) throws {
+    private func runProcess(executable: String, arguments: [String]) throws {
         let process = Process()
-        process.executableURL = URL(fileURLWithPath: "/usr/bin/ditto")
-        process.arguments = ["-x", "-k", zipURL.path, zipURL.deletingLastPathComponent().path]
+        process.executableURL = URL(fileURLWithPath: executable)
+        process.arguments = arguments
         try process.run()
         process.waitUntilExit()
+    }
+
+    private func installFromZip(at zipURL: URL) throws -> URL? {
+        try runProcess(executable: "/usr/bin/ditto", arguments: ["-x", "-k", zipURL.path, zipURL.deletingLastPathComponent().path])
 
         let extractedDir = zipURL.deletingLastPathComponent()
-        if let appURL = try FileManager.default.contentsOfDirectory(at: extractedDir, includingPropertiesForKeys: nil)
-            .first(where: { $0.pathExtension == "app" }) {
-            let dest = URL(fileURLWithPath: "/Applications/\(appURL.lastPathComponent)")
-            try? FileManager.default.removeItem(at: dest)
-            try FileManager.default.copyItem(at: appURL, to: dest)
-            updateLog.info("Installed to \(dest.path)")
-            NSWorkspace.shared.open(dest)
-            NSApplication.shared.terminate(nil)
-        } else {
+        guard let appURL = try FileManager.default.contentsOfDirectory(at: extractedDir, includingPropertiesForKeys: nil)
+            .first(where: { $0.pathExtension == "app" }) else {
             NSWorkspace.shared.open(extractedDir)
+            return nil
+        }
+        return try installApp(at: appURL)
+    }
+
+    private func installFromDMG(at dmgURL: URL) throws -> URL? {
+        let mountTask = Process()
+        mountTask.executableURL = URL(fileURLWithPath: "/usr/bin/hdiutil")
+        mountTask.arguments = ["attach", "-nobrowse", "-plist", dmgURL.path]
+        let pipe = Pipe()
+        mountTask.standardOutput = pipe
+        try mountTask.run()
+        mountTask.waitUntilExit()
+
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        guard let propertyList = try PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [[String: Any]] else {
+            return nil
+        }
+        guard let mountPoint = propertyList.compactMap({ $0["mount-point"] as? String }).first else {
+            return nil
+        }
+
+        defer {
+            try? runProcess(executable: "/usr/bin/hdiutil", arguments: ["detach", "-quiet", mountPoint])
+        }
+
+        let mountURL = URL(fileURLWithPath: mountPoint)
+        guard let appURL = try FileManager.default.contentsOfDirectory(at: mountURL, includingPropertiesForKeys: nil)
+            .first(where: { $0.pathExtension == "app" }) else { return nil }
+        let stagingDir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: stagingDir, withIntermediateDirectories: true)
+        let stagingApp = stagingDir.appendingPathComponent(appURL.lastPathComponent)
+        try runProcess(executable: "/usr/bin/ditto", arguments: [appURL.path, stagingApp.path])
+        return try installApp(at: stagingApp)
+    }
+
+    private func installApp(at sourceAppURL: URL) throws -> URL {
+        let dest = URL(fileURLWithPath: "/Applications/\(sourceAppURL.lastPathComponent)")
+        if FileManager.default.fileExists(atPath: dest.path) {
+            try? FileManager.default.removeItem(at: dest)
+        }
+        try runProcess(executable: "/usr/bin/ditto", arguments: [sourceAppURL.path, dest.path])
+        try? runProcess(executable: "/usr/bin/xattr", arguments: ["-cr", dest.path])
+        updateLog.info("Installed to \(dest.path)")
+        return dest
+    }
+
+    private func relaunchAfterUpdate(at appURL: URL) {
+        updateLog.info("Relaunching from \(appURL.path)")
+        AppSettings.flush()
+        let bundleURL = appURL
+        let executableName = bundleURL.deletingPathExtension().lastPathComponent
+        let executableURL = bundleURL.appendingPathComponent("Contents/MacOS/\(executableName)")
+        let process = Process()
+        process.executableURL = executableURL
+        process.arguments = []
+        try? process.run()
+        DispatchQueue.main.async {
+            NSApplication.shared.terminate(nil)
         }
     }
 

@@ -363,6 +363,7 @@
 		4AA22C503673B2E5F3F45C81 /* fightdata_plegends.json in Resources */ = {isa = PBXBuildFile; fileRef = 41B1EFF5A0121E4712825DB0 /* fightdata_plegends.json */; };
 		4AA67BC43FA47C5341267E55 /* ARCADE_FBNEO.png in Resources */ = {isa = PBXBuildFile; fileRef = 8700FB3B470B3289AFACE878 /* ARCADE_FBNEO.png */; };
 		4AB1C9DDE00848F4AFF7DC0C /* BezelSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71020EB1CE64E1B4DD3514D7 /* BezelSettingsView.swift */; };
+		4AB23F3CFA5D46860C322282 /* UpdateWizardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A534F2D85440714CF65708BD /* UpdateWizardView.swift */; };
 		4ABA13771D06AE503D7724CE /* LOWRESNX.png in Resources */ = {isa = PBXBuildFile; fileRef = 78131EAC3F8B4141AAFC799F /* LOWRESNX.png */; };
 		4B0455148E7C00D2645FE37F /* ppsspp_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = 53A454FEA006A9BC23D6D0B6 /* ppsspp_libretro_default.json */; };
 		4B94C244C68FFB5B7611ED77 /* VECTREX.png in Resources */ = {isa = PBXBuildFile; fileRef = CE108305F82ABE87D2BE7D7D /* VECTREX.png */; };
@@ -2028,6 +2029,7 @@
 		A4F332DF631734D8EED42E6B /* BoxArtSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxArtSettingsView.swift; sourceTree = "<group>"; };
 		A51EC5B948387F84D6AA081B /* PCFX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PCFX.png; sourceTree = "<group>"; };
 		A527CCEDB398D0EED340B00E /* input_coreLabels_tempgba.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_tempgba.json; sourceTree = "<group>"; };
+		A534F2D85440714CF65708BD /* UpdateWizardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateWizardView.swift; sourceTree = "<group>"; };
 		A57218D064A20013239BC9DA /* BaseRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseRunner.swift; sourceTree = "<group>"; };
 		A5A64EEE69DC7C4D90D341E6 /* fightdata_clayftr2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_clayftr2.json; sourceTree = "<group>"; };
 		A65D48FF2331F48A66F22918 /* c64@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "c64@132w.png"; sourceTree = "<group>"; };
@@ -4137,6 +4139,7 @@
 				4077D568E47AFA32B755F967 /* StreamingMediaSettingsView.swift */,
 				059B489FC9D5EFEFA26D850F /* TimeMachineSettingsView.swift */,
 				C6E39A1DA6685C2C22E7F0E9 /* UpdateAvailableView.swift */,
+				A534F2D85440714CF65708BD /* UpdateWizardView.swift */,
 				B868CBCF190918C4BD72EA68 /* WhatsNewView.swift */,
 				908E8F99C005A448E3842E3F /* StreamingMediaTabs */,
 			);
@@ -5834,6 +5837,7 @@
 				BE7C2C0DF4F71AE2FF2E50EF /* TrainingModeOverlayViewModel.swift in Sources */,
 				DC04E65A0A0068C4291426D5 /* TruchiEmuApp.swift in Sources */,
 				9EFB1C38E1C77CAC8E872012 /* UpdateAvailableView.swift in Sources */,
+				4AB23F3CFA5D46860C322282 /* UpdateWizardView.swift in Sources */,
 				677E565E4FE7FA4E55160101 /* WhatsNewView.swift in Sources */,
 				8C3DB989C12A59BAD8C9B0BB /* XPCBridgeAdapter.swift in Sources */,
 				6CBEC44953FF94D0C5198E14 /* XPCConnectionManager.swift in Sources */,
