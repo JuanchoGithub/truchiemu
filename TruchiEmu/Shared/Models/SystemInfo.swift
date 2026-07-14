@@ -554,6 +554,18 @@ enum EmulatorLanguage: Int, CaseIterable, Identifiable {
         case .spain: return "Spain"
         }
     }
+
+    var localizedName: String {
+        let loc = LocalizationManager.shared
+        switch self {
+        case .northAmerica: return loc.localized("region.northAmerica")
+        case .world: return loc.localized("region.world")
+        case .europe: return loc.localized("region.europe")
+        case .japan: return loc.localized("region.japan")
+        case .brazil: return loc.localized("region.brazil")
+        case .spain: return loc.localized("region.spain")
+        }
+    }
 }
 
 class SystemPreferences: ObservableObject {

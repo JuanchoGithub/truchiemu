@@ -4,6 +4,7 @@ import GameController
 
 struct SetupWizardView: View {
     @ObservedObject var wizard: SetupWizardState
+    @ObservedObject private var themeManager = ThemeManager.shared
     @EnvironmentObject var library: ROMLibrary
     @EnvironmentObject var coreManager: CoreManager
     @EnvironmentObject var controllerService: ControllerService
@@ -13,6 +14,7 @@ struct SetupWizardView: View {
     @Environment(\.colorScheme) private var colorScheme
     @State private var raLoginError: String?
     @State private var isRALoggingIn: Bool = false
+    @State private var raLoginSuccess: Bool = false
 
     var body: some View {
         ZStack {
@@ -22,20 +24,25 @@ struct SetupWizardView: View {
             VStack(spacing: 0) {
                 headerBar
 
-                ZStack {
-                    switch wizard.currentStep {
-                    case .getStarted: stepGetStarted
-                    case .lookAndFeel: stepLookAndFeel
-                    case .optionalFeatures: stepOptionalFeatures
-                    case .completion: stepCompletion
+                ScrollView {
+                    ZStack {
+                        switch wizard.currentStep {
+                        case .getStarted: stepGetStarted
+                        case .lookAndFeel: stepLookAndFeel
+                        case .featureCatalog: stepFeatureCatalog
+                        case .achievementsSetup: stepAchievementsSetup
+                        case .streamingSetup: stepStreamingSetup
+                        case .completion: stepCompletion
+                        }
                     }
+                    .padding(32)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .padding(32)
 
                 bottomNavigation
             }
             .padding()
-            .frame(maxWidth: 680)
+            .frame(maxWidth: 720)
             .background(Color(nsColor: .controlBackgroundColor))
             .cornerRadius(12)
             .shadow(color: Color(nsColor: .shadowColor).opacity(0.15), radius: 20, y: 4)
@@ -56,11 +63,11 @@ struct SetupWizardView: View {
             .padding(.top, 12)
 
             HStack(spacing: 0) {
-                ForEach(Array(SetupWizardState.WizardStep.allCases.enumerated()), id: \.element.id) { idx, step in
+                ForEach(Array(wizard.visibleSteps.enumerated()), id: \.element.id) { idx, step in
                     Circle()
                         .fill(idx <= wizard.currentStepIndex ? AppColors.brandAccent : AppColors.cardBackground(colorScheme))
                         .frame(width: 8, height: 8)
-                    if idx < SetupWizardState.WizardStep.allCases.count - 1 {
+                    if idx < wizard.visibleSteps.count - 1 {
                         Rectangle()
                             .fill(idx < wizard.currentStepIndex ? AppColors.brandAccent : AppColors.cardBackground(colorScheme))
                             .frame(height: 1)
@@ -82,7 +89,7 @@ struct SetupWizardView: View {
 
     private var bottomNavigation: some View {
         HStack {
-            if wizard.currentStepIndex > 0 && wizard.currentStep != .completion {
+            if wizard.currentStepIndex > 0 {
                 Button(loc.localized("wizard.back")) {
                     wizard.previousStep()
                 }
@@ -108,12 +115,6 @@ Button(loc.localized("wizard.skip")) {
                 }
                 .buttonStyle(.borderedProminent)
                 .keyboardShortcut(.return, modifiers: [])
-            } else if wizard.currentStep == .getStarted {
-                Button(loc.localized("wizard.continue")) {
-                    wizard.nextStep()
-                }
-                .buttonStyle(.borderedProminent)
-                .keyboardShortcut(.return, modifiers: [])
             } else {
                 Button(loc.localized("wizard.continue")) {
                     wizard.nextStep()
@@ -133,12 +134,50 @@ Button(loc.localized("wizard.skip")) {
         AppSettings.set("display_default_shader_preset", value: wizard.selectedShaderPresetID)
         SystemPreferences.shared.systemLanguage = wizard.selectedRegion
 
+        // Persist theme (only if different from current — no restart here, user is prompted at Settings if they want one)
+        if wizard.selectedTheme != ThemeManager.shared.currentTheme {
+            AppSettings.set("accentTheme", value: wizard.selectedTheme)
+            ThemeManager.shared.applyTheme(wizard.selectedTheme)
+        }
+
         for folder in wizard.libraryFolders {
             library.addLibraryFolder(url: folder)
         }
 
+        // LaunchBox metadata
+        if wizard.featureLaunchBox {
+            AppSettings.setBool("launchbox_use_for_boxart", value: true)
+            AppSettings.setBool("launchbox_download_after_scan", value: true)
+        }
+
+        // Cheats master toggle (download handled separately)
+        if wizard.featureCheats {
+            AppSettings.setBool("cheats_enabled", value: true)
+        }
+
+        // Streaming
+        if wizard.featureStreaming {
+            AppSettings.setBool("streaming_enabled", value: wizard.streamingEnabled)
+            AppSettings.setString("streaming_quality", value: wizard.streamingQuality.rawValue)
+
+            // Persist the per-destination keys we have, even ones that aren't currently selected,
+            // so the user doesn't lose their other destinations by tweaking one in the wizard.
+            AppSettings.setString("streaming_twitch_key", value: wizard.streamingTwitchKey)
+            AppSettings.setString("streaming_youtube_key", value: wizard.streamingYouTubeKey)
+            AppSettings.setString("streaming_custom_key", value: wizard.streamingCustomKey)
+
+            if wizard.streamingEnabled {
+                AppSettings.setString("streaming_mode", value: wizard.streamingDestination.rawValue)
+            }
+        }
+
         let downloadBezels = wizard.downloadBezels
-        let downloadCheats = wizard.downloadCheats
+        let downloadCheats = wizard.featureCheatsDownload
+        let achievementsUsername = wizard.achievementsUsername
+        let achievementsPassword = wizard.achievementsPassword
+        let achievementsWebApiKey = wizard.achievementsWebApiKey
+        let achievementsEnabled = wizard.featureRetroAchievements
+        let achievementsHardcore = wizard.achievementsHardcore
 
         Task.detached(priority: .utility) {
             if downloadBezels || downloadCheats {
@@ -152,22 +191,21 @@ Button(loc.localized("wizard.skip")) {
                 }
             }
 
-            /*
-            if achievementsEnabled && !achievementsUsername.isEmpty && !achievementsPassword.isEmpty {
+            if achievementsEnabled && !achievementsUsername.isEmpty && !achievementsWebApiKey.isEmpty {
                 do {
-                    let token = try await RetroAchievementsService.shared.loginWithWebApiKey(
+                    try await RetroAchievementsService.shared.loginWithWebApiKey(
                         username: achievementsUsername,
-                        webApiKey: achievementsPassword
-                    )
-                    await RetroAchievementsService.shared.saveSettings(
-                        username: achievementsUsername,
-                        webApiKey: <#T##String#>: token
+                        webApiKey: achievementsWebApiKey,
+                        password: achievementsPassword
                     )
                     await RetroAchievementsService.shared.setEnabled(true)
+                    if achievementsHardcore {
+                        await RetroAchievementsService.shared.setHardcoreMode(true)
+                    }
                 } catch {
                     LoggerService.info(category: "Wizard", "Achievements login failed: \(error.localizedDescription)")
                 }
-            }*/
+            }
         }
     }
 }
@@ -176,7 +214,7 @@ Button(loc.localized("wizard.skip")) {
 
 extension SetupWizardView {
     private var stepGetStarted: some View {
-        VStack(spacing: 24) {
+            VStack(spacing: 24) {
             VStack(spacing: 8) {
                 Text("wizard.welcomeTitle")
                     .font(.title)
@@ -187,47 +225,55 @@ extension SetupWizardView {
             }
 
             VStack(alignment: .leading, spacing: 8) {
-                Label(loc.localized("wizard.selectLanguage"), systemImage: "globe")
-                    .font(.headline)
+                HStack {
+                    Label(loc.localized("wizard.selectLanguage"), systemImage: "globe")
+                        .font(.headline)
+                    Spacer()
+                    Picker(loc.localized("settings.selectLanguage"), selection: Binding<String>(
+                        get: { loc.currentLanguage },
+                        set: { newLang in
+                            loc.setLanguage(newLang)
+                            autoSelectRegion(for: newLang)
+                        })
+                    ) {
+                        ForEach(loc.availableLanguages, id: \.self) { lang in
+                            Text("\(languageFlag(for: lang)) \(languageDisplayName(for: lang))")
+                                .tag(lang)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .labelsHidden()
+                    .id(loc.currentLanguage)
+                    .frame(maxWidth: 220, alignment: .trailing)
+                }
 
                 Text("wizard.languageDescription")
                     .foregroundColor(AppColors.textSecondary(colorScheme))
                     .font(.callout)
-
-                Picker(loc.localized("settings.selectLanguage"), selection: Binding<String>(
-                    get: { loc.currentLanguage },
-                    set: { newLang in
-                        loc.setLanguage(newLang)
-                        autoSelectRegion(for: newLang)
-                    })
-                ) {
-                    ForEach(loc.availableLanguages, id: \.self) { lang in
-                        Text("\(languageFlag(for: lang)) \(languageDisplayName(for: lang))")
-                            .tag(lang)
-                    }
-                }
-                .pickerStyle(.menu)
-                .padding(.leading, 4)
             }
 
             Divider()
 
             VStack(alignment: .leading, spacing: 8) {
-                Label(loc.localized("wizard.gameRegion"), systemImage: "map")
-                    .font(.headline)
+                HStack {
+                    Label(loc.localized("wizard.gameRegion"), systemImage: "map")
+                        .font(.headline)
+                    Spacer()
+                    Picker(loc.localized("wizard.selectRegion"), selection: $wizard.selectedRegion) {
+                        ForEach(EmulatorLanguage.allCases) { lang in
+                            Text("\(lang.flagEmoji) \(lang.localizedName)")
+                                .tag(lang)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .labelsHidden()
+                    .id(loc.currentLanguage)
+                    .frame(maxWidth: 220, alignment: .trailing)
+                }
 
                 Text("wizard.regionDescription")
                     .foregroundColor(AppColors.textSecondary(colorScheme))
                     .font(.callout)
-
-                Picker(loc.localized("wizard.selectRegion"), selection: $wizard.selectedRegion) {
-                    ForEach(EmulatorLanguage.allCases) { lang in
-                        Text("\(lang.flagEmoji) \(lang.name)")
-                            .tag(lang)
-                    }
-                }
-                .pickerStyle(.menu)
-                .padding(.leading, 4)
 
                 VStack(alignment: .leading, spacing: 6) {
                     Text("wizard.regionExamples")
@@ -362,11 +408,34 @@ Image(systemName: "trash")
     }
 }
 
-// MARK: - Step 2: Look & Feel (Bezels + Shaders)
+// MARK: - Step 2: Look & Feel (Theme + Bezels + Shaders)
 
 extension SetupWizardView {
     private var stepLookAndFeel: some View {
         VStack(alignment: .leading, spacing: 24) {
+            // Theme
+            VStack(alignment: .leading, spacing: 12) {
+                Label(loc.localized("wizard.theme"), systemImage: "paintpalette")
+                    .font(.headline)
+
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("wizard.themeDescription")
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
+                        .font(.callout)
+
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(AccentColorTheme.allCases, id: \.self) { theme in
+                                themeButton(theme)
+                            }
+                        }
+                    }
+                }
+                .padding(.leading, 4)
+            }
+
+            Divider()
+
             // Bezels
             VStack(alignment: .leading, spacing: 12) {
                 Label(loc.localized("bezel.title"), systemImage: "rectangle.on.rectangle")
@@ -409,6 +478,34 @@ extension SetupWizardView {
         }
     }
 
+    private func themeButton(_ theme: AccentColorTheme) -> some View {
+        let isSelected = wizard.selectedTheme == theme
+        return Button {
+            wizard.selectedTheme = theme
+        } label: {
+            VStack(spacing: 4) {
+                Image(theme.iconAssetName)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 40, height: 40)
+                Text(theme.displayName)
+                    .font(.system(size: 9))
+                    .lineLimit(1)
+                    .foregroundColor(isSelected ? AppColors.brandAccent : .primary)
+            }
+            .padding(6)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(isSelected ? AppColors.brandAccent.opacity(0.12) : AppColors.cardBackgroundSubtle(colorScheme))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(isSelected ? AppColors.brandAccent : Color.clear, lineWidth: 1.5)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
     private func shaderPill(preset: ShaderPreset) -> some View {
         let isSelected = wizard.selectedShaderPresetID == preset.id
         return Button {
@@ -439,117 +536,352 @@ extension SetupWizardView {
     }
 }
 
-// MARK: - Step 3: Optional Features (Cheats + Achievements + Logging)
+// MARK: - Step 3: Feature Catalog (checklist of optional features)
 
 extension SetupWizardView {
-    private var stepOptionalFeatures: some View {
+    private var stepFeatureCatalog: some View {
+        VStack(alignment: .leading, spacing: 24) {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("wizard.featureCatalog.title")
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                Text("wizard.featureCatalog.description")
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
+                    .font(.callout)
+            }
+
+            VStack(alignment: .leading, spacing: 16) {
+                featureRow(
+                    icon: "trophy",
+                    title: loc.localized("wizard.feature.achievements"),
+                    description: loc.localized("wizard.feature.achievementsDesc"),
+                    isOn: $wizard.featureRetroAchievements
+                )
+
+                Divider()
+
+                featureRow(
+                    icon: "antenna.radiowaves.left.and.right",
+                    title: loc.localized("wizard.feature.streaming"),
+                    description: loc.localized("wizard.feature.streamingDesc"),
+                    isOn: $wizard.featureStreaming
+                )
+
+                Divider()
+
+                featureRow(
+                    icon: "wand.and.stars",
+                    title: loc.localized("wizard.feature.cheats"),
+                    description: loc.localized("wizard.feature.cheatsDesc"),
+                    isOn: $wizard.featureCheats
+                )
+
+                if wizard.featureCheats {
+                    HStack(spacing: 12) {
+                        Image(systemName: "arrow.down.circle")
+                            .frame(width: 24)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
+                        Toggle(isOn: $wizard.featureCheatsDownload) {
+                            Text(loc.localized("wizard.cheatsDetail"))
+                                .font(.caption)
+                        }
+                        .toggleStyle(.switch)
+                        .tint(AppColors.brandAccentSecondary)
+                        Spacer()
+                    }
+                    .padding(.leading, 8)
+                }
+
+                Divider()
+
+                featureRow(
+                    icon: "books.vertical",
+                    title: loc.localized("wizard.feature.launchbox"),
+                    description: loc.localized("wizard.feature.launchboxDesc"),
+                    isOn: $wizard.featureLaunchBox
+                )
+
+                Divider()
+
+                // Accessibility row with inline action button instead of a toggle
+                HStack(spacing: 12) {
+                    Image(systemName: "keyboard")
+                        .frame(width: 24)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(loc.localized("wizard.feature.accessibility"))
+                            .fontWeight(.medium)
+                        Text(loc.localized("wizard.feature.accessibilityDesc"))
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
+                            .font(.callout)
+                    }
+                    Spacer()
+                    if wizard.hasAccessibilityPermissions {
+                        Label(loc.localized("wizard.accessibility.granted"), systemImage: "checkmark.circle.fill")
+                            .font(.caption)
+                            .foregroundColor(AppColors.success(colorScheme))
+                    } else {
+                        Button(loc.localized("wizard.accessibility.prompt")) {
+                            wizard.requestAccessibilityPermission()
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                    }
+                }
+            }
+        }
+    }
+
+    /// Each feature row uses the same horizontal layout: fixed-width icon + (title, description) +
+    /// spacer + trailing toggle. The toggle's `.labelsHidden()`-style placement on the right of an
+    /// `HStack` keeps every toggle switch vertically aligned.
+    private func featureRow(icon: String, title: String, description: String, isOn: Binding<Bool>) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: icon)
+                .frame(width: 24)
+                .foregroundColor(.primary)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .fontWeight(.medium)
+                Text(description)
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
+                    .font(.callout)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Spacer()
+            Toggle("", isOn: isOn)
+                .labelsHidden()
+                .toggleStyle(.switch)
+                .tint(AppColors.brandAccentSecondary)
+        }
+        .padding(.leading, 8)
+    }
+}
+
+
+// MARK: - Step 4: RetroAchievements Setup (conditional)
+
+extension SetupWizardView {
+    private var stepAchievementsSetup: some View {
         VStack(alignment: .leading, spacing: 20) {
-            // Cheats
-            featureToggle(
-                title: loc.localized("wizard.cheatsTitle"),
-                icon: "wand.and.stars",
-                description: loc.localized("wizard.cheatsDescription"),
-                isOn: $wizard.downloadCheats,
-                detail: loc.localized("wizard.cheatsDetail")
-            )
+            VStack(alignment: .leading, spacing: 8) {
+                Label(loc.localized("retroAchievements.title"), systemImage: "trophy")
+                    .font(.headline)
+
+                Text("wizard.retroAchievementsDescription")
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
+                    .font(.callout)
+            }
+
+            VStack(spacing: 8) {
+                TextField(loc.localized("retroAchievements.username"), text: $wizard.achievementsUsername)
+                    .textFieldStyle(.roundedBorder)
+                    .autocorrectionDisabled()
+
+                SecureField(loc.localized("retroAchievements.password"), text: $wizard.achievementsPassword)
+                    .textFieldStyle(.roundedBorder)
+
+                SecureField(loc.localized("retroAchievements.webApiKey"), text: $wizard.achievementsWebApiKey)
+                    .textFieldStyle(.roundedBorder)
+                    .autocorrectionDisabled()
+            }
+            .padding(12)
+            .background(AppColors.cardBackgroundSubtle(colorScheme))
+            .cornerRadius(8)
+
+            HStack(spacing: 12) {
+                Button(action: testRAConnection) {
+                    if isRALoggingIn {
+                        ProgressView().controlSize(.small)
+                    } else {
+                        Text(loc.localized("wizard.ra.testConnection"))
+                    }
+                }
+                .buttonStyle(.bordered)
+                .disabled(wizard.achievementsUsername.isEmpty || wizard.achievementsWebApiKey.isEmpty || isRALoggingIn)
+
+                Link(loc.localized("retroAchievements.findYourKeyAt"), destination: URL(string: "https://retroachievements.org/controlpanel.php")!)
+                    .font(.callout)
+                    .foregroundColor(AppColors.brandAccent)
+
+                Spacer()
+
+                if raLoginSuccess {
+                    Label(loc.localized("wizard.ra.connected"), systemImage: "checkmark.circle.fill")
+                        .font(.caption)
+                        .foregroundColor(AppColors.success(colorScheme))
+                }
+            }
+
+            if let error = raLoginError {
+                Label(error, systemImage: "xmark.circle.fill")
+                    .font(.caption)
+                    .foregroundColor(AppColors.error(colorScheme))
+            }
 
             Divider()
 
-            // Achievements
             VStack(alignment: .leading, spacing: 8) {
-                Toggle(isOn: $wizard.achievementsEnabled) {
-                    Label { Text("retroAchievements.title")
-                    } icon: { Image(systemName: "trophy")
-                    }
-                }
-                .toggleStyle(.switch)
-                .tint(AppColors.brandAccentSecondary)
+                Label(loc.localized("retroAchievements.hardcoreMode"), systemImage: "shield.lefthalf.filled")
+                    .font(.headline)
 
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("wizard.retroAchievementsDescription")
-                        .foregroundColor(AppColors.textSecondary(colorScheme))
-                        .font(.callout)
+                Toggle(loc.localized("retroAchievements.hardcoreMode"), isOn: $wizard.achievementsHardcore)
+                    .toggleStyle(.switch)
+                    .tint(AppColors.brandAccentSecondary)
 
-                    if wizard.achievementsEnabled {
-                        VStack(spacing: 8) {
-                            TextField(loc.localized("retroAchievements.username"), text: $wizard.achievementsUsername)
-                                .textFieldStyle(.roundedBorder)
-                            SecureField(loc.localized("retroAchievements.password"), text: $wizard.achievementsPassword)
-                                .textFieldStyle(.roundedBorder)
-
-                            if let error = raLoginError {
-Label(error, systemImage: "xmark.circle.fill")
-                            .font(.caption)
-                            .foregroundColor(AppColors.error(colorScheme))
-                            }
-
-                            /*HStack(spacing: 8) {
-                            Button {
-                                Task {
-                                    isRALoggingIn = true
-                                    raLoginError = nil
-                                    do {
-                                        let token = try await RetroAchievementsService.shared.login(
-                                            username: wizard.achievementsUsername, password: wizard.achievementsPassword)
-                                        RetroAchievementsService.shared.saveSettings(username: wizard.achievementsUsername, token: token)
-                                    } catch {
-                                        raLoginError = error.localizedDescription
-                                    }
-                                    isRALoggingIn = false
-                                }
-                            } label: {
-                                if isRALoggingIn { ProgressView().controlSize(.small) } else { Text("Test Connection") }
-                            }
-                            .disabled(wizard.achievementsUsername.isEmpty || wizard.achievementsPassword.isEmpty || isRALoggingIn)
-
-                            Link("Create Account", destination: URL(string: "https://retroachievements.org")!)
-                                .font(.callout)
-                                .foregroundColor(AppColors.brandAccent)
-                            }*/
-                        }
-                        .padding(12)
-                        .background(AppColors.cardBackgroundSubtle(colorScheme))
-                        .cornerRadius(8)
-                    }
-                }
-        .padding(.leading, 36)
+                Text(loc.localized("retroAchievements.hardcoreModeDescription"))
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
+                    .font(.callout)
+            }
         }
     }
-    }
 
-    private func featureToggle(title: String, icon: String, description: String, isOn: Binding<Bool>, detail: String) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Toggle(isOn: isOn) {
-                Label { Text(title)
-                    .fontWeight(.medium)
-                } icon: { Image(systemName: icon)
-                }
+    private func testRAConnection() {
+        Task {
+            isRALoggingIn = true
+            raLoginError = nil
+            raLoginSuccess = false
+            do {
+                try await RetroAchievementsService.shared.loginWithWebApiKey(
+                    username: wizard.achievementsUsername,
+                    webApiKey: wizard.achievementsWebApiKey,
+                    password: wizard.achievementsPassword
+                )
+                raLoginSuccess = true
+            } catch {
+                raLoginError = error.localizedDescription
             }
-            .toggleStyle(.switch)
-            .tint(AppColors.brandAccentSecondary)
-
-            VStack(alignment: .leading, spacing: 6) {
-Text(description)
-            .foregroundColor(AppColors.textSecondary(colorScheme))
-            .font(.callout)
-
-            if isOn.wrappedValue {
-                HStack(spacing: 6) {
-                    Image(systemName: "info.circle")
-                        .font(.caption)
-                        .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
-                    Text(detail)
-                        .font(.caption)
-                        .foregroundColor(AppColors.textSecondary(colorScheme))
-                    }
-                }
-            }
-            .padding(.leading, 36)
+            isRALoggingIn = false
         }
     }
 }
 
-// MARK: - Step 4: Completion
+// MARK: - Step 5: Streaming Setup (conditional)
+
+extension SetupWizardView {
+    private var stepStreamingSetup: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            VStack(alignment: .leading, spacing: 8) {
+                Label(loc.localized("wizard.stream.title"), systemImage: "antenna.radiowaves.left.and.right")
+                    .font(.headline)
+
+                Text("wizard.stream.description")
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
+                    .font(.callout)
+            }
+
+            Toggle(loc.localized("wizard.stream.enable"), isOn: $wizard.streamingEnabled)
+                .toggleStyle(.switch)
+                .tint(AppColors.brandAccentSecondary)
+
+            if wizard.streamingEnabled {
+                VStack(alignment: .leading, spacing: 16) {
+                    // Destination
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(loc.localized("wizard.stream.destination"))
+                            .font(.callout)
+                            .fontWeight(.medium)
+                        Picker(loc.localized("wizard.stream.destination"), selection: $wizard.streamingDestination) {
+                            ForEach([StreamingMode.twitch, .youtube, .custom], id: \.self) { mode in
+                                Text(streamingModeLabel(for: mode))
+                                    .tag(mode)
+                            }
+                        }
+                        .pickerStyle(.segmented)
+                        .labelsHidden()
+                    }
+
+                    // Stream key
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(loc.localized("wizard.stream.streamKey"))
+                            .font(.callout)
+                            .fontWeight(.medium)
+                        SecureField(loc.localized("wizard.stream.streamKeyPlaceholder"),
+                                    text: Binding<String>(
+                                        get: { wizard.streamingStreamKey },
+                                        set: { wizard.streamingStreamKey = $0 }
+                                    ))
+                            .textFieldStyle(.roundedBorder)
+                            .autocorrectionDisabled()
+                        HStack(spacing: 6) {
+                            Text(streamKeyHint)
+                                .font(.caption)
+                                .foregroundColor(AppColors.textSecondary(colorScheme))
+                            if let url = streamKeyLinkURL {
+                                Link(streamKeyLinkLabel, destination: url)
+                                    .font(.caption)
+                                    .foregroundColor(AppColors.brandAccent)
+                            }
+                        }
+                    }
+
+                    // Quality
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(loc.localized("wizard.stream.quality"))
+                            .font(.callout)
+                            .fontWeight(.medium)
+                        Picker(loc.localized("wizard.stream.quality"), selection: $wizard.streamingQuality) {
+                            ForEach([RecordingQuality.low, .medium, .high], id: \.self) { q in
+                                Text(recordingQualityLabel(for: q))
+                                    .tag(q)
+                            }
+                        }
+                        .pickerStyle(.segmented)
+                        .labelsHidden()
+                    }
+                }
+                .padding(12)
+                .background(AppColors.cardBackgroundSubtle(colorScheme))
+                .cornerRadius(8)
+            }
+        }
+    }
+
+    private func streamingModeLabel(for mode: StreamingMode) -> String {
+        switch mode {
+        case .twitch: return "Twitch"
+        case .youtube: return "YouTube"
+        case .custom: return loc.localized("wizard.stream.custom")
+        case .localFile: return loc.localized("settings.streaming.localFile")
+        }
+    }
+
+    private var streamKeyHint: String {
+        switch wizard.streamingDestination {
+        case .twitch: return loc.localized("wizard.stream.keyHint.twitch")
+        case .youtube: return loc.localized("wizard.stream.keyHint.youtube")
+        case .custom: return loc.localized("wizard.stream.keyHint.custom")
+        case .localFile: return ""
+        }
+    }
+
+    private var streamKeyLinkURL: URL? {
+        switch wizard.streamingDestination {
+        case .twitch:  return URL(string: "https://dashboard.twitch.tv/u/__username__/settings/stream")
+        case .youtube: return URL(string: "https://studio.youtube.com/channel/UC/live_streaming")
+        case .custom:  return nil
+        case .localFile: return nil
+        }
+    }
+
+    private var streamKeyLinkLabel: String {
+        switch wizard.streamingDestination {
+        case .twitch:  return loc.localized("wizard.stream.openDashboard")
+        case .youtube: return loc.localized("wizard.stream.openStudio")
+        case .custom, .localFile: return ""
+        }
+    }
+
+    private func recordingQualityLabel(for q: RecordingQuality) -> String {
+        switch q {
+        case .low: return loc.localized("wizard.stream.quality.low")
+        case .medium: return loc.localized("wizard.stream.quality.medium")
+        case .high: return loc.localized("wizard.stream.quality.high")
+        case .lossless: return loc.localized("wizard.stream.quality.lossless")
+        }
+    }
+}
+
+// MARK: - Step 6: Completion
 
 extension SetupWizardView {
     private var stepCompletion: some View {
@@ -565,6 +897,23 @@ Image(systemName: "checkmark.circle.fill")
 Text("wizard.completionDescription")
             .multilineTextAlignment(.center)
             .foregroundColor(AppColors.textSecondary(colorScheme))
+
+            // Summary of configured features
+            if !wizard.enabledFeaturesSummary.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(loc.localized("wizard.summary.title"))
+                        .font(.callout)
+                        .fontWeight(.semibold)
+                    ForEach(wizard.enabledFeaturesSummary, id: \.self) { key in
+                        Label(loc.localized(key), systemImage: "checkmark")
+                            .font(.callout)
+                            .foregroundColor(AppColors.brandAccent)
+                    }
+                }
+                .padding(12)
+                .background(AppColors.cardBackgroundSubtle(colorScheme))
+                .cornerRadius(8)
+            }
 
             if !wizard.allDetectedGames.isEmpty && library.roms.isEmpty {
                 HStack(spacing: 6) {

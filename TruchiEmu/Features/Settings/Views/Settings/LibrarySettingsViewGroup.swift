@@ -176,14 +176,15 @@ var body: some View {
                      .buttonStyle(.bordered)
                      .disabled(library.isScanning)
                      
-                     Button(action: {
-                         library.hasCompletedOnboarding = false
-                         SetupWizardState.shared.hasCompletedWizard = false
-                         SetupWizardState.shared.currentStep = .getStarted
-                     }) {
-                         Label { Text(loc.localized("library.runSetupWizard")) } icon: { Image(systemName: "wand.and.stars") }
-                     }
-                     .buttonStyle(.bordered)
+                      Button(action: {
+                          library.hasCompletedOnboarding = false
+                          SetupWizardState.shared.hasCompletedWizard = false
+                          SetupWizardState.shared.resetForReRun()
+                          NotificationCenter.default.post(name: .closeAppSettings, object: nil)
+                      }) {
+                          Label { Text(loc.localized("library.runSetupWizard")) } icon: { Image(systemName: "wand.and.stars") }
+                      }
+                      .buttonStyle(.bordered)
                      
                      LabeledContent(loc.localized("library.totalGames")) {
                          Text("\(library.roms.count)")
