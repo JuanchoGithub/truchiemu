@@ -336,26 +336,19 @@ final class LibraryAutomationCoordinator: ObservableObject {
             }
         )
 
-        // Brief pause before LaunchBox phase
-        try? await Task.sleep(nanoseconds: 500_000_000)
-        await Task.yield()
-
-        // After Libretro CDN, try LaunchBox GamesDB for remaining ROMs still missing art
+        // After Libretro CDN, try LaunchBox GamesDB for remaining ROMs still missing metadata/art
         if LaunchBoxGamesDBService.shared.downloadAfterScan {
-            let stillMissing = scope.filter { rom in
-                !rom.hasBoxArt
+            let stillNeeded = scope.filter { rom in
+                !rom.hasBoxArt ||
+                (rom.metadata?.description?.isEmpty ?? true) ||
+                (rom.metadata?.developer?.isEmpty ?? true)
             }
-            if !stillMissing.isEmpty {
-                statusLine = localizedStatus("library.automation.tryingLaunchbox", "\(stillMissing.count)")
-                await LaunchBoxGamesDBService.shared.batchDownloadBoxArt(
-                    for: stillMissing,
-                    library: library
-                ) { [weak self] completed, totalCount, fileLabel in
-                    guard let self = self else { return }
-                    let frac = Double(completed) / max(Double(totalCount), 1)
-                    self.progress = frac
-                    self.statusLine = self.localizedStatus("library.automation.launchboxBoxArt", "\(Int(frac * 100))", fileLabel)
-                }
+            if !stillNeeded.isEmpty {
+                statusLine = localizedStatus("library.automation.tryingLaunchbox", "\(stillNeeded.count)")
+                await MetadataSyncCoordinator.shared.runAfterLibraryUpdate(
+                    library: library,
+                    targetROMs: stillNeeded
+                )
             }
         }
 

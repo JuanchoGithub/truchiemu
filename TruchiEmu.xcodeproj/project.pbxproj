@@ -109,6 +109,7 @@
 		13909F17DF2385136F4273B8 /* IconPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A1BBAF236A7482126D4923 /* IconPickerView.swift */; };
 		139F5308F944EC66EAB548BE /* MetalCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7617E35BCF8ABD715F148725 /* MetalCoordinator.swift */; };
 		13DB33EDA51711079ED63488 /* fightdata_vhunt2.json in Resources */ = {isa = PBXBuildFile; fileRef = 65C067FA21A2CFE61996BB6F /* fightdata_vhunt2.json */; };
+		13FD60D485399D437AD283D5 /* LaunchBoxMetadataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EB954899F92CE8016C887B3 /* LaunchBoxMetadataService.swift */; };
 		140BF0CFF39BA12534FAE0CF /* BezelModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 827E55E978215F285D7F5800 /* BezelModels.swift */; };
 		142A6AA4E03AD16607BD045B /* GameDBLookupResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = B624916CC58B4F2C2A93E827 /* GameDBLookupResult.swift */; };
 		14661987AC7B4F113605903E /* input_systemLabels_segacd.json in Resources */ = {isa = PBXBuildFile; fileRef = 954E450BA7A6E836972893EA /* input_systemLabels_segacd.json */; };
@@ -1544,6 +1545,7 @@
 		3E98450A3942B71D79BB3CB5 /* fds-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "fds-cheats.zip"; sourceTree = "<group>"; };
 		3E98AB57B09D9F106F4211B4 /* ArchiveReader.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ArchiveReader.c; sourceTree = "<group>"; };
 		3EAB9E08EEDB12D7EDCFB53E /* input_coreLabels_eightyone.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_eightyone.json; sourceTree = "<group>"; };
+		3EB954899F92CE8016C887B3 /* LaunchBoxMetadataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchBoxMetadataService.swift; sourceTree = "<group>"; };
 		3F06DE9467D9C3C67A9AF659 /* fightdata_kizuna.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_kizuna.json; sourceTree = "<group>"; };
 		3F0F0E8A94E91412BCEE886A /* gb-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "gb-cheats.zip"; sourceTree = "<group>"; };
 		3F13225A0D533F3EF41CEB80 /* SystemDatabaseWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemDatabaseWrapper.swift; sourceTree = "<group>"; };
@@ -3366,6 +3368,7 @@
 				8BA1C0AA362D511F3CD87919 /* HardcoreModeManager.swift */,
 				B57968ED5BE5EC0BF7BE93EB /* JaguarBIOSService.swift */,
 				51CC71BA94F2F723F61276A2 /* LaunchBoxGamesDBService.swift */,
+				3EB954899F92CE8016C887B3 /* LaunchBoxMetadataService.swift */,
 				553202E8BACC113D608625E6 /* LibretroRDBParser.swift */,
 				352DC36DB12EA05E9995055B /* LibretroThumbnailManifestService.swift */,
 				205860E15724E191A9B42460 /* LibretroThumbnailResolver.swift */,
@@ -5682,6 +5685,7 @@
 				9B925803A17E7F9D43679470 /* JaguarBIOSService.swift in Sources */,
 				7ABCF7A060244B57A297019B /* KeyboardMapping.swift in Sources */,
 				C18E5BE81E68BF2BD3405575 /* LaunchBoxGamesDBService.swift in Sources */,
+				13FD60D485399D437AD283D5 /* LaunchBoxMetadataService.swift in Sources */,
 				A88B029EDF9B982AD0A805D9 /* LibraryAnimations.swift in Sources */,
 				E51CDE2C230FBBFE9AA8A980 /* LibraryAutomationCoordinator.swift in Sources */,
 				0D8A07B323B96EBC8E1F8E1F /* LibraryFilterOption.swift in Sources */,

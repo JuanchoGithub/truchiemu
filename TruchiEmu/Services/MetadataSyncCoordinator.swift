@@ -1,14 +1,16 @@
 import Foundation
 import SwiftUI
 
-// Background coordinator that integrates LaunchBox metadata fetching into the
-// post-scan automation pipeline.
 @MainActor
 final class MetadataSyncCoordinator: ObservableObject {
     static let shared = MetadataSyncCoordinator()
 
     enum Phase: Equatable {
         case idle
+        case downloading
+        case extracting
+        case parsing
+        case indexing
         case syncing
     }
 
@@ -19,14 +21,8 @@ final class MetadataSyncCoordinator: ObservableObject {
 
     private init() {}
 
-    // Run after library update: sync LaunchBox metadata for ROMs that need it.
-    // Only runs when the feature is enabled in settings.
     func runAfterLibraryUpdate(library: ROMLibrary, targetROMs: [ROM]? = nil) async {
-        // Skip if any game is running — metadata syncing is network-heavy
-        // and degrades gameplay performance.
-
-        // If targetROMs is provided, use it. Otherwise, fallback to full library.
-        let scope = targetROMs ?? []
+        guard LaunchBoxGamesDBService.shared.isEnabled else { return }
 
         if RunningGamesTracker.shared.isGameRunning {
             #if LOG_DEBUG
@@ -35,14 +31,15 @@ final class MetadataSyncCoordinator: ObservableObject {
             return
         }
 
-        let launchbox = LaunchBoxGamesDBService.shared
-        guard launchbox.isEnabled else { return }
+        let metadataService = LaunchBoxMetadataService.shared
+        let scope = targetROMs ?? library.roms
 
-        let snapshot = scope
-        let needMetadata = snapshot.filter { rom in
+        let needMetadata = scope.filter { rom in
             (rom.metadata?.description?.isEmpty ?? true) ||
-            (rom.metadata?.developer?.isEmpty ?? true)
+            (rom.metadata?.developer?.isEmpty ?? true) ||
+            (rom.metadata?.publisher?.isEmpty ?? true)
         }
+
         guard !needMetadata.isEmpty else { return }
 
         isActive = true
@@ -53,59 +50,120 @@ final class MetadataSyncCoordinator: ObservableObject {
             statusLine = ""
         }
 
+        phase = .downloading
+        statusLine = "Checking LaunchBox database..."
+
+        guard await metadataService.downloadIfNeeded(progress: { [weak self] p in
+            Task { @MainActor in
+                self?.progress = p
+                self?.statusLine = "Downloading Metadata.zip: \(Int(p * 100))% (501 MB)"
+            }
+        }) else {
+            statusLine = "LaunchBox database download failed"
+            return
+        }
+
+        phase = .parsing
+        progress = 0
+
+        guard await metadataService.parseAndIndexIfNeeded(status: { [weak self] msg in
+            Task { @MainActor in
+                if msg.hasPrefix("Indexed ") {
+                    self?.phase = .indexing
+                } else if msg.hasPrefix("Extracting") {
+                    self?.phase = .extracting
+                } else {
+                    self?.phase = .parsing
+                }
+                self?.statusLine = msg
+            }
+        }) else {
+            statusLine = "LaunchBox database parse failed"
+            return
+        }
+
         phase = .syncing
-        let total = Double(needMetadata.count)
-
-        // Ultra-conservative concurrency + inter-request throttle to keep app responsive
-        let maxConcurrent = 1
+        let total = needMetadata.count
         var completed = 0
+        var enriched = 0
 
-        await withTaskGroup(of: (Bool, String).self) { group in
-            var iter = needMetadata.makeIterator()
-            var active = 0
-
-            while active < maxConcurrent, let rom = iter.next() {
-                group.addTask {
-                    let ok = await launchbox.fetchAndApplyMetadata(for: rom, library: library)
-                    return (ok, rom.displayName)
-                }
-                active += 1
-            }
-
-            for await (_, name) in group {
-                active -= 1
-                completed += 1
-                let frac = Double(completed) / max(total, 1)
-                progress = frac
-                statusLine = "Fetching metadata: \(Int(frac * 100))% — \(name)"
-
-                // Throttle: 1s + yield between requests to avoid saturating network/UI
-                try? await Task.sleep(nanoseconds: 1_000_000_000)
-                await Task.yield()
-
-                if let next = iter.next() {
-                    group.addTask {
-                        let ok = await launchbox.fetchAndApplyMetadata(for: next, library: library)
-                        return (ok, next.displayName)
-                    }
-                    active += 1
-                }
-            }
+        for rom in needMetadata {
+            let found = await metadataService.fetchAndApplyMetadata(for: rom, library: library)
+            completed += 1
+            if found { enriched += 1 }
+            progress = Double(completed) / Double(max(total, 1))
+            let systemID = rom.systemID ?? "?"
+            statusLine = "\(completed)/\(total) — \(rom.displayName) (\(systemID))" + (found ? " ✓" : " — no match")
+            try? await Task.sleep(nanoseconds: 50_000_000)
         }
 
         progress = 1
-        statusLine = "Fetching metadata: 100% — done"
-        launchbox.recordSyncDate()
+        statusLine = "Done — \(enriched) enriched of \(total) ROMs"
     }
 
-    // Full manual sync of all games.
-    func fullSync(library: ROMLibrary) async {
-        await LaunchBoxGamesDBService.shared.batchSyncLibrary(library: library) { [weak self] completed, total, label in
-            guard let self = self else { return }
-            self.phase = .syncing
-            self.progress = Double(completed) / max(Double(total), 1)
-            self.statusLine = "Syncing metadata: \(completed)/\(total) — \(label)"
+    func forceSync(library: ROMLibrary) async {
+        guard LaunchBoxGamesDBService.shared.isEnabled else { return }
+
+        isActive = true
+        defer {
+            isActive = false
+            phase = .idle
+            progress = 0
+            statusLine = ""
         }
-        self.phase = .idle
+
+        let metadataService = LaunchBoxMetadataService.shared
+
+        phase = .downloading
+        statusLine = "Downloading LaunchBox metadata (forced refresh)..."
+
+        guard await metadataService.downloadIfNeeded(force: true, progress: { [weak self] p in
+            Task { @MainActor in
+                self?.progress = p
+                self?.statusLine = "Downloading Metadata.zip: \(Int(p * 100))% (501 MB)"
+            }
+        }) else {
+            statusLine = "LaunchBox database download failed"
+            return
+        }
+
+        phase = .parsing
+        progress = 0
+
+        guard await metadataService.parseAndIndexIfNeeded(force: true, status: { [weak self] msg in
+            Task { @MainActor in
+                if msg.hasPrefix("Indexed ") {
+                    self?.phase = .indexing
+                } else if msg.hasPrefix("Extracting") {
+                    self?.phase = .extracting
+                } else {
+                    self?.phase = .parsing
+                }
+                self?.statusLine = msg
+            }
+        }) else {
+            statusLine = "LaunchBox database parse failed"
+            return
+        }
+
+        phase = .syncing
+
+        let allROMs = library.roms
+        let total = allROMs.count
+        var completed = 0
+        var enriched = 0
+
+        for rom in allROMs {
+            let found = await metadataService.fetchAndApplyMetadata(for: rom, library: library)
+            completed += 1
+            if found { enriched += 1 }
+            progress = Double(completed) / Double(max(total, 1))
+            let systemID = rom.systemID ?? "?"
+            statusLine = "\(completed)/\(total) — \(rom.displayName) (\(systemID))" + (found ? " ✓" : " — no match")
+            try? await Task.sleep(nanoseconds: 50_000_000)
+        }
+
+        progress = 1
+        statusLine = "Force sync complete — \(enriched) matched of \(total) ROMs"
     }
 }

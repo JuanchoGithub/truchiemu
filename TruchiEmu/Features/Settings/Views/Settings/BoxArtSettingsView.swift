@@ -15,12 +15,15 @@ struct BoxArtSettingsView: View {
     @State private var useHeadCheck = false
     @State private var useLaunchBox = false
     @State private var launchBoxDownloadAfterScan = true
+    @State private var launchBoxLastSync: Date?
     
+    @EnvironmentObject var library: ROMLibrary
     @Binding var searchText: String
     @Binding var focusedSectionID: String?
     @Binding var scopedSectionID: String?
     
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var syncCoordinator = MetadataSyncCoordinator.shared
     
     init(searchText: Binding<String> = .constant(""),
          focusedSectionID: Binding<String?> = .constant(nil),
@@ -60,17 +63,14 @@ struct BoxArtSettingsView: View {
                 .id("section-libretroCDN")
             }
 
-            // LaunchBox GamesDB
-            if (!isSearching || matchesSearch("launchbox gamesdb box art download scan third-party fallback")) && sectionVisible("section-launchbox") {
+            // LaunchBox Metadata
+            if (!isSearching || matchesSearch("launchbox gamesdb metadata enrichment box art download scan")) && sectionVisible("section-launchbox") {
                 Section {
-                    Toggle(loc.localized("boxArt.enableLaunchBox"), isOn: $useLaunchBox)
-                    if useLaunchBox {
-                        Toggle(loc.localized("boxArt.autoDownloadBoxArt"), isOn: $launchBoxDownloadAfterScan)
-                    }
+                    launchBoxSectionContent
                 } header: {
-                    Label { Text(loc.localized("boxArt.launchBoxGamesDB")) } icon: { Image(systemName: "gamecontroller.fill") }
+                    Label { Text(loc.localized("launchbox.section")) } icon: { Image(systemName: "books.vertical") }
                 } footer: {
-                    Text(loc.localized("boxArt.launchBoxDescription"))
+                    Text(loc.localized("launchbox.description"))
                 }
                 .id("section-launchbox")
             }
@@ -203,6 +203,7 @@ struct BoxArtSettingsView: View {
             useHeadCheck = BoxArtService.shared.useHeadBeforeThumbnailDownload
             useLaunchBox = LaunchBoxGamesDBService.shared.isEnabled
             launchBoxDownloadAfterScan = LaunchBoxGamesDBService.shared.downloadAfterScan
+            launchBoxLastSync = LaunchBoxGamesDBService.shared.lastSyncDate
             thumbnailBaseURLString = thumbnailServerURLStorage.isEmpty
                 ? LibretroThumbnailResolver.defaultBaseURL.absoluteString
                 : thumbnailServerURLStorage
@@ -224,13 +225,54 @@ struct BoxArtSettingsView: View {
         .onChange(of: useCRCMatching) { _, newVal in BoxArtService.shared.useCRCMatchingForThumbnails = newVal; AppSettings.setBool("thumbnail_use_crc_matching", value: newVal) }
         .onChange(of: fallbackFilename) { _, newVal in BoxArtService.shared.fallbackToFilenameForThumbnails = newVal; AppSettings.setBool("thumbnail_fallback_filename", value: newVal) }
         .onChange(of: useHeadCheck) { _, newVal in BoxArtService.shared.useHeadBeforeThumbnailDownload = newVal; AppSettings.setBool("thumbnail_use_head_check", value: newVal) }
-        .onChange(of: useLaunchBox) { _, newVal in LaunchBoxGamesDBService.shared.isEnabled = newVal; AppSettings.setBool("launchbox_use_for_boxart", value: newVal) }
+        .onChange(of: useLaunchBox) { _, newVal in
+            LaunchBoxGamesDBService.shared.isEnabled = newVal
+            AppSettings.setBool("launchbox_use_for_boxart", value: newVal)
+            if !newVal { launchBoxLastSync = nil }
+        }
         .onChange(of: launchBoxDownloadAfterScan) { _, newVal in LaunchBoxGamesDBService.shared.downloadAfterScan = newVal; AppSettings.setBool("launchbox_download_after_scan", value: newVal) }
     }
     
+    @ViewBuilder
+    private var launchBoxSectionContent: some View {
+        Toggle(loc.localized("launchbox.enable"), isOn: $useLaunchBox)
+        if useLaunchBox {
+            Toggle(loc.localized("launchbox.autoSync"), isOn: $launchBoxDownloadAfterScan)
+            if let syncDate = launchBoxLastSync {
+                HStack {
+                    Text(loc.localized("launchbox.lastSync"))
+                    Spacer()
+                    Text(syncDate, style: .date)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            Button(loc.localized("launchbox.syncNow")) {
+                Task {
+                    await syncCoordinator.forceSync(library: library)
+                    launchBoxLastSync = LaunchBoxGamesDBService.shared.lastSyncDate
+                }
+            }
+            .disabled(syncCoordinator.isActive)
+            if syncCoordinator.isActive {
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        ProgressView()
+                            .controlSize(.small)
+                        Text(syncCoordinator.statusLine)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(2)
+                    }
+                    ProgressView(value: syncCoordinator.progress)
+                        .progressViewStyle(.linear)
+                }
+            }
+        }
+    }
+
     private var hasMatchingSections: Bool {
         matchesSearch("libretro thumbnail CDN URL source") ||
-        matchesSearch("launchbox gamesdb box art download scan third-party fallback") ||
+        matchesSearch("launchbox gamesdb metadata enrichment box art download scan") ||
         matchesSearch("screenscraper account credentials box art free account username password") ||
         matchesSearch("priority CRC matching filename fallback HTTP head check box art matching") ||
         matchesSearch("performance indexing manifest refresh repository library URL 404 check")

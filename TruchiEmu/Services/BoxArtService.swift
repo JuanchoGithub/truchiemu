@@ -277,9 +277,16 @@ class BoxArtService: ObservableObject {
             }
         }
 
-        // 3. LaunchBox GamesDB (third-party fallback)
-        if let launchBoxArt = await LaunchBoxGamesDBService.shared.fetchBoxArt(for: rom) {
-            return launchBoxArt
+        // 3. LaunchBox GamesDB (CDN-backed via Metadata.xml)
+        if LaunchBoxGamesDBService.shared.isEnabled,
+           let platformName = LaunchBoxPlatformMapper.launchBoxPlatformName(for: rom.systemID ?? ""),
+           let match = await LaunchBoxMetadataService.shared.bestMatch(
+            for: rom.displayName,
+            platformName: platformName
+           ),
+           let imageRef = LaunchBoxMetadataService.shared.boxArtRef(for: match) {
+            let cdnURL = LaunchBoxMetadataService.cdnURL(for: imageRef)
+            return await downloadAndCache(artURL: cdnURL, for: rom)
         }
 
         return nil
