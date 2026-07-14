@@ -458,8 +458,14 @@ The standard Swift **`DEBUG` flag is NOT defined** in this project's compilation
 
 ## Release Process
 
-See `RELEASE_PROCESS.md` at the project root for the complete step-by-step release guide.
-When asked to "release", "cut a release", or "bump version", follow that document.
+See `RELEASE_PROCESS.md` at the project root for the complete guide. It documents both:
+- the **nightly preview** channel (single `TruchiEmu-nightly.zip` asset on the `nightly` pre-release tag, no version bump, no merge — for in-flight test builds), and
+- the **tagged stable release** workflow (version bump + changelog + git tag + push + `gh release create v<version>` — for shipping).
+
+When asked to "release", "cut a release", or "bump version", follow the tagged-stable-release steps in `RELEASE_PROCESS.md`.
+
+When asked to "build the current state and upload it for testing", "upload to the nightly", "let other Macs download it", or "ship a test build" without bumping versions / merging anything, follow the nightly-preview-build steps in `RELEASE_PROCESS.md`.
+
 
 ## When Adding Source Files
 

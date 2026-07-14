@@ -1,6 +1,67 @@
 # Release Process
 
-This document describes the exact steps to cut a new TruchiEmu release. Follow it in order when asked to "release", "cut a release", or "bump version".
+This document describes the exact steps to cut a new TruchiEmu release. The two channels are:
+
+- **Nightly preview builds** — fast in-flight test builds of uncommitted work, single `TruchiEmu-nightly.zip` asset on the `nightly` pre-release tag. Documented in the next section.
+- **Tagged stable releases** — version-bump + changelog + git tag + push + `gh release create v<version>`. Documented in "Tagged stable releases" below.
+
+---
+
+## Nightly preview builds
+
+There is a **`nightly` GitHub pre-release** tag at `https://github.com/<owner>/<repo>/releases/tag/nightly` used to ship in-testing preview builds of uncommitted work. Persisted there as a single asset: `TruchiEmu-nightly.zip`.
+
+**Use this channel when the user asks to:**
+- "build the current state and upload it for testing"
+- "upload to the nightly"
+- "let other Macs download it"
+- "ship a test build" without bumping versions / cutting a tagged release / merging anything
+
+**Do NOT use this channel for:**
+- Tagged stable releases — see "Tagged stable releases" below.
+- Merging the working tree — nightly preview builds are explicitly not on `main`. The user keeps the changes uncommitted deliberately while testing.
+
+### Workflow
+
+1. **Build Release config:**
+   ```bash
+   xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Release -destination 'platform=macOS,arch=arm64' build
+   ```
+   The build output is at `~/Library/Developer/Xcode/DerivedData/TruchiEmu-<hash>/Build/Products/Release/TruchiEmu.app`.
+
+2. **Zip the .app:**
+   ```bash
+   ditto -c -k --sequesterRsrc --keepParent \
+     "<DerivedData path>/Build/Products/Release/TruchiEmu.app" \
+     "/tmp/TruchiEmu-nightly.zip"
+   ```
+
+3. **Upload, clobbering the existing asset:**
+   ```bash
+   gh release upload nightly /tmp/TruchiEmu-nightly.zip --clobber
+   ```
+
+4. **Update release notes** describing what's in this preview:
+   - Write the markdown to `/tmp/nightly_notes.md` (or any temp path).
+   - `gh release edit nightly --notes-file /tmp/nightly_notes.md`
+   - Date the notes at the top so the user can tell which version of "nightly" is live.
+
+5. **Verify:**
+   - `gh release view nightly` — confirm `assets: ["TruchiEmu-nightly.zip"]` plus the new publish timestamp.
+   - The release URL is `https://github.com/<owner>/<repo>/releases/tag/nightly`. Share it back to the user.
+
+### Conventions
+
+- Never bump the app Version/Build number for a nightly — leave `project.yml`, `Info.plist`, `docs/_config.yml`, and the changelog HTML files untouched.
+- Never `git add`, `git commit`, `git tag`, or `git push` for a nightly-only upload — the working tree stays dirty between tests.
+- Never merge anything to `main` via the nightly channel. Nightly is for download-only preview deltas of in-flight work.
+- If the user later asks to "make this a real release," switch to the tagged-release workflow below and follow version-bump + changelog + commit + tag + push + `gh release create v<version>` in full.
+
+---
+
+## Tagged stable releases
+
+Follow the steps below in order when asked to "release", "cut a release", or "bump version".
 
 ## Prerequisites
 
