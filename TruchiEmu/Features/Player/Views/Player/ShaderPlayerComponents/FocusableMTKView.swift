@@ -237,6 +237,28 @@ class FocusableMTKView: MTKView {
             return
         }
 
+        if hotkeys.matches(.shareButton, systemID: systemID, event: event) {
+            Task { @MainActor in
+                self.runner?.handleSharePress(isLongPress: false)
+            }
+            return
+        }
+
+        if hotkeys.matches(.recording, systemID: systemID, event: event) {
+            Task { @MainActor in
+                guard let runner = self.runner else { return }
+                let service = StreamRecordingService.shared
+                if service.isRecording {
+                    service.stop()
+                } else {
+                    let size = runner.captureSize
+                    let url = EmulatorRunner.recordingOutputURL(systemID: runner.systemID, rom: runner.rom)
+                    service.startRecording(outputURL: url, width: Int(size.width), height: Int(size.height))
+                }
+            }
+            return
+        }
+
         // For DOS/ScummVM games, bypass ALL TruchiEmu keyboard handling and send properly mapped keys to DOSBOX
         if shouldCaptureInputForCurrentGame() {
             #if LOG_DEBUG

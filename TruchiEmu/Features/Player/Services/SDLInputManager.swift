@@ -31,9 +31,10 @@ class SDLInputManager: ObservableObject {
     private nonisolated(unsafe) var captureCallback: ((Int, String) -> Void)?
     private nonisolated(unsafe) var captureInstanceID: Int32?
 
-    // SDL share button indices cached at runner registration
-    nonisolated(unsafe) var cachedShareSinglePressButtonIndex: Int? = nil
-    nonisolated(unsafe) var cachedShareLongPressButtonIndex: Int? = nil
+    // SDL share button index cached at runner registration. The same
+    // physical button dispatches single-press vs long-press ShareBehaviors
+    // via the long-press detector (BaseRunner.handleSharePress).
+    nonisolated(unsafe) var cachedShareButtonIndex: Int? = nil
 
     private nonisolated static let deadzone: Int16 = 8000
     private nonisolated static let triggerThreshold: Int16 = 16384
@@ -109,13 +110,11 @@ class SDLInputManager: ObservableObject {
         runnerLock.lock()
         _activeRunner = runner
         runnerLock.unlock()
-        // Cache the SDL share button indices (per-system resolved, falling
+        // Cache the SDL share button index (per-system resolved, falling
         // back to the global binding when no per-system override exists).
         let sysID = runner.rom?.systemID
-        let singleBinding = HotkeyConfigManager.shared.controllerBinding(for: .shareSinglePress, systemID: sysID, source: .sdl)
-        let longBinding = HotkeyConfigManager.shared.controllerBinding(for: .shareLongPress, systemID: sysID, source: .sdl)
-        cachedShareSinglePressButtonIndex = Int(singleBinding.identifier)
-        cachedShareLongPressButtonIndex = Int(longBinding.identifier)
+        let binding = HotkeyConfigManager.shared.controllerBinding(for: .shareButton, systemID: sysID, source: .sdl)
+        cachedShareButtonIndex = Int(binding.identifier)
     }
 
     func unregisterRunner() {
@@ -285,9 +284,11 @@ class SDLInputManager: ObservableObject {
                 return
             }
 
-            // Check share button gestures after capture check
+            // Check share button after capture check. A single physical
+            // button is dispatched here; short vs long press is resolved
+            // by the long-press detector on the runner side.
             let btn = Int(event.button)
-            if btn == cachedShareSinglePressButtonIndex || btn == cachedShareLongPressButtonIndex {
+            if btn == cachedShareButtonIndex {
                 if pressed {
                     DispatchQueue.main.async { ControllerLongPressDetector.shared.handleSDLPressDown(buttonIndex: btn) }
                 } else {
@@ -365,9 +366,11 @@ class SDLInputManager: ObservableObject {
                 return
             }
 
-            // Check share button gestures after capture check
+            // Check share button after capture check. A single physical
+            // button is dispatched here; short vs long press is resolved
+            // by the long-press detector on the runner side.
             let btn = Int(event.button)
-            if btn == cachedShareSinglePressButtonIndex || btn == cachedShareLongPressButtonIndex {
+            if btn == cachedShareButtonIndex {
                 if pressed {
                     DispatchQueue.main.async { ControllerLongPressDetector.shared.handleSDLPressDown(buttonIndex: btn) }
                 } else {

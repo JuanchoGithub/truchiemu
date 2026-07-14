@@ -45,6 +45,18 @@ struct RecordingTabView: View {
                 .id("section-recordingEnable")
             }
 
+            if sectionVisible("section-recordingHotkey") {
+                Section {
+                    MediaHotkeyBindingRow(action: .recording, sectionKey: "settings.media.hotkey.recordingSection")
+                    Text(loc.localized("settings.media.hotkey.editInHotkeys"))
+                        .font(.caption2)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
+                } header: {
+                    Label(loc.localized("settings.media.hotkey.recordingSection"), systemImage: "keyboard")
+                }
+                .id("section-recordingHotkey")
+            }
+
             if recordingEnabled {
                 if sectionVisible("section-recordWithShaders") {
                     recordWithShadersSection

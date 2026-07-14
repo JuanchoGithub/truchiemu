@@ -5,10 +5,6 @@ struct HotkeyConfigSettingsView: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var hotkeyManager = HotkeyConfigManager.shared
-    @ObservedObject private var controllerCaptureCoordinator = ControllerHotkeyCaptureCoordinator.shared
-    @State private var listeningAction: HotkeyAction?
-    @State private var listeningSlot: KeySlot = .primary
-    @State private var listeningControllerAction: HotkeyAction?
     @Binding var searchText: String
     @Binding var focusedSectionID: String?
     @Binding var scopedSectionID: String?
@@ -18,8 +14,6 @@ struct HotkeyConfigSettingsView: View {
         case global
         case gameplay
     }
-
-    enum KeySlot { case primary, secondary }
 
     let scope: Scope
 
@@ -131,6 +125,15 @@ struct HotkeyConfigSettingsView: View {
                     .id("section-speedRewind")
                 }
 
+                if showGameplay && (!isSearching
+                    || matchesSearch("screenshot capture photo picture share button recording")
+                    || matchesAnyLabel([.screenshot, .shareButton, .recording])) {
+                    Section(header: Label(loc.localized("hotkeys.capture"), systemImage: "camera")) {
+                        hotkeyActionGrid([.screenshot, .shareButton, .recording])
+                    }
+                    .id("section-capture")
+                }
+
                 if showReset && (!isSearching || matchesSearch("reset defaults restore")) {
                     Section(header: Label(loc.localized("hotkeys.reset"), systemImage: "arrow.counterclockwise")) {
                         Text(loc.localized("hotkeys.resetDescription"))
@@ -154,7 +157,7 @@ struct HotkeyConfigSettingsView: View {
                     && !matchesSearch("hotkeys keyboard shortcuts save load slot undo training input capture guide sidebar")
                     && !matchesSearch("slots 0-9 slot")
                     && !matchesSearch("training mode reset recording playback tape")
-                    && !matchesSearch("screenshot capture photo picture")
+                    && !matchesSearch("screenshot capture photo picture share button recording")
                     && !matchesSearch("speed rewind fast forward slow motion time machine")
                     && !matchesSearch("reset defaults restore") {
                     Section {
@@ -191,109 +194,12 @@ struct HotkeyConfigSettingsView: View {
 
     @ViewBuilder
     private func hotkeyGridRow(action: HotkeyAction, isLast: Bool) -> some View {
-        let cfg = hotkeyManager.config[action] ?? .unbound
         GridRow {
             Text(loc.localized(action.localizationKey))
                 .lineLimit(1)
                 .gridColumnAlignment(.leading)
-            HStack(spacing: 8) {
-                HotkeyCaptureButton(
-                    binding: cfg.primary,
-                    isListening: listeningAction == action && listeningSlot == .primary,
-                    conflicts: conflicts(for: cfg.primary, excluding: action),
-                    onCapture: { captured in
-                        hotkeyManager.update(action, primary: captured)
-                        listeningAction = nil
-                    },
-                    onStartListening: {
-                        listeningAction = action
-                        listeningSlot = .primary
-                        // Only one capture at a time — cancel any in-flight controller capture.
-                        if listeningControllerAction != nil {
-                            controllerCaptureCoordinator.cancel()
-                            listeningControllerAction = nil
-                        }
-                    },
-                    onCancel: {
-                        listeningAction = nil
-                    },
-                    onClear: {
-                        hotkeyManager.update(action, primary: .none)
-                    }
-                )
-                HotkeyCaptureButton(
-                    binding: cfg.secondary,
-                    isListening: listeningAction == action && listeningSlot == .secondary,
-                    conflicts: conflicts(for: cfg.secondary, excluding: action),
-                    onCapture: { captured in
-                        hotkeyManager.update(action, secondary: captured)
-                        listeningAction = nil
-                    },
-                    onStartListening: {
-                        listeningAction = action
-                        listeningSlot = .secondary
-                        if listeningControllerAction != nil {
-                            controllerCaptureCoordinator.cancel()
-                            listeningControllerAction = nil
-                        }
-                    },
-                    onCancel: {
-                        listeningAction = nil
-                    },
-                    onClear: {
-                        hotkeyManager.update(action, secondary: .none)
-                    }
-                )
-                ControllerHotkeyCaptureButton(
-                    binding: cfg.controller ?? .unset,
-                    isListening: listeningControllerAction == action,
-                    availableSources: hotkeyManager.availableControllerSources,
-                    onBindingCaptured: { captured in
-                        hotkeyManager.updateControllerBinding(action, binding: captured)
-                        listeningControllerAction = nil
-                    },
-                    onListenStateChanged: { listening in
-                        if listening {
-                            // Cancel any keyboard capture in flight — only one at a time.
-                            listeningAction = nil
-                            if let src = hotkeyManager.availableControllerSources.first {
-                                listeningControllerAction = action
-                                controllerCaptureCoordinator.startListening(
-                                    source: src,
-                                    currentLabel: loc.localized("hotkeys.pressButton")
-                                ) { [action] captured in
-                                    hotkeyManager.updateControllerBinding(action, binding: captured)
-                                    listeningControllerAction = nil
-                                }
-                            }
-                        } else {
-                            controllerCaptureCoordinator.cancel()
-                            listeningControllerAction = nil
-                        }
-                    },
-                    onClearRequested: {
-                        hotkeyManager.updateControllerBinding(action, binding: nil)
-                        if listeningControllerAction == action {
-                            controllerCaptureCoordinator.cancel()
-                            listeningControllerAction = nil
-                        }
-                    },
-                    onSourceChanged: { src in
-                        if listeningControllerAction == action {
-                            controllerCaptureCoordinator.cancel()
-                            listeningControllerAction = action
-                            controllerCaptureCoordinator.startListening(
-                                source: src,
-                                currentLabel: loc.localized("hotkeys.pressButton")
-                            ) { [action] captured in
-                                hotkeyManager.updateControllerBinding(action, binding: captured)
-                                listeningControllerAction = nil
-                            }
-                        }
-                    }
-                )
-            }
-            .gridColumnAlignment(.trailing)
+            HotkeyActionRow(action: action)
+                .gridColumnAlignment(.trailing)
         }
         .padding(.vertical, AppSpacing.xxs)
         .overlay(alignment: .bottom) {
@@ -302,10 +208,6 @@ struct HotkeyConfigSettingsView: View {
                     .overlay(AppColors.divider(colorScheme))
             }
         }
-    }
-
-    private func conflicts(for binding: HotkeyBinding, excluding action: HotkeyAction) -> [(HotkeyAction, HotkeyBinding)] {
-        hotkeyManager.findConflicts(for: binding, excluding: action)
     }
 }
 

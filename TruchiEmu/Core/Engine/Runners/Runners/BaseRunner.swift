@@ -323,9 +323,11 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     private let _saveManager = SaveStateManager()
     // Keyboard mapping snapshot captured at launch — safe to read from any thread.
     var cachedKeyboardMapping: KeyboardMapping = KeyboardMapping(buttons: [:])
-    // Controller share button binding identifiers captured at launch.
-    var cachedShareSinglePressBinding: String? = nil
-    var cachedShareLongPressBinding: String? = nil
+    // Controller share button binding identifier captured at launch.
+    // Single physical button; tapped briefly → ShareBehavior.singlePress,
+    // held longer → ShareBehavior.longPress. Dispatched via
+    // ControllerLongPressDetector (BaseRunner.handleSharePress).
+    var cachedShareButtonBinding: String? = nil
     // Time machine controller binding identifiers captured at launch.
     var cachedRewindBinding: String? = nil
     var cachedSlowMotionBinding: String? = nil
@@ -1764,8 +1766,7 @@ weak var metalCoordinator: MetalCoordinator?
         // sysID gets resolved later (line ~1794) from rom?.systemID ?? "default"; pass it
         // through here once, so the cache is built before gamepad input is wired.
         let resolvedSysID = rom?.systemID
-        cachedShareSinglePressBinding = cachedGC(.shareSinglePress, systemID: resolvedSysID)
-        cachedShareLongPressBinding   = cachedGC(.shareLongPress,   systemID: resolvedSysID)
+        cachedShareButtonBinding     = cachedGC(.shareButton,       systemID: resolvedSysID)
         cachedRewindBinding           = cachedGC(.rewind,           systemID: resolvedSysID)
         cachedSlowMotionBinding       = cachedGC(.slowMotion,       systemID: resolvedSysID)
         cachedFastForwardBinding      = cachedGC(.fastForward,      systemID: resolvedSysID)
@@ -1816,21 +1817,25 @@ weak var metalCoordinator: MetalCoordinator?
             extendedGamepad.valueChangedHandler = { [weak self] _, element in
                 guard let self = self else { return }
 
-                // Check share button gestures before game input
+                // Share button: a single physical button that, depending on
+                // press duration, dispatches the user's configured Single-press
+                // or Long-press ShareBehavior (screenshot / record / etc).
+                // SharingTabView owns the behavior pickers; this is just the
+                // physical-press dispatch.
+                if let button = element as? GCControllerButtonInput,
+                   let name = element.localizedName,
+                   name == self.cachedShareButtonBinding {
+                    LoggerService.info(category: "Runner", "GC element: '\(name)' share button pressed=\(button.isPressed)")
+                    if button.isPressed {
+                        ControllerLongPressDetector.shared.handlePressDown(elementName: name)
+                    } else {
+                        ControllerLongPressDetector.shared.handlePressUp(elementName: name)
+                    }
+                    return
+                }
+
                 if let button = element as? GCControllerButtonInput,
                    let name = element.localizedName {
-                    let isSingle = name == self.cachedShareSinglePressBinding
-                    let isLong = name == self.cachedShareLongPressBinding
-                    LoggerService.info(category: "Runner", "GC element: '\(name)' isSingle=\(isSingle) isLong=\(isLong) pressed=\(button.isPressed)")
-                    if isSingle || isLong {
-                        if button.isPressed {
-                            ControllerLongPressDetector.shared.handlePressDown(elementName: name)
-                        } else {
-                            ControllerLongPressDetector.shared.handlePressUp(elementName: name)
-                        }
-                        return
-                    }
-
                     // Time machine controller bindings
                     if name == self.cachedRewindBinding {
                         if button.isPressed {

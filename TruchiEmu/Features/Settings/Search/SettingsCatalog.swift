@@ -353,12 +353,6 @@ enum SettingsCatalog {
                 optionTitles: ["Single press", "Long press", "Nothing", "Enable game clip buffer", "Clip duration", "30 seconds", "60 seconds", "2 minutes", "5 minutes", "10 minutes", "15 minutes", "Custom", "Use display resolution"],
                 keywords: ["share", "button", "single", "long", "press", "behavior", "nothing", "screenshot", "recording", "stream", "save", "last", "moments", "clip", "buffer", "retro", "game", "rolling", "duration", "size", "estimate"]
             ),
-            SettingsCatalogEntry(
-                page: .streaming, sectionID: "tabHotkeys",
-                sectionTitle: "Capture Hotkeys",
-                optionTitles: ["Screenshot shortcut", "Share single-press shortcut", "Share long-press shortcut"],
-                keywords: ["hotkeys", "keyboard", "shortcut", "screenshot", "share", "single", "long", "press", "capture", "key", "binding"]
-            ),
 
             SettingsCatalogEntry(
                 page: .hotkeys, sectionID: "general",
@@ -413,13 +407,15 @@ enum SettingsCatalog {
                 keywords: ["training", "mode", "reset", "recording", "playback", "tape"]
             ),
             SettingsCatalogEntry(
-                page: .hotkeys, sectionID: "screenshots",
-                sectionTitle: "Screenshots",
-                optionTitles: ["Screenshot"],
+                page: .hotkeys, sectionID: "capture",
+                sectionTitle: "Screenshots, Share & Recording",
+                optionTitles: ["Screenshot", "Share Button", "Toggle Recording"],
                 optionSubSectionIDs: [
-                    "Screenshot": "screenshots"
+                    "Screenshot": "capture",
+                    "Share Button": "capture",
+                    "Toggle Recording": "capture"
                 ],
-                keywords: ["screenshot", "capture", "photo", "picture", "save", "share", "button"]
+                keywords: ["screenshot", "capture", "photo", "picture", "save", "share", "button", "recording", "video", "record"]
             ),
             SettingsCatalogEntry(
                 page: .hotkeys, sectionID: "reset",

@@ -320,7 +320,6 @@ enum MediaTab: String, CaseIterable, Identifiable {
     case streaming
     case screenshots
     case sharing
-    case hotkeys
 
     var id: String { rawValue }
 

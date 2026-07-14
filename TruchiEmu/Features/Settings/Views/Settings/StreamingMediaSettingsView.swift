@@ -38,8 +38,6 @@ struct StreamingMediaSettingsView: View {
             tab = .screenshots
         case "tabSharing":
             tab = .sharing
-        case "tabHotkeys":
-            tab = .hotkeys
         default:
             break
         }
@@ -85,9 +83,6 @@ struct StreamingMediaSettingsView: View {
                         case .sharing:
                             SharingTabView(config: $config, searchText: $searchText)
                                 .id("section-tabSharing")
-                        case .hotkeys:
-                            HotkeysTabView(searchText: $searchText)
-                                .id("section-tabHotkeys")
                         }
                     }
                     .padding(.horizontal)

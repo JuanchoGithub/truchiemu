@@ -80,8 +80,8 @@ enum HotkeyAction: String, Codable, CaseIterable, Identifiable {
     case slowMotion
     case fastForward
     case screenshot
-    case shareSinglePress
-    case shareLongPress
+    case shareButton
+    case recording
 
     var id: String { rawValue }
 
@@ -111,7 +111,8 @@ enum HotkeyAction: String, Codable, CaseIterable, Identifiable {
         if isSlotAction { return "slots" }
         if isTrainingAction { return "training" }
         if self == .screenshot { return "screenshots" }
-        if self == .shareSinglePress || self == .shareLongPress { return "share" }
+        if self == .shareButton { return "share" }
+        if self == .recording { return "recording" }
         return "general"
     }
 }
@@ -239,16 +240,16 @@ final class HotkeyConfigManager: ObservableObject {
         .rewind:                  HotkeyConfig(primary: .plain(15),    secondary: .none),         // R
         .slowMotion:              HotkeyConfig(primary: .plain(41),    secondary: .none),         // ;
         .fastForward:             HotkeyConfig(primary: .plain(3),     secondary: .none),         // F
-        .shareSinglePress:        HotkeyConfig(
-                                        primary: .none,
-                                        secondary: .none,
-                                        controller: nil,
-                                    ),
-        .shareLongPress:          HotkeyConfig(
-                                        primary: .none,
-                                        secondary: .none,
-                                        controller: nil,
-                                    ),
+        .shareButton:             HotkeyConfig(
+                                       primary: .none,
+                                       secondary: .none,
+                                       controller: nil,
+                                   ),
+        .recording:               HotkeyConfig(
+                                       primary: HotkeyBinding(keyCode: 15, modifierFlags: UInt(NSEvent.ModifierFlags.command.rawValue) | UInt(NSEvent.ModifierFlags.shift.rawValue)),
+                                       secondary: .none,
+                                       controller: nil,
+                                   ),
     ]
 
     func controllerBinding(for action: HotkeyAction, source: ControllerHotkeySource) -> ControllerHotkeyBinding {
@@ -312,9 +313,13 @@ final class HotkeyConfigManager: ObservableObject {
             return .gc("Share Button", label: "Share Button")
         case (.screenshot, .sdl):
             return .sdl(13)
-        case (.shareSinglePress, .gameController), (.shareLongPress, .gameController):
+        case (.shareButton, .gameController):
             return .gc("Share Button", label: "Share Button")
-        case (.shareSinglePress, .sdl), (.shareLongPress, .sdl):
+        case (.shareButton, .sdl):
+            return .sdl(13)
+        case (.recording, .gameController):
+            return .gc("Share Button", label: "Share Button")
+        case (.recording, .sdl):
             return .sdl(13)
         default:
             return .unset

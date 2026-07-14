@@ -72,8 +72,8 @@ struct ControllerHotkeyCaptureButton: NSViewRepresentable {
 
     fileprivate func sourceLabel(_ src: ControllerHotkeySource) -> String {
         switch src {
-        case .gameController: return LocalizationManager.shared.localized("hotkeys.sourceAppleController")
-        case .sdl: return LocalizationManager.shared.localized("hotkeys.sourceSDL")
+        case .gameController: return LocalizationManager.shared.localized("hotkeys.sourceAppleControllerShort")
+        case .sdl: return LocalizationManager.shared.localized("hotkeys.sourceSDLShort")
         }
     }
 
@@ -106,9 +106,9 @@ private final class ControllerHotkeyCaptureContainer: NSView {
     private let outerStack: NSStackView
     private let innerStack: NSStackView
 
-    private static let buttonMinWidth: CGFloat = 80
+    private static let buttonMinWidth: CGFloat = 110
     private static let clearButtonWidth: CGFloat = 22
-    private static let popUpWidth: CGFloat = 180
+    private static let popUpWidth: CGFloat = 96
 
     override init(frame frameRect: NSRect) {
         outerStack = NSStackView()

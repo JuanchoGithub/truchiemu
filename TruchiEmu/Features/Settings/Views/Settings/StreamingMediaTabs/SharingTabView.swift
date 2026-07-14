@@ -39,6 +39,11 @@ struct SharingTabView: View {
 
     private var shareButtonSection: some View {
         Section {
+            MediaHotkeyBindingRow(action: .shareButton, sectionKey: "settings.media.hotkey.shareSection")
+            Text(loc.localized("settings.media.hotkey.editInHotkeys"))
+                .font(.caption2)
+                .foregroundStyle(AppColors.textSecondary(colorScheme))
+
             Picker(loc.localized("media.shareSinglePress"), selection: Binding(
                 get: { config.share.singlePress },
                 set: {

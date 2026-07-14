@@ -12,6 +12,15 @@ struct ScreenshotsTabView: View {
     var body: some View {
         Form {
             Section {
+                MediaHotkeyBindingRow(action: .screenshot, sectionKey: "settings.media.hotkey.screenshotSection")
+                Text(loc.localized("settings.media.hotkey.editInHotkeys"))
+                    .font(.caption2)
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+            } header: {
+                Label(loc.localized("settings.media.hotkey.screenshotSection"), systemImage: "keyboard")
+            }
+
+            Section {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("screenshot.includeNative")
