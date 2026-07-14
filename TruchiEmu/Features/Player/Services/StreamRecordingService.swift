@@ -724,7 +724,7 @@ class StreamRecordingService: ObservableObject {
         guard coreAspect > 0 else { return CGSize(width: 640, height: 480) }
         let width: CGFloat = 640
         let height = (width / CGFloat(coreAspect)).rounded()
-        return CGSize(width: width, height: max(64, height))
+        return CGSize(width: width, height: max(64, Self.makeEven(height)))
     }
 
     /// Computes the stream pixel-buffer pool size for a user-chosen stream
@@ -751,13 +751,27 @@ class StreamRecordingService: ObservableObject {
             // Core is wider than the stream target → width-bound.
             let width = target.width
             let height = (width / coreAspect).rounded(.toNearestOrEven)
-            return CGSize(width: width, height: max(64, height))
+            return CGSize(width: width, height: max(64, Self.makeEven(height)))
         } else {
             // Core is narrower than (or equal to) the stream target → height-bound.
             let height = target.height
             let width = (height * coreAspect).rounded(.toNearestOrEven)
-            return CGSize(width: max(64, width), height: height)
+            return CGSize(width: max(64, Self.makeEven(width)), height: height)
         }
+    }
+
+    /// Force a dimension to the nearest even integer. VideoToolbox's H.264/HEVC
+    /// encoder requires even source dimensions because NV12 (4:2:0) chroma
+    /// planes are half the luma dimensions — an odd width/height would force
+    /// non-integer chroma sizes and the encoder's internal `VTPixelTransferSession`
+    /// rejects the pixel buffer (err=-536870206). Cores with non-round aspect
+    /// ratios (e.g., picodrive's default 10:7 PAR → 1543-wide pool at 1080p)
+    /// hit this. Rounding down to even keeps the pool within the chosen stream
+    /// resolution target; the encoder's `scalingMode = .letterbox` pads any
+    /// residual aspect mismatch during encode.
+    private static func makeEven(_ value: CGFloat) -> CGFloat {
+        let int = Int(value.rounded())
+        return CGFloat(int - (int & 1))
     }
 
     func forceStop() {

@@ -542,6 +542,7 @@
 		7087D0F7B70E84B687E4E97A /* Achievement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE1FAA370EEA90A7E3D3CC5 /* Achievement.swift */; };
 		70A8376A03E3B09069D1B118 /* fightdata_gowcaizr.json in Resources */ = {isa = PBXBuildFile; fileRef = B75F53EA285C2E4D4ADC0642 /* fightdata_gowcaizr.json */; };
 		70F4DB83A82880E7F2A28D97 /* atari7800@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 15A5E5BF6348143202BAA8F9 /* atari7800@132w.png */; };
+		714D657AEDB409F1DFA924E8 /* HotkeyActionRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1454A3CD638307C2DD9561DA /* HotkeyActionRow.swift */; };
 		71E0838C7961379AF8CFAD4A /* input_coreOverrides_mesen.json in Resources */ = {isa = PBXBuildFile; fileRef = 40A7B97302EE7EAFEA6F62ED /* input_coreOverrides_mesen.json */; };
 		7283B053DC245FB74C2A55F6 /* input_systemLabels_3do.json in Resources */ = {isa = PBXBuildFile; fileRef = A9747E1374E8440042D0FF33 /* input_systemLabels_3do.json */; };
 		72ABDF783EDAAF4BDD1D793A /* fightdata_arabianm.json in Resources */ = {isa = PBXBuildFile; fileRef = 2D56ED71DDB9C818FE8EE657 /* fightdata_arabianm.json */; };
@@ -670,6 +671,7 @@
 		88C6209E377761122EFF7420 /* input_systemLabels_ti_83.json in Resources */ = {isa = PBXBuildFile; fileRef = 2E0EE3D213A80F69382477E8 /* input_systemLabels_ti_83.json */; };
 		89787561CC0407307E78EA54 /* input_coreLabels_beetle_vb.json in Resources */ = {isa = PBXBuildFile; fileRef = D371E4C1F06305FA88AD9ADC /* input_coreLabels_beetle_vb.json */; };
 		89999BCF6C86749975156810 /* CLILauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F31D1631DA8C12805D91493 /* CLILauncher.swift */; };
+		89A20E7ABDC0B98424B9DDF2 /* MediaHotkeyBindingRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7EBF5DE7A5D6623BDB398DE /* MediaHotkeyBindingRow.swift */; };
 		89C8956AC2B831DA7E70F726 /* input_systemOverrides_gamegear.json in Resources */ = {isa = PBXBuildFile; fileRef = 553B9163434E407B82F065DB /* input_systemOverrides_gamegear.json */; };
 		8A6465EC1B5DD1F8FDB9297D /* PSP.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9C5D64D2262E657B3F007C98 /* PSP.metal */; };
 		8A6E0AB146F590BACFEEF9AD /* input_coreLabels_race.json in Resources */ = {isa = PBXBuildFile; fileRef = D256D164C12D4E02C237597C /* input_coreLabels_race.json */; };
@@ -1148,7 +1150,6 @@
 		F0AD72CCE4B5E63664FADEB3 /* CorePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47516431097E29AD293A7B5 /* CorePickerView.swift */; };
 		F0C3A285F7DDEEE9DD1E9D78 /* build_mame_unified.py in Resources */ = {isa = PBXBuildFile; fileRef = C31F0AA882132918E8CE3FA6 /* build_mame_unified.py */; };
 		F1076B7F46B13D1B6099B623 /* GamepadNavContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = F41E405D5837D8139B4A0C69 /* GamepadNavContext.swift */; };
-		F1A52B7F28C331A9B4C2D1A7 /* HotkeysTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D52668940A2210192B426E59 /* HotkeysTabView.swift */; };
 		F1AA44B0A96EE6EA380D60E7 /* EASYRPG.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D4A52AFA9B952287155E6A6 /* EASYRPG.png */; };
 		F1B11978BEC8CE8C0D198CBF /* SharedMemoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC670A67B8CEDEF192F88015 /* SharedMemoryManager.swift */; };
 		F2058F5CDAFDED1DB7FAFD71 /* genesis-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = CB6C88486821941C90609217 /* genesis-cheats.zip */; };
@@ -1326,6 +1327,7 @@
 		13A112551790EB584A91B3F6 /* BezelStorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelStorageManager.swift; sourceTree = "<group>"; };
 		13E4A2F34938242C4F50AF42 /* dreamcast-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "dreamcast-cheats.zip"; sourceTree = "<group>"; };
 		144C93B31170B0C9D0269952 /* input_coreOverrides_redream.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_redream.json; sourceTree = "<group>"; };
+		1454A3CD638307C2DD9561DA /* HotkeyActionRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyActionRow.swift; sourceTree = "<group>"; };
 		15134742139975273F1F990C /* gambatte_libretro_gb.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = gambatte_libretro_gb.json; sourceTree = "<group>"; };
 		153FF1E93D7B4F7B1ED3BCF8 /* fightdata_sams64.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_sams64.json; sourceTree = "<group>"; };
 		154CCFA03FA2B0980BA39F0C /* CoreAndAchievements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreAndAchievements.swift; sourceTree = "<group>"; };
@@ -2192,6 +2194,7 @@
 		C72372490BF3D6F53F7ADEEC /* ShaderPresetPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderPresetPickerView.swift; sourceTree = "<group>"; };
 		C7711139BFB4F4B62DECF8A8 /* GameInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameInfo.swift; sourceTree = "<group>"; };
 		C7CD3A2622E5EB85414BAD77 /* input_systemLabels_3ds.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_3ds.json; sourceTree = "<group>"; };
+		C7EBF5DE7A5D6623BDB398DE /* MediaHotkeyBindingRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaHotkeyBindingRow.swift; sourceTree = "<group>"; };
 		C8068AB52E3C18DAAE29F47B /* input_systemLabels_gamegear.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_gamegear.json; sourceTree = "<group>"; };
 		C8150011A3202237E7584D4C /* MAMEVerificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEVerificationService.swift; sourceTree = "<group>"; };
 		C8197A3CD7930768E84C3380 /* fightdata_sfiii.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_sfiii.json; sourceTree = "<group>"; };
@@ -2259,7 +2262,6 @@
 		D4F318393A897A37973C4D7A /* fightdata_bigfight.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_bigfight.json; sourceTree = "<group>"; };
 		D4F842A74C8DC38EDF4C8010 /* CodableWrappers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodableWrappers.swift; sourceTree = "<group>"; };
 		D503F9A21A5B9E67E09C0961 /* gearboy_libretro_default.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = gearboy_libretro_default.json; sourceTree = "<group>"; };
-		D52668940A2210192B426E59 /* HotkeysTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeysTabView.swift; sourceTree = "<group>"; };
 		D55982DD468036597081950E /* input_coreLabels_holani.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_holani.json; sourceTree = "<group>"; };
 		D58ADFC9D5F59660DB53A581 /* PCECD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PCECD.png; sourceTree = "<group>"; };
 		D5B2F7AE141392E7AA767BF3 /* SystemPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemPickerView.swift; sourceTree = "<group>"; };
@@ -2660,6 +2662,13 @@
 				C3CDB21811A3FC4E2F21F791 /* SFSymbolCatalog.swift */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		1832080561374C334082347B /* Netplay */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Netplay;
 			sourceTree = "<group>";
 		};
 		18A378D98313D80173A8B0B0 /* AppIcons */ = {
@@ -3249,6 +3258,7 @@
 				AEC913610330C88937B9C1C0 /* Help */,
 				5BE55A1DE39FF8B3E1936E9F /* Library */,
 				B25EB5586EA89D564C31571B /* MAME */,
+				1832080561374C334082347B /* Netplay */,
 				BAE82561D0B8C45F15735EAD /* Player */,
 				8EA8442105B8007BF7C7BDD2 /* Settings */,
 			);
@@ -3291,8 +3301,8 @@
 		908E8F99C005A448E3842E3F /* StreamingMediaTabs */ = {
 			isa = PBXGroup;
 			children = (
-				D52668940A2210192B426E59 /* HotkeysTabView.swift */,
 				74ECC7553330C0817573A3CD /* MediaConfigHelpers.swift */,
+				C7EBF5DE7A5D6623BDB398DE /* MediaHotkeyBindingRow.swift */,
 				944B0903687B28CB8F29FCD9 /* RecordingTabView.swift */,
 				1BF99ABE2F71BC250A85AC33 /* ScreenshotsTabView.swift */,
 				8938D4FC0C24D516AFA27CDA /* SharingTabView.swift */,
@@ -3455,6 +3465,7 @@
 				C4BFFB66CF03271089D7FED6 /* slang_shader_bridge.mm */,
 				F9E6973D2682AC9B98A71D5A /* TruchiEmu-Bridging-Header.h */,
 				994AE121AC2997DDFCDDC992 /* Hashing */,
+				CD9D238114BB1EF4A50C21A5 /* Netplay */,
 				3526BE11D51FDEC4219C0D61 /* Runners */,
 			);
 			path = Engine;
@@ -3922,6 +3933,13 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
+		CD9D238114BB1EF4A50C21A5 /* Netplay */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Netplay;
+			sourceTree = "<group>";
+		};
 		D0CDC1D3C0773FC9C8698346 /* BoxArtSamples */ = {
 			isa = PBXGroup;
 			children = (
@@ -4120,6 +4138,7 @@
 				B0135BC846E6477A8389B7FC /* GeneralSettingsView.swift */,
 				B5E3E5DB793CCE1800B8C7BE /* GenreSettingsView.swift */,
 				D12FCF47C4E8A17755ADDBE1 /* HelpSettingsView.swift */,
+				1454A3CD638307C2DD9561DA /* HotkeyActionRow.swift */,
 				EFCE1CD3383AD9599F73EA5E /* HotkeyConfigSettingsView.swift */,
 				A6DA1A056535CC2F61A60BF4 /* InstallDragView.swift */,
 				207CA3D1269209D39D868D9B /* LibrarySettingsViewGroup.swift */,
@@ -5647,9 +5666,9 @@
 				104D7496A5BF50D24818AE3E /* HelpSheetView.swift in Sources */,
 				9E0E1EB96CD993ECBD2873AE /* HelpWindowView.swift in Sources */,
 				1A46304E3641B352E5FA9B18 /* HintTree.swift in Sources */,
+				714D657AEDB409F1DFA924E8 /* HotkeyActionRow.swift in Sources */,
 				FDE92E115DEE8FE3BE7318EF /* HotkeyConfig.swift in Sources */,
 				C89D895A0684B41688FF2FD4 /* HotkeyConfigSettingsView.swift in Sources */,
-				F1A52B7F28C331A9B4C2D1A7 /* HotkeysTabView.swift in Sources */,
 				4C5E02094A7A7692B2C1EC6A /* IOSurfaceVideoManager.swift in Sources */,
 				13909F17DF2385136F4273B8 /* IconPickerView.swift in Sources */,
 				D3BF624E6D643A9C9E0976FF /* ImageCache.swift in Sources */,
@@ -5698,6 +5717,7 @@
 				C5D1641BD6B3B412414CFB7F /* ManualActionStatus.swift in Sources */,
 				A317BA63CC3CAC398F149DDE /* MediaConfig.swift in Sources */,
 				0551607941CD9C007481EC63 /* MediaConfigHelpers.swift in Sources */,
+				89A20E7ABDC0B98424B9DDF2 /* MediaHotkeyBindingRow.swift in Sources */,
 				D0D14BB46406932F82A06897 /* MetadataRow.swift in Sources */,
 				739E1E9110A94DEA08756FA9 /* MetadataSyncCoordinator.swift in Sources */,
 				139F5308F944EC66EAB548BE /* MetalCoordinator.swift in Sources */,
