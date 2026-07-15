@@ -481,10 +481,20 @@ outputHeight: Float(drawHeight)
                             time: time,
                             texSizeX: Float(frameTex.width),
                             texSizeY: Float(frameTex.height),
+                            outputWidth: vpW,
+                            outputHeight: vpH,
                             signalStrength: getUniform("signalStrength", fallback: 0.9),
                             snowAmount: getUniform("snowAmount", fallback: 0.5),
+                            tuning: getUniform("tuning", fallback: 0.0),
+                            overscan: getUniform("overscan", fallback: 0.047),
+                            saturation: getUniform("saturation", fallback: 1.0),
+                            hue: getUniform("hue", fallback: 0.0),
+                            colorMode: getUniform("colorMode", fallback: 1.0),
+                            brightness: getUniform("brightness", fallback: 1.0),
+                            contrast: getUniform("contrast", fallback: 1.0),
                             bleedAmount: getUniform("bleedAmount", fallback: 0.35),
                             chromaAmount: getUniform("chromaAmount", fallback: 0.4),
+                            ntscAmount: getUniform("ntscAmount", fallback: 0.25),
                             barrelAmount: getUniform("barrelAmount", fallback: 0.06),
                             scanlineIntensity: getUniform("scanlineIntensity", fallback: 0.4),
                             vignetteStrength: getUniform("vignetteStrength", fallback: 0.6),
@@ -495,6 +505,7 @@ outputHeight: Float(drawHeight)
                             tintB: getUniform("tintB", fallback: 0.98),
                             channel: getUniform("channel", fallback: 1.0),
                             showOSD: getUniform("showOSD", fallback: 1.0),
+                            useNtsc: getUniform("useNtsc", fallback: 1.0),
                             useDistort: getUniform("useDistort", fallback: 1.0),
                             useScan: getUniform("useScan", fallback: 1.0),
                             useBleed: getUniform("useBleed", fallback: 1.0),
@@ -504,8 +515,11 @@ outputHeight: Float(drawHeight)
                             useBezel: getUniform("useBezel", fallback: 1.0),
                             bezelRounding: getUniform("bezelRounding", fallback: 0.05),
                             bezelGlow: getUniform("bezelGlow", fallback: 0.23),
-                            outputWidth: vpW,
-                            outputHeight: vpH
+                            interference: getUniform("interference", fallback: 0.2),
+                            ghosting: getUniform("ghosting", fallback: 0.15),
+                            tearing: getUniform("tearing", fallback: 0.1),
+                            colorLoss: getUniform("colorLoss", fallback: 0.0),
+                            barsAmount: getUniform("barsAmount", fallback: 0.1)
                         )
                         enc.setFragmentBytes(&u, length: MemoryLayout<FamicomRFUniforms>.stride, index: 0)
                     case "fragmentDotMatrixLCD":

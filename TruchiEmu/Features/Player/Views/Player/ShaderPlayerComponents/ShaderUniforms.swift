@@ -206,10 +206,20 @@ struct FamicomRFUniforms {
     var time: Float
     var texSizeX: Float
     var texSizeY: Float
+    var outputWidth: Float
+    var outputHeight: Float
     var signalStrength: Float
     var snowAmount: Float
+    var tuning: Float
+    var overscan: Float
+    var saturation: Float
+    var hue: Float
+    var colorMode: Float
+    var brightness: Float
+    var contrast: Float
     var bleedAmount: Float
     var chromaAmount: Float
+    var ntscAmount: Float
     var barrelAmount: Float
     var scanlineIntensity: Float
     var vignetteStrength: Float
@@ -220,6 +230,7 @@ struct FamicomRFUniforms {
     var tintB: Float
     var channel: Float
     var showOSD: Float
+    var useNtsc: Float
     var useDistort: Float
     var useScan: Float
     var useBleed: Float
@@ -229,8 +240,11 @@ struct FamicomRFUniforms {
     var useBezel: Float
     var bezelRounding: Float
     var bezelGlow: Float
-    var outputWidth: Float
-    var outputHeight: Float
+    var interference: Float
+    var ghosting: Float
+    var tearing: Float
+    var colorLoss: Float
+    var barsAmount: Float
 }
 
 // Legacy alias for CRT passthrough
