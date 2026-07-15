@@ -366,6 +366,15 @@ fragment float4 fragmentFamicomRF(VertexOut in [[stage_in]],
     float3 snow = float3(noise) * (0.6 + 0.4 * hash21(fragPx + u.time));
     rgb = mix(rgb, snow, staticMask);
 
+    // Force B&W once chroma is dropped (Color Mode off / burst lost). The RF
+    // chroma-fringe and ghosting effects above sample the colored source
+    // texture, so without this they would re-introduce color into a picture
+    // that is supposed to be grayscale. OSD/bezel are drawn afterward.
+    if (colorAmt < 0.5) {
+        float g = dot(rgb, float3(0.299, 0.587, 0.114));
+        rgb = float3(g);
+    }
+
     // Channel OSD (image-normalized space, drawn on top of the picture).
     if (u.showOSD > 0.5) {
         float2 imgSize = float2(u.outputWidth, u.outputHeight);
