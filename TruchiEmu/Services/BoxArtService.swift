@@ -293,8 +293,14 @@ class BoxArtService: ObservableObject {
     }
 
     func downloadAndCache(artURL: URL, for rom: ROM, session: URLSession? = nil) async -> URL? {
+        await downloadAndCache(artURL: artURL, for: rom, to: rom.boxArtLocalPath, session: session)
+    }
+
+    // Same as downloadAndCache(artURL:for:) but saves to a custom destination URL.
+    // Used for title screens ({stem}_title.png) and in-game screenshots ({stem}_snap_N.png)
+    // which share the boxart directory but use different filenames.
+    func downloadAndCache(artURL: URL, for rom: ROM, to localURL: URL, session: URLSession? = nil) async -> URL? {
         let sess = session ?? URLSession.shared
-        let localURL = rom.boxArtLocalPath
         let folder = localURL.deletingLastPathComponent()
 
         try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
@@ -443,6 +449,106 @@ class BoxArtService: ObservableObject {
         }
 
         return (nil, nil)
+    }
+
+    // MARK: - Named_Titles / Named_Snaps (title screens & in-game screenshots)
+
+    // Generic libretro CDN fetch for a single Named_* type folder that saves to a
+    // caller-supplied local destination. Returns the local URL on success.
+    private func fetchThumbnailLibretro(
+        for rom: ROM,
+        typeFolder: String,
+        regionSuffix: String?,
+        localDestination: URL,
+        localStem: String
+    ) async -> (URL?, String?) {
+        let source = "libretro_\(typeFolder)"
+        let romPathKey = localStem
+
+        guard let sysID = LibretroThumbnailResolver.effectiveThumbnailSystemID(for: rom) else { return (nil, nil) }
+
+        let folders = await LibretroThumbnailResolver.workingFolders(forSystemID: sysID)
+        guard !folders.isEmpty else { return (nil, nil) }
+
+        guard let gameTitle = await LibretroThumbnailResolver.resolveGameTitle(
+            for: rom,
+            useCRC: useCRCMatchingForThumbnails,
+            fallbackFilename: fallbackToFilenameForThumbnails
+        ), !gameTitle.isEmpty else { return (nil, nil) }
+
+        let regionPreference = SystemPreferences.shared.systemLanguage.noIntroRegionPreference
+        let manifestMatches = await LibretroThumbnailResolver.bestMatchingURLs(
+            forType: typeFolder,
+            gameTitle: gameTitle,
+            systemFolders: folders,
+            base: thumbnailServerURL,
+            regionPreference: regionPreference
+        )
+
+        for (_, url, regionTag) in manifestMatches {
+            if let saved = await downloadAndCache(artURL: url, for: rom, to: localDestination, session: thumbnailURLSession) {
+                cacheRepo.storeBoxArtResolution(romPathKey: romPathKey, systemID: sysID, gameTitle: gameTitle, resolvedURL: saved.path, source: source, httpStatus: 200, isValid: true)
+                return (saved, regionTag)
+            }
+        }
+        return (nil, nil)
+    }
+
+    // Downloads the libretro "Named_Titles" title screen to {stem}_title.png in the boxart dir.
+    func downloadTitleScreen(for rom: ROM) async -> URL? {
+        let romPathKey: String
+        if let inner = rom.innerROMPath {
+            romPathKey = URL(fileURLWithPath: inner).deletingPathExtension().lastPathComponent
+        } else {
+            romPathKey = rom.path.deletingPathExtension().lastPathComponent
+        }
+        let boxartDir = rom.path.deletingLastPathComponent().appendingPathComponent("boxart", isDirectory: true)
+        let stem = "\(romPathKey)_title"
+        let localURL = boxartDir.appendingPathComponent("\(stem).png")
+        let (saved, _) = await fetchThumbnailLibretro(
+            for: rom, typeFolder: "Named_Titles", regionSuffix: SystemPreferences.shared.systemLanguage.regionSuffix,
+            localDestination: localURL, localStem: romPathKey
+        )
+        return saved
+    }
+
+    // Downloads up to `cap` libretro "Named_Snaps" in-game screenshots to
+    // {stem}_snap_0.png, {stem}_snap_1.png, ... in the boxart dir.
+    // Returns the on-disk URLs that were successfully downloaded.
+    func downloadScreenshots(for rom: ROM, cap: Int = 4) async -> [URL] {
+        let romPathKey: String
+        if let inner = rom.innerROMPath {
+            romPathKey = URL(fileURLWithPath: inner).deletingPathExtension().lastPathComponent
+        } else {
+            romPathKey = rom.path.deletingPathExtension().lastPathComponent
+        }
+        let boxartDir = rom.path.deletingLastPathComponent().appendingPathComponent("boxart", isDirectory: true)
+        let stem = "\(romPathKey)_snap"
+
+        guard let sysID = LibretroThumbnailResolver.effectiveThumbnailSystemID(for: rom) else { return [] }
+        let folders = await LibretroThumbnailResolver.workingFolders(forSystemID: sysID)
+        guard !folders.isEmpty else { return [] }
+        guard let gameTitle = await LibretroThumbnailResolver.resolveGameTitle(
+            for: rom, useCRC: useCRCMatchingForThumbnails, fallbackFilename: fallbackToFilenameForThumbnails
+        ), !gameTitle.isEmpty else { return [] }
+
+        let regionPreference = SystemPreferences.shared.systemLanguage.noIntroRegionPreference
+        let matches = await LibretroThumbnailResolver.bestMatchingURLs(
+            forType: "Named_Snaps",
+            gameTitle: gameTitle,
+            systemFolders: folders,
+            base: thumbnailServerURL,
+            regionPreference: regionPreference
+        )
+
+        var results: [URL] = []
+        for (index, (_, url, _)) in matches.enumerated() where index < cap {
+            let localURL = boxartDir.appendingPathComponent("\(stem)_\(index).png")
+            if let saved = await downloadAndCache(artURL: url, for: rom, to: localURL, session: thumbnailURLSession) {
+                results.append(saved)
+            }
+        }
+        return results
     }
 
     private func httpStatus(for url: URL, method: String, session: URLSession) async -> Int {
@@ -599,6 +705,49 @@ class BoxArtService: ObservableObject {
             library.saveROMsToDatabase(only: modifiedIDs)
             if !modifiedIDs.isEmpty { signalBoxArtUpdated(for: UUID()) }
         }
+
+        // Post-pass: also fetch libretro Named_Titles (title screen) and Named_Snaps
+        // (in-game screenshots). These complement the box art on the game detail
+        // overview. We fetch them for every passed ROM that is still missing them,
+        // independent of whether box art downloaded (a game can have box art but no
+        // title screen, or vice-versa). Failures are silently ignored.
+        let needTitle = roms.filter { !$0.hasTitleScreen || $0.screenshotPaths.isEmpty }
+        guard !needTitle.isEmpty else { return }
+        await withTaskGroup(of: Void.self) { group in
+            var active = 0
+            var iterator = needTitle.makeIterator()
+            while active < 2, let rom = iterator.next() {
+                group.addTask { await self.downloadTitleAndScreenshots(for: rom, library: library) }
+                active += 1
+            }
+            for await _ in group {
+                active -= 1
+                if let next = iterator.next() {
+                    group.addTask { await self.downloadTitleAndScreenshots(for: next, library: library) }
+                    active += 1
+                }
+            }
+        }
+    }
+
+    // Fetches the title screen (Named_Titles) and up to 4 in-game screenshots
+    // (Named_Snaps) for a single ROM, persisting the results onto the ROM
+    // (hasTitleScreen / hasScreenshots / screenshotPaths) without forcing a DB save.
+    // Public so the Game Detail view can lazily fetch art that the scan-time pass missed.
+    func downloadTitleAndScreenshots(for rom: ROM, library: ROMLibrary) async {
+        var updated = rom
+        if let titleURL = await downloadTitleScreen(for: rom) {
+            updated.hasTitleScreen = true
+            updated.titleScreenLocalPath = titleURL
+        }
+        let snaps = await downloadScreenshots(for: rom)
+        if !snaps.isEmpty {
+            updated.hasScreenshots = true
+            updated.screenshotPaths = snaps
+        }
+        guard updated.hasTitleScreen || updated.hasScreenshots else { return }
+        await MainActor.run { library.updateROM(updated, persist: false) }
+        await MainActor.run { library.saveROMsToDatabase(only: [updated.id]) }
     }
     
     func fetchBoxArtGoogle(for rom: ROM) async -> URL? {

@@ -318,8 +318,12 @@ final class LibraryAutomationCoordinator: ObservableObject {
             }
         }
 
-        // Phase 3: Box art downloads (skip hidden ROMs)
-        let artTargets = scope.filter { $0.needsAutomaticBoxArt && !$0.isHidden }
+        // Phase 3: Box art downloads (skip hidden ROMs). Also include ROMs that
+        // already have box art but are still missing a libretro title screen or
+        // screenshots, so the Game Detail hero/overview art is fetched.
+        let artTargets = scope.filter {
+            !$0.isHidden && ($0.needsAutomaticBoxArt || !$0.hasTitleScreen || $0.screenshotPaths.isEmpty)
+        }
         guard !artTargets.isEmpty else { return }
 
         phase = .downloadingArt

@@ -37,6 +37,7 @@ final class ROMEntry {
     var boxArtRequestedRegion: String?
     var boxArtRegionTag: String?
     var boxArtFetchedAt: Date?
+    var hasTitleScreen: Bool
 
     // Relationships
     // Note: inverse relationships with @Relationship can cause circular reference issues
@@ -82,8 +83,9 @@ final class ROMEntry {
         innerROMPath: String? = nil,
         boxArtRequestedRegion: String? = nil,
         boxArtRegionTag: String? = nil,
-        boxArtFetchedAt: Date? = nil
-) {
+        boxArtFetchedAt: Date? = nil,
+        hasTitleScreen: Bool = false
+    ) {
         self.id = id
         self.name = name
         self.path = path.path
@@ -117,6 +119,7 @@ final class ROMEntry {
         self.boxArtRequestedRegion = boxArtRequestedRegion
         self.boxArtRegionTag = boxArtRegionTag
         self.boxArtFetchedAt = boxArtFetchedAt
+        self.hasTitleScreen = hasTitleScreen
     }
 }
 

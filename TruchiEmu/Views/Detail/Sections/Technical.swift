@@ -1,29 +1,17 @@
 import SwiftUI
 
 extension GameDetailView {
-    var gameInfoSection: some View {
+    var technicalSection: some View {
         VStack(spacing: AppSpacing.lg) {
-            gameInfoActionButtons
-
-            if !screenshotImages.isEmpty { screenshotsRow }
+            technicalActionButtons
 
             gameMetadataCard
 
             MAMEDependencyStatusView(rom: currentROM, coreID: activeCoreID)
-
-            if let description = gameDescription {
-                ModernSectionCard(showHeader: false) {
-                    Text(description)
-                        .font(.body)
-                        .foregroundColor(AppColors.textPrimary(colorScheme).opacity(0.85))
-                        .lineSpacing(4)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-            }
         }
     }
 
-    var gameInfoActionButtons: some View {
+    var technicalActionButtons: some View {
         HStack(spacing: AppSpacing.sm) {
             identifyButton
             fetchBoxArtButton
@@ -50,43 +38,43 @@ extension GameDetailView {
                     Divider().overlay(AppColors.divider(colorScheme))
                     MetadataRow(label: loc.localized("gameInfo.fileSize"), value: size)
                 }
-            if let crc = crcHash {
-                Divider().overlay(AppColors.divider(colorScheme))
-                MetadataRow(
-                    label: loc.localized("gameInfo.crc32"),
-                    value: crc,
-                    isMonospaced: true,
-                    copyAction: {
-                        NSPasteboard.general.clearContents()
-                        NSPasteboard.general.setString(crc, forType: .string)
-                    }
-                )
-            }
-            if achievementsService.isEnabled, currentROM.raMatchStatus == "matched" {
-                Divider().overlay(AppColors.divider(colorScheme))
-                HStack {
-                    Image(systemName: "trophy.fill").foregroundColor(AppColors.brandAccent).frame(width: 20)
-                    Text(loc.localized("gameInfo.retroAchievements"))
-                        .font(.subheadline)
-                        .fontWeight(.medium)
-                        .foregroundColor(AppColors.textPrimary(colorScheme))
-                    Spacer()
-                    HStack(spacing: 4) {
-                        Image(systemName: "checkmark.circle.fill")
-                            .font(.caption2)
-                            .foregroundColor(AppColors.success(colorScheme))
-                        Text(loc.localized("gameInfo.raSupported"))
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
-                            .foregroundColor(AppColors.success(colorScheme))
-                    }
-                    .padding(.horizontal, AppSpacing.sm)
-                    .padding(.vertical, AppSpacing.xxs)
-                    .background(AppColors.success(colorScheme).opacity(0.12))
-                    .cornerRadius(AppRadius.xs)
+                if let crc = crcHash {
+                    Divider().overlay(AppColors.divider(colorScheme))
+                    MetadataRow(
+                        label: loc.localized("gameInfo.crc32"),
+                        value: crc,
+                        isMonospaced: true,
+                        copyAction: {
+                            NSPasteboard.general.clearContents()
+                            NSPasteboard.general.setString(crc, forType: .string)
+                        }
+                    )
                 }
-                .padding(.vertical, AppSpacing.xs)
-            }
+                if achievementsService.isEnabled, currentROM.raMatchStatus == "matched" {
+                    Divider().overlay(AppColors.divider(colorScheme))
+                    HStack {
+                        Image(systemName: "trophy.fill").foregroundColor(AppColors.brandAccent).frame(width: 20)
+                        Text(loc.localized("gameInfo.retroAchievements"))
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .foregroundColor(AppColors.textPrimary(colorScheme))
+                        Spacer()
+                        HStack(spacing: 4) {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.caption2)
+                                .foregroundColor(AppColors.success(colorScheme))
+                            Text(loc.localized("gameInfo.raSupported"))
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                                .foregroundColor(AppColors.success(colorScheme))
+                        }
+                        .padding(.horizontal, AppSpacing.sm)
+                        .padding(.vertical, AppSpacing.xxs)
+                        .background(AppColors.success(colorScheme).opacity(0.12))
+                        .cornerRadius(AppRadius.xs)
+                    }
+                    .padding(.vertical, AppSpacing.xs)
+                }
                 if let meta = currentROM.metadata {
                     gameMetadataRows(meta: meta)
                 }
@@ -94,30 +82,30 @@ extension GameDetailView {
         }
     }
 
-  var gameSystemPicker: some View {
-    HStack {
-      Image(systemName: "gamecontroller").foregroundColor(AppColors.brandAccent).frame(width: 20)
-      Text(loc.localized("gameInfo.system"))
-        .font(.subheadline)
-        .fontWeight(.medium)
-        .foregroundColor(AppColors.textPrimary(colorScheme))
-      Spacer()
-      Button {
-        showSystemPicker = true
-      } label: {
-        HStack(spacing: 4) {
-          Text(systemName)
-            .font(.subheadline)
-            .foregroundColor(AppColors.textPrimary(colorScheme))
-          Image(systemName: "chevron.up.chevron.down")
-            .font(.caption2)
-            .foregroundColor(AppColors.textSecondary(colorScheme))
+    var gameSystemPicker: some View {
+        HStack {
+            Image(systemName: "gamecontroller").foregroundColor(AppColors.brandAccent).frame(width: 20)
+            Text(loc.localized("gameInfo.system"))
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .foregroundColor(AppColors.textPrimary(colorScheme))
+            Spacer()
+            Button {
+                showSystemPicker = true
+            } label: {
+                HStack(spacing: 4) {
+                    Text(systemName)
+                        .font(.subheadline)
+                        .foregroundColor(AppColors.textPrimary(colorScheme))
+                    Image(systemName: "chevron.up.chevron.down")
+                        .font(.caption2)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
+                }
+            }
+            .buttonStyle(.plain)
         }
-      }
-      .buttonStyle(.plain)
+        .padding(.vertical, AppSpacing.xs)
     }
-    .padding(.vertical, AppSpacing.xs)
-  }
 
     @ViewBuilder
     func gameMetadataRows(meta: ROMMetadata) -> some View {
@@ -138,26 +126,26 @@ extension GameDetailView {
             MetadataRow(label: loc.localized("gameInfo.genre"), value: GenreManager.shared.effectiveDisplayName(for: meta.genre))
         }
         playersRow
-      if let esrb = meta.esrbRating {
-        Divider().overlay(AppColors.divider(colorScheme))
-        HStack {
-          Image(systemName: "shield.fill").foregroundColor(AppColors.brandAccent).frame(width: 20)
-          Text(loc.localized("gameInfo.esrb"))
-            .font(.subheadline)
-            .fontWeight(.medium)
-            .foregroundColor(AppColors.textPrimary(colorScheme))
-          Spacer()
-          Text(esrb)
-            .font(.subheadline)
-            .fontWeight(.semibold)
-            .foregroundColor(AppColors.textPrimary(colorScheme))
-            .padding(.horizontal, AppSpacing.sm)
-            .padding(.vertical, AppSpacing.xxs)
-            .background(esrbBadgeColor(for: esrb))
-            .cornerRadius(AppRadius.xs)
+        if let esrb = meta.esrbRating {
+            Divider().overlay(AppColors.divider(colorScheme))
+            HStack {
+                Image(systemName: "shield.fill").foregroundColor(AppColors.brandAccent).frame(width: 20)
+                Text(loc.localized("gameInfo.esrb"))
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(AppColors.textPrimary(colorScheme))
+                Spacer()
+                Text(esrb)
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(AppColors.textPrimary(colorScheme))
+                    .padding(.horizontal, AppSpacing.sm)
+                    .padding(.vertical, AppSpacing.xxs)
+                    .background(esrbBadgeColor(for: esrb))
+                    .cornerRadius(AppRadius.xs)
+            }
+            .padding(.vertical, AppSpacing.xs)
         }
-        .padding(.vertical, AppSpacing.xs)
-      }
     }
 
     var identifyButton: some View {
@@ -177,6 +165,8 @@ extension GameDetailView {
                             u.hasBoxArt = true
                             library.updateROM(u)
                             loadBoxArt()
+                            loadTitleScreen()
+                            loadScreenshots()
                         }
                     }
                     loadSlotInfo()
@@ -191,6 +181,8 @@ extension GameDetailView {
                             u.hasBoxArt = true
                             library.updateROM(u)
                             loadBoxArt()
+                            loadTitleScreen()
+                            loadScreenshots()
                         }
                     }
                     loadSlotInfo()
@@ -212,10 +204,10 @@ extension GameDetailView {
         } label: {
             HStack(spacing: 6) {
                 if case .working = manualActionStatus { ProgressView().controlSize(.small) } else { Image(systemName: "qrcode.viewfinder") }
-Text(loc.localized("gameInfo.identifyGame"))
-        }
-        .font(.subheadline)
-        .foregroundColor(AppColors.textOnAccent(colorScheme))
+                Text(loc.localized("gameInfo.identifyGame"))
+            }
+            .font(.subheadline)
+            .foregroundColor(AppColors.textOnAccent(colorScheme))
             .padding(.horizontal, AppSpacing.lg)
             .padding(.vertical, AppSpacing.sm)
             .background(AppColors.brandAccent)
@@ -279,7 +271,12 @@ Text(loc.localized("gameInfo.identifyGame"))
             if case .result = fetchMetadataStatus { fetchMetadataStatus = .hidden }
         }
         if success {
-            await MainActor.run { fetchMetadataStatus = .result(loc.localized("gameInfo.metadataUpdated"), tone: .success) }
+            await MainActor.run {
+                fetchMetadataStatus = .result(loc.localized("gameInfo.metadataUpdated"), tone: .success)
+                loadBoxArt()
+                loadTitleScreen()
+                loadScreenshots()
+            }
         } else {
             await MainActor.run { fetchMetadataStatus = .result(loc.localized("gameInfo.noMetadataFound"), tone: .warning) }
         }
@@ -340,6 +337,8 @@ Text(loc.localized("gameInfo.identifyGame"))
             u.hasBoxArt = true
             library.updateROM(u)
             loadBoxArt()
+            loadTitleScreen()
+            loadScreenshots()
             fetchBoxArtAutoDismiss?.cancel()
             fetchBoxArtAutoDismiss = Task { @MainActor in
                 try? await Task.sleep(nanoseconds: 10_000_000_000)
@@ -356,23 +355,6 @@ Text(loc.localized("gameInfo.identifyGame"))
         fetchBoxArtAutoDismiss?.cancel()
         fetchBoxArtAutoDismiss = nil
         fetchBoxArtStatus = .hidden
-    }
-
-    var screenshotsRow: some View {
-        ModernSectionCard(title: loc.localized("gameInfo.screenshots"), icon: "photo.on.rectangle", showHeader: true) {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: AppSpacing.sm) {
-                    ForEach(screenshotImages.indices, id: \.self) { index in
-                        Image(nsImage: screenshotImages[index])
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: 180, height: 120)
-                            .clipShape(RoundedRectangle(cornerRadius: AppRadius.md))
-                            .overlay(RoundedRectangle(cornerRadius: AppRadius.md).stroke(AppColors.cardBorder(colorScheme), lineWidth: 1))
-                    }
-                }
-            }
-        }
     }
 
     func esrbBadgeColor(for rating: String) -> Color {
@@ -404,34 +386,34 @@ Text(loc.localized("gameInfo.identifyGame"))
         }
     }
 
-  private func playersPickerView(meta: ROMMetadata) -> some View {
-    HStack {
-      Image(systemName: "person.2").foregroundColor(AppColors.brandAccent).frame(width: 20)
-      Text(loc.localized("gameInfo.players"))
-        .font(.subheadline)
-        .fontWeight(.medium)
-        .foregroundColor(AppColors.textPrimary(colorScheme))
-      Spacer()
-      Picker("", selection: Binding(
-        get: { meta.userPlayerOverride ?? 1 },
-        set: { newValue in
-          guard newValue > 0 else { return }
-          Task { @MainActor in
-            var updated = self.currentROM
-            if updated.metadata == nil { updated.metadata = ROMMetadata() }
-            updated.metadata?.userPlayerOverride = newValue
-            updated.metadata?.players = newValue
-            self.library.updateROM(updated)
-          }
+    private func playersPickerView(meta: ROMMetadata) -> some View {
+        HStack {
+            Image(systemName: "person.2").foregroundColor(AppColors.brandAccent).frame(width: 20)
+            Text(loc.localized("gameInfo.players"))
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .foregroundColor(AppColors.textPrimary(colorScheme))
+            Spacer()
+            Picker("", selection: Binding(
+                get: { meta.userPlayerOverride ?? 1 },
+                set: { newValue in
+                    guard newValue > 0 else { return }
+                    Task { @MainActor in
+                        var updated = self.currentROM
+                        if updated.metadata == nil { updated.metadata = ROMMetadata() }
+                        updated.metadata?.userPlayerOverride = newValue
+                        updated.metadata?.players = newValue
+                        self.library.updateROM(updated)
+                    }
+                }
+            )) {
+                Text(loc.localized("gameInfo.single")).tag(1)
+                Text(loc.localized("gameInfo.multi")).tag(2)
+            }
+            .pickerStyle(.segmented)
+            .labelsHidden()
+            .frame(width: 160)
         }
-      )) {
-        Text(loc.localized("gameInfo.single")).tag(1)
-        Text(loc.localized("gameInfo.multi")).tag(2)
-      }
-      .pickerStyle(.segmented)
-      .labelsHidden()
-      .frame(width: 160)
+        .padding(.vertical, AppSpacing.xs)
     }
-    .padding(.vertical, AppSpacing.xs)
-  }
 }

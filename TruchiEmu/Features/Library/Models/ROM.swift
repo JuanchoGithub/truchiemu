@@ -59,6 +59,12 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
     // When the boxart was last downloaded/fetched
     var boxArtFetchedAt: Date?
 
+    // Title screen (libretro Named_Titles) — single hero/title image
+    var hasTitleScreen: Bool = false
+    var titleScreenLocalPath: URL = URL(fileURLWithPath: "")
+    // Screenshots (libretro Named_Snaps) — captured gameplay images
+    var hasScreenshots: Bool = false
+
     // RetroAchievements metadata
     var raGameId: Int?
     var raMatchStatus: String?
@@ -136,8 +142,55 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
             }
         }
 
+        // 7b. titleScreenLocalPath (libretro Named_Titles)
+        let titleBaseName = "\(romNameWithoutExt)_title"
+        let titlePng = boxartDir.appendingPathComponent("\(titleBaseName).png")
+        let titleJpg = boxartDir.appendingPathComponent("\(titleBaseName).jpg")
+        let titleJpeg = boxartDir.appendingPathComponent("\(titleBaseName).jpeg")
+        if FileManager.default.fileExists(atPath: titlePng.path) {
+            self.titleScreenLocalPath = titlePng
+            self.hasTitleScreen = true
+        } else if FileManager.default.fileExists(atPath: titleJpg.path) {
+            self.titleScreenLocalPath = titleJpg
+            self.hasTitleScreen = true
+        } else if FileManager.default.fileExists(atPath: titleJpeg.path) {
+            self.titleScreenLocalPath = titleJpeg
+            self.hasTitleScreen = true
+        } else {
+            self.titleScreenLocalPath = URL(fileURLWithPath: "")
+            self.hasTitleScreen = false
+        }
+
+        // 7c. screenshot paths (libretro Named_Snaps) — scan the boxart dir for {stem}_snap_*.{ext}
+        // These are NOT persisted as derived fields (the array is stored on the model directly
+        // after a download), so we only resolve them here when the array is empty as a fallback.
+        if self.screenshotPaths.isEmpty {
+            self.screenshotPaths = Self.scanScreenshotPaths(boxartDir: boxartDir, stem: romNameWithoutExt)
+        }
+
         // 8. infoLocalPath
         self.infoLocalPath = path.deletingLastPathComponent().appendingPathComponent("\(name)_info.json")
+    }
+
+    // Scans the /boxart directory for libretro Named_Snaps files
+    // named `{stem}_snap_0.png`, `{stem}_snap_1.png`, etc.
+    private static func scanScreenshotPaths(boxartDir: URL, stem: String) -> [URL] {
+        let imageExtensions: Set<String> = ["png", "jpg", "jpeg", "webp", "gif", "bmp"]
+        let prefix = "\(stem)_snap_"
+        guard let contents = try? FileManager.default.contentsOfDirectory(
+            at: boxartDir,
+            includingPropertiesForKeys: nil,
+            options: [.skipsSubdirectoryDescendants]
+        ) else { return [] }
+
+        return contents
+            .filter { url in
+                let name = url.deletingPathExtension().lastPathComponent
+                guard name.hasPrefix(prefix) else { return false }
+                let versionSuffix = String(name.dropFirst(prefix.count))
+                return Int(versionSuffix) != nil && imageExtensions.contains(url.pathExtension.lowercased())
+            }
+            .sorted { $0.lastPathComponent < $1.lastPathComponent }
     }
 
     // Unique key for tracking running games. Includes innerROMPath when present

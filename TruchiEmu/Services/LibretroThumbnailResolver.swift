@@ -563,6 +563,57 @@ enum LibretroThumbnailResolver {
         return preference.count // worst score
     }
 
+    // Convenience variant that restricts matching to a single Named_* type folder
+    // (e.g. "Named_Titles" or "Named_Snaps"). Used when downloading title
+    // screens / in-game screenshots exclusively (we do NOT want box-art fallback).
+    static func bestMatchingURLs(
+        forType typeFolder: String,
+        gameTitle: String,
+        systemFolders: [String],
+        base: URL,
+        regionPreference: [String]
+    ) async -> [(folder: String, url: URL, regionTag: String?)] {
+        let fuzzy = stripParenthesesForFuzzyMatch(gameTitle).trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !fuzzy.isEmpty else { return [] }
+        let prefixNoPeriod = fuzzy.hasSuffix(".") ? String(fuzzy.dropLast()).trimmingCharacters(in: .whitespaces) : fuzzy
+        let prefixes = Set([fuzzy, prefixNoPeriod, libretroFilesystemSafeName(fuzzy), libretroFilesystemSafeName(prefixNoPeriod)]).filter { !$0.isEmpty }
+
+        var results: [(folder: String, url: URL, regionTag: String?, score: Int)] = []
+
+        for folder in systemFolders {
+            let repoName = githubRepoName(for: folder)
+            let fileSet: Set<String>
+            do {
+                fileSet = try await LibretroThumbnailManifestService.shared.getManifestFileSet(for: repoName)
+            } catch {
+                LoggerService.warning(category: logCategory, "Manifest fetch failed for \(repoName): \(error.localizedDescription). Skipping manifest-based match.")
+                continue
+            }
+
+            let typePrefix = "\(typeFolder)/"
+            let candidates = fileSet.filter { path in
+                guard path.hasPrefix(typePrefix) else { return false }
+                let name = path.dropFirst(typePrefix.count)
+                return prefixes.contains(where: { name.hasPrefix($0) })
+            }.sorted()
+
+            for path in candidates {
+                let fileName = String(path.dropFirst(typePrefix.count))
+                let score = regionScore(for: fileName, preference: regionPreference)
+                let fileURL = buildThumbnailURL(base: base, systemFolder: folder, typeFolder: typeFolder, fileName: fileName)
+                let regionTag = self.regionTag(from: fileURL)
+                results.append((folder, fileURL, regionTag, score))
+            }
+        }
+
+        results.sort { a, b in
+            if a.score != b.score { return a.score < b.score }
+            return a.url.lastPathComponent.count < b.url.lastPathComponent.count
+        }
+
+        return results.map { ($0.folder, $0.url, $0.regionTag) }
+    }
+
     // Uses the thumbnail manifest to find all matching URLs for a game title.
     // Searches Named_Boxarts entries matching the fuzzy title prefix, ranks them
     // by region preference, and returns sorted list of (folder, url, regionTag).

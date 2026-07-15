@@ -48,6 +48,8 @@ struct GameDetailView: View {
     @State var bezelSelectorWindowController: BezelSelectorWindowController?
     @State var localTitle: String = ""
     @State var gameDescription: String? = nil
+    @State var mostRecentSaveSlot: SlotInfo? = nil
+    @State var titleScreenImage: NSImage? = nil
 
     @ObservedObject var loc = LocalizationManager.shared
 
@@ -137,7 +139,8 @@ struct GameDetailView: View {
     @ViewBuilder
     private var sectionContent: some View {
         switch selectedSection {
-        case .gameInfo: gameInfoSection
+        case .gameInfo: overviewSection
+        case .technical: technicalSection
         case .shader: shaderSection
         case .bezels: bezelsSection
         case .controls: controlsSection
@@ -179,35 +182,41 @@ struct GameDetailView: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            compactHeaderSection
-
-            Divider()
-                .overlay(AppColors.divider(colorScheme))
-
-            HStack(spacing: 0) {
-                sidebarNavigation
+        GeometryReader { geo in
+            let headerHeight = min(max(geo.size.height * 0.25, 150), 210)
+            VStack(spacing: 0) {
+                compactHeaderSection
+                    .frame(height: headerHeight)
 
                 Divider()
                     .overlay(AppColors.divider(colorScheme))
 
-                mainContentArea
-            }
-            .frame(maxHeight: .infinity)
+                HStack(spacing: 0) {
+                    sidebarNavigation
 
-            if manualActionStatus.isVisible {
-                manualActionStatusBar
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    Divider()
+                        .overlay(AppColors.divider(colorScheme))
+
+                    mainContentArea
+                }
+                .frame(maxHeight: .infinity)
+
+                if manualActionStatus.isVisible {
+                    manualActionStatusBar
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
             }
+            .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+            .animation(.easeInOut(duration: 0.2), value: manualActionStatus.isVisible)
         }
-        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
-        .animation(.easeInOut(duration: 0.2), value: manualActionStatus.isVisible)
 	.onAppear {
 		if let initial = initialSection {
 			selectedSection = initial
 		}
 		loadBoxArt()
             loadSlotInfo()
+            loadMostRecentSaveState()
+            loadTitleScreen()
             // Only load achievements if we're logged in and RA is enabled
             if achievementsService.isLoggedIn && achievementsService.isEnabled {
                 loadAchievements()
@@ -221,14 +230,16 @@ struct GameDetailView: View {
   .onDisappear {
       teardownGamepadNavContext()
   }
-  .onChange(of: currentROM.id) { _, _ in
-    clearManualStatus()
-    loadSlotInfo()
-    if achievementsService.isLoggedIn && achievementsService.isEnabled {
-      loadAchievements()
-    }
-    loadAchievementViewMode()
-  }
+    .onChange(of: currentROM.id) { _, _ in
+        clearManualStatus()
+        loadSlotInfo()
+        loadMostRecentSaveState()
+        loadTitleScreen()
+        if achievementsService.isLoggedIn && achievementsService.isEnabled {
+          loadAchievements()
+        }
+        loadAchievementViewMode()
+      }
   .onChange(of: currentROM.lastPlayed) { _, _ in
             // Refresh slot info when user returns from playing the game
             loadSlotInfo()
@@ -260,7 +271,8 @@ struct GameDetailView: View {
             }
             crcHash = currentROM.crc32
         }
-.onChange(of: currentROM.hasBoxArt) { _, _ in loadBoxArt() }
+        .onChange(of: currentROM.hasBoxArt) { _, _ in loadBoxArt() }
+.onChange(of: currentROM.hasTitleScreen) { _, _ in loadTitleScreen() }
 .onChange(of: currentROM.screenshotPaths) { _, _ in loadScreenshots() }
 .onChange(of: library.bezelUpdateToken) { _, _ in Task { await loadCurrentBezelImage() } }
 .onChange(of: achievementViewMode) { _, newValue in
@@ -299,20 +311,22 @@ struct GameDetailView: View {
 
     var primarySections: [DetailSection] {
         var sections: [DetailSection] = [.gameInfo]
-        if currentROM.systemID == "gb" || currentROM.systemID == "gbc" {
-            sections.append(.coreOptions)
+        sections.append(.savedStates)
+        if achievementsService.isEnabled {
+            sections.append(.achievements)
         }
-        sections.append(contentsOf: [.shader, .bezels, .controls])
+        sections.append(contentsOf: [.cheats, .shader, .bezels, .controls])
         if let sysID = currentROM.systemID, sysID == "dos" || sysID == "scummvm" {
             sections.append(.analogMouse)
+        }
+        if currentROM.systemID == "gb" || currentROM.systemID == "gbc" {
+            sections.append(.coreOptions)
         }
         return sections
     }
 
     var advancedSections: [DetailSection] {
-        achievementsService.isEnabled
-            ? [.savedStates, .cheats, .core, .achievements]
-            : [.savedStates, .cheats, .core]
+        [.core, .technical]
     }
 
     var allSections: [DetailSection] {
@@ -403,6 +417,34 @@ struct GameDetailView: View {
         let systemID = currentROM.systemID ?? ""
         slotInfoList = saveStateManager.allSlotInfo(gameName: gameName, systemID: systemID)
         progressiveSlots = saveStateManager.allProgressiveSlots(gameName: gameName, systemID: systemID)
+    }
+
+    func loadMostRecentSaveState() {
+        let gameName = "\(currentROM.displayName)__\(currentROM.id.uuidString.prefix(8))"
+        let systemID = currentROM.systemID ?? ""
+        mostRecentSaveSlot = saveStateManager.mostRecentSaveState(gameName: gameName, systemID: systemID)
+    }
+
+    func loadTitleScreen() {
+        Task {
+            // Already on disk — just load it.
+            if currentROM.hasTitleScreen, !currentROM.titleScreenLocalPath.path.isEmpty,
+               let img = await ImageCache.shared.image(for: currentROM.titleScreenLocalPath) {
+                titleScreenImage = img
+                return
+            }
+            titleScreenImage = nil
+
+            // Fallback: if the scan-time pass missed the title screen (network
+            // failure, already-cataloged game, etc.), fetch it lazily now.
+            guard !currentROM.hasTitleScreen else { return }
+            let rom = currentROM
+            await BoxArtService.shared.downloadTitleAndScreenshots(for: rom, library: library)
+            if currentROM.hasTitleScreen, !currentROM.titleScreenLocalPath.path.isEmpty,
+               let img = await ImageCache.shared.image(for: currentROM.titleScreenLocalPath) {
+                titleScreenImage = img
+            }
+        }
     }
 
     @MainActor

@@ -161,6 +161,33 @@ return sysDir.appendingPathComponent(fileName)
     func existingSlots(gameName: String, systemID: String) -> [SlotInfo] {
         allSlotInfo(gameName: gameName, systemID: systemID).filter { $0.exists }
     }
+
+    // Returns the single most recently-modified save state across ALL slots
+    // (auto -1 through 9) including every progressive version. Used to power
+    // a "Continue" affordance that jumps straight to the newest save.
+    func mostRecentSaveState(gameName: String, systemID: String) -> SlotInfo? {
+        let slots = allSlotInfo(gameName: gameName, systemID: systemID)
+        var best: SlotInfo?
+        var bestDate: Date = .distantPast
+
+        for slot in slots {
+            let versions = progressiveSlotVersions(gameName: gameName, systemID: systemID, slot: slot.id)
+            if !versions.isEmpty {
+                for v in versions {
+                    let info = progressiveSlotInfo(gameName: gameName, systemID: systemID, slot: slot.id, version: v)
+                    if info.exists, let date = info.modificationDate, date > bestDate {
+                        bestDate = date
+                        best = info
+                    }
+                }
+            }
+            if slot.exists, let date = slot.modificationDate, date > bestDate {
+                bestDate = date
+                best = slot
+            }
+        }
+        return best
+    }
     
     // MARK: - File Operations
     
