@@ -128,6 +128,7 @@ struct GameCardView: View {
             contextMenu?()
         }
         .accessibilityLabel(rom.displayName)
+        .accessibilityHint(Text("Double-click or press Enter to launch"))
         .accessibilityAddTraits(.isButton)
         .task(id: "\(rom.id)-\(boxArtService.boxArtUpdated)-\(zoomLevel)") {
             var artPath = rom.boxArtLocalPath
@@ -298,17 +299,23 @@ struct GameCardView: View {
                     .tint(AppColors.brandAccent)
             }
         }
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(
-                    LinearGradient(
-                        colors: [.clear, Color.black.opacity(colorScheme == .dark ? 0.12 : 0.05)],
-                        startPoint: .center,
-                        endPoint: .bottom
-                    )
-                )
-                .allowsHitTesting(false)
-        )
+        .overlay(alignment: .center) {
+            if isHovered, !isLaunching {
+                Button {
+                    onDoubleClick?()
+                } label: {
+                    Image(systemName: "play.fill")
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundColor(.white)
+                        .padding(11)
+                        .background(Circle().fill(AppColors.brandAccent))
+                        .shadow(color: .black.opacity(0.35), radius: 4, y: 2)
+                }
+                .buttonStyle(.plain)
+                .transition(.opacity)
+                .accessibilityLabel(Text("Launch " + rom.displayName))
+            }
+        }
         .shadow(
             color: isLaunching ? AppColors.brandAccent.opacity(0.4) : (isSelected ? AppColors.brandAccentSecondary.opacity(0.25) : (isHovered ? AppColors.brandAccentSecondary.opacity(0.25) : .clear)),
             radius: isLaunching ? 12 : (isSelected ? 6 : (isHovered ? 10 : 6))

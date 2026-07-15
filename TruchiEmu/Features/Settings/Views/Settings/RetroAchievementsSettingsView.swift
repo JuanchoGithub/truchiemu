@@ -288,20 +288,20 @@ struct RetroAchievementsSettingsView: View {
     ) -> some View {
         VStack(spacing: AppSpacing.lg) {
             TextField(loc.localized("retroAchievements.username"), text: username)
-                .textFieldStyle(.plain)
+                .textFieldStyle(.roundedBorder)
                 .autocorrectionDisabled()
 
             SecureField(loc.localized("retroAchievements.password"), text: password)
-                .textFieldStyle(.plain)
+                .textFieldStyle(.roundedBorder)
 
             HStack {
                 if showApiKey.wrappedValue {
                     TextField(loc.localized("retroAchievements.webApiKey"), text: webApiKey)
-                        .textFieldStyle(.plain)
+                        .textFieldStyle(.roundedBorder)
                         .autocorrectionDisabled()
                 } else {
                     SecureField(loc.localized("retroAchievements.webApiKey"), text: webApiKey)
-                        .textFieldStyle(.plain)
+                        .textFieldStyle(.roundedBorder)
                 }
                 Button(action: { showApiKey.wrappedValue.toggle() }) {
                     Image(systemName: showApiKey.wrappedValue ? "eye.slash" : "eye")

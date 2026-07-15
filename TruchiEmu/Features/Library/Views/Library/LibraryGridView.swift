@@ -206,6 +206,7 @@ struct LibraryGridView: View {
     @State private var isScrolling = false
     @State private var scrollMonitor: Any?
     @State private var scrollDebounceTimer: Timer?
+    @State private var keyMonitor: Any?
 
     // MARK: - Focused field for Cmd+F
     enum FocusableField: Hashable { case search }
@@ -235,9 +236,8 @@ struct LibraryGridView: View {
             
             filterChips
             
-            // Active filter summary bar
-            if !activeFilters.isEmpty {
-                activeFilterSummary
+            if !activeFilters.isEmpty || !selectedGenres.isEmpty || !searchText.isEmpty {
+                filterStatusStrip
             }
             
             ZStack {
@@ -335,9 +335,13 @@ struct LibraryGridView: View {
                 Spacer()
             }
             ToolbarItem(placement: .primaryAction) {
-            Button { pickFolder() } label: { Image(systemName: "folder.badge.plus") }
+            Button { pickFolder() } label: {
+                Label(loc.localized("toolbar.addROMFolder"), systemImage: "folder.badge.plus")
+                    .labelStyle(.titleAndIcon)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(AppColors.brandAccent)
             .help(loc.localized("toolbar.addROMFolder"))
-            .foregroundStyle(ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .primary)
             }
             ToolbarItem(placement: .primaryAction) {
                 Color.clear
@@ -361,7 +365,7 @@ struct LibraryGridView: View {
                         .font(.system(size: 12))
                         .foregroundStyle(continuousZoom == 1.0 && ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .primary)
                     Text("\(Int(continuousZoom * 100))%")
-                        .font(.system(size: 9, weight: .medium, design: .monospaced))
+                        .font(.system(size: 9, weight: .medium, design: .rounded))
                         .frame(width: 36)
                 }
             }
@@ -1003,9 +1007,20 @@ viewModel.updateFilters(
                 }
                 return event
             }
+            keyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+                if (event.keyCode == 36 || event.keyCode == 76),
+                   focusedField != .search,
+                   let rom = selectedROM {
+                    Task { await launchGame(rom) }
+                }
+                return event
+            }
         }
         .onDisappear {
             if let monitor = scrollMonitor {
+                NSEvent.removeMonitor(monitor)
+            }
+            if let monitor = keyMonitor {
                 NSEvent.removeMonitor(monitor)
             }
             scrollDebounceTimer?.invalidate()
@@ -1914,25 +1929,20 @@ viewModel.updateFilters(
         }
     }
     
-    private var activeFilterSummary: some View {
-        HStack {
+    private var filterStatusStrip: some View {
+        HStack(spacing: 6) {
             Image(systemName: "line.3.horizontal.decrease.circle.fill")
-                .foregroundColor(AppColors.brandAccent)
                 .font(.caption)
-            
             Text("Filtering: " + activeFilterDisplayText)
                 .font(.caption)
-	.foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
-	.lineLimit(1)
-
-	Spacer()
-
-	Text("\(viewModel.displayedROMs.count) game\(viewModel.displayedROMs.count == 1 ? "" : "s")")
-	.font(.caption)
-	.foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                .lineLimit(1)
+            Spacer()
+            Text("\(viewModel.displayedROMs.count) game\(viewModel.displayedROMs.count == 1 ? "" : "s")")
+                .font(.caption)
         }
+        .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
         .padding(.horizontal, 16)
-        .padding(.vertical, 6)
+        .padding(.vertical, 5)
         .background(AppColors.cardBackgroundSubtle(colorScheme))
     }
     
