@@ -5,6 +5,7 @@ struct GameDetailView: View {
     @ObservedObject private var gamepadNav = GamepadNavigationManager.shared
     @EnvironmentObject var coreManager: CoreManager
     @EnvironmentObject var controllerService: ControllerService
+    @EnvironmentObject var categoryManager: CategoryManager
     @ObservedObject var sysPrefs = SystemPreferences.shared
     @Environment(\.dismiss) var dismiss
     @Environment(\.colorScheme) var colorScheme

@@ -27,7 +27,7 @@ extension GameDetailView {
                 VStack(alignment: .leading, spacing: 8) {
                     titleField
 
-                    metadataChips
+                    categoryChips
 
                     Spacer(minLength: 0)
 
@@ -50,18 +50,28 @@ extension GameDetailView {
                         Image(nsImage: titleImg)
                             .resizable()
                             .scaledToFill()
-                            .opacity(0.5)
-                            .blur(radius: 14)
-                        // Gradient scrim: hero stays vivid behind the box art
-                        // (leading) and fades to solid behind the title/buttons
-                        // (trailing) so the text remains legible.
+                            .opacity(0.7)
+                            .blur(radius: 8)
+                        // Keep the title/buttons legible: hero shows on the
+                        // box-art side (leading) and fades to solid on the
+                        // text side (trailing).
                         LinearGradient(
                             colors: [
-                                AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled).opacity(0.2),
-                                AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled).opacity(0.9)
+                                Color.clear,
+                                AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled).opacity(0.85)
                             ],
                             startPoint: .leading,
                             endPoint: .trailing
+                        )
+                        // Fade the hero to nothing at the bottom so it blends
+                        // seamlessly into the content below.
+                        LinearGradient(
+                            colors: [
+                                Color.clear,
+                                AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled)
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
                         )
                     }
                 }
@@ -101,51 +111,33 @@ extension GameDetailView {
         }
     }
 
-    private var metadataChips: some View {
-        HStack(spacing: 6) {
-            if let sys = system {
+    private var categoryChips: some View {
+        let cats = categoryManager.categories.filter { $0.gameIDs.contains(currentROM.id) }
+        return HStack(spacing: 6) {
+            ForEach(cats) { cat in
                 HStack(spacing: 5) {
-                    if let emuImg = sys.emuImage(size: 132) {
-                        Image(nsImage: emuImg)
+                    if let img = NSImage(systemSymbolName: cat.iconName.isEmpty ? "tag.fill" : cat.iconName, accessibilityDescription: nil) {
+                        Image(nsImage: img)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .frame(width: 13, height: 13)
+                            .frame(width: 12, height: 12)
                     }
-                    Text(sys.name)
+                    Text(cat.name)
                         .font(.caption)
                         .fontWeight(.medium)
-                        .foregroundColor(AppColors.textSecondary(colorScheme))
                 }
+                .foregroundColor(cat.color)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 3)
-                .background(AppColors.cardBackgroundSubtle(colorScheme))
+                .background(cat.color.opacity(0.14))
+                .overlay(
+                    RoundedRectangle(cornerRadius: AppRadius.xs)
+                        .stroke(cat.color.opacity(0.45), lineWidth: 1)
+                )
                 .cornerRadius(AppRadius.xs)
-            }
-
-            if let genre = currentROM.metadata?.genre {
-                chip(GenreManager.shared.effectiveDisplayName(for: genre))
-            }
-
-            if let meta = currentROM.metadata, meta.players > 0 {
-                chip(meta.players == 1
-                     ? loc.localized("gameDetail.singlePlayer")
-                     : (meta.cooperative
-                        ? loc.localized("gameDetail.multiCoop")
-                        : loc.localized("gameDetail.multiPlayer")))
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    private func chip(_ text: String) -> some View {
-        Text(text)
-            .font(.caption)
-            .fontWeight(.medium)
-            .foregroundColor(AppColors.textSecondary(colorScheme))
-            .padding(.horizontal, 8)
-            .padding(.vertical, 3)
-            .background(AppColors.cardBackgroundSubtle(colorScheme))
-            .cornerRadius(AppRadius.xs)
     }
 
     var launchButton: some View {
