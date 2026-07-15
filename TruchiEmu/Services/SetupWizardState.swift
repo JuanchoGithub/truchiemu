@@ -97,6 +97,7 @@ final class SetupWizardState: ObservableObject {
     @Published var featureStreaming: Bool = false
     @Published var featureLaunchBox: Bool = false
     @Published var featureAccessibility: Bool = false
+    @Published var featureTimeMachine: Bool = false
     
     // RetroAchievements setup
     @Published var achievementsUsername: String = ""
@@ -194,7 +195,10 @@ final class SetupWizardState: ObservableObject {
         
         // LaunchBox
         featureLaunchBox = AppSettings.getBool("launchbox_use_for_boxart", defaultValue: false)
-        
+
+        // Time Machine (defaults to on at runtime)
+        featureTimeMachine = AppSettings.getBool("timeMachine_enabled", defaultValue: true)
+
         // Streaming
         let streamingOn = AppSettings.getBool("streaming_enabled", defaultValue: false)
         featureStreaming = streamingOn
@@ -387,6 +391,9 @@ final class SetupWizardState: ObservableObject {
         }
         if featureLaunchBox {
             items.append("wizard.summary.launchbox")
+        }
+        if featureTimeMachine {
+            items.append("wizard.summary.timeMachine")
         }
         if featureAccessibility {
             items.append("wizard.summary.accessibility")

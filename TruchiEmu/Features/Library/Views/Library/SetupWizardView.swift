@@ -155,6 +155,9 @@ Button(loc.localized("wizard.skip")) {
             AppSettings.setBool("cheats_enabled", value: true)
         }
 
+        // Time Machine (always write, even if false, so the wizard's choice takes effect)
+        AppSettings.setBool("timeMachine_enabled", value: wizard.featureTimeMachine)
+
         // Streaming
         if wizard.featureStreaming {
             AppSettings.setBool("streaming_enabled", value: wizard.streamingEnabled)
@@ -599,6 +602,15 @@ extension SetupWizardView {
                     title: loc.localized("wizard.feature.launchbox"),
                     description: loc.localized("wizard.feature.launchboxDesc"),
                     isOn: $wizard.featureLaunchBox
+                )
+
+                Divider()
+
+                featureRow(
+                    icon: "clock.arrow.circlepath",
+                    title: loc.localized("wizard.feature.timeMachine"),
+                    description: loc.localized("wizard.feature.timeMachineDesc"),
+                    isOn: $wizard.featureTimeMachine
                 )
 
                 Divider()
