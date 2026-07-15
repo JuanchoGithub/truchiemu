@@ -134,15 +134,25 @@ LoggerService.debug(category: "ShaderPicker", "newPresetID=\(newPresetID), targe
 #endif
 
 // Activate the shader - check built-in, saved, and slang presets
+var activatedSlang = false
 if let preset = ShaderPreset.preset(id: newPresetID) {
     ShaderManager.shared.activatePreset(preset)
 } else if let savedPreset = ShaderPresetStorageService.shared.savedPresets.first(where: { $0.id.uuidString == newPresetID }) {
-    ShaderManager.shared.activatePresetWithOverrides(presetID: savedPreset.basePresetID, overrides: savedPreset.uniformValues)
+    ShaderManager.shared.activateSavedPreset(savedPreset)
+    activatedSlang = ShaderManager.shared.activeSlangPreset != nil
 } else if let slangPreset = SlangPresetDiscoveryService.shared.presets.first(where: { $0.path.path == newPresetID }) {
-    ShaderManager.shared.activateSlangPreset(slangPreset)
+    ShaderManager.shared.activateSlangPreset(slangPreset, overrides: newUniforms)
+    activatedSlang = true
+} else {
+    ShaderManager.shared.resetToDefault()
 }
-for (name, value) in newUniforms {
-    ShaderManager.shared.updateUniform(name, value: value)
+
+// Apply in-memory uniform adjustments for the system level (not persisted for in-house shaders).
+// Slang presets already had their overrides routed into the filter chain during activation.
+if !activatedSlang {
+    for (name, value) in newUniforms {
+        ShaderManager.shared.updateUniform(name, value: value)
+    }
 }
 
 let targetSystemID = targetSystem.id

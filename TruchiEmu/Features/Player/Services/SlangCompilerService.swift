@@ -82,6 +82,7 @@ class SlangCompilerService: ObservableObject {
 
         chainLock.lock()
         _filterChain = chain
+        _queue = queue
         chainLock.unlock()
         activePreset = slangPreset
         LoggerService.info(category: "Slang", "Chain created successfully for preset: \(slangPreset.name)")

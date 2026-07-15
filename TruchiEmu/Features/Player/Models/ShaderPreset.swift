@@ -66,7 +66,8 @@ struct ShaderUniformOption: Codable, Hashable {
 
   var displayLabel: String {
     let key = "shader.option.\(label.lowercased().replacingOccurrences(of: " ", with: "_"))"
-    return LocalizationManager.shared.localized(key)
+    let translated = LocalizationManager.shared.localized(key)
+    return translated == key ? label : translated
   }
 }
 
@@ -79,13 +80,22 @@ struct ShaderUniform: Codable, Hashable, Identifiable {
   var step: Float = 0.01
   var displayName: String?
   var description: String?
+  /// Optional group/category for the parameter (e.g. "Beam", "Geometry") used to group
+  /// slang shader parameters. Nil for built-in Metal shaders.
+  var category: String?
   var type: ShaderUniformType = .slider
   var options: [ShaderUniformOption]? = nil
 
   var displayLabel: String {
     if let displayName = displayName {
       let key = "shader.param.\(displayName.lowercased().replacingOccurrences(of: " ", with: "_").replacingOccurrences(of: "'", with: ""))"
-      return LocalizationManager.shared.localized(key)
+      let translated = LocalizationManager.shared.localized(key)
+      // If no translation exists, fall back to the (already cleaned) display name rather
+      // than showing the mangled localization key.
+      if translated != key {
+        return translated
+      }
+      return displayName
     }
     return name.replacingOccurrences(of: "_", with: " ").capitalized
   }

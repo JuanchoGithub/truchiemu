@@ -510,12 +510,12 @@ func launchGame(
             } else {
                 // Check saved custom presets (by UUID string)
                 if let savedPreset = ShaderPresetStorageService.shared.savedPresets.first(where: { $0.id.uuidString == config.shaderPresetID }) {
-                    ShaderManager.shared.activatePresetWithOverrides(presetID: savedPreset.basePresetID, overrides: savedPreset.uniformValues)
+                    ShaderManager.shared.activateSavedPreset(savedPreset)
                     #if LOG_DEBUG
                     LoggerService.debug(category: "GameLauncher", "Activated custom shader: \(savedPreset.name)")
                     #endif
                 } else if let slangPreset = SlangPresetDiscoveryService.shared.presets.first(where: { $0.path.path == config.shaderPresetID }) {
-                    ShaderManager.shared.activateSlangPreset(slangPreset)
+                    ShaderManager.shared.activateSlangPreset(slangPreset, overrides: config.shaderUniformOverrides)
                     #if LOG_DEBUG
                     LoggerService.debug(category: "GameLauncher", "Activated slang shader: \(slangPreset.name)")
                     #endif
@@ -536,10 +536,18 @@ func launchGame(
         }
 
         
-        // 1.5. Apply shader uniform overrides (after preset activation to override defaults)
+        // 1.5. Apply shader uniform overrides after preset activation (override saved/defaults).
+        // Slang chains route through the librashader filter chain; Metal presets use the
+        // in-house ShaderParameterStore.
         if !config.shaderUniformOverrides.isEmpty {
-            for (name, value) in config.shaderUniformOverrides {
-                ShaderManager.shared.updateUniform(name, value: value)
+            if ShaderManager.shared.activeSlangPreset != nil {
+                for (name, value) in config.shaderUniformOverrides {
+                    SlangCompilerService.shared.setParameter(name: name, value: value)
+                }
+            } else {
+                for (name, value) in config.shaderUniformOverrides {
+                    ShaderManager.shared.updateUniform(name, value: value)
+                }
             }
         }
 

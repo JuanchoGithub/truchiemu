@@ -65,13 +65,35 @@ class KeyWindowPanel: NSPanel {
 
 // MARK: - Shader Parameter Sliders (Embedded in Picker View)
 struct ShaderParameterSliders: View {
-    let preset: ShaderPreset
+    let uniforms: [ShaderUniform]
     @Binding var uniformValues: [String: Float]
-	var onValueCommitted: (([String: Float]) -> Void)?
+	var onUpdate: ((String, Float) -> Void)?
 	@ObservedObject private var loc = LocalizationManager.shared
 	@Environment(\.colorScheme) private var colorScheme
 
-	var body: some View {
+    init(uniforms: [ShaderUniform],
+         uniformValues: Binding<[String: Float]>,
+         onUpdate: ((String, Float) -> Void)? = nil) {
+        self.uniforms = uniforms
+        self._uniformValues = uniformValues
+        self.onUpdate = onUpdate
+    }
+
+    /// Groups uniforms by their category (when present), preserving first-seen order.
+    /// Uniforms without a category are collected under a nil section (rendered ungrouped).
+    private var groupedSections: [(category: String?, uniforms: [ShaderUniform])] {
+        var seen: [String] = []
+        var buckets: [String?: [ShaderUniform]] = [:]
+        for uniform in uniforms {
+            let key = uniform.category
+            buckets[key, default: []].append(uniform)
+            if let c = key, !seen.contains(c) { seen.append(c) }
+        }
+        if buckets[nil] != nil { seen.insert("", at: 0) }
+        return seen.map { c in (c.isEmpty ? nil : c, buckets[c.isEmpty ? nil : c] ?? []) }
+    }
+
+    var body: some View {
         VStack(alignment: .leading, spacing: 8) {
               HStack {
                   Image(systemName: "slider.horizontal.3")
@@ -85,8 +107,21 @@ struct ShaderParameterSliders: View {
 
              ScrollView {
                  VStack(spacing: 12) {
-                     ForEach(preset.globalUniforms) { uniform in
-                         parameterSliderRow(for: uniform)
+                     ForEach(groupedSections, id: \.category) { section in
+                         VStack(alignment: .leading, spacing: 8) {
+                             if let category = section.category {
+                                 Text(category.uppercased())
+                                     .font(.caption)
+                                     .fontWeight(.semibold)
+                                     .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                                     .padding(.leading, 2)
+                             }
+                             VStack(spacing: 12) {
+                                 ForEach(section.uniforms) { uniform in
+                                     parameterSliderRow(for: uniform)
+                                 }
+                             }
+                         }
                      }
                  }
                  .padding(.vertical, 4)
@@ -99,104 +134,117 @@ struct ShaderParameterSliders: View {
 
 private func parameterSliderRow(for uniform: ShaderUniform) -> some View {
           Group {
-              if uniform.type == .toggle {
-                  HStack(alignment: .center) {
-                      VStack(alignment: .leading, spacing: 2) {
-                          Text(uniform.displayLabel)
-                              .font(.subheadline)
-                          if let desc = uniform.description {
-                        Text(desc)
-                            .font(.caption2)
-                            .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
-                            .lineLimit(2)
-                        }
-                    }
+               let hasRange = uniform.minValue != uniform.maxValue
+               if uniform.type == .toggle {
+                   HStack(alignment: .center) {
+                       VStack(alignment: .leading, spacing: 2) {
+                           Text(uniform.displayLabel)
+                               .font(.subheadline)
+                           if let desc = uniform.description {
+                         Text(desc)
+                             .font(.caption2)
+                             .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                             .lineLimit(2)
+                         }
+                     }
 
-                    Spacer()
+                     Spacer()
 
-                    Toggle("", isOn: Binding(
-                           get: { currentUniformValue(for: uniform) > 0.5 },
-                           set: { newValue in
-                               uniformValues[uniform.name] = newValue ? 1.0 : 0.0
-                               ShaderManager.shared.updateUniform(uniform.name, value: newValue ? 1.0 : 0.0)
-                           }
-                       ))
-                       .toggleStyle(.switch)
-                       .labelsHidden()
-                       .controlSize(.small)
-                  }
-              } else if uniform.type == .dropdown {
-                  VStack(alignment: .leading, spacing: 4) {
-                      HStack(alignment: .firstTextBaseline) {
-                          VStack(alignment: .leading, spacing: 2) {
-                              Text(uniform.displayLabel)
-                                  .font(.subheadline)
-            if let desc = uniform.description {
-                    Text(desc)
-                        .font(.caption2)
-                        .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
-                        .lineLimit(2)
-                    }
-                }
-
-                Spacer()
-            }
-
-            let selectedValue = currentUniformValue(for: uniform)
-                       Picker("", selection: Binding(
-                           get: { selectedValue },
-                           set: { newValue in
-                               uniformValues[uniform.name] = newValue
-                               ShaderManager.shared.updateUniform(uniform.name, value: newValue)
-                           }
-                       )) {
-                            ForEach(uniform.options ?? [], id: \.value) { option in
-                                Text(option.displayLabel).tag(option.value)
+                     Toggle("", isOn: Binding(
+                            get: { currentUniformValue(for: uniform) > 0.5 },
+                            set: { newValue in
+                                let v: Float = newValue ? 1.0 : 0.0
+                                uniformValues[uniform.name] = v
+                                onUpdate?(uniform.name, v)
                             }
-                       }
-                       .pickerStyle(.menu)
-                       .controlSize(.small)
-                  }
-              } else {
-                  VStack(alignment: .leading, spacing: 4) {
-                      HStack(alignment: .firstTextBaseline) {
-                          VStack(alignment: .leading, spacing: 2) {
-                              Text(uniform.displayLabel)
-                                  .font(.subheadline)
-                if let desc = uniform.description {
-                        Text(desc)
-                            .font(.caption2)
-                            .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
-                            .lineLimit(2)
+                        ))
+                        .toggleStyle(.switch)
+                        .labelsHidden()
+                        .controlSize(.small)
+                   }
+                } else if uniform.type == .dropdown {
+                   VStack(alignment: .leading, spacing: 4) {
+                       HStack(alignment: .firstTextBaseline) {
+                           VStack(alignment: .leading, spacing: 2) {
+                               Text(uniform.displayLabel)
+                                   .font(.subheadline)
+             if let desc = uniform.description {
+                     Text(desc)
+                         .font(.caption2)
+                         .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                         .lineLimit(2)
+                     }
+                 }
+
+                 Spacer()
+             }
+
+             let selectedValue = currentUniformValue(for: uniform)
+                        Picker("", selection: Binding(
+                            get: { selectedValue },
+                            set: { newValue in
+                                uniformValues[uniform.name] = newValue
+                                onUpdate?(uniform.name, newValue)
+                            }
+                        )) {
+                             ForEach(uniform.options ?? [], id: \.value) { option in
+                                 Text(option.displayLabel).tag(option.value)
+                             }
                         }
-                    }
+                        .pickerStyle(.menu)
+                        .controlSize(.small)
+                   }
+               } else if !hasRange {
+                   HStack {
+                       Text(uniform.displayLabel)
+                           .font(.subheadline)
+                       Spacer()
+                       Text(formatUniformValue(currentUniformValue(for: uniform)))
+                           .font(.caption)
+                           .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                           .monospacedDigit()
+                   }
+               } else {
+                   let safeStep = uniform.step > 0 ? uniform.step : 0.001
+                   VStack(alignment: .leading, spacing: 4) {
+                       HStack(alignment: .firstTextBaseline) {
+                           VStack(alignment: .leading, spacing: 2) {
+                               Text(uniform.displayLabel)
+                                   .font(.subheadline)
+                 if let desc = uniform.description {
+                         Text(desc)
+                             .font(.caption2)
+                             .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                             .lineLimit(2)
+                         }
+                     }
 
-                    Spacer()
+                     Spacer()
 
-                    Text(formatUniformValue(currentUniformValue(for: uniform)))
-                        .font(.caption)
-                        .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
-                        .monospacedDigit()
-                      }
+                     Text(formatUniformValue(currentUniformValue(for: uniform)))
+                         .font(.caption)
+                         .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                         .monospacedDigit()
+                       }
 
 Slider(
                             value: Binding(
                                 get: { currentUniformValue(for: uniform) },
                                 set: { newValue in
-                                    let steppedValue = (newValue / uniform.step).rounded() * uniform.step
+                                    let steppedValue = (newValue / safeStep).rounded() * safeStep
                                     uniformValues[uniform.name] = steppedValue
-                                    ShaderManager.shared.updateUniform(uniform.name, value: steppedValue)
+                                    onUpdate?(uniform.name, steppedValue)
                                 }
                             ),
                             in: uniform.minValue...uniform.maxValue,
-                            step: uniform.step,
+                            step: safeStep,
                             onEditingChanged: { _ in }
                         )
                        .controlSize(.small)
-                  }
-              }
-          }
-      }
+                   }
+               }
+           }
+       }
 
     private func currentUniformValue(for uniform: ShaderUniform) -> Float {
         uniformValues[uniform.name] ?? uniform.defaultValue ?? 0.0 as Float
@@ -421,6 +469,11 @@ struct SavedPresetRowView: View {
 	private var loc: LocalizationManager { LocalizationManager.shared }
 	@Environment(\.colorScheme) private var colorScheme
 
+    private func basePresetDisplayName(for preset: SavedShaderPreset) -> String? {
+        if let base = preset.basePreset { return base.name }
+        return SlangPresetDiscoveryService.shared.presets.first { $0.path.path == preset.basePresetID }?.displayName
+    }
+
 	var body: some View {
 		HStack(spacing: 10) {
 			Image(systemName: "bookmark.fill")
@@ -434,8 +487,8 @@ struct SavedPresetRowView: View {
                     .lineLimit(1)
                     .foregroundColor(isSelected ? AppColors.brandAccent : .primary)
 
-                if let base = preset.basePreset {
-            Text(loc.localized("shader.basedOn") + " \(base.name)")
+                if let baseName = basePresetDisplayName(for: preset) {
+            Text(loc.localized("shader.basedOn") + " \(baseName)")
                     .font(.caption2)
                     .foregroundColor(AppColors.textSecondary(colorScheme))
                     .lineLimit(1)
@@ -488,6 +541,8 @@ struct ShaderPresetPickerView: View {
 @State private var searchText: String = ""
 @State private var savedPresets: [SavedShaderPreset] = []
 @ObservedObject private var slangDiscovery = SlangPresetDiscoveryService.shared
+@ObservedObject private var slangService = SlangCompilerService.shared
+@State private var reflectedSlangParams: [ShaderUniform] = []
 @State private var showSaveDialog = false
 @State private var savePresetName: String = ""
 @State private var showImportPicker = false
@@ -578,6 +633,13 @@ controller.close()
                             savePresetBar
                         }
                         .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+                    } else if isSlangPresetSelected, !(slangService.activePreset?.parameters ?? reflectedSlangParams).isEmpty {
+                        // Slang preset with reflected parameters
+                        VStack(spacing: 0) {
+                            parameterSliders
+                            savePresetBar
+                        }
+                        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
                     } else if let savedPreset = savedPresets.first(where: { $0.id.uuidString == settings.shaderPresetID }),
                              !savedPreset.uniformValues.isEmpty {
                          // Saved custom preset with uniforms
@@ -625,8 +687,25 @@ controller.close()
             
             // Load uniform values if the initial preset is a saved custom shader
             if let savedPreset = savedPresets.first(where: { $0.id.uuidString == settings.shaderPresetID }) {
-                // Load base preset uniforms as defaults, then apply saved overrides
-                if let basePreset = ShaderPreset.preset(id: savedPreset.basePresetID) {
+                // Saved preset whose base is a slang path
+                if let slangPreset = SlangPresetDiscoveryService.shared.presets.first(where: { $0.path.path == savedPreset.basePresetID }) {
+                    if let live = SlangCompilerService.shared.activePreset, live.path.path == slangPreset.path.path {
+                        // Chain already active (live edit of a running game): merge live defaults + saved overrides
+                        reflectedSlangParams = live.parameters
+                        var merged = live.parameterDefaults
+                        for (n, v) in savedPreset.uniformValues { merged[n] = v }
+                        settings.uniformValues = merged
+                    } else if let reflected = SlangPreset.reflectParameters(at: slangPreset.path) {
+                        reflectedSlangParams = reflected.parameters
+                        var merged = reflected.defaults
+                        for (n, v) in savedPreset.uniformValues { merged[n] = v }
+                        settings.uniformValues = merged
+                    } else {
+                        settings.uniformValues = savedPreset.uniformValues
+                    }
+                }
+                // Saved preset based on a built-in Metal preset - load uniforms as defaults, then apply saved overrides
+                else if let basePreset = ShaderPreset.preset(id: savedPreset.basePresetID) {
                     var merged: [String: Float] = [:]
                     for uniform in basePreset.globalUniforms {
                         merged[uniform.name] = uniform.defaultValue
@@ -639,6 +718,23 @@ controller.close()
                     settings.uniformValues = savedPreset.uniformValues
                 }
             }
+            // Slang preset selected directly (not via saved preset): ensure its reflected
+            // parameters populate the right column even when no game is running.
+            else if let slangPreset = SlangPresetDiscoveryService.shared.presets.first(where: { $0.path.path == settings.shaderPresetID }) {
+                if let live = SlangCompilerService.shared.activePreset, live.path.path == slangPreset.path.path {
+                    // Live chain already loaded (e.g. game running). Backfill any missing keys with reflected defaults.
+                    reflectedSlangParams = live.parameters
+                    var values = settings.uniformValues
+                    for (n, v) in live.parameterDefaults where values[n] == nil { values[n] = v }
+                    settings.uniformValues = values
+                } else if let reflected = SlangPreset.reflectParameters(at: slangPreset.path) {
+                    // No live chain: backfill persisted overrides with reflected defaults so sliders show.
+                    reflectedSlangParams = reflected.parameters
+                    var values = settings.uniformValues
+                    for (n, v) in reflected.defaults where values[n] == nil { values[n] = v }
+                    settings.uniformValues = values
+                }
+            }
         }
         .onReceive(ShaderPresetStorageService.shared.$savedPresets) { presets in
             savedPresets = presets
@@ -647,9 +743,9 @@ controller.close()
             guard case .success(let url) = result else { return }
             if let imported = ShaderPresetStorageService.shared.import(from: url) {
                 savedPresets = ShaderPresetStorageService.shared.savedPresets
-                settings.shaderPresetID = imported.basePresetID
+                settings.shaderPresetID = imported.id.uuidString
                 settings.uniformValues = imported.uniformValues
-                ShaderManager.shared.activatePresetWithOverrides(presetID: imported.basePresetID, overrides: imported.uniformValues)
+                ShaderManager.shared.activateSavedPreset(imported)
                 selectedCategory = .saved
             }
         }
@@ -1036,7 +1132,23 @@ controller.close()
                 onSelect: {
                     settings.shaderPresetID = preset.id.uuidString
                     settings.uniformValues = preset.uniformValues
-                    ShaderManager.shared.activatePresetWithOverrides(presetID: preset.basePresetID, overrides: preset.uniformValues)
+                    ShaderManager.shared.activateSavedPreset(preset)
+                    // Cache reflected slang params for the right column (no-op for Metal presets)
+                    if let slangBase = SlangPresetDiscoveryService.shared.presets.first(where: { $0.path.path == preset.basePresetID }) {
+                        if let live = SlangCompilerService.shared.activePreset, live.path.path == slangBase.path.path {
+                            reflectedSlangParams = live.parameters
+                            var merged = live.parameterDefaults
+                            for (n, v) in preset.uniformValues { merged[n] = v }
+                            settings.uniformValues = merged
+                        } else if let reflected = SlangPreset.reflectParameters(at: slangBase.path) {
+                            reflectedSlangParams = reflected.parameters
+                            var merged = reflected.defaults
+                            for (n, v) in preset.uniformValues { merged[n] = v }
+                            settings.uniformValues = merged
+                        }
+                    } else {
+                        reflectedSlangParams = []
+                    }
                 },
                 onRename: {
                     renamePreset = preset
@@ -1106,8 +1218,18 @@ controller.close()
             .contentShape(Rectangle())
             .onTapGesture {
                 settings.shaderPresetID = preset.path.path
-                settings.uniformValues = preset.parameterDefaults
                 ShaderManager.shared.activateSlangPreset(preset)
+                let live = SlangCompilerService.shared.activePreset
+                if live?.path.path == preset.path.path, let live = live {
+                    reflectedSlangParams = live.parameters
+                    settings.uniformValues = live.parameterDefaults
+                } else if let reflected = SlangPreset.reflectParameters(at: preset.path) {
+                    reflectedSlangParams = reflected.parameters
+                    settings.uniformValues = reflected.defaults
+                } else {
+                    reflectedSlangParams = []
+                    settings.uniformValues = [:]
+                }
             }
 
             Divider()
@@ -1117,29 +1239,61 @@ controller.close()
     }
 
 // MARK: - Parameter Sliders
-    
+
+    private var isSlangPresetSelected: Bool {
+        SlangPresetDiscoveryService.shared.presets.contains { $0.path.path == settings.shaderPresetID }
+    }
+
     private var parameterSliders: some View {
         Group {
             // Check built-in first
             if let preset = ShaderPreset.preset(id: settings.shaderPresetID),
                !preset.globalUniforms.isEmpty {
                 ShaderParameterSliders(
-                    preset: preset,
+                    uniforms: preset.globalUniforms,
                     uniformValues: $settings.uniformValues,
-                    onValueCommitted: onValueCommitted
+                    onUpdate: { name, value in ShaderManager.shared.updateUniform(name, value: value) }
                 )
                 .frame(maxWidth: .infinity)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 8)
+            }
+            // Slang preset: use reflected parameters from the active chain, or the cached reflection
+            else if isSlangPresetSelected {
+                let slangParams = slangService.activePreset?.parameters ?? reflectedSlangParams
+                if !slangParams.isEmpty {
+                    ShaderParameterSliders(
+                        uniforms: slangParams,
+                        uniformValues: $settings.uniformValues,
+                        onUpdate: { name, value in SlangCompilerService.shared.setParameter(name: name, value: value) }
+                    )
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 8)
+                }
             }
             // Check saved custom presets - use base preset for slider definition
             else if let savedPreset = savedPresets.first(where: { $0.id.uuidString == settings.shaderPresetID }),
                   let basePreset = ShaderPreset.preset(id: savedPreset.basePresetID),
                   !basePreset.globalUniforms.isEmpty {
                 ShaderParameterSliders(
-                    preset: basePreset,
+                    uniforms: basePreset.globalUniforms,
                     uniformValues: $settings.uniformValues,
-                    onValueCommitted: onValueCommitted
+                    onUpdate: { name, value in ShaderManager.shared.updateUniform(name, value: value) }
+                )
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 8)
+            }
+            // Saved custom preset whose base is a slang path
+            else if let savedPreset = savedPresets.first(where: { $0.id.uuidString == settings.shaderPresetID }),
+                    slangService.activePreset?.path.path == savedPreset.basePresetID,
+                    let slangParams = slangService.activePreset?.parameters,
+                    !slangParams.isEmpty {
+                ShaderParameterSliders(
+                    uniforms: slangParams,
+                    uniformValues: $settings.uniformValues,
+                    onUpdate: { name, value in SlangCompilerService.shared.setParameter(name: name, value: value) }
                 )
                 .frame(maxWidth: .infinity)
                 .padding(.horizontal, 8)

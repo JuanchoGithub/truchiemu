@@ -883,7 +883,7 @@ private struct PerSystemShaderView: View {
                 isSelected: preset.id.uuidString == currentPresetID,
                 onSelect: {
                     systemDB.updateSystemShaderPreset(systemID: systemID, presetID: preset.id.uuidString)
-                    shaderManager.activatePresetWithOverrides(presetID: preset.basePresetID, overrides: preset.uniformValues)
+                    shaderManager.activateSavedPreset(preset)
                 },
                 onRename: {},
                 onExport: {},
@@ -977,8 +977,17 @@ private struct PerSystemShaderView: View {
             settings: shaderWindowSettings!
         ) { [self] newPresetID, newUniformValues, _ in
             systemDB.updateSystemShaderPreset(systemID: systemID, presetID: newPresetID)
-            for (key, value) in newUniformValues {
-                shaderManager.updateUniform(key, value: value)
+            let isSlang = SlangPresetDiscoveryService.shared.presets.contains { $0.path.path == newPresetID }
+            if isSlang {
+                shaderManager.activateSlangPreset(
+                    SlangPresetDiscoveryService.shared.presets.first { $0.path.path == newPresetID }!,
+                    overrides: newUniformValues
+                )
+            } else if let preset = ShaderPreset.preset(id: newPresetID) {
+                shaderManager.activatePreset(preset)
+                for (key, value) in newUniformValues { shaderManager.updateUniform(key, value: value) }
+            } else if let savedPreset = ShaderPresetStorageService.shared.savedPresets.first(where: { $0.id.uuidString == newPresetID }) {
+                shaderManager.activateSavedPreset(savedPreset)
             }
             ShaderWindowController.shared?.close()
         }

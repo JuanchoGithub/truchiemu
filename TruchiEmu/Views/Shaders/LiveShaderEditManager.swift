@@ -31,9 +31,18 @@ class LiveShaderEditManager: ObservableObject {
                 for (name, value) in savedPreset.uniformValues {
                     if merged[name] == nil { merged[name] = value }
                 }
-                ShaderManager.shared.activatePresetWithOverrides(presetID: savedPreset.basePresetID, overrides: merged)
+                // For slang-based saved presets the merge above needs to flow into the
+                // slang chain; activateSavedPreset handles both Metal and slang bases,
+                // but it applies only savedPreset.uniformValues. If the saved base is
+                // slang, apply the per-game merge through the slang override path.
+                if SlangPresetDiscoveryService.shared.presets.contains(where: { $0.path.path == savedPreset.basePresetID }),
+                   let slangPreset = SlangPresetDiscoveryService.shared.presets.first(where: { $0.path.path == savedPreset.basePresetID }) {
+                    ShaderManager.shared.activateSlangPreset(slangPreset, overrides: merged)
+                } else {
+                    ShaderManager.shared.activateSavedPreset(savedPreset)
+                }
             } else if let slangPreset = SlangPresetDiscoveryService.shared.presets.first(where: { $0.path.path == presetID }) {
-                ShaderManager.shared.activateSlangPreset(slangPreset)
+                ShaderManager.shared.activateSlangPreset(slangPreset, overrides: shaderUniformOverrides)
             }
         }
 
@@ -92,12 +101,20 @@ class LiveShaderEditManager: ObservableObject {
             guard let self = self else { return }
 
             // Apply to the running game immediately via ShaderManager
+            var activatedSlang = false
             if ShaderPreset.preset(id: newPresetID) != nil {
                 ShaderManager.shared.activatePresetWithOverrides(presetID: newPresetID, overrides: newUniformValues)
             } else if let savedPreset = ShaderPresetStorageService.shared.savedPresets.first(where: { $0.id.uuidString == newPresetID }) {
-                ShaderManager.shared.activatePresetWithOverrides(presetID: savedPreset.basePresetID, overrides: newUniformValues)
+                ShaderManager.shared.activateSavedPreset(savedPreset)
+                activatedSlang = ShaderManager.shared.activeSlangPreset != nil
             } else if let slangPreset = SlangPresetDiscoveryService.shared.presets.first(where: { $0.path.path == newPresetID }) {
-                ShaderManager.shared.activateSlangPreset(slangPreset)
+                ShaderManager.shared.activateSlangPreset(slangPreset, overrides: newUniformValues)
+                activatedSlang = true
+            }
+            if !activatedSlang {
+                for (name, value) in newUniformValues {
+                    ShaderManager.shared.updateUniform(name, value: value)
+                }
             }
 
             // Persist to ROM settings
@@ -144,6 +161,10 @@ class LiveShaderEditManager: ObservableObject {
 
     private func extractCurrentUniformValues(from settings: ROMSettings) -> [String: Float] {
         var values: [String: Float] = [:]
+        // Merge any persisted generic overrides (incl. slang params) first.
+        for (k, v) in settings.shaderUniformOverrides {
+            values[k] = v
+        }
         values["scanlineIntensity"] = settings.scanlineIntensity
         values["barrelAmount"] = settings.barrelAmount
         values["colorBoost"] = settings.colorBoost
@@ -155,6 +176,8 @@ class LiveShaderEditManager: ObservableObject {
     }
 
     private func applyUniformValues(_ values: [String: Float], to settings: inout ROMSettings) {
+        // Persist the full generic dict (covers slang params + arbitrary overrides)
+        settings.shaderUniformOverrides = values
         if let v = values["scanlineIntensity"] { settings.scanlineIntensity = v }
         if let v = values["barrelAmount"] { settings.barrelAmount = v }
         if let v = values["colorBoost"] { settings.colorBoost = v }

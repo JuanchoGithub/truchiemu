@@ -40,7 +40,7 @@ class ShaderManager: ObservableObject {
             } else {
                 // Check saved custom presets (by UUID string)
                 if let savedPreset = ShaderPresetStorageService.shared.savedPresets.first(where: { $0.id.uuidString == savedDefaultID }) {
-                    activatePresetWithOverrides(presetID: savedPreset.basePresetID, overrides: savedPreset.uniformValues)
+                    activateSavedPreset(savedPreset)
                 } else {
                     loadDefaultUniforms()
                 }
@@ -60,14 +60,22 @@ class ShaderManager: ObservableObject {
     private var library: MTLLibrary?
     
     
-    func activateSlangPreset(_ preset: SlangPreset) {
+    func activateSlangPreset(_ preset: SlangPreset, overrides: [String: Float] = [:]) {
         do {
-            _ = try SlangCompilerService.shared.loadAndActivatePreset(at: preset.path, queue: commandQueue ?? device!.makeCommandQueue()!)
-            activeSlangPreset = preset
+            let reflected = try SlangCompilerService.shared.loadAndActivatePreset(at: preset.path, queue: commandQueue ?? device!.makeCommandQueue()!)
+            activeSlangPreset = reflected
             activePreset = ShaderPreset.defaultPreset
             clearPipelineCache()
             Self.parameterStore.updateFragmentFunctionName("slang")
-            LoggerService.info(category: "ShaderManager", "Activated slang shader preset: \(preset.name)")
+
+            var values = reflected.parameterDefaults
+            for (name, value) in overrides {
+                values[name] = value
+                SlangCompilerService.shared.setParameter(name: name, value: value)
+            }
+            uniformValues = values
+
+            LoggerService.info(category: "ShaderManager", "Activated slang shader preset: \(preset.name) (params=\(reflected.parameters.count))")
         } catch {
             LoggerService.error(category: "ShaderManager", "Failed to activate slang preset: \(error.localizedDescription)")
         }
@@ -226,6 +234,15 @@ class ShaderManager: ObservableObject {
 
         let fragmentName = deriveFragmentFunctionName(from: preset)
         Self.parameterStore.updateFragmentFunctionName(fragmentName)
+    }
+
+    // Activate a saved preset whose base may be a built-in Metal preset or a slang .slangp path.
+    func activateSavedPreset(_ saved: SavedShaderPreset) {
+        if let slangPreset = SlangPresetDiscoveryService.shared.presets.first(where: { $0.path.path == saved.basePresetID }) {
+            activateSlangPreset(slangPreset, overrides: saved.uniformValues)
+        } else {
+            activatePresetWithOverrides(presetID: saved.basePresetID, overrides: saved.uniformValues)
+        }
     }
 
     // Update a uniform value

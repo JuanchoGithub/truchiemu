@@ -148,15 +148,22 @@ LoggerService.debug(category: "ShaderPicker", "Settings context: systemID=\(Stri
 #endif
 
 // Activate the shader if a game is currently running with this runner
+var activatedSlang = false
 if let preset = ShaderPreset.preset(id: newPresetID) {
     ShaderManager.shared.activatePreset(preset)
 } else if let savedPreset = ShaderPresetStorageService.shared.savedPresets.first(where: { $0.id.uuidString == newPresetID }) {
-    ShaderManager.shared.activatePresetWithOverrides(presetID: savedPreset.basePresetID, overrides: savedPreset.uniformValues)
+    ShaderManager.shared.activateSavedPreset(savedPreset)
+    activatedSlang = ShaderManager.shared.activeSlangPreset != nil
 } else if let slangPreset = SlangPresetDiscoveryService.shared.presets.first(where: { $0.path.path == newPresetID }) {
-    ShaderManager.shared.activateSlangPreset(slangPreset)
+    ShaderManager.shared.activateSlangPreset(slangPreset, overrides: newUniformValues)
+    activatedSlang = true
 }
-for (name, value) in newUniformValues {
-    ShaderManager.shared.updateUniform(name, value: value)
+// Confirmed-persisted uniform overrides for a slang preset were applied during
+// activation above; only route remaining (Metal) uniforms through the in-house store.
+if !activatedSlang {
+    for (name, value) in newUniformValues {
+        ShaderManager.shared.updateUniform(name, value: value)
+    }
 }
 
 updateSettings { romSettings in
@@ -238,6 +245,10 @@ ShaderWindowController.shared?.close()
 
     func extractUniformValues(from settings: ROMSettings) -> [String: Float] {
         var values: [String: Float] = [:]
+        // Merge any persisted general overrides (incl. slang params) first.
+        for (k, v) in settings.shaderUniformOverrides {
+            values[k] = v
+        }
         values["scanlineIntensity"] = settings.scanlineIntensity
         values["barrelAmount"] = settings.barrelAmount
         values["colorBoost"] = settings.colorBoost
