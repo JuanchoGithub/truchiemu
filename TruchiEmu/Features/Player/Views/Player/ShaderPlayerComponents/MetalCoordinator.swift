@@ -316,6 +316,36 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
                     recordingStartTime = 0
                     wasRecordingFlag = false
                 }
+
+                // Screenshot capture: built-in-shader path runs in the enc
+                // block below; the slang path early-returns, so we capture
+                // here using the same helper so slang presets also produce a
+                // saved PNG on screenshot hotkey/menu.
+                if pendingDisplayURL != nil {
+                    let displayURL = pendingDisplayURL
+                    let nativeURL = pendingNativeURL
+                    performScreenshotCapture(
+                        commandBuffer: cmdBuffer,
+                        device: device,
+                        drawable: drawable.texture,
+                        sourceNative: frameTex,
+                        displayURL: displayURL,
+                        nativeURL: nativeURL
+                    )
+                    pendingDisplayURL = nil
+                    pendingNativeURL = nil
+                    pendingWantsNative = false
+                    let cb = pendingOnComplete
+                    pendingOnComplete = nil
+                    if let cb = cb {
+                        cmdBuffer.addCompletedHandler { _ in
+                            var saved: [URL] = []
+                            if let u = displayURL { saved.append(u) }
+                            if let u = nativeURL { saved.append(u) }
+                            cb(saved)
+                        }
+                    }
+                }
             }
             cmdBuffer.present(drawable)
             cmdBuffer.commit()
