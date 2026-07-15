@@ -12,6 +12,7 @@ struct BoxArtPickerView: View {
     @ObservedObject private var loc = LocalizationManager.shared
 
     @State private var appliedSearchText: String = ""
+    @State private var coachDismissed: Bool = AppSettings.getBool("boxArtPickerCoachDismissed", defaultValue: false)
 
     enum SearchEngine: String, CaseIterable {
         case duckduckgo = "DuckDuckGo"
@@ -23,6 +24,10 @@ struct BoxArtPickerView: View {
             header
 
             Divider()
+
+            if !coachDismissed {
+                coachmark
+            }
 
             VStack(spacing: 12) {
                 HStack(spacing: 10) {
@@ -52,9 +57,18 @@ struct BoxArtPickerView: View {
                     }
                 }
 
-            Text(loc.localized("boxArt.rightClickInfo"))
-                .font(.caption)
-                .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                HStack(spacing: 6) {
+                    Image(systemName: "hand.point.up.left.fill")
+                        .font(.caption)
+                    Text(loc.localized("boxArt.rightClickInfo"))
+                        .font(.caption)
+                }
+                .foregroundColor(AppColors.textSecondary(colorScheme))
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(AppColors.cardBackgroundSubtle(colorScheme))
+                .cornerRadius(8)
             }
             .padding()
 
@@ -75,6 +89,30 @@ struct BoxArtPickerView: View {
     private func updateSearch() {
         appliedSearchText = searchText
     }
+
+    private var coachmark: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "lightbulb.fill")
+                .foregroundColor(AppColors.brandAccent)
+            Text(loc.localized("boxArt.pickTip"))
+                .font(.callout)
+                .foregroundColor(AppColors.textPrimary(colorScheme))
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer()
+            Button {
+                coachDismissed = true
+                AppSettings.setBool("boxArtPickerCoachDismissed", value: true)
+            } label: {
+                Image(systemName: "xmark.circle.fill")
+                    .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+            }
+            .buttonStyle(.plain)
+            .help(loc.localized("library.cancel"))
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(AppColors.brandAccentSecondary.opacity(0.12))
+    }
         
 
     private var header: some View {
@@ -89,7 +127,7 @@ struct BoxArtPickerView: View {
             Spacer()
             Button(loc.localized("core.cancel")) { dismiss() }
                 .buttonStyle(.bordered)
-            Button(loc.localized("core.done")) { dismiss() }
+            Button(loc.localized("boxArt.close")) { dismiss() }
                 .buttonStyle(.borderedProminent)
         }
         .padding()

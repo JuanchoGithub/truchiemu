@@ -1412,6 +1412,8 @@
   "boxArt.searchQuery": "Consulta de busca...",
   "boxArt.engine": "Motor",
   "boxArt.rightClickInfo": "Clique com o botão direito em qualquer imagem para usá-la como capa",
+  "boxArt.close": "Fechar",
+  "boxArt.pickTip": "Dica: clique com o botão direito em qualquer capa dos resultados para usá-la.",
   "boxArt.pickerTitle": "Buscar capa",
   "boxArt.downloadSheet.title": "Baixar Capas",
   "boxArt.downloadSheet.regionLabel": "Região",

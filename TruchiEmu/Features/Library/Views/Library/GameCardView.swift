@@ -185,8 +185,8 @@ struct GameCardView: View {
                 )
                 .grayscale(artworkGrayscale)
                 .opacity(artworkOpacity)
-                .padding(.horizontal, 8)
-                .padding(.top, 8)
+                .padding(.horizontal, 4)
+                .padding(.top, 4)
 
                 if raService.isEnabled && rom.raMatchStatus == "matched" {
                     Image(systemName: "trophy.fill")
@@ -258,8 +258,8 @@ struct GameCardView: View {
                     }
                 }
             }
-            .padding(.horizontal, 4)
-            .padding(.bottom, 4)
+            .padding(.horizontal, 8)
+            .padding(.bottom, 6)
             .frame(maxWidth: .infinity, alignment: .leading)
 
             if isSingleBoxTypeView {
@@ -270,7 +270,7 @@ struct GameCardView: View {
         }
         .padding(.horizontal, 8)
         .padding(.top, 8)
-        .padding(.bottom, 4)
+        .padding(.bottom, 8)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: isSingleBoxTypeView ? .top : .center)
         .background(
             RoundedRectangle(cornerRadius: 12)
@@ -299,8 +299,8 @@ struct GameCardView: View {
                     .tint(AppColors.brandAccent)
             }
         }
-        .overlay(alignment: .center) {
-            if isHovered, !isLaunching {
+            .overlay(alignment: .center) {
+                if isHovered, !isLaunching {
                 Button {
                     onDoubleClick?()
                 } label: {
@@ -317,8 +317,15 @@ struct GameCardView: View {
             }
         }
         .shadow(
-            color: isLaunching ? AppColors.brandAccent.opacity(0.4) : (isSelected ? AppColors.brandAccentSecondary.opacity(0.25) : (isHovered ? AppColors.brandAccentSecondary.opacity(0.25) : .clear)),
-            radius: isLaunching ? 12 : (isSelected ? 6 : (isHovered ? 10 : 6))
+            color: isLaunching
+                ? AppColors.brandAccent.opacity(0.4)
+                : isSelected
+                ? AppColors.brandAccentSecondary.opacity(0.30)
+                : isHovered
+                ? AppColors.brandAccentSecondary.opacity(0.28)
+                : Color.black.opacity(0.14),
+            radius: isLaunching ? 14 : isSelected ? 9 : isHovered ? 12 : 7,
+            y: isLaunching ? 0 : isHovered ? 6 : 3
         )
         .offset(y: isPressed ? -4 : 0)
     }
@@ -341,7 +348,8 @@ struct GameCardView: View {
             .frame(width: geometry.size.width, height: geometry.size.height)
         }
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .shadow(color: Color.black.opacity(isPressed ? 0.35 : 0.25), radius: isPressed ? 8 : 4, x: 0, y: isPressed ? 4 : 2)
+        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.black.opacity(0.10), lineWidth: 1))
+        .shadow(color: Color.black.opacity(isPressed ? 0.35 : 0.20), radius: isPressed ? 9 : 5, x: 0, y: isPressed ? 5 : 3)
     }
 
     private var placeholderArt: some View {

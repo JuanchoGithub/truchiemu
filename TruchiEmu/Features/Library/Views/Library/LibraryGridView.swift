@@ -487,14 +487,15 @@ struct LibraryGridView: View {
                         }
                     }
                     NSApp.windows.first { $0.identifier?.rawValue == "settings" }?.makeKeyAndOrderFront(nil)
-        } label: {
-                Label(loc.localized("app.settings"), systemImage: "gearshape")
-                    .labelStyle(.titleAndIcon)
+                } label: {
+                    Label(loc.localized("app.settings"), systemImage: "gearshape")
+                        .labelStyle(.titleAndIcon)
+                }
+                .padding(.horizontal, 4)
+                .help(loc.localized("app.settings"))
+                .foregroundStyle(ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .primary)
             }
-            .padding(.horizontal, 4)
-            .help(loc.localized("app.settings"))
-            .foregroundStyle(ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .primary)
-        }
+
     }
     .sheet(isPresented: $showBoxArtDownloadSheet) {
         BoxArtDownloadSheet(
@@ -1685,38 +1686,6 @@ viewModel.updateFilters(
         .padding(.bottom, 4)
     }
     
-    // Visible zoom slider for the grid view
-    // Uses onEditingChanged to avoid column recalculation on every tiny value change
-    // during scroll (which causes scroll lock/jank).
-    private var zoomSlider: some View {
-        HStack(spacing: 8) {
-		Image(systemName: "minus.magnifyingglass")
-		.font(.system(size: 12))
-		.foregroundColor(AppColors.textSecondaryNeutral(colorScheme).opacity(0.6))
-		.frame(width: 16)
-
-		Slider(value: $continuousZoom, in: 0...1, step: 1.0/7.0,
-			onEditingChanged: { isEditing in
-			if !isEditing {
-				withAnimation(.interpolatingSpring(stiffness: 150, damping: 20)) {
-				updateColumnCountFromZoom()
-				}
-			}
-			})
-
-		Image(systemName: "plus.magnifyingglass")
-		.font(.system(size: 12))
-		.foregroundColor(AppColors.textSecondaryNeutral(colorScheme).opacity(0.6))
-		.frame(width: 16)
-
-		Text("\(Int(continuousZoom * 100))%")
-		.font(.system(size: 11, weight: .medium, design: .monospaced))
-		.foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
-		.frame(width: 32, alignment: .trailing)
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 6)
-    }
     @State private var isLastPlayedHovered = false
     @State private var isLastAddedHovered = false
     

@@ -1406,6 +1406,8 @@
   "boxArt.searchQuery": "Buscar...",
   "boxArt.engine": "Motor",
   "boxArt.rightClickInfo": "Haz clic derecho en cualquier imagen para usarla como carátula",
+  "boxArt.close": "Cerrar",
+  "boxArt.pickTip": "Consejo: haz clic derecho en cualquier carátula de los resultados para usarla.",
   "boxArt.pickerTitle": "Buscar carátula",
   "boxArt.downloadSheet.title": "Descargar carátulas",
   "boxArt.downloadSheet.regionLabel": "Región",

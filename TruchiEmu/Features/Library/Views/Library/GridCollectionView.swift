@@ -142,7 +142,7 @@ final class GridCollectionViewCoordinator: NSObject {
     func updateItemSizes() {
         guard let cv = collectionView else { return }
         let cardWidth: CGFloat = (80 + (zoomLevel * 200)) * 1.25
-        let spacing: CGFloat = max(6, 16 - (zoomLevel * 8))
+        let spacing: CGFloat = max(8, 18 - (zoomLevel * 8))
         gridSpacing = spacing
 
         _ = max(1, min(8, Int((cv.bounds.width - (gridPadding.leading + gridPadding.trailing) + spacing) / (cardWidth + spacing))))
