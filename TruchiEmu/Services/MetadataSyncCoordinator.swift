@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import SwiftData
 
 @MainActor
 final class MetadataSyncCoordinator: ObservableObject {
@@ -87,16 +88,22 @@ final class MetadataSyncCoordinator: ObservableObject {
         var completed = 0
         var enriched = 0
 
+        var enrichedIDs: [UUID] = []
         for rom in needMetadata {
-            let found = await metadataService.fetchAndApplyMetadata(for: rom, library: library)
+            let found = await metadataService.fetchAndApplyMetadata(for: rom, library: library, downloadBoxArt: false, persistImmediately: false)
             completed += 1
-            if found { enriched += 1 }
+            if found { enriched += 1; enrichedIDs.append(rom.id) }
             progress = Double(completed) / Double(max(total, 1))
             let systemID = rom.systemID ?? "?"
             statusLine = "\(completed)/\(total) — \(rom.displayName) (\(systemID))" + (found ? " ✓" : " — no match")
-            try? await Task.sleep(nanoseconds: 50_000_000)
+            if completed % 20 == 0 { await Task.yield() }
         }
 
+        if !enrichedIDs.isEmpty {
+            statusLine = "Flushing changes to disk..."
+            LibraryMetadataStore.shared.flushDirtyToSwiftData()
+            library.saveROMsToDatabase(only: enrichedIDs)
+        }
         progress = 1
         statusLine = "Done — \(enriched) enriched of \(total) ROMs"
     }
@@ -153,16 +160,22 @@ final class MetadataSyncCoordinator: ObservableObject {
         var completed = 0
         var enriched = 0
 
+        var enrichedIDs: [UUID] = []
         for rom in allROMs {
-            let found = await metadataService.fetchAndApplyMetadata(for: rom, library: library)
+            let found = await metadataService.fetchAndApplyMetadata(for: rom, library: library, downloadBoxArt: false, persistImmediately: false)
             completed += 1
-            if found { enriched += 1 }
+            if found { enriched += 1; enrichedIDs.append(rom.id) }
             progress = Double(completed) / Double(max(total, 1))
             let systemID = rom.systemID ?? "?"
             statusLine = "\(completed)/\(total) — \(rom.displayName) (\(systemID))" + (found ? " ✓" : " — no match")
-            try? await Task.sleep(nanoseconds: 50_000_000)
+            if completed % 20 == 0 { await Task.yield() }
         }
 
+        if !enrichedIDs.isEmpty {
+            statusLine = "Flushing changes to disk..."
+            LibraryMetadataStore.shared.flushDirtyToSwiftData()
+            library.saveROMsToDatabase(only: enrichedIDs)
+        }
         progress = 1
         statusLine = "Force sync complete — \(enriched) matched of \(total) ROMs"
     }

@@ -320,35 +320,111 @@ final class LaunchBoxMetadataService: ObservableObject {
         return result
     }
 
-    private func buildCrossRef(gamesByPlatform: [String: [LaunchBoxGame]]) -> [String: String] {
-        var map: [String: String] = [:]
-        let allSystems = SystemDatabase.systems
+    private static let platformOverrides: [String: String] = [
+        "psp": "Sony PSP",
+        "mame": "Arcade",
+        "fba": "Arcade",
+        "hbmame": "Arcade",
+        "dice": "Arcade",
+        "daphne": "Arcade",
+        "laserdisc": "Arcade",
+        "atari_st": "Atari ST",
+        "atari_jaguar": "Atari Jaguar",
+        "commodore_64": "Commodore 64",
+        "neogeo": "SNK Neo Geo AES",
+        "pce": "NEC TurboGrafx-16",
+        "pcecd": "NEC TurboGrafx-CD",
+        "apple_ii": "Apple II",
+        "commodore_amiga": "Commodore Amiga",
+        "wonderswan": "WonderSwan",
+        "xbox": "Microsoft Xbox",
+        "odyssey2": "Magnavox Odyssey 2",
+        "pc_88": "NEC PC-8801",
+    ]
 
-        for platformName in gamesByPlatform.keys {
-            let lower = platformName.lowercased()
-            for system in allSystems {
-                let sysName = system.name.lowercased()
-                if lower.contains(sysName) || sysName.contains(lower) {
-                    map[system.id] = platformName
+    private func buildCrossRef(gamesByPlatform: [String: [LaunchBoxGame]]) -> [String: String] {
+        let allSystems = SystemDatabase.systems
+        let platformNames = Array(gamesByPlatform.keys)
+        var map: [String: String] = [:]
+
+        for system in allSystems {
+            if let override = Self.platformOverrides[system.id] {
+                if platformNames.contains(override) {
+                    map[system.id] = override
+                    continue
                 }
+            }
+            let best = bestPlatformName(for: system, available: platformNames)
+            if let best {
+                map[system.id] = best
             }
         }
 
-        for system in allSystems {
-            if map[system.id] == nil {
-                let mfr = system.manufacturer.lowercased()
-                let sysName = system.name.lowercased()
-                for platformName in gamesByPlatform.keys {
-                    let lower = platformName.lowercased()
-                    if lower.contains(mfr) && lower.contains(sysName) {
-                        map[system.id] = platformName
-                        break
+        return map
+    }
+
+    private func bestPlatformName(for system: SystemInfo, available: [String]) -> String? {
+        let sysName = system.name.lowercased().trimmingCharacters(in: .whitespaces)
+        let mfr = system.manufacturer.lowercased().trimmingCharacters(in: .whitespaces)
+
+        var candidates = [sysName]
+
+        if !sysName.contains(mfr) {
+            candidates.append("\(mfr) \(sysName)")
+        }
+
+        if sysName.hasPrefix(mfr) {
+            let stripped = sysName
+                .replacingOccurrences(of: mfr, with: "")
+                .trimmingCharacters(in: CharacterSet.whitespaces.union(.punctuationCharacters))
+            if !stripped.isEmpty {
+                candidates.append(stripped)
+            }
+        }
+
+        if sysName.contains("/") {
+            let separators = [" / ", "/"]
+            for sep in separators {
+                if sysName.contains(sep) {
+                    for part in sysName.components(separatedBy: sep) {
+                        let trimmed = part.trimmingCharacters(in: .whitespaces)
+                        if !trimmed.isEmpty, !candidates.contains(trimmed) {
+                            candidates.append(trimmed)
+                        }
+                        if trimmed.hasPrefix(mfr) {
+                            let stripped = trimmed
+                                .replacingOccurrences(of: mfr, with: "")
+                                .trimmingCharacters(in: CharacterSet.whitespaces.union(.punctuationCharacters))
+                            if !stripped.isEmpty, !candidates.contains(stripped) {
+                                candidates.append(stripped)
+                            }
+                        }
                     }
                 }
             }
         }
 
-        return map
+        for candidate in candidates {
+            if let exact = available.first(where: { $0.lowercased() == candidate }) {
+                return exact
+            }
+        }
+
+        for candidate in candidates {
+            let matches = available.filter { $0.lowercased().contains(candidate) }
+            if !matches.isEmpty {
+                return matches.min(by: { $0.count < $1.count })
+            }
+        }
+
+        if let guessed = LaunchBoxPlatformMapper.launchBoxPlatformName(for: system.id) {
+            let lower = guessed.lowercased()
+            if let match = available.first(where: { $0.lowercased().contains(lower) }) {
+                return match
+            }
+        }
+
+        return nil
     }
 
     // MARK: - Query API
@@ -386,28 +462,86 @@ final class LaunchBoxMetadataService: ObservableObject {
 
     func bestMatch(for gameName: String, platformName: String) -> LaunchBoxGame? {
         let games = games(forPlatform: platformName)
-        let query = gameName.lowercased().trimmingCharacters(in: .whitespaces)
+        let rawQuery = gameName.lowercased().trimmingCharacters(in: .whitespaces)
 
+        guard !rawQuery.isEmpty else { return nil }
+
+        let query = normalizeForMatching(rawQuery)
         guard !query.isEmpty else { return nil }
 
-        let exact = games.first { $0.name.lowercased() == query }
-        if let exact { return exact }
+        let queryTokens = query.searchTokens
+        if queryTokens.isEmpty { return nil }
+
+        if let exact = games.first(where: { normalizeForMatching($0.name.lowercased()) == query }) {
+            return exact
+        }
 
         var scored: [(game: LaunchBoxGame, score: Int)] = []
 
         for game in games {
-            if game.name.lowercased().fuzzyMatch(query) {
-                scored.append((game, fuzzyScore(query, target: game.name.lowercased())))
+            let name = game.name.lowercased()
+            let normalizedName = normalizeForMatching(name)
+
+            let score = matchScore(query: query, queryTokens: queryTokens,
+                                   target: name, normalizedTarget: normalizedName)
+            if score > (scored.last?.1 ?? 0) {
+                scored.append((game, score))
             }
-            for alt in game.alternateNames {
-                if alt.lowercased().fuzzyMatch(query) {
-                    scored.append((game, fuzzyScore(query, target: alt.lowercased())))
-                    break
+
+            for altName in game.alternateNames {
+                let alt = altName.lowercased()
+                let normalizedAlt = normalizeForMatching(alt)
+                let altScore = matchScore(query: query, queryTokens: queryTokens,
+                                          target: alt, normalizedTarget: normalizedAlt)
+                if altScore > (scored.last?.1 ?? 0) {
+                    scored.append((game, altScore))
                 }
             }
         }
 
-        return scored.max(by: { $0.score < $1.score })?.game
+        return scored.max(by: { $0.score < $1.score }).flatMap { $0.score > 0 ? $0.game : nil }
+    }
+
+    private func matchScore(query: String, queryTokens: [String], target: String, normalizedTarget: String) -> Int {
+        if normalizedTarget == query { return 1_000_000 }
+
+        let targetTokens = normalizedTarget.searchTokens
+        let allTokensPresent = queryTokens.allSatisfy { qToken in
+            targetTokens.contains { $0 == qToken || $0.fuzzyMatch(qToken) }
+        }
+
+        if allTokensPresent {
+            var score = 10_000
+            for (i, qToken) in queryTokens.enumerated() {
+                if let matchIdx = targetTokens.firstIndex(of: qToken) {
+                    score += 500
+                    score += max(0, 10 - abs(matchIdx - i)) * 100
+                    score += qToken.count * 10
+                } else if targetTokens.contains(where: { $0.fuzzyMatch(qToken) }) {
+                    score += 200
+                }
+            }
+            let extraTokens = max(0, targetTokens.count - queryTokens.count)
+            score -= extraTokens * 50
+            score += Int(Double(queryTokens.count) / Double(max(targetTokens.count, 1)) * 2000)
+            return score
+        }
+
+        if normalizedTarget.fuzzyMatch(query) {
+            if normalizedTarget.hasPrefix(query) { return 5_000 }
+            if normalizedTarget.contains(query) { return 3_000 }
+            return 2_000
+        }
+
+        if target.fuzzyMatch(query) {
+            return 1_000
+        }
+
+        return 0
+    }
+
+    private func normalizeForMatching(_ s: String) -> String {
+        stripTags(from: s.folding(options: .diacriticInsensitive, locale: nil)).lowercased().trimmingCharacters(in: .whitespaces)
     }
 
     private func fuzzyScore(_ query: String, target: String) -> Int {
@@ -431,6 +565,23 @@ final class LaunchBoxMetadataService: ObservableObject {
             }
         }
         return score
+    }
+
+    private func stripTags(from name: String) -> String {
+        var result = name
+
+        let patterns = [
+            "\\(.*?\\)",
+            "\\[.*?\\]",
+        ]
+
+        for pattern in patterns {
+            while let range = result.range(of: pattern, options: .regularExpression) {
+                result.removeSubrange(range)
+            }
+        }
+
+        return result.trimmingCharacters(in: .whitespaces)
     }
 
     func boxArtRef(for game: LaunchBoxGame) -> LaunchBoxImageRef? {
@@ -457,11 +608,35 @@ final class LaunchBoxMetadataService: ObservableObject {
         URL(string: "https://images.launchbox-app.com/\(imageRef.fileName)")!
     }
 
-    func fetchAndApplyMetadata(for rom: ROM, library: ROMLibrary) async -> Bool {
+    private var nameIndexCache: [String: [String: LaunchBoxGame]] = [:]
+
+    private func nameIndex(for platformName: String) -> [String: LaunchBoxGame] {
+        if let cached = nameIndexCache[platformName] { return cached }
+        let games = games(forPlatform: platformName)
+        var index: [String: LaunchBoxGame] = [:]
+        index.reserveCapacity(games.count * 2)
+        for game in games {
+            let key = normalizeForMatching(game.name)
+            if !key.isEmpty { index[key] = game }
+            for alt in game.alternateNames {
+                let altKey = normalizeForMatching(alt)
+                if !altKey.isEmpty { index[altKey] = game }
+            }
+        }
+        nameIndexCache[platformName] = index
+        return index
+    }
+
+    func fetchAndApplyMetadata(for rom: ROM, library: ROMLibrary, downloadBoxArt: Bool = true, persistImmediately: Bool = true) async -> Bool {
         let gameName = rom.metadata?.title ?? rom.displayName
         guard let systemID = rom.systemID,
-              let match = bestMatch(for: gameName, systemID: systemID)
+              let platformName = platformName(forSystemID: systemID)
         else { return false }
+
+        let index = nameIndex(for: platformName)
+        let normalizedQuery = normalizeForMatching(gameName)
+        let match = index[normalizedQuery] ?? bestMatch(for: gameName, platformName: platformName)
+        guard let match else { return false }
 
         var updated = rom
         var meta = updated.metadata ?? ROMMetadata()
@@ -478,7 +653,7 @@ final class LaunchBoxMetadataService: ObservableObject {
         updated.metadata = meta
 
         var downloadedBoxArt = false
-        if !updated.hasBoxArt, let imageRef = boxArtRef(for: match) {
+        if downloadBoxArt, !updated.hasBoxArt, let imageRef = boxArtRef(for: match) {
             let cdn = Self.cdnURL(for: imageRef)
             let localURL = updated.boxArtLocalPath
             let folder = localURL.deletingLastPathComponent()
@@ -500,7 +675,7 @@ final class LaunchBoxMetadataService: ObservableObject {
             }
         }
 
-        library.updateROM(updated, persist: true)
+        library.updateROM(updated, persist: persistImmediately, silent: !persistImmediately)
         LoggerService.info(category: "LaunchBoxMD", "Enriched '\(rom.name)' — found \(match.name) (DBID: \(match.databaseID))" + (downloadedBoxArt ? " + box art" : ""))
         return true
     }
