@@ -277,4 +277,8 @@ struct RfDisplayUniforms {
     var glitch: Float
     var tear: Float
     var hShift: Float
+    var vHold: Float
+    var hHold: Float
+    var vPos: Float
+    var hPos: Float
 }

@@ -551,7 +551,11 @@ outputHeight: Float(drawHeight)
                             rollShear: dyn.rollShear,
                             glitch: dyn.glitch,
                             tear: dyn.tear,
-                            hShift: dyn.hShift
+                            hShift: dyn.hShift,
+                            vHold: getUniform("vHold", fallback: 0.0),
+                            hHold: getUniform("hHold", fallback: 0.0),
+                            vPos: getUniform("vPos", fallback: 0.0),
+                            hPos: getUniform("hPos", fallback: 0.0)
                         )
                         enc.setFragmentBytes(&u, length: MemoryLayout<RfDisplayUniforms>.stride, index: 0)
                     case "fragmentDotMatrixLCD":

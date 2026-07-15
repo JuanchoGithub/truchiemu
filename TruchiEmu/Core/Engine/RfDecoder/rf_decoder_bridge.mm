@@ -193,11 +193,12 @@ void convert_to_rgba8(const uint8_t* src, int w, int h, int pitch, int bpp,
     // C++ lambda (captures _erng by reference) so the RNG actually advances.
     auto erf = [&]() -> float { return static_cast<float>(_erng()) / 4294967295.0f; };
 
-    // Schedule / advance events. Frequent + varied so bad reception reads
-    // like the real demo (constant subtle drift, with dropouts / rolling /
-    // tuning / bumps firing every second or two).
+    // Schedule / advance events. Frequency scales with instability so low
+    // values almost never fire; intensity is also scaled by `inst` below so
+    // a value like 0.01 produces only a barely-perceptible wobble, never a
+    // full dropout / roll / grey-snow event.
     if (_evType == 0) {
-        float p = 0.018f * (0.3f + 0.7f * inst);
+        float p = 0.02f * inst * inst;
         if (inst > 0.001f && erf() < p) {
             int pick = static_cast<int>(erf() * 4.0f);
             if (pick == 0)      { _evType = 1; _evDur = 20 + static_cast<int>(erf() * 50); }
@@ -205,7 +206,7 @@ void convert_to_rgba8(const uint8_t* src, int w, int h, int pitch, int bpp,
             else if (pick == 2) { _evType = 3; _evDur = 6 + static_cast<int>(erf() * 16); }
             else                { _evType = 4; _evDur = 25 + static_cast<int>(erf() * 45); }
             _evT = 0;
-            _evInt = 0.6f + erf() * 0.4f;  // 0.6..1.0
+            _evInt = 0.6f + erf() * 0.4f;  // 0.6..1.0 base
         }
     } else {
         _evT += 1;
@@ -216,11 +217,22 @@ void convert_to_rgba8(const uint8_t* src, int w, int h, int pitch, int bpp,
         }
     }
 
-    // Always-on slow vertical drift so the picture is never perfectly static.
-    float baseRoll = 0.0016f * inst;
-    _rollPhase += baseRoll + _rollSpeedEvt;
+    // Vertical roll is driven only by active instability events (roll/bump);
+    // when idle the picture eases back to neutral (rollOffset -> 0) so there
+    // is no constant creeping drift. Movement can still happen during events,
+    // it just settles afterward.
+    if (_evType != 0) {
+        _rollPhase += _rollSpeedEvt;
+    } else {
+        _rollPhase *= 0.9f;
+        if (std::fabs(_rollPhase) < 0.001f) _rollPhase = 0.0f;
+    }
     if (_rollPhase >= 1.0f) _rollPhase -= 1.0f;
-    if (_rollPhase < 0.0f)  _rollPhase += 1.0f;
+    else if (_rollPhase < 0.0f)  _rollPhase += 1.0f;
+
+    // Effective event intensity scales with instability: at low `inst` the
+    // same scheduled event is a faint nudge, at high `inst` it's a full hit.
+    float ei = _evInt * inst;
 
     // Per-event reception targets. Fading the carrier (targetSignal -> 0)
     // drives the *real* decoder: weak burst -> automatic B&W, no sync ->
@@ -235,34 +247,37 @@ void convert_to_rgba8(const uint8_t* src, int w, int h, int pitch, int bpp,
 
     if (_evType == 1) {                 // carrier dropout -> off-air grey snow
         float e = envelope(_evT, _evDur);
-        targetSignal = 1.0f - 0.97f * e * _evInt;   // down to ~0.03
-        targetSnow = 0.8f * e * _evInt;
+        targetSignal = 1.0f - 0.97f * e * ei;   // down to ~0.03
+        targetSnow = 0.8f * e * ei;
     } else if (_evType == 2) {          // vertical hold loss -> weak + rolling
         float e = envelope(_evT, _evDur);
-        targetSignal = 1.0f - 0.72f * e * _evInt;   // ~0.28 -> burst drops -> B&W
-        targetSnow = 0.45f * e * _evInt;
-        shear = 0.09f * e * _evInt;                 // diagonal drift
-        _rollSpeedEvt = 0.014f * e * _evInt;
+        targetSignal = 1.0f - 0.72f * e * ei;   // ~0.28 -> burst drops -> B&W
+        targetSnow = 0.45f * e * ei;
+        shear = 0.09f * e * ei;                 // diagonal drift
+        _rollSpeedEvt = 0.014f * e * ei;
     } else if (_evType == 3) {          // bump -> brief, everything at once
         float e = envelope(_evT, _evDur);
-        targetSignal = 1.0f - 0.88f * e * _evInt;
-        targetSnow = 0.6f * e * _evInt;
-        glitch = _evInt * e;
-        tear = _evInt * e;
-        hShift = (erf() - 0.5f) * 2.0f * _evInt * e;
-        tuneSweep = 8000.0f * _evInt * e;
-        _rollSpeedEvt = 0.035f * e * _evInt;
+        targetSignal = 1.0f - 0.88f * e * ei;
+        targetSnow = 0.6f * e * ei;
+        glitch = ei * e;
+        tear = ei * e;
+        hShift = (erf() - 0.5f) * 2.0f * ei * e;
+        tuneSweep = 8000.0f * ei * e;
+        _rollSpeedEvt = 0.035f * e * ei;
     } else if (_evType == 4) {          // tuning drift sweep (herringbone + B&W)
         float e = envelope(_evT, _evDur);
-        targetSignal = 1.0f - 0.6f * e * _evInt;    // weak -> B&W
-        targetSnow = 0.35f * e * _evInt;
-        tuneSweep = _evInt * 11000.0f * std::sin(static_cast<float>(_evT) * 0.35f) * e;
+        targetSignal = 1.0f - 0.6f * e * ei;    // weak -> B&W
+        targetSnow = 0.35f * e * ei;
+        tuneSweep = ei * 11000.0f * std::sin(static_cast<float>(_evT) * 0.35f) * e;
     }
 
-    // Effective RF knobs layered on the UI base values.
+    // Effective RF knobs layered on the UI base values. Signal never drops
+    // below 0.2 (keeps the decoder off true off-air so it can't fully collapse
+    // to grey snow via the UI), and finer stepping lets instability modulate
+    // it subtly.
     float flick = 0.04f * inst * erf();   // tiny always-on carrier flutter
     float effSignal = _baseSignal * targetSignal * (1.0f - flick);
-    if (effSignal < 0.0f) effSignal = 0.0f;
+    if (effSignal < 0.2f) effSignal = 0.2f;
     float effSnow = _baseSnow + targetSnow;
     float effGhost = _baseGhost + glitch * 0.4f + targetSnow * 0.2f;
     _enc->set_rf_knobs(effSignal, effSnow, _baseTuning + tuneSweep, effGhost);

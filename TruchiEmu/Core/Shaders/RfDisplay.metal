@@ -48,6 +48,12 @@ struct RfDisplayUniforms {
     float glitch;       // 0..1 bump glitch intensity
     float tear;         // 0..1 horizontal tear bands
     float hShift;       // -1..1 random horizontal jump
+    // Manual sync-hold + picture position (user knobs; independent of the
+    // random instability scheduler above).
+    float vHold;        // baseline vertical-hold offset (roll)
+    float hHold;        // baseline horizontal-sync offset
+    float vPos;         // static vertical picture nudge
+    float hPos;         // static horizontal picture nudge
 };
 
 struct ShaderContext {
@@ -74,33 +80,39 @@ static float2 getDistortedUV(float2 uv, ShaderContext ctx, float amount, bool ac
     return distort * 0.5 + 0.5;
 }
 
-static constant uint C_GLYPH   = 0x3923; // 011 100 100 100 011
-static constant uint H_GLYPH   = 0x29E4; // 100 100 111 100 100
-static constant uint ONE_GLYPH = 0x2C97; // 010 110 010 010 111
-static constant uint TWO_GLYPH = 0x72A7; // 111 001 010 100 111
+// Channel OSD glyphs, 5x6 (higher resolution than the old 3x5), one row per
+// entry (MSB = leftmost pixel). CH1 / CH2 readout.
+static constant uint CH_C[6] = { 0b01110, 0b10001, 0b10000, 0b10000, 0b10001, 0b01110 };
+static constant uint CH_H[6] = { 0b10001, 0b10001, 0b10001, 0b11111, 0b10001, 0b10001 };
+static constant uint CH_1[6] = { 0b00100, 0b01100, 0b00100, 0b00100, 0b00100, 0b01110 };
+static constant uint CH_2[6] = { 0b11111, 0b00001, 0b00001, 0b00110, 0b01000, 0b11111 };
 
-static float glyphCoverage(uint bits, float2 cell) {
-    if (cell.x < 0.0 || cell.x >= 3.0 || cell.y < 0.0 || cell.y >= 5.0) return 0.0;
-    int col = int(cell.x);
-    int row = int(cell.y);
-    uint bit = (bits >> (uint((4 - row) * 3 + (2 - col)))) & 1u;
-    return float(bit);
+static float glyphCoverage(const constant uint* rows, int gh, float2 cell) {
+    int col = int(floor(cell.x));
+    int row = int(floor(cell.y));
+    if (col < 0 || col > 4 || row < 0 || row >= gh) return 0.0;
+    return float((rows[row] >> (4 - col)) & 1u);
 }
 
 static float3 drawChannelOSD(float3 rgb, float2 uv, float channel, float2 imgSize) {
-    float csx = 36.0 / imgSize.x;
-    float csy = 36.0 / imgSize.y;
-    float2 origin = float2(0.02, 0.02);
+    if (channel < 0.5) return rgb;  // OFF
+    // 25% smaller than the old 36px cells.
+    float cs = 27.0;
+    // Pulled in from the very top-left edge so the barrel distortion at the
+    // screen corner doesn't clip the top of the glyphs.
+    float2 origin = float2(0.035, 0.05);
     float2 local = uv - origin;
     if (local.x < 0.0 || local.y < 0.0) return rgb;
-    float2 cell = float2(local.x / csx, local.y / csy);
-    uint glyph = 0u;
+    float2 cell = local * (imgSize / cs);
+    const int GH = 6;
+    const constant uint* rows = nullptr;
     float inGlyph = 0.0;
-    if (cell.x >= 0.0 && cell.x < 3.0)            { glyph = C_GLYPH;   inGlyph = 1.0; }
-    else if (cell.x >= 4.0 && cell.x < 7.0)       { glyph = H_GLYPH;   inGlyph = 1.0; cell.x -= 4.0; }
-    else if (cell.x >= 8.0 && cell.x < 11.0)      { glyph = (channel > 1.5) ? TWO_GLYPH : ONE_GLYPH; inGlyph = 1.0; cell.x -= 8.0; }
+    float cx = cell.x;
+    if (cx >= 0.0 && cx < 5.0)              { rows = CH_C; inGlyph = 1.0; }
+    else if (cx >= 6.0 && cx < 11.0)        { rows = CH_H; inGlyph = 1.0; cell.x -= 6.0; }
+    else if (cx >= 12.0 && cx < 17.0)       { rows = (channel > 1.5f) ? CH_2 : CH_1; inGlyph = 1.0; cell.x -= 12.0; }
     if (inGlyph < 0.5) return rgb;
-    if (glyphCoverage(glyph, cell) > 0.5) {
+    if (glyphCoverage(rows, GH, cell) > 0.5) {
         rgb = mix(rgb, float3(0.25, 1.0, 0.35), 0.9);
     }
     return rgb;
@@ -160,6 +172,12 @@ fragment float4 fragmentRfDisplay(VertexOut in [[stage_in]],
 
     ShaderContext ctx = prepareContext(in.texCoord, DISTORT);
     float2 uv = getDistortedUV(in.texCoord, ctx, u.barrelAmount, DISTORT);
+
+    // Manual picture position nudge (static), then manual sync-hold
+    // (baseline V-roll / H-offset), then the random instability pass.
+    uv += float2(u.hPos, u.vPos);
+    uv.y = fract(uv.y + u.vHold);
+    uv.x = fract(uv.x + u.hHold);
 
     // Roll / shear / tear / bump glitch on the content UV, then sample.
     float2 cuv = applyInstability(uv, u);
