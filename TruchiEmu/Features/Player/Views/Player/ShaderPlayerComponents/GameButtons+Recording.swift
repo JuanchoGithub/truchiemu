@@ -35,8 +35,15 @@ struct RecordStreamButton: View {
         if let key = StreamRecordingService.customStreamKey, !key.isEmpty { true } else { false }
     }
 
+    private var shouldShowButton: Bool {
+        recordingService.isUserRecording
+        || recordingService.isRecording
+        || AppSettings.getBool("streaming_enabled", defaultValue: false)
+        || AppSettings.getBool("recording_local_enabled", defaultValue: true)
+    }
+
     var body: some View {
-        if !recordingService.streamingEnabled {
+        if !shouldShowButton {
             EmptyView()
         } else {
             RecordStreamButtonContent(
