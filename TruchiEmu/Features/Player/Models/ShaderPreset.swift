@@ -245,6 +245,51 @@ globalUniforms: [
                     recommendedSystems: ["nes", "snes", "genesis", "psx"]
                 ),
 
+        // Famicom RF (Antenna TV) — stylized RF/antenna CRT look
+        ShaderPreset(
+            id: "builtin-famicom-rf",
+            name: "Famicom RF (Antenna TV)",
+            shaderType: .crt,
+            passes: [
+                ShaderPass(
+                    shaderFile: "FamicomRF",
+                    filter: .linear,
+                    scaleX: 1.0, scaleY: 1.0,
+                    scaleTypeX: .viewport, scaleTypeY: .viewport
+                )
+            ],
+            globalUniforms: [
+                ShaderUniform(name: "signalStrength", defaultValue: 0.9, minValue: 0.0, maxValue: 1.0, displayName: "Signal Strength"),
+                ShaderUniform(name: "snowAmount", defaultValue: 0.5, minValue: 0.0, maxValue: 1.0, displayName: "Snow Amount"),
+                ShaderUniform(name: "channel", defaultValue: 1.0, minValue: 1.0, maxValue: 2.0, step: 1.0, displayName: "Channel", type: .dropdown, options: [
+                    ShaderUniformOption(value: 1.0, label: "CH1"),
+                    ShaderUniformOption(value: 2.0, label: "CH2"),
+                ]),
+                ShaderUniform(name: "bleedAmount", defaultValue: 0.35, minValue: 0.0, maxValue: 1.0, displayName: "RF Luma Bleed"),
+                ShaderUniform(name: "chromaAmount", defaultValue: 0.4, minValue: 0.0, maxValue: 1.0, displayName: "RF Chroma Fringe"),
+                ShaderUniform(name: "barrelAmount", defaultValue: 0.06, minValue: 0.0, maxValue: 0.5, displayName: "Barrel Distortion"),
+                ShaderUniform(name: "scanlineIntensity", defaultValue: 0.4, minValue: 0.0, maxValue: 1.0, displayName: "Scanline Intensity"),
+                ShaderUniform(name: "vignetteStrength", defaultValue: 0.6, minValue: 0.0, maxValue: 1.0, displayName: "Vignette Strength"),
+                ShaderUniform(name: "flickerStrength", defaultValue: 0.006, minValue: 0.0, maxValue: 0.03, step: 0.001, displayName: "Flicker Strength"),
+                ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0, displayName: "Color Boost"),
+                ShaderUniform(name: "tintR", defaultValue: 0.95, minValue: 0.5, maxValue: 1.5, displayName: "Tint Red"),
+                ShaderUniform(name: "tintG", defaultValue: 1.02, minValue: 0.5, maxValue: 1.5, displayName: "Tint Green"),
+                ShaderUniform(name: "tintB", defaultValue: 0.98, minValue: 0.5, maxValue: 1.5, displayName: "Tint Blue"),
+                ShaderUniform(name: "bezelRounding", defaultValue: 0.05, minValue: 0.0, maxValue: 0.1, displayName: "Bezel Rounding"),
+                ShaderUniform(name: "bezelGlow", defaultValue: 0.23, minValue: 0.0, maxValue: 1.0, displayName: "Bezel Glow"),
+                ShaderUniform(name: "showOSD", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Channel OSD", type: .toggle),
+                ShaderUniform(name: "useDistort", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Distortion", type: .toggle),
+                ShaderUniform(name: "useScan", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Scanlines", type: .toggle),
+                ShaderUniform(name: "useBleed", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "RF Luma Bleed", type: .toggle),
+                ShaderUniform(name: "useChroma", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "RF Chroma Fringe", type: .toggle),
+                ShaderUniform(name: "useVig", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Vignette", type: .toggle),
+                ShaderUniform(name: "useFlick", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Flicker", type: .toggle),
+                ShaderUniform(name: "useBezel", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Bezel Mask", type: .toggle),
+            ],
+            description: "Stylized Famicom-through-RF/antenna CRT TV: antenna snow, RF chroma/luma bleed, barrel-distorted scanlines, and a green CH1/CH2 channel readout.",
+            recommendedSystems: ["nes"]
+        ),
+
         // Sharp Bilinear (Clean & Sharp)
         ShaderPreset(
             id: "builtin-sharp-bilinear",

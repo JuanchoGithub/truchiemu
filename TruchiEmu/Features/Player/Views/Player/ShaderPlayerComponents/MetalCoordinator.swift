@@ -475,6 +475,39 @@ outputWidth: Float(drawWidth),
 outputHeight: Float(drawHeight)
 )
                         enc.setFragmentBytes(&u, length: MemoryLayout<CRTUniforms>.stride, index: 0)
+                    case "fragmentFamicomRF":
+                        let colorB = getUniform("colorBoost", fallback: 1.0)
+                        var u = FamicomRFUniforms(
+                            time: time,
+                            texSizeX: Float(frameTex.width),
+                            texSizeY: Float(frameTex.height),
+                            signalStrength: getUniform("signalStrength", fallback: 0.9),
+                            snowAmount: getUniform("snowAmount", fallback: 0.5),
+                            bleedAmount: getUniform("bleedAmount", fallback: 0.35),
+                            chromaAmount: getUniform("chromaAmount", fallback: 0.4),
+                            barrelAmount: getUniform("barrelAmount", fallback: 0.06),
+                            scanlineIntensity: getUniform("scanlineIntensity", fallback: 0.4),
+                            vignetteStrength: getUniform("vignetteStrength", fallback: 0.6),
+                            flickerStrength: getUniform("flickerStrength", fallback: 0.006),
+                            colorBoost: colorB,
+                            tintR: getUniform("tintR", fallback: 0.95),
+                            tintG: getUniform("tintG", fallback: 1.02),
+                            tintB: getUniform("tintB", fallback: 0.98),
+                            channel: getUniform("channel", fallback: 1.0),
+                            showOSD: getUniform("showOSD", fallback: 1.0),
+                            useDistort: getUniform("useDistort", fallback: 1.0),
+                            useScan: getUniform("useScan", fallback: 1.0),
+                            useBleed: getUniform("useBleed", fallback: 1.0),
+                            useChroma: getUniform("useChroma", fallback: 1.0),
+                            useVig: getUniform("useVig", fallback: 1.0),
+                            useFlick: getUniform("useFlick", fallback: 1.0),
+                            useBezel: getUniform("useBezel", fallback: 1.0),
+                            bezelRounding: getUniform("bezelRounding", fallback: 0.05),
+                            bezelGlow: getUniform("bezelGlow", fallback: 0.23),
+                            outputWidth: vpW,
+                            outputHeight: vpH
+                        )
+                        enc.setFragmentBytes(&u, length: MemoryLayout<FamicomRFUniforms>.stride, index: 0)
                     case "fragmentDotMatrixLCD":
                         // Use preset defaults for all uniforms
                         let colorB = getUniform("colorBoost", fallback: 1.0)

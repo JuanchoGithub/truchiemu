@@ -1151,6 +1151,7 @@
 		F0AD72CCE4B5E63664FADEB3 /* CorePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47516431097E29AD293A7B5 /* CorePickerView.swift */; };
 		F0C3A285F7DDEEE9DD1E9D78 /* build_mame_unified.py in Resources */ = {isa = PBXBuildFile; fileRef = C31F0AA882132918E8CE3FA6 /* build_mame_unified.py */; };
 		F1076B7F46B13D1B6099B623 /* GamepadNavContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = F41E405D5837D8139B4A0C69 /* GamepadNavContext.swift */; };
+		F1AA1B8F49F0A72048BB69A1 /* FamicomRF.metal in Sources */ = {isa = PBXBuildFile; fileRef = 625852EC0A71AE15C0A0F6AE /* FamicomRF.metal */; };
 		F1AA44B0A96EE6EA380D60E7 /* EASYRPG.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D4A52AFA9B952287155E6A6 /* EASYRPG.png */; };
 		F1B11978BEC8CE8C0D198CBF /* SharedMemoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC670A67B8CEDEF192F88015 /* SharedMemoryManager.swift */; };
 		F2058F5CDAFDED1DB7FAFD71 /* genesis-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = CB6C88486821941C90609217 /* genesis-cheats.zip */; };
@@ -1720,6 +1721,7 @@
 		61EE2306C49C20631F9B6071 /* SG1000.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SG1000.png; sourceTree = "<group>"; };
 		622F8211E719F06C7DBF42EE /* input_coreLabels_higan_accuracy.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_higan_accuracy.json; sourceTree = "<group>"; };
 		6253DADF3E4A0EAA610ADE01 /* BezelSelectorWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelSelectorWindow.swift; sourceTree = "<group>"; };
+		625852EC0A71AE15C0A0F6AE /* FamicomRF.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = FamicomRF.metal; sourceTree = "<group>"; };
 		62B4EE0802A69845537290E2 /* CRTFilter_multipass.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CRTFilter_multipass.metal; sourceTree = "<group>"; };
 		631ADA78528F78E63F5A2A5E /* IOSurfaceVideoManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSurfaceVideoManager.swift; sourceTree = "<group>"; };
 		631DBE9A82934122CB458925 /* fightdata_aodk.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_aodk.json; sourceTree = "<group>"; };
@@ -2909,6 +2911,7 @@
 				62B4EE0802A69845537290E2 /* CRTFilter_multipass.metal */,
 				26D95B905CF18035469C4C59 /* CRTFilter.metal */,
 				BF7A3D8D17275C396BE21173 /* DotMatrixLCD.metal */,
+				625852EC0A71AE15C0A0F6AE /* FamicomRF.metal */,
 				61128A5490F95F51CF67D3B9 /* GBA.metal */,
 				EFD1D1521FD51B428CD6D464 /* LiteCRT.metal */,
 				3BD337DAF7B206DF941EB16D /* LottesCRT.metal */,
@@ -5622,6 +5625,7 @@
 				C25037436138043A3C12B4C7 /* DreamcastBIOSService.swift in Sources */,
 				DE29E5DDC33BE3F03B33B621 /* EscapeToastOverlay.swift in Sources */,
 				2092982EBE4E3207136DC2C0 /* ExtractedROMCacheSettingsView.swift in Sources */,
+				F1AA1B8F49F0A72048BB69A1 /* FamicomRF.metal in Sources */,
 				10A813FD9AC06B780E931816 /* FilterChipView.swift in Sources */,
 				92800B5A7288EC0F30C67F0B /* FocusableMTKView.swift in Sources */,
 				C5AB2A1C3ECF952779306356 /* FrameExpander.swift in Sources */,

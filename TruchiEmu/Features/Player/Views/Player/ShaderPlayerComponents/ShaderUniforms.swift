@@ -201,5 +201,37 @@ struct PSPUniforms {
     var colorGamut: simd_float3x3
 }
 
+// Famicom RF (Antenna TV) uniforms - matches FamicomRFUniforms in FamicomRF.metal
+struct FamicomRFUniforms {
+    var time: Float
+    var texSizeX: Float
+    var texSizeY: Float
+    var signalStrength: Float
+    var snowAmount: Float
+    var bleedAmount: Float
+    var chromaAmount: Float
+    var barrelAmount: Float
+    var scanlineIntensity: Float
+    var vignetteStrength: Float
+    var flickerStrength: Float
+    var colorBoost: Float
+    var tintR: Float
+    var tintG: Float
+    var tintB: Float
+    var channel: Float
+    var showOSD: Float
+    var useDistort: Float
+    var useScan: Float
+    var useBleed: Float
+    var useChroma: Float
+    var useVig: Float
+    var useFlick: Float
+    var useBezel: Float
+    var bezelRounding: Float
+    var bezelGlow: Float
+    var outputWidth: Float
+    var outputHeight: Float
+}
+
 // Legacy alias for CRT passthrough
 typealias ShaderUniforms = CRTUniforms
