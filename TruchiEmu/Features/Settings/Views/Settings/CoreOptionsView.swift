@@ -662,15 +662,14 @@ struct EmptyStateView: View {
     @ObservedObject private var loc = LocalizationManager.shared
 
     var body: some View {
-        ContentUnavailableView {
-            Label { Text(loc.localized("coreOptions.noSettingsFound")) } icon: { Image(systemName: "gearshape.2") }
-        } description: {
-            Text(loc.localized("coreOptions.noSettingsDescription"))
-        } actions: {
-            Button(loc.localized("coreOptions.rediscoverFromCore")) {
+        AppEmptyState(
+            icon: "gearshape.2",
+            title: loc.localized("coreOptions.noSettingsFound"),
+            description: loc.localized("coreOptions.noSettingsDescription"),
+            actionLabel: loc.localized("coreOptions.rediscoverFromCore"),
+            action: {
                 Task { await viewModel.discoverOptions(for: coreID, library: library) }
             }
-            .buttonStyle(.borderedProminent)
-        }
+        )
     }
 }

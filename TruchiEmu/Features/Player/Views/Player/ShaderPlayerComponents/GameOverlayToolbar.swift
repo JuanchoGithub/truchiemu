@@ -84,6 +84,7 @@ struct GameOverlayToolbar: View {
                 currentSlot: runner.currentSlot,
                 onSlotChange: { newSlot in
                     runner.currentSlot = newSlot
+                    AppHaptics.selection()
                 },
                 runner: runner,
                 disabled: saveLoadDisabled

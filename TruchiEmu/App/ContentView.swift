@@ -356,11 +356,26 @@ applyShaderOverrides(systemID: data.systemID, shaderID: data.newShaderPresetID, 
         .onChange(of: library.isScanning) { _, isScanning in
             if !isScanning && !library.lastAddedROMs.isEmpty {
                 selectedFilter = .all
+                celebrateFirstScanIfNeeded(addedCount: library.lastAddedROMs.count)
             }
         }
 // Set ideal window size so the window doesn't start stretched larger than needed
 .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
 .frame(minWidth: 1000, idealWidth: 1200, minHeight: 650, idealHeight: 750)
+}
+
+private func celebrateFirstScanIfNeeded(addedCount: Int) {
+    guard !AppSettings.getBool("hasCelebratedFirstScan", defaultValue: false) else { return }
+    AppSettings.setBool("hasCelebratedFirstScan", value: true)
+    ConfettiManager.shared.grandCelebration()
+    NotificationPillManager.shared.post(
+        PillNotification(
+            icon: "party.popper.fill",
+            title: LocalizationManager.shared.localized("firstScan.celebrateTitle"),
+            subtitle: LocalizationManager.shared.localized("firstScan.celebrateSubtitle", addedCount),
+            autoDismissDelay: 6
+        )
+    )
 }
 
 private func applyShaderOverrides(systemID: String, shaderID: String, selectedGameIDs: Set<UUID>) {

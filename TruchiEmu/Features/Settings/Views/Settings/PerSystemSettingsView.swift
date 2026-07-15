@@ -98,12 +98,13 @@ struct PerSystemSettingsView: View {
                         }
                     }
                 } else {
-                    ContentUnavailableView {
-                        Label(selectedSystemID == nil
-                              ? loc.localized("perSystem.selectSystem")
-                              : loc.localized("perSystem.systemNotFound"),
-                              systemImage: "square.grid.2x2")
-                    }
+                    AppEmptyState(
+                        icon: "square.grid.2x2",
+                        title: selectedSystemID == nil
+                            ? loc.localized("perSystem.selectSystem")
+                            : loc.localized("perSystem.systemNotFound"),
+                        description: loc.localized("perSystem.selectSystemDescription")
+                    )
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }

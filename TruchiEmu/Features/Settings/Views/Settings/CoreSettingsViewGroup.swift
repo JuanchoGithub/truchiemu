@@ -96,11 +96,11 @@ struct CoreSettingsView: View {
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
-                    ContentUnavailableView {
-                        Label { Text(loc.localized("cores.selectSystem")) } icon: { Image(systemName: "gamecontroller") }
-                    } description: {
-                        Text(loc.localized("cores.selectSystemDescription"))
-                    }
+                    AppEmptyState(
+                        icon: "gamecontroller",
+                        title: loc.localized("cores.selectSystem"),
+                        description: loc.localized("cores.selectSystemDescription")
+                    )
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }

@@ -64,6 +64,7 @@ class CheatManagerService: ObservableObject {
         allCheats[rom.runningKey] = cheats
         saveEnabledIndices(for: rom, cheats: cheats)
         LoggerService.info(category: "CheatManagerService", "Updated cheat: \(cheat.displayName) for \(rom.displayName)")
+        AppHaptics.selection()
 
         if showToast && SystemPreferences.shared.showCheatNotifications {
             let key = cheat.enabled ? "cheat.toastEnabled" : "cheat.toastDisabled"

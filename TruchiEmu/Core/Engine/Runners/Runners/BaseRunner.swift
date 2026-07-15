@@ -1132,13 +1132,17 @@ case "scummvm": runner = ScummVMRunner()
                 #endif
             }
             
-            if let v = actualVersion {
+            if !AppSettings.getBool("hasCelebratedFirstSave", defaultValue: false) {
+                AppSettings.setBool("hasCelebratedFirstSave", value: true)
+                osdMessage = "First save state — you can pick up right here anytime!"
+            } else if let v = actualVersion {
                 osdMessage = "Saved \(slot == -1 ? "Auto" : "Slot \(slot)") #\(v)"
             } else {
                 osdMessage = "Saved \(slot == -1 ? "Auto" : "Slot \(slot)")"
             }
             
             onSaveStateSaved?(slot)
+            AppHaptics.success()
             
             // Clear OSD after 2 seconds
             Task {
@@ -1187,6 +1191,7 @@ case "scummvm": runner = ScummVMRunner()
         let success = XPCBridgeAdapter.shared.unserializeState(actualData)
         if success {
             osdMessage = "Loaded save state"
+            AppHaptics.success()
             rcheevosLock.lock()
             _needsRcheevosReset = true
             rcheevosLock.unlock()

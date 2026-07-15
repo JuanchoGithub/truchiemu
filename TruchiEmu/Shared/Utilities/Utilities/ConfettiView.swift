@@ -151,9 +151,16 @@ class ConfettiManager: ObservableObject {
 
 // MARK: - Confetti Overlay
 
+/// Reusable confetti overlay. Drop it into any window/host that needs
+/// celebration bursts. Defaults to the shared manager, but a dedicated
+/// `ConfettiManager` instance can be injected to scope bursts to one host.
 struct ConfettiOverlay: View {
-    @ObservedObject private var manager = ConfettiManager.shared
-    
+    @ObservedObject private var manager: ConfettiManager
+
+    init(manager: ConfettiManager = .shared) {
+        self.manager = manager
+    }
+
     var body: some View {
         ZStack {
             if manager.isShowing {
