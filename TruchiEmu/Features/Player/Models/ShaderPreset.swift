@@ -314,6 +314,55 @@ globalUniforms: [
             recommendedSystems: ["nes"]
         ),
 
+        // RF Decoder — the EXACT GOROman famicom-rf-hackrf-decoder pipeline.
+        // The game's digital frame is encoded to NTSC/RF IQ and run through the
+        // real C++ SDR decoder (sync search, AGC, per-line burst, Y/C split),
+        // then shown through the tube-CRT display pass.
+        ShaderPreset(
+            id: "builtin-rf-decoder",
+            name: "RF Decoder (Real SDR)",
+            shaderType: .crt,
+            passes: [
+                ShaderPass(
+                    shaderFile: "RfDecoder",
+                    filter: .linear,
+                    scaleX: 1.0, scaleY: 1.0,
+                    scaleTypeX: .viewport, scaleTypeY: .viewport
+                )
+            ],
+            globalUniforms: [
+                // Decode-stage RF knobs (digital -> RF -> decoder)
+                ShaderUniform(name: "signalStrength", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Signal Strength"),
+                ShaderUniform(name: "snowAmount", defaultValue: 0.0, minValue: 0.0, maxValue: 1.0, displayName: "Snow / Noise"),
+                ShaderUniform(name: "tuningHz", defaultValue: 0.0, minValue: -200000.0, maxValue: 200000.0, step: 1000.0, displayName: "Carrier Offset (Hz)"),
+                ShaderUniform(name: "ghosting", defaultValue: 0.25, minValue: 0.0, maxValue: 1.0, displayName: "Multipath Ghosting"),
+                ShaderUniform(name: "instability", defaultValue: 0.6, minValue: 0.0, maxValue: 1.0, displayName: "Reception Instability"),
+                ShaderUniform(name: "saturation", defaultValue: 1.0, minValue: 0.0, maxValue: 2.0, displayName: "Saturation"),
+                ShaderUniform(name: "hue", defaultValue: 0.0, minValue: -180.0, maxValue: 180.0, displayName: "Hue Trim"),
+                ShaderUniform(name: "colorMode", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Color Mode", type: .toggle),
+                // Display (tube CRT) pass
+                ShaderUniform(name: "channel", defaultValue: 1.0, minValue: 1.0, maxValue: 2.0, step: 1.0, displayName: "Channel", type: .dropdown, options: [
+                    ShaderUniformOption(value: 1.0, label: "CH1"),
+                    ShaderUniformOption(value: 2.0, label: "CH2"),
+                ]),
+                ShaderUniform(name: "barrelAmount", defaultValue: 0.06, minValue: 0.0, maxValue: 0.5, displayName: "Barrel Distortion"),
+                ShaderUniform(name: "scanlineIntensity", defaultValue: 0.4, minValue: 0.0, maxValue: 1.0, displayName: "Scanline Intensity"),
+                ShaderUniform(name: "vignetteStrength", defaultValue: 0.6, minValue: 0.0, maxValue: 1.0, displayName: "Vignette Strength"),
+                ShaderUniform(name: "flickerStrength", defaultValue: 0.006, minValue: 0.0, maxValue: 0.03, step: 0.001, displayName: "Flicker Strength"),
+                ShaderUniform(name: "colorBoost", defaultValue: 1.0, minValue: 0.5, maxValue: 2.0, displayName: "Color Boost"),
+                ShaderUniform(name: "tintR", defaultValue: 0.95, minValue: 0.5, maxValue: 1.5, displayName: "Tint Red"),
+                ShaderUniform(name: "tintG", defaultValue: 1.02, minValue: 0.5, maxValue: 1.5, displayName: "Tint Green"),
+                ShaderUniform(name: "tintB", defaultValue: 0.98, minValue: 0.5, maxValue: 1.5, displayName: "Tint Blue"),
+                ShaderUniform(name: "showOSD", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Channel OSD", type: .toggle),
+                ShaderUniform(name: "useDistort", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Distortion", type: .toggle),
+                ShaderUniform(name: "useScan", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Scanlines", type: .toggle),
+                ShaderUniform(name: "useVig", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Vignette", type: .toggle),
+                ShaderUniform(name: "useFlick", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Flicker", type: .toggle),
+            ],
+            description: "Runs the actual GOROman famicom-rf-hackrf-decoder SDR pipeline on the game's digital output: the frame is encoded to NTSC/RF IQ, then decoded through the real sync-search / AGC / per-line-burst DSP, yielding authentic snow, off-tune herringbone, multipath ghosting, dot-crawl and burst-drop gray. Shown via a tube-CRT pass with a CH1/CH2 readout.",
+            recommendedSystems: ["nes", "snes", "n64", "genesis", "sms", "gg", "pce", "ngp", "ws", "vb", "a78", "lnx"]
+        ),
+
         // Sharp Bilinear (Clean & Sharp)
         ShaderPreset(
             id: "builtin-sharp-bilinear",

@@ -249,3 +249,32 @@ struct FamicomRFUniforms {
 
 // Legacy alias for CRT passthrough
 typealias ShaderUniforms = CRTUniforms
+
+// RF Decoder display pass uniforms - matches RfDisplayUniforms in RfDisplay.metal
+struct RfDisplayUniforms {
+    var time: Float
+    var texSizeX: Float
+    var texSizeY: Float
+    var outputWidth: Float
+    var outputHeight: Float
+    var barrelAmount: Float
+    var scanlineIntensity: Float
+    var vignetteStrength: Float
+    var flickerStrength: Float
+    var colorBoost: Float
+    var tintR: Float
+    var tintG: Float
+    var tintB: Float
+    var channel: Float
+    var showOSD: Float
+    var useDistort: Float
+    var useScan: Float
+    var useVig: Float
+    var useFlick: Float
+    var signalLoss: Float
+    var rollOffset: Float
+    var rollShear: Float
+    var glitch: Float
+    var tear: Float
+    var hShift: Float
+}

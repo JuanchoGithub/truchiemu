@@ -91,9 +91,21 @@ targets:
       - "Resources"
       - "lib"
       - "Core/Engine/internal/**"
+      - "Core/Engine/RfDecoder/**"
       - "Core/Shaders/internal/**"
       - "Core/Shaders/all_shaders.metal"
       - "Core/XPC/Service/**"
+    # The RF DSP pipeline (encoder + front-end + decoder) is self-contained
+    # hot math; compile it optimized even in a Debug build so it doesn't run
+    # at -O0 (which is ~7x slower and drops NES games to single-digit fps).
+    - path: TruchiEmu/Core/Engine/RfDecoder/ntsc_encoder.cpp
+      compilerFlags: -O3
+    - path: TruchiEmu/Core/Engine/RfDecoder/dsp/ntsc_decoder.cpp
+      compilerFlags: -O3
+    - path: TruchiEmu/Core/Engine/RfDecoder/rf_decoder_bridge.mm
+      compilerFlags: -O3
+    - path: TruchiEmu/Core/Engine/RfDecoder/rf_dynamic_state.cpp
+      compilerFlags: -O3
     - path: TruchiEmu/Resources
       excludes:
       - "slang-shaders/**"
@@ -166,6 +178,7 @@ targets:
     - path: TruchiEmu/Core/XPC/Shared
     - path: TruchiEmu/Core/Engine
       excludes:
+      - "RfDecoder/tests/**"
       - "slang/**"
       - "slang_shader_bridge.*"
       - "internal/**"

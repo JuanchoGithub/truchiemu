@@ -311,6 +311,8 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     private var hasLoggedFrame = false
     private var runnerFrameCount = 0
     private var textureCache: MTLTexture? = nil
+    private var rfTextureCache: MTLTexture? = nil
+    private let rfDecoder = RfDecoderBridge()
     private let textureLock = NSLock()
     @MainActor @Published var rom: ROM?
     @MainActor @Published var lastError: GameError?
@@ -618,6 +620,8 @@ case "scummvm": runner = ScummVMRunner()
         }
         hookedControllers.removeAll()
         textureCache = nil
+        rfTextureCache = nil
+        rfDecoder.reset()
         undoBuffer = nil
         SDLInputManager.shared.unregisterRunner()
     }
@@ -1635,6 +1639,14 @@ weak var metalCoordinator: MetalCoordinator?
             useFormat = mtlFormat
         }
 
+        // "Digital -> RF -> decoder" path: feed the raw core frame through the
+        // famidec RF decoder and display its decoded 640x480 output instead.
+        if ShaderManager.shared.getCurrentFragmentFunctionName() == "fragmentRfDisplay" {
+            processRfFrame(data: data, width: width, height: height, pitch: pitch,
+                           bpp: useBPP, format: format)
+            return
+        }
+
         var tex: MTLTexture
         if let existing = textureCache,
            existing.width == width,
@@ -1712,6 +1724,58 @@ weak var metalCoordinator: MetalCoordinator?
                 }
             }
 
+            self.runnerFrameCount += 1
+        }
+    }
+
+    // Runs the raw core frame through the famidec RF decoder and publishes the
+    // decoded 640x480 texture as currentFrameTexture. Mirrors the bookkeeping
+    // of updateFrame() so first-frame / rotation handling stays consistent.
+    private func processRfFrame(data: UnsafeRawPointer, width: Int, height: Int,
+                                pitch: Int, bpp: Int, format: Int) {
+        let snap = ShaderManager.shared.getUniformSnapshot()
+        let getF: (String, Float) -> Float = { snap[$0] ?? $1 }
+        rfDecoder.setSignalStrength(getF("signalStrength", 1.0),
+                                    snow: getF("snowAmount", 0.0),
+                                    tuningHz: getF("tuningHz", 0.0),
+                                    ghosting: getF("ghosting", 0.0),
+                                    saturation: getF("saturation", 1.0),
+                                    hueDeg: getF("hue", 0.0),
+                                    colorMode: Int32(getF("colorMode", 1.0)),
+                                    instability: getF("instability", 0.5))
+
+        rfDecoder.processFrame(data, width: Int32(width), height: Int32(height),
+                               pitch: Int32(pitch), bpp: Int32(bpp), format: Int32(format))
+
+        guard let device = self.device,
+              let decoded = rfDecoder.decodedRGBA() else { return }
+        let dw = Int(rfDecoder.decodedWidth())
+        let dh = Int(rfDecoder.decodedHeight())
+
+        var tex = rfTextureCache
+        if tex == nil || tex?.width != dw || tex?.height != dh {
+            let desc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba8Unorm,
+                                                                width: dw, height: dh, mipmapped: false)
+            desc.usage = [.shaderRead]
+            desc.storageMode = .shared
+            guard let newTex = device.makeTexture(descriptor: desc) else { return }
+            tex = newTex
+            rfTextureCache = tex
+        }
+        tex?.replace(region: MTLRegionMake2D(0, 0, dw, dh),
+                     mipmapLevel: 0,                      withBytes: UnsafeRawPointer(decoded),
+                     bytesPerRow: dw * 4)
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.currentFrameTexture = tex
+            self.metalView?.needsDisplay = true
+
+            if !self.hasLoggedFrame {
+                LoggerService.info(category: "Runner", "RF decoder first frame (\(dw)x\(dh))")
+                self.hasLoggedFrame = true
+                self.isReadyForDisplay = true
+            }
             self.runnerFrameCount += 1
         }
     }

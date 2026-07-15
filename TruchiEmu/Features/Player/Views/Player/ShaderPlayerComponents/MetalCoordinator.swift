@@ -522,6 +522,38 @@ outputHeight: Float(drawHeight)
                             barsAmount: getUniform("barsAmount", fallback: 0.1)
                         )
                         enc.setFragmentBytes(&u, length: MemoryLayout<FamicomRFUniforms>.stride, index: 0)
+                    case "fragmentRfDisplay":
+                        let colorB = getUniform("colorBoost", fallback: 1.0)
+                        // Live instability published by the RF decoder bridge.
+                        let dyn = RfDynamicStateGet()
+                        var u = RfDisplayUniforms(
+                            time: time,
+                            texSizeX: Float(frameTex.width),
+                            texSizeY: Float(frameTex.height),
+                            outputWidth: vpW,
+                            outputHeight: vpH,
+                            barrelAmount: getUniform("barrelAmount", fallback: 0.06),
+                            scanlineIntensity: getUniform("scanlineIntensity", fallback: 0.4),
+                            vignetteStrength: getUniform("vignetteStrength", fallback: 0.6),
+                            flickerStrength: getUniform("flickerStrength", fallback: 0.006),
+                            colorBoost: colorB,
+                            tintR: getUniform("tintR", fallback: 0.95),
+                            tintG: getUniform("tintG", fallback: 1.02),
+                            tintB: getUniform("tintB", fallback: 0.98),
+                            channel: getUniform("channel", fallback: 1.0),
+                            showOSD: getUniform("showOSD", fallback: 1.0),
+                            useDistort: getUniform("useDistort", fallback: 1.0),
+                            useScan: getUniform("useScan", fallback: 1.0),
+                            useVig: getUniform("useVig", fallback: 1.0),
+                            useFlick: getUniform("useFlick", fallback: 1.0),
+                            signalLoss: dyn.signalLoss,
+                            rollOffset: dyn.rollOffset,
+                            rollShear: dyn.rollShear,
+                            glitch: dyn.glitch,
+                            tear: dyn.tear,
+                            hShift: dyn.hShift
+                        )
+                        enc.setFragmentBytes(&u, length: MemoryLayout<RfDisplayUniforms>.stride, index: 0)
                     case "fragmentDotMatrixLCD":
                         // Use preset defaults for all uniforms
                         let colorB = getUniform("colorBoost", fallback: 1.0)

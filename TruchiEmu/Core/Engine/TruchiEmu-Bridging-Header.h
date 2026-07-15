@@ -8,6 +8,8 @@
 
 #import "RcheevosWrapper.h"
 #import "ArchiveReader.h"
+#import "rf_decoder_bridge.h"
+#import "rf_dynamic_state.h"
 
 #ifndef XPC_SERVICE
 #import "slang_shader_bridge.h"
