@@ -1,0 +1,67 @@
+---
+layout: default
+title: v1.7.0 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.7.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.7.0</h1>
+        <div class="release-meta">
+            <span class="release-date">July 15, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Time Machine playback controls, Famicom RF NTSC decoder shader, LaunchBox metadata enrichment, an Update Wizard, a redesigned grid/sidebar, and broad build-warning cleanup.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>Time Machine:</strong> Rewind, fast-forward, and slow-motion playback controls added to the Setup Wizard and game toolbar</li>
+            <li><strong>Famicom RF Shader:</strong> New NTSC-decoding Famicom RF shader with customizable parameters and grayscale output, based on GOROman/famicom-rf-hackrf-decoder</li>
+            <li><strong>Update Wizard:</strong> In-app wizard for managing app updates with user interaction and a dedicated About view entry</li>
+            <li><strong>LaunchBox Metadata:</strong> Metadata enrichment and box art retrieval via a new LaunchBox Metadata Service with platform overrides</li>
+            <li><strong>Grid &amp; Sidebar Redesign:</strong> New GridCollectionView, sidebar redesign, category management with deletion, and improved search</li>
+            <li><strong>Game Detail Enhancements:</strong> Title screen support, category chips, and refined GameCardView hover/press interactions</li>
+            <li><strong>Recording &amp; Streaming:</strong> Recording hotkey, improved share/record button visibility, even-dimension stream resolution handling</li>
+            <li><strong>Netplay Plan:</strong> Comprehensive Netplay implementation plan documented with infrastructure and matchmaking details</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>Added Time Machine controls (rewind, fast-forward, slow motion) wired into Setup Wizard and game overlay toolbar</li>
+            <li>Added Famicom RF shader with NTSC decoding, additional parameters, grayscale conversion, and localization support</li>
+            <li>Integrated GOROman/famicom-rf-hackrf-decoder dependency into AboutView with description and license details</li>
+            <li>Implemented Update Wizard for managing app updates with user interaction</li>
+            <li>Added LaunchBox Metadata Service for metadata enrichment and box art retrieval with platform overrides and match scoring</li>
+            <li>Added GridCollectionView for displaying ROMs in a grid layout with launching state management</li>
+            <li>Redesigned the sidebar with category deletion, confirmation alerts, and improved system search</li>
+            <li>Integrated CategoryManager into GameDetailView with category chips in the header</li>
+            <li>Added title screen support and enhanced game detail view</li>
+            <li>Added screenshot capture functionality in MetalCoordinator for enhanced image saving</li>
+            <li>Added streaming improvements: recording hotkey, toolbar compact mode, and even-dimension stream resolution handling</li>
+            <li>Added CDI support for RetroAchievements hash generation</li>
+            <li>Added support for per-system hotkey configurations and a new guide sidebar toggle</li>
+            <li>Added controller identity management and enhanced button mapping functionality</li>
+            <li>Refactored shader management to streamline preset activation and uniform handling, including slang preset support</li>
+            <li>Improved aspect ratio handling, viewport calculations, and texture/pixel buffer management in Metal rendering</li>
+            <li>Extensive build-warning cleanup across concurrency modifiers, unused variables, and type safety</li>
+            <li>Updated localization files with new translation keys for Time Machine, Update Wizard, and Famicom RF shader</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.6.0.html' | relative_url }}" class="release-prev">&larr; v1.6.0</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>

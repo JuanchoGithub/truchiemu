@@ -1,0 +1,67 @@
+---
+layout: default
+title: v1.7.0 - Documentação do TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/pt/changelog.html' | relative_url }}">Registro de mudanças</a>
+        <span class="separator">/</span>
+        <span class="current">v1.7.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.7.0</h1>
+        <div class="release-meta">
+            <span class="release-date">15 de julho de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Controles de reprodução Time Machine, shader decodificador Famicom RF NTSC, enriquecimento de metadados LaunchBox, um Assistente de Atualização, um redesenho de grade/barra lateral e ampla limpeza de avisos de compilação.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destaques</h2>
+        <ul class="feature-list">
+            <li><strong>Time Machine:</strong> Controles de retroceder, avanço rápido e câmera lenta adicionados ao Assistente de Configuração e à barra de jogo</li>
+            <li><strong>Shader Famicom RF:</strong> Novo shader Famicom RF com decodificação NTSC, parâmetros personalizáveis e saída em tons de cinza, baseado em GOROman/famicom-rf-hackrf-decoder</li>
+            <li><strong>Assistente de Atualização:</strong> Assistente no app para gerenciar atualizações com interação do usuário e entrada dedicada em Sobre</li>
+            <li><strong>Metadados LaunchBox:</strong> Enriquecimento de metadados e obtenção de capas via novo serviço com substituições de plataforma</li>
+            <li><strong>Redesenho de Grade e Barra Lateral:</strong> Novo GridCollectionView, redesenho da barra lateral, gerenciamento de categorias com exclusão e melhor busca</li>
+            <li><strong>Melhorias nos Detalhes do Jogo:</strong> Suporte a tela de título, chips de categoria e melhores interações de hover/pressão no GameCardView</li>
+            <li><strong>Gravação e Streaming:</strong> Atalho de gravação, melhor visibilidade do botão compartilhar/gravar e tratamento de resolução de stream de dimensões pares</li>
+            <li><strong>Plano Netplay:</strong> Plano de implementação Netplay documentado com infraestrutura e detalhes de matchmaking</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Mudanças detalhadas</h2>
+        <ul>
+            <li>Adicionados controles Time Machine (retroceder, avanço rápido, câmera lenta) no Assistente de Configuração e na barra de jogo</li>
+            <li>Adicionado shader Famicom RF com decodificação NTSC, parâmetros adicionais, conversão para tons de cinza e suporte de localização</li>
+            <li>Integrada a dependência GOROman/famicom-rf-hackrf-decoder em Sobre com descrição e detalhes de licença</li>
+            <li>Implementado o Assistente de Atualização para gerenciar atualizações com interação do usuário</li>
+            <li>Adicionado serviço de metadados LaunchBox para enriquecimento e capas com substituições de plataforma e pontuação de correspondência</li>
+            <li>Adicionado GridCollectionView para exibir ROMs em grade com gerenciamento de estado de lançamento</li>
+            <li>Redesenhada a barra lateral com exclusão de categorias, alertas de confirmação e melhor busca de sistemas</li>
+            <li>Integrado CategoryManager na visualização de detalhes do jogo com chips de categoria no cabeçalho</li>
+            <li>Adicionado suporte a tela de título e melhorada a visualização de detalhes do jogo</li>
+            <li>Adicionada funcionalidade de captura de tela no MetalCoordinator para salvamento de imagens</li>
+            <li>Melhorias de streaming: atalho de gravação, modo compacto de barra e tratamento de resolução de stream de dimensões pares</li>
+            <li>Adicionado suporte CDI para geração de hash do RetroAchievements</li>
+            <li>Adicionado suporte para configurações de atalhos por sistema e um novo interruptor de guia na barra lateral</li>
+            <li>Adicionado gerenciamento de identidade de controle e funcionalidade aprimorada de mapeamento de botões</li>
+            <li>Refatorado o gerenciamento de shaders para simplificar ativação de predefinições e tratamento de uniforms, incluindo suporte a predefinições slang</li>
+            <li>Melhorado o tratamento de proporção de aspecto, cálculos de viewport e gerenciamento de texturas/buffer de pixels na renderização Metal</li>
+            <li>Ampla limpeza de avisos de compilação em modificadores de concorrência, variáveis não usadas e segurança de tipos</li>
+            <li>Atualizados os arquivos de localização com novas chaves para Time Machine, Assistente de Atualização e shader Famicom RF</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/pt/changelog/v1.6.0.html' | relative_url }}" class="release-prev">&larr; v1.6.0</a>
+        <a href="{{ '/pt/changelog.html' | relative_url }}" class="release-all">Todas as versões</a>
+    </nav>
+</div>
