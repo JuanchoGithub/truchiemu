@@ -55,7 +55,7 @@ struct SidebarRowButton: View {
         }
         .buttonStyle(.plain)
         .overlay(alignment: .trailing) {
-            if isHovered, system != nil {
+            if (isHovered || isSelected), system != nil {
                 Menu {
                     sidebarContextMenuContent(for: system)
                 } label: {

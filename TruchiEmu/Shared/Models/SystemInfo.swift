@@ -288,6 +288,25 @@ struct SystemInfo: Identifiable, Codable, Hashable {
         }
         return name
     }
+
+    /// Lowercased concatenation of every field a user might type to find this
+    /// system — id ("nes"), name ("Nintendo Entertainment System"), manufacturer,
+    /// path keywords, extensions, and database aliases. Used by sidebar search.
+    var searchableText: String {
+        let parts: [String?] = [
+            id,
+            name,
+            customDisplayName,
+            manufacturer,
+            pathKeywords.joined(separator: " "),
+            extensions.joined(separator: " "),
+            database?.joined(separator: " ")
+        ]
+        return parts
+            .compactMap { $0 }
+            .joined(separator: " ")
+            .lowercased()
+    }
 }
 
 // MARK: - SystemDatabase

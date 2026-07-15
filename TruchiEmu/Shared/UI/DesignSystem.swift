@@ -827,9 +827,9 @@ enum AppRetroEffects {
                 LinearGradient(
                     colors: [
                         .clear,
-                        .black.opacity(opacity),
+                        Color.primary.opacity(opacity),
                         .clear,
-                        .black.opacity(opacity * 0.5),
+                        Color.primary.opacity(opacity * 0.5),
                         .clear
                     ],
                     startPoint: .top,
@@ -837,12 +837,6 @@ enum AppRetroEffects {
                 )
             )
             .allowsHitTesting(false)
-    }
-}
-
-extension View {
-    func sectionHeaderStyle() -> some View {
-        self.font(AppTypography.sectionHeader).textCase(.uppercase).tracking(0.8)
     }
 }
 

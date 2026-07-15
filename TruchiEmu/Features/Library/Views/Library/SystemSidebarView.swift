@@ -15,6 +15,7 @@ struct SystemSidebarView: View {
     @Binding var editingCategory: GameCategory?
     @State private var hiddenCategoryRefreshToggle = false
     @State private var categoriesRefreshToggle = false
+    @State private var systemSearchText = ""
 
     // Memoized sidebar list. The cache is updated through `.onChange`/`.onReceive`
     // listeners (NOT inside a computed property) so we never mutate @State while
@@ -53,15 +54,21 @@ struct SystemSidebarView: View {
         cachedCombinedSystems
     }
 
+    private var filteredSystems: [(system: SystemInfo, combinedCount: Int)] {
+        guard !systemSearchText.isEmpty else { return combinedSystemsWithROMs }
+        let query = systemSearchText.lowercased()
+        return combinedSystemsWithROMs.filter {
+            $0.system.searchableText.contains(query)
+        }
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                HStack {
-                    RoundedRectangle(cornerRadius: 1)
-                        .fill(AppGradients.accent)
-                        .frame(width: 48, height: 2)
-                    Spacer()
-                }
+                AppSearchField(
+                    text: $systemSearchText,
+                    placeholder: loc.localized("app.searchSystems")
+                )
                 .padding(.bottom, 8)
 
                 sidebarRow(icon: "square.grid.2x2", label: loc.localized("app.allGames"), count: library.romCounts["all"] ?? 0, filter: .all)
@@ -87,7 +94,7 @@ struct SystemSidebarView: View {
                     isHeaderHovered: $categoriesHeaderHovered,
                     onAction: { showCreateCategorySheet = true },
                     actionLabel: loc.localized("app.newCategory"),
-                    showAction: categoriesHeaderHovered
+                    showAction: true
                 )
 
                 Group {
@@ -110,15 +117,24 @@ struct SystemSidebarView: View {
                     )
 
                     if systemsSectionExpanded {
-                        ForEach(combinedSystemsWithROMs, id: \.system.id) { entry in
-                            sidebarRow(
-                                icon: entry.system.iconName,
-                                label: entry.system.sidebarDisplayName,
-                                system: entry.system,
-                                count: entry.combinedCount,
-                                filter: .system(entry.system),
-                                onRename: onRenameSystem != nil ? { system in onRenameSystem?(system) } : nil
+                        if systemSearchText.isEmpty || !filteredSystems.isEmpty {
+                            ForEach(filteredSystems, id: \.system.id) { entry in
+                                sidebarRow(
+                                    icon: entry.system.iconName,
+                                    label: entry.system.sidebarDisplayName,
+                                    system: entry.system,
+                                    count: entry.combinedCount,
+                                    filter: .system(entry.system),
+                                    onRename: onRenameSystem != nil ? { system in onRenameSystem?(system) } : nil
+                                )
+                            }
+                        } else {
+                            AppEmptyState(
+                                icon: "magnifyingglass",
+                                title: loc.localized("app.noSystemsMatch"),
+                                description: ""
                             )
+                            .padding(.top, 8)
                         }
                     }
                 }
@@ -158,7 +174,12 @@ struct SystemSidebarView: View {
             .padding(.vertical, 12)
         }
         .scrollContentBackground(.hidden)
-        .background(AppColors.sidebarBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+        .background(
+            ZStack {
+                AppColors.sidebarBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled)
+                AppRetroEffects.scanlineOverlay(opacity: 0.06)
+            }
+        )
         .frame(minWidth: 220, idealWidth: 240)
         .navigationTitle(loc.localized("app.library"))
         .onReceive(NotificationCenter.default.publisher(for: .gamepadSidebarContextMenu)) { _ in
@@ -172,6 +193,10 @@ struct SystemSidebarView: View {
         }
         .onChange(of: library.romCounts) { _, _ in
             cachedCombinedSystems = computeCombinedSystems()
+        }
+        .onChange(of: systemSearchText) { _, newValue in
+            guard !newValue.isEmpty, let first = filteredSystems.first else { return }
+            selectedFilter = .system(first.system)
         }
         .onChange(of: library.lastChangeDate) { _, _ in
             cachedCombinedSystems = computeCombinedSystems()
@@ -228,11 +253,13 @@ struct SystemSidebarView: View {
                 HStack(spacing: 4) {
             Image(systemName: isExpanded.wrappedValue ? "chevron.down" : "chevron.right")
                     .font(.caption.weight(.semibold))
-                    .foregroundStyle(AppColors.textSecondaryNeutral(colorScheme))
+                    .foregroundStyle(AppColors.brandAccent)
                         .frame(width: 12, alignment: .center)
-                    Text(title)
-                        .font(AppTypography.sectionHeader)
-                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                Text(title)
+                    .font(AppTypography.sectionHeader)
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                    .textCase(.uppercase)
+                    .tracking(0.8)
                     Spacer(minLength: 0)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -243,15 +270,21 @@ struct SystemSidebarView: View {
             if showAction, let action = onAction, let label = actionLabel {
                 Button(action: action) {
                     HStack(spacing: 4) {
-                Image(systemName: "plus.circle")
-                    .foregroundStyle(AppColors.textSecondaryNeutral(colorScheme))
-                        Text(label)
-                            .lineLimit(1)
+                        Image(systemName: "plus.circle")
+                            .foregroundStyle(AppColors.brandAccent)
+                        if isHeaderHovered.wrappedValue {
+                            Text(label)
+                                .lineLimit(1)
+                                .transition(.opacity.combined(with: .move(edge: .trailing)))
+                        }
                     }
                     .font(.caption)
+                    .frame(height: 18)
+                    .padding(.vertical, 2)
                 }
+                .accessibilityLabel(label)
                 .buttonStyle(.plain)
-                .transition(.opacity.combined(with: .move(edge: .trailing)))
+                .animation(.easeInOut(duration: 0.15), value: isHeaderHovered.wrappedValue)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

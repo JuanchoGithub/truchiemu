@@ -13,6 +13,7 @@ struct CategoryRowButton: View {
 
     @State private var isHovered = false
     @State private var isDropTarget = false
+    @State private var showDeleteAlert = false
     @ObservedObject private var loc = LocalizationManager.shared
     @Environment(\.colorScheme) private var colorScheme
 
@@ -36,6 +37,7 @@ struct CategoryRowButton: View {
         .foregroundColor(isSelected ? (Color(hex: category.colorHex) ?? .blue) : .secondary)
         .padding(.horizontal, 6)
         .padding(.vertical, 2)
+        .padding(.trailing, (isHovered || isSelected) ? 22 : 0)
         .background(isSelected ? (Color(hex: category.colorHex) ?? .blue).opacity(0.15) : AppColors.cardBackgroundSubtle(colorScheme))
         .cornerRadius(6)
       }
@@ -65,7 +67,34 @@ struct CategoryRowButton: View {
                     .padding(.leading, 2)
             }
         }
+        .overlay(alignment: .trailing) {
+            if isHovered || isSelected {
+                Menu {
+                    Button {
+                        showEditCategorySheet(category)
+                    } label: {
+                        Label(loc.localized("contextMenu.editCategory"), systemImage: "pencil")
+                    }
+                    Button(role: .destructive) {
+                        showDeleteAlert = true
+                    } label: {
+                        Label(loc.localized("contextMenu.deleteCategory"), systemImage: "trash")
+                    }
+                } label: {
+                    Image(systemName: "ellipsis")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(.secondary)
+                        .padding(.horizontal, 4)
+                        .padding(.vertical, 6)
+                }
+                .menuIndicator(.hidden)
+                .padding(.trailing, 4)
+                .transition(.opacity)
+            }
+        }
     .onHover { isHovered = $0 }
+    .animation(AppMotion.micro, value: isHovered)
+    .animation(AppMotion.micro, value: isSelected)
     .onDrop(of: [.plainText], isTargeted: $isDropTarget) { items in
       handleDropOnCategory(items, category.id)
     }
@@ -76,10 +105,22 @@ struct CategoryRowButton: View {
                 Label(loc.localized("contextMenu.editCategory"), systemImage: "pencil")
             }
 		Button(role: .destructive) {
-				onDeleteCategory(category.id)
+				showDeleteAlert = true
 			} label: {
                 Label(loc.localized("contextMenu.deleteCategory"), systemImage: "trash")
             }
+        }
+        .alert(
+            loc.localized("contextMenu.deleteCategory"),
+            isPresented: $showDeleteAlert,
+            presenting: category
+        ) { cat in
+            Button(loc.localized("app.cancel"), role: .cancel) {}
+            Button(loc.localized("app.delete"), role: .destructive) {
+                onDeleteCategory(cat.id)
+            }
+        } message: { cat in
+            Text(String(format: loc.localized("category.deleteConfirm"), cat.name))
         }
     }
 }
