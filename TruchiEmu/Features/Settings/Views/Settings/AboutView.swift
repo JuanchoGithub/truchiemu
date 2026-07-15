@@ -239,6 +239,16 @@ struct AboutView: View {
                             licenseURL: nil,
                             description: "Community-created PNG bezel overlays for retro gaming systems. Bezels are provided per-system and cover a vast library of games."
                         )
+
+                        Divider()
+
+                        DependencyGroup(
+                            name: "GOROman/famicom-rf-hackrf-decoder",
+                            url: "https://github.com/GOROman/famicom-rf-hackrf-decoder",
+                            license: "MIT",
+                            licenseURL: "https://github.com/GOROman/famicom-rf-hackrf-decoder/blob/main/LICENSE",
+                            description: "Source of the DSP and visual pipeline (antenna static, off-tune interference, NTSC composite decode, RF ghosting, CRT scanlines) that powers the Famicom RF shader in TruchiEmu."
+                        )
                     }
                     
                     // --- Box Art ---

@@ -708,8 +708,6 @@ class StreamRecordingService: ObservableObject {
         audioSessionAnchor = 0
         streamingService = nil
         pixelBufferPool = nil
-        audioReadScratch = []
-        audioResampleScratch = []
         stopAudioCapture()
         if wasUserInitiated, RollingVideoBufferService.shared.isEnabled {
             RollingVideoBufferService.shared.startCaptureIfReady()
@@ -801,7 +799,6 @@ class StreamRecordingService: ObservableObject {
             currentInitiator = nil
             recordingStartTime = nil
             audioSessionAnchor = 0
-            stopAudioCapture()
             w.finishWriting {
                 if let e = w.error {
                     LoggerService.error(category: "Recording", "forceStop writer error: \(e.localizedDescription)")
@@ -809,8 +806,7 @@ class StreamRecordingService: ObservableObject {
             }
         }
         pixelBufferPool = nil
-        audioReadScratch = []
-        audioResampleScratch = []
+        stopAudioCapture()
         streamStatus = .idle
     }
 
@@ -858,8 +854,6 @@ class StreamRecordingService: ObservableObject {
         audioInput = nil
         pixelBufferAdaptor = nil
         pixelBufferPool = nil
-        audioReadScratch = []
-        audioResampleScratch = []
 
         writer.finishWriting {
             if let error = writerRef.error {
@@ -878,8 +872,6 @@ class StreamRecordingService: ObservableObject {
         guard let service = streamingService else { return }
         streamingService = nil
         pixelBufferPool = nil
-        audioReadScratch = []
-        audioResampleScratch = []
 
         Task { @MainActor in
             await service.stop()
@@ -966,6 +958,16 @@ class StreamRecordingService: ObservableObject {
     private func stopAudioCapture() {
         audioTimer?.cancel()
         audioTimer = nil
+        // Clear the scratch buffers on the writing queue so the teardown is
+        // serialized behind any in-flight `captureAudioSamples()` handler.
+        // `audioTimer.cancel()` does NOT wait for the currently-executing
+        // handler, so resetting these `nonisolated(unsafe)` arrays inline from
+        // the MainActor would race a mid-flight copy and fault (empty buffer
+        // read → index out of range).
+        writingQueue.async { [weak self] in
+            self?.audioReadScratch = []
+            self?.audioResampleScratch = []
+        }
     }
 
     nonisolated private func captureAudioSamples() {

@@ -192,6 +192,16 @@ final class RTMPStreamingService {
             .build() else {
             return .failure(.connectionFailed("SessionBuilderFactory returned nil"))
         }
+        // Materialize the RTMPStream BEFORE connecting so it registers with the
+        // connection (via `RTMPStream.init` → `connection.addStream`). On a
+        // successful connect, `RTMPConnection.connect` iterates its registered
+        // streams and calls `createStream()` on each — which assigns the real
+        // RTMP stream id that the subsequent publish handshake needs. The live
+        // `start()` path does this implicitly by touching `session.stream` to
+        // set video/audio settings; without it here the publish races its own
+        // async stream registration and times out, so verification fails even
+        // though real streaming works.
+        _ = await session.stream
         do {
             try await session.connect { }
             _ = try? await session.close()
