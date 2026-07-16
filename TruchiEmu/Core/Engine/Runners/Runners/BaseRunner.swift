@@ -719,7 +719,7 @@ case "scummvm": runner = ScummVMRunner()
     func togglePause() {
         isPaused.toggle()
         XPCBridgeAdapter.shared.setPaused(isPaused)
-        osdMessage = isPaused ? "Paused" : "Resumed"
+        osdMessage = isPaused ? LocalizationManager.shared.localized("osd.paused") : LocalizationManager.shared.localized("osd.resumed")
         
         Task {
             try? await Task.sleep(nanoseconds: 2_000_000_000)
@@ -736,6 +736,13 @@ case "scummvm": runner = ScummVMRunner()
         _needsRcheevosReset = true
         rcheevosLock.unlock()
         onGameReset?()
+    }
+
+    @MainActor
+    private func slotLabel(_ slot: Int) -> String {
+        slot == -1
+            ? LocalizationManager.shared.localized("osd.auto")
+            : LocalizationManager.shared.localized("osd.slot", "\(slot)")
     }
 
     // MARK: - Time Machine & Speed Control
@@ -825,7 +832,7 @@ case "scummvm": runner = ScummVMRunner()
     private func enterTimeMachineMode() {
         guard let newest = timeMachineBuffer.newestFrameIndex,
               timeMachineBuffer.entryCount > 1 else {
-            osdMessage = "No rewind data"
+            osdMessage = LocalizationManager.shared.localized("osd.noRewindData")
             Task {
                 try? await Task.sleep(nanoseconds: 1_000_000_000)
                 await MainActor.run { self.osdMessage = nil }
@@ -838,7 +845,7 @@ case "scummvm": runner = ScummVMRunner()
         XPCBridgeAdapter.shared.setSpeedMultiplier(1.0)
         XPCBridgeAdapter.shared.setPaused(true)
         timeMachineScrubFrameIndex = newest
-        osdMessage = "Rewind"
+        osdMessage = LocalizationManager.shared.localized("osd.rewind")
         LoggerService.info(category: "TimeMachine", "Entered scrub mode at frame \(newest)")
     }
 
@@ -1023,7 +1030,7 @@ case "scummvm": runner = ScummVMRunner()
         guard let newest = timeMachineBuffer.newestFrameIndex,
               let nearest = timeMachineBuffer.nearestEntry(before: newest - 1),
               nearest.frameIndex < newest else {
-            osdMessage = "No rewind data"
+            osdMessage = LocalizationManager.shared.localized("osd.noRewindData")
             Task {
                 try? await Task.sleep(nanoseconds: 1_000_000_000)
                 await MainActor.run { self.osdMessage = nil }
@@ -1032,9 +1039,9 @@ case "scummvm": runner = ScummVMRunner()
         }
         let success = applyState(nearest.data, resumeAfter: true)
         if success {
-            osdMessage = "Rewound"
+            osdMessage = LocalizationManager.shared.localized("osd.rewound")
         } else {
-            osdMessage = "Rewind failed"
+            osdMessage = LocalizationManager.shared.localized("osd.rewindFailed")
         }
         Task {
             try? await Task.sleep(nanoseconds: 2_000_000_000)
@@ -1134,11 +1141,17 @@ case "scummvm": runner = ScummVMRunner()
             
             if !AppSettings.getBool("hasCelebratedFirstSave", defaultValue: false) {
                 AppSettings.setBool("hasCelebratedFirstSave", value: true)
-                osdMessage = "First save state — you can pick up right here anytime!"
+                osdMessage = LocalizationManager.shared.localized("osd.firstSaveTitle")
+                CelebrationManager.shared.celebrate(
+                    icon: "party.popper.fill",
+                    title: LocalizationManager.shared.localized("celebration.firstSaveTitle"),
+                    subtitle: LocalizationManager.shared.localized("celebration.firstSaveSubtitle"),
+                    style: .grand
+                )
             } else if let v = actualVersion {
-                osdMessage = "Saved \(slot == -1 ? "Auto" : "Slot \(slot)") #\(v)"
+                osdMessage = LocalizationManager.shared.localized("osd.savedVersion", slotLabel(slot), v)
             } else {
-                osdMessage = "Saved \(slot == -1 ? "Auto" : "Slot \(slot)")"
+                osdMessage = LocalizationManager.shared.localized(slot == -1 ? "osd.savedAuto" : "osd.savedSlot", slotLabel(slot))
             }
             
             onSaveStateSaved?(slot)
@@ -1190,7 +1203,7 @@ case "scummvm": runner = ScummVMRunner()
 
         let success = XPCBridgeAdapter.shared.unserializeState(actualData)
         if success {
-            osdMessage = "Loaded save state"
+            osdMessage = LocalizationManager.shared.localized("osd.loadedSaveState")
             AppHaptics.success()
             rcheevosLock.lock()
             _needsRcheevosReset = true
@@ -1271,7 +1284,7 @@ case "scummvm": runner = ScummVMRunner()
         
         let success = XPCBridgeAdapter.shared.unserializeState(actualData)
         if success {
-            osdMessage = "Loaded \(slot == -1 ? "Auto" : "Slot \(slot)")"
+                osdMessage = LocalizationManager.shared.localized("osd.loadedSaveState")
             rcheevosLock.lock()
             _needsRcheevosReset = true
             rcheevosLock.unlock()
@@ -1295,7 +1308,7 @@ case "scummvm": runner = ScummVMRunner()
     @MainActor
     func undoLoadState() -> Bool {
         guard let undoData = undoBuffer else {
-            osdMessage = "Nothing to undo"
+            osdMessage = LocalizationManager.shared.localized("osd.nothingToUndo")
             return false
         }
         
@@ -1304,14 +1317,14 @@ case "scummvm": runner = ScummVMRunner()
         if let decompressed = SaveStateManager.decompressStateData(undoData) {
             actualData = decompressed
         } else {
-            osdMessage = "Error: Could not restore previous state"
+            osdMessage = LocalizationManager.shared.localized("osd.undoFailed")
             return false
         }
         
         let success = XPCBridgeAdapter.shared.unserializeState(actualData)
         if success {
             undoBuffer = nil
-            osdMessage = "Undo successful"
+            osdMessage = LocalizationManager.shared.localized("osd.undoSuccess")
             
             // Clear OSD after 2 seconds
             Task {
@@ -1319,7 +1332,7 @@ case "scummvm": runner = ScummVMRunner()
                 await MainActor.run { self.osdMessage = nil }
             }
         } else {
-            osdMessage = "Error: Could not restore previous state"
+            osdMessage = LocalizationManager.shared.localized("osd.undoFailed")
         }
         
         return success
@@ -1333,7 +1346,7 @@ case "scummvm": runner = ScummVMRunner()
         } else {
             currentSlot += 1
         }
-        osdMessage = "Slot: \(currentSlot)"
+        osdMessage = LocalizationManager.shared.localized("osd.currentSlot", slotLabel(currentSlot))
         
         Task {
             try? await Task.sleep(nanoseconds: 1_000_000_000)
@@ -1349,7 +1362,7 @@ case "scummvm": runner = ScummVMRunner()
         } else {
             currentSlot -= 1
         }
-        osdMessage = "Slot: \(currentSlot)"
+        osdMessage = LocalizationManager.shared.localized("osd.currentSlot", slotLabel(currentSlot))
         
         Task {
             try? await Task.sleep(nanoseconds: 1_000_000_000)
@@ -1521,10 +1534,10 @@ weak var metalCoordinator: MetalCoordinator?
                 }
                 return
             }
-            osdMessage = "Saving clip..."
+            osdMessage = LocalizationManager.shared.localized("osd.savingClip")
             RollingVideoBufferService.shared.saveBufferToFile { [weak self] url in
                 if let url = url {
-                    self?.osdMessage = "Clip saved"
+                        self?.osdMessage = LocalizationManager.shared.localized("osd.clipSaved")
                     Task { @MainActor in
                         try? await Task.sleep(nanoseconds: 2_000_000_000)
                         self?.osdMessage = nil

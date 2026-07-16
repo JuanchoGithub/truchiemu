@@ -296,8 +296,9 @@ case .library:
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
         }
 
-        // Confetti overlay for celebration moments
-            ConfettiOverlay()
+        // Celebration overlay picks up CelebrationManager.shared (confetti + branded pill)
+        // Other notification pills continue to render below via the dedicated manager.
+        CelebrationOverlay()
 
         // Gamepad context menu overlay
         GamepadContextMenuOverlay()
@@ -367,14 +368,11 @@ applyShaderOverrides(systemID: data.systemID, shaderID: data.newShaderPresetID, 
 private func celebrateFirstScanIfNeeded(addedCount: Int) {
     guard !AppSettings.getBool("hasCelebratedFirstScan", defaultValue: false) else { return }
     AppSettings.setBool("hasCelebratedFirstScan", value: true)
-    ConfettiManager.shared.grandCelebration()
-    NotificationPillManager.shared.post(
-        PillNotification(
-            icon: "party.popper.fill",
-            title: LocalizationManager.shared.localized("firstScan.celebrateTitle"),
-            subtitle: LocalizationManager.shared.localized("firstScan.celebrateSubtitle", addedCount),
-            autoDismissDelay: 6
-        )
+    CelebrationManager.shared.celebrate(
+        icon: "party.popper.fill",
+        title: LocalizationManager.shared.localized("firstScan.celebrateTitle"),
+        subtitle: LocalizationManager.shared.localized("firstScan.celebrateSubtitle", addedCount),
+        style: .grand
     )
 }
 

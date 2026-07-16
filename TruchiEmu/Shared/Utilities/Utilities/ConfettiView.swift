@@ -123,29 +123,48 @@ struct ConfettiView: View {
 
 // MARK: - Confetti Manager
 
+/// Intensity selector for confetti bursts. Drives particle count and duration.
+enum ConfettiStyle: CaseIterable {
+    case subtle
+    case standard
+    case grand
+
+    var particleCount: Int {
+        switch self {
+        case .subtle: return 24
+        case .standard: return 40
+        case .grand: return 80
+        }
+    }
+}
+
 // Manages confetti display across the app
 @MainActor
 class ConfettiManager: ObservableObject {
     static let shared = ConfettiManager()
-    
+
     @Published var isShowing = false
     @Published var particleCount: Int = 40
-    
+
     // Show a quick confetti burst
     func burst(particles: Int = 40) {
         guard !isShowing else { return }
         particleCount = particles
         isShowing = true
-        
+
         // Auto-dismiss after animation
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
             self.isShowing = false
         }
     }
-    
+
+    func burst(style: ConfettiStyle) {
+        burst(particles: style.particleCount)
+    }
+
     // Show confetti for a rare/special achievement
     func grandCelebration() {
-        burst(particles: 80)
+        burst(style: .grand)
     }
 }
 

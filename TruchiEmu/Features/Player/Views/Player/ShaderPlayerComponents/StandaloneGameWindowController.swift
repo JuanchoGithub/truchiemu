@@ -107,6 +107,7 @@ var moveListOverlayView: NSHostingView<AnyView>?
 var achievementToastOverlayView: NSHostingView<AnyView>?
     var escapeToastOverlayView: SafeHostingView<AnyView>?
     var cheatToastOverlayView: SafeHostingView<AnyView>?
+    var celebrationOverlayView: SafeHostingView<AnyView>?
     var screenshotFlashOverlayView: NSView?
     var screenshotPillOverlayView: SafeHostingView<AnyView>?
     var recordingBadgeOverlayView: SafeHostingView<AnyView>?
@@ -156,6 +157,8 @@ return MoveListOverlayViewModel(runner: runner)
         escapeToastOverlayView = nil
         cheatToastOverlayView?.removeFromSuperview()
         cheatToastOverlayView = nil
+        celebrationOverlayView?.removeFromSuperview()
+        celebrationOverlayView = nil
         screenshotFlashOverlayView?.removeFromSuperview()
         screenshotFlashOverlayView = nil
         screenshotPillOverlayView?.removeFromSuperview()
@@ -383,12 +386,28 @@ super.init(window: window)
         cheatToastView.layer?.backgroundColor = NSColor.clear.cgColor
         containerView.addSubview(cheatToastView, positioned: .below, relativeTo: hostingView)
         self.cheatToastOverlayView = cheatToastView
-
         NSLayoutConstraint.activate([
             cheatToastView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
             cheatToastView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
             cheatToastView.topAnchor.constraint(equalTo: containerView.topAnchor),
             cheatToastView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
+        ])
+
+        // Celebration overlay (game window) — pill-only on purpose. Confetti stays
+        // in the main library window so a running game is never broadsided by particles.
+        let celebrationOverlayView = SafeHostingView(rootView: AnyView(CelebrationPillOverlay()))
+        celebrationOverlayView.translatesAutoresizingMaskIntoConstraints = false
+        celebrationOverlayView.wantsLayer = true
+        celebrationOverlayView.isPassThroughOverlay = true
+        celebrationOverlayView.layer?.backgroundColor = NSColor.clear.cgColor
+        containerView.addSubview(celebrationOverlayView, positioned: .below, relativeTo: hostingView)
+        self.celebrationOverlayView = celebrationOverlayView
+
+        NSLayoutConstraint.activate([
+            celebrationOverlayView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            celebrationOverlayView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            celebrationOverlayView.topAnchor.constraint(equalTo: containerView.topAnchor),
+            celebrationOverlayView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
         ])
 
         // Screenshot flash backdrop — lightweight NSView (SwiftUI hosting here caused layout issues)

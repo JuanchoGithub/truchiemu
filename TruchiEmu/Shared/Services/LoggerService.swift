@@ -69,7 +69,16 @@ enum LogLevel: String, Codable, CaseIterable {
 // Thread-safe for concurrent access.
 final class LoggerService: @unchecked Sendable {
     static let shared = LoggerService()
-    
+
+    /// Re-entrancy guard. Some bootstrapping paths (e.g. `LocalizationManager.init`
+    /// → `LoggerService.debug` → `LogManager.shared` → `AppSettings` →
+    /// `SwiftDataContainer.shared` → `LoggerService.info`) reach back into
+    /// `LoggerService.shared` before the original dispatch_once has finished.
+    /// Without this guard, macOS aborts the process via `dispatch_once` deadlock.
+    /// While > 0, log calls go to `print()` only and skip the file write —
+    /// those calls are always from inside the init chain anyway.
+    fileprivate static var initDepth: Int = 0
+
     // MARK: - Configuration
     
     #if XPC_SERVICE
@@ -103,17 +112,20 @@ final class LoggerService: @unchecked Sendable {
     // MARK: - Init
     
     private init() {
+        Self.initDepth += 1
+        defer { Self.initDepth -= 1 }
+
         // Load saved log level (default to INFO - don't read AppSettings here to avoid circular dependency)
         // The actual saved value will be loaded lazily on first access
         self.currentLevel = .info
-        
+            
         // Initialize file logging
         setupFileLogging()
-        
+            
         // Register the C callback so libretro core logs (LibretroDB, Identify, Bridge, etc.)
         // are routed through LoggerService and written to the log file.
         RegisterCoreLogCallback(g_coreLogCallback)
-        
+            
         // Mark as initialized - now we can safely write to AppSettings
         self.isInitialized = true
 
@@ -227,25 +239,35 @@ final class LoggerService: @unchecked Sendable {
     }
     
     // MARK: - Public Logging API
-    
+
+    // Drops to print only during LoggerService.init re-entrancy (see `initDepth`).
+    private static func safePrint(_ level: LogLevel, category: String, message: String) {
+        let timestamp = ISO8601DateFormatter.string(from: Date(), timeZone: TimeZone.current)
+        print("\(timestamp) [\(level.label)] [\(category)] \(message)")
+    }
+
     // Log at INFO level: general logs, games running, downloads, file operations, save/load states, zipping, online operations.
     static func info(_ message: String) {
+        if initDepth > 0 { safePrint(.info, category: "App", message: message); return }
         shared.log(.info, category: "App", message: message)
     }
-    
+
     // Log at INFO level with a specific category.
     static func info(category: String, _ message: String) {
+        if initDepth > 0 { safePrint(.info, category: category, message: message); return }
         shared.log(.info, category: category, message: message)
     }
-    
+
     // Log at DEBUG level: more detailed logs for troubleshooting.
     #if LOG_DEBUG
     static func debug(_ message: String) {
+        if initDepth > 0 { safePrint(.debug, category: "App", message: message); return }
         shared.log(.debug, category: "App", message: message)
     }
-    
+
     // Log at DEBUG level with a specific category.
     static func debug(category: String, _ message: String) {
+        if initDepth > 0 { safePrint(.debug, category: category, message: message); return }
         shared.log(.debug, category: category, message: message)
     }
     #endif
@@ -264,6 +286,7 @@ final class LoggerService: @unchecked Sendable {
 
     // Log at ERROR level (logged as .info to always appear, tagged with [ERROR]).
     static func error(_ message: String) {
+        if initDepth > 0 { safePrint(.info, category: "App", message: "[ERROR] \(message)"); return }
         let ts = ISO8601DateFormatter.string(from: Date(), timeZone: TimeZone.current)
         let formatted = "\(ts) [ERROR] [App] \(message)"
         print(formatted)
@@ -274,6 +297,7 @@ final class LoggerService: @unchecked Sendable {
 
     // Log at ERROR level with a specific category (logged as .info to always appear, tagged with [ERROR]).
     static func error(category: String, _ message: String) {
+        if initDepth > 0 { safePrint(.info, category: category, message: "[ERROR] \(message)"); return }
         let ts = ISO8601DateFormatter.string(from: Date(), timeZone: TimeZone.current)
         let formatted = "\(ts) [ERROR] [\(category)] \(message)"
         print(formatted)
@@ -281,9 +305,10 @@ final class LoggerService: @unchecked Sendable {
             shared.writeToFile(formatted + "\n")
         }
     }
-    
+
     // Log at WARNING level.
     static func warning(_ message: String) {
+        if initDepth > 0 { safePrint(.info, category: "App", message: "[WARN] \(message)"); return }
         let ts = ISO8601DateFormatter.string(from: Date(), timeZone: TimeZone.current)
         let formatted = "\(ts) [WARN] [App] \(message)"
         print(formatted)
@@ -296,6 +321,7 @@ final class LoggerService: @unchecked Sendable {
     
     // Log at WARNING level with category.
     static func warning(category: String, _ message: String) {
+        if initDepth > 0 { safePrint(.info, category: category, message: "[WARN] \(message)"); return }
         let ts = ISO8601DateFormatter.string(from: Date(), timeZone: TimeZone.current)
         let formatted = "\(ts) [WARN] [\(category)] \(message)"
         print(formatted)
