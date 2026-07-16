@@ -1,0 +1,51 @@
+---
+layout: default
+title: v1.7.2 - Documentação do TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/pt/changelog.html' | relative_url }}">Registro de alterações</a>
+        <span class="separator">/</span>
+        <span class="current">v1.7.2</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.7.2</h1>
+        <div class="release-meta">
+            <span class="release-date">16 de julho de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Versão de rede de segurança sobre a v1.7.1. Embora a v1.7.1 tenha corrigido o bug de perda de dados, a v1.7.2 adiciona um backup automático do seu armazenamento SwiftData e uma tela de recuperação "Modo Atualização do App" para que uma futura migração problemática nunca mais apague seus dados silenciosamente. Se a migração falhar, sua biblioteca, saves, BIOS, cheats e configurações são restaurados de um backup com carimbo de data/hora e o app inicia em um modo limitado que permite instalar uma atualização corretiva.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destaques</h2>
+        <ul class="feature-list">
+            <li><strong>Backup pré-migração automático:</strong> Antes de abrir o armazenamento SwiftData, a v1.7.2 copia a tríplice SQLite (<code>TruchiEmu.sqlite</code>, <code>-wal</code>, <code>-shm</code>) para <code>~/Library/Application Support/TruchiEmu/.migrationBackups/</code> com carimbo de data/hora. No máximo 5 backups recentes são mantidos.</li>
+            <li><strong>Reversão em falha:</strong> Se uma migração de esquema falhar, o app restaura o backup pré-migração mais recente no caminho do armazenamento ativo, para que a próxima versão (corretiva) abra sua biblioteca original em vez de um armazenamento vazio.</li>
+            <li><strong>Modo Atualização do App:</strong> Quando o armazenamento não pode ser aberto, o app mostra uma tela bloqueada com verificação de atualização em um toque, Time Machine, continuar em modo limitado e sair — seus dados sempre são reportados como intactos.</li>
+            <li><strong>Fallback em memória:</strong> A UI continua funcional mesmo quando o armazenamento em disco está indisponível, permitindo que a tela de recuperação seja renderizada.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Alterações detalhadas</h2>
+        <ul>
+            <li>Adicionado <code>SwiftDataContainer.makePreMigrationBackup()</code> e <code>restoreLatestBackup()</code> (cópia/restauração da tríplice SQLite com limpeza de backups antigos)</li>
+            <li>Adicionado estado <code>launchSchemaError</code>, <code>createdPreMigrationBackup</code> e <code>runningInMemoryFallback</code> para expor falhas de migração</li>
+            <li>Revisado o caminho de falha do <code>ModelContainer</code>: em erro, restaura o backup e então usa um armazenamento em memória — sem exclusões destrutivas</li>
+            <li>Adicionado <code>AppUpdateModeView</code> e conectado como primeira view quando <code>launchSchemaError != nil</code>, com uma notificação <code>.exitAppUpdateMode</code> para dispensá-lo</li>
+            <li>Removido o não mais usado <code>deleteStoreFiles()</code> (seu caminho de excluir-e-repetir foi removido do manipulador de falha)</li>
+            <li>Adicionadas chaves de localização <code>updateMode.*</code> (en/es/pt)</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/pt/changelog/v1.7.1.html' | relative_url }}" class="release-prev">&larr; v1.7.1</a>
+        <a href="{{ '/pt/changelog.html' | relative_url }}" class="release-all">Todas as versões</a>
+    </nav>
+</div>

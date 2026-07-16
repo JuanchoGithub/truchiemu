@@ -20,6 +20,25 @@ final class SwiftDataContainer: ObservableObject {
     
     private(set) var container: ModelContainer!
     private(set) var migrationFlag: PersistenceMigrationFlag?
+
+    // Populated when the SwiftData store could not be migrated/opened on this
+    // launch. The app's root Scene inspects this to decide whether to surface
+    // App Update Mode (recovery UI). Non-nil means the container currently in
+    // use is the in-memory fallback and the user's on-disk store is intact, but
+    // the user needs a fixing update to read their existing data.
+    private(set) var launchSchemaError: Error?
+
+    // True when a backup of the SwiftData SQLite triple was successfully created
+    // at the start of this launch (so the recovery flow / App Update Mode knows
+    // it can offer "restore from the just-taken backup").
+    private(set) var createdPreMigrationBackup: Bool = false
+
+    // True when the live store on disk had to be the in-memory fallback this
+    // launch because the on-disk store could not be opened.
+    private(set) var runningInMemoryFallback: Bool = false
+
+    // Maximum number of pre-migration backups to retain under .migrationBackups/.
+    private static let maxBackups = 3
     
     // Primary context for MainActor writes
     var mainContext: ModelContext {
@@ -33,39 +52,97 @@ final class SwiftDataContainer: ObservableObject {
     
     // MARK: - Store Management
 
-    // Delete ONLY the SwiftData SQLite store files to force a fresh schema creation.
-    // Used as a fallback when schema migration fails. NEVER touch the surrounding
-    // `TruchiEmu/` user-data folder — that holds saves/BIOS/states/cheats/settings/logs
-    // which must survive a failed migration. Only the three SQLite triples inside
-    // the folder, plus the legacy `default.store*` files at the Application Support
-    // root (leftover from a pre-folder-layout era), are touched.
-    private static func deleteStoreFiles() {
+    // Copy the live SwiftData SQLite triple (store + wal + shm) into a timestamped
+    // subdirectory of `~/Library/Application Support/TruchiEmu/.migrationBackups/<ISO>/`
+    // BEFORE attempting ModelContainer init. This ensures a known-good copy of the
+    // user's DB exists even if migration corrupts or deletes the live files. The
+    // surrounding user-data folder (saves, BIOS, etc.) is intentionally not backed
+    // up here — those aren't touched by the migration flow.
+    private static func makePreMigrationBackup(storeURL: URL,
+                                                walURL: URL,
+                                                shmURL: URL) -> Bool {
         let fileManager = FileManager.default
-        let appSupport = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        let truchieFolder = appSupport.appendingPathComponent("TruchiEmu")
+        let backupRoot = storeURL.deletingLastPathComponent().appendingPathComponent(".migrationBackups")
+        let timestamp = ISO8601DateFormatter().string(from: Date())
+            .replacingOccurrences(of: ":", with: "-")
+        let dest = backupRoot.appendingPathComponent(timestamp)
+        do {
+            try fileManager.createDirectory(at: dest, withIntermediateDirectories: true)
+        } catch {
+            LoggerService.warning(category: "SwiftDataContainer", "Could not create backup directory: \(error.localizedDescription)")
+            return false
+        }
 
-        let storeFile = truchieFolder.appendingPathComponent("TruchiEmu.sqlite")
-        let walFile = truchieFolder.appendingPathComponent("TruchiEmu.sqlite-wal")
-        let shmFile = truchieFolder.appendingPathComponent("TruchiEmu.sqlite-shm")
+        let pairs: [(URL, URL)] = [
+            (storeURL, dest.appendingPathComponent("TruchiEmu.sqlite")),
+            (walURL, dest.appendingPathComponent("TruchiEmu.sqlite-wal")),
+            (shmURL, dest.appendingPathComponent("TruchiEmu.sqlite-shm"))
+        ]
+        var copiedAny = false
+        for (src, dst) in pairs {
+            guard fileManager.fileExists(atPath: src.path) else { continue }
+            do {
+                if fileManager.fileExists(atPath: dst.path) { try fileManager.removeItem(at: dst) }
+                try fileManager.copyItem(at: src, to: dst)
+                copiedAny = true
+            } catch {
+                LoggerService.warning(category: "SwiftDataContainer", "Backup copy failed for \(src.lastPathComponent): \(error.localizedDescription)")
+            }
+        }
 
-        // Legacy "root" path (pre-folder-layout era, lives at the Application
-        // Support root, NOT inside the TruchiEmu user-data folder).
-        let rootStore = appSupport.appendingPathComponent("default.store")
-        let rootWal = appSupport.appendingPathComponent("default.store-wal")
-        let rootShm = appSupport.appendingPathComponent("default.store-shm")
-
-        let targets = [storeFile, walFile, shmFile, rootStore, rootWal, rootShm]
-
-        for url in targets {
-            if fileManager.fileExists(atPath: url.path) {
-                do {
-                    try fileManager.removeItem(at: url)
-                    LoggerService.info(category: "SwiftDataContainer", "Deleted: \(url.lastPathComponent)")
-                } catch {
-                    LoggerService.warning(category: "SwiftDataContainer", "Failed to delete \(url.lastPathComponent): \(error.localizedDescription)")
+        // Prune older backups beyond maxBackups. Sort by name (ISO timestamps sort
+        // chronologically) and remove the oldest.
+        if let entries = try? fileManager.contentsOfDirectory(at: backupRoot,
+                                                                includingPropertiesForKeys: nil) {
+            let sorted = entries.sorted(by: { $0.lastPathComponent < $1.lastPathComponent })
+            if sorted.count > maxBackups {
+                for old in sorted.prefix(sorted.count - maxBackups) {
+                    try? fileManager.removeItem(at: old)
                 }
             }
         }
+
+        if copiedAny {
+            LoggerService.info(category: "SwiftDataContainer", "Pre-migration backup written to \(dest.lastPathComponent)")
+        }
+        return copiedAny
+    }
+
+    // Restore the most recent pre-migration backup to the live store path. Called
+    // on the failure path when ModelContainer(for:) threw: the catch block may have
+    // touched the live SQLite files (delete+retry), so we put the known-good copy
+    // back as the live store. The next fixing release can then open and migrate
+    // that store, recovering the user's library metadata. Returns true on success.
+    private static func restoreLatestBackup(storeURL: URL,
+                                              walURL: URL,
+                                              shmURL: URL) -> Bool {
+        let fileManager = FileManager.default
+        let backupRoot = storeURL.deletingLastPathComponent().appendingPathComponent(".migrationBackups")
+        guard let entries = try? fileManager.contentsOfDirectory(at: backupRoot,
+                                                                  includingPropertiesForKeys: nil),
+              !entries.isEmpty else { return false }
+        let latest = entries.sorted(by: { $0.lastPathComponent < $1.lastPathComponent }).last!
+
+        let pairs: [(URL, URL)] = [
+            (latest.appendingPathComponent("TruchiEmu.sqlite"), storeURL),
+            (latest.appendingPathComponent("TruchiEmu.sqlite-wal"), walURL),
+            (latest.appendingPathComponent("TruchiEmu.sqlite-shm"), shmURL)
+        ]
+        var restoredAny = false
+        for (src, dst) in pairs {
+            guard fileManager.fileExists(atPath: src.path) else { continue }
+            do {
+                if fileManager.fileExists(atPath: dst.path) { try fileManager.removeItem(at: dst) }
+                try fileManager.copyItem(at: src, to: dst)
+                restoredAny = true
+            } catch {
+                LoggerService.warning(category: "SwiftDataContainer", "Restore failed for \(src.lastPathComponent): \(error.localizedDescription)")
+            }
+        }
+        if restoredAny {
+            LoggerService.info(category: "SwiftDataContainer", "Restored pre-migration backup to live store path from \(latest.lastPathComponent)")
+        }
+        return restoredAny
     }
     
     // MARK: - Initialization (private)
@@ -104,7 +181,6 @@ final class SwiftDataContainer: ObservableObject {
         CustomGameDataEntry.self
         ])
 
-        // --- NEW LOGIC START ---
         let fileManager = FileManager.default
         let appSupport = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         let directoryURL = appSupport.appendingPathComponent("TruchiEmu")
@@ -113,42 +189,52 @@ final class SwiftDataContainer: ObservableObject {
         try? fileManager.createDirectory(at: directoryURL, withIntermediateDirectories: true)
         
         let storeURL = directoryURL.appendingPathComponent("TruchiEmu.sqlite")
+        let walURL = directoryURL.appendingPathComponent("TruchiEmu.sqlite-wal")
+        let shmURL = directoryURL.appendingPathComponent("TruchiEmu.sqlite-shm")
+
+        // Take a backup of the existing store BEFORE attempting ModelContainer init,
+        // so the user always has a known-good copy irrespective of what migration does.
+        // (Returned Bool tracked for App Update Mode UI.)
+        createdPreMigrationBackup = Self.makePreMigrationBackup(storeURL: storeURL,
+                                                                  walURL: walURL,
+                                                                  shmURL: shmURL)
+
         let config = ModelConfiguration(url: storeURL)
-        // --- NEW LOGIC END ---
         
         do {
             container = try ModelContainer(for: schema, configurations: [config])
             migrationFlag = PersistenceMigrationFlag()
         } catch {
-            // Try recovery without logging (to avoid circular deps)
-            
-            Self.deleteStoreFiles()
-            
-            // Re-create directory after deletion just in case
-            try? fileManager.createDirectory(at: directoryURL, withIntermediateDirectories: true)
-            
-            let retryConfig = ModelConfiguration(url: storeURL)
+            // Schema migration / store-open failed. Surface the error so App Update
+            // Mode UI can present the recovery flow, restore the pre-migration backup
+            // to the live store path (so a fixing release can pick up the user's
+            // original DB rather than an empty one), and run the app in-memory so the
+            // UI still works. Crucially, we do NOT delete anything from the user-data
+            // folder here — the broken store on disk is replaced by the pre-migration
+            // backup (which preserves the user's library metadata).
+            launchSchemaError = error
+            LoggerService.error(category: "SwiftDataContainer", "Schema migration failed: \(error.localizedDescription)")
+
+            // Restore the user's last-known-good SQLite triple from the pre-migration
+            // backup to the live store path. The next launch (with a fixing release)
+            // will see the user's original DB and can migrate it forward.
+            _ = Self.restoreLatestBackup(storeURL: storeURL,
+                                         walURL: walURL,
+                                         shmURL: shmURL)
+
+            // In-memory fallback so the UI can render App Update Mode.
+            let fallbackConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
             do {
-                container = try ModelContainer(for: schema, configurations: [retryConfig])
+                container = try ModelContainer(for: schema, configurations: [fallbackConfig])
                 migrationFlag = PersistenceMigrationFlag()
+                runningInMemoryFallback = true
+                LoggerService.info(category: "SwiftDataContainer", "Running in-memory-only; live store restored from backup; awaiting fixing update via App Update Mode.")
             } catch {
-                // If schema migration fails, delete the store file and try again
-                Self.deleteStoreFiles()
-                let retryConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-                do {
-                    container = try ModelContainer(for: schema, configurations: [retryConfig])
-                    migrationFlag = PersistenceMigrationFlag()
-                } catch {
-                    // Last resort: in-memory only
-                    let fallbackConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
-                    do {
-                        container = try ModelContainer(for: schema, configurations: [fallbackConfig])
-                        migrationFlag = PersistenceMigrationFlag()
-                    } catch {
-                        fatalError("Unable to initialize SwiftData container: \(error)")
-                    }
-                }
+                // Even the in-memory container couldn't be created — this is a
+                // code/schema bug unconnected to user data. fatalError so the
+                // dev sees it during their build.
+                fatalError("Unable to initialize SwiftData container: \(error)")
             }
-        }    
+        }
     }
 }

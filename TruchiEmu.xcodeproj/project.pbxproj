@@ -745,6 +745,7 @@
 		970C82707C0A9DEE473877A3 /* SavedShaderPreset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B2AEF2FFA96556BE1A55529 /* SavedShaderPreset.swift */; };
 		97532B79D1C03B1230BDB004 /* PersistenceMigrationFlag.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD9A1772372E4EED4D48A027 /* PersistenceMigrationFlag.swift */; };
 		977FA560F54529F986503CB8 /* fightdata_bldyror2.json in Resources */ = {isa = PBXBuildFile; fileRef = ACCCAB473CDDFB48059CD9DC /* fightdata_bldyror2.json */; };
+		9787127712006FC1210D80B1 /* AppUpdateModeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D01A5F58DD9164916D0B287C /* AppUpdateModeView.swift */; };
 		97B0CD3FFC12A55AEC384069 /* input_coreOverrides_ppsspp.json in Resources */ = {isa = PBXBuildFile; fileRef = 1ED3B3AE849C004507B6167C /* input_coreOverrides_ppsspp.json */; };
 		97C7E67F5D0B442F48CC53AA /* atari7800-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = B90D6D8D0EDAADDD3673F76E /* atari7800-cheats.zip */; };
 		97CCC29A6F7E7CD81BB53C1A /* VB.png in Resources */ = {isa = PBXBuildFile; fileRef = 8A73903CC89F4E5F785FF99D /* VB.png */; };
@@ -2268,6 +2269,7 @@
 		CFD762AF10BDB023C7F0DB26 /* ControllerIdentityKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerIdentityKey.swift; sourceTree = "<group>"; };
 		CFFF59517742B9B10657F3F5 /* fightdata_ssoldier.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_ssoldier.json; sourceTree = "<group>"; };
 		D00288CAC09A296119FC3F98 /* NTbe4.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = NTbe4.jpg; sourceTree = "<group>"; };
+		D01A5F58DD9164916D0B287C /* AppUpdateModeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUpdateModeView.swift; sourceTree = "<group>"; };
 		D0CCCF7E7B149FD3BD9B3F8B /* HintTree.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HintTree.swift; sourceTree = "<group>"; };
 		D12FCF47C4E8A17755ADDBE1 /* HelpSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpSettingsView.swift; sourceTree = "<group>"; };
 		D16D483A383752A639254DD5 /* MoveListModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveListModels.swift; sourceTree = "<group>"; };
@@ -3239,6 +3241,14 @@
 			path = XPC;
 			sourceTree = "<group>";
 		};
+		5942ABB5ECC5CEF036487EB1 /* AppUpdateMode */ = {
+			isa = PBXGroup;
+			children = (
+				D01A5F58DD9164916D0B287C /* AppUpdateModeView.swift */,
+			);
+			path = AppUpdateMode;
+			sourceTree = "<group>";
+		};
 		5BE55A1DE39FF8B3E1936E9F /* Library */ = {
 			isa = PBXGroup;
 			children = (
@@ -3297,6 +3307,7 @@
 		65C5C9C4F778132F28C02EF8 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				5942ABB5ECC5CEF036487EB1 /* AppUpdateMode */,
 				1F92234FC7D9A5FE968934E4 /* CoreDownload */,
 				399D59B6C48CDCB07A57E82C /* Detail */,
 				295D40A0EA98790DAA5EE5C0 /* NotificationCenter */,
@@ -5623,6 +5634,7 @@
 				BA41C9657722249E795D90F7 /* AnalogMouseSettingsView.swift in Sources */,
 				C3BF49FC6F5E4BC7F610A35E /* AppHaptics.swift in Sources */,
 				8486017DB7D747C9E058F05D /* AppSettings.swift in Sources */,
+				9787127712006FC1210D80B1 /* AppUpdateModeView.swift in Sources */,
 				F795BC067809176CEFAEEF29 /* AppUpdateService.swift in Sources */,
 				F2977433FDB56451CDF737CE /* AppearanceMode.swift in Sources */,
 				4BC641474FF845851DDAD200 /* ArcadeButtonMapper.swift in Sources */,

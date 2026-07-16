@@ -1,0 +1,51 @@
+---
+layout: default
+title: v1.7.2 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.7.2</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.7.2</h1>
+        <div class="release-meta">
+            <span class="release-date">July 16, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Safety-net release on top of v1.7.1. Even though v1.7.1 fixed the data-loss bug, v1.7.2 adds an automatic backup of your SwiftData store and an "App Update Mode" recovery screen so that a future breaking migration can never silently wipe your data again. If migration ever fails, your library, saves, BIOS, cheats, and settings are restored from a timestamped backup and the app launches into a limited mode that lets you install a fixing update.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>Automatic pre-migration backup:</strong> Before opening the SwiftData store, v1.7.2 copies the SQLite triple (<code>TruchiEmu.sqlite</code>, <code>-wal</code>, <code>-shm</code>) to <code>~/Library/Application Support/TruchiEmu/.migrationBackups/</code> with a timestamp. At most 5 recent backups are kept.</li>
+            <li><strong>Rollback on failure:</strong> If a schema migration fails, the app restores the most recent pre-migration backup to the live store path, so the next (fixing) release opens your original library instead of an empty store.</li>
+            <li><strong>App Update Mode:</strong> When the store cannot be opened, the app presents a locked-down screen offering a one-tap update check, Time Machine, a limited-mode continue, and quit — your data is always reported as intact.</li>
+            <li><strong>In-memory fallback:</strong> The UI stays functional even when the on-disk store is unavailable, so the recovery screen can render.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>Added <code>SwiftDataContainer.makePreMigrationBackup()</code> and <code>restoreLatestBackup()</code> (backup/restore of the SQLite triple with pruning of old backups)</li>
+            <li>Added <code>launchSchemaError</code>, <code>createdPreMigrationBackup</code>, and <code>runningInMemoryFallback</code> state to surface migration failures</li>
+            <li>Revised the <code>ModelContainer</code> init failure path: on error, restore the backup then fall back to an in-memory store — no destructive deletes</li>
+            <li>Added <code>AppUpdateModeView</code> and wired it as the first view when <code>launchSchemaError != nil</code>, with an <code>.exitAppUpdateMode</code> notification to dismiss</li>
+            <li>Removed the now-unused <code>deleteStoreFiles()</code> (its delete-and-retry path was removed from the failure handler)</li>
+            <li>Added <code>updateMode.*</code> localization keys (en/es/pt)</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.7.1.html' | relative_url }}" class="release-prev">&larr; v1.7.1</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>

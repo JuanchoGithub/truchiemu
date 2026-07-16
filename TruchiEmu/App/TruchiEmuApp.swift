@@ -31,6 +31,7 @@ static let showChangelogFromMenu = Notification.Name("showChangelogFromMenu")
     static let hiddenGamesCategoryChanged = Notification.Name("hiddenGamesCategoryChanged")
     static let clipSaved = Notification.Name("clipSaved")
     static let firstSaveCelebrated = Notification.Name("firstSaveCelebrated")
+    static let exitAppUpdateMode = Notification.Name("exitAppUpdateMode")
   }
 
 @main
@@ -548,12 +549,17 @@ struct ContentWithPrepopulationView: View {
   @State private var isRunningPrepopulation = false
   @State private var showInstallDrag = false
   @State private var startupUpdateCheckComplete: Bool
+  @State private var showAppUpdateMode: Bool = false
   @ObservedObject private var loc = LocalizationManager.shared
   @ObservedObject private var updateService = AppUpdateService.shared
   @EnvironmentObject var library: ROMLibrary
   @Environment(\.openWindow) private var openWindow
     
     init() {
+        // If SwiftDataContainer init encountered a schema-migration failure this
+        // launch, present App Update Mode as the very first thing the user sees.
+        _showAppUpdateMode = State(initialValue: SwiftDataContainer.shared.launchSchemaError != nil)
+
         if !AppSettings.getBool("installDrag_version_migration_done", defaultValue: false) {
             if AppSettings.getBool("installDragSkipped", defaultValue: false) {
                 AppSettings.markVersionCompleted("installDragSkipped_version")
@@ -575,7 +581,16 @@ struct ContentWithPrepopulationView: View {
     
     var body: some View {
         Group {
-            if showInstallDrag {
+            // App Update Mode preempts every other startup view. Triggered when
+            // SwiftDataContainer could not open the on-disk store this launch.
+            // Once dismissed via .exitAppUpdateMode, we fall through to the
+            // remaining startup paths (limited mode).
+            if showAppUpdateMode {
+                AppUpdateModeView()
+                    .onReceive(NotificationCenter.default.publisher(for: .exitAppUpdateMode)) { _ in
+                        showAppUpdateMode = false
+                    }
+            } else if showInstallDrag {
                 InstallDragView()
                     .onReceive(NotificationCenter.default.publisher(for: .installDragCompleted)) { _ in
                         showInstallDrag = false
