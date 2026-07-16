@@ -32,23 +32,30 @@ final class SwiftDataContainer: ObservableObject {
     }
     
     // MARK: - Store Management
-    
-    // Delete all SwiftData store files to force a fresh schema creation.
-    // Used as a fallback when schema migration fails.
+
+    // Delete ONLY the SwiftData SQLite store files to force a fresh schema creation.
+    // Used as a fallback when schema migration fails. NEVER touch the surrounding
+    // `TruchiEmu/` user-data folder — that holds saves/BIOS/states/cheats/settings/logs
+    // which must survive a failed migration. Only the three SQLite triples inside
+    // the folder, plus the legacy `default.store*` files at the Application Support
+    // root (leftover from a pre-folder-layout era), are touched.
     private static func deleteStoreFiles() {
         let fileManager = FileManager.default
         let appSupport = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        
-        // 1. The new organized path
         let truchieFolder = appSupport.appendingPathComponent("TruchiEmu")
-        
-        // 2. The old "root" path (to clean up the mess)
+
+        let storeFile = truchieFolder.appendingPathComponent("TruchiEmu.sqlite")
+        let walFile = truchieFolder.appendingPathComponent("TruchiEmu.sqlite-wal")
+        let shmFile = truchieFolder.appendingPathComponent("TruchiEmu.sqlite-shm")
+
+        // Legacy "root" path (pre-folder-layout era, lives at the Application
+        // Support root, NOT inside the TruchiEmu user-data folder).
         let rootStore = appSupport.appendingPathComponent("default.store")
         let rootWal = appSupport.appendingPathComponent("default.store-wal")
         let rootShm = appSupport.appendingPathComponent("default.store-shm")
-        
-        let targets = [truchieFolder, rootStore, rootWal, rootShm]
-        
+
+        let targets = [storeFile, walFile, shmFile, rootStore, rootWal, rootShm]
+
         for url in targets {
             if fileManager.fileExists(atPath: url.path) {
                 do {

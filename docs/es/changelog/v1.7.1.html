@@ -1,0 +1,56 @@
+---
+layout: default
+title: v1.7.1 - Documentación de TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/es/changelog.html' | relative_url }}">Registro de cambios</a>
+        <span class="separator">/</span>
+        <span class="current">v1.7.1</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.7.1</h1>
+        <div class="release-meta">
+            <span class="release-date">16 de julio de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Corrección crítica: actualizar de v1.6.0 a v1.7.0 podía eliminar por completo la carpeta de datos de usuario de TruchiEmu (saves, BIOS, estados, cheats, base de datos de la biblioteca). v1.7.1 corrige la migración para que los datos de usuario se conserven.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destacados</h2>
+        <ul class="feature-list">
+            <li><strong>Corrección de pérdida de datos:</strong> Actualizar de v1.6.0 a v1.7.0 eliminaba por completo la carpeta <code>~/Library/Application Support/TruchiEmu/</code>. v1.7.1 corrige la migración de esquema del campo <code>ROMEntry.hasTitleScreen</code> para que la migración tenga éxito y los datos de usuario se conserven.</li>
+            <li><strong>Defensa en profundidad:</strong> La ruta de recuperación de respaldo del almacén ya no toca la carpeta de datos de usuario — solo los tres archivos SQLite de SwiftData (<code>TruchiEmu.sqlite</code>, <code>-wal</code>, <code>-shm</code>). Saves, BIOS, configuración, cheats y logs nunca son eliminados por la ruta de recuperación, incluso en una migración fallida.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Cambios detallados</h2>
+        <ul>
+            <li>Cambiado <code>ROMEntry.hasTitleScreen</code> de <code>Bool</code> no opcional a <code>Bool?</code> opcional para que SwiftData/CoreData pueda migrar automáticamente las filas existentes desde v1.6.0 (las filas existentes obtienen <code>nil</code>, tratado como <code>false</code> por todos los puntos de uso)</li>
+            <li>Restringido <code>SwiftDataContainer.deleteStoreFiles()</code> para que solo elimine la tripleta SQLite (<code>TruchiEmu.sqlite</code>/<code>-wal</code>/<code>-shm</code>) y los archivos heredados <code>default.store*</code> raíz — nunca la carpeta completa de datos de usuario <code>TruchiEmu/</code></li>
+            <li>Coalescencia de lecturas de <code>ROMEntry.hasTitleScreen</code> a <code>false</code> para los puntos de uso que traducen entre el modelo SwiftData y el struct <code>ROM</code> plano</li>
+        </ul>
+    </section>
+
+    <section id="affected-users">
+        <h2>Si ya actualizaste a v1.7.0 y perdiste datos</h2>
+        <p>v1.7.1 no puede recuperar datos que ya fueron eliminados por v1.7.0 en un lanzamiento anterior. Si fuiste afectado, tus opciones son:</p>
+        <ul>
+            <li><strong>Instantáneas locales APFS de macOS:</strong> macOS suele retener instantáneas locales de corta duración del disco. Abre <strong>Time Machine</strong> desde la barra de menús o lanza <code>/System/Applications/Utilities/Time Machine.app</code> y restaura <code>~/Library/Application Support/TruchiEmu/</code> desde una instantánea anterior al lanzamiento de v1.7.0.</li>
+            <li><strong>Copia de seguridad de Time Machine:</strong> Si tienes una unidad externa de Time Machine, restaura la misma carpeta desde tu copia de seguridad más reciente anterior a la actualización.</li>
+            <li><strong>Instala v1.7.1 primero</strong> antes de restaurar: una vez que v1.7.1 esté instalado, los lanzamientos futuros ya no eliminarán la carpeta, por lo que una carpeta restaurada no será borrada en el siguiente relanzamiento.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/es/changelog/v1.7.0.html' | relative_url }}" class="release-prev">&larr; v1.7.0</a>
+        <a href="{{ '/es/changelog.html' | relative_url }}" class="release-all">Todas las versiones</a>
+    </nav>
+</div>

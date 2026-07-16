@@ -1,0 +1,56 @@
+---
+layout: default
+title: v1.7.1 - Documentação do TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/pt/changelog.html' | relative_url }}">Registro de mudanças</a>
+        <span class="separator">/</span>
+        <span class="current">v1.7.1</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.7.1</h1>
+        <div class="release-meta">
+            <span class="release-date">16 de julho de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Correção crítica: atualizar da v1.6.0 para a v1.7.0 podia excluir toda a pasta de dados de usuário do TruchiEmu (saves, BIOS, estados, cheats, banco de dados da biblioteca). A v1.7.1 corrige a migração para que os dados do usuário sejam preservados.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destaques</h2>
+        <ul class="feature-list">
+            <li><strong>Correção de perda de dados:</strong> Atualizar da v1.6.0 para a v1.7.0 excluía toda a pasta <code>~/Library/Application Support/TruchiEmu/</code>. A v1.7.1 corrige a migração de esquema do campo <code>ROMEntry.hasTitleScreen</code> para que a migração seja bem-sucedida e os dados do usuário sejam preservados.</li>
+            <li><strong>Defesa em profundidade:</strong> O caminho de recuperação reservado do armazenamento não toca mais na pasta de dados do usuário — apenas os três arquivos SQLite do SwiftData (<code>TruchiEmu.sqlite</code>, <code>-wal</code>, <code>-shm</code>). Saves, BIOS, configurações, cheats e logs nunca são excluídos pelo caminho de recuperação, mesmo em uma migração com falha.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Mudanças detalhadas</h2>
+        <ul>
+            <li>Alterado <code>ROMEntry.hasTitleScreen</code> de <code>Bool</code> não opcional para <code>Bool?</code> opcional para que o SwiftData/CoreData possa migrar automaticamente as linhas existentes da v1.6.0 (linhas existentes recebem <code>nil</code>, tratado como <code>false</code> por todos os pontos de uso)</li>
+            <li>Restrito <code>SwiftDataContainer.deleteStoreFiles()</code> para que remova apenas a tríplice SQLite (<code>TruchiEmu.sqlite</code>/<code>-wal</code>/<code>-shm</code>) e os arquivos legados <code>default.store*</code> na raiz — nunca toda a pasta de dados do usuário <code>TruchiEmu/</code></li>
+            <li>Coalescência das leituras de <code>ROMEntry.hasTitleScreen</code> para <code>false</code> nos pontos de uso que convertem entre o modelo SwiftData e a struct <code>ROM</code> simples</li>
+        </ul>
+    </section>
+
+    <section id="affected-users">
+        <h2>Se você já atualizou para a v1.7.0 e perdeu dados</h2>
+        <p>A v1.7.1 não pode recuperar dados que já foram excluídos pela v1.7.0 em uma execução anterior. Se você foi afetado, suas opções são:</p>
+        <ul>
+            <li><strong>Instantâneos locais APFS do macOS:</strong> O macOS costuma reter instantâneos locais de curta duração do disco. Abra o <strong>Time Machine</strong> na barra de menu ou execute <code>/System/Applications/Utilities/Time Machine.app</code> e restaure <code>~/Library/Application Support/TruchiEmu/</code> a partir de um instantâneo anterior à execução da v1.7.0.</li>
+            <li><strong>Backup do Time Machine:</strong> Se você tem um drive externo do Time Machine, restaure a mesma pasta do seu backup mais recente anterior à atualização.</li>
+            <li><strong>Instale a v1.7.1 primeiro</strong> antes de restaurar: depois que a v1.7.1 estiver instalada, futuras execuções não excluirão mais a pasta, então uma pasta restaurada não será apagada no próximo lançamento.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/pt/changelog/v1.7.0.html' | relative_url }}" class="release-prev">&larr; v1.7.0</a>
+        <a href="{{ '/pt/changelog.html' | relative_url }}" class="release-all">Todas as versões</a>
+    </nav>
+</div>

@@ -1,0 +1,56 @@
+---
+layout: default
+title: v1.7.1 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.7.1</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.7.1</h1>
+        <div class="release-meta">
+            <span class="release-date">July 16, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Critical hotfix: updating from v1.6.0 to v1.7.0 could delete the entire TruchiEmu user-data folder (saves, BIOS, states, cheats, library database). v1.7.1 fixes the migration so user data is preserved.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>Data-loss fix:</strong> Updating from v1.6.0 to v1.7.0 deleted the entire <code>~/Library/Application Support/TruchiEmu/</code> folder. v1.7.1 fixes the schema migration for the <code>ROMEntry.hasTitleScreen</code> field so the migration succeeds and user data is preserved.</li>
+            <li><strong>Defense in depth:</strong> The fallback store-recovery path no longer touches the user-data folder — only the three SwiftData SQLite files (<code>TruchiEmu.sqlite</code>, <code>-wal</code>, <code>-shm</code>). Saves, BIOS, config, cheats, and logs are never deleted by the recovery code path, even on a failed migration.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>Changed <code>ROMEntry.hasTitleScreen</code> from a non-optional <code>Bool</code> to an optional <code>Bool?</code> so SwiftData/CoreData can automatically migrate existing rows from v1.6.0 (existing rows get <code>nil</code>, treated as <code>false</code> by all call sites)</li>
+            <li>Narrowed <code>SwiftDataContainer.deleteStoreFiles()</code> so it only removes the SQLite triple (<code>TruchiEmu.sqlite</code>/<code>-wal</code>/<code>-shm</code>) and the legacy root-level <code>default.store*</code> files — never the entire <code>TruchiEmu/</code> user-data folder</li>
+            <li>Coalesced <code>ROMEntry.hasTitleScreen</code> reads to <code>false</code> for callers that translate between the SwiftData model and the plain <code>ROM</code> struct</li>
+        </ul>
+    </section>
+
+    <section id="affected-users">
+        <h2>If you already updated to v1.7.0 and lost data</h2>
+        <p>v1.7.1 cannot recover data that was already deleted by v1.7.0 on a previous launch. If you were affected, your options are:</p>
+        <ul>
+            <li><strong>macOS APFS local snapshots:</strong> macOS often retains short-lived local snapshots of your disk. Open <strong>Time Machine</strong> from the menu bar or launch <code>/System/Applications/Utilities/Time Machine.app</code> and restore <code>~/Library/Application Support/TruchiEmu/</code> from a snapshot predating the v1.7.0 launch.</li>
+            <li><strong>Time Machine backup:</strong> If you have an external Time Machine drive, restore the same folder from your most recent backup predating the update.</li>
+            <li><strong>Install v1.7.1 first</strong> before restoring: once v1.7.1 is installed, future launches will no longer delete the folder, so a restored folder won't be wiped on the next relaunch.</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.7.0.html' | relative_url }}" class="release-prev">&larr; v1.7.0</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>

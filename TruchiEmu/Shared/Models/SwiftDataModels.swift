@@ -37,7 +37,11 @@ final class ROMEntry {
     var boxArtRequestedRegion: String?
     var boxArtRegionTag: String?
     var boxArtFetchedAt: Date?
-    var hasTitleScreen: Bool
+    // Optional so v1.6 stores migrate cleanly: existing rows get nil for the new
+    // column, which the migration system can do for nullable columns but NOT for
+    // non-optional Bool (which would fail with "Validation error missing attribute
+    // values on mandatory destination attribute"). All callers coalesce with ?? false.
+    var hasTitleScreen: Bool?
 
     // Relationships
     // Note: inverse relationships with @Relationship can cause circular reference issues
@@ -84,7 +88,7 @@ final class ROMEntry {
         boxArtRequestedRegion: String? = nil,
         boxArtRegionTag: String? = nil,
         boxArtFetchedAt: Date? = nil,
-        hasTitleScreen: Bool = false
+        hasTitleScreen: Bool? = false
     ) {
         self.id = id
         self.name = name

@@ -378,7 +378,7 @@ final class ROMRepository {
         rom.boxArtRequestedRegion = entry.boxArtRequestedRegion
         rom.boxArtRegionTag = entry.boxArtRegionTag
         rom.boxArtFetchedAt = entry.boxArtFetchedAt
-        rom.hasTitleScreen = entry.hasTitleScreen
+        rom.hasTitleScreen = entry.hasTitleScreen ?? false
         return rom
     }
 
