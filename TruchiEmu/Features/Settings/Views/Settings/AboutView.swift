@@ -88,7 +88,10 @@ struct AboutView: View {
                     upToDateMessage = nil
                     let _ = await updateService.checkForUpdates()
                     if !updateService.updateAvailable {
-                        let latest = updateService.allReleases.first?.version ?? "—"
+                        let latest = updateService.allReleases
+                            .filter { !$0.isPrerelease }
+                            .max(by: { AppVersion.compare($0.version, $1.version) == .orderedAscending })?
+                            .version ?? AppVersion.current
                         upToDateMessage = loc.localized("update.upToDate") + " " + loc.localized("update.currentLabel") + " v\(AppVersion.current), " + loc.localized("update.latestLabel") + " v\(latest)"
                     }
                     isCheckingUpdates = false
@@ -326,7 +329,10 @@ VStack(alignment: .leading, spacing: AppSpacing.md) {
                 upToDateMessage = nil
                 let _ = await updateService.checkForUpdates()
                 if !updateService.updateAvailable {
-                    let latest = updateService.allReleases.first?.version ?? "—"
+                    let latest = updateService.allReleases
+                        .filter { !$0.isPrerelease }
+                        .max(by: { AppVersion.compare($0.version, $1.version) == .orderedAscending })?
+                        .version ?? AppVersion.current
                     upToDateMessage = loc.localized("update.upToDate") + " " + loc.localized("update.currentLabel") + " v\(AppVersion.current), " + loc.localized("update.latestLabel") + " v\(latest)"
                 }
                 isCheckingUpdates = false

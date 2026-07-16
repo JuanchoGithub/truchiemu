@@ -1713,6 +1713,8 @@
   "update.availableTitle": "Update Available",
   "update.availableSubtitle": "Version",
   "update.skipVersion": "Skip this version",
+  "update.dismissedBadge": "Dismissed",
+  "update.dismissedHint": "You previously dismissed this update. You can still install it manually.",
   "update.downloadAndInstall": "Download & Install",
   "update.viewOnGitHub": "View on GitHub",
   "update.downloading": "Downloading update...",

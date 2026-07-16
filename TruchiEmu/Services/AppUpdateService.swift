@@ -37,6 +37,7 @@ struct AppRelease: Identifiable {
     let publishedAt: Date?
     let assetDownloadURL: String?
     let assetName: String?
+    let isPrerelease: Bool
 
     var version: String {
         tagName.hasPrefix("v") ? String(tagName.dropFirst()) : tagName
@@ -48,6 +49,10 @@ struct AppRelease: Identifiable {
 
     var isNewer: Bool {
         AppVersion.compare(version, AppVersion.current) == .orderedDescending
+    }
+
+    var isSkippedByUser: Bool {
+        AppSettings.getString("skippedUpdateVersion", defaultValue: "") == version
     }
 }
 
@@ -94,10 +99,6 @@ final class AppUpdateService: ObservableObject {
         AppSettings.getDate("lastUpdateCheckDate")
     }
 
-    var skippedVersion: String? {
-        AppSettings.getString("skippedUpdateVersion")
-    }
-
     func skipVersion(_ version: String) {
         AppSettings.setString("skippedUpdateVersion", value: version)
     }
@@ -135,13 +136,15 @@ final class AppUpdateService: ObservableObject {
             }
             return nil
             #else
-            if let latest = appReleases.first, latest.isNewer {
-                if let skipped = skippedVersion, skipped == latest.version {
-                    updateLog.info("Skipping version \(latest.version) (user dismissed)")
-                    latestRelease = nil
+            let stableReleases = appReleases.filter { !$0.isPrerelease }
+            let latest = stableReleases.max(by: { AppVersion.compare($0.version, $1.version) == .orderedAscending })
+
+            if let latest = latest, latest.isNewer {
+                latestRelease = latest
+                if latest.isSkippedByUser {
+                    updateLog.info("Update available but skipped by user: \(latest.version)")
                     return nil
                 }
-                latestRelease = latest
                 updateLog.info("Update available: \(latest.version)")
                 return latest
             } else {
@@ -162,6 +165,9 @@ final class AppUpdateService: ObservableObject {
     func downloadAndInstall(release: AppRelease) async {
         let installURL = await downloadUpdateOnly(release: release)
         guard installURL != nil else { return }
+        if AppSettings.getString("skippedUpdateVersion", defaultValue: "") == release.version {
+            AppSettings.remove("skippedUpdateVersion")
+        }
         relaunchAfterUpdate(at: installURL!)
     }
 
@@ -327,6 +333,7 @@ private struct GitHubRelease: Decodable {
     let body: String?
     let htmlURL: String?
     let publishedAt: String?
+    let prerelease: Bool
     let assets: [GitHubAsset]
 
     enum CodingKeys: String, CodingKey {
@@ -335,6 +342,7 @@ private struct GitHubRelease: Decodable {
         case body
         case htmlURL = "html_url"
         case publishedAt = "published_at"
+        case prerelease
         case assets
     }
 
@@ -349,7 +357,8 @@ private struct GitHubRelease: Decodable {
             htmlURL: htmlURL ?? "",
             publishedAt: parseDate(publishedAt),
             assetDownloadURL: macAsset?.browserDownloadURL,
-            assetName: macAsset?.name
+            assetName: macAsset?.name,
+            isPrerelease: prerelease
         )
     }
 

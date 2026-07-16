@@ -1711,6 +1711,8 @@
   "update.availableTitle": "Atualização disponível",
   "update.availableSubtitle": "Versão",
   "update.skipVersion": "Pular esta versão",
+  "update.dismissedBadge": "Ignorada",
+  "update.dismissedHint": "Você ignorou esta atualização anteriormente. Você ainda pode instalá-la manualmente.",
   "update.downloadAndInstall": "Baixar e instalar",
   "update.viewOnGitHub": "Ver no GitHub",
   "update.downloading": "Baixando atualização...",

@@ -19,16 +19,27 @@ struct UpdateAvailableView: View {
                     Text(loc.localized("update.availableSubtitle") + " \(release.version)")
                         .font(.subheadline)
                         .foregroundStyle(AppColors.textSecondary(colorScheme))
+                    if release.isSkippedByUser {
+                        Text(loc.localized("update.dismissedHint"))
+                            .font(.caption2)
+                            .foregroundStyle(AppColors.textTertiary(colorScheme))
+                    }
                 }
                 Spacer()
-                Button {
-                    AppUpdateService.shared.skipVersion(release.version)
-                } label: {
-                    Text(loc.localized("update.skipVersion"))
+                if !release.isSkippedByUser {
+                    Button {
+                        AppUpdateService.shared.skipVersion(release.version)
+                    } label: {
+                        Text(loc.localized("update.skipVersion"))
+                            .font(.caption)
+                            .foregroundStyle(AppColors.textTertiary(colorScheme))
+                    }
+                    .buttonStyle(.plain)
+                } else {
+                    Text(loc.localized("update.dismissedBadge"))
                         .font(.caption)
                         .foregroundStyle(AppColors.textTertiary(colorScheme))
                 }
-                .buttonStyle(.plain)
             }
 
         if isExpanded {
