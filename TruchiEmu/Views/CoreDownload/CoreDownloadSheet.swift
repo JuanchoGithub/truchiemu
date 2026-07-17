@@ -400,42 +400,43 @@ init(pending: CoreManager.PendingCoreDownload) {
 } else {
             let isAvailable = selectedCoreEntry.isInstalled || coreManager.availableCores.contains(where: { $0.coreID == selectedCoreEntry.id })
 
-            if !isAvailable {
-                if isRefreshingCores || coreManager.isFetchingCoreList {
-                    HStack(spacing: 8) {
-                        ProgressView().controlSize(.small)
+            // Refresh is always available, even when cores are already present
+            if isRefreshingCores || coreManager.isFetchingCoreList {
+                HStack(spacing: 8) {
+                    ProgressView().controlSize(.small)
 				Text("coreDownload.refreshingListOnline")
 						.font(.caption)
 						.foregroundColor(AppColors.textSecondary(colorScheme))
-                    }
-                } else {
-                    Button {
-                        checkBuildbotForCores()
-                    } label: {
-                        HStack(spacing: 6) {
-                            Image(systemName: "arrow.triangle.2.circlepath")
-                            Text("coreDownload.refreshListOnline")
-                        }
-                    }
-                    .buttonStyle(.bordered)
-                    .controlSize(.large)
-                    .disabled(isRefreshingCores || coreManager.isFetchingCoreList)
                 }
             } else {
-                    Button {
-                        startDownload()
-                    } label: {
-                        HStack(spacing: 6) {
-                            Image(systemName: selectedCoreEntry.isInstalled ? "play.fill" : "arrow.down.circle")
-                            Text(pendingROM != nil && selectedCoreEntry.isInstalled ? loc.localized("coreDownload.launch") : loc.localized("coreDownload.downloadAndInstall"))
-                        }
+                Button {
+                    checkBuildbotForCores()
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "arrow.triangle.2.circlepath")
+                        Text("coreDownload.refreshListOnline")
                     }
-                    .buttonStyle(.borderedProminent)
-                    .tint(selectedCoreEntry.isInstalled ? .green : .purple)
-                    .keyboardShortcut(.defaultAction)
-                    .controlSize(.large)
                 }
+                .buttonStyle(.bordered)
+                .controlSize(.large)
+                .disabled(isRefreshingCores || coreManager.isFetchingCoreList)
             }
+
+            if isAvailable {
+                Button {
+                    startDownload()
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: selectedCoreEntry.isInstalled ? "play.fill" : "arrow.down.circle")
+                        Text(pendingROM != nil && selectedCoreEntry.isInstalled ? loc.localized("coreDownload.launch") : loc.localized("coreDownload.downloadAndInstall"))
+                    }
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(selectedCoreEntry.isInstalled ? .green : .purple)
+                .keyboardShortcut(.defaultAction)
+                .controlSize(.large)
+            }
+        }
         }
     }
 
@@ -508,6 +509,9 @@ guard coreManager.isInstalled(coreID: selectedCoreEntry.id) else {
     refreshError = nil
     
     Task {
+      // Populate core→system mappings (coreToSystemMap) so fetchAvailableCores
+      // can associate cores (e.g. dolphin ↔ gamecube/wii) correctly.
+      await LibretroInfoManager.shared.refreshCoreInfo()
       await coreManager.fetchAvailableCores()
       
       await MainActor.run {
