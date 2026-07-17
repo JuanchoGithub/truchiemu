@@ -41,8 +41,12 @@ struct GameCardView: View {
         ceil(titleFontSize * 1.3)
     }
 
-    private var textBlockMinHeight: CGFloat {
-        textRowHeight * 2 + 4
+    private var subtitleFontSize: CGFloat {
+        max(8, titleFontSize - 3)
+    }
+
+    private var subtitleLineHeight: CGFloat {
+        ceil(subtitleFontSize * 1.3)
     }
 
     private var textBlockFixedPadding: CGFloat {
@@ -56,6 +60,13 @@ struct GameCardView: View {
     private var isSingleBoxTypeView: Bool {
         if case .system = filter { return true }
         return false
+    }
+
+    private var systemSubtitle: String? {
+        guard !isSingleBoxTypeView,
+              let systemID = rom.systemID, systemID != "unknown",
+              let sys = SystemDatabase.system(forID: systemID) else { return nil }
+        return sys.sidebarDisplayName
     }
 
     private var categoryBadges: [GameCategory] {
@@ -238,14 +249,21 @@ struct GameCardView: View {
             Spacer()
                 .frame(height: textBlockFixedPadding)
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 2) {
                 Text(rom.displayName)
                     .font(.system(size: titleFontSize, weight: .semibold, design: .rounded))
                     .lineLimit(2)
                     .multilineTextAlignment(.center)
                     .foregroundColor(titleColor)
                     .frame(maxWidth: .infinity, alignment: .center)
-                    .frame(minHeight: textBlockMinHeight, alignment: .top)
+
+                if let systemName = systemSubtitle {
+                    Text(systemName)
+                        .font(.system(size: subtitleFontSize, weight: .regular, design: .rounded))
+                        .foregroundColor(AppColors.textMuted(colorScheme))
+                        .lineLimit(1)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                }
 
                 if isHiddenItem, let mameType = rom.mameRomType {
                     HStack(spacing: 4) {
