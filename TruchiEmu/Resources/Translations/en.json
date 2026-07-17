@@ -155,6 +155,7 @@
   "app.playHistory": "Play History",
   "app.systems": "Systems",
   "app.searchSystems": "Search systems",
+  "app.search": "Search",
   "app.noSystemsMatch": "No systems match",
   "app.controllers": "Controllers",
   "app.shadersDisplay": "Display",

@@ -155,6 +155,7 @@
   "app.playHistory": "Histórico de Jogo",
   "app.systems": "Sistemas",
   "app.searchSystems": "Buscar sistemas",
+  "app.search": "Buscar",
   "app.noSystemsMatch": "Nenhum sistema corresponde",
   "app.controllers": "Controles",
   "app.shadersDisplay": "Tela",

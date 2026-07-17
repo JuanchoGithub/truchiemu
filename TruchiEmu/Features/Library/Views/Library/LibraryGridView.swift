@@ -212,6 +212,12 @@ struct LibraryGridView: View {
     enum FocusableField: Hashable { case search }
     @FocusState private var focusedField: FocusableField?
 
+    // When searching, the system filter is ignored so games across all systems
+    // are matched in the main grid (systems are matched separately in the sidebar).
+    private var effectiveFilter: LibraryFilter {
+        searchText.isEmpty ? filter : .all
+    }
+
     private var activeFilterDisplayText: String {
         let filterNames: [String] = activeFilters.compactMap { rawValue -> String? in
             GameFilterOption(rawValue: rawValue)?.label
@@ -230,8 +236,6 @@ struct LibraryGridView: View {
                 .onChange(of: continuousZoom) { _, newValue in
                     AppSettings.setDouble("gridZoomLevel", value: newValue)
                 }
-            
-            searchField
                 .focused($focusedField, equals: .search)
             
             filterChips
@@ -532,7 +536,7 @@ struct LibraryGridView: View {
             
             // Sync view model with restored sort settings
 viewModel.updateFilters(
-                filter: filter,
+                filter: effectiveFilter,
                 searchText: searchText,
                 activeFilters: activeFilters,
                 sortByLastPlayed: sortByLastPlayed,
@@ -541,7 +545,7 @@ viewModel.updateFilters(
             )
 
             // Contextually resolve local boxarts for the current view
-            handleFilterChange(filter)
+            handleFilterChange(effectiveFilter)
             
             // Add notification observers for menu commands
             setupMenuNotificationObservers()
@@ -562,7 +566,7 @@ viewModel.updateFilters(
             sortByLastPlayed = AppSettings.getBool("sortByLastPlayed", defaultValue: false)
             sortByLastAdded = AppSettings.getBool("sortByLastAdded", defaultValue: false)
             viewModel.updateFilters(
-                filter: filter,
+                filter: effectiveFilter,
                 searchText: searchText,
                 activeFilters: activeFilters,
                 sortByLastPlayed: sortByLastPlayed,
@@ -578,7 +582,7 @@ viewModel.updateFilters(
                     activeFilters.insert(rawValue)
                 }
                 viewModel.updateFilters(
-                    filter: filter,
+                    filter: effectiveFilter,
                     searchText: searchText,
                     activeFilters: activeFilters,
                     sortByLastPlayed: sortByLastPlayed,
@@ -632,7 +636,7 @@ viewModel.updateFilters(
         }
         .onChange(of: searchText) { _, newValue in
             viewModel.updateFilters(
-                filter: filter,
+                filter: effectiveFilter,
                 searchText: newValue,
                 activeFilters: activeFilters,
                 sortByLastPlayed: sortByLastPlayed,
@@ -1665,27 +1669,6 @@ viewModel.updateFilters(
 
     // MARK: - Search & Filters
 
-    private var searchField: some View {
-        HStack {
-		Image(systemName: "magnifyingglass")
-		.foregroundColor(AppColors.textSecondary(colorScheme))
-            TextField(loc.localized("library.searchGames"), text: $searchText)
-                .textFieldStyle(.plain)
-            if !searchText.isEmpty {
-                Button { searchText = "" } label: {
-			Image(systemName: "xmark.circle.fill")
-				.foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
-                }
-                .buttonStyle(.plain)
-            }
-        }
-        .padding(8)
-        .background(AppColors.cardBackgroundSubtle(colorScheme))
-        .cornerRadius(10)
-        .padding([.horizontal, .top], 16)
-        .padding(.bottom, 4)
-    }
-    
     @State private var isLastPlayedHovered = false
     @State private var isLastAddedHovered = false
     
@@ -1697,7 +1680,7 @@ viewModel.updateFilters(
                     sortByLastPlayed.toggle()
                     AppSettings.setBool("sortByLastPlayed", value: sortByLastPlayed)
                     viewModel.updateFilters(
-                        filter: filter,
+                        filter: effectiveFilter,
                         searchText: searchText,
                         activeFilters: activeFilters,
                         sortByLastPlayed: sortByLastPlayed,
@@ -1742,7 +1725,7 @@ viewModel.updateFilters(
                     sortByLastAdded.toggle()
                     AppSettings.setBool("sortByLastAdded", value: sortByLastAdded)
                     viewModel.updateFilters(
-                        filter: filter,
+                        filter: effectiveFilter,
                         searchText: searchText,
                         activeFilters: activeFilters,
                         sortByLastPlayed: sortByLastPlayed,
@@ -1851,7 +1834,7 @@ viewModel.updateFilters(
                         allGenres: GenreManager.shared.getAllDisplayGenres(from: library.roms),
                         onChange: {
                             viewModel.updateFilters(
-                                filter: filter,
+                                filter: effectiveFilter,
                                 searchText: searchText,
                                 activeFilters: activeFilters,
                                 sortByLastPlayed: sortByLastPlayed,
@@ -1868,7 +1851,7 @@ viewModel.updateFilters(
                         activeFilters.removeAll()
                         selectedGenres.removeAll()
                         viewModel.updateFilters(
-                            filter: filter,
+                            filter: effectiveFilter,
                             searchText: searchText,
                             activeFilters: activeFilters,
                             sortByLastPlayed: sortByLastPlayed,

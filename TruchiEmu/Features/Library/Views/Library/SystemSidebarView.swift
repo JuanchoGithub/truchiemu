@@ -13,9 +13,9 @@ struct SystemSidebarView: View {
     @Binding var selectedFilter: LibraryFilter
     @Binding var showCreateCategorySheet: Bool
     @Binding var editingCategory: GameCategory?
+    @Binding var searchText: String
     @State private var hiddenCategoryRefreshToggle = false
     @State private var categoriesRefreshToggle = false
-    @State private var systemSearchText = ""
 
     // Memoized sidebar list. The cache is updated through `.onChange`/`.onReceive`
     // listeners (NOT inside a computed property) so we never mutate @State while
@@ -55,8 +55,8 @@ struct SystemSidebarView: View {
     }
 
     private var filteredSystems: [(system: SystemInfo, combinedCount: Int)] {
-        guard !systemSearchText.isEmpty else { return combinedSystemsWithROMs }
-        let query = systemSearchText.lowercased()
+        guard !searchText.isEmpty else { return combinedSystemsWithROMs }
+        let query = searchText.lowercased()
         return combinedSystemsWithROMs.filter {
             $0.system.searchableText.contains(query)
         }
@@ -112,7 +112,7 @@ struct SystemSidebarView: View {
                     )
 
                     if systemsSectionExpanded {
-                        if systemSearchText.isEmpty || !filteredSystems.isEmpty {
+                        if searchText.isEmpty || !filteredSystems.isEmpty {
                             ForEach(filteredSystems, id: \.system.id) { entry in
                                 sidebarRow(
                                     icon: entry.system.iconName,
@@ -165,8 +165,8 @@ struct SystemSidebarView: View {
                 Spacer()
                 } header: {
                     AppSearchField(
-                        text: $systemSearchText,
-                        placeholder: loc.localized("app.searchSystems")
+                        text: $searchText,
+                        placeholder: loc.localized("app.search")
                     )
                     .padding(.bottom, 8)
                     .background(AppColors.sidebarBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
@@ -196,10 +196,6 @@ struct SystemSidebarView: View {
         }
         .onChange(of: library.romCounts) { _, _ in
             cachedCombinedSystems = computeCombinedSystems()
-        }
-        .onChange(of: systemSearchText) { _, newValue in
-            guard !newValue.isEmpty, let first = filteredSystems.first else { return }
-            selectedFilter = .system(first.system)
         }
         .onChange(of: library.lastChangeDate) { _, _ in
             cachedCombinedSystems = computeCombinedSystems()

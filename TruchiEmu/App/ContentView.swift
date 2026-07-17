@@ -60,10 +60,11 @@ struct ContentView: View {
         ZStack {
             VStack(spacing: 0) {
                  HStack(spacing: 0) {
-                     SystemSidebarView(
-                         selectedFilter: $selectedFilter,
-                         showCreateCategorySheet: $showCreateCategorySheet,
-                         editingCategory: $editingCategory,
+                      SystemSidebarView(
+                          selectedFilter: $selectedFilter,
+                          showCreateCategorySheet: $showCreateCategorySheet,
+                          editingCategory: $editingCategory,
+                          searchText: $searchText,
                          onRefresh: { system in
                              let romsForSystem = library.roms.filter { $0.systemID == system.id }
                              let uniqueFolders = Set(romsForSystem.map { $0.path.deletingLastPathComponent() })
