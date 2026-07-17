@@ -7,7 +7,9 @@ class PPSSPAssetService: ObservableObject {
     @Published var isDownloading = false
     @Published var downloadProgress: Double = 0.0
     @Published var downloadStatus: String = ""
+    @Published var downloadError: String? = nil
     @Published var lastCheckDate: Date?
+    @Published var isPresentingAssetSheet = false
     
     private let systemDirectoryName = "PPSSPP"
     
@@ -26,6 +28,32 @@ class PPSSPAssetService: ObservableObject {
         case notChecked
     }
     
+    enum AssetSheetResult {
+        case downloaded
+        case skipped
+        case cancelled
+    }
+
+    private var pendingSheetContinuation: CheckedContinuation<AssetSheetResult, Never>?
+
+    // Presents the locking asset-download sheet and suspends the caller
+    // (GameLauncher.launch) until the user resolves it.
+    @MainActor
+    func requestAssetDownloadSheet() async -> AssetSheetResult {
+        await withCheckedContinuation { continuation in
+            pendingSheetContinuation = continuation
+            isPresentingAssetSheet = true
+        }
+    }
+
+    // Resolves the pending sheet, dismissing it and resuming the caller.
+    @MainActor
+    func resolveAssetSheet(_ result: AssetSheetResult) {
+        isPresentingAssetSheet = false
+        pendingSheetContinuation?.resume(returning: result)
+        pendingSheetContinuation = nil
+    }
+
     private init() {
         lastCheckDate = AppSettings.getDate("ppsspAssetCheckDate")
     }

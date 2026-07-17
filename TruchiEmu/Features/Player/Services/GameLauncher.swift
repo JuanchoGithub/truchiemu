@@ -234,9 +234,18 @@ func launchGame(
             if !PPSSPAssetService.shared.hasAssets {
                 _ = PPSSPAssetService.shared.ensureAssetsCopied()
                 if !PPSSPAssetService.shared.hasAssets {
-                    let shouldDownload = await showPPSSPAssetMissingAlertAsync()
-                    if shouldDownload {
+                    if ProcessInfo.processInfo.arguments.contains("--headless") {
                         _ = await PPSSPAssetService.shared.downloadAssets()
+                    } else {
+                        switch await PPSSPAssetService.shared.requestAssetDownloadSheet() {
+                        case .downloaded, .skipped:
+                            break
+                        case .cancelled:
+                            isLaunching = false
+                            currentLaunchROM = nil
+                            completion?(nil)
+                            return
+                        }
                     }
                 }
             }
@@ -590,35 +599,6 @@ func launchGame(
         }
     }
     
-    // MARK: - PPSSPP Asset Alert
-    
-    // Show an alert when PPSSPP assets are missing.
-    // Returns true to download, false to skip or cancel
-    private func showPPSSPAssetMissingAlertAsync() async -> Bool {
-        let alert = NSAlert()
-        alert.alertStyle = .warning
-        alert.messageText = "PPSSPP Assets Missing"
-        alert.informativeText = "PPSSPP requires asset files to run games.\n\nThese include UI textures, fonts, and language files.\n\nWould you like to download them now?"
-        LoggerService.warning(category: "GameLauncher", "PPSSPP assets missing, prompting user")
-        
-        alert.addButton(withTitle: "Download Assets")
-        alert.addButton(withTitle: "Continue Without Assets")
-        alert.addButton(withTitle: "Cancel")
-        
-        let response = alert.runModal()
-        
-        if response == .alertFirstButtonReturn {
-            LoggerService.info(category: "GameLauncher", "User requested PPSSPP asset download")
-            return true
-        } else if response == .alertSecondButtonReturn {
-            LoggerService.warning(category: "GameLauncher", "User chose to continue without PPSSPP assets")
-            return false
-        } else {
-            LoggerService.info(category: "GameLauncher", "User cancelled PPSSPP launch")
-            return false
-        }
-    }
-
     // MARK: - Switch Game Alert
 
     enum SwitchGameAction {

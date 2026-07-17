@@ -1234,6 +1234,7 @@
 		FE3F6C0CB14E59B683D59FBA /* input_coreLabels_quicknes.json in Resources */ = {isa = PBXBuildFile; fileRef = 338C611AB1DC2750E81AF4DB /* input_coreLabels_quicknes.json */; };
 		FE40223ACDEDB8A87C3FDA12 /* Nintendo_-_Nintendo_Entertainment_System.json in Resources */ = {isa = PBXBuildFile; fileRef = 978A420F9B33674E54E993EC /* Nintendo_-_Nintendo_Entertainment_System.json */; };
 		FE4BE8535C891352EBF145CC /* MAMEDependencyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B54516F131621A68EEC7EBC0 /* MAMEDependencyService.swift */; };
+		FE4CEC7F59C13C8EE1396535 /* PPSSPAssetDownloadSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2F97137C42867C603DD69C /* PPSSPAssetDownloadSheet.swift */; };
 		FE6FF06DA950D71C144F4D60 /* fightdata_bigfight.json in Resources */ = {isa = PBXBuildFile; fileRef = D4F318393A897A37973C4D7A /* fightdata_bigfight.json */; };
 		FEAA75962BBCE12DAEEFA779 /* pce@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = D9CE94667031F54D1573ACBE /* pce@132w.png */; };
 		FF4E588A3F4D531D818A8298 /* CheatParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DBD3DD1DC68C0749E4F9F /* CheatParser.swift */; };
@@ -1460,6 +1461,7 @@
 		2B0373818A51E7E098FE635B /* input_coreLabels_vaporspec.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_vaporspec.json; sourceTree = "<group>"; };
 		2B0D139B92612C9F7812DBB4 /* chroma.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = chroma.hpp; sourceTree = "<group>"; };
 		2B279C5C9BBB3A01C3D99DB4 /* fightdata_64street.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_64street.json; sourceTree = "<group>"; };
+		2B2F97137C42867C603DD69C /* PPSSPAssetDownloadSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PPSSPAssetDownloadSheet.swift; sourceTree = "<group>"; };
 		2B6C405950B80529A3DAB81B /* fightdata_fatfury1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_fatfury1.json; sourceTree = "<group>"; };
 		2C1283F9FDAB03FC63950043 /* CPS3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CPS3.png; sourceTree = "<group>"; };
 		2C21A6516E56F19973BF82B7 /* SearchMatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMatch.swift; sourceTree = "<group>"; };
@@ -2722,13 +2724,6 @@
 			path = Services;
 			sourceTree = "<group>";
 		};
-		1832080561374C334082347B /* Netplay */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Netplay;
-			sourceTree = "<group>";
-		};
 		18A378D98313D80173A8B0B0 /* AppIcons */ = {
 			isa = PBXGroup;
 			children = (
@@ -3330,7 +3325,6 @@
 				AEC913610330C88937B9C1C0 /* Help */,
 				5BE55A1DE39FF8B3E1936E9F /* Library */,
 				B25EB5586EA89D564C31571B /* MAME */,
-				1832080561374C334082347B /* Netplay */,
 				BAE82561D0B8C45F15735EAD /* Player */,
 				8EA8442105B8007BF7C7BDD2 /* Settings */,
 			);
@@ -3553,7 +3547,6 @@
 				C4BFFB66CF03271089D7FED6 /* slang_shader_bridge.mm */,
 				F9E6973D2682AC9B98A71D5A /* TruchiEmu-Bridging-Header.h */,
 				994AE121AC2997DDFCDDC992 /* Hashing */,
-				CD9D238114BB1EF4A50C21A5 /* Netplay */,
 				935F987E8AD75ED2229D7CE8 /* RfDecoder */,
 				3526BE11D51FDEC4219C0D61 /* Runners */,
 			);
@@ -4022,13 +4015,6 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
-		CD9D238114BB1EF4A50C21A5 /* Netplay */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Netplay;
-			sourceTree = "<group>";
-		};
 		D0CDC1D3C0773FC9C8698346 /* BoxArtSamples */ = {
 			isa = PBXGroup;
 			children = (
@@ -4143,6 +4129,7 @@
 		E1C5CFF0B4EF0EED9FC6C686 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				2B2F97137C42867C603DD69C /* PPSSPAssetDownloadSheet.swift */,
 				293CDD815D80BA89D9063C1F /* Bezels */,
 				008A5E8A211D8FBBD32F53AA /* BoxArt */,
 				653DE9525EF1FB1F93751490 /* Player */,
@@ -5849,6 +5836,7 @@
 				87B10EFAD98B1F06174C53D9 /* NotificationService.swift in Sources */,
 				27AAD6EBD24C3A463A413FD8 /* OtherFiltersPopover.swift in Sources */,
 				0156A555D87ABB90781E2ED0 /* Overview.swift in Sources */,
+				FE4CEC7F59C13C8EE1396535 /* PPSSPAssetDownloadSheet.swift in Sources */,
 				802243197EC4A31177770310 /* PPSSPAssetService.swift in Sources */,
 				8A6465EC1B5DD1F8FDB9297D /* PSP.metal in Sources */,
 				0731BAFCEC49AC5E62BA3474 /* Passthrough.metal in Sources */,

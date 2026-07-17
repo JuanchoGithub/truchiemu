@@ -27,6 +27,7 @@ struct ContentView: View {
 @ObservedObject var notificationPillManager = NotificationPillManager.shared
 @ObservedObject var wizard = SetupWizardState.shared
 @ObservedObject var gamepadNavCoordinator = GamepadNavCoordinator.shared
+@ObservedObject private var ppssppAssetService = PPSSPAssetService.shared
 @State private var cachedGamepadFilters: [LibraryFilter]? = nil
 @State private var cachedGamepadFiltersKey: Int = 0
     
@@ -307,6 +308,9 @@ case .library:
 .sheet(item: $coreManager.pendingDownload) { pending in
 CoreDownloadSheet(pending: pending)
     .gamepadDismissable { coreManager.pendingDownload = nil }
+}
+.sheet(isPresented: $ppssppAssetService.isPresentingAssetSheet) {
+    PPSSPAssetDownloadSheet()
 }
 .sheet(item: $shaderOverrideData) { data in
 ShaderGameOverrideView(
