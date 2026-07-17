@@ -2071,6 +2071,7 @@
     "hotkeys.conflictHint": "Conflicts with: %@",
     "hotkeys.action.saveState": "Quick Save",
     "hotkeys.action.loadState": "Quick Load",
+    "hotkeys.action.pause": "Pause / Resume",
     "hotkeys.action.undoLoadState": "Undo Load",
     "hotkeys.action.slotNext": "Next Slot",
     "hotkeys.action.slotPrev": "Previous Slot",

@@ -339,6 +339,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     // or global default assigns a controller button).
     var cachedSaveStateBinding: String? = nil
     var cachedLoadStateBinding: String? = nil
+    var cachedPauseBinding: String? = nil
     var cachedToggleGuideSidebarBinding: String? = nil
     private var hookedController: GCController? = nil
     private var hookedControllers: [Int: GCController] = [:]
@@ -1854,6 +1855,7 @@ weak var metalCoordinator: MetalCoordinator?
         cachedFastForwardBinding      = cachedGC(.fastForward,      systemID: resolvedSysID)
         cachedSaveStateBinding        = cachedGC(.saveState,        systemID: resolvedSysID)
         cachedLoadStateBinding        = cachedGC(.loadState,        systemID: resolvedSysID)
+        cachedPauseBinding            = cachedGC(.pause,            systemID: resolvedSysID)
         cachedToggleGuideSidebarBinding = cachedGC(.toggleGuideSidebar, systemID: resolvedSysID)
 
         // Pre-warm rolling buffer so it's continuously recording before share press
@@ -1953,6 +1955,13 @@ weak var metalCoordinator: MetalCoordinator?
                             HardcoreModeManager.shared.attemptLoadState {
                                 Task { @MainActor in _ = self.loadState(slot: self.currentSlot) }
                             }
+                            return
+                        }
+                        if name == self.cachedPauseBinding {
+                            if button.isPressed {
+                                Task { @MainActor in self.togglePause() }
+                            }
+                            // Toggle semantics — no action on release.
                             return
                         }
                         if name == self.cachedToggleGuideSidebarBinding {

@@ -57,6 +57,7 @@ struct HotkeyBinding: Codable, Equatable, Hashable {
 enum HotkeyAction: String, Codable, CaseIterable, Identifiable {
     case saveState
     case loadState
+    case pause
     case undoLoadState
     case slotNext
     case slotPrev
@@ -213,6 +214,7 @@ final class HotkeyConfigManager: ObservableObject {
     static let defaults: [HotkeyAction: HotkeyConfig] = [
         .saveState:               HotkeyConfig(primary: .command(1),   secondary: .plain(96)),    // ⌘S, F5
         .loadState:               HotkeyConfig(primary: .command(37),  secondary: .plain(98)),    // ⌘L, F7
+        .pause:                   HotkeyConfig(primary: .plain(35),    secondary: .none),         // P
         .undoLoadState:           HotkeyConfig(primary: .command(6),   secondary: .none),         // ⌘Z
         .slotNext:                HotkeyConfig(primary: .plain(97),    secondary: .none),         // F6
         .slotPrev:                HotkeyConfig(primary: .plain(95),    secondary: .none),         // F4
@@ -317,6 +319,10 @@ final class HotkeyConfigManager: ObservableObject {
             return .gc("Share Button", label: "Share Button")
         case (.shareButton, .sdl):
             return .sdl(13)
+        case (.pause, .gameController):
+            return .gc("Pause", label: "Pause")
+        case (.pause, .sdl):
+            return .unset
         case (.recording, .gameController):
             return .gc("Share Button", label: "Share Button")
         case (.recording, .sdl):

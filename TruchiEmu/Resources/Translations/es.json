@@ -2063,6 +2063,7 @@
     "hotkeys.conflictHint": "Conflicto con: %@",
     "hotkeys.action.saveState": "Guardado Rápido",
     "hotkeys.action.loadState": "Carga Rápida",
+    "hotkeys.action.pause": "Pausar / Reanudar",
     "hotkeys.action.undoLoadState": "Deshacer Carga",
     "hotkeys.action.slotNext": "Ranura Siguiente",
     "hotkeys.action.slotPrev": "Ranura Anterior",

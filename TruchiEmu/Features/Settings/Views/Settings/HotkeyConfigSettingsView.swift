@@ -115,11 +115,11 @@ struct HotkeyConfigSettingsView: View {
                 }
 
                 if showGameplay && (!isSearching
-                    || matchesSearch("speed rewind fast forward slow motion time machine")
-                    || matchesAnyLabel([.rewind, .slowMotion, .fastForward])) {
+                    || matchesSearch("speed rewind fast forward slow motion time machine pause resume")
+                    || matchesAnyLabel([.rewind, .slowMotion, .fastForward, .pause])) {
                     Section(header: Label(loc.localized("hotkeys.speedRewind"), systemImage: "clock.arrow.circlepath")) {
                         hotkeyActionGrid([
-                            .rewind, .slowMotion, .fastForward
+                            .rewind, .slowMotion, .fastForward, .pause
                         ])
                     }
                     .id("section-speedRewind")
@@ -153,7 +153,7 @@ struct HotkeyConfigSettingsView: View {
                     && !matchesAnyLabel([.saveState, .loadState, .undoLoadState, .slotNext, .slotPrev, .toggleInputCapture, .toggleGuideSidebar])
                     && !matchesAnyLabel(slotActions)
                     && !matchesAnyLabel([.toggleTrainingMode, .trainingReset, .trainingToggleRecording, .trainingStartPlayback])
-                    && !matchesAnyLabel([.rewind, .slowMotion, .fastForward])
+                    && !matchesAnyLabel([.rewind, .slowMotion, .fastForward, .pause])
                     && !matchesSearch("hotkeys keyboard shortcuts save load slot undo training input capture guide sidebar")
                     && !matchesSearch("slots 0-9 slot")
                     && !matchesSearch("training mode reset recording playback tape")

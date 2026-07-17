@@ -149,6 +149,10 @@ class FocusableMTKView: MTKView {
             }
             return
         }
+        if hotkeys.matches(.pause, systemID: systemID, event: event) {
+            Task { @MainActor in self.runner?.togglePause() }
+            return
+        }
         if hotkeys.matches(.undoLoadState, systemID: systemID, event: event) {
             Task { @MainActor in _ = runner?.undoLoadState() }
             return

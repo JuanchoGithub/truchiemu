@@ -2069,6 +2069,7 @@
     "hotkeys.conflictHint": "Conflito com: %@",
     "hotkeys.action.saveState": "Salvamento Rápido",
     "hotkeys.action.loadState": "Carregamento Rápido",
+    "hotkeys.action.pause": "Pausar / Retomar",
     "hotkeys.action.undoLoadState": "Desfazer Carregamento",
     "hotkeys.action.slotNext": "Próximo Slot",
     "hotkeys.action.slotPrev": "Slot Anterior",
