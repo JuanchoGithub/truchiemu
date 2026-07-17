@@ -19,6 +19,8 @@ struct RetroAchievementsSettingsView: View {
     @State private var isCacheRefreshing = false
     @State private var matchingStatus: String?
     @State private var isMatching = false
+    @State private var showEnablePrompt = false
+    @State private var enableHardcore = false
     
     @Binding var searchText: String
     @Binding var focusedSectionID: String?
@@ -230,6 +232,15 @@ struct RetroAchievementsSettingsView: View {
                 guard let id = newScope else { return }
                 DispatchQueue.main.async {
                     withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+                }
+            }
+            .sheet(isPresented: $showEnablePrompt) {
+                EnableRetroAchievementsPromptView(enableHardcore: $enableHardcore) {
+                    raService.setEnabled(true)
+                    if enableHardcore {
+                        raService.setHardcoreMode(true)
+                        HardcoreModeManager.shared.activateHardcore()
+                    }
                 }
             }
         }
@@ -539,6 +550,10 @@ struct RetroAchievementsSettingsView: View {
                     isLoggingIn = false
                     password = ""
                     webApiKey = ""
+                    if !raService.isEnabled {
+                        enableHardcore = false
+                        showEnablePrompt = true
+                    }
                 }
             } catch {
                 await MainActor.run {
@@ -547,5 +562,54 @@ struct RetroAchievementsSettingsView: View {
                 }
             }
         }
+    }
+}
+
+// MARK: - Enable Prompt Sheet
+
+private struct EnableRetroAchievementsPromptView: View {
+    @ObservedObject private var loc = LocalizationManager.shared
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.dismiss) private var dismiss
+    @Binding var enableHardcore: Bool
+    let onConfirm: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.xl) {
+            VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                Text(loc.localized("retroAchievements.enableAfterLoginTitle"))
+                    .font(.headline)
+                    .foregroundColor(AppColors.textPrimary(colorScheme))
+                Text(loc.localized("retroAchievements.enableAfterLoginMessage"))
+                    .font(.subheadline)
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                Toggle(loc.localized("retroAchievements.enableAfterLoginHardcore"), isOn: $enableHardcore)
+                    .tint(AppColors.brandAccent)
+                Text(loc.localized("retroAchievements.enableAfterLoginHardcoreDescription"))
+                    .font(.caption)
+                    .foregroundColor(AppColors.textTertiary(colorScheme))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            HStack(spacing: AppSpacing.md) {
+                Spacer()
+                Button(loc.localized("general.cancel"), role: .cancel) {
+                    dismiss()
+                }
+                Button(loc.localized("retroAchievements.enable")) {
+                    onConfirm()
+                    dismiss()
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(AppColors.brandAccent)
+            }
+        }
+        .padding(AppSpacing.xl2)
+        .frame(width: 380)
+        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
     }
 }
