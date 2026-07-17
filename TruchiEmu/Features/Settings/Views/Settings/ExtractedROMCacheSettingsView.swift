@@ -5,6 +5,7 @@ struct ExtractedROMCacheSettingsView: View {
     @State private var selectedTTL: CacheTTL = .oneWeek
     @State private var cacheSize: Int64 = 0
     @State private var showCleanAllConfirmation = false
+    @State private var showInfo = false
     @ObservedObject private var loc = LocalizationManager.shared
 
     private var cacheSizeString: String {
@@ -12,7 +13,22 @@ struct ExtractedROMCacheSettingsView: View {
     }
 
     var body: some View {
-        Section(header: Label(loc.localized("settings.extractedCache"), systemImage: "internaldrive")) {
+        Section {
+            HStack(spacing: AppSpacing.sm) {
+                Label(loc.localized("settings.extractedCache"), systemImage: "internaldrive")
+                Spacer()
+                Button(action: { showInfo = true }) {
+                    Image(systemName: "questionmark.circle")
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                .help(loc.localized("settings.extractedCacheHelp"))
+            }
+            .alert(loc.localized("settings.extractedCache"), isPresented: $showInfo) {
+                Button(loc.localized("library.close"), role: .cancel) {}
+            } message: {
+                Text(loc.localized("settings.extractedCacheHelp"))
+            }
             Picker(loc.localized("settings.extractedCacheTTL"), selection: $selectedTTL) {
                 ForEach(CacheTTL.allCases, id: \.self) { ttl in
                     Text(ttl.displayName).tag(ttl)

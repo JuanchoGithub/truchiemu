@@ -29,6 +29,7 @@ struct GeneralSettingsView: View {
 
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var themeManager = ThemeManager.shared
+    @ObservedObject var prefs = SystemPreferences.shared
 
     init(searchText: Binding<String> = .constant(""),
          focusedSectionID: Binding<String?> = .constant(nil),
@@ -74,9 +75,9 @@ struct GeneralSettingsView: View {
             if contentLoaded {
                 ScrollViewReader { proxy in
                     Form {
-                    // ★ Language picker
-            if (!isSearching || matchesSearch("Application Language localization")) && sectionVisible("section-language") {
-                Section(header: Label(loc.localized("settings.language"), systemImage: "globe")) {
+                    // ★ Language & Region
+            if (!isSearching || matchesSearch("Language Region systems language emulation core country localization")) && sectionVisible("section-languageRegion") {
+                Section(header: Label(loc.localized("settings.languageRegion"), systemImage: "globe")) {
                     Picker(loc.localized("settings.selectLanguage"), selection: Binding<String>(
                         get: { loc.currentLanguage },
                         set: { loc.setLanguage($0) })
@@ -87,8 +88,17 @@ struct GeneralSettingsView: View {
                         }
                     }
                     .pickerStyle(.menu)
+
+                    Picker(loc.localized("library.gameRegion"), selection: $prefs.systemLanguage) {
+                        ForEach(EmulatorLanguage.allCases) { lang in
+                            Text("\(lang.flagEmoji) \(lang.name)").tag(lang)
+                        }
+                    }
+                    Text(loc.localized("library.regionDescription"))
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
                 }
-                .id("section-language")
+                .id("section-languageRegion")
             }
 
             // ★ Theme section
@@ -438,7 +448,7 @@ private struct CustomThemeButton: View {
     }
 
     private var hasMatchingSections: Bool {
-        matchesSearch("Application Language localization") ||
+        matchesSearch("Language Region systems language emulation core country localization") ||
         matchesSearch("Theme accent color appearance mode light dark gaming tinted surfaces toolbar") ||
         matchesSearch("Application version build notifications updates")
     }

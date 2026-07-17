@@ -9,7 +9,10 @@ struct LibrarySettingsView: View {
     @EnvironmentObject var library: ROMLibrary
     @State private var scanningFolders: Set<String> = []
     @State private var rebuildTargetFolder: ROMLibraryFolder?
+    @State private var showFullRescanConfirmation = false
     @State private var showHiddenGamesCategory = true
+    @State private var displayOptionsExpanded = false
+    @State private var showWizardConfirmation = false
     @ObservedObject var prefs = SystemPreferences.shared
     @ObservedObject private var loc = LocalizationManager.shared
     
@@ -29,7 +32,6 @@ struct LibrarySettingsView: View {
     // Define searchable sections with their keywords
 private enum LibrarySection: CaseIterable, Identifiable {
   case displayOptions
-  case region
   case libraryFolders
   case hideRules
   case cache
@@ -39,8 +41,7 @@ private enum LibrarySection: CaseIterable, Identifiable {
   
   var title: String {
     switch self {
-    case .displayOptions: return "Display Options"
-    case .region: return "Region"
+    case .displayOptions: return "Other Display Options"
     case .libraryFolders: return "Library Folders"
     case .hideRules: return "Hide Rules"
     case .cache: return "Cache"
@@ -52,8 +53,6 @@ private enum LibrarySection: CaseIterable, Identifiable {
     switch self {
     case .displayOptions:
       return "display options show bios files hidden mame game list sidebar merge gbc gb fbneo"
-    case .region:
-      return "region box art cover usa japan europe world language core emulation"
     case .libraryFolders:
       return "library folders roms games scan rescan primary folder subfolders add folder refresh rebuild"
     case .hideRules:
@@ -87,104 +86,121 @@ private enum LibrarySection: CaseIterable, Identifiable {
 var body: some View {
         ScrollViewReader { proxy in
         Form {
-             // Display Options Section
-             if visibleSections.contains(.displayOptions) {
-                 Section {
-                     Toggle(loc.localized("library.showBiosFiles"), isOn: $prefs.showBiosFiles)
-                     Text(loc.localized("library.showBiosFilesDescription"))
-                         .font(.caption)
-                         .foregroundStyle(AppColors.textSecondary(colorScheme))
-                     
-                      Toggle(loc.localized("library.showHiddenMAMEFiles"), isOn: $prefs.showHiddenMAMEFiles)
-                      Text(loc.localized("library.showHiddenMAMEFilesDescription"))
-                          .font(.caption)
-                          .foregroundStyle(AppColors.textSecondary(colorScheme))
+              // Library Folders Section
+              if visibleSections.contains(.libraryFolders) {
+                  LibraryFoldersSection(
+                      scanningFolders: $scanningFolders,
+                      rebuildTargetFolder: $rebuildTargetFolder,
+                      searchText: searchText
+                  )
+                  .id("section-libraryFolders")
+              }
 
-                      Toggle(loc.localized("settings.mergeGBGBC"), isOn: Binding(
-                          get: { SystemDatabaseWrapper.shared.mergeGBGBC },
-                          set: { SystemDatabaseWrapper.shared.mergeGBGBC = $0 }
-                      ))
-                      Text(loc.localized("settings.mergeGBGBCDescription"))
+              // Hide Rules Section
+              if visibleSections.contains(.hideRules) {
+                  Section {
+                      Toggle(loc.localized("settings.showHiddenGamesCategory"), isOn: $showHiddenGamesCategory)
+                      Text(loc.localized("settings.hiddenGamesDescription"))
                           .font(.caption)
                           .foregroundStyle(AppColors.textSecondary(colorScheme))
+                  } header: {
+                      Label { Text(loc.localized("settings.hiddenGames")) } icon: { Image(systemName: "eye.slash") }
+                  }
+                  .id("section-hideRules")
+              }
 
-                      Toggle(loc.localized("settings.mergeMameFBA"), isOn: Binding(
-                          get: { SystemDatabaseWrapper.shared.mergeMameFBA },
-                          set: { SystemDatabaseWrapper.shared.mergeMameFBA = $0 }
-                      ))
-                      Text(loc.localized("settings.mergeMameFBADescription"))
-                          .font(.caption)
-                          .foregroundStyle(AppColors.textSecondary(colorScheme))
-                    } header: {
-                     Label { Text(loc.localized("library.displayOptions")) } icon: { Image(systemName: "eyeglasses") }
-                 }
-                 .id("section-displayOptions")
-             }
+              // Other Display Options Section (collapsible)
+              if visibleSections.contains(.displayOptions) {
+                  Section {
+                      Button(action: { withAnimation { displayOptionsExpanded.toggle() } }) {
+                          HStack {
+                              Label { Text(loc.localized("library.otherDisplayOptions")) } icon: { Image(systemName: "eyeglasses") }
+                              Spacer()
+                              Image(systemName: displayOptionsExpanded ? "chevron.down" : "chevron.right")
+                                  .font(.caption)
+                                  .foregroundStyle(AppColors.textSecondary(colorScheme))
+                          }
+                          .contentShape(Rectangle())
+                      }
+                      .buttonStyle(.plain)
+                      
+                      if displayOptionsExpanded {
+                          Toggle(loc.localized("library.showBiosFiles"), isOn: $prefs.showBiosFiles)
+                          Text(loc.localized("library.showBiosFilesDescription"))
+                              .font(.caption)
+                              .foregroundStyle(AppColors.textSecondary(colorScheme))
+                          
+                          Toggle(loc.localized("library.showHiddenMAMEFiles"), isOn: $prefs.showHiddenMAMEFiles)
+                          Text(loc.localized("library.showHiddenMAMEFilesDescription"))
+                              .font(.caption)
+                              .foregroundStyle(AppColors.textSecondary(colorScheme))
+
+                          Toggle(loc.localized("settings.mergeGBGBC"), isOn: Binding(
+                              get: { SystemDatabaseWrapper.shared.mergeGBGBC },
+                              set: { SystemDatabaseWrapper.shared.mergeGBGBC = $0 }
+                          ))
+                          Text(loc.localized("settings.mergeGBGBCDescription"))
+                              .font(.caption)
+                              .foregroundStyle(AppColors.textSecondary(colorScheme))
+
+                          Toggle(loc.localized("settings.mergeMameFBA"), isOn: Binding(
+                              get: { SystemDatabaseWrapper.shared.mergeMameFBA },
+                              set: { SystemDatabaseWrapper.shared.mergeMameFBA = $0 }
+                          ))
+                          Text(loc.localized("settings.mergeMameFBADescription"))
+                              .font(.caption)
+                              .foregroundStyle(AppColors.textSecondary(colorScheme))
+                      }
+                  }
+                  .id("section-displayOptions")
+              }
+              
+              // Cache Section
+              if visibleSections.contains(.cache) {
+                  ExtractedROMCacheSettingsView()
+                  .id("section-cache")
+              }
              
-             // Hide Rules Section
-             if visibleSections.contains(.hideRules) {
-                 Section {
-                     Toggle(loc.localized("settings.showHiddenGamesCategory"), isOn: $showHiddenGamesCategory)
-                     Text(loc.localized("settings.hiddenGamesDescription"))
-                         .font(.caption)
-                         .foregroundStyle(AppColors.textSecondary(colorScheme))
-                 } header: {
-                     Label { Text(loc.localized("settings.hiddenGames")) } icon: { Image(systemName: "eye.slash") }
-                 }
-                 .id("section-hideRules")
-             }
-             
-             // Region Section
-             if visibleSections.contains(.region) {
-                 Section {
-                     Picker(loc.localized("library.gameRegion"), selection: $prefs.systemLanguage) {
-                         ForEach(EmulatorLanguage.allCases) { lang in
-                             Text("\(lang.flagEmoji) \(lang.name)").tag(lang)
-                         }
-                     }
-                     Text(loc.localized("library.regionDescription"))
-                         .font(.caption)
-                         .foregroundStyle(AppColors.textSecondary(colorScheme))
-                 } header: {
-                     Label { Text(loc.localized("library.region")) } icon: { Image(systemName: "map") }
-                 }
-                 .id("section-region")
-             }
-             
-             // Library Folders Section
-             if visibleSections.contains(.libraryFolders) {
-                 LibraryFoldersSection(
-                     scanningFolders: $scanningFolders,
-                     rebuildTargetFolder: $rebuildTargetFolder,
-                     searchText: searchText
-                 )
-                 .id("section-libraryFolders")
-             }
-             
-             // Cache Section
-             if visibleSections.contains(.cache) {
-                 ExtractedROMCacheSettingsView()
-                 .id("section-cache")
-             }
-             
-             // Maintenance Section - put at bottom
-             if visibleSections.contains(.maintenance) {
-                 Section {
-                     Button(action: { Task { await library.fullRescan() } }) {
-                         Label { Text(loc.localized("library.fullLibraryRescan")) } icon: { Image(systemName: "arrow.clockwise.circle.fill") }
-                     }
-                     .buttonStyle(.bordered)
-                     .disabled(library.isScanning)
+              // Maintenance Section - put at bottom
+              if visibleSections.contains(.maintenance) {
+                  Section {
+                      Button(action: { showFullRescanConfirmation = true }) {
+                          Label { Text(loc.localized("library.fullLibraryRescan")) } icon: { Image(systemName: "arrow.clockwise.circle.fill") }
+                      }
+                      .buttonStyle(.bordered)
+                      .disabled(library.isScanning)
+                      .confirmationDialog(
+                          loc.localized("library.fullRescanConfirmationTitle"),
+                          isPresented: $showFullRescanConfirmation,
+                          titleVisibility: .visible
+                      ) {
+                          Button(loc.localized("library.fullRescanConfirm")) {
+                              Task { await library.fullRescan() }
+                          }
+                          Button(loc.localized("library.cancel"), role: .cancel) {}
+                      } message: {
+                          Text(loc.localized("library.fullRescanConfirmationMessage"))
+                      }
                      
-                      Button(action: {
-                          library.hasCompletedOnboarding = false
-                          SetupWizardState.shared.hasCompletedWizard = false
-                          SetupWizardState.shared.resetForReRun()
-                          NotificationCenter.default.post(name: .closeAppSettings, object: nil)
-                      }) {
+                      Button(action: { showWizardConfirmation = true }) {
                           Label { Text(loc.localized("library.runSetupWizard")) } icon: { Image(systemName: "wand.and.stars") }
                       }
                       .buttonStyle(.bordered)
+                      .confirmationDialog(
+                          loc.localized("library.runSetupWizardConfirmationTitle"),
+                          isPresented: $showWizardConfirmation,
+                          titleVisibility: .visible
+                      ) {
+                          Button(loc.localized("library.runSetupWizardConfirm")) {
+                              library.hasCompletedOnboarding = false
+                              SetupWizardState.shared.hasCompletedWizard = false
+                              SetupWizardState.shared.resetForReRun()
+                              NotificationCenter.default.post(name: .closeAppSettings, object: nil)
+                          }
+                          Button(loc.localized("library.cancel"), role: .cancel) {}
+                      } message: {
+                          Text(loc.localized("library.runSetupWizardConfirmationMessage"))
+                      }
                      
                      LabeledContent(loc.localized("library.totalGames")) {
                          Text("\(library.roms.count)")
@@ -348,6 +364,7 @@ struct LibraryFoldersSection: View {
         var newMap = library.subfolderMap
         newMap[folder.url.path] = found
         library.subfolderMap = newMap
+        library.updateFolderROMCounts()
         discoveredSubfolders[folder.url.path] = found.filter { $0.depthFromPrimary == 1 }.sorted { $0.url.path < $1.url.path }
         discoveringFolders.remove(folder.url.path)
     }
@@ -471,14 +488,17 @@ struct LibraryFolderRowView: View {
 
     var body: some View {
         HStack(spacing: AppSpacing.lg) {
-            if canExpand {
-                Button(action: onToggleExpand) {
+            Group {
+                if canExpand {
                     expandableContent
+                } else {
+                    leafContent
                 }
-                .buttonStyle(.plain)
-                .disabled(isCurrentlyDiscovering)
-            } else {
-                leafContent
+            }
+            .contentShape(Rectangle())
+            .onTapGesture {
+                guard canExpand, !isCurrentlyDiscovering else { return }
+                onToggleExpand()
             }
 
             Spacer()

@@ -303,7 +303,7 @@ let idsToPurge = orphans.map { $0.id }
         self.updateCounts() 
     }
 
-    private func updateFolderROMCounts() {
+    func updateFolderROMCounts() {
         let allFolderPaths = Set(
             primaryFolders.map(\.url.path) + subfolderMap.values.flatMap { $0.map(\.url.path) }
         )
