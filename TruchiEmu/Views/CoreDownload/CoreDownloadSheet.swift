@@ -194,10 +194,19 @@ init(pending: CoreManager.PendingCoreDownload) {
         }
     }
 
-    private func loadBoxArt() async {
-        guard let rom = pendingROM,
-              FileManager.default.fileExists(atPath: rom.boxArtLocalPath.path) else { return }
-        boxArtImage = await ImageCache.shared.thumbnail(for: rom.boxArtLocalPath, preferredSize: .tiny)
+    private func loadBoxArt() {
+        guard let rom = pendingROM else { return }
+        var artPath = rom.boxArtLocalPath
+        if !FileManager.default.fileExists(atPath: artPath.path) {
+            if let resolved = BoxArtService.shared.resolveLocalBoxArt(for: rom) {
+                artPath = resolved
+            }
+        }
+        if FileManager.default.fileExists(atPath: artPath.path),
+           let data = try? Data(contentsOf: artPath),
+           let image = NSImage(data: data) {
+            boxArtImage = image
+        }
     }
 
     private var romContextBox: some View {
@@ -228,14 +237,12 @@ init(pending: CoreManager.PendingCoreDownload) {
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .task(id: pending.romID?.uuidString ?? "") {
-            await loadBoxArt()
-        }
+        .onAppear { loadBoxArt() }
         .onChange(of: boxArtService.boxArtUpdated) { _ in
-            // Only react to later arrivals of THIS rom's art; avoid churning on
-            // unrelated global box-art signals that would cancel the load.
+            // React to later arrivals of THIS rom's art; avoid churning on
+            // unrelated global box-art signals once we already have an image.
             if boxArtImage == nil {
-                Task { await loadBoxArt() }
+                loadBoxArt()
             }
         }
         .background(AppColors.cardBackgroundSubtle(colorScheme))
