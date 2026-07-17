@@ -11,8 +11,10 @@ struct CoreDownloadSheet: View {
     @State private var downloadError: String? = nil
     @State private var isFetchingMAMEDeps = false
     @State private var mameDepsError: String? = nil
-@State private var isRefreshingCores = false
-@State private var refreshError: String? = nil
+    @State private var isRefreshingCores = false
+    @State private var refreshError: String? = nil
+    @State private var boxArtImage: NSImage? = nil
+    @ObservedObject private var boxArtService = BoxArtService.shared
 @Environment(\.colorScheme) private var colorScheme
 
 init(pending: CoreManager.PendingCoreDownload) {
@@ -194,8 +196,16 @@ init(pending: CoreManager.PendingCoreDownload) {
 
     private var romContextBox: some View {
         HStack(spacing: 10) {
+            if let img = boxArtImage {
+                Image(nsImage: img)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 40, height: 40)
+                    .cornerRadius(6)
+            } else {
 		Image(systemName: "gamecontroller")
 				.foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+            }
             VStack(alignment: .leading, spacing: 2) {
 		Text("coreDownload.readyToLaunch")
 				.font(.caption)
@@ -212,6 +222,13 @@ init(pending: CoreManager.PendingCoreDownload) {
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
+        .task(id: "\(pending.romID?.uuidString ?? "")-\(boxArtService.boxArtUpdated)") {
+            guard let rom = pendingROM, FileManager.default.fileExists(atPath: rom.boxArtLocalPath.path) else {
+                boxArtImage = nil
+                return
+            }
+            boxArtImage = await ImageCache.shared.thumbnail(for: rom.boxArtLocalPath, preferredSize: .tiny)
+        }
         .background(AppColors.cardBackgroundSubtle(colorScheme))
         .cornerRadius(10)
     }
@@ -292,12 +309,12 @@ init(pending: CoreManager.PendingCoreDownload) {
         .buttonStyle(.plain)
     }
 
-    // Max height to show 4 cores before scrolling (each button is ~60px + 8px spacing)
+    // Max height to show 3 full cores plus half of the 4th before scrolling,
+    // so the user discovers there are more cores than currently visible.
     private var maxCoreListHeight: CGFloat {
-        let itemHeight: CGFloat = 68
+        let itemHeight: CGFloat = 50
         let spacing: CGFloat = 8
-        let count = min(allCoresForSystem.count, 4)
-        return CGFloat(count) * itemHeight + CGFloat(count - 1) * spacing
+        return 3.5 * itemHeight + 3 * spacing
     }
 
     private var coreSelectionSection: some View {
@@ -332,7 +349,7 @@ init(pending: CoreManager.PendingCoreDownload) {
                 }
             }
             .frame(maxWidth: .infinity)
-            .frame(height: allCoresForSystem.count <= 4 ? nil : maxCoreListHeight)
+            .frame(height: allCoresForSystem.count <= 3 ? nil : maxCoreListHeight)
             .background(AppColors.cardBackgroundSubtle(colorScheme))
             .cornerRadius(8)
 
@@ -351,9 +368,11 @@ init(pending: CoreManager.PendingCoreDownload) {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 24)
             } else {
-                Text(allCoresForSystem.count == 1
-                    ? "coreDownload.coreAvailable"
-                    : "coreDownload.coresAvailable")
+                let count = allCoresForSystem.count
+                let caption = count == 1
+                    ? loc.localized("coreDownload.coreAvailable")
+                    : String(format: loc.localized("coreDownload.coresAvailable"), count)
+                Text(verbatim: caption)
                     .font(.caption).foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
             }
         }
