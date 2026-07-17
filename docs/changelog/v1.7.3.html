@@ -1,0 +1,55 @@
+---
+layout: default
+title: v1.7.3 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.7.3</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.7.3</h1>
+        <div class="release-meta">
+            <span class="release-date">July 17, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Maintenance release focused on core management, downloads, and search. Adds PPSSPP asset downloading, asynchronous and inline box art in the core download sheet, improved cheat crash recovery, and new settings options. Library browsing gains sidebar and grid search with game-card subtitles for quicker navigation.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>PPSSPP asset downloads:</strong> New UI and backend to fetch required PPSSPP assets, with localized strings.</li>
+            <li><strong>Core download sheet improvements:</strong> Box art now loads asynchronously and displays inline; core list height adapts and refresh/button logic is more reliable.</li>
+            <li><strong>Cheat crash recovery:</strong> Hardened crash recovery in LibretroBridge and improved ScummVM detection database handling.</li>
+            <li><strong>Library search &amp; navigation:</strong> Sidebar and library grid search (filtering systems by matching games), plus game-card subtitle support and consistent toolbar styling.</li>
+            <li><strong>Settings &amp; core persistence:</strong> New settings options with improved localization, and a flag to manage libretro core instance persistence.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>Implemented PPSSPP asset download functionality and UI with localization support</li>
+            <li>Implemented asynchronous loading of box art in CoreDownloadSheet and added inline box art display with updated list height logic</li>
+            <li>Enhanced cheat crash recovery in LibretroBridge and improved ScummVM detection database handling</li>
+            <li>Improved core download button logic and refresh handling in CoreDownloadSheet</li>
+            <li>Updated background styling in CoreDownloadSheet and CoreDownloadStatusBar for UI consistency</li>
+            <li>Enhanced settings views with new options and improved localization support</li>
+            <li>Refined search in SystemSidebarView to filter systems by matching games; added search to sidebar and library grid with translation updates</li>
+            <li>Updated toolbar button style in LibraryGridView and added game-card subtitle support with improved layout</li>
+            <li>Added <code>g_instancePersisted</code> flag to manage libretro core instance persistence</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.7.2.html' | relative_url }}" class="release-prev">&larr; v1.7.2</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>

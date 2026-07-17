@@ -1,0 +1,55 @@
+---
+layout: default
+title: v1.7.3 - Documentação do TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/pt/changelog.html' | relative_url }}">Registro de alterações</a>
+        <span class="separator">/</span>
+        <span class="current">v1.7.3</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.7.3</h1>
+        <div class="release-meta">
+            <span class="release-date">17 de julho de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Versão de manutenção focada no gerenciamento, download e busca de cores. Adiciona o download de assets do PPSSPP, carregamento assíncrono e embutido das capas na tela de download de cores, melhor recuperação de falhas de cheats e novas opções de configurações. A navegação da biblioteca ganha busca na barra lateral e na grade, com subtítulos nos cartões de jogo para uma navegação mais rápida.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destaques</h2>
+        <ul class="feature-list">
+            <li><strong>Download de assets PPSSPP:</strong> Nova interface e backend para obter os assets necessários do PPSSPP, com textos localizados.</li>
+            <li><strong>Melhorias na tela de download de cores:</strong> As capas agora carregam de forma assíncrona e são exibidas embutidas; a altura da lista se adapta e a lógica de botões e atualização é mais confiável.</li>
+            <li><strong>Recuperação de falhas de cheats:</strong> Recuperação de falhas reforçada no LibretroBridge e melhor tratamento do banco de dados de detecção do ScummVM.</li>
+            <li><strong>Busca e navegação da biblioteca:</strong> Busca na barra lateral e na grade (filtrando sistemas por jogos correspondentes), além de subtítulos nos cartões e estilo de barra de ferramentas consistente.</li>
+            <li><strong>Configurações e persistência de cores:</strong> Novas opções de configurações com melhor localização, e uma flag para gerenciar a persistência da instância do core libretro.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Alterações detalhadas</h2>
+        <ul>
+            <li>Implementada a funcionalidade de download de assets do PPSSPP com interface e suporte à localização</li>
+            <li>Implementado o carregamento assíncrono de capas no CoreDownloadSheet e adicionada sua exibição embutida com lógica de altura de lista atualizada</li>
+            <li>Melhorada a recuperação de falhas de cheats no LibretroBridge e o tratamento do banco de dados de detecção do ScummVM</li>
+            <li>Melhorada a lógica do botão de download e a atualização no CoreDownloadSheet</li>
+            <li>Atualizado o estilo de fundo no CoreDownloadSheet e CoreDownloadStatusBar para maior consistência</li>
+            <li>Melhoradas as views de configurações com novas opções e melhor localização</li>
+            <li>Refinada a busca no SystemSidebarView para filtrar sistemas por jogos correspondentes; adicionada busca à barra lateral e à grade com atualizações de tradução</li>
+            <li>Atualizado o estilo dos botões da barra de ferramentas no LibraryGridView e adicionado suporte a subtítulos nos cartões de jogo</li>
+            <li>Adicionada a flag <code>g_instancePersisted</code> para gerenciar a persistência da instância do core libretro</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/pt/changelog/v1.7.2.html' | relative_url }}" class="release-prev">&larr; v1.7.2</a>
+        <a href="{{ '/pt/changelog.html' | relative_url }}" class="release-all">Todas as versões</a>
+    </nav>
+</div>
