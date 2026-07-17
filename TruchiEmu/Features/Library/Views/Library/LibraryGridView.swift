@@ -212,10 +212,11 @@ struct LibraryGridView: View {
     enum FocusableField: Hashable { case search }
     @FocusState private var focusedField: FocusableField?
 
-    // When searching, the system filter is ignored so games across all systems
-    // are matched in the main grid (systems are matched separately in the sidebar).
+    // When searching, the system filter is honored only when a specific system is
+    // selected (so clicking a system in the sidebar during search narrows results
+    // to that system's matching games). Otherwise all systems are matched.
     private var effectiveFilter: LibraryFilter {
-        searchText.isEmpty ? filter : .all
+        searchText.isEmpty ? filter : (filter.isSystemView ? filter : .all)
     }
 
     private var activeFilterDisplayText: String {

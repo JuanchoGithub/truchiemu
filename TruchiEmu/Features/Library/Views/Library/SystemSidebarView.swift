@@ -54,11 +54,34 @@ struct SystemSidebarView: View {
         cachedCombinedSystems
     }
 
+    // During a search, the sidebar lists only systems that actually have games
+    // matching the query (not systems whose own name matches), since the main
+    // grid matches across all systems. The count shown is the number of matching
+    // games in that system, not the total ROM count.
     private var filteredSystems: [(system: SystemInfo, combinedCount: Int)] {
         guard !searchText.isEmpty else { return combinedSystemsWithROMs }
-        let query = searchText.lowercased()
-        return combinedSystemsWithROMs.filter {
-            $0.system.searchableText.contains(query)
+        let terms = searchText.lowercased().split(separator: " ").map(String.init)
+        guard !terms.isEmpty else { return combinedSystemsWithROMs }
+
+        // Map each ROM's internal systemID to its display system id.
+        var displayByInternal: [String: String] = [:]
+        for entry in combinedSystemsWithROMs {
+            for internalID in systemDatabase.allInternalIDs(forDisplayID: entry.system.id) {
+                displayByInternal[internalID] = entry.system.id
+            }
+        }
+
+        // Count matching games per display system.
+        var matchCountByDisplay: [String: Int] = [:]
+        for rom in library.roms where !rom.isHidden {
+            guard let displayID = displayByInternal[rom.systemID ?? ""] else { continue }
+            guard terms.allSatisfy({ rom.displayName.localizedCaseInsensitiveContains($0) }) else { continue }
+            matchCountByDisplay[displayID, default: 0] += 1
+        }
+
+        return combinedSystemsWithROMs.compactMap { entry in
+            guard let count = matchCountByDisplay[entry.system.id], count > 0 else { return nil }
+            return (system: entry.system, combinedCount: count)
         }
     }
 
