@@ -103,7 +103,7 @@ final class GridCollectionViewCoordinator: NSObject {
     var library: ROMLibrary?
     var categoryManager: CategoryManager?
     fileprivate var previousRomsCount: Int = 0
-    fileprivate var previousRomsFingerprint: [UUID] = []
+    fileprivate var previousRomsFingerprint: [String] = []
     fileprivate var previousZoomLevel: Double = 0.5
     fileprivate var previousSelection: Set<UUID> = []
 
@@ -376,7 +376,7 @@ struct GridCollectionViewRepresentable: NSViewRepresentable {
         c.library = library
         c.categoryManager = categoryManager
         c.previousRomsCount = roms.count
-        c.previousRomsFingerprint = roms.map(\.id)
+        c.previousRomsFingerprint = roms.map { "\($0.id)|\($0.raMatchStatus ?? "")|\($0.raGameId ?? 0)" }
         c.previousZoomLevel = zoomLevel
         c.previousSelection = selection
 
@@ -389,7 +389,7 @@ struct GridCollectionViewRepresentable: NSViewRepresentable {
         guard let cv = nsView.documentView as? NSCollectionView else { return }
         let c = context.coordinator
 
-        let newFingerprint: [UUID] = roms.map(\.id)
+        let newFingerprint = roms.map { "\($0.id)|\($0.raMatchStatus ?? "")|\($0.raGameId ?? 0)" }
         let dataChanged = roms.count != c.previousRomsCount || newFingerprint != c.previousRomsFingerprint
         let zoomChanged = zoomLevel != c.previousZoomLevel
         let needsReload = dataChanged || zoomChanged

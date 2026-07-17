@@ -528,7 +528,10 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
             let oldBezel = roms[idx].settings.bezelFileName
             
             // Only send updates if not silent
-            if !silent { objectWillChange.send() }
+            if !silent {
+                lastChangeDate = Date()
+                objectWillChange.send()
+            }
             roms[idx] = updatedROM
             if oldBezel != updatedROM.settings.bezelFileName { bezelUpdateToken += 1 }
             LibraryMetadataStore.shared.persist(rom: updatedROM)
