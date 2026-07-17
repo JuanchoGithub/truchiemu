@@ -64,14 +64,9 @@ struct SystemSidebarView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
-                AppSearchField(
-                    text: $systemSearchText,
-                    placeholder: loc.localized("app.searchSystems")
-                )
-                .padding(.bottom, 8)
-
-                sidebarRow(icon: "square.grid.2x2", label: loc.localized("app.allGames"), count: library.romCounts["all"] ?? 0, filter: .all)
+            LazyVStack(alignment: .leading, spacing: 0, pinnedViews: [.sectionHeaders]) {
+                Section {
+                    sidebarRow(icon: "square.grid.2x2", label: loc.localized("app.allGames"), count: library.romCounts["all"] ?? 0, filter: .all)
 
                 let favCount = library.romCounts["favorites"] ?? 0
                 if favCount > 0 {
@@ -168,6 +163,14 @@ struct SystemSidebarView: View {
                 }
 
                 Spacer()
+                } header: {
+                    AppSearchField(
+                        text: $systemSearchText,
+                        placeholder: loc.localized("app.searchSystems")
+                    )
+                    .padding(.bottom, 8)
+                    .background(AppColors.sidebarBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+                }
             }
             .id(hiddenCategoryRefreshToggle)
             .padding(.horizontal, 8)
