@@ -341,10 +341,9 @@ struct LibraryGridView: View {
             ToolbarItem(placement: .primaryAction) {
             Button { pickFolder() } label: {
                 Label(loc.localized("toolbar.addROMFolder"), systemImage: "folder.badge.plus")
-                    .labelStyle(.titleAndIcon)
+                    .labelStyle(.iconOnly)
             }
-            .buttonStyle(.borderedProminent)
-            .tint(AppColors.brandAccent)
+            .buttonStyle(.bordered)
             .help(loc.localized("toolbar.addROMFolder"))
             }
             ToolbarItem(placement: .primaryAction) {
