@@ -9,35 +9,51 @@
 
 // --- Cheat Crash Recovery ---
 // PicoDrive's retro_cheat_set reads from unmapped Genesis memory addresses
-// when the cheat lookup table entry is zero. Install a permanent SIGSEGV
-// and SIGBUS handler that re-raises for non-cheat faults but recovers
-// gracefully from cheat-related crashes. Works in the main app process
-// where POSIX signals are delivered. In XPC service processes, Mach
-// exception ports may intercept before POSIX signals — so we also defer
-// cheat application until after the first frame (see
-// StandaloneGameWindowController.onFirstFrameReady).
+// when the cheat lookup table entry is zero. Install a SIGSEGV/SIGBUS handler
+// that recovers from cheat-related crashes via siglongjmp.
+//
+// IMPORTANT: the handler is scoped to the duration of a single cheat call.
+// The previous handlers are saved and restored immediately afterwards, so the
+// handler is NEVER installed process-wide. A previous implementation installed
+// it once and never restored it, which replaced every other core's own signal
+// handling for the lifetime of the process — corrupting cores such as ScummVM
+// during their init/detection and making them pass bad data downstream. This
+// scoped form keeps PicoDrive cheat recovery working without affecting other
+// cores. (In XPC service processes, Mach exception ports may intercept before
+// POSIX signals — so cheat application is also deferred until after the first
+// frame; see StandaloneGameWindowController.onFirstFrameReady.)
 static sigjmp_buf g_cheatCrashJmpBuf;
 static volatile sig_atomic_t g_inCheatCall = 0;
 
 static void cheatCrashHandler(int sig) {
-    if (!g_inCheatCall) {
-        signal(sig, SIG_DFL);
-        raise(sig);
-        return;
-    }
+    (void)sig;
     g_inCheatCall = 0;
     siglongjmp(g_cheatCrashJmpBuf, 1);
 }
 
-static dispatch_once_t g_cheatSigInitOnce;
-static void installCheatSignalHandler(void) {
-    struct sigaction act;
+// Installs our recovery handler, runs `block`, then restores the previous
+// handlers. Any SIGSEGV/SIGBUS raised inside `block` (e.g. a PicoDrive cheat
+// fault) is caught and recovered from; everything else outside this call uses
+// the handlers that were in place before.
+static void runCheatCallSafely(void (^block)(void)) {
+    struct sigaction act, oldSegv, oldBus;
     memset(&act, 0, sizeof(act));
     act.sa_handler = cheatCrashHandler;
     sigemptyset(&act.sa_mask);
     act.sa_flags = SA_NODEFER;
-    sigaction(SIGSEGV, &act, NULL);
-    sigaction(SIGBUS, &act, NULL);
+    sigaction(SIGSEGV, &act, &oldSegv);
+    sigaction(SIGBUS, &act, &oldBus);
+
+    g_inCheatCall = 1;
+    if (sigsetjmp(g_cheatCrashJmpBuf, 1) == 0) {
+        block();
+    } else {
+        bridge_log_printf(RETRO_LOG_WARN, "[Bridge] SIGSEGV caught during cheat application — skipped");
+    }
+    g_inCheatCall = 0;
+
+    sigaction(SIGSEGV, &oldSegv, NULL);
+    sigaction(SIGBUS, &oldBus, NULL);
 }
 
 // --- Global State ---
@@ -521,14 +537,9 @@ g_frame_poll_callback = callback;
         [g_instance->_coreLock unlock];
         return;
     }
-    dispatch_once(&g_cheatSigInitOnce, ^{ installCheatSignalHandler(); });
-    g_inCheatCall = 1;
-    if (sigsetjmp(g_cheatCrashJmpBuf, 1) == 0) {
+    runCheatCallSafely(^{
         g_instance->_retro_cheat_set(index, enabled, codeStr);
-    } else {
-        bridge_log_printf(RETRO_LOG_WARN, "[Bridge] SIGSEGV caught in retro_cheat_set — skipping cheat index=%d", index);
-    }
-    g_inCheatCall = 0;
+    });
     [g_instance->_coreLock unlock];
 }
 
@@ -539,14 +550,9 @@ g_frame_poll_callback = callback;
         [g_instance->_coreLock unlock];
         return;
     }
-    dispatch_once(&g_cheatSigInitOnce, ^{ installCheatSignalHandler(); });
-    g_inCheatCall = 1;
-    if (sigsetjmp(g_cheatCrashJmpBuf, 1) == 0) {
+    runCheatCallSafely(^{
         g_instance->_retro_cheat_reset();
-    } else {
-        bridge_log_printf(RETRO_LOG_WARN, "[Bridge] SIGSEGV caught in retro_cheat_reset");
-    }
-    g_inCheatCall = 0;
+    });
     [g_instance->_coreLock unlock];
 }
 

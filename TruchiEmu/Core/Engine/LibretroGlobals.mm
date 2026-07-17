@@ -77,6 +77,15 @@ void RegisterCoreLogCallback(CoreLogCallback callback) {
   g_coreLogCallback = callback;
 }
 
+// Converts a C string to an NSString, never returning nil and never throwing.
+// `stringWithUTF8String:` returns nil (and historically can raise) on invalid
+// UTF-8; callers must not insert nil into NSDictionary, so we normalize here.
+static NSString *SafeCString(const char *cstr) {
+    if (!cstr) return @"";
+    NSString *s = [NSString stringWithUTF8String:cstr];
+    return s ?: @"";
+}
+
 void initOptStorage(void) {
     if (!g_optValues) {
         g_optValues = [NSMutableDictionary dictionary];
@@ -94,13 +103,12 @@ void parseCoreOptionsV2(struct retro_core_options_v2 *opts) {
     struct retro_core_option_v2_category *cat = opts->categories;
     int catCount = 0;
     while (cat->key && catCount < 256) {
-      @try {
-        cats[[NSString stringWithUTF8String:cat->key]] = @{
-          @"desc" : cat->desc ? [NSString stringWithUTF8String:cat->desc] : @"",
-          @"info" : cat->info ? [NSString stringWithUTF8String:cat->info] : @""
+      NSString *key = SafeCString(cat->key);
+      if (key.length > 0) {
+        cats[key] = @{
+          @"desc" : SafeCString(cat->desc),
+          @"info" : SafeCString(cat->info)
         };
-      } @catch (NSException *exception) {
-        bridge_log_printf(RETRO_LOG_WARN, " Failed to parse category: %s", exception.reason);
       }
       cat++;
       catCount++;
@@ -112,36 +120,37 @@ void parseCoreOptionsV2(struct retro_core_options_v2 *opts) {
     struct retro_core_option_v2_definition *def = opts->definitions;
     int defCount = 0;
     while (def && def->key && defCount < 512) {
-      @try {
-        NSString *key =[NSString stringWithUTF8String:def->key];
-        NSString *desc =[NSString stringWithUTF8String:(def->desc_categorized ?: def->desc)];
-        NSString *info =[NSString stringWithUTF8String:(def->info_categorized ?: def->info)];
-        NSString *catKey = def->category_key ?[NSString stringWithUTF8String:def->category_key] : nil;
-        NSString *defaultVal = def->default_value ? [NSString stringWithUTF8String:def->default_value] : @"";
-
-        NSMutableArray *vals = [NSMutableArray array];
-        for (int vi = 0; vi < RETRO_NUM_CORE_OPTION_VALUES_MAX; vi++) {
-          const char *valStr = def->values[vi].value;
-          if (!valStr) break;
-          @try {
-            NSString *vval =[NSString stringWithUTF8String:valStr];
-            NSString *vlabel = def->values[vi].label ? [NSString stringWithUTF8String:def->values[vi].label] : vval;[vals addObject:@{@"value" : vval, @"label" : vlabel}];
-          } @catch (NSException *exception) {
-            bridge_log_printf(RETRO_LOG_ERROR, "Failed to parse option value: %s", exception.reason);
-            break;
-          }
-        }
-        defs[key] = @{
-          @"desc" : desc ?: @"",
-          @"info" : info ?: @"",
-          @"defaultValue" : defaultVal,
-          @"category" : catKey ?: @"",
-          @"values" : [vals copy]
-        };
-        g_optValues[key] = defaultVal;
-      } @catch (NSException *exception) {
-        bridge_log_printf(RETRO_LOG_ERROR, "Failed to parse option definition: %s", exception.reason);
+      NSString *key = SafeCString(def->key);
+      // Skip entries with no usable key rather than inserting a degenerate key.
+      if (key.length == 0) {
+        def++;
+        defCount++;
+        continue;
       }
+
+      NSString *desc = SafeCString(def->desc_categorized ?: def->desc);
+      NSString *info = SafeCString(def->info_categorized ?: def->info);
+      NSString *catKey = SafeCString(def->category_key);
+      NSString *defaultVal = SafeCString(def->default_value);
+
+      NSMutableArray *vals = [NSMutableArray array];
+      for (int vi = 0; vi < RETRO_NUM_CORE_OPTION_VALUES_MAX; vi++) {
+        const char *valStr = def->values[vi].value;
+        if (!valStr) break;
+        NSString *vval = SafeCString(valStr);
+        NSString *vlabel = def->values[vi].label ? SafeCString(def->values[vi].label) : vval;
+        [vals addObject:@{@"value" : vval, @"label" : vlabel}];
+      }
+      defs[key] = @{
+        @"desc" : desc,
+        @"info" : info,
+        @"defaultValue" : defaultVal,
+        @"category" : catKey,
+        @"values" : [vals copy]
+      };
+      // `defaultVal` is always a non-nil NSString from SafeCString, so this
+      // subscript assignment can never raise or store a dangling pointer.
+      g_optValues[key] = defaultVal;
       def++;
       defCount++;
     }
@@ -159,35 +168,33 @@ void parseCoreOptionsV1(struct retro_core_options *opts) {
     struct retro_core_option_definition *def = opts->definitions;
     int defCount = 0;
     while (def && def->key && defCount < 512) {
-      @try {
-        NSString *key =[NSString stringWithUTF8String:def->key];
-        NSString *desc = def->desc ? [NSString stringWithUTF8String:def->desc] : @"";
-        NSString *info = def->info ? [NSString stringWithUTF8String:def->info] : @"";
-        NSString *defaultVal = def->default_value ?[NSString stringWithUTF8String:def->default_value] : @"";
-
-        NSMutableArray *vals = [NSMutableArray array];
-        for (int vi = 0; vi < RETRO_NUM_CORE_OPTION_VALUES_MAX; vi++) {
-          const char *valStr = def->values[vi].value;
-          if (!valStr) break;
-          @try {
-            NSString *vval = [NSString stringWithUTF8String:valStr];
-            NSString *vlabel = def->values[vi].label ? [NSString stringWithUTF8String:def->values[vi].label] : vval;[vals addObject:@{@"value" : vval, @"label" : vlabel}];
-          } @catch (NSException *exception) {
-            bridge_log_printf(RETRO_LOG_ERROR, "Failed to parse option value: %s", exception.reason);
-            break;
-          }
-        }
-        defs[key] = @{
-          @"desc" : desc,
-          @"info" : info,
-          @"defaultValue" : defaultVal,
-          @"category" : @"",
-          @"values" : [vals copy]
-        };
-        g_optValues[key] = defaultVal;
-      } @catch (NSException *exception) {
-        bridge_log_printf(RETRO_LOG_ERROR, "Failed to parse option definition: %s", exception.reason);
+      NSString *key = SafeCString(def->key);
+      if (key.length == 0) {
+        def++;
+        defCount++;
+        continue;
       }
+
+      NSString *desc = SafeCString(def->desc);
+      NSString *info = SafeCString(def->info);
+      NSString *defaultVal = SafeCString(def->default_value);
+
+      NSMutableArray *vals = [NSMutableArray array];
+      for (int vi = 0; vi < RETRO_NUM_CORE_OPTION_VALUES_MAX; vi++) {
+        const char *valStr = def->values[vi].value;
+        if (!valStr) break;
+        NSString *vval = SafeCString(valStr);
+        NSString *vlabel = def->values[vi].label ? SafeCString(def->values[vi].label) : vval;
+        [vals addObject:@{@"value" : vval, @"label" : vlabel}];
+      }
+      defs[key] = @{
+        @"desc" : desc,
+        @"info" : info,
+        @"defaultValue" : defaultVal,
+        @"category" : @"",
+        @"values" : [vals copy]
+      };
+      g_optValues[key] = defaultVal;
       def++;
       defCount++;
     }

@@ -367,6 +367,40 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
         }
     }
 
+    // MARK: - Detection Database
+
+    // The scummvm_libretro core requires `scummvm.dat` (its game-detection
+    // database) to be discoverable via either the system directory or the
+    // launched game's directory. Without it, the core crashes during game
+    // detection (HashMap lookup inside isEntryGrayListed). The file ships in
+    // the app bundle but must be copied to a location the core actually
+    // searches before launch.
+    private func ensureDetectionDatabase(in gameFolder: URL) {
+        guard let datURL = Bundle.main.url(forResource: "ScummVM", withExtension: "dat", subdirectory: "Data/LibretroDats") else {
+            LoggerService.info(category: "ScummVM", "ScummVM.dat not found in bundle; detection may fail")
+            return
+        }
+
+        let destinations = [
+            gameFolder.appendingPathComponent("ScummVM.dat"),
+            SaveDirectoryManager.shared.activeSystemDirectory.appendingPathComponent("ScummVM.dat")
+        ]
+
+        for destination in destinations {
+            do {
+                try FileManager.default.createDirectory(at: destination.deletingLastPathComponent(),
+                                                        withIntermediateDirectories: true)
+                if FileManager.default.fileExists(atPath: destination.path) {
+                    continue
+                }
+                try FileManager.default.copyItem(at: datURL, to: destination)
+                LoggerService.info(category: "ScummVM", "Copied ScummVM.dat to: \(destination.path)")
+            } catch {
+                LoggerService.info(category: "ScummVM", "Failed to copy ScummVM.dat to \(destination.path): \(error)")
+            }
+        }
+    }
+
     @MainActor
     override func launch(rom: ROM, coreID: String, shaderUniformOverrides: [String: Float] = [:]) {
     let romPath = rom.path
@@ -394,7 +428,11 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
                 LoggerService.info(category: "ScummVM", "Failed to extract \(fileExt): \(romPath.path)")
                 return
             }
-            
+
+            // Ensure the detection database is present before launch, otherwise
+            // the core crashes during game detection.
+            ensureDetectionDatabase(in: extractedFolder)
+
             // Step 2: Detect game ID
             if let gameID = detectGameID(in: extractedFolder) {
                 // Step 3: Create hook file
@@ -431,7 +469,14 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
                 super.launch(rom: modifiedRom, coreID: coreID, shaderUniformOverrides: shaderUniformOverrides)
             }
         } else {
-            // Non-ZIP file (maybe already a .scummvm file), launch normally
+            // Non-ZIP file (maybe already a .scummvm file). Make sure the
+            // detection database is available next to the game as well.
+            var nonZipFolder = romPath.deletingLastPathComponent()
+            var isDir: ObjCBool = false
+            if FileManager.default.fileExists(atPath: romPath.path, isDirectory: &isDir), isDir.boolValue {
+                nonZipFolder = romPath
+            }
+            ensureDetectionDatabase(in: nonZipFolder)
             #if LOG_DEBUG
             LoggerService.debug(category: "ScummVM", "Launching non-ZIP file normally")
             #endif
