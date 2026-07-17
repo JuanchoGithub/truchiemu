@@ -163,6 +163,7 @@ init(pending: CoreManager.PendingCoreDownload) {
         }
         .padding(28)
         .frame(width: 500)
+        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
         // Auto-select best installed core when the requested core isn't installed
         .onAppear {
             selectedCoreID = bestInstalledOrRequestedCoreID

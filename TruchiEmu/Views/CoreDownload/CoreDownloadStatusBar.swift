@@ -78,6 +78,6 @@ struct CoreDownloadStatusBar: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.bar)
+        .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
     }
 }
