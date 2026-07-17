@@ -37,6 +37,11 @@ extern NSMutableDictionary<NSString *, NSString *> *g_optValues;
 extern NSDictionary<NSString *, NSDictionary *> *g_optDefinitions;
 extern NSDictionary<NSString *, NSDictionary *> *g_optCategories;
 extern BOOL g_loadingForOptions;
+// YES when the bridge kept a libretro core loaded after a headless options
+// discovery probe so a subsequent game launch can take over the same instance
+// instead of re-dlopen'ing the dylib (which crashes PPSSPP's ThreadManager on
+// the second retro_init inside the same XPC service process).
+extern BOOL g_instancePersisted;
 
 // Input descriptors (RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS)
 extern NSDictionary<NSString *, NSArray *> *g_inputDescriptors;

@@ -23,6 +23,7 @@ NSDictionary<NSString *, NSDictionary *> *g_optDefinitions = nil;
 NSDictionary<NSString *, NSDictionary *> *g_optCategories = nil;
 NSDictionary<NSString *, NSArray *> *g_inputDescriptors = nil;
 BOOL g_loadingForOptions = NO;
+BOOL g_instancePersisted = NO;
 
 dispatch_semaphore_t g_bridgeCompletionSemaphore = nil;
 CoreLogCallback g_coreLogCallback = NULL;
