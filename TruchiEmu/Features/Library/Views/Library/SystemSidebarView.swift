@@ -85,26 +85,57 @@ struct SystemSidebarView: View {
         }
     }
 
+    // During a search, the smart-collection rows (All, Favorites, Recent,
+    // RetroAchievements, Categories, Hidden, MAME files) should reflect how
+    // many games in each collection match the query — mirroring how the
+    // Systems section already narrows to matching systems. When not searching,
+    // the cached static totals from `library.romCounts` (or category membership)
+    // are used unchanged.
+    private var searchMatchedROMs: [ROM] {
+        guard !searchText.isEmpty else { return [] }
+        let terms = searchText.lowercased().split(separator: " ").map(String.init)
+        guard !terms.isEmpty else { return [] }
+        return library.roms.filter { rom in
+            terms.allSatisfy { rom.displayName.localizedCaseInsensitiveContains($0) }
+        }
+    }
+
+    private func searchAwareCount(fallbackKey: String, basePredicate: (ROM) -> Bool) -> Int {
+        guard !searchText.isEmpty else { return library.romCounts[fallbackKey] ?? 0 }
+        return searchMatchedROMs.filter(basePredicate).count
+    }
+
+    @ViewBuilder
+    private var smartCollectionRows: some View {
+        sidebarRow(icon: "square.grid.2x2", label: loc.localized("app.allGames"), count: searchAwareCount(fallbackKey: "all") { !$0.isHidden }, filter: .all)
+
+        let favCount = searchAwareCount(fallbackKey: "favorites") { $0.isFavorite && !$0.isHidden }
+        if favCount > 0 {
+            sidebarRow(icon: "heart.fill", label: loc.localized("app.favorites"), count: favCount, tint: .pink, filter: .favorites)
+        }
+
+        let recentCount = searchAwareCount(fallbackKey: "recent") { $0.lastPlayed != nil && !$0.isHidden }
+        sidebarRow(icon: "clock.fill", label: loc.localized("app.recent"), count: recentCount, tint: .orange, filter: .recent)
+
+        let raCount = retroAchievementsMatchCount
+        if raCount > 0 {
+            sidebarRow(icon: "trophy.fill", label: loc.localized("library.retroAchievements"), count: raCount, tint: AppColors.brandAccent, filter: .retroAchievements)
+        }
+    }
+
+    private var retroAchievementsMatchCount: Int {
+        guard raService.isEnabled else { return 0 }
+        if searchText.isEmpty {
+            return library.roms.filter { $0.raMatchStatus == "matched" }.count
+        }
+        return searchMatchedROMs.filter { $0.raMatchStatus == "matched" && !$0.isHidden }.count
+    }
+
     var body: some View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 0, pinnedViews: [.sectionHeaders]) {
                 Section {
-                    sidebarRow(icon: "square.grid.2x2", label: loc.localized("app.allGames"), count: library.romCounts["all"] ?? 0, filter: .all)
-
-                let favCount = library.romCounts["favorites"] ?? 0
-                if favCount > 0 {
-                    sidebarRow(icon: "heart.fill", label: loc.localized("app.favorites"), count: favCount, tint: .pink, filter: .favorites)
-                }
-
-        let recentCount = library.romCounts["recent"] ?? 0
-        sidebarRow(icon: "clock.fill", label: loc.localized("app.recent"), count: recentCount, tint: .orange, filter: .recent)
-
-        if raService.isEnabled {
-            let raCount = library.roms.filter { $0.raMatchStatus == "matched" }.count
-            if raCount > 0 {
-                sidebarRow(icon: "trophy.fill", label: loc.localized("library.retroAchievements"), count: raCount, tint: AppColors.brandAccent, filter: .retroAchievements)
-            }
-        }
+                    smartCollectionRows
 
         sectionHeader(
                     title: loc.localized("app.categories"),
@@ -157,7 +188,7 @@ struct SystemSidebarView: View {
                     }
                 }
 
-                let hiddenCount = library.romCounts["hidden"] ?? 0
+                let hiddenCount = searchAwareCount(fallbackKey: "hidden") { $0.isHidden }
                 let showHiddenCategory = AppSettings.getBool("showHiddenGamesCategory", defaultValue: true)
                 if hiddenCount > 0 && showHiddenCategory {
                     sectionHeader(
@@ -171,7 +202,7 @@ struct SystemSidebarView: View {
                     sidebarRow(icon: "eye.slash", label: loc.localized("app.hidden"), count: hiddenCount, tint: .gray, filter: .hidden)
                 }
 
-                let mameNonGamesCount = library.romCounts["mameNonGames"] ?? 0
+                let mameNonGamesCount = searchAwareCount(fallbackKey: "mameNonGames") { $0.systemID == "mame" && $0.mameRomType != "game" }
                 let showHiddenMAME = SystemPreferences.shared.showHiddenMAMEFiles
                 if mameNonGamesCount > 0 && showHiddenMAME {
                     sectionHeader(
@@ -380,7 +411,9 @@ onSystemAction: system != nil ? { sys, action, targetID in
     
     @ViewBuilder
     private func categoryRow(category: GameCategory) -> some View {
-        let count = categoryManager.gamesInCategory(categoryID: category.id, fromROMs: library.roms).count
+        let count = searchText.isEmpty
+            ? categoryManager.gamesInCategory(categoryID: category.id, fromROMs: library.roms).count
+            : searchMatchedROMs.filter { category.gameIDs.contains($0.id) && !$0.isHidden }.count
         let isSelected = selectedFilter.id == LibraryFilter.category(category.id).id
         let isGamepadFocusedRow = gamepadNav.isGamepadActive && gamepadNav.activeZone == .sidebar && gamepadFocusedFilter?.id == LibraryFilter.category(category.id).id
 
