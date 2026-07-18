@@ -380,6 +380,7 @@
   "retroAchievements.notLoggedIn": "Não conectado. Por favor, conecte-se ao RetroAchievements primeiro.",
   "retroAchievements.failedToRefresh": "Falha ao atualizar: {0}",
   "retroAchievements.matchedOfTotal": "Vinculados {0} de {1} jogos escaneados",
+  "retroAchievements.importingCacheProgress": "Importando cache de jogos ({0}/{1} arquivos)",
   "retroAchievements.fetchingSystems": "Buscando sistemas do RetroAchievements...",
   "retroAchievements.fetchingGamesProgress": "Buscando jogos: {0} ({1}/{2})",
   "retroAchievements.verifyingRomProgress": "Verificando: {0} ({1}/{2})",

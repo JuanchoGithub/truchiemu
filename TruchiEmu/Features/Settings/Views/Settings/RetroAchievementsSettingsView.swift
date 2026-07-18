@@ -18,7 +18,6 @@ struct RetroAchievementsSettingsView: View {
     @State private var cacheRefreshError: String?
     @State private var isCacheRefreshing = false
     @State private var matchingStatus: String?
-    @State private var isMatching = false
     @State private var showEnablePrompt = false
     @State private var enableHardcore = false
     
@@ -185,7 +184,6 @@ struct RetroAchievementsSettingsView: View {
                     Section {
                         CacheSectionContent(
                             isCacheRefreshing: $isCacheRefreshing,
-                            isMatching: $isMatching,
                             cacheRefreshError: cacheRefreshError,
                             matchingStatus: matchingStatus,
                             onRefreshConsoles: refreshConsoles,
@@ -362,7 +360,6 @@ struct RetroAchievementsSettingsView: View {
     @ViewBuilder
     private func CacheSectionContent(
         isCacheRefreshing: Binding<Bool>,
-        isMatching: Binding<Bool>,
         cacheRefreshError: String?,
         matchingStatus: String?,
         onRefreshConsoles: @escaping () -> Void,
@@ -397,18 +394,36 @@ struct RetroAchievementsSettingsView: View {
             .disabled(raCacheCoordinator.isActive || isCacheRefreshing.wrappedValue || !raService.isLoggedIn)
 
             Button(action: onMatchAllGames) {
-                if isMatching.wrappedValue {
-                    ProgressView()
-                        .controlSize(.small)
-                } else {
-                    Label(loc.localized("retroAchievements.matchAllGames"), systemImage: "trophy")
-                }
+                Label(loc.localized("retroAchievements.matchAllGames"), systemImage: "trophy")
             }
             .buttonStyle(.bordered)
-            .disabled(raCacheCoordinator.isActive || isMatching.wrappedValue || !raService.isLoggedIn || library.roms.isEmpty)
+            .disabled(raCacheCoordinator.isActive || raService.isMatchingAll || !raService.isLoggedIn)
         }
 
-        if raCacheCoordinator.isActive {
+        if raService.isMatchingAll {
+            VStack(alignment: .leading, spacing: 6) {
+                BouncingProgressBar()
+                if raService.isImportingRACache {
+                    // Cache-import phase: show files-progress instead of the
+                    // matched counter (which is still 0 of N during import).
+                    let format = loc.localized("retroAchievements.importingCacheProgress")
+                    Text(format
+                        .replacingOccurrences(of: "{0}", with: "\(raService.importRACacheStep)")
+                        .replacingOccurrences(of: "{1}", with: "\(raService.importRACacheTotal)"))
+                        .font(.caption)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
+                } else {
+                    let format = loc.localized("retroAchievements.matchedOfTotal")
+                    Text(format
+                        .replacingOccurrences(of: "{0}", with: "\(raService.matchedAllCount)")
+                        .replacingOccurrences(of: "{1}", with: "\(raService.matchedAllTotal)"))
+                        .font(.caption)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
+                }
+            }
+        }
+
+        if raCacheCoordinator.isActive && !raService.isMatchingAll {
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
                     Text(raCacheCoordinator.statusLine)
@@ -518,12 +533,14 @@ struct RetroAchievementsSettingsView: View {
             return
         }
         matchingStatus = nil
-        isMatching = true
         Task {
             let (matched, total) = await raService.matchAllCachedGames(roms: library.roms)
             await MainActor.run {
-                isMatching = false
-                matchingStatus = loc.localized("retroAchievements.matchedOfTotal", matched, total)
+                raService.isMatchingAll = false
+                let format = loc.localized("retroAchievements.matchedOfTotal")
+                matchingStatus = format
+                    .replacingOccurrences(of: "{0}", with: "\(matched)")
+                    .replacingOccurrences(of: "{1}", with: "\(total)")
             }
         }
     }

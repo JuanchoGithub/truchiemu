@@ -378,6 +378,7 @@
   "retroAchievements.notLoggedIn": "Inicia sesión primero.",
   "retroAchievements.failedToRefresh": "Falló: {0}",
   "retroAchievements.matchedOfTotal": "{0} de {1} juegos vinculados",
+  "retroAchievements.importingCacheProgress": "Importando caché de juegos ({0}/{1} archivos)",
   "retroAchievements.fetchingSystems": "Obteniendo sistemas de RetroAchievements...",
   "retroAchievements.fetchingGamesProgress": "Obteniendo juegos: {0} ({1}/{2})",
   "retroAchievements.verifyingRomProgress": "Verificando: {0} ({1}/{2})",

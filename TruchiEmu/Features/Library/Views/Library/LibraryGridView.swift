@@ -20,6 +20,7 @@ struct LibraryGridView: View {
     @EnvironmentObject var controllerService: ControllerService
     @StateObject private var dragState = GameDragState.shared
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var raService = RetroAchievementsService.shared
     @Binding var showCreateCategorySheet: Bool
     @Binding var filter: LibraryFilter
     @Binding var selectedROM: ROM?
@@ -243,6 +244,31 @@ struct LibraryGridView: View {
             
             if !activeFilters.isEmpty || !selectedGenres.isEmpty || !searchText.isEmpty {
                 filterStatusStrip
+            }
+
+            if raService.isMatchingAll {
+                HStack(spacing: 12) {
+                    BouncingProgressBar()
+                        .frame(width: 240)
+                    if raService.isImportingRACache {
+                        let format = loc.localized("retroAchievements.importingCacheProgress")
+                        Text(format
+                            .replacingOccurrences(of: "{0}", with: "\(raService.importRACacheStep)")
+                            .replacingOccurrences(of: "{1}", with: "\(raService.importRACacheTotal)"))
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    } else {
+                        let format = loc.localized("retroAchievements.matchedOfTotal")
+                        Text(format
+                            .replacingOccurrences(of: "{0}", with: "\(raService.matchedAllCount)")
+                            .replacingOccurrences(of: "{1}", with: "\(raService.matchedAllTotal)"))
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    Spacer()
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 6)
             }
             
             ZStack {

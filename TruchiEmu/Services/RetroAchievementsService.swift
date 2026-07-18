@@ -32,6 +32,17 @@ class RetroAchievementsService: ObservableObject {
     @Published var isEnabled = false
     @Published var richPresence: String?
     
+    // MARK: - "Match All Games" progress (observed by Library + Settings views)
+    @Published var isMatchingAll = false
+    @Published var matchedAllCount = 0
+    @Published var matchedAllTotal = 0
+    // True during the cache-import phase of "Match All Games". When true the
+    // views show "Importing game cache (step/total files)"; when false they
+    // show the matched-count progress line.
+    @Published var isImportingRACache = false
+    @Published var importRACacheStep = 0
+    @Published var importRACacheTotal = 0
+    
     // MARK: - Configuration
     
     private let apiBaseURL = "https://retroachievements.org/API"
@@ -70,12 +81,17 @@ class RetroAchievementsService: ObservableObject {
     private var isProcessingUnlocks = false
     private var lastUnlockTime: Date = .distantPast
 
-    private var modelContext: ModelContext?
-
-    /// Injected by the Coordinator/App to allow SwiftData access
-    func setModelContext(_ context: ModelContext) {
-        self.modelContext = context
+    // Resolved live from the current SwiftData container rather than cached, so it
+    // always reflects the active store even if the container is recreated (migration,
+    // reset, reload). Caching it at launch caused matching to read a stale context
+    // that no longer held the full library.
+    private var modelContext: ModelContext? {
+        SwiftDataContainer.shared.mainContext
     }
+
+    /// Kept for compatibility with the app's launch wiring; the context is now
+    /// resolved live from SwiftDataContainer.shared.mainContext.
+    func setModelContext(_ context: ModelContext) {}
     
     // MARK: - Initialization
     
@@ -566,7 +582,7 @@ class RetroAchievementsService: ObservableObject {
 
     /// Imports local JSON cache files using a background ModelContext.
     /// Called by user-initiated flows (fetchAndCacheAllGames, matchAllCachedGames).
-    func importLocalRAGameCache() async {
+    func importLocalRAGameCache(onProgress: ((Int, Int) -> Void)? = nil) async {
         guard let container = SwiftDataContainer.shared.container else { return }
         let listFolder = listDataFolder
 
@@ -597,8 +613,10 @@ class RetroAchievementsService: ObservableObject {
 
         LoggerService.info(category: "RetroAchievements", "Found \(jsonFiles.count) relevant JSON cache files for your library.")
 
-        for fileURL in jsonFiles {
+        let totalCount = jsonFiles.count
+        for (index, fileURL) in jsonFiles.enumerated() {
             await importLocalJSONFile(fileURL)
+            onProgress?(index + 1, totalCount)
         }
     }
 
@@ -851,13 +869,40 @@ class RetroAchievementsService: ObservableObject {
     }
 
     /// Matches all games in the library using the local RA cache.
-    func matchAllCachedGames(roms: [ROM]) async -> (matched: Int, total: Int) {
+    /// - Parameter roms: The authoritative set of games to match (the in-memory library the user sees).
+    /// - Parameter onProgress: Optional closure invoked after each ROM with the running matched count and total.
+    func matchAllCachedGames(
+        roms: [ROM],
+        onProgress: ((Int, Int) -> Void)? = nil
+    ) async -> (matched: Int, total: Int) {
         var matchedCount = 0
         let coordinator = RAGameCacheCoordinator.shared
-        let totalRoms = roms.count
 
-        // Ensure local cache is loaded into memory/SwiftData
-        await importLocalRAGameCache()
+        // Publish state BEFORE the long import/matching work so SwiftUI gets to
+        // render the progress bar with the correct total immediately. Without
+        // this reordering the bar either didn't appear or showed frozen,
+        // because importLocalRAGameCache() then the matching loop hogged the
+        // MainActor for seconds with no SwiftUI render frame in between.
+        isMatchingAll = true
+        matchedAllCount = 0
+        matchedAllTotal = roms.count
+        await Task.yield()
+
+        // Cache-import phase. Drive the dedicated published state so the bar
+        // shows "Importing game cache (step/total)" instead of being stuck on
+        // "Matched 0 of N" for ~50s while JSON files are parsed.
+        isImportingRACache = true
+        importRACacheStep = 0
+        importRACacheTotal = 0
+        await Task.yield()
+        await importLocalRAGameCache { step, total in
+            self.importRACacheStep = step
+            self.importRACacheTotal = total
+        }
+        isImportingRACache = false
+        await Task.yield()
+
+        let totalRoms = roms.count
 
         for (index, rom) in roms.enumerated() {
             let step = index + 1
@@ -872,11 +917,19 @@ class RetroAchievementsService: ObservableObject {
                     matchedCount += 1
                 }
             }
+            matchedAllCount = matchedCount
+            onProgress?(matchedCount, totalRoms)
             coordinator.updateHashingProgress(Double(step) / Double(totalRoms), romName: rom.name, step: step, total: totalRoms)
+            // Let SwiftUI repaint the running counter. The hashing happens off
+            // MainActor, but the SwiftData lookup + the progress closure above
+            // are synchronous; yielding here guarantees a render frame per ROM
+            // so the bar never freezes between iterations.
+            await Task.yield()
         }
 
+        isMatchingAll = false
         coordinator.finish()
-        return (matchedCount, roms.count)
+        return (matchedCount, totalRoms)
     }
 
     // MARK: - Game Identification
@@ -908,7 +961,19 @@ class RetroAchievementsService: ObservableObject {
         let isGBFamily = systemID == "gb" || systemID == "gbc"
         let altConsoleID: Int? = isGBFamily ? (raConsoleID == 4 ? 6 : 4) : nil
         var matchedOnAltConsole = false
-        let romHash = rom.md5 ?? RomHasher.hashRom(at: rom.path.path, systemID: systemID)
+
+        // hashing reads file bytes + calls rcheevos C; for disc images this can
+        // take seconds. Run off MainActor so the UI stays responsive and the
+        // "Matched X of Y" line keeps updating per ROM.
+        let romHash: String?
+        if let precomputed = rom.md5 {
+            romHash = precomputed
+        } else {
+            let path = rom.path.path
+            romHash = await Task.detached(priority: .userInitiated) {
+                RomHasher.hashRom(at: path, systemID: systemID)
+            }.value
+        }
         
         LoggerService.info(category: "RetroAchievements", "Syncing '\(rom.name)' - Generated Hash: \(romHash ?? "NONE") (RA ConsoleID: \(raConsoleID))")
         
