@@ -135,11 +135,28 @@ struct ROM: Identifiable, Codable, Hashable, Sendable {
         } else if FileManager.default.fileExists(atPath: jpegPath.path) {
             self.boxArtLocalPath = jpegPath
         } else {
-            self.boxArtLocalPath = pngPath
-            if hasBoxArt {
-                hasBoxArt = false
-                needsAutomaticBoxArt = true
+            // The common "{stem}_boxart" file is missing. Fall back to the broad
+            // local resolver, which also matches art named after the display
+            // name / inner-ROM name / sanitized variants. Only scans the /boxart
+            // directory as a fallback, so the typical case stays a cheap stat.
+            if let resolved = BoxArtService.shared.resolveLocalBoxArt(for: self) {
+                self.boxArtLocalPath = resolved
+            } else {
+                self.boxArtLocalPath = pngPath
             }
+        }
+
+        // hasBoxArt is derived from whether a real art file actually exists at
+        // the resolved path. This guarantees the grid card (which trusts
+        // hasBoxArt) and the detail view (which re-resolves) never disagree —
+        // a ROM whose art is named after its display name instead of its file
+        // stem keeps hasBoxArt=true once the broad resolver finds it.
+        if FileManager.default.fileExists(atPath: self.boxArtLocalPath.path) {
+            hasBoxArt = true
+            needsAutomaticBoxArt = false
+        } else {
+            hasBoxArt = false
+            needsAutomaticBoxArt = true
         }
 
         // 7b. titleScreenLocalPath (libretro Named_Titles)

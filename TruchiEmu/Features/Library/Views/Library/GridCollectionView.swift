@@ -10,6 +10,7 @@ final class GridCollectionViewItem: NSCollectionViewItem {
     private var isMultiSelectedCached: Bool = false
     private var zoomLevelCached: Double = 0.5
     private var filterCached: LibraryFilter?
+    private var raEnabledCached: Bool = false
     private var onTapCached: (() -> Void)?
     private var onDoubleClickCached: (() -> Void)?
     private var contextMenuProviderCached: (() -> AnyView)?
@@ -40,6 +41,7 @@ final class GridCollectionViewItem: NSCollectionViewItem {
         isMultiSelected: Bool,
         zoomLevel: Double,
         filter: LibraryFilter?,
+        raEnabled: Bool,
         onTap: (() -> Void)?,
         onDoubleClick: (() -> Void)?,
         contextMenuProvider: (() -> AnyView)?,
@@ -51,6 +53,7 @@ final class GridCollectionViewItem: NSCollectionViewItem {
         self.isMultiSelectedCached = isMultiSelected
         self.zoomLevelCached = zoomLevel
         self.filterCached = filter
+        self.raEnabledCached = raEnabled
         self.onTapCached = onTap
         self.onDoubleClickCached = onDoubleClick
         self.contextMenuProviderCached = contextMenuProvider
@@ -77,6 +80,7 @@ final class GridCollectionViewItem: NSCollectionViewItem {
             isMultiSelected: isMultiSelectedCached,
             zoomLevel: zoomLevelCached,
             filter: filterCached,
+            raEnabled: raEnabledCached,
             onTap: onTapCached,
             onDoubleClick: onDoubleClickCached,
             contextMenu: contextMenuProviderCached,
@@ -98,6 +102,7 @@ final class GridCollectionViewCoordinator: NSObject {
     var roms: [ROM] = []
     var zoomLevel: Double = 0.5
     var filter: LibraryFilter?
+    var raEnabled: Bool = false
     var gridPadding: EdgeInsets = EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16)
     var gridSpacing: CGFloat = 10
     var library: ROMLibrary?
@@ -247,6 +252,7 @@ extension GridCollectionViewCoordinator: NSCollectionViewDataSource {
             isMultiSelected: selected,
             zoomLevel: zoomLevel,
             filter: filter,
+            raEnabled: raEnabled,
             onTap: { [weak self] in self?.onTap?(rom, indexPath.item) },
             onDoubleClick: { [weak self] in self?.onDoubleClick?(rom) },
             contextMenuProvider: { [weak self] in
@@ -284,15 +290,14 @@ extension GridCollectionViewCoordinator: NSCollectionViewDelegate {
 
 extension GridCollectionViewCoordinator: NSCollectionViewPrefetching {
     func collectionView(_ collectionView: NSCollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+        let thumbSize = BoxArtThumbnailSize.forGridZoom(zoomLevel)
         for ip in indexPaths where ip.item < roms.count {
             let rom = roms[ip.item]
-            var artPath = rom.boxArtLocalPath
-            if !FileManager.default.fileExists(atPath: artPath.path) {
-                if let resolved = BoxArtService.shared.resolveLocalBoxArt(for: rom) {
-                    artPath = resolved
-                } else { continue }
-            }
-            let thumbSize = BoxArtThumbnailSize.forGridZoom(zoomLevel)
+            // Use the precomputed path; skip ROMs without art. The global
+            // resolveLocalBoxArt is only needed for unrecognized naming, which
+            // the scan/automation path handles — prefetch shouldn't re-stat.
+            let artPath = rom.boxArtLocalPath
+            guard rom.hasBoxArt, FileManager.default.fileExists(atPath: artPath.path) else { continue }
             Task {
                 if thumbSize != .tiny {
                     _ = await ImageCache.shared.thumbnail(for: artPath, preferredSize: .tiny)
@@ -333,6 +338,7 @@ struct GridCollectionViewRepresentable: NSViewRepresentable {
     @Binding var primarySelection: ROM?
     var zoomLevel: Double
     var filter: LibraryFilter?
+    var raEnabled: Bool
     var gridPadding: EdgeInsets
     var onDoubleClick: ((ROM) -> Void)?
     var onTap: ((ROM, Int) -> Void)?
@@ -369,6 +375,7 @@ struct GridCollectionViewRepresentable: NSViewRepresentable {
         c.roms = roms
         c.zoomLevel = zoomLevel
         c.filter = filter
+        c.raEnabled = raEnabled
         c.gridPadding = gridPadding
         c.onDoubleClick = onDoubleClick
         c.onTap = onTap
@@ -397,6 +404,7 @@ struct GridCollectionViewRepresentable: NSViewRepresentable {
         c.roms = roms
         c.zoomLevel = zoomLevel
         c.filter = filter
+        c.raEnabled = raEnabled
         c.gridPadding = gridPadding
         c.onDoubleClick = onDoubleClick
         c.onTap = onTap

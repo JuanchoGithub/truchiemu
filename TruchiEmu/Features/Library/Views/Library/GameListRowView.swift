@@ -9,6 +9,7 @@ struct GameListRowView: View {
     let isEvenRow: Bool
     let zoomLevel: Double
     let filter: LibraryFilter?
+    let raEnabled: Bool
     var contextMenu: (() -> AnyView)?
     let isScrolling: Bool
     @Environment(\.colorScheme) private var colorScheme
@@ -17,7 +18,6 @@ struct GameListRowView: View {
     @State private var raProgress: (earned: Int, total: Int)?
     @EnvironmentObject var library: ROMLibrary
     @EnvironmentObject var categoryManager: CategoryManager
-    @ObservedObject private var raService = RetroAchievementsService.shared
     
     private var titleFontSize: CGFloat {
         12 + zoomLevel * 8
@@ -172,7 +172,7 @@ Text(sys.name)
             }
 
             // RetroAchievements
-            if raService.isEnabled && rom.raMatchStatus == "matched" {
+            if raEnabled && rom.raMatchStatus == "matched" {
                 HStack(spacing: 3) {
                     Image(systemName: "trophy.fill")
                         .font(.system(size: subtitleFontSize - 0.5))
@@ -236,16 +236,18 @@ Text(sys.name)
             }
         }
         .task(id: rom.id) {
+            // rom.boxArtLocalPath is authoritative and rom.hasBoxArt is correct
+            // (resolved during the off-scroll pipeline), so this is zero
+            // main-thread I/O. Art-less ROMs show the system placeholder.
             if rom.hasBoxArt {
-                if let thumb = await ImageCache.shared.thumbnail(for: rom.boxArtLocalPath, preferredSize: .tiny) {
+                let artPath = rom.boxArtLocalPath
+                if let cached = ImageCache.shared.thumbnailSync(for: artPath, preferredSize: .tiny) {
+                    self.thumb = cached
+                } else if let thumb = await ImageCache.shared.thumbnail(for: artPath, preferredSize: .tiny) {
                     self.thumb = thumb
                 }
             } else {
-                if let resolvedPath = BoxArtService.shared.resolveLocalBoxArtIfNeeded(for: rom, library: library) {
-                    self.thumb = await ImageCache.shared.thumbnail(for: resolvedPath, preferredSize: .tiny)
-                } else {
-                    self.thumb = nil
-                }
+                self.thumb = nil
             }
 
             if let raGameId = rom.raGameId, raGameId > 0 {

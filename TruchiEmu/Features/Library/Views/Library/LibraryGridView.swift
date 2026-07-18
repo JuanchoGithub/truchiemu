@@ -743,6 +743,7 @@ viewModel.updateFilters(
             ),
             zoomLevel: continuousZoom,
             filter: filter,
+            raEnabled: raService.isEnabled,
             gridPadding: gridPadding,
             onDoubleClick: { rom in
                 Task { await launchGame(rom) }
@@ -762,7 +763,6 @@ viewModel.updateFilters(
             guard newIndex != nil else { return }
             gridScrollTarget = nil
         }
-        .id("grid-\(zoomLevel)-\(continuousZoom)")
     }
     
     // MARK: - Gamepad Navigation Handlers
@@ -969,7 +969,7 @@ viewModel.updateFilters(
             ForEach(Array(viewModel.displayedROMs.enumerated()), id: \.element.id) { index, rom in
                 let isSelected = selectedROMs.contains(rom.id) || selectedROM?.id == rom.id
                 let isGamepadFocused = gamepadNav.activeZone == .content && gamepadNav.contentIndex == index
-            GameListRowView(rom: rom, isSelected: isSelected, isEvenRow: index.isMultiple(of: 2), zoomLevel: zoomLevel, filter: filter, contextMenu: { contextMenu(for: rom) }, isScrolling: isScrolling)
+                GameListRowView(rom: rom, isSelected: isSelected, isEvenRow: index.isMultiple(of: 2), zoomLevel: zoomLevel, filter: filter, raEnabled: raService.isEnabled, contextMenu: { contextMenu(for: rom) }, isScrolling: isScrolling)
                 .tag(rom)
                 .listRowBackground(Color.clear)
                 .contentShape(Rectangle())
@@ -2325,10 +2325,12 @@ private struct DeleteConfirmationView: View {
                     artPath = resolved
                 }
             }
-            if FileManager.default.fileExists(atPath: artPath.path),
-               let data = try? Data(contentsOf: artPath),
-               let image = NSImage(data: data) {
-                boxArtImage = image
+            if FileManager.default.fileExists(atPath: artPath.path) {
+                // Off-main decode via ImageCache (uses the .medium thumbnail if
+                // already generated, otherwise downsamples on a detached task).
+                Task { @MainActor in
+                    boxArtImage = await ImageCache.shared.thumbnail(for: artPath, preferredSize: .medium)
+                }
             }
         }
         .onDisappear {

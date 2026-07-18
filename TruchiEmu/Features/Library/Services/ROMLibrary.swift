@@ -421,6 +421,13 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
             await LibraryAutomationCoordinator.shared.runAfterLibraryUpdate(library: self, targetROMs: self.lastAddedROMs)
             await MetadataSyncCoordinator.shared.runAfterLibraryUpdate(library: self, targetROMs: self.lastAddedROMs)
         }
+
+        // 8. Pre-generate on-disk thumbnails for the whole library so that
+        // scrolling never hits the full-original decode path (Photos.app-style
+        // eager thumbnail generation at import time). Off the main path.
+        Task { @MainActor in
+            BoxArtThumbnailService.shared.warmThumbnails(for: self.roms)
+        }
     }
 
     private func processNewROMs(_ scannedROMs: [ROM], existingROMPaths: Set<String>) -> [ROM] {
@@ -1061,7 +1068,15 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
         purgeOrphanedROMs()
         loadFileIndexFromStorage()
         updateCounts()
-        
+
+        Task { @MainActor in
+            // Eagerly pre-generate on-disk thumbnails for the existing library
+            // (Photos.app-style import-time thumbnail generation) so scrolling
+            // never falls back to decoding the full original boxart. Already-
+            // warmed ROMs are skipped cheaply inside warmThumbnails.
+            BoxArtThumbnailService.shared.warmThumbnails(for: self.roms)
+        }
+
         Task {
             // Background fill of metadata for existing ROMs that have CRC but no enrichment attempt
             await self.fillMetadataForExistingROMs()

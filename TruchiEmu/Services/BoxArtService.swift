@@ -126,7 +126,28 @@ class BoxArtService: ObservableObject {
 
     // Scans the local /boxart subfolder for an existing image matching this ROM.
     // Returns the local file URL if found, nil otherwise. Does NOT download from CDN.
+    // Results are memoized per-ROM until invalidateResolvedBoxArtCache is called —
+    // this avoids repeating a directory listing every time a card scrolls into view.
     nonisolated func resolveLocalBoxArt(for rom: ROM) -> URL? {
+        // Per-ROM cache: stops art-less cards from re-listing their /boxart dir
+        // on every scroll appear. NSLock-guarded because resolveLocalBoxArt can
+        // be called from non-MainActor contexts (grid prefetch Tasks).
+        if let cached = ResultCache.shared.get(rom.id) {
+            return cached
+        }
+        let result = self.resolveLocalBoxArtUncached(for: rom)
+        ResultCache.shared.set(rom.id, result)
+        return result
+    }
+
+    /// Clear any cached resolveLocalBoxArt() result for a given rom. Call after
+    /// boxart is downloaded/deleted for a rom so subsequent resolves re-scan.
+    @MainActor
+    func invalidateResolvedBoxArtCache(for romID: UUID) {
+        ResultCache.shared.remove(romID)
+    }
+
+    private nonisolated func resolveLocalBoxArtUncached(for rom: ROM) -> URL? {
         let localBoxArtDir = rom.path.deletingLastPathComponent().appendingPathComponent("boxart", isDirectory: true)
         let imageExtensions: Set<String> = ["png", "jpg", "jpeg", "webp", "gif", "bmp"]
 
@@ -706,6 +727,14 @@ class BoxArtService: ObservableObject {
             if !modifiedIDs.isEmpty { signalBoxArtUpdated(for: UUID()) }
         }
 
+        // Pre-generate on-disk thumbnails for the ROMs we just fetched so the
+        // next scroll paints them from the fast disk-thumb path instead of
+        // decoding the full original. Runs on the thumbnail service queue.
+        if !modifiedIDs.isEmpty {
+            let fetched = roms.filter { modifiedIDs.contains($0.id) }
+            BoxArtThumbnailService.shared.warmThumbnails(for: fetched)
+        }
+
         // Post-pass: also fetch libretro Named_Titles (title screen) and Named_Snaps
         // (in-game screenshots). These complement the box art on the game detail
         // overview. We fetch them for every passed ROM that is still missing them,
@@ -801,6 +830,13 @@ class BoxArtService: ObservableObject {
             BoxArtThumbnailService.generateThumbnailsSynchronously(forOriginal: url)
             Task { await ImageCache.shared.removeImage(for: url); await ImageCache.shared.removeThumbnail(for: url) }
         }
+        // Invalidate the per-ROM resolve cache so the next resolve re-scans.
+        // Legacy callers pass UUID() (junk); we just skip invalidation in
+        // that case — the cards' .task keyed on rom.hasBoxArt will re-fire
+        // when library.updateROM mutates the affected rom(s).
+        if romID != UUID() {
+            ResultCache.shared.remove(romID)
+        }
         boxArtUpdated = UUID()
     }
 
@@ -820,4 +856,31 @@ struct BoxArtCandidate: Identifiable {
     var id = UUID()
     var title: String
     var thumbnailURL: URL
+}
+
+// MARK: - resolveLocalBoxArt per-ROM memoization
+
+/// Thread-safe per-ROM cache for BoxArtService.resolveLocalBoxArt(). Stores
+/// results keyed by ROM id so that art-less cards scrolling in and out of view
+/// don't re-list their /boxart directory on every appearance. A nil value is
+/// a valid cache entry (meaning "we looked, there's nothing there").
+private final class ResultCache: @unchecked Sendable {
+    static let shared = ResultCache()
+    private var cache: [UUID: URL?] = [:]
+    private let lock = NSLock()
+
+    func get(_ id: UUID) -> URL?? {
+        lock.lock(); defer { lock.unlock() }
+        return cache[id]
+    }
+
+    func set(_ id: UUID, _ value: URL?) {
+        lock.lock(); defer { lock.unlock() }
+        cache[id] = value
+    }
+
+    func remove(_ id: UUID) {
+        lock.lock(); defer { lock.unlock() }
+        cache.removeValue(forKey: id)
+    }
 }

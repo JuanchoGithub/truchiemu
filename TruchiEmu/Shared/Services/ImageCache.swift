@@ -11,8 +11,10 @@ import ImageIO
 actor ImageCache {
     static let shared = ImageCache()
 
-    // Thumbnails: grid/list views — small images, many entries
-    private var thumbnailCache = NSCache<NSString, NSImage>()
+    // Thumbnails: grid/list views — small images, many entries.
+    // NSCache is thread-safe, so this can be accessed from both the actor
+    // isolation domain and the nonisolated thumbnailSync(...) fast path.
+    nonisolated(unsafe) private var thumbnailCache = NSCache<NSString, NSImage>()
 
     // Full images: detail views, zoom — larger images, fewer entries
     private var imageCache = NSCache<NSString, NSImage>()
@@ -26,7 +28,7 @@ actor ImageCache {
 
     // MARK: - Cost Calculation
 
-    private func cost(of image: NSImage) -> Int {
+    nonisolated private func cost(of image: NSImage) -> Int {
         let rep = image.representations.first
         let width = CGFloat(rep?.pixelsWide ?? Int(image.size.width))
         let height = CGFloat(rep?.pixelsHigh ?? Int(image.size.height))
@@ -107,6 +109,57 @@ actor ImageCache {
         let key = thumbKey(url)
         let c = cost(of: image)
         thumbnailCache.setObject(image, forKey: key as NSString, cost: c)
+    }
+
+    /// Synchronous fast path used by recycled NSCollectionViewItems to pre-paint
+    /// before the SwiftUI .task fires, eliminating placeholder flicker on scroll.
+    /// Order: in-memory NSCache first (instant), then a guarded disk read of the
+    /// pre-generated `te_thumbs` JPEG (sub-millisecond when the file is already
+    /// in the OS page cache, which it is once warmed). The `fileExists` guard
+    /// keeps the cold/uncached case cheap — only ROMs with a real thumb file pay
+    /// the decode, and that decode runs on the main thread but is tiny (400–800px
+    /// JPEG). This is what lets warmed libraries paint boxart with zero flash
+    /// and zero async round-trip, independent of NSCache residency.
+    nonisolated func thumbnailSync(for url: URL, preferredSize: BoxArtThumbnailSize) -> NSImage? {
+        let sizeKey = "thumb:\(preferredSize.rawValue):\(url.path)" as NSString
+        if let cached = thumbnailCache.object(forKey: sizeKey) {
+            return cached
+        }
+        // Fall back to any cached size — a slightly wrong size is better than nil.
+        for size in BoxArtThumbnailSize.allCases where size != preferredSize {
+            let altKey = "thumb:\(size.rawValue):\(url.path)" as NSString
+            if let cached = thumbnailCache.object(forKey: altKey) {
+                return cached
+            }
+        }
+        // Cache miss: read the pre-generated thumb from disk. Guarded by
+        // fileExists so we only touch disk for ROMs that actually have a thumb.
+        let thumbURL = BoxArtThumbnailService.thumbnailURL(for: url, size: preferredSize)
+        if FileManager.default.fileExists(atPath: thumbURL.path),
+           let source = CGImageSourceCreateWithURL(thumbURL as CFURL, nil),
+           let cgImage = CGImageSourceCreateImageAtIndex(source, 0, [kCGImageSourceShouldCacheImmediately: true] as CFDictionary) {
+            let img = NSImage(cgImage: cgImage, size: .zero)
+            thumbnailCache.setObject(img, forKey: sizeKey, cost: cost(of: img))
+            return img
+        }
+        // Last-resort fallback: decode the original boxart synchronously so a
+        // recycled cell never paints the placeholder/stock gradient while the
+        // async path catches up. This only fires when te_thumbs hasn't been
+        // generated yet (cold miss); once decoded it's cached. A single full
+        // decode on the main thread is cheap and far better than the flash.
+        guard FileManager.default.fileExists(atPath: url.path),
+              let origSource = CGImageSourceCreateWithURL(url as CFURL, nil),
+              let origCG = CGImageSourceCreateThumbnailAtIndex(origSource, 0, [
+                kCGImageSourceCreateThumbnailFromImageAlways: true,
+                kCGImageSourceCreateThumbnailWithTransform: true,
+                kCGImageSourceShouldCacheImmediately: true,
+                kCGImageSourceThumbnailMaxPixelSize: Int(preferredSize.maxPixelSize)
+              ] as CFDictionary) else {
+            return nil
+        }
+        let origImg = NSImage(cgImage: origCG, size: .zero)
+        thumbnailCache.setObject(origImg, forKey: sizeKey, cost: cost(of: origImg))
+        return origImg
     }
 
     func removeThumbnail(for url: URL) {
@@ -294,15 +347,21 @@ actor ImageCache {
     }
 
     init() {
-        // Thumbnail cache: count-based eviction only; cost limit disabled (0 = no limit).
-        // Decoded thumbnails are ~120KB–2.5MB depending on size. 2000 items allows
-        // holding roughly every visible card plus a generous scroll buffer.
-        // Under memory pressure NSCache evicts automatically regardless of limits.
-        thumbnailCache.countLimit = 2000
-        thumbnailCache.totalCostLimit = 0
+        // Thumbnail cache: bounded by both count (2500) and total bytes (384MB).
+        // Decoded thumbnails range ~120KB (.tiny) to ~2.5MB (.large). Without a
+        // cost limit, 2500 large thumbs could hold ~6GB; the 384MB cap lets NSCache
+        // evict the largest entries under pressure before system OOM intervenes.
+        // Thumbnail cache: 700MB / 5000 entries. Bounded so NSCache still evicts
+        // under memory pressure. Cache misses during scroll are covered by the
+        // disk-reading thumbnailSync fast path (reads the warmed te_thumbs JPEG,
+        // sub-ms from page cache), so we don't need to keep the whole library
+        // resident to avoid flashes.
+        thumbnailCache.countLimit = 5000
+        thumbnailCache.totalCostLimit = 700 * 1024 * 1024
 
-        // Full image cache: 500 items for detail/zoom images
+        // Full image cache: 500 items / 256MB — detail/zoom images, bounded so
+        // the large entries evict before they compete with the working set.
         imageCache.countLimit = 500
-        imageCache.totalCostLimit = 0
+        imageCache.totalCostLimit = 256 * 1024 * 1024
     }
 }

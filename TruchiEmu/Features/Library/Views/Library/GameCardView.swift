@@ -8,6 +8,7 @@ struct GameCardView: View {
     let isMultiSelected: Bool
     let zoomLevel: Double
     let filter: LibraryFilter?
+    let raEnabled: Bool
     let onTap: (() -> Void)?
     let onDoubleClick: (() -> Void)?
     var contextMenu: (() -> AnyView)?
@@ -17,13 +18,52 @@ struct GameCardView: View {
     @State private var isPressed = false
     @State private var isLaunching = false
     @State private var image: NSImage?
+    @State private var zoomReloadToken: UUID = UUID()
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var prefs = SystemPreferences.shared
     @ObservedObject private var dragState = GameDragState.shared
-    @ObservedObject private var boxArtService = BoxArtService.shared
-    @ObservedObject private var raService = RetroAchievementsService.shared
     @EnvironmentObject private var library: ROMLibrary
     @EnvironmentObject private var categoryManager: CategoryManager
+
+    init(
+        rom: ROM,
+        isSelected: Bool,
+        isMultiSelected: Bool,
+        zoomLevel: Double,
+        filter: LibraryFilter?,
+        raEnabled: Bool,
+        onTap: (() -> Void)?,
+        onDoubleClick: (() -> Void)?,
+        contextMenu: (() -> AnyView)?,
+        selectedIDsProvider: (() -> Set<UUID>)?
+    ) {
+        self.rom = rom
+        self.isSelected = isSelected
+        self.isMultiSelected = isMultiSelected
+        self.zoomLevel = zoomLevel
+        self.filter = filter
+        self.raEnabled = raEnabled
+        self.onTap = onTap
+        self.onDoubleClick = onDoubleClick
+        self.contextMenu = contextMenu
+        self.selectedIDsProvider = selectedIDsProvider
+
+        // Pre-populate the cached thumbnail synchronously in init so recycled
+        // NSCollectionViewItems paint immediately on configure() instead of
+        // flickering the placeholder while awaiting a cache hit round-trip
+        // through the ImageCache actor. rom.boxArtLocalPath is authoritative
+        // and rom.hasBoxArt is correct, so this is zero main-thread I/O; on a
+        // miss we fall back to nil and the .task body does the async load.
+        let preferredSize = BoxArtThumbnailSize.forGridZoom(zoomLevel)
+        let initialImage: NSImage? = rom.hasBoxArt
+            ? ImageCache.shared.thumbnailSync(for: rom.boxArtLocalPath, preferredSize: preferredSize)
+            : nil
+        _image = State(initialValue: initialImage)
+    }
+
+    private var zoomBucket: BoxArtThumbnailSize {
+        BoxArtThumbnailSize.forGridZoom(zoomLevel)
+    }
 
     private var boxType: BoxType {
         prefs.boxType(for: rom.systemID ?? "")
@@ -141,15 +181,25 @@ struct GameCardView: View {
         .accessibilityLabel(rom.displayName)
         .accessibilityHint(Text("Double-click or press Enter to launch"))
         .accessibilityAddTraits(.isButton)
-        .task(id: "\(rom.id)-\(boxArtService.boxArtUpdated)-\(zoomLevel)") {
-            var artPath = rom.boxArtLocalPath
-            if !FileManager.default.fileExists(atPath: artPath.path) {
-                if let resolved = BoxArtService.shared.resolveLocalBoxArt(for: rom) {
-                    artPath = resolved
-                }
+        .task(id: "\(rom.id)-\(rom.hasBoxArt)-\(zoomReloadToken)") {
+            // rom.boxArtLocalPath is now authoritative (resolved during the
+            // off-scroll pipeline), so this is zero main-thread I/O. Art-less
+            // ROMs bail immediately to the placeholder with no await.
+            guard rom.hasBoxArt else {
+                if self.image != nil { self.image = nil }
+                return
             }
+            let artPath = rom.boxArtLocalPath
 
-            let thumbSize = BoxArtThumbnailSize.forGridZoom(zoomLevel)
+            let thumbSize = zoomBucket
+
+            // Fast path: if the thumbnail is already in the in-memory cache,
+            // paint it synchronously and return without any await — keeps
+            // recycling cells flicker-free and avoids yielding to the actor.
+            if let cached = ImageCache.shared.thumbnailSync(for: artPath, preferredSize: thumbSize) {
+                self.image = cached
+                return
+            }
 
             if thumbSize != .tiny {
                 if let tiny = await ImageCache.shared.thumbnail(for: artPath, preferredSize: .tiny) {
@@ -159,17 +209,15 @@ struct GameCardView: View {
 
             if let img = await ImageCache.shared.thumbnail(for: artPath, preferredSize: thumbSize) {
                 self.image = img
-                if !rom.hasBoxArt {
-                    var updated = rom
-                    updated.hasBoxArt = true
-                    library.updateROM(updated, persist: false, silent: true)
-                }
-            } else if self.image == nil {
-                if rom.hasBoxArt {
-                    var updated = rom
-                    updated.hasBoxArt = false
-                    library.updateROM(updated, persist: false, silent: true)
-                }
+            }
+        }
+        .onChange(of: zoomBucket) { _, _ in
+            // Debounce zoom-driven image reloads so scrubbing the zoom slider
+            // doesn't queue a decode for every step. The .task re-fires on token
+            // change, picking up the latest bucket when this fires.
+            Task { @MainActor in
+                try? await Task.sleep(nanoseconds: 150_000_000)
+                zoomReloadToken = UUID()
             }
         }
         .onReceive(RunningGamesTracker.shared.$runningGames) { games in
@@ -199,7 +247,7 @@ struct GameCardView: View {
                 .padding(.horizontal, 4)
                 .padding(.top, 4)
 
-                if raService.isEnabled && rom.raMatchStatus == "matched" {
+                if raEnabled && rom.raMatchStatus == "matched" {
                     Image(systemName: "trophy.fill")
                     .font(.system(size: 10, weight: .bold))
                     .foregroundColor(AppColors.textOnAccent(for: AppColors.brandAccent.opacity(0.85), colorScheme: colorScheme))
