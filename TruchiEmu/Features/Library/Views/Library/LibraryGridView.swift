@@ -1358,8 +1358,15 @@ viewModel.updateFilters(
         }
     }
     
+    private var currentSystem: SystemInfo? {
+        if case .system(let system) = filter { return system }
+        return nil
+    }
+
     private var emptyStateIcon: String {
-        if !activeFilters.isEmpty && searchText.isEmpty {
+        if let system = currentSystem {
+            return system.iconName
+        } else if !activeFilters.isEmpty && searchText.isEmpty {
             return "line.3.horizontal.decrease.circle"
         } else if !searchText.isEmpty {
             return "magnifyingglass"
@@ -1369,9 +1376,17 @@ viewModel.updateFilters(
             return "tray"
         }
     }
-    
+
     private var emptyStateTitle: String {
-        if !activeFilters.isEmpty && searchText.isEmpty {
+        if let system = currentSystem {
+            let name = system.sidebarDisplayName
+            if !searchText.isEmpty {
+                return loc.localized("library.nothingMatchingInSystem")
+                    .replacingOccurrences(of: "{0}", with: name)
+                    .replacingOccurrences(of: "{1}", with: searchText)
+            }
+            return loc.localized("library.noGamesInSystem").replacingOccurrences(of: "{0}", with: name)
+        } else if !activeFilters.isEmpty && searchText.isEmpty {
             return loc.localized("library.noGamesMatchFilters")
         } else if !searchText.isEmpty {
             return loc.localized("library.nothingMatching").replacingOccurrences(of: "{0}", with: searchText)
@@ -1381,9 +1396,11 @@ viewModel.updateFilters(
             return loc.localized("library.nothingHere")
         }
     }
-    
+
     private var emptyStateDescription: String {
-        if !activeFilters.isEmpty && searchText.isEmpty {
+        if currentSystem != nil {
+            return loc.localized("library.tryOtherSystems")
+        } else if !activeFilters.isEmpty && searchText.isEmpty {
             return loc.localized("library.tryLooseningFilters")
         } else if !searchText.isEmpty {
             return loc.localized("library.tryDifferentSearch")
