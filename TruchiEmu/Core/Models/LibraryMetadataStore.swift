@@ -278,7 +278,11 @@ final class LibraryMetadataStore: ObservableObject {
     }
 
     func mergedROM(_ rom: ROM) -> ROM {
-        guard let rec = entries[Self.pathKey(for: rom)] else { return rom }
+        guard let rec = entries[Self.pathKey(for: rom)] else {
+            var refreshed = rom
+            refreshed.refreshDerivedFields()
+            return refreshed
+        }
         var merged = rec.applying(to: rom)
         
         // Ensure that if a custom name exists on the original ROM, it is preserved during merging.
