@@ -678,8 +678,6 @@ super.init(window: window)
         }
     }
 
-private var pendingCloseAfterFullscreenExit = false
-
     @objc private func windowDidChangeScreen() {
         DispatchQueue.main.async { [weak self] in
             let isFullscreen = self?.window?.styleMask.contains(.fullScreen) ?? false
@@ -696,12 +694,6 @@ private var pendingCloseAfterFullscreenExit = false
                     self?.window?.contentAspectRatio = NSSize(width: CGFloat(coreAspect), height: 1)
                 } else if let info = SystemDatabase.system(forID: systemID), info.displayAspectRatio > 0 {
                     self?.window?.contentAspectRatio = NSSize(width: info.displayAspectRatio, height: 1)
-                }
-
-                if self?.pendingCloseAfterFullscreenExit == true {
-                    self?.pendingCloseAfterFullscreenExit = false
-                    self?.window?.close()
-                    return
                 }
             }
 
@@ -769,12 +761,11 @@ private var pendingCloseAfterFullscreenExit = false
     }
 
     func windowShouldClose(_ sender: NSWindow) -> Bool {
-        if isFullscreen {
-            pendingCloseAfterFullscreenExit = true
-            sender.toggleFullScreen(nil)
-            return false
-        }
         return true
+    }
+
+    func windowDidExitFullScreen(_ notification: Notification) {
+        isFullscreen = false
     }
     
     // Toggle auto-fullscreen setting

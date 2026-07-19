@@ -731,6 +731,10 @@ class BoxArtService: ObservableObject {
             if !modifiedIDs.isEmpty { signalBoxArtUpdated(for: UUID()) }
         }
 
+        // Let the UI advance past the final "100% — <rom>" line so it doesn't
+        // appear frozen while we persist and build thumbnails.
+        onItemProgress?(total, total, LocalizationManager.shared.localized("library.automation.savingLibrary"), nil)
+
         // Pre-generate on-disk thumbnails for the ROMs we just fetched so the
         // next scroll paints them from the fast disk-thumb path instead of
         // decoding the full original. Runs on the thumbnail service queue.

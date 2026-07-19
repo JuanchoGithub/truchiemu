@@ -18,6 +18,10 @@ final class LibraryAutomationCoordinator: ObservableObject {
     @Published private(set) var statusLine: String = ""
     @Published private(set) var isActive: Bool = false
 
+    // Transient dedupe so the box-art progress closure doesn't flood @Published
+    // writes (which SwiftUI coalesces, leaving the status text frozen).
+    private var lastBoxArtPercent: Int = -1
+
     private init() {}
 
     private var loc: LocalizationManager { LocalizationManager.shared }
@@ -335,8 +339,13 @@ final class LibraryAutomationCoordinator: ObservableObject {
             onItemProgress: { [weak self] completed, totalCount, fileLabel, _ in
                 guard let self = self else { return }
                 let frac = Double(completed) / max(Double(totalCount), 1)
-                self.progress = frac
-                self.statusLine = self.localizedStatus("library.automation.downloadingBoxArt", "\(Int(frac * 100))", fileLabel)
+                let pct = Int(frac * 100)
+                Task { @MainActor in
+                    self.progress = frac
+                    guard pct != self.lastBoxArtPercent else { return }
+                    self.lastBoxArtPercent = pct
+                    self.statusLine = self.localizedStatus("library.automation.downloadingBoxArt", "\(pct)", fileLabel)
+                }
             }
         )
 
@@ -348,7 +357,8 @@ final class LibraryAutomationCoordinator: ObservableObject {
                 (rom.metadata?.developer?.isEmpty ?? true)
             }
             if !stillNeeded.isEmpty {
-                statusLine = localizedStatus("library.automation.tryingLaunchbox", "\(stillNeeded.count)")
+                lastBoxArtPercent = -1
+                statusLine = loc.localized("library.automation.enrichingMetadata")
                 await MetadataSyncCoordinator.shared.runAfterLibraryUpdate(
                     library: library,
                     targetROMs: stillNeeded

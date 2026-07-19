@@ -459,6 +459,7 @@
   "library.automation.downloadingBoxArtStart": "Descargando carátulas: 0% — …",
   "library.automation.downloadingBoxArt": "Descargando carátulas: {0}% — {1}",
   "library.automation.downloadingBoxArtDone": "Descargando carátulas: 100% — listo",
+  "library.automation.savingLibrary": "Guardando biblioteca y generando miniaturas…",
   "library.automation.tryingLaunchbox": "Probando LaunchBox GamesDB para {0} juegos…",
   "library.automation.launchboxBoxArt": "Carátulas LaunchBox: {0}% — {1}",
   "library.close": "Cerrar",

@@ -161,11 +161,15 @@ final class XPCConnectionManager: ObservableObject {
             let controllers = GameLauncher.shared.allActiveControllers()
             let hadGameWindows = !controllers.isEmpty
 
-            // Show in-window error overlay on each active controller.
-            // The overlay replaces game content and lets the user dismiss it,
-            // which closes the window and cleans up the controller.
+            // Show in-window error overlay on each active controller so a real
+            // crash is visible, then close the windows. The overlay alone does
+            // not guarantee the window is dismissed (it relies on the user
+            // clicking it, and the overlay can fail to render while the XPC is
+            // shutting down), so we must close the windows directly to avoid
+            // orphaning a frozen game window.
             for controller in controllers {
                 controller.showErrorOverlay(.coreServiceCrashed)
+                controller.window?.close()
             }
 
             // If no controllers have windows (edge case), clean up directly.

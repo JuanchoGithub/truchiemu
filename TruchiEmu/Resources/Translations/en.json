@@ -461,6 +461,7 @@
   "library.automation.downloadingBoxArtStart": "Downloading box art: 0% — …",
   "library.automation.downloadingBoxArt": "Downloading box art: {0}% — {1}",
   "library.automation.downloadingBoxArtDone": "Downloading box art: 100% — done",
+  "library.automation.savingLibrary": "Saving library and building thumbnails…",
   "library.automation.tryingLaunchbox": "Trying LaunchBox GamesDB for {0} games…",
   "library.automation.launchboxBoxArt": "LaunchBox box art: {0}% — {1}",
   "library.close": "Close",
