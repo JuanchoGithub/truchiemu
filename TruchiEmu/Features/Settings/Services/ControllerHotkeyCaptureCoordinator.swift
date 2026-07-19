@@ -131,12 +131,14 @@ final class ControllerHotkeyCaptureCoordinator: ObservableObject {
             state = .idle
             return
         }
-        SDLInputManager.shared.startCapture(instanceID: instanceID) { [weak self] index, alias in
-            guard let self else { return }
-            let binding = ControllerHotkeyBinding.sdl(index, label: alias)
-            self.state = .captured(binding)
-            self.capturedHandler?(binding)
-            self.capturedHandler = nil
+        SDLInputManager.shared.startCapture(instanceID: instanceID) { index, alias in
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                let binding = ControllerHotkeyBinding.sdl(index, label: alias)
+                self.state = .captured(binding)
+                self.capturedHandler?(binding)
+                self.capturedHandler = nil
+            }
         }
     }
 
