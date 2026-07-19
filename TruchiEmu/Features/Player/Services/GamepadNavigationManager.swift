@@ -26,6 +26,11 @@ final class GamepadNavigationManager: ObservableObject {
     @Published var contentIndex: Int = 0
     @Published var gameToolbarIndex: Int = 0
     @Published var isGamepadActive: Bool = false
+
+    /// True while the gamepad toolbar overlay is open. The runner checks this
+    /// to ignore controller input so presses aren't double-handled by the game
+    /// while the user is navigating the toolbar from the couch.
+    @MainActor var isGamepadToolbarActive: Bool = false
     @Published var scrollAnchorIndex: Int = 0
 
     var suppressLeftStickInToolbar: Bool = false
@@ -43,9 +48,15 @@ final class GamepadNavigationManager: ObservableObject {
     private var lastLoggedButtons: Set<GamepadNavButton> = []
     private var lastRepeatTime: [GamepadNavButton: Double] = [:]
     private var pressedButtons: Set<GamepadNavButton> = []
+    private var lastPressTime: [GamepadNavButton: Double] = [:]
     private static let deadZone: Float = 0.5
     private static let repeatDelay: Double = 0.12
     private static let pollInterval: Double = 1.0 / 30.0
+    /// Max time between the two constituent button presses for a combo (L3+R3,
+    /// Start+Select) to count as a simultaneous press. Polling runs at 30 Hz, so
+    /// two buttons pressed a few ms apart would otherwise land in different
+    /// frames and never register as a combo.
+    private static let comboWindow: Double = 0.18
 
     private var cancellables = Set<AnyCancellable>()
 
@@ -96,6 +107,7 @@ final class GamepadNavigationManager: ObservableObject {
         pollTimer = nil
         pressedButtons = []
         lastRepeatTime = [:]
+        lastPressTime = [:]
         isGamepadActive = false
     }
 
@@ -205,8 +217,13 @@ final class GamepadNavigationManager: ObservableObject {
         }
 
         let controllers = ControllerService.shared.connectedControllers
-        guard let gc = controllers.first(where: { !$0.isKeyboard })?.gcController,
-              let gamepad = gc.extendedGamepad else {
+        let gamepad = controllers.first(where: { !$0.isKeyboard })?.gcController?.extendedGamepad
+
+        // Controllers SDL handles as raw joysticks (unrecognized gamepads) are
+        // never exposed as GCController instances, so poll SDL's nav snapshot too.
+        let sdlButtons = SDLInputManager.shared.pollNavButtons()
+
+        guard gamepad != nil || !sdlButtons.isEmpty else {
             if isGamepadActive { isGamepadActive = false }
             return
         }
@@ -219,21 +236,43 @@ final class GamepadNavigationManager: ObservableObject {
 
         var newlyPressed = Set<GamepadNavButton>()
 
-        readDigitalButtons(gamepad, into: &newlyPressed)
+        if let gamepad {
+            readDigitalButtons(gamepad, into: &newlyPressed)
+        } else {
+            newlyPressed.formUnion(sdlButtons)
+        }
         let topContext = GamepadNavContextStack.shared.topActive()
         if topContext is GamepadGameToolbarContext && suppressLeftStickInToolbar {
             var nonLeftStick = Set<GamepadNavButton>()
-            readAnalogInputs(gamepad, into: &nonLeftStick, now: now, filterLeftStick: true)
+            if let gamepad {
+                readAnalogInputs(gamepad, into: &nonLeftStick, now: now, filterLeftStick: true)
+            }
             newlyPressed.formUnion(nonLeftStick)
-        } else {
+        } else if let gamepad {
             readAnalogInputs(gamepad, into: &newlyPressed, now: now)
         }
 
-        if newlyPressed.contains(.l3) && newlyPressed.contains(.r3) {
-            newlyPressed.insert(.l3PlusR3)
-            newlyPressed.remove(.l3)
-            newlyPressed.remove(.r3)
+        // Record when each individual button was first pressed so combos can be
+        // detected even when the two buttons land in separate poll frames.
+        for button in newlyPressed where lastPressTime[button] == nil {
+            lastPressTime[button] = now
         }
+
+        // Combo detection: the companion button may have been pressed up to
+        // `comboWindow` seconds ago (i.e. in a neighbouring poll frame).
+        func comboFormed(_ a: GamepadNavButton, _ b: GamepadNavButton, _ combo: GamepadNavButton) {
+            guard (newlyPressed.contains(a) && newlyPressed.contains(b))
+                    || (newlyPressed.contains(a) && recentPress(b))
+                    || (newlyPressed.contains(b) && recentPress(a)) else { return }
+            newlyPressed.insert(combo)
+            newlyPressed.remove(a)
+            newlyPressed.remove(b)
+            lastPressTime[a] = nil
+            lastPressTime[b] = nil
+        }
+
+        comboFormed(.l3, .r3, .l3PlusR3)
+        comboFormed(.start, .select, .startPlusSelect)
 
         let justPressed = newlyPressed.subtracting(pressedButtons)
         let justReleased = pressedButtons.subtracting(newlyPressed)
@@ -245,6 +284,7 @@ final class GamepadNavigationManager: ObservableObject {
 
         for button in justReleased {
             lastRepeatTime.removeValue(forKey: button)
+            lastPressTime.removeValue(forKey: button)
         }
 
         processActions(config: config, justPressed: justPressed, newlyPressed: newlyPressed, now: now)
@@ -264,7 +304,21 @@ final class GamepadNavigationManager: ObservableObject {
             var shouldFire = false
 
             if !mappedButton.isAnalog {
-                shouldFire = justPressed.contains(mappedButton)
+                // D-pad directions auto-repeat while held so the toolbar focus
+                // keeps moving (matching the analog-stick behaviour).
+                if [.dpadUp, .dpadDown, .dpadLeft, .dpadRight].contains(mappedButton) {
+                    if justPressed.contains(mappedButton) {
+                        shouldFire = true
+                        lastRepeatTime[mappedButton] = now
+                    } else if newlyPressed.contains(mappedButton) {
+                        if let lastTime = lastRepeatTime[mappedButton], now >= lastTime + Self.repeatDelay {
+                            shouldFire = true
+                            lastRepeatTime[mappedButton] = now
+                        }
+                    }
+                } else {
+                    shouldFire = justPressed.contains(mappedButton)
+                }
             } else {
                 if justPressed.contains(mappedButton) {
                     shouldFire = true
@@ -298,6 +352,13 @@ final class GamepadNavigationManager: ObservableObject {
                 }
             }
         }
+    }
+
+    /// True if `button` was pressed within `comboWindow` seconds (including in a
+    /// neighbouring poll frame) and is still considered "recently active".
+    private func recentPress(_ button: GamepadNavButton) -> Bool {
+        guard let t = lastPressTime[button] else { return false }
+        return CACurrentMediaTime() - t <= Self.comboWindow
     }
 
     private func readDigitalButtons(_ gamepad: GCExtendedGamepad, into buttons: inout Set<GamepadNavButton>) {

@@ -428,6 +428,96 @@ enum SettingsCatalog {
             ),
 
             SettingsCatalogEntry(
+                page: .gamepadNav, sectionID: "enable",
+                sectionTitle: "Enable Joystick Navigation",
+                optionTitles: ["Enable Joystick Navigation"],
+                optionSubSectionIDs: [
+                    "Enable Joystick Navigation": "enable"
+                ],
+                keywords: ["gamepad", "navigation", "joystick", "enable", "controller"]
+            ),
+            SettingsCatalogEntry(
+                page: .gamepadNav, sectionID: "navigation",
+                sectionTitle: "Movement",
+                optionTitles: ["Navigate Up", "Navigate Down", "Navigate Left", "Navigate Right"],
+                optionSubSectionIDs: [
+                    "Navigate Up": "navigation",
+                    "Navigate Down": "navigation",
+                    "Navigate Left": "navigation",
+                    "Navigate Right": "navigation"
+                ],
+                keywords: ["gamepad", "navigation", "dpad", "stick", "movement", "up", "down", "left", "right"]
+            ),
+            SettingsCatalogEntry(
+                page: .gamepadNav, sectionID: "zones",
+                sectionTitle: "Zone Switching",
+                optionTitles: ["Previous Zone", "Next Zone", "Focus Sidebar", "Focus Content", "Focus Toolbar"],
+                optionSubSectionIDs: [
+                    "Previous Zone": "zones",
+                    "Next Zone": "zones",
+                    "Focus Sidebar": "zones",
+                    "Focus Content": "zones",
+                    "Focus Toolbar": "zones"
+                ],
+                keywords: ["gamepad", "zone", "sidebar", "content", "toolbar", "focus", "l1", "r1"]
+            ),
+            SettingsCatalogEntry(
+                page: .gamepadNav, sectionID: "scrolling",
+                sectionTitle: "Scrolling",
+                optionTitles: ["Scroll Up", "Scroll Down", "Page Up", "Page Down"],
+                optionSubSectionIDs: [
+                    "Scroll Up": "scrolling",
+                    "Scroll Down": "scrolling",
+                    "Page Up": "scrolling",
+                    "Page Down": "scrolling"
+                ],
+                keywords: ["gamepad", "scroll", "page", "l2", "r2", "right stick"]
+            ),
+            SettingsCatalogEntry(
+                page: .gamepadNav, sectionID: "actions",
+                sectionTitle: "Actions",
+                optionTitles: ["Select", "Cancel", "Context Menu", "Toggle Grid/List", "Focus Search", "Cycle Sort Order"],
+                optionSubSectionIDs: [
+                    "Select": "actions",
+                    "Cancel": "actions",
+                    "Context Menu": "actions",
+                    "Toggle Grid/List": "actions",
+                    "Focus Search": "actions",
+                    "Cycle Sort Order": "actions"
+                ],
+                keywords: ["gamepad", "select", "cancel", "context", "menu", "view", "search", "sort", "a", "b", "x", "y"]
+            ),
+            SettingsCatalogEntry(
+                page: .gamepadNav, sectionID: "library",
+                sectionTitle: "Library",
+                optionTitles: ["Open Settings", "Launch Game"],
+                optionSubSectionIDs: [
+                    "Open Settings": "library",
+                    "Launch Game": "library"
+                ],
+                keywords: ["gamepad", "library", "settings", "launch", "start", "select"]
+            ),
+            SettingsCatalogEntry(
+                page: .gamepadNav, sectionID: "gameWindow",
+                sectionTitle: "Game Window",
+                optionTitles: ["Show Game Toolbar", "Close Window"],
+                optionSubSectionIDs: [
+                    "Show Game Toolbar": "gameWindow",
+                    "Close Window": "gameWindow"
+                ],
+                keywords: ["gamepad", "toolbar", "overlay", "show", "close", "window", "start", "select", "l3", "r3"]
+            ),
+            SettingsCatalogEntry(
+                page: .gamepadNav, sectionID: "reset",
+                sectionTitle: "Reset to Defaults",
+                optionTitles: ["Reset All Bindings"],
+                optionSubSectionIDs: [
+                    "Reset All Bindings": "reset"
+                ],
+                keywords: ["gamepad", "navigation", "reset", "defaults", "restore"]
+            ),
+
+            SettingsCatalogEntry(
                 page: .reset, sectionID: "all",
                 sectionTitle: "Reset Settings",
                 optionTitles: ["Reset Hotkeys", "Reset Save Directories", "Reset Startup Tab", "Restore All Defaults"],

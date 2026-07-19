@@ -75,6 +75,10 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     @MainActor @Published var isToolbarVisible: Bool = true
     @MainActor @Published var isGamepadToolbarMode: Bool = false
     @MainActor @Published var gamepadToolbarFocusedIndex: Int?
+    @MainActor @Published var isStopConfirmArmed: Bool = false
+    @MainActor @Published var isSlotPickerShown: Bool = false
+    @MainActor @Published var isRecordStreamPickerShown: Bool = false
+    @MainActor @Published var isCheatPickerShown: Bool = false
     @MainActor var gameToolbarNavContext: GamepadGameToolbarContext?
     @MainActor var gameRunningNavContext: GamepadGameRunningContext?
     @MainActor @Published var isFullscreen: Bool = false
@@ -1348,15 +1352,19 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
     // Pauses the game while the cheat manager is shown.
     @MainActor
     func showCheatManager() {
+        showCheatManager(gamepad: false)
+    }
+
+    func showCheatManager(gamepad: Bool) {
         guard currentGameROM != nil, window != nil else { return }
 
         _ = HardcoreModeManager.shared.attemptUseCheats { [weak self] in
-            self?.presentCheatManagerSheet()
+            self?.presentCheatManagerSheet(gamepad: gamepad)
         }
     }
 
     @MainActor
-    func presentCheatManagerSheet() {
+    func presentCheatManagerSheet(gamepad: Bool = false) {
         guard let rom = currentGameROM, let window = window else { return }
 
         // Don't show if already showing
@@ -1364,19 +1372,37 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         
         // Pause the game while sheet is shown
         runner?.togglePause()
-        
+
+        // Gamepad entry: ensure cheats are downloaded, then show a focused,
+        // navigable list instead of the full mouse-oriented browser.
+        if gamepad {
+            if CheatManagerService.shared.totalCount(for: rom) == 0,
+               let systemID = rom.systemID {
+                Task {
+                    _ = try? await CheatDownloadService.shared.downloadCheatForROM(rom, systemID: systemID)
+                }
+            }
+        }
+
         let sheetWindow = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 600, height: 700),
+            contentRect: NSRect(x: 0, y: 0, width: gamepad ? 380 : 600, height: gamepad ? 440 : 700),
             styleMask:[.titled, .closable],
             backing: .buffered,
             defer: false
         )
         sheetWindow.title = "Cheats - \(rom.displayName)"
         sheetWindow.isReleasedWhenClosed = true
-        sheetWindow.contentView = SafeHostingView(rootView:
-            CheatManagerViewWrapper(rom: rom, windowController: self)
-                .environment(SystemDatabaseWrapper.shared)
-        )
+        if gamepad {
+            sheetWindow.contentView = SafeHostingView(rootView:
+                CheatPickerView(rom: rom, windowController: self)
+                    .environment(SystemDatabaseWrapper.shared)
+            )
+        } else {
+            sheetWindow.contentView = SafeHostingView(rootView:
+                CheatManagerViewWrapper(rom: rom, windowController: self)
+                    .environment(SystemDatabaseWrapper.shared)
+            )
+        }
         
         cheatManagerSheetWindow = sheetWindow
         

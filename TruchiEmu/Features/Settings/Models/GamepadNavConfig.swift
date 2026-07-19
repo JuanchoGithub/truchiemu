@@ -27,6 +27,7 @@ enum GamepadNavButton: String, Codable, CaseIterable, Identifiable {
     case rightStickLeft
     case rightStickRight
     case l3PlusR3
+    case startPlusSelect
 
     var id: String { rawValue }
 
@@ -57,6 +58,7 @@ enum GamepadNavButton: String, Codable, CaseIterable, Identifiable {
         case .rightStickLeft: return "R-Stick ←"
         case .rightStickRight: return "R-Stick →"
         case .l3PlusR3: return "L3+R3"
+        case .startPlusSelect: return "Start+Select"
         }
     }
 
@@ -72,7 +74,10 @@ enum GamepadNavButton: String, Codable, CaseIterable, Identifiable {
 
     static let availableForMapping: [GamepadNavButton] = [
         .buttonA, .buttonB, .buttonX, .buttonY,
-        .l1, .r1, .l2, .r2, .l3, .r3, .l3PlusR3,
+        .dpadUp, .dpadDown, .dpadLeft, .dpadRight,
+        .leftStickUp, .leftStickDown, .leftStickLeft, .leftStickRight,
+        .rightStickUp, .rightStickDown, .rightStickLeft, .rightStickRight,
+        .l1, .r1, .l2, .r2, .l3, .r3, .l3PlusR3, .startPlusSelect,
         .start, .select
     ]
 }
@@ -209,7 +214,7 @@ final class GamepadNavConfigManager: ObservableObject {
         .cycleSortOrder:   GamepadNavConfig(binding: GamepadNavBinding(button: .r3)),
         .openSettings:      GamepadNavConfig(binding: GamepadNavBinding(button: .select)),
         .launchGame:        GamepadNavConfig(binding: GamepadNavBinding(button: .start)),
-        .showGameToolbar:   GamepadNavConfig(binding: GamepadNavBinding(button: .l3PlusR3)),
+        .showGameToolbar:   GamepadNavConfig(binding: GamepadNavBinding(button: .startPlusSelect)),
         .closeWindow:      GamepadNavConfig(binding: .unbound),
     ]
 

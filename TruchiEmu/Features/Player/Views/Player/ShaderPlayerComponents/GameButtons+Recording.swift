@@ -2,10 +2,10 @@ import SwiftUI
 
 struct RecordStreamButton: View {
     @ObservedObject var runner: EmulatorRunner
+    @Binding var isDropdownShown: Bool
     @ObservedObject private var recordingService = StreamRecordingService.shared
     @ObservedObject private var loc = LocalizationManager.shared
     @Environment(\.colorScheme) private var colorScheme
-    @State private var isDropdownShown = false
     @State private var isHovered = false
 
     private var defaultIcon: String {
@@ -77,7 +77,8 @@ struct RecordStreamButton: View {
                     captureSize: runner.captureSize,
                     hasTwitchKey: hasTwitchKey,
                     hasYoutubeKey: hasYoutubeKey,
-                    hasCustomKey: hasCustomKey
+                    hasCustomKey: hasCustomKey,
+                    dismissAction: { isDropdownShown = false }
                 )
                 .frame(width: 220)
             }
@@ -140,9 +141,91 @@ private struct StreamPickerView: View {
     let hasTwitchKey: Bool
     let hasYoutubeKey: Bool
     let hasCustomKey: Bool
+    let dismissAction: () -> Void
     @ObservedObject private var loc = LocalizationManager.shared
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dismiss) var dismiss
+    @State private var sheetFocusIndex: Int = 0
+
+    private struct RowAction {
+        let id: String
+        let label: String
+        let icon: String
+        let tintRed: Bool
+        let perform: () -> Void
+    }
+
+    private var actions: [RowAction] {
+        var rows: [RowAction] = []
+        if recordingService.isUserRecording {
+            rows.append(RowAction(
+                id: "stop",
+                label: loc.localized("toolbar.stopRecording"),
+                icon: "stop.circle.fill",
+                tintRed: true,
+                perform: {
+                    recordingService.stop()
+                    dismissAction()
+                }
+            ))
+        }
+        rows.append(RowAction(
+            id: "localFile",
+            label: loc.localized("settings.streaming.localFile"),
+            icon: "record.circle",
+            tintRed: false,
+            perform: {
+                startMode(.localFile)
+                dismissAction()
+            }
+        ))
+        if hasTwitchKey {
+            rows.append(RowAction(
+                id: "twitch",
+                label: "Twitch",
+                icon: "antenna.radiowaves.left.and.right",
+                tintRed: false,
+                perform: {
+                    startMode(.twitch)
+                    dismissAction()
+                }
+            ))
+        }
+        if hasYoutubeKey {
+            rows.append(RowAction(
+                id: "youtube",
+                label: "YouTube",
+                icon: "antenna.radiowaves.left.and.right",
+                tintRed: false,
+                perform: {
+                    startMode(.youtube)
+                    dismissAction()
+                }
+            ))
+        }
+        if hasCustomKey {
+            rows.append(RowAction(
+                id: "custom",
+                label: StreamRecordingService.customStreamName,
+                icon: "antenna.radiowaves.left.and.right",
+                tintRed: false,
+                perform: {
+                    startMode(.custom)
+                    dismissAction()
+                }
+            ))
+        }
+        return rows
+    }
+
+    private func refreshSheetFocus() {
+        if let ctx = GamepadNavContextStack.shared.topActive() as? GamepadSheetContext,
+           ctx.itemCount == sheetItemCount {
+            sheetFocusIndex = ctx.focusIndex
+        }
+    }
+
+    private var sheetItemCount: Int { actions.count }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -152,77 +235,47 @@ private struct StreamPickerView: View {
                 .font(.headline)
                 .padding()
             Divider()
-            if recordingService.isUserRecording {
-                Button(action: {
-                    recordingService.stop()
-                    isDropdownShown = false
-                }) {
-                    Label(loc.localized("toolbar.stopRecording"), systemImage: "stop.circle.fill")
-                        .foregroundColor(.red)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .contentShape(Rectangle())
+            ScrollViewReader { proxy in
+                VStack(spacing: 0) {
+                    ForEach(Array(actions.enumerated()), id: \.element.id) { index, action in
+                        let isFocused = sheetFocusIndex == index
+                        Button(action: action.perform) {
+                            Label(action.label, systemImage: action.icon)
+                                .foregroundColor(action.tintRed ? .red : .primary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 8)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 6)
+                                        .stroke(isFocused ? AppColors.brandAccent : Color.clear, lineWidth: 2)
+                                        .padding(-2)
+                                )
+                                .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                        .id(index)
+                        if index < actions.count - 1 {
+                            Divider().opacity(0.3)
+                        }
+                    }
                 }
-                .buttonStyle(.plain)
-                Divider().opacity(0.3)
-            }
-            Button(action: {
-                startMode(.localFile)
-                isDropdownShown = false
-            }) {
-                Label(loc.localized("settings.streaming.localFile"), systemImage: "record.circle")
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-            if hasTwitchKey {
-                Divider().opacity(0.3)
-                Button(action: {
-                    startMode(.twitch)
-                    isDropdownShown = false
-                }) {
-                    Label("Twitch", systemImage: "antenna.radiowaves.left.and.right")
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .contentShape(Rectangle())
+                .onReceive(GamepadNavContextStack.shared.focusPublisher) { _ in
+                    refreshSheetFocus()
+                    if sheetFocusIndex >= 0 { proxy.scrollTo(sheetFocusIndex, anchor: .center) }
                 }
-                .buttonStyle(.plain)
-            }
-            if hasYoutubeKey {
-                Divider().opacity(0.3)
-                Button(action: {
-                    startMode(.youtube)
-                    isDropdownShown = false
-                }) {
-                    Label("YouTube", systemImage: "antenna.radiowaves.left.and.right")
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-            }
-            if hasCustomKey {
-                Divider().opacity(0.3)
-                Button(action: {
-                    startMode(.custom)
-                    isDropdownShown = false
-                }) {
-                    Label(StreamRecordingService.customStreamName, systemImage: "antenna.radiowaves.left.and.right")
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
             }
         }
         .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
         .clipShape(RoundedRectangle(cornerRadius: 12))
+        .gamepadSheetNav(
+            isPresented: $isDropdownShown,
+            itemCount: sheetItemCount,
+            columnCount: 1,
+            onSelect: { idx in
+                guard actions.indices.contains(idx) else { return }
+                actions[idx].perform()
+            }
+        )
     }
 
     private func startMode(_ mode: StreamingMode) {

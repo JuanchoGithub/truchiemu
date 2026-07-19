@@ -1,5 +1,6 @@
 import SwiftUI
 import CoreGraphics
+import Combine
 
 @MainActor
 class GamepadNavContext: ObservableObject {
@@ -15,6 +16,11 @@ final class GamepadNavContextStack {
     static let shared = GamepadNavContextStack()
 
     private var contexts: [GamepadNavContext] = []
+
+    /// Fires whenever any pushed context's focus index changes (sheet or toolbar).
+    /// SwiftUI views observe this to refresh their focus-ring highlight without
+    /// having to hold a strong reference to the active context themselves.
+    let focusPublisher = PassthroughSubject<Void, Never>()
 
     private init() {}
 
@@ -32,12 +38,21 @@ final class GamepadNavContextStack {
     func topActive() -> GamepadNavContext? {
         let keyWindow = NSApp.keyWindow
         let activeContexts = contexts.filter { $0.isActive }
-        if let key = keyWindow {
-            if let match = activeContexts.first(where: { $0.ownedWindow === key }) {
-                return match
+        guard !activeContexts.isEmpty else { return nil }
+
+        let keyOwned = activeContexts.filter { $0.ownedWindow === keyWindow }
+        let nilOwned = activeContexts.filter { $0.ownedWindow == nil }
+
+        if let topKey = keyOwned.max(by: { $0.priority < $1.priority }) {
+            // A global (nil-owned) overlay such as a popover/sheet takes
+            // precedence only when it outranks every key-window-owned context.
+            if let topNil = nilOwned.max(by: { $0.priority < $1.priority }),
+               topNil.priority > topKey.priority {
+                return topNil
             }
+            return topKey
         }
-        return activeContexts.first { $0.ownedWindow == nil } ?? activeContexts.first
+        return nilOwned.max(by: { $0.priority < $1.priority }) ?? activeContexts.max(by: { $0.priority < $1.priority })
     }
 }
 
@@ -62,7 +77,11 @@ final class GamepadSheetContext: GamepadNavContext {
     override var priority: Int { 100 }
 
     var itemCount: Int = 0
-    @Published var focusIndex: Int = 0
+    @Published var focusIndex: Int = 0 {
+        didSet {
+            GamepadNavContextStack.shared.focusPublisher.send()
+        }
+    }
     var columnCount: Int = 1
     var onSelect: ((Int) -> Void)?
     var onDismiss: (() -> Void)?
@@ -120,7 +139,15 @@ final class GamepadGameToolbarContext: GamepadNavContext {
     override var priority: Int { 50 }
 
     var itemCount: Int = 0
-    @Published var focusIndex: Int = 0
+    /// Indices of toolbar buttons that are not currently visible (e.g. a
+    /// feature the game doesn't support, like training/guide). Navigation
+    /// skips these so the focus ring never lands on an invisible control.
+    var skipIndices: Set<Int> = []
+    @Published var focusIndex: Int = 0 {
+        didSet {
+            GamepadNavContextStack.shared.focusPublisher.send()
+        }
+    }
     var onSelect: ((Int) -> Void)?
     var onDismiss: (() -> Void)?
     var onNavigate: (() -> Void)?
@@ -130,12 +157,27 @@ final class GamepadGameToolbarContext: GamepadNavContext {
         super.init()
     }
 
+    private func step(from index: Int, delta: Int) -> Int {
+        var next = index
+        for _ in 0..<itemCount {
+            let candidate = next + delta
+            guard (0..<itemCount).contains(candidate) else { break }
+            if !skipIndices.contains(candidate) {
+                return candidate
+            }
+            next = candidate
+        }
+        return next
+    }
+
     override func handleAction(_ action: GamepadNavAction) {
         switch action {
         case .navigateLeft:
-            if focusIndex > 0 { focusIndex -= 1; onNavigate?() }
+            let next = step(from: focusIndex, delta: -1)
+            if next != focusIndex { focusIndex = next; onNavigate?() }
         case .navigateRight:
-            if focusIndex < itemCount - 1 { focusIndex += 1; onNavigate?() }
+            let next = step(from: focusIndex, delta: 1)
+            if next != focusIndex { focusIndex = next; onNavigate?() }
         case .select:
             onSelect?(focusIndex)
         case .cancel:
@@ -288,16 +330,19 @@ struct GamepadSheetNavModifier: ViewModifier {
     let itemCount: Int
     let columnCount: Int
     let onSelect: ((Int) -> Void)?
+    let onDismiss: (() -> Void)?
 
-    init(isPresented: Binding<Bool>, itemCount: Int, columnCount: Int = 1, onSelect: ((Int) -> Void)? = nil) {
+    init(isPresented: Binding<Bool>, itemCount: Int, columnCount: Int = 1, onSelect: ((Int) -> Void)? = nil, onDismiss: (() -> Void)? = nil) {
         _isPresented = isPresented
         self.itemCount = itemCount
         self.columnCount = columnCount
         self.onSelect = onSelect
+        self.onDismiss = onDismiss
         _context = StateObject(wrappedValue: GamepadSheetContext(
             itemCount: itemCount,
             columnCount: columnCount,
-            onSelect: onSelect
+            onSelect: onSelect,
+            onDismiss: onDismiss
         ))
     }
 
@@ -306,12 +351,23 @@ struct GamepadSheetNavModifier: ViewModifier {
             .onAppear {
                 context.itemCount = itemCount
                 context.columnCount = columnCount
-                context.onDismiss = { isPresented = false }
+                context.onDismiss = { [onDismiss] in
+                    onDismiss?()
+                    isPresented = false
+                }
                 if let onSelect { context.onSelect = onSelect }
                 GamepadNavContextStack.shared.push(context)
             }
             .onDisappear {
                 GamepadNavContextStack.shared.remove(context)
+            }
+            .onChange(of: isPresented) { _, presented in
+                if !presented {
+                    GamepadNavContextStack.shared.remove(context)
+                }
+            }
+            .onChange(of: itemCount) { _, newCount in
+                context.itemCount = newCount
             }
     }
 }
@@ -341,8 +397,8 @@ extension View {
         modifier(GamepadNavContextPushModifier(context: context))
     }
 
-    func gamepadSheetNav(isPresented: Binding<Bool>, itemCount: Int, columnCount: Int = 1, onSelect: ((Int) -> Void)? = nil) -> some View {
-        modifier(GamepadSheetNavModifier(isPresented: isPresented, itemCount: itemCount, columnCount: columnCount, onSelect: onSelect))
+    func gamepadSheetNav(isPresented: Binding<Bool>, itemCount: Int, columnCount: Int = 1, onSelect: ((Int) -> Void)? = nil, onDismiss: (() -> Void)? = nil) -> some View {
+        modifier(GamepadSheetNavModifier(isPresented: isPresented, itemCount: itemCount, columnCount: columnCount, onSelect: onSelect, onDismiss: onDismiss))
     }
 
     func gamepadDismissable(onDismiss: @escaping () -> Void) -> some View {

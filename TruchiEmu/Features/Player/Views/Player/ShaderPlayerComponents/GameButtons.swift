@@ -285,11 +285,11 @@ struct AutoFullscreenButton: View {
 
 struct SlotSelectorButton: View {
   let currentSlot: Int
+  @Binding var isDropdownShown: Bool
   let onSlotChange: (Int) -> Void
   @ObservedObject var runner: EmulatorRunner
   @ObservedObject private var loc = LocalizationManager.shared
   @Environment(\.colorScheme) private var colorScheme
-  @State private var isDropdownShown = false
     @State private var selectedSlot: Int = 0
     @State private var isHovered = false
     var disabled: Bool = false
@@ -318,7 +318,18 @@ struct SlotSelectorButton: View {
         .popover(isPresented: $isDropdownShown, arrowEdge: .top) {
             SlotPickerView(selectedSlot: $selectedSlot, onSlotSelect: onSlotChange, runner: runner)
                 .frame(width: 280, height: 400)
-                .gamepadDismissable { isDropdownShown = false }
+                .gamepadSheetNav(
+                    isPresented: $isDropdownShown,
+                    itemCount: 11,
+                    columnCount: 1,
+                    onSelect: { slot in
+                        let mapped = slot - 1
+                        selectedSlot = mapped
+                        onSlotChange(mapped)
+                        AppSettings.setInt("selected_save_slot", value: mapped)
+                        isDropdownShown = false
+                    }
+                )
         }
         .disabled(disabled)
     }
@@ -375,7 +386,15 @@ struct SlotPickerView: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
     @State private var slotThumbnails: [Int: NSImage] = [:]
-    
+    @State private var sheetFocusIndex: Int = 0
+
+    private func refreshSheetFocus() {
+        if let ctx = GamepadNavContextStack.shared.topActive() as? GamepadSheetContext,
+           ctx.itemCount == 11 {
+            sheetFocusIndex = ctx.focusIndex
+        }
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             Text(loc.localized("toolbar.selectSaveSlot"))
@@ -384,16 +403,19 @@ struct SlotPickerView: View {
             
             Divider()
             
-            ScrollView {
-                VStack(spacing: 0) {
-                    ForEach(-1...9, id: \.self) { slot in
-                        Button(action: {
+             ScrollViewReader { proxy in
+                 ScrollView {
+                     VStack(spacing: 0) {
+                         ForEach(-1...9, id: \.self) { slot in
+                         let rowIndex = slot + 1
+                         let isFocused = sheetFocusIndex == rowIndex
+                         Button(action: {
                             selectedSlot = slot
                             onSlotSelect?(slot)
                             AppSettings.setInt("selected_save_slot", value: slot)
-                            dismiss()
-                        }) {
-                            HStack(spacing: 10) {
+                             dismiss()
+                         }) {
+                             HStack(spacing: 10) {
                                 ZStack {
                                     if let thumbnail = slotThumbnails[slot], let info = slotInfo(for: slot), info.exists {
                                         Image(nsImage: thumbnail)
@@ -418,7 +440,7 @@ Image(systemName: "photo")
                                     Text(slotInfo(for: slot)?.displayName ?? (slot == -1 ? loc.localized("toolbar.slotAuto") : "Slot \(slot)"))
                                         .font(.system(size: 13, weight: .medium))
                                         .foregroundColor(.white)
-                                    
+                                     
 if let info = slotInfo(for: slot), info.exists, let timestamp = info.formattedDate {
                         Text(timestamp)
                             .font(.system(size: 10))
@@ -440,15 +462,26 @@ if let info = slotInfo(for: slot), info.exists, let timestamp = info.formattedDa
                             .padding(.horizontal, 12)
                             .padding(.vertical, 8)
                             .frame(maxWidth: .infinity)
+                            .background(
+                                RoundedRectangle(cornerRadius: 6)
+                                    .stroke(isFocused ? AppColors.brandAccent : Color.clear, lineWidth: 2)
+                                    .padding(-2)
+                            )
                             .contentShape(Rectangle())
                         }
+                        .id(rowIndex)
                         .buttonStyle(.plain)
                         
                         if slot < 9 {
-                            Divider().opacity(0.3)
-                        }
-                    }
-                }
+                             Divider().opacity(0.3)
+                         }
+                     }
+                 }
+                  .onReceive(GamepadNavContextStack.shared.focusPublisher) { _ in
+                      refreshSheetFocus()
+                      if sheetFocusIndex >= 0 { proxy.scrollTo(sheetFocusIndex, anchor: .center) }
+                  }
+              }
             }
         }
         .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))

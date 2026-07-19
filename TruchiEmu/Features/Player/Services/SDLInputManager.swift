@@ -36,6 +36,13 @@ class SDLInputManager: ObservableObject {
     // via the long-press detector (BaseRunner.handleSharePress).
     nonisolated(unsafe) var cachedShareButtonIndex: Int? = nil
 
+    // Pollable snapshot of currently-pressed buttons, keyed by the app's
+    // GamepadNavButton vocabulary, so GamepadNavigationManager can drive UI
+    // navigation (and button combos like L3+R3) for controllers that SDL
+    // handles as raw joysticks and never exposes as GCController instances.
+    nonisolated(unsafe) private var navButtonState: [GamepadNavButton: Bool] = [:]
+    private let navStateLock = NSLock()
+
     private nonisolated static let deadzone: Int16 = 8000
     private nonisolated static let triggerThreshold: Int16 = 16384
 
@@ -93,6 +100,48 @@ class SDLInputManager: ObservableObject {
     ]
 
     private init() {}
+
+    // SDL game-controller button enum index → app nav button (used for
+    // recognized controllers handled via the SDL_CONTROLLERBUTTON* events).
+    private nonisolated static let sdlControllerNavMap: [Int32: GamepadNavButton] = [
+        SDL_CONTROLLER_BUTTON_A.rawValue: .buttonA,
+        SDL_CONTROLLER_BUTTON_B.rawValue: .buttonB,
+        SDL_CONTROLLER_BUTTON_X.rawValue: .buttonX,
+        SDL_CONTROLLER_BUTTON_Y.rawValue: .buttonY,
+        SDL_CONTROLLER_BUTTON_BACK.rawValue: .select,
+        SDL_CONTROLLER_BUTTON_START.rawValue: .start,
+        SDL_CONTROLLER_BUTTON_LEFTSHOULDER.rawValue: .l1,
+        SDL_CONTROLLER_BUTTON_RIGHTSHOULDER.rawValue: .r1,
+        SDL_CONTROLLER_BUTTON_DPAD_UP.rawValue: .dpadUp,
+        SDL_CONTROLLER_BUTTON_DPAD_DOWN.rawValue: .dpadDown,
+        SDL_CONTROLLER_BUTTON_DPAD_LEFT.rawValue: .dpadLeft,
+        SDL_CONTROLLER_BUTTON_DPAD_RIGHT.rawValue: .dpadRight,
+        SDL_CONTROLLER_BUTTON_LEFTSTICK.rawValue: .l3,
+        SDL_CONTROLLER_BUTTON_RIGHTSTICK.rawValue: .r3,
+    ]
+
+    // Raw joystick button index → app nav button (used for unrecognized
+    // controllers handled via the SDL_JOYBUTTON* fallback events).
+    private nonisolated static let joystickNavMap: [Int: GamepadNavButton] = [
+        0: .buttonA, 1: .buttonB, 2: .buttonX, 3: .buttonY,
+        4: .l1, 5: .r1, 6: .l2, 7: .r2,
+        8: .select, 9: .start, 10: .l3, 11: .r3,
+    ]
+
+    private nonisolated func setNavButton(_ button: GamepadNavButton, pressed: Bool) {
+        navStateLock.lock()
+        navButtonState[button] = pressed
+        navStateLock.unlock()
+    }
+
+    /// Returns the set of app nav buttons currently held, for UI navigation
+    /// polling. Safe to call from the main thread.
+    nonisolated func pollNavButtons() -> Set<GamepadNavButton> {
+        navStateLock.lock()
+        let held = Set(navButtonState.compactMap { $0.value ? $0.key : nil })
+        navStateLock.unlock()
+        return held
+    }
 
     // MARK: - Public API
 
@@ -268,6 +317,9 @@ class SDLInputManager: ObservableObject {
     // MARK: - Game Controller Events
 
     private nonisolated func handleButtonEvent(_ event: SDL_ControllerButtonEvent, pressed: Bool) {
+        if let navButton = Self.sdlControllerNavMap[Int32(event.button)] {
+            setNavButton(navButton, pressed: pressed)
+        }
         if pressed {
             sdlDataLock.lock()
             let capID = captureInstanceID
@@ -346,6 +398,21 @@ class SDLInputManager: ObservableObject {
             return
         }
 
+        let dz = Int32(Self.deadzone)
+        if axis == SDL_CONTROLLER_AXIS_LEFTX.rawValue {
+            setNavButton(.leftStickLeft, pressed: event.value < -dz)
+            setNavButton(.leftStickRight, pressed: event.value > dz)
+        } else if axis == SDL_CONTROLLER_AXIS_LEFTY.rawValue {
+            setNavButton(.leftStickUp, pressed: event.value < -dz)
+            setNavButton(.leftStickDown, pressed: event.value > dz)
+        } else if axis == SDL_CONTROLLER_AXIS_RIGHTX.rawValue {
+            setNavButton(.rightStickLeft, pressed: event.value < -dz)
+            setNavButton(.rightStickRight, pressed: event.value > dz)
+        } else if axis == SDL_CONTROLLER_AXIS_RIGHTY.rawValue {
+            setNavButton(.rightStickUp, pressed: event.value < -dz)
+            setNavButton(.rightStickDown, pressed: event.value > dz)
+        }
+
         guard let (index, id) = Self.axisMap[axis] else { return }
         dispatchAnalog(index: index, id: id, value: event.value, player: port)
     }
@@ -353,6 +420,9 @@ class SDLInputManager: ObservableObject {
     // MARK: - Raw Joystick Events (Fallback)
 
     private nonisolated func handleJoyButtonEvent(_ event: SDL_JoyButtonEvent, pressed: Bool) {
+        if let navButton = Self.joystickNavMap[Int(event.button)] {
+            setNavButton(navButton, pressed: pressed)
+        }
         if pressed {
             sdlDataLock.lock()
             let capID = captureInstanceID
@@ -429,11 +499,31 @@ class SDLInputManager: ObservableObject {
             return
         }
 
+        let dz = Int32(Self.deadzone)
+        if axis == 0 {
+            setNavButton(.leftStickLeft, pressed: event.value < -dz)
+            setNavButton(.leftStickRight, pressed: event.value > dz)
+        } else if axis == 1 {
+            setNavButton(.leftStickUp, pressed: event.value < -dz)
+            setNavButton(.leftStickDown, pressed: event.value > dz)
+        } else if axis == 2 {
+            setNavButton(.rightStickLeft, pressed: event.value < -dz)
+            setNavButton(.rightStickRight, pressed: event.value > dz)
+        } else if axis == 3 {
+            setNavButton(.rightStickUp, pressed: event.value < -dz)
+            setNavButton(.rightStickDown, pressed: event.value > dz)
+        }
+
         guard let (index, id) = Self.joystickAxisMap[axis] else { return }
         dispatchAnalog(index: index, id: id, value: event.value, player: port)
     }
 
     private nonisolated func handleJoyHatEvent(_ event: SDL_JoyHatEvent) {
+        let hat = event.value
+        setNavButton(.dpadUp, pressed: (hat & UInt8(SDL_HAT_UP)) != 0)
+        setNavButton(.dpadDown, pressed: (hat & UInt8(SDL_HAT_DOWN)) != 0)
+        setNavButton(.dpadLeft, pressed: (hat & UInt8(SDL_HAT_LEFT)) != 0)
+        setNavButton(.dpadRight, pressed: (hat & UInt8(SDL_HAT_RIGHT)) != 0)
         if event.value != 0 {
             sdlDataLock.lock()
             let capID = captureInstanceID
@@ -442,7 +532,6 @@ class SDLInputManager: ObservableObject {
             sdlDataLock.unlock()
 
             if event.which == capID, let cb = cb {
-                let hat = event.value
                 if (hat & UInt8(SDL_HAT_UP)) != 0 { cb(11, "D-Pad Up") }
                 else if (hat & UInt8(SDL_HAT_DOWN)) != 0 { cb(12, "D-Pad Down") }
                 else if (hat & UInt8(SDL_HAT_LEFT)) != 0 { cb(13, "D-Pad Left") }
@@ -457,7 +546,6 @@ class SDLInputManager: ObservableObject {
         sdlDataLock.unlock()
         guard !isGC, let port else { return }
 
-        let hat = event.value
         dispatchButton(retroID: 4, player: port, pressed: (hat & UInt8(SDL_HAT_UP)) != 0)
         dispatchButton(retroID: 5, player: port, pressed: (hat & UInt8(SDL_HAT_DOWN)) != 0)
         dispatchButton(retroID: 6, player: port, pressed: (hat & UInt8(SDL_HAT_LEFT)) != 0)
@@ -474,16 +562,29 @@ class SDLInputManager: ObservableObject {
 
         guard let runner else { return }
         Task { @MainActor in
+            // Ignore controller input while the gamepad toolbar overlay is open
+            // so presses aren't double-handled by the game.
+            if GamepadNavigationManager.shared.isGamepadToolbarActive { return }
             runner.setKeyState(retroID: retroID, player: player, pressed: pressed)
         }
     }
 
     private nonisolated func dispatchAnalog(index: Int, id: Int, value: Int16, player: Int) {
-        XPCBridgeAdapter.shared.setAnalogState(index, id: id, value: Int32(value), player: player)
+        let value = Int32(value)
+        Task { @MainActor in
+            // Ignore controller input while the gamepad toolbar overlay is open
+            // so presses aren't double-handled by the game.
+            if GamepadNavigationManager.shared.isGamepadToolbarActive { return }
+            XPCBridgeAdapter.shared.setAnalogState(index, id: id, value: value, player: player)
+        }
     }
 
     private nonisolated func dispatchAnalogButton(retroID: Int, value: Int16, player: Int) {
-        XPCBridgeAdapter.shared.setAnalogButtonState(retroID: retroID, value: Int32(value), player: player)
+        let value = Int32(value)
+        Task { @MainActor in
+            if GamepadNavigationManager.shared.isGamepadToolbarActive { return }
+            XPCBridgeAdapter.shared.setAnalogButtonState(retroID: retroID, value: value, player: player)
+        }
     }
 
     // MARK: - Thread-safe Query Methods

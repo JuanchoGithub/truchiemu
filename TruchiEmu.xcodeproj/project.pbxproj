@@ -625,6 +625,7 @@
 		7E0AE511450BD2A5FE2820A5 /* CoreOptionsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E07C31C568B8140ACE5C6ABD /* CoreOptionsSection.swift */; };
 		7E1281194B7150DB55497A7A /* CheatManagerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7442198CF891F84CE81220FA /* CheatManagerService.swift */; };
 		7E1C3785C6F25E705635A60B /* gearboy_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = D503F9A21A5B9E67E09C0961 /* gearboy_libretro_default.json */; };
+		7E45C123959B64DF17F0371E /* GamepadNavSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CF94E42B2B1161FDE2DB55 /* GamepadNavSettingsView.swift */; };
 		7F2F80091C48339E573A016D /* fightdata_kbash.json in Resources */ = {isa = PBXBuildFile; fileRef = BA1C6E7ABF7218A2B1BF591B /* fightdata_kbash.json */; };
 		7F3A0AF55C70223F0AD9607C /* SCUMMVM.png in Resources */ = {isa = PBXBuildFile; fileRef = A208B8C6B2BCD2197F46362D /* SCUMMVM.png */; };
 		7F7B70E8BE63D8BEBB523510 /* psx-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 6418BF23C56726D09EF49C78 /* psx-cheats.zip */; };
@@ -1913,6 +1914,7 @@
 		83F1EFBDD0AE4C0DBA2E5821 /* input_systemLabels_wonderswan.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_wonderswan.json; sourceTree = "<group>"; };
 		8422707E4EFAF2631E115415 /* BezelSystemMapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelSystemMapping.swift; sourceTree = "<group>"; };
 		84C04444191200BA087DA7D9 /* fightdata_gaxeduel.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_gaxeduel.json; sourceTree = "<group>"; };
+		84CF94E42B2B1161FDE2DB55 /* GamepadNavSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamepadNavSettingsView.swift; sourceTree = "<group>"; };
 		84D2D65163527E606B9A8023 /* XPCSharedMemory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XPCSharedMemory.h; sourceTree = "<group>"; };
 		857D78DF34C31AA99698DF6A /* FLASHBACK.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FLASHBACK.png; sourceTree = "<group>"; };
 		85B3B44BBDB415B6AD99E93B /* fightdata_sams64_2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_sams64_2.json; sourceTree = "<group>"; };
@@ -4212,6 +4214,7 @@
 				8CFD1DFC1E63A628D89B5DF7 /* CoreOptionsView.swift */,
 				50F0C395AC7AC42E3144C256 /* CoreSettingsViewGroup.swift */,
 				17ACE1CD476919F03307CB20 /* ExtractedROMCacheSettingsView.swift */,
+				84CF94E42B2B1161FDE2DB55 /* GamepadNavSettingsView.swift */,
 				B0135BC846E6477A8389B7FC /* GeneralSettingsView.swift */,
 				B5E3E5DB793CCE1800B8C7BE /* GenreSettingsView.swift */,
 				D12FCF47C4E8A17755ADDBE1 /* HelpSettingsView.swift */,
@@ -5736,6 +5739,7 @@
 				D32BA18DB9ED9FDA4A25A07E /* GamepadNavConfig.swift in Sources */,
 				F1076B7F46B13D1B6099B623 /* GamepadNavContext.swift in Sources */,
 				1ACE2B4563E908571208698E /* GamepadNavCoordinator.swift in Sources */,
+				7E45C123959B64DF17F0371E /* GamepadNavSettingsView.swift in Sources */,
 				22D45EF6813F1B4ADDD34BAD /* GamepadNavigationManager.swift in Sources */,
 				CC4C936CF4AAB9EBE49E8F47 /* GeneralSettingsView.swift in Sources */,
 				5DC85C85056E986328B9BC36 /* GenreManager.swift in Sources */,

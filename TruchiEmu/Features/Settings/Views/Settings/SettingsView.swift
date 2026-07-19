@@ -34,7 +34,7 @@ struct SettingsView: View {
     enum Page: Hashable, Codable, RawRepresentable, Identifiable {
 
         var id: String { rawValue }
-        case general, saves, library, controllers, analogMouse, boxArt, cheats, bezels, retroAchievements, genre, logging, moveList, hotkeys, timeMachine, perSystem, streaming, help, about, reset
+        case general, saves, library, controllers, analogMouse, boxArt, cheats, bezels, retroAchievements, genre, logging, moveList, hotkeys, gamepadNav, timeMachine, perSystem, streaming, help, about, reset
 
         var rawValue: String {
             switch self {
@@ -51,6 +51,7 @@ struct SettingsView: View {
             case .logging: return "logging"
             case .moveList: return "moveList"
             case .hotkeys: return "hotkeys"
+            case .gamepadNav: return "gamepadNav"
             case .timeMachine: return "timeMachine"
             case .perSystem: return "perSystem"
             case .streaming: return "streaming"
@@ -75,6 +76,7 @@ struct SettingsView: View {
             case "logging": self = .logging
             case "moveList": self = .moveList
             case "hotkeys", "hotkeysGlobal", "hotkeysGameplay": self = .hotkeys
+            case "gamepadNav": self = .gamepadNav
             case "timeMachine": self = .timeMachine
             case "perSystem": self = .perSystem
             case "streaming": self = .streaming
@@ -89,7 +91,7 @@ struct SettingsView: View {
             switch self {
             case .general, .saves, .boxArt, .bezels, .perSystem:
                 return .general
-            case .library, .controllers, .analogMouse, .hotkeys:
+            case .library, .controllers, .analogMouse, .hotkeys, .gamepadNav:
                 return .library
             case .cheats, .streaming, .retroAchievements, .moveList, .genre, .timeMachine:
                 return .gameplay
@@ -113,11 +115,12 @@ struct SettingsView: View {
             case .logging: return "doc.text.fill"
             case .moveList: return "figure.martial.arts"
             case .hotkeys: return "keyboard"
+            case .gamepadNav: return "gamecontroller.circle"
             case .timeMachine: return "clock.arrow.circlepath"
             case .perSystem: return "square.grid.2x2"
             case .streaming: return "video.fill"
             case .help: return "questionmark.circle.fill"
-            case .about: return "info.circle.fill"
+            case .about: return "info.circle"
             case .reset: return "arrow.uturn.backward"
             }
         }
@@ -137,6 +140,7 @@ struct SettingsView: View {
             case .logging: return LocalizationManager.shared.localized("settings.logging")
             case .moveList: return LocalizationManager.shared.localized("settings.moveList")
             case .hotkeys: return LocalizationManager.shared.localized("settings.hotkeys")
+            case .gamepadNav: return LocalizationManager.shared.localized("gamepadNav.section")
             case .timeMachine: return LocalizationManager.shared.localized("settings.timeMachine")
             case .perSystem: return LocalizationManager.shared.localized("settings.perSystem")
              case .streaming: return LocalizationManager.shared.localized("settings.streamingAndMedia")
@@ -174,6 +178,8 @@ struct SettingsView: View {
                 return "move list moves fighting combo frame data timing input"
             case .hotkeys:
                 return "hotkeys keyboard shortcuts save load slot undo training recording input capture global gameplay key binding"
+            case .gamepadNav:
+                return "gamepad navigation controller overlay toolbar d-pad a b start select l3 r3 combo show game"
             case .timeMachine:
                 return "time machine rewind fast forward slow motion speed scrub timeline buffer memory"
             case .perSystem:
@@ -203,7 +209,7 @@ struct SettingsView: View {
 
     static let allPages: [Page] = [
         .general, .saves, .boxArt, .bezels, .perSystem,
-        .library, .controllers, .analogMouse, .hotkeys,
+        .library, .controllers, .analogMouse, .hotkeys, .gamepadNav,
         .cheats, .retroAchievements, .moveList, .streaming, .genre, .timeMachine,
         .logging, .reset, .help, .about
     ]
@@ -626,6 +632,7 @@ struct SettingsView: View {
             case .logging: LoggingSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
             case .moveList: MoveListSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
             case .hotkeys: HotkeyConfigSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID, scope: .all)
+            case .gamepadNav: GamepadNavSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
             case .timeMachine: TimeMachineSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID, selectedPage: selectedPageBinding)
             case .perSystem: PerSystemSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID, pendingSystemID: $pendingSystemSelection)
             case .streaming: StreamingMediaSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)

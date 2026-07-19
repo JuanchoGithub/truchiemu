@@ -8,6 +8,8 @@ extension StandaloneGameWindowController {
     @MainActor
     func onMouseActivity() {
         guard !InputCaptureManager.shared.isCapturing else { return }
+        // Never auto-hide while navigating the toolbar by gamepad.
+        if isGamepadToolbarMode { return }
         if isToolbarVisible {
             scheduleHideToolbar()
         } else {
@@ -18,6 +20,15 @@ extension StandaloneGameWindowController {
     @MainActor
     func showToolbar() {
         guard !InputCaptureManager.shared.isCapturing else { return }
+
+        // While navigating the toolbar by gamepad it must stay visible; don't
+        // (re)arm the auto-hide timer.
+        if isGamepadToolbarMode {
+            toolbarView?.isHidden = false
+            toolbarView?.alphaValue = 1
+            isToolbarVisible = true
+            return
+        }
 
         // Hide the game toolbar while in Time Machine scrub mode so it
         // doesn't overlap the timeline overlay and steal clicks.

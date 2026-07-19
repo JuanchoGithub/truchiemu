@@ -269,11 +269,10 @@ struct CheatBrowserList: View {
     }
 
     private var cheatListSection: some View {
-        let filtered = filteredCheats
-        let sorted = filtered.sorted { $0.enabled && !$1.enabled }
+        let sorted = orderedCheats
 
         return Group {
-            if filtered.isEmpty {
+            if sorted.isEmpty {
                 Text(loc.localized("cheats.noCheatsMatch").replacingOccurrences(of: "{0}", with: searchText))
                     .font(.subheadline).foregroundColor(AppColors.textMuted(colorScheme)).padding(.vertical, AppSpacing.xxs)
             } else {
@@ -285,6 +284,7 @@ struct CheatBrowserList: View {
                                 updated.enabled.toggle()
                                 cheatManager.updateCheat(updated, for: rom)
                                 loadCheats()
+                                applyEnabledCheats()
                             }
                         }
                     }
@@ -293,6 +293,11 @@ struct CheatBrowserList: View {
                 .frame(maxHeight: maxListHeight)
             }
         }
+    }
+
+    /// Cheats after filtering + ordering.
+    private var orderedCheats: [Cheat] {
+        filteredCheats.sorted { $0.enabled && !$1.enabled }
     }
 
     private var enableDisableAllRow: some View {
@@ -369,6 +374,15 @@ struct CheatBrowserList: View {
         cheatManager.loadCheatsForROM(rom)
         cheats = cheatManager.cheats(for: rom)
         onCountsChanged?(totalCount, enabledCount)
+    }
+
+    /// Push the currently-enabled cheats to the running core so toggles take
+    /// effect immediately (instead of requiring the explicit Apply button).
+    private func applyEnabledCheats() {
+        guard !HardcoreModeManager.shared.areCheatsBlocked else { return }
+        let enabled = cheatManager.cheats(for: rom).filter { $0.enabled }
+        let cheatData = enabled.map { ["index": $0.index, "code": $0.code, "enabled": $0.enabled] as [String: Any] }
+        XPCBridgeAdapter.shared.applyCheats(cheatData)
     }
 
     private func addCheat() {
@@ -455,5 +469,82 @@ struct CheatBrowserList: View {
         case .custom:
             return false
         }
+    }
+}
+
+/// Wraps the cheat list in a gamepad-navigable sheet when `gamepadNavMode`
+/// is enabled. Up/Down moves focus, A toggles the focused cheat, B closes.
+struct GamepadCheatListModifier: ViewModifier {
+    let gamepadNavMode: Bool
+    @Binding var cheats: [Cheat]
+    let onToggle: ((Cheat) -> Void)?
+    let onDismiss: (() -> Void)?
+    let onLoad: (() -> Void)?
+
+    @Environment(\.colorScheme) private var colorScheme
+    @State private var sheetFocusIndex: Int = 0
+    @State private var isPresented: Bool = true
+
+    func body(content: Content) -> some View {
+        guard gamepadNavMode else { return AnyView(content) }
+
+        let list = cheats
+        return AnyView(
+            VStack(spacing: 0) {
+                if list.isEmpty {
+                    VStack(spacing: 12) {
+                        ProgressView().controlSize(.regular)
+                        Text(LocalizationManager.shared.localized("cheat.searching"))
+                            .font(.subheadline)
+                            .foregroundColor(AppColors.textSecondary(colorScheme))
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .padding()
+                } else {
+                    ScrollViewReader { proxy in
+                        ScrollView {
+                            VStack(spacing: 6) {
+                                ForEach(Array(list.enumerated()), id: \.element.id) { index, cheat in
+                                    CheatListRowView(cheat: cheat, isOn: cheat.enabled) {
+                                        onToggle?(cheat)
+                                    }
+                                    .id(index)
+                                    .overlay(alignment: .center) {
+                                        if sheetFocusIndex == index {
+                                            RoundedRectangle(cornerRadius: 6)
+                                                .stroke(AppColors.brandAccent, lineWidth: 2)
+                                                .padding(-2)
+                                        }
+                                    }
+                                    .padding(.horizontal, 8)
+                                }
+                            }
+                            .padding()
+                        }
+                        .onReceive(GamepadNavContextStack.shared.focusPublisher) { _ in
+                            if let ctx = GamepadNavContextStack.shared.topActive() as? GamepadSheetContext,
+                               ctx.itemCount == list.count {
+                                sheetFocusIndex = ctx.focusIndex
+                                if sheetFocusIndex >= 0 { proxy.scrollTo(sheetFocusIndex, anchor: .center) }
+                            }
+                        }
+                    }
+                }
+            }
+            .gamepadSheetNav(
+                isPresented: $isPresented,
+                itemCount: list.count,
+                onSelect: { idx in
+                    if list.indices.contains(idx) {
+                        onToggle?(list[idx])
+                        onLoad?()
+                    }
+                },
+                onDismiss: {
+                    onDismiss?()
+                }
+            )
+            .onAppear { onLoad?() }
+        )
     }
 }

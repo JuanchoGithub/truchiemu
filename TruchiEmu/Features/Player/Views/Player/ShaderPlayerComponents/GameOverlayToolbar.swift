@@ -36,8 +36,8 @@ struct GameOverlayToolbar: View {
     private var toolbarContent: some View {
         HStack(spacing: spacing) {
             ToolbarButton(
-                icon: "power",
-                label: loc.localized("toolbar.stop"),
+                icon: stopButtonIcon,
+                label: stopButtonLabel,
                 danger: true
             ) {
                 windowController.window?.close()
@@ -82,6 +82,7 @@ struct GameOverlayToolbar: View {
 
             SlotSelectorButton(
                 currentSlot: runner.currentSlot,
+                isDropdownShown: $windowController.isSlotPickerShown,
                 onSlotChange: { newSlot in
                     runner.currentSlot = newSlot
                     AppHaptics.selection()
@@ -93,8 +94,11 @@ struct GameOverlayToolbar: View {
 
             toolbarDivider
 
-            RecordStreamButton(runner: runner)
-                .gamepadToolbarFocus(index: 6, focusedIndex: focusedIndex)
+            RecordStreamButton(
+                runner: runner,
+                isDropdownShown: $windowController.isRecordStreamPickerShown
+            )
+            .gamepadToolbarFocus(index: 6, focusedIndex: focusedIndex)
 
             toolbarDivider
 
@@ -107,6 +111,12 @@ struct GameOverlayToolbar: View {
                 }
             }
             .gamepadToolbarFocus(index: 7, focusedIndex: focusedIndex)
+            .popover(isPresented: $windowController.isCheatPickerShown, arrowEdge: .top) {
+                if let rom = windowController.currentGameROM {
+                    CheatPickerView(rom: rom, windowController: windowController)
+                        .frame(width: 380, height: 440)
+                }
+            }
 
             FightTrainingToolbarButton(windowController: windowController)
                 .gamepadToolbarFocus(index: trainingFocusIndex, focusedIndex: focusedIndex)
@@ -127,6 +137,18 @@ struct GameOverlayToolbar: View {
                 .fill(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled).opacity(0.85))
                 .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
         )
+    }
+
+    private var stopButtonIcon: String {
+        windowController.isGamepadToolbarMode && windowController.isStopConfirmArmed
+            ? "checkmark.circle.fill"
+            : "power"
+    }
+
+    private var stopButtonLabel: String {
+        windowController.isGamepadToolbarMode && windowController.isStopConfirmArmed
+            ? loc.localized("toolbar.confirmStop")
+            : loc.localized("toolbar.stop")
     }
 
     @ViewBuilder
@@ -173,14 +195,14 @@ struct GameOverlayToolbar: View {
     }
 
     private var fullscreenFocusIndex: Int {
-        var idx = 9
+        var idx = 8
         if windowController.trainingModeViewModel.hasGameData { idx += 1 }
         if windowController.gameGuideViewModel.hasGuideData { idx += 1 }
         return idx
     }
 
     private var autoFullscreenFocusIndex: Int {
-        var idx = 10
+        var idx = 9
         if windowController.trainingModeViewModel.hasGameData { idx += 1 }
         if windowController.gameGuideViewModel.hasGuideData { idx += 1 }
         return idx
