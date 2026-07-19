@@ -22,6 +22,7 @@ typedef void (*FramePollCallbackType)(void);
                      coreID:(NSString *)coreID
                    systemID:(nullable NSString *)systemID
                 romFilename:(nullable NSString *)romFilename
+           wiiControllerType:(int)wiiControllerType
             failureCallback:(nullable void (^)(NSString *message))failureCb;
 
 + (void)stop;
@@ -73,6 +74,9 @@ typedef void (*FramePollCallbackType)(void);
 
 /* Set the Genesis controller device type (0=auto, 513=3-button, 514=6-button) */
 + (void)setGenesisDeviceType:(unsigned)deviceType;
+
+/* Set the Wii (Dolphin) controller device type for auto mode (0=auto, 513=Wiimote+Classic, 514=Wii U Pro) */
++ (void)setWiiControllerType:(unsigned)deviceType;
 
 /* Geometry — returns the core-provided display aspect ratio from
  * retro_system_av_info */

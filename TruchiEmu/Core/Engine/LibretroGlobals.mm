@@ -15,6 +15,7 @@ NSString *g_shaderDir = nil;
 BOOL g_isPaused = NO;
 BOOL g_variablesUpdated = NO;
 unsigned g_genesisDeviceType = 0;
+int g_wiiControllerType = 0; // 0=auto, 1=Wiimote, 513=Sideways, 1025=Wiimote+Classic
 int g_currentRotation = 0; 
 GLuint g_hwFBO = 0;
 

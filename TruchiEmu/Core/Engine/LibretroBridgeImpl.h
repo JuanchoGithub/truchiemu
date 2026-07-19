@@ -8,7 +8,7 @@
 #import "AudioRingBuffer.hpp"
 
 #ifndef RETRO_DEVICE_WIIMOTE_CC
-#define RETRO_DEVICE_WIIMOTE_CC 513
+#define RETRO_DEVICE_WIIMOTE_CC 1025
 #endif
 
 typedef void (^VideoFrameCallback)(const void * _Nonnull data, int width, int height, int pitch, int format);

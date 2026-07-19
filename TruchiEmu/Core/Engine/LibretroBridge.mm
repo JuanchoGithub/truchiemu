@@ -97,6 +97,7 @@ g_frame_poll_callback = callback;
  coreID:(NSString *)coreID
  systemID:(nullable NSString *)systemID
  romFilename:(nullable NSString *)romFilename
+ wiiControllerType:(int)wiiControllerType
  failureCallback:(nullable void (^)(NSString *))failureCb {
 
 #ifndef XPC_SERVICE
@@ -107,7 +108,14 @@ g_frame_poll_callback = callback;
         return;
     }
 #endif
-    
+
+    // Persist the Wii controller type SYNCHRONOUSLY before queuing launchROM.
+    // Setting it from a separate XPC message (fire-and-forget) races with the
+    // launch message and g_bridgeQueue dispatch — by the time launchROM runs,
+    // the global may still be 0, falling back to plain Wiimote. Embedding the
+    // device type in the launch call guarantees it's set before launchROM.
+    g_wiiControllerType = wiiControllerType;
+
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         g_bridgeQueue = dispatch_queue_create("com.truchiemu.bridge", DISPATCH_QUEUE_SERIAL);
@@ -515,6 +523,10 @@ g_frame_poll_callback = callback;
 
 + (void)setGenesisDeviceType:(unsigned)deviceType {
     g_genesisDeviceType = deviceType;
+}
+
++ (void)setWiiControllerType:(unsigned)deviceType {
+    g_wiiControllerType = (int)deviceType;
 }
 
 + (NSDictionary<NSString *, NSArray *> *)getInputDescriptorsDictionary {

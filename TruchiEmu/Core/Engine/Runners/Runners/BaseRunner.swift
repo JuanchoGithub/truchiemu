@@ -492,6 +492,8 @@ case "scummvm": runner = ScummVMRunner()
         let cachedAchievements = self.rcheevosAchievements ?? []
         let resolvedRomPath = self.romPath
         let genesisControllerType = AppSettings.getGenesisControllerType()
+        let wiiControllerType = AppSettings.getWiiControllerType()
+        let hasRealController = !ControllerService.shared.connectedControllers.contains { !$0.isKeyboard }
 
         emulationQueue.async { [cachedAchievements, genesisControllerType] in
             XPCBridgeAdapter.shared.setLanguage(selectedLang)
@@ -525,6 +527,27 @@ case "scummvm": runner = ScummVMRunner()
                 XPCBridgeAdapter.shared.setGenesisDeviceType(0)
             }
 
+            // Wii (Dolphin): tell the core which controller subtype is attached.
+            // Auto mode picks Wiimote + Classic Controller when a real controller
+            // (GC or SDL) is connected, otherwise a plain Wiimote. The override
+            // forces a specific subtype regardless of controller presence.
+            // The value is passed as a launch parameter (deterministic) rather
+            // than a separate fire-and-forget XPC message (which raced the
+            // launch dispatch and was observed reaching the core as 0).
+            let isDolphinCore = lowerCoreID.contains("dolphin")
+            var wiiDeviceForLaunch: Int = 0
+            if isDolphinCore {
+                let device: UInt32
+                if let forced = wiiControllerType.deviceValue {
+                    device = forced
+                } else {
+                    device = hasRealController ? 1025 : 1
+                }
+                wiiDeviceForLaunch = Int(device)
+                LoggerService.info(category: "BaseRunner", "WiiDeviceResolve wiiControllerType=\(wiiControllerType.rawValue) hasRealController=\(hasRealController) resolvedDevice=\(device)")
+            } else {
+                XPCBridgeAdapter.shared.setWiiControllerType(0)
+            }
             // Set up rcheevos achievement detection. The runtime lives in the
             // XPC service; we just feed triggers in and listen for events.
             if !cachedAchievements.isEmpty {
@@ -555,6 +578,7 @@ case "scummvm": runner = ScummVMRunner()
                 self?.rcheevosLock.unlock()
                 if needsReset { XPCBridgeAdapter.shared.resetRcheevosTriggers() }
                 },
+                wiiControllerType: wiiDeviceForLaunch,
                 onFailure: { [weak self] message in
                     Task { @MainActor in
                         LoggerService.error(category: "Runner", "Core launch failed: \(message)")

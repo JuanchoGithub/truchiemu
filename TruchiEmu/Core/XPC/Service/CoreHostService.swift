@@ -142,6 +142,7 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
                  systemDirectory: String,
                  language: Int,
                  logLevel: Int,
+                 wiiControllerType: Int,
                  reply: @escaping (Bool, String?) -> Void) {
 
         SaveDirectoryBridge.setSavePath(saveDirectory)
@@ -205,7 +206,8 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
 							  videoCallback: videoCallback,
 							  coreID: coreID,
 							  systemID: systemID,
-							  romFilename: romFilename) { msg in
+							  romFilename: romFilename,
+							  wiiControllerType: Int32(wiiControllerType)) { msg in
 			failureMsg = msg
 		}
 		Self.logMemoryFootprint(label: "post-launch")
@@ -466,6 +468,12 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
 
     func setGenesisDeviceType(_ deviceType: Int, reply: @escaping () -> Void) {
         LibretroBridge.setGenesisDeviceType(UInt32(deviceType))
+        reply()
+    }
+
+    func setWiiControllerType(_ deviceType: Int, reply: @escaping () -> Void) {
+        LoggerService.info(category: "CoreHostService", "setWiiControllerType received deviceType=\(deviceType)")
+        LibretroBridge.setWiiControllerType(UInt32(deviceType))
         reply()
     }
 

@@ -4,5 +4,6 @@
   "dolphin_fastmem": "enabled",
   "dolphin_crop_overscan": "enabled",
   "dolphin_fast_disc_speed": "enabled",
-  "dolphin_osd_enabled": "disabled"
+  "dolphin_osd_enabled": "disabled",
+  "dolphin_ir_mode": "2"
 }

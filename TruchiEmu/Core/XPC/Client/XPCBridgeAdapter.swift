@@ -50,12 +50,14 @@ final class XPCBridgeAdapter {
 
     func launch(dylibPath: String, romPath: String, coreID: String, systemID: String?, romFilename: String?,
                  shaderDir: String?, videoCallback: @escaping (UnsafeRawPointer?, Int, Int, Int, Int) -> Void,
+                 wiiControllerType: Int = 0,
                  onFailure: ((String) -> Void)? = nil) {
         guard useXPC else {
             LoggerService.warning(category: "XPCBridgeAdapter", "launch() — XPC DISABLED, launching in-process (useXPC=false)")
             LibretroBridgeSwift.launch(
                 dylibPath: dylibPath, romPath: romPath, coreID: coreID,
                 systemID: systemID, romFilename: romFilename, shaderDir: shaderDir,
+                wiiControllerType: wiiControllerType,
                 videoCallback: videoCallback, onFailure: onFailure
             )
             return
@@ -119,7 +121,7 @@ final class XPCBridgeAdapter {
         dylibPath: dylibPath, romPath: romPath, coreID: coreID,
         systemID: systemID, romFilename: romFilename, shaderDir: shaderDir,
         saveDirectory: saveDir, systemDirectory: sysDir,
-        language: lang, logLevel: logLevel
+        language: lang, logLevel: logLevel, wiiControllerType: wiiControllerType
         ) { success, errorMessage in
             if !success {
                 onFailure?(errorMessage ?? "Unknown error")
@@ -655,6 +657,14 @@ final class XPCBridgeAdapter {
             return
         }
         XPCConnectionManager.shared.remoteProxy?.setGenesisDeviceType(Int(deviceType)) {}
+    }
+
+    func setWiiControllerType(_ deviceType: UInt32) {
+        guard useXPC else {
+            LibretroBridgeSwift.setWiiControllerType(deviceType)
+            return
+        }
+        XPCConnectionManager.shared.remoteProxy?.setWiiControllerType(Int(deviceType)) {}
     }
 
     func setOptions(_ options: [String: String]) {

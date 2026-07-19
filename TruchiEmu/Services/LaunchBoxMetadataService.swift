@@ -457,11 +457,17 @@ final class LaunchBoxMetadataService: ObservableObject {
 
     func bestMatch(for gameName: String, systemID: String) -> LaunchBoxGame? {
         guard let platformName = platformName(forSystemID: systemID) else { return nil }
-        return bestMatch(for: gameName, platformName: platformName)
+        return bestMatch(for: gameName, platformName: platformName, systemID: systemID)
     }
 
-    func bestMatch(for gameName: String, platformName: String) -> LaunchBoxGame? {
-        let games = games(forPlatform: platformName)
+    func bestMatch(for gameName: String, platformName: String, systemID: String? = nil) -> LaunchBoxGame? {
+        var games = games(forPlatform: platformName)
+        // Virtual Console titles live inside the Wii/GameCube LaunchBox platforms
+        // and share tokens with retail discs (e.g. "Super Mario Bros."). Exclude
+        // them for retail Wii/GameCube so a disc never mismatches to a VC game.
+        if systemID == "wii" || systemID == "gamecube" {
+            games = games.filter { !LaunchBoxMetadataService.isVirtualConsole($0.name) }
+        }
         let rawQuery = gameName.lowercased().trimmingCharacters(in: .whitespaces)
 
         guard !rawQuery.isEmpty else { return nil }
@@ -542,6 +548,15 @@ final class LaunchBoxMetadataService: ObservableObject {
 
     private func normalizeForMatching(_ s: String) -> String {
         stripTags(from: s.folding(options: .diacriticInsensitive, locale: nil)).lowercased().trimmingCharacters(in: .whitespaces)
+    }
+
+    /// Detects Virtual Console titles, which appear inside the Wii/GameCube
+    /// LaunchBox platforms but are emulated ports, not retail discs. Matching a
+    /// retail disc to one of these produces absurd results (e.g. "New Super Mario
+    /// Bros." → "Super Mario Bros. (Virtual Console)").
+    private static func isVirtualConsole(_ name: String) -> Bool {
+        let lower = name.lowercased()
+        return lower.contains("(virtual console)") || lower.contains("(vc)") || lower.contains("virtual console")
     }
 
     private func fuzzyScore(_ query: String, target: String) -> Int {
@@ -635,7 +650,7 @@ final class LaunchBoxMetadataService: ObservableObject {
 
         let index = nameIndex(for: platformName)
         let normalizedQuery = normalizeForMatching(gameName)
-        let match = index[normalizedQuery] ?? bestMatch(for: gameName, platformName: platformName)
+        let match = index[normalizedQuery] ?? bestMatch(for: gameName, platformName: platformName, systemID: systemID)
         guard let match else { return false }
 
         var updated = rom

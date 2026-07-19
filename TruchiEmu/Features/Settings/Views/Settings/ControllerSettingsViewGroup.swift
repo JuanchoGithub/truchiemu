@@ -123,6 +123,7 @@ struct ControllerSettingsView: View {
         } else {
             _selectedSystemID = State(initialValue: "default")
         }
+        _wiiControllerTypeSelection = State(initialValue: AppSettings.getWiiControllerType())
     }
 
     var body: some View {
@@ -150,6 +151,18 @@ struct ControllerSettingsView: View {
                         Spacer()
                     }
                 }
+            }
+
+            Section(loc.localized("controllers.wiiControllerType")) {
+                Picker(loc.localized("controllers.wiiControllerType"), selection: wiiControllerTypeBinding) {
+                    Text(loc.localized("controllers.wii.auto")).tag(AppSettings.WiiControllerType.auto)
+                    Text(loc.localized("controllers.wii.wiimote")).tag(AppSettings.WiiControllerType.wiimote)
+                    Text(loc.localized("controllers.wii.wiimoteSideways")).tag(AppSettings.WiiControllerType.wiimoteSideways)
+                    Text(loc.localized("controllers.wii.wiimoteClassic")).tag(AppSettings.WiiControllerType.wiimoteClassic)
+                }
+                Text(loc.localized("controllers.wiiControllerTypeHelp"))
+                    .font(.caption)
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
             }
 
             if !searchText.isEmpty {
@@ -325,6 +338,18 @@ struct ControllerSettingsView: View {
         Binding(
             get: { AppSettings.getGenesisControllerType() },
             set: { AppSettings.setGenesisControllerType($0) }
+        )
+    }
+
+    @State private var wiiControllerTypeSelection: AppSettings.WiiControllerType = .auto
+
+    private var wiiControllerTypeBinding: Binding<AppSettings.WiiControllerType> {
+        Binding(
+            get: { wiiControllerTypeSelection },
+            set: {
+                wiiControllerTypeSelection = $0
+                AppSettings.setWiiControllerType($0)
+            }
         )
     }
 

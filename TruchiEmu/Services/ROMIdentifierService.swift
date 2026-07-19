@@ -253,6 +253,26 @@ final class ROMIdentifierService: @unchecked Sendable {
         LoggerService.debug(category: "ROMIdentifier","Identify: START system=\(systemID) file=\(rom.path.lastPathComponent) (preferNameMatch=\(preferNameMatch))")
         #endif
 
+        // Wii/GameCube retail discs have no usable libretro DAT (only "Wii (Digital)"
+        // exists upstream, and full-file CRC cannot match Redump/No-Intro CRCs). Read
+        // the disc header directly for an authoritative title + game code. This also
+        // unblocks LaunchBox enrichment, which requires a non-nil crc32/title.
+        if systemID == "wii" || systemID == "gamecube" {
+            if let header = DiscHeaderReader.read(from: rom.path, systemID: systemID) {
+                #if LOG_DEBUG
+                LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): disc-header → '\(header.title)' (code \(header.gameCode), wii=\(header.isWii))")
+                #endif
+                return .identified(GameInfo(
+                    name: header.title,
+                    year: nil, publisher: nil, developer: nil, genre: nil,
+                    crc: "", thumbnailLookupSystemID: systemID, players: nil
+                ))
+            }
+            #if LOG_DEBUG
+            LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): no disc-header readable (e.g. .rvz/.wia), falling back to name match")
+            #endif
+        }
+
         let db = await LibretroDatabaseLibrary.shared.fetchAndLoadDat(for: system)
         if db.isEmpty {
             LoggerService.error(category: "ROMIdentifier", "Identify \(rom.name): empty database for system \(systemID), identification skipped.")

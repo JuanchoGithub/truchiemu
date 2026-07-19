@@ -29,6 +29,7 @@ import Foundation
 
     static func launch(dylibPath: String, romPath: String, coreID: String, systemID: String? = nil, romFilename: String? = nil,
                        shaderDir: String? = nil,
+                       wiiControllerType: Int = 0,
                        videoCallback: @escaping (UnsafeRawPointer?, Int, Int, Int, Int) -> Void,
                        onFailure: ((String) -> Void)? = nil) {
         #if !XPC_SERVICE
@@ -40,7 +41,7 @@ import Foundation
         #endif
         LibretroBridge.launch(withDylibPath: dylibPath, romPath: romPath, shaderDir: shaderDir, videoCallback: { data, w, h, pitch, format in
             videoCallback(data, Int(w), Int(h), Int(pitch), Int(format))
-        }, coreID: coreID, systemID: systemID, romFilename: romFilename, failureCallback: { message in
+        }, coreID: coreID, systemID: systemID, romFilename: romFilename, wiiControllerType: Int32(wiiControllerType), failureCallback: { message in
             onFailure?(message)
         })
         
@@ -353,6 +354,10 @@ static func setKeyState(retroID: Int, pressed: Bool) {
 
     static func setGenesisDeviceType(_ deviceType: UInt32) {
         LibretroBridge.setGenesisDeviceType(deviceType)
+    }
+
+    static func setWiiControllerType(_ deviceType: UInt32) {
+        LibretroBridge.setWiiControllerType(deviceType)
     }
 
     // MARK: - Direct Memory Access

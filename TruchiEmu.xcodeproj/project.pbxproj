@@ -733,6 +733,7 @@
 		9445955AEA22BF215BC4A705 /* ZXS.png in Resources */ = {isa = PBXBuildFile; fileRef = 3FE9A86B3E8DEBB7247CD073 /* ZXS.png */; };
 		94E0DA548FB08FF30BABB657 /* msumd@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 1025434DD2AD0DB5E24C9527 /* msumd@132w.png */; };
 		94F18E1F0634E807A991FED7 /* cpc-alt.png in Resources */ = {isa = PBXBuildFile; fileRef = CFA7EE5F0E680257ECC8A1E4 /* cpc-alt.png */; };
+		95003D500A633FFBC2877CCB /* DiscHeaderReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E47DE987F403D82F4294F3B /* DiscHeaderReader.swift */; };
 		954B76716E5AB9956257D60C /* Sony - PlayStation Portable.dat in Resources */ = {isa = PBXBuildFile; fileRef = C042BD111B93D252B7591D31 /* Sony - PlayStation Portable.dat */; };
 		9598A06E63F01D2944846736 /* n64_unreleased-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 48EC2BF08A118C9E0FDC4593 /* n64_unreleased-cheats.zip */; };
 		95DF320E0D3AA286DA9CB885 /* CPS3.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C1283F9FDAB03FC63950043 /* CPS3.png */; };
@@ -1958,6 +1959,7 @@
 		8D81EC76BF3E62E5BD7D2461 /* fightdata_sgemf.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_sgemf.json; sourceTree = "<group>"; };
 		8DC3C30FA66CEE1150C45DC5 /* BezelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelManager.swift; sourceTree = "<group>"; };
 		8DEABF20B657D31D6DF07400 /* TI83.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TI83.png; sourceTree = "<group>"; };
+		8E47DE987F403D82F4294F3B /* DiscHeaderReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscHeaderReader.swift; sourceTree = "<group>"; };
 		8E620C09D44B588F017C7B16 /* input_coreLabels_beetle_sgx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_beetle_sgx.json; sourceTree = "<group>"; };
 		8E6AF76D7552E90F0C9FEAD1 /* SDLControllerMapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDLControllerMapping.swift; sourceTree = "<group>"; };
 		8E892D0AA9633E0476542B9F /* input_coreLabels_gw.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_gw.json; sourceTree = "<group>"; };
@@ -3443,6 +3445,7 @@
 				79F9C29D41593BD0666D4215 /* CoreManager.swift */,
 				0FF63BFF980BE337C49CF0B7 /* CoreOverrideService.swift */,
 				3923EC666D7D2EBA025850F5 /* DATPrepopulationService.swift */,
+				8E47DE987F403D82F4294F3B /* DiscHeaderReader.swift */,
 				02AF500782AB016FB6164846 /* DreamcastBIOSService.swift */,
 				EB775F5E7D4CB3DFCACA89A5 /* GameDragState.swift */,
 				3785C1F47A9C4D765D471039 /* GameModeManager.swift */,
@@ -5702,6 +5705,7 @@
 				093A0D5881AA5FCDDD7AEDFF /* DesignSystem.swift in Sources */,
 				487D415E3A60D766E5C55314 /* DetailBoxArtComponents.swift in Sources */,
 				92931B26614CCBD73F498965 /* DetailSection.swift in Sources */,
+				95003D500A633FFBC2877CCB /* DiscHeaderReader.swift in Sources */,
 				FC372B713FBF4FAF94510511 /* DotMatrixLCD.metal in Sources */,
 				5283D5F00AED8BC54D66A48F /* DragPreviewStack.swift in Sources */,
 				C25037436138043A3C12B4C7 /* DreamcastBIOSService.swift in Sources */,

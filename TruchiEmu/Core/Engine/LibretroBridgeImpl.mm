@@ -188,12 +188,21 @@ LOAD_SYM(retro_get_memory_data)
   }
   gi.meta = NULL;
 
-  device_type = 1; 
+  device_type = 1;
+
+  bridge_log_printf(RETRO_LOG_INFO, "[Bridge] WiiDeviceProbe coreID=%s systemID=%s ext=%s g_wiiControllerType=%d path=%s",
+                    g_coreID ? g_coreID.UTF8String : "(null)",
+                    g_systemID ? g_systemID.UTF8String : "(null)",
+                    _retainedRomPath ? _retainedRomPath.pathExtension.UTF8String : "(null)",
+                    g_wiiControllerType,
+                    _retainedRomPath ? _retainedRomPath.UTF8String : "(null)");
 
   if (g_coreID && [[g_coreID lowercaseString] containsString:@"dolphin"]) {
     NSString *ext = [_retainedRomPath.pathExtension lowercaseString];
     if ([ext isEqualToString:@"wbfs"] || [ext isEqualToString:@"wad"] || [ext isEqualToString:@"wia"] ||[ext isEqualToString:@"rvz"]) {
-      device_type = 513;
+      // 0 = auto (Swift resolves to Wiimote+Classic when a controller is connected,
+      // otherwise plain Wiimote); non-zero = explicit override device value.
+      device_type = (g_wiiControllerType != 0) ? (unsigned)g_wiiControllerType : 1;
     }
 } else if ((g_coreID && [[g_coreID lowercaseString] containsString:@"swanstation"]) ||
               (g_coreID && [[g_coreID lowercaseString] containsString:@"mednafen_psx"]) ||
@@ -224,10 +233,11 @@ LOAD_SYM(retro_get_memory_data)
     goto shutdown;
   } @catch (...) {
     goto shutdown;
-}[self setControllerPortDevice:0 device:device_type];
+  }[self setControllerPortDevice:0 device:device_type];
     [self setControllerPortDevice:1 device:device_type];
     [self setControllerPortDevice:2 device:device_type];
     [self setControllerPortDevice:3 device:device_type];
+    NSLog(@"[Bridge] WiiDeviceApply device_type=%u for dolphin ports 0-3", device_type);
 
     // Signal variables updated for Flycast cores so retro_run() triggers
     // update_variables() with first_startup=false, which processes device

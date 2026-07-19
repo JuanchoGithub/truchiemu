@@ -11,6 +11,7 @@ import Foundation
                 systemDirectory: String,
                 language: Int,
                 logLevel: Int,
+                wiiControllerType: Int,
                 reply: @escaping (Bool, String?) -> Void)
 
     func stop(reply: @escaping () -> Void)
@@ -54,6 +55,7 @@ import Foundation
 
     func setControllerPortDevice(port: Int, device: Int, reply: @escaping () -> Void)
     func setGenesisDeviceType(_ deviceType: Int, reply: @escaping () -> Void)
+    func setWiiControllerType(_ deviceType: Int, reply: @escaping () -> Void)
     func setVariablesUpdated(reply: @escaping () -> Void)
 
     func loadCoreForOptions(dylibPath: String, coreID: String, romPath: String?, reply: @escaping () -> Void)

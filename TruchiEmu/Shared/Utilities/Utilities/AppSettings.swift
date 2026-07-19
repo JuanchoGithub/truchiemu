@@ -357,6 +357,44 @@ enum AppSettings {
         guard let data = try? JSONEncoder().encode(type) else { return }
         setData(GenesisControllerKey.controllerType, value: data)
     }
+
+    // MARK: - Wii Controller Type
+
+    enum WiiControllerType: String, Codable {
+        case auto = "auto"
+        case wiimote = "wiimote"
+        case wiimoteSideways = "wiimoteSideways"
+        case wiimoteClassic = "wiimoteClassic"
+
+        /// libretro device subtype for Dolphin (RETRO_DEVICE_JOYPAD | subtype << 8).
+        /// Dolphin has no "Wii U Pro" device; the standard gamepad mapping is
+        /// Wiimote + Classic Controller (1025). `.auto` resolves at launch.
+        var deviceValue: UInt32? {
+            switch self {
+            case .auto: return nil
+            case .wiimote: return 1
+            case .wiimoteSideways: return 513
+            case .wiimoteClassic: return 1025
+            }
+        }
+    }
+
+    enum WiiControllerKey {
+        static let controllerType = "wiiControllerType"
+    }
+
+    static func getWiiControllerType() -> WiiControllerType {
+        guard let data = getData(WiiControllerKey.controllerType),
+              let type = try? JSONDecoder().decode(WiiControllerType.self, from: data) else {
+            return .auto
+        }
+        return type
+    }
+
+    static func setWiiControllerType(_ type: WiiControllerType) {
+        guard let data = try? JSONEncoder().encode(type) else { return }
+        setData(WiiControllerKey.controllerType, value: data)
+    }
 }
 
 // MARK: - Notification Names
