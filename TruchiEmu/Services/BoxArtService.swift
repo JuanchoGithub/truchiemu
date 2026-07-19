@@ -337,10 +337,14 @@ class BoxArtService: ObservableObject {
                 guard validImageTypes.contains((httpResponse.mimeType ?? "").lowercased()) else { return nil }
             }
             try FileManager.default.moveItem(at: tmpURL, to: localURL)
-            BoxArtThumbnailService.deleteThumbnails(for: localURL)
-            await ImageCache.shared.removeImage(for: localURL)
-            await ImageCache.shared.removeThumbnail(for: localURL)
-            BoxArtThumbnailService.generateThumbnailsSynchronously(forOriginal: localURL)
+            if localURL == rom.boxArtLocalPath {
+                BoxArtThumbnailService.deleteThumbnails(for: localURL)
+                await ImageCache.shared.removeImage(for: localURL)
+                await ImageCache.shared.removeThumbnail(for: localURL)
+                BoxArtThumbnailService.generateThumbnailsSynchronously(forOriginal: localURL)
+            } else {
+                await ImageCache.shared.removeImage(for: localURL)
+            }
             return localURL
         } catch {
             return nil

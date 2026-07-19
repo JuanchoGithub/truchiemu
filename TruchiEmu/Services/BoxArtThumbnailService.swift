@@ -256,9 +256,6 @@ class BoxArtThumbnailService: ObservableObject {
         guard let context = NSGraphicsContext(bitmapImageRep: destRep) else { return nil }
         NSGraphicsContext.saveGraphicsState()
         NSGraphicsContext.current = context
-        // The cgImage is anchored bottom-left by default; flip vertically.
-        context.cgContext.translateBy(x: 0, y: CGFloat(destH))
-        context.cgContext.scaleBy(x: 1, y: -1)
         context.cgContext.draw(cgImage, in: targetRect)
         NSGraphicsContext.restoreGraphicsState()
         return destRep
@@ -385,6 +382,11 @@ class BoxArtThumbnailService: ObservableObject {
         }
 
         for fileURL in fileURLs {
+            // Only boxart source files get resampled into te_thumbs. Titles
+            // (*_title.*) and snaps (*_snap_*.png) live in the same directory
+            // but must never be downsized.
+            let isBoxArt = fileURL.lastPathComponent.lowercased().contains("_boxart.")
+            guard isBoxArt else { continue }
             if Self.needsRegeneration(for: fileURL, size: .tiny) {
                 Self.scheduleGeneration(forOriginal: fileURL)
                 Task {
