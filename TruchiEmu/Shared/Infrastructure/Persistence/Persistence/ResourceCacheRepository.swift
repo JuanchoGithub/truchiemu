@@ -48,6 +48,16 @@ final class ResourceCacheRepository {
         return models.count
     }
 
+    func deleteEntry(cacheKey: String) {
+        let pd: Predicate<ResourceCacheEntryModel> = #Predicate { (entry: ResourceCacheEntryModel) in
+            entry.cacheKey == cacheKey
+        }
+        let descriptor = FetchDescriptor<ResourceCacheEntryModel>(predicate: pd)
+        guard let model = try? context.fetch(descriptor).first else { return }
+        context.delete(model)
+        try? context.save()
+    }
+
     func getBoxArtResolution(romPathKey: String, source: String) -> RCBoxArtData? {
         let ck = "\(romPathKey)::\(source)"
         let pd: Predicate<BoxArtResolutionEntry> = #Predicate { (e: BoxArtResolutionEntry) in

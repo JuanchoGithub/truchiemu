@@ -31,6 +31,11 @@ class ResourceCacheInterceptor: ObservableObject {
         cacheKey: String,
         expiry: CacheExpiryPolicy
     ) async throws -> (data: Data, response: URLResponse) {
+        if expiry == .force {
+            LoggerService.info(category: "ResourceCache", "Force fetch (bypassing cache): \(cacheKey)")
+            return try await fullFetch(url: url, cacheKey: cacheKey, type: type, expiry: .conditional)
+        }
+
         if let entry = cacheRepo.getEntry(cacheKey: cacheKey) {
             if entry.responseStatus == 404 {
                 LoggerService.info(category: "ResourceCache", "Cache hit (404 cached): \(cacheKey) — skipping network call")
@@ -289,6 +294,19 @@ class ResourceCacheInterceptor: ObservableObject {
                 expiresAt: Int(Date().timeIntervalSince1970) + 86400
             )
         }
+    }
+
+    // MARK: - Invalidate
+
+    /// Removes a cached entry (and its on-disk file) so the next fetch performs a
+    /// fresh unconditional GET. Used when a cached payload fails to decode — its etag
+    /// may still match the server, which would otherwise 304 the same corrupt bytes.
+    func invalidate(cacheKey: String) {
+        if let localPath = cacheRepo.getEntry(cacheKey: cacheKey)?.localPath {
+            try? FileManager.default.removeItem(at: URL(fileURLWithPath: localPath))
+        }
+        cacheRepo.deleteEntry(cacheKey: cacheKey)
+        LoggerService.info(category: "ResourceCache", "Invalidated cache entry: \(cacheKey)")
     }
 }
 

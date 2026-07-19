@@ -266,55 +266,43 @@ class LibretroThumbnailManifestService: ObservableObject {
         LoggerService.info(category: logCategory, "Fetching manifest for \(repoName) from GitHub (force=\(force))...")
         
         let cacheKey = ResourceCacheEntry.makeThumbnailManifestKey(repoName: repoName)
-        
-        // Use ResourceCacheInterceptor for cache-first fetch with conditional revalidation
+
         let data: Data
         do {
-            if force {
-                // If force-refreshing, we still use the interceptor but with 'conditional' policy
-                // to benefit from ETag but definitely check for updates.
-                let result = try await ResourceCacheInterceptor.shared.fetchWithCache(
-                    url: url,
-                    type: .thumbnailManifest,
-                    cacheKey: cacheKey,
-                    expiry: .conditional // Force revalidation via ETag
-                )
-                data = result.data
-            } else {
-                // We will use a much longer expiry here to satisfy the "once a month" requirement
-                // We'll assume .long is 30 days or similar if defined, otherwise we use a custom value.
-                // For now, let's see what's available in ResourceCacheInterceptor.
-                // Based on previous reads, it seems we have .short, .conditional. 
-                // Let's check if there's a way to pass a custom TTL.
-                // Actually, I'll just use .conditional and let the interceptor handle the ETag.
-                // But the user specifically asked for "once a month".
-                // I will use .conditional and rely on the fact that if the ETag hasn't changed, 
-                // it won't download the whole thing.
-                
-                // Wait, the user wants to avoid the download unless it changed.
-                // If I use .short (1 hour), it's too frequent.
-                // If I use .conditional, it checks every time.
-                // Let's see if I can define a custom expiry or if I should just use a long one.
-                // Looking at ResourceCacheInterceptor.swift again... it doesn't show the enum definition.
-                // I will try to use .conditional which is the most efficient for "only download if changed".
-                let result = try await ResourceCacheInterceptor.shared.fetchWithCache(
-                    url: url,
-                    type: .thumbnailManifest,
-                    cacheKey: cacheKey,
-                    expiry: .conditional 
-                )
-                data = result.data
-            }
+            data = try await ResourceCacheInterceptor.shared.fetchWithCache(
+                url: url,
+                type: .thumbnailManifest,
+                cacheKey: cacheKey,
+                expiry: .conditional
+            ).data
         } catch {
             LoggerService.warning(category: logCategory, "GitHub manifest fetch failed for \(repoName): \(error.localizedDescription)")
             throw error
         }
-        
-        let response = try JSONDecoder().decode(GitTreesResponse.self, from: data)
+
+        if let response = try? JSONDecoder().decode(GitTreesResponse.self, from: data) {
+            let paths = Set(response.tree.map { $0.path })
+            manifestCache[repoName] = paths
+            LoggerService.info(category: logCategory, "Manifest for \(repoName) loaded with \(paths.count) entries")
+            return paths
+        }
+
+        // The cached/304 data failed to decode — the on-disk file is corrupt (its etag
+        // still matches the server, so a conditional request would 304 the same bad bytes).
+        // Invalidate the entry and force a fresh unconditional GET that overwrites it.
+        LoggerService.warning(category: logCategory, "Manifest for \(repoName) failed to decode; re-fetching unconditionally")
+        ResourceCacheInterceptor.shared.invalidate(cacheKey: cacheKey)
+        let freshData = try await ResourceCacheInterceptor.shared.fetchWithCache(
+            url: url,
+            type: .thumbnailManifest,
+            cacheKey: cacheKey,
+            expiry: .force
+        ).data
+
+        let response = try JSONDecoder().decode(GitTreesResponse.self, from: freshData)
         let paths = Set(response.tree.map { $0.path })
-        
         manifestCache[repoName] = paths
-        LoggerService.info(category: logCategory, "Manifest for \(repoName) loaded with \(paths.count) entries")
+        LoggerService.info(category: logCategory, "Manifest for \(repoName) loaded with \(paths.count) entries (after forced re-fetch)")
         return paths
     }
 }

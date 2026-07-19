@@ -96,6 +96,7 @@ enum LibretroRDBParser {
                 developer: developerStr,
                 genre: genreStr,
                 crc: upper,
+                serial: nil,
                 thumbnailLookupSystemID: nil
             )
             out[upper] = info

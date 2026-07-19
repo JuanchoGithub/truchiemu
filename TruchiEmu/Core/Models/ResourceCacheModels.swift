@@ -70,6 +70,7 @@ enum CacheExpiryPolicy: Sendable {
     case medium           // 24 hours (search results, API responses)
     case long             // 7 days (box art, bezels, cheat files)
     case conditional       // Use ETag/Last-Modified for 304 revalidation
+    case force           // Unconditional GET; ignore cached entry entirely
 
     var ttlSeconds: Int? {
         switch self {
@@ -78,6 +79,7 @@ enum CacheExpiryPolicy: Sendable {
         case .medium: return 86400        // 24 hours
         case .long: return 604800         // 7 days
         case .conditional: return nil     // TTL determined by ETag/Last-Modified
+        case .force: return nil
         }
     }
 }

@@ -550,6 +550,20 @@ final class LaunchBoxMetadataService: ObservableObject {
         stripTags(from: s.folding(options: .diacriticInsensitive, locale: nil)).lowercased().trimmingCharacters(in: .whitespaces)
     }
 
+    /// Strips region/disc tags (e.g. "[SNVE69]", "(USA)", "[!]") and file
+    /// extensions so a tagged filename like "Need for Speed - The Run [SNVE69]"
+    /// matches the clean LaunchBox name "Need for Speed: The Run".
+    private func cleanGameTitle(_ title: String) -> String {
+        var cleaned = title
+        if let lastDot = cleaned.lastIndex(of: ".") {
+            cleaned = String(cleaned[..<lastDot])
+        }
+        if let regex = try? NSRegularExpression(pattern: "\\s*[\\[\\(].*?[\\]\\)]", options: .caseInsensitive) {
+            cleaned = regex.stringByReplacingMatches(in: cleaned, options: [], range: NSRange(location: 0, length: cleaned.utf16.count), withTemplate: "")
+        }
+        return cleaned.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
     /// Detects Virtual Console titles, which appear inside the Wii/GameCube
     /// LaunchBox platforms but are emulated ports, not retail discs. Matching a
     /// retail disc to one of these produces absurd results (e.g. "New Super Mario
@@ -643,7 +657,7 @@ final class LaunchBoxMetadataService: ObservableObject {
     }
 
     func fetchAndApplyMetadata(for rom: ROM, library: ROMLibrary, downloadBoxArt: Bool = true, persistImmediately: Bool = true) async -> Bool {
-        let gameName = rom.metadata?.title ?? rom.displayName
+        let gameName = cleanGameTitle(rom.metadata?.title ?? rom.displayName)
         guard let systemID = rom.systemID,
               let platformName = platformName(forSystemID: systemID)
         else { return false }

@@ -65,6 +65,7 @@ struct GameInfo: Equatable {
     let developer: String?
     let genre: String?
     let crc: String
+    let serial: String?
     let thumbnailLookupSystemID: String?
     var players: Int?
 }
@@ -159,11 +160,14 @@ final class SystemSearchIndex {
     let exactMap: [String: [GameInfo]]
     let aggressiveMap: [String: [GameInfo]]
     let allEntries: [GameInfo]
+    /// Maps the 4-letter disc game ID (e.g. "snve" from serial "RVL-SNVE-USA") to entries.
+    let serialMap: [String: [GameInfo]]
     
     init(database: [String: GameInfo]) {
         var exact: [String: [GameInfo]] = [:]
         var aggressive: [String: [GameInfo]] = [:]
         var all: [GameInfo] = []
+        var serial: [String: [GameInfo]] = [:]
         
         for info in database.values {
             all.append(info)
@@ -172,10 +176,15 @@ final class SystemSearchIndex {
             
             let datAggressive = ROMIdentifierService.aggressivelyNormalizedTitle(info.name)
             aggressive[datAggressive, default: []].append(info)
+            
+            if let serialKey = ROMIdentifierService.gameIDFromSerial(info.serial) {
+                serial[serialKey, default: []].append(info)
+            }
         }
         self.exactMap = exact
         self.aggressiveMap = aggressive
         self.allEntries = all
+        self.serialMap = serial
     }
 }
 
@@ -217,6 +226,7 @@ final class ROMIdentifierService: @unchecked Sendable {
                         developer: unifiedEntry.manufacturer,
                         genre: nil,
                         crc: "",
+                        serial: nil,
                         thumbnailLookupSystemID: nil,
                         players: unifiedEntry.players
                     ))
@@ -231,6 +241,7 @@ final class ROMIdentifierService: @unchecked Sendable {
                         developer: unifiedEntry.manufacturer,
                         genre: nil,
                         crc: "",
+                        serial: nil,
                         thumbnailLookupSystemID: nil,
                         players: unifiedEntry.players
                     ))
@@ -253,23 +264,44 @@ final class ROMIdentifierService: @unchecked Sendable {
         LoggerService.debug(category: "ROMIdentifier","Identify: START system=\(systemID) file=\(rom.path.lastPathComponent) (preferNameMatch=\(preferNameMatch))")
         #endif
 
-        // Wii/GameCube retail discs have no usable libretro DAT (only "Wii (Digital)"
-        // exists upstream, and full-file CRC cannot match Redump/No-Intro CRCs). Read
-        // the disc header directly for an authoritative title + game code. This also
-        // unblocks LaunchBox enrichment, which requires a non-nil crc32/title.
+        // Wii/GameCube: identify by the disc's embedded game code matched against the
+        // DAT serial (e.g. header "SNVE69" → DAT serial "RVL-SNVE-USA"). This is the
+        // authoritative, fast path — no multi-GB CRC hashing — and survives region/
+        // version suffixes in DAT titles. Disc-header title is the offline fallback.
         if systemID == "wii" || systemID == "gamecube" {
-            if let header = DiscHeaderReader.read(from: rom.path, systemID: systemID) {
+            let db = await LibretroDatabaseLibrary.shared.fetchAndLoadDat(for: system)
+            if !db.isEmpty,
+               let header = DiscHeaderReader.read(from: rom.path, systemID: systemID),
+               let gameID = Self.gameIDFromDiscCode(header.gameCode) {
+                let index = SystemSearchIndex(database: db)
+                if let match = index.serialMap[gameID]?.first {
+                    #if LOG_DEBUG
+                    LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): DAT serial-match → '\(match.name)' (code \(header.gameCode))")
+                    #endif
+                    return .identified(GameInfo(
+                        name: match.name,
+                        year: match.year, publisher: match.publisher, developer: match.developer,
+                        genre: match.genre, crc: match.crc, serial: match.serial,
+                        thumbnailLookupSystemID: systemID, players: match.players
+                    ))
+                }
+            }
+            if !db.isEmpty {
+                if let byDat = identifyByDatFallback(rom: rom, database: db, systemID: systemID) {
+                    return byDat
+                }
+            } else if let header = DiscHeaderReader.read(from: rom.path, systemID: systemID) {
                 #if LOG_DEBUG
                 LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): disc-header → '\(header.title)' (code \(header.gameCode), wii=\(header.isWii))")
                 #endif
                 return .identified(GameInfo(
                     name: header.title,
                     year: nil, publisher: nil, developer: nil, genre: nil,
-                    crc: "", thumbnailLookupSystemID: systemID, players: nil
+                    crc: "", serial: nil, thumbnailLookupSystemID: systemID, players: nil
                 ))
             }
             #if LOG_DEBUG
-            LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): no disc-header readable (e.g. .rvz/.wia), falling back to name match")
+            LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): no DAT and no disc-header readable (e.g. .rvz/.wia)")
             #endif
         }
 
@@ -469,6 +501,32 @@ final class ROMIdentifierService: @unchecked Sendable {
         let stripped = LibretroThumbnailResolver.stripParenthesesForFuzzyMatch(s)
         return stripped.lowercased().replacingOccurrences(of: "  +", with: " ", options: .regularExpression)
             .trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    /// Extracts the 4-letter disc game ID from a Redump/libretro serial, used to
+    /// match Wii/GameCube discs by their embedded game code. Examples:
+    ///   "RVL-SNVE-USA-B0" → "snve",  "DOL-GXXE-USA" → "gxxe",  "GXLE01" → "gxle"
+    /// Returns nil when no recognizable game ID is present.
+    static func gameIDFromSerial(_ serial: String?) -> String? {
+        guard let serial = serial?.trimmingCharacters(in: .whitespacesAndNewlines), !serial.isEmpty else { return nil }
+        let parts = serial.components(separatedBy: "-").filter { !$0.isEmpty }
+        if parts.count >= 2 {
+            let id = parts[1].lowercased()
+            return id.count >= 3 && id.count <= 5 ? id : nil
+        }
+        // No dashes (e.g. "GXLE01"): take the middle 4 letters after the system prefix.
+        let letters = serial.filter { $0.isLetter }.lowercased()
+        guard letters.count >= 5 else { return nil }
+        let start = letters.index(letters.startIndex, offsetBy: 1)
+        let end = letters.index(letters.startIndex, offsetBy: 5)
+        return String(letters[start..<end])
+    }
+
+    /// Normalizes a 6-char disc game code (e.g. "SNVE69") to its 4-letter ID ("snve").
+    static func gameIDFromDiscCode(_ code: String) -> String? {
+        let normalized = code.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        guard normalized.count >= 4 else { return nil }
+        return String(normalized.prefix(4))
     }
 
 static func titleFromDatGame(name: String, description: String) -> String {
@@ -765,6 +823,22 @@ static func titleFromDatGame(name: String, description: String) -> String {
         return sorted.first
     }
 
+    /// Wii/GameCube identification: match the file's name against the loaded
+    /// (Redump retail) DAT. Returns `.identified` when a match is found, else nil so
+    /// the caller can fall back to the disc header.
+    private func identifyByDatFallback(rom: ROM, database: [String: GameInfo], systemID: String) -> ROMIdentifyResult? {
+        let language = Self.currentEmulatorLanguage()
+        guard let info = identifyByName(rom: rom, database: database, language: language) else { return nil }
+        #if LOG_DEBUG
+        LoggerService.debug(category: "ROMIdentifier", "Identify \(rom.name): DAT name-match → '\(info.name)'")
+        #endif
+        return .identified(GameInfo(
+            name: info.name,
+            year: info.year, publisher: info.publisher, developer: info.developer,
+            genre: info.genre, crc: info.crc, serial: info.serial, thumbnailLookupSystemID: systemID, players: info.players
+        ))
+    }
+
     func computeCRC(for url: URL, systemID: String) -> String? {
         let scoped = url.startAccessingSecurityScopedResource()
         defer { if scoped { url.stopAccessingSecurityScopedResource() } }
@@ -905,6 +979,7 @@ struct LibretroDatGame {
     var publisher: String?
     var genre: String?
     var players: Int?
+    var serial: String?
     var crcs: [String] = []
 }
 
@@ -923,7 +998,7 @@ actor LibretroDatabaseLibrary {
     private static func isArcadeFamily(_ systemID: String) -> Bool { systemID == "mame" || systemID == "fba" }
 
     private static func tagGameInfo(_ info: GameInfo, thumbnailLookupSystemID: String) -> GameInfo {
-        GameInfo(name: info.name, year: info.year, publisher: info.publisher, developer: info.developer, genre: info.genre, crc: info.crc, thumbnailLookupSystemID: thumbnailLookupSystemID, players: info.players)
+        GameInfo(name: info.name, year: info.year, publisher: info.publisher, developer: info.developer, genre: info.genre, crc: info.crc, serial: info.serial, thumbnailLookupSystemID: thumbnailLookupSystemID, players: info.players)
     }
 
     // TODO: make this dynamic
@@ -973,7 +1048,7 @@ actor LibretroDatabaseLibrary {
             if trimmed.hasPrefix("game (") || trimmed.hasPrefix("machine (") { currentGame = LibretroDatGame() }
             else if trimmed == ")" && currentGame != nil {
                 let nameToUse = ROMIdentifierService.titleFromDatGame(name: currentGame!.name, description: currentGame!.description)
-                for crc in currentGame!.crcs { database[crc.uppercased()] = GameInfo(name: nameToUse, year: currentGame?.year, publisher: currentGame?.publisher ?? currentGame?.developer, developer: currentGame?.developer, genre: currentGame?.genre, crc: crc.uppercased(), thumbnailLookupSystemID: nil, players: currentGame?.players) }
+                for crc in currentGame!.crcs { database[crc.uppercased()] = GameInfo(name: nameToUse, year: currentGame?.year, publisher: currentGame?.publisher ?? currentGame?.developer, developer: currentGame?.developer, genre: currentGame?.genre, crc: crc.uppercased(), serial: currentGame?.serial, thumbnailLookupSystemID: nil, players: currentGame?.players) }
                 currentGame = nil
             } else if currentGame != nil {
                 if trimmed.hasPrefix("name ") { currentGame?.name = extractQuotes(trimmed) ?? "" }
@@ -984,10 +1059,17 @@ actor LibretroDatabaseLibrary {
                 else if trimmed.hasPrefix("publisher ") { currentGame?.publisher = extractQuotes(trimmed) }
                 else if trimmed.hasPrefix("genre ") || trimmed.hasPrefix("category ") { currentGame?.genre = extractQuotes(trimmed) }
                 else if trimmed.hasPrefix("users ") { currentGame?.players = Int(trimmed.dropFirst("users ".count).trimmingCharacters(in: .whitespaces)) }
+                else if trimmed.hasPrefix("serial ") { currentGame?.serial = extractQuotes(trimmed) }
                 else if trimmed.hasPrefix("rom (") || trimmed.hasPrefix("disk (") {
                     if let crcRange = trimmed.range(of: "crc ") {
                         let substring = trimmed[crcRange.upperBound...]
                         if let firstWord = substring.components(separatedBy: .whitespaces).first { currentGame?.crcs.append(firstWord.trimmingCharacters(in: CharacterSet(charactersIn: ")")).uppercased()) }
+                    }
+                    if let serialRange = trimmed.range(of: "serial "), currentGame?.serial == nil {
+                        let substring = trimmed[serialRange.upperBound...]
+                        if let firstQuote = substring.firstIndex(of: "\""), let lastQuote = substring[substring.index(after: firstQuote)...].firstIndex(of: "\"") {
+                            currentGame?.serial = String(substring[substring.index(after: firstQuote)..<lastQuote])
+                        }
                     }
                 }
             }
@@ -1001,6 +1083,14 @@ actor LibretroDatabaseLibrary {
     private func extractQuotes(_ string: String) -> String? {
         if let start = string.firstIndex(of: "\""), let end = string[string.index(after: start)...].firstIndex(of: "\"") { return String(string[string.index(after: start)..<end]) }
         return nil
+    }
+
+    /// Removes Virtual Console entries from a Wii/GameCube lookup DB. The No-Intro
+    /// "Wii (Digital)" DAT and even stray Redump entries contain VC WADs (e.g.
+    /// "Super Mario Bros. (Virtual Console)") that fuzzy-match retail disc filenames
+    /// and produce absurd misidentifications.
+    private static func excludingVirtualConsole(_ db: [String: GameInfo]) -> [String: GameInfo] {
+        db.filter { !$0.value.name.lowercased().contains("virtual console") && !$0.value.name.lowercased().contains("(vc)") }
     }
 
     func findVariantEntries(for gameName: String, systemID: String) async -> [String] {
@@ -1104,8 +1194,15 @@ actor LibretroDatabaseLibrary {
         #if LOG_DEBUG
         LoggerService.debug(category: "LibretroDB", "DATs directory: \(datsDir.path)"); LoggerService.debug(category: "LibretroDB", "RDBs directory: \(rdbDir.path)")
         #endif
-        let localNames = datBasenamesToTry(for: system)
         let baseUrl = "https://raw.githubusercontent.com/libretro/libretro-database/master/"
+
+        // Wii/GameCube: the retail DATs live under Redump. The No-Intro "Wii (Digital)"
+        // DAT is full of Virtual Console WADs and shadows the correct retail titles, so
+        // skip the (Digital)/VC DATs for these systems entirely (local cache + download).
+        let isWiiFamily = system.id == "wii" || system.id == "gamecube"
+        let localNames = datBasenamesToTry(for: system).filter {
+            !(isWiiFamily && $0.contains("(Digital)"))
+        }
         #if LOG_DEBUG
         LoggerService.debug(category: "LibretroDB", "=== STEP 1: Scanning local DATs in \(datsDir.path) ===")
         #endif
@@ -1161,22 +1258,24 @@ actor LibretroDatabaseLibrary {
         LoggerService.debug(category: "LibretroDB", "=== STEP 3: Downloading No-Intro DAT (metadat/no-intro) from \(baseUrl) ===")
         #endif
         let noIntroOnly = ["metadat/no-intro"]
-        if let db = await downloadDatRemote(systemID: system.id, names: localNames, remotePaths: noIntroOnly, datsDir: datsDir, baseUrl: baseUrl) { 
+        if let db = await downloadDatRemote(systemID: system.id, names: localNames, remotePaths: noIntroOnly, datsDir: datsDir, baseUrl: baseUrl) {
             #if LOG_DEBUG
-            LoggerService.debug(category: "LibretroDB", "Step 3: SUCCESS — downloaded No-Intro DAT with \(db.count) entries"); 
+            LoggerService.debug(category: "LibretroDB", "Step 3: SUCCESS — downloaded No-Intro DAT with \(db.count) entries");
             #endif
-            return db 
+            return isWiiFamily ? Self.excludingVirtualConsole(db) : db
         }
 
         #if LOG_DEBUG
         LoggerService.debug(category: "LibretroDB", "=== STEP 4: Downloading other DAT trees from \(baseUrl) ===")
         #endif
-        let otherDatPaths = ["metadat/redump", "metadat/mame", "metadat/fba", "metadat/fbneo-split", "dat"]
-        if let db = await downloadDatRemote(systemID: system.id, names: localNames, remotePaths: otherDatPaths, datsDir: datsDir, baseUrl: baseUrl) { 
+        let otherDatPaths = isWiiFamily
+            ? ["metadat/redump", "dat"]
+            : ["metadat/redump", "metadat/mame", "metadat/fba", "metadat/fbneo-split", "dat"]
+        if let db = await downloadDatRemote(systemID: system.id, names: localNames, remotePaths: otherDatPaths, datsDir: datsDir, baseUrl: baseUrl) {
             #if LOG_DEBUG
-            LoggerService.debug(category: "LibretroDB", "Step 4: SUCCESS — downloaded DAT with \(db.count) entries"); 
+            LoggerService.debug(category: "LibretroDB", "Step 4: SUCCESS — downloaded DAT with \(db.count) entries");
             #endif
-            return db 
+            return isWiiFamily ? Self.excludingVirtualConsole(db) : db
         }
 
         #if LOG_DEBUG
