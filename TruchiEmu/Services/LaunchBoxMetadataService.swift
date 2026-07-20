@@ -482,16 +482,30 @@ final class LaunchBoxMetadataService: ObservableObject {
             return exact
         }
 
-        var scored: [(game: LaunchBoxGame, score: Int)] = []
+        // Pre-filter to games sharing at least one token with the query. Without
+        // this, every miss scans the entire platform (thousands of games × fuzzy
+        // scoring) — that was the bulk of the ~128s LaunchBox phase. The token
+        // index makes candidate selection O(queryTokens) instead of O(allGames).
+        let tokenIdx = tokenIndex(for: platformName)
+        var candidateSet: [LaunchBoxGame] = []
+        var seen = Set<Int>()
+        for token in queryTokens {
+            for game in tokenIdx[token] ?? [] {
+                if seen.insert(game.databaseID).inserted { candidateSet.append(game) }
+            }
+        }
+        if candidateSet.isEmpty { return nil }
 
-        for game in games {
+        var best: (game: LaunchBoxGame, score: Int)? = nil
+
+        for game in candidateSet {
             let name = game.name.lowercased()
             let normalizedName = normalizeForMatching(name)
 
             let score = matchScore(query: query, queryTokens: queryTokens,
                                    target: name, normalizedTarget: normalizedName)
-            if score > (scored.last?.1 ?? 0) {
-                scored.append((game, score))
+            if score > (best?.score ?? 0) {
+                best = (game, score)
             }
 
             for altName in game.alternateNames {
@@ -499,13 +513,13 @@ final class LaunchBoxMetadataService: ObservableObject {
                 let normalizedAlt = normalizeForMatching(alt)
                 let altScore = matchScore(query: query, queryTokens: queryTokens,
                                           target: alt, normalizedTarget: normalizedAlt)
-                if altScore > (scored.last?.1 ?? 0) {
-                    scored.append((game, altScore))
+                if altScore > (best?.score ?? 0) {
+                    best = (game, altScore)
                 }
             }
         }
 
-        return scored.max(by: { $0.score < $1.score }).flatMap { $0.score > 0 ? $0.game : nil }
+        return best.flatMap { $0.score > 0 ? $0.game : nil }
     }
 
     private func matchScore(query: String, queryTokens: [String], target: String, normalizedTarget: String) -> Int {
@@ -638,6 +652,7 @@ final class LaunchBoxMetadataService: ObservableObject {
     }
 
     private var nameIndexCache: [String: [String: LaunchBoxGame]] = [:]
+    private var tokenIndexCache: [String: [String: [LaunchBoxGame]]] = [:]
 
     private func nameIndex(for platformName: String) -> [String: LaunchBoxGame] {
         if let cached = nameIndexCache[platformName] { return cached }
@@ -656,6 +671,27 @@ final class LaunchBoxMetadataService: ObservableObject {
         return index
     }
 
+    // Maps each search token to the games containing it. Built once per platform.
+    // This collapses bestMatch's O(allGames) fuzzy scan into a tiny candidate set:
+    // only games that share at least one token with the query are ever scored.
+    private func tokenIndex(for platformName: String) -> [String: [LaunchBoxGame]] {
+        if let cached = tokenIndexCache[platformName] { return cached }
+        let games = games(forPlatform: platformName)
+        var index: [String: [LaunchBoxGame]] = [:]
+        for game in games {
+            let nameTokens = Set(normalizeForMatching(game.name.lowercased()).searchTokens)
+            var altTokens: Set<String> = []
+            for alt in game.alternateNames {
+                altTokens.formUnion(normalizeForMatching(alt.lowercased()).searchTokens)
+            }
+            for token in nameTokens.union(altTokens) where !token.isEmpty {
+                index[token, default: []].append(game)
+            }
+        }
+        tokenIndexCache[platformName] = index
+        return index
+    }
+
     func fetchAndApplyMetadata(for rom: ROM, library: ROMLibrary, downloadBoxArt: Bool = true, persistImmediately: Bool = true) async -> Bool {
         let gameName = cleanGameTitle(rom.metadata?.title ?? rom.displayName)
         guard let systemID = rom.systemID,
@@ -664,7 +700,17 @@ final class LaunchBoxMetadataService: ObservableObject {
 
         let index = nameIndex(for: platformName)
         let normalizedQuery = normalizeForMatching(gameName)
-        let match = index[normalizedQuery] ?? bestMatch(for: gameName, platformName: platformName, systemID: systemID)
+        #if LOG_DEBUG
+        let start = Date()
+        #endif
+        let exactHit = index[normalizedQuery]
+        let match = exactHit ?? bestMatch(for: gameName, platformName: platformName, systemID: systemID)
+        #if LOG_DEBUG
+        let elapsed = Date().timeIntervalSince(start)
+        if elapsed > 0.05 {
+            LoggerService.info(category: "LaunchBoxMD", "SLOW lookup '\(gameName)' (\(String(format: "%.3f", elapsed))s) exactHit=\(exactHit != nil)")
+        }
+        #endif
         guard let match else { return false }
 
         var updated = rom

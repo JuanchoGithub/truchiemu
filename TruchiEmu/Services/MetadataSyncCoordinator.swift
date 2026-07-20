@@ -49,8 +49,23 @@ final class MetadataSyncCoordinator: ObservableObject {
         }()
         let noMatchROMPaths = noMatchCache.filter { Date().timeIntervalSince($0.value) < negativeCacheTTL }.keys
 
+        // Positive cache: ROMs already enriched by LaunchBox in a previous run.
+        // The store may have the metadata, but the in-memory `scope` copies used
+        // by the filter can predate the metadata merge (or carry nil metadata), so
+        // we can't rely on `rom.metadata` to skip already-enriched ROMs. Without
+        // this gate, every re-scan re-runs ~1684 lookups + store writes for data
+        // that's already on disk — that's the entire 128s LaunchBox phase.
+        let syncedCacheTTL: TimeInterval = 30 * 24 * 3600
+        let syncedCache: [String: Date] = {
+            guard let data = AppSettings.getData("launchbox_syncedROMs"),
+                  let map = try? JSONDecoder().decode([String: Date].self, from: data) else { return [:] }
+            return map
+        }()
+        let syncedROMPaths = syncedCache.filter { Date().timeIntervalSince($0.value) < syncedCacheTTL }.keys
+
         let needMetadata = scope.filter { rom in
             guard !(noMatchROMPaths.contains(rom.path.path)) else { return false }
+            guard !(syncedROMPaths.contains(rom.path.path)) else { return false }
             return (rom.metadata?.description?.isEmpty ?? true) ||
                    (rom.metadata?.developer?.isEmpty ?? true) ||
                    (rom.metadata?.publisher?.isEmpty ?? true)
@@ -125,6 +140,17 @@ final class MetadataSyncCoordinator: ObservableObject {
             for path in newlyNoMatch { map[path] = now }
             if let data = try? JSONEncoder().encode(map) {
                 AppSettings.setData("launchbox_noMatchROMs", value: data)
+            }
+        }
+
+        if !enrichedIDs.isEmpty {
+            var map = syncedCache
+            let now = Date()
+            for id in enrichedIDs {
+                if let rom = scope.first(where: { $0.id == id }) { map[rom.path.path] = now }
+            }
+            if let data = try? JSONEncoder().encode(map) {
+                AppSettings.setData("launchbox_syncedROMs", value: data)
             }
         }
 

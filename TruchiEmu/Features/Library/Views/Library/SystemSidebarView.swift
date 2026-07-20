@@ -46,7 +46,7 @@ struct SystemSidebarView: View {
             }
         }
 
-        return result.sorted(by: { $0.0.name.localizedCaseInsensitiveCompare($1.0.name) == .orderedAscending })
+        return result.sorted(by: { $0.0.sidebarDisplayName.localizedCaseInsensitiveCompare($1.0.sidebarDisplayName) == .orderedAscending })
     }
 
     // Read-only accessor used by the view body. Pure read; never mutates @State.

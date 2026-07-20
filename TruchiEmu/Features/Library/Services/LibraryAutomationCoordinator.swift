@@ -411,7 +411,7 @@ final class LibraryAutomationCoordinator: ObservableObject {
         // Now we fire them on a detached background Task and return immediately so the
         // user-visible scan completes with metadata-rich ROMs in ~60s.
         let artTargets = scope.filter {
-            !$0.isHidden && ($0.needsAutomaticBoxArt || !$0.hasTitleScreen || $0.screenshotPaths.isEmpty)
+            !$0.isHidden && $0.needsAutomaticBoxArt
         }
 
         guard !artTargets.isEmpty else {

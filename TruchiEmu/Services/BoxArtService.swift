@@ -748,7 +748,12 @@ class BoxArtService: ObservableObject {
         // Hard gate: drop any candidate whose box art file already exists on disk.
         // Covers art fetched >7 days ago, region-flag churn, or in-memory flag
         // drift — if the file is there, we never re-download it.
+        let preDiskGate = candidates.count
         candidates = candidates.filter { !FileManager.default.fileExists(atPath: $0.boxArtLocalPath.path) }
+
+        #if LOG_DEBUG
+        LoggerService.info(category: "BoxArt", "batch: input=\(roms.count) preDiskGate=\(preDiskGate) postDiskGate=\(candidates.count) (needArt=\(romsNeedingBoxArt(in: roms).count) recent=\(romsWithRecentBoxArt(in: roms, currentRegionSuffix: regionSuffix).count))")
+        #endif
 
         guard !candidates.isEmpty else { return }
 
@@ -771,7 +776,7 @@ class BoxArtService: ObservableObject {
             }
         }
 
-        let maxConcurrent = 2
+        let maxConcurrent = 8
         var modifiedIDs: [UUID] = []
         let total = candidates.count
         
@@ -804,7 +809,6 @@ class BoxArtService: ObservableObject {
                 let reportedURL: URL? = if case .success(let u) = artResult { u } else { nil }
                 onItemProgress?(completed, total, completedRom.displayName, reportedURL)
                 if let nextRom = iterator.next() {
-                    try? await Task.sleep(nanoseconds: 500_000_000)
                     group.addTask {
                         if let local = self.resolveLocalBoxArt(for: nextRom) { return (nextRom, .success(local), nil) }
                         let (r, regionTag) = await self.fetchBoxArtLibretro(for: nextRom, regionSuffix: regionSuffix)
