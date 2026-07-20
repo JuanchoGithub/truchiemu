@@ -1225,6 +1225,10 @@ case "scummvm": runner = ScummVMRunner()
 
         undoBuffer = XPCBridgeAdapter.shared.serializeState()
 
+        // A state file on an iCloud-synced directory can be a dataless
+        // placeholder that reads as empty; pull it down before loading.
+        ICloudMaterializer.ensureMaterialized(at: url)
+
         guard let fileData = try? Data(contentsOf: url) else {
             let error = GameError.loadStateError(reason: "State file not found")
             osdMessage = error.localizedDescription

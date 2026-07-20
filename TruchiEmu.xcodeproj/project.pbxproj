@@ -402,6 +402,7 @@
 		516EE8E3C3A02E5129EE30D7 /* input_systemLabels_xrick.json in Resources */ = {isa = PBXBuildFile; fileRef = F931A653951E17D19F105A64 /* input_systemLabels_xrick.json */; };
 		519D7A9BB62BFF6323628C89 /* picodrive_libretro_genesis.json in Resources */ = {isa = PBXBuildFile; fileRef = 2AAB2855FD74E2E82EB51E61 /* picodrive_libretro_genesis.json */; };
 		51D6228376173BD76BE6AB1C /* input_coreLabels_virtual_jaguar.json in Resources */ = {isa = PBXBuildFile; fileRef = 6411DA402E81AB00AD6D3E4D /* input_coreLabels_virtual_jaguar.json */; };
+		5211E693A9768D70E3FEB4F8 /* ICloudMaterializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94E70E2B12D7C50F36C7881 /* ICloudMaterializer.swift */; };
 		5241FD577987B5C9F2E77822 /* fightdata_kof98um.json in Resources */ = {isa = PBXBuildFile; fileRef = 9E9C541D9A3CD5391A7863D6 /* fightdata_kof98um.json */; };
 		527853485CF2C89303596E16 /* input_coreOverrides_opera.json in Resources */ = {isa = PBXBuildFile; fileRef = AA63D6D1D8AD345E7E735488 /* input_coreOverrides_opera.json */; };
 		5283D5F00AED8BC54D66A48F /* DragPreviewStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC6AB7FF503B33DE09A41088 /* DragPreviewStack.swift */; };
@@ -834,6 +835,7 @@
 		A6820B1684D14C3CED7A2B0F /* SEtBX.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 305854E346C89DB7F671CA96 /* SEtBX.jpg */; };
 		A6EB5C639841F4B3DB026DB9 /* input_coreLabels_fceumm.json in Resources */ = {isa = PBXBuildFile; fileRef = F1FC27A5C1F866F0F0C1F520 /* input_coreLabels_fceumm.json */; };
 		A7278EBCDED05652CE85EED6 /* fightdata_mvsc2.json in Resources */ = {isa = PBXBuildFile; fileRef = C9F54364D05E25E6DB8E0D89 /* fightdata_mvsc2.json */; };
+		A73CD8FC11A30FE6195AC14F /* ICloudMaterializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94E70E2B12D7C50F36C7881 /* ICloudMaterializer.swift */; };
 		A74D8800D5925587CDB94FDD /* input_coreLabels_smsplus.json in Resources */ = {isa = PBXBuildFile; fileRef = 6D7AD632B74E90918C28499F /* input_coreLabels_smsplus.json */; };
 		A789DFBC7120AA04FE2A3D8A /* input_coreLabels_puae.json in Resources */ = {isa = PBXBuildFile; fileRef = D5EA7A9B9DAF119BC3A9EAFB /* input_coreLabels_puae.json */; };
 		A7A34EE047C262EF9E9AD22E /* input_coreLabels_emux_nes.json in Resources */ = {isa = PBXBuildFile; fileRef = 0A20DDAC9A6FF7DC5B1182B7 /* input_coreLabels_emux_nes.json */; };
@@ -2175,6 +2177,7 @@
 		B868CBCF190918C4BD72EA68 /* WhatsNewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatsNewView.swift; sourceTree = "<group>"; };
 		B8B8DAC8DDF59912CD8CC6EA /* input_coreLabels_lowres_nx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_lowres_nx.json; sourceTree = "<group>"; };
 		B90D6D8D0EDAADDD3673F76E /* atari7800-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "atari7800-cheats.zip"; sourceTree = "<group>"; };
+		B94E70E2B12D7C50F36C7881 /* ICloudMaterializer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudMaterializer.swift; sourceTree = "<group>"; };
 		B97569865BB977C5BABB542B /* GG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = GG.png; sourceTree = "<group>"; };
 		BA0C225C9BB1C6E426B0E6F0 /* input_systemLabels_epochcv.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_epochcv.json; sourceTree = "<group>"; };
 		BA1C6E7ABF7218A2B1BF591B /* fightdata_kbash.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_kbash.json; sourceTree = "<group>"; };
@@ -4148,6 +4151,7 @@
 			children = (
 				2A5F6194C027F95EB23ED33A /* CoreClientProtocol.swift */,
 				FF549897537D3CC05BD11231 /* CoreHostProtocol.swift */,
+				B94E70E2B12D7C50F36C7881 /* ICloudMaterializer.swift */,
 				84D2D65163527E606B9A8023 /* XPCSharedMemory.h */,
 			);
 			path = Shared;
@@ -5590,6 +5594,7 @@
 				C0B31C7FFBB276342157AAC1 /* CoreHostService.swift in Sources */,
 				F6C6FBCE05B3CD0E06B557BD /* CoreOverrideService.swift in Sources */,
 				D314E09ECA35515983A3F87C /* CoreOverrideStubs.c in Sources */,
+				5211E693A9768D70E3FEB4F8 /* ICloudMaterializer.swift in Sources */,
 				B621FB26FD899CB24EF75EB3 /* LibretroBridge.mm in Sources */,
 				DB9C6B84818F0494C9D193F9 /* LibretroBridgeImpl.mm in Sources */,
 				87E784CA3A8C16662716565A /* LibretroCallbacks.mm in Sources */,
@@ -5762,6 +5767,7 @@
 				714D657AEDB409F1DFA924E8 /* HotkeyActionRow.swift in Sources */,
 				FDE92E115DEE8FE3BE7318EF /* HotkeyConfig.swift in Sources */,
 				C89D895A0684B41688FF2FD4 /* HotkeyConfigSettingsView.swift in Sources */,
+				A73CD8FC11A30FE6195AC14F /* ICloudMaterializer.swift in Sources */,
 				4C5E02094A7A7692B2C1EC6A /* IOSurfaceVideoManager.swift in Sources */,
 				13909F17DF2385136F4273B8 /* IconPickerView.swift in Sources */,
 				D3BF624E6D643A9C9E0976FF /* ImageCache.swift in Sources */,

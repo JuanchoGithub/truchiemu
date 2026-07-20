@@ -108,6 +108,33 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
         LoggerService.info(category: "XPC-Memory", "\(label): resident=\(String(format: "%.1f", mb))MB footprint=\(String(format: "%.1f", footprintMB))MB")
     }
 
+    // Mirrors Play!'s CAppConfig::GetBasePath() (NSDocumentDirectory /
+    // "Play Data Files") and pre-creates the vfs/mc0 and vfs/mc1 memory-card
+    // directories the HLE BIOS looks for. Runs in the XPC host so
+    // NSDocumentDirectory resolves the same way the core sees it.
+    private static func ensurePlayMemoryCardDirectories() {
+        guard let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            LoggerService.warning(category: "PS2-MemCard", "Could not resolve Documents directory for Play! memory cards")
+            return
+        }
+        let vfs = documents
+            .appendingPathComponent("Play Data Files", isDirectory: true)
+            .appendingPathComponent("vfs", isDirectory: true)
+        for card in ["mc0", "mc1"] {
+            let cardDir = vfs.appendingPathComponent(card, isDirectory: true)
+            do {
+                try FileManager.default.createDirectory(at: cardDir, withIntermediateDirectories: true)
+                LoggerService.info(category: "PS2-MemCard", "Ensured Play! memory card directory: \(cardDir.path)")
+                // Documents is iCloud-synced by default. Existing card contents
+                // may be dataless placeholders that read as empty/corrupt — pull
+                // them down before the core opens the card.
+                ICloudMaterializer.ensureDirectoryMaterialized(at: cardDir)
+            } catch {
+                LoggerService.error(category: "PS2-MemCard", "Failed to create \(cardDir.path): \(error.localizedDescription)")
+            }
+        }
+    }
+
     override init() {
         super.init()
     }
@@ -147,6 +174,25 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
 
         SaveDirectoryBridge.setSavePath(saveDirectory)
         SaveDirectoryBridge.setSystemPath(systemDirectory)
+
+        // Any of these paths may be iCloud-synced (Desktop & Documents sync, or
+        // a user-chosen library folder). A dataless placeholder reads as
+        // empty/corrupt to the core, so download the bytes before launch. The
+        // ROM is materialized as a single file; system dir (BIOS, etc.) is
+        // walked because the core reads specific files from it on demand.
+        ICloudMaterializer.ensureMaterialized(at: URL(fileURLWithPath: romPath), timeout: 120)
+        ICloudMaterializer.ensureDirectoryMaterialized(at: URL(fileURLWithPath: systemDirectory))
+
+        // Play! (PS2) ignores GET_SAVE_DIRECTORY/GET_SYSTEM_DIRECTORY and stores
+        // its virtual memory cards under NSDocumentDirectory/Play Data Files/vfs/
+        // {mc0,mc1}. It only EnsurePathExists() during CPS2VM construction, so a
+        // launch that aborts early (e.g. the old serialize crash) leaves the base
+        // folder without the mc0/mc1 subdirs and the HLE BIOS reports "no memory
+        // cards". Pre-create them here so a card is always present. These are
+        // directory-backed cards — an empty directory is a valid blank card.
+        if coreID.lowercased().contains("play_libretro") {
+            Self.ensurePlayMemoryCardDirectories()
+        }
 
 		LibretroBridge.setLanguage(Int32(language))
 		LibretroBridge.setLogLevel(Int32(logLevel))
