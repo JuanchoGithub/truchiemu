@@ -302,7 +302,14 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
 
     // Whether the current core supports save states
     var supportsSaveStates: Bool {
-        XPCBridgeAdapter.shared.serializeSize() > 0
+        // Play! (PS2) reports a non-zero serialize size but crashes inside
+        // retro_serialize (CSIF::SaveState) when the memory-card subsystem is
+        // in an inconsistent state. Treat it as unsupported until the core can
+        // serialize reliably.
+        if activeCoreID.lowercased().contains("play_libretro") {
+            return false
+        }
+        return XPCBridgeAdapter.shared.serializeSize() > 0
     }
     
     internal var device: MTLDevice? = MTLCreateSystemDefaultDevice()
@@ -467,6 +474,15 @@ case "scummvm": runner = ScummVMRunner()
                 // (see isDolphinCore()); skip rewind for the same reason.
                 if coreID.lowercased().contains("dolphin") {
                     LoggerService.warning(category: "TimeMachine", "Rewind not supported for Dolphin cores — buffer not allocated")
+                    return
+                }
+                // Play! (PS2) crashes inside retro_serialize (CSIF::SaveState ->
+                // SaveCallReplies) when the SIF/memory-card subsystem is in an
+                // inconsistent state — e.g. no memory cards available. The fault
+                // is a native C++ crash that ObjC @catch cannot recover from.
+                // Skip rewind capture for this core (see supportsSaveStates).
+                if coreID.lowercased().contains("play_libretro") {
+                    LoggerService.warning(category: "TimeMachine", "Rewind not supported for Play! (PS2) core — buffer not allocated")
                     return
                 }
                 let memoryBudget = capturedMemoryBudgetMB * 1024 * 1024
