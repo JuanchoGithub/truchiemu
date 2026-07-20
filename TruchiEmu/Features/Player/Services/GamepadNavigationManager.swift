@@ -111,6 +111,17 @@ final class GamepadNavigationManager: ObservableObject {
         isGamepadActive = false
     }
 
+    /// Clears transient poll state and marks the gamepad idle, used when nav is
+    /// suppressed (e.g. a game is running or no window is focused) so that no
+    /// stale presses or repeat timers carry over once nav resumes.
+    private func resetNavState() {
+        if isGamepadActive { isGamepadActive = false }
+        pressedButtons = []
+        lastRepeatTime = [:]
+        lastPressTime = [:]
+        lastLoggedButtons = []
+    }
+
     func focusZone(_ zone: GamepadNavZone) {
         saveCurrentZoneIndex()
         activeZone = zone
@@ -216,6 +227,26 @@ final class GamepadNavigationManager: ObservableObject {
             return
         }
 
+        let topContext = GamepadNavContextStack.shared.topActive()
+
+        // Never synthesize navigation when no window actually has focus.
+        guard NSApp.keyWindow != nil else {
+            resetNavState()
+            return
+        }
+
+        // While a game is running the gamepad drives the running game, so library
+        // UI navigation must never fire. Without this guard the controller is
+        // double-read and reported as `zone=sidebar` nav even though the game
+        // window is the focused one. The gamepad toolbar and open sheets/popovers
+        // install their own contexts and are exempt (see `gameRunningNavSuppressed`
+        // below). The toolbar can still be *opened* during gameplay via its combo
+        // (L3+R3 / Start+Select) or its configured binding — that path must keep
+        // working even while the rest of nav is suppressed.
+        let gameRunningNavSuppressed = RunningGamesTracker.shared.isGameRunning
+            && !(topContext is GamepadGameToolbarContext)
+            && !(topContext is GamepadSheetContext)
+
         let controllers = ControllerService.shared.connectedControllers
         let gamepad = controllers.first(where: { !$0.isKeyboard })?.gcController?.extendedGamepad
 
@@ -228,7 +259,7 @@ final class GamepadNavigationManager: ObservableObject {
             return
         }
 
-        if !isGamepadActive { isGamepadActive = true }
+        if !gameRunningNavSuppressed && !isGamepadActive { isGamepadActive = true }
         _ = GamepadNavCoordinator.shared
 
         let now = CACurrentMediaTime()
@@ -241,7 +272,6 @@ final class GamepadNavigationManager: ObservableObject {
         } else {
             newlyPressed.formUnion(sdlButtons)
         }
-        let topContext = GamepadNavContextStack.shared.topActive()
         if topContext is GamepadGameToolbarContext && suppressLeftStickInToolbar {
             var nonLeftStick = Set<GamepadNavButton>()
             if let gamepad {
@@ -276,6 +306,29 @@ final class GamepadNavigationManager: ObservableObject {
 
         let justPressed = newlyPressed.subtracting(pressedButtons)
         let justReleased = pressedButtons.subtracting(newlyPressed)
+
+        // During gameplay (no toolbar/sheet), swallow all library navigation and
+        // its logs so the controller belongs to the game. The only action that
+        // survives is opening the gamepad toolbar — the legitimate couch-play nav
+        // entry point. We still track press timing so a combo spanning poll
+        // frames forms correctly.
+        if gameRunningNavSuppressed {
+            for button in justReleased {
+                lastRepeatTime.removeValue(forKey: button)
+                lastPressTime.removeValue(forKey: button)
+            }
+            pressedButtons = newlyPressed
+            lastLoggedButtons = []
+            // Honor whatever binding the user assigned to "Show Game Toolbar"
+            // — a plain button or either combo (L3+R3 / Start+Select). The combo
+            // synthetic button is already present in `justPressed` once
+            // `comboFormed` runs above, so no hard-coded buttons are needed.
+            if let toolbarBinding = config[.showGameToolbar]?.binding.button,
+               justPressed.contains(toolbarBinding) {
+                fireAction(.showGameToolbar)
+            }
+            return
+        }
 
         if justPressed != lastLoggedButtons && !justPressed.isEmpty {
             LoggerService.info(category: "GamepadNav", "Pressed: \(justPressed), zone=\(activeZone)")

@@ -505,15 +505,31 @@ LoggerService.info(category: "Shaders", "Updated shader for \(updatedROMIDs.coun
         for count in categoryManager.categories.map({ $0.id }).sorted() {
             hasher.combine(count)
         }
-        hasher.combine(systemDatabase.systemsForDisplay.count)
+        // Include system display names and the toggles that affect which rows
+        // the sidebar renders, so a rename or settings change refreshes the
+        // cached nav order instead of drifting out of sync with the display.
+        let displaySystems = systemDatabase.systemsForDisplay
+        hasher.combine(displaySystems.count)
+        for sys in displaySystems {
+            hasher.combine(sys.id)
+            hasher.combine(sys.sidebarDisplayName)
+        }
+        hasher.combine(RetroAchievementsService.shared.isEnabled)
+        hasher.combine(AppSettings.getBool("showHiddenGamesCategory", defaultValue: true))
+        hasher.combine(SystemPreferences.shared.showHiddenMAMEFiles)
         return hasher.finalize()
     }
 
     private func computeGamepadFilters() -> [LibraryFilter] {
         var items: [LibraryFilter] = [.all]
+        // Mirror SystemSidebarView exactly: each smart collection row only appears
+        // when its count is non-zero (and, for RetroAchievements, when RA is
+        // enabled). Appending `.recent` unconditionally here previously desynced
+        // the nav index from the displayed rows whenever no game had been played.
         if library.romCounts["favorites"] ?? 0 > 0 { items.append(.favorites) }
-        items.append(.recent)
-        if let raCount = library.romCounts["retroAchievements"], raCount > 0 {
+        if library.romCounts["recent"] ?? 0 > 0 { items.append(.recent) }
+        if RetroAchievementsService.shared.isEnabled,
+           let raCount = library.romCounts["retroAchievements"], raCount > 0 {
             items.append(.retroAchievements)
         }
         for cat in categoryManager.categories {
@@ -531,13 +547,22 @@ LoggerService.info(category: "Shaders", "Updated shader for \(updatedROMIDs.coun
             }
             return total > 0 ? .system(sys) : nil
         }.sorted { lhs, rhs in
-            let lName: String = if case .system(let s) = lhs { s.name } else { "" }
-            let rName: String = if case .system(let s) = rhs { s.name } else { "" }
+            // Sort by `sidebarDisplayName` (honors custom renames) to match the
+            // order the sidebar actually renders its system rows.
+            let lName: String = if case .system(let s) = lhs { s.sidebarDisplayName } else { "" }
+            let rName: String = if case .system(let s) = rhs { s.sidebarDisplayName } else { "" }
             return lName.localizedCaseInsensitiveCompare(rName) == .orderedAscending
         }
         items.append(contentsOf: systemFilters)
-        if library.romCounts["hidden"] ?? 0 > 0 { items.append(.hidden) }
-        if library.romCounts["mameNonGames"] ?? 0 > 0 { items.append(.mameNonGames) }
+        // Respect the same visibility toggles the sidebar uses.
+        if library.romCounts["hidden"] ?? 0 > 0,
+           AppSettings.getBool("showHiddenGamesCategory", defaultValue: true) {
+            items.append(.hidden)
+        }
+        if library.romCounts["mameNonGames"] ?? 0 > 0,
+           SystemPreferences.shared.showHiddenMAMEFiles {
+            items.append(.mameNonGames)
+        }
         return items
     }
 }
