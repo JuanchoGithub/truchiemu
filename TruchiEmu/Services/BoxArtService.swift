@@ -269,8 +269,8 @@ class BoxArtService: ObservableObject {
         // 1. Libretro Thumbnails CDN (primary)
         if useLibretroThumbnails {
             let regionSuffix = SystemPreferences.shared.systemLanguage.regionSuffix
-            let (lib, _) = await fetchBoxArtLibretro(for: rom, regionSuffix: regionSuffix)
-            if let lib = lib {
+            let (libResult, _) = await fetchBoxArtLibretro(for: rom, regionSuffix: regionSuffix)
+            if case .success(let lib) = libResult {
                 return lib
             }
         }
@@ -314,17 +314,50 @@ class BoxArtService: ObservableObject {
     }
 
     func downloadAndCache(artURL: URL, for rom: ROM, session: URLSession? = nil) async -> URL? {
-        await downloadAndCache(artURL: artURL, for: rom, to: rom.boxArtLocalPath, session: session)
+        if case .success(let url) = await downloadAndCache(artURL: artURL, for: rom, to: rom.boxArtLocalPath, session: session) {
+            return url
+        }
+        return nil
     }
 
     // Same as downloadAndCache(artURL:for:) but saves to a custom destination URL.
     // Used for title screens ({stem}_title.png) and in-game screenshots ({stem}_snap_N.png)
     // which share the boxart directory but use different filenames.
-    func downloadAndCache(artURL: URL, for rom: ROM, to localURL: URL, session: URLSession? = nil) async -> URL? {
+    // Result of a single artwork download, carrying the *reason* for failure so
+    // callers can cache negative results with the right TTL:
+    //  - .success:       file on disk (valid image).
+    //  - .notFound:      definitively absent — 404, or non-image content. Safe to
+    //                    remember for a long time (CDN genuinely has no art).
+    //  - .transient:     network error / timeout / 429 / 5xx. Retry soon; do not
+    //                    treat as permanent absence (API throttling, blip, etc.).
+    enum ArtDownloadResult: Equatable {
+        case success(URL)
+        case notFound
+        case transient
+    }
+
+    func downloadAndCache(artURL: URL, for rom: ROM, to localURL: URL, session: URLSession? = nil) async -> ArtDownloadResult {
         let sess = session ?? URLSession.shared
         let folder = localURL.deletingLastPathComponent()
 
         try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+
+        // Disk is the source of truth: if the art file already exists and is a
+        // valid image, never delete-and-re-download it. This prevents re-fetching
+        // (and clobbering) art we already have on every re-scan, for box art,
+        // title screens, and screenshots alike.
+        if FileManager.default.fileExists(atPath: localURL.path), isValidImageFile(at: localURL) {
+            if localURL == rom.boxArtLocalPath {
+                BoxArtThumbnailService.deleteThumbnails(for: localURL)
+                await ImageCache.shared.removeImage(for: localURL)
+                await ImageCache.shared.removeThumbnail(for: localURL)
+                BoxArtThumbnailService.generateThumbnailsSynchronously(forOriginal: localURL)
+            } else {
+                await ImageCache.shared.removeImage(for: localURL)
+            }
+            return .success(localURL)
+        }
+
         if FileManager.default.fileExists(atPath: localURL.path) {
             try? FileManager.default.removeItem(at: localURL)
         }
@@ -332,9 +365,14 @@ class BoxArtService: ObservableObject {
         do {
             let (tmpURL, response) = try await sess.download(from: artURL)
             if let httpResponse = response as? HTTPURLResponse {
-                guard (200...299).contains(httpResponse.statusCode) else { return nil }
+                let status = httpResponse.statusCode
+                guard (200...299).contains(status) else {
+                    // 404 = definitively no art; everything else (429/5xx/403) is
+                    // transient (throttling / server error) and should be retried.
+                    return status == 404 ? .notFound : .transient
+                }
                 let validImageTypes = ["image/png", "image/jpeg", "image/jpg", "image/gif", "image/webp", "image/bmp"]
-                guard validImageTypes.contains((httpResponse.mimeType ?? "").lowercased()) else { return nil }
+                guard validImageTypes.contains((httpResponse.mimeType ?? "").lowercased()) else { return .notFound }
             }
             try FileManager.default.moveItem(at: tmpURL, to: localURL)
             if localURL == rom.boxArtLocalPath {
@@ -345,17 +383,19 @@ class BoxArtService: ObservableObject {
             } else {
                 await ImageCache.shared.removeImage(for: localURL)
             }
-            return localURL
+            return .success(localURL)
         } catch {
-            return nil
+            // Timeout, connection drop, DNS failure — transient, retry soon.
+            return .transient
         }
     }
 
     // MARK: - Libretro thumbnails CDN
 
     // Returns (localFileURL, resolvedRegionTag). The region tag is extracted from the CDN URL
-    // (e.g., "(USA)"), NOT from the local file path. Returns (nil, nil) on failure.
-    func fetchBoxArtLibretro(for rom: ROM, regionSuffix: String? = nil) async -> (URL?, String?) {
+    // (e.g., "(USA)"), NOT from the local file path. Returns (.notFound, nil) on
+    // definitive failure, (.transient, nil) on network/transient failure.
+    func fetchBoxArtLibretro(for rom: ROM, regionSuffix: String? = nil) async -> (ArtDownloadResult, String?) {
         let romPathKey: String
         if let inner = rom.innerROMPath {
             romPathKey = URL(fileURLWithPath: inner).deletingPathExtension().lastPathComponent
@@ -370,41 +410,41 @@ class BoxArtService: ObservableObject {
         let regionMatches = rom.boxArtRequestedRegion == regionSuffix
         if regionMatches,
            let cached = cacheRepo.getBoxArtResolution(romPathKey: romPathKey, source: source),
-           cached.isValid,
-           FileManager.default.fileExists(atPath: cached.resolvedURL) {
-            LoggerService.info(category: "BoxArt", "Libretro: Fast cache hit for '\(rom.name)'. Skipping CRC.")
-            return (URL(fileURLWithPath: cached.resolvedURL), nil)
-        }
+            cached.isValid,
+            FileManager.default.fileExists(atPath: cached.resolvedURL) {
+             LoggerService.info(category: "BoxArt", "Libretro: Fast cache hit for '\(rom.name)'. Skipping CRC.")
+             return (.success(URL(fileURLWithPath: cached.resolvedURL)), nil)
+         }
 
-        guard let sysID = LibretroThumbnailResolver.effectiveThumbnailSystemID(for: rom) else { return (nil, nil) }
+         guard let sysID = LibretroThumbnailResolver.effectiveThumbnailSystemID(for: rom) else { return (.notFound, nil) }
 
-        // Resolve working folders (probes once, then cached)
-        let folders = await LibretroThumbnailResolver.workingFolders(forSystemID: sysID)
-        guard !folders.isEmpty else { return (nil, nil) }
+         // Resolve working folders (probes once, then cached)
+         let folders = await LibretroThumbnailResolver.workingFolders(forSystemID: sysID)
+         guard !folders.isEmpty else { return (.notFound, nil) }
 
-        // This is the heavy CRC calculation
-        guard let gameTitle = await LibretroThumbnailResolver.resolveGameTitle(
-            for: rom,
-            useCRC: useCRCMatchingForThumbnails,
-            fallbackFilename: fallbackToFilenameForThumbnails
-        ), !gameTitle.isEmpty else { return (nil, nil) }
+         // This is the heavy CRC calculation
+         guard let gameTitle = await LibretroThumbnailResolver.resolveGameTitle(
+             for: rom,
+             useCRC: useCRCMatchingForThumbnails,
+             fallbackFilename: fallbackToFilenameForThumbnails
+         ), !gameTitle.isEmpty else { return (.notFound, nil) }
 
-        let knownVariants: [String]
-        if useCRCMatchingForThumbnails, let romSystemID = rom.systemID {
-            knownVariants = await LibretroDatabaseLibrary.shared.findVariantEntries(for: gameTitle, systemID: romSystemID)
-        } else {
-            knownVariants = []
-        }
+         let knownVariants: [String]
+         if useCRCMatchingForThumbnails, let romSystemID = rom.systemID {
+             knownVariants = await LibretroDatabaseLibrary.shared.findVariantEntries(for: gameTitle, systemID: romSystemID)
+         } else {
+             knownVariants = []
+         }
 
-        let localBoxArtDir = rom.path.deletingLastPathComponent().appendingPathComponent("boxart", isDirectory: true)
-        let safeStem = LibretroThumbnailResolver.libretroFilesystemSafeName(gameTitle)
+         let localBoxArtDir = rom.path.deletingLastPathComponent().appendingPathComponent("boxart", isDirectory: true)
+         let safeStem = LibretroThumbnailResolver.libretroFilesystemSafeName(gameTitle)
 
-        for stem in [gameTitle, safeStem] where !stem.isEmpty {
-            if let local = LibretroThumbnailResolver.resolveLocalThumbnail(named: stem, in: localBoxArtDir) {
-                if isValidImageFile(at: local) { return (local, nil) }
-                else { try? FileManager.default.removeItem(at: local) }
-            }
-        }
+         for stem in [gameTitle, safeStem] where !stem.isEmpty {
+             if let local = LibretroThumbnailResolver.resolveLocalThumbnail(named: stem, in: localBoxArtDir) {
+                 if isValidImageFile(at: local) { return (.success(local), nil) }
+                 else { try? FileManager.default.removeItem(at: local) }
+             }
+         }
 
         // Step 1: Try manifest-based region-preference matching first.
         // This finds ALL files in the manifest matching the game title, then picks
@@ -418,6 +458,7 @@ class BoxArtService: ObservableObject {
             regionPreference: regionPreference
         )
 
+        var sawTransient = false
         for (_, url, regionTag) in manifestMatches {
             if let cached = cacheRepo.getBoxArtResolution(romPathKey: romPathKey, source: source) {
                 if cached.resolvedURL == url.absoluteString && !cached.isValid && cached.httpStatus != 0 { continue }
@@ -425,10 +466,14 @@ class BoxArtService: ObservableObject {
 
             // Skip HEAD check for manifest-confirmed URLs — the manifest is authoritative,
             // so we avoid an extra CDN hit. Go straight to download.
-            if let saved = await downloadAndCache(artURL: url, for: rom, session: thumbnailURLSession) {
+            switch await downloadAndCache(artURL: url, for: rom, to: rom.boxArtLocalPath, session: thumbnailURLSession) {
+            case .success(let saved):
                 cacheRepo.storeBoxArtResolution(romPathKey: romPathKey, systemID: sysID, gameTitle: gameTitle, resolvedURL: saved.path, source: source, httpStatus: 200, isValid: true)
-                return (saved, regionTag)
-            } else {
+                return (.success(saved), regionTag)
+            case .transient:
+                sawTransient = true
+                cacheRepo.storeBoxArtResolution(romPathKey: romPathKey, systemID: sysID, gameTitle: gameTitle, resolvedURL: url.absoluteString, source: source, httpStatus: 0, isValid: false)
+            case .notFound:
                 cacheRepo.storeBoxArtResolution(romPathKey: romPathKey, systemID: sysID, gameTitle: gameTitle, resolvedURL: url.absoluteString, source: source, httpStatus: 0, isValid: false)
             }
         }
@@ -464,42 +509,57 @@ class BoxArtService: ObservableObject {
                 }
             }
 
-            if let saved = await downloadAndCache(artURL: url, for: rom, session: thumbnailURLSession) {
+            switch await downloadAndCache(artURL: url, for: rom, to: rom.boxArtLocalPath, session: thumbnailURLSession) {
+            case .success(let saved):
                 let resolvedRegionTag = LibretroThumbnailResolver.regionTag(from: url)
                 cacheRepo.storeBoxArtResolution(romPathKey: romPathKey, systemID: sysID, gameTitle: gameTitle, resolvedURL: saved.path, source: source, httpStatus: 200, isValid: true)
-                return (saved, resolvedRegionTag)
-            } else {
+                return (.success(saved), resolvedRegionTag)
+            case .transient:
+                sawTransient = true
+                cacheRepo.storeBoxArtResolution(romPathKey: romPathKey, systemID: sysID, gameTitle: gameTitle, resolvedURL: url.absoluteString, source: source, httpStatus: headStatusCode == -1 ? 0 : headStatusCode, isValid: false)
+            case .notFound:
                 cacheRepo.storeBoxArtResolution(romPathKey: romPathKey, systemID: sysID, gameTitle: gameTitle, resolvedURL: url.absoluteString, source: source, httpStatus: headStatusCode == -1 ? 0 : headStatusCode, isValid: false)
             }
         }
 
-        return (nil, nil)
+        // No candidate produced a file. If any attempt was a transient (throttled /
+        // network) failure, report that so the caller retries soon; otherwise the
+        // art is definitively absent.
+        return (sawTransient ? .transient : .notFound, nil)
     }
 
     // MARK: - Named_Titles / Named_Snaps (title screens & in-game screenshots)
 
     // Generic libretro CDN fetch for a single Named_* type folder that saves to a
-    // caller-supplied local destination. Returns the local URL on success.
+    // caller-supplied local destination. Returns the result (carrying failure reason).
     private func fetchThumbnailLibretro(
         for rom: ROM,
         typeFolder: String,
         regionSuffix: String?,
         localDestination: URL,
         localStem: String
-    ) async -> (URL?, String?) {
+    ) async -> ArtDownloadResult {
         let source = "libretro_\(typeFolder)"
         let romPathKey = localStem
 
-        guard let sysID = LibretroThumbnailResolver.effectiveThumbnailSystemID(for: rom) else { return (nil, nil) }
+        // Disk is the source of truth: if the title/screenshot file already exists
+        // and is a valid image, return it immediately. This skips the per-ROM
+        // CRC + network manifest lookup that otherwise burns ~66ms per ROM on
+        // every re-scan even when the art is already on disk.
+        if FileManager.default.fileExists(atPath: localDestination.path), isValidImageFile(at: localDestination) {
+            return .success(localDestination)
+        }
+
+        guard let sysID = LibretroThumbnailResolver.effectiveThumbnailSystemID(for: rom) else { return .notFound }
 
         let folders = await LibretroThumbnailResolver.workingFolders(forSystemID: sysID)
-        guard !folders.isEmpty else { return (nil, nil) }
+        guard !folders.isEmpty else { return .notFound }
 
         guard let gameTitle = await LibretroThumbnailResolver.resolveGameTitle(
             for: rom,
             useCRC: useCRCMatchingForThumbnails,
             fallbackFilename: fallbackToFilenameForThumbnails
-        ), !gameTitle.isEmpty else { return (nil, nil) }
+        ), !gameTitle.isEmpty else { return .notFound }
 
         let regionPreference = SystemPreferences.shared.systemLanguage.noIntroRegionPreference
         let manifestMatches = await LibretroThumbnailResolver.bestMatchingURLs(
@@ -510,17 +570,24 @@ class BoxArtService: ObservableObject {
             regionPreference: regionPreference
         )
 
-        for (_, url, regionTag) in manifestMatches {
-            if let saved = await downloadAndCache(artURL: url, for: rom, to: localDestination, session: thumbnailURLSession) {
+        var sawTransient = false
+        for (_, url, _) in manifestMatches {
+            switch await downloadAndCache(artURL: url, for: rom, to: localDestination, session: thumbnailURLSession) {
+            case .success(let saved):
                 cacheRepo.storeBoxArtResolution(romPathKey: romPathKey, systemID: sysID, gameTitle: gameTitle, resolvedURL: saved.path, source: source, httpStatus: 200, isValid: true)
-                return (saved, regionTag)
+                return .success(saved)
+            case .transient:
+                sawTransient = true
+                cacheRepo.storeBoxArtResolution(romPathKey: romPathKey, systemID: sysID, gameTitle: gameTitle, resolvedURL: url.absoluteString, source: source, httpStatus: 0, isValid: false)
+            case .notFound:
+                cacheRepo.storeBoxArtResolution(romPathKey: romPathKey, systemID: sysID, gameTitle: gameTitle, resolvedURL: url.absoluteString, source: source, httpStatus: 0, isValid: false)
             }
         }
-        return (nil, nil)
+        return sawTransient ? .transient : .notFound
     }
 
     // Downloads the libretro "Named_Titles" title screen to {stem}_title.png in the boxart dir.
-    func downloadTitleScreen(for rom: ROM) async -> URL? {
+    func downloadTitleScreen(for rom: ROM) async -> ArtDownloadResult {
         let romPathKey: String
         if let inner = rom.innerROMPath {
             romPathKey = URL(fileURLWithPath: inner).deletingPathExtension().lastPathComponent
@@ -530,17 +597,16 @@ class BoxArtService: ObservableObject {
         let boxartDir = rom.path.deletingLastPathComponent().appendingPathComponent("boxart", isDirectory: true)
         let stem = "\(romPathKey)_title"
         let localURL = boxartDir.appendingPathComponent("\(stem).png")
-        let (saved, _) = await fetchThumbnailLibretro(
+        return await fetchThumbnailLibretro(
             for: rom, typeFolder: "Named_Titles", regionSuffix: SystemPreferences.shared.systemLanguage.regionSuffix,
             localDestination: localURL, localStem: romPathKey
         )
-        return saved
     }
 
     // Downloads up to `cap` libretro "Named_Snaps" in-game screenshots to
     // {stem}_snap_0.png, {stem}_snap_1.png, ... in the boxart dir.
     // Returns the on-disk URLs that were successfully downloaded.
-    func downloadScreenshots(for rom: ROM, cap: Int = 4) async -> [URL] {
+    func downloadScreenshots(for rom: ROM, cap: Int = 4) async -> ([URL], ArtDownloadResult) {
         let romPathKey: String
         if let inner = rom.innerROMPath {
             romPathKey = URL(fileURLWithPath: inner).deletingPathExtension().lastPathComponent
@@ -550,12 +616,22 @@ class BoxArtService: ObservableObject {
         let boxartDir = rom.path.deletingLastPathComponent().appendingPathComponent("boxart", isDirectory: true)
         let stem = "\(romPathKey)_snap"
 
-        guard let sysID = LibretroThumbnailResolver.effectiveThumbnailSystemID(for: rom) else { return [] }
+        // Disk is the source of truth: if the requested screenshot files already
+        // exist on disk, return them immediately — skip the per-ROM CRC hash and
+        // network manifest lookup that otherwise burn ~670ms per ROM every re-scan
+        // (even when the art is already present).
+        let existing = (0..<cap).compactMap { i -> URL? in
+            let url = boxartDir.appendingPathComponent("\(stem)_\(i).png")
+            return FileManager.default.fileExists(atPath: url.path) && isValidImageFile(at: url) ? url : nil
+        }
+        if !existing.isEmpty { return (existing, .success(existing[0])) }
+
+        guard let sysID = LibretroThumbnailResolver.effectiveThumbnailSystemID(for: rom) else { return ([], .notFound) }
         let folders = await LibretroThumbnailResolver.workingFolders(forSystemID: sysID)
-        guard !folders.isEmpty else { return [] }
+        guard !folders.isEmpty else { return ([], .notFound) }
         guard let gameTitle = await LibretroThumbnailResolver.resolveGameTitle(
             for: rom, useCRC: useCRCMatchingForThumbnails, fallbackFilename: fallbackToFilenameForThumbnails
-        ), !gameTitle.isEmpty else { return [] }
+        ), !gameTitle.isEmpty else { return ([], .notFound) }
 
         let regionPreference = SystemPreferences.shared.systemLanguage.noIntroRegionPreference
         let matches = await LibretroThumbnailResolver.bestMatchingURLs(
@@ -567,13 +643,17 @@ class BoxArtService: ObservableObject {
         )
 
         var results: [URL] = []
+        var sawTransient = false
         for (index, (_, url, _)) in matches.enumerated() where index < cap {
             let localURL = boxartDir.appendingPathComponent("\(stem)_\(index).png")
-            if let saved = await downloadAndCache(artURL: url, for: rom, to: localURL, session: thumbnailURLSession) {
-                results.append(saved)
+            switch await downloadAndCache(artURL: url, for: rom, to: localURL, session: thumbnailURLSession) {
+            case .success(let saved): results.append(saved)
+            case .transient: sawTransient = true
+            case .notFound: break
             }
         }
-        return results
+        let result: ArtDownloadResult = results.isEmpty ? (sawTransient ? .transient : .notFound) : .success(results[0])
+        return (results, result)
     }
 
     private func httpStatus(for url: URL, method: String, session: URLSession) async -> Int {
@@ -655,12 +735,20 @@ class BoxArtService: ObservableObject {
             let staleIDs = Set(stale.map { $0.id })
             candidates = roms.filter { !$0.hasBoxArt || staleIDs.contains($0.id) }
         } else {
-            // Same region: skip recently fetched ones, only download truly missing
+            // Same region: only download truly missing art. Disk is the source of
+            // truth — if the box art file already exists locally (valid image, not
+            // the 7-day cache window or a region flag), skip it. This prevents
+            // re-downloading art we already have on every re-scan.
             let recent = romsWithRecentBoxArt(in: roms, currentRegionSuffix: regionSuffix)
             let recentIDs = Set(recent.map { $0.id })
             let needsArt = romsNeedingBoxArt(in: roms)
             candidates = needsArt.filter { !recentIDs.contains($0.id) }
         }
+
+        // Hard gate: drop any candidate whose box art file already exists on disk.
+        // Covers art fetched >7 days ago, region-flag churn, or in-memory flag
+        // drift — if the file is there, we never re-download it.
+        candidates = candidates.filter { !FileManager.default.fileExists(atPath: $0.boxArtLocalPath.path) }
 
         guard !candidates.isEmpty else { return }
 
@@ -687,16 +775,16 @@ class BoxArtService: ObservableObject {
         var modifiedIDs: [UUID] = []
         let total = candidates.count
         
-        await withTaskGroup(of: (ROM, URL?, String?).self) { group in
+        await withTaskGroup(of: (ROM, ArtDownloadResult, String?).self) { group in
             var activeTasks = 0
             var completed = 0
             var iterator = candidates.makeIterator()
             
             while activeTasks < maxConcurrent, let rom = iterator.next() {
                 group.addTask {
-                    if let local = self.resolveLocalBoxArt(for: rom) { return (rom, local, nil) }
-                    let (url, regionTag) = await self.fetchBoxArtLibretro(for: rom, regionSuffix: regionSuffix)
-                    return (rom, url, regionTag)
+                    if let local = self.resolveLocalBoxArt(for: rom) { return (rom, .success(local), nil) }
+                    let (result, regionTag) = await self.fetchBoxArtLibretro(for: rom, regionSuffix: regionSuffix)
+                    return (rom, result, regionTag)
                 }
                 activeTasks += 1
             }
@@ -704,8 +792,8 @@ class BoxArtService: ObservableObject {
             for await result in group {
                 activeTasks -= 1
                 completed += 1
-                var (completedRom, url, regionTag) = result
-                if let _ = url {
+                var (completedRom, artResult, regionTag) = result
+                if case .success(let url) = artResult {
                     completedRom.hasBoxArt = true
                     completedRom.boxArtRequestedRegion = regionSuffix
                     completedRom.boxArtRegionTag = regionTag
@@ -713,13 +801,14 @@ class BoxArtService: ObservableObject {
                     modifiedIDs.append(completedRom.id)
                     await MainActor.run { library.updateROM(completedRom, persist: false) }
                 }
-                onItemProgress?(completed, total, completedRom.displayName, url)
+                let reportedURL: URL? = if case .success(let u) = artResult { u } else { nil }
+                onItemProgress?(completed, total, completedRom.displayName, reportedURL)
                 if let nextRom = iterator.next() {
                     try? await Task.sleep(nanoseconds: 500_000_000)
                     group.addTask {
-                        if let local = self.resolveLocalBoxArt(for: nextRom) { return (nextRom, local, nil) }
-                        let (url, regionTag) = await self.fetchBoxArtLibretro(for: nextRom, regionSuffix: regionSuffix)
-                        return (nextRom, url, regionTag)
+                        if let local = self.resolveLocalBoxArt(for: nextRom) { return (nextRom, .success(local), nil) }
+                        let (r, regionTag) = await self.fetchBoxArtLibretro(for: nextRom, regionSuffix: regionSuffix)
+                        return (nextRom, r, regionTag)
                     }
                     activeTasks += 1
                 }
@@ -743,28 +832,12 @@ class BoxArtService: ObservableObject {
             BoxArtThumbnailService.shared.warmThumbnails(for: fetched)
         }
 
-        // Post-pass: also fetch libretro Named_Titles (title screen) and Named_Snaps
-        // (in-game screenshots). These complement the box art on the game detail
-        // overview. We fetch them for every passed ROM that is still missing them,
-        // independent of whether box art downloaded (a game can have box art but no
-        // title screen, or vice-versa). Failures are silently ignored.
-        let needTitle = roms.filter { !$0.hasTitleScreen || $0.screenshotPaths.isEmpty }
-        guard !needTitle.isEmpty else { return }
-        await withTaskGroup(of: Void.self) { group in
-            var active = 0
-            var iterator = needTitle.makeIterator()
-            while active < 2, let rom = iterator.next() {
-                group.addTask { await self.downloadTitleAndScreenshots(for: rom, library: library) }
-                active += 1
-            }
-            for await _ in group {
-                active -= 1
-                if let next = iterator.next() {
-                    group.addTask { await self.downloadTitleAndScreenshots(for: next, library: library) }
-                    active += 1
-                }
-            }
-        }
+        // NOTE: Title screens and in-game screenshots are intentionally NOT fetched
+        // here. The scan only downloads box art; title/snaps are fetched lazily when
+        // the user opens a game's info view (GameDetailView calls
+        // downloadTitleAndScreenshots). Fetching them for the whole library at scan
+        // time added ~140s of CDN lookups (incl. 9s timeouts for ROMs with no art on
+        // the libretro CDN) for art the user may never look at.
     }
 
     // Fetches the title screen (Named_Titles) and up to 4 in-game screenshots
@@ -772,17 +845,93 @@ class BoxArtService: ObservableObject {
     // (hasTitleScreen / hasScreenshots / screenshotPaths) without forcing a DB save.
     // Public so the Game Detail view can lazily fetch art that the scan-time pass missed.
     func downloadTitleAndScreenshots(for rom: ROM, library: ROMLibrary) async {
+        // Disk is the source of truth: if the title screen and at least one
+        // screenshot already exist on disk, skip all network lookups. This keeps
+        // re-scans from re-fetching (and re-listing manifests for) art we already have.
+        let romPathKey: String
+        if let inner = rom.innerROMPath {
+            romPathKey = URL(fileURLWithPath: inner).deletingPathExtension().lastPathComponent
+        } else {
+            romPathKey = rom.path.deletingPathExtension().lastPathComponent
+        }
+        let boxartDir = rom.path.deletingLastPathComponent().appendingPathComponent("boxart", isDirectory: true)
+        let titleExists = FileManager.default.fileExists(atPath: boxartDir.appendingPathComponent("\(romPathKey)_title.png").path)
+        let snapExists = (0..<4).contains {
+            FileManager.default.fileExists(atPath: boxartDir.appendingPathComponent("\(romPathKey)_snap_\($0).png").path)
+        }
+        if titleExists && snapExists {
+            LoggerService.info(category: "BoxArtProf", "PROF skip \(romPathKey): title+snap on disk")
+            return
+        }
+
+        // Negative-result cache with reason-specific TTLs. We distinguish WHY a fetch
+        // failed so we don't conflate "CDN definitively has no art" with "network
+        // blip / API throttling":
+        //  - .notFound  (404 / non-image): the art genuinely doesn't exist → remember
+        //                for a long time (7 days). Safe; CDN won't suddenly gain it.
+        //  - .transient (timeout / 429 / 5xx): retry soon (6h) so a throttle or blip
+        //                doesn't permanently block art that's actually available.
+        // A successful fetch always wins and clears any negative entry.
+        let pathKey = rom.path.path
+        let notFoundTTL: TimeInterval = 7 * 24 * 3600
+        let transientTTL: TimeInterval = 6 * 3600
+        let notFoundCache: [String: Date] = {
+            guard let data = AppSettings.getData("boxart_titleSnap_notFound"),
+                  let map = try? JSONDecoder().decode([String: Date].self, from: data) else { return [:] }
+            return map
+        }()
+        let transientCache: [String: Date] = {
+            guard let data = AppSettings.getData("boxart_titleSnap_transient"),
+                  let map = try? JSONDecoder().decode([String: Date].self, from: data) else { return [:] }
+            return map
+        }()
+        if let cachedAt = notFoundCache[pathKey], Date().timeIntervalSince(cachedAt) < notFoundTTL {
+            LoggerService.info(category: "BoxArtProf", "PROF skip \(romPathKey): CDN notFound cached")
+            return
+        }
+        if let cachedAt = transientCache[pathKey], Date().timeIntervalSince(cachedAt) < transientTTL {
+            LoggerService.info(category: "BoxArtProf", "PROF skip \(romPathKey): CDN transient cached")
+            return
+        }
+
+        let tts = Date()
         var updated = rom
-        if let titleURL = await downloadTitleScreen(for: rom) {
-            updated.hasTitleScreen = true
-            updated.titleScreenLocalPath = titleURL
+        var titleResult: ArtDownloadResult = .notFound
+        var snapResult: ArtDownloadResult = .notFound
+        if !titleExists {
+            let tt = Date()
+            titleResult = await downloadTitleScreen(for: rom)
+            let exists = if case .success = titleResult { true } else { false }
+            LoggerService.info(category: "BoxArtProf", "PROF title '\(romPathKey)' took \(String(format: "%.2f", Date().timeIntervalSince(tt)))s (exists=\(exists))")
+            if case .success(let url) = titleResult {
+                updated.hasTitleScreen = true; updated.titleScreenLocalPath = url
+            }
         }
-        let snaps = await downloadScreenshots(for: rom)
-        if !snaps.isEmpty {
-            updated.hasScreenshots = true
-            updated.screenshotPaths = snaps
+        if !snapExists {
+            let ts = Date()
+            let (snaps, result) = await downloadScreenshots(for: rom)
+            snapResult = result
+            LoggerService.info(category: "BoxArtProf", "PROF snap '\(romPathKey)' took \(String(format: "%.2f", Date().timeIntervalSince(ts)))s (count=\(snaps.count))")
+            if !snaps.isEmpty {
+                updated.hasScreenshots = true
+                updated.screenshotPaths = snaps
+            }
         }
-        guard updated.hasTitleScreen || updated.hasScreenshots else { return }
+        // Remember the worst failure reason so we re-check with the right TTL.
+        // .transient outranks .notFound (a transient failure should retry sooner).
+        let worst: ArtDownloadResult = (titleResult == .transient || snapResult == .transient) ? .transient : .notFound
+        let hasAnySuccess = if case .success = titleResult { true } else if case .success = snapResult { true } else { false }
+        if !hasAnySuccess {
+            let now = Date()
+            if worst == .transient {
+                var map = transientCache; map[pathKey] = now
+                if let data = try? JSONEncoder().encode(map) { AppSettings.setData("boxart_titleSnap_transient", value: data) }
+            } else {
+                var map = notFoundCache; map[pathKey] = now
+                if let data = try? JSONEncoder().encode(map) { AppSettings.setData("boxart_titleSnap_notFound", value: data) }
+            }
+            return
+        }
         await MainActor.run { library.updateROM(updated, persist: false) }
         await MainActor.run { library.saveROMsToDatabase(only: [updated.id]) }
     }

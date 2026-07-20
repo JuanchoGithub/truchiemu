@@ -64,7 +64,7 @@ enum ROMIdentifier {
 
     // MARK: - Public Entry Point
 
-    static func identifySystem(url: URL, extension ext: String, pathContextURL: URL? = nil, skipMAMEScoring: Bool = false) async -> SystemInfo? {
+    static func identifySystem(url: URL, extension ext: String, pathContextURL: URL? = nil, skipMAMEScoring: Bool = false, skipCRC: Bool = false) async -> SystemInfo? {
         let filename = url.lastPathComponent.lowercased()
         let extLower = normalize(extension: ext)
         
@@ -185,7 +185,9 @@ enum ROMIdentifier {
         // 6. CRC-based Disambiguation (Heavy I/O: read entire file + DAT lookup)
         // For ambiguous extensions with competing candidates within striking distance,
         // compute CRC32 and check candidate systems' DAT databases.
-        if let crcMatch = await identifyByCRC(url: url, extLower: extLower, candidates: candidates) {
+        // Skippable during the scan pass — final CRC-based identification happens
+        // once in LibraryAutomationCoordinator Phase 1, not twice (scan + Phase 1).
+        if !skipCRC, let crcMatch = await identifyByCRC(url: url, extLower: extLower, candidates: candidates) {
             candidates[crcMatch, default: 0] += 150
             #if LOG_DEBUG
             LoggerService.debug(category: "ROMIdentifier", "CRC disambiguation for \(filename): \(crcMatch) matched")

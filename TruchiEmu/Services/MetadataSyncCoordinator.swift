@@ -35,10 +35,25 @@ final class MetadataSyncCoordinator: ObservableObject {
         let metadataService = LaunchBoxMetadataService.shared
         let scope = targetROMs ?? library.roms
 
+        // Disk gate: skip ROMs LaunchBox already searched and found NO match for
+        // on a previous run. Re-querying unmatchable ROMs every scan wastes ~66ms
+        // each (in-memory name-index lookup) for zero benefit — across a 1900-ROM
+        // library that's the bulk of Phase 3b. Persisted with a timestamp; entries
+        // expire after the TTL so a transient failure (or later-added metadata)
+        // is retried rather than permanently blocked.
+        let negativeCacheTTL: TimeInterval = 7 * 24 * 3600
+        let noMatchCache: [String: Date] = {
+            guard let data = AppSettings.getData("launchbox_noMatchROMs"),
+                  let map = try? JSONDecoder().decode([String: Date].self, from: data) else { return [:] }
+            return map
+        }()
+        let noMatchROMPaths = noMatchCache.filter { Date().timeIntervalSince($0.value) < negativeCacheTTL }.keys
+
         let needMetadata = scope.filter { rom in
-            (rom.metadata?.description?.isEmpty ?? true) ||
-            (rom.metadata?.developer?.isEmpty ?? true) ||
-            (rom.metadata?.publisher?.isEmpty ?? true)
+            guard !(noMatchROMPaths.contains(rom.path.path)) else { return false }
+            return (rom.metadata?.description?.isEmpty ?? true) ||
+                   (rom.metadata?.developer?.isEmpty ?? true) ||
+                   (rom.metadata?.publisher?.isEmpty ?? true)
         }
 
         guard !needMetadata.isEmpty else { return }
@@ -89,14 +104,28 @@ final class MetadataSyncCoordinator: ObservableObject {
         var enriched = 0
 
         var enrichedIDs: [UUID] = []
+        var newlyNoMatch: [String] = []
         for rom in needMetadata {
             let found = await metadataService.fetchAndApplyMetadata(for: rom, library: library, downloadBoxArt: false, persistImmediately: false)
             completed += 1
-            if found { enriched += 1; enrichedIDs.append(rom.id) }
+            if found {
+                enriched += 1; enrichedIDs.append(rom.id)
+            } else {
+                newlyNoMatch.append(rom.path.path)
+            }
             progress = Double(completed) / Double(max(total, 1))
             let systemID = rom.systemID ?? "?"
             statusLine = "\(completed)/\(total) — \(rom.displayName) (\(systemID))" + (found ? " ✓" : " — no match")
             if completed % 20 == 0 { await Task.yield() }
+        }
+
+        if !newlyNoMatch.isEmpty {
+            var map = noMatchCache
+            let now = Date()
+            for path in newlyNoMatch { map[path] = now }
+            if let data = try? JSONEncoder().encode(map) {
+                AppSettings.setData("launchbox_noMatchROMs", value: data)
+            }
         }
 
         if !enrichedIDs.isEmpty {

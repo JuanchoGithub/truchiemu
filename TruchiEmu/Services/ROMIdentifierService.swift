@@ -2,9 +2,11 @@ import Foundation
 import zlib // <-- ADD THIS
 
 // MARK: - I/O Bottleneck Controller
-// Limits heavy file reading to 4 concurrent operations to prevent SSD/HDD I/O thrashing.
+// Limits heavy file reading to N concurrent operations. Was 4 (HDD-era); bumped
+// to 16 to take advantage of modern NVMe SSDs on Apple Silicon. The 4-way cap
+// left most disk bandwidth idle during the scan/identify pipeline.
 private let diskIOQueue = DispatchQueue(label: "com.truchiemu.diskIO", attributes: .concurrent)
-private let diskIOSemaphore = DispatchSemaphore(value: 4) // Max 4 concurrent disk reads
+private let diskIOSemaphore = DispatchSemaphore(value: 16) // Max 16 concurrent disk reads (NVMe-friendly)
 
 // MARK: - Hardware-Accelerated CRC32
 struct CRC32 {
@@ -193,6 +195,21 @@ final class ROMIdentifierService: @unchecked Sendable {
     private let indexCache = NSCache<NSString, SystemSearchIndex>()
 
     func identify(rom: ROM, preferNameMatch: Bool = false) async -> ROMIdentifyResult {
+        guard let systemID = rom.systemID,
+              let system = SystemDatabase.system(forID: systemID) else {
+            LoggerService.error(category: "ROMIdentifier", "Identify: no system for ROM \(rom.path.lastPathComponent)")
+            return .noSystem
+        }
+        let db = await LibretroDatabaseLibrary.shared.fetchAndLoadDat(for: system)
+        return await identify(rom: rom, database: db, preferNameMatch: preferNameMatch)
+    }
+
+    /// Identification entry point that accepts an ALREADY-LOADED DAT dictionary.
+    /// The post-scan coordinator groups ROMs by system and pre-fetches each system's
+    /// DAT once (Phase 0), then calls this overload per ROM so we don't funnel 1000s
+    /// of `identify` calls through a single `LibretroDatabaseLibrary` actor hop each —
+    /// that serialization was the dominant cost of Phase 1 (≈80s for ~1800 ROMs).
+    func identify(rom: ROM, database db: [String: GameInfo], preferNameMatch: Bool = false) async -> ROMIdentifyResult {
         #if LOG_DEBUG
         LoggerService.debug(category: "ROMIdentifier","Identify \(rom.name): START (preferNameMatch=\(preferNameMatch))")
         #endif
@@ -269,7 +286,6 @@ final class ROMIdentifierService: @unchecked Sendable {
         // authoritative, fast path — no multi-GB CRC hashing — and survives region/
         // version suffixes in DAT titles. Disc-header title is the offline fallback.
         if systemID == "wii" || systemID == "gamecube" {
-            let db = await LibretroDatabaseLibrary.shared.fetchAndLoadDat(for: system)
             if !db.isEmpty,
                let header = DiscHeaderReader.read(from: rom.path, systemID: systemID),
                let gameID = Self.gameIDFromDiscCode(header.gameCode) {
@@ -305,7 +321,6 @@ final class ROMIdentifierService: @unchecked Sendable {
             #endif
         }
 
-        let db = await LibretroDatabaseLibrary.shared.fetchAndLoadDat(for: system)
         if db.isEmpty {
             LoggerService.error(category: "ROMIdentifier", "Identify \(rom.name): empty database for system \(systemID), identification skipped.")
             return .databaseUnavailable
@@ -440,14 +455,6 @@ final class ROMIdentifierService: @unchecked Sendable {
             }
         }
 
-        // --- INTEGRATION START ---
-        // Trigger RA sync as a side effect of identification.
-        // We use a Task to avoid blocking the primary identification result.
-        Task {
-            await RetroAchievementsService.shared.syncROMWithRA(rom: rom)
-        }
-        // --- INTEGRATION END ---
-        
         return .crcNotInDatabase(crc: key)
     }
 

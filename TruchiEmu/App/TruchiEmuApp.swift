@@ -667,6 +667,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             await HaishinKitLogger.installAppender()
         }
 
+        // Warm BoxArtService on the main thread. It is a @MainActor singleton
+        // whose init touches AppSettings (which asserts main-actor isolation).
+        // If its first access happens from a background scan queue, the lazy
+        // dispatch_once init would run off-main and crash. Eagerly touching
+        // .shared here guarantees the init fires on the main actor.
+        _ = BoxArtService.shared
+
         // Start SDL2 input subsystem for game controller support
         SDLInputManager.shared.start()
 

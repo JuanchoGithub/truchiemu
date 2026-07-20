@@ -311,6 +311,29 @@ final class LibraryMetadataStore: ObservableObject {
         objectWillChange.send()
     }
 
+    /// Batch variant of `persist(rom:)` for use after a library scan where
+    /// thousands of ROMs may be persisted in tight succession. Writes all
+    /// entries to the in-memory dictionary and marks them dirty in one pass,
+    /// then fires a SINGLE `objectWillChange.send()` for the whole batch.
+    /// Calling persist(rom:) per-ROM instead fires N times during a scan
+    /// (N=1601 → 1601 SwiftUI invalidation storms on the main actor).
+    func persistBatch(_ roms: [ROM]) {
+        guard !roms.isEmpty else { return }
+        for rom in roms {
+            let key = Self.pathKey(for: rom)
+            var rec = ROMMetadataRecord(from: rom)
+            if let existing = entries[key] {
+                if rec.titleScreenPath == nil { rec.titleScreenPath = existing.titleScreenPath }
+                if rec.screenshotPaths.isEmpty && !existing.screenshotPaths.isEmpty {
+                    rec.screenshotPaths = existing.screenshotPaths
+                }
+            }
+            entries[key] = rec
+            dirtyKeys.insert(key)
+        }
+        objectWillChange.send()
+    }
+
     // Flush only dirty entries to SwiftData. More efficient than flushAllToSwiftData()
     // when only a subset of ROMs have been modified.
     func flushDirtyToSwiftData() {

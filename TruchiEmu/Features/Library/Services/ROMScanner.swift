@@ -227,7 +227,10 @@ actor ROMScanner {
         if filename == "scph5500.bin" || filename == "scph5501.bin" || filename == "scph5502.bin" { return [] }
 
         let skipMAMEScoring = !mameRejectedURLs.contains(url)
-        guard let system = await identifySystem(url: url, extension: ext, skipMAMEScoring: skipMAMEScoring) else {
+        // Scan pass skips CRC + archive extraction for ambiguous inner ROMs.
+        // Final, authoritative identification happens once in LibraryAutomationCoordinator
+        // Phase 1 (ROMIdentifierService.identify), which runs the full CRC pipeline.
+        guard let system = await identifySystem(url: url, extension: ext, skipMAMEScoring: skipMAMEScoring, skipCRC: true) else {
             return []
         }
 
@@ -267,34 +270,18 @@ actor ROMScanner {
             if !innerROMs.isEmpty {
                 var results: [ROM] = []
 
-                // Check if any inner file needs full identification (ambiguous extension)
-                let needsFullID = innerROMs.contains(where: { $0.isAmbiguous })
-
-                var tempExtraction: ArchiveExtractor.TemporaryExtraction?
-                if needsFullID {
-                    do {
-                        tempExtraction = try await ArchiveExtractor.shared.extractTemporary(url: url, systemID: system.id)
-                    } catch {
-                        LoggerService.error(category: "ROMScanner", "Failed to extract \(url.lastPathComponent) for identification: \(error.localizedDescription)")
-                    }
-                }
-
+                // Scan-time: do NOT extract archives to identify ambiguous inner ROMs.
+                // Extraction is O(file size) on disk and dominates scan time for large
+                // libraries. Ambiguous inner ROMs keep their tentative systemID from
+                // listInnerROMs (first matching system) and are re-identified
+                // authoritatively in LibraryAutomationCoordinator Phase 1, which has
+                // the full CRC + DAT pipeline and runs in parallel batches.
                 for inner in innerROMs {
                     // Skip AppleDouble metadata files inside archives
                     if URL(fileURLWithPath: inner.relativePath).lastPathComponent.hasPrefix("._") { continue }
 
                     let innerName = URL(fileURLWithPath: inner.relativePath).deletingPathExtension().lastPathComponent
-                    let innerExt = URL(fileURLWithPath: inner.relativePath).pathExtension.lowercased()
-
-                    var resolvedSystemID = inner.systemID
-                    if inner.isAmbiguous, let extraction = tempExtraction {
-                        let innerFilename = URL(fileURLWithPath: inner.relativePath).lastPathComponent
-                        if let extractedURL = extraction.files.first(where: { $0.lastPathComponent == innerFilename }) {
-                            if let identifiedSystem = await ROMIdentifier.identifySystem(url: extractedURL, extension: innerExt, pathContextURL: url, skipMAMEScoring: true) {
-                                resolvedSystemID = identifiedSystem.id
-                            }
-                        }
-                    }
+                    let resolvedSystemID = inner.systemID
 
                     var rom = ROM(id: UUID(), name: innerName, path: url, systemID: resolvedSystemID, originalSystemID: resolvedSystemID)
                     rom.innerROMPath = inner.relativePath
@@ -309,10 +296,6 @@ actor ROMScanner {
                         rom.refreshDerivedFields()
                     }
                     results.append(rom)
-                }
-
-                if let temp = tempExtraction {
-                    try? FileManager.default.removeItem(at: temp.tempDirectory)
                 }
 
                 return results
@@ -385,7 +368,7 @@ actor ROMScanner {
     var containerRefs: [URL: Set<String>] = [:]
     for url in containerURLs {
         let ext = url.pathExtension.lowercased()
-        let system = await identifySystem(url: url, extension: ext)
+        let system = await identifySystem(url: url, extension: ext, skipCRC: true)
         if system?.isDiskBased == true || containerExts.contains(ext) {
             let refs = Set(getReferencedFiles(in: url).map { $0.standardized.path })
             for ref in refs {
@@ -476,8 +459,8 @@ actor ROMScanner {
 
     // MARK: - System Identification & Container Logic
     
-    nonisolated private func identifySystem(url: URL, extension ext: String, skipMAMEScoring: Bool = false) async -> SystemInfo? {
-        await ROMIdentifier.identifySystem(url: url, extension: ext, skipMAMEScoring: skipMAMEScoring)
+    nonisolated private func identifySystem(url: URL, extension ext: String, skipMAMEScoring: Bool = false, skipCRC: Bool = false) async -> SystemInfo? {
+        await ROMIdentifier.identifySystem(url: url, extension: ext, skipMAMEScoring: skipMAMEScoring, skipCRC: skipCRC)
     }
 
     nonisolated func getReferencedFiles(in url: URL) ->[URL] {

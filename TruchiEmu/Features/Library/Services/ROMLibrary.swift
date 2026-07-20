@@ -171,11 +171,15 @@ class ROMLibrary: ObservableObject {
             romsToSave = roms
         }
         repository.saveROMs(romsToSave)
-        
-        // Also update games.xml for any modified ROMs
+
+        // Update games.xml for modified ROMs. Group by containing folder so each
+        // folder's XML is rewritten ONCE with all its ROMs, instead of once per
+        // ROM — the old per-ROM loop re-read + re-serialized the whole file for
+        // every entry, making a few-hundred-row save take several seconds.
         if updateXML {
-            for rom in romsToSave {
-                updateGamesXML(for: rom)
+            let byFolder = Dictionary(grouping: romsToSave) { $0.path.deletingLastPathComponent() }
+            for (folder, romsInFolder) in byFolder {
+                updateGamesXML(for: romsInFolder, in: folder)
             }
         }
     }
@@ -304,17 +308,38 @@ let idsToPurge = orphans.map { $0.id }
     }
 
     func updateFolderROMCounts() {
-        let allFolderPaths = Set(
-            primaryFolders.map(\.url.path) + subfolderMap.values.flatMap { $0.map(\.url.path) }
-        )
-        var counts = allFolderPaths.reduce(into: [String: Int]()) { $0[$1] = 0 }
+        // O(roms × max_path_depth) — a ROM's containing primary/sub folder is the
+        // longest registered folder path that is a prefix of rom.path.path.
+        // We walk up the ROM's path components checking membership in a set,
+        // instead of the old O(roms × folders) nested-loop scan.
+        let allFolderPaths = primaryFolders.map(\.url.path) + subfolderMap.values.flatMap { $0.map(\.url.path) }
+        // De-duplicate folder paths in case the same path is registered twice.
+        let folderSet = Set(allFolderPaths)
+
+        var counts: [String: Int] = folderSet.reduce(into: [String: Int]()) { $0[$1] = 0 }
+
         for rom in roms where !rom.isHidden {
-            let path = rom.path.path
-            for folderPath in allFolderPaths {
-                if path == folderPath || path.hasPrefix(folderPath + "/") {
-                    counts[folderPath, default: 0] += 1
-                }
+            let romPath = rom.path.path
+            // Try exact match first (ROM path equals folder path itself)
+            if folderSet.contains(romPath) {
+                counts[romPath, default: 0] += 1
+                continue
             }
+            // Walk up romPath's parent chain and check the set — O(depth).
+            // The first ancestor that matches is the deepest registered folder
+            // containing this ROM, which is what we want to increment.
+            var parent = (romPath as NSString).deletingLastPathComponent
+            while !parent.isEmpty {
+                if folderSet.contains(parent) {
+                    counts[parent, default: 0] += 1
+                    break
+                }
+                let next = (parent as NSString).deletingLastPathComponent
+                if next == parent { break }
+                parent = next
+            }
+            // If no ancestor matched, the ROM lives outside any registered folder
+            // (unlikely, since scanning only adds from registered folders); skip.
         }
         folderROMCounts = counts
     }
@@ -357,7 +382,9 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
     // MARK: - Core Scanning Method (Optimized)
 
     func scanROMs(in folder: URL, runAutomationAfter: Bool = true) async {
-        // Ensure MAME database is loaded before scanning
+        // Ensure MAME database is loaded before scanning.
+        // ROMScanner.bulkIdentifyMAME also calls ensureLoaded() (idempotent if already loaded)
+        // — kept here so the first log line refers to a fully-initialized state.
         await MAMEUnifiedService.shared.ensureLoaded()
         
         if RunningGamesTracker.shared.isGameRunning {
@@ -377,12 +404,30 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
         
         // 1. Scan the folder
         let scanner = ROMScanner()
-        let scannedROMs = await scanner.scan(folder: folder, cancellationToken: scanCancellationToken) { progress in
-            Task { @MainActor in self.scanProgress = progress }
+        let scannedROMs = await scanner.scan(folder: folder, cancellationToken: scanCancellationToken) { [weak self] progress in
+            // The closure is called from the ProgressTracker actor (off the main thread),
+            // throttled to 50 ms (maximum ~20 calls/sec). The previous code spawned a
+            // `Task { @MainActor in ... }` per callback; with the 60 s scan target that's
+            // only ~1200 tasks, acceptable. We retain that pattern since accessing
+            // `self.scanProgress` (a @Published property of this @MainActor class) requires
+            // a MainActor hop. MainActor.assumeIsolated is NOT safe here because we are
+            // NOT on the main thread.
+            Task { @MainActor in
+                self?.scanProgress = progress
+            }
         }
 
         // 2. Identify new items (Fast O(1) duplicate prevention)
-        let existingROMPaths = Set(roms.map { $0.path.path })
+        // Ground-truth source for "already imported" is the SwiftData store, not the
+        // in-memory `roms` array. If `self.roms` is empty (e.g. freshly launched app
+        // that hasn't loaded the library yet), fall back to the persisted store so a
+        // re-scan of an already-imported folder does NOT re-identify every ROM.
+        let existingROMPaths: Set<String>
+        if !roms.isEmpty {
+            existingROMPaths = Set(roms.map { $0.path.path })
+        } else {
+            existingROMPaths = Set(repository.allROMs().map { $0.path.path })
+        }
         let processedROMs = processNewROMs(scannedROMs, existingROMPaths: existingROMPaths)
             
         if !processedROMs.isEmpty {
@@ -392,14 +437,12 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
             self.roms.sort { $0.displayName < $1.displayName }
             self.updateCounts(for: processedROMs)
 
-            // 5. Persist only the new items
+            // 5. Persist only the new items (one batch save — single context.save())
             repository.saveROMs(processedROMs)
-            for rom in processedROMs {
-                #if LOG_DEBUG
-                LoggerService.debug(category: "ROMLibrary", "Persisting new ROM: \(rom.displayName)")
-                #endif
-                LibraryMetadataStore.shared.persist(rom: rom)
-            }
+            // Persist metadata entries in batch — single objectWillChange.send(),
+            // not one per_ROM. The previous per-ROM loop fired ~1601 invalidations
+            // in tight succession on the MainActor, freezing the UI briefly.
+            LibraryMetadataStore.shared.persistBatch(processedROMs)
             LibraryMetadataStore.shared.flushToSwiftData()
 
             LoggerService.info(category: "ROMLibrary", "Scan extracted \(processedROMs.count) new ROMs in \(String(format: "%.2f", Date().timeIntervalSince(scanStart)))s")
@@ -414,12 +457,26 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
         cleanupScummVMCaches()
 
         // 7. Automation
+        // Run identification + enrichment (Phase 1, 1.5, 1.75, 2) inline — these
+        // are part of the user-facing "scan + save + metadata enrichment" budget
+        // and are CPU/IO-bound, expected to complete within the 60 s target.
+        //
+        // Box art download (Phase 3) and LaunchBox sync (MetadataSyncCoordinator)
+        // are network-bound and were previously `await`ed here, blocking scanROMs
+        // from returning for tens of minutes. They now run in a detached background
+        // Task so the UI remains responsive; box art arrives incrementally as
+        // downloads complete.
         if runAutomationAfter {
             guard !RunningGamesTracker.shared.isGameRunning else { return }
-            // NOTE: If these coordinators perform global scans, you should check
-            // if they can be made to only target the 'newROMs' or 'folder'
+            // Await identification + enrichment so the user-visible scan completes
+            // with metadata-rich ROMs in the library.
             await LibraryAutomationCoordinator.shared.runAfterLibraryUpdate(library: self, targetROMs: self.lastAddedROMs)
-            await MetadataSyncCoordinator.shared.runAfterLibraryUpdate(library: self, targetROMs: self.lastAddedROMs)
+            LoggerService.info(category: "ROMLibrary", "=== SCAN-TO-ENRICHED COMPLETE in \(String(format: "%.2f", Date().timeIntervalSince(scanStart)))s ===")
+            // Background: LaunchBox + any deferred work that LibraryAutomationCoordinator
+            // itself spawns (box art Phase 3). Not awaited.
+            Task { @MainActor in
+                await MetadataSyncCoordinator.shared.runAfterLibraryUpdate(library: self, targetROMs: self.lastAddedROMs)
+            }
         }
 
         // 8. Pre-generate on-disk thumbnails for the whole library so that
@@ -547,7 +604,7 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
             if !silent { updateCounts() }
             if persist {
                 LibraryMetadataStore.shared.flushDirtyToSwiftData()
-                updateGamesXML(for: rom)
+                updateGamesXML(for: [rom], in: rom.path.deletingLastPathComponent())
                 saveROMsToDatabase(only: [rom.id])
             }
         }
@@ -707,8 +764,7 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
         }
     }
 
-    private func updateGamesXML(for rom: ROM) {
-        let folder = rom.path.deletingLastPathComponent()
+    private func updateGamesXML(for roms: [ROM], in folder: URL) {
         let xmlPath = folder.appendingPathComponent("games.xml")
         let xml: XMLDocument; let root: XMLElement
 
@@ -719,23 +775,39 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
             xml = XMLDocument(rootElement: root); xml.version = "1.0"; xml.characterEncoding = "UTF-8"
         }
 
-        let relPath = "./\(rom.path.lastPathComponent)"
-        var gameNode = (root.children as? [XMLElement])?.first { $0.name == "game" && $0.elements(forName: "path").first?.stringValue == relPath }
-        
-        if let existing = gameNode { existing.setChildren(nil) }
-        else { let newGame = XMLElement(name: "game"); root.addChild(newGame); gameNode = newGame }
-        guard let node = gameNode else { return }
+        // Index existing game nodes by their relative path for O(1) lookup.
+        var existingNodes: [String: XMLElement] = [:]
+        if let children = root.children as? [XMLElement] {
+            for child in children where child.name == "game" {
+                let relPath = child.elements(forName: "path").first?.stringValue
+                if let relPath { existingNodes[relPath] = child }
+            }
+        }
 
-        node.addChild(XMLElement(name: "path", stringValue: relPath))
-        if let title = rom.metadata?.title { node.addChild(XMLElement(name: "name", stringValue: title)) }
-        if let year = rom.metadata?.year { node.addChild(XMLElement(name: "year", stringValue: year)) }
-        if let publisher = rom.metadata?.publisher { node.addChild(XMLElement(name: "publisher", stringValue: publisher)) }
-        if let developer = rom.metadata?.developer { node.addChild(XMLElement(name: "developer", stringValue: developer)) }
-        if let genre = rom.metadata?.genre { node.addChild(XMLElement(name: "genre", stringValue: genre)) }
-        if let desc = rom.metadata?.description { node.addChild(XMLElement(name: "desc", stringValue: desc)) }
-        if let crc = rom.crc32 { node.addChild(XMLElement(name: "crc", stringValue: crc)) }
-        if let players = rom.metadata?.players { node.addChild(XMLElement(name: "players", stringValue: String(players))) }
+        for rom in roms {
+            let relPath = "./\(rom.path.lastPathComponent)"
+            let node: XMLElement
+            if let existing = existingNodes[relPath] {
+                existing.setChildren(nil)
+                node = existing
+            } else {
+                let newGame = XMLElement(name: "game")
+                root.addChild(newGame)
+                node = newGame
+            }
 
+            node.addChild(XMLElement(name: "path", stringValue: relPath))
+            if let title = rom.metadata?.title { node.addChild(XMLElement(name: "name", stringValue: title)) }
+            if let year = rom.metadata?.year { node.addChild(XMLElement(name: "year", stringValue: year)) }
+            if let publisher = rom.metadata?.publisher { node.addChild(XMLElement(name: "publisher", stringValue: publisher)) }
+            if let developer = rom.metadata?.developer { node.addChild(XMLElement(name: "developer", stringValue: developer)) }
+            if let genre = rom.metadata?.genre { node.addChild(XMLElement(name: "genre", stringValue: genre)) }
+            if let desc = rom.metadata?.description { node.addChild(XMLElement(name: "desc", stringValue: desc)) }
+            if let crc = rom.crc32 { node.addChild(XMLElement(name: "crc", stringValue: crc)) }
+            if let players = rom.metadata?.players { node.addChild(XMLElement(name: "players", stringValue: String(players))) }
+        }
+
+        // Single read + single write of the folder's XML, regardless of ROM count.
         try? xml.xmlData(options: .nodePrettyPrint).write(to: xmlPath)
     }
 
@@ -823,7 +895,22 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
 
     @MainActor func addPrimaryFolder(url: URL, scanAfter: Bool = true) {
         guard !isInternalPath(url), !url.path.isEmpty, !isExcludedLibraryPath(url) else { return }
-        guard !primaryFolders.contains(where: { $0.url.path == url.path }) else { return }
+
+        // If the folder is already registered, treat the re-add as a REFRESH:
+        // re-scan it so any ROMs (including ones from a previous crashed/empty
+        // scan) are picked up. Simply returning early here left a folder with 0
+        // ROMs permanently un-scannable because every subsequent add was a no-op.
+        if let existing = primaryFolders.first(where: { $0.url.path == url.path }) {
+            LoggerService.info(category: "ROMLibrary", "Folder already registered — re-scanning as refresh: \(url.path)")
+            if scanAfter {
+                isScanning = true
+                scanProgress = 0
+                Task {
+                    await scanROMs(in: url, runAutomationAfter: true)
+                }
+            }
+            return
+        }
 
         let folder = ROMLibraryFolder(url: url, parentPath: nil, isPrimary: true)
         primaryFolders.append(folder)

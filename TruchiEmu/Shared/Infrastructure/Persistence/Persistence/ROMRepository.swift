@@ -74,6 +74,12 @@ final class ROMRepository {
     // Bulk upsert ROM entries into the store.
     // Uses a single batch fetch + dictionary lookup to avoid N+1 queries.
     // All inserts/updates happen before a single context.save() to minimize WAL flushes.
+    //
+    // IMPORTANT: ROM identity is the file PATH, not the throwaway `UUID` generated
+    // at scan time. Each scan produces fresh UUIDs, so keying the upsert on `id`
+    // would turn a re-scan into duplicate inserts of stale entries. Instead we key
+    // on path: when a scanned ROM's path already exists we reuse that entry's `id`,
+    // so the upsert matches (update) rather than inserting a duplicate.
     func saveROMs(_ roms: [ROM]) {
         guard !roms.isEmpty else { return }
 
@@ -87,15 +93,22 @@ final class ROMRepository {
             return
         }
 
-        // 2. Build UUID → ROMEntry lookup map for O(1) access
-        var existingMap: [UUID: ROMEntry] = [:]
+        // 2. Build path → ROMEntry lookup map for O(1) access.
+        // ROMs extracted from archives share the archive path but differ by
+        // innerROMPath, so include innerROMPath in the key to keep them distinct.
+        var existingByPath: [String: ROMEntry] = [:]
         for entry in existingEntries {
-            existingMap[entry.id] = entry
+            let key = entry.path + (entry.innerROMPath ?? "")
+            existingByPath[key] = entry
         }
 
-        // 3. Upsert all ROMs using the in-memory map (no additional queries)
-        for rom in roms {
-            if let existing = existingMap[rom.id] {
+        // 3. Upsert all ROMs using the in-memory map (no additional queries).
+        // When the path matches an existing entry, reuse its id so SwiftData
+        // performs an UPDATE instead of creating a duplicate INSERT.
+        for var rom in roms {
+            let key = rom.path.path + (rom.innerROMPath ?? "")
+            if let existing = existingByPath[key] {
+                rom.id = existing.id
                 updateROMEntry(existing, from: rom)
             } else {
                 let entry = romEntry(from: rom)
