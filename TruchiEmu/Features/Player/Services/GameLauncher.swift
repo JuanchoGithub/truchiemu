@@ -682,6 +682,17 @@ func launchGame(
         }
         activeControllers.removeAll()
     }
+
+    /// Close the running game windows for the given ROM ids (e.g. when those
+    /// ROMs are removed from the library). Detaches SwiftUI before closing to
+    /// avoid use-after-free during teardown.
+    @MainActor func closeGameWindows(for romIDs: Set<UUID>) {
+        guard !romIDs.isEmpty else { return }
+        for (romID, controller) in activeControllers where romIDs.contains(romID) {
+            controller.detachSwiftUI()
+            controller.close()
+        }
+    }
     
     // Check if a game is currently being launched
     func isLaunchingGame(romID: UUID) -> Bool {

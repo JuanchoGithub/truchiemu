@@ -68,6 +68,15 @@ var sortByLastPlayed: Bool = false
             .debounce(for: .milliseconds(120), scheduler: DispatchQueue.main)
             .sink { [weak self] _ in self?.refreshData() }
             .store(in: &cancellables)
+
+        // Folder removal (ROMs deleted from the library) — force a refresh so the
+        // grid/list and any active search re-run against the new library contents
+        // immediately, even if the debounced $roms pipeline would otherwise be
+        // coalesced. This guarantees removed games disappear from the view.
+        NotificationCenter.default.publisher(for: .libraryROMsRemoved)
+            .debounce(for: .milliseconds(50), scheduler: DispatchQueue.main)
+            .sink { [weak self] _ in self?.refreshData() }
+            .store(in: &cancellables)
     }
 
     private func currentInputsFingerprint() -> Int {

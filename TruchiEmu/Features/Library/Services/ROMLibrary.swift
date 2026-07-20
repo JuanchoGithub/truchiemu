@@ -354,29 +354,44 @@ let idsToPurge = orphans.map { $0.id }
 
     func addLibraryFolder(url: URL) { addPrimaryFolder(url: url) }
 
-    func removeLibraryFolder(at index: Int) {
-        guard index < libraryFolders.count else { return }
-        let url = libraryFolders[index]
-        let folderPath = url.path.hasSuffix("/") ? url.path : url.path + "/"
-        let removedROMs = roms.filter { $0.path.path.hasPrefix(folderPath) || $0.path.path == url.path }
+    /// All folder paths currently registered (primary + subfolders), excluding
+    /// the given removed paths. Used to decide whether a ROM is still reachable
+    /// through another folder after one is deleted (e.g. a user added a root
+    /// folder and a subfolder from it as two separate primary folders).
+    private func remainingFolderPaths(excluding removedPaths: [String]) -> Set<String> {
+        let all = primaryFolders.map { $0.url.path }
+            + subfolderMap.values.flatMap { $0.map { $0.url.path } }
+        return Set(all.filter { path in !removedPaths.contains { path == $0 || path.hasPrefix($0 + "/") } })
+    }
 
-        libraryFolders.remove(at: index)
-        saveSecurityScopedBookmarks()
-        
-        let removedIDs = removedROMs.map { $0.id }
-        roms.removeAll { removedIDs.contains($0.id) }
-        repository.deleteROMsByPath([folderPath])
-
-        if libraryFolders.isEmpty {
-            roms.removeAll()
-            fileIndex.removeAll()
-        } else {
-            for path in Set(removedROMs.map { $0.path.path }) { fileIndex.removeValue(forKey: path) }
+    /// ROMs that live under any of `pathsToRemove` but are NOT also reachable
+    /// from any other remaining folder. These are the only ROMs safe to delete
+    /// when a folder is removed.
+    private func orphanedROMs(for pathsToRemove: [String]) -> [ROM] {
+        let remaining = remainingFolderPaths(excluding: pathsToRemove)
+        return roms.filter { rom in
+            let isUnderRemoved = pathsToRemove.contains { rom.path.path == $0 || rom.path.path.hasPrefix($0 + "/") }
+            guard isUnderRemoved else { return false }
+            let isUnderRemaining = remaining.contains { rom.path.path == $0 || rom.path.path.hasPrefix($0 + "/") }
+            return !isUnderRemaining
         }
+    }
 
-LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryMetadataStore.pathKey(for: $0) }))
-    updateCounts()
-    cleanupScummVMCaches()
+    /// Stop any running game and close any open info window for the given ROMs
+    /// before they are removed from the library, so the user can't keep
+    /// interacting with a game that no longer exists.
+    ///
+    /// The teardown is deferred to the next runloop pass so it never runs
+    /// synchronously inside the delete-confirmation action (which would tear
+    /// down windows while the presenting view is still dismissing its dialog,
+    /// a state that can wedge the system open/save panel XPC service).
+    private func closeWindowsForRemovedROMs(_ removedROMs: [ROM]) {
+        let removedIDs = Set(removedROMs.map { $0.id })
+        guard !removedIDs.isEmpty else { return }
+        DispatchQueue.main.async {
+            GameLauncher.shared.closeGameWindows(for: removedIDs)
+            NotificationCenter.default.post(name: .libraryROMsRemoved, object: removedIDs)
+        }
     }
 
     // MARK: - Core Scanning Method (Optimized)
@@ -555,8 +570,13 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
     }
 
     func deleteAllFoldersAndROMs() {
-        for idx in libraryFolders.indices.reversed() { removeLibraryFolder(at: idx) }
-        roms.removeAll()
+        for idx in primaryFolders.indices.reversed() where idx < primaryFolders.count {
+            removePrimaryFolder(at: idx)
+        }
+        if !roms.isEmpty {
+            closeWindowsForRemovedROMs(roms)
+            roms = []
+        }
         fileIndex.removeAll()
         saveROMsToDatabase()
     }
@@ -938,17 +958,19 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
         let affectedSubfolders = (subfolderMap[folderPath] ?? []).filter { !$0.isPrimary && !repository.isFolderPrimary(urlPath: $0.url.path) }
         var pathsToRemove = [folderPath]; pathsToRemove.append(contentsOf: affectedSubfolders.map { $0.url.path })
 
-        let removedROMs = roms.filter { rom in pathsToRemove.contains { rom.path.path == $0 || rom.path.path.hasPrefix($0 + "/") } }
+        let removedROMs = orphanedROMs(for: pathsToRemove)
+        closeWindowsForRemovedROMs(removedROMs)
 
         primaryFolders.remove(at: index)
         for sub in affectedSubfolders { subfolderMap[folderPath]?.removeAll { $0.url.path == sub.url.path } }
         if subfolderMap[folderPath]?.isEmpty == true { subfolderMap.removeValue(forKey: folderPath) }
 
-        roms.removeAll { rom in pathsToRemove.contains { rom.path.path == $0 || rom.path.path.hasPrefix($0 + "/") } }
+        let removedIDs = removedROMs.map { $0.id }
+        roms = roms.filter { !removedIDs.contains($0.id) }
         libraryFolders.removeAll { $0.path == folderPath || $0.path.hasPrefix(folderPath + "/") }
         repository.removeLibraryFolder(urlPath: folderPath, removeSubfolders: true)
 
-        repository.deleteROMsByPath(pathsToRemove)
+        repository.deleteROMs(ids: removedIDs)
         LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryMetadataStore.pathKey(for: $0) }))
         saveSecurityScopedBookmarks()
         updateCounts()
@@ -956,16 +978,17 @@ LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryM
 
     @MainActor func removeSubfolder(from primaryFolderPath: String, subfolderPath: String) {
         if repository.isFolderPrimary(urlPath: subfolderPath) { return }
-        let prefix = subfolderPath.hasSuffix("/") ? subfolderPath : subfolderPath + "/"
-        
-        let removedROMs = roms.filter { $0.path.path == subfolderPath || $0.path.path.hasPrefix(prefix) }
+
+        let removedROMs = orphanedROMs(for: [subfolderPath])
+        closeWindowsForRemovedROMs(removedROMs)
 
         subfolderMap[primaryFolderPath]?.removeAll { $0.url.path == subfolderPath }
         if subfolderMap[primaryFolderPath]?.isEmpty == true { subfolderMap.removeValue(forKey: primaryFolderPath) }
 
-        roms.removeAll { $0.path.path == subfolderPath || $0.path.path.hasPrefix(prefix) }
+        let removedIDs = removedROMs.map { $0.id }
+        roms = roms.filter { !removedIDs.contains($0.id) }
         repository.removeLibraryFolder(urlPath: subfolderPath, removeSubfolders: true)
-        repository.deleteROMsByPath([subfolderPath])
+        repository.deleteROMs(ids: removedIDs)
         LibraryMetadataStore.shared.deleteMetadataEntries(Set(removedROMs.map { LibraryMetadataStore.pathKey(for: $0) }))
         updateCounts()
     }

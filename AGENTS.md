@@ -1,6 +1,7 @@
 # AGENTS.md
 
 Behavioral guidelines and project-specific instructions for working on TruchiEmu.
+Try to adhere to ADS-STE100 Simplified Technical English.
 
 **Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
 
