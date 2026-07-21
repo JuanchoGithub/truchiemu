@@ -345,7 +345,7 @@ extension TVModeView {
         case .contextMenu:
             showTVSettingsOverlay = true
         case .toggleViewMode, .focusSearch:
-            NotificationCenter.default.post(name: .tvModeExited, object: nil)
+            cycleTheme()
         case .openSettings:
             // SELECT button cycles the bold/muted theme instead of opening settings.
             cycleTheme()

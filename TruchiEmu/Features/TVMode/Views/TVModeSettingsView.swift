@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 
 /// TV Mode settings panel. Shown via the Start button in TV Mode (or via the
 /// parent toolbar). Self-contained — does not integrate with the standard
@@ -6,13 +7,8 @@ import SwiftUI
 struct TVModeSettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject private var loc = LocalizationManager.shared
-    @State private var shownEntries: Set<TVModeSettings.SmartEntry>
-    @State private var showSystems: Bool
-
-    init() {
-        _shownEntries = State(initialValue: Set(TVModeSettings.shownSmartEntries))
-        _showSystems = State(initialValue: TVModeSettings.showSystems)
-    }
+    @StateObject private var nav = TVModeSettingsNav()
+    @State private var settingsGeneration: Int = 0
 
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
@@ -25,40 +21,132 @@ struct TVModeSettingsView: View {
                         .font(.system(size: 22))
                         .foregroundStyle(.secondary)
                 }.buttonStyle(.plain)
+                .overlay(focusRing(active: nav.focusID == .close))
             }
 
             Toggle(loc.localized("tvMode.settings.launchInTVMode"), isOn: Binding(
                 get: { TVModeSettings.launchInTVMode },
                 set: { TVModeSettings.setLaunchInTVMode($0) }
             ))
+            .toggleStyle(.checkbox)
+            .overlay(focusRing(active: nav.focusID == .launchInTVMode))
 
             Divider()
 
             VStack(alignment: .leading, spacing: 10) {
                 Text(loc.localized("tvMode.settings.shownEntries"))
                     .font(.system(size: 14, weight: .semibold))
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 200))], alignment: .leading, spacing: 8) {
-                    ForEach(TVModeSettings.SmartEntry.allCases) { entry in
-                        Toggle(loc.localized(entry.locKey), isOn: Binding(
-                            get: { shownEntries.contains(entry) },
-                            set: { isOn in
-                                if isOn { shownEntries.insert(entry) } else { shownEntries.remove(entry) }
-                                TVModeSettings.setShownSmartEntries(Array(shownEntries).sorted { $0.rawValue < $1.rawValue })
-                                NotificationCenter.default.post(name: .tvModeSettingsChanged, object: nil)
-                            }
-                        ))
-                        .toggleStyle(.checkbox)
-                    }
-                    Toggle(loc.localized("tvMode.settings.systems"), isOn: Binding(
-                        get: { showSystems },
-                        set: { showSystems = $0; TVModeSettings.setShowSystems($0); NotificationCenter.default.post(name: .tvModeSettingsChanged, object: nil) }
+                ForEach(TVModeSettings.SmartEntry.allCases) { entry in
+                    let _ = settingsGeneration  // drives re-eval on change
+                    Toggle(loc.localized(entry.locKey), isOn: Binding(
+                        get: { TVModeSettings.shownSmartEntries.contains(entry) },
+                        set: { isOn in
+                            var current = Set(TVModeSettings.shownSmartEntries)
+                            if isOn { current.insert(entry) } else { current.remove(entry) }
+                            TVModeSettings.setShownSmartEntries(Array(current).sorted { $0.rawValue < $1.rawValue })
+                        }
                     ))
                     .toggleStyle(.checkbox)
+                    .overlay(focusRing(active: nav.focusID == .smartEntry(entry)))
                 }
+                let _ = settingsGeneration
+                Toggle(loc.localized("tvMode.settings.systems"), isOn: Binding(
+                    get: { TVModeSettings.showSystems },
+                    set: { TVModeSettings.setShowSystems($0) }
+                ))
+                .toggleStyle(.checkbox)
+                .overlay(focusRing(active: nav.focusID == .showSystems))
             }
             Spacer()
         }
         .padding(28)
         .frame(minWidth: 460, minHeight: 360)
+        .onAppear {
+            nav.bind(dismiss: { dismiss() })
+        }
+        .onDisappear { nav.unbind() }
+        .onReceive(NotificationCenter.default.publisher(for: .tvModeSettingsChanged)) { _ in
+            // Bump a generation counter so any Binding.get closures that re-
+            // evaluate after this redraw see fresh values from TVModeSettings.
+            settingsGeneration &+= 1
+        }
+    }
+
+    @ViewBuilder
+    private func focusRing(active: Bool) -> some View {
+        if active {
+            RoundedRectangle(cornerRadius: 4)
+                .stroke(AppColors.brandAccent, lineWidth: 2)
+                .padding(-2)
+                .allowsHitTesting(false)
+        }
+    }
+}
+
+@MainActor
+final class TVModeSettingsNav: ObservableObject {
+    enum FocusID: Hashable {
+        case launchInTVMode
+        case smartEntry(TVModeSettings.SmartEntry)
+        case showSystems
+        case close
+    }
+
+    @Published var focusID: FocusID = .launchInTVMode
+    private(set) var itemIDs: [FocusID] = []
+    private var context: GamepadSheetContext?
+    private var dismissAction: (() -> Void)?
+    private var focusSubscription: AnyCancellable?
+
+    func bind(dismiss: @escaping () -> Void) {
+        var ids: [FocusID] = [.launchInTVMode]
+        ids.append(contentsOf: TVModeSettings.SmartEntry.allCases.map { .smartEntry($0) })
+        ids.append(.showSystems)
+        ids.append(.close)
+        itemIDs = ids
+
+        let ctx = GamepadSheetContext(itemCount: ids.count, columnCount: 1)
+        ctx.onSelect = { [weak self] idx in self?.activate(index: idx) }
+        ctx.onDismiss = { [weak self] in self?.dismissAction?() }
+        GamepadNavContextStack.shared.push(ctx)
+        context = ctx
+        dismissAction = dismiss
+
+        focusSubscription = ctx.$focusIndex
+            .removeDuplicates()
+            .sink { [weak self] idx in
+                guard let self, self.itemIDs.indices.contains(idx) else { return }
+                let newID = self.itemIDs[idx]
+                if newID != self.focusID { self.focusID = newID }
+            }
+    }
+
+    func unbind() {
+        focusSubscription?.cancel()
+        focusSubscription = nil
+        if let context { GamepadNavContextStack.shared.remove(context) }
+        context = nil
+        itemIDs = []
+        dismissAction = nil
+    }
+
+    private func activate(index: Int) {
+        guard itemIDs.indices.contains(index) else { return }
+        let id = itemIDs[index]
+        switch id {
+        case .launchInTVMode:
+            TVModeSettings.setLaunchInTVMode(!TVModeSettings.launchInTVMode)
+        case .smartEntry(let entry):
+            var current = Set(TVModeSettings.shownSmartEntries)
+            if current.contains(entry) { current.remove(entry) } else { current.insert(entry) }
+            TVModeSettings.setShownSmartEntries(Array(current).sorted { $0.rawValue < $1.rawValue })
+            NotificationCenter.default.post(name: .tvModeSettingsChanged, object: nil)
+        case .showSystems:
+            let next = !TVModeSettings.showSystems
+            TVModeSettings.setShowSystems(next)
+            NotificationCenter.default.post(name: .tvModeSettingsChanged, object: nil)
+        case .close:
+            dismissAction?()
+        }
     }
 }
