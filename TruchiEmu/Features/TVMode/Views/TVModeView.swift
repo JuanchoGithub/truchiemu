@@ -127,7 +127,8 @@ struct TVModeView: View {
         if viewModel.page == .detail, let rom = viewModel.downloadedDetailROM {
             TVModeGameDetailView(rom: rom, theme: viewModel.theme, focused: true)
                 .environmentObject(library)
-                .transition(.opacity)
+                .id(rom.id)
+                .transition(.opacity.combined(with: .scale(scale: 0.97)))
         }
     }
 
@@ -266,13 +267,13 @@ extension TVModeView {
             switch viewModel.page {
             case .row1: viewModel.selectEntryByOffset(-1)
             case .row2: viewModel.selectGameByOffset(-1)
-            case .detail: break
+            case .detail: viewModel.shiftDetailGame(by: -1)
             }
         case .navigateRight:
             switch viewModel.page {
             case .row1: viewModel.selectEntryByOffset(1)
             case .row2: viewModel.selectGameByOffset(1)
-            case .detail: break
+            case .detail: viewModel.shiftDetailGame(by: 1)
             }
         case .navigateUp:
             switch viewModel.page {
@@ -291,38 +292,38 @@ extension TVModeView {
             switch viewModel.page {
             case .row1: viewModel.selectEntryByOffset(-5)
             case .row2: viewModel.selectGameByOffset(-5)
-            case .detail: break
+            case .detail: viewModel.shiftDetailGame(by: -5)
             }
         case .focusNextZone:
             switch viewModel.page {
             case .row1: viewModel.selectEntryByOffset(5)
             case .row2: viewModel.selectGameByOffset(5)
-            case .detail: break
+            case .detail: viewModel.shiftDetailGame(by: 5)
             }
         // L2 / R2 — move 10 at a time
         case .pageUp:
             switch viewModel.page {
             case .row1: viewModel.selectEntryByOffset(-10)
             case .row2: viewModel.selectGameByOffset(-10)
-            case .detail: break
+            case .detail: viewModel.shiftDetailGame(by: -10)
             }
         case .pageDown:
             switch viewModel.page {
             case .row1: viewModel.selectEntryByOffset(10)
             case .row2: viewModel.selectGameByOffset(10)
-            case .detail: break
+            case .detail: viewModel.shiftDetailGame(by: 10)
             }
         case .scrollUp:
             switch viewModel.page {
             case .row1: viewModel.selectEntryByOffset(-10)
             case .row2: viewModel.selectGameByOffset(-10)
-            case .detail: break
+            case .detail: viewModel.shiftDetailGame(by: -10)
             }
         case .scrollDown:
             switch viewModel.page {
             case .row1: viewModel.selectEntryByOffset(10)
             case .row2: viewModel.selectGameByOffset(10)
-            case .detail: break
+            case .detail: viewModel.shiftDetailGame(by: 10)
             }
         case .select:
             switch viewModel.page {

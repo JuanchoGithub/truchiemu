@@ -93,6 +93,25 @@ final class TVModeViewModel: ObservableObject {
         Task { await fetchDetailArt(for: rom) }
     }
 
+    /// Move to a neighbouring game while already on the detail page. Updates
+    /// both the hero ROM and the art-fetch task so the next frame reflects the
+    /// newly-selected game and begins loading its boxart/title/snaps.
+    func shiftDetailGame(by delta: Int) {
+        guard page == .detail, !games.isEmpty else { return }
+        let count = games.count
+        var newIndex = selectedGameIndex + delta
+        newIndex = ((newIndex % count) + count) % count
+        guard newIndex != selectedGameIndex,
+              games.indices.contains(newIndex) else { return }
+        let rom = games[newIndex]
+        withAnimation(.easeOut(duration: 0.22)) {
+            selectedGameIndex = newIndex
+        }
+        loadingDetailROM = rom
+        downloadedDetailROM = rom
+        Task { await fetchDetailArt(for: rom) }
+    }
+
     func exitDetail() {
         page = .row2
         downloadedDetailROM = nil
