@@ -201,7 +201,9 @@ struct LibraryGridView: View {
     @State private var currentDownloadGameName: String? = nil
     @State private var carouselBoxArtURLs: [URL] = []
     @State private var marqueeOffset: CGFloat = 0
-    private enum ViewMode: String { case grid, list }
+    private enum ViewMode: String { case grid, list, tv }
+    private var previousViewMode: ViewMode { get { _previousViewMode } set { _previousViewMode = newValue } }
+    @State private var _previousViewMode: ViewMode = .grid
 
     @State private var lastSelectedFilterID: String? = nil
     @State private var isScrolling = false
@@ -402,10 +404,10 @@ struct LibraryGridView: View {
             ToolbarItem(placement: .primaryAction) {
                 AccentSegmentedControl(
                     selection: $viewMode,
-                    options: [(ViewMode.grid, "square.grid.2x2"), (ViewMode.list, "list.bullet")],
+                    options: [(ViewMode.grid, "square.grid.2x2"), (ViewMode.list, "list.bullet"), (ViewMode.tv, "tv")],
                     accentColor: ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .blue
                 )
-                .frame(width: 80)
+                .frame(width: 120)
                 .help(loc.localized("toolbar.switchViewMode"))
             }
             ToolbarItem(placement: .primaryAction) {
@@ -556,8 +558,10 @@ struct LibraryGridView: View {
             sortByLastAdded = AppSettings.getBool("sortByLastAdded", defaultValue: false)
             
             // Initialize view mode from settings
-            if let savedMode = AppSettings.getString("gridViewMode") {
-                viewMode = savedMode == "list" ? .list : .grid
+            if let savedMode = AppSettings.getString("gridViewMode"),
+               let parsed = ViewMode(rawValue: savedMode),
+               parsed != .tv {
+                viewMode = parsed
             }
             
             // Sync view model with restored sort settings
@@ -585,6 +589,8 @@ viewModel.updateFilters(
                     viewMode = .grid
                 } else if mode == "list" {
                     viewMode = .list
+                } else if mode == "tv" {
+                    viewMode = .tv
                 }
             }
         }
@@ -671,8 +677,14 @@ viewModel.updateFilters(
             )
         }
         .onChange(of: viewMode) { _, newMode in
+            if newMode != .tv { _previousViewMode = newMode }
             AppSettings.set("gridViewMode", value: newMode.rawValue)
             gamepadNav.columnCount = newMode == .list ? 1 : columnCount
+            if newMode == .tv {
+                TVModeSettingsManager.shared.enter()
+                let restore = previousViewMode
+                DispatchQueue.main.async { viewMode = restore }
+            }
         }
         .onDisappear {
             // Save zoom level persistently (backup)

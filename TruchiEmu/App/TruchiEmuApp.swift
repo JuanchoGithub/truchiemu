@@ -237,6 +237,7 @@ var body: some Scene {
         .environmentObject(controllerService)
         .environmentObject(LibraryAutomationCoordinator.shared)
         .environmentObject(mameVerification)
+        .environmentObject(TVModeSettingsManager.shared)
         .environment(systemDatabase)
         .onAppear {
           startMAMEVerificationIfNeeded()
@@ -306,6 +307,11 @@ var body: some Scene {
                             NotificationCenter.default.post(name: .viewModeChanged, object: "list")
                         }
                         .keyboardShortcut("2", modifiers: .command)
+
+                        Button(loc.localized("tvMode.title")) {
+                            TVModeSettingsManager.shared.toggle()
+                        }
+                        .keyboardShortcut("t", modifiers: [.command, .shift])
                     }
                     
                     Divider()

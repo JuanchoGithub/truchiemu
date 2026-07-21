@@ -52,6 +52,14 @@ final class GamepadNavigationManager: ObservableObject {
     private static let deadZone: Float = 0.5
     private static let repeatDelay: Double = 0.12
     private static let pollInterval: Double = 1.0 / 30.0
+    /// Physical directional inputs (d-pad and analog stick axes). Each of these
+    /// represents a single intent ("go left") that must map to at most one
+    /// `GamepadNavAction` per tick — see `processActions`.
+    private static let directionButtons: Set<GamepadNavButton> = [
+        .dpadUp, .dpadDown, .dpadLeft, .dpadRight,
+        .leftStickUp, .leftStickDown, .leftStickLeft, .leftStickRight,
+        .rightStickUp, .rightStickDown, .rightStickLeft, .rightStickRight,
+    ]
     /// Max time between the two constituent button presses for a combo (L3+R3,
     /// Start+Select) to count as a simultaneous press. Polling runs at 30 Hz, so
     /// two buttons pressed a few ms apart would otherwise land in different
@@ -351,8 +359,21 @@ final class GamepadNavigationManager: ObservableObject {
     ]
 
     private func processActions(config: [GamepadNavAction: GamepadNavConfig], justPressed: Set<GamepadNavButton>, newlyPressed: Set<GamepadNavButton>, now: Double) {
+        var directionButtonsFired: Set<GamepadNavButton> = []
         for action in GamepadNavAction.allCases {
             guard let cfg = config[action], !cfg.binding.isUnset, let mappedButton = cfg.binding.button else { continue }
+
+            // A single physical direction button (d-pad or stick axis) can only
+            // carry one intent per tick. Without this guard, the defaults that
+            // bind `.focusSidebarZone -> .dpadLeft`, `.focusContentZone ->
+            // .dpadRight`, and `.focusToolbarZone -> .dpadUp` would also fire
+            // `.navigateLeft/Right/Up` from the same press, racing between zone
+            // switches and in-row navigation (e.g. jumping a TV Mode page on
+            // every D-pad tap). The analog stick happens to be safe because
+            // it has no second action slot bound to a stick direction.
+            if Self.directionButtons.contains(mappedButton), directionButtonsFired.contains(mappedButton) {
+                continue
+            }
 
             var shouldFire = false
 
@@ -387,6 +408,9 @@ final class GamepadNavigationManager: ObservableObject {
             if shouldFire {
                 LoggerService.info(category: "GamepadNav", "Firing \(action) from \(mappedButton.displayName)")
                 fireAction(action)
+                if Self.directionButtons.contains(mappedButton) {
+                    directionButtonsFired.insert(mappedButton)
+                }
             }
         }
 

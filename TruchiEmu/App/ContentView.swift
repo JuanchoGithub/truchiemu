@@ -40,7 +40,10 @@ struct ContentView: View {
 @State private var editingCategory: GameCategory? = nil
 @State private var renamingSystem: SystemInfo? = nil
 @State private var shaderOverrideData: ShaderOverrideData?
-    
+
+@ObservedObject private var tvModeSettings = TVModeSettingsManager.shared
+@State private var showTVModeSettings: Bool = false
+
     var body: some View {
         Group {
             if !library.hasCompletedOnboarding && !wizard.hasCompletedWizard {
@@ -51,8 +54,36 @@ struct ContentView: View {
                 .environmentObject(coreManager)
                 .environmentObject(controllerService)
                 .environmentObject(loc)
+            } else if tvModeSettings.isActive {
+                TVModeView(library: library, systemDatabase: systemDatabase)
+                    .environmentObject(library)
+                    .environmentObject(categoryManager)
+                    .environmentObject(coreManager)
+                    .environmentObject(controllerService)
+                    .environmentObject(loc)
+                    .sheet(isPresented: $showTVModeSettings) {
+                        TVModeSettingsView()
+                            .environmentObject(loc)
+                    }
+                    .onReceive(NotificationCenter.default.publisher(for: .tvModeExited)) { _ in
+                        tvModeSettings.exitMode()
+                    }
             } else {
                 mainInterface
+            }
+        }
+        .onChange(of: tvModeSettings.isActive) { _, isActive in
+            // When we drop out of TV Mode, defer the fullscreen exit one
+            // runloop tick. By then SwiftUI has swapped in `mainInterface`
+            // (with its unified toolbar items) and macOS can perform the
+            // fullscreen→windowed transition with an intact chrome. Calling
+            // `toggleFullScreen` synchronously inside `TVModeView.onDisappear`
+            // races the view swap and can leave the toolbar unrendered.
+            guard !isActive else { return }
+            DispatchQueue.main.async {
+                if let window = NSApp.windows.first(where: { $0.styleMask.contains(.fullScreen) }) {
+                    window.toggleFullScreen(nil)
+                }
             }
         }
     }
