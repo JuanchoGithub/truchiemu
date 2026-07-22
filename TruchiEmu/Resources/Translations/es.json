@@ -2323,6 +2323,7 @@
     "tvMode.exit": "Salir del Modo TV",
     "tvMode.theme.bold": "Intenso",
     "tvMode.theme.muted": "Suave",
+    "tvMode.theme.boxart": "Carátula",
     "tvMode.page.systems": "Sistemas",
     "tvMode.page.games": "Juegos",
     "tvMode.page.detail": "Detalles del Juego",

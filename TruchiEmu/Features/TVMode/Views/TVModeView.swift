@@ -100,18 +100,30 @@ struct TVModeView: View {
 
     @ViewBuilder
     private var background: some View {
-        if viewModel.theme == .bold {
-            ZStack {
-                AppColors.windowBackground(colorScheme, tinted: true)
-                RadialGradient(colors: [AppColors.accentForScheme(colorScheme).opacity(0.22), .clear], center: .top, startRadius: 0, endRadius: 600).ignoresSafeArea()
-                RadialGradient(colors: [AppColors.accentForScheme(colorScheme).opacity(0.18), .clear], center: .bottom, startRadius: 0, endRadius: 700).ignoresSafeArea()
-            }
+        if viewModel.theme == .boxart {
+            TVModeBoxartBackdrop(
+                rom: backdropROM,
+                scrimColor: Color.black.opacity(0.45)
+            )
+        } else if viewModel.theme == .bold {
+            TVModeAnimatedAccentBackground()
         } else {
             ZStack {
                 Color(red: 0.07, green: 0.07, blue: 0.08)
                 RadialGradient(colors: [Color.white.opacity(0.04), .clear], center: .center, startRadius: 0, endRadius: 500).ignoresSafeArea()
             }
         }
+    }
+
+    /// The ROM whose boxart should fill the backdrop. On the detail page we
+    /// prefer the freshly-downloaded hero ROM (so art loads swap-in
+    /// seamlessly); otherwise fall back to the currently-selected game in the
+    /// list so the backdrop previews the game the user is focused on.
+    private var backdropROM: ROM? {
+        if viewModel.page == .detail, let rom = viewModel.downloadedDetailROM {
+            return rom
+        }
+        return viewModel.selectedGame
     }
 
     @ViewBuilder
@@ -360,9 +372,10 @@ extension TVModeView {
     }
 
     fileprivate func cycleTheme() {
+        let allThemes = TVModeSettings.Theme.allCases
         let current = TVModeSettings.theme
-        let next: TVModeSettings.Theme = current == .bold ? .muted : .bold
-        TVModeSettings.setTheme(next)
+        let nextIndex = (allThemes.firstIndex(of: current).map { $0 + 1 } ?? 0) % allThemes.count
+        TVModeSettings.setTheme(allThemes[nextIndex])
         NotificationCenter.default.post(name: .tvModeSettingsChanged, object: nil)
     }
 

@@ -14,6 +14,7 @@ enum TVModeSettings {
     enum Theme: String, CaseIterable, Identifiable {
         case bold
         case muted
+        case boxart
         var id: String { rawValue }
     }
 

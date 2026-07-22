@@ -2331,6 +2331,7 @@
     "tvMode.exit": "Exit TV Mode",
     "tvMode.theme.bold": "Bold",
     "tvMode.theme.muted": "Muted",
+    "tvMode.theme.boxart": "Boxart",
     "tvMode.page.systems": "Systems",
     "tvMode.page.games": "Games",
     "tvMode.page.detail": "Game Details",
