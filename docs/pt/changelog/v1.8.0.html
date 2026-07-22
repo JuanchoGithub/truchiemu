@@ -1,0 +1,82 @@
+---
+layout: default
+title: v1.8.0 - Documentação do TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/pt/changelog.html' | relative_url }}">Registro de alterações</a>
+        <span class="separator">/</span>
+        <span class="current">v1.8.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.8.0</h1>
+        <div class="release-meta">
+            <span class="release-date">22 de julho de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Versão de recursos focada no Modo TV, scaffolding, infraestrutura e qualidade de vida. Adiciona uma experiência de navegação em Modo TV em tela cheia com fundos animados e efeitos de foco nas capas; renova o carregamento, reamostragem e tematização de capas; amplia o RetroAchievements com aviso de ativação e progresso de importação; reforça a confiabilidade de retrocesso, save state e XPC; e traz busca ao digitar, coleções inteligentes e melhorias de gêneros ao navegador da biblioteca.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destaques</h2>
+        <ul class="feature-list">
+            <li><strong>Modo TV:</strong> Navegação da biblioteca estilo TV em tela cheia com tiles de entrada, fundos animados, vista de detalhe integrada e escalonamento de foco das capas.</li>
+            <li><strong>Pipeline de capas:</strong> Carregamento assíncrono de miniaturas, resolução de caminhos locais, reamostragem refinada e um tema de capas dedicado ao Modo TV para foco mais nítido na tela.</li>
+            <li><strong>Upgrades no RetroAchievements:</strong> Aviso de ativação inicial (com opção hardcore), indicadores de progresso para importação de cache e correspondência de jogos, e mapeamento preciso de IDs de console via RomHasher.</li>
+            <li><strong>Confiabilidade de retrocesso e save:</strong> Sondagem de estado XPC e captura refeitos para corrigir problemas graves de retrocesso duplo (#20); melhor tratamento de save state no Play! (PS2) e avisos de captura de retrocesso.</li>
+            <li><strong>Navegação da biblioteca:</strong> Busca ao digitar na janela principal, linhas de coleção inteligente cientes da busca, estados vazios por sistema e filtragem da barra lateral consciente do termo.</li>
+            <li><strong>Shaders de fundo:</strong> Shaders LCD Grid refatorados, controles manuais de retenção de sincronização e posição de RF, e uniformes aprimorados para a tela RF do Famicom.</li>
+            <li><strong>Escaneamento e metadados:</strong> Cache e filtragem para o processamento de metadados, refator do escaneamento e identificação, e refrescamento de campos derivados de ROMs mescladas.</li>
+            <li><strong>Infraestrutura e ciclo de vida:</strong> Materialização de placeholders iCloud sem dados, notificações de remoção de ROMs, melhor tratamento de erros e resposta de UI durante quedas do XPC, e pausa com atalho configurável.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Alterações detalhadas</h2>
+        <ul>
+            <li>Adicionado Modo TV com tiles de entrada, vista de detalhe de jogo e configurações dedicadas</li>
+            <li>Refator do tile de jogo do Modo TV para melhor tratamento de proporção e visuais de foco</li>
+            <li>Melhorada a renderização do fundo do Modo TV com layout otimizado</li>
+            <li>Adicionado tema de capas ao Modo TV, com fundos animados e configurações de estilo de ícones de sistema para os tiles de entrada</li>
+            <li>Refinada a vista de configurações do Modo TV e o tratamento de navegação para melhor gestão de estado e controle de foco</li>
+            <li>Adicionada a função de deslocamento de jogos na vista de detalhe para melhor navegação</li>
+            <li>Fundo fixado ao tamanho da imagem para evitar recorte de halo; posicionamento e recorte de capa refinados para foco mais nítido; removida a sobreposição do Modo TV para visuais mais limpos</li>
+            <li>Refator dos shaders LCD Grid e implementado o serviço de metadados LaunchBox</li>
+            <li>Refinada a geração de miniaturas e a lógica de reamostragem de capas para melhor desempenho</li>
+            <li>Melhorado o tratamento de capas e a geração de miniaturas para resolver caminhos locais e melhorar o manuseio de imagem</li>
+            <li>Adicionado aviso de ativação do RetroAchievements com opção de modo hardcore e traduções atualizadas</li>
+            <li>Melhorada a integração do RetroAchievements com indicadores de progresso para importação de cache e correspondência de jogos</li>
+            <li>Atualizado o mapeamento de IDs de console do RetroAchievements para usar RomHasher e melhorar a precisão</li>
+            <li>Otimizada a sondagem de estado XPC e captura para corrigir problemas graves de retrocesso duplo (Fixes #20)</li>
+            <li>Melhorado o suporte de save state para o core Play! (PS2) e avisos de captura de retrocesso</li>
+            <li>Implementada busca ao digitar na janela principal com tratamento de foco</li>
+            <li>Implementadas linhas de coleção inteligente cientes da busca na SystemSidebarView</li>
+            <li>Melhorada a filtragem da biblioteca e mensagens de estado vazio para contextos por sistema</li>
+            <li>Melhorada a navegação com gamepad com auto-repetição e agendamento dinâmico de atrasos</li>
+            <li>Melhorada a gestão da navegação com gamepad para evitar entradas obsoletas durante o jogo</li>
+            <li>Melhorada a gestão e exibição de gêneros</li>
+            <li>Otimizado o processamento de metadados de ROM com cache e filtragem</li>
+            <li>Refator do processo de escaneamento e identificação de ROMs</li>
+            <li>Melhorada a função de ROM mesclada para refrescar campos derivados quando nenhum registro é encontrado</li>
+            <li>Atualizado o fingerprinting de ROM para incluir estado de correspondência e ID de jogo</li>
+            <li>Adicionado ICloudMaterializer para tratar placeholders iCloud sem dados (materialização de arquivos e diretórios)</li>
+            <li>Implementadas notificações de remoção de ROMs e melhorada a gestão de pastas da biblioteca</li>
+            <li>Melhorado o tratamento de erros e a resposta de UI durante quedas do XPC; traduções de status da biblioteca atualizadas</li>
+            <li>Adicionada política de expiração forçada de cache e invalidação de entradas</li>
+            <li>Adicionada a função de pausa com atalhos de teclado e traduções atualizadas</li>
+            <li>Adicionado suporte aos tipos de controle do Wii no core Dolphin</li>
+            <li>Melhorada a tela RF e os uniformes do shader com controles manuais de retenção de sincronização e posição</li>
+            <li>Garantidas atualizações de UI no thread principal durante a captura de entrada SDL</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/pt/changelog/v1.7.3.html' | relative_url }}" class="release-prev">&larr; v1.7.3</a>
+        <a href="{{ '/pt/changelog.html' | relative_url }}" class="release-all">Todas as versões</a>
+    </nav>
+</div>

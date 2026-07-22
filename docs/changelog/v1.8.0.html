@@ -1,0 +1,82 @@
+---
+layout: default
+title: v1.8.0 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.8.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.8.0</h1>
+        <div class="release-meta">
+            <span class="release-date">July 22, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Feature release focused on TV Mode, scaffolding, infrastructure, and quality-of-life. Adds a full-screen TV Mode browsing experience with animated backgrounds and box-art focus effects; revamps box-art loading, resampling, and theming; expands RetroAchievements with an enable prompt and import progress; hardens rewind, save-state, and XPC reliability; and brings type-to-search, smart collections, and genre improvements to the library browser.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>TV Mode:</strong> Full-screen TV-style library browsing with entry tiles, animated backgrounds, an integrated game detail view, and box-art focus scaling.</li>
+            <li><strong>Box-art pipeline:</strong> Async thumbnail loading, local-path resolution, refined resampling, and a dedicated TV Mode boxart theme for sharper on-screen focus.</li>
+            <li><strong>RetroAchievements upgrades:</strong> First-run enable prompt (with hardcore option), cache-import and game-matching progress indicators, and accurate console-ID mapping via RomHasher.</li>
+            <li><strong>Rewind & save-state reliability:</strong> XPC state polling and capture reworked to fix serious double-rewind issues (#20); better Play! (PS2) save-state handling and rewind-capture warnings.</li>
+            <li><strong>Library browsing:</strong> Type-to-search in the main window, smart collection rows that respect the search query, system-aware empty states, and search-aware sidebar filtering.</li>
+            <li><strong>Background shaders:</strong> Refactored LCD Grid shaders, manual RF sync-hold and position controls, and enhanced Famicom RF display uniforms.</li>
+            <li><strong>ROM scanning & metadata:</strong> Caching and filtering for metadata processing, refactored scan/identification, and merged-ROM derived-field refresh.</li>
+            <li><strong>Infrastructure & lifecycle:</strong> iCloud dataless-placeholder materialization, ROM-removal notifications, improved error handling and UI responsiveness during XPC crashes, and a paused-hotkey binding.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>Added TV Mode with entry tiles, game detail view, and dedicated settings</li>
+            <li>Refactored TV Mode game tile for improved aspect-ratio handling and focused state visuals</li>
+            <li>Improved TV Mode backdrop rendering with optimized background layout</li>
+            <li>Added boxart theme to TV Mode, with animated backgrounds and system-icon style settings for TV-mode entry tiles</li>
+            <li>Refined TV Mode settings view and navigation handling for improved state management and focus control</li>
+            <li>Added game-shifting functionality in the detail view for improved navigation</li>
+            <li>Pinned background fill to image size to prevent halo clipping; refined boxart positioning and clipping for sharper focus effect; removed TV-mode overlay for cleaner visuals</li>
+            <li>Refactored LCD Grid shaders and implemented LaunchBox metadata service</li>
+            <li>Refined box-art thumbnail generation and resampling logic for improved performance</li>
+            <li>Enhanced box-art handling and thumbnail generation to resolve local paths and improve image handling</li>
+            <li>Added enable prompt for RetroAchievements with hardcore mode option and updated translations</li>
+            <li>Enhanced RetroAchievements integration with progress indicators for cache import and game matching</li>
+            <li>Updated RetroAchievements console ID mapping to use RomHasher for accuracy</li>
+            <li>Optimized XPC state polling and capture handling to fix serious issues on double rewind (Fixes #20)</li>
+            <li>Improved save-state support for the Play! (PS2) core and enhanced rewind-capture warnings</li>
+            <li>Implemented type-to-search functionality in the main window with focus handling</li>
+            <li>Implemented search-aware smart collection rows in SystemSidebarView</li>
+            <li>Enhanced library filtering and empty-state messages for system-specific contexts</li>
+            <li>Enhanced gamepad navigation with auto-repeat functionality and dynamic delay scheduling</li>
+            <li>Enhanced gamepad navigation management to prevent stale inputs during gameplay</li>
+            <li>Enhanced genre management and display features</li>
+            <li>Optimized ROM metadata processing with caching and filtering mechanisms</li>
+            <li>Refactored ROM scanning and identification process</li>
+            <li>Enhanced merged-ROM function to refresh derived fields when no record is found</li>
+            <li>Updated ROM fingerprinting to include match status and game ID for improved tracking</li>
+            <li>Added ICloudMaterializer for handling iCloud dataless placeholders (file and directory materialization)</li>
+            <li>Implemented ROM removal notifications and enhanced library folder management</li>
+            <li>Enhanced error handling and UI responsiveness during XPC crashes; updated library-status translations</li>
+            <li>Added force-expiry policy to cache and implemented cache entry invalidation</li>
+            <li>Added pause functionality with hotkey bindings and updated translations</li>
+            <li>Added Wii controller-type support in the Dolphin core</li>
+            <li>Enhanced RF display and shader uniforms with manual sync-hold and position controls</li>
+            <li>Ensured UI updates run on the main thread during SDL input capture</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.7.3.html' | relative_url }}" class="release-prev">&larr; v1.7.3</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>
