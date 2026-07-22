@@ -14,6 +14,7 @@ struct SystemSidebarView: View {
     @Binding var showCreateCategorySheet: Bool
     @Binding var editingCategory: GameCategory?
     @Binding var searchText: String
+    var searchFocused: FocusState<Bool>.Binding
     @State private var hiddenCategoryRefreshToggle = false
     @State private var categoriesRefreshToggle = false
 
@@ -220,7 +221,8 @@ struct SystemSidebarView: View {
                 } header: {
                     AppSearchField(
                         text: $searchText,
-                        placeholder: loc.localized("app.search")
+                        placeholder: loc.localized("app.search"),
+                        focusBinding: searchFocused
                     )
                     .padding(.bottom, 8)
                     .background(AppColors.sidebarBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))

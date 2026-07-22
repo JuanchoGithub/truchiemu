@@ -1137,6 +1137,7 @@
 		E8594EDDA258B1366CD303C9 /* fightdata_mbombrd.json in Resources */ = {isa = PBXBuildFile; fileRef = 8F442C51C91A87E9FE4913C0 /* fightdata_mbombrd.json */; };
 		E94371B66B9AFF69B9EB479B /* fightdata_ssf2t.json in Resources */ = {isa = PBXBuildFile; fileRef = 2F9C768777295B1C35E8BDF1 /* fightdata_ssf2t.json */; };
 		E952927EBAAC3AE769BF3003 /* fightdata_wh2.json in Resources */ = {isa = PBXBuildFile; fileRef = 6A31F66CF343DBA94D408DC1 /* fightdata_wh2.json */; };
+		E9C0F23EA1F3DB9AEE465065 /* TypeToSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9406B4D1F3A243D22E8BA5 /* TypeToSearch.swift */; };
 		E9E775DA61FD7613A74094C8 /* input_coreLabels_vircon32.json in Resources */ = {isa = PBXBuildFile; fileRef = E0DC3B1DB907C41823FBE25C /* input_coreLabels_vircon32.json */; };
 		EA2E07E56F10C0F232DAC18E /* SlangPresetDiscoveryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A119E4B19856B61DDCE4AEA /* SlangPresetDiscoveryService.swift */; };
 		EA4C269AEDD90FF203A43D9F /* CPS1.png in Resources */ = {isa = PBXBuildFile; fileRef = 9B9365CD6FC031FDA5FC4E59 /* CPS1.png */; };
@@ -1743,6 +1744,7 @@
 		5E5551604B613874ED01F84F /* fightdata_fghthist.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_fghthist.json; sourceTree = "<group>"; };
 		5E87F33C253900ECEF327206 /* MoveListOverlayViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveListOverlayViewModel.swift; sourceTree = "<group>"; };
 		5E90C52AEDC3AC23BA35B915 /* vb@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vb@132w.png"; sourceTree = "<group>"; };
+		5E9406B4D1F3A243D22E8BA5 /* TypeToSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypeToSearch.swift; sourceTree = "<group>"; };
 		5F0061F058B92B2B52DAD714 /* input_coreOverrides_play.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_play.json; sourceTree = "<group>"; };
 		5F6FCC4037CB225E511FD3F5 /* StandaloneGameWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandaloneGameWindowController.swift; sourceTree = "<group>"; };
 		5FAB7FCC34BD915DBC0C4AB6 /* input_coreOverrides_citra_canary.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_citra_canary.json; sourceTree = "<group>"; };
@@ -4174,6 +4176,7 @@
 				ABE60205F14183C120DDC8AA /* DesignSystem.swift */,
 				4AF5738E0CA85CD54BC36AC0 /* NotificationPill.swift */,
 				A8935D40F11BF986BE60A840 /* ThemeManager.swift */,
+				5E9406B4D1F3A243D22E8BA5 /* TypeToSearch.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -6040,6 +6043,7 @@
 				C5021605B5A1B387E0904EFF /* TrainingModeOverlay.swift in Sources */,
 				BE7C2C0DF4F71AE2FF2E50EF /* TrainingModeOverlayViewModel.swift in Sources */,
 				DC04E65A0A0068C4291426D5 /* TruchiEmuApp.swift in Sources */,
+				E9C0F23EA1F3DB9AEE465065 /* TypeToSearch.swift in Sources */,
 				9EFB1C38E1C77CAC8E872012 /* UpdateAvailableView.swift in Sources */,
 				4AB23F3CFA5D46860C322282 /* UpdateWizardView.swift in Sources */,
 				677E565E4FE7FA4E55160101 /* WhatsNewView.swift in Sources */,

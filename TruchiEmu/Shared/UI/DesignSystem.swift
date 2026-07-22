@@ -944,9 +944,17 @@ struct AppSearchField: View {
     @Binding var text: String
     var placeholder: String = "Search..."
     var onSubmit: (() -> Void)? = nil
-    @FocusState private var isFocused: Bool
+    // Optional external focus binding so callers can programmatically focus
+    // the underlying TextField (e.g. for Cmd+F or type-to-search). When nil,
+    // a private local @FocusState is used.
+    var focusBinding: FocusState<Bool>.Binding? = nil
+    @FocusState private var localFocus: Bool
     @Environment(\.colorScheme) private var colorScheme
-    
+
+    private var isFocused: Bool {
+        focusBinding?.wrappedValue ?? localFocus
+    }
+
     var body: some View {
         let accent = AppColors.accentSecondaryForScheme(colorScheme)
         return HStack(spacing: AppSpacing.sm) {
@@ -958,7 +966,7 @@ struct AppSearchField: View {
                 .textFieldStyle(.plain)
                 .font(.body)
                 .foregroundColor(AppColors.textPrimary(colorScheme))
-                .focused($isFocused)
+                .focused(focusBinding ?? $localFocus)
                 .onSubmit { onSubmit?() }
             
             if !text.isEmpty {

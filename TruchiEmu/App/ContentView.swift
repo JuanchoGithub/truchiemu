@@ -36,6 +36,7 @@ struct ContentView: View {
 @State private var showOnboarding = false
 @State private var shaderController: ShaderWindowController? = nil
 @State private var searchText = ""
+@FocusState private var searchFocused: Bool
 @State private var showCreateCategorySheet = false
 @State private var editingCategory: GameCategory? = nil
 @State private var renamingSystem: SystemInfo? = nil
@@ -97,6 +98,7 @@ struct ContentView: View {
                           showCreateCategorySheet: $showCreateCategorySheet,
                           editingCategory: $editingCategory,
                           searchText: $searchText,
+                          searchFocused: $searchFocused,
                          onRefresh: { system in
                              let romsForSystem = library.roms.filter { $0.systemID == system.id }
                              let uniqueFolders = Set(romsForSystem.map { $0.path.deletingLastPathComponent() })
@@ -272,6 +274,7 @@ case .library:
                           filter: $selectedFilter,
                           selectedROM: $selectedROM,
                           searchText: $searchText,
+                          searchFocused: $searchFocused,
                           library: library,
                           categoryManager: categoryManager
                        )
@@ -336,6 +339,7 @@ case .library:
         // Gamepad context menu overlay
         GamepadContextMenuOverlay()
         }
+.modifier(TypeToSearch(searchText: $searchText, searchFocused: $searchFocused))
 .sheet(item: $coreManager.pendingDownload) { pending in
 CoreDownloadSheet(pending: pending)
     .gamepadDismissable { coreManager.pendingDownload = nil }

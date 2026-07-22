@@ -25,6 +25,7 @@ struct LibraryGridView: View {
     @Binding var filter: LibraryFilter
     @Binding var selectedROM: ROM?
     @Binding var searchText: String
+    var searchFocused: FocusState<Bool>.Binding
 
     // These are now passed in via init to allow ViewModel initialization
     @ObservedObject var library: ROMLibrary
@@ -39,6 +40,7 @@ struct LibraryGridView: View {
         filter: Binding<LibraryFilter>,
         selectedROM: Binding<ROM?>,
         searchText: Binding<String>,
+        searchFocused: FocusState<Bool>.Binding,
         library: ROMLibrary,
         categoryManager: CategoryManager
     ) {
@@ -46,6 +48,7 @@ struct LibraryGridView: View {
         self._filter = filter
         self._selectedROM = selectedROM
         self._searchText = searchText
+        self.searchFocused = searchFocused
         self.library = library
         self.categoryManager = categoryManager
         self._viewModel = StateObject(wrappedValue: LibraryViewModel(
@@ -211,10 +214,6 @@ struct LibraryGridView: View {
     @State private var scrollDebounceTimer: Timer?
     @State private var keyMonitor: Any?
 
-    // MARK: - Focused field for Cmd+F
-    enum FocusableField: Hashable { case search }
-    @FocusState private var focusedField: FocusableField?
-
     // When searching, the system filter is honored only when a specific system is
     // selected (so clicking a system in the sidebar during search narrows results
     // to that system's matching games). Otherwise all systems are matched.
@@ -240,7 +239,6 @@ struct LibraryGridView: View {
                 .onChange(of: continuousZoom) { _, newValue in
                     AppSettings.setDouble("gridZoomLevel", value: newValue)
                 }
-                .focused($focusedField, equals: .search)
             
             filterChips
             
@@ -291,7 +289,7 @@ struct LibraryGridView: View {
 }
 .modifier(GamepadNavReceiver(
     onLaunch: { [self] in if let rom = selectedROM { Task { await launchGame(rom) } } },
-    onFocusSearch: { [self] in focusedField = .search },
+    onFocusSearch: { [self] in searchFocused.wrappedValue = true },
     onNavigateUp: { [self] in handleGamepadNavUp(columnCount: viewMode == .grid ? columnCount : 1, totalCount: viewModel.displayedROMs.count) },
     onNavigateDown: { [self] in handleGamepadNavDown(columnCount: viewMode == .grid ? columnCount : 1, totalCount: viewModel.displayedROMs.count) },
     onNavigateLeft: { [self] in handleGamepadNavLeft() },
@@ -697,7 +695,7 @@ viewModel.updateFilters(
         // MARK: - Keyboard Shortcuts
         // Cmd+F focuses search field
         .background {
-            Button("") { focusedField = .search }
+            Button("") { searchFocused.wrappedValue = true }
                 .keyboardShortcut(KeyEquivalent("f"), modifiers: .command)
                 .hidden()
         }
@@ -1052,7 +1050,7 @@ viewModel.updateFilters(
             }
             keyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
                 if (event.keyCode == 36 || event.keyCode == 76),
-                   focusedField != .search,
+                   !searchFocused.wrappedValue,
                    let rom = selectedROM {
                     Task { await launchGame(rom) }
                 }
