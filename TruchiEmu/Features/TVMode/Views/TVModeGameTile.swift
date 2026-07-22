@@ -18,13 +18,6 @@ struct TVModeGameTile: View {
     var body: some View {
         VStack(spacing: 8) {
             tileContent
-                .overlay(
-                    RoundedRectangle(cornerRadius: boxCornerRadius, style: .continuous)
-                        .strokeBorder(
-                            isFocused ? (theme == .bold ? AppColors.accentForScheme(colorScheme) : Color.white) : Color.white.opacity(0.08),
-                            lineWidth: isFocused ? 3 : 1
-                        )
-                )
                 .scaleEffect(isFocused ? 1.30 : 1.0, anchor: .bottom)
                 .animation(.easeOut(duration: 0.22), value: isFocused)
 
