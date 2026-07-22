@@ -73,7 +73,7 @@ struct GameListRowView: View {
     private var metadataLine2: String? {
         var parts: [String] = []
         if let genre = rom.metadata?.genre, !genre.isEmpty {
-            parts.append(genre)
+            parts.append(GenreManager.shared.effectiveDisplayName(for: genre))
         }
         if let players = rom.metadata?.players, players > 0 {
             parts.append(players == 1 ? "1 player" : "\(players) players")

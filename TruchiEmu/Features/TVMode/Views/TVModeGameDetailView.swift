@@ -121,7 +121,7 @@ struct TVModeGameDetailView: View {
             metadataRow(title: "tvMode.detail.year", value: rom.metadata?.year)
             metadataRow(title: "tvMode.detail.developer", value: rom.metadata?.developer)
             metadataRow(title: "tvMode.detail.publisher", value: rom.metadata?.publisher)
-            metadataRow(title: "tvMode.detail.genre", value: rom.metadata?.genre)
+            metadataRow(title: "tvMode.detail.genre", value: rom.metadata?.genre.map { GenreManager.shared.effectiveDisplayName(for: $0) })
             metadataRow(title: "tvMode.detail.players", value: playerDescription)
             metadataRow(title: "tvMode.detail.played", value: String(rom.timesPlayed))
             metadataRow(title: "tvMode.detail.playtime", value: playtimeDescription)

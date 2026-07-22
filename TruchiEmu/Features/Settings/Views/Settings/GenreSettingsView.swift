@@ -7,6 +7,7 @@ struct GenreGroup: Identifiable {
     let displayName: String
     let originals: [String]
     let type: GenreGroupType
+    let romCount: Int
     var isHidden: Bool
 
     var id: String { displayName }
@@ -37,6 +38,7 @@ struct GenreSettingsView: View {
     }
 
     @State private var expandedID: String? = nil
+    @State private var expandedTier2: Set<String> = []
     @State private var showNewCategoryField: Bool = false
     @State private var newCategoryName: String = ""
     @State private var isCreatingNew: Bool = false
@@ -54,7 +56,8 @@ struct GenreSettingsView: View {
     @State private var cachedGroups: [GenreGroup] = []
 
     private func recacheData() {
-        let originals = Array(Set(library.roms.compactMap { $0.metadata?.genre })).sorted()
+        let rawGenres = Set(library.roms.compactMap { $0.metadata?.genre })
+        let originals = Set(rawGenres.flatMap { GenreManager.shared.splitGenreString($0) }).sorted()
         cachedOriginalGenres = originals
 
         var displayToOriginals: [String: [String]] = [:]
@@ -65,27 +68,48 @@ struct GenreSettingsView: View {
             displayToOriginals[display, default: []].append(original)
         }
 
-        for (original, display) in GenreManager.shared.mappings {
-            if !originalsSet.contains(original) {
-                displayToOriginals[display, default: []].append(original)
+        var displayToRomCount: [String: Int] = [:]
+        for rom in library.roms {
+            let displays = GenreManager.shared.effectiveDisplayNames(for: rom.metadata?.genre)
+            for d in displays {
+                displayToRomCount[d, default: 0] += 1
             }
         }
 
         cachedGroups = displayToOriginals.map { displayName, originals in
-            let isCustom = !originalsSet.contains(displayName)
             let type: GenreGroupType
-            if isCustom {
-                type = .custom
-            } else if originals.count > 1 {
-                type = .merged
-            } else {
+            switch GenreManager.shared.genreGrouping {
+            case .raw:
                 type = .direct
+            case .detailed:
+                if Set(GenreManager.detailedMappings.values).contains(displayName) {
+                    type = .merged
+                } else if originalsSet.contains(displayName) {
+                    type = .direct
+                } else {
+                    type = .custom
+                }
+            case .minimal:
+                if Set(GenreManager.minimalMappings.values).contains(displayName) {
+                    type = .merged
+                } else if originalsSet.contains(displayName) {
+                    type = .direct
+                } else {
+                    type = .custom
+                }
+            case .custom:
+                if !originalsSet.contains(displayName) {
+                    type = .custom
+                } else {
+                    type = .direct
+                }
             }
 
             return GenreGroup(
                 displayName: displayName,
                 originals: originals.sorted(),
                 type: type,
+                romCount: displayToRomCount[displayName] ?? 0,
                 isHidden: GenreManager.shared.isHidden(displayName)
             )
         }
@@ -107,6 +131,8 @@ struct GenreSettingsView: View {
     private var mergedCount: Int { cachedGroups.filter { $0.type == .merged }.count }
     private var customCount: Int { cachedGroups.filter { $0.type == .custom }.count }
     private var hiddenCount: Int { cachedGroups.filter { $0.isHidden }.count }
+    private var tier4Count: Int { Set(library.roms.compactMap { $0.metadata?.genre }).count }
+    private var tier3Count: Int { cachedOriginalGenres.count }
 
     private func availableOriginals(for group: GenreGroup) -> [String] {
         let inGroup = Set(group.originals)
@@ -145,6 +171,7 @@ struct GenreSettingsView: View {
             if contentLoaded {
                 ScrollViewReader { proxy in
                     Form {
+                        groupingSection
                         overviewSection
                         genresSection
                         newGenreSection
@@ -193,6 +220,97 @@ struct GenreSettingsView: View {
         }
     }
 
+    // MARK: - Grouping Picker Section
+
+    @ViewBuilder
+    private var groupingSection: some View {
+        let grouping = genreManager.genreGrouping
+        let isCustom = grouping == .custom
+
+        Section {
+            Text(loc.localized("genre.grouping.display"))
+                .font(.subheadline)
+                .foregroundStyle(AppColors.textSecondary(colorScheme))
+
+            Picker(selection: Binding(get: {
+                grouping == .custom ? GenreGrouping.detailed : grouping
+            }, set: { newValue in
+                guard newValue != grouping else { return }
+                genreManager.applyGrouping(newValue)
+                recacheData()
+                refreshID = UUID()
+            })) {
+                Text("\(loc.localized("genre.grouping.minimal")) (Tier-1)")
+                    .tag(GenreGrouping.minimal)
+                Text("\(loc.localized("genre.grouping.detailed")) (Tier-2)")
+                    .tag(GenreGrouping.detailed)
+                Text("\(loc.localized("genre.grouping.raw")) (Tier-3)")
+                    .tag(GenreGrouping.raw)
+            } label: {
+                EmptyView()
+            }
+            .pickerStyle(.segmented)
+
+            if isCustom {
+                HStack(spacing: AppSpacing.sm) {
+                    Image(systemName: "exclamationmark.triangle")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.warning(colorScheme))
+                    Text(loc.localized("genre.grouping.custom.hint"))
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                    Spacer()
+                    Text(loc.localized("genre.grouping.custom"))
+                        .font(.caption2)
+                        .fontWeight(.medium)
+                        .foregroundStyle(AppColors.accentSecondaryForScheme(colorScheme))
+                        .padding(.horizontal, AppSpacing.sm)
+                        .padding(.vertical, AppSpacing.xxs)
+                        .background(AppColors.accentSecondaryForScheme(colorScheme).opacity(0.12))
+                        .clipShape(Capsule())
+                }
+            } else if grouping != .raw {
+                HStack(spacing: AppSpacing.sm) {
+                    Image(systemName: "info.circle")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textTertiary(colorScheme))
+                    Text(loc.localized("genre.grouping.\(grouping.rawValue).hint"))
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textTertiary(colorScheme))
+                }
+            }
+
+            if genreManager.hasOverrides {
+                HStack(spacing: AppSpacing.sm) {
+                    Image(systemName: "pencil.circle")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.accentSecondaryForScheme(colorScheme))
+                    Text(loc.localized("genre.grouping.hasOverrides"))
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                    Spacer()
+                    Button(loc.localized("genre.grouping.reset")) {
+                        genreManager.resetOverrides()
+                        recacheData()
+                        refreshID = UUID()
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.small)
+                    .tint(AppColors.warning(colorScheme))
+                }
+            }
+
+            if grouping == .raw {
+                Text(loc.localized("genre.grouping.raw.hint"))
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textTertiary(colorScheme))
+            }
+        } header: {
+            Label(loc.localized("genre.grouping.title"), systemImage: "rectangle.3.group")
+        }
+        .id("section-grouping")
+    }
+
     // MARK: - Overview Section
 
     @ViewBuilder
@@ -225,6 +343,18 @@ struct GenreSettingsView: View {
                             accent: AppColors.textTertiary(colorScheme)
                         )
                     }
+                    AppStatCard(
+                        icon: "square.stack.3d.down.right",
+                        value: "\(tier4Count)",
+                        label: "Tier-4",
+                        accent: AppColors.textSecondary(colorScheme)
+                    )
+                    AppStatCard(
+                        icon: "square.stack.3d.up",
+                        value: "\(tier3Count)",
+                        label: "Tier-3",
+                        accent: AppColors.textSecondary(colorScheme)
+                    )
                 }
                 .padding(.vertical, AppSpacing.sm)
             }
@@ -372,7 +502,7 @@ struct GenreSettingsView: View {
     private func genreRow(group: GenreGroup) -> some View {
         let isExpanded = expandedID == group.displayName
 
-        return VStack(spacing: 0) {
+        return VStack(alignment: .leading, spacing: 0) {
             // Compact header
             HStack(spacing: AppSpacing.md) {
                 // Chevron
@@ -387,6 +517,10 @@ struct GenreSettingsView: View {
                     .foregroundStyle(group.isHidden ? AppColors.textTertiary(colorScheme) : AppColors.textPrimary(colorScheme))
                     .strikethrough(group.isHidden)
                     .lineLimit(1)
+
+                Text("\(group.romCount) \(loc.localized("genre.games"))")
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textTertiary(colorScheme))
 
                 Spacer()
 
@@ -444,6 +578,7 @@ struct GenreSettingsView: View {
             }
         }
         .padding(.horizontal, AppSpacing.xs)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: AppRadius.sm)
                 .fill(rowBackground(for: group))
@@ -561,34 +696,142 @@ struct GenreSettingsView: View {
                 .font(.caption)
                 .foregroundStyle(AppColors.textSecondary(colorScheme))
 
-            ForEach(group.originals, id: \.self) { original in
-                HStack(spacing: AppSpacing.sm) {
-                    Image(systemName: "arrow.right")
-                        .font(.caption2)
-                        .foregroundStyle(AppColors.textTertiary(colorScheme))
+            if GenreManager.shared.genreGrouping == .minimal {
+                let tier2Map: [String: [String]] = Dictionary(
+                    grouping: group.originals,
+                    by: { GenreManager.shared.subGenreDisplayName(for: $0) }
+                )
+                let tier2Names = tier2Map.keys.sorted()
 
-                    Text(original)
-                        .font(.body)
-                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                ForEach(tier2Names, id: \.self) { tier2Name in
+                    let tier3Originals = tier2Map[tier2Name]!.sorted()
+                    let isExpanded = expandedTier2.contains(tier2Name)
 
-                    Spacer()
+                    VStack(alignment: .leading, spacing: 0) {
+                        // Tier 2 header — click whole row to expand
+                        HStack(spacing: AppSpacing.sm) {
+                            Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
+                                .font(.caption2)
+                                .foregroundStyle(AppColors.textTertiary(colorScheme))
+                                .frame(width: 12)
 
-                    if original != group.displayName {
-                        Button {
-                            GenreManager.shared.removeMapping(for: original)
-                            recacheData()
-                            refreshID = UUID()
-                        } label: {
-                            Image(systemName: "xmark.circle")
+                            Text(tier2Name)
+                                .font(.body)
+                                .foregroundStyle(AppColors.textPrimary(colorScheme))
+
+                            Text("\(tier3Originals.count)")
                                 .font(.caption)
                                 .foregroundStyle(AppColors.textTertiary(colorScheme))
                         }
-                        .buttonStyle(.plain)
-                        .help(loc.localized("genre.removeMapping"))
-                    } else {
-                        Text("(\(loc.localized("genre.originalsCount")))")
-                            .font(.caption)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            withAnimation(.easeInOut(duration: 0.15)) {
+                                if isExpanded {
+                                    expandedTier2.remove(tier2Name)
+                                } else {
+                                    expandedTier2.insert(tier2Name)
+                                }
+                            }
+                        }
+
+                        // Tier 3 items + folder actions
+                        if isExpanded {
+                            ForEach(tier3Originals, id: \.self) { original in
+                                HStack(spacing: AppSpacing.sm) {
+                                    Text(original)
+                                        .font(.body)
+                                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                    Spacer()
+                                    Button {
+                                        GenreManager.shared.removeMapping(for: original)
+                                        recacheData()
+                                        refreshID = UUID()
+                                    } label: {
+                                        Image(systemName: "xmark.circle")
+                                            .font(.caption)
+                                            .foregroundStyle(AppColors.textTertiary(colorScheme))
+                                    }
+                                    .buttonStyle(.plain)
+                                    .help(loc.localized("genre.removeMapping"))
+                                }
+                                .padding(.leading, 16)
+                            }
+
+                            // Add genre to this Tier 2 folder
+                            let available = cachedOriginalGenres.filter { !tier3Originals.contains($0) }.sorted()
+                            if !available.isEmpty {
+                                Menu {
+                                    ForEach(available, id: \.self) { original in
+                                        Button(original) {
+                                            GenreManager.shared.mergeGenres(from: [original], to: tier2Name)
+                                            recacheData()
+                                            refreshID = UUID()
+                                        }
+                                    }
+                                } label: {
+                                    Label(loc.localized("genre.addGenre"), systemImage: "plus.circle")
+                                        .font(.caption)
+                                        .foregroundStyle(AppColors.accentSecondaryForScheme(colorScheme))
+                                }
+                                .menuStyle(.borderlessButton)
+                                .padding(.leading, 16)
+                                .padding(.top, 4)
+                            }
+
+                            // Move this Tier 2 folder to a different Tier 1 group
+                            let allTier1 = Set(GenreManager.minimalMappings.values)
+                            let otherGroups = allTier1.filter { $0 != group.displayName }.sorted()
+                            if !otherGroups.isEmpty {
+                                Menu {
+                                    ForEach(otherGroups, id: \.self) { tier1 in
+                                        Button(tier1) {
+                                            GenreManager.shared.mergeTier2Into(tier2Name, tier1Name: tier1)
+                                            recacheData()
+                                            refreshID = UUID()
+                                        }
+                                    }
+                                } label: {
+                                    Label(loc.localized("genre.moveTo"), systemImage: "arrow.triangle.branch")
+                                        .font(.caption)
+                                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                }
+                                .menuStyle(.borderlessButton)
+                                .padding(.leading, 16)
+                                .padding(.top, 4)
+                            }
+                        }
+                    }
+                }
+            } else {
+                ForEach(group.originals, id: \.self) { original in
+                    HStack(spacing: AppSpacing.sm) {
+                        Image(systemName: "arrow.right")
+                            .font(.caption2)
                             .foregroundStyle(AppColors.textTertiary(colorScheme))
+
+                        Text(original)
+                            .font(.body)
+                            .foregroundStyle(AppColors.textSecondary(colorScheme))
+
+                        Spacer()
+
+                        if original != group.displayName {
+                            Button {
+                                GenreManager.shared.removeMapping(for: original)
+                                recacheData()
+                                refreshID = UUID()
+                            } label: {
+                                Image(systemName: "xmark.circle")
+                                    .font(.caption)
+                                    .foregroundStyle(AppColors.textTertiary(colorScheme))
+                            }
+                            .buttonStyle(.plain)
+                            .help(loc.localized("genre.removeMapping"))
+                        } else {
+                            Text("(\(loc.localized("genre.originalsCount")))")
+                                .font(.caption)
+                                .foregroundStyle(AppColors.textTertiary(colorScheme))
+                        }
                     }
                 }
             }
@@ -615,7 +858,7 @@ struct GenreSettingsView: View {
 
                 Menu {
                     ForEach(available, id: \.self) { original in
-                        Button(original) {
+                        Button(GenreManager.shared.subGenreDisplayName(for: original)) {
                             GenreManager.shared.mergeGenres(from: [original], to: group.displayName)
                             recacheData()
                             refreshID = UUID()
@@ -698,9 +941,12 @@ struct GenreSettingsView: View {
     }
 
     private func deleteGroup(_ group: GenreGroup) {
-        let keysToRemove = GenreManager.shared.mappings.filter { $0.value == group.displayName }.map { $0.key }
-        for key in keysToRemove {
-            GenreManager.shared.removeMapping(for: key)
+        // Remove all user overrides that target this display name.
+        let gm = GenreManager.shared
+        let t2 = gm.tier2Overrides.filter { $0.value == group.displayName }.map { $0.key }
+        let t1 = gm.tier1Overrides.filter { $0.value == group.displayName }.map { $0.key }
+        for key in t2 + t1 {
+            gm.removeMapping(for: key)
         }
 
         if expandedID == group.displayName {

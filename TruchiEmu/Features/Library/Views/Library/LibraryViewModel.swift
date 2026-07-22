@@ -131,10 +131,11 @@ var sortByLastPlayed: Bool = false
             // Snapshot inputs ON the MainActor (state we need is MainActor-isolated).
             // For GenreManager (which is @MainActor), pre-resolve unique genres to a
             // plain dictionary so the off-MainActor filter can do dict lookups only.
+            // Each raw genre may resolve to multiple display names (catver split).
             let rawGenres = Set(self.library.roms.compactMap { $0.metadata?.genre })
-            var genreLookup: [String: String] = [:]
+            var genreLookup: [String: [String]] = [:]
             for raw in rawGenres {
-                genreLookup[raw] = GenreManager.shared.effectiveDisplayName(for: raw)
+                genreLookup[raw] = GenreManager.shared.effectiveDisplayNames(for: raw)
             }
 
             // For .system filters, resolve the merged internal IDs here on the
@@ -252,8 +253,8 @@ var sortByLastPlayed: Bool = false
         // 4. Genre Filter
         if !inputs.selectedGenres.isEmpty {
             filtered = filtered.filter { rom in
-                let displayGenre = inputs.genreLookup[rom.metadata?.genre ?? ""] ?? "Unknown"
-                return inputs.selectedGenres.contains(displayGenre)
+                let displayGenres = inputs.genreLookup[rom.metadata?.genre ?? ""] ?? ["Unknown"]
+                return displayGenres.contains(where: { inputs.selectedGenres.contains($0) })
             }
         }
 
@@ -304,7 +305,7 @@ struct FilterInputs: Sendable {
     let sortByLastAdded: Bool
     let selectedGenres: Set<String>
     let mameRunnableSet: Set<String>
-    let genreLookup: [String: String]
+    let genreLookup: [String: [String]]
     /// Pre-resolved merged internal IDs for `.system(...)` filters, captured
     /// on the MainActor before the filter ran off-actor. Nil for non-system
     /// filters.

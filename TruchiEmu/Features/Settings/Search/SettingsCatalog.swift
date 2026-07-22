@@ -541,6 +541,11 @@ enum SettingsCatalog {
             ),
 
             SettingsCatalogEntry(
+                page: .genre, sectionID: "grouping",
+                sectionTitle: "Genre Grouping",
+                keywords: ["grouping", "display", "minimal", "detailed", "raw", "preset", "tier", "level", "reset"]
+            ),
+            SettingsCatalogEntry(
                 page: .genre, sectionID: "overview",
                 sectionTitle: "Genre Overview",
                 keywords: ["overview", "total", "merged", "custom", "hidden"]
