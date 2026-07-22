@@ -63,9 +63,12 @@ struct TVModeGameTile: View {
     private var tileContent: some View {
         ZStack {
             // Subtle background fill that shows through any letterboxing the
-            // image doesn't cover, plus shadows live behind it.
+            // image doesn't cover, plus shadows live behind it. Pinned to
+            // imageSize so the opaque container doesn't grow past the cover
+            // and swallow the halo's outward bleed.
             RoundedRectangle(cornerRadius: boxCornerRadius, style: .continuous)
                 .fill(boxBackground)
+                .frame(width: imageDisplaySize.width, height: imageDisplaySize.height)
                 .shadow(color: shadowColor, radius: isFocused ? 28 : 5, y: isFocused ? 12 : 2)
 
             // Halo behind the tile — sized to the tile, not a fixed box, so
