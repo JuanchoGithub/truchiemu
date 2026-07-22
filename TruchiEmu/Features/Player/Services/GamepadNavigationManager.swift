@@ -47,11 +47,40 @@ final class GamepadNavigationManager: ObservableObject {
     private var pollTimer: Timer?
     private var lastLoggedButtons: Set<GamepadNavButton> = []
     private var lastRepeatTime: [GamepadNavButton: Double] = [:]
+    /// Number of times a direction button has auto-repeated during the current
+    /// press. Used to look up the next interval from `repeatSchedule`. Reset to
+    /// zero when the button is released.
+    private var repeatCount: [GamepadNavButton: Int] = [:]
     private var pressedButtons: Set<GamepadNavButton> = []
     private var lastPressTime: [GamepadNavButton: Double] = [:]
     private static let deadZone: Float = 0.5
-    private static let repeatDelay: Double = 0.12
     private static let pollInterval: Double = 1.0 / 30.0
+
+    /// Schedules for direction-button auto-repeat. The user holds the stick or
+    /// d-pad and the first N presses are spaced generously; later presses
+    /// accelerate so long traverses feel quick without the initial direction
+    /// tap being misread as multiple presses. The unit is seconds.
+    ///
+    /// Each entry is the delay **to the next fire**, indexed by the count of
+    /// fires already produced for the current press. Users typically spec the
+    /// gaps between the 1st–2nd, 2nd–3rd, etc. events; we model that exactly:
+    /// after the 1st fire use `schedule[0]`, after the 2nd use `schedule[1]`,
+    /// …and anything beyond the tail uses the final rate.
+    private static let repeatSchedule: [Double] = [
+        0.75, 0.75,       // 1→2, 2→3
+        0.50, 0.50, 0.50, // 3→4, 4→5, 5→6
+        0.25, 0.25, 0.25, 0.25, 0.25, // 6→11
+        // Tail: 11th fire and onward reuse the final entry.
+    ]
+
+    private static func repeatDelay(afterFires count: Int) -> Double {
+        guard !repeatSchedule.isEmpty else { return 0.12 }
+        let scheduled = repeatSchedule[min(max(count, 0), repeatSchedule.count - 1)]
+        // Past the tail, reuse the final (fastest) rate so further presses
+        // keep accelerating indefinitely.
+        if count >= repeatSchedule.count { return repeatSchedule.last ?? scheduled }
+        return scheduled
+    }
     /// Physical directional inputs (d-pad and analog stick axes). Each of these
     /// represents a single intent ("go left") that must map to at most one
     /// `GamepadNavAction` per tick — see `processActions`.
@@ -115,6 +144,7 @@ final class GamepadNavigationManager: ObservableObject {
         pollTimer = nil
         pressedButtons = []
         lastRepeatTime = [:]
+        repeatCount = [:]
         lastPressTime = [:]
         isGamepadActive = false
     }
@@ -126,6 +156,7 @@ final class GamepadNavigationManager: ObservableObject {
         if isGamepadActive { isGamepadActive = false }
         pressedButtons = []
         lastRepeatTime = [:]
+        repeatCount = [:]
         lastPressTime = [:]
         lastLoggedButtons = []
     }
@@ -323,6 +354,7 @@ final class GamepadNavigationManager: ObservableObject {
         if gameRunningNavSuppressed {
             for button in justReleased {
                 lastRepeatTime.removeValue(forKey: button)
+                repeatCount.removeValue(forKey: button)
                 lastPressTime.removeValue(forKey: button)
             }
             pressedButtons = newlyPressed
@@ -345,6 +377,7 @@ final class GamepadNavigationManager: ObservableObject {
 
         for button in justReleased {
             lastRepeatTime.removeValue(forKey: button)
+            repeatCount.removeValue(forKey: button)
             lastPressTime.removeValue(forKey: button)
         }
 
@@ -381,28 +414,12 @@ final class GamepadNavigationManager: ObservableObject {
                 // D-pad directions auto-repeat while held so the toolbar focus
                 // keeps moving (matching the analog-stick behaviour).
                 if [.dpadUp, .dpadDown, .dpadLeft, .dpadRight].contains(mappedButton) {
-                    if justPressed.contains(mappedButton) {
-                        shouldFire = true
-                        lastRepeatTime[mappedButton] = now
-                    } else if newlyPressed.contains(mappedButton) {
-                        if let lastTime = lastRepeatTime[mappedButton], now >= lastTime + Self.repeatDelay {
-                            shouldFire = true
-                            lastRepeatTime[mappedButton] = now
-                        }
-                    }
+                    shouldFire = tryFireRepeating(button: mappedButton, justPressed: justPressed, newlyPressed: newlyPressed, now: now)
                 } else {
                     shouldFire = justPressed.contains(mappedButton)
                 }
             } else {
-                if justPressed.contains(mappedButton) {
-                    shouldFire = true
-                    lastRepeatTime[mappedButton] = now
-                } else if newlyPressed.contains(mappedButton) {
-                    if let lastTime = lastRepeatTime[mappedButton], now >= lastTime + Self.repeatDelay {
-                        shouldFire = true
-                        lastRepeatTime[mappedButton] = now
-                    }
-                }
+                shouldFire = tryFireRepeating(button: mappedButton, justPressed: justPressed, newlyPressed: newlyPressed, now: now)
             }
 
             if shouldFire {
@@ -416,19 +433,32 @@ final class GamepadNavigationManager: ObservableObject {
 
         for (stickButton, navAction) in stickToNavAction {
             if newlyPressed.contains(stickButton) {
-                var shouldFire = false
-                if justPressed.contains(stickButton) {
-                    shouldFire = true
-                    lastRepeatTime[stickButton] = now
-                } else if let lastTime = lastRepeatTime[stickButton], now >= lastTime + Self.repeatDelay {
-                    shouldFire = true
-                    lastRepeatTime[stickButton] = now
-                }
-                if shouldFire {
+                if tryFireRepeating(button: stickButton, justPressed: justPressed, newlyPressed: newlyPressed, now: now) {
                     fireAction(navAction)
                 }
             }
         }
+    }
+
+    /// Decide whether a direction input should fire this tick. The first
+    /// `justPressed` edge always fires immediately; subsequent repeats respect
+    /// an accelerating delay schedule so holding the stick/d-pad ramps up
+    /// speed instead of flickering through the carousel. Returns true and
+    /// updates `lastRepeatTime` / `repeatCount` when the action should fire.
+    private func tryFireRepeating(button: GamepadNavButton, justPressed: Set<GamepadNavButton>, newlyPressed: Set<GamepadNavButton>, now: Double) -> Bool {
+        if justPressed.contains(button) {
+            lastRepeatTime[button] = now
+            repeatCount[button] = 1
+            return true
+        }
+        guard newlyPressed.contains(button) else { return false }
+        let count = repeatCount[button] ?? 0
+        guard let lastTime = lastRepeatTime[button] else { return false }
+        let delay = Self.repeatDelay(afterFires: count)
+        guard now >= lastTime + delay else { return false }
+        lastRepeatTime[button] = now
+        repeatCount[button] = count + 1
+        return true
     }
 
     /// True if `button` was pressed within `comboWindow` seconds (including in a
