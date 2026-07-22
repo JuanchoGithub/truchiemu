@@ -68,10 +68,6 @@ struct TVModeGameTile: View {
                 .fill(boxBackground)
                 .shadow(color: shadowColor, radius: isFocused ? 28 : 5, y: isFocused ? 12 : 2)
 
-            boxartView
-                .frame(width: imageDisplaySize.width, height: imageDisplaySize.height)
-                .clipShape(RoundedRectangle(cornerRadius: boxCornerRadius, style: .continuous))
-
             // Halo behind the tile — sized to the tile, not a fixed box, so
             // each cover's accent glow matches its own proportions.
             if isFocused {
@@ -86,6 +82,10 @@ struct TVModeGameTile: View {
                     )
                     .allowsHitTesting(false)
             }
+
+            boxartView
+                .frame(width: imageDisplaySize.width, height: imageDisplaySize.height)
+                .clipShape(RoundedRectangle(cornerRadius: boxCornerRadius, style: .continuous))
         }
         .frame(
             width: imageDisplaySize.width + (isFocused ? 36 : 0),
