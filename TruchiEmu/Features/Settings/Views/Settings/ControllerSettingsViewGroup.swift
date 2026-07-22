@@ -715,19 +715,41 @@ struct DeadzoneSlidersSection: View {
     let selectedControllerId: UUID
     @ObservedObject private var loc = LocalizationManager.shared
 
-    private var currentMapping: ControllerGamepadMapping {
-        guard let player = controllerService.connectedControllers.first(where: { $0.id == selectedControllerId }),
+    private var selectedPlayer: PlayerController? {
+        controllerService.connectedControllers.first(where: { $0.id == selectedControllerId })
+    }
+
+    // When a controller has both gcController and sdlInstanceID populated,
+    // GC takes precedence (mirrors the historical single-path behavior).
+    private var usesSDL: Bool {
+        guard let player = selectedPlayer else { return false }
+        return player.gcController == nil && player.isSDL
+    }
+
+    private var currentGCMapping: ControllerGamepadMapping {
+        guard let player = selectedPlayer,
               let vendorName = player.gcController?.vendorName else {
             return ControllerGamepadMapping.defaults(for: "Unknown", systemID: systemID)
         }
         return controllerService.mapping(for: vendorName, systemID: systemID)
     }
 
+    private var currentSDLMapping: SDLControllerMapping {
+        guard let player = selectedPlayer else {
+            return SDLControllerMapping.defaults(for: systemID)
+        }
+        if let identity = player.identityKey {
+            return controllerService.sdlMapping(forIdentity: identity, systemID: systemID)
+        }
+        let vendor = SDLInputManager.shared.sdlVendorName(for: player.sdlInstanceID ?? 0)
+        return controllerService.sdlMapping(for: vendor, systemID: systemID)
+    }
+
     var body: some View {
         VStack(spacing: 4) {
             DeadzoneSliderRow(
                 label: loc.localized("controllers.deadzoneLeft"),
-                value: Double(currentMapping.leftStickDeadzone),
+                value: Double(usesSDL ? currentSDLMapping.leftStickDeadzone : currentGCMapping.leftStickDeadzone),
                 defaultValue: 0.15,
                 onValueChanged: { newVal in
                     updateDeadzone(left: Float(newVal), right: nil)
@@ -735,7 +757,7 @@ struct DeadzoneSlidersSection: View {
             )
             DeadzoneSliderRow(
                 label: loc.localized("controllers.deadzoneRight"),
-                value: Double(currentMapping.rightStickDeadzone),
+                value: Double(usesSDL ? currentSDLMapping.rightStickDeadzone : currentGCMapping.rightStickDeadzone),
                 defaultValue: 0.15,
                 onValueChanged: { newVal in
                     updateDeadzone(left: nil, right: Float(newVal))
@@ -746,21 +768,33 @@ struct DeadzoneSlidersSection: View {
     }
 
     private func updateDeadzone(left: Float?, right: Float?) {
-        guard let player = controllerService.connectedControllers.first(where: { $0.id == selectedControllerId }) else { return }
-        var mapping: ControllerGamepadMapping
-        if let identity = player.identityKey {
-            mapping = controllerService.mapping(forIdentity: identity, systemID: systemID)
+        guard let player = selectedPlayer else { return }
+        if usesSDL {
+            var mapping = currentSDLMapping
+            if let left { mapping.leftStickDeadzone = left }
+            if let right { mapping.rightStickDeadzone = right }
+            if let identity = player.identityKey {
+                controllerService.updateSDLMapping(forIdentity: identity, systemID: systemID, mapping: mapping)
+            } else {
+                let vendor = SDLInputManager.shared.sdlVendorName(for: player.sdlInstanceID ?? 0)
+                controllerService.updateSDLMapping(for: vendor, systemID: systemID, mapping: mapping)
+            }
         } else {
-            let vendorName = player.gcController?.vendorName ?? "Unknown"
-            mapping = controllerService.mapping(for: vendorName, systemID: systemID)
-        }
-        if let left { mapping.leftStickDeadzone = left }
-        if let right { mapping.rightStickDeadzone = right }
-        if let identity = player.identityKey {
-            controllerService.updateMapping(forIdentity: identity, systemID: systemID, mapping: mapping)
-        } else {
-            let vendorName = player.gcController?.vendorName ?? "Unknown"
-            controllerService.updateMapping(for: vendorName, systemID: systemID, mapping: mapping)
+            var mapping: ControllerGamepadMapping
+            if let identity = player.identityKey {
+                mapping = controllerService.mapping(forIdentity: identity, systemID: systemID)
+            } else {
+                let vendorName = player.gcController?.vendorName ?? "Unknown"
+                mapping = controllerService.mapping(for: vendorName, systemID: systemID)
+            }
+            if let left { mapping.leftStickDeadzone = left }
+            if let right { mapping.rightStickDeadzone = right }
+            if let identity = player.identityKey {
+                controllerService.updateMapping(forIdentity: identity, systemID: systemID, mapping: mapping)
+            } else {
+                let vendorName = player.gcController?.vendorName ?? "Unknown"
+                controllerService.updateMapping(for: vendorName, systemID: systemID, mapping: mapping)
+            }
         }
     }
 }
@@ -839,15 +873,49 @@ struct StickVisualizerView: View {
     @State private var lY: Double = 0
     @State private var rX: Double = 0
     @State private var rY: Double = 0
+    // Tracks the GCController whose thumbstick valueChangedHandler closures
+    // are currently attached to this view's @State. Required because
+    // valueChangedHandler is persistent on the controller — switching the
+    // selection to an SDL controller does NOT auto-detach the previous GC
+    // handlers, so the previous GC controller would keep driving the dots.
+    @State private var attachedGCController: GCController?
     @EnvironmentObject var controllerService: ControllerService
     @ObservedObject private var loc = LocalizationManager.shared
 
-    private var currentMapping: ControllerGamepadMapping {
-        guard let player = controllerService.connectedControllers.first(where: { $0.id == selectedControllerId }),
+    private var selectedPlayer: PlayerController? {
+        controllerService.connectedControllers.first(where: { $0.id == selectedControllerId })
+    }
+
+    // GC takes precedence when both are present (see DeadzoneSlidersSection).
+    private var usesSDL: Bool {
+        guard let player = selectedPlayer else { return false }
+        return player.gcController == nil && player.isSDL
+    }
+
+    private var currentGCMapping: ControllerGamepadMapping {
+        guard let player = selectedPlayer,
               let vendorName = player.gcController?.vendorName else {
             return ControllerGamepadMapping.defaults(for: "Unknown", systemID: systemID)
         }
         return controllerService.mapping(for: vendorName, systemID: systemID)
+    }
+
+    private var currentSDLMapping: SDLControllerMapping {
+        guard let player = selectedPlayer else {
+            return SDLControllerMapping.defaults(for: systemID)
+        }
+        if let identity = player.identityKey {
+            return controllerService.sdlMapping(forIdentity: identity, systemID: systemID)
+        }
+        let vendor = SDLInputManager.shared.sdlVendorName(for: player.sdlInstanceID ?? 0)
+        return controllerService.sdlMapping(for: vendor, systemID: systemID)
+    }
+
+    private var deadzones: (left: Float, right: Float) {
+        if usesSDL {
+            return (currentSDLMapping.leftStickDeadzone, currentSDLMapping.rightStickDeadzone)
+        }
+        return (currentGCMapping.leftStickDeadzone, currentGCMapping.rightStickDeadzone)
     }
 
     var body: some View {
@@ -857,24 +925,56 @@ struct StickVisualizerView: View {
                 .fontWeight(.semibold)
                 .foregroundColor(AppColors.textSecondary(colorScheme))
             HStack(spacing: 12) {
-                CompactStickView(x: lX, y: lY, label: "L", deadZone: Double(currentMapping.leftStickDeadzone))
-                CompactStickView(x: rX, y: rY, label: "R", deadZone: Double(currentMapping.rightStickDeadzone))
+                CompactStickView(x: lX, y: lY, label: "L", deadZone: Double(deadzones.left))
+                CompactStickView(x: rX, y: rY, label: "R", deadZone: Double(deadzones.right))
             }
         }
         .onAppear { monitorSelectedController() }
         .onChange(of: selectedControllerId) { monitorSelectedController() }
+        .onDisappear { detachAll() }
+    }
+
+    /// Detach all previously-attached input sources. The GC thumbstick
+    /// `valueChangedHandler` is persistent on the controller, so it must be
+    /// explicitly nilled out — otherwise the previous GC controller keeps
+    /// firing into this view's @State even after the user selects an SDL
+    /// controller. The SDL observer is single-slot and cleared symmetrically.
+    private func detachAll() {
+        if let gc = attachedGCController, let gamepad = gc.extendedGamepad {
+            gamepad.leftThumbstick.valueChangedHandler = nil
+            gamepad.rightThumbstick.valueChangedHandler = nil
+        }
+        attachedGCController = nil
+        SDLInputManager.shared.stopAxisObservation()
     }
 
     private func monitorSelectedController() {
-        guard let gc = controllerService.connectedControllers.first(where: { $0.id == selectedControllerId })?.gcController,
-              let gamepad = gc.extendedGamepad else { return }
+        // Drop any previously-attached handlers before binding new ones,
+        // so exactly one input source drives the dots at a time.
+        detachAll()
 
-        gamepad.leftThumbstick.valueChangedHandler = { _, x, y in
-            DispatchQueue.main.async { lX = Double(x); lY = Double(y) }
+        guard let player = selectedPlayer else { return }
+        if let gc = player.gcController, let gamepad = gc.extendedGamepad {
+            gamepad.leftThumbstick.valueChangedHandler = { _, x, y in
+                DispatchQueue.main.async { lX = Double(x); lY = Double(y) }
+            }
+            gamepad.rightThumbstick.valueChangedHandler = { _, x, y in
+                DispatchQueue.main.async { rX = Double(x); rY = Double(y) }
+            }
+            attachedGCController = gc
+        } else if player.isSDL {
+            let instanceID = player.sdlInstanceID ?? 0
+            SDLInputManager.shared.startAxisObservation(instanceID: instanceID) { lx, ly, rx, ry in
+                DispatchQueue.main.async {
+                    lX = Double(lx); lY = Double(ly); rX = Double(rx); rY = Double(ry)
+                }
+            }
         }
-        gamepad.rightThumbstick.valueChangedHandler = { _, x, y in
-            DispatchQueue.main.async { rX = Double(x); rY = Double(y) }
-        }
+
+        // Reset dot positions so stale state from the previous selection
+        // doesn't linger on-screen if the newly-selected controller hasn't
+        // reported an axis event yet.
+        lX = 0; lY = 0; rX = 0; rY = 0
     }
 }
 
@@ -986,7 +1086,7 @@ struct ButtonMappingList: View {
                 // Stick visualizer + deadzone sliders. Only relevant for
                 // gamepads — keyboard player would never end up in this view
                 // (the parent switch routes keyboard to keyboardMappingContent).
-                if !player.isSDL {
+                if !player.isKeyboard {
                     Divider()
                         .padding(.horizontal, 12)
 

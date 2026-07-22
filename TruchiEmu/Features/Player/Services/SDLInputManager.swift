@@ -31,10 +31,23 @@ class SDLInputManager: ObservableObject {
     private nonisolated(unsafe) var captureCallback: ((Int, String) -> Void)?
     private nonisolated(unsafe) var captureInstanceID: Int32?
 
+    // Live axis observer for the settings stick visualizer. Single-slot:
+    // only the currently-selected controller's axes are observed, mirroring
+    // the single-selection model of the controller settings UI.
+    private nonisolated(unsafe) var axisObserverCallback: ((Int32, Float, Float, Float, Float) -> Void)?
+    private nonisolated(unsafe) var axisObserverInstanceID: Int32?
+    private nonisolated(unsafe) var observedAxes: [Int32: (lX: Float, lY: Float, rX: Float, rY: Float)] = [:]
+
     // SDL share button index cached at runner registration. The same
     // physical button dispatches single-press vs long-press ShareBehaviors
     // via the long-press detector (BaseRunner.handleSharePress).
     nonisolated(unsafe) var cachedShareButtonIndex: Int? = nil
+
+    // Active runner's systemID cached at runner registration, used to
+    // resolve per-system SDL deadzone mappings on the SDL thread. Mirrors
+    // the cachedShareButtonIndex precedent. Falls back to "default" when
+    // no runner is registered (e.g. while in the settings UI).
+    private nonisolated(unsafe) var cachedActiveSystemID: String? = nil
 
     // Pollable snapshot of currently-pressed buttons, keyed by the app's
     // GamepadNavButton vocabulary, so GamepadNavigationManager can drive UI
@@ -164,12 +177,14 @@ class SDLInputManager: ObservableObject {
         let sysID = runner.rom?.systemID
         let binding = HotkeyConfigManager.shared.controllerBinding(for: .shareButton, systemID: sysID, source: .sdl)
         cachedShareButtonIndex = Int(binding.identifier)
+        cachedActiveSystemID = sysID
     }
 
     func unregisterRunner() {
         runnerLock.lock()
         _activeRunner = nil
         runnerLock.unlock()
+        cachedActiveSystemID = nil
     }
 
     // MARK: - SDL Loop
@@ -297,6 +312,19 @@ class SDLInputManager: ObservableObject {
             sdlDataLock.unlock()
         }
 
+        // If the disconnected controller was the active axis-observation
+        // target, drop the observer so its closure doesn't dangle into a
+        // destroyed SwiftUI view. The visualizer is rebuilt by
+        // ControllerService.refreshConnectedControllers once the
+        // disconnection notification fires.
+        sdlDataLock.lock()
+        observedAxes.removeValue(forKey: instanceID)
+        if axisObserverInstanceID == instanceID {
+            axisObserverInstanceID = nil
+            axisObserverCallback = nil
+        }
+        sdlDataLock.unlock()
+
         DispatchQueue.main.async {
             NotificationCenter.default.post(name: .sdlControllerDisconnected, object: nil)
         }
@@ -358,6 +386,7 @@ class SDLInputManager: ObservableObject {
     }
 
     private nonisolated func handleAxisEvent(_ event: SDL_ControllerAxisEvent) {
+        notifyAxisObserverIfMatched(instanceID: event.which, axis: Int(event.axis), rawValue: event.value)
         if abs(Int32(event.value)) > Self.triggerThreshold {
             sdlDataLock.lock()
             let capID = captureInstanceID
@@ -414,7 +443,7 @@ class SDLInputManager: ObservableObject {
         }
 
         guard let (index, id) = Self.axisMap[axis] else { return }
-        dispatchAnalog(index: index, id: id, value: event.value, player: port)
+        dispatchAnalog(index: index, id: id, value: event.value, player: port, instanceID: event.which)
     }
 
     // MARK: - Raw Joystick Events (Fallback)
@@ -461,6 +490,7 @@ class SDLInputManager: ObservableObject {
     }
 
     private nonisolated func handleJoyAxisEvent(_ event: SDL_JoyAxisEvent) {
+        notifyAxisObserverIfMatched(instanceID: event.which, axis: Int(event.axis), rawValue: event.value)
         if abs(Int32(event.value)) > Self.triggerThreshold {
             sdlDataLock.lock()
             let capID = captureInstanceID
@@ -515,7 +545,7 @@ class SDLInputManager: ObservableObject {
         }
 
         guard let (index, id) = Self.joystickAxisMap[axis] else { return }
-        dispatchAnalog(index: index, id: id, value: event.value, player: port)
+        dispatchAnalog(index: index, id: id, value: event.value, player: port, instanceID: event.which)
     }
 
     private nonisolated func handleJoyHatEvent(_ event: SDL_JoyHatEvent) {
@@ -569,13 +599,31 @@ class SDLInputManager: ObservableObject {
         }
     }
 
-    private nonisolated func dispatchAnalog(index: Int, id: Int, value: Int16, player: Int) {
-        let value = Int32(value)
+    private nonisolated func dispatchAnalog(index: Int, id: Int, value: Int16, player: Int, instanceID: Int32) {
+        let raw = Float(value) / 32768.0
+        let sysID = cachedActiveSystemID ?? "default"
         Task { @MainActor in
             // Ignore controller input while the gamepad toolbar overlay is open
             // so presses aren't double-handled by the game.
             if GamepadNavigationManager.shared.isGamepadToolbarActive { return }
-            XPCBridgeAdapter.shared.setAnalogState(index, id: id, value: value, player: player)
+
+            // Resolve the per-controller deadzone. Identity-keyed mappings
+            // take precedence over vendor-name legacy mappings, mirroring
+            // the GCController path in BaseRunner.updateGamepadButton. We are
+            // already on MainActor inside this Task, so the ControllerService
+            // @MainActor APIs are accessible directly.
+            let deadzone: Float
+            if let identity = ControllerService.shared.identityKey(forSDL: instanceID) {
+                let m = ControllerService.shared.sdlMapping(forIdentity: identity, systemID: sysID)
+                deadzone = index == 0 ? m.leftStickDeadzone : m.rightStickDeadzone
+            } else {
+                let vendor = SDLInputManager.shared.sdlVendorName(for: instanceID)
+                let m = ControllerService.shared.sdlMapping(for: vendor, systemID: sysID)
+                deadzone = index == 0 ? m.leftStickDeadzone : m.rightStickDeadzone
+            }
+            let scaled = AnalogDeadZone(radial: deadzone, anti: 0.0).apply(raw)
+            let retroValue = Int32(scaled * 32767.0)
+            XPCBridgeAdapter.shared.setAnalogState(index, id: id, value: retroValue, player: player)
         }
     }
 
@@ -674,5 +722,55 @@ class SDLInputManager: ObservableObject {
         captureInstanceID = nil
         captureCallback = nil
         sdlDataLock.unlock()
+    }
+
+    // MARK: - Live Axis Observation (settings stick visualizer)
+
+    /// Register a single observer for live analog stick values of the given
+    /// SDL instance ID. The callback receives normalized `[-1, 1]` floats
+    /// `(leftX, leftY, rightX, rightY)` and is invoked on the SDL thread, so
+    /// callers must hop to main themselves if they touch UI state.
+    /// Replaces any previously-registered observer (single-slot design — only
+    /// one controller is selected in the settings UI at a time).
+    func startAxisObservation(instanceID: Int32, callback: @escaping (Float, Float, Float, Float) -> Void) {
+        sdlDataLock.lock()
+        axisObserverInstanceID = instanceID
+        axisObserverCallback = { _, lX, lY, rX, rY in callback(lX, lY, rX, rY) }
+        observedAxes[instanceID] = (0, 0, 0, 0)
+        sdlDataLock.unlock()
+    }
+
+    func stopAxisObservation() {
+        sdlDataLock.lock()
+        let id = axisObserverInstanceID
+        axisObserverInstanceID = nil
+        axisObserverCallback = nil
+        if let id { observedAxes.removeValue(forKey: id) }
+        sdlDataLock.unlock()
+    }
+
+    /// Invoked from both SDL axes paths (recognized game controllers and raw
+    /// joysticks) before any capture/dispatch gating, so the visualizer sees
+    /// raw axis data even when the gamepad toolbar overlay is open. Maps
+    /// SDL axis → (leftX=0, leftY=1, rightX=2, rightY=3); other axes are
+    /// ignored. The Y axes are negated to match the GCController convention
+    /// (Y-positive-up) that the stick visualizer consumes; the gameplay
+    /// dispatch path is unaffected since libretro interprets the Y sign itself.
+    private nonisolated func notifyAxisObserverIfMatched(instanceID: Int32, axis: Int, rawValue: Int16) {
+        sdlDataLock.lock()
+        let obsID = axisObserverInstanceID
+        let cb = axisObserverCallback
+        sdlDataLock.unlock()
+        guard instanceID == obsID, let cb, axis >= 0, axis <= 3 else { return }
+        let normalized = Float(rawValue) / 32768.0
+        var state = observedAxes[instanceID] ?? (0, 0, 0, 0)
+        switch axis {
+        case 0: state.lX = normalized
+        case 1: state.lY = -normalized
+        case 2: state.rX = normalized
+        default: state.rY = -normalized
+        }
+        observedAxes[instanceID] = state
+        cb(instanceID, state.lX, state.lY, state.rX, state.rY)
     }
 }
