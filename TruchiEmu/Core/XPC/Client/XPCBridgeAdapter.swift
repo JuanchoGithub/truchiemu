@@ -429,11 +429,15 @@ final class XPCBridgeAdapter {
         if let callback {
             capturedStateCallback = callback
             ensureXPCConnection()
-            // Poll the XPC service at ~20Hz for newly captured states. This is
-            // less frequent than the per-frame capture interval (typically 3
-            // frames), so the XPC traffic stays bounded. The XPC service
-            // overwrites its latest slot each frame; we coalesce here.
-            let timer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { [weak self] _ in
+            // Poll the XPC service at ~40Hz for newly captured states. The
+            // run loop produces ~20 captures/sec (every 3 frames at 60fps);
+            // polling faster than the production rate gives jitter margin so
+            // the service's pending-queue cap (CoreHostService.maxPendingStates)
+            // doesn't drop snapshots when the UI is briefly busy. Each poll
+            // drains every queued state via drainCapturedState — both the
+            // trigger timer here and the self-reentrancy keep the queue
+            // empty in steady state.
+            let timer = Timer.scheduledTimer(withTimeInterval: 0.025, repeats: true) { [weak self] _ in
                 self?.pollCapturedState()
             }
             RunLoop.main.add(timer, forMode: .common)
@@ -447,15 +451,75 @@ final class XPCBridgeAdapter {
     private var capturedStatePollTimer: Timer?
     private var capturedStateCallback: ((Data, UInt64) -> Void)?
     private var capturedStateLastFrame: UInt64 = 0
+    // Prevents interleaved drain strands. The default NSXPCConnection
+    // dispatch queue is concurrent, so two 25 ms timer ticks could fire
+    // two drainCapturedState rounds that issue concurrent
+    // consumeCapturedState XPC calls — whose replies may then interleave
+    // (out-of-order) and cause a captured state to be skipped between
+    // them. Serialize drains: a second tick is a no-op if one is in
+    // flight. Mutated only on the main RunLoop (timer) and on the XPC
+    // reply queue (closure), so access is guarded by this lock.
+    private let drainInFlightLock = NSLock()
+    private var drainInFlight = false
 
+    /// Kick a drain round. The 25 ms poll timer fires this; each round pulls
+    /// every currently-queued state out of the XPC service via re-entrant
+    /// consumeCapturedState calls, so we don't maintain the old 1-per-tick
+    /// limiter (which dropped captures whenever the service's queue
+    /// momentarily held more than the timer could consume). Only one drain
+    /// strand may run at a time to keep reply ordering deterministic.
     private func pollCapturedState() {
-        guard let callback = capturedStateCallback else { return }
-        XPCConnectionManager.shared.remoteProxy?.consumeCapturedState { [weak self] state, frameIndex in
-            guard let self else { return }
-            guard let state, frameIndex > self.capturedStateLastFrame else { return }
-            self.capturedStateLastFrame = frameIndex
-            callback(state, frameIndex)
+        drainInFlightLock.lock()
+        if drainInFlight {
+            drainInFlightLock.unlock()
+            return
         }
+        drainInFlight = true
+        drainInFlightLock.unlock()
+        drainCapturedState()
+    }
+
+    private func drainCapturedState() {
+        guard capturedStateCallback != nil else {
+            endDrain()
+            return
+        }
+        guard let proxy = XPCConnectionManager.shared.remoteProxy else {
+            endDrain()
+            return
+        }
+        proxy.consumeCapturedState { [weak self] state, frameIndex in
+            guard let self else { return }
+            if let state {
+                // The watermark filter keeps us from re-pushing the same
+                // state if captures cycle around the buffer. setFrameCount
+                // rewinds this watermark in lock-step with the engine clock
+                // (see setFrameCount), so a legit post-rewind capture with
+                // frameIndex > watermark always passes. A rejection here is
+                // a real anomaly worth logging — not the expected post-rewind
+                // behavior (that prior silent rejection was the root cause of
+                // the "double rewind loses the 30..45 region" bug).
+                if frameIndex > self.capturedStateLastFrame {
+                    self.capturedStateLastFrame = frameIndex
+                    self.capturedStateCallback?(state, frameIndex)
+                } else {
+                    LoggerService.debug(category: "TimeMachine", "pollCapturedState: rejected stale capture frameIndex=\(frameIndex) lastFrame=\(self.capturedStateLastFrame)")
+                }
+                // Keep draining — there may be more queued states. Re-entry
+                // happens on the XPC reply queue, not on the call stack, so
+                // no risk of unbounded recursion; the chain terminates when
+                // the service returns nil (empty queue).
+                self.drainCapturedState()
+            } else {
+                self.endDrain()
+            }
+        }
+    }
+
+    private func endDrain() {
+        drainInFlightLock.lock()
+        drainInFlight = false
+        drainInFlightLock.unlock()
     }
 
     func flushAudio() {
@@ -482,6 +546,19 @@ final class XPCBridgeAdapter {
             return
         }
         ensureXPCConnection()
+        // setFrameCount rewinds the engine's _frameCount backward (e.g. on
+        // exit from Time Machine scrub at an earlier frame). The drain-
+        // CapturedState watermark filter drops captures with frameIndex <=
+        // lastFrame, so the watermark must be lowered in lock-step with the
+        // engine clock — otherwise every post-rewind capture gets silently
+        // filtered. This was the root cause of "double rewind loses the
+        // 30..45 region": resume play pushed captures at frame 902, 905, …
+        // but capturedStateLastFrame stayed at the pre-rewind ~1799.
+        //
+        // setFrameCount runs on @MainActor (exitTimeMachineMode) and
+        // drainCapturedState runs on the main RunLoop — both serialized on
+        // the main thread, so no synchronization needed.
+        capturedStateLastFrame = frameCount
         XPCConnectionManager.shared.remoteProxy?.setFrameCount(frameCount) {}
     }
 

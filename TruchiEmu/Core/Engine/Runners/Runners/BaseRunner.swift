@@ -901,7 +901,6 @@ case "scummvm": runner = ScummVMRunner()
         isRewindingStorage = false
         speedMultiplier = 1.0
         XPCBridgeAdapter.shared.setSpeedMultiplier(1.0)
-        XPCBridgeAdapter.shared.setPaused(false)
         // Drop entries past the playhead so the timeline's total duration
         // reflects only the remaining history after rewinding. Without this
         // the overlay keeps reporting the pre-rewind total (e.g., 20s even
@@ -909,11 +908,18 @@ case "scummvm": runner = ScummVMRunner()
         timeMachineBuffer.truncate(after: exitScrubFrame)
         // Reset the engine's internal capture-indexing clock so the next
         // captures are indexed at exitScrubFrame+1, +2, … instead of the
-        // pre-rewind frame number. Without this the engine still thinks
-        // we're at the original "now", captures new entries with high
-        // frameIndex values, and overlays see the total climb back to 20s
-        // even though the actual game state is mid-history.
+        // pre-rewind frame number. This also lowers the XPC poller's
+        // watermark (see XPCBridgeAdapter.setFrameCount) so post-rewind
+        // captures aren't rejected as stale.
+        //
+        // Sent BEFORE setPaused(false): both go FIFO over the same
+        // NSXPCConnection, so the engine clock is guaranteed to be rolled
+        // back before the run loop wakes and bumps _frameCount++. Reversing
+        // the order would let a few frames run at the stale (high) frame
+        // number before the rewind arrived, leaking out-of-range captures
+        // into the queue that drainCapturedState would then reject.
         XPCBridgeAdapter.shared.setFrameCount(exitScrubFrame)
+        XPCBridgeAdapter.shared.setPaused(false)
         let postTruncateOldest = timeMachineBuffer.oldestFrameIndex ?? 0
         let postTruncateNewest = timeMachineBuffer.newestFrameIndex ?? 0
         let postTruncateCount = timeMachineBuffer.entryCount
