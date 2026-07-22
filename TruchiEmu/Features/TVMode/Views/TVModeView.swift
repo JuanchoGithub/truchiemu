@@ -69,12 +69,12 @@ struct TVModeView: View {
 
     var body: some View {
         ZStack {
-            background
             contentLayer
             topBar
             bottomHint
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(background.ignoresSafeArea())
         .onAppear {
             navContext.handler = { [self] action in handle(action: action) }
             GamepadNavContextStack.shared.push(navContext)
@@ -105,13 +105,20 @@ struct TVModeView: View {
                 rom: backdropROM,
                 scrimColor: Color.black.opacity(0.45)
             )
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .drawingGroup()
+            .allowsHitTesting(false)
         } else if viewModel.theme == .bold {
             TVModeAnimatedAccentBackground()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .allowsHitTesting(false)
         } else {
             ZStack {
                 Color(red: 0.07, green: 0.07, blue: 0.08)
-                RadialGradient(colors: [Color.white.opacity(0.04), .clear], center: .center, startRadius: 0, endRadius: 500).ignoresSafeArea()
+                RadialGradient(colors: [Color.white.opacity(0.04), .clear], center: .center, startRadius: 0, endRadius: 500)
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .allowsHitTesting(false)
         }
     }
 
