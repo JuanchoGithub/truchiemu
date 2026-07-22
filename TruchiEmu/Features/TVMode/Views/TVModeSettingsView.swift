@@ -24,11 +24,16 @@ struct TVModeSettingsView: View {
                 .overlay(focusRing(active: nav.focusID == .close))
             }
 
-            Toggle(loc.localized("tvMode.settings.launchInTVMode"), isOn: Binding(
-                get: { TVModeSettings.launchInTVMode },
-                set: { TVModeSettings.setLaunchInTVMode($0) }
-            ))
-            .toggleStyle(.checkbox)
+            HStack {
+                Text(loc.localized("tvMode.settings.launchInTVMode"))
+                Spacer()
+                Toggle("", isOn: Binding(
+                    get: { TVModeSettings.launchInTVMode },
+                    set: { TVModeSettings.setLaunchInTVMode($0) }
+                ))
+                .toggleStyle(.switch)
+                .labelsHidden()
+            }
             .overlay(focusRing(active: nav.focusID == .launchInTVMode))
 
             Divider()
@@ -38,23 +43,33 @@ struct TVModeSettingsView: View {
                     .font(.system(size: 14, weight: .semibold))
                 ForEach(TVModeSettings.SmartEntry.allCases) { entry in
                     let _ = settingsGeneration  // drives re-eval on change
-                    Toggle(loc.localized(entry.locKey), isOn: Binding(
-                        get: { TVModeSettings.shownSmartEntries.contains(entry) },
-                        set: { isOn in
-                            var current = Set(TVModeSettings.shownSmartEntries)
-                            if isOn { current.insert(entry) } else { current.remove(entry) }
-                            TVModeSettings.setShownSmartEntries(Array(current).sorted { $0.rawValue < $1.rawValue })
-                        }
-                    ))
-                    .toggleStyle(.checkbox)
+                    HStack {
+                        Text(loc.localized(entry.locKey))
+                        Spacer()
+                        Toggle("", isOn: Binding(
+                            get: { TVModeSettings.shownSmartEntries.contains(entry) },
+                            set: { isOn in
+                                var current = Set(TVModeSettings.shownSmartEntries)
+                                if isOn { current.insert(entry) } else { current.remove(entry) }
+                                TVModeSettings.setShownSmartEntries(Array(current).sorted { $0.rawValue < $1.rawValue })
+                            }
+                        ))
+                        .toggleStyle(.switch)
+                        .labelsHidden()
+                    }
                     .overlay(focusRing(active: nav.focusID == .smartEntry(entry)))
                 }
                 let _ = settingsGeneration
-                Toggle(loc.localized("tvMode.settings.systems"), isOn: Binding(
-                    get: { TVModeSettings.showSystems },
-                    set: { TVModeSettings.setShowSystems($0) }
-                ))
-                .toggleStyle(.checkbox)
+                HStack {
+                    Text(loc.localized("tvMode.settings.systems"))
+                    Spacer()
+                    Toggle("", isOn: Binding(
+                        get: { TVModeSettings.showSystems },
+                        set: { TVModeSettings.setShowSystems($0) }
+                    ))
+                    .toggleStyle(.switch)
+                    .labelsHidden()
+                }
                 .overlay(focusRing(active: nav.focusID == .showSystems))
             }
             Spacer()

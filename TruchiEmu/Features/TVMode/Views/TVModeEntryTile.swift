@@ -11,6 +11,7 @@ struct TVModeEntryTile: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
     @State private var systemImage: NSImage?
+    @State private var controllerImage: NSImage?
 
     private let size: CGFloat = 144
 
@@ -50,7 +51,13 @@ struct TVModeEntryTile: View {
 
     @ViewBuilder
     private var iconView: some View {
-        if let system = entry.system, let img = systemImage {
+        if let system = entry.system, usesControllerIcons, let img = controllerImage {
+            Image(nsImage: img)
+                .resizable()
+                .interpolation(.high)
+                .aspectRatio(contentMode: .fit)
+                .padding(30)
+        } else if let system = entry.system, let img = systemImage {
             Image(nsImage: img)
                 .resizable()
                 .interpolation(.high)
@@ -69,6 +76,10 @@ struct TVModeEntryTile: View {
                 .padding(30)
                 .foregroundStyle(iconColor)
         }
+    }
+
+    private var usesControllerIcons: Bool {
+        (AppSettings.getString("tvMode_systemIconStyle", defaultValue: "default") ?? "default") == "controller"
     }
 
     private var containerFill: Color {
@@ -115,12 +126,16 @@ struct TVModeEntryTile: View {
     }
 
     private func loadSystemImage() {
-        guard let system = entry.system else { systemImage = nil; return }
+        guard let system = entry.system else { systemImage = nil; controllerImage = nil; return }
         systemImage = system.emuImage(size: 132)
         // Fall back to a slightly larger render if no 132-sized asset is cached.
         if systemImage == nil {
             systemImage = system.emuImage(size: 600)
             if systemImage == nil { systemImage = system.emuImage(size: 120) }
         }
+        controllerImage = Bundle.main.url(
+            forResource: system.id,
+            withExtension: "ico"
+        ).flatMap { NSImage(contentsOf: $0) }
     }
 }

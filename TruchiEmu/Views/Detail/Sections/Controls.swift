@@ -74,8 +74,7 @@ Text(loc.localized("controls.edit"))
     func controllerIconForSystem(_ sys: SystemInfo) -> NSImage? {
         Bundle.main.url(
             forResource: sys.id,
-            withExtension: "ico",
-            subdirectory: "ControllerIcons"
+            withExtension: "ico"
         ).flatMap { NSImage(contentsOf: $0) }
     }
 
