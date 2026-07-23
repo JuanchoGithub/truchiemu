@@ -62,8 +62,33 @@ final class TVModeViewModel: ObservableObject {
         self.initialEntryID = initialEntryID
         self.theme = TVModeSettings.theme
         rebuildEntries()
+        // Pick the same row-1 entry the main window was on, then load its
+        // games and seed the selected game off the persisted ROM id.
+        // `initialEntryID` (from current main window) takes priority over the
+        // cross-session saved value, so opening TV-mode immediately syncs
+        // the filter from the main window position.
+        if let initialEntryID,
+           let idx = row1Entries.firstIndex(where: { $0.id == initialEntryID }) {
+            selectedEntryIndex = idx
+        } else if let raw = AppSettings.getString("tvMode_lastFilter"),
+                  let idx = row1Entries.firstIndex(where: { $0.id == raw }) {
+            selectedEntryIndex = idx
+        }
         recomputeGames()
+        // Restore the same game the main window was on. We check both the
+        // cross-session setting and the live main window reference, preferring
+        // main.
+        if let mainROM = AppSettings.getString("tvMode_entryROM"), let uuid = UUID(uuidString: mainROM),
+           let idx = games.firstIndex(where: { $0.id == uuid }) {
+            selectedGameIndex = idx
+        } else if let saved = AppSettings.getString("tvMode_lastROM"), let uuid = UUID(uuidString: saved),
+                  let idx = games.firstIndex(where: { $0.id == uuid }) {
+            selectedGameIndex = idx
+        }
         observeChanges()
+        // Snapshot the initial selection so an immediate exit (without any
+        // user nav) still has a valid filter+ROM pair to restore.
+        syncStateForMainWindow()
     }
 
     func reloadSettings() {
@@ -84,6 +109,21 @@ final class TVModeViewModel: ObservableObject {
         return games[selectedGameIndex]
     }
 
+    /// Identifier of the currently selected row-1 entry (the system or smart
+    /// filter TV-mode is showing). Mirrors `LibraryFilter.id` so the value is
+    /// interchangeable with ContentView's `selectedFilter.id` — used to keep
+    /// the two surfaces in sync (see `syncStateForMainWindow()`).
+    var selectedFilterID: String? {
+        selectedEntry?.filter.id
+    }
+
+    /// UUID string of the currently selected game. May differ from the
+    /// equivalent position in the main view because filters and sort orders
+    /// can change between modes — readers look up the ROM directly.
+    var selectedRomID: String? {
+        selectedGame?.id.uuidString
+    }
+
     func selectEntryByOffset(_ delta: Int) {
         guard !row1Entries.isEmpty else { return }
         let count = row1Entries.count
@@ -94,6 +134,7 @@ final class TVModeViewModel: ObservableObject {
                 selectedEntryIndex = newIndex
                 recomputeGames()
                 selectedGameIndex = games.isEmpty ? 0 : min(selectedGameIndex, games.count - 1)
+                syncStateForMainWindow()
             }
         }
     }
@@ -106,6 +147,7 @@ final class TVModeViewModel: ObservableObject {
         if newIndex != selectedGameIndex {
             withAnimation(.easeOut(duration: 0.22)) {
                 selectedGameIndex = newIndex
+                syncStateForMainWindow()
             }
         }
     }
@@ -114,6 +156,7 @@ final class TVModeViewModel: ObservableObject {
         if games.isEmpty { return }
         page = .row2
         if !games.indices.contains(selectedGameIndex) { selectedGameIndex = 0 }
+        syncStateForMainWindow()
     }
 
     func enterDetail() {
@@ -137,6 +180,7 @@ final class TVModeViewModel: ObservableObject {
         let rom = games[newIndex]
         withAnimation(.easeOut(duration: 0.22)) {
             selectedGameIndex = newIndex
+            syncStateForMainWindow()
         }
         loadingDetailROM = rom
         downloadedDetailROM = rom
@@ -355,6 +399,56 @@ final class TVModeViewModel: ObservableObject {
         let work = DispatchWorkItem { [weak self] in self?.sortHudLabel = nil }
         sortHudWorkItem = work
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.6, execute: work)
+    }
+
+    /// Mirrors the current selection out to AppSettings so the main window
+    /// can resume from the same system/filter and game the user was on when
+    /// TV-mode exits (and conversely, know what is being entered with).
+    /// Cheap (a couple of dictionary writes) — called on every nav action.
+    func syncStateForMainWindow() {
+        AppSettings.setString("tvMode_lastFilter", value: selectedFilterID)
+        AppSettings.setString("tvMode_lastROM", value: selectedRomID)
+        // Also write the canonical main-window key so any code path that
+        // reads `lastSelectedFilter` (ContentView's `.onAppear`, future
+        // restore flows) sees the same value. Removes the asymmetry where
+        // the main-window value diverged from the TV-mode snapshot.
+        AppSettings.setString("lastSelectedFilter", value: selectedFilterID)
+    }
+
+    /// Restores `selectedGameIndex` from a previously persisted ROM UUID
+    /// (saved by an earlier session of TV-mode or by the main window's
+    /// auto-save on every change). Returns true if a match was found and
+    /// applied. Safe to call multiple times — last write wins.
+    @discardableResult
+    func restoreLastROM() -> Bool {
+        guard let raw = AppSettings.getString("tvMode_lastROM"),
+              let uuid = UUID(uuidString: raw) else { return false }
+        if let idx = games.firstIndex(where: { $0.id == uuid }) {
+            selectedGameIndex = idx
+            return true
+        }
+        return false
+    }
+
+    /// Restores `selectedEntryIndex` from a previously persisted filter id.
+    /// Called after `rebuildEntries()` so entries are populated first.
+    @discardableResult
+    func restoreLastFilter() -> Bool {
+        guard let raw = AppSettings.getString("tvMode_lastFilter") else { return false }
+        if let idx = row1Entries.firstIndex(where: { $0.id == raw }) {
+            selectedEntryIndex = idx
+            return true
+        }
+        return false
+    }
+
+    /// Convenience: restore both filter and ROM in the right order. Filter
+    /// must be restored before `recomputeGames()` runs so the games list
+    /// contains the ROM we're trying to match.
+    func restoreStateFromMainWindow() {
+        restoreLastFilter()
+        recomputeGames()
+        restoreLastROM()
     }
 
     func count(for filter: LibraryFilter) -> Int {

@@ -71,6 +71,18 @@ struct ContentView: View {
                             .environmentObject(loc)
                     }
                     .onReceive(NotificationCenter.default.publisher(for: .tvModeExited)) { _ in
+                        // Restore the same filter + game the user was on in
+                        // TV-mode so the handoff feels seamless. Filter first
+                        // (drives `games` list) then select the matching ROM.
+                        if let raw = AppSettings.getString("tvMode_lastFilter"),
+                           let restored = restoreFilter(from: raw) {
+                            selectedFilter = restored
+                        }
+                        if let raw = AppSettings.getString("tvMode_lastROM"),
+                           let uuid = UUID(uuidString: raw),
+                           let match = library.roms.first(where: { $0.id == uuid }) {
+                            selectedROM = match
+                        }
                         tvModeSettings.exitMode()
                     }
             } else {
@@ -285,7 +297,11 @@ case .library:
                      .navigationTitle(navigationTitle)
                      .onChange(of: selectedFilter) { _, newFilter in
                          AppSettings.setString("lastSelectedFilter", value: newFilter.id)
+                         AppSettings.setString("tvMode_lastFilter", value: newFilter.id)
                          gamepadNavCoordinator.syncSidebarIndex(to: newFilter)
+                     }
+                     .onChange(of: selectedROM) { _, newROM in
+                         AppSettings.setString("tvMode_entryROM", value: newROM?.id.uuidString)
                      }
                  }
                 .sheet(isPresented: $showCreateCategorySheet) {
@@ -475,8 +491,10 @@ LoggerService.info(category: "Shaders", "Updated shader for \(updatedROMIDs.coun
         if id == "all" { return .all }
         if id == "favorites" { return .favorites }
         if id == "recent" { return .recent }
+        if id == "last-added" { return .lastAdded }
         if id == "hidden" { return .hidden }
         if id == "mame-non-games" { return .mameNonGames }
+        if id == "retro-achievements" { return .retroAchievements }
         if id.hasPrefix("category-") {
             let catID = String(id.dropFirst("category-".count))
             return .category(catID)
