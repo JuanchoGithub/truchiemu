@@ -196,9 +196,9 @@ struct GameTimeBarOverlay: View {
         let resumeKey = hotkeys.config[.rewind]?.primary.displayString
             ?? hotkeys.config[.rewind]?.secondary.displayString
             ?? "—"
-        let leftName = runner.cachedKeyboardMapping.buttons[.left]
+        let leftName = (runner.cachedKeyboardMappings[1] ?? KeyboardMapping(buttons: [:])).buttons[.left]
             .map { HotkeyBinding.keyName(for: $0) }
-        let rightName = runner.cachedKeyboardMapping.buttons[.right]
+        let rightName = (runner.cachedKeyboardMappings[1] ?? KeyboardMapping(buttons: [:])).buttons[.right]
             .map { HotkeyBinding.keyName(for: $0) }
         let moveHint: String
         if let l = leftName, let r = rightName {

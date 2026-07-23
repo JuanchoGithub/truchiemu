@@ -30,6 +30,7 @@ class ControllerService: ObservableObject {
     private let kbMappingKey = "keyboard_mapping_v1"
     private let identityMappingKey = "controller_identities_v1"
     private let identitySDLMappingKey = "sdl_controller_identities_v1"
+    private let keyboardAssignedPlayersKey = "keyboard_assigned_players"
     private var savedMappings: [String: [String: ControllerGamepadMapping]] = [:]
     private var savedSDLMappings: [String: [String: SDLControllerMapping]] = [:]
     private var savedIdentityMappings: [String: [String: ControllerGamepadMapping]] = [:]
@@ -122,7 +123,7 @@ class ControllerService: ObservableObject {
 
         let keyboardPlayer = PlayerController(
             id: Self.keyboardId,
-            assignedPlayers: [1],
+            assignedPlayers: keyboardAssignedPlayers,
             mapping: ControllerGamepadMapping.defaults(for: "Keyboard", systemID: "default", handedness: handedness),
             sortOrder: 0,
             isKeyboard: true
@@ -272,14 +273,31 @@ class ControllerService: ObservableObject {
         }
     }
 
+    var keyboardAssignedPlayers: Set<Int> {
+        get {
+            if let raw = AppSettings.getData(keyboardAssignedPlayersKey),
+               let decoded = try? JSONDecoder().decode(Set<Int>.self, from: raw) {
+                return decoded
+            }
+            return [1]
+        }
+        set {
+            if let data = try? JSONEncoder().encode(newValue) {
+                AppSettings.setData(keyboardAssignedPlayersKey, value: data)
+            }
+        }
+    }
+
     private func hasControllerAssigned(to slot: Int) -> Bool {
         sessionSlotAssignments.values.contains { $0.contains(slot) }
             || sdlSlotAssignments.values.contains { $0.contains(slot) }
+            || keyboardAssignedPlayers.contains(slot)
     }
 
     private func ensureP1Exists() {
         let hasP1 = sessionSlotAssignments.values.contains { $0.contains(1) }
             || sdlSlotAssignments.values.contains { $0.contains(1) }
+            || keyboardAssignedPlayers.contains(1)
         guard !hasP1 else { return }
         for key in sessionSlotAssignments.keys {
             var slots = sessionSlotAssignments[key] ?? []
@@ -343,6 +361,23 @@ class ControllerService: ObservableObject {
         }
 
         sessionSlotAssignments[key] = slots
+        refreshConnectedControllers()
+    }
+
+    func toggleKeyboardSlot(_ slot: Int) {
+        guard slot >= 1 && slot <= 4 else { return }
+        var slots = keyboardAssignedPlayers
+        if slots.contains(slot) {
+            if slots.count == 1 && slot == 1 { return }
+            slots.remove(slot)
+            if slots.isEmpty { slots.insert(1) }
+        } else {
+            slots.insert(slot)
+        }
+        if !slots.contains(1) {
+            ensureP1Exists()
+        }
+        keyboardAssignedPlayers = slots
         refreshConnectedControllers()
     }
 

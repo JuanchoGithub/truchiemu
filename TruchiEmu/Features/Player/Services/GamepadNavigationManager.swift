@@ -306,12 +306,9 @@ final class GamepadNavigationManager: ObservableObject {
 
         var newlyPressed = Set<GamepadNavButton>()
 
-        if gamepads.isEmpty {
-            newlyPressed.formUnion(sdlButtons)
-        } else {
-            for gamepad in gamepads {
-                readDigitalButtons(gamepad, into: &newlyPressed)
-            }
+        newlyPressed.formUnion(sdlButtons)
+        for gamepad in gamepads {
+            readDigitalButtons(gamepad, into: &newlyPressed)
         }
         if topContext is GamepadGameToolbarContext && suppressLeftStickInToolbar {
             var nonLeftStick = Set<GamepadNavButton>()

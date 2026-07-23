@@ -330,8 +330,8 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     // Expose saveManager for UI access
     var saveManager: SaveStateManager { _saveManager }
     private let _saveManager = SaveStateManager()
-    // Keyboard mapping snapshot captured at launch — safe to read from any thread.
-    var cachedKeyboardMapping: KeyboardMapping = KeyboardMapping(buttons: [:])
+    // Keyboard mapping snapshots per player, captured at launch — safe to read from any thread.
+    var cachedKeyboardMappings: [Int: KeyboardMapping] = [1: KeyboardMapping(buttons: [:])]
     // Controller share button binding identifier captured at launch.
     // Single physical button; tapped briefly → ShareBehavior.singlePress,
     // held longer → ShareBehavior.longPress. Dispatched via
@@ -429,11 +429,18 @@ case "scummvm": runner = ScummVMRunner()
             self.romPath = rom.path.path
         }
         let sysID = rom.systemID ?? "default"
-        var mapping = ControllerService.shared.keyboardMapping(for: sysID)
-        if mapping.buttons.isEmpty {
-            mapping = KeyboardMapping.defaults(for: sysID)
+        let cs = ControllerService.shared
+        let kbPlayer = cs.connectedControllers.first(where: { $0.isKeyboard })
+        let assignedPlayers = kbPlayer?.assignedPlayers ?? [1]
+        var mappings: [Int: KeyboardMapping] = [:]
+        for player in assignedPlayers {
+            var mapping = cs.keyboardMapping(for: sysID, player: player)
+            if mapping.buttons.isEmpty {
+                mapping = KeyboardMapping.defaults(for: sysID)
+            }
+            mappings[player] = mapping
         }
-        self.cachedKeyboardMapping = mapping
+        self.cachedKeyboardMappings = mappings
         
         setupGamepadInput()
         SDLInputManager.shared.registerRunner(self)
@@ -1874,11 +1881,11 @@ weak var metalCoordinator: MetalCoordinator?
     }
 
     func mapKey(_ keyCode: UInt16) -> (retroID: Int, player: Int)? {
-        for (button, code) in cachedKeyboardMapping.buttons {
-            if code == keyCode {
+        for (player, mapping) in cachedKeyboardMappings {
+            for (button, code) in mapping.buttons where code == keyCode {
                 let rid = Int(button.retroID(for: self.systemID, coreID: self.activeCoreID))
                 guard rid >= 0 else { return nil }
-                return (retroID: rid, player: button.playerIndex)
+                return (retroID: rid, player: player - 1)
             }
         }
         return nil

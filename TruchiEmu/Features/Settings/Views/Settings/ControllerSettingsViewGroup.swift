@@ -93,7 +93,6 @@ struct ControllerSettingsView: View {
     @State private var configName: String = ""
     @State private var savedConfigs: [String: ControllerGamepadMapping] = [:]
     @State private var showDeleteConfirmation = false
-    @State private var selectedKeyboardPlayer: Int = 1
     @State private var kbListeningFor: RetroButton? = nil
     @State private var showParentModeHelp = false
     @ObservedObject private var hotkeyManager = HotkeyConfigManager.shared
@@ -531,17 +530,9 @@ struct ControllerSettingsView: View {
 
                 Spacer()
 
-                Picker("", selection: $selectedKeyboardPlayer) {
-                    ForEach(1...4, id: \.self) { i in
-                        Text(String(format: loc.localized("controllers.playerShort"), i)).tag(i)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .frame(width: 180)
-
                 Button(loc.localized("controllers.resetToDefaults")) {
                     let defaults = KeyboardMapping.defaults(for: selectedSystemID, handedness: controllerService.handedness)
-                    controllerService.updateKeyboardMapping(defaults, for: selectedSystemID, player: selectedKeyboardPlayer)
+                    controllerService.updateKeyboardMapping(defaults, for: selectedSystemID, player: 1)
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.small)
@@ -552,7 +543,7 @@ struct ControllerSettingsView: View {
 
             ScrollView {
                 let buttons = RetroButton.availableButtons(for: selectedSystemID)
-                let currentMapping = controllerService.keyboardMapping(for: selectedSystemID, player: selectedKeyboardPlayer)
+                let currentMapping = controllerService.keyboardMapping(for: selectedSystemID, player: 1)
                 let conflictMap = keyboardConflicts
 
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
@@ -571,7 +562,7 @@ struct ControllerSettingsView: View {
                             ) { code in
                                 var m = currentMapping
                                 m.buttons[btn] = code
-                                controllerService.updateKeyboardMapping(m, for: selectedSystemID, player: selectedKeyboardPlayer)
+                                controllerService.updateKeyboardMapping(m, for: selectedSystemID, player: 1)
                                 kbListeningFor = nil
                             } onStartListening: {
                                 kbListeningFor = btn
@@ -608,17 +599,7 @@ struct ControllerSettingsView: View {
 
     private func toggleKeyboardSlot(player: PlayerController, slot: Int) {
         guard player.isKeyboard else { return }
-        var slots = player.assignedPlayers
-        if slots.contains(slot) {
-            if slots.count == 1 && slot == 1 { return }
-            slots.remove(slot)
-            if slots.isEmpty { slots.insert(1) }
-        } else {
-            slots.insert(slot)
-        }
-        if let idx = controllerService.connectedControllers.firstIndex(where: { $0.id == player.id }) {
-            controllerService.connectedControllers[idx].assignedPlayers = slots
-        }
+        controllerService.toggleKeyboardSlot(slot)
     }
 
     private func saveCurrentConfig() {
