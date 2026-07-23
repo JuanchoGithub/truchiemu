@@ -39,7 +39,7 @@ class ControllerService: ObservableObject {
     var sdlSlotAssignments: [Int32: Set<Int>] = [:]
 
     var replaceKeyboardWithController: Bool {
-        get { AppSettings.getBool("replaceKeyboardWithController", defaultValue: false) }
+        get { AppSettings.getBool("replaceKeyboardWithController", defaultValue: true) }
         set { AppSettings.setBool("replaceKeyboardWithController", value: newValue) }
     }
 
@@ -148,6 +148,27 @@ class ControllerService: ObservableObject {
             nameCounts[baseName, default: 0] += 1
         }
 
+        // If any existing controller is covering P1 (has P1 + a higher slot
+        // due to ensureP1Exists after a disconnection), temporarily free P1
+        // so a newly connecting controller can take it — otherwise the new
+        // controller goes to P3/P4 and the covering controller stays sprawled.
+        for key in sessionSlotAssignments.keys {
+            var slots = sessionSlotAssignments[key]!
+            if slots.contains(1) && slots.contains(where: { $0 > 1 }) {
+                slots.remove(1)
+                sessionSlotAssignments[key] = slots
+                break
+            }
+        }
+        for key in sdlSlotAssignments.keys {
+            var slots = sdlSlotAssignments[key]!
+            if slots.contains(1) && slots.contains(where: { $0 > 1 }) {
+                slots.remove(1)
+                sdlSlotAssignments[key] = slots
+                break
+            }
+        }
+
         let unassigned = allGCs.filter { sessionSlotAssignments[ObjectIdentifier($0)] == nil }
         for gc in unassigned {
             let taken = allControllerSlots()
@@ -157,7 +178,9 @@ class ControllerService: ObservableObject {
                 continue
             }
             var available = Set(1...4).subtracting(taken)
-            if !replaceKeyboardWithController {
+            if let gap = firstGapSlot(), available.contains(gap) {
+                available = [gap]
+            } else if !replaceKeyboardWithController {
                 let withoutKB = available.subtracting(keyboardAssignedPlayers)
                 if !withoutKB.isEmpty { available = withoutKB }
             }
@@ -221,7 +244,9 @@ class ControllerService: ObservableObject {
                 continue
             }
             var available = Set(1...4).subtracting(taken)
-            if !replaceKeyboardWithController {
+            if let gap = firstGapSlot(), available.contains(gap) {
+                available = [gap]
+            } else if !replaceKeyboardWithController {
                 let withoutKB = available.subtracting(keyboardAssignedPlayers)
                 if !withoutKB.isEmpty { available = withoutKB }
             }
@@ -325,6 +350,29 @@ class ControllerService: ObservableObject {
         for s in sessionSlotAssignments.values { slots.formUnion(s) }
         for s in sdlSlotAssignments.values { slots.formUnion(s) }
         return slots
+    }
+
+    // Returns the lowest gap slot, or nil if no gap exists. A "gap" is a
+    // free slot that isn't part of the contiguous free tail at the top end
+    // (e.g. P3 when P1,P2,P4 are taken, or P1 when P2,P3,P4 are taken).
+    // Gaps take precedence over keyboard replacement — we fill them before
+    // considering whether the new controller can take a keyboard slot.
+    private func firstGapSlot() -> Int? {
+        let occupied = allControllerSlots().union(keyboardAssignedPlayers)
+        guard occupied.count < 4 else { return nil }
+        let maxOccupied = occupied.max() ?? 0
+        // The tail is the contiguous free stretch beyond the highest occupied
+        // slot. When maxOccupied >= 4 there is no tail (all gaps above are
+        // packed in), so tail is empty.
+        let tail: Set<Int>
+        if maxOccupied < 4 {
+            tail = Set((maxOccupied + 1)...4)
+        } else {
+            tail = []
+        }
+        let free = Set(1...4).subtracting(occupied)
+        let gaps = free.subtracting(tail)
+        return gaps.min()
     }
 
     private func ensureP1Exists() {
