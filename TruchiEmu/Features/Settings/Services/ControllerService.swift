@@ -364,6 +364,18 @@ class ControllerService: ObservableObject {
         refreshConnectedControllers()
     }
 
+    func disableController(_ controller: GCController) {
+        let key = ObjectIdentifier(controller)
+        sessionSlotAssignments[key] = []
+        ensureP1Exists()
+        refreshConnectedControllers()
+    }
+
+    func resetKeyboard() {
+        keyboardAssignedPlayers = [1]
+        refreshConnectedControllers()
+    }
+
     func toggleKeyboardSlot(_ slot: Int) {
         guard slot >= 1 && slot <= 4 else { return }
         var slots = keyboardAssignedPlayers
@@ -426,6 +438,12 @@ class ControllerService: ObservableObject {
         }
         if !slots.contains(1) { ensureP1Exists() }
         sdlSlotAssignments[instanceID] = slots
+        refreshConnectedControllers()
+    }
+
+    func disableSDLController(_ instanceID: Int32) {
+        sdlSlotAssignments[instanceID] = []
+        ensureP1Exists()
         refreshConnectedControllers()
     }
 

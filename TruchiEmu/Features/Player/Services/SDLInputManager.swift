@@ -59,6 +59,25 @@ class SDLInputManager: ObservableObject {
     private nonisolated static let deadzone: Int16 = 8000
     private nonisolated static let triggerThreshold: Int16 = 16384
 
+    // Known USB vendor IDs for controllers that GCController handles natively
+    // on macOS. When an SDL-recognized game controller matches one of these,
+    // we skip opening it — GCController already routes its input, and opening
+    // it via SDL would create a duplicate controller entry and double-input.
+    private nonisolated static let gcControllerVendors: Set<UInt16> = [
+        0x045E, // Microsoft (Xbox One / Series X|S)
+        0x054C, // Sony (DualSense / DualShock 4)
+        0x057E, // Nintendo (Switch Pro Controller — macOS 13+)
+        0x0F0D, // HORI (MFi)
+        0x20D6, // PowerA (MFi)
+        0x0738, // Mad Catz
+        0x0E6F, // PDP
+        0x1A79, // Various MFi
+    ]
+
+    private nonisolated static func isKnownGCVendor(vendorID: UInt16) -> Bool {
+        gcControllerVendors.contains(vendorID)
+    }
+
     // SDL_GameController button → retroID (used for recognized controllers)
     private nonisolated static let buttonMap: [Int32: Int] = [
         SDL_CONTROLLER_BUTTON_A.rawValue: 8,
@@ -260,9 +279,46 @@ class SDLInputManager: ObservableObject {
     private nonisolated func handleDeviceAdded(_ event: SDL_JoyDeviceEvent) {
         let deviceIndex = event.which
 
-        // Skip recognized game controllers — GCController already handles them
         if SDL_IsGameController(deviceIndex) == SDL_TRUE {
-            LoggerService.info(category: "SDL", "Skipping game controller (device \(deviceIndex)) — already handled by GCController")
+            // Open the controller with SDL_GameController so we can read its
+            // vendor ID. If GCController already handles this device (based
+            // on USB vendor), close the SDL handle and skip it — otherwise
+            // the controller appears twice in the UI and SDL dispatches
+            // duplicate input alongside GCController's path.
+            guard let controller = SDL_GameControllerOpen(deviceIndex) else {
+                let err = String(cString: SDL_GetError())
+                LoggerService.warning(category: "SDL", "Failed to open game controller: \(err)")
+                return
+            }
+            let joystick = SDL_GameControllerGetJoystick(controller)
+            let instanceID = SDL_JoystickInstanceID(joystick)
+            let vendor = SDL_JoystickGetVendor(joystick)
+
+            if vendor != 0 && Self.isKnownGCVendor(vendorID: vendor) {
+                SDL_GameControllerClose(controller)
+                if let name = SDL_GameControllerName(controller) {
+                    LoggerService.info(category: "SDL", "Game controller '\(String(cString: name))' (instance \(instanceID), vendor 0x\(String(format: "%04X", vendor))) skipped — handled by GCController")
+                } else {
+                    LoggerService.info(category: "SDL", "Game controller (instance \(instanceID), vendor 0x\(String(format: "%04X", vendor))) skipped — handled by GCController")
+                }
+                return
+            }
+
+            sdlDataLock.lock()
+            gameControllers[instanceID] = controller
+            joystickIsGameController.insert(instanceID)
+            let port = assignPortLocked(for: instanceID)
+            sdlDataLock.unlock()
+
+            if let name = SDL_GameControllerName(controller) {
+                LoggerService.info(category: "SDL", "Game controller '\(String(cString: name))' (instance \(instanceID)) opened on port \(port)")
+            } else {
+                LoggerService.info(category: "SDL", "Game controller (instance \(instanceID)) opened on port \(port)")
+            }
+
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(name: .sdlControllerConnected, object: nil)
+            }
             return
         }
 
@@ -381,8 +437,8 @@ class SDLInputManager: ObservableObject {
         sdlDataLock.lock()
         let port = portForInstance[event.which]
         sdlDataLock.unlock()
-        guard let retroID = Self.buttonMap[Int32(event.button)], let port else { return }
-        dispatchButton(retroID: retroID, player: port, pressed: pressed)
+        guard let retroID = Self.buttonMap[Int32(event.button)], port != nil else { return }
+        dispatchButton(retroID: retroID, instanceID: event.which, pressed: pressed)
     }
 
     private nonisolated func handleAxisEvent(_ event: SDL_ControllerAxisEvent) {
@@ -416,14 +472,14 @@ class SDLInputManager: ObservableObject {
         let axis = Int32(event.axis)
         if axis == SDL_CONTROLLER_AXIS_TRIGGERLEFT.rawValue {
             let pressed = event.value > Self.triggerThreshold
-            dispatchButton(retroID: 12, player: port, pressed: pressed)
-            dispatchAnalogButton(retroID: 12, value: event.value, player: port)
+            dispatchButton(retroID: 12, instanceID: event.which, pressed: pressed)
+            dispatchAnalogButton(retroID: 12, value: event.value, instanceID: event.which)
             return
         }
         if axis == SDL_CONTROLLER_AXIS_TRIGGERRIGHT.rawValue {
             let pressed = event.value > Self.triggerThreshold
-            dispatchButton(retroID: 13, player: port, pressed: pressed)
-            dispatchAnalogButton(retroID: 13, value: event.value, player: port)
+            dispatchButton(retroID: 13, instanceID: event.which, pressed: pressed)
+            dispatchAnalogButton(retroID: 13, value: event.value, instanceID: event.which)
             return
         }
 
@@ -443,7 +499,7 @@ class SDLInputManager: ObservableObject {
         }
 
         guard let (index, id) = Self.axisMap[axis] else { return }
-        dispatchAnalog(index: index, id: id, value: event.value, player: port, instanceID: event.which)
+        dispatchAnalog(index: index, id: id, value: event.value, instanceID: event.which)
     }
 
     // MARK: - Raw Joystick Events (Fallback)
@@ -484,9 +540,9 @@ class SDLInputManager: ObservableObject {
         let port = portForInstance[event.which]
         sdlDataLock.unlock()
 
-        guard !isGC, let port else { return }
+        guard !isGC, port != nil else { return }
         guard let retroID = Self.joystickButtonMap[Int(event.button)] else { return }
-        dispatchButton(retroID: retroID, player: port, pressed: pressed)
+        dispatchButton(retroID: retroID, instanceID: event.which, pressed: pressed)
     }
 
     private nonisolated func handleJoyAxisEvent(_ event: SDL_JoyAxisEvent) {
@@ -518,14 +574,14 @@ class SDLInputManager: ObservableObject {
         let axis = Int(event.axis)
         if axis == 4 {
             let pressed = event.value > Self.triggerThreshold
-            dispatchButton(retroID: 12, player: port, pressed: pressed)
-            dispatchAnalogButton(retroID: 12, value: event.value, player: port)
+            dispatchButton(retroID: 12, instanceID: event.which, pressed: pressed)
+            dispatchAnalogButton(retroID: 12, value: event.value, instanceID: event.which)
             return
         }
         if axis == 5 {
             let pressed = event.value > Self.triggerThreshold
-            dispatchButton(retroID: 13, player: port, pressed: pressed)
-            dispatchAnalogButton(retroID: 13, value: event.value, player: port)
+            dispatchButton(retroID: 13, instanceID: event.which, pressed: pressed)
+            dispatchAnalogButton(retroID: 13, value: event.value, instanceID: event.which)
             return
         }
 
@@ -545,7 +601,7 @@ class SDLInputManager: ObservableObject {
         }
 
         guard let (index, id) = Self.joystickAxisMap[axis] else { return }
-        dispatchAnalog(index: index, id: id, value: event.value, player: port, instanceID: event.which)
+        dispatchAnalog(index: index, id: id, value: event.value, instanceID: event.which)
     }
 
     private nonisolated func handleJoyHatEvent(_ event: SDL_JoyHatEvent) {
@@ -574,17 +630,17 @@ class SDLInputManager: ObservableObject {
         let isGC = joystickIsGameController.contains(event.which)
         let port = portForInstance[event.which]
         sdlDataLock.unlock()
-        guard !isGC, let port else { return }
+        guard !isGC, port != nil else { return }
 
-        dispatchButton(retroID: 4, player: port, pressed: (hat & UInt8(SDL_HAT_UP)) != 0)
-        dispatchButton(retroID: 5, player: port, pressed: (hat & UInt8(SDL_HAT_DOWN)) != 0)
-        dispatchButton(retroID: 6, player: port, pressed: (hat & UInt8(SDL_HAT_LEFT)) != 0)
-        dispatchButton(retroID: 7, player: port, pressed: (hat & UInt8(SDL_HAT_RIGHT)) != 0)
+        dispatchButton(retroID: 4, instanceID: event.which, pressed: (hat & UInt8(SDL_HAT_UP)) != 0)
+        dispatchButton(retroID: 5, instanceID: event.which, pressed: (hat & UInt8(SDL_HAT_DOWN)) != 0)
+        dispatchButton(retroID: 6, instanceID: event.which, pressed: (hat & UInt8(SDL_HAT_LEFT)) != 0)
+        dispatchButton(retroID: 7, instanceID: event.which, pressed: (hat & UInt8(SDL_HAT_RIGHT)) != 0)
     }
 
     // MARK: - Input Dispatch
 
-    private nonisolated func dispatchButton(retroID: Int, player: Int, pressed: Bool) {
+    private nonisolated func dispatchButton(retroID: Int, instanceID: Int32, pressed: Bool) {
         weak var runner: EmulatorRunner?
         runnerLock.lock()
         runner = _activeRunner
@@ -592,26 +648,20 @@ class SDLInputManager: ObservableObject {
 
         guard let runner else { return }
         Task { @MainActor in
-            // Ignore controller input while the gamepad toolbar overlay is open
-            // so presses aren't double-handled by the game.
             if GamepadNavigationManager.shared.isGamepadToolbarActive { return }
+            let player = resolvePlayerPort(for: instanceID)
             runner.setKeyState(retroID: retroID, player: player, pressed: pressed)
         }
     }
 
-    private nonisolated func dispatchAnalog(index: Int, id: Int, value: Int16, player: Int, instanceID: Int32) {
+    private nonisolated func dispatchAnalog(index: Int, id: Int, value: Int16, instanceID: Int32) {
         let raw = Float(value) / 32768.0
         let sysID = cachedActiveSystemID ?? "default"
         Task { @MainActor in
-            // Ignore controller input while the gamepad toolbar overlay is open
-            // so presses aren't double-handled by the game.
             if GamepadNavigationManager.shared.isGamepadToolbarActive { return }
 
-            // Resolve the per-controller deadzone. Identity-keyed mappings
-            // take precedence over vendor-name legacy mappings, mirroring
-            // the GCController path in BaseRunner.updateGamepadButton. We are
-            // already on MainActor inside this Task, so the ControllerService
-            // @MainActor APIs are accessible directly.
+            let player = resolvePlayerPort(for: instanceID)
+
             let deadzone: Float
             if let identity = ControllerService.shared.identityKey(forSDL: instanceID) {
                 let m = ControllerService.shared.sdlMapping(forIdentity: identity, systemID: sysID)
@@ -627,12 +677,19 @@ class SDLInputManager: ObservableObject {
         }
     }
 
-    private nonisolated func dispatchAnalogButton(retroID: Int, value: Int16, player: Int) {
+    private nonisolated func dispatchAnalogButton(retroID: Int, value: Int16, instanceID: Int32) {
         let value = Int32(value)
         Task { @MainActor in
             if GamepadNavigationManager.shared.isGamepadToolbarActive { return }
+            let player = resolvePlayerPort(for: instanceID)
             XPCBridgeAdapter.shared.setAnalogButtonState(retroID: retroID, value: value, player: player)
         }
+    }
+
+    @MainActor
+    private func resolvePlayerPort(for instanceID: Int32) -> Int {
+        let slots = ControllerService.shared.sdlSlotAssignments[instanceID] ?? []
+        return (slots.min() ?? 1) - 1
     }
 
     // MARK: - Thread-safe Query Methods

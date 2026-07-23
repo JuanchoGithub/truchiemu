@@ -11,6 +11,7 @@ struct ControllerRowView: View {
     let isInParentMode: Bool
     let onSelect: () -> Void
     let onToggleSlot: (Int) -> Void
+    let onDisable: () -> Void
 
     var body: some View {
         HStack(spacing: 8) {
@@ -28,6 +29,26 @@ struct ControllerRowView: View {
                 .lineLimit(1)
                 .foregroundColor(AppColors.textPrimary(colorScheme))
 
+                if player.isSDL {
+                    Text("SDL")
+                    .font(.caption2)
+                    .fontWeight(.semibold)
+                    .foregroundColor(AppColors.accentForScheme(colorScheme))
+                    .padding(.horizontal, 4)
+                    .padding(.vertical, 1)
+                    .background(AppColors.accentForScheme(colorScheme).opacity(0.15))
+                    .cornerRadius(3)
+                } else if !player.isKeyboard {
+                    Text("Native")
+                    .font(.caption2)
+                    .fontWeight(.semibold)
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
+                    .padding(.horizontal, 4)
+                    .padding(.vertical, 1)
+                    .background(AppColors.cardBackgroundSubtle(colorScheme))
+                    .cornerRadius(3)
+                }
+
                 if isInParentMode {
                     Text(loc.localized("controllers.parentMode"))
                     .font(.caption2)
@@ -43,6 +64,10 @@ struct ControllerRowView: View {
             .onTapGesture { onSelect() }
 
             Spacer()
+
+            PlayerSlotToggle(slot: 0, isAssigned: !player.assignedPlayers.isEmpty) {
+                onDisable()
+            }
 
             ForEach(1...4, id: \.self) { slot in
                 PlayerSlotToggle(slot: slot, isAssigned: player.assignedPlayers.contains(slot)) {
@@ -69,13 +94,23 @@ private struct PlayerSlotToggle: View {
 
     var body: some View {
         Button(action: action) {
-            Text("P\(slot)")
-                .font(.caption)
-                .fontWeight(isAssigned ? .bold : .regular)
-                .foregroundColor(isAssigned ? AppColors.textOnAccent(colorScheme) : AppColors.textTertiary(colorScheme))
-                .frame(width: 28, height: 22)
-                .background(isAssigned ? AppColors.brandAccent : AppColors.cardBackgroundSubtle(colorScheme))
-                .cornerRadius(4)
+            if slot == 0 {
+                Text("\u{2014}")
+                    .font(.caption)
+                    .fontWeight(.regular)
+                    .foregroundColor(isAssigned ? AppColors.textTertiary(colorScheme) : .white)
+                    .frame(width: 22, height: 22)
+                    .background(isAssigned ? AppColors.cardBackgroundSubtle(colorScheme) : AppColors.error(colorScheme))
+                    .cornerRadius(4)
+            } else {
+                Text("P\(slot)")
+                    .font(.caption)
+                    .fontWeight(isAssigned ? .bold : .regular)
+                    .foregroundColor(isAssigned ? AppColors.textOnAccent(colorScheme) : AppColors.textTertiary(colorScheme))
+                    .frame(width: 28, height: 22)
+                    .background(isAssigned ? AppColors.brandAccent : AppColors.cardBackgroundSubtle(colorScheme))
+                    .cornerRadius(4)
+            }
         }
         .buttonStyle(.plain)
     }
@@ -227,6 +262,15 @@ struct ControllerSettingsView: View {
                                 controllerService.toggleController(gc, player: slot)
                             } else if player.isSDL, let id = player.sdlInstanceID {
                                 controllerService.toggleSDLController(id, player: slot)
+                            }
+                        },
+                        onDisable: {
+                            if player.isKeyboard {
+                                controllerService.resetKeyboard()
+                            } else if let gc = player.gcController {
+                                controllerService.disableController(gc)
+                            } else if player.isSDL, let id = player.sdlInstanceID {
+                                controllerService.disableSDLController(id)
                             }
                         }
                     )
