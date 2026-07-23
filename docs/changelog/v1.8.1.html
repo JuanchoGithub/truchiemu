@@ -1,0 +1,66 @@
+---
+layout: default
+title: v1.8.1 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.8.1</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.8.1</h1>
+        <div class="release-meta">
+            <span class="release-date">July 23, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Patch release focused on controller management improvements and TV Mode refinements. Overhauls keyboard mapping to support multiple players, adds priority-based controller slot allocation, and introduces SDL controller disable/reset controls. TV Mode gains fullscreen exit handling, filter/sort modes, gamepad navigation improvements, resolution-adaptive scaling, and integrated core download overlay.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>Multi-player keyboard mapping:</strong> Refactored keyboard input to support multiple players with simplified controller settings.</li>
+            <li><strong>Controller slot management:</strong> Gap-slot prioritization over keyboard replacement when connecting new controllers.</li>
+            <li><strong>SDL controller controls:</strong> Added disable and reset functionality for SDL and keyboard controllers.</li>
+            <li><strong>TV Mode enhancements:</strong> Filter sync on state restoration, reset filters action, sort mode, short-list mode with smooth item duplication, and core download overlay for seamless core management.</li>
+            <li><strong>TV Mode quality-of-life:</strong> Fullscreen exit via keyboard/gamepad, resolution-adaptive scaling, and improved gamepad navigation.</li>
+            <li><strong>RetroAchievements fixes:</strong> Cache pre-load condition check and RA Hash display in game detail view.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>Updated controller management to prioritize gap slots over keyboard replacement and adjusted default setting</li>
+            <li>Added option to replace keyboard input with newly connected controllers</li>
+            <li>Enhanced controller management with disable and reset functionality for SDL and keyboard controllers</li>
+            <li>Refactored keyboard mapping to support multiple players and simplify controller settings</li>
+            <li>Improved TV Mode fullscreen exit handling and gamepad navigation support</li>
+            <li>Added TV Mode functionality with controller bindings and UI updates</li>
+            <li>Enhanced TV Mode state restoration by syncing filter and ROM selections</li>
+            <li>Added reset filters action and sort mode functionality in TV Mode</li>
+            <li>Implemented short-list mode with smooth item duplication for TV Mode</li>
+            <li>Enhanced RetroAchievements integration with cache pre-load condition check</li>
+            <li>Improved error handling in StandaloneGameWindowController to surface specific runner errors</li>
+            <li>Updated TV Mode to maintain user's filter selection when entering TV mode</li>
+            <li>Implemented auto-fullscreen restoration in TVModeSettingsManager when exiting TV mode</li>
+            <li>Enhanced TV Mode view to manage keyboard input more effectively during gameplay</li>
+            <li>Added new translations for core download actions and game info in English, Spanish, and Portuguese</li>
+            <li>Introduced TVModeCoreDownloadOverlay for better core management in TV mode</li>
+            <li>Updated GameDetailView to display RA Hash and improved achievement loading logic</li>
+            <li>Implemented resolution-adaptive scaling for TV Mode</li>
+            <li>Enhanced controller settings with SDL support and live axis observation</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.8.0.html' | relative_url }}" class="release-prev">&larr; v1.8.0</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>

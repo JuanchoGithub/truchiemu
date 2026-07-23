@@ -1,0 +1,66 @@
+---
+layout: default
+title: v1.8.1 - Documentación de TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/es/changelog.html' | relative_url }}">Registro de cambios</a>
+        <span class="separator">/</span>
+        <span class="current">v1.8.1</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.8.1</h1>
+        <div class="release-meta">
+            <span class="release-date">23 de julio de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Versión de parche centrada en mejoras en la gestión de mandos y refinamientos del Modo TV. Renueva el mapeo de teclado para soportar múltiples jugadores, añade asignación de ranuras basada en prioridad y controles de desactivación/restablecimiento para mandos SDL. El Modo TV gana manejo de salida de pantalla completa, modos de filtro/ordenación, navegación con gamepad mejorada, escalado adaptativo a resolución y superposición integrada de descarga de cores.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destacados</h2>
+        <ul class="feature-list">
+            <li><strong>Mapeo de teclado multijugador:</strong> Refactor de la entrada de teclado para soportar múltiples jugadores con ajustes simplificados.</li>
+            <li><strong>Gestión de ranuras de mando:</strong> Priorización de ranuras vacías sobre reemplazo de teclado al conectar nuevos mandos.</li>
+            <li><strong>Controles de mando SDL:</strong> Funcionalidad de desactivación y restablecimiento para mandos SDL y teclado.</li>
+            <li><strong>Mejoras en Modo TV:</strong> Sincronización de filtros al restaurar estado, acción de restablecer filtros, modo de ordenación, modo de lista corta con duplicación fluida y superposición de descarga de cores.</li>
+            <li><strong>Calidad de vida en Modo TV:</strong> Salida de pantalla completa con teclado/gamepad, escalado adaptativo a resolución y navegación con gamepad mejorada.</li>
+            <li><strong>Correcciones en RetroAchievements:</strong> Verificación de condición de carga previa de caché y visualización de RA Hash en la vista de detalle del juego.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Cambios detallados</h2>
+        <ul>
+            <li>Actualizada la gestión de mandos para priorizar ranuras vacías sobre reemplazo de teclado y ajustado el valor predeterminado</li>
+            <li>Añadida opción para reemplazar la entrada de teclado con mandos recién conectados</li>
+            <li>Mejorada la gestión de mandos con funcionalidad de desactivación y restablecimiento para mandos SDL y teclado</li>
+            <li>Refactor del mapeo de teclado para soportar múltiples jugadores y simplificar los ajustes de mandos</li>
+            <li>Mejorado el manejo de salida de pantalla completa del Modo TV y soporte de navegación con gamepad</li>
+            <li>Añadida funcionalidad de Modo TV con enlaces de mandos y actualizaciones de UI</li>
+            <li>Mejorada la restauración de estado del Modo TV sincronizando filtros y selecciones de ROM</li>
+            <li>Añadida acción de restablecer filtros y funcionalidad de modo de ordenación en Modo TV</li>
+            <li>Implementado modo de lista corta con duplicación fluida de elementos para Modo TV</li>
+            <li>Mejorada la integración de RetroAchievements con verificación de condición de carga previa de caché</li>
+            <li>Mejorado el manejo de errores en StandaloneGameWindowController para mostrar errores específicos del runner</li>
+            <li>Actualizado el Modo TV para mantener la selección de filtros del usuario al entrar</li>
+            <li>Implementada restauración automática de pantalla completa en TVModeSettingsManager al salir del Modo TV</li>
+            <li>Mejorada la vista del Modo TV para gestionar la entrada de teclado durante el juego</li>
+            <li>Añadidas nuevas traducciones para acciones de descarga de cores e información del juego en inglés, español y portugués</li>
+            <li>Introducida TVModeCoreDownloadOverlay para mejor gestión de cores en Modo TV</li>
+            <li>Actualizada GameDetailView para mostrar RA Hash y mejorar la lógica de carga de logros</li>
+            <li>Implementado escalado adaptativo a resolución para Modo TV</li>
+            <li>Mejorados los ajustes de mandos con soporte SDL y observación de ejes en vivo</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/es/changelog/v1.8.0.html' | relative_url }}" class="release-prev">&larr; v1.8.0</a>
+        <a href="{{ '/es/changelog.html' | relative_url }}" class="release-all">Todas las versiones</a>
+    </nav>
+</div>
