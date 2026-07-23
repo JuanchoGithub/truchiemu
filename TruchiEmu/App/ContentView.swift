@@ -90,16 +90,23 @@ struct ContentView: View {
             }
         }
         .onChange(of: tvModeSettings.isActive) { _, isActive in
-            // When we drop out of TV Mode, defer the fullscreen exit one
-            // runloop tick. By then SwiftUI has swapped in `mainInterface`
-            // (with its unified toolbar items) and macOS can perform the
-            // fullscreen→windowed transition with an intact chrome. Calling
-            // `toggleFullScreen` synchronously inside `TVModeView.onDisappear`
-            // races the view swap and can leave the toolbar unrendered.
+            // When we drop out of TV Mode, defer the fullscreen exit until
+            // after SwiftUI has swapped in `mainInterface` (with its unified
+            // toolbar items). A single `DispatchQueue.main.async` is enough
+            // when called from a plain runloop callback (e.g. a keyboard
+            // NSEvent monitor), but the gamepad-navigation poll timer wraps
+            // its work in another `DispatchQueue.main.async`. In that case
+            // the inner dispatch runs immediately after the outer block ends
+            // — before the CATransaction commits and SwiftUI swaps the view
+            // — and `toggleFullScreen` transitions to windowed with an empty
+            // chrome. Nesting two async calls ensures we always cross at
+            // least one CATransaction boundary before calling toggle.
             guard !isActive else { return }
             DispatchQueue.main.async {
-                if let window = NSApp.windows.first(where: { $0.styleMask.contains(.fullScreen) }) {
-                    window.toggleFullScreen(nil)
+                DispatchQueue.main.async {
+                    if let window = NSApp.windows.first(where: { $0.styleMask.contains(.fullScreen) }) {
+                        window.toggleFullScreen(nil)
+                    }
                 }
             }
         }

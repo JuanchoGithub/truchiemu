@@ -287,13 +287,13 @@ final class GamepadNavigationManager: ObservableObject {
             && !(topContext is GamepadSheetContext)
 
         let controllers = ControllerService.shared.connectedControllers
-        let gamepad = controllers.first(where: { !$0.isKeyboard })?.gcController?.extendedGamepad
+        let gamepads = controllers.compactMap { $0.isKeyboard ? nil : $0.gcController?.extendedGamepad }
 
         // Controllers SDL handles as raw joysticks (unrecognized gamepads) are
         // never exposed as GCController instances, so poll SDL's nav snapshot too.
         let sdlButtons = SDLInputManager.shared.pollNavButtons()
 
-        guard gamepad != nil || !sdlButtons.isEmpty else {
+        guard !gamepads.isEmpty || !sdlButtons.isEmpty else {
             if isGamepadActive { isGamepadActive = false }
             return
         }
@@ -306,19 +306,23 @@ final class GamepadNavigationManager: ObservableObject {
 
         var newlyPressed = Set<GamepadNavButton>()
 
-        if let gamepad {
-            readDigitalButtons(gamepad, into: &newlyPressed)
-        } else {
+        if gamepads.isEmpty {
             newlyPressed.formUnion(sdlButtons)
+        } else {
+            for gamepad in gamepads {
+                readDigitalButtons(gamepad, into: &newlyPressed)
+            }
         }
         if topContext is GamepadGameToolbarContext && suppressLeftStickInToolbar {
             var nonLeftStick = Set<GamepadNavButton>()
-            if let gamepad {
+            for gamepad in gamepads {
                 readAnalogInputs(gamepad, into: &nonLeftStick, now: now, filterLeftStick: true)
             }
             newlyPressed.formUnion(nonLeftStick)
-        } else if let gamepad {
-            readAnalogInputs(gamepad, into: &newlyPressed, now: now)
+        } else {
+            for gamepad in gamepads {
+                readAnalogInputs(gamepad, into: &newlyPressed, now: now)
+            }
         }
 
         // Record when each individual button was first pressed so combos can be
