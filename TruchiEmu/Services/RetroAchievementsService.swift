@@ -1005,9 +1005,12 @@ class RetroAchievementsService: ObservableObject {
         }
 
         // 2. Fallback to NAME-based identification
+        // NOTE: raGameId is deliberately NOT set here. When the hash doesn't match,
+        // setting raGameId to a name-match game causes wrong RA data to display
+        // in views that check raGameId > 0. The status alone ("mismatch") is set
+        // so the RA comparison sheet can still use name matching.
         if let raGameId = await identifyGameByName(title: rom.name, consoleID: raConsoleID) {
-            romEntry.raGameId = raGameId
-            romEntry.raMatchStatus = "mismatch" // Found by name but hash didn't match (or wasn't checked yet)
+            romEntry.raMatchStatus = "mismatch"
             
             // 3. Verify the exact version using the ROM's hash via local cache
             if let romHash = romHash {

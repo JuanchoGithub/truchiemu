@@ -15,11 +15,43 @@ final class TVModeSettingsManager: ObservableObject {
         }
     }
 
+    /// The value of `autoFullscreenEnabled` that was in effect before the user
+    /// entered TV Mode. TV Mode forces auto-fullscreen on for any game it
+    /// launches (which always open behind the fullscreen TV-mode window
+    /// otherwise); when the user leaves TV Mode we restore this prior value
+    /// so the main-window launch behavior is unchanged.
+    private var priorAutoFullscreen: Bool?
+
     private init() {
         self.isActive = TVModeSettings.launchInTVMode
+        if isActive {
+            // Started in TV-mode (persisted launch flag) — mirror enter()'s
+            // autoFs save/restore so the main-window behavior is restored
+            // when the user leaves TV-mode later.
+            priorAutoFullscreen = AppSettings.getBool("autoFullscreenEnabled", defaultValue: false)
+            AppSettings.setBool("autoFullscreenEnabled", value: true)
+        }
     }
 
-    func toggle() { isActive.toggle() }
-    func enter() { isActive = true }
-    func exitMode() { isActive = false }
+    func toggle() {
+        if isActive { exitMode() } else { enter() }
+    }
+
+    func enter() {
+        guard !isActive else { return }
+        if priorAutoFullscreen == nil {
+            priorAutoFullscreen = AppSettings.getBool("autoFullscreenEnabled", defaultValue: false)
+        }
+        AppSettings.setBool("autoFullscreenEnabled", value: true)
+        isActive = true
+    }
+
+    func exitMode() {
+        guard isActive else { return }
+        isActive = false
+        if let prior = priorAutoFullscreen {
+            AppSettings.setBool("autoFullscreenEnabled", value: prior)
+            priorAutoFullscreen = nil
+        }
+    }
 }

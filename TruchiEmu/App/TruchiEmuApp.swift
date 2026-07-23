@@ -73,7 +73,7 @@ LoggerService.debug(category: category, message)
     
     @StateObject private var library = ROMLibrary()
     @StateObject private var categoryManager = CategoryManager()
-    @StateObject private var coreManager = CoreManager()
+    @StateObject private var coreManager = CoreManager.shared
     @StateObject private var controllerService = ControllerService.shared
     @StateObject private var mameVerification = MAMEVerificationService.shared
     @State private var systemDatabase = SystemDatabaseWrapper.shared

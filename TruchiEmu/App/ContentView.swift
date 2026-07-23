@@ -56,7 +56,11 @@ struct ContentView: View {
                 .environmentObject(controllerService)
                 .environmentObject(loc)
             } else if tvModeSettings.isActive {
-                TVModeView(library: library, systemDatabase: systemDatabase)
+                TVModeView(
+                    library: library,
+                    systemDatabase: systemDatabase,
+                    initialEntryID: selectedFilter.id
+                )
                     .environmentObject(library)
                     .environmentObject(categoryManager)
                     .environmentObject(coreManager)

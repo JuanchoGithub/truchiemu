@@ -8,29 +8,73 @@ final class TVModeNavContext: GamepadNavContext {
 
     var handler: ((GamepadNavAction) -> Void)?
 
+    /// Suspended while a game is running so launch actions (e.g. an Enter
+    /// keypass during gameplay) aren't routed back into TV-mode navigation.
+    /// `GamepadNavContextStack.topActive()` skips contexts where
+    /// `isActive == false`.
+    func suspendForGameplay() {
+        isActive = false
+    }
+
+    func resumeFromGameplay() {
+        isActive = true
+    }
+
     override func handleAction(_ action: GamepadNavAction) {
+        guard isActive else { return }
         handler?(action)
     }
 }
 
 /// Maps keyboard arrows + Enter + Esc to GamepadNavAction so TV mode can be
 /// operated from the keyboard while developing.
+///
+/// The local monitor quietly forwards all `keyDown` events. While a game
+/// window is running we tear the monitor down so TV-mode doesn't swallow
+/// gamepad/keyboard input meant for the game (e.g. Enter as Start, Esc as
+/// menu pause, arrows for navigation). When the game window closes, the
+/// monitor resumes so TV-mode is once again keyboard-operable.
+/// Maps keyboard arrows + Enter + Esc to GamepadNavAction so TV mode can be
+/// operated from the keyboard while developing.
+///
+/// The local monitor quietly forwards all `keyDown` events. While a game
+/// window is running we tear the monitor down so TV-mode doesn't swallow
+/// gamepad/keyboard input meant for the game (e.g. Enter as Start, Esc as
+/// menu pause, arrows for navigation). When the game window closes, the
+/// monitor resumes so TV-mode is once again keyboard-operable.
+///
+/// Routed through `GamepadNavContextStack.shared.topActive()` so an
+/// overlay with higher priority (e.g. `TVModeCoreDownloadSheetContext`)
+/// intercepts the keystrokes instead of the underlying TV-mode surface.
 struct TVModeKeyMonitor: ViewModifier {
-    let handler: (GamepadNavAction) -> Void
+    @ObservedObject private var games = RunningGamesTracker.shared
     @State private var monitor: Any?
 
     func body(content: Content) -> some View {
         content
-            .onAppear {
-                monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
-                    let action = map(event)
-                    if let action { handler(action); return nil }
-                    return event
-                }
+            .onAppear { installIfNeeded() }
+            .onDisappear { uninstall() }
+            .onChange(of: games.runningGames.isEmpty) { _, noGameRunning in
+                if noGameRunning { installIfNeeded() } else { uninstall() }
             }
-            .onDisappear {
-                if let monitor { NSEvent.removeMonitor(monitor); self.monitor = nil }
+    }
+
+    private func installIfNeeded() {
+        guard monitor == nil else { return }
+        // Don't attach the monitor while a game is already running.
+        guard RunningGamesTracker.shared.runningGames.isEmpty else { return }
+        monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+            let action = map(event)
+            if let action {
+                GamepadNavContextStack.shared.topActive()?.handleAction(action)
+                return nil
             }
+            return event
+        }
+    }
+
+    private func uninstall() {
+        if let monitor { NSEvent.removeMonitor(monitor); self.monitor = nil }
     }
 
     private func map(_ event: NSEvent) -> GamepadNavAction? {
@@ -53,9 +97,11 @@ struct TVModeKeyMonitor: ViewModifier {
 
 struct TVModeView: View {
     @EnvironmentObject private var library: ROMLibrary
+    @EnvironmentObject private var coreManager: CoreManager
     @Environment(SystemDatabaseWrapper.self) private var systemDatabase
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var runningGames = RunningGamesTracker.shared
 
     @StateObject private var viewModel: TVModeViewModel
     @StateObject private var navContext: TVModeNavContext
@@ -67,8 +113,12 @@ struct TVModeView: View {
     /// `\.tvModeScale` and re-render when it changes.
     @State private var scale: CGFloat = TVModeMetrics.scale
 
-    init(library: ROMLibrary, systemDatabase: SystemDatabaseWrapper) {
-        _viewModel = StateObject(wrappedValue: TVModeViewModel(library: library, systemDatabase: systemDatabase))
+    init(library: ROMLibrary, systemDatabase: SystemDatabaseWrapper, initialEntryID: String? = nil) {
+        _viewModel = StateObject(wrappedValue: TVModeViewModel(
+            library: library,
+            systemDatabase: systemDatabase,
+            initialEntryID: initialEntryID
+        ))
         _navContext = StateObject(wrappedValue: TVModeNavContext())
     }
 
@@ -77,13 +127,34 @@ struct TVModeView: View {
             contentLayer
             topBar
             bottomHint
+            if let pending = coreManager.pendingDownload {
+                TVModeCoreDownloadOverlay(
+                    pending: pending,
+                    coreManager: coreManager,
+                    library: library,
+                    loc: loc,
+                    colorScheme: colorScheme,
+                    onDismiss: { coreManager.pendingDownload = nil }
+                )
+                .transition(.opacity)
+                .zIndex(100)
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(background.ignoresSafeArea())
         .environment(\.tvModeScale, scale)
+        .animation(.easeInOut(duration: 0.2), value: coreManager.pendingDownload)
         .onAppear {
             scale = TVModeMetrics.scale
             navContext.handler = { [self] action in handle(action: action) }
+            // Honor an already-running game so we don't double-rout `select` /
+            // `launchGame` into the launch pipeline and surface a duplicate-
+            // launch notification.
+            if runningGames.runningGames.isEmpty {
+                navContext.resumeFromGameplay()
+            } else {
+                navContext.suspendForGameplay()
+            }
             GamepadNavContextStack.shared.push(navContext)
             enterFullscreen()
         }
@@ -102,7 +173,15 @@ struct TVModeView: View {
         .onReceive(NotificationCenter.default.publisher(for: .tvModeSettingsChanged)) { _ in
             viewModel.reloadSettings()
         }
-        .modifier(TVModeKeyMonitor { action in handle(action: action) })
+        // Suspend the TV-mode gamepad nav context while a game window is
+        // active so its higher priority (60) doesn't outrank the game window's
+        // `GamepadGameRunningContext`. Without this, an Enter pressed mid-
+        // gameplay routes back here and re-fires the launch flow.
+        .onChange(of: runningGames.runningGames.isEmpty) { _, noGameRunning in
+            if noGameRunning { navContext.resumeFromGameplay() }
+            else { navContext.suspendForGameplay() }
+        }
+        .modifier(TVModeKeyMonitor())
     }
 
     @ViewBuilder

@@ -50,6 +50,18 @@ extension GameDetailView {
                         }
                     )
                 }
+                if achievementsService.isEnabled, let hash = raHash {
+                    Divider().overlay(AppColors.divider(colorScheme))
+                    MetadataRow(
+                        label: loc.localized("gameInfo.raHash"),
+                        value: hash,
+                        isMonospaced: true,
+                        copyAction: {
+                            NSPasteboard.general.clearContents()
+                            NSPasteboard.general.setString(hash, forType: .string)
+                        }
+                    )
+                }
                 if achievementsService.isEnabled, currentROM.raMatchStatus == "matched" {
                     Divider().overlay(AppColors.divider(colorScheme))
                     HStack {

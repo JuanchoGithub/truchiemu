@@ -881,6 +881,7 @@
   "gameInfo.path": "Path",
   "gameInfo.fileSize": "File Size",
   "gameInfo.crc32": "CRC32",
+  "gameInfo.raHash": "RA Hash",
   "gameInfo.originalName": "Original Name",
   "gameInfo.developer": "Developer",
   "gameInfo.publisher": "Publisher",
@@ -1182,6 +1183,11 @@
   "coreDownload.status.installing": "Installing…",
   "coreDownload.download": "Download",
   "coreDownload.unavailableForMac": "Unavailable for Mac",
+  "coreDownload.installed": "Installed",
+  "coreDownload.downloadable": "Available",
+  "coreDownload.refresh": "Refresh",
+  "coreDownload.cores": "cores",
+  "coreDownload.noDownloadable": "No downloadable core available for this system.",
   "ppssppAsset.title": "PPSSPP Assets Required",
   "ppssppAsset.description": "PPSSPP needs asset files (UI textures, fonts, and language files) to run games.",
   "ppssppAsset.download": "Download Assets",
@@ -2380,5 +2386,9 @@
     "tvMode.detail.description": "Description",
     "tvMode.detail.snaps": "Snaps",
     "tvMode.detail.noSnaps": "No screenshots available",
-    "tvMode.detail.launch": "Play"
+    "tvMode.detail.launch": "Play",
+    "tvMode.coreDownload.cycle": "Cycle cores",
+    "tvMode.coreDownload.actions": "Switch action",
+    "tvMode.coreDownload.confirm": "Confirm",
+    "tvMode.coreDownload.cancel": "Cancel"
 }

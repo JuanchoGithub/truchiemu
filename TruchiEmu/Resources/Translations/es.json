@@ -873,6 +873,7 @@
   "gameInfo.path": "Ruta",
   "gameInfo.fileSize": "Tamaño",
   "gameInfo.crc32": "CRC32",
+  "gameInfo.raHash": "RA Hash",
   "gameInfo.originalName": "Nombre original",
   "gameInfo.developer": "Desarrollador",
   "gameInfo.publisher": "Editor",
@@ -1174,6 +1175,11 @@
   "coreDownload.status.installing": "Instalando…",
   "coreDownload.download": "Descargar",
   "coreDownload.unavailableForMac": "No disponible para Mac",
+  "coreDownload.installed": "Instalado",
+  "coreDownload.downloadable": "Disponible",
+  "coreDownload.refresh": "Actualizar",
+  "coreDownload.cores": "núcleos",
+  "coreDownload.noDownloadable": "No hay núcleos descargables para este sistema.",
   "ppssppAsset.title": "Se requieren archivos de PPSSPP",
   "ppssppAsset.description": "PPSSPP necesita archivos de recursos (texturas de interfaz, fuentes y archivos de idioma) para ejecutar juegos.",
   "ppssppAsset.download": "Descargar recursos",
@@ -2372,5 +2378,9 @@
     "tvMode.detail.description": "Descripción",
     "tvMode.detail.snaps": "Capturas",
     "tvMode.detail.noSnaps": "No hay capturas disponibles",
-    "tvMode.detail.launch": "Jugar"
+    "tvMode.detail.launch": "Jugar",
+    "tvMode.coreDownload.cycle": "Cambiar núcleos",
+    "tvMode.coreDownload.actions": "Cambiar acción",
+    "tvMode.coreDownload.confirm": "Confirmar",
+    "tvMode.coreDownload.cancel": "Cancelar"
 }

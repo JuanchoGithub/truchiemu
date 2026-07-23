@@ -26,9 +26,16 @@ final class TVModeViewModel: ObservableObject {
     private let raService = RetroAchievementsService.shared
     private var cancellables = Set<AnyCancellable>()
 
-    init(library: ROMLibrary, systemDatabase: SystemDatabaseWrapper) {
+    /// LibraryFilter id (e.g. "system-snes") the user was on in the main
+    /// window when TV-mode was opened. Drives the initial selectedEntryIndex
+    /// so TV-mode opens at the same system/filter the main window was on
+    /// instead of always jumping to "All Games".
+    private let initialEntryID: String?
+
+    init(library: ROMLibrary, systemDatabase: SystemDatabaseWrapper, initialEntryID: String? = nil) {
         self.library = library
         self.systemDatabase = systemDatabase
+        self.initialEntryID = initialEntryID
         self.theme = TVModeSettings.theme
         rebuildEntries()
         recomputeGames()
@@ -122,28 +129,46 @@ final class TVModeViewModel: ObservableObject {
 
     // MARK: - Launch
 
-    /// Launches the currently selected game forcing fullscreen. The TV mode
-    /// goroutine owns the autoFullscreen setting for the duration of the launch.
+    /// Launches the currently selected game forcing fullscreen.
+    ///
+    /// Mirrors `LibraryGridView.launchGame`: resolves the core via the
+    /// centralized `CoreManager.resolveCoreID` helper (which honors the user's
+    /// per-system preferred core, e.g. picodrive over the SMS default
+    /// genesis_plus_gx) and requests a core download when the resolved core
+    /// isn't installed yet. Without this, TV-mode silently ignored the
+    /// preferred-core setting and bypassed the core-download sheet, so the
+    /// runner hit "Core dylib not found" for systems whose default core wasn't
+    /// on disk — even when an alternative core the user had installed could
+    /// have run the game.
+    ///
+    /// Auto-fullscreen is set globally on TV-mode entry (handled by
+    /// `TVModeSettingsManager.enter()`), so we don't toggle it here ourselves.
+    /// The controller's `init` reads the global at construction time, ensuring
+    /// both direct launches and post-core-download launches go fullscreen.
     func launchSelected() async {
         guard let rom = (page == .detail ? downloadedDetailROM : selectedGame) ?? selectedGame else { return }
-        let systemID = rom.systemID ?? ""
-        let coreID: String
-        if rom.useCustomCore, let cid = rom.selectedCoreID, !cid.isEmpty {
-            coreID = cid
-        } else {
-            coreID = SystemDatabase.system(forID: systemID)?.defaultCoreID ?? ""
-        }
+        guard let systemID = rom.systemID,
+              let system = SystemDatabase.system(forID: systemID) else { return }
+
+        let coreManager = CoreManager.shared
+        let coreID = coreManager.resolveCoreID(for: rom, system: system)
         guard !coreID.isEmpty else { return }
 
-        let priorAuto = AppSettings.getBool("autoFullscreenEnabled", defaultValue: false)
-        AppSettings.setBool("autoFullscreenEnabled", value: true)
+        if !coreManager.isInstalled(coreID: coreID) {
+            coreManager.requestCoreDownload(
+                for: coreID,
+                systemID: systemID,
+                romID: rom.id,
+                slotToLoad: nil
+            )
+            return
+        }
+
         await GameLauncher.shared.launchGame(
             rom: rom,
             coreID: coreID,
             library: library
-        ) { _ in
-            AppSettings.setBool("autoFullscreenEnabled", value: priorAuto)
-        }
+        )
     }
 
     // MARK: - Internal
@@ -199,7 +224,15 @@ final class TVModeViewModel: ObservableObject {
             }
         }
         row1Entries = entries
-        if selectedEntryIndex >= entries.count { selectedEntryIndex = max(0, entries.count - 1) }
+
+        if let initialEntryID,
+           let index = entries.firstIndex(where: { $0.id == initialEntryID }) {
+            // Restore the same filter the main window was on when the
+            // user opened TV mode.
+            selectedEntryIndex = index
+        } else if selectedEntryIndex >= entries.count {
+            selectedEntryIndex = max(0, entries.count - 1)
+        }
     }
 
     private func recomputeGames() {

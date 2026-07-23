@@ -21,6 +21,7 @@ struct GameDetailView: View {
     @State var boxArtImageURL: URL? = nil
     @State var screenshotImages: [NSImage] = []
     @State var crcHash: String? = nil
+    @State var raHash: String? = nil
     @State var fileSize: String? = nil
     @State var slotInfoList: [SlotInfo] = []
     @State var progressiveSlots: [Int: [SlotInfo]] = [:]
@@ -271,6 +272,14 @@ struct GameDetailView: View {
                 fileSize = formatter.string(fromByteCount: size)
             }
             crcHash = currentROM.crc32
+            if achievementsService.isEnabled {
+                Task { @MainActor in
+                    let hash = await Task.detached(priority: .background) {
+                        RomHasher.hashRom(at: currentROM.path.path, systemID: currentROM.systemID ?? "")
+                    }.value
+                    raHash = hash
+                }
+            }
         }
         .onChange(of: currentROM.hasBoxArt) { _, _ in loadBoxArt() }
 .onChange(of: currentROM.hasTitleScreen) { _, _ in loadTitleScreen() }
@@ -450,7 +459,7 @@ struct GameDetailView: View {
 
     @MainActor
     func loadAchievements() {
-        if let raGameId = currentROM.raGameId, raGameId > 0 {
+        if let raGameId = currentROM.raGameId, raGameId > 0, currentROM.raMatchStatus == "matched" {
             loadAchievements(raGameId: raGameId)
         } else {
             gameAchievements = []

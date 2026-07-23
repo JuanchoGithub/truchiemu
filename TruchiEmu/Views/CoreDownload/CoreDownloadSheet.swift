@@ -6,7 +6,11 @@ struct CoreDownloadSheet: View {
     @ObservedObject private var loc = LocalizationManager.shared
     let pending: CoreManager.PendingCoreDownload
 
-    @State private var selectedCoreID: String
+    /// Selected core id. Exposed as a binding so external controllers (e.g.
+    /// the TV-mode gamepad nav layer, which lists cores via D-pad) can drive
+    /// selection without duplicating the picker UI.
+    @Binding var selectedCoreID: String
+
     @State private var isDownloading = false
     @State private var downloadError: String? = nil
     @State private var isFetchingMAMEDeps = false
@@ -17,9 +21,16 @@ struct CoreDownloadSheet: View {
     @ObservedObject private var boxArtService = BoxArtService.shared
 @Environment(\.colorScheme) private var colorScheme
 
-init(pending: CoreManager.PendingCoreDownload) {
+init(pending: CoreManager.PendingCoreDownload, selectedCoreID: Binding<String>? = nil) {
         self.pending = pending
-        _selectedCoreID = State(initialValue: pending.coreInfo.coreID)
+        if let selectedCoreID {
+            self._selectedCoreID = selectedCoreID
+        } else {
+            self._selectedCoreID = Binding(
+                get: { pending.coreInfo.coreID },
+                set: { _ in }
+            )
+        }
     }
 
     // A core entry that can be either installed or downloadable — mirrors CorePickerView pattern

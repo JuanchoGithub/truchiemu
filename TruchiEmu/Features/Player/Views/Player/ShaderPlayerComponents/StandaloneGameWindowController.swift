@@ -975,9 +975,18 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         
         // Check if runner is running
         if !(runner?.isRunning ?? false) {
-            LoggerService.error(category: "Runner", "Runner is not running after launch")
+            // Surface the runner's specific error when available (e.g.
+            // `.coreNotFound` from a missing dylib) instead of the generic
+            // "runner stopped" message. Helps users diagnose a missing core.
+            let runnerError = runner?.lastError
+            LoggerService.error(category: "Runner", "Runner is not running after launch: \(runnerError?.localizedDescription ?? "no error set")")
             DispatchQueue.main.async { [weak self] in
-                self?.showErrorOverlay(.runnerStopped)
+                guard let self else { return }
+                if let error = runnerError {
+                    self.showErrorOverlay(.launchFailed(reason: error.localizedDescription))
+                } else {
+                    self.showErrorOverlay(.runnerStopped)
+                }
             }
             return
         }

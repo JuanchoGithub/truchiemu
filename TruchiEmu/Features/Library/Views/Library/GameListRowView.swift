@@ -250,7 +250,7 @@ Text(sys.name)
                 self.thumb = nil
             }
 
-            if let raGameId = rom.raGameId, raGameId > 0 {
+            if let raGameId = rom.raGameId, raGameId > 0, rom.raMatchStatus == "matched" {
                 raProgress = RetroAchievementsService.cachedAchievementProgress(for: raGameId)
             }
         }

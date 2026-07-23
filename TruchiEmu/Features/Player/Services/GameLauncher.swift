@@ -399,8 +399,8 @@ func launchGame(
  }
 
  // Pre-load cached achievements for rcheevos memory detection
- if config.achievementsEnabled {
- if let raGameId = rom.raGameId, raGameId > 0 {
+    if config.achievementsEnabled {
+        if let raGameId = rom.raGameId, raGameId > 0, rom.raMatchStatus == "matched" {
  if let username = RetroAchievementsService.shared.username {
                 if let patchTriggers = await RetroAchievementsService.shared.fetchPatchData(gameID: raGameId), !patchTriggers.isEmpty {
                     LoggerService.info(category: "GameLauncher", "Got \(patchTriggers.count) unhashed triggers from patch API for game \(raGameId)")

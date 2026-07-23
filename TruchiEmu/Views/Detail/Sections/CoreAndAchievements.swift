@@ -418,7 +418,7 @@ Label(loc.localized("achievement.searchRetroAchievements"), systemImage: "checkm
 
     @ViewBuilder
     private var viewOnRALink: some View {
-        if let raGameId = currentROM.raGameId, raGameId > 0,
+        if let raGameId = currentROM.raGameId, raGameId > 0, currentROM.raMatchStatus == "matched",
            let url = URL(string: "https://retroachievements.org/game/\(raGameId)") {
             Button {
                 NSWorkspace.shared.open(url)
@@ -435,7 +435,7 @@ Label(loc.localized("achievement.searchRetroAchievements"), systemImage: "checkm
     }
 
     private var viewOnRALinkAnyView: AnyView? {
-        if let raGameId = currentROM.raGameId, raGameId > 0,
+        if let raGameId = currentROM.raGameId, raGameId > 0, currentROM.raMatchStatus == "matched",
            URL(string: "https://retroachievements.org/game/\(raGameId)") != nil {
             return AnyView(viewOnRALink)
         }

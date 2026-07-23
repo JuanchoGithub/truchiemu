@@ -386,6 +386,7 @@ case "scummvm": runner = ScummVMRunner()
     open func launch(rom: ROM, coreID: String, shaderUniformOverrides: [String: Float] = [:]) {
         if findCoreLib(coreID: coreID) == nil {
             LoggerService.error(category: "Runner", "Core dylib not found: \(coreID)")
+            lastError = .coreNotFound(coreID: coreID)
             isRunning = false
             self.stop()
             return
@@ -419,6 +420,7 @@ case "scummvm": runner = ScummVMRunner()
                 self.romPath = selectedFile.path
             } catch {
                 LoggerService.error(category: "Runner", "Archive extraction failed: \(error.localizedDescription)")
+                lastError = .launchFailed(reason: error.localizedDescription)
                 isRunning = false
                 self.stop()
                 return

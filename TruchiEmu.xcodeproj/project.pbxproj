@@ -546,6 +546,7 @@
 		6D92CA8DC0096725EC9520AF /* atari800@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 5049F3EC03369C598CE5BBB2 /* atari800@132w.png */; };
 		6DC791FACC64774AC60FB0B6 /* MoveForest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9069327937C4BD5B3CED4E12 /* MoveForest.swift */; };
 		6E10F7AD982F0C4DF5A5104C /* input_coreLabels_m2000.json in Resources */ = {isa = PBXBuildFile; fileRef = 07068C673E61C6896809ABA9 /* input_coreLabels_m2000.json */; };
+		6E25093F9B5D976E5D0159CA /* TVModeCoreDownloadOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0902A78AB9003E62065EFAFF /* TVModeCoreDownloadOverlay.swift */; };
 		6E807F3F9D6E2A4C8D93432D /* CheatBrowserList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F0A3249C2C0C109308A13AF /* CheatBrowserList.swift */; };
 		6E93458B12828DAFC78C4FCC /* NEC - PC Engine - TurboGrafx 16.dat in Resources */ = {isa = PBXBuildFile; fileRef = 866F7E9495192E7531109947 /* NEC - PC Engine - TurboGrafx 16.dat */; };
 		6F05200AEB2CE6B267039BAC /* COLSGM.png in Resources */ = {isa = PBXBuildFile; fileRef = 24667B16B733A9A54FBF645A /* COLSGM.png */; };
@@ -1339,6 +1340,7 @@
 		08583960EFE60BDC1B849D84 /* fightdata_drgnmst.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_drgnmst.json; sourceTree = "<group>"; };
 		0869679B382A9418B9809DC0 /* input_coreLabels_wasm-4.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "input_coreLabels_wasm-4.json"; sourceTree = "<group>"; };
 		08E76098C4A079BA9B1A9D55 /* input_systemLabels_zx81.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_zx81.json; sourceTree = "<group>"; };
+		0902A78AB9003E62065EFAFF /* TVModeCoreDownloadOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVModeCoreDownloadOverlay.swift; sourceTree = "<group>"; };
 		091B265D3E1B243C94402582 /* SNK - Neo Geo Pocket.dat */ = {isa = PBXFileReference; path = "SNK - Neo Geo Pocket.dat"; sourceTree = "<group>"; };
 		099CB2A7DA5F883DF51B285E /* input_coreOverrides_dice.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_dice.json; sourceTree = "<group>"; };
 		0A0B987D3192A6B7AD9E370C /* input_coreLabels_o2em.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_o2em.json; sourceTree = "<group>"; };
@@ -4271,6 +4273,7 @@
 				68FD211A72F4862B10F9258C /* CurvedRowLayout.swift */,
 				F00C70234047FB1BDBC3941E /* TVModeAnimatedAccentBackground.swift */,
 				91A69D413971061EA36A4532 /* TVModeBoxartBackdrop.swift */,
+				0902A78AB9003E62065EFAFF /* TVModeCoreDownloadOverlay.swift */,
 				86C00E951DC0729BDE7FCDDA /* TVModeEntryTile.swift */,
 				5BF7F46A5B667F8AB060455A /* TVModeGameDetailView.swift */,
 				FB9B612171274CE268934F30 /* TVModeGameTile.swift */,
@@ -6122,6 +6125,7 @@
 				1226E683B4C6974386DAAC65 /* SystemSidebarView.swift in Sources */,
 				0BD658AEDE7FC81FEAF30836 /* TVModeAnimatedAccentBackground.swift in Sources */,
 				96A2D20940E1E42BF689143A /* TVModeBoxartBackdrop.swift in Sources */,
+				6E25093F9B5D976E5D0159CA /* TVModeCoreDownloadOverlay.swift in Sources */,
 				5E214FFE9AF0A387BCEE4609 /* TVModeEntry.swift in Sources */,
 				5A715B466E5613FF4980B3A8 /* TVModeEntryTile.swift in Sources */,
 				623644F24D5A2B17725FC856 /* TVModeGameDetailView.swift in Sources */,
