@@ -23,6 +23,7 @@ struct CurvedRowLayout<Item: Identifiable & Hashable, Content: View>: View {
     let visibleEachSide: Int
     @ViewBuilder let content: (Item, Bool) -> Content
 
+    @Environment(\.tvModeScale) private var scale
     @State private var animatedCenter: CGFloat = 0
 
     var body: some View {
@@ -37,7 +38,7 @@ struct CurvedRowLayout<Item: Identifiable & Hashable, Content: View>: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         }
-        .frame(height: itemHeight + maxSag + 24)
+        .frame(height: itemHeight + maxSag + 24 * scale)
         .onAppear { animatedCenter = CGFloat(centerIndex) }
         .onChange(of: centerIndex) { _, newValue in
             withAnimation(.easeOut(duration: 0.22)) {

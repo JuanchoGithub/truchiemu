@@ -6,19 +6,20 @@ import Combine
 /// SettingsView to keep the change footprint minimal.
 struct TVModeSettingsView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.tvModeScale) private var scale
     @ObservedObject private var loc = LocalizationManager.shared
     @StateObject private var nav = TVModeSettingsNav()
     @State private var settingsGeneration: Int = 0
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 24) {
+        VStack(alignment: .leading, spacing: 24 * scale) {
             HStack {
                 Text(loc.localized("tvMode.settings.title"))
-                    .font(.system(size: 22, weight: .bold))
+                    .font(.system(size: 22 * scale, weight: .bold))
                 Spacer()
                 Button(action: { dismiss() }) {
                     Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 22))
+                        .font(.system(size: 22 * scale))
                         .foregroundStyle(.secondary)
                 }.buttonStyle(.plain)
                 .overlay(focusRing(active: nav.focusID == .close))
@@ -38,9 +39,9 @@ struct TVModeSettingsView: View {
 
             Divider()
 
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 10 * scale) {
                 Text(loc.localized("tvMode.settings.shownEntries"))
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.system(size: 14 * scale, weight: .semibold))
                 ForEach(TVModeSettings.SmartEntry.allCases) { entry in
                     let _ = settingsGeneration  // drives re-eval on change
                     HStack {
@@ -74,8 +75,8 @@ struct TVModeSettingsView: View {
             }
             Spacer()
         }
-        .padding(28)
-        .frame(minWidth: 460, minHeight: 360)
+        .padding(28 * scale)
+        .frame(minWidth: 460 * scale, minHeight: 360 * scale)
         .onAppear {
             nav.bind(dismiss: { dismiss() })
         }
@@ -90,9 +91,9 @@ struct TVModeSettingsView: View {
     @ViewBuilder
     private func focusRing(active: Bool) -> some View {
         if active {
-            RoundedRectangle(cornerRadius: 4)
-                .stroke(AppColors.brandAccent, lineWidth: 2)
-                .padding(-2)
+            RoundedRectangle(cornerRadius: 4 * scale)
+                .stroke(AppColors.brandAccent, lineWidth: 2 * scale)
+                .padding(-2 * scale)
                 .allowsHitTesting(false)
         }
     }

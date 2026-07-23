@@ -7,6 +7,7 @@ import AppKit
 /// without ever competing with foreground content.
 struct TVModeAnimatedAccentBackground: View {
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.tvModeScale) private var scale
     @State private var phase: Phase = .a
 
     enum Phase: CaseIterable {
@@ -22,7 +23,7 @@ struct TVModeAnimatedAccentBackground: View {
                 colors: [topColor.opacity(0.22), .clear],
                 center: phase == .b ? .topLeading : .top,
                 startRadius: 0,
-                endRadius: phase == .a || phase == .c ? 600 : 760
+                endRadius: (phase == .a || phase == .c ? 600 : 760) * scale
             )
             .ignoresSafeArea()
             .animation(.easeInOut(duration: phaseDuration), value: phase)
@@ -33,7 +34,7 @@ struct TVModeAnimatedAccentBackground: View {
                 colors: [bottomColor.opacity(0.18), .clear],
                 center: phase == .c ? .bottomTrailing : .bottom,
                 startRadius: 0,
-                endRadius: phase == .b || phase == .d ? 700 : 540
+                endRadius: (phase == .b || phase == .d ? 700 : 540) * scale
             )
             .ignoresSafeArea()
             .animation(.easeInOut(duration: phaseDuration), value: phase)

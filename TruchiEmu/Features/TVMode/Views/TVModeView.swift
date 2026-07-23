@@ -62,6 +62,11 @@ struct TVModeView: View {
     @State private var showTVSettingsOverlay: Bool = false
     @State private var enteredFullscreen: Bool = false
 
+    /// Refreshed on appear / screen change so the scale tracks the current
+    /// display. Held in `@State` so children read a stable value via
+    /// `\.tvModeScale` and re-render when it changes.
+    @State private var scale: CGFloat = TVModeMetrics.scale
+
     init(library: ROMLibrary, systemDatabase: SystemDatabaseWrapper) {
         _viewModel = StateObject(wrappedValue: TVModeViewModel(library: library, systemDatabase: systemDatabase))
         _navContext = StateObject(wrappedValue: TVModeNavContext())
@@ -75,7 +80,9 @@ struct TVModeView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(background.ignoresSafeArea())
+        .environment(\.tvModeScale, scale)
         .onAppear {
+            scale = TVModeMetrics.scale
             navContext.handler = { [self] action in handle(action: action) }
             GamepadNavContextStack.shared.push(navContext)
             enterFullscreen()
@@ -115,7 +122,7 @@ struct TVModeView: View {
         } else {
             ZStack {
                 Color(red: 0.07, green: 0.07, blue: 0.08)
-                RadialGradient(colors: [Color.white.opacity(0.04), .clear], center: .center, startRadius: 0, endRadius: 500)
+                RadialGradient(colors: [Color.white.opacity(0.04), .clear], center: .center, startRadius: 0, endRadius: 500 * scale)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .allowsHitTesting(false)
@@ -139,7 +146,7 @@ struct TVModeView: View {
             row1
             row2
         }
-        .blur(radius: viewModel.page == .detail ? 18 : 0)
+        .blur(radius: viewModel.page == .detail ? 18 * scale : 0)
         .opacity(viewModel.page == .detail ? 0.25 : 1)
         .animation(.easeInOut(duration: 0.25), value: viewModel.page)
 
@@ -159,10 +166,10 @@ struct TVModeView: View {
                 get: { viewModel.selectedEntryIndex },
                 set: { viewModel.selectedEntryIndex = $0 }
             ),
-            itemWidth: 200,
-            itemHeight: 200,
-            spacing: 22,
-            maxSag: 28,
+            itemWidth: 200 * scale,
+            itemHeight: 200 * scale,
+            spacing: 22 * scale,
+            maxSag: 28 * scale,
             visibleEachSide: 5
         ) { entry, isCenter in
             let count = viewModel.count(for: entry.filter)
@@ -173,7 +180,7 @@ struct TVModeView: View {
                 theme: viewModel.theme
             )
         }
-        .padding(.vertical, 30)
+        .padding(.vertical, 30 * scale)
     }
 
     @ViewBuilder
@@ -184,10 +191,10 @@ struct TVModeView: View {
                 get: { viewModel.selectedGameIndex },
                 set: { viewModel.selectedGameIndex = $0 }
             ),
-            itemWidth: 210,
-            itemHeight: 280,
-            spacing: 14,
-            maxSag: 28,
+            itemWidth: 210 * scale,
+            itemHeight: 280 * scale,
+            spacing: 14 * scale,
+            maxSag: 28 * scale,
             visibleEachSide: 4
         ) { rom, isCenter in
             TVModeGameTile(
@@ -196,7 +203,7 @@ struct TVModeView: View {
                 theme: viewModel.theme
             )
         }
-        .padding(.vertical, 30)
+        .padding(.vertical, 30 * scale)
     }
 
     @ViewBuilder
@@ -204,7 +211,7 @@ struct TVModeView: View {
         VStack {
             HStack {
                 Text(loc.localized("tvMode.title"))
-                    .font(.system(size: 22, weight: .bold))
+                    .font(.system(size: 22 * scale, weight: .bold))
                     .foregroundStyle(viewModel.theme == .bold ? AppColors.accentForScheme(colorScheme) : .white)
                 Spacer()
                 themeToggle
@@ -212,14 +219,14 @@ struct TVModeView: View {
                     showTVSettingsOverlay = true
                 } label: {
                     Image(systemName: "gearshape.fill")
-                        .font(.system(size: 18))
+                        .font(.system(size: 18 * scale))
                         .foregroundStyle(.primary)
                 }
                 .buttonStyle(.plain)
-                .padding(.leading, 12)
+                .padding(.leading, 12 * scale)
             }
-            .padding(.horizontal, 40)
-            .padding(.top, 24)
+            .padding(.horizontal, 40 * scale)
+            .padding(.top, 24 * scale)
             Spacer()
         }
         .sheet(isPresented: $showTVSettingsOverlay) {
@@ -230,15 +237,15 @@ struct TVModeView: View {
 
     @ViewBuilder
     private var themeToggle: some View {
-        HStack(spacing: 6) {
+        HStack(spacing: 6 * scale) {
             ForEach(TVModeSettings.Theme.allCases) { t in
                 Button {
                     TVModeSettings.setTheme(t)
                     NotificationCenter.default.post(name: .tvModeSettingsChanged, object: nil)
                 } label: {
                     Text(loc.localized("tvMode.theme.\(t.rawValue)"))
-                        .font(.system(size: 12, weight: .semibold))
-                        .padding(.horizontal, 14).padding(.vertical, 6)
+                        .font(.system(size: 12 * scale, weight: .semibold))
+                        .padding(.horizontal, 14 * scale).padding(.vertical, 6 * scale)
                         .background(
                             Capsule().fill(viewModel.theme == t
                                 ? (viewModel.theme == .bold ? AppColors.accentForScheme(colorScheme).opacity(0.25) : Color.white.opacity(0.12))
@@ -255,24 +262,24 @@ struct TVModeView: View {
     private var bottomHint: some View {
         VStack {
             Spacer()
-            HStack(spacing: 24) {
+            HStack(spacing: 24 * scale) {
                 hintChip(loc.localized("tvMode.page.systems"), active: viewModel.page == .row1)
                 hintChip(loc.localized("tvMode.page.games"), active: viewModel.page == .row2)
                 if viewModel.page == .detail {
                     hintChip(loc.localized("tvMode.page.detail"), active: true)
                 }
             }
-            .padding(.bottom, 20)
+            .padding(.bottom, 20 * scale)
         }
     }
 
     @ViewBuilder
     private func hintChip(_ label: String, active: Bool) -> some View {
         Text(label)
-            .font(.system(size: 12, weight: .semibold))
-            .padding(.horizontal, 12).padding(.vertical, 5)
+            .font(.system(size: 12 * scale, weight: .semibold))
+            .padding(.horizontal, 12 * scale).padding(.vertical, 5 * scale)
             .background(Capsule().fill(active && viewModel.theme == .bold ? AppColors.accentForScheme(colorScheme).opacity(0.22) : Color.white.opacity(active ? 0.10 : 0.04)))
-            .overlay(Capsule().strokeBorder(active && viewModel.theme == .bold ? AppColors.accentForScheme(colorScheme) : Color.white.opacity(active ? 0.3 : 0.1), lineWidth: 1))
+            .overlay(Capsule().strokeBorder(active && viewModel.theme == .bold ? AppColors.accentForScheme(colorScheme) : Color.white.opacity(active ? 0.3 : 0.1), lineWidth: 1 * scale))
             .foregroundStyle(.primary)
     }
 }

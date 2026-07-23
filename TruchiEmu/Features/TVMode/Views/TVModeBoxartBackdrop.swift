@@ -16,6 +16,7 @@ struct TVModeBoxartBackdrop: View {
     let rom: ROM?
     let scrimColor: Color
 
+    @Environment(\.tvModeScale) private var scale
     @State private var displayedImage: NSImage?
     @State private var displayedRomID: UUID?
     @State private var pendingDebounce: Task<Void, Never>?
@@ -32,7 +33,7 @@ struct TVModeBoxartBackdrop: View {
                 Image(nsImage: img)
                     .resizable()
                     .scaledToFill()
-                    .blur(radius: 58)
+                    .blur(radius: 58 * scale)
                     .saturation(1.4)
                     .opacity(0.55)
                     // Fade in via opacity binding instead of using SwiftUI's

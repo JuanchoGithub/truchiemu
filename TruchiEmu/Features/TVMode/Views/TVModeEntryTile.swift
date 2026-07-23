@@ -9,41 +9,42 @@ struct TVModeEntryTile: View {
     let isFocused: Bool
     let theme: TVModeSettings.Theme
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.tvModeScale) private var scale
     @ObservedObject private var loc = LocalizationManager.shared
     @State private var systemImage: NSImage?
     @State private var controllerImage: NSImage?
 
-    private let size: CGFloat = 144
+    private var size: CGFloat { 144 * scale }
 
     var body: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 10 * scale) {
             iconView
                 .frame(width: size, height: size)
                 .background(
-                    RoundedRectangle(cornerRadius: 32, style: .continuous)
+                    RoundedRectangle(cornerRadius: 32 * scale, style: .continuous)
                         .fill(containerFill)
                 )
                 .overlay(
-                    RoundedRectangle(cornerRadius: 32, style: .continuous)
-                        .strokeBorder(borderColor, lineWidth: isFocused ? 4 : 1.5)
+                    RoundedRectangle(cornerRadius: 32 * scale, style: .continuous)
+                        .strokeBorder(borderColor, lineWidth: isFocused ? 4 * scale : 1.5 * scale)
                 )
-                .shadow(color: shadowColor, radius: isFocused ? 22 : 6, y: isFocused ? 12 : 3)
+                .shadow(color: shadowColor, radius: isFocused ? 22 * scale : 6 * scale, y: isFocused ? 12 * scale : 3 * scale)
                 .scaleEffect(isFocused ? 1.0 : 0.92)
                 .animation(.easeOut(duration: 0.22), value: isFocused)
 
-            VStack(spacing: 4) {
+            VStack(spacing: 4 * scale) {
                 Text(entry.displayName)
-                    .font(.system(size: 28, weight: .bold))
+                    .font(.system(size: 28 * scale, weight: .bold))
                     .foregroundStyle(textColor)
                     .lineLimit(1)
                     .minimumScaleFactor(0.65)
                 if count > 0 {
                     Text("\(count)")
-                        .font(.system(size: 22, weight: .semibold))
+                        .font(.system(size: 22 * scale, weight: .semibold))
                         .foregroundStyle(textColor.opacity(0.7))
                 }
             }
-            .frame(width: size + 60)
+            .frame(width: size + 60 * scale)
         }
         .onAppear { loadSystemImage() }
         .onChange(of: entry.id) { _, _ in loadSystemImage() }
@@ -56,24 +57,24 @@ struct TVModeEntryTile: View {
                 .resizable()
                 .interpolation(.high)
                 .aspectRatio(contentMode: .fit)
-                .padding(30)
+                .padding(30 * scale)
         } else if let system = entry.system, let img = systemImage {
             Image(nsImage: img)
                 .resizable()
                 .interpolation(.high)
                 .aspectRatio(contentMode: .fit)
-                .padding(18)
+                .padding(18 * scale)
         } else if let symbol = entry.sfSymbol {
             Image(systemName: symbol)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .padding(30)
+                .padding(30 * scale)
                 .foregroundStyle(iconColor)
         } else {
             Image(systemName: "gamecontroller")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .padding(30)
+                .padding(30 * scale)
                 .foregroundStyle(iconColor)
         }
     }
@@ -127,11 +128,11 @@ struct TVModeEntryTile: View {
 
     private func loadSystemImage() {
         guard let system = entry.system else { systemImage = nil; controllerImage = nil; return }
-        systemImage = system.emuImage(size: 132)
+        systemImage = system.emuImage(size: Int(132 * scale))
         // Fall back to a slightly larger render if no 132-sized asset is cached.
         if systemImage == nil {
-            systemImage = system.emuImage(size: 600)
-            if systemImage == nil { systemImage = system.emuImage(size: 120) }
+            systemImage = system.emuImage(size: Int(600 * scale))
+            if systemImage == nil { systemImage = system.emuImage(size: Int(120 * scale)) }
         }
         controllerImage = Bundle.main.url(
             forResource: system.id,

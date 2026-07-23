@@ -11,21 +11,22 @@ struct TVModeGameTile: View {
     let isFocused: Bool
     let theme: TVModeSettings.Theme
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.tvModeScale) private var scale
     @State private var image: NSImage?
 
-    private static let preferredWidth: CGFloat = 160
+    private var preferredWidth: CGFloat { 160 * scale }
 
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 8 * scale) {
             tileContent
                 .scaleEffect(isFocused ? 1.30 : 1.0, anchor: .bottom)
                 .animation(.easeOut(duration: 0.22), value: isFocused)
 
             Text(rom.displayName)
-                .font(.system(size: 13, weight: .semibold))
+                .font(.system(size: 13 * scale, weight: .semibold))
                 .foregroundStyle(theme == .bold ? AppColors.textPrimary(colorScheme) : .primary)
                 .lineLimit(1)
-                .frame(width: imageDisplaySize.width + 40)
+                .frame(width: imageDisplaySize.width + 40 * scale)
         }
         .onAppear { preloadImage() }
         .onChange(of: rom.id) { _, _ in preloadImage() }
@@ -46,7 +47,7 @@ struct TVModeGameTile: View {
     /// box / portrait boxart keep its own aspect — no more 3:4 squashing.
     private var imageDisplaySize: CGSize {
         let aspect = imageAspect
-        let width = Self.preferredWidth
+        let width = preferredWidth
         return CGSize(width: width, height: width / aspect)
     }
 
@@ -56,7 +57,7 @@ struct TVModeGameTile: View {
     private var boxCornerRadius: CGFloat {
         let size = imageDisplaySize
         let base = min(size.width, size.height) * 0.07
-        return min(max(base, 6), 22)
+        return min(max(base, 6 * scale), 22 * scale)
     }
 
     @ViewBuilder
@@ -69,19 +70,19 @@ struct TVModeGameTile: View {
             RoundedRectangle(cornerRadius: boxCornerRadius, style: .continuous)
                 .fill(boxBackground)
                 .frame(width: imageDisplaySize.width, height: imageDisplaySize.height)
-                .shadow(color: shadowColor, radius: isFocused ? 28 : 5, y: isFocused ? 12 : 2)
+                .shadow(color: shadowColor, radius: isFocused ? 28 * scale : 5 * scale, y: isFocused ? 12 * scale : 2 * scale)
 
             // Halo behind the tile — sized to the tile, not a fixed box, so
             // each cover's accent glow matches its own proportions.
             if isFocused {
-                RoundedRectangle(cornerRadius: boxCornerRadius + 10, style: .continuous)
+                RoundedRectangle(cornerRadius: boxCornerRadius + 10 * scale, style: .continuous)
                     .fill(haloColor)
-                    .blur(radius: 32)
+                    .blur(radius: 32 * scale)
                     .opacity(0.55)
-                    .padding(-18)
+                    .padding(-18 * scale)
                     .frame(
-                        width: imageDisplaySize.width + 36,
-                        height: imageDisplaySize.height + 36
+                        width: imageDisplaySize.width + 36 * scale,
+                        height: imageDisplaySize.height + 36 * scale
                     )
                     .allowsHitTesting(false)
             }
@@ -91,8 +92,8 @@ struct TVModeGameTile: View {
                 .clipShape(RoundedRectangle(cornerRadius: boxCornerRadius, style: .continuous))
         }
         .frame(
-            width: imageDisplaySize.width + (isFocused ? 36 : 0),
-            height: imageDisplaySize.height + (isFocused ? 36 : 0)
+            width: imageDisplaySize.width + (isFocused ? 36 * scale : 0),
+            height: imageDisplaySize.height + (isFocused ? 36 * scale : 0)
         )
     }
 
@@ -105,7 +106,7 @@ struct TVModeGameTile: View {
                 .aspectRatio(contentMode: .fit)
         } else {
             // Placeholder: dark rounded rect with a small game icon.
-            RoundedRectangle(cornerRadius: boxCornerRadius - 2, style: .continuous)
+            RoundedRectangle(cornerRadius: boxCornerRadius - 2 * scale, style: .continuous)
                 .fill(boxBackground)
                 .overlay(
                     Image(systemName: "gamecontroller.fill")

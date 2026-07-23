@@ -957,6 +957,7 @@
 		BC275C67C6688C206CB4A202 /* input_systemLabels_amiga.json in Resources */ = {isa = PBXBuildFile; fileRef = DCDBB4B2BAE4809CC656CB3B /* input_systemLabels_amiga.json */; };
 		BC9C57943B2B061E72D6ABA7 /* Cheat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5641DF774B081BEE408A9052 /* Cheat.swift */; };
 		BCF6E7FD69063759D0607C29 /* HardcoreModeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BA1C0AA362D511F3CD87919 /* HardcoreModeManager.swift */; };
+		BCFC90DF9027D4305BD145A3 /* TVModeMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A158D1E971E353A7E5A7A13 /* TVModeMetrics.swift */; };
 		BD71E295B764ABB29962EA20 /* RetroButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30A8C369BBDB954516046501 /* RetroButton.swift */; };
 		BD74977960E9593789D89B41 /* Nintendo - Virtual Boy.dat in Resources */ = {isa = PBXBuildFile; fileRef = 40D1BAA97C12B70D381691F0 /* Nintendo - Virtual Boy.dat */; };
 		BD89AC605678E7AADAD3A301 /* fightdata_lastblad.json in Resources */ = {isa = PBXBuildFile; fileRef = D7216ED9D6BD09B93FFFEEE3 /* fightdata_lastblad.json */; };
@@ -1590,6 +1591,7 @@
 		395F149C0EF853E27D8FA5EC /* MAME2003PLUS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MAME2003PLUS.png; sourceTree = "<group>"; };
 		39AC83150450784449DF3657 /* fightdata_samsho4.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_samsho4.json; sourceTree = "<group>"; };
 		39DDBB9192D4EC4EC5E94A44 /* ScreenshotService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotService.swift; sourceTree = "<group>"; };
+		3A158D1E971E353A7E5A7A13 /* TVModeMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVModeMetrics.swift; sourceTree = "<group>"; };
 		3ADA8797ACD3483D9EB680FC /* input_coreLabels_bsnes_mercury_accuracy.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_bsnes_mercury_accuracy.json; sourceTree = "<group>"; };
 		3AF1127D67BDBDFCF438209A /* fightdata_xmvsf.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_xmvsf.json; sourceTree = "<group>"; };
 		3B2FDDCFB5D6B47BD7A985D0 /* fightdata_kof95.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_kof95.json; sourceTree = "<group>"; };
@@ -3335,6 +3337,7 @@
 			isa = PBXGroup;
 			children = (
 				6134273171A1D67C5727EC2A /* TVModeEntry.swift */,
+				3A158D1E971E353A7E5A7A13 /* TVModeMetrics.swift */,
 				5A899083767EEC40F32FD7C4 /* TVModeSettings.swift */,
 				D41B70CA0953A752789E4CC1 /* TVModeViewModel.swift */,
 			);
@@ -6123,6 +6126,7 @@
 				5A715B466E5613FF4980B3A8 /* TVModeEntryTile.swift in Sources */,
 				623644F24D5A2B17725FC856 /* TVModeGameDetailView.swift in Sources */,
 				F62933F7B93123D3C48B2565 /* TVModeGameTile.swift in Sources */,
+				BCFC90DF9027D4305BD145A3 /* TVModeMetrics.swift in Sources */,
 				5A3F9A411EA59DB442491CF0 /* TVModeSettings.swift in Sources */,
 				483F7D0F2BF1756AD07552C1 /* TVModeSettingsManager.swift in Sources */,
 				E08990940E23A05B3C9E8A70 /* TVModeSettingsView.swift in Sources */,
