@@ -275,6 +275,21 @@ struct ControllerSettingsView: View {
                         }
                     )
                 }
+
+                Toggle(isOn: Binding(
+                    get: { controllerService.replaceKeyboardWithController },
+                    set: { controllerService.replaceKeyboardWithController = $0 }
+                )) {
+                    HStack(spacing: 6) {
+                        Text(loc.localized("controllers.replaceKeyboard"))
+                            .font(.body)
+                        Text(loc.localized("controllers.replaceKeyboardDetail"))
+                            .font(.caption)
+                            .foregroundColor(AppColors.textTertiary(colorScheme))
+                    }
+                }
+                .toggleStyle(.switch)
+                .controlSize(.small)
             }
 
             Section(loc.localized("controllers.savedConfigs")) {

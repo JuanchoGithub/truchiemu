@@ -78,6 +78,35 @@ class SDLInputManager: ObservableObject {
         gcControllerVendors.contains(vendorID)
     }
 
+    // Tracks how many SDL game controllers with a given name have already
+    // been accepted (not skipped). Used by isDuplicateGCController below to
+    // avoid blocking a second controller of the same model when macOS only
+    // exposes one of them as a GCController (e.g. two 8BitDo controllers).
+    nonisolated(unsafe) private var acceptedSDLCountByName: [String: Int] = [:]
+
+    // Check whether this SDL controller is already handled by GCController.
+    // macOS can recognise controllers (e.g. 8BitDo) whose vendor ID isn't in
+    // gcControllerVendors. Since GCController doesn't expose USB identifiers
+    // on macOS, we match on the HID device name — both APIs read the same
+    // descriptor, so the same physical device reports the same string.
+    //
+    // To handle the case where a user has two of the same model (e.g. two
+    // 8BitDo Pro 2) but only one appears as a GCController, we only skip if
+    // the number of GC controllers with this name exceeds the number of SDL
+    // controllers with that name we've already accepted.
+    private nonisolated func isDuplicateGCController(vendorID: UInt16, sdlName: String) -> Bool {
+        guard vendorID != 0 else { return false }
+        let gcCount = GCController.controllers().filter { $0.vendorName == sdlName }.count
+        guard gcCount > 0 else { return false }
+
+        sdlDataLock.lock()
+        let accepted = acceptedSDLCountByName[sdlName, default: 0]
+        sdlDataLock.unlock()
+
+        return accepted < gcCount
+    }
+
+
     // SDL_GameController button → retroID (used for recognized controllers)
     private nonisolated static let buttonMap: [Int32: Int] = [
         SDL_CONTROLLER_BUTTON_A.rawValue: 8,
@@ -281,10 +310,10 @@ class SDLInputManager: ObservableObject {
 
         if SDL_IsGameController(deviceIndex) == SDL_TRUE {
             // Open the controller with SDL_GameController so we can read its
-            // vendor ID. If GCController already handles this device (based
-            // on USB vendor), close the SDL handle and skip it — otherwise
-            // the controller appears twice in the UI and SDL dispatches
-            // duplicate input alongside GCController's path.
+            // vendor/product IDs. If GCController already handles this device,
+            // close the SDL handle and skip it — otherwise the controller
+            // appears twice in the UI and SDL dispatches duplicate input
+            // alongside GCController's path.
             guard let controller = SDL_GameControllerOpen(deviceIndex) else {
                 let err = String(cString: SDL_GetError())
                 LoggerService.warning(category: "SDL", "Failed to open game controller: \(err)")
@@ -293,25 +322,37 @@ class SDLInputManager: ObservableObject {
             let joystick = SDL_GameControllerGetJoystick(controller)
             let instanceID = SDL_JoystickInstanceID(joystick)
             let vendor = SDL_JoystickGetVendor(joystick)
+            let product = SDL_JoystickGetProduct(joystick)
 
-            if vendor != 0 && Self.isKnownGCVendor(vendorID: vendor) {
+            let sdlName: String? = SDL_GameControllerName(controller).map { String(cString: $0) }
+            let isKnownGCVendor = vendor != 0 && Self.isKnownGCVendor(vendorID: vendor)
+            let isGCCDuplicate = vendor != 0 && sdlName != nil && isDuplicateGCController(vendorID: vendor, sdlName: sdlName!)
+
+            if isKnownGCVendor || isGCCDuplicate {
+                let version = SDL_JoystickGetProductVersion(joystick)
+                let serial = SDL_JoystickGetSerial(joystick).map { String(cString: $0) }
+                var guid = SDL_JoystickGetGUID(joystick)
+                let guidStr = Self.formatGUID(&guid)
                 SDL_GameControllerClose(controller)
-                if let name = SDL_GameControllerName(controller) {
-                    LoggerService.info(category: "SDL", "Game controller '\(String(cString: name))' (instance \(instanceID), vendor 0x\(String(format: "%04X", vendor))) skipped — handled by GCController")
+                if let name = sdlName {
+                    LoggerService.info(category: "SDL", "Game controller '\(name)' (instance \(instanceID), vendor 0x\(String(format: "%04X", vendor)), product 0x\(String(format: "%04X", product)), version \(version)) skipped — GCController handles it. serial=\(serial ?? "nil") guid=\(guidStr)")
                 } else {
-                    LoggerService.info(category: "SDL", "Game controller (instance \(instanceID), vendor 0x\(String(format: "%04X", vendor))) skipped — handled by GCController")
+                    LoggerService.info(category: "SDL", "Game controller (instance \(instanceID), vendor 0x\(String(format: "%04X", vendor)), product 0x\(String(format: "%04X", product)), version \(version)) skipped — GCController handles it. serial=\(serial ?? "nil") guid=\(guidStr)")
                 }
                 return
             }
 
             sdlDataLock.lock()
+            if let name = sdlName {
+                acceptedSDLCountByName[name, default: 0] += 1
+            }
             gameControllers[instanceID] = controller
             joystickIsGameController.insert(instanceID)
             let port = assignPortLocked(for: instanceID)
             sdlDataLock.unlock()
 
-            if let name = SDL_GameControllerName(controller) {
-                LoggerService.info(category: "SDL", "Game controller '\(String(cString: name))' (instance \(instanceID)) opened on port \(port)")
+            if let name = sdlName {
+                LoggerService.info(category: "SDL", "Game controller '\(name)' (instance \(instanceID)) opened on port \(port)")
             } else {
                 LoggerService.info(category: "SDL", "Game controller (instance \(instanceID)) opened on port \(port)")
             }
@@ -758,7 +799,7 @@ class SDLInputManager: ObservableObject {
         return (UInt16(vendor), UInt16(product))
     }
 
-    private static func formatGUID(_ guid: inout SDL_JoystickGUID) -> String {
+    private nonisolated static func formatGUID(_ guid: inout SDL_JoystickGUID) -> String {
         return withUnsafeBytes(of: &guid) { rawBuf -> String in
             let bytes = Array(rawBuf)
             return bytes.map { String(format: "%02X", $0) }.joined()

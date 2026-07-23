@@ -627,6 +627,8 @@
   "controllers.pressKey": "Pressione uma tecla…",
   "controllers.searchingWithin": "Buscando na seção",
   "controllers.connectedControllers": "Controles Conectados",
+  "controllers.replaceKeyboard": "Próximo controle substitui Teclado",
+  "controllers.replaceKeyboardDetail": "Novos controles pegam o slot do teclado em vez do próximo slot livre",
   "controllers.editMapping": "Ver/editar mapeamento deste controle",
   "controllers.playerSlot": "Jogador",
   "controllers.playerShort": "P%d",

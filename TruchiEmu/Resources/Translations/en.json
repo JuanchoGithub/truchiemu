@@ -627,6 +627,8 @@
   "controllers.pressKey": "Press a key…",
   "controllers.searchingWithin": "Searching within section",
   "controllers.connectedControllers": "Connected Controllers",
+  "controllers.replaceKeyboard": "Next controller replaces Keyboard",
+  "controllers.replaceKeyboardDetail": "New controllers take the keyboard's player slot instead of the next open slot",
   "controllers.editMapping": "View/edit this controller's mapping",
   "controllers.playerSlot": "Player",
   "controllers.playerShort": "P%d",

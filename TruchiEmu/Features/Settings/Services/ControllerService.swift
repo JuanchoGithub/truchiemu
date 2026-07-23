@@ -38,6 +38,11 @@ class ControllerService: ObservableObject {
 
     var sdlSlotAssignments: [Int32: Set<Int>] = [:]
 
+    var replaceKeyboardWithController: Bool {
+        get { AppSettings.getBool("replaceKeyboardWithController", defaultValue: false) }
+        set { AppSettings.setBool("replaceKeyboardWithController", value: newValue) }
+    }
+
     private var cancellables = Set<AnyCancellable>()
 
     var parentModePlayers: Set<Int> {
@@ -144,16 +149,20 @@ class ControllerService: ObservableObject {
         }
 
         let unassigned = allGCs.filter { sessionSlotAssignments[ObjectIdentifier($0)] == nil }
-        var nextSlot = 1
         for gc in unassigned {
-            while nextSlot <= 4 && hasControllerAssigned(to: nextSlot) {
-                nextSlot += 1
+            let taken = allControllerSlots()
+            let totalControllers = taken.count + 1
+            if totalControllers > 4 {
+                sessionSlotAssignments[ObjectIdentifier(gc)] = []
+                continue
             }
-            if nextSlot <= 4 {
-                sessionSlotAssignments[ObjectIdentifier(gc)] = [nextSlot]
-                nextSlot += 1
-            } else {
-                sessionSlotAssignments[ObjectIdentifier(gc)] = [1]
+            var available = Set(1...4).subtracting(taken)
+            if !replaceKeyboardWithController {
+                let withoutKB = available.subtracting(keyboardAssignedPlayers)
+                if !withoutKB.isEmpty { available = withoutKB }
+            }
+            if let slot = available.min() {
+                sessionSlotAssignments[ObjectIdentifier(gc)] = [slot]
             }
         }
 
@@ -204,12 +213,21 @@ class ControllerService: ObservableObject {
         for key in removedSDLKeys { sdlSlotAssignments.removeValue(forKey: key) }
 
         let unassignedSDL = sdlIDs.filter { sdlSlotAssignments[$0] == nil }
-        var sdlNextSlot = 1
         for instanceID in unassignedSDL {
-            while sdlNextSlot <= 4 && hasControllerAssigned(to: sdlNextSlot) {
-                sdlNextSlot += 1
+            let taken = allControllerSlots()
+            let totalControllers = taken.count + 1
+            if totalControllers > 4 {
+                sdlSlotAssignments[instanceID] = []
+                continue
             }
-            sdlSlotAssignments[instanceID] = sdlNextSlot <= 4 ? [sdlNextSlot] : [1]
+            var available = Set(1...4).subtracting(taken)
+            if !replaceKeyboardWithController {
+                let withoutKB = available.subtracting(keyboardAssignedPlayers)
+                if !withoutKB.isEmpty { available = withoutKB }
+            }
+            if let slot = available.min() {
+                sdlSlotAssignments[instanceID] = [slot]
+            }
         }
 
         for instanceID in sdlIDs {
@@ -271,6 +289,15 @@ class ControllerService: ObservableObject {
         if activePlayerIndex == 0 && !players.isEmpty {
             activePlayerIndex = 1
         }
+
+        // Re-wire GC controller input on active runners when controllers
+        // change mid-game, so newly connected controllers get their
+        // valueChangedHandler wired up with the correct slot assignment.
+        if RunningGamesTracker.shared.isGameRunning {
+            for wc in GameLauncher.shared.allActiveControllers() {
+                wc.runner?.setupGamepadInput()
+            }
+        }
     }
 
     var keyboardAssignedPlayers: Set<Int> {
@@ -291,7 +318,13 @@ class ControllerService: ObservableObject {
     private func hasControllerAssigned(to slot: Int) -> Bool {
         sessionSlotAssignments.values.contains { $0.contains(slot) }
             || sdlSlotAssignments.values.contains { $0.contains(slot) }
-            || keyboardAssignedPlayers.contains(slot)
+    }
+
+    private func allControllerSlots() -> Set<Int> {
+        var slots = Set<Int>()
+        for s in sessionSlotAssignments.values { slots.formUnion(s) }
+        for s in sdlSlotAssignments.values { slots.formUnion(s) }
+        return slots
     }
 
     private func ensureP1Exists() {
