@@ -275,6 +275,16 @@ final class GamepadNavCoordinator: ObservableObject {
         NotificationCenter.default.post(name: .gamepadShowGameToolbar, object: nil)
     }
 
+    private func enterTVMode() {
+        // Bound while in the library. No-op when TV Mode is already active or
+        // a game is running — the running-game case is also gated upstream in
+        // `GamepadNavigationManager.poll`, but the early-return keeps a stale
+        // bind from racing an in-flight launch.
+        guard !TVModeSettingsManager.shared.isActive,
+              RunningGamesTracker.shared.isGameRunning == false else { return }
+        TVModeSettingsManager.shared.enter()
+    }
+
     private func applySidebarSelection() {
         let visible = visibleSidebarFilters
         guard navManager.sidebarIndex < visible.count else { return }
@@ -335,6 +345,7 @@ final class GamepadNavCoordinator: ObservableObject {
             }
         case .resetFilters:
             break
+        case .enterTVMode: enterTVMode()
         }
     }
 }

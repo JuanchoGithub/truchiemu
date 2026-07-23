@@ -1156,18 +1156,22 @@ struct SettingsSectionCard<Content: View>: View {
 }
 
 // A settings row with a label and control, properly aligned.
+// Uses `.top` vertical alignment so wrapped labels and multi-line descriptions
+// stay flush with the top of the control (consistent across toggles, pickers,
+// and buttons — which all have varying intrinsic heights and otherwise drift
+// when paired with multi-line text).
 struct SettingsRow<Content: View>: View {
     let label: String
     let description: String?
     @ViewBuilder var control: Content
     @Environment(\.colorScheme) private var colorScheme
-    
+
     init(_ label: String, description: String? = nil, @ViewBuilder control: () -> Content) {
         self.label = label
         self.description = description
         self.control = control()
     }
-    
+
     var body: some View {
         HStack(alignment: .top, spacing: AppSpacing.xl) {
             VStack(alignment: .leading, spacing: AppSpacing.xs) {
@@ -1179,7 +1183,7 @@ struct SettingsRow<Content: View>: View {
                         .foregroundStyle(AppColors.textSecondary(colorScheme))
                 }
             }
-            Spacer()
+            Spacer(minLength: AppSpacing.md)
             control
         }
         .padding(.vertical, AppSpacing.sm)

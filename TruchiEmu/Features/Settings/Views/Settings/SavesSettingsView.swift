@@ -65,15 +65,14 @@ struct SavesSettingsView: View {
                 .foregroundStyle(AppColors.textSecondary(colorScheme))
 
             if progressiveSaves {
-                HStack {
-                    Text(loc.localized("settings.saves.autoSlotCount"))
-                    Spacer()
-                    Picker("", selection: $autoSlotCount) {
+                SettingsRow(loc.localized("settings.saves.autoSlotCount")) {
+                    Picker(loc.localized("settings.saves.autoSlotCount"), selection: $autoSlotCount) {
                         ForEach(1...5, id: \.self) { count in
                             Text("\(count)").tag(count)
                         }
                     }
                     .pickerStyle(.segmented)
+                    .labelsHidden()
                     .frame(width: 200)
                 }
                 Text(loc.localized("settings.saves.slotCountDescription"))

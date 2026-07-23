@@ -163,7 +163,7 @@ VStack(alignment: .leading, spacing: AppSpacing.xs) {
                     .foregroundStyle(AppColors.textSecondary(colorScheme))
             }
             
-            HStack {
+            HStack(alignment: .firstTextBaseline, spacing: AppSpacing.xl) {
                 Picker(loc.localized("bezel.view"), selection: $selectedSystem) {
                     Text(loc.localized("bezel.allSystems")).tag("all")
                     Divider()
@@ -173,9 +173,9 @@ VStack(alignment: .leading, spacing: AppSpacing.xs) {
                 }
                 .labelsHidden()
                 .disabled(apiService.progressTracker.isRunning)
-                
-                Spacer()
-                
+
+                Spacer(minLength: AppSpacing.md)
+
                 Button(action: runDownload) {
                     if apiService.progressTracker.isRunning {
                         ProgressView().controlSize(.small).padding(.horizontal, AppSpacing.xs)

@@ -99,6 +99,19 @@ struct GamepadNavSettingsView: View {
                     .id("section-gameWindow")
                 }
 
+                if !isSearching || matchesPage() || matchesAnyLabel(tvModeActions) {
+                    Section {
+                        actionGrid(tvModeActions)
+                        Text(loc.localized("gamepadNav.section.tvModeDescription"))
+                            .font(.caption)
+                            .foregroundStyle(AppColors.textSecondary(colorScheme))
+                            .fixedSize(horizontal: false, vertical: true)
+                    } header: {
+                        Label(loc.localized("gamepadNav.section.tvMode"), systemImage: "tv")
+                    }
+                    .id("section-tvMode")
+                }
+
                 if !isSearching || matchesPage() {
                     Section(header: Label(loc.localized("gamepadNav.section.reset"), systemImage: "arrow.uturn.backward")) {
                         VStack(alignment: .leading, spacing: AppSpacing.xs) {
@@ -123,7 +136,8 @@ struct GamepadNavSettingsView: View {
                     && !matchesAnyLabel(scrollActions)
                     && !matchesAnyLabel(coreActions)
                     && !matchesAnyLabel(libraryActions)
-                    && !matchesAnyLabel(gameWindowActions) {
+                    && !matchesAnyLabel(gameWindowActions)
+                    && !matchesAnyLabel(tvModeActions) {
                     Section {
                         Text("\(loc.localized("general.noMatchingSettings")) \"\(searchText)\"")
                             .font(.caption)
@@ -180,6 +194,10 @@ struct GamepadNavSettingsView: View {
 
     private var gameWindowActions: [GamepadNavAction] {
         [.showGameToolbar, .closeWindow]
+    }
+
+    private var tvModeActions: [GamepadNavAction] {
+        [.enterTVMode]
     }
 
     // MARK: Grid rows

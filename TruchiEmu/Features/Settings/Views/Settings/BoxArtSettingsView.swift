@@ -124,15 +124,10 @@ struct BoxArtSettingsView: View {
                 Section {
                     let manifestService = LibretroThumbnailManifestService.shared
                     VStack(alignment: .leading, spacing: AppSpacing.md) {
-                        HStack {
-                            VStack(alignment: .leading, spacing: AppSpacing.xs) {
-                                Text(loc.localized("boxArt.assetIndexing"))
-                                    .font(.body)
-                                Text(loc.localized("boxArt.assetIndexingDescription"))
-                                    .font(.caption)
-                                    .foregroundStyle(AppColors.textSecondary(colorScheme))
-                            }
-                            Spacer()
+                        SettingsRow(
+                            loc.localized("boxArt.assetIndexing"),
+                            description: loc.localized("boxArt.assetIndexingDescription")
+                        ) {
                             Button(action: {
                                 Task { await manifestService.refreshAllManifests() }
                             }) {
@@ -239,9 +234,7 @@ struct BoxArtSettingsView: View {
         if useLaunchBox {
             Toggle(loc.localized("launchbox.autoSync"), isOn: $launchBoxDownloadAfterScan)
             if let syncDate = launchBoxLastSync {
-                HStack {
-                    Text(loc.localized("launchbox.lastSync"))
-                    Spacer()
+                LabeledContent(loc.localized("launchbox.lastSync")) {
                     Text(syncDate, style: .date)
                         .foregroundStyle(.secondary)
                 }

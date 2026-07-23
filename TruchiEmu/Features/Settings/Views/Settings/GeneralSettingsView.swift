@@ -136,20 +136,21 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
             ColorPicker(loc.localized("settings.customColor"), selection: $pendingCustomColor, supportsOpacity: false)
         }
 
-        HStack {
-            Toggle(loc.localized("settings.toolbarAccent"), isOn: $pendingToolbarAccent)
-            Spacer()
-            Toggle(loc.localized("settings.tintedSurfaces"), isOn: $pendingTintedSurfaces)
-        }
-        HStack(spacing: AppSpacing.xs) {
-            Text(loc.localized("settings.toolbarAccentDescription"))
-                .font(.caption)
-                .foregroundStyle(AppColors.textSecondary(colorScheme))
-            Spacer()
-            Text(loc.localized("settings.tintedSurfacesDescription"))
-                .font(.caption)
-                .foregroundStyle(AppColors.textSecondary(colorScheme))
-        }
+                    HStack(alignment: .firstTextBaseline, spacing: AppSpacing.xl) {
+                        Toggle(loc.localized("settings.toolbarAccent"), isOn: $pendingToolbarAccent)
+                        Spacer(minLength: AppSpacing.md)
+                        Toggle(loc.localized("settings.tintedSurfaces"), isOn: $pendingTintedSurfaces)
+                    }
+                    HStack(alignment: .top, spacing: AppSpacing.xl) {
+                        Text(loc.localized("settings.toolbarAccentDescription"))
+                            .font(.caption)
+                            .foregroundStyle(AppColors.textSecondary(colorScheme))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        Text(loc.localized("settings.tintedSurfacesDescription"))
+                            .font(.caption)
+                            .foregroundStyle(AppColors.textSecondary(colorScheme))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
 
         VStack(alignment: .leading, spacing: AppSpacing.sm) {
             Text(loc.localized("settings.theme.previewTitle"))
@@ -212,33 +213,33 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
                         .font(.caption)
                         .foregroundStyle(AppColors.textSecondary(colorScheme))
 
-                    HStack {
-                        Text(loc.localized("settings.systemNotifications"))
-                        Spacer()
-                        if NotificationService.shared.isAuthorized {
-                            Button(loc.localized("settings.notificationsTest")) {
-                                NotificationService.shared.sendNotification(
-                                    title: loc.localized("settings.notificationsTestTitle"),
-                                    body: loc.localized("settings.notificationsTestBody")
-                                )
-                            }
-                            .buttonStyle(.bordered)
-                            .controlSize(.small)
-                        }
-                        Button(NotificationService.shared.isAuthorized ? loc.localized("settings.enabled") : loc.localized("settings.enable")) {
-                            Task {
-                                let granted = await NotificationService.shared.requestAuthorization()
-                                if granted {
+                    SettingsRow(loc.localized("settings.systemNotifications")) {
+                        HStack(spacing: AppSpacing.sm) {
+                            if NotificationService.shared.isAuthorized {
+                                Button(loc.localized("settings.notificationsTest")) {
                                     NotificationService.shared.sendNotification(
                                         title: loc.localized("settings.notificationsTestTitle"),
                                         body: loc.localized("settings.notificationsTestBody")
                                     )
                                 }
+                                .buttonStyle(.bordered)
+                                .controlSize(.small)
                             }
+                            Button(NotificationService.shared.isAuthorized ? loc.localized("settings.enabled") : loc.localized("settings.enable")) {
+                                Task {
+                                    let granted = await NotificationService.shared.requestAuthorization()
+                                    if granted {
+                                        NotificationService.shared.sendNotification(
+                                            title: loc.localized("settings.notificationsTestTitle"),
+                                            body: loc.localized("settings.notificationsTestBody")
+                                        )
+                                    }
+                                }
+                            }
+                            .disabled(NotificationService.shared.isAuthorized)
+                            .buttonStyle(.bordered)
+                            .controlSize(.small)
                         }
-                        .disabled(NotificationService.shared.isAuthorized)
-                        .buttonStyle(.bordered)
-                        .controlSize(.small)
                     }
                 }
                 .id("section-application")
