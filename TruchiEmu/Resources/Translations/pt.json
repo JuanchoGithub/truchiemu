@@ -2204,6 +2204,7 @@
     "gamepadNav.action.focusContentZone": "Focar conteúdo",
     "gamepadNav.action.focusToolbarZone": "Focar barra de ferramentas",
     "gamepadNav.action.closeWindow": "Fechar janela",
+    "gamepadNav.action.resetFilters": "Redefinir filtros",
     "gamepadNav.unbound": "Sem atribuição",
     "gamepadNav.bindButton": "Botão atribuído",
     "gamepadNav.conflictResolved": "Conflito resolvido",
@@ -2388,5 +2389,6 @@
     "tvMode.coreDownload.cycle": "Alternar núcleos",
     "tvMode.coreDownload.actions": "Alternar ação",
     "tvMode.coreDownload.confirm": "Confirmar",
-    "tvMode.coreDownload.cancel": "Cancelar"
+    "tvMode.coreDownload.cancel": "Cancelar",
+    "tvMode.sortHUD.alphabetical": "Nome"
 }

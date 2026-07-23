@@ -11,6 +11,30 @@ final class TVModeViewModel: ObservableObject {
     @Published var page: Page = .row1
     @Published var theme: TVModeSettings.Theme
 
+    /// Sort mode applied to the games row. Mirrors the main library's
+    /// two-value sort (`sortByLastPlayed` / `sortByLastAdded` AppSettings
+    /// booleans) but as a single tri-state so the L3 rotate action can
+    /// cycle through them. Reset by pressing L3+R3.
+    @Published var sortMode: SortMode = .alphabetical
+
+    /// Brief HUD overlay shown after `cycleSortMode()` / `resetSortMode()`.
+    /// `nil` when no overlay is on screen.
+    @Published var sortHudLabel: String? = nil
+
+    enum SortMode: String, CaseIterable {
+        case alphabetical
+        case lastPlayed
+        case lastAdded
+
+        var localizationKey: String {
+            switch self {
+            case .alphabetical: return "tvMode.sortHUD.alphabetical"
+            case .lastPlayed:    return "app.lastPlayed"
+            case .lastAdded:     return "app.lastAdded"
+            }
+        }
+    }
+
     enum Page: Equatable {
         case row1      // systems row focused
         case row2      // games row focused
@@ -248,18 +272,20 @@ final class TVModeViewModel: ObservableObject {
         case .favorites:
             roms = library.roms.filter { $0.isFavorite && !$0.isHidden }
         case .recent:
+            // "Recent" entry filters to games that have been played; the
+            // sort mode decides ordering (defaulting to last-played).
             roms = library.roms.filter { $0.lastPlayed != nil && !$0.isHidden }
-            .sorted { ($0.lastPlayed ?? .distantPast) > ($1.lastPlayed ?? .distantPast) }
         case .lastAdded:
+            // "Last Added" entry shows all games (regardless of sort mode);
+            // the sort mode decides ordering (defaulting to last-added).
             roms = library.roms.filter { !$0.isHidden }
-            .sorted { $0.dateAdded > $1.dateAdded }
         case .system(let sys):
             let internalIDs = Set(systemDatabase.allInternalIDs(forDisplayID: sys.id))
             var filtered = library.roms.filter { internalIDs.contains($0.systemID ?? "") && !$0.isHidden }
             if sys.id == "mame" {
                 filtered = filtered.filter { rom in rom.mameRomType == "game" || rom.mameRomType == nil }
             }
-            roms = filtered.sorted { $0.displayName.localizedCaseInsensitiveCompare($1.displayName) == .orderedAscending }
+            roms = filtered
         case .retroAchievements:
             roms = library.roms.filter { $0.raMatchStatus == "matched" && !$0.isHidden }
         case .hidden:
@@ -269,8 +295,66 @@ final class TVModeViewModel: ObservableObject {
         case .category:
             roms = []
         }
-        games = roms
+        games = applySort(roms)
         if selectedGameIndex >= roms.count { selectedGameIndex = max(0, roms.count - 1) }
+    }
+
+    /// Sorts `roms` per the current `sortMode`. The `.recent` entry always
+    /// sorts by last-played (its whole point), `.lastAdded` always by
+    /// date-added. Other entries follow `sortMode`.
+    private func applySort(_ roms: [ROM]) -> [ROM] {
+        guard let entry = selectedEntry else { return roms }
+        switch entry.filter {
+        case .recent:    return roms.sorted { ($0.lastPlayed ?? .distantPast) > ($1.lastPlayed ?? .distantPast) }
+        case .lastAdded: return roms.sorted { $0.dateAdded > $1.dateAdded }
+        default: break
+        }
+        switch sortMode {
+        case .alphabetical:
+            return roms.sorted { $0.displayName.localizedCaseInsensitiveCompare($1.displayName) == .orderedAscending }
+        case .lastPlayed:
+            return roms.sorted { a, b in
+                switch (a.lastPlayed, b.lastPlayed) {
+                case (nil, nil): return a.displayName.localizedCaseInsensitiveCompare(b.displayName) == .orderedAscending
+                case (_, nil):   return true
+                case (nil, _):   return false
+                case let (dA, dB): return dA! > dB!
+                }
+            }
+        case .lastAdded:
+            return roms.sorted { $0.dateAdded > $1.dateAdded }
+        }
+    }
+
+    /// Rotates `sortMode` through alphabetical → lastPlayed → lastAdded →
+    /// alphabetical → …, applies it to the games row, and flashes the HUD.
+    func cycleSortMode() {
+        let all = SortMode.allCases
+        guard let idx = all.firstIndex(of: sortMode) else { sortMode = .alphabetical; return }
+        sortMode = all[(idx + 1) % all.count]
+        recomputeGames()
+        flashSortHud()
+    }
+
+    /// Resets `sortMode` to alphabetical and re-applies the row.
+    func resetSortMode() {
+        guard sortMode != .alphabetical else { flashSortHud(); return }
+        sortMode = .alphabetical
+        recomputeGames()
+        flashSortHud()
+    }
+
+    /// Surfaces the `sortHudLabel` for ~1.6 s — long enough for the user to
+    /// read the new mode without disowning the row. The auto-hide is one-time
+    /// per cycle (cancel-and-replace: rapid R3 presses refresh the timer).
+    private var sortHudWorkItem: DispatchWorkItem?
+    private func flashSortHud() {
+        let loc = LocalizationManager.shared
+        sortHudLabel = loc.localized(sortMode.localizationKey)
+        sortHudWorkItem?.cancel()
+        let work = DispatchWorkItem { [weak self] in self?.sortHudLabel = nil }
+        sortHudWorkItem = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.6, execute: work)
     }
 
     func count(for filter: LibraryFilter) -> Int {

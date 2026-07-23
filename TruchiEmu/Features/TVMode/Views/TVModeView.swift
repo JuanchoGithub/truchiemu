@@ -127,6 +127,11 @@ struct TVModeView: View {
             contentLayer
             topBar
             bottomHint
+            if let hudLabel = viewModel.sortHudLabel {
+                sortHUD(label: hudLabel)
+                    .transition(.opacity)
+                    .zIndex(200)
+            }
             if let pending = coreManager.pendingDownload {
                 TVModeCoreDownloadOverlay(
                     pending: pending,
@@ -352,6 +357,34 @@ struct TVModeView: View {
         }
     }
 
+    /// Brief sort-mode pill that surfaces on L3 / L3+R3 to confirm the new
+    /// mode. Sits at top-centre of the screen; auto-hides per
+    /// `TVModeViewModel.flashSortHud()`.
+    private func sortHUD(label: String) -> some View {
+        VStack {
+            HStack(spacing: 8 * scale) {
+                Image(systemName: "arrow.up.arrow.down.circle.fill")
+                    .font(.system(size: 16 * scale, weight: .semibold))
+                Text(verbatim: loc.localized("app.sortBy"))
+                    .font(.system(size: 13 * scale, weight: .medium))
+                    .foregroundStyle(.secondary)
+                Text(verbatim: label)
+                    .font(.system(size: 14 * scale, weight: .semibold))
+                    .foregroundStyle(.primary)
+            }
+            .padding(.horizontal, 18 * scale).padding(.vertical, 10 * scale)
+            .background(
+                Capsule().fill(AppColors.windowBackground(colorScheme, tinted: false).opacity(0.92))
+            )
+            .overlay(
+                Capsule().strokeBorder(AppColors.brandAccent.opacity(0.5), lineWidth: 1 * scale)
+            )
+            .shadow(color: .black.opacity(0.35), radius: 12, y: 4)
+            .padding(.top, 28 * scale)
+            Spacer()
+        }
+    }
+
     @ViewBuilder
     private func hintChip(_ label: String, active: Bool) -> some View {
         Text(label)
@@ -451,7 +484,14 @@ extension TVModeView {
         case .contextMenu:
             showTVSettingsOverlay = true
         case .toggleViewMode, .focusSearch:
+            // X and SELECT both cycle the theme. L3 (was also routed here)
+            // is repurposed to rotate the game-row sort mode — see
+            // `.cycleSortOrder` / `.resetFilters` cases below.
             cycleTheme()
+        case .cycleSortOrder:
+            viewModel.cycleSortMode()
+        case .resetFilters:
+            viewModel.resetSortMode()
         case .openSettings:
             // SELECT button cycles the bold/muted theme instead of opening settings.
             cycleTheme()

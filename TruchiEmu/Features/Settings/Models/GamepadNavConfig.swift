@@ -106,6 +106,7 @@ enum GamepadNavAction: String, Codable, CaseIterable, Identifiable {
     case launchGame
     case showGameToolbar
     case closeWindow
+    case resetFilters
 
     var id: String { rawValue }
 
@@ -216,6 +217,7 @@ final class GamepadNavConfigManager: ObservableObject {
         .launchGame:        GamepadNavConfig(binding: GamepadNavBinding(button: .start)),
         .showGameToolbar:   GamepadNavConfig(binding: GamepadNavBinding(button: .startPlusSelect)),
         .closeWindow:      GamepadNavConfig(binding: .unbound),
+        .resetFilters:      GamepadNavConfig(binding: GamepadNavBinding(button: .l3PlusR3)),
     ]
 
     func update(_ action: GamepadNavAction, binding: GamepadNavBinding) {

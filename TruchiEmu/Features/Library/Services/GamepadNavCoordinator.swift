@@ -333,6 +333,8 @@ final class GamepadNavCoordinator: ObservableObject {
             } else {
                 showGameToolbar()
             }
+        case .resetFilters:
+            break
         }
     }
 }

@@ -2206,6 +2206,7 @@
     "gamepadNav.action.focusContentZone": "Focus Content",
     "gamepadNav.action.focusToolbarZone": "Focus Toolbar",
     "gamepadNav.action.closeWindow": "Close Window",
+    "gamepadNav.action.resetFilters": "Reset Filters",
     "gamepadNav.unbound": "Not bound",
     "gamepadNav.bindButton": "Bound Button",
     "gamepadNav.conflictResolved": "Conflict resolved",
@@ -2390,5 +2391,6 @@
     "tvMode.coreDownload.cycle": "Cycle cores",
     "tvMode.coreDownload.actions": "Switch action",
     "tvMode.coreDownload.confirm": "Confirm",
-    "tvMode.coreDownload.cancel": "Cancel"
+    "tvMode.coreDownload.cancel": "Cancel",
+    "tvMode.sortHUD.alphabetical": "Name"
 }
