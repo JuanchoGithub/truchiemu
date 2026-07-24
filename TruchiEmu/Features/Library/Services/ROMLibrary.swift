@@ -920,7 +920,7 @@ let idsToPurge = orphans.map { $0.id }
         // re-scan it so any ROMs (including ones from a previous crashed/empty
         // scan) are picked up. Simply returning early here left a folder with 0
         // ROMs permanently un-scannable because every subsequent add was a no-op.
-        if let existing = primaryFolders.first(where: { $0.url.path == url.path }) {
+        if primaryFolders.contains(where: { $0.url.path == url.path }) {
             LoggerService.info(category: "ROMLibrary", "Folder already registered — re-scanning as refresh: \(url.path)")
             if scanAfter {
                 isScanning = true
