@@ -192,7 +192,9 @@ struct ControllerSettingsView: View {
                     Text(loc.localized("controllers.wii.auto")).tag(AppSettings.WiiControllerType.auto)
                     Text(loc.localized("controllers.wii.wiimote")).tag(AppSettings.WiiControllerType.wiimote)
                     Text(loc.localized("controllers.wii.wiimoteSideways")).tag(AppSettings.WiiControllerType.wiimoteSideways)
+                    Text(loc.localized("controllers.wii.wiimoteNunchuk")).tag(AppSettings.WiiControllerType.wiimoteNunchuk)
                     Text(loc.localized("controllers.wii.wiimoteClassic")).tag(AppSettings.WiiControllerType.wiimoteClassic)
+                    Text(loc.localized("controllers.wii.wiimoteClassicPro")).tag(AppSettings.WiiControllerType.wiimoteClassicPro)
                 }
                 Text(loc.localized("controllers.wiiControllerTypeHelp"))
                     .font(.caption)

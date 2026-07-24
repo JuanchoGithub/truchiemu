@@ -402,11 +402,11 @@ class FocusableMTKView: MTKView {
 
     // MARK: - Input Capture Helpers
 
-    /// Returns true if the current game should use full input capture (DOS/ScummVM)
+    /// Returns true if the current game should use full input capture (DOS/ScummVM/Wii/GameCube)
     func shouldCaptureInputForCurrentGame() -> Bool {
         guard let runner = runner else { return false }
         let systemID = runner.systemID.lowercased()
-        return systemID == "dos" || systemID == "scummvm"
+        return systemID == "dos" || systemID == "scummvm" || systemID == "wii" || systemID == "gamecube"
     }
 
     /// Updates input capture state when the runner changes

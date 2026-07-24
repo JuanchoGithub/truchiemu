@@ -364,17 +364,22 @@ enum AppSettings {
         case auto = "auto"
         case wiimote = "wiimote"
         case wiimoteSideways = "wiimoteSideways"
+        case wiimoteNunchuk = "wiimoteNunchuk"
         case wiimoteClassic = "wiimoteClassic"
+        case wiimoteClassicPro = "wiimoteClassicPro"
 
-        /// libretro device subtype for Dolphin (RETRO_DEVICE_JOYPAD | subtype << 8).
-        /// Dolphin has no "Wii U Pro" device; the standard gamepad mapping is
-        /// Wiimote + Classic Controller (1025). `.auto` resolves at launch.
+        /// libretro device subtype for Dolphin ((subtype << 8) | RETRO_DEVICE_JOYPAD).
+        /// Values from dolphin libretro Input.cpp: RETRO_DEVICE_WIIMOTE=1,
+        /// RETRO_DEVICE_WIIMOTE_SW=(2<<8)|1=513, RETRO_DEVICE_WIIMOTE_NC=(3<<8)|1=769,
+        /// RETRO_DEVICE_WIIMOTE_CC=(4<<8)|1=1025, RETRO_DEVICE_WIIMOTE_CC_PRO=(5<<8)|1=1281.
         var deviceValue: UInt32? {
             switch self {
             case .auto: return nil
             case .wiimote: return 1
             case .wiimoteSideways: return 513
+            case .wiimoteNunchuk: return 769
             case .wiimoteClassic: return 1025
+            case .wiimoteClassicPro: return 1281
             }
         }
     }
