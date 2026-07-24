@@ -136,10 +136,6 @@ struct AppUpdateModeView: View {
         isChecking = true
         defer { isChecking = false }
         checkError = nil
-        do {
-            _ = await updateService.checkForUpdates()
-        } catch {
-            checkError = error.localizedDescription
-        }
+        _ = await updateService.checkForUpdates()
     }
 }

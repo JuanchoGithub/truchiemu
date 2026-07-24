@@ -173,6 +173,13 @@ struct SavesSettingsView: View {
                 Text(loc.localized("settings.saves.saveManagerDescription"))
                     .font(.caption)
                     .foregroundStyle(AppColors.textSecondary(colorScheme))
+                Button {
+                    showSaveManager = true
+                } label: {
+                    Label(loc.localized("settings.saves.saveManager"), systemImage: "externaldrive")
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
             } header: {
                 Label(loc.localized("settings.saves.manage"), systemImage: "wrench.and.screwdriver")
             }
