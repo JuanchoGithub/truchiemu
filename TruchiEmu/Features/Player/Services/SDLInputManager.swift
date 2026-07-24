@@ -508,7 +508,7 @@ class SDLInputManager: ObservableObject {
         sdlDataLock.lock()
         let port = portForInstance[event.which]
         sdlDataLock.unlock()
-        guard let port else { return }
+        guard port != nil else { return }
 
         let axis = Int32(event.axis)
         if axis == SDL_CONTROLLER_AXIS_TRIGGERLEFT.rawValue {
@@ -610,7 +610,7 @@ class SDLInputManager: ObservableObject {
         let isGC = joystickIsGameController.contains(event.which)
         let port = portForInstance[event.which]
         sdlDataLock.unlock()
-        guard !isGC, let port else { return }
+        guard !isGC, port != nil else { return }
 
         let axis = Int(event.axis)
         if axis == 4 {
