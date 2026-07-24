@@ -24,7 +24,7 @@ Download and install from my releases page: https://github.com/JuanchoGithub/tru
 
 TruchiEmu is a modern, high-performance emulator built from the ground up with SwiftUI. It brings your favorite classic consoles to life with a stunning interface, immersive visuals, and effortless library management.
 
-https://github.com/user-attachments/assets/c59b9283-b5bd-49d0-9631-f0d6bc247d60
+https://github.com/user-attachments/assets/c2613ee8-2c9c-40fb-805d-7e27081cb9e7
 
 ---
 
@@ -35,7 +35,7 @@ Forget clunky, outdated menus. TruchiEmu features a polished, native macOS inter
 
 ### 📺 Immersive Visuals
 
-https://github.com/user-attachments/assets/46a734d8-9c25-4d94-bb81-80cb53506531
+https://github.com/user-attachments/assets/6fc2ae7a-3013-417c-a0ca-7b4489a0b252
 
 Relive the golden age of gaming with advanced Metal-powered shaders. Whether you want the warm glow of a classic CRT, the sharp look of an LCD, or custom scanline effects, TruchiEmu makes every pixel feel authentic. 14 built-in Metal shaders cover CRT, LCD, smoothing, and composite looks; hundreds of community-made Slang/RetroArch `.slangp` presets are auto-discovered and loaded via librashader.
 
@@ -156,16 +156,6 @@ MIT, etc, thanks to LibRetro and a countless other teams around the web.
 
 Now for some more media:
 
+https://github.com/user-attachments/assets/7bfa1d11-134d-4408-8ebb-f42521c8fb73
 
-
-https://github.com/user-attachments/assets/8657fe30-b08d-4a3c-a907-dfc633d63afe
-
-
-
-https://github.com/user-attachments/assets/1363458c-d316-434b-bd46-ed926ab21919
-
-
-
-https://github.com/user-attachments/assets/480b1cc8-73d4-40fb-b8f5-062311610426
-
-
+https://github.com/user-attachments/assets/10e596a6-8fc8-40c9-af8d-e5df98259c0c
