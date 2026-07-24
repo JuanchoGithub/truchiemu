@@ -1,0 +1,115 @@
+---
+layout: default
+title: Stream Recording - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <h1>Stream Recording</h1>
+
+    <div class="feature-overview">
+        <p class="lead">Record your gameplay sessions locally (H.264/HEVC/ProRes) or stream live to Twitch, YouTube, or any custom RTMP endpoint &mdash; all without leaving the game.</p>
+    </div>
+
+    <section id="overview">
+        <h2>Overview</h2>
+        <p>The Stream Recording pipeline runs entirely in-process via HaishinKit &mdash; real RTMP handshake, AMF0 messaging, FLV mux, VideoToolbox H.264/HEVC encode, and AAC encode. There are no external processes, no pipes, no FIFOs, so backpressure flows synchronously without silent frame drops.</p>
+
+        <h3>What You Get</h3>
+        <ul class="feature-list">
+            <li><strong>Local Recording:</strong> Capture to local files in H.264, HEVC, or lossless ProRes 422 / ProRes 4444</li>
+            <li><strong>Live Streaming:</strong> Stream to Twitch or YouTube (with stream-key verification), or any custom RTMP endpoint</li>
+            <li><strong>In-Game Controls:</strong> Start / stop recording from the game toolbar without breaking flow; the record button's visibility adapts to your recording state and settings</li>
+            <li><strong>VideoToolbox Hardware Encoding:</strong> H.264 / HEVC hardware encode plus AAC audio encode for minimal GPU/CPU impact</li>
+            <li><strong>Stream Resolutions:</strong> Native / 720p / 1080p / 1440p / 4K via the <code>StreamResolution</code> picker. ProRes encoders demote to H.264 for streaming (FLV/RTMP doesn't carry ProRes)</li>
+            <li><strong>Rolling Video Buffer:</strong> Tap a "save last moments" hotkey to write the past few seconds to disk &mdash; perfect for clip-worthy plays you didn't see coming</li>
+            <li><strong>Share Button:</strong> Single-press and long-press share actions, configurable per game</li>
+            <li><strong>Record With or Without Shaders:</strong> Choose whether the recording captures the post-shader drawable (CRT, LCD, etc.) or the raw core frame</li>
+            <li><strong>Live Status:</strong> Connection status flows through <code>.connecting &rarr; .streaming</code> or <code>.failed("...")</code> with a localized reason, surfaced in the overlay</li>
+        </ul>
+    </section>
+
+    <section id="how-to-use">
+        <h2>How to Use</h2>
+
+        <h3>Local Recording</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Open Stream Settings</strong>
+                <p>Go to <strong>Settings &rarr; Streaming & Media</strong>. Under the Local tab, pick encoder (H.264 / HEVC / ProRes), bitrate, and quality presets.</p>
+            </li>
+            <li>
+                <strong>Start Recording from the Game</strong>
+                <p>Launch any game. Click the record button on the in-game overlay toolbar to start. A red indicator confirms recording in progress.</p>
+            </li>
+            <li>
+                <strong>Save Last Moments</strong>
+                <p>Press the "Save Last Moments" hotkey during gameplay to flush the rolling video buffer to disk. The flushed clip is saved alongside your recording.</p>
+            </li>
+            <li>
+                <strong>Stop & Locate</strong>
+                <p>Press the record button again to stop. Completed recordings live in your configured save directory &mdash; reveal them via the share button's "Reveal in Finder" option.</p>
+            </li>
+        </ol>
+
+        <h3>Live Streaming to Twitch or YouTube</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Open Streaming > Twitch or YouTube</strong>
+                <p>Go to <strong>Settings &rarr; Streaming & Media</strong> and pick the Twitch or YouTube tab.</p>
+            </li>
+            <li>
+                <strong>Enter Your Stream Key</strong>
+                <p>Paste your stream key. Hit <strong>Verify</strong> &mdash; the VerifyButton shows immediate success or failure feedback inline.</p>
+            </li>
+            <li>
+                <strong>Configure Resolution & Encoder</strong>
+                <p>Select Native / 720p / 1080p / 1440p / 4K from the resolution picker. Higher values upstage CPU; choose ProRes only for local recording.</p>
+            </li>
+            <li>
+                <strong>Start Streaming from the Game</strong>
+                <p>Open any game. The game toolbar reveals the streaming button; click it to begin. Status transitions from <code>connecting</code> to <code>streaming</code>; errors surface inline.</p>
+            </li>
+            <li>
+                <strong>Stop Streaming</strong>
+                <p>Click the streaming button again or close the game. The stream is cleanly torn down by HaishinKit.</p>
+            </li>
+        </ol>
+
+        <h3>Custom RTMP</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Open the Custom Tab</strong>
+                <p>Under <strong>Streaming & Media &rarr; Custom</strong>, enter your RTMP URL (with stream key appended as needed).</p>
+            </li>
+            <li>
+                <strong>Click Verify</strong>
+                <p>TruchiEmu attempts an in-process handshake to confirm the endpoint.</p>
+            </li>
+        </ol>
+    </section>
+
+    <section id="share">
+        <h2>Share Button & Hotkeys</h2>
+        <p>The <strong>Share</strong> tab configures the share button interaction:</p>
+        <ul class="feature-list">
+            <li><strong>Single-press share:</strong> Quick reveal-in-Finder of the most recent recording / screenshot</li>
+            <li><strong>Long-press share:</strong> Triggers the "Save Last Moments" rolling video buffer flush</li>
+            <li><strong>Hotkeys:</strong> Bind controller or keyboard hotkeys for both share actions in <strong>Settings &rarr; Hotkeys</strong></li>
+        </ul>
+    </section>
+
+    <section id="references">
+        <h2>Related Features</h2>
+        <div class="related-services">
+            <div class="service-card">
+                <h3><a href="{{ '/features/shaders.html' | relative_url }}">Shaders</a></h3>
+                <p>The "record with shaders" toggle decides whether your recording captures the post-shader drawable (CRT, LCD, etc.) or the raw core frame.</p>
+            </div>
+            <div class="service-card">
+                <h3><a href="{{ '/features/controllers.html' | relative_url }}">Controller Support</a></h3>
+                <p>Bind hotkeys for recording start/stop and share actions on your gamepad or keyboard.</p>
+            </div>
+        </div>
+    </section>
+</div>

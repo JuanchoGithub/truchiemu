@@ -1,0 +1,82 @@
+---
+layout: default
+title: TV Mode - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <h1>TV Mode</h1>
+
+    <div class="feature-overview">
+        <p class="lead">TV Mode is TruchiEmu's couch-friendly, full-screen library experience. Flip to TV Mode to browse your entire collection with a gamepad &mdash; no mouse needed.</p>
+    </div>
+
+    <section id="overview">
+        <h2>Overview</h2>
+        <p>TV Mode is designed for the moment you put your laptop on the TV or sit back with a controller. The whole browsing UI re-arranges to a wide, big-tile layout with animated box-art backgrounds and crisp focus scaling. TruchiEmu remembers your filter and ROM selections when you leave TV Mode and restores them when you come back.</p>
+
+        <div class="screenshot-frame">
+            <img src="{{ '/media/screenshots/tv-mode.png' | relative_url }}" alt="TV Mode" class="screenshot lightbox-trigger">
+            <p class="screenshot-caption">TV Mode browsing with animated backgrounds and box-art focus</p>
+        </div>
+
+        <h3>What You Get</h3>
+        <ul class="feature-list">
+            <li><strong>Gamepad Navigation:</strong> Traverse your whole library with D-pad / analog stick, A to select, B to back out, R3/L3 to toggle the sidebar</li>
+            <li><strong>Auto-Repeat Navigation:</strong> Holding a direction auto-repeat-scrolls with dynamic delay scheduling &mdash; fast on the first repeat, then accelerates</li>
+            <li><strong>Animated Backgrounds:</strong> The TV Mode backdrop derives from the focused game's box art and the current system artwork, with the fill pinned to the image size to prevent halo clipping</li>
+            <li><strong>Box-Art Focus:</strong> Focused entries scale up with cleaner visuals; the overlay is removed for a sharper look</li>
+            <li><strong>Short-List Mode:</strong> Compact title-only stack with smooth item duplication for very large libraries that would otherwise be overwhelming</li>
+            <li><strong>System Icon Style:</strong> Configurable icon style for system entry tiles &mdash; pick the look that matches your library artwork</li>
+            <li><strong>Filter & Sort:</strong> TV Mode maintains your filter and ROM selections on state restoration; reset filters at any time, and switch sort modes inline</li>
+            <li><strong>Resolution-Adaptive Scaling:</strong> Auto-scales the UI relative to your screen resolution for a consistent feel on 1080p, 1440p, and 4K displays</li>
+            <li><strong>Core Download Overlay:</strong> Trigger core downloads directly from TV Mode via an integrated overlay &mdash; no need to drop back to the desktop</li>
+            <li><strong>Auto-Fullscreen:</strong> TVModeSettingsManager optionally restores the previous fullscreen state when you exit TV Mode</li>
+        </ul>
+    </section>
+
+    <section id="how-to-use">
+        <h2>How to Use</h2>
+        <ol class="setup-steps">
+            <li>
+                <strong>Enter TV Mode</strong>
+                <p>From the Library window, open the <strong>View</strong> menu and choose <strong>TV Mode</strong> (or click the dedicated toolbar entry). The Library transitions to a full-screen TV-style layout.</p>
+            </li>
+            <li>
+                <strong>Navigate with Your Gamepad</strong>
+                <p>Use your analog stick or D-pad to browse. The focused item scales up and the background adapts. Press A to enter a system or game; press B to go back.</p>
+            </li>
+            <li>
+                <strong>Filter / Sort / Short-List</strong>
+                <p>Open the sidebar with R3/L3 (or the configured binding) to switch filter chips, sort order, and short-list mode. Filters persist on TV Mode exit and re-enter.</p>
+            </li>
+            <li>
+                <strong>Launch a Game</strong>
+                <p>Select a game to open its detail view. If the core is missing, the Core Download Overlay walks you through installing it inline; afterwards, select Play.</p>
+            </li>
+            <li>
+                <strong>Exit TV Mode</strong>
+                <p>Press the configured exit binding (or Escape / controller Back). TruchiEmu returns to the desktop library and optionally restores the previous fullscreen state.</p>
+            </li>
+        </ol>
+    </section>
+
+    <section id="settings">
+        <h2>Settings</h2>
+        <p>TV Mode's separate settings let you customize icon style, toggle auto-fullscreen restoration, and adjust resolution-adaptive scaling. Find these under <strong>Settings &rarr; General &rarr; TV-Mode System Icons</strong> and the in-TV Mode sidebar.</p>
+    </section>
+
+    <section id="references">
+        <h2>Related Features</h2>
+        <div class="related-services">
+            <div class="service-card">
+                <h3><a href="{{ '/features/library.html' | relative_url }}">Library Management</a></h3>
+                <p>TV Mode is a presentation layer over the same library &mdash; all your categories, filters, and box art apply identically.</p>
+            </div>
+            <div class="service-card">
+                <h3><a href="{{ '/features/controllers.html' | relative_url }}">Controller Support</a></h3>
+                <p>Gamepad navigation works with any supported controller via GCController or SDL2.</p>
+            </div>
+        </div>
+    </section>
+</div>

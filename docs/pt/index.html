@@ -1,154 +1,166 @@
 ---
 layout: default
 title: "TruchiEmu - O Emulador Definitivo de Retro Gaming para macOS"
-description: "A experiência definitiva de retro gaming, lindamente reimaginada para macOS com shaders Metal, RetroAchievements e interface nativa SwiftUI."
+description: "A experiência definitiva de retro gaming, lindamente reimaginada para macOS com shaders Metal, RetroAchievements, TV Mode, streaming e interface nativa SwiftUI."
 ---
 
 <div class="hero">
-<div class="container">
-<div class="hero-content">
-<h1>TruchiEmu</h1>
-<p class="hero-tagline">
-A experiência definitiva de retro gaming, lindamente reimaginada para macOS
-</p>
-<div class="hero-actions">
-<a href="{{ '/pt/getting-started.html' | relative_url }}" class="btn btn-primary btn-lg">
-                Começar
-                </a>
-                <a href="{{ '/pt/features.html' | relative_url }}" class="btn btn-secondary btn-lg">
-                Explorar Recursos
-                </a>
-</div>
-</div>
-<div class="hero-screenshot">
-<img src="{{ '/media/features/themes-light-dark.png' | relative_url }}" alt="Interface do TruchiEmu" class="hero-image">
-</div>
-</div>
+  <div class="container">
+    <div class="hero-content">
+      <h1>TruchiEmu</h1>
+      <p class="hero-tagline">
+        A experiência definitiva de retro gaming, lindamente reimaginada para macOS
+      </p>
+      <div class="hero-actions">
+        <a href="{{ '/pt/getting-started.html' | relative_url }}" class="btn btn-primary btn-lg">
+          Começar
+        </a>
+        <a href="{{ '/pt/features.html' | relative_url }}" class="btn btn-secondary btn-lg">
+          Explorar Recursos
+        </a>
+      </div>
+    </div>
+    <div class="hero-screenshot">
+      <img src="{{ '/media/screenshots/library-grid.png' | relative_url }}" alt="Biblioteca do TruchiEmu" class="hero-image">
+    </div>
+  </div>
 </div>
 
-<!-- Features Grid -->
+<!-- Intro -->
 <section class="section features-preview">
-<div class="container">
-<h2 class="section-title">Por que TruchiEmu?</h2>
-<p class="section-subtitle">
-Um emulador moderno e nativo para macOS com recursos profissionais e visuais impressionantes.
-</p>
+  <div class="container">
+    <h2 class="section-title">Por que TruchiEmu?</h2>
+    <p class="section-subtitle">
+      Um emulador moderno e nativo para macOS construído do zero com SwiftUI &mdash; um app para inúmeros clássicos, com visuais profissionais, controles e uma interface polida, amigável a gamepad.
+    </p>
 
-<div class="features-grid">
-<div class="feature-card">
-<div class="feature-icon">🎮</div>
-<h3>Suporte Universal de Sistemas</h3>
-<p>Alimentado pelo libretro, o TruchiEmu suporta praticamente todos os sistemas de jogos que possuam um core disponível, dos clássicos 8-bit aos complexos consoles 3D e máquinas de fliperama.</p>
-</div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🎮</div>
+        <h3>Suporte Universal de Sistemas</h3>
+        <p>Alimentado pelo libretro, o TruchiEmu executa praticamente qualquer console clássico, portátil, arcade ou computador que tenha um core disponível &mdash; de NES e Game Boy a PS2, Saturn, DOS, ScummVM e MAME.</p>
+      </div>
 
+      <div class="feature-card">
+        <div class="feature-icon">🎨</div>
+        <h3>Interface Nativa SwiftUI</h3>
+        <p>100% nativo macOS com animações suaves, modo escuro, totalmente navegável por gamepad e um acabamento que parece feito para o seu Mac. Busca por digitação, coleções inteligentes e vistas de detalhes por jogo.</p>
+      </div>
 
-<div class="feature-card">
-<div class="feature-icon">🎨</div>
-<h3>Interface Nativa e Bonita</h3>
-<p>100% nativo macOS SwiftUI com animações suaves, suporte ao modo escuro e uma experiência de usuário polida que parece feita para o seu Mac.</p>
-</div>
+      <div class="feature-card">
+        <div class="feature-icon">📺</div>
+        <h3>TV Mode</h3>
+        <p>Uma experiência de navegação em tela cheia, amigável ao sofá, com fundos animados, efeitos de foco nas capas, modo short-list e escalonamento adaptativo por resolução. Navegue toda sua biblioteca com o gamepad &mdash; sem precisar de mouse.</p>
+      </div>
 
-<div class="feature-card">
-<div class="feature-icon">🔮</div>
-<h3>Shaders Profissionais</h3>
-<p>14 shaders Metal integrados, incluindo CRT autêntico (Lottes, LiteCRT, Multipass), efeitos LCD de portáteis (GB, GBC, GBA, PSP, NDS, 3DS) e filtros de escala limpa.</p>
-</div>
+      <div class="feature-card">
+        <div class="feature-icon">🔮</div>
+        <h3>Shaders Profissionais</h3>
+        <p>14 shaders Metal integrados (CRT Lottes, LiteCRT, Multipass, Game Boy, GBC, GBA, PSP, NDS, 3DS, Sharp Bilinear e mais) além de suporte nativo a presets slang via librashader &mdash; centenas de presets da comunidade incluídos.</p>
+      </div>
 
-<div class="feature-card">
-<div class="feature-icon">🏆</div>
-<h3>RetroAchievements</h3>
-<p>Ganhe troféus e compita em rankings com integração completa ao RetroAchievements, incluindo modo hardcore para o desafio definitivo.</p>
-</div>
+      <div class="feature-card">
+        <div class="feature-icon">🏆</div>
+        <h3>RetroAchievements</h3>
+        <p>Integração completa com RetroAchievements com Modo Hardcore, indicador de importação de cache, exibição do hash da ROM e rich presence. Ganhe troféus e compita em rankings globais.</p>
+      </div>
 
-<div class="feature-card">
-<div class="feature-icon">💾</div>
-<h3>Gerenciamento de Save States</h3>
-<p>Save states intuitivos baseados em slots com gerenciamento automático de salvamento e ferramentas de migração para atualizações sem problemas.</p>
-</div>
+      <div class="feature-card">
+        <div class="feature-icon">⏪</div>
+        <h3>Time Machine</h3>
+        <p>Controles de rebobinamento, avanço rápido e câmera lenta direto na barra do jogo. Cronometre a nova tentativa perfeita, estude sequências difíceis em câmera lenta ou rebobine instantaneamente quando errar.</p>
+      </div>
 
-<div class="feature-card">
-<div class="feature-icon">🎮</div>
-<h3>Suporte a Controles</h3>
-<p>Suporte completo a gamepads com mapeamento por sistema, predefinições de controles populares (Xbox, PlayStation, MFi, Arcade Stick) e controles personalizáveis.</p>
-</div>
+      <div class="feature-card">
+        <div class="feature-icon">🎥</div>
+        <h3>Gravação e Streaming</h3>
+        <p>Capture o gameplay para arquivos locais (H.264/HEVC/ProRes) ou faça transmissão ao vivo para Twitch, YouTube ou qualquer servidor RTMP personalizado &mdash; em processo, com codificação por hardware VideoToolbox e buffer dos últimos momentos.</p>
+      </div>
 
-<div class="feature-card">
-<div class="feature-icon">🖌️</div>
-<h3>Temas e Aparência</h3>
-<p>16 temas de cores de destaque selecionados e inspirados em jogos&mdash;de Samus a Doom&mdash;além de seletor de cor personalizada, modos de aparência claro/escuro e superfícies coloridas.</p>
-</div>
-</div>
-</div>
+      <div class="feature-card">
+        <div class="feature-icon">🖱️</div>
+        <h3>Mouse Analógico e Game Guide</h3>
+        <p>Use o stick analógico do gamepad como mouse em jogos DOS e ScummVM &mdash; com o D-pad como setas. A barra lateral Game Guide traz dicas progressivas UHS e tutoriais completos do GameFAQs.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🥊</div>
+        <h3>Training Mode e Move Lists</h3>
+        <p>Ferramentas de fighting games: programe o dummy de P2 (postura, guard, wake-up tech, reversais), grave/reproduza sequências de inputs e visualize notações de golpes na tela para mais de 200 fighting games curados.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🕹️</div>
+        <h3>Controles Multiplayer</h3>
+        <p>Até 4 jogadores via GCController da Apple e SDL2. Mapeamento de teclado para múltiplos jogadores, alocação de slots por prioridade ao conectar new pads, desativar/reset para controladores SDL obsoletos e overrides por sistema.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">💾</div>
+        <h3>Save States e Bezels</h3>
+        <p>11 slots de save visual com miniaturas e versionamento progressivo. Mais um baixador automático de bezels combinado por capa que emoldura sua tela para qualquer proporção de aspecto.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🖼️</div>
+        <h3>Automação da Biblioteca</h3>
+        <p>Identificação de ROM por DAT/CRC32, enriquecimento de metadados LaunchBox, capas de múltiplas fontes (ScreenScraper + Libretro CDN), materialização de espaços iCloud sem dados e notificações de remoção de ROM.</p>
+      </div>
+    </div>
+  </div>
 </section>
 
-<!-- Screenshot Carousel -->
+<!-- Screenshot -->
 <section class="section screenshot-preview">
-<div class="container">
-<h2 class="section-title">Veja em Ação</h2>
-<div class="carousel">
-<div class="carousel-item">
-<img src="{{ '/media/screenshots/library-grid.png' | relative_url }}" alt="Visualização em Grade da Biblioteca">
-<h4>Navegue pela Sua Coleção</h4>
-<p>Biblioteca visualmente rica com capas e metadados automáticos.</p>
-</div>
+  <div class="container">
+    <h2 class="section-title">Veja em Ação</h2>
+    <div class="carousel">
+      <div class="carousel-item">
+        <img src="{{ '/media/screenshots/tv-mode.png' | relative_url }}" alt="TV Mode navegação em tela cheia">
+        <h4>TV Mode</h4>
+        <p>Navegação de biblioteca amigável ao sofá e controlável por gamepad.</p>
+      </div>
 
-<div class="carousel-item">
-<img src="{{ '/media/screenshots/game-detail.png' | relative_url }}" alt="Visualização de Detalhes do Jogo">
-<h4>Detalhes do Jogo</h4>
-<p>Informações completas para cada jogo com opções de jogo.</p>
-</div>
+      <div class="carousel-item">
+        <img src="{{ '/media/screenshots/library-grid.png' | relative_url }}" alt="Visualização em Grade da Biblioteca">
+        <h4>Navegue pela Sua Coleção</h4>
+        <p>Biblioteca visualmente rica com capas e metadados automáticos.</p>
+      </div>
 
-<div class="carousel-item">
-<img src="{{ '/media/screenshots/shader-picker.png' | relative_url }}" alt="Seletor de Shaders">
-<h4>Seletor de Shaders</h4>
-<p>Visualização e personalização de shaders em tempo real.</p>
-</div>
-</div>
-</div>
-</section>
+      <div class="carousel-item">
+        <img src="{{ '/media/screenshots/game-detail.png' | relative_url }}" alt="Visualização de Detalhes do Jogo">
+        <h4>Detalhes do Jogo</h4>
+        <p>Informações completas para cada jogo com opções de jogo.</p>
+      </div>
 
-<!-- Quick Stats -->
-<section class="section stats-preview">
-<div class="container">
-<div class="stats-grid">
-<div class="stat-item">
-<span class="stat-number">∞</span>
-<span class="stat-label">Sistemas Suportados</span>
-</div>
+      <div class="carousel-item">
+        <img src="{{ '/media/screenshots/shader-picker.png' | relative_url }}" alt="Seletor de Shaders">
+        <h4>Seletor de Shaders</h4>
+        <p>Visualização e personalização de shaders em tempo real.</p>
+      </div>
 
-<div class="stat-item">
-<span class="stat-number">14</span>
-<span class="stat-label">Presets de Shader</span>
-</div>
-<div class="stat-item">
-<span class="stat-number">16+</span>
-<span class="stat-label">Temas de Cores</span>
-</div>
-<div class="stat-item">
-<span class="stat-number">100%</span>
-<span class="stat-label">Nativo macOS</span>
-</div>
-<div class="stat-item">
-<span class="stat-number">1.0</span>
-<span class="stat-label">Versão de Lançamento</span>
-</div>
-</div>
-</div>
+      <div class="carousel-item">
+        <img src="{{ '/media/screenshots/save-state-browser.png' | relative_url }}" alt="Navegador de Save States">
+        <h4>Save States</h4>
+        <p>Grid visual com miniaturas e versionamento progressivo.</p>
+      </div>
+    </div>
+  </div>
 </section>
 
 <!-- Call to Action -->
 <section class="section cta-section">
-<div class="container">
-<h2>Pronto para Jogar?</h2>
-<p>Comece sua jornada de retro gaming em minutos com a configuração sem esforço do TruchiEmu.</p>
-<div class="cta-actions">
-<a href="{{ '/pt/getting-started.html' | relative_url }}" class="btn btn-primary btn-lg">
-                Começar Agora
-                </a>
-                <a href="{{ '/pt/features/shaders.html' | relative_url }}" class="btn btn-secondary btn-lg">
-                Saiba Mais Sobre Shaders
-                </a>
-</div>
-</div>
+  <div class="container">
+    <h2>Pronto para Jogar?</h2>
+    <p>Comece sua jornada de retro gaming em minutos com o assistente de configuração do TruchiEmu.</p>
+    <div class="cta-actions">
+      <a href="{{ '/pt/getting-started.html' | relative_url }}" class="btn btn-primary btn-lg">
+        Começar Agora
+      </a>
+      <a href="{{ '/pt/features.html' | relative_url }}" class="btn btn-secondary btn-lg">
+        Tour Completo de Recursos
+      </a>
+    </div>
+  </div>
 </section>
 <!-- Force rebuild: GitHub Pages regeneration signal -->

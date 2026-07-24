@@ -1,0 +1,58 @@
+---
+layout: default
+title: Gravação e Streaming - Documentação do TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <h1>Gravação e Streaming</h1>
+
+    <div class="feature-overview">
+        <p class="lead">Grave sessões localmente (H.264/HEVC/ProRes) ou transmita ao vivo para Twitch, YouTube, ou qualquer endpoint RTMP personalizado &mdash; sem sair do jogo.</p>
+    </div>
+
+    <section id="overview">
+        <h2>Visão Geral</h2>
+        <p>O pipeline roda em processo via HaishinKit &mdash; handshake RTMP real, mensageria AMF0, mux FLV, codificação H.264/HEVC e AAC por VideoToolbox. Sem processos externos, pipes ou FIFOs &mdash; o backpressure flui de forma síncrona sem queda silenciosa de frames.</p>
+
+        <h3>Recursos</h3>
+        <ul class="feature-list">
+            <li><strong>Gravação Local:</strong> H.264, HEVC ou ProRes 422/4444 lossless</li>
+            <li><strong>Transmissão ao vivo:</strong> Twitch/YouTube (verificação de stream-key) ou RTMP customizado</li>
+            <li><strong>Controles no jogo:</strong> Start/stop pela barra do jogo</li>
+            <li><strong>Codificação por Hardware:</strong> H.264/HEVC VideoToolbox + AAC</li>
+            <li><strong>Resoluções de Stream:</strong> Nativa / 720p / 1080p / 1440p / 4K. ProRes é degradado para H.264 em streaming</li>
+            <li><strong>Rolling Video Buffer:</strong> Hotkey "salvar últimos momentos" descarrega os segundos passados para o disco</li>
+            <li><strong>Botão Share:</strong> Single-press e long-press configuráveis por jogo</li>
+            <li><strong>Com ou Sem Shaders:</strong> Captura o drawable pós-shader ou o frame raw do core</li>
+        </ul>
+    </section>
+
+    <section id="how-to-use">
+        <h2>Como Usar</h2>
+        <h3>Gravação Local</h3>
+        <ol class="setup-steps">
+            <li><strong>Settings &rarr; Streaming & Media</strong>: escolha encoder + bitrate + qualidade</li>
+            <li><strong>Lance um jogo</strong>: clique no botão vermelho da barra; indicador vermelho confirma gravação</li>
+            <li><strong>Salvar últimos momentos:</strong> Hotkey para descarregar o rolling buffer no disco</li>
+            <li><strong>Stop & localizar:</strong> Clique de novo; revelar no Finder via Share</li>
+        </ol>
+
+        <h3>Twitch ou YouTube</h3>
+        <ol class="setup-steps">
+            <li><strong>Settings &rarr; Streaming & Media &rarr; Twitch/YouTube</strong></li>
+            <li><strong>Cole sua stream key</strong> e faça Verify (feedback imediato)</li>
+            <li><strong>Escolha Resolução & Encoder</strong></li>
+            <li><strong>Inicie de um jogo</strong>: o botão de stream aparece na barra</li>
+            <li><strong>Stop:</strong> Clique de novo ou feche o jogo</li>
+        </ol>
+
+        <h3>RTMP Customizado</h3>
+        <p>Tab Custom, cole sua URL RTMP (com stream key se aplicável), verifique e comece a transmitir.</p>
+    </section>
+
+    <section id="share">
+        <h2>Botão Share e Hotkeys</h2>
+        <p>Single-press share &mdash; revelação rápida do clip mais recente. Long-press &mdash; flush do rolling video buffer. Bind em Settings &rarr; Hotkeys.</p>
+    </section>
+</div>

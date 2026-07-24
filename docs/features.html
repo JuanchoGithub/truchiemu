@@ -15,21 +15,50 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
     <div class="container">
         <h3>On This Page</h3>
         <ul>
+            <li><a href="#tv-mode">TV Mode</a></li>
             <li><a href="#shaders">Shader Collection</a></li>
             <li><a href="#library">Library Management</a></li>
             <li><a href="#achievements">Achievements</a></li>
-            <li><a href="#savestates">Save Features</a></li>
-            <li><a href="#themes">Themes &amp; Appearance</a></li>
-            <li><a href="#bezels">Bezels &amp; Screen Framing</a></li>
+            <li><a href="#savestates">Save State Features</a></li>
+            <li><a href="#themes">Themes & Appearance</a></li>
+            <li><a href="#bezels">Bezels & Screen Framing</a></li>
             <li><a href="#controllers">Controller Support</a></li>
             <li><a href="#analog-mouse">Analog Mouse Support</a></li>
-            <li><a href="#point-and-click-guide">Point &amp; Click Guide</a></li>
+            <li><a href="#point-and-click-guide">Point & Click Guide</a></li>
             <li><a href="#training-mode">Training Mode</a></li>
-            <li><a href="#move-lists">Move List &amp; Fight Data</a></li>
+            <li><a href="#move-lists">Move List & Fight Data</a></li>
+            <li><a href="#time-machine">Time Machine</a></li>
             <li><a href="#streaming">Stream Recording</a></li>
+            <li><a href="#netplay">Netplay (Roadmap)</a></li>
         </ul>
     </div>
 </nav>
+
+<section id="tv-mode" class="content-section">
+    <div class="container">
+        <h2>TV Mode</h2>
+        <p>TV Mode is TruchiEmu's couch-friendly, full-screen library experience. Flip to TV Mode from the <strong>View &rarr; TV Mode</strong> menu (or a button on the game-toolbar) to browse your entire collection without a mouse.</p>
+
+        <div class="screenshot-frame">
+            <img src="{{ '/media/screenshots/tv-mode.png' | relative_url }}" alt="TV Mode" class="screenshot lightbox-trigger">
+            <p class="screenshot-caption">TV Mode browsing with animated backgrounds, box-art focus effects, and gamepad navigation</p>
+        </div>
+
+        <h3>What You Get</h3>
+        <ul class="feature-list">
+            <li><strong>Gamepad Navigation:</strong> D-pad / analog stick scrolls through games, A selects, B backs out, R3/L3 toggles the sidebar &mdash; full traversal without ever touching the keyboard or mouse</li>
+            <li><strong>Animated Backgrounds:</strong> Backdrops derived from each game's box art and system artwork, with auto-repeat navigation and dynamic delay scheduling</li>
+            <li><strong>Box-Art Focus:</strong> Focused entries scale up with cleaner visuals and pin the background fill to the image size to prevent halo clipping</li>
+            <li><strong>Short-List Mode:</strong> Compact title-only stack for very large libraries, with smooth item duplication</li>
+            <li><strong>Filter & Sort:</strong> TV Mode maintains your filter and ROM selections on state restoration; reset filters at any time</li>
+            <li><strong>Resolution-Adaptive Scaling:</strong> Auto-scales the UI relative to your screen resolution for a consistent feel on 1080p, 1440p, and 4K displays</li>
+            <li><strong>Core Download Overlay:</strong> Trigger core downloads directly from TV Mode &mdash; no need to drop back to the desktop</li>
+            <li><strong>Auto-Fullscreen:</strong> Optionally restore the previous fullscreen state when you exit TV Mode</li>
+        </ul>
+
+        <p><a href="{{ '/features/tv-mode.html' | relative_url }}">Learn more about TV Mode &rarr;</a></p>
+    </div>
+</section>
 
 <section id="shaders" class="content-section">
     <div class="container">
@@ -119,11 +148,13 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
 
         <h3>Automatic Organization</h3>
         <ul class="feature-list">
-            <li><strong>Smart Detection:</strong> Automatically identifies games from ROM file hashes</li>
-            <li><strong>Metadata Fetching:</strong> Downloads game descriptions, release dates, and details</li>
-            <li><strong>Cover Art:</strong> Automatically downloads high-quality box art from multiple sources (ScreenScraper, Libretro CDN). You can also pick alternative artwork per game with the interactive Box Art Picker.</li>
+            <li><strong>Smart Detection:</strong> Automatically identifies games from ROM file hashes (CRC32 hardware-accelerated via zlib, with DAT databases and a rejection-tracking scorer for MAME)</li>
+            <li><strong>Metadata Fetching:</strong> LaunchBox Metadata Service downloads game descriptions, release dates, publisher, genre with platform overrides and match scoring</li>
+            <li><strong>Cover Art Sources:</strong> ScreenScraper and Libretro CDN with configurable priority; interactive Box Art Picker lets you swap alt artwork per game; PPSSPP asset downloads are auto-applied</li>
             <li><strong>System Categorization:</strong> Groups games by original console/system</li>
-            <li><strong>Achievement Detection:</strong> Identifies games with RetroAchievements support</li>
+            <li><strong>Achievement Detection:</strong> Identifies games with RetroAchievements support and shows the RA hash in the Game Detail view</li>
+            <li><strong>iCloud Materialization:</strong> iCloud dataless-placeholders are materialized on access so ROMs stored in iCloud appear correctly when they would otherwise be displayed as zero-byte stubs</li>
+            <li><strong>Removal Notifications:</strong> When ROMs are removed from a watched folder, TruchiEmu posts a notification and updates the library automatically</li>
         </ul>
 
         <div class="view-mode">
@@ -174,6 +205,8 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
                 <li>Check the achievement lists on the RA website to plan your approach for difficult trophies.</li>
                 <li>Join the RetroAchievements community to track your progress against other players.</li>
                 <li><strong>Hardcore Mode:</strong> Enable Hardcore Mode via settings to block save states, rewind, slow motion, and cheats, which is required for earning Hardcore-tier achievements.</li>
+                <li><strong>First-Run Enable Prompt:</strong> TruchiEmu offers to enable RetroAchievements (and Hardcore Mode) during the Setup Wizard, with cache-import progress for offline achievement data.</li>
+                <li><strong>Game Detail View:</strong> The Game Detail page shows the game's RA hash and progress on already-unlocked achievements, sourced via accurate <code>RomHasher</code> console-ID mapping (CDI supported on PS1).</li>
             </ul>
         </div>
 
@@ -277,7 +310,11 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
             <li><strong>Smart Defaults:</strong> TruchiEmu picks a sensible button layout based on the controller type and the system you're playing</li>
             <li><strong>Per-Controller Profiles:</strong> Each controller you connect gets its own mapping, remembered for next time</li>
             <li><strong>Per-System Overrides:</strong> A PlayStation pad can be SNES-style on one system and Genesis-style on another</li>
-            <li><strong>Deadzone &amp; Sensitivity:</strong> Tune stick response so drift doesn't wander the character</li>
+            <li><strong>Multi-Player Keyboard Mapping:</strong> Refactored keyboard input supports multiple players from a single physical keyboard &mdash; combine a gamepad for P1 and keyboard for P2 (or vice-versa)</li>
+            <li><strong>Gap-Slot Prioritization:</strong> When a new controller connects, TruchiEmu prioritizes the first empty slot before substituting a keyboard player &mdash; your P2 stays P2</li>
+            <li><strong>SDL Disable & Reset:</strong> Disable a stuck SDL controller or reset the SDL controller list without quitting the app; keyboard controllers can also be disabled/reset independently</li>
+            <li><strong>Replace Keyboard with Controller:</strong> Toggle whether a freshly-connected controller should automatically take over a keyboard-assigned slot</li>
+            <li><strong>Deadzone & Sensitivity:</strong> Tune stick response so drift doesn't wander the character</li>
             <li><strong>Remap Anything:</strong> Swap any button to any other button, including face, shoulder, and stick clicks</li>
             <li><strong>Analog Mouse Mode:</strong> Use a stick to control the mouse in DOS and ScummVM games &mdash; see the Analog Mouse section for full details</li>
             <li><strong>Keyboard Shortcuts:</strong> System hotkeys for save states, screenshots, and other common actions</li>
@@ -376,21 +413,70 @@ description: Comprehensive overview of TruchiEmu's features including shaders, a
     </div>
 </section>
 
+<section id="time-machine" class="content-section">
+    <div class="container">
+        <h2>Time Machine</h2>
+        <p>TruchiEmu's Time Machine brings rewind, fast-forward, and slow-motion controls directly to the game toolbar. The Setup Wizard offers an optional Time Machine step on first launch, and the controls stay available during gameplay for the ultimate sandbox.</p>
+
+        <h3>Key Features</h3>
+        <ul class="feature-list">
+            <li><strong>Rewind:</strong> Step backward through recent frames to retry a missed jump, a botched combo, or a fatal hit without reaching for a save state</li>
+            <li><strong>Fast Forward:</strong> Skip slow dialogue, grinding, or long cutscenes while keeping audio pitched to playback speed</li>
+            <li><strong>Slow Motion:</strong> Study frame-perfect sequences at reduced speed &mdash; ideal for fighting game combo practice or tricky platformer setups</li>
+            <li><strong>Hardcore-Aware:</strong> When RetroAchievements Hardcore Mode is active, Time Machine controls are disabled alongside save states and cheats</li>
+            <li><strong>Per-Core Compatibility:</strong> The Time Machine uses save-state deltas; some cores (e.g. Dolphin) with known crash issues are gracefully excluded, and Play! (PS2) save-state warnings surface clearly</li>
+        </ul>
+
+        <div class="info-box">
+            <p><strong>Where to find it:</strong> Time Machine controls appear on the in-game overlay toolbar. Build them into the Setup Wizard during first launch from <strong>Settings &rarr; Time Machine</strong>, where you can also configure rewind buffer depth, slow-motion ratio, and hotkeys.</p>
+        </div>
+
+        <p><a href="{{ '/features/time-machine.html' | relative_url }}">Learn more about Time Machine &rarr;</a></p>
+    </div>
+</section>
+
 <section id="streaming" class="content-section">
     <div class="container">
         <h2>Stream Recording</h2>
-        <p>Record your gameplay sessions or stream live to Twitch, YouTube, or a custom RTMP server &mdash; all without leaving the game.</p>
+        <p>Record your gameplay sessions or stream live to Twitch, YouTube, or a custom RTMP server &mdash; all without leaving the game. The entire encode/RTMP pipeline runs in-process via HaishinKit, so there are no external processes, FIFOs, or silent frame drops under backpressure.</p>
 
         <h3>Key Features</h3>
         <ul class="feature-list">
             <li><strong>Local Recording:</strong> Capture gameplay to local files in H.264, HEVC, or lossless ProRes 422/4444</li>
-            <li><strong>Live Streaming:</strong> Stream directly to Twitch or YouTube, or point to any custom RTMP endpoint</li>
-            <li><strong>VideoToolbox Encoding:</strong> Hardware-accelerated encoding via macOS VideoToolbox for minimal performance impact</li>
-            <li><strong>Flexible Quality:</strong> Adjustable bitrate and quality presets to balance file size and fidelity</li>
-            <li><strong>In-Game Controls:</strong> Start/stop recording from the game toolbar without breaking your flow</li>
+            <li><strong>Live Streaming:</strong> Stream directly to Twitch or YouTube, or point to any custom RTMP endpoint with stream-key verification (Twitch/YouTube give immediate success/failure feedback)</li>
+            <li><strong>Resolutions:</strong> Native / 720p / 1080p / 1440p / 4K via the <code>StreamResolution</code> picker; ProRes encoders are demoted to H.264 for streaming</li>
+            <li><strong>VideoToolbox Encoding:</strong> Hardware-accelerated H.264/HEVC encode and AAC audio encode via macOS VideoToolbox for minimal performance impact</li>
+            <li><strong>Rolling Video Buffer:</strong> Tap a "save last moments" hotkey to write the past few seconds to disk &mdash; perfect for clip-worthy plays you didn't see coming</li>
+            <li><strong>Share Button:</strong> Single-press and long-press share actions, configurable per game</li>
+            <li><strong>Record With or Without Shaders:</strong> Choose whether the recording captures the post-shader drawable or the raw core frame</li>
+            <li><strong>In-Game Controls:</strong> Start/stop recording from the game toolbar without breaking your flow; visibility of the record button adapts to your current recording state and settings</li>
         </ul>
 
+        <div class="info-box">
+            <p><strong>Where to find it:</strong> Configure streaming in <strong>Settings &rarr; Streaming & Media</strong> &mdash; separate tabs for Twitch, YouTube, custom RTMP, and the share button behavior.</p>
+        </div>
+
         <p><a href="{{ '/features/streaming.html' | relative_url }}">Learn more about Stream Recording &rarr;</a></p>
+    </div>
+</section>
+
+<section id="netplay" class="content-section">
+    <div class="container">
+        <h2>Netplay &mdash; Roadmap</h2>
+        <p>Netplay (multiplayer over the network) is documented as an implementation plan and is not yet shipped. The complete design &mdash; infrastructure, matchmaking, and rollback netcode integration &mdash; lives in <code>Netplay_Implementation_Plan.md</code> in the repository root.</p>
+
+        <h3>Roadmap High-Level</h3>
+        <ul class="feature-list">
+            <li><strong>Core integration:</strong> Wrap libretro's netplay API in a Swift-friendly SwiftPM module reusing existing <code>LibretroBridge</code></li>
+            <li><strong>Transport:</strong> Initial peer-to-peer via STUN, with optional relay for restrictive NATs</li>
+            <li><strong>Matchmaking:</strong> Optional centralized matchmaking with room codes &mdash; no requirements on local discovery</li>
+            <li><strong>Lobby UI:</strong> SwiftUI lobby shown as a tab/window; Brawl-style host/join/codes</li>
+            <li><strong>Savestate sync:</strong> Pull the existing save-state & Time Machine pipeline to seed initial state for retro games that support it</li>
+        </ul>
+
+        <div class="warning-box">
+            <p><strong>Status:</strong> Netplay is a documented roadmap, not a shipped feature. Track progress in <code>Netplay_Implementation_Plan.md</code>.</p>
+        </div>
     </div>
 </section>
 

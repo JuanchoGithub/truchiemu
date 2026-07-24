@@ -6,50 +6,121 @@ title: Controller Support - TruchiEmu Documentation
 
 <div class="feature-docs">
     <h1>Controller Support</h1>
-    
+
     <div class="feature-overview">
-        <p class="lead">TruchiEmu provides comprehensive controller support with automatic mapping, per-game configurations, and advanced deadzone calibration. Experience authentic gameplay with any controller from classic gamepads to modern arcade sticks, with full button remapping and turbo functionality.</p>
+        <p class="lead">TruchiEmu supports both Apple's <strong>GCController</strong> framework and <strong>SDL2</strong> for broad controller compatibility, with multi-player keyboard mapping, priority-based slot allocation, SDL disable/reset, and per-system overrides.</p>
     </div>
 
-    <section id="service-explanation">
+    <section id="overview">
         <h2>Overview</h2>
-        <p>Plug in a gamepad and it just works. TruchiEmu recognizes the controller, picks a sensible button layout for the game you're playing, and is ready in seconds. From there you can fine-tune deadzones, swap any button, or remap the whole layout per system.</p>
+        <p>Plug in a gamepad and it just works. TruchiEmu recognizes the controller, picks a sensible button layout for the game you're playing, and is ready in seconds. From there you can fine-tune deadzones, swap any button, or remap the whole layout per system. With v1.8.1, the input stack supports multiple players on a single keyboard plus gap-slot prioritization &mdash; your friend who grabs a gamepad mid-session slots into the next empty P-slot instead of stealing your keyboard assignment.</p>
 
         <h3>What You Get</h3>
         <ul class="feature-list">
-<li><strong>Plug and Play:</strong> USB and Bluetooth controllers are recognized the moment you connect them</li>
-<li><strong>Smart Defaults:</strong> TruchiEmu picks a sensible button layout based on the controller type and the system you're playing</li>
-<li><strong>Per-Controller Profiles:</strong> Each controller you connect gets its own mapping, remembered for next time</li>
-<li><strong>Per-System Overrides:</strong> A PlayStation pad can be SNES-style on one system and Genesis-style on another</li>
-<li><strong>Deadzone & Sensitivity:</strong> Tune stick response so drift doesn't wander the character</li>
-<li><strong>Remap Anything:</strong> Swap any button to any other button, including face, shoulder, and stick clicks</li>
-<li><strong>Analog Mouse Mode:</strong> Use a stick to control the mouse in DOS and ScummVM games  see the Analog Mouse page for full details</li>
-<li><strong>Keyboard Shortcuts:</strong> System hotkeys for save states, screenshots, and other common actions</li>
-</ul>
+            <li><strong>Plug and Play:</strong> USB and Bluetooth controllers are recognized the moment you connect them</li>
+            <li><strong>Dual Driver Support:</strong> GCController-compatible gamepads (Xbox, PlayStation, MFi, Switch Pro) and SDL2-compatible controllers for broader hardware support</li>
+            <li><strong>Smart Defaults:</strong> TruchiEmu picks a sensible button layout based on the controller type and the system you're playing</li>
+            <li><strong>Per-Controller Profiles:</strong> Each controller has its own mapping, remembered between sessions</li>
+            <li><strong>Per-System Overrides:</strong> A PlayStation pad can be SNES-style on one system and Genesis-style on another</li>
+            <li><strong>Multi-Player Keyboard Mapping:</strong> Refactored keyboard input supports multiple players from a single physical keyboard &mdash; combine a gamepad for P1 and keyboard for P2 (or vice versa)</li>
+            <li><strong>Gap-Slot Prioritization:</strong> When a new controller connects, TruchiEmu prioritizes the first empty slot before substituting a keyboard player &mdash; your P2 stays P2</li>
+            <li><strong>Replace Keyboard with Controller Option:</strong> Toggle whether a freshly-connected controller should automatically take over a keyboard-assigned slot</li>
+            <li><strong>SDL Disable & Reset:</strong> Disable a stuck SDL controller or reset the SDL controller list without quitting the app; keyboard controllers can also be disabled/reset independently</li>
+            <li><strong>Live Axis Observation:</strong> SDL axes are observable in real-time so changes are reflected immediately in the mapping UI</li>
+            <li><strong>Deadzone & Sensitivity:</strong> Tune stick response so drift doesn't wander the character</li>
+            <li><strong>Remap Anything:</strong> Swap any button to any other button, including face, shoulder, and stick clicks</li>
+            <li><strong>Controller Type Icons:</strong> TruchiEmu shows visual icons in the toolbar and settings for Xbox, DualShock 4, DualSense, MFi, and Arcade Stick &mdash; generic HID otherwise</li>
+            <li><strong>Analog Mouse Mode:</strong> Use a stick to control the mouse in DOS and ScummVM games &mdash; see the <a href="{{ '/features/analog-mouse.html' | relative_url }}">Analog Mouse</a> page for full details</li>
+            <li><strong>Hotkeys:</strong> Per-system and per-game hotkey configuration for save states, screenshots, share, training-mode reset, and other common actions</li>
+        </ul>
+    </section>
+
+    <section id="multiplayer-config">
+        <h2>Multi-Player Configuration</h2>
+        <p>TruchiEmu supports up to 4 simultaneous players. The slot assignment system can be summarized:</p>
+
+        <h3>Slot Allocation Rules (v1.8.1+)</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>P1 is "anchored"</strong>
+                <p>Player 1 is reserved &mdash; a freshly connected gamepad will never displace P1 unless you've explicitly enabled "replace keyboard with controller" and the P1 slot is keyboard.</p>
+            </li>
+            <li>
+                <strong>First Empty Slot</strong>
+                <p>When a new gamepad connects, it's assigned to the first empty P2&ndash;P4 slot. If all are full, it queues for the next disconnect.</p>
+            </li>
+            <li>
+                <strong>Gap-Slot Prioritization</strong>
+                <p>If the keyboard is currently filling the first empty slot, the new gamepad will <em>only</em> replace the keyboard if you've enabled "replace keyboard with controller" in Settings &rarr; Controllers. By default, the gamepad goes to the next gap (a slot that's truly empty).</p>
+            </li>
+            <li>
+                <strong>SDL Controller Disable</strong>
+                <p>If an SDL controller is misbehaving or stuck, you can disable it from the Controllers panel without quitting &mdash; or reset the full SDL controller list. Keyboard controllers have the same disable/reset affordance.</p>
+            </li>
+        </ol>
+
+        <h3>Multi-Player Keyboard</h3>
+        <p>TruchiEmu lets multiple players share one keyboard in addition to gamepads. From <strong>Settings &rarr; Controllers &rarr; Keyboard</strong>, you can configure separate keys for Player 1, Player 2, and so on &mdash; up to the max players your games support. Mixed configurations (gamepad for P1, keyboard for P2) are fully supported.</p>
+
+        <div class="info-box">
+            <p><strong>Tested scenarios:</strong> 4 gamepads, 4 keyboard keyboards (within reach), 2 gamepads + 2 keyboard players, blindfolded debug &mdash; the slot allocation keeps people in their seats even as gamepads come and go. Connect a stuck-reset Bluetooth pad? Disable it in the panel; the other slots stay live.</p>
+        </div>
     </section>
 
     <section id="step-by-step-guide">
         <h2>Step-by-Step Configuration Guide</h2>
-        
-        <h3>Basic Controller Setup</h3>
+
+        <h3>Basic Setup</h3>
         <ol class="setup-steps">
             <li>
                 <strong>Connect Controller</strong>
-                <p>Connect your controller via USB or pair via Bluetooth. TruchiEmu automatically detects the controller and shows a notification with the detected controller type.</p>
+                <p>Connect via USB or pair via Bluetooth. TruchiEmu auto-detects the controller and shows a notification with the detected type.</p>
+            </li>
+            <li>
+                <strong>Verify Slot Assignment</strong>
+                <p>A notification pill shows which player slot the controller took (P1&ndash;P4). If the wrong slot, disable/reset &mdash; or simply unplug and replug.</p>
             </li>
         </ol>
 
-        <h3>Advanced Configuration</h3>
+        <h3>Custom Button Mapping</h3>
         <ol class="setup-steps">
             <li>
-                <strong>Custom Button Mapping</strong>
-                <p>Go to <strong>Settings → Controllers</strong>, select your controller and system, then click any button in the mapping list to remap. Save and load named mapping configurations for reuse (gamepads only).</p>
+                <strong>Open Settings &rarr; Controllers</strong>
+                <p>Pick a system (or use Global Default), select your controller or keyboard, then click any button in the mapping list to remap.</p>
             </li>
             <li>
-                <strong>Controller Type Icons</strong>
-                <p>TruchiEmu displays visual controller type icons in the toolbar and settings, making it easy to identify Xbox, DualShock 4, DualSense, MFi, and Arcade Stick controllers at a glance. Other controllers display a generic HID icon.</p>
+                <strong>Press a Physical Button</strong>
+                <p>Press a physical gamepad button or keyboard key to bind it to the selected action. The mapping UI shows the binding immediately.</p>
+            </li>
+            <li>
+                <strong>Save/Load Named Profiles (Gamepad Only)</strong>
+                <p>Save named mapping configurations for reuse &mdash; handy for switching between arcade sticks and gamepads.</p>
+            </li>
+            <li>
+                <strong>Tune Deadzone</strong>
+                <p>Adjust analog-stick deadzone and sensitivity in the same panel so drift won't wander the character.</p>
             </li>
         </ol>
+
+        <h3>Reset Buttons</h3>
+        <p>If your SDL controller list gets stuck or an Xbox controller stops responding, hit <strong>Disable</strong> on the offending row, then <strong>Reset</strong>. The same affordance exists for keyboard "controllers".</p>
     </section>
 
+    <section id="references">
+        <h2>Related Features</h2>
+        <div class="related-services">
+            <div class="service-card">
+                <h3><a href="{{ '/features/analog-mouse.html' | relative_url }}">Analog Mouse</a></h3>
+                <p>Use your gamepad stick as a mouse for DOS and ScummVM games.</p>
+            </div>
+            <div class="service-card">
+                <h3><a href="{{ '/features/training-mode.html' | relative_url }}">Training Mode</a></h3>
+                <p>Bind controller hotkeys for training-mode reset, record, and playback.</p>
+            </div>
+            <div class="service-card">
+                <h3><a href="{{ '/features/tv-mode.html' | relative_url }}">TV Mode</a></h3>
+                <p>Gamepad navigation across the whole library UI.</p>
+            </div>
+        </div>
+    </section>
 </div>

@@ -1,0 +1,75 @@
+---
+layout: default
+title: Analog Mouse Support - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <h1>Analog Mouse Support</h1>
+
+    <div class="feature-overview">
+        <p class="lead">Use your gamepad's analog sticks to control the mouse cursor in DOS and ScummVM games &mdash; with D-pad as arrow keys, configurable button mapping for clicks, and per-system/per-game overrides.</p>
+    </div>
+
+    <section id="overview">
+        <h2>Overview</h2>
+        <p>DOS and ScummVM games often need a mouse: point and click, drag, drop, or drop objects. With Analog Mouse, you don't need a real mouse at hand &mdash; the left analog stick moves the cursor; the right stick gives you precise 1/5-speed control; the D-pad sends arrow keys; Start sends Enter; Select sends Space.</p>
+
+        <h3>What You Get</h3>
+        <ul class="feature-list">
+            <li><strong>Analog Stick to Mouse:</strong> The primary analog stick (left or right &mdash; configurable handedness) moves the cursor at 60fps with adjustable sensitivity</li>
+            <li><strong>Secondary Stick for Fine Control:</strong> The secondary analog stick moves the mouse at 1/5 speed for precise pixel targeting</li>
+            <li><strong>D-Pad as Keyboard:</strong> D-pad sends arrow keys; Start sends Enter; Select sends Space</li>
+            <li><strong>Configurable Button Mapping:</strong> Assign left, right, and middle mouse click to any gamepad button</li>
+            <li><strong>Per-System & Per-Game:</strong> Independent settings for DOS and ScummVM, with per-game overrides</li>
+            <li><strong>Auto-Release with Game Guide:</strong> Input capture releases when you open the Game Guide sidebar (so you can use the mouse in hints/walkthroughs) and resumes when it closes</li>
+        </ul>
+    </section>
+
+    <section id="how-to-use">
+        <h2>How to Use</h2>
+        <ol class="setup-steps">
+            <li>
+                <strong>Enable Analog Mouse</strong>
+                <p>Open <strong>Settings &rarr; Analog Mouse</strong>. Toggle per-system enable for DOS, ScummVM, or both.</p>
+            </li>
+            <li>
+                <strong>Set Stick Handedness</strong>
+                <p>Choose whether the left or right stick is the "primary" (fast) cursor; the other becomes the "fine" control stick.</p>
+            </li>
+            <li>
+                <strong>Tune Sensitivity & Deadzone</strong>
+                <p>Adjust sensitivity multiplier and stick dead-zone in the same panel. Use the secondary stick for fine targeting.</p>
+            </li>
+            <li>
+                <strong>Map Mouse Buttons to Gamepad</strong>
+                <p>Click a mouse-button field, then press a gamepad button to assign. Repeat for left, right, and middle click.</p>
+            </li>
+            <li>
+                <strong>Per-Game Overrides</strong>
+                <p>From the Game Detail view, click <strong>Game &rarr; Analog Mouse Override</strong> to set per-game settings that override the system default.</p>
+            </li>
+        </ol>
+    </section>
+
+    <section id="tips">
+        <h2>Tips</h2>
+        <div class="info-box">
+            <p><strong>Comfort tip:</strong> Use the secondary stick for precise pixel targeting, and map mouse buttons to comfortable gamepad buttons for your preferred play style. If you're stuck in a puzzle, open the Game Guide via <code>Cmd+J</code> &mdash; mouse capture auto-releases so you can interact with the guide, and re-engages when you close it.</p>
+        </div>
+    </section>
+
+    <section id="references">
+        <h2>Related Features</h2>
+        <div class="related-services">
+            <div class="service-card">
+                <h3><a href="{{ '/features/controllers.html' | relative_url }}">Controller Support</a></h3>
+                <p>Analog Mouse integrates with the controller driver layer (GCController + SDL2).</p>
+            </div>
+            <div class="service-card">
+                <h3><a href="{{ '/features/game-guide.html' | relative_url }}">Game Guide</a></h3>
+                <p>The Game Guide auto-releases Analog Mouse so you can interact with hints via the real cursor.</p>
+            </div>
+        </div>
+    </section>
+</div>

@@ -1,0 +1,77 @@
+---
+layout: default
+title: Time Machine - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <h1>Time Machine</h1>
+
+    <div class="feature-overview">
+        <p class="lead">Rewind, fast-forward, and slow-motion controls directly from the game toolbar. Retry that missed jump in an instant or study a frame-perfect sequence at any speed.</p>
+    </div>
+
+    <section id="overview">
+        <h2>Overview</h2>
+        <p>Time Machine captures short save-state deltas in a circular buffer and replays them on demand, giving you the same kind of "scrub" you'd expect from a video editor or a modern arcade-rerelease &mdash; all without ever leaving the game window.</p>
+
+        <h3>What You Get</h3>
+        <ul class="feature-list">
+            <li><strong>Rewind:</strong> Step backward through recent frames to retry a missed jump, a botched combo, or a fatal hit without reaching for a save state</li>
+            <li><strong>Fast Forward:</strong> Skip slow dialogue, grinding, or long cutscenes while keeping audio pitched to playback speed</li>
+            <li><strong>Slow Motion:</strong> Study frame-perfect sequences at reduced speed &mdash; ideal for fighting game combo practice or tricky platformer setups</li>
+            <li><strong>Hardcore-Aware:</strong> When RetroAchievements Hardcore Mode is active, Time Machine is disabled alongside save states and cheats</li>
+            <li><strong>Per-Core Compatibility:</strong> Some cores (e.g. Dolphin) with known crash issues on the rewind pipeline are gracefully excluded; Play! (PS2) save-state warnings surface clearly so you know before you trigger one</li>
+        </ul>
+    </section>
+
+    <section id="how-to-use">
+        <h2>How to Use</h2>
+        <ol class="setup-steps">
+            <li>
+                <strong>Enable Time Machine</strong>
+                <p>Open <strong>Settings &rarr; Time Machine</strong> and toggle Time Machine on. The Setup Wizard also offers this on first launch.</p>
+            </li>
+            <li>
+                <strong>Choose Buffer Depth</strong>
+                <p>Set the rewind buffer depth in seconds. Larger buffers consume more memory but let you rewind further back.</p>
+            </li>
+            <li>
+                <strong>Set Slow-Motion Ratio</strong>
+                <p>Choose a slow-motion playback speed like 0.5&times;, 0.25&times;, or 0.1&times;.</p>
+            </li>
+            <li>
+                <strong>Bind Hotkeys</strong>
+                <p>Bind rewind / fast forward / slow motion hotkeys in <strong>Settings &rarr; Hotkeys</strong>. Both keyboard and gamepad bindings are supported.</p>
+            </li>
+            <li>
+                <strong>Use It During Gameplay</strong>
+                <p>Trigger rewind / fast-forward / slow-motion during gameplay via the toolbar buttons or the bound hotkeys. The overlay shows the current Time Machine state and scrub position.</p>
+            </li>
+        </ol>
+    </section>
+
+    <section id="restrictions">
+        <h2>Restrictions</h2>
+        <div class="warning-box">
+            <p><strong>Hardcore Mode:</strong> Time Machine is blocked while RetroAchievements Hardcore Mode is active, just like save states, cheats, and rewind-specific slow motion.</p>
+        </div>
+        <div class="info-box">
+            <p><strong>Cores that aren't supported:</strong> The Time Machine pipeline requires savestate deltas; cores that the libretro ecosystem has warned against using with save states are gracefully excluded from the rewind pipeline, and the Play! (PS2) core surfaces an explicit warning before triggering save-state capture so you can back out.</p>
+        </div>
+    </section>
+
+    <section id="references">
+        <h2>Related Features</h2>
+        <div class="related-services">
+            <div class="service-card">
+                <h3><a href="{{ '/features/save-states.html' | relative_url }}">Save States</a></h3>
+                <p>Time Machine reuses the same savestate pipeline that powers the visual Save State grid.</p>
+            </div>
+            <div class="service-card">
+                <h3><a href="{{ '/features/achievements.html' | relative_url }}">RetroAchievements</a></h3>
+                <p>Hardcore Mode disables Time Machine alongside save states and cheats.</p>
+            </div>
+        </div>
+    </section>
+</div>

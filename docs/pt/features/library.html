@@ -1,0 +1,117 @@
+---
+layout: default
+title: Gerenciamento da Biblioteca - Documentação do TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <h1>Gerenciamento da Biblioteca</h1>
+
+    <div class="feature-overview">
+        <p class="lead">O sistema de gerenciamento de biblioteca do TruchiEmu organiza sua coleção de jogos com enriquecimento de metadados, box art multi-fonte, identificação DAT/CRC32 e automação pós-escaneamento &mdash; incluindo materialização de placeholders do iCloud e notificações de remoção de ROMs.</p>
+    </div>
+
+    <section id="overview">
+        <h2>Visão Geral</h2>
+        <p>A biblioteca é onde seus jogos vivem. Aponte o TruchiEmu para suas pastas de ROMs e ele faz o resto: descobre a qual sistema cada arquivo pertence, identifica o jogo, obtém um título e descrição, e baixa a capa. Navegue por sistema, favoritos, jogados recentemente ou as categorias que você criou.</p>
+
+        <h3>O Que Ele Faz por Você</h3>
+        <ul class="feature-list">
+            <li><strong>Identificação CRC32:</strong> Hash CRC32 acelerado por hardware (via zlib) contra bancos DAT &mdash; não apenas extensões de arquivo &mdash; para identificar ROMs com precisão independentemente do nome</li>
+            <li><strong>Rastreamento de Rejeição MAME:</strong> A identificação MAME usa rastreamento de rejeição e um algoritmo de pontuação refinado; entradas MAME não-jogo são filtradas automaticamente</li>
+            <li><strong>Serviço de Metadados LaunchBox:</strong> O enriquecimento de metadados em segundo plano obtém descrições, datas de lançamento, editora, número de jogadores e gênero. Overrides de plataforma melhoram a pontuação entre sistemas</li>
+            <li><strong>Prioridade de Box Art:</strong> As capas são obtidas do ScreenScraper e Libretro CDN com prioridade configurável; um seletor interativo de Box Art permite trocar a capa alternativa por jogo</li>
+            <li><strong>Download de Assets PPSSPP:</strong> Assets específicos do PPSSPP são baixados e aplicados automaticamente ao detectar uma ROM de PSP</li>
+            <li><strong>Seleção de Região de Box Art:</strong> Escolha a região preferida para capas por jogo ou global; miniaturas são geradas, cacheadas e reamostradas eficientemente</li>
+            <li><strong>Materialização do iCloud:</strong> Placeholders do iCloud são materializados ao acessar, para que ROMs armazenadas no iCloud sejam exibidas corretamente &mdash; sem stubs de zero bytes na sua lista</li>
+            <li><strong>Notificações de Remoção de ROMs:</strong> Quando ROMs são removidas de pastas monitoradas, a biblioteca é atualizada automaticamente e publica uma notificação &mdash; sem necessidade de reescaneamento manual</li>
+            <li><strong>Organizado do Seu Jeito:</strong> Navegue por sistema, favoritos, recentes, últimos adicionados, categorias personalizadas ou compatibilidade com RetroAchievements</li>
+            <li><strong>Grade ou Lista:</strong> Alterne entre a grade de capas (com controle deslizante de zoom) e a visualização de lista compacta</li>
+            <li><strong>Busca e Filtros:</strong> Busca por digitação na janela principal (busca multi-termo); chips de filtro rápido para "sem capa", "nunca jogado", "não identificado", "multijogador", "gênero"</li>
+            <li><strong>Barra Lateral Inteligente:</strong> As linhas de coleções inteligentes no SystemSidebarView respeitam a consulta de busca ativa &mdash; sistemas ocultos permanecem ocultos ao filtrar</li>
+            <li><strong>Compatibilidade com RetroAchievements:</strong> Jogos com conquistas são marcados e podem ser filtrados para mostrar apenas esses</li>
+        </ul>
+    </section>
+
+    <section id="automation-pipeline">
+        <h2>Automação Pós-Escaneamento</h2>
+        <p>O TruchiEmu não apenas escaneia &mdash; após o escaneamento, o <strong>LibraryAutomationCoordinator</strong> executa um pipeline pós-escaneamento: identificar &rarr; enriquecer metadados &rarr; baixar capa. O pipeline respeita o <code>RunningGamesTracker</code> para que o trabalho pesado pós-escaneamento pause durante o jogo.</p>
+
+        <div class="info-box">
+            <p><strong>Desempenho em segundo plano:</strong> O pipeline é executado em série com um atraso de aquecimento de 2 segundos para nunca competir com a CPU do jogo ativo. Um <strong>MetadataSyncCoordinator</strong> separado gerencia a sincronização do LaunchBox em segundo plano com concorrência de 1 por vez; também pausa durante o jogo.</p>
+        </div>
+
+        <h3>Pipeline de Identificação</h3>
+        <ol class="setup-steps">
+            <li>
+                <strong>Escaneamento</strong>
+                <p>ROMScanner (um <code>actor</code> do Swift) escaneia diretórios recursivamente, filtra por extensão e identifica arquivos MAME em uma única passada.</p>
+            </li>
+            <li>
+                <strong>Hash e Correspondência</strong>
+                <p>ROMIdentifierService calcula CRC32 em paralelo (semáforo de 4 vias para limitação de E/S) e compara com bancos DAT. ROMIdentifier usa pontuação ponderada: cabeçalhos mágicos > extensões únicas > padrões de nome > contexto de caminho.</p>
+            </li>
+            <li>
+                <strong>Enriquecimento de Metadados</strong>
+                <p>O Serviço de Metadados LaunchBox enriquece os jogos identificados com descrição, data de lançamento, editora, número de jogadores e gênero.</p>
+            </li>
+            <li>
+                <strong>Download de Capas</strong>
+                <p>BoxArtService obtém capas do ScreenScraper e Libretro CDN conforme sua prioridade. Respeita preferências de região. BoxArtThumbnailService gera e cacheia miniaturas para renderização rápida em grade.</p>
+            </li>
+            <li>
+                <strong>Categorização por Gênero</strong>
+                <p>Os gêneros são populados a partir dos metadados e expostos como chips de filtro na barra lateral da biblioteca.</p>
+            </li>
+        </ol>
+    </section>
+
+    <section id="managing-folders">
+        <h2>Gerenciamento de Pastas da Biblioteca</h2>
+        <h3>Adicionar Pastas</h3>
+        <ul class="feature-list">
+            <li><strong>Assistente de Configuração:</strong> Adicione uma ou mais pastas durante a configuração inicial</li>
+            <li><strong>Barra de Ferramentas:</strong> Clique no botão <code>folder.badge.plus</code> no topo da sua biblioteca</li>
+            <li><strong>Barra de Menu:</strong> Jogos &rarr; Adicionar Pasta de ROMs (<code>Shift+Cmd+O</code>)</li>
+            <li><strong>Configurações:</strong> Ajustes &rarr; Biblioteca &rarr; Pastas da Biblioteca, clique em "Adicionar Pasta"</li>
+        </ul>
+
+        <h3>Reescaneamento e Reconstrução</h3>
+        <ul class="feature-list">
+            <li><strong>Reescaneamento Completo:</strong> Ajustes &rarr; Biblioteca &rarr; Manutenção &rarr; "Reescaneamento Completo da Biblioteca" (ou <code>Shift+Cmd+R</code>)</li>
+            <li><strong>Atualização por Pasta:</strong> Cada pasta tem um botão "Atualizar" (e uma opção "Reconstruir" com múltiplas estratégias)</li>
+            <li><strong>Atualização por Sistema:</strong> Clique com o botão direito em um sistema na barra lateral e escolha "Atualizar"</li>
+            <li><strong>Arquivos MAME Ocultos:</strong> Entradas MAME não-jogo filtradas ficam sob uma entrada "Arquivos MAME Ocultos" na barra lateral, não na grade principal</li>
+        </ul>
+    </section>
+
+    <section id="genres-categories">
+        <h2>Gêneros e Categorias</h2>
+        <p>Navegue por gênero usando o chip de filtro de gênero (baseado em metadados do LaunchBox), ou crie categorias personalizadas com nomes, ícones SF Symbol, ícones personalizados e cores por categoria.</p>
+        <ul class="feature-list">
+            <li><strong>Categorias Personalizadas:</strong> Arraste e solte jogos em categorias personalizadas, ou use o menu de contexto</li>
+            <li><strong>Favoritos:</strong> Clique direito &rarr; "Adicionar aos Favoritos" para acesso rápido</li>
+            <li><strong>Jogados Recentemente:</strong> Rastreamento automático baseado no histórico de inicialização</li>
+            <li><strong>Jogos Ocultos:</strong> Clique direito &rarr; "Ocultar Jogo" para manter a grade principal organizada</li>
+            <li><strong>Gerenciamento de Gêneros:</strong> Ajustes &rarr; Gêneros fornece controles por gênero</li>
+        </ul>
+    </section>
+
+    <section id="references">
+        <h2>Recursos Relacionados</h2>
+        <div class="related-services">
+            <div class="service-card">
+                <h3><a href="{{ '/pt/features/save-states.html' | relative_url }}">Sistema de Save States</a></h3>
+                <p>Save states podem ser visualizados e gerenciados a partir da visualização de detalhes do jogo como uma grade visual.</p>
+            </div>
+            <div class="service-card">
+                <h3><a href="{{ '/pt/features/achievements.html' | relative_url }}">RetroAchievements</a></h3>
+                <p>Jogos com suporte a RetroAchievements são marcados na biblioteca e filtráveis através da entrada RA na barra lateral. A visualização de detalhes do jogo mostra o hash RA do jogo.</p>
+            </div>
+            <div class="service-card">
+                <h3><a href="{{ '/pt/features/tv-mode.html' | relative_url }}">TV Mode</a></h3>
+                <p>O TV Mode usa a mesma biblioteca &mdash; suas categorias, filtros e capas se aplicam de forma idêntica.</p>
+            </div>
+        </div>
+    </section>
+</div>

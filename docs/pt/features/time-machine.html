@@ -1,0 +1,43 @@
+---
+layout: default
+title: Time Machine - Documentação do TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <h1>Time Machine</h1>
+
+    <div class="feature-overview">
+        <p class="lead">Controles de rebobinamento, avanço rápido e câmera lenta direto da barra do jogo.</p>
+    </div>
+
+    <section id="overview">
+        <h2>Visão Geral</h2>
+        <p>O Time Machine captura deltas de save-state em um buffer circular e os reproduz sob demanda, dando o mesmo "scrub" que você esperaria de um editor de vídeo &mdash; tudo sem sair da janela do jogo.</p>
+
+        <h3>Recursos</h3>
+        <ul class="feature-list">
+            <li><strong>Rebobinamento:</strong> Volte frames recentes para refazer um pulo errado, combo errado ou golpe fatal sem recorrer a save state</li>
+            <li><strong>Avanço Rápido:</strong> Pule diálogos lentos, grind ou cutscenes longas mantendo o pitch do áudio</li>
+            <li><strong>Câmera Lenta:</strong> Estude sequências frame-perfect em velocidade reduzida &mdash; ideal para prática de combos ou setups difíceis</li>
+            <li><strong>Hardcore-Aware:</strong> Quando o Modo Hardcore do RetroAchievements está ativo, o Time Machine é desativado junto com save states e cheats</li>
+            <li><strong>Compatibilidade por Core:</strong> Alguns cores (ex.: Dolphin) são excluídos com elegância; o Play! (PS2) exibe avisos claros</li>
+        </ul>
+    </section>
+
+    <section id="how-to-use">
+        <h2>Como Usar</h2>
+        <ol class="setup-steps">
+            <li><strong>Habilitar Time Machine:</strong> Settings &rarr; Time Machine, toggle on (ou pelo Setup Wizard).</li>
+            <li><strong>Definir Profundidade do Buffer:</strong> Profundidade de rebobinamento em segundos (maior = mais memória).</li>
+            <li><strong>Definir Ratio de Câmera Lenta:</strong> 0.5&times;, 0.25&times;, 0.1&times;, etc.</li>
+            <li><strong>Atribuir Hotkeys:</strong> Bind de rebobinamento / avanço rápido / câmera lenta em Hotkeys. Aceita teclado e gamepad.</li>
+            <li><strong>Usar durante o jogo:</strong> Dispare os controles pela barra ou hotkeys. O overlay exibe o estado atual.</li>
+        </ol>
+    </section>
+
+    <section id="restrictions">
+        <h2>Restrições</h2>
+        <div class="warning-box"><p><strong>Modo Hardcore:</strong> Time Machine é bloqueado quando o Modo Hardcore do RetroAchievements está ativo.</p></div>
+    </section>
+</div>

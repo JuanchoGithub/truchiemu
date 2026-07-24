@@ -6,56 +6,111 @@ title: Library Management - TruchiEmu Documentation
 
 <div class="feature-docs">
     <h1>Library Management</h1>
-    
+
     <div class="feature-overview">
-        <p class="lead">TruchiEmu's library management system organizes your game collection with metadata enrichment, artwork downloads, and system-based categorization.</p>
+        <p class="lead">TruchiEmu's library management system organizes your game collection with metadata enrichment, multi-source box art, DAT/CRC32 identification, and post-scan automation &mdash; including iCloud dataless-placeholder materialization and ROM-removal notifications.</p>
     </div>
 
-    <section id="service-explanation">
+    <section id="overview">
         <h2>Overview</h2>
         <p>The Library is where your games live. Point TruchiEmu at your ROM folders and it does the rest: it figures out which system each file belongs to, identifies the game, pulls in a title and description, and grabs the box art. Browse by system, favorite, recently played, or any of the saved categories you've made.</p>
 
         <h3>What It Does For You</h3>
-<ul class="feature-list">
-<li><strong>Automatic Identification:</strong> Each ROM is recognized and matched to a real game title  no manual entry needed</li>
-<li><strong>Box Art:</strong> Cover art is downloaded automatically for every game it can find</li>
-<li><strong>Metadata:</strong> Game info, descriptions, and genres are pulled in from community databases</li>
-<li><strong>Organized Your Way:</strong> Browse by system, favorites, recently played, last added, custom categories, or RetroAchievements</li>
-<li><strong>Grid or List:</strong> Switch between the cover-art grid and a compact list view</li>
-<li><strong>Search & Filters:</strong> Multi-term search plus quick filter chips for "no box art", "never played", "multiplayer", and more</li>
-<li><strong>RetroAchievements Aware:</strong> Games with achievements are flagged so you can filter to just those</li>
-</ul>
+        <ul class="feature-list">
+            <li><strong>CRC32 Identification:</strong> Hardware-accelerated CRC32 hashing (via zlib) against DAT databases &mdash; not just file extensions &mdash; so ROMs are accurately identified regardless of filename</li>
+            <li><strong>MAME Rejection Tracking:</strong> MAME identification uses rejection tracking and a refined scoring algorithm; non-game MAME entries are filtered out automatically</li>
+            <li><strong>LaunchBox Metadata Service:</strong> Background metadata enrichment pulls in descriptions, release dates, publisher, player count, and genre. Platform overrides improve match scoring across systems</li>
+            <li><strong>Box Art Priority:</strong> Box art is fetched from ScreenScraper and Libretro CDN with configurable priority; an interactive Box Art Picker lets you swap alternative artwork per game</li>
+            <li><strong>PPSSPP Asset Downloads:</strong> PPSSPP-specific assets are downloaded and applied automatically when a PSP ROM is detected</li>
+            <li><strong>Box Art Region Selection:</strong> Pick preferred region for box art per game or system-wide; thumbnails are generated, cached, and resampled efficiently</li>
+            <li><strong>iCloud Materialization:</strong> iCloud dataless-placeholders are materialized on access so ROMs stored in iCloud display correctly &mdash; no more zero-byte stubs in your library list</li>
+            <li><strong>ROM-Removal Notifications:</strong> When ROMs are removed from watched folders, the library updates automatically and posts a notification so you don't have to manually rescan</li>
+            <li><strong>Organized Your Way:</strong> Browse by system, favorites, recently played, last added, custom categories, or RetroAchievements-support</li>
+            <li><strong>Grid or List:</strong> Switch between the cover-art grid (with zoom slider) and the compact list view</li>
+            <li><strong>Search & Filters:</strong> Type-to-search in the main window (multi-term search); quick filter chips for "no box art", "never played", "unidentified", "multiplayer", "genre"</li>
+            <li><strong>Search-Aware Sidebar:</strong> Smart collection rows in SystemSidebarView respect the active search query &mdash; hidden systems stay hidden when you filter</li>
+            <li><strong>RetroAchievements Aware:</strong> Games with achievements are flagged and can be filtered to just those</li>
+        </ul>
     </section>
 
-    <section id="step-by-step-guide">
-        <h2>Step-by-Step Configuration Guide</h2>
-        
-        <h3>Initial Library Setup</h3>
+    <section id="automation-pipeline">
+        <h2>Post-Scan Automation</h2>
+        <p>TruchiEmu doesn't just scan &mdash; after the scan, <strong>LibraryAutomationCoordinator</strong> runs a post-scan pipeline: identify &rarr; enrich metadata &rarr; download art. Pipeline respects <code>RunningGamesTracker</code> so heavy post-scan work pauses during gameplay.</p>
+
+        <div class="info-box">
+            <p><strong>Background performance:</strong> The pipeline runs serially with a 2-second warm-up delay so it never competes with active gameplay CPU. A separate <strong>MetadataSyncCoordinator</strong> handles background LaunchBox sync with 1-at-a-time concurrency; it also pauses during gameplay.</p>
+        </div>
+
+        <h3>Identification Pipeline</h3>
         <ol class="setup-steps">
-<li>
-<strong>Add ROM Directories</strong>
-<p>Add ROM directories from the Library sidebar (button <code>folder.badge.plus</code>) or the initial onboarding wizard. TruchiEmu supports recursive scanning of subdirectories.</p>
-<img src="{{ '/media/screenshots/library-directories.png' | relative_url }}" alt="ROM Directories Configuration">
-</li>
-<li>
-<strong>Start Library Scan</strong>
-<p>Initiate a scan from the Library view. The scanner identifies ROM systems, then automatically runs post-scan automation: CRC32-based game identification, metadata enrichment, and box art downloads. No manual scan configuration is needed &mdash; scanning automatically filters non-ROM file types and identifies systems by extension and file headers.</p>
-</li>
-            </ol>
+            <li>
+                <strong>Scan</strong>
+                <p>ROMScanner (a Swift <code>actor</code>) scans directories recursively, filters by extension, and bulk-identifies MAME files in one pass.</p>
+            </li>
+            <li>
+                <strong>Hash & Match</strong>
+                <p>ROMIdentifierService computes CRC32 in parallel (4-way semaphore for I/O throttling) and matches against DAT databases. ROMIdentifier uses weighted scoring: magic headers > unique extensions > filename patterns > path context.</p>
+            </li>
+            <li>
+                <strong>Metadata Enrichment</strong>
+                <p>LaunchBox Metadata Service enriches identified games with description, release date, publisher, player count, and genre.</p>
+            </li>
+            <li>
+                <strong>Box Art Download</strong>
+                <p>BoxArtService fetches art from ScreenScraper and Libretro CDN per your priority. Honor region preferences. BoxArtThumbnailService generates and caches thumbnails for fast grid rendering.</p>
+            </li>
+            <li>
+                <strong>Genre Categorization</strong>
+                <p>Genres are populated from the metadata and exposed as filter chips in the library sidebar.</p>
+            </li>
+        </ol>
+    </section>
+
+    <section id="managing-folders">
+        <h2>Managing Library Folders</h2>
+        <h3>Adding Folders</h3>
+        <ul class="feature-list">
+            <li><strong>Setup Wizard:</strong> Add one or more folders during first-launch setup</li>
+            <li><strong>Library Toolbar:</strong> Click the <code>folder.badge.plus</code> button at the top of your library</li>
+            <li><strong>Menu Bar:</strong> Games &rarr; Add ROM Folder (<code>Shift+Cmd+O</code>)</li>
+            <li><strong>Settings:</strong> Settings &rarr; Library &rarr; Library Folders, click "Add Folder"</li>
+        </ul>
+
+        <h3>Rescanning & Rebuild</h3>
+        <ul class="feature-list">
+            <li><strong>Full Rescan:</strong> Settings &rarr; Library &rarr; Maintenance &rarr; "Full Library Rescan" (or <code>Shift+Cmd+R</code>)</li>
+            <li><strong>Per-Folder Refresh:</strong> Each folder has a "Refresh" button (and a "Rebuild" option with multiple strategies)</li>
+            <li><strong>Per-System Refresh:</strong> Right-click a system in the sidebar and choose "Refresh"</li>
+            <li><strong>Hidden MAME Files:</strong> Filtered non-game MAME entries live under a "Hidden MAME Files" sidebar entry, not in your main grid</li>
+        </ul>
+    </section>
+
+    <section id="genres-categories">
+        <h2>Genres & Categories</h2>
+        <p>Browse by genre using the genre filter chip (powered by LaunchBox metadata), or create custom categories with names, SF Symbol icons, custom uploaded icons, and per-category colors.</p>
+        <ul class="feature-list">
+            <li><strong>Custom Categories:</strong> Drag-and-drop games into custom categories, or use the right-click context menu</li>
+            <li><strong>Favorites:</strong> Right-click &rarr; "Add to Favorites" for quick access</li>
+            <li><strong>Recently Played:</strong> Auto-tracked based on launch history</li>
+            <li><strong>Hidden Games:</strong> Right-click &rarr; "Hide Game" to keep main grid uncluttered</li>
+            <li><strong>Genre Management:</strong> Settings &rarr; Genres provides per-genre controls</li>
+        </ul>
     </section>
 
     <section id="references">
         <h2>Related Features</h2>
-        
         <div class="related-services">
             <div class="service-card">
                 <h3><a href="{{ '/features/save-states.html' | relative_url }}">Save State System</a></h3>
-                <p>Save states can be viewed and managed from the game detail view.</p>
+                <p>Save states can be viewed and managed from the game detail view as a visual grid.</p>
             </div>
-            
             <div class="service-card">
                 <h3><a href="{{ '/features/achievements.html' | relative_url }}">RetroAchievements</a></h3>
-                <p>Games with RetroAchievements support are flagged in the library and can be filtered via the RetroAchievements view.</p>
+                <p>Games with RetroAchievements support are flagged in the library and filterable via the RA sidebar entry. The Game Detail view shows the RA hash for the game.</p>
+            </div>
+            <div class="service-card">
+                <h3><a href="{{ '/features/tv-mode.html' | relative_url }}">TV Mode</a></h3>
+                <p>TV Mode uses the same library &mdash; your categories, filters, and box art apply identically.</p>
             </div>
         </div>
     </section>

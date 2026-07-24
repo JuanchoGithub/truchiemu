@@ -27,11 +27,7 @@ GitHub
 <div class="footer-section">
 <h4>{{ site.data[lang_code].supported_systems | default: "Supported Systems" }}</h4>
 <ul>
-<li><a href="{{ lang_path | append: '/systems/nes.html' | relative_url }}">NES</a></li>
-<li><a href="{{ lang_path | append: '/systems/snes.html' | relative_url }}">SNES</a></li>
-<li><a href="{{ lang_path | append: '/systems/n64.html' | relative_url }}">N64</a></li>
-<li><a href="{{ lang_path | append: '/systems/gba.html' | relative_url }}">GBA</a></li>
-<li><a href="{{ lang_path | append: '/systems.html' | relative_url }}">{{ site.data[lang_code].all_systems | default: "All Systems" }} &rarr;</a></li>
+<li><a href="{{ lang_path | append: '/systems.html' | relative_url }}">{{ site.data[lang_code].all_systems | default: "All Supported Systems" }} &rarr;</a></li>
 </ul>
 </div>
 
