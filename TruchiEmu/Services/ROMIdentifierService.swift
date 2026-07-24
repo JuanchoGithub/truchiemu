@@ -214,7 +214,7 @@ final class ROMIdentifierService: @unchecked Sendable {
         LoggerService.debug(category: "ROMIdentifier","Identify \(rom.name): START (preferNameMatch=\(preferNameMatch))")
         #endif
         guard let systemID = rom.systemID,
-              let system = SystemDatabase.system(forID: systemID) else {
+              SystemDatabase.system(forID: systemID) != nil else {
             LoggerService.error(category: "ROMIdentifier", "Identify: no system for ROM \(rom.path.lastPathComponent)")
             return .noSystem
         }
