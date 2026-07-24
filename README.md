@@ -37,7 +37,7 @@ Forget clunky, outdated menus. TruchiEmu features a polished, native macOS inter
 
 https://github.com/user-attachments/assets/46a734d8-9c25-4d94-bb81-80cb53506531
 
-Relive the golden age of gaming with advanced Metal-powered shaders. Whether you want the warm glow of a classic CRT, the sharp look of an LCD, or custom scanline effects, TruchiEmu makes every pixel feel authentic.
+Relive the golden age of gaming with advanced Metal-powered shaders. Whether you want the warm glow of a classic CRT, the sharp look of an LCD, or custom scanline effects, TruchiEmu makes every pixel feel authentic. 14 built-in Metal shaders cover CRT, LCD, smoothing, and composite looks; hundreds of community-made Slang/RetroArch `.slangp` presets are auto-discovered and loaded via librashader.
 
 ### 🖌️ Gaming-Inspired Themes
 
@@ -47,6 +47,26 @@ Relive the golden age of gaming with advanced Metal-powered shaders. Whether you
 
 - **Gaming themes**: Mario, Sonic, Kratos, Kirby, Zelda, Pikachu, Master Chief, lots of others
 - **Tinted surfaces & accent toolbars**: Subtle theme blending across every window
+
+### 📺 TV Mode
+
+Flip to TV Mode from **View → TV Mode** (or a button on the game-toolbar) for a couch-friendly, full-screen library experience. Browse your entire collection with just a gamepad — D-pad scrolls, A selects, B backs out — no mouse required. Animated backdrops derived from box art, box-art focus scaling, short-list mode for large libraries, and resolution-adaptive scaling for 1080p through 4K. Trigger core downloads directly from TV Mode without dropping back to the desktop.
+
+### ⏪ Time Machine
+
+Rewind, fast-forward, and slow-motion controls directly from the game toolbar. Time Machine captures save-state deltas in a circular buffer and replays them on demand — giving you the same "scrub" you'd expect from a video editor, all without leaving the game window. Perfect for retrying a missed jump, skipping slow cutscenes, or studying frame-perfect sequences at 0.25× speed. Hardcore-aware: automatically disabled when RetroAchievements Hardcore Mode is active.
+
+### 🎬 Recording & Streaming
+
+Record sessions locally (H.264/HEVC/ProRes lossless) or stream live to Twitch, YouTube, or any custom RTMP endpoint — without leaving the game. The pipeline runs in-process via HaishinKit (real RTMP handshake, AMF0 messaging, FLV mux, VideoToolbox H.264/HEVC + AAC encode) so there are no external processes, pipes, or silent frame drops. Rolling video buffer with a "save last moments" hotkey, configurable Share button (single-press reveals latest clip, long-press flushes the buffer), and per-game stream resolution from native up to 4K.
+
+### 🥊 Move Lists & Fight Data
+
+On-screen move notation overlay for fighting games, with directional inputs, button-glyph combinations, and special-condition markers rendered as crisp visual tokens. Ships with a curated Fight Data library covering 200+ fighting games — Street Fighter II, Mortal Kombat, KOF, Tekken, Samurai Shodown, Eternal Champions, Clay Fighter, Dragon Ball Z, Yu Yu Hakusho, TMNT Tournament Fighters, and more. MoveForest evaluator tracks inputs intelligently. Toggle move names alongside tokens, search and filter by character, input type, or name.
+
+### 🎯 Game Guide
+
+A built-in game guide overlay for point-and-click adventures (DOS, ScummVM) that shows contextual hints, walkthrough snippets, and clickable region maps. Auto-loads per game, toggle from the game toolbar. Captures release gracefully with Analog Mouse so you can switch between guide navigation and gameplay without losing your cursor.
 
 ### 🚀 Effortless Setup
 Getting started is a breeze. Our guided setup wizard walks you through your first launch, and our automated library services handle the heavy lifting: syncing metadata and downloading beautiful box art for your entire collection.
@@ -59,7 +79,7 @@ Getting started is a breeze. Our guided setup wizard walks you through your firs
 
 
 ### 🏆 RetroAchievements
-Take your nostalgia to the next level. TruchiEmu supports RetroAchievements, allowing you to earn trophies and compete for glory while playing the classics.
+Take your nostalgia to the next level. TruchiEmu supports RetroAchievements with full auth, achievement tracking/unlocking, rich presence polling, and game data caching. **Hardcore Mode** enforces achievement integrity by blocking save states, rewind, slow motion, and cheats when active — the same restrictions as official RetroAchievements clients. Games with RA support are flagged in the library and filterable via a dedicated sidebar entry; the Game Detail view shows the RA hash used for identification.
 
 ### ✨ Pure Delight
 Every interaction is designed to be smooth and joyful. From polished transitions to celebratory confetti moments, TruchiEmu brings a touch of magic to your retro gaming sessions.
@@ -70,14 +90,23 @@ Every interaction is designed to be smooth and joyful. From polished transitions
 
 ## 🛠️ Key Features
 
-- **Multi-System Powerhouse**: One app, countless classics. Support for NES, SNES, N64, GBA, Genesis, DOS, ScummVM, and more.
+- **Multi-System Powerhouse**: One app, countless classics. Support for NES, SNES, N64, GBA, Genesis, DOS, ScummVM, and more — virtually every system with an available LibRetro core.
+- **TV Mode**: Couch-friendly, gamepad-navigable full-screen library with animated backdrops, box-art focus, and resolution-adaptive scaling.
+- **Time Machine**: Rewind, fast-forward, and slow-motion controls from the game toolbar — circular save-state delta buffer, frame-perfect study, and Hardcore-aware auto-disable.
+- **Recording & Streaming**: In-process local recording (H.264/HEVC/ProRes) and live RTMP streaming to Twitch/YouTube/custom endpoints via HaishinKit. Rolling video buffer, configurable Share button, native-to-4K resolution.
+- **Move Lists & Fight Data**: On-screen move notation overlay with 200+ curated fighting game sets, MoveForest input evaluator, search and per-character filter.
+- **Game Guide**: Contextual in-game guide overlay for DOS/ScummVM with hints, walkthrough snippets, and clickable maps.
 - **Analog Mouse Support**: Use your gamepad's analog sticks to control the mouse cursor in DOS and ScummVM games, with configurable buttons for clicks and D-pad for keyboard inputs.
-- **Fighting Game Features**: Training mode overlay with customizable practice settings and on-screen move list notation for fighting games.
-- **Seamless Library Management**: Organize your games into custom categories, manage genres, and enjoy a clutter-free experience.
-- **Advanced Save States**: Never lose your progress with intuitive, slot-based progressive save and load functionality.
+- **Advanced Shader System**: 14 built-in Metal shaders (CRT, LCD, smoothing, composite) plus full Slang/RetroArch `.slangp` preset support via librashader. Save your tweaks as `.truchishader` files to export, share, and re-import. Per-game and per-system shader overrides.
+- **RetroAchievements + Hardcore Mode**: Full RA integration with auth, achievement tracking, rich presence, and Hardcore Mode enforcement (blocks save states, rewind, cheats).
+- **Pro-Grade Controller Support**: Full gamepad mapping with per-system configurations, controller type icons, and customizable controls. Up to 4 players with multi-player keyboard support, gap-slot priority, live axis preview, and SDL-gamepad disable/reset.
+- **Cheat System**: Built-in cheat library auto-downloaded from libretro-database, live toggle without restart, manual entry (Game Genie, Pro Action Replay, GameShark, raw hex), and per-ROM persistence.
+- **Seamless Library Management**: Organize your games into custom categories, manage genres, and enjoy a clutter-free experience. CRC32 hardware-accelerated identification against DAT databases, LaunchBox metadata sync, multi-source box art (ScreenScraper + Libretro CDN) with region selection, iCloud placeholder materialization, and ROM-removal notifications.
+- **Advanced Save States**: Visual grid of save states from the game detail view, slot-based progressive save and load functionality, auto-save on exit.
+- **Bezel System**: Arcade cabinet bezels and screen framing with user > auto-match > system-default resolution cascade, per-game and per-system preferences.
+- **Custom Core Options**: Per-core option persistence with a 5-layer override hierarchy (core default → app default → app system default → system override → game override). Versioned option keys for evolving libretro cores.
 - **Notification System**: In-game notification pills for game actions, controller connections, and system events with full history.
-- **Pro-Grade Controller Support**: Full gamepad mapping with per-system configurations, controller type icons, and customizable controls.
-- **Customizable Visuals**: Fine-tune your experience with custom shaders, bezel support, and gaming-inspired themes.
+- **CLI Support**: Launch games directly from the terminal: `TruchiEmu <rom-path>` for headless ROM launch.
 - **Built-in Update Checker**: Automatic update checking and in-app changelog viewer to stay up to date.
 
 ---
