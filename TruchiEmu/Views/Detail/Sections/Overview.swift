@@ -203,7 +203,6 @@ extension GameDetailView {
 
     // MARK: - Recent save states
 
-    @ViewBuilder
     private var recentSaveStatesPreview: some View {
         guard let slot = mostRecentSaveSlot, slot.exists else { return AnyView(EmptyView()) }
 
