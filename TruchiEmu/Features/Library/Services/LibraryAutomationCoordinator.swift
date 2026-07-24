@@ -421,7 +421,7 @@ final class LibraryAutomationCoordinator: ObservableObject {
 
         Task.detached(priority: .utility) { [scope, automationStart] in
             // Capture the @MainActor library reference for the box-art progress callback.
-            let lib = await library
+            let lib = library
 
             await MainActor.run {
                 self.isActive = true
