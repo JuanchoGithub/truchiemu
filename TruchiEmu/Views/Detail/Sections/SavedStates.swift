@@ -324,7 +324,8 @@ private struct ProgressiveThumbnailView: View {
         )
         .contextMenu {
             Button(action: {
-                try? saveStateManager.deleteProgressiveState(gameName: rom.displayName, systemID: rom.systemID ?? "", slot: slotID, version: version)
+                let gameKey = "\(rom.displayName)__\(rom.id.uuidString.prefix(8))"
+                try? saveStateManager.deleteProgressiveState(gameName: gameKey, systemID: rom.systemID ?? "", slot: slotID, version: version)
                 onDelete()
             }) {
                 Label(loc.localized("saveState.delete"), systemImage: "trash")

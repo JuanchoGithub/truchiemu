@@ -115,8 +115,9 @@ Text(slot.displayName)
             if slot.exists {
             Button(action: {
                 if slot.id >= 0 {
+                    let gameKey = "\(rom.displayName)__\(rom.id.uuidString.prefix(8))"
                     try? saveStateManager.deleteSlotWithProgressives(
-                        gameName: rom.displayName,
+                        gameName: gameKey,
                         systemID: rom.systemID ?? "",
                         slot: slot.id
                     )
