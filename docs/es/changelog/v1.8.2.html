@@ -1,0 +1,52 @@
+---
+layout: default
+title: v1.8.2 - Documentación de TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/es/changelog.html' | relative_url }}">Registro de cambios</a>
+        <span class="separator">/</span>
+        <span class="current">v1.8.2</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.8.2</h1>
+        <div class="release-meta">
+            <span class="release-date">24 de julio de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Versión de parche que refina la titularidad del Modo TV sobre los slots de guardado y la jerarquía de navegación con gamepad entre el juego y la app. Añade una ruta « jugar limpio » por Y en el Modo TV, evita que la preferencia global de auto-carga se sobrescriba, y evita que un mismo combo físico (p. ej. L3+R3) asignado a la barra de juego y a la entrada al Modo TV dispare la acción incorrecta.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destacados</h2>
+        <ul class="feature-list">
+            <li><strong>Modo TV:</strong> Y en la página de detalle del juego ahora inicia una sesión limpia sin auto-cargar un guardado, mientras que A sigue cargando el guardado más reciente (Continuar).</li>
+            <li><strong>Protección de guardados:</strong> La anulación de auto-carga por lanzamiento ya no sobrescribe la preferencia global <code>saveState_autoLoadOnStart</code> del usuario.</li>
+            <li><strong>Jerarquía de navegación con gamepad:</strong> Un combo asignado a « Mostrar barra de juego » y a « Entrar en Modo TV » ahora dispara solo la acción apropiada al contexto — la barra durante el juego, la entrada al Modo TV en la biblioteca — imponiendo una prioridad « el juego gana sobre la app ».</li>
+            <li><strong>Fiable pantalla completa del Modo TV:</strong> Reafirma el estado de ventana clave tras cerrar la hoja de ajustes para que el mando siga respondiendo sin clic del ratón.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Cambios detallados</h2>
+        <ul>
+            <li>Añadido el cableado <code>disableAutoLoadOnStart</code> por lanzamiento a través de <code>TVModeViewModel.launchSelected</code> → <code>GameLauncher.launchGame</code> → <code>StandaloneGameWindowController.launch</code></li>
+            <li>Introducido <code>effectiveShouldAutoLoad()</code> en <code>StandaloneGameWindowController</code> para que un lanzamiento limpio nunca sobrescriba la preferencia global de auto-carga del usuario</li>
+            <li>Enrutado Y en la página de detalle del Modo TV a <code>launchSelected(disableAutoLoad: true)</code>; Y en otros sitios sigue abriendo la hoja de ajustes</li>
+            <li>Mostrado el slot de guardado más reciente en la página de detalle del Modo TV y vinculado A a Continuar (cargar slot) cuando existe un guardado</li>
+            <li>Suavizado el guardia de key-window en <code>GamepadNavigationManager.poll</code> para que los contextos globales de superposición se despachen sin importar un <code>NSApp.keyWindow</code> transitoriamente nil (corrige la falta de respuesta tras cerrar la hoja en Modo TV a pantalla completa)</li>
+            <li>Añadido <code>GamepadNavAction.isLibraryOnlyAction</code> y una jerarquía « el juego gana sobre la app » en <code>processActions</code> para que un combo compartido no dispare barra + entrada al Modo TV a la vez</li>
+            <li>Reforzado <code>restoreKeyWindowAfterSettings</code> con un segundo intento retardado de re-key para cubrir carreras de cierre de hoja SwiftUI en ventanas a pantalla completa</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/es/changelog/v1.8.1.html' | relative_url }}" class="release-prev">&larr; v1.8.1</a>
+        <a href="{{ '/es/changelog.html' | relative_url }}" class="release-all">Todas las versiones</a>
+    </nav>
+</div>

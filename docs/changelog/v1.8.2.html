@@ -1,0 +1,52 @@
+---
+layout: default
+title: v1.8.2 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.8.2</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.8.2</h1>
+        <div class="release-meta">
+            <span class="release-date">July 24, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Patch release refining TV Mode ownership of save state slots and the gamepad navigation hierarchy between gameplay and the app. Adds a per-launch "play fresh" path on Y in TV Mode, prevents the global auto-load preference from being clobbered, and keeps a single physical combo (e.g. L3+R3) bound to both game-overlay and TV-mode entry from firing the wrong action.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>TV Mode:</strong> Y on the game-detail page now launches a fresh session without auto-loading a save state, while A continues to load the most recent save (Continue).</li>
+            <li><strong>Save state safeguards:</strong> Per-launch auto-load override no longer overwrites the user's global <code>saveState_autoLoadOnStart</code> preference.</li>
+            <li><strong>Gamepad navigation hierarchy:</strong> A combo bound to both "Show Game Toolbar" and "Enter TV Mode" now fires only the context-appropriate action — toolbar during gameplay, TV-mode entry in the library — enforcing a "game wins over app" priority.</li>
+            <li><strong>Fullscreen TV Mode reliability:</strong> Re-asserts key-window status after the in-app settings sheet dismisses so the controller stays responsive without a mouse click.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>Added per-launch <code>disableAutoLoadOnStart</code> plumbing through <code>TVModeViewModel.launchSelected</code> → <code>GameLauncher.launchGame</code> → <code>StandaloneGameWindowController.launch</code></li>
+            <li>Introduced <code>effectiveShouldAutoLoad()</code> on <code>StandaloneGameWindowController</code> so a fresh-start launch never clobbers the user's global auto-load preference</li>
+            <li>Routed Y on the TV Mode game-detail page to <code>launchSelected(disableAutoLoad: true)</code>; Y elsewhere still opens the settings sheet</li>
+            <li>Surfaced the most-recent save slot on the TV Mode detail page and bound A to Continue (load slot) when a save exists</li>
+            <li>Softened the <code>GamepadNavigationManager.poll</code> key-window guard so global overlay contexts dispatch regardless of transiently-nil <code>NSApp.keyWindow</code> (fixes post-sheet-dismissal deadness in fullscreen TV Mode)</li>
+            <li>Added <code>GamepadNavAction.isLibraryOnlyAction</code> and gated <code>processActions</code> on a "game wins over app" hierarchy so a shared combo no longer double-fires toolbar + TV-mode entry</li>
+            <li>Strengthened <code>restoreKeyWindowAfterSettings</code> with a second delayed re-key attempt to cover SwiftUI sheet teardown races on fullscreen windows</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.8.1.html' | relative_url }}" class="release-prev">&larr; v1.8.1</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>
