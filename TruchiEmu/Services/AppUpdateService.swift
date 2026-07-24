@@ -76,12 +76,8 @@ final class AppUpdateService: ObservableObject {
     @Published var allReleases: [AppRelease] = []
 
     var updateAvailable: Bool {
-        guard latestRelease != nil else { return false }
-        #if LOG_DEBUG
-        return true
-        #else
-        return latestRelease!.isNewer
-        #endif
+        guard let latestRelease else { return false }
+        return latestRelease.isNewer
     }
 
     var newerReleases: [AppRelease] {
@@ -128,18 +124,10 @@ final class AppUpdateService: ObservableObject {
 
             AppSettings.setDate("lastUpdateCheckDate", value: Date())
 
-            #if LOG_DEBUG
-            if let latest = appReleases.first {
-                latestRelease = latest
-                updateLog.info("[LOG_DEBUG] Presenting latest release for testing: \(latest.version)")
-                return latest
-            }
-            return nil
-            #else
             let stableReleases = appReleases.filter { !$0.isPrerelease }
             let latest = stableReleases.max(by: { AppVersion.compare($0.version, $1.version) == .orderedAscending })
 
-            if let latest = latest, latest.isNewer {
+            if let latest, latest.isNewer {
                 latestRelease = latest
                 if latest.isSkippedByUser {
                     updateLog.info("Update available but skipped by user: \(latest.version)")
@@ -152,7 +140,6 @@ final class AppUpdateService: ObservableObject {
                 updateLog.info("App is up to date")
                 return nil
             }
-            #endif
         } catch {
             updateLog.warning("Update check failed: \(error.localizedDescription)")
             return nil
