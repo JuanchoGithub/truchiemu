@@ -24,7 +24,7 @@ Download and install from my releases page: https://github.com/JuanchoGithub/tru
 
 TruchiEmu is a modern, high-performance emulator built from the ground up with SwiftUI. It brings your favorite classic consoles to life with a stunning interface, immersive visuals, and effortless library management.
 
-https://github.com/user-attachments/assets/c59b9283-b5bd-49d0-9631-f0d6bc247d60
+https://github.com/user-attachments/assets/c2613ee8-2c9c-40fb-805d-7e27081cb9e7
 
 ---
 
@@ -35,7 +35,7 @@ Forget clunky, outdated menus. TruchiEmu features a polished, native macOS inter
 
 ### 📺 Immersive Visuals
 
-https://github.com/user-attachments/assets/46a734d8-9c25-4d94-bb81-80cb53506531
+https://github.com/user-attachments/assets/6fc2ae7a-3013-417c-a0ca-7b4489a0b252
 
 Relive the golden age of gaming with advanced Metal-powered shaders. Whether you want the warm glow of a classic CRT, the sharp look of an LCD, or custom scanline effects, TruchiEmu makes every pixel feel authentic. 14 built-in Metal shaders cover CRT, LCD, smoothing, and composite looks; hundreds of community-made Slang/RetroArch `.slangp` presets are auto-discovered and loaded via librashader.
 
@@ -61,30 +61,13 @@ Rewind, fast-forward, and slow-motion controls directly from the game toolbar. T
 Record sessions locally (H.264/HEVC/ProRes lossless) or stream live to Twitch, YouTube, or any custom RTMP endpoint — without leaving the game. The pipeline runs in-process via HaishinKit (real RTMP handshake, AMF0 messaging, FLV mux, VideoToolbox H.264/HEVC + AAC encode) so there are no external processes, pipes, or silent frame drops. Rolling video buffer with a "save last moments" hotkey, configurable Share button (single-press reveals latest clip, long-press flushes the buffer), and per-game stream resolution from native up to 4K.
 
 ### 🥊 Move Lists & Fight Data
-
 On-screen move notation overlay for fighting games, with directional inputs, button-glyph combinations, and special-condition markers rendered as crisp visual tokens. Ships with a curated Fight Data library covering 200+ fighting games — Street Fighter II, Mortal Kombat, KOF, Tekken, Samurai Shodown, Eternal Champions, Clay Fighter, Dragon Ball Z, Yu Yu Hakusho, TMNT Tournament Fighters, and more. MoveForest evaluator tracks inputs intelligently. Toggle move names alongside tokens, search and filter by character, input type, or name.
 
 ### 🎯 Game Guide
-
 A built-in game guide overlay for point-and-click adventures (DOS, ScummVM) that shows contextual hints, walkthrough snippets, and clickable region maps. Auto-loads per game, toggle from the game toolbar. Captures release gracefully with Analog Mouse so you can switch between guide navigation and gameplay without losing your cursor.
-
-### 🚀 Effortless Setup
-Getting started is a breeze. Our guided setup wizard walks you through your first launch, and our automated library services handle the heavy lifting: syncing metadata and downloading beautiful box art for your entire collection.
-
-<img width="1012" height="644" alt="Every Libretro Core supported (not all tested), including core options" src="https://github.com/user-attachments/assets/ad5d22f4-812f-4794-abbf-254c26c8fa10" />
-
-<img width="812" height="644" alt="image" src="https://github.com/user-attachments/assets/8ba9d183-25e3-4cb1-84fb-e7b79e98bafe" />
-
-<img width="754" height="563" alt="image" src="https://github.com/user-attachments/assets/9ef473de-610a-4a5d-bd0b-c4d1faafb4d2" />
-
 
 ### 🏆 RetroAchievements
 Take your nostalgia to the next level. TruchiEmu supports RetroAchievements with full auth, achievement tracking/unlocking, rich presence polling, and game data caching. **Hardcore Mode** enforces achievement integrity by blocking save states, rewind, slow motion, and cheats when active — the same restrictions as official RetroAchievements clients. Games with RA support are flagged in the library and filterable via a dedicated sidebar entry; the Game Detail view shows the RA hash used for identification.
-
-### ✨ Pure Delight
-Every interaction is designed to be smooth and joyful. From polished transitions to celebratory confetti moments, TruchiEmu brings a touch of magic to your retro gaming sessions.
-
-<img width="1112" height="814" alt="Easy interface to serach Box Art" src="https://github.com/user-attachments/assets/b68a47cd-e09e-4c22-a5ac-baec4d0c9b2a" />
 
 ---
 
@@ -156,16 +139,6 @@ MIT, etc, thanks to LibRetro and a countless other teams around the web.
 
 Now for some more media:
 
+https://github.com/user-attachments/assets/7bfa1d11-134d-4408-8ebb-f42521c8fb73
 
-
-https://github.com/user-attachments/assets/8657fe30-b08d-4a3c-a907-dfc633d63afe
-
-
-
-https://github.com/user-attachments/assets/1363458c-d316-434b-bd46-ed926ab21919
-
-
-
-https://github.com/user-attachments/assets/480b1cc8-73d4-40fb-b8f5-062311610426
-
-
+https://github.com/user-attachments/assets/10e596a6-8fc8-40c9-af8d-e5df98259c0c
