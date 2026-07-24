@@ -52,13 +52,13 @@ struct TVModeEntryTile: View {
 
     @ViewBuilder
     private var iconView: some View {
-        if let system = entry.system, usesControllerIcons, let img = controllerImage {
+        if entry.system != nil, usesControllerIcons, let img = controllerImage {
             Image(nsImage: img)
                 .resizable()
                 .interpolation(.high)
                 .aspectRatio(contentMode: .fit)
                 .padding(30 * scale)
-        } else if let system = entry.system, let img = systemImage {
+        } else if entry.system != nil, let img = systemImage {
             Image(nsImage: img)
                 .resizable()
                 .interpolation(.high)
