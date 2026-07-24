@@ -49,11 +49,15 @@ final class GameModeManager: ObservableObject {
             try process.run()
             process.waitUntilExit()
 
-            let outData = stdout.fileHandleForReading.readDataToEndOfFile()
             let errData = stderr.fileHandleForReading.readDataToEndOfFile()
+            #if LOG_DEBUG
+            let outData = stdout.fileHandleForReading.readDataToEndOfFile()
             if let out = String(data: outData, encoding: .utf8), !out.isEmpty {
                 LoggerService.debug(category: "GameMode", "stdout: \(out.trimmingCharacters(in: .whitespacesAndNewlines))")
             }
+            #else
+            _ = stdout.fileHandleForReading.readDataToEndOfFile()
+            #endif
             if let err = String(data: errData, encoding: .utf8), !err.isEmpty {
                 LoggerService.info(category: "GameMode", "stderr: \(err.trimmingCharacters(in: .whitespacesAndNewlines))")
             }

@@ -393,7 +393,9 @@ final class XPCBridgeAdapter {
         } else if !ackReceived {
             LoggerService.warning(category: "TimeMachine", "setSpeedMultiplier XPC reply: proxy returned nil")
         } else {
+            #if LOG_DEBUG
             LoggerService.debug(category: "TimeMachine", "setSpeedMultiplier reply ok")
+            #endif
         }
     }
 
@@ -503,7 +505,9 @@ final class XPCBridgeAdapter {
                     self.capturedStateLastFrame = frameIndex
                     self.capturedStateCallback?(state, frameIndex)
                 } else {
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "TimeMachine", "pollCapturedState: rejected stale capture frameIndex=\(frameIndex) lastFrame=\(self.capturedStateLastFrame)")
+                    #endif
                 }
                 // Keep draining — there may be more queued states. Re-entry
                 // happens on the XPC reply queue, not on the call stack, so

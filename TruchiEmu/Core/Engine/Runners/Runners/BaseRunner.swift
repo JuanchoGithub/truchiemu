@@ -954,7 +954,9 @@ case "scummvm": runner = ScummVMRunner()
             guard scrub > 0 else { return }
             let nearest = timeMachineBuffer.nearestEntry(before: scrub)
             guard let nearest else {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "TimeMachine", "step back: no snapshots (scrub=\(scrub))")
+                #endif
                 return
             }
             if nearest.frameIndex < scrub {
@@ -962,7 +964,9 @@ case "scummvm": runner = ScummVMRunner()
             } else {
                 // nearest.frameIndex == scrub → query one frame earlier.
                 guard let prev = timeMachineBuffer.nearestEntry(before: scrub - 1) else {
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "TimeMachine", "step back: no earlier snapshot (scrub=\(scrub))")
+                    #endif
                     return
                 }
                 target = prev.frameIndex
@@ -971,7 +975,9 @@ case "scummvm": runner = ScummVMRunner()
             // Find a snapshot *strictly* after the playhead. nearestEntry
             // (after:) returns entries with frameIndex >= arg.
             guard let nearest = timeMachineBuffer.nearestEntry(after: scrub) else {
+                #if LOG_DEBUG
                 LoggerService.debug(category: "TimeMachine", "step forward: no snapshots (scrub=\(scrub))")
+                #endif
                 return
             }
             if nearest.frameIndex > scrub {
@@ -979,7 +985,9 @@ case "scummvm": runner = ScummVMRunner()
             } else {
                 // nearest.frameIndex == scrub → query scrub+1.
                 guard let next = timeMachineBuffer.nearestEntry(after: scrub + 1) else {
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "TimeMachine", "step forward: no later snapshot (scrub=\(scrub))")
+                    #endif
                     return
                 }
                 target = next.frameIndex
@@ -2048,16 +2056,22 @@ weak var metalCoordinator: MetalCoordinator?
                     if let dpad = element as? GCControllerDirectionPad {
                         let lPressed = dpad.left.isPressed
                         let rPressed = dpad.right.isPressed
+                        #if LOG_DEBUG
                         LoggerService.debug(category: "TimeMachine", "Gamepad dpad element: left pressed=\(lPressed) right pressed=\(rPressed)")
+                        #endif
                         if lPressed { dir = -1 }
                         else if rPressed { dir = 1 }
                         else { dir = 0 }
                     } else {
+                        #if LOG_DEBUG
                         let nameForLog = element.localizedName ?? "<nil>"
                         let kindForLog = String(describing: type(of: element))
                         let computedDir = self.timeMachineScrubDirection(for: element, mapping: mapping, extendedGamepad: extendedGamepad)
                         LoggerService.debug(category: "TimeMachine", "Gamepad non-dpad element: name='\(nameForLog)' kind=\(kindForLog) computedDir=\(computedDir)")
                         dir = computedDir
+                        #else
+                        dir = self.timeMachineScrubDirection(for: element, mapping: mapping, extendedGamepad: extendedGamepad)
+                        #endif
                     }
                     if dir != 0 {
                         let capturedDir = dir

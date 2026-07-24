@@ -404,7 +404,7 @@ The three Swift active compilation conditions are scoped **Debug-only** in `proj
 | `LOG_EXTREME` | yes | no | Gates per-frame/extreme-verbosity logging (`LoggerService.extreme` bodies and `#if LOG_EXTREME` blocks) |
 | `XPC_SERVICE` | yes (TruchiEmuCoreHost only) | yes (TruchiEmuCoreHost only) | Marks the XPC target; not a debug toggle — always set for that target |
 
-`LoggerService.debug(_:)` and `LoggerService.extreme(_:)` are **always defined** (in all build configurations) but their bodies compile to no-ops when `LOG_DEBUG`/`LOG_EXTREME` are off. This means unguarded `LoggerService.debug(...)` call sites compile in Release but emit no log output. Sites that want to skip the string-interpolation cost in Release should wrap the call in `#if LOG_DEBUG ... #endif`.
+`LoggerService.debug(_:)` and `LoggerService.extreme(_:)` are **always defined** (in all build configurations) so call sites compile regardless of build type, but their bodies compile to no-ops when `LOG_DEBUG`/`LOG_EXTREME` are off. **Every single call site is wrapped in `#if LOG_DEBUG ... #endif`** (or `#if LOG_EXTREME ... #endif` for `.extreme`), so no debug-level message — including its string interpolation — reaches a Release build. When adding a new `LoggerService.debug`/`.extreme` call, always wrap it in the matching guard so the same invariant holds.
 
 **Footgun:** `#if LOG_DEBUG` blocks compile only in Debug builds — do not use them to gate production runtime behavior (state changes, control flow, business logic), or that behavior will silently disappear in Release. They are for debug-only branches: logging, dev test hooks, dev presets. Use standard `#if DEBUG` for the same purpose when interfacing with third-party/stdlib conventions.
 

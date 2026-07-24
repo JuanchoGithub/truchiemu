@@ -56,7 +56,9 @@ private final class LoggerServiceAppender: LBLoggerAppender, @unchecked Sendable
         let prefixed = "\(function):\(line) \(message)"
         switch level {
         case .trace, .debug:
+            #if LOG_DEBUG
             LoggerService.debug(category: category, prefixed)
+            #endif
         case .info:
             LoggerService.info(category: category, prefixed)
         case .warn:

@@ -99,10 +99,14 @@ class SlangCompilerService: ObservableObject {
             Self.shared._filterChain
         }
         guard let chain = chain else {
+            #if LOG_DEBUG
             LoggerService.debug(category: "Slang", "renderFrame: no chain")
+            #endif
             return
         }
+        #if LOG_DEBUG
         LoggerService.debug(category: "Slang", "renderFrame sizes: in=\(inputTexture.width)x\(inputTexture.height) out=\(outputTexture.width)x\(outputTexture.height) vp=\(UInt32(viewport.width))x\(UInt32(viewport.height)) ar=\(aspectRatio)")
+        #endif
 
         let libraVP = libra_viewport_t(
             x: Float(viewport.originX),

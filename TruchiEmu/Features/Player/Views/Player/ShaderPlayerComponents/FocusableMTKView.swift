@@ -217,7 +217,9 @@ class FocusableMTKView: MTKView {
             } else if runner.mapKey(event.keyCode) != nil {
                 // Log the bind to figure out why left/right binding not match.
                 if let mapped = runner.mapKey(event.keyCode) {
+                    #if LOG_DEBUG
                     LoggerService.debug(category: "TimeMachine", "Keyboard mapped keyCode=\(event.keyCode) → retroID=\(mapped.retroID) (NOT 6/7, ignored in scrub mode)")
+                    #endif
                 }
             }
         }

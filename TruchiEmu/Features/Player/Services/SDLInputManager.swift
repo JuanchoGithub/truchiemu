@@ -435,7 +435,9 @@ class SDLInputManager: ObservableObject {
         let port = nextPort
         portForInstance[instanceID] = port
         nextPort += 1
+        #if LOG_DEBUG
         LoggerService.debug(category: "SDL", "Assigned port \(port) to instance \(instanceID)")
+        #endif
         return port
     }
 
