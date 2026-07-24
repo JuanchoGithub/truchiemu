@@ -78,11 +78,14 @@ targets:
         CODE_SIGN_STYLE: Automatic
         ENABLE_HARDENED_RUNTIME: NO
         SWIFT_VERSION: "5"
-        SWIFT_ACTIVE_COMPILATION_CONDITIONS: "LOG_DEBUG LOG_EXTREME"
         HEADER_SEARCH_PATHS: "/opt/homebrew/include/SDL2 /usr/local/include/SDL2"
         LIBRARY_SEARCH_PATHS: "/opt/homebrew/lib /usr/local/lib"
         LD_RUNPATH_SEARCH_PATHS: "@executable_path/../Frameworks"
         OTHER_LDFLAGS: "-framework Metal -framework MetalKit -framework GameController -framework AVFoundation -framework WebKit -framework OpenGL -framework Network -framework SwiftData -larchive -L$(PROJECT_DIR)/TruchiEmu/lib -llibrashader_capi -lSDL2"
+      configs:
+        Debug:
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: "DEBUG LOG_DEBUG LOG_EXTREME"
+        Release: {}
 
     sources:
     - path: TruchiEmu
@@ -171,8 +174,12 @@ targets:
         SWIFT_VERSION: "5"
         SWIFT_OBJC_BRIDGING_HEADER: TruchiEmu/Core/Engine/TruchiEmu-Bridging-Header.h
         OTHER_LDFLAGS: "-framework AVFoundation -framework OpenGL -framework IOSurface"
-        SWIFT_ACTIVE_COMPILATION_CONDITIONS: "XPC_SERVICE LOG_DEBUG LOG_EXTREME"
         GCC_PREPROCESSOR_DEFINITIONS: "XPC_SERVICE=1"
+      configs:
+        Debug:
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: "XPC_SERVICE DEBUG LOG_DEBUG LOG_EXTREME"
+        Release:
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: "XPC_SERVICE"
     sources:
     - path: TruchiEmu/Core/XPC/Service
     - path: TruchiEmu/Core/XPC/Shared

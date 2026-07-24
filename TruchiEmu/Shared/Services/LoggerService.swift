@@ -259,30 +259,34 @@ final class LoggerService: @unchecked Sendable {
     }
 
     // Log at DEBUG level: more detailed logs for troubleshooting.
-    #if LOG_DEBUG
     static func debug(_ message: String) {
+        #if LOG_DEBUG
         if initDepth > 0 { safePrint(.debug, category: "App", message: message); return }
         shared.log(.debug, category: "App", message: message)
+        #endif
     }
 
     // Log at DEBUG level with a specific category.
     static func debug(category: String, _ message: String) {
+        #if LOG_DEBUG
         if initDepth > 0 { safePrint(.debug, category: category, message: message); return }
         shared.log(.debug, category: category, message: message)
+        #endif
     }
-    #endif
-    
+
     // Log at EXTREME level: every frame, timing data, etc.
-    #if LOG_EXTREME
     static func extreme(_ message: String) {
+        #if LOG_EXTREME
         shared.log(.extreme, category: "App", message: message)
+        #endif
     }
     
     // Log at EXTREME level with a specific category.
     static func extreme(category: String, _ message: String) {
+        #if LOG_EXTREME
         shared.log(.extreme, category: category, message: message)
+        #endif
     }
-    #endif
 
     // Log at ERROR level (logged as .info to always appear, tagged with [ERROR]).
     static func error(_ message: String) {

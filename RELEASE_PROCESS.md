@@ -7,6 +7,19 @@ This document describes the exact steps to cut a new TruchiEmu release. The two 
 
 ---
 
+## Local builds (Debug and Release)
+
+| Build | Command | When to use |
+|---|---|---|
+| Debug | `xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug -destination 'platform=macOS,arch=arm64' build` | Local development — has `DEBUG`/`LOG_DEBUG`/`LOG_EXTREME` active, no optimization (`-Onone`) |
+| Release | `xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Release -destination 'platform=macOS,arch=arm64' build` | Shipping/nightly — no debug flags, `-O` whole-module optimization. Use this for any zip uploaded to users |
+
+Always run `xcodegen generate` after editing `project.yml` before building. See AGENTS.md "Compile-time flags" for what `LOG_DEBUG`/`LOG_EXTREME`/`DEBUG` gate in each configuration.
+
+**Output path:** `~/Library/Developer/Xcode/DerivedData/TruchiEmu-<hash>/Build/Products/<Debug|Release>/TruchiEmu.app`
+
+---
+
 ## Nightly preview builds
 
 There is a **`nightly` GitHub pre-release** tag at `https://github.com/<owner>/<repo>/releases/tag/nightly` used to ship in-testing preview builds of uncommitted work. Persisted there as a single asset: `TruchiEmu-nightly.zip`.

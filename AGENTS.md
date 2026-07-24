@@ -125,7 +125,7 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 
 - **XcodeGen**: Run `xcodegen generate` after any `project.yml` change to regenerate `TruchiEmu.xcodeproj`. Do not edit the `.xcodeproj` directly.
 - **No project.yml edits for new files**: Sources under `TruchiEmu/` and resources under `TruchiEmu/Resources/` are auto-included via recursive paths in `project.yml`. Only edit `project.yml` if you're adding a directory that should be **excluded** from the build.
-- **Build command**: `xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug build` (or open the xcodeproj in Xcode)
+- **Build command**: `xcodebuild -project TruchiEmu.xcodeproj -scheme TruchiEmu -configuration Debug build` for a Debug build. Use `-configuration Release` for a Release build (no `DEBUG`/`LOG_DEBUG`/`LOG_EXTREME` flags — see "Compile-time flags" below). (Or open the xcodeproj in Xcode.)
 - **macOS 14.0+ and Swift 5.9** required
 
 ### Source exclusions in project.yml
@@ -393,13 +393,20 @@ Owned by `StreamRecordingService` when its `mode != .localFile`. Live RTMP publi
 - **Usage**: `LoggerService.info("message")`, `LoggerService.debug("message")`, etc.
 - Many services use private enum wrappers (e.g., `ROMScannerLog`, `containerLog`) to route through `LoggerService` with category prefixes.
 
-### Compile-time flags: `LOG_DEBUG` vs `DEBUG`
+### Compile-time flags: `LOG_DEBUG`, `LOG_EXTREME`, `DEBUG`
 
-The project defines **`LOG_DEBUG` and `LOG_EXTREME`** as Swift active compilation conditions in `project.yml:81` (and via `xcshareddata` xcconfigs in the `.xcodeproj`). These flags gate the **509** debug-logging call sites scattered throughout the codebase — outside a `LOG_DEBUG` block, debug-level log messages compile to no-ops.
+The three Swift active compilation conditions are scoped **Debug-only** in `project.yml` (target-level `settings.configs.Debug`). They are **not** defined in Release builds:
 
-The standard Swift **`DEBUG` flag is NOT defined** in this project's compilation conditions. Only **one** of multiple Debug build configurations in the xcodeproj actually sets `SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;` — the rest use `LOG_DEBUG LOG_EXTREME`. As a result, any `#if DEBUG` block in this codebase is **dead code** in most build configurations.
+| Flag | Debug | Release | Purpose |
+|---|---|---|---|
+| `DEBUG` | yes | no | Standard Swift debug flag; third-party/stdlib `#if DEBUG` branches |
+| `LOG_DEBUG` | yes | no | Gates ~500 debug-logging call sites (`LoggerService.debug` bodies and `#if LOG_DEBUG` blocks) |
+| `LOG_EXTREME` | yes | no | Gates per-frame/extreme-verbosity logging (`LoggerService.extreme` bodies and `#if LOG_EXTREME` blocks) |
+| `XPC_SERVICE` | yes (TruchiEmuCoreHost only) | yes (TruchiEmuCoreHost only) | Marks the XPC target; not a debug toggle — always set for that target |
 
-**Footgun:** If you write `#if DEBUG`, your debug guard never compiles in. Use `#if LOG_DEBUG` instead for runtime debug-only branches (logging, test hooks, dev presets). At the time of writing, the only real `#if DEBUG` block in the codebase is at `Core/Engine/Runners/Runners/BaseRunner.swift:1690` (N64 debug probe); favor `LOG_DEBUG` for any new conditional compilation.
+`LoggerService.debug(_:)` and `LoggerService.extreme(_:)` are **always defined** (in all build configurations) but their bodies compile to no-ops when `LOG_DEBUG`/`LOG_EXTREME` are off. This means unguarded `LoggerService.debug(...)` call sites compile in Release but emit no log output. Sites that want to skip the string-interpolation cost in Release should wrap the call in `#if LOG_DEBUG ... #endif`.
+
+**Footgun:** `#if LOG_DEBUG` blocks compile only in Debug builds — do not use them to gate production runtime behavior (state changes, control flow, business logic), or that behavior will silently disappear in Release. They are for debug-only branches: logging, dev test hooks, dev presets. Use standard `#if DEBUG` for the same purpose when interfacing with third-party/stdlib conventions.
 
 ## Project Structure
 
