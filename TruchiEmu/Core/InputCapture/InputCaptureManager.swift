@@ -176,15 +176,15 @@ class InputCaptureManager: NSObject, ObservableObject {
             .otherMouseDown, .otherMouseUp, .scrollWheel
         ]
         for mask in masks {
-            if let handle = NSEvent.addLocalMonitorForEvents(matching: mask) { [weak self] event in
+            if let handle = NSEvent.addLocalMonitorForEvents(matching: mask, handler: { [weak self] event in
                 self?.handleMouseEvent(event)
                 return event
-            } {
+            }) {
                 localEventMonitors.append(handle)
             }
         }
 
-        if let escapeHandle = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+        if let escapeHandle = NSEvent.addLocalMonitorForEvents(matching: .keyDown, handler: { [weak self] event in
             guard let self = self, self.isCapturing else { return event }
             if event.keyCode == 53 {
                 self.handleEscapePress()
@@ -195,7 +195,7 @@ class InputCaptureManager: NSObject, ObservableObject {
             // HotkeyConfigManager; we don't duplicate it here so that
             // rebinds to a different key still toggle both directions.
             return event
-        } {
+        }) {
             localEventMonitors.append(escapeHandle)
         }
     }
