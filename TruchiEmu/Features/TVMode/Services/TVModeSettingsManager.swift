@@ -1,6 +1,7 @@
 import Foundation
 import Combine
 import SwiftUI
+import AppKit
 
 /// Single source of truth for whether TV Mode is currently active. Both the
 /// View menu and ContentView read/observe this so the menu item always
@@ -30,6 +31,25 @@ final class TVModeSettingsManager: ObservableObject {
             // when the user leaves TV-mode later.
             priorAutoFullscreen = AppSettings.getBool("autoFullscreenEnabled", defaultValue: false)
             AppSettings.setBool("autoFullscreenEnabled", value: true)
+            enterFullscreenAtStartup()
+        }
+    }
+
+    /// Guard: when the app cold-starts in TV-mode, the user almost certainly
+    /// quit the app while it was fullscreen (that's the whole point of the
+    /// 10-foot launcher). We push the main window into fullscreen on launch
+    /// so the experience matches what they last saw. Defer with a double
+    /// async so we cross at least one CATransaction boundary — same pattern
+    /// used by the TV-mode exit path in `ContentView`. Skip if any window is
+    /// already fullscreen (e.g. a CLI-launched game takes precedence) or if
+    /// the main window isn't around yet.
+    private func enterFullscreenAtStartup() {
+        DispatchQueue.main.async {
+            DispatchQueue.main.async {
+                guard !NSApp.windows.contains(where: { $0.styleMask.contains(.fullScreen) }) else { return }
+                guard let window = NSApp.windows.first(where: { $0.styleMask.contains(.fullScreen) == false }) else { return }
+                window.toggleFullScreen(nil)
+            }
         }
     }
 
