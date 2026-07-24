@@ -268,8 +268,15 @@ final class GamepadNavigationManager: ObservableObject {
 
         let topContext = GamepadNavContextStack.shared.topActive()
 
-        // Never synthesize navigation when no window actually has focus.
-        guard NSApp.keyWindow != nil else {
+        // Never synthesize navigation directed at a window that isn't key.
+        // A context that owns a particular window (gameplay, dedicated windows)
+        // only acts when its window is the key window. Global contexts (sheets,
+        // the TV-mode overlay, the library) have `ownedWindow == nil` and are
+        // dispatched regardless — which is what keeps the gamepad alive on a
+        // fullscreen TV-mode window whose `keyWindow` status can be transiently
+        // `nil` after a SwiftUI sheet is torn down. `NSApp.isActive` above
+        // already filters the "no window of ours has focus at all" case.
+        if let owned = topContext?.ownedWindow, owned !== NSApp.keyWindow {
             resetNavState()
             return
         }

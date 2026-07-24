@@ -44,8 +44,16 @@ final class TVModeViewModel: ObservableObject {
     @Published private(set) var loadingDetailROM: ROM? = nil
     @Published private(set) var downloadedDetailROM: ROM? = nil
 
+    /// Most recently-modified save slot for the currently focused game on
+    /// the detail page. Used to surface a "Continue" affordance in TV-mode
+    /// (mirrors the desktop `GameDetailView.mostRecentSaveSlot`/Continue
+    /// button flow) and to feed `slotToLoad` into `launchSelected` when the
+    /// user presses A on a game that has a save.
+    @Published private(set) var mostRecentSaveSlot: SlotInfo? = nil
+
     private let library: ROMLibrary
     private let systemDatabase: SystemDatabaseWrapper
+    private let saveStateManager = SaveStateManager()
     private let prefs = SystemPreferences.shared
     private let raService = RetroAchievementsService.shared
     private var cancellables = Set<AnyCancellable>()
@@ -164,6 +172,7 @@ final class TVModeViewModel: ObservableObject {
         loadingDetailROM = rom
         downloadedDetailROM = rom
         page = .detail
+        refreshMostRecentSaveSlot(for: rom)
         Task { await fetchDetailArt(for: rom) }
     }
 
@@ -184,6 +193,7 @@ final class TVModeViewModel: ObservableObject {
         }
         loadingDetailROM = rom
         downloadedDetailROM = rom
+        refreshMostRecentSaveSlot(for: rom)
         Task { await fetchDetailArt(for: rom) }
     }
 
@@ -191,6 +201,7 @@ final class TVModeViewModel: ObservableObject {
         page = .row2
         downloadedDetailROM = nil
         loadingDetailROM = nil
+        mostRecentSaveSlot = nil
     }
 
     func exitRow2() { page = .row1 }
@@ -213,7 +224,24 @@ final class TVModeViewModel: ObservableObject {
     /// `TVModeSettingsManager.enter()`), so we don't toggle it here ourselves.
     /// The controller's `init` reads the global at construction time, ensuring
     /// both direct launches and post-core-download launches go fullscreen.
-    func launchSelected() async {
+    ///
+    /// - Parameters:
+    ///   - slotToLoad: Optional save slot to load on start. `nil` launches the
+    ///     game fresh (or honors the global `saveState_autoLoadOnStart`
+    ///     setting, which the runner window handles on its own). Passing a slot
+    ///     mirrors the desktop "Continue" button so TV-mode users can resume
+    ///     previous play without having to dig into the save-state picker.
+    ///   - progressiveVersion: Optional progressive slot version to load. Only
+    ///     used together with `slotToLoad` — `SaveStateManager` walks the
+    ///     progressive versions to find the newest one and surfaces it via
+    ///     `mostRecentSaveSlot`, so the caller can pass that version straight
+    ///     through to `GameLauncher` for an exact restore.
+    ///   - disableAutoLoad: When `true`, the runner's `effectiveShouldAutoLoad`
+    ///     gate returns `false` for this launch only — used by the "Y — Play
+    ///     from start" affordance to skip auto-load even when the user has
+    ///     `saveState_autoLoadOnStart` enabled. Default `false` keeps every
+    ///     other caller's behaviour unchanged.
+    func launchSelected(slotToLoad: Int? = nil, progressiveVersion: Int? = nil, disableAutoLoad: Bool = false) async {
         guard let rom = (page == .detail ? downloadedDetailROM : selectedGame) ?? selectedGame else { return }
         guard let systemID = rom.systemID,
               let system = SystemDatabase.system(forID: systemID) else { return }
@@ -227,7 +255,7 @@ final class TVModeViewModel: ObservableObject {
                 for: coreID,
                 systemID: systemID,
                 romID: rom.id,
-                slotToLoad: nil
+                slotToLoad: slotToLoad
             )
             return
         }
@@ -235,6 +263,9 @@ final class TVModeViewModel: ObservableObject {
         await GameLauncher.shared.launchGame(
             rom: rom,
             coreID: coreID,
+            slotToLoad: slotToLoad,
+            progressiveVersion: progressiveVersion,
+            disableAutoLoadOnStart: disableAutoLoad,
             library: library
         )
     }
@@ -478,5 +509,18 @@ final class TVModeViewModel: ObservableObject {
             loadingDetailROM = rom
             downloadedDetailROM = rom
         }
+    }
+
+    /// Recomputes `mostRecentSaveSlot` for the given ROM so the detail view
+    /// can surface a "Continue" affordance. Matches `GameDetailView`'s
+    /// `loadMostRecentSaveState()` formatting — the game name encodes the
+    /// running key that `SaveStateManager` keys on (`displayName__<id prefix>`).
+    /// Hard-core gate isn't checked here because this only displays whether a
+    /// save file exists; the load attempt itself is gated by `HardcoreModeManager`
+    /// at launch time.
+    private func refreshMostRecentSaveSlot(for rom: ROM) {
+        let gameName = "\(rom.displayName)__\(rom.id.uuidString.prefix(8))"
+        let systemID = rom.systemID ?? ""
+        mostRecentSaveSlot = saveStateManager.mostRecentSaveState(gameName: gameName, systemID: systemID)
     }
 }

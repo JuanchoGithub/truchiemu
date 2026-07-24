@@ -2391,6 +2391,7 @@
     "tvMode.detail.snaps": "Capturas",
     "tvMode.detail.noSnaps": "Sem capturas disponíveis",
     "tvMode.detail.launch": "Jogar",
+    "tvMode.detail.playFromStart": "Y — Jogar do início",
     "tvMode.coreDownload.cycle": "Alternar núcleos",
     "tvMode.coreDownload.actions": "Alternar ação",
     "tvMode.coreDownload.confirm": "Confirmar",

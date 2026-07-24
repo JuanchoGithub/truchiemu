@@ -149,6 +149,12 @@ class GameLauncher: ObservableObject {
     //   - rom: The ROM to launch
     //   - coreID: The core to use
     //   - slotToLoad: Optional save slot to load on start
+    //   - disableAutoLoadOnStart: Per-launch override that forces the auto-load
+    //     step off, even when the user's `saveState_autoLoadOnStart` preference
+    //     is enabled. Used by TV-mode's "Play from start" affordance (Y) so a
+    //     single press can bypass global auto-load without clobbering the
+    //     user's setting. The runner's auto-load checks consult this flag
+    //     before falling back to the AppSettings value.
     //   - library: Reference to ROMLibrary for marking as played
     //   - completion: Called when launch is complete
     // - Returns: The window controller if launch was successful
@@ -157,6 +163,7 @@ func launchGame(
         coreID: String,
         slotToLoad: Int? = nil,
         progressiveVersion: Int? = nil,
+        disableAutoLoadOnStart: Bool = false,
         library: ROMLibrary? = nil,
         shaderUniformOverrides: [String: Float] = [:],
         checkMAMEDeps: Bool = true,
@@ -485,7 +492,7 @@ func launchGame(
         RollingVideoBufferService.shared.didAssignActiveRunner()
 
         // Launch the game (window will be shown by controller when ready)
-        controller.launch(rom: rom, coreID: coreID, slotToLoad: slotToLoad, progressiveVersion: progressiveVersion, shaderUniformOverrides: config.shaderUniformOverrides)
+        controller.launch(rom: rom, coreID: coreID, slotToLoad: slotToLoad, progressiveVersion: progressiveVersion, disableAutoLoadOnStart: disableAutoLoadOnStart, shaderUniformOverrides: config.shaderUniformOverrides)
 
         // Cleanup
         isLaunching = false

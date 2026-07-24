@@ -8,6 +8,11 @@ struct TVModeGameDetailView: View {
     let rom: ROM
     let theme: TVModeSettings.Theme
     let focused: Bool
+    /// Most recent save slot for this ROM (computed by `TVModeViewModel`),
+    /// or `nil` when no save state exists. Drives the Continue/Play hint
+    /// below the title: when non-nil, pressing A on the gamepad loads the
+    /// save (mirrors the desktop `Continue` button); Y launches fresh.
+    var mostRecentSaveSlot: SlotInfo?
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.tvModeScale) private var scale
     @EnvironmentObject private var library: ROMLibrary
@@ -61,13 +66,41 @@ struct TVModeGameDetailView: View {
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
 
-            Text("tvMode.detail.launch")
-                .font(.system(size: 14 * scale, weight: .semibold, design: .rounded))
-                .padding(.horizontal, 18 * scale).padding(.vertical, 8 * scale)
-                .background(
-                    Capsule().fill(theme == .bold ? AppColors.accentForScheme(colorScheme).opacity(0.25) : Color.gray.opacity(0.2))
-                )
-                .overlay(Capsule().strokeBorder(theme == .bold ? AppColors.accentForScheme(colorScheme) : Color.white.opacity(0.4), lineWidth: 1 * scale))
+            // Render the launch affordance. There are two states:
+            //
+            // 1. No save state exists — a single chip reading "Press A to Play"
+            //    matches the original behaviour.
+            // 2. A save state exists — the primary chip becomes "Continue — {date}"
+            //    (bound to A) and a smaller secondary chip announces "Y to Play
+            //    from start" so the couch user can establish a fresh game even
+            //    when continuing is the default. Without the secondary hint,
+            //    the user has no signal that pressing Y also exists as a path.
+            if let slot = mostRecentSaveSlot, slot.exists {
+                Text(continueLabel(for: slot))
+                    .font(.system(size: 14 * scale, weight: .semibold, design: .rounded))
+                    .padding(.horizontal, 18 * scale).padding(.vertical, 8 * scale)
+                    .background(
+                        Capsule().fill(theme == .bold ? AppColors.accentForScheme(colorScheme).opacity(0.25) : Color.gray.opacity(0.2))
+                    )
+                    .overlay(Capsule().strokeBorder(theme == .bold ? AppColors.accentForScheme(colorScheme) : Color.white.opacity(0.4), lineWidth: 1 * scale))
+
+                Text(loc.localized("tvMode.detail.playFromStart"))
+                    .font(.system(size: 12 * scale, weight: .medium, design: .rounded))
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 14 * scale).padding(.vertical, 6 * scale)
+                    .background(
+                        Capsule().fill(Color.gray.opacity(0.15))
+                    )
+                    .overlay(Capsule().strokeBorder(Color.white.opacity(0.18), lineWidth: 1 * scale))
+            } else {
+                Text("tvMode.detail.launch")
+                    .font(.system(size: 14 * scale, weight: .semibold, design: .rounded))
+                    .padding(.horizontal, 18 * scale).padding(.vertical, 8 * scale)
+                    .background(
+                        Capsule().fill(theme == .bold ? AppColors.accentForScheme(colorScheme).opacity(0.25) : Color.gray.opacity(0.2))
+                    )
+                    .overlay(Capsule().strokeBorder(theme == .bold ? AppColors.accentForScheme(colorScheme) : Color.white.opacity(0.4), lineWidth: 1 * scale))
+            }
         }
     }
 
@@ -161,6 +194,20 @@ struct TVModeGameDetailView: View {
     private var playerDescription: String? {
         guard let p = rom.metadata?.players, p > 0 else { return nil }
         return "\(p)"
+    }
+
+    /// Localized "Continue — {date}" label for the launch hint. Reuses the
+    /// existing `gameDetail.continueDate` placeholder so the date formatter
+    /// matches what `Header.continueButton` produces on the desktop detail
+    /// page — users coming from desktop to TV-mode should see the same string.
+    private func continueLabel(for slot: SlotInfo) -> String {
+        let template = loc.localized("gameDetail.continueDate")
+        if let date = slot.modificationDate {
+            let relative = GameDetailView.relativeDateFormatter
+                .localizedString(for: date, relativeTo: Date())
+            return template.replacingOccurrences(of: "{date}", with: relative)
+        }
+        return loc.localized("header.continue")
     }
 
     private var playtimeDescription: String {

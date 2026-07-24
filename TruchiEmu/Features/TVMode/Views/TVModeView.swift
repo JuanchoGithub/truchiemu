@@ -235,7 +235,12 @@ struct TVModeView: View {
         .animation(.easeInOut(duration: 0.25), value: viewModel.page)
 
         if viewModel.page == .detail, let rom = viewModel.downloadedDetailROM {
-            TVModeGameDetailView(rom: rom, theme: viewModel.theme, focused: true)
+            TVModeGameDetailView(
+                rom: rom,
+                theme: viewModel.theme,
+                focused: true,
+                mostRecentSaveSlot: viewModel.mostRecentSaveSlot
+            )
                 .environmentObject(library)
                 .id(rom.id)
                 .transition(.opacity.combined(with: .scale(scale: 0.97)))
@@ -313,7 +318,7 @@ struct TVModeView: View {
             .padding(.top, 24 * scale)
             Spacer()
         }
-        .sheet(isPresented: $showTVSettingsOverlay) {
+        .sheet(isPresented: $showTVSettingsOverlay, onDismiss: restoreKeyWindowAfterSettings) {
             TVModeSettingsView()
                 .environmentObject(loc)
         }
@@ -467,13 +472,23 @@ extension TVModeView {
             switch viewModel.page {
             case .row1: viewModel.moveDownFromRow1()
             case .row2: viewModel.enterDetail()
-            case .detail: Task { await viewModel.launchSelected() }
+            case .detail:
+                // A on the detail page acts as "Continue": when the selected
+                // ROM has a save state the most recent slot is restored, so the
+                // user can resume previous play without leaving TV-mode
+                // (mirrors the desktop `GameDetailView` Continue button). When
+                // no save exists this falls through to a fresh launch.
+                let slot = viewModel.mostRecentSaveSlot
+                Task { await viewModel.launchSelected(slotToLoad: slot?.id, progressiveVersion: slot?.progressiveVersion) }
             }
         case .launchGame:
             switch viewModel.page {
             case .row1: viewModel.moveDownFromRow1()
-            case .row2: Task { await viewModel.launchSelected() }
-            case .detail: Task { await viewModel.launchSelected() }
+            // Start (.launchGame) jumps straight into the game from any list
+            // page; the detail-page "play fresh" path lives on Y (see the
+            // `.contextMenu` branch below) since that's where the user expects
+            // the secondary launch affordance to live.
+            case .row2, .detail: Task { await viewModel.launchSelected() }
             }
         case .cancel:
             switch viewModel.page {
@@ -482,7 +497,21 @@ extension TVModeView {
             case .row1: NotificationCenter.default.post(name: .tvModeExited, object: nil)
             }
         case .contextMenu:
-            showTVSettingsOverlay = true
+            // Y is bound to `.contextMenu`. On the game-detail page A already
+            // behaves as "Continue" (loads the most recent save), so Y takes
+            // the natural cousin role and launches the game fresh — matches
+            // the secondary "Play from start" chip rendered in
+            // `TVModeGameDetailView`. `disableAutoLoad: true` forces the
+            // runner to skip the auto-load step even when the user has
+            // `saveState_autoLoadOnStart` enabled, so Y always starts a fresh
+            // session regardless of the global preference. Any other page
+            // (row1, row2, settings overlays, etc.): Y opens the TV-mode
+            // settings sheet as before.
+            if viewModel.page == .detail {
+                Task { await viewModel.launchSelected(disableAutoLoad: true) }
+            } else {
+                showTVSettingsOverlay = true
+            }
         case .toggleViewMode, .focusSearch:
             // X and SELECT both cycle the theme. L3 (was also routed here)
             // is repurposed to rotate the game-row sort mode — see
@@ -517,6 +546,40 @@ extension TVModeView {
               window.contentViewController != nil || window.contentView != nil else { return }
         window.toggleFullScreen(nil)
         enteredFullscreen = true
+    }
+
+    /// Re-asserts key window status on the TV-mode window after the in-app
+    /// settings sheet dismisses. When a SwiftUI sheet presents on top of a
+    /// fullscreen window, the dismissal handshake occasionally leaves
+    /// `NSApp.keyWindow` `nil` — once that happens `GamepadNavigationManager.poll`
+    /// bails at its `keyWindow != nil` guard, so every subsequently-pressed
+    /// button silently does nothing until the user clicks the window with the
+    /// mouse. Forcing a `makeKeyAndOrderFront` on the fullscreen TV-mode window
+    /// re-keys it so polling resumes immediately. The dispatch is deferred via
+    /// `DispatchQueue.main.async` so we run AFTER SwiftUI has fully torn down
+    /// the sheet; calling `makeKeyAndOrderFront` synchronously inside the
+    /// `.onDismiss` callback can land on a window hierarchy that's still in
+    /// the middle of pulling down the sheet, which silently no-ops on the
+    /// fullscreen app window.
+    fileprivate func restoreKeyWindowAfterSettings() {
+        // Cross at least one CATransaction boundary (mirrors the pattern used
+        // elsewhere for fullscreen toggles) so the re-key runs AFTER SwiftUI
+        // has fully torn the sheet down. A single `makeKeyAndOrderFront`
+        // occasionally no-ops on a fullscreen window whose key status is
+        // transiently undefined mid-dismissal; schedule a second attempt a
+        // beat later to catch the rare case where the first one lands too
+        // early.
+        let reKey: () -> Void = {
+            guard let window = NSApp.windows.first(where: { $0.styleMask.contains(.fullScreen) }) else { return }
+            window.makeKeyAndOrderFront(nil)
+            if !NSApp.isActive { NSApp.activate(ignoringOtherApps: true) }
+        }
+        DispatchQueue.main.async {
+            DispatchQueue.main.async {
+                reKey()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) { reKey() }
+            }
+        }
     }
 }
 

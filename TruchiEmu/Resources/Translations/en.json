@@ -2393,6 +2393,7 @@
     "tvMode.detail.snaps": "Snaps",
     "tvMode.detail.noSnaps": "No screenshots available",
     "tvMode.detail.launch": "Play",
+    "tvMode.detail.playFromStart": "Y — Play from start",
     "tvMode.coreDownload.cycle": "Cycle cores",
     "tvMode.coreDownload.actions": "Switch action",
     "tvMode.coreDownload.confirm": "Confirm",

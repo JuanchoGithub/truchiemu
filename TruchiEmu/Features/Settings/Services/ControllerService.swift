@@ -390,6 +390,10 @@ class ControllerService: ObservableObject {
         }
         if let firstKey = sessionSlotAssignments.keys.first {
             sessionSlotAssignments[firstKey] = [1]
+            return
+        }
+        if sessionSlotAssignments.isEmpty && sdlSlotAssignments.isEmpty {
+            keyboardAssignedPlayers = [1]
         }
     }
 

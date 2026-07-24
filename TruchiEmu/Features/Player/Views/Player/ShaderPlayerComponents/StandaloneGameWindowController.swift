@@ -89,6 +89,12 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     private var pendingSlotToLoad: Int?
     private var pendingProgressiveVersion: Int?
     private var pendingROMForState: ROM?
+    /// Per-launch override for the `saveState_autoLoadOnStart` AppSettings
+    /// preference. The three auto-load sites (`shouldAutoLoad`-checks) consult
+    /// `effectiveShouldAutoLoad()` which returns `false` when this is set,
+    /// regardless of the user's preference. Set by `launch(...:disableAutoLoadOnStart:)`.
+    /// Default `false` preserves existing behaviour for every other caller.
+    private var disableAutoLoadOnStart: Bool = false
     @MainActor @Published var saveStatesDisabled: Bool = false
 @MainActor @Published var isLoading: Bool = false
 @MainActor @Published var launchError: GameLaunchError?
@@ -643,7 +649,7 @@ super.init(window: window)
         if slotToLoad != nil {
             willLoadState = true
         } else {
-            let shouldAutoLoad = AppSettings.getBool("saveState_autoLoadOnStart", defaultValue: true) && !HardcoreModeManager.shared.isHardcoreActive
+            let shouldAutoLoad = effectiveShouldAutoLoad()
             if shouldAutoLoad && !isDolphinCore() {
                 willLoadState = true
             } else {
@@ -804,9 +810,16 @@ super.init(window: window)
     
     // MARK: - Normal Launch
     
-    func launch(rom: ROM, coreID: String, slotToLoad: Int? = nil, progressiveVersion: Int? = nil, shaderUniformOverrides: [String: Float] = [:]) {
+    func launch(rom: ROM, coreID: String, slotToLoad: Int? = nil, progressiveVersion: Int? = nil, disableAutoLoadOnStart: Bool = false, shaderUniformOverrides: [String: Float] = [:]) {
         // Store shader uniforms for later use in _doLaunch
         self.pendingShaderUniforms = shaderUniformOverrides
+        // Per-launch override consulted by the three auto-load checks below
+        // (lines ~646, ~1096, ~1233). When the caller asks to disable auto-load
+        // we apply `false` regardless of the user's `saveState_autoLoadOnStart`
+        // preference — used by TV-mode's Y "Play from start" button which must
+        // skip auto-loading even when the user has the global preference on.
+        // Default `false` keeps the existing behaviour for every other caller.
+        self.disableAutoLoadOnStart = disableAutoLoadOnStart
         LoggerService.info(category: "GameLauncher", "launch() received \(shaderUniformOverrides.count) shader uniforms, key shellColorIndex=\(shaderUniformOverrides["shellColorIndex"] ?? -1)")
         
         // Check if this same ROM is already running in another window
@@ -1093,7 +1106,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         if slotToLoad != nil {
             willLoadState = true
         } else {
-            let shouldAutoLoad = AppSettings.getBool("saveState_autoLoadOnStart", defaultValue: true) && !HardcoreModeManager.shared.isHardcoreActive
+            let shouldAutoLoad = effectiveShouldAutoLoad()
             if shouldAutoLoad && !isDolphinCore() {
                 let systemID = rom.systemID ?? "default"
                 let gameName = "\(rom.displayName)__\(rom.id.uuidString.prefix(8))"
@@ -1230,7 +1243,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
                 }
             } else {
                 // Auto-load: find the most recent save across all slots
-                let shouldAutoLoad = AppSettings.getBool("saveState_autoLoadOnStart", defaultValue: true) && !HardcoreModeManager.shared.isHardcoreActive
+                let shouldAutoLoad = effectiveShouldAutoLoad()
                 if shouldAutoLoad {
                     if self.isDolphinCore() {
                         LoggerService.info(category: "SaveState", "Auto-load disabled for Dolphin core (known crash issue)")
@@ -1752,6 +1765,20 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
             GamepadNavContextStack.shared.remove(ctx)
             gameToolbarNavContext = nil
         }
+        // Reset the global gamepad-toolbar bits so they don't leak into the
+        // next session. `isGamepadToolbarActive` and `suppressLeftStickInToolbar`
+        // are owned by `GamepadNavigationManager` and normally cleared by
+        // `exitGamepadToolbarMode()` — but if the window closes while the toolbar
+        // is open that path never runs, leaving the flags stuck. The new launch's
+        // GCController `valueChangedHandler` early-returns when
+        // `isGamepadToolbarActive` is true (BaseRunner line ~1964), so the
+        // gamepad silently fails to drive the next game until the app is
+        // restarted. Always reset them here so the second session sees a clean
+        // state. Fixes the "gamepad doesn't respond after TV mode" path (#24)
+        // where the user closes the game toolbar via window-close without
+        // first pressing cancel.
+        GamepadNavigationManager.shared.isGamepadToolbarActive = false
+        GamepadNavigationManager.shared.suppressLeftStickInToolbar = false
 
         if RetroAchievementsService.shared.isEnabled {
             RetroAchievementsService.shared.refreshGameCacheAfterGameStop()
@@ -1808,6 +1835,18 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
     }
 
     // MARK: - Helper Functions
+
+    /// Resolves whether the auto-load-on-start gate is open for THIS launch.
+    /// Defaults `false` when the caller requested `disableAutoLoadOnStart: true`
+    /// (e.g. TV-mode's Y "Play from start" button) so a single press can skip
+    /// the auto-load step without flipping the user's saved preference.
+    /// Otherwise falls through to the standard `saveState_autoLoadOnStart`
+    /// AppSettings value, still gated by hardcore mode.
+    private func effectiveShouldAutoLoad() -> Bool {
+        if disableAutoLoadOnStart { return false }
+        return AppSettings.getBool("saveState_autoLoadOnStart", defaultValue: true)
+            && !HardcoreModeManager.shared.isHardcoreActive
+    }
 
     private func fightOverlayGameKey() -> String? {
         guard currentGameROM != nil, let gameData = moveListViewModel.moveListService.currentGameData else { return nil }
