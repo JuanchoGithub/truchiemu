@@ -122,6 +122,20 @@ enum GamepadNavAction: String, Codable, CaseIterable, Identifiable {
         }
     }
 
+    /// Actions whose handler only makes sense outside gameplay — they open
+    /// app-level UI (TV-mode entry, settings) that competes with the running
+    /// game for screen/key focus. Routing them while a game is running would
+    /// yank focus away from the player at the wrong moment. Bound to the
+    /// same physical button as `.showGameToolbar`, this lets a single combo
+    /// (such as L3+R3) act as "show toolbar" during gameplay and "enter TV
+    /// mode" in the library without one firing over the other.
+    var isLibraryOnlyAction: Bool {
+        switch self {
+        case .enterTVMode, .openSettings: return true
+        default: return false
+        }
+    }
+
     var isNavigationAction: Bool {
         switch self {
         case .navigateUp, .navigateDown, .navigateLeft, .navigateRight: return true

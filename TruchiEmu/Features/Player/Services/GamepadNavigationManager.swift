@@ -401,8 +401,24 @@ final class GamepadNavigationManager: ObservableObject {
 
     private func processActions(config: [GamepadNavAction: GamepadNavConfig], justPressed: Set<GamepadNavButton>, newlyPressed: Set<GamepadNavButton>, now: Double) {
         var directionButtonsFired: Set<GamepadNavButton> = []
+        let isGameRunning = RunningGamesTracker.shared.isGameRunning
         for action in GamepadNavAction.allCases {
             guard let cfg = config[action], !cfg.binding.isUnset, let mappedButton = cfg.binding.button else { continue }
+
+            // Apply a "game wins over app" hierarchy so a single combo (e.g.
+            // L3+R3) bound to both `.showGameToolbar` and `.enterTVMode` fires
+            // only the right one for the current context. Gameplay-only actions
+            // (toolbar, close-window) are suppressed when no game is running;
+            // app-level actions (enter TV Mode, open Settings) are suppressed
+            // when a game IS running. Without this, pressing the combo in the
+            // library posts a no-op toolbar notification AND fires TV-mode
+            // entry at the same time, while pressing it during gameplay falls
+            // through `gameRunningNavSuppressed` early-return above so app
+            // actions are already gated — but during a brief toolbar/sheet
+            // opening (`gameRunningNavSuppressed == false`) dispatch reaches
+            // here and would otherwise double-fire.
+            if action.isGameWindowAction, !isGameRunning { continue }
+            if action.isLibraryOnlyAction, isGameRunning { continue }
 
             // A single physical direction button (d-pad or stick axis) can only
             // carry one intent per tick. Without this guard, the defaults that
