@@ -1,0 +1,50 @@
+---
+layout: default
+title: v1.8.4 - Documentación de TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/es/changelog.html' | relative_url }}">Registro de cambios</a>
+        <span class="separator">/</span>
+        <span class="current">v1.8.4</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.8.4</h1>
+        <div class="release-meta">
+            <span class="release-date">24 de julio de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Versión hotfix: el Modo TV ahora respeta correctamente el último estado de sesión del usuario, así que cerrar la app en modo normal y volver a abrirla ya no devuelve al usuario al Modo TV. También incluye presets de mando preinstalados y un script de exportación para mapeos de gamepad por defecto.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destacados</h2>
+        <ul class="feature-list">
+            <li><strong>Modo TV respeta la última sesión:</strong> <code>TVModeSettingsManager</code> ahora lee <code>tvMode_currentlyActive</code> en el init (la clave de modo runtime que ya escribía en cada cambio) y solo recurre a la preferencia <code>launchInTVMode</code> en un primer arranque real, así que salir del Modo TV y cerrar la app ahora sí persiste.</li>
+            <li><strong>Presets de mando preinstalados:</strong> Nuevo <code>BundledControllerPresets.swift</code> carga mapeos de mando por defecto desde JSON al arrancar, con presets para 8BitDo Ultimate 3-mode (layout Xbox), Lic Pro Controller y Xbox Wireless Controller. <code>ControllerService</code> los usa como fuente de mapeos por defecto.</li>
+            <li><strong>Utilidad de exportación de presets:</strong> El script <code>scripts/export_controller_presets.py</code> exporta los mapeos de mando guardados por el usuario a los archivos JSON de presets preinstalados.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Cambios detallados</h2>
+        <ul>
+            <li>Lectura de <code>tvMode_currentlyActive</code> en el init de <code>TVModeSettingsManager</code> con fallback a <code>launchInTVMode</code> solo cuando no hay sesión previa registrada, para que el Modo TV al iniciar coincida con el estado al cerrar la app</li>
+            <li>Añadido <code>BundledControllerPresets.swift</code> para cargar mapeos de mando por defecto desde JSON al iniciar la app</li>
+            <li>Añadidos archivos JSON de presets de mando para 8BitDo Ultimate 3mode Xbox, Lic Pro Controller y Xbox Wireless Controller</li>
+            <li>Actualizado <code>ControllerService</code> para usar los presets preinstalados como fuente de mapeos por defecto</li>
+            <li>Añadido script <code>export_controller_presets.py</code> para exportar mapeos de mando guardados por el usuario a los archivos de presets preinstalados</li>
+            <li>Actualizado <code>project.pbxproj</code> para incluir los nuevos archivos fuente y recursos</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/es/changelog/v1.8.3.html' | relative_url }}" class="release-prev">&larr; v1.8.3</a>
+        <a href="{{ '/es/changelog.html' | relative_url }}" class="release-all">Todas las versiones</a>
+    </nav>
+</div>

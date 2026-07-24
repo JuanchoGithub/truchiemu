@@ -1,0 +1,50 @@
+---
+layout: default
+title: v1.8.4 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.8.4</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.8.4</h1>
+        <div class="release-meta">
+            <span class="release-date">July 24, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Hotfix release: TV Mode now correctly resumes the user's last session state, so quitting the app in normal mode and relaunching no longer drops the user back into TV Mode. Also ships bundled controller presets and an export script for default gamepad mappings.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>TV Mode respects the last session:</strong> <code>TVModeSettingsManager</code> now reads <code>tvMode_currentlyActive</code> on init (the runtime-mode key it has been writing on every toggle) and only falls back to the <code>launchInTVMode</code> preference on a true first launch, so exiting TV Mode and quitting now actually persists.</li>
+            <li><strong>Bundled controller presets:</strong> New <code>BundledControllerPresets.swift</code> loads default controller mappings from JSON at launch, with new presets for 8BitDo Ultimate 3-mode (Xbox layout), Lic Pro Controller, and Xbox Wireless Controller. <code>ControllerService</code> uses them as the default-mapping source.</li>
+            <li><strong>Preset export utility:</strong> <code>scripts/export_controller_presets.py</code> exports user-saved controller mappings into the bundled preset JSON files.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>Read <code>tvMode_currentlyActive</code> at <code>TVModeSettingsManager</code> init and fall back to <code>launchInTVMode</code> only when no prior session has been recorded, so cold-start TV-mode state matches the user's quit-time state</li>
+            <li>Add <code>BundledControllerPresets.swift</code> to load default controller mappings from JSON at app launch</li>
+            <li>Add new controller preset JSON files for 8BitDo Ultimate 3mode Xbox, Lic Pro Controller, and Xbox Wireless Controller</li>
+            <li>Update <code>ControllerService</code> to use bundled presets as the source for default mappings</li>
+            <li>Add <code>export_controller_presets.py</code> script to export user-saved controller mappings to bundled preset files</li>
+            <li>Update <code>project.pbxproj</code> to include the new source files and resources</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.8.3.html' | relative_url }}" class="release-prev">&larr; v1.8.3</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>

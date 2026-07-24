@@ -1,0 +1,50 @@
+---
+layout: default
+title: v1.8.4 - Documentação do TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/pt/changelog.html' | relative_url }}">Registro de mudanças</a>
+        <span class="separator">/</span>
+        <span class="current">v1.8.4</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.8.4</h1>
+        <div class="release-meta">
+            <span class="release-date">24 de julho de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Versão hotfix: o Modo TV agora respeita corretamente o último estado de sessão do usuário, então fechar o app no modo normal e reabrir não traz mais o usuário de volta ao Modo TV. Também traz presets de controle empacotados e um script de exportação para mapeamentos padrão de gamepad.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destaques</h2>
+        <ul class="feature-list">
+            <li><strong>Modo TV respeita a última sessão:</strong> <code>TVModeSettingsManager</code> agora lê <code>tvMode_currentlyActive</code> no init (a chave de modo runtime que já vinha escrevendo a cada alteração) e só recorre à preferência <code>launchInTVMode</code> em um primeiro lançamento de fato, então sair do Modo TV e fechar o app agora persiste de verdade.</li>
+            <li><strong>Presets de controle empacotados:</strong> Novo <code>BundledControllerPresets.swift</code> carrega mapeamentos padrão de controle a partir de JSON no lançamento, com presets para 8BitDo Ultimate 3-mode (layout Xbox), Lic Pro Controller e Xbox Wireless Controller. <code>ControllerService</code> os usa como fonte dos mapeamentos padrão.</li>
+            <li><strong>Utilitário de exportação de presets:</strong> O script <code>scripts/export_controller_presets.py</code> exporta os mapeamentos de controle salvos pelo usuário para os arquivos JSON de presets empacotados.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Mudanças detalhadas</h2>
+        <ul>
+            <li>Leitura de <code>tvMode_currentlyActive</code> no init de <code>TVModeSettingsManager</code> com fallback para <code>launchInTVMode</code> somente quando não há sessão prévia registrada, para que o Modo TV ao iniciar corresponda ao estado ao fechar o app</li>
+            <li>Adicionado <code>BundledControllerPresets.swift</code> para carregar mapeamentos padrão de controle a partir de JSON no lançamento do app</li>
+            <li>Adicionados arquivos JSON de presets de controle para 8BitDo Ultimate 3mode Xbox, Lic Pro Controller e Xbox Wireless Controller</li>
+            <li>Atualizado <code>ControllerService</code> para usar os presets empacotados como fonte dos mapeamentos padrão</li>
+            <li>Adicionado script <code>export_controller_presets.py</code> para exportar mapeamentos de controle salvos pelo usuário para os arquivos de presets empacotados</li>
+            <li>Atualizado <code>project.pbxproj</code> para incluir os novos arquivos-fonte e recursos</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/pt/changelog/v1.8.3.html' | relative_url }}" class="release-prev">&larr; v1.8.3</a>
+        <a href="{{ '/pt/changelog.html' | relative_url }}" class="release-all">Todas as versões</a>
+    </nav>
+</div>
