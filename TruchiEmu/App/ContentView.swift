@@ -110,6 +110,15 @@ struct ContentView: View {
                 }
             }
         }
+        .task {
+            // Initialize the ROM library asynchronously after the view appears.
+            // Lives on the outer Group so it runs regardless of which branch
+            // is showing — without this, launching directly into TV-mode left
+            // `library.roms` empty (the previous `.task` was attached to
+            // `mainInterface` only), so TVModeViewModel saw no games until the
+            // user exited TV-mode and triggered the main-interface `.task`.
+            library.initializeIfNeeded()
+        }
     }
 
     private var mainInterface: some View {
@@ -384,15 +393,6 @@ applyShaderOverrides(systemID: data.systemID, shaderID: data.newShaderPresetID, 
 }
 .gamepadDismissable { shaderOverrideData = nil }
 }
-        .task {
-            // Initialize the ROM library asynchronously after the view appears.
-            // This defers expensive database loads to after the UI is visible.
-            library.initializeIfNeeded()
-            
-            // Box art images are now loaded on-demand via ImageCache as they appear on screen.
-            // The previous startup preloading was removed because it was blocking the UI
-            // for several seconds while reporting 0% cache hit rate.
-        }
         .onAppear {
             if let savedFilterID = AppSettings.getString("lastSelectedFilter"),
                let restoredFilter = restoreFilter(from: savedFilterID) {
