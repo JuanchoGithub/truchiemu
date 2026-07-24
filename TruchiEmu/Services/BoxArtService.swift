@@ -301,7 +301,7 @@ class BoxArtService: ObservableObject {
         // 3. LaunchBox GamesDB (CDN-backed via Metadata.xml)
         if LaunchBoxGamesDBService.shared.isEnabled,
            let platformName = LaunchBoxPlatformMapper.launchBoxPlatformName(for: rom.systemID ?? ""),
-           let match = await LaunchBoxMetadataService.shared.bestMatch(
+           let match = LaunchBoxMetadataService.shared.bestMatch(
             for: rom.displayName,
             platformName: platformName
            ),
@@ -798,7 +798,7 @@ class BoxArtService: ObservableObject {
                 activeTasks -= 1
                 completed += 1
                 var (completedRom, artResult, regionTag) = result
-                if case .success(let url) = artResult {
+                if case .success = artResult {
                     completedRom.hasBoxArt = true
                     completedRom.boxArtRequestedRegion = regionSuffix
                     completedRom.boxArtRegionTag = regionTag
@@ -898,7 +898,6 @@ class BoxArtService: ObservableObject {
             return
         }
 
-        let tts = Date()
         var updated = rom
         var titleResult: ArtDownloadResult = .notFound
         var snapResult: ArtDownloadResult = .notFound
