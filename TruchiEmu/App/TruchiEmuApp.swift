@@ -671,7 +671,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         // so VideoToolbox/socket/codec warnings are surfaced to our log file.
         Task {
             await SessionBuilderFactory.shared.register(RTMPSessionFactory())
-            await HaishinKitLogger.installAppender()
+            HaishinKitLogger.installAppender()
         }
 
         // Warm BoxArtService on the main thread. It is a @MainActor singleton
