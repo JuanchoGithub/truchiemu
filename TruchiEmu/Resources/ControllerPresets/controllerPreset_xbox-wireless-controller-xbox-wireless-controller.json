@@ -1,0 +1,159 @@
+{
+  "gcMapping": {
+    "buttons": [
+      "lStickUp",
+      {
+        "gcElementAlias": "Left Stick (Up)",
+        "gcElementName": "Left Stick (Up)",
+        "identifier": "leftThumbstickUp"
+      },
+      "rStickUp",
+      {
+        "gcElementAlias": "Right Stick (Up)",
+        "gcElementName": "Right Stick (Up)",
+        "identifier": "rightThumbstickUp"
+      },
+      "down",
+      {
+        "gcElementAlias": "D-pad (Down)",
+        "gcElementName": "D-pad (Down)",
+        "identifier": "dpadDown"
+      },
+      "lStickRight",
+      {
+        "gcElementAlias": "Left Stick (Right)",
+        "gcElementName": "Left Stick (Right)",
+        "identifier": "leftThumbstickRight"
+      },
+      "l1",
+      {
+        "gcElementAlias": "Left Bumper",
+        "gcElementName": "Left Bumper",
+        "identifier": "leftShoulder"
+      },
+      "lStickDown",
+      {
+        "gcElementAlias": "Left Stick (Down)",
+        "gcElementName": "Left Stick (Down)",
+        "identifier": "leftThumbstickDown"
+      },
+      "r3",
+      {
+        "gcElementAlias": "Right Stick Click",
+        "gcElementName": "Right Stick Click",
+        "identifier": "rightThumbstickButton"
+      },
+      "l2",
+      {
+        "gcElementAlias": "Left Trigger",
+        "gcElementName": "Left Trigger",
+        "identifier": "leftTrigger"
+      },
+      "x",
+      {
+        "gcElementAlias": "Button X",
+        "gcElementName": "X Button",
+        "identifier": "faceWest"
+      },
+      "start",
+      {
+        "gcElementAlias": "Menu Button",
+        "gcElementName": "Menu Button",
+        "identifier": "buttonMenu"
+      },
+      "rStickRight",
+      {
+        "gcElementAlias": "Right Stick (Right)",
+        "gcElementName": "Right Stick (Right)",
+        "identifier": "rightThumbstickRight"
+      },
+      "a",
+      {
+        "gcElementAlias": "Button A",
+        "gcElementName": "A Button",
+        "identifier": "faceSouth"
+      },
+      "l3",
+      {
+        "gcElementAlias": "Left Stick Click",
+        "gcElementName": "Left Stick Click",
+        "identifier": "leftThumbstickButton"
+      },
+      "r2",
+      {
+        "gcElementAlias": "Right Trigger",
+        "gcElementName": "Right Trigger",
+        "identifier": "rightTrigger"
+      },
+      "y",
+      {
+        "gcElementAlias": "Button Y",
+        "gcElementName": "Y Button",
+        "identifier": "faceNorth"
+      },
+      "b",
+      {
+        "gcElementAlias": "Button B",
+        "gcElementName": "B Button",
+        "identifier": "faceEast"
+      },
+      "rStickLeft",
+      {
+        "gcElementAlias": "Right Stick (Left)",
+        "gcElementName": "Right Stick (Left)",
+        "identifier": "rightThumbstickLeft"
+      },
+      "right",
+      {
+        "gcElementAlias": "D-pad (Right)",
+        "gcElementName": "D-pad (Right)",
+        "identifier": "dpadRight"
+      },
+      "r1",
+      {
+        "gcElementAlias": "Right Bumper",
+        "gcElementName": "Right Bumper",
+        "identifier": "rightShoulder"
+      },
+      "rStickDown",
+      {
+        "gcElementAlias": "Right Stick (Down)",
+        "gcElementName": "Right Stick (Down)",
+        "identifier": "rightThumbstickDown"
+      },
+      "left",
+      {
+        "gcElementAlias": "D-pad (Left)",
+        "gcElementName": "D-pad (Left)",
+        "identifier": "dpadLeft"
+      },
+      "select",
+      {
+        "gcElementAlias": "View Button",
+        "gcElementName": "View Button",
+        "identifier": "buttonOptions"
+      },
+      "lStickLeft",
+      {
+        "gcElementAlias": "Left Stick (Left)",
+        "gcElementName": "Left Stick (Left)",
+        "identifier": "leftThumbstickLeft"
+      },
+      "up",
+      {
+        "gcElementAlias": "D-pad (Up)",
+        "gcElementName": "D-pad (Up)",
+        "identifier": "dpadUp"
+      }
+    ],
+    "leftStickDeadzone": 0.15,
+    "rightStickDeadzone": 0.15,
+    "vendorName": "Xbox Wireless Controller"
+  },
+  "identity": {
+    "inputSystem": "apple",
+    "productKey": "Xbox Wireless Controller",
+    "vendorName": "Xbox Wireless Controller"
+  },
+  "sdlMapping": null
+}

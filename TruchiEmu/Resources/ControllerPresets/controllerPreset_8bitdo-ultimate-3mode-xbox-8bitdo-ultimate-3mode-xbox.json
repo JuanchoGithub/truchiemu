@@ -1,0 +1,153 @@
+{
+  "gcMapping": {
+    "buttons": [
+      "x",
+      {
+        "gcElementAlias": "Button X",
+        "gcElementName": "X Button",
+        "identifier": "faceWest"
+      },
+      "r1",
+      {
+        "gcElementAlias": "Right Bumper",
+        "gcElementName": "R1 Button",
+        "identifier": "rightShoulder"
+      },
+      "rStickRight",
+      {
+        "gcElementAlias": "Right Stick (Right)",
+        "gcElementName": "Right Thumbstick (Right)",
+        "identifier": "rightThumbstickRight"
+      },
+      "right",
+      {
+        "gcElementAlias": "D-pad (Right)",
+        "gcElementName": "Direction Pad (Right)",
+        "identifier": "dpadRight"
+      },
+      "y",
+      {
+        "gcElementAlias": "Button Y",
+        "gcElementName": "Y Button",
+        "identifier": "faceNorth"
+      },
+      "b",
+      {
+        "gcElementAlias": "Button B",
+        "gcElementName": "B Button",
+        "identifier": "faceEast"
+      },
+      "l3",
+      {
+        "gcElementAlias": "Left Stick Click",
+        "gcElementName": "Left Thumbstick Button",
+        "identifier": "leftThumbstickButton"
+      },
+      "rStickDown",
+      {
+        "gcElementAlias": "Right Stick (Down)",
+        "gcElementName": "Right Thumbstick (Down)",
+        "identifier": "rightThumbstickDown"
+      },
+      "lStickLeft",
+      {
+        "gcElementAlias": "Left Stick (Left)",
+        "gcElementName": "Left Thumbstick (Left)",
+        "identifier": "leftThumbstickLeft"
+      },
+      "lStickDown",
+      {
+        "gcElementAlias": "Left Stick (Down)",
+        "gcElementName": "Left Thumbstick (Down)",
+        "identifier": "leftThumbstickDown"
+      },
+      "up",
+      {
+        "gcElementAlias": "D-pad (Up)",
+        "gcElementName": "Direction Pad (Up)",
+        "identifier": "dpadUp"
+      },
+      "rStickLeft",
+      {
+        "gcElementAlias": "Right Stick (Left)",
+        "gcElementName": "Right Thumbstick (Left)",
+        "identifier": "rightThumbstickLeft"
+      },
+      "l1",
+      {
+        "gcElementAlias": "Left Bumper",
+        "gcElementName": "L1 Button",
+        "identifier": "leftShoulder"
+      },
+      "r3",
+      {
+        "gcElementAlias": "Right Stick Click",
+        "gcElementName": "Right Thumbstick Button",
+        "identifier": "rightThumbstickButton"
+      },
+      "lStickUp",
+      {
+        "gcElementAlias": "Left Stick (Up)",
+        "gcElementName": "Left Thumbstick (Up)",
+        "identifier": "leftThumbstickUp"
+      },
+      "r2",
+      {
+        "gcElementAlias": "Right Trigger",
+        "gcElementName": "R2 Button",
+        "identifier": "rightTrigger"
+      },
+      "lStickRight",
+      {
+        "gcElementAlias": "Left Stick (Right)",
+        "gcElementName": "Left Thumbstick (Right)",
+        "identifier": "leftThumbstickRight"
+      },
+      "down",
+      {
+        "gcElementAlias": "D-pad (Down)",
+        "gcElementName": "Direction Pad (Down)",
+        "identifier": "dpadDown"
+      },
+      "rStickUp",
+      {
+        "gcElementAlias": "Right Stick (Up)",
+        "gcElementName": "Right Thumbstick (Up)",
+        "identifier": "rightThumbstickUp"
+      },
+      "select",
+      {
+        "gcElementAlias": "View Button",
+        "gcElementName": "Options Button",
+        "identifier": "buttonOptions"
+      },
+      "a",
+      {
+        "gcElementAlias": "Button A",
+        "gcElementName": "A Button",
+        "identifier": "faceSouth"
+      },
+      "l2",
+      {
+        "gcElementAlias": "Left Trigger",
+        "gcElementName": "L2 Button",
+        "identifier": "leftTrigger"
+      },
+      "start",
+      {
+        "gcElementAlias": "Menu Button",
+        "gcElementName": "Menu Button",
+        "identifier": "buttonMenu"
+      }
+    ],
+    "leftStickDeadzone": 0.15,
+    "rightStickDeadzone": 0.15,
+    "vendorName": "8BitDo Ultimate 3mode Xbox"
+  },
+  "identity": {
+    "inputSystem": "apple",
+    "productKey": "8BitDo Ultimate 3mode Xbox",
+    "vendorName": "8BitDo Ultimate 3mode Xbox"
+  },
+  "sdlMapping": null
+}

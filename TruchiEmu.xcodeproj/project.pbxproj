@@ -526,6 +526,7 @@
 		6A4B29CDFCA95B63F1B69293 /* fightdata_avengrgs.json in Resources */ = {isa = PBXBuildFile; fileRef = DD45DCE273FFD784398D7867 /* fightdata_avengrgs.json */; };
 		6A51B989E35F07D719A17594 /* LottesCRT.metal in Sources */ = {isa = PBXBuildFile; fileRef = 3BD337DAF7B206DF941EB16D /* LottesCRT.metal */; };
 		6A6E6DC775BF822CCC19DA9A /* input_coreLabels_beetle_cygne.json in Resources */ = {isa = PBXBuildFile; fileRef = 6B780B3BD2FF4782265A8B1F /* input_coreLabels_beetle_cygne.json */; };
+		6A73572872A0A3B71380F07A /* BundledControllerPresets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CF13E8490C2F1A4A8DA38FB /* BundledControllerPresets.swift */; };
 		6A8B991B66EC645052F8A71A /* input_systemLabels_pc_88.json in Resources */ = {isa = PBXBuildFile; fileRef = 2D272E09133EC5DFFC1C8F89 /* input_systemLabels_pc_88.json */; };
 		6A93A1B5626B0CD76190BEDA /* fightdata_samsho4.json in Resources */ = {isa = PBXBuildFile; fileRef = 39AC83150450784449DF3657 /* fightdata_samsho4.json */; };
 		6AB3002F168B6FA251A840A2 /* fightdata_powerins.json in Resources */ = {isa = PBXBuildFile; fileRef = 50DEB95008CC61A8B0A51DAB /* fightdata_powerins.json */; };
@@ -668,6 +669,7 @@
 		83F24062C334DA32CC27C7A8 /* input_coreLabels_higan_accuracy.json in Resources */ = {isa = PBXBuildFile; fileRef = 622F8211E719F06C7DBF42EE /* input_coreLabels_higan_accuracy.json */; };
 		83FCF5A7A8180A9CF049C107 /* nestopia_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = E66F7CAF96BF8C952C315532 /* nestopia_libretro_default.json */; };
 		8431EB7420AD2C2B96598A43 /* fightdata_sfz2al.json in Resources */ = {isa = PBXBuildFile; fileRef = EBDC7603DAF0D037BCBD7EC3 /* fightdata_sfz2al.json */; };
+		844F4C4C5C4373CF4867CC1D /* controllerPreset_8bitdo-ultimate-3mode-xbox-8bitdo-ultimate-3mode-xbox.json in Resources */ = {isa = PBXBuildFile; fileRef = 24853C93B4165B0F75DA903A /* controllerPreset_8bitdo-ultimate-3mode-xbox-8bitdo-ultimate-3mode-xbox.json */; };
 		8486017DB7D747C9E058F05D /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF4D3CED7C7C18FB8375C015 /* AppSettings.swift */; };
 		84C84CCBB98FA712DF8B6971 /* NGP.png in Resources */ = {isa = PBXBuildFile; fileRef = 40DA7086C981032D0B98C415 /* NGP.png */; };
 		84D8EF6AD4A33478C294BF06 /* CoreAndAchievements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 154CCFA03FA2B0980BA39F0C /* CoreAndAchievements.swift */; };
@@ -1049,6 +1051,7 @@
 		CF304079A8662B14B2BF9D27 /* input_coreLabels_mame.json in Resources */ = {isa = PBXBuildFile; fileRef = FA7BBD418F0D1637767DE7CA /* input_coreLabels_mame.json */; };
 		CF6F7A342B60A94D30A8C004 /* fightdata_svg.json in Resources */ = {isa = PBXBuildFile; fileRef = DFB716FDB9E08D61BB411959 /* fightdata_svg.json */; };
 		CFA32E280A0EBDCB7AF3095D /* fightdata_dbzsb.json in Resources */ = {isa = PBXBuildFile; fileRef = FF0214363F4B0E9296DB8AC5 /* fightdata_dbzsb.json */; };
+		CFA35C123220A5F1765ED1F0 /* controllerPreset_xbox-wireless-controller-xbox-wireless-controller.json in Resources */ = {isa = PBXBuildFile; fileRef = 01806BCFD8672293F4457A33 /* controllerPreset_xbox-wireless-controller-xbox-wireless-controller.json */; };
 		CFE1925DEA7686C5B3D76A98 /* input_coreLabels_holani.json in Resources */ = {isa = PBXBuildFile; fileRef = D55982DD468036597081950E /* input_coreLabels_holani.json */; };
 		D0439304429F0CDCB80B2E16 /* SystemDatabaseWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F13225A0D533F3EF41CEB80 /* SystemDatabaseWrapper.swift */; };
 		D07D50F0B808A3E91E40FDD5 /* input_systemLabels_snes.json in Resources */ = {isa = PBXBuildFile; fileRef = B1B0C5B0C75C0BC4460C2913 /* input_systemLabels_snes.json */; };
@@ -1111,6 +1114,7 @@
 		DCD12CEBA7F2C2CDA39B26D0 /* Nintendo - Nintendo 64.dat in Resources */ = {isa = PBXBuildFile; fileRef = 20E3F1E2894944E8BAF2B432 /* Nintendo - Nintendo 64.dat */; };
 		DD58429E4400B7D8C6607E68 /* input_systemLabels_n64.json in Resources */ = {isa = PBXBuildFile; fileRef = C8B26D230952CE0ADCFFD5BF /* input_systemLabels_n64.json */; };
 		DD7A6F7A0C60AB198C195ADF /* fightdata_fatfury1.json in Resources */ = {isa = PBXBuildFile; fileRef = 2B6C405950B80529A3DAB81B /* fightdata_fatfury1.json */; };
+		DDD1ABA8FD2A671F6AA0EA1D /* controllerPreset_lic-pro-controller-0300b7156f0e00008b01000001000000.json in Resources */ = {isa = PBXBuildFile; fileRef = 67EFFC04948C60EA261E7A65 /* controllerPreset_lic-pro-controller-0300b7156f0e00008b01000001000000.json */; };
 		DDF78E0DC034F7763CB5A406 /* SettingsIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56EFDAB22A9883E3B0AC36E2 /* SettingsIndex.swift */; };
 		DE29E5DDC33BE3F03B33B621 /* EscapeToastOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8433AB2853AB9C980368AE4 /* EscapeToastOverlay.swift */; };
 		DE5559D3DDAF0582E387F738 /* fightdata_samsh5sp.json in Resources */ = {isa = PBXBuildFile; fileRef = 936CC9F84C2CC958CCD03A2A /* fightdata_samsh5sp.json */; };
@@ -1314,6 +1318,7 @@
 		00E666D1118167F817DB6B88 /* fightdata_sf.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_sf.json; sourceTree = "<group>"; };
 		0131AF2732320A89574B49A3 /* input_systemLabels_colecovision.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_colecovision.json; sourceTree = "<group>"; };
 		01412B280262985F0F003F9D /* input_coreOverrides_hatari.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_hatari.json; sourceTree = "<group>"; };
+		01806BCFD8672293F4457A33 /* controllerPreset_xbox-wireless-controller-xbox-wireless-controller.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "controllerPreset_xbox-wireless-controller-xbox-wireless-controller.json"; sourceTree = "<group>"; };
 		028968D965BBF8007BE1DC73 /* ATARI800.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ATARI800.png; sourceTree = "<group>"; };
 		02AF500782AB016FB6164846 /* DreamcastBIOSService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DreamcastBIOSService.swift; sourceTree = "<group>"; };
 		02CF8EF66CB8C3E5967901A7 /* SettingsSearchable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsSearchable.swift; sourceTree = "<group>"; };
@@ -1472,6 +1477,7 @@
 		2401598CC4B250B3D30A32A9 /* MediaConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaConfig.swift; sourceTree = "<group>"; };
 		24020D18A3CFC76C3A13F218 /* TIC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TIC.png; sourceTree = "<group>"; };
 		24667B16B733A9A54FBF645A /* COLSGM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = COLSGM.png; sourceTree = "<group>"; };
+		24853C93B4165B0F75DA903A /* controllerPreset_8bitdo-ultimate-3mode-xbox-8bitdo-ultimate-3mode-xbox.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "controllerPreset_8bitdo-ultimate-3mode-xbox-8bitdo-ultimate-3mode-xbox.json"; sourceTree = "<group>"; };
 		24CA44B3215148A4B9D3912B /* fightdata_captcomm.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_captcomm.json; sourceTree = "<group>"; };
 		24F34C2C75CBC27CAFF82647 /* NAOMI.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NAOMI.png; sourceTree = "<group>"; };
 		25044CACE0D8BC8A3BB04773 /* fightdata_ddsom.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_ddsom.json; sourceTree = "<group>"; };
@@ -1837,6 +1843,7 @@
 		67D8E99941A946620FF8D608 /* LibretroBridgeSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroBridgeSwift.swift; sourceTree = "<group>"; };
 		67E3968F66782C9657808245 /* fightdata_tekken2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_tekken2.json; sourceTree = "<group>"; };
 		67E3AE6E21EEEE60B5106D5D /* input_coreLabels_beetle_pc_fx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_beetle_pc_fx.json; sourceTree = "<group>"; };
+		67EFFC04948C60EA261E7A65 /* controllerPreset_lic-pro-controller-0300b7156f0e00008b01000001000000.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "controllerPreset_lic-pro-controller-0300b7156f0e00008b01000001000000.json"; sourceTree = "<group>"; };
 		68782332EFE8C05AAE16BABF /* input_coreLabels_ffmpeg.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_ffmpeg.json; sourceTree = "<group>"; };
 		68F707CDD47CCEEBDA203171 /* gba.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = gba.ico; sourceTree = "<group>"; };
 		68FD211A72F4862B10F9258C /* CurvedRowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurvedRowLayout.swift; sourceTree = "<group>"; };
@@ -1939,6 +1946,7 @@
 		7BB4D897239AF20C30DBDE57 /* input_coreLabels_reminiscence.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_reminiscence.json; sourceTree = "<group>"; };
 		7BE05BB15313DA90F5BFFC94 /* input_coreOverrides_mupen64plus.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_mupen64plus.json; sourceTree = "<group>"; };
 		7CC6E52ACF63E0F4B9AD638C /* 8bGameBoy.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = 8bGameBoy.metal; sourceTree = "<group>"; };
+		7CF13E8490C2F1A4A8DA38FB /* BundledControllerPresets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundledControllerPresets.swift; sourceTree = "<group>"; };
 		7D0DDCC64C1B31C45D418074 /* CelebrationOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CelebrationOverlay.swift; sourceTree = "<group>"; };
 		7D49DC16154AEF67185DC961 /* input_coreLabels_3d_engine.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_3d_engine.json; sourceTree = "<group>"; };
 		7D63B93FCBE5E88FCC35FC49 /* CheatDownloadService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheatDownloadService.swift; sourceTree = "<group>"; };
@@ -2776,6 +2784,7 @@
 		1128BD0262A6AA67827DC4DA /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				7CF13E8490C2F1A4A8DA38FB /* BundledControllerPresets.swift */,
 				AED4234BBEB8FF8BF9F4214E /* ControllerHotkeyCaptureCoordinator.swift */,
 				0DF9540BCE224E456A3FA60E /* ControllerService.swift */,
 				007D62D59B68855828E28A77 /* CoreOptionsManager.swift */,
@@ -3356,6 +3365,7 @@
 				D0CDC1D3C0773FC9C8698346 /* BoxArtSamples */,
 				FE700291499B346B34E3C68A /* cheats */,
 				76456D83E1C30F476B43170E /* ControllerIcons */,
+				CE06450A5BF233B4C5A83D7F /* ControllerPresets */,
 				D7460AC8093968B54EEAD8B5 /* CoreOverrides */,
 				35AF3E1D0EA8DD7BDA67C06A /* Data */,
 				0CBD37D03C917E1671224137 /* EmulatorIcons */,
@@ -4161,6 +4171,16 @@
 				46DE9EB293E2EF4339C372C2 /* MAMEVerificationRecord.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		CE06450A5BF233B4C5A83D7F /* ControllerPresets */ = {
+			isa = PBXGroup;
+			children = (
+				24853C93B4165B0F75DA903A /* controllerPreset_8bitdo-ultimate-3mode-xbox-8bitdo-ultimate-3mode-xbox.json */,
+				67EFFC04948C60EA261E7A65 /* controllerPreset_lic-pro-controller-0300b7156f0e00008b01000001000000.json */,
+				01806BCFD8672293F4457A33 /* controllerPreset_xbox-wireless-controller-xbox-wireless-controller.json */,
+			);
+			path = ControllerPresets;
 			sourceTree = "<group>";
 		};
 		D0CDC1D3C0773FC9C8698346 /* BoxArtSamples */ = {
@@ -4985,6 +5005,9 @@
 				05D5024FE997AA3514C9D6A9 /* check_coverage.py in Resources */,
 				87730A8888387C2E267DFBD8 /* col@132w.png in Resources */,
 				5657896F66E1C3999BCF43EB /* colecovision-cheats.zip in Resources */,
+				844F4C4C5C4373CF4867CC1D /* controllerPreset_8bitdo-ultimate-3mode-xbox-8bitdo-ultimate-3mode-xbox.json in Resources */,
+				DDD1ABA8FD2A671F6AA0EA1D /* controllerPreset_lic-pro-controller-0300b7156f0e00008b01000001000000.json in Resources */,
+				CFA35C123220A5F1765ED1F0 /* controllerPreset_xbox-wireless-controller-xbox-wireless-controller.json in Resources */,
 				FDF44AF015BFE88B93BB0463 /* coverage_report.json in Resources */,
 				94F18E1F0634E807A991FED7 /* cpc-alt.png in Resources */,
 				0D2E27740B6ADF1221055466 /* cpc@132w.png in Resources */,
@@ -5828,6 +5851,7 @@
 				49C54B79CA96648E9B9F7069 /* BoxArtService.swift in Sources */,
 				126430C5084506DE1D08831F /* BoxArtSettingsView.swift in Sources */,
 				1B30AF34E62E318B40D3B0B8 /* BoxArtThumbnailService.swift in Sources */,
+				6A73572872A0A3B71380F07A /* BundledControllerPresets.swift in Sources */,
 				9848C59D1C12F39F2D7C6625 /* ButtonKeyResolver.swift in Sources */,
 				89999BCF6C86749975156810 /* CLILauncher.swift in Sources */,
 				EEFB801BD3A80132FB475EB6 /* CRTFilter.metal in Sources */,

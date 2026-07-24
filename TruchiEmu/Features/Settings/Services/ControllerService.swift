@@ -35,6 +35,8 @@ class ControllerService: ObservableObject {
     private var savedSDLMappings: [String: [String: SDLControllerMapping]] = [:]
     private var savedIdentityMappings: [String: [String: ControllerGamepadMapping]] = [:]
     private var savedIdentitySDLMappings: [String: [String: SDLControllerMapping]] = [:]
+    private var bundledGC: [String: ControllerGamepadMapping] = [:]
+    private var bundledSDL: [String: SDLControllerMapping] = [:]
 
     var sdlSlotAssignments: [Int32: Set<Int>] = [:]
 
@@ -659,6 +661,10 @@ class ControllerService: ObservableObject {
             return resolveForSystem(legacy, vendorName: vendor, systemID: systemID)
         }
 
+        if let bundled = bundledGC[key] {
+            return resolveForSystem(bundled, vendorName: identity.vendorName ?? "Unknown", systemID: systemID)
+        }
+
         return resolveDefault(vendorName: identity.vendorName ?? "Unknown", systemID: systemID)
     }
 
@@ -688,6 +694,7 @@ class ControllerService: ObservableObject {
         if let saved = savedIdentitySDLMappings[key]?["default"] { return saved }
         if let vendor = identity.vendorName, let legacy = savedSDLMappings[vendor]?[systemID] { return legacy }
         if let vendor = identity.vendorName, let legacy = savedSDLMappings[vendor]?["default"] { return legacy }
+        if let bundled = bundledSDL[key] { return bundled }
         return SDLControllerMapping.defaults(for: systemID)
     }
 
@@ -875,6 +882,10 @@ class ControllerService: ObservableObject {
            let saved = try? JSONDecoder().decode([String: KeyboardMapping].self, from: data) {
             keyboardMappings = saved
         }
+
+        let bundled = BundledControllerPresets.load()
+        bundledGC = bundled.gc
+        bundledSDL = bundled.sdl
     }
 
     private func migrateStaleGenesisMappings() {

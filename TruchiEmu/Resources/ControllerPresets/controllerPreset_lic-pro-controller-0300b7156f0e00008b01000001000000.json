@@ -1,0 +1,135 @@
+{
+  "gcMapping": null,
+  "identity": {
+    "inputSystem": "sdl",
+    "productKey": "0300B7156F0E00008B01000001000000",
+    "vendorName": "Lic Pro Controller"
+  },
+  "sdlMapping": {
+    "buttons": [
+      "l2",
+      {
+        "sdlButtonAlias": "Button 6",
+        "sdlButtonIndex": 6
+      },
+      "left",
+      {
+        "sdlButtonAlias": "D-Pad Left",
+        "sdlButtonIndex": 13
+      },
+      "y",
+      {
+        "sdlButtonAlias": "Button 2",
+        "sdlButtonIndex": 2
+      },
+      "rStickRight",
+      {
+        "sdlButtonAlias": "Right Stick X",
+        "sdlButtonIndex": 102
+      },
+      "b",
+      {
+        "sdlButtonAlias": "Button 0",
+        "sdlButtonIndex": 0
+      },
+      "lStickRight",
+      {
+        "sdlButtonAlias": "Left Stick X",
+        "sdlButtonIndex": 100
+      },
+      "r2",
+      {
+        "sdlButtonAlias": "Button 7",
+        "sdlButtonIndex": 7
+      },
+      "r3",
+      {
+        "sdlButtonAlias": "Button 11",
+        "sdlButtonIndex": 11
+      },
+      "x",
+      {
+        "sdlButtonAlias": "Button 3",
+        "sdlButtonIndex": 3
+      },
+      "up",
+      {
+        "sdlButtonAlias": "D-Pad Up",
+        "sdlButtonIndex": 11
+      },
+      "down",
+      {
+        "sdlButtonAlias": "D-Pad Down",
+        "sdlButtonIndex": 12
+      },
+      "right",
+      {
+        "sdlButtonAlias": "D-Pad Right",
+        "sdlButtonIndex": 14
+      },
+      "r1",
+      {
+        "sdlButtonAlias": "Button 5",
+        "sdlButtonIndex": 5
+      },
+      "l1",
+      {
+        "sdlButtonAlias": "Button 4",
+        "sdlButtonIndex": 4
+      },
+      "rStickLeft",
+      {
+        "sdlButtonAlias": "Right Stick X",
+        "sdlButtonIndex": 102
+      },
+      "lStickUp",
+      {
+        "sdlButtonAlias": "Left Stick Y",
+        "sdlButtonIndex": 101
+      },
+      "l3",
+      {
+        "sdlButtonAlias": "Button 10",
+        "sdlButtonIndex": 10
+      },
+      "rStickDown",
+      {
+        "sdlButtonAlias": "Right Stick Y",
+        "sdlButtonIndex": 103
+      },
+      "lStickLeft",
+      {
+        "sdlButtonAlias": "Left Stick X",
+        "sdlButtonIndex": 100
+      },
+      "lStickDown",
+      {
+        "sdlButtonAlias": "Left Stick Y",
+        "sdlButtonIndex": 101
+      },
+      "start",
+      {
+        "sdlButtonAlias": "Button 9",
+        "sdlButtonIndex": 9
+      },
+      "a",
+      {
+        "sdlButtonAlias": "Button 1",
+        "sdlButtonIndex": 1
+      },
+      "select",
+      {
+        "sdlButtonAlias": "Button 8",
+        "sdlButtonIndex": 8
+      },
+      "rStickUp",
+      {
+        "sdlButtonAlias": "Right Stick Y",
+        "sdlButtonIndex": 103
+      }
+    ],
+    "leftStickDeadzone": 0.15,
+    "rightStickDeadzone": 0.15,
+    "vendorName": "Standard HID Gamepad"
+  }
+}
