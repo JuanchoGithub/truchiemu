@@ -217,10 +217,10 @@ class StreamRecordingService: ObservableObject {
     /// buffer — eliminating the per-frame CPU readback that previously caused
     /// the renderer to stall.
     nonisolated static func makePixelBufferPool(width: Int, height: Int) -> CVPixelBufferPool? {
-        var poolAttributes: [String: Any] = [
+        let poolAttributes: [String: Any] = [
             kCVPixelBufferPoolMinimumBufferCountKey as String: 3
         ]
-        var pixelBufferAttributes: [String: Any] = [
+        let pixelBufferAttributes: [String: Any] = [
             kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
             kCVPixelBufferWidthKey as String: width,
             kCVPixelBufferHeightKey as String: height,
