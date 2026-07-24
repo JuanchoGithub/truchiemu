@@ -249,7 +249,7 @@ init(pending: CoreManager.PendingCoreDownload, selectedCoreID: Binding<String>? 
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
         .onAppear { loadBoxArt() }
-        .onChange(of: boxArtService.boxArtUpdated) { _ in
+        .onChange(of: boxArtService.boxArtUpdated) { _, _ in
             // React to later arrivals of THIS rom's art; avoid churning on
             // unrelated global box-art signals once we already have an image.
             if boxArtImage == nil {
