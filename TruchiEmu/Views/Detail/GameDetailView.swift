@@ -275,7 +275,7 @@ struct GameDetailView: View {
             if achievementsService.isEnabled {
                 Task { @MainActor in
                     let hash = await Task.detached(priority: .background) {
-                        RomHasher.hashRom(at: currentROM.path.path, systemID: currentROM.systemID ?? "")
+                        await RomHasher.hashRom(at: currentROM.path.path, systemID: currentROM.systemID ?? "")
                     }.value
                     raHash = hash
                 }
