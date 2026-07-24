@@ -176,7 +176,7 @@ class ConfettiManager: ObservableObject {
 struct ConfettiOverlay: View {
     @ObservedObject private var manager: ConfettiManager
 
-    init(manager: ConfettiManager = .shared) {
+    init(manager: ConfettiManager) {
         self.manager = manager
     }
 
