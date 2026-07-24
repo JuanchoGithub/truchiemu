@@ -24,7 +24,15 @@ final class TVModeSettingsManager: ObservableObject {
     private var priorAutoFullscreen: Bool?
 
     private init() {
-        self.isActive = TVModeSettings.launchInTVMode
+        // Resume the last TV-mode session. The `currentlyActive` key is written
+        // on every `isActive` change, so it reflects what the user was doing at
+        // quit. Fall back to the `launchInTVMode` user preference only when no
+        // prior session exists (i.e. truly first launch).
+        if AppSettingsCache.shared.getData("tvMode_currentlyActive") != nil {
+            self.isActive = AppSettings.getBool("tvMode_currentlyActive", defaultValue: false)
+        } else {
+            self.isActive = TVModeSettings.launchInTVMode
+        }
         if isActive {
             // Started in TV-mode (persisted launch flag) — mirror enter()'s
             // autoFs save/restore so the main-window behavior is restored
