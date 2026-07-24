@@ -38,7 +38,7 @@ hard_wrap: false
 syntax_highlighter: rouge
 
 vars:
-version: "1.8.2"
+version: "1.8.3"
 icon: "/media/logo-icon.png"
 
 nav:

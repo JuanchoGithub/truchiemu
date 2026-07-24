@@ -1,0 +1,53 @@
+---
+layout: default
+title: v1.8.3 - Documentação do TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/pt/changelog.html' | relative_url }}">Registro de mudanças</a>
+        <span class="separator">/</span>
+        <span class="current">v1.8.3</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.8.3</h1>
+        <div class="release-meta">
+            <span class="release-date">24 de julho de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Versão de patch que corrige duas regressões — falhas silenciosas ao apagar saves e notificações falsas de atualização na versão atual — mais uma passagem de confiabilidade de carregamento de jogos no Modo TV e uma ampla limpeza de avisos do Swift 6.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destaques</h2>
+        <ul class="feature-list">
+            <li><strong>Apagar saves funciona de novo:</strong> Os handlers de exclusão em <code>ModernSaveStateSlotView</code> e no menu de contexto de thumbnail progressiva agora constroem a mesma chave composta <code>displayName__<uuidPrefix></code> usada pelo caminho de save (#27).</li>
+            <li><strong>Sem notificação falsa de atualização na versão atual:</strong> A disponibilidade de atualização em <code>AppUpdateService</code> não é mais condicionada a <code>#if LOG_DEBUG</code>, então instalações limpas não se reportam mais como desatualizadas (#25).</li>
+            <li><strong>Confiabilidade do Modo TV:</strong> A inicialização da biblioteca foi refactorada para que os jogos carreguem de forma determinística no Modo TV, e entrar no Modo TV agora dispara uma passagem de entrada em tela cheia para manter o controle focado.</li>
+            <li><strong>Limpeza de avisos do Swift 6:</strong> Removidos ~20 avisos de isolamento de actor, bindings não usados e APIs deprecadas para manter o log de build acionável.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Mudanças detalhadas</h2>
+        <ul>
+            <li>Corrigidos os handlers de exclusão para usar a chave composta <code>displayName__<uuidPrefix></code> — ver <code>BaseRunner.swift:1150</code> e <code>GameDetailView.swift:426</code> para o caminho de save canônico (Corrige #27)</li>
+            <li>Removida a condicional <code>#if LOG_DEBUG</code> da disponibilidade de atualização em <code>AppUpdateService</code>; o caminho real de comparação de versão agora roda sempre (Corrige #25)</li>
+            <li>Refactorada a inicialização da biblioteca de ROMs para que os jogos carreguem no Modo TV em vez de depender de efeitos colaterais</li>
+            <li>Adicionada lógica de entrada em tela cheia ao ativar o Modo TV para que a janela ativa ganhe foco na transição</li>
+            <li>Atualizadas as configurações de build e flags de log para documentar o escopo de <code>LOG_DEBUG</code>/<code>LOG_EXTREME</code></li>
+            <li>Adicionado log de depuração para operações de time machine e outros componentes</li>
+            <li>Limpeza de avisos do Swift 6: <code>await</code> redundante em chamadas síncronas, bindings <code>system</code>/<code>port</code>/<code>existing</code> não usados, <code>onChange(of:perform:)</code> deprecado de um parâmetro, argumentos padrão com isolamento de actor e corpos de trailing-closure ambíguos</li>
+            <li>Revisados os links de assets e cortadas seções desatualizadas no <code>README.md</code></li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/pt/changelog/v1.8.2.html' | relative_url }}" class="release-prev">&larr; v1.8.2</a>
+        <a href="{{ '/pt/changelog.html' | relative_url }}" class="release-all">Todas as versões</a>
+    </nav>
+</div>

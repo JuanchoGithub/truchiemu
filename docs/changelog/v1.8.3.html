@@ -1,0 +1,53 @@
+---
+layout: default
+title: v1.8.3 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.8.3</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.8.3</h1>
+        <div class="release-meta">
+            <span class="release-date">July 24, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Patch release fixing two regressions — silent save-state deletion failures and false-positive update notifications on the current version — plus a TV-mode game-loading reliability pass and a broad Swift 6 warning cleanup.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>Deleting save states works again:</strong> Delete handlers in <code>ModernSaveStateSlotView</code> and the progressive thumbnail context menu now build the same composite <code>displayName__<uuidPrefix></code> key the save path uses (#27).</li>
+            <li><strong>No false update prompt on the current version:</strong> Update availability in <code>AppUpdateService</code> is no longer gated behind <code>#if LOG_DEBUG</code>, so fresh installs no longer report themselves as outdated (#25).</li>
+            <li><strong>TV Mode reliability:</strong> Library initialization was refactored so games load deterministically in TV mode, and entering TV mode now triggers a fullscreen entry pass to keep the controller focused.</li>
+            <li><strong>Swift 6 warning cleanup:</strong> Removed ~20 actor-isolation, unused-binding, and deprecated-API warnings across Swift sources to keep the build log actionable.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>Fix save-state delete handlers to use the composite <code>displayName__<uuidPrefix></code> key — see <code>BaseRunner.swift:1150</code> and <code>GameDetailView.swift:426</code> for the canonical save path (Fixes #27)</li>
+            <li>Drop <code>#if LOG_DEBUG</code> gating of update availability in <code>AppUpdateService</code>; the real version-comparison path now runs unconditionally (Fixes #25)</li>
+            <li>Refactor ROM library initialization so games are loaded in TV mode rather than relying on side-effects</li>
+            <li>Add fullscreen entry logic on TV Mode activation so the active window is brought to focus on transition</li>
+            <li>Update build configurations and logging flags to document the <code>LOG_DEBUG</code>/<code>LOG_EXTREME</code> scoping rules</li>
+            <li>Add debug logging for time-machine operations and other components</li>
+            <li>Cleanup Swift 6 warnings: redundant <code>await</code> on sync calls, unused <code>system</code>/<code>port</code>/<code>existing</code> bindings, deprecated single-parameter <code>onChange(of:perform:)</code>, default actor-isolation arguments, and confusable trailing-closure bodies</li>
+            <li>Revise asset links and trim outdated sections in <code>README.md</code></li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.8.2.html' | relative_url }}" class="release-prev">&larr; v1.8.2</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>
