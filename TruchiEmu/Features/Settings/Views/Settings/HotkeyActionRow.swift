@@ -27,6 +27,7 @@ struct HotkeyActionRow: View {
 
     var body: some View {
         let cfg = hotkeyManager.config[action] ?? .unbound
+        let modified = !hotkeyManager.isAtDefault(action)
         HStack(spacing: 8) {
             HotkeyCaptureButton(
                 binding: cfg.primary,
@@ -113,6 +114,22 @@ struct HotkeyActionRow: View {
                     }
                 }
             )
+            if modified {
+                Button {
+                    hotkeyManager.resetActionToDefaults(action)
+                    listeningAction = nil
+                    if listeningControllerAction == action {
+                        controllerCaptureCoordinator.cancel()
+                        listeningControllerAction = nil
+                    }
+                } label: {
+                    Image(systemName: "arrow.counterclockwise")
+                        .imageScale(.small)
+                }
+                .buttonStyle(.borderless)
+                .help(loc.localized("hotkeys.resetActionToDefaultsTooltip"))
+                .opacity(0.6)
+            }
         }
     }
 }

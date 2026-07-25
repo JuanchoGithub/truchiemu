@@ -5,24 +5,18 @@ struct HotkeyConfigSettingsView: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var hotkeyManager = HotkeyConfigManager.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
     @Binding var searchText: String
     @Binding var focusedSectionID: String?
     @Binding var scopedSectionID: String?
 
-    enum Scope: Hashable {
-        case all
-        case global
-        case gameplay
-    }
-
-    let scope: Scope
+    @State private var tab: HotkeyTab = HotkeyTab.load()
 
     init(searchText: Binding<String> = .constant(""), focusedSectionID: Binding<String?> = .constant(nil),
-         scopedSectionID: Binding<String?> = .constant(nil), scope: Scope = .all) {
+         scopedSectionID: Binding<String?> = .constant(nil)) {
         self._searchText = searchText
         self._focusedSectionID = focusedSectionID
         self._scopedSectionID = scopedSectionID
-        self.scope = scope
     }
 
     private var isSearching: Bool { !searchText.isEmpty }
@@ -35,34 +29,9 @@ struct HotkeyConfigSettingsView: View {
 
     private func matchesAnyLabel(_ actions: [HotkeyAction]) -> Bool {
         guard !searchText.isEmpty else { return true }
-        let loc = LocalizationManager.shared
         return actions.contains { action in
             SettingsIndex.matches(haystack: loc.localized(action.localizationKey), query: searchText)
         }
-    }
-
-    private var showGeneral: Bool {
-        scope == .all || scope == .global
-    }
-
-    private var showSlots: Bool {
-        scope == .all || scope == .global
-    }
-
-    private var showTraining: Bool {
-        scope == .all || scope == .gameplay
-    }
-
-    private var showGameplay: Bool {
-        scope == .all || scope == .gameplay
-    }
-
-    private var showWii: Bool {
-        scope == .all || scope == .gameplay
-    }
-
-    private var showReset: Bool {
-        scope == .all
     }
 
     private func sectionVisible(_ id: String) -> Bool {
@@ -70,9 +39,204 @@ struct HotkeyConfigSettingsView: View {
         return scope == id || scope == id.replacingOccurrences(of: "section-", with: "")
     }
 
+    private func applyTarget(_ id: String, proxy: ScrollViewProxy) {
+        switch id {
+        // App tab = Gamepad Navigation bindings.
+        case "tabApp", "enable", "navigation", "zones", "scrolling", "actions",
+             "library", "gameWindow", "tvMode", "reset":
+            tab = .app
+        // In-Game tab = General + Slots shortcuts (used during gameplay).
+        case "tabInGame", "general", "slots", "inGame-reset",
+             "saveState", "loadState", "undoLoadState", "slotNext", "slotPrev",
+             "toggleInputCapture", "toggleGuideSidebar",
+             "slot0", "slot1", "slot2", "slot3", "slot4",
+             "slot5", "slot6", "slot7", "slot8", "slot9":
+            tab = .inGame
+        // Special tab = Training, Speed/Rewind, Capture, system-specific (Wii).
+        case "tabSpecial", "training", "speedRewind", "capture", "wii", "special-reset",
+             "toggleTrainingMode", "trainingReset", "trainingToggleRecording", "trainingStartPlayback",
+             "rewind", "slowMotion", "fastForward", "pause",
+             "screenshot", "shareButton", "recording", "toggleWiiController":
+            tab = .special
+        default:
+            break
+        }
+        DispatchQueue.main.async {
+            withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+        }
+    }
+
     var body: some View {
-        ScrollViewReader { proxy in
-            Form {
+        VStack(spacing: 0) {
+            if !isSearching {
+                Picker("", selection: Binding(
+                    get: { tab },
+                    set: { newTab in
+                        tab = newTab
+                        newTab.save()
+                    }
+                )) {
+                    ForEach(HotkeyTab.allCases) { t in
+                        Text(loc.localized(t.localizationKey)).tag(t)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+                .padding(.horizontal)
+                .padding(.top, AppSpacing.md)
+                .padding(.bottom, AppSpacing.sm)
+            }
+
+            ScrollViewReader { proxy in
+                Group {
+                    switch tab {
+                    case .app:
+                        // App tab hosts the Gamepad Navigation bindings. The
+                        // content is a sequence of `Section` views, so it is
+                        // wrapped in its own `Form` here (the other tabs use
+                        // `HotkeyTabContent` which produces their own `Form`).
+                        Form {
+                            GamepadNavContent(
+                                searchText: $searchText,
+                                scopedSectionID: scopedSectionID
+                            )
+                        }
+                        .scrollContentBackground(.hidden)
+                        .formStyle(.grouped)
+                        .id("section-tabApp")
+                    case .inGame:
+                        HotkeyTabContent(
+                            tab: .inGame,
+                            sections: inGameSections,
+                            explainer: true,
+                            resetActionKey: "hotkeys.resetToDefaults",
+                            resetDescriptionKey: "hotkeys.resetDescription",
+                            searchText: searchText,
+                            scopedSectionID: scopedSectionID,
+                            matchesSearch: matchesSearch,
+                            matchesAnyLabel: matchesAnyLabel,
+                            sectionVisible: sectionVisible
+                        )
+                        .id("section-tabInGame")
+                    case .special:
+                        HotkeyTabContent(
+                            tab: .special,
+                            sections: specialSections,
+                            explainer: false,
+                            resetActionKey: "hotkeys.resetToDefaults",
+                            resetDescriptionKey: "hotkeys.resetDescription",
+                            searchText: searchText,
+                            scopedSectionID: scopedSectionID,
+                            matchesSearch: matchesSearch,
+                            matchesAnyLabel: matchesAnyLabel,
+                            sectionVisible: sectionVisible
+                        )
+                        .id("section-tabSpecial")
+                    }
+                }
+                .onChange(of: focusedSectionID) { _, newID in
+                    guard let id = newID else { return }
+                    applyTarget(id, proxy: proxy)
+                }
+                .onChange(of: scopedSectionID) { _, newScope in
+                    guard let id = newScope else { return }
+                    applyTarget(id, proxy: proxy)
+                }
+            }
+        }
+        .background(AppColors.windowBackground(colorScheme, tinted: themeManager.tintedSurfacesEnabled))
+        .navigationTitle(loc.localized("settings.hotkeys"))
+        .onAppear {
+            tab = HotkeyTab.load()
+        }
+    }
+
+    fileprivate struct SectionDescriptor {
+        let id: String
+        let titleKey: String
+        let icon: String
+        let actions: [HotkeyAction]
+        let searchKeywords: String
+    }
+
+    private var inGameSections: [SectionDescriptor] {
+        [
+            SectionDescriptor(
+                id: "general",
+                titleKey: "hotkeys.general",
+                icon: "keyboard",
+                actions: [.saveState, .loadState, .undoLoadState, .slotNext, .slotPrev, .toggleInputCapture, .toggleGuideSidebar],
+                searchKeywords: "hotkeys keyboard shortcuts save load slot undo training input capture guide sidebar"
+            ),
+            SectionDescriptor(
+                id: "slots",
+                titleKey: "hotkeys.slots",
+                icon: "square.grid.3x3",
+                actions: [.slot0, .slot1, .slot2, .slot3, .slot4, .slot5, .slot6, .slot7, .slot8, .slot9],
+                searchKeywords: "slots 0-9 slot"
+            ),
+        ]
+    }
+
+    private var specialSections: [SectionDescriptor] {
+        [
+            SectionDescriptor(
+                id: "training",
+                titleKey: "hotkeys.training",
+                icon: "figure.martial.arts",
+                actions: [.toggleTrainingMode, .trainingReset, .trainingToggleRecording, .trainingStartPlayback],
+                searchKeywords: "training mode reset recording playback tape"
+            ),
+            SectionDescriptor(
+                id: "speedRewind",
+                titleKey: "hotkeys.speedRewind",
+                icon: "clock.arrow.circlepath",
+                actions: [.rewind, .slowMotion, .fastForward, .pause],
+                searchKeywords: "speed rewind fast forward slow motion time machine pause resume"
+            ),
+            SectionDescriptor(
+                id: "capture",
+                titleKey: "hotkeys.capture",
+                icon: "camera",
+                actions: [.screenshot, .shareButton, .recording],
+                searchKeywords: "screenshot capture photo picture share button recording"
+            ),
+            SectionDescriptor(
+                id: "wii",
+                titleKey: "hotkeys.wii",
+                icon: "gamecontroller",
+                actions: [.toggleWiiController],
+                searchKeywords: "wii gamecube nunchuk classic controller pointer wiimote attachment"
+            ),
+        ]
+    }
+}
+
+private struct HotkeyTabContent: View {
+    @Environment(\.colorScheme) private var colorScheme
+    @ObservedObject private var loc = LocalizationManager.shared
+    @ObservedObject private var hotkeyManager = HotkeyConfigManager.shared
+
+    let tab: HotkeyTab
+    let sections: [HotkeyConfigSettingsView.SectionDescriptor]
+    let explainer: Bool
+    let resetActionKey: String
+    let resetDescriptionKey: String
+    let searchText: String
+    let scopedSectionID: String?
+    let matchesSearch: (String) -> Bool
+    let matchesAnyLabel: ([HotkeyAction]) -> Bool
+    let sectionVisible: (String) -> Bool
+
+    private var isSearching: Bool { !searchText.isEmpty }
+
+    private var allTabActions: [HotkeyAction] {
+        sections.flatMap(\.actions)
+    }
+
+    var body: some View {
+        Form {
+            if explainer {
                 Section {
                     VStack(alignment: .leading, spacing: AppSpacing.xs) {
                         Text(loc.localized("hotkeys.explainerTitle"))
@@ -86,116 +250,59 @@ struct HotkeyConfigSettingsView: View {
                     .padding(.vertical, AppSpacing.xxs)
                 }
                 .id("section-explainer")
+            }
 
-                if showGeneral && (!isSearching
-                    || matchesSearch("hotkeys keyboard shortcuts save load slot undo training input capture guide sidebar controller source apple sdl")
-                    || matchesAnyLabel([.saveState, .loadState, .undoLoadState, .slotNext, .slotPrev, .toggleInputCapture, .toggleGuideSidebar])) {
-                Section(header: Label(loc.localized("hotkeys.general"), systemImage: "keyboard")) {
-                    hotkeyActionGrid([
-                        .saveState, .loadState, .undoLoadState, .slotNext, .slotPrev, .toggleInputCapture, .toggleGuideSidebar
-                    ])
-                }
-                    .id("section-general")
-                }
-
-                if showSlots && (!isSearching
-                    || matchesSearch("slots 0-9 slot")
-                    || matchesAnyLabel(slotActions)) {
-                    Section(header: Label(loc.localized("hotkeys.slots"), systemImage: "square.grid.3x3")) {
-                        hotkeyActionGrid(slotActions)
+            ForEach(sections, id: \.id) { section in
+                if sectionVisible(section.id) && (!isSearching
+                    || matchesSearch(section.searchKeywords)
+                    || matchesAnyLabel(section.actions)) {
+                    Section(header: Label(loc.localized(section.titleKey), systemImage: section.icon)) {
+                        hotkeyActionGrid(section.actions)
                     }
-                    .id("section-slots")
-                }
-
-                if showTraining && (!isSearching
-                    || matchesSearch("training mode reset recording playback tape")
-                    || matchesAnyLabel([.toggleTrainingMode, .trainingReset, .trainingToggleRecording, .trainingStartPlayback])) {
-                    Section(header: Label(loc.localized("hotkeys.training"), systemImage: "figure.martial.arts")) {
-                        hotkeyActionGrid([
-                            .toggleTrainingMode, .trainingReset, .trainingToggleRecording, .trainingStartPlayback
-                        ])
-                    }
-                    .id("section-training")
-                }
-
-                if showGameplay && (!isSearching
-                    || matchesSearch("speed rewind fast forward slow motion time machine pause resume")
-                    || matchesAnyLabel([.rewind, .slowMotion, .fastForward, .pause])) {
-                    Section(header: Label(loc.localized("hotkeys.speedRewind"), systemImage: "clock.arrow.circlepath")) {
-                        hotkeyActionGrid([
-                            .rewind, .slowMotion, .fastForward, .pause
-                        ])
-                    }
-                    .id("section-speedRewind")
-                }
-
-                if showGameplay && (!isSearching
-                    || matchesSearch("screenshot capture photo picture share button recording")
-                    || matchesAnyLabel([.screenshot, .shareButton, .recording])) {
-                    Section(header: Label(loc.localized("hotkeys.capture"), systemImage: "camera")) {
-                        hotkeyActionGrid([.screenshot, .shareButton, .recording])
-                    }
-                    .id("section-capture")
-                }
-
-                if showWii && (!isSearching
-                    || matchesSearch("wii gamecube nunchuk classic controller pointer wiimote attachment")
-                    || matchesAnyLabel([.toggleWiiController])) {
-                    Section(header: Label(loc.localized("hotkeys.wii"), systemImage: "gamecontroller")) {
-                        hotkeyActionGrid([.toggleWiiController])
-                    }
-                    .id("section-wii")
-                }
-
-                if showReset && (!isSearching || matchesSearch("reset defaults restore")) {
-                    Section(header: Label(loc.localized("hotkeys.reset"), systemImage: "arrow.counterclockwise")) {
-                        Text(loc.localized("hotkeys.resetDescription"))
-                            .font(.caption)
-                            .foregroundStyle(AppColors.textSecondary(colorScheme))
-
-                        Button(loc.localized("hotkeys.resetToDefaults")) {
-                            hotkeyManager.resetToDefaults()
-                        }
-                        .buttonStyle(.bordered)
-                        .controlSize(.small)
-                    }
-                    .id("section-reset")
-                }
-
-                if isSearching
-                    && !matchesAnyLabel([.saveState, .loadState, .undoLoadState, .slotNext, .slotPrev, .toggleInputCapture, .toggleGuideSidebar])
-                    && !matchesAnyLabel(slotActions)
-                    && !matchesAnyLabel([.toggleTrainingMode, .trainingReset, .trainingToggleRecording, .trainingStartPlayback])
-                    && !matchesAnyLabel([.rewind, .slowMotion, .fastForward, .pause])
-                    && !matchesAnyLabel([.toggleWiiController])
-                    && !matchesSearch("hotkeys keyboard shortcuts save load slot undo training input capture guide sidebar")
-                    && !matchesSearch("slots 0-9 slot")
-                    && !matchesSearch("training mode reset recording playback tape")
-                    && !matchesSearch("screenshot capture photo picture share button recording")
-                    && !matchesSearch("speed rewind fast forward slow motion time machine")
-                    && !matchesSearch("wii gamecube nunchuk classic controller pointer")
-                    && !matchesSearch("reset defaults restore") {
-                    Section {
-                        Text("\(loc.localized("general.noMatchingSettings")) \"\(searchText)\"")
-                            .font(.caption)
-                            .foregroundStyle(AppColors.textSecondary(colorScheme))
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .padding(.vertical, AppSpacing.xl2)
-                    }
+                    .id("section-\(section.id)")
                 }
             }
-            .scrollContentBackground(.hidden)
-            .formStyle(.grouped)
-            .onChange(of: focusedSectionID) { _, newID in
-                guard let id = newID else { return }
-                withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
+
+            resetSection
+
+            if isSearching && !anySectionMatches {
+                Section {
+                    Text("\(loc.localized("general.noMatchingSettings")) \"\(searchText)\"")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.vertical, AppSpacing.xl2)
+                }
             }
         }
-        .navigationTitle(loc.localized("settings.hotkeys"))
+        .scrollContentBackground(.hidden)
+        .formStyle(.grouped)
     }
 
-    private var slotActions: [HotkeyAction] {
-        [.slot0, .slot1, .slot2, .slot3, .slot4, .slot5, .slot6, .slot7, .slot8, .slot9]
+    private var anySectionMatches: Bool {
+        sections.contains { section in
+            matchesSearch(section.searchKeywords) || matchesAnyLabel(section.actions)
+        }
+    }
+
+    @ViewBuilder
+    private var resetSection: some View {
+        let resetID = "\(tab.rawValue)-reset"
+        if sectionVisible(resetID) && (!isSearching || matchesSearch("reset defaults restore")) {
+            Section(header: Label(loc.localized("hotkeys.reset"), systemImage: "arrow.counterclockwise")) {
+                Text(loc.localized(resetDescriptionKey))
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+
+                Button(loc.localized(resetActionKey)) {
+                    hotkeyManager.resetActionsToDefaults(allTabActions)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .disabled(allTabActions.allSatisfy { hotkeyManager.isAtDefault($0) })
+            }
+            .id("section-\(resetID)")
+        }
     }
 
     @ViewBuilder

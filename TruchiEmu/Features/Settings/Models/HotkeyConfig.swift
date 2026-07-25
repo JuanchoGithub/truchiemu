@@ -360,6 +360,33 @@ final class HotkeyConfigManager: ObservableObject {
         savePerSystem()
     }
 
+    /// Restore a single action to its default primary/secondary/controller
+    /// bindings. Per-system overrides for the action are left intact.
+    func resetActionToDefaults(_ action: HotkeyAction) {
+        guard let defaultCfg = Self.defaults[action] else { return }
+        config[action] = defaultCfg
+        save()
+    }
+
+    /// Restore a set of actions to their defaults. Used by the per-tab
+    /// "Reset to Defaults" buttons on the Hotkeys settings page.
+    func resetActionsToDefaults(_ actions: [HotkeyAction]) {
+        var changed = false
+        for action in actions {
+            guard let defaultCfg = Self.defaults[action] else { continue }
+            if config[action] != defaultCfg {
+                config[action] = defaultCfg
+                changed = true
+            }
+        }
+        if changed { save() }
+    }
+
+    /// True when the global binding for `action` matches its default value.
+    func isAtDefault(_ action: HotkeyAction) -> Bool {
+        config[action] == Self.defaults[action]
+    }
+
     /// Resolves the effective HotkeyConfig for `action` given an optional
     /// `systemID`. Falls back to the global config when no per-system
     /// override exists for that action.
@@ -495,5 +522,38 @@ final class HotkeyConfigManager: ObservableObject {
         if let data = try? JSONEncoder().encode(perSystemConfig) {
             AppSettings.setData(Self.perSystemStorageKey, value: data)
         }
+    }
+}
+
+enum HotkeyTab: String, CaseIterable, Identifiable {
+    case app
+    case inGame
+    case special
+
+    var id: String { rawValue }
+
+    var localizationKey: String {
+        "settings.hotkeys.tab." + rawValue
+    }
+
+    private static let storageKey = "hotkeys.activeTab"
+
+    static func load() -> HotkeyTab {
+        guard let raw = AppSettings.getString(storageKey) else {
+            return .inGame
+        }
+        if let tab = HotkeyTab(rawValue: raw) { return tab }
+        // Migrate legacy tab identifiers (`.systems`/`.app`/`.inGame` had
+        // different meanings before the Gamepad Nav tab was introduced).
+        switch raw {
+        case "app":     return .inGame   // former "app" (general+slots) is now "inGame"
+        case "inGame":  return .special   // former "inGame" (training+capture+wii) is now "special"
+        case "systems": return .special  // former "systems" merged into "special"
+        default:        return .inGame
+        }
+    }
+
+    func save() {
+        AppSettings.setString(Self.storageKey, value: rawValue)
     }
 }

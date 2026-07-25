@@ -1,36 +1,23 @@
 import SwiftUI
 import AppKit
 
-/// Settings page that lets the user rebind which controller button triggers each
-/// gamepad navigation action (d-pad nav, A=select, B=cancel, Start+Select=show
-/// toolbar, …).
-///
-/// Bindings are presented via native SwiftUI `Picker` rather than a capture
-/// coordinator: simpler and more discoverable, and it sidesteps the gameplay
-/// hijack-vs-capture conflict that `ControllerHotkeyCaptureCoordinator` must
-/// guard against.
-struct GamepadNavSettingsView: View {
+/// Reusable gamepad-navigation binding content. Embedded as the "App" tab
+/// of the Hotkeys settings page. Renders inside an enclosing `Form` scope
+/// provided by the host, so it starts directly with `Section { ... }`.
+struct GamepadNavContent: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var configManager = GamepadNavConfigManager.shared
+
     @Binding var searchText: String
-    @Binding var focusedSectionID: String?
-    @Binding var scopedSectionID: String?
+    let scopedSectionID: String?
 
     @State private var settingsGamepadContext: GamepadNavContext?
-
-    init(searchText: Binding<String> = .constant(""),
-         focusedSectionID: Binding<String?> = .constant(nil),
-         scopedSectionID: Binding<String?> = .constant(nil)) {
-        self._searchText = searchText
-        self._focusedSectionID = focusedSectionID
-        self._scopedSectionID = scopedSectionID
-    }
 
     private var isSearching: Bool { !searchText.isEmpty }
 
     private func matchesPage() -> Bool {
-        SettingsSearchRuntime.pageMatches(.gamepadNav, query: searchText)
+        SettingsSearchRuntime.pageMatches(.hotkeys, query: searchText)
     }
 
     private func matchesAnyLabel(_ actions: [GamepadNavAction]) -> Bool {
@@ -43,131 +30,107 @@ struct GamepadNavSettingsView: View {
     }
 
     var body: some View {
-        ScrollViewReader { proxy in
-            Form {
-                Section {
-                    VStack(alignment: .leading, spacing: AppSpacing.xs) {
-                        Text(loc.localized("gamepadNav.section"))
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(AppColors.textPrimary(colorScheme))
-                        Toggle(loc.localized("gamepadNav.enableJoystickNavigation"), isOn: $configManager.isEnabled)
-                            .font(.caption)
-                    }
-                    .padding(.vertical, AppSpacing.xxs)
-                }
-                .id("section-enable")
+        Section {
+            VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                Text(loc.localized("gamepadNav.section"))
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(AppColors.textPrimary(colorScheme))
+                Toggle(loc.localized("gamepadNav.enableJoystickNavigation"), isOn: $configManager.isEnabled)
+                    .font(.caption)
+            }
+            .padding(.vertical, AppSpacing.xxs)
+        }
+        .id("section-enable")
 
-                if !isSearching || matchesPage() || matchesAnyLabel(navigationActions) {
-                    Section(header: Label(loc.localized("gamepadNav.section.navigation"), systemImage: "dpad.up.filled")) {
-                        actionGrid(navigationActions)
-                    }
-                    .id("section-navigation")
-                }
+        if sectionVisible("enable") && (!isSearching || matchesPage() || matchesAnyLabel(navigationActions)) {
+            Section(header: Label(loc.localized("gamepadNav.section.navigation"), systemImage: "dpad.up.filled")) {
+                actionGrid(navigationActions)
+            }
+            .id("section-navigation")
+        }
 
-                if !isSearching || matchesPage() || matchesAnyLabel(zoneActions) {
-                    Section(header: Label(loc.localized("gamepadNav.section.zones"), systemImage: "square.stack.3d.up")) {
-                        actionGrid(zoneActions)
-                    }
-                    .id("section-zones")
-                }
+        if sectionVisible("zones") && (!isSearching || matchesPage() || matchesAnyLabel(zoneActions)) {
+            Section(header: Label(loc.localized("gamepadNav.section.zones"), systemImage: "square.stack.3d.up")) {
+                actionGrid(zoneActions)
+            }
+            .id("section-zones")
+        }
 
-                if !isSearching || matchesPage() || matchesAnyLabel(scrollActions) {
-                    Section(header: Label(loc.localized("gamepadNav.section.scrolling"), systemImage: "arrow.up.arrow.down")) {
-                        actionGrid(scrollActions)
-                    }
-                    .id("section-scrolling")
-                }
+        if sectionVisible("scrolling") && (!isSearching || matchesPage() || matchesAnyLabel(scrollActions)) {
+            Section(header: Label(loc.localized("gamepadNav.section.scrolling"), systemImage: "arrow.up.arrow.down")) {
+                actionGrid(scrollActions)
+            }
+            .id("section-scrolling")
+        }
 
-                if !isSearching || matchesPage() || matchesAnyLabel(coreActions) {
-                    Section(header: Label(loc.localized("gamepadNav.section.actions"), systemImage: "hand.tap")) {
-                        actionGrid(coreActions)
-                    }
-                    .id("section-actions")
-                }
+        if sectionVisible("actions") && (!isSearching || matchesPage() || matchesAnyLabel(coreActions)) {
+            Section(header: Label(loc.localized("gamepadNav.section.actions"), systemImage: "hand.tap")) {
+                actionGrid(coreActions)
+            }
+            .id("section-actions")
+        }
 
-                if !isSearching || matchesPage() || matchesAnyLabel(libraryActions) {
-                    Section(header: Label(loc.localized("gamepadNav.section.library"), systemImage: "book")) {
-                        actionGrid(libraryActions)
-                    }
-                    .id("section-library")
-                }
+        if sectionVisible("library") && (!isSearching || matchesPage() || matchesAnyLabel(libraryActions)) {
+            Section(header: Label(loc.localized("gamepadNav.section.library"), systemImage: "book")) {
+                actionGrid(libraryActions)
+            }
+            .id("section-library")
+        }
 
-                if !isSearching || matchesPage() || matchesAnyLabel(gameWindowActions) {
-                    Section(header: Label(loc.localized("gamepadNav.section.gameWindow"), systemImage: "gamecontroller")) {
-                        actionGrid(gameWindowActions)
-                    }
-                    .id("section-gameWindow")
-                }
+        if sectionVisible("gameWindow") && (!isSearching || matchesPage() || matchesAnyLabel(gameWindowActions)) {
+            Section(header: Label(loc.localized("gamepadNav.section.gameWindow"), systemImage: "gamecontroller")) {
+                actionGrid(gameWindowActions)
+            }
+            .id("section-gameWindow")
+        }
 
-                if !isSearching || matchesPage() || matchesAnyLabel(tvModeActions) {
-                    Section {
-                        actionGrid(tvModeActions)
-                        Text(loc.localized("gamepadNav.section.tvModeDescription"))
-                            .font(.caption)
-                            .foregroundStyle(AppColors.textSecondary(colorScheme))
-                            .fixedSize(horizontal: false, vertical: true)
-                    } header: {
-                        Label(loc.localized("gamepadNav.section.tvMode"), systemImage: "tv")
-                    }
-                    .id("section-tvMode")
-                }
+        if sectionVisible("tvMode") && (!isSearching || matchesPage() || matchesAnyLabel(tvModeActions)) {
+            Section {
+                actionGrid(tvModeActions)
+                Text(loc.localized("gamepadNav.section.tvModeDescription"))
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                    .fixedSize(horizontal: false, vertical: true)
+            } header: {
+                Label(loc.localized("gamepadNav.section.tvMode"), systemImage: "tv")
+            }
+            .id("section-tvMode")
+        }
 
-                if !isSearching || matchesPage() {
-                    Section(header: Label(loc.localized("gamepadNav.section.reset"), systemImage: "arrow.uturn.backward")) {
-                        VStack(alignment: .leading, spacing: AppSpacing.xs) {
-                            Text(loc.localized("gamepadNav.resetDescription"))
-                                .font(.caption)
-                                .foregroundStyle(AppColors.textSecondary(colorScheme))
-                                .fixedSize(horizontal: false, vertical: true)
-                            Button(loc.localized("gamepadNav.resetToDefaults")) {
-                                configManager.resetToDefaults()
-                            }
-                            .buttonStyle(.bordered)
-                            .controlSize(.small)
-                        }
+        if sectionVisible("reset") && (!isSearching || matchesPage()) {
+            Section(header: Label(loc.localized("gamepadNav.section.reset"), systemImage: "arrow.uturn.backward")) {
+                VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                    Text(loc.localized("gamepadNav.resetDescription"))
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                        .fixedSize(horizontal: false, vertical: true)
+                    Button(loc.localized("gamepadNav.resetToDefaults")) {
+                        configManager.resetToDefaults()
                     }
-                    .id("section-reset")
-                }
-
-                if isSearching
-                    && !matchesPage()
-                    && !matchesAnyLabel(navigationActions)
-                    && !matchesAnyLabel(zoneActions)
-                    && !matchesAnyLabel(scrollActions)
-                    && !matchesAnyLabel(coreActions)
-                    && !matchesAnyLabel(libraryActions)
-                    && !matchesAnyLabel(gameWindowActions)
-                    && !matchesAnyLabel(tvModeActions) {
-                    Section {
-                        Text("\(loc.localized("general.noMatchingSettings")) \"\(searchText)\"")
-                            .font(.caption)
-                            .foregroundStyle(AppColors.textSecondary(colorScheme))
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .padding(.vertical, AppSpacing.xl2)
-                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
                 }
             }
-            .scrollContentBackground(.hidden)
-            .formStyle(.grouped)
-            .onChange(of: focusedSectionID) { _, newID in
-                guard let id = newID else { return }
-                withAnimation { proxy.scrollTo("section-\(id)", anchor: .top) }
-            }
-            .onAppear {
-                if settingsGamepadContext == nil {
-                    let ctx = GamepadSheetContext(itemCount: 0)
-                    settingsGamepadContext = ctx
-                    GamepadNavContextStack.shared.push(ctx)
-                }
-            }
-            .onDisappear {
-                if let ctx = settingsGamepadContext {
-                    GamepadNavContextStack.shared.remove(ctx)
-                    settingsGamepadContext = nil
-                }
+            .id("section-reset")
+        }
+
+        if isSearching
+            && !matchesPage()
+            && !matchesAnyLabel(navigationActions)
+            && !matchesAnyLabel(zoneActions)
+            && !matchesAnyLabel(scrollActions)
+            && !matchesAnyLabel(coreActions)
+            && !matchesAnyLabel(libraryActions)
+            && !matchesAnyLabel(gameWindowActions)
+            && !matchesAnyLabel(tvModeActions) {
+            Section {
+                Text("\(loc.localized("general.noMatchingSettings")) \"\(searchText)\"")
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.vertical, AppSpacing.xl2)
             }
         }
-        .navigationTitle(loc.localized("gamepadNav.section"))
     }
 
     // MARK: Action groupings
@@ -216,6 +179,8 @@ struct GamepadNavSettingsView: View {
         GridRow {
             Text(loc.localized(action.localizationKey))
                 .lineLimit(1)
+                .truncationMode(.tail)
+                .frame(width: 220, alignment: .leading)
                 .gridColumnAlignment(.leading)
             Picker(loc.localized("gamepadNav.bindButton"), selection: pickerSelection(for: action)) {
                 Text(loc.localized("gamepadNav.unbound")).tag(GamepadNavButton?.none)

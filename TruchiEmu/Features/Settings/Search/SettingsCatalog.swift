@@ -418,6 +418,27 @@ enum SettingsCatalog {
                 keywords: ["screenshot", "capture", "photo", "picture", "save", "share", "button", "recording", "video", "record"]
             ),
             SettingsCatalogEntry(
+                page: .hotkeys, sectionID: "wii",
+                sectionTitle: "Wii",
+                optionTitles: ["Switch Wii Controller"],
+                optionSubSectionIDs: [
+                    "Switch Wii Controller": "wii"
+                ],
+                keywords: ["wii", "gamecube", "nunchuk", "classic", "controller", "pointer", "wiimote", "attachment", "switch"]
+            ),
+            SettingsCatalogEntry(
+                page: .hotkeys, sectionID: "speedRewind",
+                sectionTitle: "Speed & Rewind",
+                optionTitles: ["Rewind", "Slow Motion", "Fast Forward", "Pause / Resume"],
+                optionSubSectionIDs: [
+                    "Rewind": "speedRewind",
+                    "Slow Motion": "speedRewind",
+                    "Fast Forward": "speedRewind",
+                    "Pause / Resume": "speedRewind"
+                ],
+                keywords: ["speed", "rewind", "fast", "forward", "slow", "motion", "time", "machine", "pause", "resume"]
+            ),
+            SettingsCatalogEntry(
                 page: .hotkeys, sectionID: "reset",
                 sectionTitle: "Reset to Defaults",
                 optionTitles: ["Reset All Hotkeys"],
@@ -428,7 +449,7 @@ enum SettingsCatalog {
             ),
 
             SettingsCatalogEntry(
-                page: .gamepadNav, sectionID: "enable",
+                page: .hotkeys, sectionID: "enable",
                 sectionTitle: "Enable Joystick Navigation",
                 optionTitles: ["Enable Joystick Navigation"],
                 optionSubSectionIDs: [
@@ -437,7 +458,7 @@ enum SettingsCatalog {
                 keywords: ["gamepad", "navigation", "joystick", "enable", "controller"]
             ),
             SettingsCatalogEntry(
-                page: .gamepadNav, sectionID: "navigation",
+                page: .hotkeys, sectionID: "navigation",
                 sectionTitle: "Movement",
                 optionTitles: ["Navigate Up", "Navigate Down", "Navigate Left", "Navigate Right"],
                 optionSubSectionIDs: [
@@ -449,7 +470,7 @@ enum SettingsCatalog {
                 keywords: ["gamepad", "navigation", "dpad", "stick", "movement", "up", "down", "left", "right"]
             ),
             SettingsCatalogEntry(
-                page: .gamepadNav, sectionID: "zones",
+                page: .hotkeys, sectionID: "zones",
                 sectionTitle: "Zone Switching",
                 optionTitles: ["Previous Zone", "Next Zone", "Focus Sidebar", "Focus Content", "Focus Toolbar"],
                 optionSubSectionIDs: [
@@ -462,7 +483,7 @@ enum SettingsCatalog {
                 keywords: ["gamepad", "zone", "sidebar", "content", "toolbar", "focus", "l1", "r1"]
             ),
             SettingsCatalogEntry(
-                page: .gamepadNav, sectionID: "scrolling",
+                page: .hotkeys, sectionID: "scrolling",
                 sectionTitle: "Scrolling",
                 optionTitles: ["Scroll Up", "Scroll Down", "Page Up", "Page Down"],
                 optionSubSectionIDs: [
@@ -474,7 +495,7 @@ enum SettingsCatalog {
                 keywords: ["gamepad", "scroll", "page", "l2", "r2", "right stick"]
             ),
             SettingsCatalogEntry(
-                page: .gamepadNav, sectionID: "actions",
+                page: .hotkeys, sectionID: "actions",
                 sectionTitle: "Actions",
                 optionTitles: ["Select", "Cancel", "Context Menu", "Toggle Grid/List", "Focus Search", "Cycle Sort Order"],
                 optionSubSectionIDs: [
@@ -488,7 +509,7 @@ enum SettingsCatalog {
                 keywords: ["gamepad", "select", "cancel", "context", "menu", "view", "search", "sort", "a", "b", "x", "y"]
             ),
             SettingsCatalogEntry(
-                page: .gamepadNav, sectionID: "library",
+                page: .hotkeys, sectionID: "library",
                 sectionTitle: "Library",
                 optionTitles: ["Open Settings", "Launch Game"],
                 optionSubSectionIDs: [
@@ -498,7 +519,7 @@ enum SettingsCatalog {
                 keywords: ["gamepad", "library", "settings", "launch", "start", "select"]
             ),
             SettingsCatalogEntry(
-                page: .gamepadNav, sectionID: "gameWindow",
+                page: .hotkeys, sectionID: "gameWindow",
                 sectionTitle: "Game Window",
                 optionTitles: ["Show Game Toolbar", "Close Window"],
                 optionSubSectionIDs: [
@@ -508,7 +529,7 @@ enum SettingsCatalog {
                 keywords: ["gamepad", "toolbar", "overlay", "show", "close", "window", "start", "select", "l3", "r3"]
             ),
             SettingsCatalogEntry(
-                page: .gamepadNav, sectionID: "reset",
+                page: .hotkeys, sectionID: "reset",
                 sectionTitle: "Reset to Defaults",
                 optionTitles: ["Reset All Bindings"],
                 optionSubSectionIDs: [
