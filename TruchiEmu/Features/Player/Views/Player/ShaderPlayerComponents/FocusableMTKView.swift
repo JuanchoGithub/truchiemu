@@ -36,16 +36,24 @@ class FocusableMTKView: MTKView {
             }
         }
 
+        // Seed the synthetic pointer the moment capture starts so the
+        // game's pointer-position read sees the click location before
+        // mouseMoved even fires. After this, mouseMoved accumulates deltas
+        // off this seed.
+        if InputCaptureManager.shared.isCapturing {
+            capturedPointerLocation = event.locationInWindow
+            capturedWindowBounds = bounds
+            updatePointerPosition(event)
+            XPCBridgeAdapter.shared.setMouseButton(0, pressed: true)
+            return
+        }
+
         if let window = self.window, !InputCaptureManager.shared.isCapturing {
             let sidebarOpen = windowController?.gameGuideViewModel.isSidebarVisible == true
             if shouldCaptureInputForCurrentGame() && !sidebarOpen {
                 InputCaptureManager.shared.startCapture(window: window)
                 return
             }
-        }
-
-        if InputCaptureManager.shared.isCapturing {
-            XPCBridgeAdapter.shared.setMouseButton(0, pressed: true)
         }
     }
 
@@ -82,6 +90,15 @@ class FocusableMTKView: MTKView {
         updateMouseDelta(with: event)
     }
 
+    /// Synthetic pointer position tracked while input capture is active.
+    /// Cocoa freezes the cursor at capture-start coordinates via
+    /// `CGAssociateMouseAndMouseCursorPosition(0)`, so `event.locationInWindow`
+    /// no longer reflects real movement — only `deltaX/deltaY` continue to
+    /// flow. We accumulate those deltas from the click that triggered capture
+    /// and clamp to the view bounds.
+    nonisolated(unsafe) private var capturedPointerLocation: NSPoint?
+    nonisolated(unsafe) private var capturedWindowBounds: NSRect = .zero
+
     private func updateMouseDelta(with event: NSEvent) {
         if InputCaptureManager.shared.isCapturing {
             let dx = Int16(clamping: Int(event.deltaX))
@@ -90,6 +107,25 @@ class FocusableMTKView: MTKView {
             if dx != 0 || dy != 0 {
                 XPCBridgeAdapter.shared.addMouseDelta(dx, y: dy)
             }
+
+            // Advance the synthetic pointer — setPointerPosition reads this
+            // because event.locationInWindow is frozen during capture.
+            if capturedPointerLocation == nil {
+                capturedPointerLocation = event.locationInWindow
+                capturedWindowBounds = bounds
+            }
+            if var loc = capturedPointerLocation {
+                loc.x += CGFloat(event.deltaX)
+                loc.y -= CGFloat(event.deltaY)
+                let size = capturedWindowBounds.size
+                if size.width > 0 && size.height > 0 {
+                    loc.x = max(0, min(size.width,  loc.x))
+                    loc.y = max(0, min(size.height, loc.y))
+                }
+                capturedPointerLocation = loc
+            }
+        } else {
+            capturedPointerLocation = nil
         }
 
         updatePointerPosition(event)
@@ -108,8 +144,10 @@ class FocusableMTKView: MTKView {
     private func updatePointerPosition(_ event: NSEvent) {
         guard InputCaptureManager.shared.isCapturing else { return }
 
-        let location = event.locationInWindow
-        let size = self.bounds.size
+        // Use the click position, then accumulate deltas (event.locationInWindow
+        // is frozen under capture; only deltaX/deltaY keep flowing).
+        let location = capturedPointerLocation ?? event.locationInWindow
+        let size = capturedWindowBounds.size.width > 0 ? capturedWindowBounds.size : bounds.size
 
         guard size.width > 0 && size.height > 0 else { return }
 
@@ -246,6 +284,13 @@ class FocusableMTKView: MTKView {
         if hotkeys.matches(.shareButton, systemID: systemID, event: event) {
             Task { @MainActor in
                 self.runner?.handleSharePress(isLongPress: false)
+            }
+            return
+        }
+
+        if hotkeys.matches(.toggleWiiController, systemID: systemID, event: event) {
+            Task { @MainActor in
+                self.runner?.toggleWiiControllerAttachment()
             }
             return
         }

@@ -57,6 +57,10 @@ struct HotkeyConfigSettingsView: View {
         scope == .all || scope == .gameplay
     }
 
+    private var showWii: Bool {
+        scope == .all || scope == .gameplay
+    }
+
     private var showReset: Bool {
         scope == .all
     }
@@ -134,6 +138,15 @@ struct HotkeyConfigSettingsView: View {
                     .id("section-capture")
                 }
 
+                if showWii && (!isSearching
+                    || matchesSearch("wii gamecube nunchuk classic controller pointer wiimote attachment")
+                    || matchesAnyLabel([.toggleWiiController])) {
+                    Section(header: Label(loc.localized("hotkeys.wii"), systemImage: "gamecontroller")) {
+                        hotkeyActionGrid([.toggleWiiController])
+                    }
+                    .id("section-wii")
+                }
+
                 if showReset && (!isSearching || matchesSearch("reset defaults restore")) {
                     Section(header: Label(loc.localized("hotkeys.reset"), systemImage: "arrow.counterclockwise")) {
                         Text(loc.localized("hotkeys.resetDescription"))
@@ -154,11 +167,13 @@ struct HotkeyConfigSettingsView: View {
                     && !matchesAnyLabel(slotActions)
                     && !matchesAnyLabel([.toggleTrainingMode, .trainingReset, .trainingToggleRecording, .trainingStartPlayback])
                     && !matchesAnyLabel([.rewind, .slowMotion, .fastForward, .pause])
+                    && !matchesAnyLabel([.toggleWiiController])
                     && !matchesSearch("hotkeys keyboard shortcuts save load slot undo training input capture guide sidebar")
                     && !matchesSearch("slots 0-9 slot")
                     && !matchesSearch("training mode reset recording playback tape")
                     && !matchesSearch("screenshot capture photo picture share button recording")
                     && !matchesSearch("speed rewind fast forward slow motion time machine")
+                    && !matchesSearch("wii gamecube nunchuk classic controller pointer")
                     && !matchesSearch("reset defaults restore") {
                     Section {
                         Text("\(loc.localized("general.noMatchingSettings")) \"\(searchText)\"")

@@ -83,6 +83,7 @@ enum HotkeyAction: String, Codable, CaseIterable, Identifiable {
     case screenshot
     case shareButton
     case recording
+    case toggleWiiController
 
     var id: String { rawValue }
 
@@ -114,6 +115,7 @@ enum HotkeyAction: String, Codable, CaseIterable, Identifiable {
         if self == .screenshot { return "screenshots" }
         if self == .shareButton { return "share" }
         if self == .recording { return "recording" }
+        if self == .toggleWiiController { return "wii" }
         return "general"
     }
 }
@@ -239,6 +241,11 @@ final class HotkeyConfigManager: ObservableObject {
                                        secondary: .none,
                                        controller: nil,
                                    ),
+        .toggleWiiController:     HotkeyConfig(
+                                       primary: HotkeyBinding(keyCode: 13,   modifierFlags: UInt(NSEvent.ModifierFlags.control.rawValue)),
+                                       secondary: .none,
+                                       controller: nil,
+                                   ),                                                       // ^W
         .rewind:                  HotkeyConfig(primary: .plain(15),    secondary: .none),         // R
         .slowMotion:              HotkeyConfig(primary: .plain(41),    secondary: .none),         // ;
         .fastForward:             HotkeyConfig(primary: .plain(3),     secondary: .none),         // F

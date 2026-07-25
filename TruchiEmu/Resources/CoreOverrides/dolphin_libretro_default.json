@@ -5,8 +5,8 @@
   "dolphin_crop_overscan": "enabled",
   "dolphin_fast_disc_speed": "enabled",
   "dolphin_osd_enabled": "disabled",
-  "dolphin_ir_mode": "Mouse controls pointer",
-  "dolphin_sensor_bar_position": "Bottom",
+  "dolphin_ir_mode": "2",
+  "dolphin_sensor_bar_position": "0",
   "dolphin_ir_yaw": "18",
   "dolphin_ir_pitch": "18",
   "dolphin_ir_offset": "14"

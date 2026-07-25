@@ -29,7 +29,7 @@ return self;
 - (void)setControllerPortDevice:(unsigned)port device:(unsigned)device {
   if (_retro_set_controller_port_device) {
     _retro_set_controller_port_device(port, device);
-    bridge_log_printf(RETRO_LOG_INFO, "Set port %u to device %u", port, device);
+    bridge_log_printf(RETRO_LOG_DEBUG, "Set port %u to device %u", port, device);
   }
 }
 

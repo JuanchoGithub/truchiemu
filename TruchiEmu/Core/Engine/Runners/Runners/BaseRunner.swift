@@ -348,6 +348,7 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     var cachedLoadStateBinding: String? = nil
     var cachedPauseBinding: String? = nil
     var cachedToggleGuideSidebarBinding: String? = nil
+    var cachedToggleWiiControllerBinding: String? = nil
     private var hookedController: GCController? = nil
     private var hookedControllers: [Int: GCController] = [:]
     
@@ -1549,6 +1550,49 @@ weak var metalCoordinator: MetalCoordinator?
         return CGSize(width: 640, height: 480)
     }
 
+    /// Circular-switches the live Dolphin Wiimote attachment between
+    /// `.wiimoteNunchuk` (right stick drives the IR pointer) and
+    /// `.wiimoteClassic` (full gamepad). Only meaningful on Wii/GameCube cores;
+    /// it's a no-op elsewhere. The new value is persisted so the next launch
+    /// boots with the same attachment.
+    @MainActor
+    func toggleWiiControllerAttachment() {
+        guard activeCoreID.lowercased().contains("dolphin") else { return }
+
+        let current = AppSettings.getWiiControllerType()
+        let next: AppSettings.WiiControllerType
+        switch current {
+        case .wiimoteClassic, .wiimoteClassicPro:
+            next = .wiimoteNunchuk
+        case .wiimoteNunchuk:
+            next = .wiimoteClassic
+        case .auto, .wiimote, .wiimoteSideways:
+            // No useful counterpart — flip into Nunchuk so subsequent presses
+            // can cycle back to Classic.
+            next = .wiimoteNunchuk
+        }
+
+        if let device = next.deviceValue {
+            for port in 0...3 {
+                XPCBridgeAdapter.shared.setControllerPortDevice(port, device: Int(device))
+            }
+            AppSettings.setWiiControllerType(next)
+
+            let name: String
+            switch next {
+            case .wiimoteNunchuk:           name = "Wiimote + Nunchuk"
+            case .wiimoteClassic:           name = "Wiimote + Classic Controller"
+            case .wiimoteClassicPro:        name = "Wiimote + Classic Controller Pro"
+            case .auto, .wiimote, .wiimoteSideways: name = next.rawValue
+            }
+            osdMessage = name
+            Task {
+                try? await Task.sleep(nanoseconds: 1_500_000_000)
+                await MainActor.run { if self.osdMessage == name { self.osdMessage = nil } }
+            }
+        }
+    }
+
     @MainActor
     func handleSharePress(isLongPress: Bool) {
         LoggerService.info(category: "Runner", "handleSharePress isLongPress=\(isLongPress)")
@@ -1924,6 +1968,7 @@ weak var metalCoordinator: MetalCoordinator?
         cachedLoadStateBinding        = cachedGC(.loadState,        systemID: resolvedSysID)
         cachedPauseBinding            = cachedGC(.pause,            systemID: resolvedSysID)
         cachedToggleGuideSidebarBinding = cachedGC(.toggleGuideSidebar, systemID: resolvedSysID)
+        cachedToggleWiiControllerBinding = cachedGC(.toggleWiiController, systemID: resolvedSysID)
 
         // Pre-warm rolling buffer so it's continuously recording before share press
         if RollingVideoBufferService.shared.isEnabled {
@@ -2038,6 +2083,10 @@ weak var metalCoordinator: MetalCoordinator?
                             DispatchQueue.main.async {
                                 NotificationCenter.default.post(name: .toggleGuideSidebar, object: nil)
                             }
+                            return
+                        }
+                        if name == self.cachedToggleWiiControllerBinding {
+                            Task { @MainActor in self.toggleWiiControllerAttachment() }
                             return
                         }
                     }

@@ -166,12 +166,12 @@ bool bridge_environment(unsigned cmd, void *data) {
 				if (valStr && valStr.length > 0) {
 					s_varCache[var->key] = valStr.UTF8String;
 					var->value = s_varCache[var->key].c_str();
-					bridge_log_printf(RETRO_LOG_INFO, "[Option] %s = %s", var->key, var->value);
+					bridge_log_printf(RETRO_LOG_DEBUG, "[Option] %s = %s", var->key, var->value);
 					return true;
 				}
 			}
 
-			bridge_log_printf(RETRO_LOG_INFO, "[Option-Unset] %s (no override or user value found)", var->key);
+			bridge_log_printf(RETRO_LOG_DEBUG, "[Option-Unset] %s (no override or user value found)", var->key);
 			var->value = NULL;
 		}
 		return false;

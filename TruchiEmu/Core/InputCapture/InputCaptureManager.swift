@@ -50,8 +50,6 @@ class InputCaptureManager: NSObject, ObservableObject {
         isCapturing = true
         captureStartTime = Date()
 
-        LoggerService.info(category: "InputCapture", "!!! DEBUG: STARTING CAPTURE WITH NEW VERSION !!!")
-
         // Hide the cursor
         NSCursor.hide()
 
@@ -87,7 +85,7 @@ class InputCaptureManager: NSObject, ObservableObject {
 
         showEscapeToast(captured: true)
 
-        LoggerService.info(category: "InputCapture", "Input capture started")
+        LoggerService.debug(category: "InputCapture", "Input capture started")
     }
 
     // MARK: - Stop Capture
@@ -122,7 +120,7 @@ class InputCaptureManager: NSObject, ObservableObject {
         // Post notification for UI to hide capture indicator
         NotificationCenter.default.post(name: .inputCaptureStateChanged, object: nil, userInfo: ["isCapturing": false])
 
-        LoggerService.info(category: "InputCapture", "Input capture stopped. Reason: \(reason)")
+        LoggerService.debug(category: "InputCapture", "Input capture stopped. Reason: \(reason)")
     }
 
     @objc private func handleAppResignActive() {

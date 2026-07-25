@@ -447,35 +447,35 @@ struct ControllerSettingsView: View {
 
     private var wiiIRModeBinding: Binding<WiiIRSettings.IRMode> {
         Binding(
-            get: { wiiIRSettings.irMode(systemID: selectedSystemID) },
+            get: { wiiIRSettings.snapshot(for: selectedSystemID).irMode },
             set: { wiiIRSettings.setIRMode($0, systemID: selectedSystemID) }
         )
     }
 
     private var wiiSensorBarBinding: Binding<WiiIRSettings.SensorBarPosition> {
         Binding(
-            get: { wiiIRSettings.sensorBarPosition(systemID: selectedSystemID) },
+            get: { wiiIRSettings.snapshot(for: selectedSystemID).sensorBarPosition },
             set: { wiiIRSettings.setSensorBarPosition($0, systemID: selectedSystemID) }
         )
     }
 
     private var wiiYawBinding: Binding<Double> {
         Binding(
-            get: { Double(wiiIRSettings.yaw(systemID: selectedSystemID)) },
+            get: { Double(wiiIRSettings.snapshot(for: selectedSystemID).yaw) },
             set: { wiiIRSettings.setYaw(Int($0), systemID: selectedSystemID) }
         )
     }
 
     private var wiiPitchBinding: Binding<Double> {
         Binding(
-            get: { Double(wiiIRSettings.pitch(systemID: selectedSystemID)) },
+            get: { Double(wiiIRSettings.snapshot(for: selectedSystemID).pitch) },
             set: { wiiIRSettings.setPitch(Int($0), systemID: selectedSystemID) }
         )
     }
 
     private var wiiVerticalOffsetBinding: Binding<Double> {
         Binding(
-            get: { Double(wiiIRSettings.verticalOffset(systemID: selectedSystemID)) },
+            get: { Double(wiiIRSettings.snapshot(for: selectedSystemID).verticalOffset) },
             set: { wiiIRSettings.setVerticalOffset(Int($0), systemID: selectedSystemID) }
         )
     }

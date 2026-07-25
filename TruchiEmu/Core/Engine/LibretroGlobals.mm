@@ -312,10 +312,10 @@ static void loadBundledOverrideJSON(const char* coreID, const char* scopeName) {
         NSString *value = json[key];
         if (![value isKindOfClass:[NSString class]] && ![value isKindOfClass:[NSNumber class]]) continue;
         NSString *valueStr = [value isKindOfClass:[NSString class]] ? value : [value description];
-        if (g_optValues && key.length > 0 && valueStr.length > 0) {
-            g_optValues[key] = valueStr;
-            bridge_log_printf(RETRO_LOG_INFO, "[Override-Bundled-JSON] %s/%s: %s = %s", coreID, scopeName, key.UTF8String, valueStr.UTF8String);
-        }
+            if (g_optValues && key.length > 0 && valueStr.length > 0) {
+                g_optValues[key] = valueStr;
+                bridge_log_printf(RETRO_LOG_DEBUG, "[Override-Bundled-JSON] %s/%s: %s = %s", coreID, scopeName, key.UTF8String, valueStr.UTF8String);
+            }
     }
 }
 
@@ -362,7 +362,7 @@ static void loadUserOverrideCFG(const char* coreID, const char* systemID, const 
         }
         if (g_optValues && key.length > 0) {
             g_optValues[key] = val;
-            bridge_log_printf(RETRO_LOG_INFO, "[Override-User-CFG] %s: %s = %s", logScope.UTF8String, key.UTF8String, val.UTF8String);
+            bridge_log_printf(RETRO_LOG_DEBUG, "[Override-User-CFG] %s: %s = %s", logScope.UTF8String, key.UTF8String, val.UTF8String);
         }
     }
 }

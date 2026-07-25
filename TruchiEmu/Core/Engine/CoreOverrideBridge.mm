@@ -62,7 +62,7 @@ void core_override_apply_all_to_optvalues(const char* coreID) {
         NSString* value = allOverrides[key];
         if (key.length > 0 && value.length > 0) {
             g_optValues[key] = value;
-            bridge_log_printf(RETRO_LOG_INFO, "[Override-JSON-Preload] %s = %s", key.UTF8String, value.UTF8String);
+            bridge_log_printf(RETRO_LOG_DEBUG, "[Override-JSON-Preload] %s = %s", key.UTF8String, value.UTF8String);
         }
     }
 }

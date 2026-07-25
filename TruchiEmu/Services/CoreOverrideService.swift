@@ -1,4 +1,5 @@
 import Foundation
+import CryptoKit
 
 final class CoreOverrideService {
     static let shared = CoreOverrideService()
@@ -50,21 +51,15 @@ final class CoreOverrideService {
                 overrides[coreID] = [:]
             }
             overrides[coreID]?[scope] = scopeOverrides
-            LoggerService.info(category: "CoreOverrideService", "Loaded bundled override: \(coreID)/\(scope) (\(scopeOverrides.count) options)")
+            LoggerService.debug(category: "CoreOverrideService", "Loaded bundled override: \(coreID)/\(scope) (\(scopeOverrides.count) options)")
         }
 
-        LoggerService.info(category: "CoreOverrideService", "Loaded bundled overrides for \(self.overrides.count) cores")
+        LoggerService.debug(category: "CoreOverrideService", "Loaded bundled overrides for \(self.overrides.count) cores")
     }
 
     func syncBundledOverridesToAppSupport() {
         let baseDir = Self.coreOverridesDirectory
         let fm = FileManager.default
-
-        guard let bundleVersion = Bundle.main.infoDictionary?["CFBundleVersion"] as? String else { return }
-
-        let versionFile = baseDir.appendingPathComponent(".bundle_version")
-        let currentVersion = try? String(contentsOf: versionFile, encoding: .utf8).trimmingCharacters(in: .whitespacesAndNewlines)
-        let isVersionChange = currentVersion != bundleVersion
 
         do {
             try fm.createDirectory(at: baseDir, withIntermediateDirectories: true)
@@ -91,16 +86,22 @@ final class CoreOverrideService {
             try? fm.createDirectory(at: coreDir, withIntermediateDirectories: true)
 
             let dest = coreDir.appendingPathComponent("\(scope).json")
-            let destExists = fm.fileExists(atPath: dest.path)
 
-            if destExists && !isVersionChange {
-                continue
-            }
-
-            if destExists {
-                try? fm.removeItem(at: dest)
-            }
             do {
+                let bundleData = try Data(contentsOf: url)
+                let bundleHash = sha256(bundleData)
+
+                let destHash: String? = {
+                    guard fm.fileExists(atPath: dest.path),
+                          let destData = try? Data(contentsOf: dest) else { return nil }
+                    return sha256(destData)
+                }()
+
+                if destHash == bundleHash { continue }
+
+                if fm.fileExists(atPath: dest.path) {
+                    try? fm.removeItem(at: dest)
+                }
                 try fm.copyItem(at: url, to: dest)
                 syncedCount += 1
             } catch {
@@ -108,14 +109,19 @@ final class CoreOverrideService {
             }
         }
 
-        try? bundleVersion.write(to: versionFile, atomically: true, encoding: .utf8)
         if syncedCount > 0 {
-            LoggerService.info(category: "CoreOverrideService", "Synced \(syncedCount) bundled override files to CoreOverrides (bundle \(bundleVersion))")
+            LoggerService.info(category: "CoreOverrideService", "Synced \(syncedCount) bundled override file(s) whose content changed")
         }
     }
 
+    private func sha256(_ data: Data) -> String {
+        var hasher = SHA256()
+        hasher.update(data: data)
+        return hasher.finalize().map { String(format: "%02x", $0) }.joined()
+    }
+
     func reloadOverrides() {
-        LoggerService.info(category: "CoreOverrideService", "Reloading core overrides...")
+        LoggerService.debug(category: "CoreOverrideService", "Reloading core overrides...")
         loadOverrides()
     }
 
