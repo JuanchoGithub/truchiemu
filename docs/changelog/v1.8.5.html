@@ -1,0 +1,45 @@
+---
+layout: default
+title: v1.8.5 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.8.5</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.8.5</h1>
+        <div class="release-meta">
+            <span class="release-date">July 24, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Hotfix release: stops the launch-time crash introduced in 1.8.4 (<code>EXC_BREAKPOINT</code> from <code>libdispatch</code>: <em>trying to lock recursively</em>) by guarding the <code>AppSettingsCache</code> initialization against the lazy-static <code>dispatch_once</code> re-entry that happens when <code>LoggerService</code> warms up during first-launch SwiftData setup.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>Launch crash fix:</strong> <code>AppSettingsCache</code> now mirrors the existing <code>LoggerService.initDepth</code> re-entrancy guard. Reads return their declared default and writes drop while <code>loadFromSwiftData()</code> is running, so the cycle <code>LocalizationManager → AppSettingsCache → SwiftDataContainer → LoggerService → LogManager → AppSettingsCache</code> can no longer re-enter the same <code>dispatch_once</code> token. Affects every build configuration (Debug and Release).</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>Add <code>AppSettingsCache.initDepth</code> bookkeeping and gate every public <code>get*</code>/<code>set*</code>/<code>remove</code> accessor on it</li>
+            <li>Bump <code>initDepth</code> inside <code>ensureLoaded()</code> while <code>loadFromSwiftData()</code> runs, so transitive calls back into <code>AppSettingsCache.shared</code> during the launch-time init chain no-op</li>
+            <li>Bump marketing version to 1.8.5 and build number to 28 across <code>project.yml</code>, both Info.plists, and <code>docs/_config.yml</code></li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.8.4.html' | relative_url }}" class="release-prev">&larr; v1.8.4</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>

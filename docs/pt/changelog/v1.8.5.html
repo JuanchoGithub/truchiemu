@@ -1,0 +1,45 @@
+---
+layout: default
+title: v1.8.5 - Documentação do TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/pt/changelog.html' | relative_url }}">Registro de mudanças</a>
+        <span class="separator">/</span>
+        <span class="current">v1.8.5</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.8.5</h1>
+        <div class="release-meta">
+            <span class="release-date">24 de julho de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Hotfix: corrige a falha de inicialização introduzida na 1.8.4 (<code>EXC_BREAKPOINT</code> vindo de <code>libdispatch</code>: <em>trying to lock recursively</em>), adicionando uma proteção contra a reentrada do token de <code>dispatch_once</code> do <code>static let</code> em <code>AppSettingsCache</code> quando o <code>LoggerService</code> aquece durante a primeira carga do SwiftData.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destaques</h2>
+        <ul class="feature-list">
+            <li><strong>Correção da falha na inicialização:</strong> <code>AppSettingsCache</code> agora espelha o padrão de proteção de reentrada já usado em <code>LoggerService.initDepth</code>. Leituras retornam o valor padrão declarado e escritas são descartadas enquanto <code>loadFromSwiftData()</code> está em execução, de modo que o ciclo <code>LocalizationManager → AppSettingsCache → SwiftDataContainer → LoggerService → LogManager → AppSettingsCache</code> não consegue mais reentrar no mesmo token de <code>dispatch_once</code>. Aplica-se a todas as configurações de build (Debug e Release).</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Mudanças detalhadas</h2>
+        <ul>
+            <li>Adicionar o contador <code>AppSettingsCache.initDepth</code> e usá-lo como guarda em todos os acessores públicos <code>get*</code>/<code>set*</code>/<code>remove</code></li>
+            <li>Incrementar <code>initDepth</code> dentro de <code>ensureLoaded()</code> enquanto <code>loadFromSwiftData()</code> é executado, de forma que chamadas transitivas de volta para <code>AppSettingsCache.shared</code> durante a cadeia de inicialização ao iniciar sejam tratadas como no-op</li>
+            <li>Subir a versão de marketing para 1.8.5 e o número de build para 28 em <code>project.yml</code>, nos dois <code>Info.plist</code> e em <code>docs/_config.yml</code></li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/pt/changelog/v1.8.4.html' | relative_url }}" class="release-prev">&larr; v1.8.4</a>
+        <a href="{{ '/pt/changelog.html' | relative_url }}" class="release-all">Todas as versões</a>
+    </nav>
+</div>

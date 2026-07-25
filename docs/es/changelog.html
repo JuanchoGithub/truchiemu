@@ -13,6 +13,16 @@ title: Registro de cambios - Documentación de TruchiEmu
 
         <div class="release-entry">
             <div class="release-version">
+                <a href="{{ '/es/changelog/v1.8.5.html' | relative_url }}">v1.8.5</a>
+            </div>
+            <div class="release-date">24 de julio de 2026</div>
+            <div class="release-summary">
+                Versión hotfix: corrige el fallo de inicio introducido en 1.8.4 (<code>EXC_BREAKPOINT</code> de libdispatch: trying to lock recursively), añadiendo una salvaguarda contra la reentrada del <code>dispatch_once</code> de <code>AppSettingsCache</code> cuando el logger se inicializa durante la primera carga de SwiftData.
+            </div>
+        </div>
+
+        <div class="release-entry">
+            <div class="release-version">
                 <a href="{{ '/es/changelog/v1.8.4.html' | relative_url }}">v1.8.4</a>
             </div>
             <div class="release-date">24 de julio de 2026</div>
