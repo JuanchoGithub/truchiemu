@@ -132,6 +132,7 @@ struct ControllerSettingsView: View {
     @State private var showParentModeHelp = false
     @ObservedObject private var hotkeyManager = HotkeyConfigManager.shared
     @ObservedObject private var controllerCaptureCoordinator = ControllerHotkeyCaptureCoordinator.shared
+    @ObservedObject private var wiiIRSettings = WiiIRSettings.shared
     @State private var quickHotkeyListeningAction: HotkeyAction?
     @State private var quickHotkeyListeningSlot: HotkeySlot = .primary
     @State private var quickHotkeyListeningControllerAction: HotkeyAction?
@@ -199,6 +200,44 @@ struct ControllerSettingsView: View {
                 Text(loc.localized("controllers.wiiControllerTypeHelp"))
                     .font(.caption)
                     .foregroundColor(AppColors.textSecondary(colorScheme))
+            }
+
+            if isWiiSystem {
+                Section(loc.localized("controllers.wiiIR.title")) {
+                    Picker(loc.localized("controllers.wiiIR.mode"), selection: wiiIRModeBinding) {
+                        ForEach(WiiIRSettings.IRMode.allCases) { mode in
+                            Text(loc.localized(mode.labelKey)).tag(mode)
+                        }
+                    }
+                    Picker(loc.localized("controllers.wiiIR.sensorBar"), selection: wiiSensorBarBinding) {
+                        ForEach(WiiIRSettings.SensorBarPosition.allCases) { pos in
+                            Text(loc.localized(pos.labelKey)).tag(pos)
+                        }
+                    }
+                    VStack(spacing: AppSpacing.sm) {
+                        IRSettingSlider(
+                            label: loc.localized("controllers.wiiIR.yaw"),
+                            value: wiiYawBinding,
+                            range: 0...100,
+                            defaultValue: Double(WiiIRSettings.Defaults.yaw)
+                        )
+                        IRSettingSlider(
+                            label: loc.localized("controllers.wiiIR.pitch"),
+                            value: wiiPitchBinding,
+                            range: 0...100,
+                            defaultValue: Double(WiiIRSettings.Defaults.pitch)
+                        )
+                        IRSettingSlider(
+                            label: loc.localized("controllers.wiiIR.verticalOffset"),
+                            value: wiiVerticalOffsetBinding,
+                            range: -50...50,
+                            defaultValue: Double(WiiIRSettings.Defaults.verticalOffset)
+                        )
+                    }
+                    Text(loc.localized("controllers.wiiIR.help"))
+                        .font(.caption)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
+                }
             }
 
             if !searchText.isEmpty {
@@ -394,10 +433,50 @@ struct ControllerSettingsView: View {
         return lower == "genesis" || lower == "megadrive" || lower == "32x"
     }
 
+    private var isWiiSystem: Bool {
+        let lower = selectedSystemID.lowercased()
+        return lower == "wii" || lower == "gamecube"
+    }
+
     private var genesisControllerTypeBinding: Binding<AppSettings.GenesisControllerType> {
         Binding(
             get: { AppSettings.getGenesisControllerType() },
             set: { AppSettings.setGenesisControllerType($0) }
+        )
+    }
+
+    private var wiiIRModeBinding: Binding<WiiIRSettings.IRMode> {
+        Binding(
+            get: { wiiIRSettings.irMode(systemID: selectedSystemID) },
+            set: { wiiIRSettings.setIRMode($0, systemID: selectedSystemID) }
+        )
+    }
+
+    private var wiiSensorBarBinding: Binding<WiiIRSettings.SensorBarPosition> {
+        Binding(
+            get: { wiiIRSettings.sensorBarPosition(systemID: selectedSystemID) },
+            set: { wiiIRSettings.setSensorBarPosition($0, systemID: selectedSystemID) }
+        )
+    }
+
+    private var wiiYawBinding: Binding<Double> {
+        Binding(
+            get: { Double(wiiIRSettings.yaw(systemID: selectedSystemID)) },
+            set: { wiiIRSettings.setYaw(Int($0), systemID: selectedSystemID) }
+        )
+    }
+
+    private var wiiPitchBinding: Binding<Double> {
+        Binding(
+            get: { Double(wiiIRSettings.pitch(systemID: selectedSystemID)) },
+            set: { wiiIRSettings.setPitch(Int($0), systemID: selectedSystemID) }
+        )
+    }
+
+    private var wiiVerticalOffsetBinding: Binding<Double> {
+        Binding(
+            get: { Double(wiiIRSettings.verticalOffset(systemID: selectedSystemID)) },
+            set: { wiiIRSettings.setVerticalOffset(Int($0), systemID: selectedSystemID) }
         )
     }
 
@@ -872,6 +951,47 @@ private struct DeadzoneSliderRow: View {
                 set: { onValueChanged($0) }
             ), in: 0.0...0.50, step: 0.01)
             .controlSize(.mini)
+        }
+    }
+}
+
+private struct IRSettingSlider: View {
+    @Environment(\.colorScheme) private var colorScheme
+    let label: String
+    let value: Binding<Double>
+    let range: ClosedRange<Double>
+    let defaultValue: Double
+
+    var formattedValue: String {
+        if value.wrappedValue == value.wrappedValue.rounded() {
+            return String(Int(value.wrappedValue))
+        }
+        return String(format: "%.1f", value.wrappedValue)
+    }
+
+    var differsFromDefault: Bool { value.wrappedValue != defaultValue }
+
+    var body: some View {
+        VStack(spacing: 2) {
+            HStack {
+                Text(label)
+                    .font(.system(size: 10))
+                Spacer()
+                Text(formattedValue)
+                    .font(.system(size: 10, design: .monospaced))
+                    .foregroundStyle(AppColors.textSecondary(colorScheme))
+                Button {
+                    value.wrappedValue = defaultValue
+                } label: {
+                    Image(systemName: "arrow.counterclockwise")
+                        .font(.system(size: 9))
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(differsFromDefault ? AppColors.brandAccent : AppColors.textSecondary(colorScheme).opacity(0.3))
+                .disabled(!differsFromDefault)
+            }
+            Slider(value: value, in: range, step: 1)
+                .controlSize(.mini)
         }
     }
 }

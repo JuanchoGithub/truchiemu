@@ -570,8 +570,6 @@ case "scummvm": runner = ScummVMRunner()
                 }
                 wiiDeviceForLaunch = Int(device)
                 LoggerService.info(category: "BaseRunner", "WiiDeviceResolve wiiControllerType=\(wiiControllerType.rawValue) hasRealController=\(hasRealController) resolvedDevice=\(device)")
-                XPCBridgeAdapter.shared.setOptionValue("Mouse controls pointer", forKey: "dolphin_ir_mode")
-                XPCBridgeAdapter.shared.setVariablesUpdated()
             } else {
                 XPCBridgeAdapter.shared.setWiiControllerType(0)
             }

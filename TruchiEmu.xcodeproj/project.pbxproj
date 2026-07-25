@@ -1181,6 +1181,7 @@
 		EC06888515A2C5C9EF4DA3BF /* input_coreOverrides_beetle_vb.json in Resources */ = {isa = PBXBuildFile; fileRef = 1C7C476D5AAB4E54EFDA312F /* input_coreOverrides_beetle_vb.json */; };
 		EC3C1249162F7E8A7EDCD48F /* GG.png in Resources */ = {isa = PBXBuildFile; fileRef = B97569865BB977C5BABB542B /* GG.png */; };
 		EC4A6392A1D56FF7BA386F85 /* input_coreLabels_mame_2003.json in Resources */ = {isa = PBXBuildFile; fileRef = 49784CFEBBD662D4BC1B1A0A /* input_coreLabels_mame_2003.json */; };
+		EC4E60F3334C8C4FDB365E94 /* WiiIRSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3187FDD6F1C85081A49EC325 /* WiiIRSettings.swift */; };
 		EC8A70B705459076568A22A8 /* nds.ico in Resources */ = {isa = PBXBuildFile; fileRef = 1C10E5CE3E9EE5A4E0AB16F4 /* nds.ico */; };
 		EC9DF02AE7088D2EDDB4EA74 /* fightdata_mk.json in Resources */ = {isa = PBXBuildFile; fileRef = E66FEE978CF4F89C1E166EEA /* fightdata_mk.json */; };
 		ECA419AEE6FF3B94E9AD8838 /* ControllerLongPressDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80E267122CAC805554DF6CE /* ControllerLongPressDetector.swift */; };
@@ -1562,6 +1563,7 @@
 		312DD29D6B77A5CC9B13F942 /* Header.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Header.swift; sourceTree = "<group>"; };
 		31496D3D05A64CD62A82B014 /* mgba_libretro_default.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = mgba_libretro_default.json; sourceTree = "<group>"; };
 		3163ABB66BACBA8035AE394E /* fightdata_sfex2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_sfex2.json; sourceTree = "<group>"; };
+		3187FDD6F1C85081A49EC325 /* WiiIRSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WiiIRSettings.swift; sourceTree = "<group>"; };
 		31D8741D997FF36BBFE4899B /* fightdata_samsho5.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_samsho5.json; sourceTree = "<group>"; };
 		321625E5E8578C0DDF915565 /* Nintendo - Nintendo DS.dat */ = {isa = PBXFileReference; path = "Nintendo - Nintendo DS.dat"; sourceTree = "<group>"; };
 		3230EB435232A6B5AC4FBC1E /* ControllerSettingsViewGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerSettingsViewGroup.swift; sourceTree = "<group>"; };
@@ -2791,6 +2793,7 @@
 				81561F32B974014E52E04793 /* InputDescriptorsManager.swift */,
 				A30E84AC45B0EC95454FA87F /* MoveListStorageService.swift */,
 				CCF02A2FBE56AF8967FB319E /* SettingsResetter.swift */,
+				3187FDD6F1C85081A49EC325 /* WiiIRSettings.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -6175,6 +6178,7 @@
 				9EFB1C38E1C77CAC8E872012 /* UpdateAvailableView.swift in Sources */,
 				4AB23F3CFA5D46860C322282 /* UpdateWizardView.swift in Sources */,
 				677E565E4FE7FA4E55160101 /* WhatsNewView.swift in Sources */,
+				EC4E60F3334C8C4FDB365E94 /* WiiIRSettings.swift in Sources */,
 				8C3DB989C12A59BAD8C9B0BB /* XPCBridgeAdapter.swift in Sources */,
 				6CBEC44953FF94D0C5198E14 /* XPCConnectionManager.swift in Sources */,
 				852B847F43CEFFD70596FC15 /* ntsc_decoder.cpp in Sources */,
