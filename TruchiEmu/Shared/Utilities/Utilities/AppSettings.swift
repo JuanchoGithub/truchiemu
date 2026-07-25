@@ -5,16 +5,31 @@ import SwiftData
 @MainActor
 final class AppSettingsCache {
     static let shared = AppSettingsCache()
-    
+
+    /// Re-entrancy guard. `loadFromSwiftData()` synchronously triggers
+    /// `SwiftDataContainer.shared` initialization, which warms the logger
+    /// (`LoggerService.shared` -> `LogManager.shared`). On a first launch those
+    /// init paths can call back into `AppSettingsCache.shared` (e.g. reading
+    /// the custom log folder bookmark) before `loadFromSwiftData()` has
+    /// returned. Without this guard, macOS aborts the process via
+    /// "BUG IN CLIENT OF LIBDISPATCH: trying to lock recursively" because
+    /// the lazy-static-init `dispatch_once` token is re-entered on the same
+    /// thread. While > 0, reads return their declared default and writes are
+    /// dropped; those calls only happen during the launch-time init chain,
+    /// where the SwiftData store has nothing useful to offer yet anyway.
+    private static var initDepth: Int = 0
+
     private var cache: [String: Data] = [:]
     private var isLoaded = false
-    
+
     private init() {
         // Don't load here - we'll load on first access
     }
-    
+
     private func ensureLoaded() {
         guard !isLoaded else { return }
+        Self.initDepth += 1
+        defer { Self.initDepth -= 1 }
         loadFromSwiftData()
         isLoaded = true
     }
@@ -23,15 +38,18 @@ final class AppSettingsCache {
         let container = SwiftDataContainer.shared
         let context = container.mainContext
         let descriptor = FetchDescriptor<SettingsEntry>()
-        
+
         guard let entries = try? context.fetch(descriptor) else { return }
-        
+
         for entry in entries {
             cache[entry.key] = entry.dataValue
         }
     }
-    
+
+    private func inFlight() -> Bool { Self.initDepth > 0 }
+
     func getBool(_ key: String, defaultValue: Bool) -> Bool {
+        guard !inFlight() else { return defaultValue }
         ensureLoaded()
         guard let data = cache[key],
               let value = try? JSONDecoder().decode(Bool.self, from: data) else {
@@ -39,15 +57,17 @@ final class AppSettingsCache {
         }
         return value
     }
-    
+
     func setBool(_ key: String, value: Bool) {
+        guard !inFlight() else { return }
         ensureLoaded()
         let data = try! JSONEncoder().encode(value)
         cache[key] = data
         saveAsync(key: key, value: data)
     }
-    
+
     func getString(_ key: String, defaultValue: String?) -> String? {
+        guard !inFlight() else { return defaultValue }
         ensureLoaded()
         guard let data = cache[key],
               let value = try? JSONDecoder().decode(String.self, from: data) else {
@@ -55,14 +75,16 @@ final class AppSettingsCache {
         }
         return value
     }
-    
+
     func setString(_ key: String, value: String?) {
+        guard !inFlight() else { return }
         let data = try! JSONEncoder().encode(value)
         cache[key] = data
         saveAsync(key: key, value: data)
     }
-    
+
     func getInt(_ key: String, defaultValue: Int) -> Int {
+        guard !inFlight() else { return defaultValue }
         ensureLoaded()
         guard let data = cache[key],
               let value = try? JSONDecoder().decode(Int.self, from: data) else {
@@ -70,15 +92,17 @@ final class AppSettingsCache {
         }
         return value
     }
-    
+
     func setInt(_ key: String, value: Int) {
+        guard !inFlight() else { return }
         ensureLoaded()
         let data = try! JSONEncoder().encode(value)
         cache[key] = data
         saveAsync(key: key, value: data)
     }
-    
+
     func getDouble(_ key: String, defaultValue: Double) -> Double {
+        guard !inFlight() else { return defaultValue }
         ensureLoaded()
         guard let data = cache[key],
               let value = try? JSONDecoder().decode(Double.self, from: data) else {
@@ -86,30 +110,35 @@ final class AppSettingsCache {
         }
         return value
     }
-    
+
     func setDouble(_ key: String, value: Double) {
+        guard !inFlight() else { return }
         ensureLoaded()
         let data = try! JSONEncoder().encode(value)
         cache[key] = data
         saveAsync(key: key, value: data)
     }
-    
+
     func getData(_ key: String) -> Data? {
+        guard !inFlight() else { return nil }
         ensureLoaded()
         return cache[key]
     }
-    
+
     func setData(_ key: String, value: Data) {
+        guard !inFlight() else { return }
         cache[key] = value
         saveAsync(key: key, value: value)
     }
-    
+
     func remove(_ key: String) {
+        guard !inFlight() else { return }
         cache.removeValue(forKey: key)
         deleteFromSwiftData(key: key)
     }
-    
+
     func getDate(_ key: String) -> Date? {
+        guard !inFlight() else { return nil }
         ensureLoaded()
         guard let data = cache[key],
               let value = try? JSONDecoder().decode(Date.self, from: data) else {
@@ -117,21 +146,24 @@ final class AppSettingsCache {
         }
         return value
     }
-    
+
     func setDate(_ key: String, value: Date) {
+        guard !inFlight() else { return }
         ensureLoaded()
         let data = try! JSONEncoder().encode(value)
         cache[key] = data
         saveAsync(key: key, value: data)
     }
-    
+
     func getCodable<T: Codable>(_ key: String, type: T.Type) -> T? {
+        guard !inFlight() else { return nil }
         ensureLoaded()
         guard let data = cache[key] else { return nil }
         return try? JSONDecoder().decode(type, from: data)
     }
-    
+
     func setCodable<T: Codable>(_ key: String, value: T) {
+        guard !inFlight() else { return }
         ensureLoaded()
         let data = try! JSONEncoder().encode(value)
         cache[key] = data
