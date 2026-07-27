@@ -130,6 +130,9 @@ private struct ProgressiveSlotStackView: View {
     @ObservedObject private var loc = LocalizationManager.shared
     @Environment(\.colorScheme) private var colorScheme
 
+    @State private var isHovering = false
+    @State private var requestRename = false
+
     private var isExpanded: Bool { expandedSlotID == slot.id }
 
     private var sortedProgressives: [SlotInfo] {
@@ -150,7 +153,8 @@ private struct ProgressiveSlotStackView: View {
                         slotID: slot.id,
                         version: v,
                         isLarge: true,
-                        onDelete: onDelete
+                        onDelete: onDelete,
+                        onRequestRename: { requestRename = true }
                     )
                     .offset(x: CGFloat(index) * offsetStep, y: CGFloat(index) * (offsetStep * 0.75))
                 }
@@ -161,10 +165,14 @@ private struct ProgressiveSlotStackView: View {
     var body: some View {
         VStack(spacing: 6) {
             HStack(spacing: 4) {
-                Text(slot.displayName)
-                    .font(.caption)
-                    .fontWeight(.semibold)
-                    .foregroundColor(AppColors.textPrimary(colorScheme))
+                SlotRenameControl(
+                    slot: slot,
+                    rom: rom,
+                    saveStateManager: saveStateManager,
+                    isHovering: isHovering,
+                    isEditingRequest: $requestRename,
+                    onRenamed: onDelete
+                )
                 Text("(\(progressives.count))")
                     .font(.caption2)
                     .foregroundColor(AppColors.textTertiary(colorScheme))
@@ -179,6 +187,20 @@ private struct ProgressiveSlotStackView: View {
         .padding(6)
         .background(AppColors.cardBackgroundSubtle(colorScheme))
         .clipShape(RoundedRectangle(cornerRadius: 10))
+        .onHover { hovering in
+            withAnimation(.easeInOut(duration: 0.15)) {
+                isHovering = hovering
+            }
+        }
+        .contextMenu {
+            if slot.id >= 0 {
+                Button {
+                    requestRename = true
+                } label: {
+                    Label(loc.localized("savedStates.rename"), systemImage: "pencil")
+                }
+            }
+        }
         .onTapGesture {
             withAnimation(.easeInOut(duration: 0.2)) {
                 expandedSlotID = isExpanded ? nil : slot.id
@@ -197,6 +219,9 @@ private struct ProgressiveSaveStateExpandedView: View {
     @ObservedObject private var loc = LocalizationManager.shared
     @Environment(\.colorScheme) private var colorScheme
 
+    @State private var isHovering = false
+    @State private var requestRename = false
+
     private var sortedProgressives: [SlotInfo] {
         progressives.sorted { ($0.progressiveVersion ?? 0) < ($1.progressiveVersion ?? 0) }
     }
@@ -204,10 +229,14 @@ private struct ProgressiveSaveStateExpandedView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 6) {
-                Text(slot.displayName)
-                    .font(.callout)
-                    .fontWeight(.semibold)
-                    .foregroundColor(AppColors.textPrimary(colorScheme))
+                SlotRenameControl(
+                    slot: slot,
+                    rom: rom,
+                    saveStateManager: saveStateManager,
+                    isHovering: isHovering,
+                    isEditingRequest: $requestRename,
+                    onRenamed: onDelete
+                )
                 Text("(\(progressives.count))")
                     .font(.caption)
                     .foregroundColor(AppColors.textSecondary(colorScheme))
@@ -229,6 +258,20 @@ private struct ProgressiveSaveStateExpandedView: View {
             RoundedRectangle(cornerRadius: 8)
                 .stroke(AppColors.brandAccent.opacity(0.2), lineWidth: 1)
         )
+        .onHover { hovering in
+            withAnimation(.easeInOut(duration: 0.15)) {
+                isHovering = hovering
+            }
+        }
+        .contextMenu {
+            if slot.id >= 0 {
+                Button {
+                    requestRename = true
+                } label: {
+                    Label(loc.localized("savedStates.rename"), systemImage: "pencil")
+                }
+            }
+        }
     }
 
     @ViewBuilder
@@ -240,7 +283,8 @@ private struct ProgressiveSaveStateExpandedView: View {
                 slotID: slot.id,
                 version: version,
                 isLarge: true,
-                onDelete: onDelete
+                onDelete: onDelete,
+                onRequestRename: { requestRename = true }
             )
 
             VStack(alignment: .leading, spacing: 2) {
@@ -281,6 +325,7 @@ private struct ProgressiveThumbnailView: View {
     let version: Int
     let isLarge: Bool
     var onDelete: () -> Void
+    var onRequestRename: () -> Void = {}
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
 
@@ -323,6 +368,13 @@ private struct ProgressiveThumbnailView: View {
             alignment: .topLeading
         )
         .contextMenu {
+            if slotID >= 0 {
+                Button {
+                    onRequestRename()
+                } label: {
+                    Label(loc.localized("savedStates.rename"), systemImage: "pencil")
+                }
+            }
             Button(action: {
                 let gameKey = "\(rom.displayName)__\(rom.id.uuidString.prefix(8))"
                 try? saveStateManager.deleteProgressiveState(gameName: gameKey, systemID: rom.systemID ?? "", slot: slotID, version: version)

@@ -904,6 +904,7 @@
 		AF57AE0144B0F2800573B14F /* SATELLAVIEW.png in Resources */ = {isa = PBXBuildFile; fileRef = EC40A476ED3D1F7A62D45D03 /* SATELLAVIEW.png */; };
 		AF8E21F25DE37BFBCDD8B953 /* input_coreLabels_bsnes-jg.json in Resources */ = {isa = PBXBuildFile; fileRef = D83947E57DE57084797AE330 /* input_coreLabels_bsnes-jg.json */; };
 		AFAF9527589AE5C42D9D806D /* ShaderPresetStorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 616B37C3C13F2D2FE25473E2 /* ShaderPresetStorageService.swift */; };
+		AFC960C09B095CDF2DC293B6 /* SlotRenameControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = E01DF2B1EEF136C2B15C7CFA /* SlotRenameControl.swift */; };
 		AFE7342E165D258837CC638E /* fightdata_asterix.json in Resources */ = {isa = PBXBuildFile; fileRef = 07538FC172C6EC887C6A46A4 /* fightdata_asterix.json */; };
 		B03223FCAB2475E14D791FFE /* fightdata_kof95.json in Resources */ = {isa = PBXBuildFile; fileRef = 3B2FDDCFB5D6B47BD7A985D0 /* fightdata_kof95.json */; };
 		B0675F58E064469C5C75A06E /* gg@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 1303390457692B07BF63B7B6 /* gg@132w.png */; };
@@ -2441,6 +2442,7 @@
 		DF68254BB5CE5328745136C2 /* GamepadNavCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamepadNavCoordinator.swift; sourceTree = "<group>"; };
 		DF7DEE8C655EE9C9F76AEDD8 /* LUTRO.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LUTRO.png; sourceTree = "<group>"; };
 		DFB716FDB9E08D61BB411959 /* fightdata_svg.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_svg.json; sourceTree = "<group>"; };
+		E01DF2B1EEF136C2B15C7CFA /* SlotRenameControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlotRenameControl.swift; sourceTree = "<group>"; };
 		E059451BADA7D67E5C1FB483 /* VMAC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VMAC.png; sourceTree = "<group>"; };
 		E07C31C568B8140ACE5C6ABD /* CoreOptionsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreOptionsSection.swift; sourceTree = "<group>"; };
 		E0BE913BF5456D0DC371C05A /* fightdata_kov2p.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_kov2p.json; sourceTree = "<group>"; };
@@ -2937,6 +2939,7 @@
 				C94E2C81D0A16F3F9DCA9E6B /* RAHashComparisonSheet.swift */,
 				37C4859B682A869506B406B2 /* SavedStates.swift */,
 				B6CE8DDABCE1ABFA58C62123 /* Shader.swift */,
+				E01DF2B1EEF136C2B15C7CFA /* SlotRenameControl.swift */,
 				A712FED2F557D01548C2747B /* Technical.swift */,
 			);
 			path = Sections;
@@ -3365,6 +3368,7 @@
 				46789EEF6D67F1A3F1C20E60 /* arcade_button_mappings.json */,
 				2CE4818DFC09EC160E87FC48 /* Assets.xcassets */,
 				18A378D98313D80173A8B0B0 /* AppIcons */,
+				AE183271815DDA34E03A113A /* BIOS */,
 				D0CDC1D3C0773FC9C8698346 /* BoxArtSamples */,
 				FE700291499B346B34E3C68A /* cheats */,
 				76456D83E1C30F476B43170E /* ControllerIcons */,
@@ -3678,6 +3682,13 @@
 				86D467EC70EF33E265BAF765 /* ResourceCacheModels.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		AE183271815DDA34E03A113A /* BIOS */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = BIOS;
 			sourceTree = "<group>";
 		};
 		AE83B388D11F6EB80FFF6EB1 /* Engine */ = {
@@ -6135,6 +6146,7 @@
 				1CEA121BE6907FBB9315DFE8 /* SlangCompilerService.swift in Sources */,
 				620EBDB01769693E7CADB30C /* SlangPreset.swift in Sources */,
 				EA2E07E56F10C0F232DAC18E /* SlangPresetDiscoveryService.swift in Sources */,
+				AFC960C09B095CDF2DC293B6 /* SlotRenameControl.swift in Sources */,
 				DF3E976013C7677FA8CCAFD9 /* StandaloneGameWindowController+Bezel.swift in Sources */,
 				76552028EAE28BB41933A579 /* StandaloneGameWindowController+GamepadNav.swift in Sources */,
 				BDF013132E527E54C1122A15 /* StandaloneGameWindowController+Playtime.swift in Sources */,

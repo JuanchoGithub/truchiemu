@@ -14,14 +14,25 @@ struct SlotInfo: Identifiable, Equatable {
     let fileSize: Int64?
     let modificationDate: Date?
     let progressiveVersion: Int?
+    // Optional user-defined display label for this slot. Persisted via
+    // SaveStateManager as a sidecar `.meta.json` file. Empty for the auto
+    // slot (-1) and for user slots that have never been named.
+    var customName: String?
 
     static func == (lhs: SlotInfo, rhs: SlotInfo) -> Bool {
-        lhs.id == rhs.id && lhs.progressiveVersion == rhs.progressiveVersion
+        lhs.id == rhs.id
+            && lhs.progressiveVersion == rhs.progressiveVersion
+            && lhs.customName == rhs.customName
     }
 
-    // Computed: display slot name (or "Auto" for slot -1)
+    // Computed: display slot name (or "Auto" for slot -1).
+    // Honors a user-supplied customName when present (user slots only),
+    // otherwise falls back to "Slot <id>" or "Auto".
     var displayName: String {
         if id == -1 { return "Auto" }
+        if let name = customName, !name.isEmpty {
+            return name
+        }
         return "Slot \(id)"
     }
 }
@@ -130,7 +141,7 @@ return sysDir.appendingPathComponent(fileName)
         let fm = FileManager.default
 
         guard let attrs = try? fm.attributesOfItem(atPath: path.path) else {
-            return SlotInfo(id: slot, exists: false, fileSize: nil, modificationDate: nil, progressiveVersion: nil)
+            return SlotInfo(id: slot, exists: false, fileSize: nil, modificationDate: nil, progressiveVersion: nil, customName: loadSlotName(gameName: gameName, systemID: systemID, slot: slot))
         }
 
         return SlotInfo(
@@ -138,7 +149,8 @@ return sysDir.appendingPathComponent(fileName)
             exists: true,
             fileSize: attrs[.size] as? Int64,
             modificationDate: attrs[.modificationDate] as? Date,
-            progressiveVersion: nil
+            progressiveVersion: nil,
+            customName: loadSlotName(gameName: gameName, systemID: systemID, slot: slot)
         )
     }
     
@@ -150,7 +162,7 @@ return sysDir.appendingPathComponent(fileName)
             if !versions.isEmpty {
                 let newestVersion = versions.max() ?? 1
                 let info = progressiveSlotInfo(gameName: gameName, systemID: systemID, slot: slot, version: newestVersion)
-                return SlotInfo(id: slot, exists: true, fileSize: info.fileSize, modificationDate: info.modificationDate, progressiveVersion: nil)
+                return SlotInfo(id: slot, exists: true, fileSize: info.fileSize, modificationDate: info.modificationDate, progressiveVersion: nil, customName: loadSlotName(gameName: gameName, systemID: systemID, slot: slot))
             }
             // Fallback: check base file
             return slotInfo(gameName: gameName, systemID: systemID, slot: slot)
@@ -197,7 +209,58 @@ return sysDir.appendingPathComponent(fileName)
         return FileManager.default.fileExists(atPath: path.path)
     }
     
-    // Deletes a save state file for a specific slot
+    // MARK: - Slot Display Name Persistence
+
+    private struct SaveSlotMetaPayload: Codable {
+        var name: String?
+    }
+
+    // Returns the URL of the sidecar metadata JSON for a given slot.
+    // Stored next to the (possibly-absent) base `.state` file so it survives
+    // progressive version rotation but is cleared when the slot is deleted.
+    func slotMetaPath(gameName: String, systemID: String, slot: Int) -> URL {
+        return statePath(gameName: gameName, systemID: systemID, slot: slot)
+            .appendingPathExtension("meta.json")
+    }
+
+    // Reads the user-defined name for a slot, or nil if unset/empty.
+    func loadSlotName(gameName: String, systemID: String, slot: Int) -> String? {
+        let url = slotMetaPath(gameName: gameName, systemID: systemID, slot: slot)
+        guard let data = try? Data(contentsOf: url) else { return nil }
+        let payload = try? JSONDecoder().decode(SaveSlotMetaPayload.self, from: data)
+        if let name = payload?.name, !name.isEmpty {
+            return name
+        }
+        return nil
+    }
+
+    // Persists (or clears, when name is empty/nil) the user-defined name for a
+    // user slot (0-9). Auto slot (-1) is intentionally ignored.
+    func setSlotName(_ name: String?, gameName: String, systemID: String, slot: Int) {
+        guard slot >= 0 else { return }
+        let url = slotMetaPath(gameName: gameName, systemID: systemID, slot: slot)
+        let fm = FileManager.default
+        let trimmed = (name ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.isEmpty {
+            if fm.fileExists(atPath: url.path) {
+                try? fm.removeItem(at: url)
+            }
+            return
+        }
+        let payload = SaveSlotMetaPayload(name: trimmed)
+        if let data = try? JSONEncoder().encode(payload) {
+            try? data.write(to: url, options: .atomic)
+        }
+    }
+
+    private func clearSlotMeta(gameName: String, systemID: String, slot: Int) {
+        let url = slotMetaPath(gameName: gameName, systemID: systemID, slot: slot)
+        let fm = FileManager.default
+        if fm.fileExists(atPath: url.path) {
+            try? fm.removeItem(at: url)
+        }
+    }
+
     func deleteState(gameName: String, systemID: String, slot: Int) throws {
         let statePath = self.statePath(gameName: gameName, systemID: systemID, slot: slot)
         let thumbPath = self.thumbnailPath(gameName: gameName, systemID: systemID, slot: slot)
@@ -209,6 +272,8 @@ return sysDir.appendingPathComponent(fileName)
         if fm.fileExists(atPath: thumbPath.path) {
             try fm.removeItem(at: thumbPath)
         }
+        // Clear any user-defined display name so the slot returns to "Slot N".
+        clearSlotMeta(gameName: gameName, systemID: systemID, slot: slot)
     }
     
     // Deletes a slot AND all its progressive versions and thumbnails
@@ -465,14 +530,15 @@ func progressiveSlotVersions(gameName: String, systemID: String, slot: Int) -> [
         let path = progressiveStatePath(gameName: gameName, systemID: systemID, slot: slot, version: version)
         let fm = FileManager.default
         guard let attrs = try? fm.attributesOfItem(atPath: path.path) else {
-            return SlotInfo(id: slot, exists: false, fileSize: nil, modificationDate: nil, progressiveVersion: nil)
+            return SlotInfo(id: slot, exists: false, fileSize: nil, modificationDate: nil, progressiveVersion: nil, customName: nil)
         }
         return SlotInfo(
             id: slot,
             exists: true,
             fileSize: attrs[.size] as? Int64,
             modificationDate: attrs[.modificationDate] as? Date,
-            progressiveVersion: version
+            progressiveVersion: version,
+            customName: nil
         )
     }
 
@@ -518,6 +584,12 @@ func deleteProgressiveState(gameName: String, systemID: String, slot: Int, versi
     }
     if fm.fileExists(atPath: thumbPath.path) {
         try fm.removeItem(at: thumbPath)
+    }
+    // If this was the last version AND no base .state remains, also clear any
+    // user-defined slot name so the slot label reverts to "Slot N".
+    if progressiveSlotVersions(gameName: gameName, systemID: systemID, slot: slot).isEmpty
+        && !fm.fileExists(atPath: self.statePath(gameName: gameName, systemID: systemID, slot: slot).path) {
+        clearSlotMeta(gameName: gameName, systemID: systemID, slot: slot)
     }
 }
 

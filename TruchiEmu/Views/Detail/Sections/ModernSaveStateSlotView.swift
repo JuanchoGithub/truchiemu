@@ -9,6 +9,8 @@ struct ModernSaveStateSlotView: View {
     var onLaunchSlot: (Int, Int?) -> Void = { _, _ in }
     @State private var thumbnail: NSImage?
     @State private var showPlayButton = false
+    @State private var isHovering = false
+    @State private var requestRename = false
     @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
@@ -60,11 +62,15 @@ struct ModernSaveStateSlotView: View {
                     .stroke(slot.exists ? AppColors.brandAccent.opacity(0.5) : Color.clear, lineWidth: 1.5)
             )
 
-Text(slot.displayName)
-      .font(.caption)
-      .fontWeight(slot.exists ? .semibold : .regular)
-      .foregroundColor(slot.exists ? AppColors.textPrimary(colorScheme) : AppColors.textMuted(colorScheme))
-      
+            SlotLabelWithRename(
+                slot: slot,
+                rom: rom,
+                saveStateManager: saveStateManager,
+                isHovering: isHovering,
+                isEditingRequest: $requestRename,
+                onRenamed: onDelete
+            )
+
       // Reserve space for 3 text rows to prevent vertical misalignment
       // Show date or file size for saved slots, empty view for empty slots
       if let date = slot.formattedDate {
@@ -84,6 +90,11 @@ Text(slot.displayName)
       }
     }
         .frame(width: 104)
+        .onHover { hovering in
+            withAnimation(.easeInOut(duration: 0.15)) {
+                isHovering = hovering
+            }
+        }
         .onTapGesture(count: 1) {
             if slot.exists {
                 withAnimation(.easeInOut(duration: 0.15)) {
@@ -112,18 +123,23 @@ Text(slot.displayName)
             }
         }
         .contextMenu {
-            if slot.exists {
-            Button(action: {
-                if slot.id >= 0 {
-                    let gameKey = "\(rom.displayName)__\(rom.id.uuidString.prefix(8))"
-                    try? saveStateManager.deleteSlotWithProgressives(
-                        gameName: gameKey,
-                        systemID: rom.systemID ?? "",
-                        slot: slot.id
-                    )
-                    onDelete()
+            if slot.exists && slot.id >= 0 {
+                Button {
+                    requestRename = true
+                } label: {
+                    Label(loc.localized("savedStates.rename"), systemImage: "pencil")
                 }
-            }) {
+                Button(action: {
+                    if slot.id >= 0 {
+                        let gameKey = "\(rom.displayName)__\(rom.id.uuidString.prefix(8))"
+                        try? saveStateManager.deleteSlotWithProgressives(
+                            gameName: gameKey,
+                            systemID: rom.systemID ?? "",
+                            slot: slot.id
+                        )
+                        onDelete()
+                    }
+                }) {
                     Label(loc.localized("saveState.delete"), systemImage: "trash")
                 }
             }
@@ -136,6 +152,40 @@ Text(slot.displayName)
                     slot: slot.id
                 )
             }
+        }
+    }
+}
+
+/// Renders the slot label for `ModernSaveStateSlotView`, swapping the plain
+/// `Text` for the renameable `SlotRenameControl` when the slot is an
+/// existing user slot (0-9). Empty and auto slots render the label as
+/// before (no pencil affordance).
+private struct SlotLabelWithRename: View {
+    let slot: SlotInfo
+    let rom: ROM
+    @ObservedObject var saveStateManager: SaveStateManager
+    var isHovering: Bool
+    @Binding var isEditingRequest: Bool
+    var onRenamed: () -> Void
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        if slot.exists && slot.id >= 0 {
+            HStack(spacing: 3) {
+                SlotRenameControl(
+                    slot: slot,
+                    rom: rom,
+                    saveStateManager: saveStateManager,
+                    isHovering: isHovering,
+                    isEditingRequest: $isEditingRequest,
+                    onRenamed: onRenamed
+                )
+            }
+        } else {
+            Text(slot.displayName)
+                .font(.caption)
+                .fontWeight(slot.exists ? .semibold : .regular)
+                .foregroundColor(slot.exists ? AppColors.textPrimary(colorScheme) : AppColors.textMuted(colorScheme))
         }
     }
 }
