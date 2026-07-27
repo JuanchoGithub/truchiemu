@@ -824,6 +824,14 @@ case "scummvm": runner = ScummVMRunner()
     static func rewindFeatureEnabled() -> Bool {
         timeMachineMasterEnabled() && AppSettings.getBool("timeMachine_rewindEnabled", defaultValue: true)
     }
+    /// Whether the user is allowed to enter Time Machine scrub mode while a
+    /// recording/stream is active. Default true. When false, rewind attempts
+    /// during recording are blocked with an OSD hint. Pairs with the recording
+    /// setting ``StreamRecordingService.seamlessRewindCut`` (#30).
+    @MainActor
+    static func rewindAllowedDuringRecording() -> Bool {
+        AppSettings.getBool("timeMachine_rewindDuringRecording", defaultValue: true)
+    }
     @MainActor
     static func fastForwardFeatureEnabled() -> Bool {
         timeMachineMasterEnabled() && AppSettings.getBool("timeMachine_fastForwardEnabled", defaultValue: true)
@@ -881,6 +889,13 @@ case "scummvm": runner = ScummVMRunner()
 
     @MainActor
     private func enterTimeMachineMode() {
+        // Block rewind while a recording/stream is active if the user has
+        // disabled ``Allow rewind during recording`` (Time Machine settings).
+        // Pairs with ``StreamRecordingService.seamlessRewindCut`` — see #30.
+        if StreamRecordingService.shared.isRecording, !Self.rewindAllowedDuringRecording() {
+            showDisabledOSD(LocalizationManager.shared.localized("osd.rewindBlockedDuringRecording"))
+            return
+        }
         guard let newest = timeMachineBuffer.newestFrameIndex,
               timeMachineBuffer.entryCount > 1 else {
             osdMessage = LocalizationManager.shared.localized("osd.noRewindData")

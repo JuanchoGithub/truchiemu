@@ -11,6 +11,7 @@ struct RecordingTabView: View {
     @State private var showFolderPicker = false
     @State private var qualityExpanded: Bool = false
     @State private var recordingEnabled: Bool = AppSettings.getBool("recording_local_enabled", defaultValue: true)
+    @State private var seamlessRewindCut: Bool = AppSettings.getBool("recording_seamlessRewindCut", defaultValue: false)
 
     init(config: Binding<MediaConfig>,
          searchText: Binding<String>,
@@ -61,6 +62,10 @@ struct RecordingTabView: View {
                 if sectionVisible("section-recordWithShaders") {
                     recordWithShadersSection
                         .id("section-recordWithShaders")
+                }
+                if sectionVisible("section-seamlessRewindCut") {
+                    seamlessRewindCutSection
+                        .id("section-seamlessRewindCut")
                 }
                 if sectionVisible("section-qualitySection") {
                     qualitySection
@@ -117,6 +122,21 @@ struct RecordingTabView: View {
                 set: { config.streaming.recordWithShaders = $0; config.streaming.save() }
             ))
             Text(loc.localized("settings.streaming.recordWithShadersDescription"))
+                .font(.caption)
+                .foregroundColor(AppColors.textSecondary(colorScheme))
+        }
+    }
+
+    private var seamlessRewindCutSection: some View {
+        Section {
+            Toggle(loc.localized("settings.streaming.seamlessRewindCut"), isOn: Binding(
+                get: { seamlessRewindCut },
+                set: { newValue in
+                    seamlessRewindCut = newValue
+                    AppSettings.setBool("recording_seamlessRewindCut", value: newValue)
+                }
+            ))
+            Text(loc.localized("settings.streaming.seamlessRewindCutDescription"))
                 .font(.caption)
                 .foregroundColor(AppColors.textSecondary(colorScheme))
         }

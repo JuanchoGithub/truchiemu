@@ -122,6 +122,13 @@ class StreamRecordingService: ObservableObject {
     @Published var streamingEnabled = false
     @Published var quality: RecordingQuality = .high
     @Published var recordWithShaders = true
+    /// When true, Time Machine rewind windows are subtracted from the
+    /// recording's PTS so they are cut entirely (seamless playback). When
+    /// false, the legacy behavior is restored: rewind window is held in the
+    /// file as the last pre-rewind frame frozen for the rewind duration (#30).
+    /// Persisted as ``recording_seamlessRewindCut`` in AppSettings, default
+    /// false (opt-in) to preserve prior behavior.
+    @Published var seamlessRewindCut: Bool = false
     @Published var streamResolution: StreamResolution = .p1080
     @Published var streamStatus: StreamStatus = .idle
     @Published var streamError: String?
@@ -198,15 +205,22 @@ class StreamRecordingService: ObservableObject {
         if paused {
             rewindEnterWallTime = CACurrentMediaTime()
         } else if rewindEnterWallTime > 0 {
-            rewindPtsOffset += CACurrentMediaTime() - rewindEnterWallTime
+            if seamlessRewindCut {
+                // Seamless mode: subtract the rewind window's wall-clock duration
+                // from the PTS anchors so the window is cut from the recording
+                // both on video and audio tracks.
+                rewindPtsOffset += CACurrentMediaTime() - rewindEnterWallTime
+            }
             rewindEnterWallTime = 0
             // Stale audio samples produced during scrubbing sit in the shared
-            // ring buffer. They'd be drained at the new (compensated) PTS and
-            // shift every resumption audio later — the per-rewind drift #30
-            // reports. Discard them so capture resumes from a clean buffer.
+            // ring buffer. They'd be drained at the next PTS and shift every
+            // resumption audio later — the per-rewind drift #30 reports.
+            // Discard them so capture resumes from a clean buffer in either
+            // mode (the legacy freeze-frame mode still pauses the engine, so
+            // the buffer's content is dead air anyway).
             SharedMemoryManager.shared.resetAudioReadPosition()
         }
-        LoggerService.info(category: "Recording", "rewind pause \(paused ? "engaged" : "released") — recording=\(isRecording) ptsOffset=\(rewindPtsOffset)s")
+        LoggerService.info(category: "Recording", "rewind pause \(paused ? "engaged" : "released") — recording=\(isRecording) seamlessCut=\(seamlessRewindCut) ptsOffset=\(rewindPtsOffset)s")
     }
 
     /// Wall-clock seconds that the active recording's PTS should be shifted
@@ -352,6 +366,7 @@ class StreamRecordingService: ObservableObject {
             }
         }
         recordWithShaders = AppSettings.getBool("streaming_record_with_shaders", defaultValue: true)
+        seamlessRewindCut = AppSettings.getBool("recording_seamlessRewindCut", defaultValue: false)
         customVideoBitrate = AppSettings.getInt("streaming_video_bitrate", defaultValue: customVideoBitrate)
         customAudioBitrate = AppSettings.getInt("streaming_audio_bitrate", defaultValue: customAudioBitrate)
         customFrameRate = AppSettings.getInt("streaming_frame_rate", defaultValue: customFrameRate)
@@ -366,6 +381,7 @@ class StreamRecordingService: ObservableObject {
         AppSettings.setString("streaming_mode", value: mode.rawValue)
         AppSettings.setString("streaming_quality", value: quality.rawValue)
         AppSettings.setBool("streaming_record_with_shaders", value: recordWithShaders)
+        AppSettings.setBool("recording_seamlessRewindCut", value: seamlessRewindCut)
         AppSettings.setInt("streaming_video_bitrate", value: customVideoBitrate)
         AppSettings.setInt("streaming_audio_bitrate", value: customAudioBitrate)
         AppSettings.setInt("streaming_frame_rate", value: customFrameRate)

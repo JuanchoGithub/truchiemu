@@ -7,6 +7,7 @@ struct TimeMachineSettingsView: View {
 
     @State private var masterEnabled: Bool = true
     @State private var rewindEnabled: Bool = true
+    @State private var rewindDuringRecording: Bool = AppSettings.getBool("timeMachine_rewindDuringRecording", defaultValue: true)
     @State private var fastForwardEnabled: Bool = true
     @State private var slowMotionEnabled: Bool = true
     @State private var memoryMB: Double = 256
@@ -82,6 +83,7 @@ struct TimeMachineSettingsView: View {
     private func loadSettings() {
         masterEnabled = AppSettings.getBool("timeMachine_enabled", defaultValue: true)
         rewindEnabled = AppSettings.getBool("timeMachine_rewindEnabled", defaultValue: true)
+        rewindDuringRecording = AppSettings.getBool("timeMachine_rewindDuringRecording", defaultValue: true)
         fastForwardEnabled = AppSettings.getBool("timeMachine_fastForwardEnabled", defaultValue: true)
         slowMotionEnabled = AppSettings.getBool("timeMachine_slowMotionEnabled", defaultValue: true)
         memoryMB = Double(AppSettings.getInt("timeMachine_memoryMB", defaultValue: 256))
@@ -103,9 +105,11 @@ struct TimeMachineSettingsView: View {
                         rewindEnabled = true
                         fastForwardEnabled = true
                         slowMotionEnabled = true
+                        rewindDuringRecording = true
                         AppSettings.set("timeMachine_rewindEnabled", value: true)
                         AppSettings.set("timeMachine_fastForwardEnabled", value: true)
                         AppSettings.set("timeMachine_slowMotionEnabled", value: true)
+                        AppSettings.set("timeMachine_rewindDuringRecording", value: true)
                     }
                 }
 
@@ -115,6 +119,18 @@ struct TimeMachineSettingsView: View {
                     }
                     .onChange(of: rewindEnabled) { _, newValue in
                         AppSettings.set("timeMachine_rewindEnabled", value: newValue)
+                    }
+
+                    if rewindEnabled {
+                        Toggle(isOn: $rewindDuringRecording) {
+                            Text(loc.localized("settings.timeMachine.rewindDuringRecording"))
+                        }
+                        .onChange(of: rewindDuringRecording) { _, newValue in
+                            AppSettings.set("timeMachine_rewindDuringRecording", value: newValue)
+                        }
+                        Text(loc.localized("settings.timeMachine.rewindDuringRecordingDescription"))
+                            .font(.caption)
+                            .foregroundStyle(AppColors.textSecondary(colorScheme))
                     }
 
                     Toggle(isOn: $fastForwardEnabled) {
