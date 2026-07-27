@@ -153,6 +153,67 @@ class StreamRecordingService: ObservableObject {
     var outputURL: URL?
     nonisolated(unsafe) private var frameCount: Int64 = 0
     nonisolated(unsafe) private var isRecordingFlag: Bool = false
+    /// While the user is in Time Machine scrub/rewind mode, both video- and
+    /// audio-frame appends are suppressed (emulation is paused, so the core
+    /// produces no fresh samples — letting the audio capture timer keep
+    /// draining the shared-memory ring would advance PTS past available
+    /// audio and desync A/V). See issue #30.
+    nonisolated(unsafe) private(set) var isRewindPaused: Bool = false
+    /// Total wall-clock time spent inside Time Machine scrub mode across the
+    /// active recording session. Subtracted from both video and audio PTS so
+    /// the final recording skips the rewind windows entirely — no frozen last
+    /// frame held for the rewind duration, no audio silence gap. Both tracks
+    /// keep advancing exactly as if the rewind had never happened. See #30.
+    nonisolated(unsafe) private(set) var rewindPtsOffset: CFTimeInterval = 0
+    /// Wall-clock snapshot taken when `setRewindPaused(true)` was last called,
+    /// so the elapsed rewind duration can be folded into `rewindPtsOffset` on
+    /// release. Reset alongside the accumulator at session boundaries.
+    nonisolated(unsafe) private var rewindEnterWallTime: CFTimeInterval = 0
+    /// PTS of the last appended video frame. AVAssetWriter requires strictly
+    /// monotonic PTS; after rewind release the offset-compensated PTS can land
+    /// at or below this value (the wall-clock gap is folded into the offset,
+    /// collapsing PTS to the pre-rewind value), so the next frame append
+    /// would be rejected with `The operation could not be completed`. We bump
+    /// the incoming PTS forward to `lastVideoPTS + 1` tick (1/600s) when that
+    /// happens. See #30.
+    nonisolated(unsafe) private var lastVideoPTS: CMTime = .invalid
+    /// Same as `lastVideoPTS` but for the audio input. AVAssetWriter refuses
+    /// audio samples at PTS ≤ the previous sample's PTS.
+    nonisolated(unsafe) private var lastAudioPTS: CMTime = .invalid
+    private nonisolated static let ptsTimescale: Int32 = 600
+
+    /// Clamp `pts` to be strictly greater than `lastPTS`. Returns the original
+    /// `pts` when it already exceeds `lastPTS`, else `lastPTS + 1` tick.
+    /// Used by both video and audio append paths to keep AVAssetWriter happy
+    /// after rewind windows (or any other PTS-arithmetic edge case).
+    nonisolated private static func enforceMonotonic(_ pts: CMTime, after last: CMTime, timescale: Int32) -> CMTime {
+        guard last.isValid, pts <= last else { return pts }
+        return CMTime(value: last.value + 1, timescale: timescale)
+    }
+
+    @MainActor
+    func setRewindPaused(_ paused: Bool) {
+        guard isRewindPaused != paused else { return }
+        isRewindPaused = paused
+        if paused {
+            rewindEnterWallTime = CACurrentMediaTime()
+        } else if rewindEnterWallTime > 0 {
+            rewindPtsOffset += CACurrentMediaTime() - rewindEnterWallTime
+            rewindEnterWallTime = 0
+            // Stale audio samples produced during scrubbing sit in the shared
+            // ring buffer. They'd be drained at the new (compensated) PTS and
+            // shift every resumption audio later — the per-rewind drift #30
+            // reports. Discard them so capture resumes from a clean buffer.
+            SharedMemoryManager.shared.resetAudioReadPosition()
+        }
+        LoggerService.info(category: "Recording", "rewind pause \(paused ? "engaged" : "released") — recording=\(isRecording) ptsOffset=\(rewindPtsOffset)s")
+    }
+
+    /// Wall-clock seconds that the active recording's PTS should be shifted
+    /// backward by (to skip rewind/scrub windows). Read by the per-frame
+    /// capture paths (`MetalCoordinator.performFrameCapture` and
+    /// `buildAudioSampleBuffer`) and subtracted from the raw wall-clock PTS.
+    nonisolated var currentRewindPtsOffset: CFTimeInterval { rewindPtsOffset }
 
     /// Video dims used by the streaming pipe-write path. Set at session start
     /// (MainActor), read on the recording thread to compute row stride for
@@ -547,6 +608,10 @@ class StreamRecordingService: ObservableObject {
             isRecording = true
             recordingStartTime = Date()
             audioSessionAnchor = CACurrentMediaTime()
+            rewindPtsOffset = 0
+            lastVideoPTS = .invalid
+            lastAudioPTS = .invalid
+            rewindEnterWallTime = 0
             LoggerService.info(category: "Recording", "Started recording to \(outputURL.path)")
 
             startAudioCapture()
@@ -663,6 +728,10 @@ class StreamRecordingService: ObservableObject {
         isRecording = true
         recordingStartTime = Date()
         audioSessionAnchor = CACurrentMediaTime()
+        rewindPtsOffset = 0
+        lastVideoPTS = .invalid
+        lastAudioPTS = .invalid
+        rewindEnterWallTime = 0
         streamStatus = .connecting
         LoggerService.info(category: "Recording", "Started streaming to \(mode.rawValue) at \(Int(poolSize.width))x\(Int(poolSize.height)) via HaishinKit")
 
@@ -706,6 +775,11 @@ class StreamRecordingService: ObservableObject {
         streamStatus = .idle
         recordingStartTime = nil
         audioSessionAnchor = 0
+        isRewindPaused = false
+        rewindPtsOffset = 0
+        lastVideoPTS = .invalid
+        lastAudioPTS = .invalid
+        rewindEnterWallTime = 0
         streamingService = nil
         pixelBufferPool = nil
         stopAudioCapture()
@@ -806,6 +880,11 @@ class StreamRecordingService: ObservableObject {
             }
         }
         pixelBufferPool = nil
+        isRewindPaused = false
+        rewindPtsOffset = 0
+        lastVideoPTS = .invalid
+        lastAudioPTS = .invalid
+        rewindEnterWallTime = 0
         stopAudioCapture()
         streamStatus = .idle
     }
@@ -823,6 +902,11 @@ class StreamRecordingService: ObservableObject {
         streamStatus = .idle
         recordingStartTime = nil
         audioSessionAnchor = 0
+        isRewindPaused = false
+        rewindPtsOffset = 0
+        lastVideoPTS = .invalid
+        lastAudioPTS = .invalid
+        rewindEnterWallTime = 0
 
         stopAudioCapture()
 
@@ -886,7 +970,7 @@ class StreamRecordingService: ObservableObject {
     /// the MainActor. `pixelBuffer` is a pool-allocated IOSurface-backed
     /// CVPixelBuffer that the GPU has just finished writing into.
     nonisolated func appendVideoFrame(_ pixelBuffer: CVPixelBuffer, at time: CMTime) {
-        guard isRecordingFlag else { return }
+        guard isRecordingFlag, !isRewindPaused else { return }
 
         // Streaming: hand the IOSurface-backed pixel buffer straight to the
         // RTMPHaishinKit service. No CPU readback, no `[UInt8]` swap, no pipe
@@ -932,7 +1016,20 @@ class StreamRecordingService: ObservableObject {
         if frameCount == 0 {
             LoggerService.info(category: "Recording", "appendVideoFrame: first local frame appended")
         }
-        adaptor.append(pixelBuffer, withPresentationTime: time)
+        // Strict monotonic PTS: AVAssetWriter fails the session with
+        // "The operation could not be completed" if a frame lands at PTS ≤ the
+        // last appended frame's PTS — exactly what happens each time a rewind
+        // window releases (offset compensation collapses PTS to the pre-rewind
+        // value, colliding with the last pre-rewind frame). Bump forward one
+        // tick (1/600s) so the writer keeps going. See #30.
+        let monotonicPTS = Self.enforceMonotonic(time, after: lastVideoPTS, timescale: Self.ptsTimescale)
+        if monotonicPTS != time {
+            #if LOG_DEBUG
+            LoggerService.debug(category: "Recording", "appendVideoFrame: PTS clamped \(time.value)→\(monotonicPTS.value) (was ≤ last=\(lastVideoPTS.value))")
+            #endif
+        }
+        adaptor.append(pixelBuffer, withPresentationTime: monotonicPTS)
+        lastVideoPTS = monotonicPTS
         frameCount &+= 1
     }
 
@@ -971,7 +1068,7 @@ class StreamRecordingService: ObservableObject {
     }
 
     nonisolated private func captureAudioSamples() {
-        guard isRecordingFlag else { return }
+        guard isRecordingFlag, !isRewindPaused else { return }
 
         let maxSamples = audioReadScratch.count
         guard maxSamples > 0 else { return }
@@ -1038,6 +1135,10 @@ class StreamRecordingService: ObservableObject {
 
         // Local recording destination: AVAssetWriter video/audio tracks.
         guard let input = audioInput, input.isReadyForMoreMediaData else { return }
+        // `buildAudioSampleBuffer` already enforced monotonic PTS; re-read it
+        // from the sample buffer so this watermark matches what the encoder
+        // actually received. See #30.
+        lastAudioPTS = sbuf.presentationTimeStamp
         input.append(sbuf)
         audioFramePosition += Int64(sampleCount)
     }
@@ -1122,7 +1223,17 @@ class StreamRecordingService: ObservableObject {
             }
         }
 
-        let pts = CMTime(seconds: CACurrentMediaTime() - audioSessionAnchor, preferredTimescale: 600)
+        // Subtract accumulated rewind duration so PTS picks up where the
+        // pre-rewind audio left off — the rewind window is cut from the
+        // recording rather than filled with silence at a PTS gap. Matches the
+        // video PTS compensation in MetalCoordinator.performFrameCapture (#30).
+        let rawPts = CACurrentMediaTime() - audioSessionAnchor
+        let compensated = CMTime(seconds: max(0, rawPts - rewindPtsOffset), preferredTimescale: 600)
+        // Strict monotonic PTS — see appendVideoFrame for rationale. After a
+        // rewind release the compensated audio PTS can land at or below the
+        // last appended sample's PTS; AVAssetWriter then tears down the
+        // session with the generic "operation could not be completed" error.
+        let pts = Self.enforceMonotonic(compensated, after: lastAudioPTS, timescale: Self.ptsTimescale)
         var timing = CMSampleTimingInfo(
             duration: CMTime(value: Int64(sampleCount), timescale: Int32(outputAudioSampleRate)),
             presentationTimeStamp: pts,

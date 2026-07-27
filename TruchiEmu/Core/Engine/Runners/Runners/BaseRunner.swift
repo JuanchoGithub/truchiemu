@@ -897,6 +897,10 @@ case "scummvm": runner = ScummVMRunner()
         XPCBridgeAdapter.shared.setPaused(true)
         timeMachineScrubFrameIndex = newest
         osdMessage = LocalizationManager.shared.localized("osd.rewind")
+        // Suspend recording appends while emulation is paused so the captured
+        // A/V PTS stays aligned on resume (see issue #30 and
+        // `StreamRecordingService.isRewindPaused`).
+        StreamRecordingService.shared.setRewindPaused(true)
         LoggerService.info(category: "TimeMachine", "Entered scrub mode at frame \(newest)")
     }
 
@@ -934,6 +938,9 @@ case "scummvm": runner = ScummVMRunner()
         let postTruncateNewest = timeMachineBuffer.newestFrameIndex ?? 0
         let postTruncateCount = timeMachineBuffer.entryCount
         osdMessage = nil
+        // Resume appending captured frames/audio to the active recording
+        // (see `enterTimeMachineMode` and issue #30).
+        StreamRecordingService.shared.setRewindPaused(false)
         LoggerService.info(category: "TimeMachine", "Exited scrub mode — scrubFrame=\(exitScrubFrame) preTruncate [oldest=\(preTruncateOldest) newest=\(preTruncateNewest) count=\(preTruncateCount)] postTruncate [oldest=\(postTruncateOldest) newest=\(postTruncateNewest) count=\(postTruncateCount)]")
     }
 

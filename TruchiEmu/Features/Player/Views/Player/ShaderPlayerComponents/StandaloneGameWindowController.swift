@@ -1698,6 +1698,17 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
     }
 
     func windowWillClose(_ notification: Notification) {
+        // Stop recording BEFORE tearing down the libretro core / XPC shared
+        // memory. The audio capture timer runs on a serial writing queue and
+        // reads from the shared audio ring buffer via
+        // `SharedMemoryManager.readAudioSamples`. If the runner stops first
+        // the XPC host exits, the SHM mapping becomes invalid, and the next
+        // timer tick dereferences a NULL `shm` and crashes
+        // (xpc_shm_load_audioReadPos @ XPCSharedMemory.h:127). Finalizing the
+        // recording writer here also flushes the last few frames cleanly
+        // instead of leaving a corrupt mp4 (#30).
+        StreamRecordingService.shared.stop()
+
         XPCBridgeAdapter.shared.setPaused(true)
 
         isClosingWindow = true

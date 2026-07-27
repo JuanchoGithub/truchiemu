@@ -1278,7 +1278,7 @@ outputHeight: Float(drawHeight)
         // `acquireFramePixelBuffer` returns a +1 reference that the closure
         // will balance with CVPixelBufferRelease at scope exit (the encoder
         // retains it as needed during append).
-        let capturePTS = CMTime(seconds: CACurrentMediaTime() - recordingStartTime, preferredTimescale: 600)
+        let capturePTS = CMTime(seconds: max(0, CACurrentMediaTime() - recordingStartTime - StreamRecordingService.shared.currentRewindPtsOffset), preferredTimescale: 600)
         // The CVMetalTexture binding and pixel buffer are retained across the
         // GPU submit/release cycle by passing them as Unmanaged handles to
         // the completion handler, which consumes them with takeRetainedValue.
