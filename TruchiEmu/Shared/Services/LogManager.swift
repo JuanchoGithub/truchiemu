@@ -59,7 +59,7 @@ final class LogManager: @unchecked Sendable {
         #else
         guard let data = AppSettings.getData(Self.customLogFolderKey) else { return nil }
         var isStale = false
-        return try? URL(resolvingBookmarkData: data, options: [], relativeTo: nil, bookmarkDataIsStale: &isStale)
+        return try? URL(resolvingBookmarkData: data, options: .withSecurityScope, relativeTo: nil, bookmarkDataIsStale: &isStale)
         #endif
     }
     

@@ -98,6 +98,7 @@ final class LoggerService: @unchecked Sendable {
 
   private var logFileHandle: FileHandle?
   private var currentLogURL: URL?
+  private var didStartLogAccessScope = false
   fileprivate let logFileQueue = DispatchQueue(label: "com.truchiemu.logger", qos: .utility)
   private let maxLogSizeBytes: Int64 = 5 * 1024 * 1024 // 5 MB
     private let maxLogAgeDays: Int = 7
@@ -145,6 +146,10 @@ final class LoggerService: @unchecked Sendable {
     private func setupFileLogging() {
 #if !XPC_SERVICE
         let logURL = LogManager.shared.currentLogURL
+        if LogManager.shared.customLogFolderURL != nil {
+            _ = logURL.startAccessingSecurityScopedResource()
+            didStartLogAccessScope = true
+        }
 #else
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         let logURL = appSupport.appendingPathComponent("TruchiEmu/Logs/TruchiEmuCoreHost.log")
@@ -155,6 +160,10 @@ final class LoggerService: @unchecked Sendable {
     private func _setupFileLoggingSync(logURL: URL? = nil) {
         logFileHandle?.closeFile()
         logFileHandle = nil
+        if didStartLogAccessScope, let url = currentLogURL {
+            url.stopAccessingSecurityScopedResource()
+            didStartLogAccessScope = false
+        }
 
         let resolvedURL: URL
         if let logURL {
