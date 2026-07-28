@@ -130,6 +130,15 @@ class StreamRecordingService: ObservableObject {
     @Published var customAudioBitrate: Int = 192_000
     @Published var customFrameRate: Int = 60
     @Published var customVideoCodec: RecordingVideoCodec = .h264
+    /// When true, the recording is built from the time-machine buffer's
+    /// eviction stream + its tail at stop. Each buffer eviction = a frame the
+    /// user has moved past and can no longer rewind to = source of truth that
+    /// goes into the file. On stop, the buffer's remaining entries (the still-
+    /// rewindable recent gameplay) are appended. Result: the output video
+    /// shows a continuous playthrough without rewind portions and without
+    /// duplicate game content across rewind boundaries (#30).
+    /// Persisted as ``recording_bufferBasedRecording``, default false.
+    @Published var bufferBasedRecording: Bool = false
     /// The next four AVFoundation writer primitives (`assetWriter`,
     /// `videoInput`, `audioInput`, `pixelBufferAdaptor`) are written on
     /// MainActor at session start/stop and read from the recording queue on
@@ -362,6 +371,7 @@ class StreamRecordingService: ObservableObject {
             }
         }
         recordWithShaders = AppSettings.getBool("streaming_record_with_shaders", defaultValue: true)
+        bufferBasedRecording = AppSettings.getBool("recording_bufferBasedRecording", defaultValue: false)
         customVideoBitrate = AppSettings.getInt("streaming_video_bitrate", defaultValue: customVideoBitrate)
         customAudioBitrate = AppSettings.getInt("streaming_audio_bitrate", defaultValue: customAudioBitrate)
         customFrameRate = AppSettings.getInt("streaming_frame_rate", defaultValue: customFrameRate)
@@ -376,6 +386,7 @@ class StreamRecordingService: ObservableObject {
         AppSettings.setString("streaming_mode", value: mode.rawValue)
         AppSettings.setString("streaming_quality", value: quality.rawValue)
         AppSettings.setBool("streaming_record_with_shaders", value: recordWithShaders)
+        AppSettings.setBool("recording_bufferBasedRecording", value: bufferBasedRecording)
         AppSettings.setInt("streaming_video_bitrate", value: customVideoBitrate)
         AppSettings.setInt("streaming_audio_bitrate", value: customAudioBitrate)
         AppSettings.setInt("streaming_frame_rate", value: customFrameRate)
