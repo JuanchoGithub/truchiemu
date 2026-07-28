@@ -34,7 +34,12 @@ class TimeMachineBuffer {
         }
     }
 
-    func push(frameIndex: UInt64, data: Data) {
+    /// Push a new entry to the buffer. Returns any entries evicted by this
+    /// push (oldest first) so the caller can react — e.g. a recording
+    /// pipeline can write each evicted entry's serialized state to the
+    /// video file as a "committed" gameplay frame.
+    @discardableResult
+    func push(frameIndex: UInt64, data: Data) -> [TimeMachineEntry] {
         lock.withLock {
             let entryOverhead = 64
             let incomingBytes = data.count + entryOverhead
@@ -44,13 +49,16 @@ class TimeMachineBuffer {
             // MpegContext during FMVs) beyond what configure() assumed — using
             // entry count alone could balloon memory by the size-growth ratio.
             // Captures arrive in frame order, so the oldest entry is at index 0.
+            var evicted: [TimeMachineEntry] = []
             while (entries.count >= maxEntries || currentMemoryBytes + incomingBytes > maxMemoryBytes)
                     && !entries.isEmpty {
-                currentMemoryBytes -= (entries[0].data.count + entryOverhead)
-                entries.removeFirst()
+                let removed = entries.removeFirst()
+                currentMemoryBytes -= (removed.data.count + entryOverhead)
+                evicted.append(removed)
             }
             entries.append(TimeMachineEntry(frameIndex: frameIndex, data: data))
             currentMemoryBytes += incomingBytes
+            return evicted
         }
     }
 

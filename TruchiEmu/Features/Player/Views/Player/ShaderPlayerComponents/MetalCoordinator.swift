@@ -1279,6 +1279,13 @@ outputHeight: Float(drawHeight)
         // will balance with CVPixelBufferRelease at scope exit (the encoder
         // retains it as needed during append).
         let capturePTS = CMTime(seconds: max(0, CACurrentMediaTime() - recordingStartTime - StreamRecordingService.shared.currentRewindPtsOffset), preferredTimescale: 600)
+        // Snapshot the rewind-scrub state at CAPTURE time. The
+        // commandBuffer completion handler fires async (after GPU work, often
+        // 16ms or more later). If we read `isRewindPaused` at append-time
+        // instead, frames captured DURING rewind would get appended AFTER
+        // rewind ends — inflating the post-rewind chunk with scrub frames
+        // and breaking seamless rotation #30.
+        let wasScrubFrame = StreamRecordingService.shared.isRewindPausedSnapshot
         // The CVMetalTexture binding and pixel buffer are retained across the
         // GPU submit/release cycle by passing them as Unmanaged handles to
         // the completion handler, which consumes them with takeRetainedValue.
@@ -1298,7 +1305,15 @@ outputHeight: Float(drawHeight)
                         RollingVideoBufferService.shared.ensureRecordingMatches(width: poolW, height: poolH)
                     }
                 }
-                StreamRecordingService.shared.appendVideoFrame(pb, at: capturePTS)
+                if !wasScrubFrame {
+                    StreamRecordingService.shared.appendVideoFrame(pb, at: capturePTS)
+                } else {
+                    // Captured during rewind — drop the buffer; do not
+                    // append to any chunk. Even if the GPU completion fires
+                    // AFTER the rewind ends, this frame must stay out.
+                    // CVPixelBuffer is auto-managed in Swift, so just
+                    // letting `pb` go out of scope releases the reference.
+                }
             }
         }
     }

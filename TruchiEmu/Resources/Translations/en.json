@@ -2259,8 +2259,6 @@
     "settings.streaming.browse": "Browse…",
     "settings.streaming.recordWithShaders": "Record with shaders applied",
     "settings.streaming.recordWithShadersDescription": "When enabled, the current shader preset is baked into the recording. Disable for a raw, unprocessed capture with lower CPU usage.",
-    "settings.streaming.seamlessRewindCut": "Cut rewinds from recording",
-    "settings.streaming.seamlessRewindCutDescription": "When enabled, Time Machine rewind windows are skipped entirely in the recorded file (the resulting clip looks like a seamless playthrough — no frozen last frame and no rewind pause). Disable to keep the legacy behavior of holding the last pre-rewind frame during rewind.",
     "settings.streaming.enable": "Enable Recording / Streaming",
     "settings.streaming.enableDescription": "Record gameplay to a local file or stream live to Twitch, YouTube, or a custom RTMP server.",
     "settings.streaming.streamURL": "Stream URL",

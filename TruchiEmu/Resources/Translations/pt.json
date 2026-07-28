@@ -2257,8 +2257,6 @@
     "settings.streaming.browse": "Procurar…",
     "settings.streaming.recordWithShaders": "Gravar com shaders aplicados",
     "settings.streaming.recordWithShadersDescription": "Quando ativado, o preset de shader atual é incorporado à gravação. Desative para uma captura bruta e sem processamento com menor uso de CPU.",
-    "settings.streaming.seamlessRewindCut": "Cortar rebobinamentos da gravação",
-    "settings.streaming.seamlessRewindCutDescription": "Quando ativado, as janelas de rebobinamento da Time Machine são omitidas inteiramente do arquivo gravado (o clipe resultante parece uma jogada contínua — sem o último quadro congelado e sem a pausa do rebobinamento). Desative para manter o comportamento legado de manter o último quadro pré-rebobinado durante o rebobinamento.",
     "settings.streaming.enable": "Habilitar gravação / transmissão",
     "settings.streaming.enableDescription": "Grave a jogabilidade em um arquivo local ou transmita ao vivo para Twitch, YouTube ou um servidor RTMP personalizado.",
     "settings.streaming.streamURL": "URL de transmissão",

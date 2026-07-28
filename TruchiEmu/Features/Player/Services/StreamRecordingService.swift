@@ -122,13 +122,6 @@ class StreamRecordingService: ObservableObject {
     @Published var streamingEnabled = false
     @Published var quality: RecordingQuality = .high
     @Published var recordWithShaders = true
-    /// When true, Time Machine rewind windows are subtracted from the
-    /// recording's PTS so they are cut entirely (seamless playback). When
-    /// false, the legacy behavior is restored: rewind window is held in the
-    /// file as the last pre-rewind frame frozen for the rewind duration (#30).
-    /// Persisted as ``recording_seamlessRewindCut`` in AppSettings, default
-    /// false (opt-in) to preserve prior behavior.
-    @Published var seamlessRewindCut: Bool = false
     @Published var streamResolution: StreamResolution = .p1080
     @Published var streamStatus: StreamStatus = .idle
     @Published var streamError: String?
@@ -137,7 +130,6 @@ class StreamRecordingService: ObservableObject {
     @Published var customAudioBitrate: Int = 192_000
     @Published var customFrameRate: Int = 60
     @Published var customVideoCodec: RecordingVideoCodec = .h264
-
     /// The next four AVFoundation writer primitives (`assetWriter`,
     /// `videoInput`, `audioInput`, `pixelBufferAdaptor`) are written on
     /// MainActor at session start/stop and read from the recording queue on
@@ -150,12 +142,7 @@ class StreamRecordingService: ObservableObject {
     nonisolated(unsafe) var audioInput: AVAssetWriterInput?
     nonisolated(unsafe) var pixelBufferAdaptor: AVAssetWriterInputPixelBufferAdaptor?
     /// Pool used by the renderer (MetalCoordinator) to obtain recycled
-    /// IOSurface-backed CVPixelBuffers for the active recording session. The
-    /// GPU blits the frame directly into a buffer pulled from this pool, then
-    /// hands it to `appendVideoFrame` on a background queue. Zero CPU copies.
-    /// Written on MainActor at session start/stop; read from the renderer
-    /// thread — controlled hand-off, not a concurrent race (sessions don't
-    /// overlap; pool is replaced only when the previous session is finished).
+    /// IOSurface-backed CVPixelBuffers for the active recording session.
     nonisolated(unsafe) var pixelBufferPool: CVPixelBufferPool?
     var outputURL: URL?
     nonisolated(unsafe) private var frameCount: Int64 = 0
@@ -166,6 +153,14 @@ class StreamRecordingService: ObservableObject {
     /// draining the shared-memory ring would advance PTS past available
     /// audio and desync A/V). See issue #30.
     nonisolated(unsafe) private(set) var isRewindPaused: Bool = false
+    /// Same value as `isRewindPaused` but read directly from the renderer's
+    /// per-frame capture site, not from the writer's append closure. The
+    /// renderer's `commandBuffer.addCompletedHandler` closure fires ASYNC
+    /// (16ms or more later); if we read `isRewindPaused` at append-time, a
+    /// frame captured DURING rewind would land in the post-rewind chunk when
+    /// the closure eventually fires. Snapshotting at capture-time ensures
+    /// scrub frames stay out of every chunk. See #30.
+    nonisolated var isRewindPausedSnapshot: Bool { isRewindPaused }
     /// Total wall-clock time spent inside Time Machine scrub mode across the
     /// active recording session. Subtracted from both video and audio PTS so
     /// the final recording skips the rewind windows entirely — no frozen last
@@ -200,27 +195,28 @@ class StreamRecordingService: ObservableObject {
 
     @MainActor
     func setRewindPaused(_ paused: Bool) {
-        guard isRewindPaused != paused else { return }
+         guard isRewindPaused != paused else { return }
         isRewindPaused = paused
         if paused {
             rewindEnterWallTime = CACurrentMediaTime()
         } else if rewindEnterWallTime > 0 {
-            if seamlessRewindCut {
-                // Seamless mode: subtract the rewind window's wall-clock duration
-                // from the PTS anchors so the window is cut from the recording
-                // both on video and audio tracks.
-                rewindPtsOffset += CACurrentMediaTime() - rewindEnterWallTime
-            }
+            // Subtract the rewind window's wall-clock duration from the PTS
+            // anchors so the next append lands just past the last pre-rewind
+            // frame, cutting the rewind window out of the file's PTS (no
+            // frozen last frame, no audio silence gap). Applies to both
+            // local recording and live streaming — `assetWriter` is nil
+            // for the latter so a chunk-rotation path doesn't exist there
+            // anyway, and the offset is what aligns streaming's PTS across
+            // the rewind window.
+            rewindPtsOffset += CACurrentMediaTime() - rewindEnterWallTime
             rewindEnterWallTime = 0
             // Stale audio samples produced during scrubbing sit in the shared
             // ring buffer. They'd be drained at the next PTS and shift every
-            // resumption audio later — the per-rewind drift #30 reports.
-            // Discard them so capture resumes from a clean buffer in either
-            // mode (the legacy freeze-frame mode still pauses the engine, so
-            // the buffer's content is dead air anyway).
+            // resumption audio later. Discard them so capture resumes from
+            // a clean buffer.
             SharedMemoryManager.shared.resetAudioReadPosition()
         }
-        LoggerService.info(category: "Recording", "rewind pause \(paused ? "engaged" : "released") — recording=\(isRecording) seamlessCut=\(seamlessRewindCut) ptsOffset=\(rewindPtsOffset)s")
+        LoggerService.info(category: "Recording", "rewind pause \(paused ? "engaged" : "released") — recording=\(isRecording) ptsOffset=\(rewindPtsOffset)s")
     }
 
     /// Wall-clock seconds that the active recording's PTS should be shifted
@@ -366,7 +362,6 @@ class StreamRecordingService: ObservableObject {
             }
         }
         recordWithShaders = AppSettings.getBool("streaming_record_with_shaders", defaultValue: true)
-        seamlessRewindCut = AppSettings.getBool("recording_seamlessRewindCut", defaultValue: false)
         customVideoBitrate = AppSettings.getInt("streaming_video_bitrate", defaultValue: customVideoBitrate)
         customAudioBitrate = AppSettings.getInt("streaming_audio_bitrate", defaultValue: customAudioBitrate)
         customFrameRate = AppSettings.getInt("streaming_frame_rate", defaultValue: customFrameRate)
@@ -381,7 +376,6 @@ class StreamRecordingService: ObservableObject {
         AppSettings.setString("streaming_mode", value: mode.rawValue)
         AppSettings.setString("streaming_quality", value: quality.rawValue)
         AppSettings.setBool("streaming_record_with_shaders", value: recordWithShaders)
-        AppSettings.setBool("recording_seamlessRewindCut", value: seamlessRewindCut)
         AppSettings.setInt("streaming_video_bitrate", value: customVideoBitrate)
         AppSettings.setInt("streaming_audio_bitrate", value: customAudioBitrate)
         AppSettings.setInt("streaming_frame_rate", value: customFrameRate)
@@ -529,17 +523,17 @@ class StreamRecordingService: ObservableObject {
         let codec = customVideoCodec
 
         let fileManager = FileManager.default
-        let parentDir = outputURL.deletingLastPathComponent().path
+        let parentDir = self.outputURL!.deletingLastPathComponent().path
         if !fileManager.fileExists(atPath: parentDir) {
             try? fileManager.createDirectory(atPath: parentDir, withIntermediateDirectories: true)
         }
 
-        if fileManager.fileExists(atPath: outputURL.path) {
-            try? fileManager.removeItem(at: outputURL)
+        if fileManager.fileExists(atPath: self.outputURL!.path) {
+            try? fileManager.removeItem(at: self.outputURL!)
         }
 
         let outputFileType: AVFileType = codec.isLossless ? .mov : .mp4
-        guard let writer = try? AVAssetWriter(outputURL: outputURL, fileType: outputFileType) else {
+        guard let writer = try? AVAssetWriter(outputURL: self.outputURL!, fileType: outputFileType) else {
             LoggerService.error(category: "Recording", "Failed to create AVAssetWriter")
             return
         }
@@ -628,7 +622,7 @@ class StreamRecordingService: ObservableObject {
             lastVideoPTS = .invalid
             lastAudioPTS = .invalid
             rewindEnterWallTime = 0
-            LoggerService.info(category: "Recording", "Started recording to \(outputURL.path)")
+            LoggerService.info(category: "Recording", "Started recording to \(self.outputURL?.path ?? "nil")")
 
             startAudioCapture()
         } else {
@@ -955,7 +949,7 @@ class StreamRecordingService: ObservableObject {
         pixelBufferAdaptor = nil
         pixelBufferPool = nil
 
-        writer.finishWriting {
+         writer.finishWriting {
             if let error = writerRef.error {
                 LoggerService.error(category: "Recording", "AVAssetWriter error: \(error.localizedDescription)")
             } else {
@@ -965,10 +959,6 @@ class StreamRecordingService: ObservableObject {
     }
 
     private func stopStreaming() {
-        // Capture the service reference, drop our MainActor handle so in-flight
-        // frame/audio appenders bail on the next `isRecordingFlag` check (the
-        // HaishinKit service's `stop()` is async; cleanly closing both actors
-        // takes an unbounded time depending on RTMP server-side finalize).
         guard let service = streamingService else { return }
         streamingService = nil
         pixelBufferPool = nil
@@ -977,6 +967,7 @@ class StreamRecordingService: ObservableObject {
             await service.stop()
         }
     }
+
 
     // MARK: - Frame Capture
 
