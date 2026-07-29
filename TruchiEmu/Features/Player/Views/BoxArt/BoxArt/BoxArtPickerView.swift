@@ -136,7 +136,7 @@ struct BoxArtPickerView: View {
 
     private func applyURL(_ url: URL) {
         Task {
-            if await BoxArtService.shared.downloadAndCache(artURL: url, for: rom) != nil {
+            if await BoxArtService.shared.downloadAndCache(artURL: url, for: rom, forceReplace: true) != nil {
                 var updated = rom
                 
                 // Force UI state change by removing and re-adding path

@@ -313,8 +313,8 @@ class BoxArtService: ObservableObject {
         return nil
     }
 
-    func downloadAndCache(artURL: URL, for rom: ROM, session: URLSession? = nil) async -> URL? {
-        if case .success(let url) = await downloadAndCache(artURL: artURL, for: rom, to: rom.boxArtLocalPath, session: session) {
+    func downloadAndCache(artURL: URL, for rom: ROM, session: URLSession? = nil, forceReplace: Bool = false) async -> URL? {
+        if case .success(let url) = await downloadAndCache(artURL: artURL, for: rom, to: rom.boxArtLocalPath, session: session, forceReplace: forceReplace) {
             return url
         }
         return nil
@@ -336,7 +336,7 @@ class BoxArtService: ObservableObject {
         case transient
     }
 
-    func downloadAndCache(artURL: URL, for rom: ROM, to localURL: URL, session: URLSession? = nil) async -> ArtDownloadResult {
+    func downloadAndCache(artURL: URL, for rom: ROM, to localURL: URL, session: URLSession? = nil, forceReplace: Bool = false) async -> ArtDownloadResult {
         let sess = session ?? URLSession.shared
         let folder = localURL.deletingLastPathComponent()
 
@@ -345,8 +345,11 @@ class BoxArtService: ObservableObject {
         // Disk is the source of truth: if the art file already exists and is a
         // valid image, never delete-and-re-download it. This prevents re-fetching
         // (and clobbering) art we already have on every re-scan, for box art,
-        // title screens, and screenshots alike.
-        if FileManager.default.fileExists(atPath: localURL.path), isValidImageFile(at: localURL) {
+        // title screens, and screenshots alike. The manual boxart picker
+        // (BoxArtPickerView) overrides this with forceReplace: true so a user
+        // right-click on a fresh search result actually replaces the file.
+        if !forceReplace,
+           FileManager.default.fileExists(atPath: localURL.path), isValidImageFile(at: localURL) {
             if localURL == rom.boxArtLocalPath {
                 BoxArtThumbnailService.deleteThumbnails(for: localURL)
                 await ImageCache.shared.removeImage(for: localURL)
