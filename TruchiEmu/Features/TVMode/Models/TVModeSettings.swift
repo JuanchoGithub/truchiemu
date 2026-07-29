@@ -8,6 +8,9 @@ enum TVModeSettings {
     private static let themeKey = "tvMode_theme"
     private static let shownSmartEntriesKey = "tvMode_shownSmartEntries"
     private static let showSystemsKey = "tvMode_showSystems"
+    private static let screenSelectionModeKey = "tvMode_screenSelectionMode"
+    private static let rememberedScreenIDKey = "tvMode_rememberedScreenID"
+    private static let originScreenIDKey = "tvMode_originScreenID"
 
     // MARK: - Theme
 
@@ -110,5 +113,70 @@ enum TVModeSettings {
 
     static func setShowSystems(_ value: Bool) {
         AppSettings.setBool(showSystemsKey, value: value)
+    }
+
+    // MARK: - Screen selection
+
+    /// How TV Mode picks which display to launch on. `.alwaysMain` skips the
+    /// picker entirely; `.ask` shows the picker on every TV-mode entry when
+    /// more than one screen is connected; `.lastUsed` remembers the screen the
+    /// user picked last and re-uses it on subsequent launches.
+    enum ScreenSelectionMode: String, CaseIterable, Identifiable {
+        case alwaysMain
+        case ask
+        case lastUsed
+
+        var id: String { rawValue }
+
+        var locKey: String {
+            switch self {
+            case .alwaysMain: return "tvMode.screenSelection.alwaysMain"
+            case .ask: return "tvMode.screenSelection.ask"
+            case .lastUsed: return "tvMode.screenSelection.lastUsed"
+            }
+        }
+    }
+
+    static var screenSelectionMode: ScreenSelectionMode {
+        guard let raw = AppSettings.getString(screenSelectionModeKey, defaultValue: nil) else { return .ask }
+        return ScreenSelectionMode(rawValue: raw) ?? .ask
+    }
+
+    static func setScreenSelectionMode(_ value: ScreenSelectionMode) {
+        AppSettings.setString(screenSelectionModeKey, value: value.rawValue)
+    }
+
+    /// Stable identifier (CGDirectDisplayID as a string) of the screen the
+    /// user last picked from the picker. Cleared by `resetRememberedScreen()`.
+    static var rememberedScreenID: String? {
+        AppSettings.getString(rememberedScreenIDKey, defaultValue: nil)
+    }
+
+    static func setRememberedScreenID(_ value: String?) {
+        if let value {
+            AppSettings.setString(rememberedScreenIDKey, value: value)
+        } else {
+            AppSettings.remove(rememberedScreenIDKey)
+        }
+    }
+
+    static func resetRememberedScreen() {
+        AppSettings.remove(rememberedScreenIDKey)
+    }
+
+    /// Display the main window was on right before the user entered TV Mode.
+    /// Used by the exit path to put the window back where the user came from
+    /// — falls back to "leave it on the TV-mode screen" when this id no
+    /// longer matches an attached display (e.g. user unplugged the monitor).
+    static var originScreenID: String? {
+        AppSettings.getString(originScreenIDKey, defaultValue: nil)
+    }
+
+    static func setOriginScreenID(_ value: String?) {
+        if let value {
+            AppSettings.setString(originScreenIDKey, value: value)
+        } else {
+            AppSettings.remove(originScreenIDKey)
+        }
     }
 }

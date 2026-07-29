@@ -34,7 +34,7 @@ struct SettingsView: View {
     enum Page: Hashable, Codable, RawRepresentable, Identifiable {
 
         var id: String { rawValue }
-        case general, saves, library, controllers, analogMouse, boxArt, cheats, bezels, retroAchievements, genre, logging, moveList, hotkeys, timeMachine, perSystem, streaming, help, about, reset
+        case general, saves, library, controllers, analogMouse, boxArt, cheats, bezels, retroAchievements, genre, logging, moveList, hotkeys, timeMachine, perSystem, streaming, tvMode, help, about, reset
 
         var rawValue: String {
             switch self {
@@ -54,6 +54,7 @@ struct SettingsView: View {
             case .timeMachine: return "timeMachine"
             case .perSystem: return "perSystem"
             case .streaming: return "streaming"
+            case .tvMode: return "tvMode"
             case .help: return "help"
             case .about: return "about"
             case .reset: return "reset"
@@ -78,6 +79,7 @@ struct SettingsView: View {
             case "timeMachine": self = .timeMachine
             case "perSystem": self = .perSystem
             case "streaming": self = .streaming
+            case "tvMode": self = .tvMode
             case "help": self = .help
             case "about": self = .about
             case "reset": self = .reset
@@ -87,7 +89,7 @@ struct SettingsView: View {
 
         var sidebarSection: SidebarSection {
             switch self {
-            case .general, .saves, .boxArt, .bezels, .perSystem:
+            case .general, .saves, .boxArt, .bezels, .perSystem, .tvMode:
                 return .general
             case .library, .controllers, .analogMouse, .hotkeys:
                 return .library
@@ -116,6 +118,7 @@ struct SettingsView: View {
             case .timeMachine: return "clock.arrow.circlepath"
             case .perSystem: return "square.grid.2x2"
             case .streaming: return "video.fill"
+            case .tvMode: return "tv"
             case .help: return "questionmark.circle.fill"
             case .about: return "info.circle"
             case .reset: return "arrow.uturn.backward"
@@ -140,6 +143,7 @@ struct SettingsView: View {
             case .timeMachine: return LocalizationManager.shared.localized("settings.timeMachine")
             case .perSystem: return LocalizationManager.shared.localized("settings.perSystem")
              case .streaming: return LocalizationManager.shared.localized("settings.streamingAndMedia")
+            case .tvMode: return LocalizationManager.shared.localized("settings.tvMode")
             case .help: return LocalizationManager.shared.localized("settings.help")
             case .about: return LocalizationManager.shared.localized("settings.about")
             case .reset: return LocalizationManager.shared.localized("settings.reset.title")
@@ -180,6 +184,8 @@ struct SettingsView: View {
                 return "system per-system bezels cheats controllers core boxart shader preferences per console platform"
              case .streaming:
                 return "streaming recording twitch youtube stream key credentials quality bitrate screenshot share button clip buffer badge rec indicator"
+            case .tvMode:
+                return "tv mode 10-foot launcher living room couch screen display external monitor multi theme bold muted boxart gamepad buttons controller mapping d-pad pick default"
             case .help:
                 return "help keyboard shortcuts faq documentation troubleshooting resources"
             case .about:
@@ -202,7 +208,7 @@ struct SettingsView: View {
     }
 
     static let allPages: [Page] = [
-        .general, .saves, .boxArt, .bezels, .perSystem,
+        .general, .saves, .boxArt, .bezels, .perSystem, .tvMode,
         .library, .controllers, .analogMouse, .hotkeys,
         .cheats, .retroAchievements, .moveList, .streaming, .genre, .timeMachine,
         .logging, .reset, .help, .about
@@ -629,6 +635,7 @@ struct SettingsView: View {
             case .timeMachine: TimeMachineSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID, selectedPage: selectedPageBinding)
             case .perSystem: PerSystemSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID, pendingSystemID: $pendingSystemSelection)
             case .streaming: StreamingMediaSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
+            case .tvMode: TVModeMainSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
             case .help: HelpSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
             case .about: AboutView(focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
             case .reset: ResetSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)

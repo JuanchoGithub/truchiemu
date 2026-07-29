@@ -101,10 +101,19 @@ struct ContentView: View {
             // — and `toggleFullScreen` transitions to windowed with an empty
             // chrome. Nesting two async calls ensures we always cross at
             // least one CATransaction boundary before calling toggle.
+            //
+            // The origin-screen restore runs BEFORE `toggleFullScreen`:
+            // AppKit treats `setFrame` on a fullscreen window as the
+            // post-exit target frame. Setting it before the toggle ensures
+            // the windowed result lands on the user's original screen in
+            // one atomic step, instead of being parked off-screen or on
+            // the wrong display (the exact bug we hit when restoring
+            // after the toggle).
             guard !isActive else { return }
             DispatchQueue.main.async {
                 DispatchQueue.main.async {
                     if let window = NSApp.windows.first(where: { $0.styleMask.contains(.fullScreen) }) {
+                        TVModeSettingsManager.shared.prepareOriginScreenRestore()
                         window.toggleFullScreen(nil)
                     }
                 }

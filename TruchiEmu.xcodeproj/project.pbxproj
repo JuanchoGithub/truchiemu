@@ -428,6 +428,7 @@
 		54B0500290F48170ED7E9772 /* input_systemLabels_gba.json in Resources */ = {isa = PBXBuildFile; fileRef = 165AEEDBCBAA0EDF4C6A229B /* input_systemLabels_gba.json */; };
 		54F6C2EC347F272ACD5B7433 /* dc@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 1E2D936B5C0CCDBBFB77FDA5 /* dc@132w.png */; };
 		5599E148D482884C3658AEA5 /* SettingsSearchable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02CF8EF66CB8C3E5967901A7 /* SettingsSearchable.swift */; };
+		55E584113B19DCBC4058608E /* ScreenCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F26EC044E2537040F0323F /* ScreenCatalog.swift */; };
 		55E6B9AB9FB2C589930FB29F /* input_coreLabels_bsnes_performance.json in Resources */ = {isa = PBXBuildFile; fileRef = CAF67BA0EDE6DB1E53D8381C /* input_coreLabels_bsnes_performance.json */; };
 		562FE8460EC832F3319BAB35 /* ResourceCacheRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C4C61168B31EC18C33BE903 /* ResourceCacheRepository.swift */; };
 		5657896F66E1C3999BCF43EB /* colecovision-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 341EDCE22CD79FCDF7272153 /* colecovision-cheats.zip */; };
@@ -731,6 +732,7 @@
 		8EA0AE9915E4C73BDFD4342F /* fightdata_drgnmst.json in Resources */ = {isa = PBXBuildFile; fileRef = 08583960EFE60BDC1B849D84 /* fightdata_drgnmst.json */; };
 		8EE6078DB034AB7CB9AE5801 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF63A8BB2AE99EA8E721D3E9 /* AboutView.swift */; };
 		9049C2E340E550DE6036FEF7 /* input_coreLabels_theodore.json in Resources */ = {isa = PBXBuildFile; fileRef = 6937A26557EA12463539AC7C /* input_coreLabels_theodore.json */; };
+		90F9EBACE99C59EC91F7859C /* TVModeMainSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4742B5293D8F02279D7A5427 /* TVModeMainSettingsView.swift */; };
 		911153D36F82919C5AC53E2C /* fightdata_sfex2.json in Resources */ = {isa = PBXBuildFile; fileRef = 3163ABB66BACBA8035AE394E /* fightdata_sfex2.json */; };
 		913FD03A767921A285FC98E0 /* fightdata_sftm.json in Resources */ = {isa = PBXBuildFile; fileRef = C3A6C719C78A5090AA56F911 /* fightdata_sftm.json */; };
 		9175C767F01BBA408C2256AA /* CoreDownloadStatusBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA8729DB9F6FECA28AB753C1 /* CoreDownloadStatusBar.swift */; };
@@ -840,6 +842,7 @@
 		A26E08F021EE7BBD84252BBC /* fightdata_knights.json in Resources */ = {isa = PBXBuildFile; fileRef = EE717AEB2DE84BEFAA4B823E /* fightdata_knights.json */; };
 		A28322A5953298E4ADE4B54C /* DINOTHAWR.png in Resources */ = {isa = PBXBuildFile; fileRef = 19BE5184F223C9FB5AAB7A18 /* DINOTHAWR.png */; };
 		A28B877A77EF71164928C438 /* SwiftDataContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 229C521334BCA5CB8DE046E8 /* SwiftDataContainer.swift */; };
+		A29907414C30FFD91369DE66 /* ScreenDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1B23140952A469B6A93FAE /* ScreenDescriptor.swift */; };
 		A2A051D01F64A6B35C63FD55 /* PPSSPP_assets.zip in Resources */ = {isa = PBXBuildFile; fileRef = 7A7A2C1D58103762F23C3156 /* PPSSPP_assets.zip */; };
 		A2D29BA34C0DA4A086414ECE /* fightdata_btlkroad.json in Resources */ = {isa = PBXBuildFile; fileRef = F9C5B0740DCBC111CE5503A2 /* fightdata_btlkroad.json */; };
 		A2E0998B1DA59292631FA342 /* input_coreLabels_pocketcdg.json in Resources */ = {isa = PBXBuildFile; fileRef = 0FBEF4A0EC322C901446D4C9 /* input_coreLabels_pocketcdg.json */; };
@@ -887,6 +890,7 @@
 		AB8FFE28A242061439B11C1B /* input_systemLabels_atari_st.json in Resources */ = {isa = PBXBuildFile; fileRef = 3BD38C52C8520B46C36D80C0 /* input_systemLabels_atari_st.json */; };
 		ABC142DDA913094BBD34EBDA /* input_systemLabels_nxengine.json in Resources */ = {isa = PBXBuildFile; fileRef = BAB77F37E53788B1C11CD496 /* input_systemLabels_nxengine.json */; };
 		AC0B20C25AFBF758CF466BEE /* wiiu.ico in Resources */ = {isa = PBXBuildFile; fileRef = E91F50D1DD73DE5B179D6681 /* wiiu.ico */; };
+		AC543D9A9B74F75A84690A8C /* TVModeScreenPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFA25006558B653BDA5466A1 /* TVModeScreenPickerView.swift */; };
 		AC6E9E9D1182BAF30B290558 /* GameModeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3785C1F47A9C4D765D471039 /* GameModeManager.swift */; };
 		AC82EA27BD1BD6E08A1452B3 /* thomson-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 8730157D603A47AE913E31BF /* thomson-cheats.zip */; };
 		ACF656245360AE90F2155F02 /* fightdata_sfa2.json in Resources */ = {isa = PBXBuildFile; fileRef = 959697A919B91A825E7E7DD8 /* fightdata_sfa2.json */; };
@@ -1674,6 +1678,7 @@
 		46DE9EB293E2EF4339C372C2 /* MAMEVerificationRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMEVerificationRecord.swift; sourceTree = "<group>"; };
 		46E0ED7A4E150D240018D6D4 /* input_coreOverrides_beetle_lynx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_beetle_lynx.json; sourceTree = "<group>"; };
 		46F6462CAACE85FBE4E9A152 /* SFX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SFX.png; sourceTree = "<group>"; };
+		4742B5293D8F02279D7A5427 /* TVModeMainSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVModeMainSettingsView.swift; sourceTree = "<group>"; };
 		47A009E54347F61469205751 /* BezelSelectorSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelSelectorSheet.swift; sourceTree = "<group>"; };
 		47C0E5F83D9F3C91BA7B9595 /* GW.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = GW.png; sourceTree = "<group>"; };
 		48C6E114A5242CDC824D54E9 /* atari@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "atari@132w.png"; sourceTree = "<group>"; };
@@ -2183,6 +2188,7 @@
 		AB1B584EF2D58664FDD12C57 /* TVModeSettingsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVModeSettingsManager.swift; sourceTree = "<group>"; };
 		ABA557C1655E4F8E21E6245E /* check_coverage.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = check_coverage.py; sourceTree = "<group>"; };
 		ABE60205F14183C120DDC8AA /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
+		AC1B23140952A469B6A93FAE /* ScreenDescriptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenDescriptor.swift; sourceTree = "<group>"; };
 		AC216B4AFF696DEDA43A6399 /* fightdata_ehrgeiz.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_ehrgeiz.json; sourceTree = "<group>"; };
 		AC4242637CF323E022F4E8FA /* mame_2003_plus.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = mame_2003_plus.json; sourceTree = "<group>"; };
 		AC76D35E66386E6C5D242961 /* GenrePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenrePickerView.swift; sourceTree = "<group>"; };
@@ -2552,6 +2558,7 @@
 		F54FE75C7494DC94970ADDC0 /* ws@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ws@132w.png"; sourceTree = "<group>"; };
 		F57E3C1CFFB6CC7ECC1EB2BE /* LYNX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LYNX.png; sourceTree = "<group>"; };
 		F5999F97B4E6C47B228D2F1B /* SequenceRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequenceRunner.swift; sourceTree = "<group>"; };
+		F5F26EC044E2537040F0323F /* ScreenCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenCatalog.swift; sourceTree = "<group>"; };
 		F627444ABF1C6A5C798EC26F /* fightdata_soulclbr.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_soulclbr.json; sourceTree = "<group>"; };
 		F64B6D88E1726561C28BB368 /* fightdata_savagere.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_savagere.json; sourceTree = "<group>"; };
 		F655939548263F218C5B75DC /* mame_libretro_default.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = mame_libretro_default.json; sourceTree = "<group>"; };
@@ -2602,6 +2609,7 @@
 		FF549897537D3CC05BD11231 /* CoreHostProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreHostProtocol.swift; sourceTree = "<group>"; };
 		FF8544B99E1A29C52878E218 /* PGM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PGM.png; sourceTree = "<group>"; };
 		FF99046DDA2AE7FA94CED63D /* fightdata_rbffspec.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_rbffspec.json; sourceTree = "<group>"; };
+		FFA25006558B653BDA5466A1 /* TVModeScreenPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVModeScreenPickerView.swift; sourceTree = "<group>"; };
 		FFCD61A1C092615118B53825 /* GameGuideViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameGuideViewModel.swift; sourceTree = "<group>"; };
 		FFD0AF7532FC4393B76C50D2 /* PSP.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PSP.png; sourceTree = "<group>"; };
 		FFE0102057205E260CD4B2EF /* fightdata_souledge.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_souledge.json; sourceTree = "<group>"; };
@@ -3353,6 +3361,7 @@
 		5EEAA03095FC8CC64CADE1FB /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				AC1B23140952A469B6A93FAE /* ScreenDescriptor.swift */,
 				6134273171A1D67C5727EC2A /* TVModeEntry.swift */,
 				3A158D1E971E353A7E5A7A13 /* TVModeMetrics.swift */,
 				5A899083767EEC40F32FD7C4 /* TVModeSettings.swift */,
@@ -3423,6 +3432,7 @@
 		74ACAB644A269C737DC826A2 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				F5F26EC044E2537040F0323F /* ScreenCatalog.swift */,
 				AB1B584EF2D58664FDD12C57 /* TVModeSettingsManager.swift */,
 			);
 			path = Services;
@@ -4311,6 +4321,7 @@
 				86C00E951DC0729BDE7FCDDA /* TVModeEntryTile.swift */,
 				5BF7F46A5B667F8AB060455A /* TVModeGameDetailView.swift */,
 				FB9B612171274CE268934F30 /* TVModeGameTile.swift */,
+				FFA25006558B653BDA5466A1 /* TVModeScreenPickerView.swift */,
 				538AB49C132C82E063E21D0A /* TVModeSettingsView.swift */,
 				DAE8D121916EBBB0D6D8B750 /* TVModeView.swift */,
 			);
@@ -4427,6 +4438,7 @@
 				7FE2570126C33B65ED8FBC84 /* SettingsView.swift */,
 				4077D568E47AFA32B755F967 /* StreamingMediaSettingsView.swift */,
 				059B489FC9D5EFEFA26D850F /* TimeMachineSettingsView.swift */,
+				4742B5293D8F02279D7A5427 /* TVModeMainSettingsView.swift */,
 				C6E39A1DA6685C2C22E7F0E9 /* UpdateAvailableView.swift */,
 				A534F2D85440714CF65708BD /* UpdateWizardView.swift */,
 				B868CBCF190918C4BD72EA68 /* WhatsNewView.swift */,
@@ -6115,6 +6127,8 @@
 				6F40193C9A9BCC936F152ED1 /* SavedStates.swift in Sources */,
 				09A4E91B96AD2C160CB5872B /* SavesSettingsView.swift in Sources */,
 				543B34C593F66B5B4A04DE1A /* ScaleSmooth.metal in Sources */,
+				55E584113B19DCBC4058608E /* ScreenCatalog.swift in Sources */,
+				A29907414C30FFD91369DE66 /* ScreenDescriptor.swift in Sources */,
 				917EB16799865634EA575E50 /* ScreenshotOverlayViews.swift in Sources */,
 				C5EB2C5F6D1AFCDE534689FB /* ScreenshotService.swift in Sources */,
 				EE03D57F8CE30415A20BABB5 /* ScreenshotsTabView.swift in Sources */,
@@ -6169,7 +6183,9 @@
 				5A715B466E5613FF4980B3A8 /* TVModeEntryTile.swift in Sources */,
 				623644F24D5A2B17725FC856 /* TVModeGameDetailView.swift in Sources */,
 				F62933F7B93123D3C48B2565 /* TVModeGameTile.swift in Sources */,
+				90F9EBACE99C59EC91F7859C /* TVModeMainSettingsView.swift in Sources */,
 				BCFC90DF9027D4305BD145A3 /* TVModeMetrics.swift in Sources */,
+				AC543D9A9B74F75A84690A8C /* TVModeScreenPickerView.swift in Sources */,
 				5A3F9A411EA59DB442491CF0 /* TVModeSettings.swift in Sources */,
 				483F7D0F2BF1756AD07552C1 /* TVModeSettingsManager.swift in Sources */,
 				E08990940E23A05B3C9E8A70 /* TVModeSettingsView.swift in Sources */,

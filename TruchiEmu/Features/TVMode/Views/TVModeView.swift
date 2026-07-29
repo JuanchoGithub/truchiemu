@@ -105,8 +105,9 @@ struct TVModeView: View {
 
     @StateObject private var viewModel: TVModeViewModel
     @StateObject private var navContext: TVModeNavContext
+    @ObservedObject private var tvModeSettings = TVModeSettingsManager.shared
+    @ObservedObject private var screenCatalog = ScreenCatalog.shared
     @State private var showTVSettingsOverlay: Bool = false
-    @State private var enteredFullscreen: Bool = false
 
     /// Refreshed on appear / screen change so the scale tracks the current
     /// display. Held in `@State` so children read a stable value via
@@ -144,6 +145,20 @@ struct TVModeView: View {
                 .transition(.opacity)
                 .zIndex(100)
             }
+            if let picker = tvModeSettings.screenPickerRequest {
+                TVModeScreenPickerView(
+                    screens: picker.screens,
+                    initialFocusIndex: picker.initialFocusIndex,
+                    onSelect: { descriptor in
+                        tvModeSettings.resolveScreenPicker(selected: descriptor)
+                    },
+                    onCancel: {
+                        tvModeSettings.resolveScreenPicker(selected: nil)
+                    }
+                )
+                .transition(.opacity)
+                .zIndex(150)
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(background.ignoresSafeArea())
@@ -161,7 +176,10 @@ struct TVModeView: View {
                 navContext.suspendForGameplay()
             }
             GamepadNavContextStack.shared.push(navContext)
-            enterFullscreen()
+            // Screen selection (target resolve + picker + fullscreen) is
+            // driven by `TVModeSettingsManager.enter()` so every entry path
+            // — menu, gamepad combo, library grid, cold-start — uses the
+            // exact same flow. Nothing to do here.
         }
         .onDisappear {
             GamepadNavContextStack.shared.remove(navContext)
@@ -169,7 +187,6 @@ struct TVModeView: View {
             // `tvModeSettings.isActive` flip false — that timing is after
             // SwiftUI has mounted `mainInterface`, so the unified toolbar
             // renders before the fullscreen→windowed transition starts.
-            enteredFullscreen = false
         }
         .onChange(of: systemDatabase.systems) { _, _ in
             viewModel.handleExternalSystemsChange()
@@ -539,13 +556,6 @@ extension TVModeView {
         let nextIndex = (allThemes.firstIndex(of: current).map { $0 + 1 } ?? 0) % allThemes.count
         TVModeSettings.setTheme(allThemes[nextIndex])
         NotificationCenter.default.post(name: .tvModeSettingsChanged, object: nil)
-    }
-
-    fileprivate func enterFullscreen() {
-        guard let window = NSApp.windows.first(where: { $0.isVisible && $0.styleMask.contains(.titled) && !$0.styleMask.contains(.fullScreen) }),
-              window.contentViewController != nil || window.contentView != nil else { return }
-        window.toggleFullScreen(nil)
-        enteredFullscreen = true
     }
 
     /// Re-asserts key window status on the TV-mode window after the in-app

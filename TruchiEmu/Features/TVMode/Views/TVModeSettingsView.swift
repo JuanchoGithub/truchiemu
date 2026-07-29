@@ -73,6 +73,43 @@ struct TVModeSettingsView: View {
                 }
                 .overlay(focusRing(active: nav.focusID == .showSystems))
             }
+
+            Divider()
+
+            VStack(alignment: .leading, spacing: 10 * scale) {
+                Text(loc.localized("tvMode.settings.screenSelection"))
+                    .font(.system(size: 14 * scale, weight: .semibold))
+                Picker("", selection: Binding(
+                    get: { TVModeSettings.screenSelectionMode },
+                    set: { TVModeSettings.setScreenSelectionMode($0) }
+                )) {
+                    ForEach(TVModeSettings.ScreenSelectionMode.allCases) { mode in
+                        Text(loc.localized(mode.locKey)).tag(mode)
+                    }
+                }
+                .pickerStyle(.menu)
+                .labelsHidden()
+                .overlay(focusRing(active: nav.focusID == .screenSelection))
+
+                HStack {
+                    Text(loc.localized("tvMode.settings.rememberedScreen"))
+                        .font(.system(size: 13 * scale))
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    Text(rememberedScreenSummary)
+                        .font(.system(size: 13 * scale, weight: .medium))
+                        .foregroundStyle(.primary)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                    Button(loc.localized("tvMode.settings.resetScreen")) {
+                        TVModeSettings.resetRememberedScreen()
+                        settingsGeneration &+= 1
+                    }
+                    .buttonStyle(.borderless)
+                    .disabled(TVModeSettings.rememberedScreenID == nil)
+                    .overlay(focusRing(active: nav.focusID == .resetScreen))
+                }
+            }
             Spacer()
         }
         .padding(28 * scale)
@@ -97,6 +134,19 @@ struct TVModeSettingsView: View {
                 .allowsHitTesting(false)
         }
     }
+
+    /// Human-readable description of the remembered screen — falls back to
+    /// "None" when the user hasn't picked yet, so the reset button clearly
+    /// has nothing to clear.
+    private var rememberedScreenSummary: String {
+        guard let id = TVModeSettings.rememberedScreenID else {
+            return loc.localized("tvMode.settings.rememberedScreen.none")
+        }
+        if let screen = ScreenCatalog.shared.screens.first(where: { $0.id == id }) {
+            return screen.name
+        }
+        return loc.localized("tvMode.settings.rememberedScreen.unavailable")
+    }
 }
 
 @MainActor
@@ -105,6 +155,8 @@ final class TVModeSettingsNav: ObservableObject {
         case launchInTVMode
         case smartEntry(TVModeSettings.SmartEntry)
         case showSystems
+        case screenSelection
+        case resetScreen
         case close
     }
 
@@ -118,6 +170,8 @@ final class TVModeSettingsNav: ObservableObject {
         var ids: [FocusID] = [.launchInTVMode]
         ids.append(contentsOf: TVModeSettings.SmartEntry.allCases.map { .smartEntry($0) })
         ids.append(.showSystems)
+        ids.append(.screenSelection)
+        ids.append(.resetScreen)
         ids.append(.close)
         itemIDs = ids
 
@@ -160,6 +214,17 @@ final class TVModeSettingsNav: ObservableObject {
         case .showSystems:
             let next = !TVModeSettings.showSystems
             TVModeSettings.setShowSystems(next)
+            NotificationCenter.default.post(name: .tvModeSettingsChanged, object: nil)
+        case .screenSelection:
+            // Cycle the picker on A so the gamepad flow can change modes
+            // without opening a menu that requires keyboard.
+            let modes = TVModeSettings.ScreenSelectionMode.allCases
+            let current = TVModeSettings.screenSelectionMode
+            let next = modes[(modes.firstIndex(of: current).map { $0 + 1 } ?? 0) % modes.count]
+            TVModeSettings.setScreenSelectionMode(next)
+            NotificationCenter.default.post(name: .tvModeSettingsChanged, object: nil)
+        case .resetScreen:
+            TVModeSettings.resetRememberedScreen()
             NotificationCenter.default.post(name: .tvModeSettingsChanged, object: nil)
         case .close:
             dismissAction?()

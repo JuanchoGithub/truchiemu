@@ -5,7 +5,6 @@ struct GeneralSettingsView: View {
     @EnvironmentObject var library: ROMLibrary
     @State private var autoCheckUpdates: Bool = true
     @State private var notificationsEnabled: Bool = false
-    @State private var tvModeSystemIconStyle: String = "default"
 
     @State private var pendingTheme: AccentColorTheme = .samus
     @State private var pendingAppearanceMode: AppearanceMode = .automatic
@@ -245,25 +244,6 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
                 .id("section-application")
             }
 
-            // ★ TV-Mode System Icons Section
-            if (!isSearching || matchesSearch("TV Mode system icon controller emulator tile")) && sectionVisible("section-tvModeSystemIcons") {
-                Section(header: Label(loc.localized("settings.tvModeSystemIcons"), systemImage: "rectangle.on.rectangle.angled")) {
-                    Picker(loc.localized("settings.tvModeSystemIcons"), selection: $tvModeSystemIconStyle) {
-                        Text(loc.localized("settings.tvModeSystemIcons.default")).tag("default")
-                        Text(loc.localized("settings.tvModeSystemIcons.controller")).tag("controller")
-                    }
-                    .pickerStyle(.menu)
-                    .onChange(of: tvModeSystemIconStyle) { _, newValue in
-                        AppSettings.setString("tvMode_systemIconStyle", value: newValue)
-                    }
-
-                    Text(loc.localized("settings.tvModeSystemIconsDescription"))
-                        .font(.caption)
-                        .foregroundStyle(AppColors.textSecondary(colorScheme))
-                }
-                .id("section-tvModeSystemIcons")
-            }
-
             // No results message
             if isSearching && !hasMatchingSections {
                 Section {
@@ -303,7 +283,6 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
             pendingCustomColor = themeManager.customAccentColor
         pendingToolbarAccent = themeManager.toolbarAccentEnabled
         pendingTintedSurfaces = themeManager.tintedSurfacesEnabled
-        tvModeSystemIconStyle = AppSettings.getString("tvMode_systemIconStyle", defaultValue: "default") ?? "default"
         activePendingTheme = pendingTheme
         activePendingAppearanceMode = pendingAppearanceMode
         activePendingCustomColor = pendingCustomColor
