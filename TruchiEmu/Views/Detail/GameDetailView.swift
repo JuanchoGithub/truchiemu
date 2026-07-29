@@ -805,7 +805,7 @@ struct GameDetailView: View {
         library.updateROM(updated)
     }
 
-    func launchGame(slotToLoad: Int? = nil, progressiveVersion: Int? = nil) {
+    func launchGame(slotToLoad: Int? = nil, progressiveVersion: Int? = nil, disableAutoLoadOnStart: Bool = false) {
         guard !isLaunchingGame else { return }
         guard let sysID = currentROM.systemID, let system = SystemDatabase.system(forID: sysID) else {
             isLaunchingGame = false
@@ -838,7 +838,7 @@ struct GameDetailView: View {
         let freshROM = library.roms.first { $0.id == currentROM.id } ?? currentROM
         let currentShaderUniforms = freshROM.settings.shaderUniformOverrides
         Task {
-            await gameLauncher.launchGame(rom: freshROM, coreID: cid, slotToLoad: slotToLoad, progressiveVersion: progressiveVersion, library: library, shaderUniformOverrides: currentShaderUniforms) { _ in
+            await gameLauncher.launchGame(rom: freshROM, coreID: cid, slotToLoad: slotToLoad, progressiveVersion: progressiveVersion, disableAutoLoadOnStart: disableAutoLoadOnStart, library: library, shaderUniformOverrides: currentShaderUniforms) { _ in
                 self.isLaunchingGame = false
             }
         }

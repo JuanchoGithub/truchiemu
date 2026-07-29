@@ -169,7 +169,7 @@ extension GameDetailView {
                     }
                     Spacer()
                     Button {
-                        launchGame()
+                        launchGame(disableAutoLoadOnStart: true)
                     } label: {
                         HStack(spacing: 6) {
                             Image(systemName: "play.fill")

@@ -142,7 +142,7 @@ extension GameDetailView {
 
     var launchButton: some View {
         Button {
-            launchGame()
+            launchGame(disableAutoLoadOnStart: true)
         } label: {
             HStack(spacing: 8) {
                 Image(systemName: "play.fill").font(.headline)
