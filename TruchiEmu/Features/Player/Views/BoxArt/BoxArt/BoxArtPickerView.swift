@@ -137,20 +137,22 @@ struct BoxArtPickerView: View {
     private func applyURL(_ url: URL) {
         Task {
             if await BoxArtService.shared.downloadAndCache(artURL: url, for: rom, forceReplace: true) != nil {
-                var updated = rom
-                
-                // Force UI state change by removing and re-adding path
-                updated.hasBoxArt = false
-                library.updateROM(updated)
-                
-                try? await Task.sleep(nanoseconds: 50_000_000)
-                
-                updated.hasBoxArt = true
-                library.updateROM(updated)
-                
+                // refreshDerivedFields() inside updateROM recomputes hasBoxArt
+                // from disk truth, so just persist the ROM with its existing
+                // fields — the new file is already on disk by the time we
+                // reach this line.
+                library.updateROM(rom)
+
                 // Signal the grid view to refresh (this also regenerates thumbnails)
-                BoxArtService.shared.signalBoxArtUpdated(for: rom.id, boxArtURL: rom.boxArtLocalPath)
-                
+                let resolvedURL = rom.boxArtLocalPath
+                BoxArtService.shared.signalBoxArtUpdated(for: rom.id, boxArtURL: resolvedURL)
+
+                // Evict any in-memory thumbnails before dismissing so the detail
+                // view reloads the new image immediately (signalBoxArtUpdated
+                // schedules the eviction in a fire-and-forget Task).
+                await ImageCache.shared.removeImage(for: resolvedURL)
+                await ImageCache.shared.removeThumbnail(for: resolvedURL)
+
                 dismiss()
             }
         }

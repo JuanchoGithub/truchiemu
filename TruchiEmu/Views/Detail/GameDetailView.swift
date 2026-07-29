@@ -7,6 +7,7 @@ struct GameDetailView: View {
     @EnvironmentObject var controllerService: ControllerService
     @EnvironmentObject var categoryManager: CategoryManager
     @ObservedObject var sysPrefs = SystemPreferences.shared
+    @ObservedObject private var boxArtService = BoxArtService.shared
     @Environment(\.dismiss) var dismiss
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.openWindow) var openWindow
@@ -282,6 +283,7 @@ struct GameDetailView: View {
             }
         }
         .onChange(of: currentROM.hasBoxArt) { _, _ in loadBoxArt() }
+        .onChange(of: boxArtService.boxArtUpdated) { _, _ in loadBoxArt() }
 .onChange(of: currentROM.hasTitleScreen) { _, _ in loadTitleScreen() }
 .onChange(of: currentROM.screenshotPaths) { _, _ in loadScreenshots() }
 .onChange(of: library.bezelUpdateToken) { _, _ in Task { await loadCurrentBezelImage() } }
@@ -714,7 +716,7 @@ struct GameDetailView: View {
     }
 
     func loadBoxArt() {
-        Task {
+        Task { @MainActor in
             if let resolvedPath = BoxArtService.shared.resolveLocalBoxArtIfNeeded(for: currentROM, library: library) {
                 boxArtImageURL = resolvedPath
                 boxArtImage = await ImageCache.shared.thumbnail(for: resolvedPath, preferredSize: .large)

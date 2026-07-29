@@ -22,6 +22,7 @@ struct GameCardView: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var prefs = SystemPreferences.shared
     @ObservedObject private var dragState = GameDragState.shared
+    @ObservedObject private var boxArtService = BoxArtService.shared
     @EnvironmentObject private var library: ROMLibrary
     @EnvironmentObject private var categoryManager: CategoryManager
 
@@ -181,7 +182,7 @@ struct GameCardView: View {
         .accessibilityLabel(rom.displayName)
         .accessibilityHint(Text("Double-click or press Enter to launch"))
         .accessibilityAddTraits(.isButton)
-        .task(id: "\(rom.id)-\(rom.hasBoxArt)-\(zoomReloadToken)") {
+        .task(id: "\(rom.id)-\(rom.hasBoxArt)-\(zoomReloadToken)-\(boxArtService.boxArtUpdated)") {
             // rom.boxArtLocalPath is now authoritative (resolved during the
             // off-scroll pipeline), so this is zero main-thread I/O. Art-less
             // ROMs bail immediately to the placeholder with no await.
