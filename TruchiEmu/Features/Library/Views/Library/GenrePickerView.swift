@@ -3,6 +3,7 @@ import SwiftUI
 struct GenrePickerView: View {
     @Binding var selectedGenres: Set<String>
     let allGenres: [String]
+    var genreCounts: [String: Int] = [:]
     let onChange: () -> Void
 
     @State private var searchText: String = ""
@@ -57,7 +58,8 @@ struct GenrePickerView: View {
                 ForEach(filteredGenres, id: \.self) { genre in
                     GenrePill(
                         genre: genre,
-                        isActive: selectedGenres.contains(genre)
+                        isActive: selectedGenres.contains(genre),
+                        count: genreCounts[genre] ?? 0
                     ) {
                         toggle(genre)
                     }
@@ -100,10 +102,13 @@ struct GenrePickerView: View {
 private struct GenrePill: View {
     let genre: String
     let isActive: Bool
+    let count: Int
     let action: () -> Void
 
     @Environment(\.colorScheme) private var colorScheme
     @State private var isHovered = false
+
+    private var isEmpty: Bool { count == 0 }
 
     var body: some View {
         Button(action: action) {
@@ -116,8 +121,12 @@ private struct GenrePill: View {
                     .font(.system(size: 11, weight: .medium))
                     .lineLimit(1)
                     .truncationMode(.tail)
+                Spacer(minLength: isActive ? 4 : 0)
+                Text("\(count)")
+                    .font(.system(size: 10, weight: .regular).monospacedDigit())
+                    .foregroundColor(isActive ? AppColors.textOnAccent(colorScheme) : AppColors.textSecondaryNeutral(colorScheme))
             }
-            .foregroundColor(isActive ? AppColors.textOnAccent(colorScheme) : AppColors.textPrimary(colorScheme))
+            .foregroundColor(isActive ? AppColors.textOnAccent(colorScheme) : (isEmpty ? AppColors.textTertiary(colorScheme) : AppColors.textPrimary(colorScheme)))
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -128,6 +137,7 @@ private struct GenrePill: View {
             .contentShape(Capsule())
         }
         .buttonStyle(.plain)
+        .opacity(isEmpty && !isActive ? 0.5 : 1.0)
         .onHover { hovering in
             let shouldAnimate = !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
             if shouldAnimate {

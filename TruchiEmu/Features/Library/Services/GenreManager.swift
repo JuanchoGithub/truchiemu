@@ -97,6 +97,19 @@ final class GenreManager: ObservableObject {
         return Array(Set(names)).sorted()
     }
 
+    /// Counts games per display genre for the given ROM subset
+    /// (e.g. the system-scoped subset for a system view).
+    /// Hidden ROMs are excluded so the count matches what the grid shows.
+    func countPerGenre(from roms: [ROM]) -> [String: Int] {
+        var counts: [String: Int] = [:]
+        for rom in roms where !rom.isHidden {
+            for name in effectiveDisplayNames(for: rom.metadata?.genre) {
+                counts[name, default: 0] += 1
+            }
+        }
+        return counts
+    }
+
     func getVisibleDisplayGenres(from roms: [ROM]) -> [String] {
         getAllDisplayGenres(from: roms).filter { !hiddenGenres.contains($0) }
     }

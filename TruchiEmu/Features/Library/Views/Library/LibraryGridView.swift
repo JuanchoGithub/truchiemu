@@ -221,6 +221,19 @@ struct LibraryGridView: View {
         searchText.isEmpty ? filter : (filter.isSystemView ? filter : .all)
     }
 
+    /// ROMs scoped to the active filter (system view's merged internal IDs,
+    /// or the full library for `.all`). Used for per-genre counts in the
+    /// genre picker so counts reflect only the games in the current view.
+    private var filterScopedROMs: [ROM] {
+        switch effectiveFilter {
+        case .system(let sys):
+            let ids = Set(SystemDatabase.allInternalIDs(forDisplayID: sys.id))
+            return library.roms.filter { ids.contains($0.systemID ?? "") }
+        default:
+            return library.roms
+        }
+    }
+
     private var activeFilterDisplayText: String {
         let filterNames: [String] = activeFilters.compactMap { rawValue -> String? in
             GameFilterOption(rawValue: rawValue)?.label
@@ -1901,6 +1914,7 @@ viewModel.updateFilters(
                     GenrePickerView(
                         selectedGenres: $selectedGenres,
                         allGenres: GenreManager.shared.getAllDisplayGenres(from: library.roms),
+                        genreCounts: GenreManager.shared.countPerGenre(from: filterScopedROMs),
                         onChange: {
                             viewModel.updateFilters(
                                 filter: effectiveFilter,
