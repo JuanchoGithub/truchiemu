@@ -425,7 +425,15 @@ func launchGame(
                     }
                 }
 
-                if let achievements = RetroAchievementsService.shared.loadCachedAchievements(gameID: raGameId, username: username) {
+                if let cachedAchievements = RetroAchievementsService.shared.loadCachedAchievements(gameID: raGameId, username: username) {
+                    // Reconcile cached achievements with the server's authoritative unlocks
+                    // BEFORE feeding them to the rcheevos runtime. If the user reset their
+                    // achievements on the RA website, the disk cache still shows them as
+                    // unlocked — and without reconciliation, the runtime would filter them
+                    // out as "already unlocked" and never activate the triggers.
+                    let achievements = await RetroAchievementsService.shared.reconcileAchievementsWithServer(
+                        gameID: raGameId, rom: rom, achievements: cachedAchievements
+                    )
                     runner.rcheevosAchievements = achievements
                     runner.rcheevosRichPresenceScript = RetroAchievementsService.shared.loadRichPresenceScript(gameID: raGameId) ?? RetroAchievementsService.shared.loadRichPresenceScript(gameID: RetroAchievementsService.shared.parentGameIDForCache(gameID: raGameId) ?? 0)
                     let withTriggers = achievements.filter { $0.trigger != nil && !$0.trigger!.isEmpty }

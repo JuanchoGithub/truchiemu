@@ -619,7 +619,7 @@ case "scummvm": runner = ScummVMRunner()
         XPCBridgeAdapter.shared.onRcheevosAchievementTriggered = { achievementId in
             XPCBridgeAdapter.shared.deactivateRcheevosAchievement(id: achievementId)
             Task { @MainActor in
-                let hardcore = AppSettings.getBool("hardcore_mode_enabled", defaultValue: false)
+                let hardcore = HardcoreModeManager.shared.isHardcoreActive(for: self.rom)
                 await RetroAchievementsService.shared.unlockAchievement(id: achievementId, hardcore: hardcore)
             }
         }
@@ -627,17 +627,13 @@ case "scummvm": runner = ScummVMRunner()
         Task { @MainActor in
             guard let game = RetroAchievementsService.shared.currentGame else { return }
             let pingGameID = game.parentGameID ?? game.id
-            await RetroAchievementsService.shared.updateRichPresence(gameID: pingGameID, message: message)
+            await RetroAchievementsService.shared.updateRichPresence(gameID: pingGameID, message: message, rom: self.rom)
         }
     }
-
-    // Notify RA server that a session has started
-    if let game = RetroAchievementsService.shared.currentGame {
-        let sessionGameID = game.parentGameID ?? game.id
-        Task { @MainActor in
-            await RetroAchievementsService.shared.startSession(gameID: sessionGameID)
-        }
-    }
+    // NOTE: startSession is invoked pre-launch by GameLauncher (via
+    // reconcileAchievementsWithServer) so that the server's unlocks are merged into
+    // the cached achievements BEFORE the rcheevos runtime is activated here. Calling
+    // it again here would duplicate the server request without effect.
     }
 
     // MARK: - Pause State

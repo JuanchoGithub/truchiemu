@@ -11,6 +11,24 @@
 #include "rc_hash.h"
 #include "RcheevosCDReader.h"
 
+// Shared helper for the common pattern of building a dorequest.php POST
+// request via the rcheevos C API and copying out the url/post_data/content_type
+// into freshly strdup'd strings that the Swift caller frees with
+// rcheevos_api_destroy_request_strings.
+static int finalize_rc_api_request(rc_api_request_t* request,
+                                   int init_result,
+                                   char** out_url, char** out_post_data, char** out_content_type) {
+  if (init_result != RC_OK) {
+    rc_api_destroy_request(request);
+    return init_result;
+  }
+  *out_url = request->url ? strdup(request->url) : NULL;
+  *out_post_data = request->post_data ? strdup(request->post_data) : NULL;
+  *out_content_type = request->content_type ? strdup(request->content_type) : NULL;
+  rc_api_destroy_request(request);
+  return RC_OK;
+}
+
 // The event handler in rcheevos v12.3.0 does not pass userdata.
 // Use thread-local storage to route events back to the Swift caller,
 // since rc_runtime_do_frame calls the handler synchronously on the same thread.
@@ -280,6 +298,162 @@ RcheevosAwardResponse rcheevos_api_process_award_response(const char* json_body,
 
     rc_api_destroy_award_achievement_response(&resp);
     return award_resp;
+}
+
+// --- API layer: ping (rich presence / "now playing") ---
+
+int rcheevos_api_init_ping(const char* username, const char* api_token, uint32_t game_id,
+                           const char* rich_presence, const char* game_hash, uint32_t hardcore,
+                           char** out_url, char** out_post_data, char** out_content_type) {
+    rc_api_ping_request_t params;
+    memset(&params, 0, sizeof(params));
+    params.username = username;
+    params.api_token = api_token;
+    params.game_id = game_id;
+    params.rich_presence = rich_presence;
+    params.game_hash = game_hash;
+    params.hardcore = hardcore;
+
+    rc_api_request_t request;
+    memset(&request, 0, sizeof(request));
+
+    int result = rc_api_init_ping_request(&request, &params);
+    return finalize_rc_api_request(&request, result, out_url, out_post_data, out_content_type);
+}
+
+RcheevosPingResponse rcheevos_api_process_ping_response(const char* json_body, size_t body_length, int http_status_code) {
+    RcheevosPingResponse ping_resp;
+    memset(&ping_resp, 0, sizeof(ping_resp));
+
+    rc_api_server_response_t server_resp;
+    server_resp.body = json_body;
+    server_resp.body_length = body_length;
+    server_resp.http_status_code = http_status_code;
+
+    rc_api_ping_response_t resp;
+    memset(&resp, 0, sizeof(resp));
+
+    int result = rc_api_process_ping_server_response(&resp, &server_resp);
+    if (result != RC_OK || !resp.response.succeeded) {
+        ping_resp.succeeded = 0;
+        ping_resp.error_message = resp.response.error_message ? strdup(resp.response.error_message) : strdup("Unknown error");
+        rc_api_destroy_ping_response(&resp);
+        return ping_resp;
+    }
+
+    ping_resp.succeeded = 1;
+    ping_resp.error_message = NULL;
+    rc_api_destroy_ping_response(&resp);
+    return ping_resp;
+}
+
+void rcheevos_api_destroy_ping_response(RcheevosPingResponse* response) {
+    if (!response) return;
+    free((void*)response->error_message);
+    response->error_message = NULL;
+}
+
+// --- API layer: start session ---
+
+int rcheevos_api_init_start_session(const char* username, const char* api_token, uint32_t game_id,
+                                     const char* game_hash, uint32_t hardcore,
+                                     char** out_url, char** out_post_data, char** out_content_type) {
+    rc_api_start_session_request_t params;
+    memset(&params, 0, sizeof(params));
+    params.username = username;
+    params.api_token = api_token;
+    params.game_id = game_id;
+    params.game_hash = game_hash;
+    params.hardcore = hardcore;
+
+    rc_api_request_t request;
+    memset(&request, 0, sizeof(request));
+
+    int result = rc_api_init_start_session_request(&request, &params);
+    return finalize_rc_api_request(&request, result, out_url, out_post_data, out_content_type);
+}
+
+RcheevosStartSessionResponse rcheevos_api_process_start_session_response(const char* json_body, size_t body_length, int http_status_code) {
+    RcheevosStartSessionResponse ss_resp;
+    memset(&ss_resp, 0, sizeof(ss_resp));
+
+    rc_api_server_response_t server_resp;
+    server_resp.body = json_body;
+    server_resp.body_length = body_length;
+    server_resp.http_status_code = http_status_code;
+
+    rc_api_start_session_response_t resp;
+    memset(&resp, 0, sizeof(resp));
+
+    int result = rc_api_process_start_session_server_response(&resp, &server_resp);
+    if (result != RC_OK || !resp.response.succeeded) {
+        ss_resp.succeeded = 0;
+        ss_resp.error_message = resp.response.error_message ? strdup(resp.response.error_message) : strdup("Unknown error");
+        rc_api_destroy_start_session_response(&resp);
+        return ss_resp;
+    }
+
+    ss_resp.succeeded = 1;
+    ss_resp.error_message = NULL;
+    ss_resp.server_now = resp.server_now;
+
+    // Copy achievement IDs from the unlocks and hardcore_unlocks arrays.
+    // The caller of startSession uses these to mark already-unlocked achievements
+    // so the runtime doesn't try to re-award them.
+    if (resp.num_unlocks > 0 && resp.unlocks) {
+        ss_resp.unlocks = (uint32_t*)malloc(resp.num_unlocks * sizeof(uint32_t));
+        if (ss_resp.unlocks) {
+            ss_resp.num_unlocks = resp.num_unlocks;
+            for (uint32_t i = 0; i < resp.num_unlocks; i++) {
+                ss_resp.unlocks[i] = resp.unlocks[i].achievement_id;
+            }
+        }
+    }
+    if (resp.num_hardcore_unlocks > 0 && resp.hardcore_unlocks) {
+        ss_resp.hardcore_unlocks = (uint32_t*)malloc(resp.num_hardcore_unlocks * sizeof(uint32_t));
+        if (ss_resp.hardcore_unlocks) {
+            ss_resp.num_hardcore_unlocks = resp.num_hardcore_unlocks;
+            for (uint32_t i = 0; i < resp.num_hardcore_unlocks; i++) {
+                ss_resp.hardcore_unlocks[i] = resp.hardcore_unlocks[i].achievement_id;
+            }
+        }
+    }
+
+    rc_api_destroy_start_session_response(&resp);
+    return ss_resp;
+}
+
+void rcheevos_api_destroy_start_session_response(RcheevosStartSessionResponse* response) {
+    if (!response) return;
+    free((void*)response->error_message);
+    free(response->unlocks);
+    free(response->hardcore_unlocks);
+    response->error_message = NULL;
+    response->unlocks = NULL;
+    response->hardcore_unlocks = NULL;
+    response->num_unlocks = 0;
+    response->num_hardcore_unlocks = 0;
+}
+
+// --- API layer: login2 with token (token refresh) ---
+// Builds a dorequest.php?r=login2 POST using the api_token field instead of
+// password. RA's login2 endpoint accepts either p=<password> OR t=<token>.
+// If the existing token is still valid, RA returns a fresh token. If expired,
+// RA returns an invalid_credentials error and the caller must re-login with
+// password.
+int rcheevos_api_init_login_with_token(const char* username, const char* api_token,
+                                        char** out_url, char** out_post_data, char** out_content_type) {
+    rc_api_login_request_t params;
+    memset(&params, 0, sizeof(params));
+    params.username = username;
+    params.api_token = api_token;
+    params.password = NULL;
+
+    rc_api_request_t request;
+    memset(&request, 0, sizeof(request));
+
+    int result = rc_api_init_login_request(&request, &params);
+    return finalize_rc_api_request(&request, result, out_url, out_post_data, out_content_type);
 }
 
 // --- Hash generation ---

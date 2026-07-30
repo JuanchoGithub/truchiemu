@@ -77,6 +77,21 @@ class RetroAchievementsService: ObservableObject {
     // Different from the Web API key (which uses y= param on REST endpoints).
     private var loginToken: String?
 
+    // The last known login token, kept around even after `loginToken` is cleared on
+    // an expired_token response. Used by `fetchLoginToken()` to attempt a token refresh
+    // via dorequest.php?r=login2&t=<token> — RA's login2 endpoint reissues a fresh token
+    // if the provided one is still valid.
+    private var lastKnownLoginToken: String?
+    private var isRefreshingToken = false
+
+    // Set to true when the server definitively rejects our token (invalid_credentials
+    // or expired_token that can't be refreshed). While true, all RA write operations
+    // (unlock, ping, start session, patch fetch) bail early. Cleared on a successful
+    // re-login via loginWithWebApiKey.
+    private var isLoggedOutByTokenFailure = false
+    // Guards the "re-login needed" notification so it fires at most once per session.
+    private var hasSurfacedTokenReloginNeeded = false
+
     private var pendingUnlocks: [(id: Int, hardcore: Bool)] = []
     private var isProcessingUnlocks = false
     private var lastUnlockTime: Date = .distantPast
@@ -105,6 +120,7 @@ class RetroAchievementsService: ObservableObject {
         username = AppSettings.get("ra_username", type: String.self)
         let key = AppSettings.get("ra_web_api_key", type: String.self)
         loginToken = AppSettings.get("ra_login_token", type: String.self)
+        lastKnownLoginToken = loginToken
         hardcoreMode = AppSettings.getBool("ra_hardcore", defaultValue: false)
         isEnabled = AppSettings.getBool("ra_enabled", defaultValue: false)
 
@@ -151,8 +167,14 @@ class RetroAchievementsService: ObservableObject {
                 self.isLoggedIn = true
                 self.username = username
                 self.userInfo = response
+                self.isLoggedOutByTokenFailure = false
+                self.hasSurfacedTokenReloginNeeded = false
                 self.saveSettings(username: username, webApiKey: webApiKey)
             }
+
+            #if LOG_DEBUG
+            LoggerService.debug(category: "RetroAchievements", "User summary: pts=\(response.totalPoints) hc=\(response.totalHardcorePoints) true=\(response.totalTruePoints) rank=\(response.rank)")
+            #endif
 
             LoggerService.info(category: "RetroAchievements", "Logged in successfully as \(username)")
 
@@ -160,6 +182,7 @@ class RetroAchievementsService: ObservableObject {
                 if let token = await fetchLoginTokenWithPassword(username: username, password: password) {
                     await MainActor.run {
                         self.loginToken = token
+                        self.lastKnownLoginToken = token
                         AppSettings.set("ra_login_token", value: token)
                     }
                     LoggerService.info(category: "RetroAchievements", "Login token obtained and saved")
@@ -1728,9 +1751,11 @@ NotificationHistoryManager.shared.post(
             LoggerService.error(category: "RetroAchievements", "Award achievement \(id) failed: HTTP \(statusCode), body: \(responseBody), error: \(errMsg)")
 
             if errMsg.contains("expired_token") || errMsg.contains("invalid_credentials") {
+                let reason = errMsg.contains("expired_token") ? "expired_token" : "invalid_credentials"
                 loginToken = nil
                 AppSettings.remove("ra_login_token")
                 LoggerService.error(category: "RetroAchievements", "Login token expired, cleared. Re-login required.")
+                surfaceReloginNeeded(reason: reason)
             }
         }
     }
@@ -1879,23 +1904,68 @@ func refreshGameCacheAfterGameStop() {
     // MARK: - Rich Presence
     
     // Update rich presence message.
-    func updateRichPresence(gameID: Int, message: String) async {
-        guard isLoggedIn, let username = username, !webApiKey.isEmpty else { return }
+    func updateRichPresence(gameID: Int, message: String, rom: ROM? = nil) async {
+        guard isLoggedIn, let username = username else { return }
+        guard let token = await fetchLoginToken() else {
+            LoggerService.error(category: "RetroAchievements", "Rich presence ping skipped — no login token")
+            return
+        }
 
-        let url = URL(string: "\(apiBaseURL)/API_Ping.php")!
+        var cUrl: UnsafeMutablePointer<CChar>?
+        var cPostData: UnsafeMutablePointer<CChar>?
+        var cContentType: UnsafeMutablePointer<CChar>?
+
+        let initResult = username.withCString { userPtr in
+            token.withCString { tokenPtr in
+                rcheevos_api_init_ping(
+                    userPtr,
+                    tokenPtr,
+                    UInt32(gameID),
+                    message,
+                    rom?.md5,
+                    HardcoreModeManager.shared.isHardcoreActive(for: rom) ? 1 : 0,
+                    &cUrl, &cPostData, &cContentType
+                )
+            }
+        }
+
+        guard initResult == 0, let urlStr = cUrl else {
+            rcheevos_api_destroy_request_strings(cUrl, cPostData, cContentType)
+            LoggerService.error(category: "RetroAchievements", "rcheevos failed to build ping request: \(initResult)")
+            return
+        }
+
+        let requestURL = String(cString: urlStr)
+        let postDataStr = cPostData.map { String(cString: $0) }
+        let contentTypeStr = cContentType.map { String(cString: $0) }
+        rcheevos_api_destroy_request_strings(cUrl, cPostData, cContentType)
+        cUrl = nil; cPostData = nil; cContentType = nil
+
+        guard let url = URL(string: requestURL) else { return }
+
         var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-
-        let body:[String: String] = [
-            "u": username,
-            "g": String(gameID),
-            "m": message,
-            "y": webApiKey
-        ]
-        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+        request.setValue("rcheevos/12.3.0 TruchiEmu/1.0.0", forHTTPHeaderField: "User-Agent")
+        if let postData = postDataStr, !postData.isEmpty {
+            request.httpMethod = "POST"
+            request.httpBody = postData.data(using: .utf8)
+            if let ct = contentTypeStr {
+                request.setValue(ct, forHTTPHeaderField: "Content-Type")
+            }
+        }
 
         do {
-            let (_, _) = try await URLSession.shared.data(for: request)
+            let (data, response) = try await URLSession.shared.data(for: request)
+            let status = (response as? HTTPURLResponse)?.statusCode ?? -1
+            let body = String(data: data, encoding: .utf8) ?? ""
+            var pingResp = body.withCString { bodyPtr in
+                rcheevos_api_process_ping_response(bodyPtr, data.count, Int32(status))
+            }
+            rcheevos_api_destroy_ping_response(&pingResp)
+            if pingResp.succeeded != 1 {
+                let err = pingResp.error_message.map { String(cString: $0) } ?? "(unknown)"
+                LoggerService.error(category: "RetroAchievements", "Ping failed (HTTP \(status)): \(err)")
+                return
+            }
             await MainActor.run {
                 self.richPresence = message
             }
@@ -1904,23 +1974,146 @@ func refreshGameCacheAfterGameStop() {
         }
     }
 
-    func startSession(gameID: Int) async {
-        guard isLoggedIn, let username = username, !webApiKey.isEmpty else { return }
+    func startSession(gameID: Int, rom: ROM? = nil) async {
+        guard let result = await performStartSession(gameID: gameID, rom: rom) else { return }
 
-        let url = URL(string: "\(apiBaseURL)/API_StartSession.php")!
-        var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
-        components.queryItems = [
-            URLQueryItem(name: "u", value: username),
-            URLQueryItem(name: "g", value: String(gameID)),
-            URLQueryItem(name: "y", value: webApiKey)
-        ]
+        // Trust the server's Unlocks/HardcoreUnlocks arrays as the authoritative answer.
+        // Reset local isUnlocked/isHardcore for ALL achievements, then mark only the ones
+        // the server says are unlocked. This is critical when the user has reset their
+        // achievements on the RA website — the local cache may still show old unlocks,
+        // and the rcheevos runtime would otherwise filter out those triggers as "already
+        // unlocked" and never activate them.
+        await MainActor.run {
+            guard let existing = self.currentGame else { return }
+            var updated = existing
+            for i in updated.achievements.indices {
+                applyServerUnlocks(result: result, to: &updated.achievements[i])
+            }
+            self.currentGame = updated
+        }
+    }
 
-        guard let finalURL = components.url else { return }
+    // Pre-launch reconciliation: asks the server for the user's true unlocks and applies
+    // them to the supplied achievements array. This MUST run before rcheevos triggers are
+    // activated — otherwise the runtime filters out "already unlocked" triggers (from
+    // stale disk cache) and never re-activates them after a server-side reset.
+    func reconcileAchievementsWithServer(gameID: Int, rom: ROM?, achievements: [Achievement]) async -> [Achievement] {
+        guard let result = await performStartSession(gameID: gameID, rom: rom) else { return achievements }
+        return achievements.map { ach in
+            var copy = ach
+            applyServerUnlocks(result: result, to: &copy)
+            return copy
+        }
+    }
+
+    // Apply server's unlocks to a single achievement in place. The server is authoritative:
+    // if the server says an achievement IS unlocked, mark it unlocked. If the server says
+    // it is NOT unlocked, clear any stale local unlock state so the runtime will activate it.
+    private func applyServerUnlocks(result: StartSessionResult, to ach: inout Achievement) {
+        let id = ach.id
+        if result.serverHardcore.contains(id) {
+            ach.isUnlocked = true
+            ach.isHardcore = true
+            ach.unlockDate = ach.unlockDate ?? Date()
+        } else if result.serverUnlocked.contains(id) {
+            ach.isUnlocked = true
+            ach.isHardcore = false
+            ach.unlockDate = ach.unlockDate ?? Date()
+        } else {
+            ach.isUnlocked = false
+            ach.isHardcore = false
+            ach.unlockDate = nil
+        }
+    }
+
+    private struct StartSessionResult {
+        let serverUnlocked: Set<Int>
+        let serverHardcore: Set<Int>
+        let succeeded: Bool
+    }
+
+    // Builds, sends, and parses a dorequest.php?r=startsession request. Returns the
+    // server's authoritative unlocks + hardcore unlocks, or nil if the call failed entirely
+    // (no token, network error, etc.).
+    private func performStartSession(gameID: Int, rom: ROM?) async -> StartSessionResult? {
+        guard isLoggedIn, let username = username else { return nil }
+        guard let token = await fetchLoginToken() else {
+            LoggerService.error(category: "RetroAchievements", "Start session skipped — no login token")
+            return nil
+        }
+
+        var cUrl: UnsafeMutablePointer<CChar>?
+        var cPostData: UnsafeMutablePointer<CChar>?
+        var cContentType: UnsafeMutablePointer<CChar>?
+
+        let initResult = username.withCString { userPtr in
+            token.withCString { tokenPtr in
+                rcheevos_api_init_start_session(
+                    userPtr,
+                    tokenPtr,
+                    UInt32(gameID),
+                    rom?.md5,
+                    HardcoreModeManager.shared.isHardcoreActive(for: rom) ? 1 : 0,
+                    &cUrl, &cPostData, &cContentType
+                )
+            }
+        }
+
+        guard initResult == 0, let urlStr = cUrl else {
+            rcheevos_api_destroy_request_strings(cUrl, cPostData, cContentType)
+            LoggerService.error(category: "RetroAchievements", "rcheevos failed to build start session request: \(initResult)")
+            return nil
+        }
+
+        let requestURL = String(cString: urlStr)
+        let postDataStr = cPostData.map { String(cString: $0) }
+        let contentTypeStr = cContentType.map { String(cString: $0) }
+        rcheevos_api_destroy_request_strings(cUrl, cPostData, cContentType)
+        cUrl = nil; cPostData = nil; cContentType = nil
+
+        guard let url = URL(string: requestURL) else { return nil }
+
+        var request = URLRequest(url: url)
+        request.setValue("rcheevos/12.3.0 TruchiEmu/1.0.0", forHTTPHeaderField: "User-Agent")
+        if let postData = postDataStr, !postData.isEmpty {
+            request.httpMethod = "POST"
+            request.httpBody = postData.data(using: .utf8)
+            if let ct = contentTypeStr {
+                request.setValue(ct, forHTTPHeaderField: "Content-Type")
+            }
+        }
+
         do {
-            let (_, _) = try await URLSession.shared.data(from: finalURL)
-            LoggerService.info(category: "RetroAchievements", "Started session for game \(gameID)")
+            let (data, response) = try await URLSession.shared.data(for: request)
+            let status = (response as? HTTPURLResponse)?.statusCode ?? -1
+            let body = String(data: data, encoding: .utf8) ?? ""
+            var ssResp = body.withCString { bodyPtr in
+                rcheevos_api_process_start_session_response(bodyPtr, data.count, Int32(status))
+            }
+            defer { rcheevos_api_destroy_start_session_response(&ssResp) }
+
+            if ssResp.succeeded != 1 {
+                let err = ssResp.error_message.map { String(cString: $0) } ?? "(unknown)"
+                LoggerService.error(category: "RetroAchievements", "Start session failed (HTTP \(status)): \(err)")
+                if err.contains("expired_token") || err.contains("invalid_credentials") {
+                    let reason = err.contains("expired_token") ? "expired_token" : "invalid_credentials"
+                    await MainActor.run {
+                        self.lastKnownLoginToken = self.lastKnownLoginToken ?? token
+                        self.loginToken = nil
+                        AppSettings.remove("ra_login_token")
+                    }
+                    surfaceReloginNeeded(reason: reason)
+                }
+                return nil
+            }
+            LoggerService.info(category: "RetroAchievements", "Started session for game \(gameID) (\(ssResp.num_unlocks) prior unlocks, \(ssResp.num_hardcore_unlocks) hardcore)")
+
+            let serverUnlocked = Set((0..<Int(ssResp.num_unlocks)).map { Int(ssResp.unlocks[$0]) })
+            let serverHardcore = Set((0..<Int(ssResp.num_hardcore_unlocks)).map { Int(ssResp.hardcore_unlocks[$0]) })
+            return StartSessionResult(serverUnlocked: serverUnlocked, serverHardcore: serverHardcore, succeeded: true)
         } catch {
             LoggerService.error(category: "RetroAchievements", "Failed to start session: \(error.localizedDescription)")
+            return nil
         }
     }
     
@@ -1950,8 +2143,126 @@ func refreshGameCacheAfterGameStop() {
 
     private func fetchLoginToken() async -> String? {
         if let existing = loginToken { return existing }
-        LoggerService.error(category: "RetroAchievements", "No login token available — re-login required")
-        return nil
+
+        // The login token was cleared (e.g. by an expired_token server response).
+        // Attempt to refresh it via dorequest.php?r=login2 using the last known
+        // token — RA's login2 endpoint reissues a fresh token if the provided one
+        // is still server-side valid. Without this, the user would have to re-enter
+        // their password every time the token expires.
+        if isRefreshingToken { return nil }
+        if isLoggedOutByTokenFailure { return nil }
+        guard let cached = lastKnownLoginToken, let username, !username.isEmpty else {
+            surfaceReloginNeeded(reason: "missing")
+            return nil
+        }
+        return await refreshLoginToken(username: username, existingToken: cached)
+    }
+
+    // Called when we know the token cannot be refreshed (server returned
+    // invalid_credentials or expired_token, or there is no stored token to try).
+    // Marks the service as effectively logged out for dorequest calls and posts a
+    // user-visible notification at most once per session.
+    private func surfaceReloginNeeded(reason: String) {
+        let prevLoggedOut = isLoggedOutByTokenFailure
+        isLoggedOutByTokenFailure = true
+        if hasSurfacedTokenReloginNeeded { return }
+        hasSurfacedTokenReloginNeeded = true
+        LoggerService.error(category: "RetroAchievements", "Re-login required (reason: \(reason)). Most Recently Played and achievement awards will not work until the user logs in again under Settings → RetroAchievements.")
+        let loc = LocalizationManager.shared
+        NotificationService.shared.sendNotification(
+            title: loc.localized("retroAchievements.reloginNeededTitle"),
+            body: loc.localized("retroAchievements.reloginNeededBody"),
+            userInfo: ["raReloginNeeded": true]
+        )
+        _ = prevLoggedOut // suppress unused-warning noise if any
+    }
+
+    private func refreshLoginToken(username: String, existingToken: String) async -> String? {
+        isRefreshingToken = true
+        defer { isRefreshingToken = false }
+
+        var cUrl: UnsafeMutablePointer<CChar>?
+        var cPostData: UnsafeMutablePointer<CChar>?
+        var cContentType: UnsafeMutablePointer<CChar>?
+
+        let initResult = username.withCString { userPtr in
+            existingToken.withCString { tokenPtr in
+                rcheevos_api_init_login_with_token(userPtr, tokenPtr, &cUrl, &cPostData, &cContentType)
+            }
+        }
+
+        guard initResult == 0, let urlStr = cUrl else {
+            rcheevos_api_destroy_request_strings(cUrl, cPostData, cContentType)
+            LoggerService.error(category: "RetroAchievements", "Token refresh: rcheevos failed to build login2 request: \(initResult)")
+            return nil
+        }
+
+        let requestURL = String(cString: urlStr)
+        let postDataStr = cPostData.map { String(cString: $0) }
+        let contentTypeStr = cContentType.map { String(cString: $0) }
+        rcheevos_api_destroy_request_strings(cUrl, cPostData, cContentType)
+        cUrl = nil; cPostData = nil; cContentType = nil
+
+        guard let url = URL(string: requestURL) else { return nil }
+
+        var request = URLRequest(url: url)
+        request.setValue("rcheevos/12.3.0 TruchiEmu/1.0.0", forHTTPHeaderField: "User-Agent")
+        if let postData = postDataStr, !postData.isEmpty {
+            request.httpMethod = "POST"
+            request.httpBody = postData.data(using: .utf8)
+            if let ct = contentTypeStr {
+                request.setValue(ct, forHTTPHeaderField: "Content-Type")
+            }
+        }
+
+        let data: Data
+        do {
+            (data, _) = try await URLSession.shared.data(for: request)
+        } catch {
+            LoggerService.error(category: "RetroAchievements", "Token refresh network error: \(error.localizedDescription)")
+            return nil
+        }
+
+        var cToken: UnsafeMutablePointer<CChar>?
+        let jsonBody = String(data: data, encoding: .utf8) ?? ""
+        let result = jsonBody.withCString { bodyPtr in
+            rcheevos_api_process_login_response(bodyPtr, data.count, &cToken)
+        }
+
+        guard result == 0, let tokenPtr = cToken else {
+            // rcheevos error codes (see rc_error.h):
+            //   -34 RC_INVALID_CREDENTIALS — token was rejected as not-a-valid token
+            //   -35 RC_EXPIRED_TOKEN       — token was rejected as expired, server refuses to refresh
+            //   -32 RC_NO_RESPONSE         — network or empty body (retryable next call)
+            //   -27 RC_API_FAILURE         — generic server error (retryable next call)
+            let reason: String
+            switch result {
+            case -34: reason = "invalid_credentials"
+            case -35: reason = "expired_token"
+            case -32: reason = "no_response"
+            case -27: reason = "api_failure"
+            default:  reason = "rc=\(result)"
+            }
+            LoggerService.error(category: "RetroAchievements", "Token refresh failed (rc=\(result), reason=\(reason)) — re-login with password required")
+            free(cToken)
+            // Only surface the user notification on definitive failures. Transient
+            // network/API issues will be retried on the next call automatically.
+            if result == -34 || result == -35 {
+                surfaceReloginNeeded(reason: reason)
+            }
+            return nil
+        }
+
+        let newToken = String(cString: tokenPtr)
+        free(cToken)
+
+        LoggerService.info(category: "RetroAchievements", "Login token refreshed successfully")
+        await MainActor.run {
+            self.loginToken = newToken
+            self.lastKnownLoginToken = newToken
+            AppSettings.set("ra_login_token", value: newToken)
+        }
+        return newToken
     }
 
     func fetchPatchData(gameID: Int) async -> [Int: String]? {
@@ -2037,9 +2348,11 @@ func refreshGameCacheAfterGameStop() {
             let errMsg = patchResponse.error_message.map { String(cString: $0) } ?? "unknown"
             rcheevos_api_destroy_patch_response(&patchResponse)
             if errMsg.contains("expired_token") || errMsg.contains("invalid_credentials") {
+                let reason = errMsg.contains("expired_token") ? "expired_token" : "invalid_credentials"
                 loginToken = nil
                 AppSettings.remove("ra_login_token")
                 LoggerService.error(category: "RetroAchievements", "Login token expired or invalid, cleared. Re-login required.")
+                surfaceReloginNeeded(reason: reason)
             }
             LoggerService.error(category: "RetroAchievements", "Patch response error: \(errMsg)")
             return nil
@@ -2158,22 +2471,27 @@ func refreshGameCacheAfterGameStop() {
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             throw RAError.networkError
         }
-        
+
         let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
-        
+
         // Throw proper error if RetroAchievements rejects the Web API Key
         if let errorMsg = json?["Error"] as? String {
             throw RAError.loginFailed(errorMsg)
         }
-        
+
         guard let responseData = json else { return nil }
-        
+
+        #if LOG_DEBUG
+        let keys = responseData.keys.sorted().joined(separator: ", ")
+        LoggerService.debug(category: "RetroAchievements", "API_GetUserSummary keys: \(keys)")
+        #endif
+
         let safeInt = { (key: String) -> Int in
             if let val = responseData[key] as? Int { return val }
             if let s = responseData[key] as? String, let val = Int(s) { return val }
             return 0
         }
-        
+
         return RAUserInfo(
             username: responseData["User"] as? String ?? username,
             totalPoints: safeInt("TotalPoints"),
@@ -2186,6 +2504,23 @@ func refreshGameCacheAfterGameStop() {
             lastGameID: responseData["LastGameID"] as? Int ?? (responseData["LastGameID"] as? String).flatMap { Int($0) },
             lastGameTitle: responseData["LastGameTitle"] as? String
         )
+    }
+
+    // Manually refresh the user summary (points/rank/member-since) without requiring
+    // a full re-login. Useful when the displayed stats appear stale or after a server-side
+    // change (e.g. points awarded retroactively for an event).
+    @MainActor
+    func refreshUserSummary() async {
+        guard isLoggedIn, let username = username, !webApiKey.isEmpty else { return }
+        do {
+            guard let response = try await requestUserSummary(username: username) else { return }
+            self.userInfo = response
+            #if LOG_DEBUG
+            LoggerService.debug(category: "RetroAchievements", "Refreshed user summary: pts=\(response.totalPoints) hc=\(response.totalHardcorePoints) true=\(response.totalTruePoints) rank=\(response.rank)")
+            #endif
+        } catch {
+            LoggerService.error(category: "RetroAchievements", "refreshUserSummary failed: \(error.localizedDescription)")
+        }
     }
     
     private func requestGameInfo(gameID: String, username: String) async throws -> (response: RAGameResponse?, rawData: Data?) {

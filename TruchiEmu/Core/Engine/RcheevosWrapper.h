@@ -113,6 +113,73 @@ RcheevosAwardResponse rcheevos_api_process_award_response(const char* json_body,
 // Free the response allocated by rcheevos_api_process_award_response.
 void rcheevos_api_destroy_award_response(RcheevosAwardResponse* response);
 
+// --- API layer: ping (rich presence / "now playing") ---
+
+// Response for ping request. succeeded is 1 on success, 0 on failure.
+// On failure, error_message is a strdup'd string the caller must free via
+// rcheevos_api_destroy_ping_response.
+typedef struct {
+    int succeeded;
+    const char* error_message;
+} RcheevosPingResponse;
+
+// Build the dorequest.php?r=ping POST request.
+// api_token is the login token from login2 (NOT the web API key).
+// rich_presence is the human-readable "now playing" string, may be NULL.
+// game_hash is the ROM hash, may be NULL (recommended).
+// hardcore is 1 if hardcore mode is enabled, 0 otherwise (ignored if game_hash is NULL).
+// Returns 0 on success. Caller must free strings via rcheevos_api_destroy_request_strings.
+int rcheevos_api_init_ping(const char* username, const char* api_token, uint32_t game_id,
+                           const char* rich_presence, const char* game_hash, uint32_t hardcore,
+                           char** out_url, char** out_post_data, char** out_content_type);
+
+// Parse the ping server response. Caller must free via rcheevos_api_destroy_ping_response.
+RcheevosPingResponse rcheevos_api_process_ping_response(const char* json_body, size_t body_length, int http_status_code);
+
+// Free the response allocated by rcheevos_api_process_ping_response.
+void rcheevos_api_destroy_ping_response(RcheevosPingResponse* response);
+
+// --- API layer: start session ---
+
+// Response for start session request. succeeded is 1 on success, 0 on failure.
+// unlocks/hardcore_unlocks are arrays of achievement IDs already unlocked
+// by the user server-side (so the client can suppress redundant award calls).
+// Caller must free via rcheevos_api_destroy_start_session_response.
+typedef struct {
+    int succeeded;
+    const char* error_message;
+    uint32_t* unlocks;
+    uint32_t num_unlocks;
+    uint32_t* hardcore_unlocks;
+    uint32_t num_hardcore_unlocks;
+    int64_t server_now;
+} RcheevosStartSessionResponse;
+
+// Build the dorequest.php?r=startsession POST request.
+// api_token is the login token from login2 (NOT the web API key).
+// game_hash is the ROM hash, may be NULL (recommended).
+// hardcore is 1 if hardcore mode is enabled, 0 otherwise (ignored if game_hash is NULL).
+// Returns 0 on success. Caller must free strings via rcheevos_api_destroy_request_strings.
+int rcheevos_api_init_start_session(const char* username, const char* api_token, uint32_t game_id,
+                                    const char* game_hash, uint32_t hardcore,
+                                    char** out_url, char** out_post_data, char** out_content_type);
+
+// Parse the start session server response. Caller must free via rcheevos_api_destroy_start_session_response.
+RcheevosStartSessionResponse rcheevos_api_process_start_session_response(const char* json_body, size_t body_length, int http_status_code);
+
+// Free the response allocated by rcheevos_api_process_start_session_response.
+void rcheevos_api_destroy_start_session_response(RcheevosStartSessionResponse* response);
+
+// --- API layer: login2 with token (token refresh) ---
+
+// Build a dorequest.php?r=login2 POST request using the existing api_token
+// instead of a password. RA's login2 endpoint accepts either p=<password>
+// OR t=<token>. If the token is still valid, RA returns a fresh token.
+// If expired, RA returns an invalid_credentials error.
+// Returns 0 on success. Caller must free strings via rcheevos_api_destroy_request_strings.
+int rcheevos_api_init_login_with_token(const char* username, const char* api_token,
+                                       char** out_url, char** out_post_data, char** out_content_type);
+
 // --- Hash generation (delegates to rcheevos rc_hash) ---
 
 // Generates a RetroAchievements hash for a given file path and console ID.

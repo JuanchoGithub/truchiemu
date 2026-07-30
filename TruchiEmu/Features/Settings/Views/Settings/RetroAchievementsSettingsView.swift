@@ -262,6 +262,13 @@ struct RetroAchievementsSettingsView: View {
                     }
                 }
                 Spacer()
+                Button {
+                    Task { await raService.refreshUserSummary() }
+                } label: {
+                    Image(systemName: "arrow.clockwise")
+                }
+                .buttonStyle(.bordered)
+                .help(loc.localized("retroAchievements.refreshStats"))
                 Button(loc.localized("retroAchievements.logout")) {
                     raService.saveSettings(username: "", webApiKey: "")
                     raService.isLoggedIn = false

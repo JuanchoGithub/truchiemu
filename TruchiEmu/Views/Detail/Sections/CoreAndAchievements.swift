@@ -118,7 +118,7 @@ extension GameDetailView {
             title: loc.localized("gameDetail.achievements"),
             icon: "trophy",
             badge: gameAchievements.isEmpty ? nil : "\(unlockedAchievementCount)/\(gameAchievements.count)",
-            headerTrailing: viewOnRALinkAnyView
+            headerTrailing: achievementsHeaderTrailing
     ) {
         VStack(alignment: .leading, spacing: 0) {
             if achievementsService.isEnabled, currentROM.raMatchStatus == "matched" {
@@ -440,5 +440,30 @@ Label(loc.localized("achievement.searchRetroAchievements"), systemImage: "checkm
             return AnyView(viewOnRALink)
         }
         return nil
+    }
+
+    private var achievementsHeaderTrailing: AnyView? {
+        if let raGameId = currentROM.raGameId, raGameId > 0, achievementsService.isLoggedIn {
+            let refreshButton = Button {
+                Task {
+                    isAchievementsLoading = true
+                    _ = await loadAchievementsAndReturnCount(raGameId: raGameId, force: true)
+                }
+            } label: {
+                if isAchievementsLoading {
+                    ProgressView().controlSize(.small)
+                } else {
+                    Image(systemName: "arrow.clockwise")
+                }
+            }
+            .buttonStyle(.borderless)
+            .help(loc.localized("achievement.refreshFromServer"))
+
+            if let link = viewOnRALinkAnyView {
+                return AnyView(HStack(spacing: AppSpacing.sm) { refreshButton; link })
+            }
+            return AnyView(refreshButton)
+        }
+        return viewOnRALinkAnyView
     }
 }
