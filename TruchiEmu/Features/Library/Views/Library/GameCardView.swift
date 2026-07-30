@@ -18,6 +18,7 @@ struct GameCardView: View {
     @State private var isPressed = false
     @State private var isLaunching = false
     @State private var image: NSImage?
+    @State private var blurredFillImage: NSImage?
     @State private var zoomReloadToken: UUID = UUID()
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var prefs = SystemPreferences.shared
@@ -60,6 +61,20 @@ struct GameCardView: View {
             ? ImageCache.shared.thumbnailSync(for: rom.boxArtLocalPath, preferredSize: preferredSize)
             : nil
         _image = State(initialValue: initialImage)
+
+        // Same fast-path for the pre-rasterized blurred-fill bitmap used by the
+        // fillBlurred display mode. Cache miss returns nil without touching disk;
+        // the on-the-fly `.blur` covers the one frame before the async task below
+        // warms the cache. Only relevant when displayMode is .fillBlurred and the
+        // current view is a group view (system views keep using the legacy path).
+        let isGroup = filter.map { !$0.isSystemView } ?? false
+        let initialBlur: NSImage? = {
+            guard rom.hasBoxArt,
+                  isGroup,
+                  prefs.boxArtDisplayMode() == .fillBlurred else { return nil }
+            return ImageCache.shared.blurredFillImageSync(for: rom.boxArtLocalPath, size: preferredSize)
+        }()
+        _blurredFillImage = State(initialValue: initialBlur)
     }
 
     private var zoomBucket: BoxArtThumbnailSize {
@@ -211,6 +226,7 @@ struct GameCardView: View {
             // ROMs bail immediately to the placeholder with no await.
             guard rom.hasBoxArt else {
                 if self.image != nil { self.image = nil }
+                if self.blurredFillImage != nil { self.blurredFillImage = nil }
                 return
             }
             let artPath = rom.boxArtLocalPath
@@ -222,6 +238,20 @@ struct GameCardView: View {
             // recycling cells flicker-free and avoids yielding to the actor.
             if let cached = ImageCache.shared.thumbnailSync(for: artPath, preferredSize: thumbSize) {
                 self.image = cached
+                if isGroupView, prefs.boxArtDisplayMode() == .fillBlurred {
+                    if let blurCached = ImageCache.shared.blurredFillImageSync(for: artPath, size: thumbSize) {
+                        self.blurredFillImage = blurCached
+                    } else {
+                        // Fire-and-forget: rasterize the blurred fill off the
+                        // main thread and update state when ready. The next
+                        // recycle will hit the cache and skip this hop.
+                        Task { @MainActor in
+                            if let blurred = await ImageCache.shared.blurredFillImage(for: artPath, size: thumbSize) {
+                                self.blurredFillImage = blurred
+                            }
+                        }
+                    }
+                }
                 return
             }
 
@@ -233,6 +263,18 @@ struct GameCardView: View {
 
             if let img = await ImageCache.shared.thumbnail(for: artPath, preferredSize: thumbSize) {
                 self.image = img
+                // After the base thumbnail lands, kick off the blurred-fill
+                // rasterization in the background. The cell renders with the
+                // sharp thumbnail + on-the-fly SwiftUI blur for a few frames,
+                // then swaps to the cached blurred bitmap once ready.
+                if isGroupView, prefs.boxArtDisplayMode() == .fillBlurred,
+                   blurredFillImage == nil {
+                    Task { @MainActor in
+                        if let blurred = await ImageCache.shared.blurredFillImage(for: artPath, size: thumbSize) {
+                            self.blurredFillImage = blurred
+                        }
+                    }
+                }
             }
         }
         .onChange(of: zoomBucket) { _, _ in
@@ -457,19 +499,34 @@ struct GameCardView: View {
     // Method 1: blurred fill. A blurred, oversized copy of the cover fills the
     // portrait frame, the sharp cover is drawn on top centered. Hides the dead
     // space around landscape covers without changing row height.
+    //
+    // Two background paths:
+    //   - blurredFillImage set → display the pre-rasterized CoreImage blur.
+    //     This is the steady-state case: a single GPU blit, no per-frame filter.
+    //   - blurredFillImage nil   → fall back to SwiftUI `.blur` on the live
+    //     thumbnail for the brief window before the async raster completes.
     private func artworkFillBlurred(_ nsImage: NSImage) -> some View {
         GeometryReader { geometry in
             let w = geometry.size.width
             let h = geometry.size.height
             ZStack {
                 Color.black
-                Image(nsImage: nsImage)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: w, height: h)
-                    .clipped()
-                    .blur(radius: max(10, min(h, 280) * 0.08))
-                    .opacity(0.85)
+                if let blurred = blurredFillImage {
+                    Image(nsImage: blurred)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: w, height: h)
+                        .clipped()
+                        .opacity(0.85)
+                } else {
+                    Image(nsImage: nsImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: w, height: h)
+                        .clipped()
+                        .blur(radius: max(10, min(h, 280) * 0.08))
+                        .opacity(0.85)
+                }
                 Color.black.opacity(0.25)
                 Image(nsImage: nsImage)
                     .resizable()
