@@ -14,7 +14,7 @@ struct TVModeGameTile: View {
     @Environment(\.tvModeScale) private var scale
     @State private var image: NSImage?
 
-    private var preferredWidth: CGFloat { 160 * scale }
+    private var preferredWidth: CGFloat { 240 * scale }
 
     var body: some View {
         VStack(spacing: 8 * scale) {

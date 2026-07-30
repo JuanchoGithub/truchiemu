@@ -297,9 +297,9 @@ struct TVModeView: View {
                 get: { viewModel.selectedGameIndex },
                 set: { viewModel.selectedGameIndex = $0 }
             ),
-            itemWidth: 210 * scale,
-            itemHeight: 280 * scale,
-            spacing: 14 * scale,
+            itemWidth: 280 * scale,
+            itemHeight: 360 * scale,
+            spacing: 6 * scale,
             maxSag: 28 * scale,
             visibleEachSide: 4
         ) { rom, isCenter in
