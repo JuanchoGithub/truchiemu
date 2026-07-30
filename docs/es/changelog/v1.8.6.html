@@ -1,0 +1,67 @@
+---
+layout: default
+title: v1.8.6 - Documentación de TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/es/changelog.html' | relative_url }}">Registro de cambios</a>
+        <span class="separator">/</span>
+        <span class="current">v1.8.6</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.8.6</h1>
+        <div class="release-meta">
+            <span class="release-date">29 de julio de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Versión de funciones: slots de estado de guardado renombrables, sincronización de grabación entre rebobinados de Time Machine, selección de pantalla en Modo TV, atajo para conectar/desconectar el mando de Wii, API de sesión/ping de RetroAchievements y gestión de permisos TCC para carpetas que evita el aviso repetido de acceso a Descargas al arrancar.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destacados</h2>
+        <ul class="feature-list">
+            <li><strong>Slots de guardado renombrables:</strong> Pasa el cursor por un slot para mostrar un botón de lápiz y renómbralo en línea, o usa la opción Renombrar en el menú contextual del slot/miniatura. Los nombres se guardan en un <code>.meta.json</code> junto a cada <code>.state</code> y vuelven a "Slot N" al vaciarse. El slot automático (-1) no se puede renombrar.</li>
+            <li><strong>La grabación se mantiene sincronizada entre rebobinados (#30):</strong> Se suspenden las inserciones de frames de vídeo y la captura de audio durante el rebobinado/scrub, y la duración del rebobinado se resta de los anclajes PTS para saltárselo en ambas pistas (sin frame congelado ni silencio). Un ajuste opt-in "Cortar rebobinados de la grabación" y un toggle "Permitir rebobinado durante la grabación" exponen ambos comportamientos; el writer se detiene de forma síncrona al cerrar la ventana antes de <code>runner.stop()</code> para evitar un fallo de captura de audio al desmapear la memoria compartida XPC.</li>
+            <li><strong>Selección de pantalla en Modo TV:</strong> Un nuevo <code>TVModeMainSettingsView</code> centraliza los ajustes del Modo TV (comportamiento, tema, opciones de pantalla, colecciones visibles, reasignación de botones del gamepad), y <code>TVModeScreenPickerView</code> permite elegir qué pantalla conectada usar al entrar al Modo TV mediante un nuevo <code>ScreenCatalog</code>.</li>
+            <li><strong>Atajo para conectar/desconectar el mando de Wii:</strong> Conecta/desconecta el mando de Wii en tiempo de ejecución con un nuevo atajo. Las opciones de IR de Wii ahora usan enteros como texto para las opciones de núcleo, con valores por defecto ajustados en <code>dolphin_libretro_default.json</code>, y se soporta el seguimiento sintético del puntero durante la captura de entrada.</li>
+            <li><strong>API de sesión/ping de RetroAchievements:</strong> Añade <code>rcheevos_api_init_ping</code>/<code>rcheevos_api_init_start_session</code> para presencia enriquecida e inicio de sesión, más <code>rcheevos_api_init_login_with_token</code> para refresco de token. La vista de ajustes muestra una acción de refresco para las estadísticas del usuario y notificaciones de re-login. El manejo de errores ahora usa un tipo estructurado <code>RAError</code> con mensajes localizados.</li>
+            <li><strong>Gestión de permisos TCC para carpetas:</strong> ROMLibrary ahora gestiona las concesiones TCC para ámbitos de carpeta. Combinado con la corrección del bookmark de carpeta en <code>LogManager</code>/<code>LoggerService</code> (resolver con <code>.withSecurityScope</code>, emparejar <code>startAccessingSecurityScopedResource</code>/<code>stopAccessingSecurityScopedResource</code> alrededor del handle del log abierto), la app ya no vuelve a pedir acceso a Descargas en cada arranque.</li>
+            <li><strong>Renovación de ajustes de atajos:</strong> Restablece atajos individuales o varios a la vez a sus asignaciones por defecto. Un nuevo enum <code>HotkeyTab</code> organiza los atajos de App, En juego y Especiales, con secciones nuevas para mando de Wii y Velocidad & Rebobinado. Los ajustes de Navegación con gamepad ahora se reutilizan bajo Atajos en vez de estar en una página separada.</li>
+            <li><strong>Integración de BoxArtService:</strong> <code>GameCardView</code> y <code>GameDetailView</code> usan el BoxArtService compartido, con un nuevo parámetro <code>forceReplace</code> en <code>downloadAndCache</code>.</li>
+            <li><strong>Override de auto-carga por lanzamiento:</strong> <code>launchGame</code> gana un parámetro <code>disableAutoLoadOnStart</code> para saltarse la auto-carga en un solo lanzamiento sin cambiar la preferencia global.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Cambios detallados</h2>
+        <ul>
+            <li>feat: añadir nombre visible para los slots de guardado (#31) — slots renombrables por el usuario, guardados en un <code>.meta.json</code> auxiliar, que se vacían al borrar el slot por completo; <code>SlotInfo</code> gana <code>customName</code> y su <code>Equatable</code> lo compara para que SwiftUI refresque al recargar</li>
+            <li>fix: mantener la grabación A/V sincronizada entre rebobinados de Time Machine (#30) — flag <code>isRewindPaused</code> + acumulador <code>rewindPtsOffset</code>, marcas de agua estrictas monotónicas de PTS, reinicio de posición de lectura de audio al soltar el rebobinado, parada síncrona del writer en <code>windowWillClose</code></li>
+            <li>feat: ajuste opt-in para cortar rebobinados de Time Machine de las grabaciones — <code>recording_seamlessRewindCut</code> y <code>timeMachine_rewindDuringRecording</code> (por defecto ON para preservar el comportamiento) con pista OSD localizada cuando se bloquea el rebobinado</li>
+            <li>refactor: revertir el código de rotación de chunks sin costuras (#30) — problemas de inflación de chunks y de cómputo de recortes forzaron revertir al enfoque de escritor único con cut-PTS-skip; se preserva el fix del snapshot de MetalCoordinator para que los frames de scrub queden fuera de la grabación</li>
+            <li>feat: exponer entradas desalojadas de TimeMachineBuffer + añadir scaffold del toggle <code>bufferBasedRecording</code> — <code>TimeMachineBuffer.push</code> devuelve entradas desalojadas; el pipeline basado en búfer aún no está conectado, el servicio de grabación sigue usando cut-PTS-skip</li>
+            <li>chore: dejar el servicio de grabación en el comportamiento cut-PTS-skip verificado — el contenido previo al rebobinado se preserva entre fronteras de rebobinado; la duración del archivo es solo tiempo de juego</li>
+            <li>feat(tvmode): implementar selección de pantalla y gestión de ajustes — <code>TVModeMainSettingsView</code>, <code>ScreenCatalog</code>, <code>ScreenDescriptor</code>, <code>TVModeScreenPickerView</code> con nuevas claves de localización (en/es/pt)</li>
+            <li>feat: añadir parámetro <code>disableAutoLoadOnStart</code> a la función <code>launchGame</code></li>
+            <li>feat(BoxArtService): añadir parámetro <code>forceReplace</code> al método <code>downloadAndCache</code></li>
+            <li>feat: integrar BoxArtService en <code>GameCardView</code> y <code>GameDetailView</code> para un manejo mejorado de carátulas</li>
+            <li>Implementar las capas de ping e inicio de sesión de la API para la integración de RetroAchievements — <code>rcheevos_api_init_ping</code>, <code>rcheevos_api_init_start_session</code>, <code>rcheevos_api_init_login_with_token</code>; <code>RetroAchievementsService</code> gestiona el refresco de token y el manejo de sesión con notificaciones al usuario e interfaz de refresco</li>
+            <li>feat: mejorar el manejo de errores de RetroAchievements con tipo estructurado <code>RAError</code> y mensajes localizados</li>
+            <li>feat: implementar la gestión de permisos TCC y el manejo de ámbitos de carpeta en ROMLibrary</li>
+            <li>fix: dejar de volver a pedir acceso a Descargas en cada arranque — resolver el bookmark de carpeta de log personalizada con <code>.withSecurityScope</code> y emparejar <code>startAccessingSecurityScopedResource</code>/<code>stopAccessingSecurityScopedResource</code> alrededor del handle del log abierto</li>
+            <li>feat: mejorar la configuración de atajos — restablecer por acción y en bloque los atajos por defecto, nuevo enum <code>HotkeyTab</code> (App/En juego/Especiales), secciones de mando de Wii y Velocidad & Rebobinado, Navegación con gamepad reutilizada bajo Atajos</li>
+            <li>Refactorizar niveles de logging y mejorar la funcionalidad del mando de Wii — INFO cambiado a DEBUG en CoreOverrideBridge/LibretroBridgeImpl/LibretroCallbacks/LibretroGlobals; atajo de conexión/desconexión del mando de Wii; opciones de IR de Wii con enteros como texto y defaults ajustados; seguimiento sintético de puntero durante la captura de entrada</li>
+            <li>Subir la versión de marketing a 1.8.6 y el número de build a 29 en <code>project.yml</code>, los dos <code>Info.plist</code> y <code>docs/_config.yml</code></li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/es/changelog/v1.8.5.html' | relative_url }}" class="release-prev">&larr; v1.8.5</a>
+        <a href="{{ '/es/changelog.html' | relative_url }}" class="release-all">Todas las versiones</a>
+    </nav>
+</div>

@@ -1,0 +1,67 @@
+---
+layout: default
+title: v1.8.6 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.8.6</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.8.6</h1>
+        <div class="release-meta">
+            <span class="release-date">July 29, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Feature release: renamable save state slots, recording sync across Time Machine rewinds, TV Mode screen selection, Wii controller toggle hotkey, RetroAchievements session/ping API, and TCC folder-scope management that stops the repeat Downloads permission prompt at launch.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>Renamable save state slots:</strong> Hover a slot to reveal a pencil button and rename it inline, or use the Rename item in the slot/thumbnail context menu. Names persist in a sidecar <code>.meta.json</code> next to each <code>.state</code> file and revert to "Slot N" once emptied. The auto slot (-1) is intentionally non-renamable.</li>
+            <li><strong>Recording stays in sync across rewinds (#30):</strong> Video frame appends and audio capture are suspended during rewind/scrub mode, and the rewind window's wall-clock duration is subtracted from the PTS anchors so the recording skips the rewind on both tracks (no frozen frame, no silence gap). An opt-in "Cut rewinds from recording" setting and a "Allow rewind during recording" toggle expose both behaviors; the writer is stopped synchronously on window close before <code>runner.stop()</code> to avoid an audio-capture crash on an unmapped XPC shared-memory pointer.</li>
+            <li><strong>TV Mode screen selection:</strong> A new <code>TVModeMainSettingsView</code> centralizes TV Mode settings (behavior, theme, display options, visible collections, gamepad button remapping), and <code>TVModeScreenPickerView</code> lets you choose which connected display to use when entering TV Mode via a new <code>ScreenCatalog</code>.</li>
+            <li><strong>Wii controller toggle hotkey:</strong> Attach/detach the Wii controller at runtime through a new hotkey binding. Wii IR settings now use stringified integers for core options, with adjusted defaults in <code>dolphin_libretro_default.json</code>, and synthetic pointer tracking is supported during input capture.</li>
+            <li><strong>RetroAchievements session/ping API:</strong> Adds <code>rcheevos_api_init_ping</code>/<code>rcheevos_api_init_start_session</code> for rich-presence updates and session start, plus <code>rcheevos_api_init_login_with_token</code> for token refresh. The settings view surfaces a refresh action for user stats and re-login notifications. Error handling is now a structured <code>RAError</code> type with localized messages.</li>
+            <li><strong>TCC folder-scope management:</strong> ROMLibrary now manages TCC permission grants for folder scopes. Combined with the folder bookmark fix in <code>LogManager</code>/<code>LoggerService</code> (resolve with <code>.withSecurityScope</code>, pair <code>startAccessingSecurityScopedResource</code>/<code>stopAccessingSecurityScopedResource</code> around the open log file handle), the app no longer re-prompts for Downloads access on every launch.</li>
+            <li><strong>Hotkey settings revamp:</strong> Reset individual hotkey actions or multiple at once to their default bindings. A new <code>HotkeyTab</code> enum organizes App, In-Game, and Special hotkeys, with new sections for Wii controller and Speed & Rewind actions. Gamepad Navigation settings are now reused under Hotkeys rather than living on a separate page.</li>
+            <li><strong>BoxArtService integration:</strong> <code>GameCardView</code> and <code>GameDetailView</code> use the shared BoxArtService, with a new <code>forceReplace</code> parameter on <code>downloadAndCache</code>.</li>
+            <li><strong>Per-launch auto-load override:</strong> <code>launchGame</code> gains a <code>disableAutoLoadOnStart</code> parameter to skip auto-load for a single launch without changing the global preference.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>feat: add display name for save state slots (#31) — user-renamable slots persisted via sidecar <code>.meta.json</code>, cleared when the slot is fully emptied; <code>SlotInfo</code> gains <code>customName</code> and its <code>Equatable</code> compares it so SwiftUI re-renders on reload</li>
+            <li>fix: keep recording A/V in sync across Time Machine rewinds (#30) — <code>isRewindPaused</code> flag + <code>rewindPtsOffset</code> accumulator, strict monotonic PTS watermarks, audio read position reset on rewind release, synchronous writer stop on <code>windowWillClose</code></li>
+            <li>feat: opt-in setting to cut Time Machine rewinds from recordings — <code>recording_seamlessRewindCut</code> and <code>timeMachine_rewindDuringRecording</code> (default ON to preserve behavior) with localized OSD hint when rewind is blocked</li>
+            <li>refactor: revert seamless chunk-rotation code (#30) — chunk inflation and trim computation issues forced a revert to the cut-PTS-skip single-writer approach; the MetalCoordinator snapshot fix is preserved so rewind scrub frames stay out of the recording</li>
+            <li>feat: surface TimeMachineBuffer evicted entries + add <code>bufferBasedRecording</code> toggle scaffold — <code>TimeMachineBuffer.push</code> returns evicted entries; the buffer-based pipeline is not yet wired up, recording service still uses cut-PTS-skip</li>
+            <li>chore: leave recording service at working cut-PTS-skip behavior — verified pre-rewind content preserved across rewind boundaries; file length is play-time only</li>
+            <li>feat(tvmode): implement screen selection and settings management — <code>TVModeMainSettingsView</code>, <code>ScreenCatalog</code>, <code>ScreenDescriptor</code>, <code>TVModeScreenPickerView</code> with new localization keys (en/es/pt)</li>
+            <li>feat: add <code>disableAutoLoadOnStart</code> parameter to <code>launchGame</code> function</li>
+            <li>feat(BoxArtService): add <code>forceReplace</code> parameter to <code>downloadAndCache</code> method</li>
+            <li>feat: integrate BoxArtService into <code>GameCardView</code> and <code>GameDetailView</code> for improved box art handling</li>
+            <li>Implement ping and start session API layers for RetroAchievements integration — <code>rcheevos_api_init_ping</code>, <code>rcheevos_api_init_start_session</code>, <code>rcheevos_api_init_login_with_token</code>; <code>RetroAchievementsService</code> manages token refresh and session handling with user notifications and refresh UI</li>
+            <li>feat: enhance RetroAchievements error handling with structured <code>RAError</code> type and localized messages</li>
+            <li>feat: implement TCC permissions management and folder scope handling in ROMLibrary</li>
+            <li>fix: stop re-prompting for Downloads access on every launch — resolve the custom log folder bookmark with <code>.withSecurityScope</code> and pair <code>startAccessingSecurityScopedResource</code>/<code>stopAccessingSecurityScopedResource</code> around the open log file handle</li>
+            <li>feat: Enhance Hotkey Configuration and Settings — per-action and bulk reset of hotkey defaults, new <code>HotkeyTab</code> enum (App/In-Game/Special), Wii controller and Speed & Rewind sections, Gamepad Navigation reused under Hotkeys</li>
+            <li>Refactor logging levels and enhance Wii controller functionality — INFO changed to DEBUG in CoreOverrideBridge/LibretroBridgeImpl/LibretroCallbacks/LibretroGlobals; Wii controller attach/detach toggle hotkey; stringified-int Wii IR core options with adjusted defaults; synthetic pointer tracking during input capture</li>
+            <li>Bump marketing version to 1.8.6 and build number to 29 across <code>project.yml</code>, both Info.plists, and <code>docs/_config.yml</code></li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.8.5.html' | relative_url }}" class="release-prev">&larr; v1.8.5</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>
