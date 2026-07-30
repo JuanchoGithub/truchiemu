@@ -115,6 +115,28 @@ class ROMLibrary: ObservableObject {
     @Published var bezelUpdateToken: Int = 0
     var romFolderURL: URL? { libraryFolders.first }
 
+    private var activeFolderScopes: [URL] = []
+
+    private func startFolderScope(for url: URL) {
+        guard !activeFolderScopes.contains(where: { $0.path == url.path }) else { return }
+        if url.startAccessingSecurityScopedResource() {
+            activeFolderScopes.append(url)
+        }
+    }
+
+    private func stopFolderScope(for url: URL) {
+        guard let idx = activeFolderScopes.firstIndex(where: { $0.path == url.path }) else { return }
+        activeFolderScopes[idx].stopAccessingSecurityScopedResource()
+        activeFolderScopes.remove(at: idx)
+    }
+
+    func stopAllFolderScopes() {
+        for url in activeFolderScopes.reversed() {
+            url.stopAccessingSecurityScopedResource()
+        }
+        activeFolderScopes.removeAll()
+    }
+
     // MARK: - SwiftData Persistence
 
     let repository: ROMRepository
@@ -141,21 +163,34 @@ class ROMLibrary: ObservableObject {
     func restoreLibraryAccess() {
         let savedFolders = repository.loadPrimaryFolders()
         if savedFolders.isEmpty {
+            stopAllFolderScopes()
             libraryFolders = []
             primaryFolders = []
             subfolderMap = [:]
             return
         }
         
+        // Release any previously-held scopes before starting fresh ones (covers
+        // re-invocation during library rebuilds; OS also releases scopes on
+        // process exit, so this is defensive cleanup, not load-bearing).
+        stopAllFolderScopes()
+        
         libraryFolders = savedFolders.compactMap {
             var stale = false
             return try? URL(resolvingBookmarkData: $0.1, options: .withSecurityScope, bookmarkDataIsStale: &stale)
         }
-        
+
+        for url in libraryFolders {
+            startFolderScope(for: url)
+        }
+
         primaryFolders = savedFolders.map { ROMLibraryFolder(url: URL(fileURLWithPath: $0.0), parentPath: $0.2, isPrimary: $0.3) }
         for primary in primaryFolders {
-            subfolderMap[primary.url.path] = repository.loadSubfolders(parentPath: primary.url.path).map {
-                ROMLibraryFolder(url: URL(fileURLWithPath: $0.0), parentPath: $0.2, isPrimary: $0.3)
+            guard let scoped = libraryFolders.first(where: { $0.path == primary.url.path }) else { continue }
+            subfolderMap[primary.url.path] = repository.loadSubfolders(parentPath: primary.url.path).map { row in
+                let relative = String(row.0.dropFirst(primary.url.path.count).dropFirst())
+                let url = relative.isEmpty ? scoped : scoped.appendingPathComponent(relative)
+                return ROMLibraryFolder(url: url, parentPath: row.2, isPrimary: row.3)
             }
         }
     }
@@ -936,7 +971,8 @@ let idsToPurge = orphans.map { $0.id }
         primaryFolders.append(folder)
 
         if !libraryFolders.contains(url) { libraryFolders.append(url) }
-        
+        startFolderScope(for: url)
+
         // Save only this bookmark
         saveSingleLibraryFolderBookmark(folder)
 
@@ -967,6 +1003,7 @@ let idsToPurge = orphans.map { $0.id }
 
         let removedIDs = removedROMs.map { $0.id }
         roms = roms.filter { !removedIDs.contains($0.id) }
+        stopFolderScope(for: folder.url)
         libraryFolders.removeAll { $0.path == folderPath || $0.path.hasPrefix(folderPath + "/") }
         repository.removeLibraryFolder(urlPath: folderPath, removeSubfolders: true)
 

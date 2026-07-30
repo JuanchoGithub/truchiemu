@@ -2513,10 +2513,10 @@ func refreshGameCacheAfterGameStop() {
         // parsing bugs (RA occasionally renames fields). Verbose but bounded.
         if let pretty = try? JSONSerialization.data(withJSONObject: responseData, options: [.prettyPrinted, .sortedKeys]),
            let prettyStr = String(data: pretty, encoding: .utf8) {
-            LoggerService.info(category: "RetroAchievements", "API_GetUserSummary FULL RESPONSE:\n\(prettyStr)")
+            LoggerService.debug(category: "RetroAchievements", "API_GetUserSummary FULL RESPONSE:\n\(prettyStr)")
         } else {
             let keys = responseData.keys.sorted().joined(separator: ", ")
-            LoggerService.info(category: "RetroAchievements", "API_GetUserSummary keys: \(keys)")
+            LoggerService.debug(category: "RetroAchievements", "API_GetUserSummary keys: \(keys)")
         }
 
         let safeInt = { (key: String) -> Int in

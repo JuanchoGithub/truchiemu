@@ -474,6 +474,16 @@ When asked to "release", "cut a release", or "bump version", follow the tagged-s
 
 When asked to "build the current state and upload it for testing", "upload to the nightly", "let other Macs download it", or "ship a test build" without bumping versions / merging anything, follow the nightly-preview-build steps in `RELEASE_PROCESS.md`.
 
+### TCC Permissions & Version Bumps
+
+TCC (Transparency, Consent, and Control) keys security-scoped bookmark grants on **bundle identity + `CFBundleVersion` + code-signature**. TruchiEmu is currently Development-signed (`CODE_SIGN_IDENTITY = "-"`, ad-hoc), so each `CFBundleVersion` bump invalidates TCC grants for user-selected folders (custom log folder, ROM library folders under `~/Downloads`, etc.).
+
+Symptom: the app re-prompts for Downloads access on every launch, and boxart reads under `~/Downloads/roms/...` fail with `err=1 (Operation not permitted)`.
+
+Rule: **Do not bump `CFBundleVersion` during active development.** Bump it only when cutting a release (see `RELEASE_PROCESS.md` and the tagged-stable-release workflow). Holding the version constant across Debug rebuilds keeps the prior TCC grant valid, so the app does not re-prompt.
+
+If a grant has already been invalidated: System Settings → Privacy & Security → Files and Folders → TruchiEmu → remove the entries, relaunch the current build, grant access once. The grant persists across rebuilds as long as `CFBundleVersion` is unchanged.
+
 
 ## When Adding Source Files
 
