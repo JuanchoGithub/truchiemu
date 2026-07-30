@@ -159,9 +159,7 @@ class RetroAchievementsService: ObservableObject {
         self.webApiKey = webApiKey
 
         do {
-            guard let response = try await requestUserSummary(username: username) else {
-                throw RAError.loginFailed("Invalid Web API Key or Username.")
-            }
+            let response = try await requestUserSummary(username: username)
 
             await MainActor.run {
                 self.isLoggedIn = true
@@ -179,13 +177,19 @@ class RetroAchievementsService: ObservableObject {
             LoggerService.info(category: "RetroAchievements", "Logged in successfully as \(username)")
 
             if loginToken == nil && !password.isEmpty {
-                if let token = await fetchLoginTokenWithPassword(username: username, password: password) {
+                do {
+                    let token = try await fetchLoginTokenWithPassword(username: username, password: password)
                     await MainActor.run {
                         self.loginToken = token
                         self.lastKnownLoginToken = token
                         AppSettings.set("ra_login_token", value: token)
                     }
                     LoggerService.info(category: "RetroAchievements", "Login token obtained and saved")
+                } catch {
+                    // Password is wrong — surface this as a credential error so the user knows
+                    // exactly what failed. The web API key already validated (user summary succeeded).
+                    LoggerService.error(category: "RetroAchievements", "Password login failed: \(error.localizedDescription)")
+                    throw error
                 }
             }
 
@@ -208,7 +212,7 @@ class RetroAchievementsService: ObservableObject {
         }
     }
 
-    private func fetchLoginTokenWithPassword(username: String, password: String) async -> String? {
+    private func fetchLoginTokenWithPassword(username: String, password: String) async throws -> String {
         var cUrl: UnsafeMutablePointer<CChar>?
         var cPostData: UnsafeMutablePointer<CChar>?
         var cContentType: UnsafeMutablePointer<CChar>?
@@ -222,7 +226,7 @@ class RetroAchievementsService: ObservableObject {
         guard initResult == 0, let urlStr = cUrl else {
             LoggerService.error(category: "RetroAchievements", "rcheevos failed to build login request: \(initResult)")
             rcheevos_api_destroy_request_strings(cUrl, cPostData, cContentType)
-            return nil
+            throw RAError.loginFailed("Internal error building login request.")
         }
 
         let requestURL = String(cString: urlStr)
@@ -237,7 +241,9 @@ class RetroAchievementsService: ObservableObject {
         LoggerService.debug(category: "RetroAchievements", "Login2 POST data: \(postDataStr ?? "nil")")
         #endif
 
-        guard let url = URL(string: requestURL) else { return nil }
+        guard let url = URL(string: requestURL) else {
+            throw RAError.loginFailed("Internal error building login URL.")
+        }
 
         var request = URLRequest(url: url)
         request.setValue("rcheevos/12.3.0 TruchiEmu/1.0.0", forHTTPHeaderField: "User-Agent")
@@ -250,11 +256,13 @@ class RetroAchievementsService: ObservableObject {
         }
 
         let data: Data
+        let response: URLResponse
         do {
-            (data, _) = try await URLSession.shared.data(for: request)
+            (data, response) = try await URLSession.shared.data(for: request)
+        } catch let urlError as URLError {
+            throw RAError.from(urlError: urlError)
         } catch {
-            LoggerService.error(category: "RetroAchievements", "Login2 network error: \(error.localizedDescription)")
-            return nil
+            throw RAError.networkUnreachable
         }
 
         var cToken: UnsafeMutablePointer<CChar>?
@@ -263,10 +271,13 @@ class RetroAchievementsService: ObservableObject {
             rcheevos_api_process_login_response(bodyPtr, data.count, &cToken)
         }
 
+        let httpStatus = (response as? HTTPURLResponse)?.statusCode ?? 0
+        let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+
         guard result == 0, let tokenPtr = cToken else {
-            LoggerService.error(category: "RetroAchievements", "Login2 response error: \(result)")
+            LoggerService.error(category: "RetroAchievements", "Login2 response error code=\(result) http=\(httpStatus)")
             free(cToken)
-            return nil
+            throw RAError.from(httpStatus: httpStatus == 0 ? 200 : httpStatus, json: json ?? nil)
         }
 
         let token = String(cString: tokenPtr)
@@ -323,7 +334,7 @@ class RetroAchievementsService: ObservableObject {
             URLQueryItem(name: "y", value: webApiKey)
         ]
         
-        guard let finalURL = components.url else { throw RAError.networkError }
+        guard let finalURL = components.url else { throw RAError.networkUnreachable }
         let (data, _) = try await URLSession.shared.data(from: finalURL)
         
         let consoles = try JSONDecoder().decode([RAConsoleResponse].self, from: data)
@@ -460,7 +471,7 @@ class RetroAchievementsService: ObservableObject {
     /// All heavy work (JSON parsing, SwiftData upserts) runs on a background context.
     func fetchAndCacheGameList(isUserInitiated: Bool = false) async throws {
         guard isEnabled, isLoggedIn else {
-            throw RAError.networkError
+            throw RAError.loginFailed("Not logged in to RetroAchievements.")
         }
 
         guard let container = SwiftDataContainer.shared.container else { return }
@@ -1894,8 +1905,9 @@ func refreshGameCacheAfterGameStop() {
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
         
         let (_, response) = try await URLSession.shared.data(for: request)
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            throw RAError.networkError
+        let httpStatus = (response as? HTTPURLResponse)?.statusCode ?? 0
+        guard httpStatus == 200 else {
+            throw RAError.serverError(httpStatus)
         }
         
         LoggerService.info(category: "RetroAchievements", "Leaderboard \(leaderboardID) score submitted: \(score)")
@@ -2458,7 +2470,7 @@ func refreshGameCacheAfterGameStop() {
         }
     }
 
-    private func requestUserSummary(username: String) async throws -> RAUserInfo? {
+    private func requestUserSummary(username: String) async throws -> RAUserInfo {
         let url = URL(string: "\(apiBaseURL)/API_GetUserSummary.php")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
         components.queryItems = [
@@ -2466,25 +2478,46 @@ func refreshGameCacheAfterGameStop() {
             URLQueryItem(name: "y", value: webApiKey), // Auth happens here
             URLQueryItem(name: "a", value: "1")
         ]
-        
-        let (data, response) = try await URLSession.shared.data(from: components.url!)
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            throw RAError.networkError
+
+        let data: Data
+        let response: URLResponse
+        do {
+            (data, response) = try await URLSession.shared.data(from: components.url!)
+        } catch let urlError as URLError {
+            throw RAError.from(urlError: urlError)
+        } catch {
+            throw RAError.networkUnreachable
         }
 
-        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
-
-        // Throw proper error if RetroAchievements rejects the Web API Key
-        if let errorMsg = json?["Error"] as? String {
-            throw RAError.loginFailed(errorMsg)
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw RAError.serverError(0)
         }
 
-        guard let responseData = json else { return nil }
+        let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
 
-        #if LOG_DEBUG
-        let keys = responseData.keys.sorted().joined(separator: ", ")
-        LoggerService.debug(category: "RetroAchievements", "API_GetUserSummary keys: \(keys)")
-        #endif
+        if httpResponse.statusCode != 200 {
+            throw RAError.from(httpStatus: httpResponse.statusCode, json: json ?? nil)
+        }
+
+        // RA returns 200 with {Success:false, Status:"..."} for some auth failures
+        if let json = json, let success = json["Success"] as? Bool, success == false {
+            throw RAError.from(httpStatus: 200, json: json)
+        }
+
+        guard let responseData = json else {
+            throw RAError.serverError(httpResponse.statusCode)
+        }
+
+        // Always log the full response so the JSON shape can be diagnosed from the log file
+        // without requiring the user to enable Debug logging. This is a diagnostic aid for
+        // parsing bugs (RA occasionally renames fields). Verbose but bounded.
+        if let pretty = try? JSONSerialization.data(withJSONObject: responseData, options: [.prettyPrinted, .sortedKeys]),
+           let prettyStr = String(data: pretty, encoding: .utf8) {
+            LoggerService.info(category: "RetroAchievements", "API_GetUserSummary FULL RESPONSE:\n\(prettyStr)")
+        } else {
+            let keys = responseData.keys.sorted().joined(separator: ", ")
+            LoggerService.info(category: "RetroAchievements", "API_GetUserSummary keys: \(keys)")
+        }
 
         let safeInt = { (key: String) -> Int in
             if let val = responseData[key] as? Int { return val }
@@ -2494,10 +2527,10 @@ func refreshGameCacheAfterGameStop() {
 
         return RAUserInfo(
             username: responseData["User"] as? String ?? username,
-            totalPoints: safeInt("TotalPoints"),
+            totalPoints: safeInt("TotalSoftcorePoints"),
             totalHardcorePoints: safeInt("TotalHardcorePoints"),
             totalTruePoints: safeInt("TotalTruePoints"),
-            rank: safeInt("Rank"),
+            rank: safeInt("TotalRanked"),
             awards: safeInt("Awards"),
             memberSince: responseData["MemberSince"] as? String ?? "",
             richPresenceMsg: responseData["RichPresenceMsg"] as? String,
@@ -2513,7 +2546,7 @@ func refreshGameCacheAfterGameStop() {
     func refreshUserSummary() async {
         guard isLoggedIn, let username = username, !webApiKey.isEmpty else { return }
         do {
-            guard let response = try await requestUserSummary(username: username) else { return }
+            let response = try await requestUserSummary(username: username)
             self.userInfo = response
             #if LOG_DEBUG
             LoggerService.debug(category: "RetroAchievements", "Refreshed user summary: pts=\(response.totalPoints) hc=\(response.totalHardcorePoints) true=\(response.totalTruePoints) rank=\(response.rank)")
@@ -2543,23 +2576,123 @@ func refreshGameCacheAfterGameStop() {
 
 enum RAError: LocalizedError {
     case apiKeyMissing
-    case networkError
+    case networkUnreachable
+    case networkTimeout
+    case serverError(Int)
+    case unknownUser
+    case invalidApiKey
+    case wrongPassword
+    case accountLocked
     case loginFailed(String)
     case gameNotFound
     case invalidHash
-    
+
+    /// User-facing category for grouping messages in the UI (e.g. to color the error label).
+    enum Severity {
+        case info, warning, error
+    }
+
+    var severity: Severity {
+        switch self {
+        case .apiKeyMissing, .networkUnreachable, .networkTimeout:
+            return .info
+        case .serverError, .loginFailed, .gameNotFound, .invalidHash:
+            return .warning
+        case .unknownUser, .invalidApiKey, .wrongPassword, .accountLocked:
+            return .error
+        }
+    }
+
+    /// Optional URL the user can click for self-service resolution (e.g. RA settings page).
+    var helpURL: URL? {
+        switch self {
+        case .unknownUser, .accountLocked:
+            return URL(string: "https://retroachievements.org/")
+        case .invalidApiKey, .wrongPassword:
+            return URL(string: "https://retroachievements.org/settings")
+        default:
+            return nil
+        }
+    }
+
     var errorDescription: String? {
         switch self {
         case .apiKeyMissing:
-            return "RetroAchievements Web API key is not configured"
-        case .networkError:
-            return "Network error occurred"
+            return "RetroAchievements Web API key is not configured."
+        case .networkUnreachable:
+            return "Can't reach retroachievements.org. Check your internet connection."
+        case .networkTimeout:
+            return "The connection to RetroAchievements timed out. Try again."
+        case .serverError(let code):
+            return "RetroAchievements server returned HTTP \(code). Try again in a moment."
+        case .unknownUser:
+            return "This RetroAchievements username doesn't exist. Check the spelling."
+        case .invalidApiKey:
+            return "The Web API Key is invalid. Generate a new one at retroachievements.org/settings."
+        case .wrongPassword:
+            return "The password is incorrect."
+        case .accountLocked:
+            return "Your RetroAchievements account is locked or suspended."
         case .loginFailed(let msg):
-            return "Connection failed: \(msg)"
+            return "RetroAchievements login failed: \(msg)"
         case .gameNotFound:
-            return "Game not found in RetroAchievements database"
+            return "Game not found in RetroAchievements database."
         case .invalidHash:
-            return "Invalid ROM hash for this system"
+            return "Invalid ROM hash for this system."
+        }
+    }
+}
+
+/// Translate an RA API response field or status code into a structured RAError.
+/// Used by both the Web API Key path (`API_GetUserSummary.php`) and the login2 path.
+extension RAError {
+    /// Map an HTTP status code + JSON body to a structured error.
+    /// `json` may be nil if the response wasn't JSON.
+    static func from(httpStatus: Int, json: [String: Any]?) -> RAError {
+        if httpStatus == 200 { return .loginFailed("Unexpected response") }
+
+        // Inspect server-provided fields
+        if let json = json {
+            if let errorStr = (json["Error"] as? String) ?? (json["Status"] as? String) {
+                let lower = errorStr.lowercased()
+                if lower.contains("unknown user") || lower.contains("user not found") || lower.contains("no such user") {
+                    return .unknownUser
+                }
+                if lower.contains("invalid api key") || lower.contains("invalid web api key") || lower.contains("api key") {
+                    return .invalidApiKey
+                }
+                if lower.contains("credentials invalid") || lower.contains("invalid credentials") || lower.contains("incorrect password") || lower.contains("wrong password") {
+                    return .wrongPassword
+                }
+                if lower.contains("locked") || lower.contains("suspended") || lower.contains("banned") {
+                    return .accountLocked
+                }
+                return .loginFailed(errorStr)
+            }
+            if let success = json["Success"] as? Bool, success == false {
+                return .loginFailed("RetroAchievements rejected the request.")
+            }
+        }
+
+        if (500..<600).contains(httpStatus) {
+            return .serverError(httpStatus)
+        }
+        return .serverError(httpStatus)
+    }
+
+    /// Map a `URLError` (raised by URLSession on transport failures) to a structured RAError.
+    static func from(urlError: URLError) -> RAError {
+        switch urlError.code {
+        case .notConnectedToInternet,
+             .networkConnectionLost,
+             .cannotConnectToHost,
+             .cannotFindHost,
+             .dnsLookupFailed:
+            return .networkUnreachable
+        case .timedOut:
+            return .networkTimeout
+        default:
+            return .networkUnreachable
         }
     }
 }

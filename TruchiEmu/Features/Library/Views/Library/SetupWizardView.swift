@@ -12,7 +12,7 @@ struct SetupWizardView: View {
     @EnvironmentObject var loc: LocalizationManager
 
     @Environment(\.colorScheme) private var colorScheme
-    @State private var raLoginError: String?
+    @State private var raLoginError: RAError?
     @State private var isRALoggingIn: Bool = false
     @State private var raLoginSuccess: Bool = false
 
@@ -725,9 +725,17 @@ extension SetupWizardView {
             }
 
             if let error = raLoginError {
-                Label(error, systemImage: "xmark.circle.fill")
+                Label(raErrorMessage(error), systemImage: "xmark.circle.fill")
                     .font(.caption)
                     .foregroundColor(AppColors.error(colorScheme))
+                    .fixedSize(horizontal: false, vertical: true)
+                if let url = error.helpURL {
+                    Button(loc.localized("ra.error.openSettings")) {
+                        NSWorkspace.shared.open(url)
+                    }
+                    .buttonStyle(.link)
+                    .font(.caption)
+                }
             }
 
             Divider()
@@ -760,10 +768,39 @@ extension SetupWizardView {
                 )
                 raLoginSuccess = true
             } catch {
-                raLoginError = error.localizedDescription
+                if let raError = error as? RAError {
+                    raLoginError = raError
+                } else {
+                    raLoginError = .loginFailed(error.localizedDescription)
+                }
             }
             isRALoggingIn = false
         }
+    }
+
+    private func raErrorMessage(_ error: RAError) -> String {
+        let key: String
+        switch error {
+        case .apiKeyMissing: key = "ra.error.apiKeyMissing"
+        case .networkUnreachable: key = "ra.error.networkUnreachable"
+        case .networkTimeout: key = "ra.error.networkTimeout"
+        case .serverError: key = "ra.error.serverError"
+        case .unknownUser: key = "ra.error.unknownUser"
+        case .invalidApiKey: key = "ra.error.invalidApiKey"
+        case .wrongPassword: key = "ra.error.wrongPassword"
+        case .accountLocked: key = "ra.error.accountLocked"
+        case .loginFailed: key = "ra.error.loginFailed"
+        case .gameNotFound: key = "ra.error.gameNotFound"
+        case .invalidHash: key = "ra.error.invalidHash"
+        }
+        let translated = loc.localized(key)
+        if translated == key, case .loginFailed(let msg) = error {
+            return loc.localized("ra.error.loginFailedWithMessage", msg)
+        }
+        if translated == key, case .serverError(let code) = error {
+            return String(format: loc.localized("ra.error.serverErrorWithCode"), code)
+        }
+        return translated
     }
 }
 

@@ -12,7 +12,7 @@ struct RetroAchievementsSettingsView: View {
     @State private var username = ""
     @State private var webApiKey = ""
     @State private var password = ""
-    @State private var loginError: String?
+    @State private var loginError: RAError?
     @State private var isLoggingIn = false
     @State private var showApiKey = false
     @State private var cacheRefreshError: String?
@@ -298,7 +298,7 @@ struct RetroAchievementsSettingsView: View {
         password: Binding<String>,
         webApiKey: Binding<String>,
         showApiKey: Binding<Bool>,
-        loginError: String?,
+        loginError: RAError?,
         isLoggingIn: Bool,
         onLogin: @escaping () -> Void
     ) -> some View {
@@ -326,9 +326,7 @@ struct RetroAchievementsSettingsView: View {
             }
 
             if let error = loginError {
-                Text(error)
-                    .font(.caption)
-                    .foregroundColor(AppColors.error(colorScheme))
+                LoginErrorView(error: error)
             }
 
             Button(action: onLogin) {
@@ -582,7 +580,11 @@ struct RetroAchievementsSettingsView: View {
             } catch {
                 await MainActor.run {
                     isLoggingIn = false
-                    loginError = error.localizedDescription
+                    if let raError = error as? RAError {
+                        loginError = raError
+                    } else {
+                        loginError = .loginFailed(error.localizedDescription)
+                    }
                 }
             }
         }
@@ -635,5 +637,99 @@ private struct EnableRetroAchievementsPromptView: View {
         .padding(AppSpacing.xl2)
         .frame(width: 380)
         .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+    }
+}
+
+// MARK: - Login Error Display
+
+/// Renders a structured `RAError` with a clear message, severity-based color, and an optional
+/// self-service help link (e.g. "Open RetroAchievements settings").
+private struct LoginErrorView: View {
+    let error: RAError
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.openURL) private var openURL
+    @ObservedObject private var loc = LocalizationManager.shared
+
+    private var color: Color {
+        switch error.severity {
+        case .info: return AppColors.accentTint(colorScheme)
+        case .warning: return .orange
+        case .error: return AppColors.error(colorScheme)
+        }
+    }
+
+    private var iconName: String {
+        switch error {
+        case .networkUnreachable, .networkTimeout: return "wifi.slash"
+        case .serverError: return "exclamationmark.triangle"
+        case .unknownUser: return "person.crop.circle.badge.questionmark"
+        case .invalidApiKey: return "key.slash"
+        case .wrongPassword: return "lock.slash"
+        case .accountLocked: return "lock"
+        case .apiKeyMissing: return "key"
+        default: return "exclamationmark.circle"
+        }
+    }
+
+    private var localizedMessage: String {
+        let key: String
+        switch error {
+        case .apiKeyMissing: key = "ra.error.apiKeyMissing"
+        case .networkUnreachable: key = "ra.error.networkUnreachable"
+        case .networkTimeout: key = "ra.error.networkTimeout"
+        case .serverError: key = "ra.error.serverError"
+        case .unknownUser: key = "ra.error.unknownUser"
+        case .invalidApiKey: key = "ra.error.invalidApiKey"
+        case .wrongPassword: key = "ra.error.wrongPassword"
+        case .accountLocked: key = "ra.error.accountLocked"
+        case .loginFailed: key = "ra.error.loginFailed"
+        case .gameNotFound: key = "ra.error.gameNotFound"
+        case .invalidHash: key = "ra.error.invalidHash"
+        }
+        let translated = loc.localized(key)
+        if translated == key, case .loginFailed(let msg) = error {
+            return loc.localized("ra.error.loginFailedWithMessage", msg)
+        }
+        if translated == key, case .serverError(let code) = error {
+            return String(format: loc.localized("ra.error.serverErrorWithCode"), code)
+        }
+        return translated
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.xs) {
+            HStack(alignment: .top, spacing: AppSpacing.xs) {
+                Image(systemName: iconName)
+                    .foregroundColor(color)
+                Text(localizedMessage)
+                    .font(.caption)
+                    .foregroundColor(color)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            if let url = error.helpURL {
+                Button {
+                    openURL(url)
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "arrow.up.forward.app")
+                            .font(.caption2)
+                        Text(loc.localized("ra.error.openSettings"))
+                            .font(.caption)
+                    }
+                    .foregroundColor(AppColors.accentTint(colorScheme))
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(AppSpacing.sm)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: AppRadius.sm)
+                .fill(color.opacity(0.1))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: AppRadius.sm)
+                .stroke(color.opacity(0.3), lineWidth: 1)
+        )
     }
 }
