@@ -195,15 +195,29 @@ Text(sys.name)
             }
 
             if isHovered, let menuContent = contextMenu {
-                Menu { menuContent() } label: {
+                ZStack {
+                    Circle()
+                        .fill(AppColors.brandAccent)
                     Image(systemName: "ellipsis")
-                        .font(.system(size: 12, weight: .bold))
-                        .foregroundColor(.secondary)
-                        .padding(.horizontal, 4)
-                        .padding(.vertical, 6)
+                        .font(.system(size: 11, weight: .heavy))
+                        .foregroundColor(.white)
                 }
-                .menuIndicator(.hidden)
-                .transition(.opacity)
+                .frame(width: 20, height: 20)
+                .overlay(
+                    Circle()
+                        .strokeBorder(Color.white.opacity(0.25), lineWidth: 0.5)
+                )
+                .shadow(color: AppColors.brandAccent.opacity(0.4), radius: 4, y: 2)
+                .opacity(0.7)
+                .overlay(
+                    Menu { menuContent() } label: {
+                        Color.clear
+                            .contentShape(Circle())
+                    }
+                    .menuStyle(.borderlessButton)
+                    .menuIndicator(.hidden)
+                )
+                .transition(.opacity.combined(with: .scale))
             }
         }
         .padding(.vertical, 4)

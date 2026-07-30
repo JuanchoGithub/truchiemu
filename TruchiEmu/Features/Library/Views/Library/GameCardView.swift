@@ -301,53 +301,76 @@ struct GameCardView: View {
     @ViewBuilder
     private var cardContent: some View {
         VStack(spacing: 0) {
-            ZStack(alignment: .topTrailing) {
-                artworkView
-                .clipped()
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.black.opacity(isHovered ? 0.08 : 0))
-                )
-                .grayscale(artworkGrayscale)
-                .opacity(artworkOpacity)
-                .padding(.horizontal, 4)
-                .padding(.top, 4)
+            ZStack(alignment: .bottomTrailing) {
+                ZStack(alignment: .topTrailing) {
+                    artworkView
+                    .clipped()
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.black.opacity(isHovered ? 0.08 : 0))
+                    )
+                    .grayscale(artworkGrayscale)
+                    .opacity(artworkOpacity)
+                    .padding(.horizontal, 4)
+                    .padding(.top, 4)
 
-                if raEnabled && rom.raMatchStatus == "matched" {
-                    Image(systemName: "trophy.fill")
-                    .font(.system(size: 10, weight: .bold))
-                    .foregroundColor(AppColors.textOnAccent(for: AppColors.brandAccent.opacity(0.85), colorScheme: colorScheme))
-                    .padding(4)
-                    .background(AppColors.brandAccent.opacity(0.85))
-                    .clipShape(Circle())
-                    .shadow(color: .black.opacity(0.3), radius: 2)
-                    .padding(4)
-                    .transition(.scale.combined(with: .opacity))
-                }
-
-                if isMultiSelected {
-                    Image(systemName: "checkmark.circle.fill")
-                        .font(.title2)
-                        .foregroundColor(AppColors.brandAccent)
+                    if raEnabled && rom.raMatchStatus == "matched" {
+                        Image(systemName: "trophy.fill")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundColor(AppColors.textOnAccent(for: AppColors.brandAccent.opacity(0.85), colorScheme: colorScheme))
+                        .padding(4)
+                        .background(AppColors.brandAccent.opacity(0.85))
+                        .clipShape(Circle())
                         .shadow(color: .black.opacity(0.3), radius: 2)
                         .padding(4)
                         .transition(.scale.combined(with: .opacity))
-                }
-            }
-            .overlay(alignment: .bottomTrailing) {
-                if isHovered, let menuContent = contextMenu {
-                    Menu { menuContent() } label: {
-                        Image(systemName: "ellipsis")
-                            .font(.system(size: 11, weight: .bold))
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 4)
-                            .background(Color.black.opacity(0.5))
-                            .clipShape(RoundedRectangle(cornerRadius: AppRadius.xs))
                     }
-                    .menuIndicator(.hidden)
-                    .padding(6)
-                    .transition(.opacity)
+
+                    if isMultiSelected {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.title2)
+                            .foregroundColor(AppColors.brandAccent)
+                            .shadow(color: .black.opacity(0.3), radius: 2)
+                            .padding(4)
+                            .transition(.scale.combined(with: .opacity))
+                    }
+                }
+
+                if isHovered, let menuContent = contextMenu {
+                    ZStack {
+                        Circle()
+                            .fill(
+                                AngularGradient(
+                                    colors: [
+                                        AppColors.brandAccent.opacity(0.85),
+                                        AppColors.brandAccent,
+                                        AppColors.brandAccent.opacity(0.85)
+                                    ],
+                                    center: .center
+                                )
+                            )
+                        Image(systemName: "ellipsis")
+                            .font(.system(size: 12, weight: .heavy))
+                            .foregroundColor(.white)
+                            .shadow(color: .black.opacity(0.3), radius: 1, y: 0.5)
+                    }
+                    .frame(width: 24, height: 24)
+                    .overlay(
+                        Circle()
+                            .strokeBorder(Color.white.opacity(0.25), lineWidth: 0.5)
+                    )
+                    .shadow(color: AppColors.brandAccent.opacity(0.4), radius: 4, y: 2)
+                    .opacity(0.7)
+                    .overlay(
+                        Menu { menuContent() } label: {
+                            Color.clear
+                                .contentShape(Circle())
+                        }
+                        .menuStyle(.borderlessButton)
+                        .menuIndicator(.hidden)
+                    )
+                    .padding(8)
+                    .transition(.opacity.combined(with: .scale))
                 }
             }
             .overlay(alignment: .bottom) {
