@@ -220,8 +220,14 @@ final class GridCollectionViewCoordinator: NSObject {
                 gap = 4
             }
         } else {
-            artHeight = cardWidth / 0.75
-            gap = 8
+            switch SystemPreferences.shared.boxArtDisplayMode() {
+            case .fillBlurred:
+                artHeight = cardWidth / 0.75
+                gap = 8
+            case .cropSquare:
+                artHeight = cardWidth
+                gap = 4
+            }
         }
 
         return ceil(artHeight + textBlockHeight + gap + topPadding + bottomPadding)

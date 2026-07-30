@@ -70,6 +70,29 @@ struct GameCardView: View {
         prefs.boxType(for: rom.systemID ?? "")
     }
 
+    private var displayMode: BoxArtDisplayMode {
+        prefs.boxArtDisplayMode()
+    }
+
+    private var isGroupView: Bool {
+        !isSingleBoxTypeView
+    }
+
+    // The frame aspect the artwork container is locked to. For system views
+    // this is the user-selected BoxType. For group views (All Games, Favorites,
+    // Categories, ...) it follows the BoxArtDisplayMode the user picked in the
+    // toolbar: cropSquare = 1:1, fillBlurred = portrait (matches the legacy
+    // All Games height so Method 1 is visually neutral vs. the old behaviour).
+    private var effectiveFrameAspectRatio: CGFloat {
+        if isGroupView {
+            switch displayMode {
+            case .fillBlurred: return 3.0 / 4.0
+            case .cropSquare: return 1.0
+            }
+        }
+        return boxType.aspectRatio
+    }
+
     private var titleFontSize: CGFloat {
         10 + zoomLevel * 6
     }
@@ -292,7 +315,7 @@ struct GameCardView: View {
                         .padding(.vertical, 4)
                 }
             }
-            .aspectRatio(boxType.aspectRatio, contentMode: .fit)
+            .aspectRatio(effectiveFrameAspectRatio, contentMode: .fit)
             .frame(maxWidth: .infinity)
 
             Spacer()
@@ -397,7 +420,19 @@ struct GameCardView: View {
         .offset(y: isPressed ? -4 : 0)
     }
 
+    @ViewBuilder
     private var artworkView: some View {
+        if isGroupView, let nsImage = image {
+            switch displayMode {
+            case .fillBlurred: artworkFillBlurred(nsImage)
+            case .cropSquare:  artworkCropSquare(nsImage)
+            }
+        } else {
+            artworkDefault
+        }
+    }
+
+    private var artworkDefault: some View {
         GeometryReader { geometry in
             ZStack(alignment: .topLeading) {
                 Color.clear
@@ -411,6 +446,58 @@ struct GameCardView: View {
                     placeholderArt
                          .scaleEffect(isPressed ? 1.02 : 1)
                 }
+            }
+            .frame(width: geometry.size.width, height: geometry.size.height)
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.black.opacity(0.10), lineWidth: 1))
+        .shadow(color: Color.black.opacity(isPressed ? 0.35 : 0.20), radius: isPressed ? 9 : 5, x: 0, y: isPressed ? 5 : 3)
+    }
+
+    // Method 1: blurred fill. A blurred, oversized copy of the cover fills the
+    // portrait frame, the sharp cover is drawn on top centered. Hides the dead
+    // space around landscape covers without changing row height.
+    private func artworkFillBlurred(_ nsImage: NSImage) -> some View {
+        GeometryReader { geometry in
+            let w = geometry.size.width
+            let h = geometry.size.height
+            ZStack {
+                Color.black
+                Image(nsImage: nsImage)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: w, height: h)
+                    .clipped()
+                    .blur(radius: max(10, min(h, 280) * 0.08))
+                    .opacity(0.85)
+                Color.black.opacity(0.25)
+                Image(nsImage: nsImage)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: w, height: h)
+                    .scaleEffect(isPressed ? 1.05 : 1)
+            }
+            .frame(width: w, height: h)
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.black.opacity(0.10), lineWidth: 1))
+        .shadow(color: Color.black.opacity(isPressed ? 0.35 : 0.20), radius: isPressed ? 9 : 5, x: 0, y: isPressed ? 5 : 3)
+    }
+
+    // Method 2: crop to square. fit-to-fill a square frame, center-cropping
+    // any overflow. Portrait covers slice top/bottom, landscape slice
+    // left/right. Box covers are unaffected.
+    private func artworkCropSquare(_ nsImage: NSImage) -> some View {
+        GeometryReader { geometry in
+            let side = min(geometry.size.width, geometry.size.height)
+            ZStack {
+                Color.black
+                Image(nsImage: nsImage)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: side, height: side)
+                    .clipped()
+                    .scaleEffect(isPressed ? 1.05 : 1)
             }
             .frame(width: geometry.size.width, height: geometry.size.height)
         }

@@ -54,6 +54,28 @@ enum BoxType: String, CaseIterable, Identifiable, Codable {
     }
 }
 
+// MARK: - Box Art Display Mode (applies to non-system library groups: All Games, Favorites, Categories, etc.)
+enum BoxArtDisplayMode: String, CaseIterable, Identifiable, Codable {
+    case fillBlurred = "FillBlurred"
+    case cropSquare = "CropSquare"
+    
+    var id: String { self.rawValue }
+    
+    var iconName: String {
+        switch self {
+        case .fillBlurred: return "rectangle.expand.vertical"
+        case .cropSquare: return "rectangle.dashed"
+        }
+    }
+    
+    var localizationKey: String {
+        switch self {
+        case .fillBlurred: return "boxArt.displayMode.fillBlurred"
+        case .cropSquare: return "boxArt.displayMode.cropSquare"
+        }
+    }
+}
+
 // MARK: - Known MAME/Arcade BIOS Files
 enum KnownBIOS {
     static let mameFiles: Set<String> = [
@@ -619,6 +641,19 @@ class SystemPreferences: ObservableObject {
 
     func setBoxType(_ type: BoxType, for systemID: String) {
         AppSettings.set("\(Self.keyBoxTypePrefix)\(systemID)", value: type.rawValue)
+        updateTrigger += 1
+    }
+
+    private static let keyBoxArtDisplayMode = "library_boxart_display_mode"
+
+    func boxArtDisplayMode() -> BoxArtDisplayMode {
+        if let rawValue = AppSettings.get(Self.keyBoxArtDisplayMode, type: String.self),
+           let mode = BoxArtDisplayMode(rawValue: rawValue) { return mode }
+        return .fillBlurred
+    }
+
+    func setBoxArtDisplayMode(_ mode: BoxArtDisplayMode) {
+        AppSettings.set(Self.keyBoxArtDisplayMode, value: mode.rawValue)
         updateTrigger += 1
     }
 

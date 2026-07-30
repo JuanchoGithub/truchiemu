@@ -5,6 +5,9 @@ Report to me in ASD-STE100 Simplified Technical English.
 
 **Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
 
+## Researching topics
+When you need to research a topic or a solution, *never* try to go to URLs directly, the nature of the web today is one of shifting URLs so you will have little success doing that. Always start by searching online about the topics first and once you get the results, investigate the URLs that you find in order to research.
+
 ## Localization method
 
 The app uses a **JSON‑based UI localization system**:

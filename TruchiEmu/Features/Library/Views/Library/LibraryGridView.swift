@@ -410,21 +410,37 @@ struct LibraryGridView: View {
             }
             ToolbarItem(placement: .primaryAction) {
                 Menu {
-                    Section(loc.localized("toolbar.boxArtStyle")) {
-                        ForEach(BoxType.allCases) { type in
-                            Button {
-                                if case .system(let system) = filter {
-                                    prefs.setBoxType(type, for: system.id)
-                                }
-                            } label: {
-                                HStack {
-                                    Label(type.rawValue, systemImage: type.iconName)
-                                    if case .system(let system) = filter, prefs.boxType(for: system.id) == type {
-                                        Image(systemName: "checkmark")
+                    if isSystemView {
+                        Section(loc.localized("toolbar.boxArtStyle")) {
+                            ForEach(BoxType.allCases) { type in
+                                Button {
+                                    if case .system(let system) = filter {
+                                        prefs.setBoxType(type, for: system.id)
+                                    }
+                                } label: {
+                                    HStack {
+                                        Label(type.rawValue, systemImage: type.iconName)
+                                        if case .system(let system) = filter, prefs.boxType(for: system.id) == type {
+                                            Image(systemName: "checkmark")
+                                        }
                                     }
                                 }
                             }
-                            .disabled(!isSystemView)
+                        }
+                    } else {
+                        Section(loc.localized("toolbar.boxArtDisplayMode")) {
+                            ForEach(BoxArtDisplayMode.allCases) { mode in
+                                Button {
+                                    prefs.setBoxArtDisplayMode(mode)
+                                } label: {
+                                    HStack {
+                                        Label(loc.localized(mode.localizationKey), systemImage: mode.iconName)
+                                        if prefs.boxArtDisplayMode() == mode {
+                                            Image(systemName: "checkmark")
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                     Divider()
