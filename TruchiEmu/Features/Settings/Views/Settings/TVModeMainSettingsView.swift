@@ -7,10 +7,14 @@ import SwiftUI
 ///
 /// Sections:
 ///   1. Behavior — launch in TV Mode by default, show systems in the sidebar
-///   2. Theme — bold / muted / boxart (segmented picker)
+///   2. Theme — bold / muted / boxart preview cards inline with the
+///      system-tile icon style picker; both give visual feedback of what
+///      the user is choosing.
 ///   3. Display — screen-selection mode, remembered screen, pick default
 ///   4. Visible collections — multi-toggle for `SmartEntry`s + systems
+///      (collapsed by default, expands when search hits it)
 ///   5. Gamepad buttons — remap X / Y / SELECT / Enter-TV-Mode for TV Mode
+///      (collapsed by default, expands when search hits it)
 ///
 /// Design notes:
 ///   - The theme and screen sections are NEW here — neither exists in the
@@ -33,6 +37,7 @@ struct TVModeMainSettingsView: View {
     @State private var tvModeSystemIconStyle: String = "default"
     @State private var showScreenPicker: Bool = false
     @State private var generation: Int = 0  // forces re-read of TVModeSettings getters
+    @State private var expandedSections: Set<String> = []
 
     init(searchText: Binding<String> = .constant(""),
          focusedSectionID: Binding<String?> = .constant(nil),
@@ -83,23 +88,14 @@ struct TVModeMainSettingsView: View {
                     .id("section-tvModeBehavior")
                 }
 
-                // ★ Theme
-                if (!isSearching || matchesSearch("theme bold muted boxart style appearance"))
+                // ★ Theme (with visual preview cards) + inline system-icon style picker
+                if (!isSearching || matchesSearch("theme bold muted boxart style appearance")
+                       || matchesSearch("system icon controller emulator tile"))
                     && sectionVisible("section-tvModeTheme") {
                     Section(header: Label(loc.localized("settings.tvModeTheme"), systemImage: "paintpalette.fill")) {
-                        Picker(loc.localized("settings.tvModeTheme"), selection: Binding(
-                            get: { TVModeSettings.theme },
-                            set: { newValue in
-                                TVModeSettings.setTheme(newValue)
-                                NotificationCenter.default.post(name: .tvModeSettingsChanged, object: nil)
-                            }
-                        )) {
-                            ForEach(TVModeSettings.Theme.allCases) { theme in
-                                Text(loc.localized("tvMode.theme.\(theme.rawValue)")).tag(theme)
-                            }
-                        }
-                        .pickerStyle(.segmented)
-                        .labelsHidden()
+                        themePreviewRow
+
+                        iconStyleRow
 
                         Text(loc.localized("settings.tvModeThemeDescription"))
                             .font(.caption)
@@ -150,10 +146,16 @@ struct TVModeMainSettingsView: View {
                     .id("section-tvModeDisplay")
                 }
 
-                // ★ Visible collections
+                // ★ Visible collections (collapsed by default, expands on search hit)
                 if (!isSearching || matchesSearch("collections smart entries favorites recent retro achievements hidden mame systems"))
                     && sectionVisible("section-tvModeCollections") {
-                    Section(header: Label(loc.localized("tvMode.settings.shownEntries"), systemImage: "list.bullet")) {
+                    DependencySection(
+                        title: loc.localized("tvMode.settings.shownEntries"),
+                        isExpanded: Binding(
+                            get: { isSearching || expandedSections.contains("section-tvModeCollections") },
+                            set: { isOn in toggleSection("section-tvModeCollections", isOn: isOn) }
+                        )
+                    ) {
                         ForEach(TVModeSettings.SmartEntry.allCases) { entry in
                             Toggle(loc.localized(entry.locKey), isOn: Binding(
                                 get: { _ = generation; return TVModeSettings.shownSmartEntries.contains(entry) },
@@ -173,32 +175,20 @@ struct TVModeMainSettingsView: View {
                             .font(.caption)
                             .foregroundStyle(AppColors.textSecondary(colorScheme))
                     }
+                    .padding(.vertical, AppSpacing.sm)
                     .id("section-tvModeCollections")
                 }
 
-                // ★ System tile icons
-                if (!isSearching || matchesSearch("system icon controller emulator tile"))
-                    && sectionVisible("section-tvModeSystemIcons") {
-                    Section(header: Label(loc.localized("settings.tvModeSystemIcons"), systemImage: "rectangle.on.rectangle.angled")) {
-                        Picker(loc.localized("settings.tvModeSystemIcons"), selection: $tvModeSystemIconStyle) {
-                            Text(loc.localized("settings.tvModeSystemIcons.default")).tag("default")
-                            Text(loc.localized("settings.tvModeSystemIcons.controller")).tag("controller")
-                        }
-                        .pickerStyle(.menu)
-                        .onChange(of: tvModeSystemIconStyle) { _, newValue in
-                            AppSettings.setString("tvMode_systemIconStyle", value: newValue)
-                        }
-                        Text(loc.localized("settings.tvModeSystemIconsDescription"))
-                            .font(.caption)
-                            .foregroundStyle(AppColors.textSecondary(colorScheme))
-                    }
-                    .id("section-tvModeSystemIcons")
-                }
-
-                // ★ Gamepad buttons
+                // ★ Gamepad buttons (collapsed by default, expands on search hit)
                 if (!isSearching || matchesSearch("gamepad controller button remap X Y SELECT enter TV mode"))
                     && sectionVisible("section-tvModeGamepad") {
-                    Section(header: Label(loc.localized("settings.tvModeGamepad"), systemImage: "gamecontroller")) {
+                    DependencySection(
+                        title: loc.localized("settings.tvModeGamepad"),
+                        isExpanded: Binding(
+                            get: { isSearching || expandedSections.contains("section-tvModeGamepad") },
+                            set: { isOn in toggleSection("section-tvModeGamepad", isOn: isOn) }
+                        )
+                    ) {
                         ForEach(tvModeGamepadActions, id: \.self) { action in
                             gamepadActionRow(action)
                         }
@@ -206,6 +196,7 @@ struct TVModeMainSettingsView: View {
                             .font(.caption)
                             .foregroundStyle(AppColors.textSecondary(colorScheme))
                     }
+                    .padding(.vertical, AppSpacing.sm)
                     .id("section-tvModeGamepad")
                 }
 
@@ -272,6 +263,86 @@ struct TVModeMainSettingsView: View {
         }
     }
 
+    // MARK: - Theme / icon-style preview rows
+
+    /// Horizontal row of three theme preview cards (bold / muted / boxart).
+    /// Each card renders a miniature of the runtime background the user sees
+    /// inside TV Mode for that theme, so the choice has immediate visual
+    /// feedback instead of being a bare segmented label.
+    @ViewBuilder
+    private var themePreviewRow: some View {
+        HStack(spacing: AppSpacing.lg) {
+            ForEach(TVModeSettings.Theme.allCases) { theme in
+                TVModeThemePreviewCard(
+                    theme: theme,
+                    colorScheme: colorScheme,
+                    isSelected: TVModeSettings.theme == theme,
+                    label: loc.localized("tvMode.theme.\(theme.rawValue)")
+                ) {
+                    TVModeSettings.setTheme(theme)
+                    NotificationCenter.default.post(name: .tvModeSettingsChanged, object: nil)
+                    generation &+= 1
+                }
+            }
+        }
+        .padding(.vertical, AppSpacing.xs)
+    }
+
+    /// Inline system-tile icon-style picker, rendered as two preview tiles
+    /// directly under the theme cards so it lives next to the theme it
+    /// decorates. Replaces the standalone "System tile icons" section that
+    /// previously used a `.menu` Picker of black-box string tags.
+    @ViewBuilder
+    private var iconStyleRow: some View {
+        Divider().padding(.vertical, AppSpacing.xs)
+
+        Text(loc.localized("settings.tvModeSystemIcons"))
+            .font(.caption)
+            .fontWeight(.semibold)
+            .foregroundStyle(AppColors.textSecondary(colorScheme))
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+        HStack(spacing: AppSpacing.lg) {
+            TVModeIconStyleTile(
+                style: "default",
+                colorScheme: colorScheme,
+                isSelected: tvModeSystemIconStyle == "default",
+                label: loc.localized("settings.tvModeSystemIcons.default")
+            ) {
+                tvModeSystemIconStyle = "default"
+                AppSettings.setString("tvMode_systemIconStyle", value: "default")
+            }
+            TVModeIconStyleTile(
+                style: "controller",
+                colorScheme: colorScheme,
+                isSelected: tvModeSystemIconStyle == "controller",
+                label: loc.localized("settings.tvModeSystemIcons.controller")
+            ) {
+                tvModeSystemIconStyle = "controller"
+                AppSettings.setString("tvMode_systemIconStyle", value: "controller")
+            }
+        }
+        .padding(.vertical, AppSpacing.xs)
+
+        Text(loc.localized("settings.tvModeSystemIconsDescription"))
+            .font(.caption)
+            .foregroundStyle(AppColors.textSecondary(colorScheme))
+    }
+
+    // MARK: - Collapsible-section helpers
+
+    /// Toggle the expansion state of a collapsible section, animating the
+    /// reveal/hide. Driven by the `DependencySection` binding declared above.
+    private func toggleSection(_ id: String, isOn: Bool) {
+        withAnimation(.easeInOut(duration: 0.2)) {
+            if isOn {
+                expandedSections.insert(id)
+            } else {
+                expandedSections.remove(id)
+            }
+        }
+    }
+
     // MARK: - Helpers
 
     /// Live read of the remembered screen. Reads via `ScreenCatalog.shared`
@@ -326,5 +397,188 @@ struct TVModeMainSettingsView: View {
             }
         )
         .frame(minWidth: 640, minHeight: 460)
+    }
+}
+
+// MARK: - Theme preview card
+
+/// Single theme preview tile. Renders a miniature of the TV-Mode runtime
+/// background the user will actually see for the given `theme`, with an
+/// accent ring + checkmark badge when selected — matching the visual
+/// idiom of the AccentColorTheme icon buttons in `GeneralSettingsView`.
+private struct TVModeThemePreviewCard: View {
+    let theme: TVModeSettings.Theme
+    let colorScheme: ColorScheme
+    let isSelected: Bool
+    let label: String
+    let action: () -> Void
+
+    @State private var isHovered = false
+
+    private let previewWidth: CGFloat = 140
+    private let previewHeight: CGFloat = 84
+
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: AppSpacing.xs) {
+                previewBackground
+                    .frame(width: previewWidth, height: previewHeight)
+                    .clipShape(RoundedRectangle(cornerRadius: AppRadius.md, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: AppRadius.md, style: .continuous)
+                            .strokeBorder(
+                                isSelected ? AppColors.accentForScheme(colorScheme) : Color.primary.opacity(0.1),
+                                lineWidth: isSelected ? 2 : 1
+                            )
+                    )
+                    .overlay(alignment: .topTrailing) {
+                        if isSelected {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.system(size: 14, weight: .bold))
+                                .foregroundStyle(.white)
+                                .background(Circle().fill(Color.black.opacity(0.55)))
+                                .padding(4)
+                        }
+                    }
+                    .scaleEffect(isHovered ? 1.04 : 1.0)
+                    .animation(AppMotion.micro, value: isHovered)
+
+                Text(label)
+                    .font(.system(size: 10))
+                    .foregroundStyle(isSelected
+                        ? AppColors.textPrimary(colorScheme)
+                        : AppColors.textTertiary(colorScheme))
+                    .lineLimit(1)
+            }
+        }
+        .buttonStyle(.plain)
+        .onHover { isHovered = $0 }
+    }
+
+    /// Miniature render of the theme's actual TV-mode background. Static
+    /// (non-animated) version of `TVModeView.background` so the preview is
+    /// cheap to render and doesn't run a `Task` inside the Settings form.
+    @ViewBuilder
+    private var previewBackground: some View {
+        switch theme {
+        case .bold:
+            ZStack {
+                AppColors.windowBackground(colorScheme, tinted: true)
+                RadialGradient(
+                    colors: [
+                        AppColors.accentForScheme(colorScheme).opacity(0.28),
+                        .clear
+                    ],
+                    center: .top,
+                    startRadius: 0,
+                    endRadius: previewHeight * 1.4
+                )
+                RadialGradient(
+                    colors: [
+                        AppColors.accentForScheme(colorScheme).opacity(0.22),
+                        .clear
+                    ],
+                    center: .bottom,
+                    startRadius: 0,
+                    endRadius: previewHeight * 1.2
+                )
+            }
+        case .muted:
+            ZStack {
+                Color(red: 0.07, green: 0.07, blue: 0.08)
+                RadialGradient(
+                    colors: [Color.white.opacity(0.06), .clear],
+                    center: .center,
+                    startRadius: 0,
+                    endRadius: previewHeight * 0.9
+                )
+            }
+        case .boxart:
+            ZStack {
+                // Static placeholder for the blurred-boxart backdrop. A
+                // dark gradient evokes the dimmed photo treatment used by
+                // `TVModeBoxartBackdrop` without depending on a live ROM.
+                LinearGradient(
+                    colors: [
+                        Color(red: 0.18, green: 0.20, blue: 0.26),
+                        Color(red: 0.05, green: 0.05, blue: 0.08)
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                Color.black.opacity(0.45)
+                VStack(spacing: 2) {
+                    Image(systemName: "photo.fill")
+                        .font(.system(size: 18, weight: .regular))
+                        .foregroundStyle(.white.opacity(0.45))
+                    Text(verbatim: "Boxart")
+                        .font(.system(size: 9, weight: .medium))
+                        .foregroundStyle(.white.opacity(0.5))
+                }
+            }
+        }
+    }
+}
+
+// MARK: - System tile icon-style preview tile
+
+/// Single icon-style preview tile for the system-tile icon picker. Shows a
+/// representative rendering of either "default" (emulator icon square grid)
+/// or "controller" (gamepad glyph), matching the runtime system-tile icon
+/// styles used in TV Mode. Same selected-ring + checkmark treatment as
+/// the theme preview cards.
+private struct TVModeIconStyleTile: View {
+    let style: String
+    let colorScheme: ColorScheme
+    let isSelected: Bool
+    let label: String
+    let action: () -> Void
+
+    @State private var isHovered = false
+
+    private let tileWidth: CGFloat = 80
+    private let tileHeight: CGFloat = 84
+
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: AppSpacing.xs) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: AppRadius.sm, style: .continuous)
+                        .fill(AppColors.cardBackground(colorScheme))
+                    Image(systemName: style == "controller" ? "gamecontroller.fill" : "square.grid.2x2.fill")
+                        .font(.system(size: 26, weight: .regular))
+                        .foregroundStyle(AppColors.accentForScheme(colorScheme).opacity(0.85))
+                }
+                .frame(width: tileWidth, height: tileHeight)
+                .clipShape(RoundedRectangle(cornerRadius: AppRadius.sm, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: AppRadius.sm, style: .continuous)
+                        .strokeBorder(
+                            isSelected ? AppColors.accentForScheme(colorScheme) : Color.primary.opacity(0.1),
+                            lineWidth: isSelected ? 2 : 1
+                        )
+                )
+                .overlay(alignment: .topTrailing) {
+                    if isSelected {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundStyle(.white)
+                            .background(Circle().fill(Color.black.opacity(0.55)))
+                            .padding(3)
+                    }
+                }
+                .scaleEffect(isHovered ? 1.04 : 1.0)
+                .animation(AppMotion.micro, value: isHovered)
+
+                Text(label)
+                    .font(.system(size: 10))
+                    .foregroundStyle(isSelected
+                        ? AppColors.textPrimary(colorScheme)
+                        : AppColors.textTertiary(colorScheme))
+                    .lineLimit(1)
+            }
+        }
+        .buttonStyle(.plain)
+        .onHover { isHovered = $0 }
     }
 }

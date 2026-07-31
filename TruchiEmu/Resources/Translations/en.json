@@ -2438,7 +2438,7 @@
     "tvMode.empty.noGames": "No games in this collection",
     "tvMode.settings.title": "TV Mode",
     "tvMode.settings.launchInTVMode": "Launch in TV Mode",
-    "tvMode.settings.launchInTVModeDescription": "Start the app directly in TV Mode",
+    "tvMode.settings.launchInTVModeDescription": "Starts the app in TV Mode on its next launch.",
     "tvMode.settings.shownEntries": "Visible Collections",
     "tvMode.settings.allGames": "All Games",
     "tvMode.settings.favorites": "Favorites",

@@ -2436,7 +2436,7 @@
     "tvMode.empty.noGames": "Sem jogos nesta coleção",
     "tvMode.settings.title": "Modo TV",
     "tvMode.settings.launchInTVMode": "Abrir no Modo TV",
-    "tvMode.settings.launchInTVModeDescription": "Iniciar o app diretamente no Modo TV",
+    "tvMode.settings.launchInTVModeDescription": "Abre o app no Modo TV no próximo início.",
     "tvMode.settings.shownEntries": "Coleções Visíveis",
     "tvMode.settings.allGames": "Todos os Jogos",
     "tvMode.settings.favorites": "Favoritos",
