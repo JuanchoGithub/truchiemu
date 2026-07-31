@@ -798,6 +798,7 @@
 		9B66E771DDAFE8430109DCF8 /* fightdata_kizuna.json in Resources */ = {isa = PBXBuildFile; fileRef = 3F06DE9467D9C3C67A9AF659 /* fightdata_kizuna.json */; };
 		9B925803A17E7F9D43679470 /* JaguarBIOSService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B57968ED5BE5EC0BF7BE93EB /* JaguarBIOSService.swift */; };
 		9BA88DAC28728BC3B9FEF862 /* segacd@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 7E3EFA7FF680E96BA5E3719A /* segacd@132w.png */; };
+		9C0148E6E8847F7537E526D1 /* GenreGroupingDiagram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CBD9194B4C14F777B32C4CD /* GenreGroupingDiagram.swift */; };
 		9C326B88CFB1F6410DFFB954 /* fightdata_ts2.json in Resources */ = {isa = PBXBuildFile; fileRef = AF3CADF1ABA18B787DBEA3B2 /* fightdata_ts2.json */; };
 		9C4953DA8A9873CAA8622D6B /* gg-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = EB3C2FF168A6FB90476E49BC /* gg-cheats.zip */; };
 		9C780BECACEF790A4C8FDDBD /* fightdata_sfexp.json in Resources */ = {isa = PBXBuildFile; fileRef = 56F71DA5B786A1E51C2E9381 /* fightdata_sfexp.json */; };
@@ -2104,6 +2105,7 @@
 		9C2D4457E6499AA2F5779FF4 /* input_systemOverrides_segacd.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemOverrides_segacd.json; sourceTree = "<group>"; };
 		9C414D93A2ECA0F8D6F1A5F3 /* fightdata_wargods.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_wargods.json; sourceTree = "<group>"; };
 		9C5D64D2262E657B3F007C98 /* PSP.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = PSP.metal; sourceTree = "<group>"; };
+		9CBD9194B4C14F777B32C4CD /* GenreGroupingDiagram.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenreGroupingDiagram.swift; sourceTree = "<group>"; };
 		9D0409EE4A71A70746BE08BB /* scummvm@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "scummvm@132w.png"; sourceTree = "<group>"; };
 		9D15314D0A6382738332BE8F /* fightdata_primrage.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_primrage.json; sourceTree = "<group>"; };
 		9D7C4618D4B79CF36C814C4D /* NotificationRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationRowView.swift; sourceTree = "<group>"; };
@@ -4417,6 +4419,7 @@
 				17ACE1CD476919F03307CB20 /* ExtractedROMCacheSettingsView.swift */,
 				84CF94E42B2B1161FDE2DB55 /* GamepadNavSettingsView.swift */,
 				B0135BC846E6477A8389B7FC /* GeneralSettingsView.swift */,
+				9CBD9194B4C14F777B32C4CD /* GenreGroupingDiagram.swift */,
 				B5E3E5DB793CCE1800B8C7BE /* GenreSettingsView.swift */,
 				D12FCF47C4E8A17755ADDBE1 /* HelpSettingsView.swift */,
 				1454A3CD638307C2DD9561DA /* HotkeyActionRow.swift */,
@@ -5975,6 +5978,7 @@
 				7E45C123959B64DF17F0371E /* GamepadNavSettingsView.swift in Sources */,
 				22D45EF6813F1B4ADDD34BAD /* GamepadNavigationManager.swift in Sources */,
 				CC4C936CF4AAB9EBE49E8F47 /* GeneralSettingsView.swift in Sources */,
+				9C0148E6E8847F7537E526D1 /* GenreGroupingDiagram.swift in Sources */,
 				5DC85C85056E986328B9BC36 /* GenreManager.swift in Sources */,
 				749F189B703826A160DAAD4E /* GenrePickerView.swift in Sources */,
 				D4A5C3EA0A548DBEF9EDE4AE /* GenreSettingsView.swift in Sources */,

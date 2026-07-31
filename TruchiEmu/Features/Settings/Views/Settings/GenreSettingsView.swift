@@ -240,16 +240,19 @@ struct GenreSettingsView: View {
                 recacheData()
                 refreshID = UUID()
             })) {
-                Text("\(loc.localized("genre.grouping.minimal")) (Tier-1)")
+                Text(verbatim: loc.localized("genre.grouping.minimal.label"))
                     .tag(GenreGrouping.minimal)
-                Text("\(loc.localized("genre.grouping.detailed")) (Tier-2)")
+                Text(verbatim: loc.localized("genre.grouping.detailed.label"))
                     .tag(GenreGrouping.detailed)
-                Text("\(loc.localized("genre.grouping.raw")) (Tier-3)")
+                Text(verbatim: loc.localized("genre.grouping.raw.label"))
                     .tag(GenreGrouping.raw)
             } label: {
                 EmptyView()
             }
             .pickerStyle(.segmented)
+
+            GenreGroupingDiagram(grouping: grouping)
+                .padding(.vertical, AppSpacing.sm)
 
             if isCustom {
                 HStack(spacing: AppSpacing.sm) {
@@ -270,14 +273,18 @@ struct GenreSettingsView: View {
                         .clipShape(Capsule())
                 }
             } else if grouping != .raw {
-                HStack(spacing: AppSpacing.sm) {
+                Label {
+                    Text(loc.localized("genre.grouping.\(grouping.rawValue).description"))
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textSecondary(colorScheme))
+                        .multilineTextAlignment(.leading)
+                } icon: {
                     Image(systemName: "info.circle")
                         .font(.caption)
                         .foregroundStyle(AppColors.textTertiary(colorScheme))
-                    Text(loc.localized("genre.grouping.\(grouping.rawValue).hint"))
-                        .font(.caption)
-                        .foregroundStyle(AppColors.textTertiary(colorScheme))
                 }
+                .labelStyle(.titleAndIcon)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
 
             if genreManager.hasOverrides {
