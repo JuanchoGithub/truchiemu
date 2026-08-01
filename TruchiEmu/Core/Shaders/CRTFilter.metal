@@ -185,28 +185,39 @@ static float3 applyMaskAndBezel(float3 rgb, float2 distortUV, float2 sampleUV, t
     float tubeVis = 1.0 - smoothstep(1.0, 1.0 + rounding, cornerMask);
     if (distortUV.x < 0.0 || distortUV.x > 1.0 || distortUV.y < 0.0 || distortUV.y > 1.0) tubeVis = 0.0;
 
-    float3 output = rgb * tubeVis;
-    
+    float3 output;
+    if (bezel) {
+        // With the bezel enabled, the rounded tube edge fully clips the screen
+        // and only the mirrored reflection fills the masked region. Mixing the
+        // real image through `tubeVis` would leak un-mirrored screen content into
+        // the corners where the tube is "cut".
+        output = rgb * step(0.99, tubeVis);
+    } else {
+        output = rgb * tubeVis;
+    }
+
     // Bezel reflection: Samples the texture with mirrors to fake "light spill" on the frame.
     if (bezel && tubeVis < 0.99) {
         // 1. Calculate a normalized "Glow Distance" based on the texture width
-        // This ensures that 32 pixels of glow looks the same size on a 256px wide screen 
+        // This ensures that 32 pixels of glow looks the same size on a 256px wide screen
         // vs a 320px wide screen.
-        float glowWidth = 32.0 / texX; 
+        float glowWidth = 32.0 / texX;
 
         // 2. Adjust the maskEdge to be aspect-aware
         // This prevents the "tall" 240p resolutions from eating the top/bottom glow
         float2 adjustedEdge = maskEdge;
-        
+
         // 3. Re-calculate bezelW using a more consistent falloff
         float bezelW = (1.0 - tubeVis) * (1.0 - smoothstep(1.0, 1.0 + glowWidth, max(adjustedEdge.x, adjustedEdge.y)));
 
         if (bezelW > 0.001) {
-            // Mirrored UV sampling
-            float2 mirUV = 1.0 - abs(1.0 - abs(sampleUV)); 
-            // We add a small "push" to the reflection so it reaches further out 
-            // even if the internal resolution is high.
-            output += tex.sample(s, mix(mirUV, sampleUV, 0.08)).rgb * boost * bezelW * glowInt;
+            // Mirror the sampleUV but CLAMP it to the visible tube region first.
+            // Without clamping, mirrored UVs from the rounded-corner region land
+            // outside the texture and pull in arbitrary content (e.g. letterbox
+            // bars), producing a "reflection" of things that are not on the screen.
+            float2 clampedSampleUV = clamp(sampleUV, 0.0, 1.0);
+            float2 mirUV = 1.0 - abs(1.0 - abs(clampedSampleUV));
+            output += tex.sample(s, mix(mirUV, clampedSampleUV, 0.08)).rgb * boost * bezelW * glowInt;
         }
     }
     return output;
