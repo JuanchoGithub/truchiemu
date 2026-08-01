@@ -17,6 +17,16 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
     private var temporalIndex: Int = 0 // Cycles 0-4, points to "current" frame
     private var frameCounter: UInt32 = 0
 
+    // Cached shader uniform snapshot. Only re-fetched from ShaderParameterStore
+    // when its generation bumps (writer mutation: live shader edit slider tick
+    // or preset activation). During normal gameplay the writer never mutates
+    // after launch, so after the first frame the renderer pays zero dict-copy
+    // cost and reads the cached reference for 183 uniform subscripts per frame.
+    // See ShaderParameterStore.getSnapshotIfChanged and ShaderManager.
+    // .getUniformSnapshotIfChanged for the generation protocol.
+    private var cachedUniformSnapshot: [String: Float] = [:]
+    private var cachedUniformGeneration: UInt64 = 0
+
     // Viewport debouncing to prevent warping during resize
     private var stableViewportSize: CGSize = .zero
     private var resizeTimer: Timer?
@@ -420,10 +430,26 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
                     let time = Float(CACurrentMediaTime().truncatingRemainder(dividingBy: 100))
                     let fragmentName = getFragmentFunctionName()
 
-                    // Helper: get a uniform value from the thread-safe snapshot
+                    // Helper: read a uniform from a per-coordinator cached
+                    // snapshot. The previous implementation called
+                    // getUniformSnapshot() (NSLock + full dictionary copy) on
+                    // every getUniform() call — ~30-40 lock+copy operations per
+                    // frame for CRT shaders, ~1800-2400/sec at 60 fps, all
+                    // wasted because the snapshot cannot change between adjacent
+                    // lookups within the same draw() invocation. The first
+                    // per-frame refresh also re-checks the store's generation:
+                    // if the writer (live shader editor or preset activation)
+                    // has not bumped it since the last frame, we keep the same
+                    // cached dict and pay zero copy cost. Normal gameplay hits
+                    // zero dict copies per frame after the first frame.
+                    if let result = ShaderManager.shared.getUniformSnapshotIfChanged(cachedGeneration: cachedUniformGeneration),
+                       result.didChange {
+                        cachedUniformSnapshot = result.snapshot
+                        cachedUniformGeneration = result.generation
+                    }
+                    let uniformSnapshot = cachedUniformSnapshot
                     func getUniform(_ name: String, fallback: Float) -> Float {
-                        let snapshot = ShaderManager.shared.getUniformSnapshot()
-                        return snapshot[name] ?? fallback
+                        return uniformSnapshot[name] ?? fallback
                     }
 
                     enc.setRenderPipelineState(pipeline)
@@ -451,6 +477,7 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
                             softnessAmount: getUniform("softnessAmount", fallback: 0.0008),
                             bezelRounding: getUniform("bezelRounding", fallback: 0.04),
                             bezelGlow: getUniform("bezelGlow", fallback: 0.35),
+                            bezelReflectionBlur: getUniform("bezelReflectionBlur", fallback: 0.02),
                             tintR: getUniform("tintR", fallback: 0.96),
                             tintG: getUniform("tintG", fallback: 1.04),
                             tintB: getUniform("tintB", fallback: 0.95),
@@ -757,6 +784,7 @@ outputHeight: Float(drawHeight)
                             softnessAmount: getUniform("softnessAmount", fallback: 0.2),
                             bezelRounding: getUniform("bezelRounding", fallback: 0.1),
                             bezelGlow: getUniform("bezelGlow", fallback: 0.5),
+                            bezelReflectionBlur: getUniform("bezelReflectionBlur", fallback: 0.02),
                             tintR: getUniform("tintR", fallback: 1.0),
                             tintG: getUniform("tintG", fallback: 1.0),
                             tintB: getUniform("tintB", fallback: 1.0),
@@ -807,6 +835,7 @@ outputHeight: Float(drawHeight)
                             softnessAmount: 0.0,
                             bezelRounding: 0.0,
                             bezelGlow: 0.0,
+                            bezelReflectionBlur: 0.0,
                             tintR: 1.0,
                             tintG: 1.0,
                             tintB: 1.0,

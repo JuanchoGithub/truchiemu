@@ -1986,6 +1986,31 @@ func refreshGameCacheAfterGameStop() {
         }
     }
 
+    // Single "stop" ping sent once on window close (replaces the per-120-frame
+    // ping loop previously driven by RcheevosRuntime.onRichPresence). Reuses
+    // updateRichPresence with the last known rich-presence message captured on
+    // the main actor so the server can update the player's "now playing" status
+    // before the session times out. Fire-and-forget: captures main-actor state
+    // up front, then runs the HTTP on a detached utility task so window close
+    // is not blocked.
+    @MainActor
+    func sendStopPing(rom: ROM?) {
+        guard let game = currentGame else { return }
+        let pingGameID = game.parentGameID ?? game.id
+        let message = richPresence ?? ""
+        let capturedRom = rom
+        Task.detached(priority: .utility) {
+            await RetroAchievementsService.shared.updateRichPresence(
+                gameID: pingGameID,
+                message: message,
+                rom: capturedRom
+            )
+            #if LOG_DEBUG
+            LoggerService.debug(category: "RetroAchievements", "Stop ping completed for gameID=\(pingGameID) (messageLen=\(message.count))")
+            #endif
+        }
+    }
+
     func startSession(gameID: Int, rom: ROM? = nil) async {
         guard let result = await performStartSession(gameID: gameID, rom: rom) else { return }
 

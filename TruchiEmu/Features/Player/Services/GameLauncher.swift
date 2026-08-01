@@ -450,6 +450,12 @@ func launchGame(
                         totalPoints: achievements.reduce(0) { $0 + $1.points },
                         parentGameID: RetroAchievementsService.shared.parentGameIDForCache(gameID: raGameId)
                     )
+                    // Initialize rich-presence display once at launch using the
+                    // game title (the periodic RP ping loop was removed; see
+                    // RcheevosRuntime.processFrame and RetroAchievementsService
+                    // .sendStopPing). The settings view keeps showing this value
+                    // for the session; no per-frame updates occur during play.
+                    RetroAchievementsService.shared.richPresence = rom.displayName
 
                     // Achievements loaded successfully at runtime — upgrade match status to "matched"
                     // so the library UI reflects that the game is properly identified, even when
@@ -475,6 +481,7 @@ func launchGame(
                         totalPoints: 0,
                         parentGameID: RetroAchievementsService.shared.parentGameIDForCache(gameID: raGameId)
                     )
+                    RetroAchievementsService.shared.richPresence = rom.displayName
                 }
             } else {
                 LoggerService.info(category: "GameLauncher", "RA enabled but no username - skipping rcheevos")

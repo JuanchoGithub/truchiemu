@@ -47,10 +47,6 @@ final class RcheevosRuntime {
     var onAchievementProgress: ((Int, Int) -> Void)?
     var onChallengeStarted: ((Int) -> Void)?
     var onChallengeCancelled: ((Int) -> Void)?
-    var onRichPresence: ((String) -> Void)?
-
-    private var richPresenceInterval: Int = 120
-    private var lastRichPresenceFrame: Int = 0
 
     init(systemID: String? = nil) {
         self.runtime = rcheevos_create()
@@ -177,11 +173,11 @@ final class RcheevosRuntime {
         if elapsed > 1_000_000 || frameCount <= 5 {
             LoggerService.info(category: "Rcheevos", "processFrame #\(frameCount) took \(elapsed / 1_000)us")
         }
-        if frameCount - lastRichPresenceFrame >= richPresenceInterval,
-           let rp = getRichPresence(), !rp.isEmpty {
-            lastRichPresenceFrame = frameCount
-            onRichPresence?(rp)
+        #if LOG_DEBUG
+        if frameCount % 60 == 0 {
+            LoggerService.debug(category: "Rcheevos", "processFrame #\(frameCount) took \(elapsed / 1_000)us (60-frame heartbeat; no RP ping)")
         }
+        #endif
     }
 
     func deactivateAllAchievements() {

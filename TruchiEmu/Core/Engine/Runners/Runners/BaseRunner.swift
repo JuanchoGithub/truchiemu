@@ -623,13 +623,11 @@ case "scummvm": runner = ScummVMRunner()
                 await RetroAchievementsService.shared.unlockAchievement(id: achievementId, hardcore: hardcore)
             }
         }
-    XPCBridgeAdapter.shared.onRcheevosRichPresence = { message in
-        Task { @MainActor in
-            guard let game = RetroAchievementsService.shared.currentGame else { return }
-            let pingGameID = game.parentGameID ?? game.id
-            await RetroAchievementsService.shared.updateRichPresence(gameID: pingGameID, message: message, rom: self.rom)
-        }
-    }
+    // Rich-presence pings are no longer dispatched per-frame. The rcheevos
+    // runtime still evaluates the RP script only when queried; we now send a
+    // single launch ping (via performStartSession in GameLauncher) and a
+    // single stop ping on window close (StandaloneGameWindowController) on a
+    // detached utility task. See StandaloneGameWindowController.onWindowWillClose.
     // NOTE: startSession is invoked pre-launch by GameLauncher (via
     // reconcileAchievementsWithServer) so that the server's unlocks are merged into
     // the cached achievements BEFORE the rcheevos runtime is activated here. Calling
@@ -655,7 +653,6 @@ case "scummvm": runner = ScummVMRunner()
         XPCBridgeAdapter.shared.onRcheevosAchievementProgress = nil
         XPCBridgeAdapter.shared.onRcheevosChallengeStarted = nil
         XPCBridgeAdapter.shared.onRcheevosChallengeCancelled = nil
-        XPCBridgeAdapter.shared.onRcheevosRichPresence = nil
 
         XPCBridgeAdapter.shared.stop()
         XPCBridgeAdapter.shared.waitForCompletion()

@@ -961,9 +961,6 @@ private func sendRcheevosTriggers(_ triggers: [RcheevosAchievementTrigger], rich
         runtime.onChallengeCancelled = { [weak self] id in
             self?.onRcheevosChallengeCancelled?(id)
         }
-        runtime.onRichPresence = { [weak self] message in
-            self?.onRcheevosRichPresence?(message)
-        }
     }
 }
 

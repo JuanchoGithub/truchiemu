@@ -1310,6 +1310,7 @@
   "shader.param.barrel_distortion": "Barrel Distortion",
   "shader.param.bezel_glow": "Bezel Glow",
   "shader.param.bezel_mask": "Bezel Mask",
+  "shader.param.bezel_reflection_blur": "Bezel Reflection Blur",
   "shader.param.bezel_rounding": "Bezel Rounding",
   "shader.param.brightness_boost": "Brightness Boost",
   "shader.param.crt_subpixel_mask": "CRT Subpixel Mask",

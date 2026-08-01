@@ -233,6 +233,7 @@ globalUniforms: [
                 ShaderUniform(name: "softnessAmount", defaultValue: 0.002, minValue: 0.0, maxValue: 0.03, step: 0.001, displayName: "Corner Softness"),
                 ShaderUniform(name: "bezelRounding", defaultValue: 0.05, minValue: 0.0, maxValue: 0.1, displayName: "Bezel Rounding"),
                 ShaderUniform(name: "bezelGlow", defaultValue: 0.23, minValue: 0.0, maxValue: 1.0, step: 0.001, displayName: "Bezel Glow"),
+                ShaderUniform(name: "bezelReflectionBlur", defaultValue: 0.02, minValue: 0.0, maxValue: 0.1, step: 0.001, displayName: "Bezel Reflection Blur"),
                 ShaderUniform(name: "tintR", defaultValue: 1.0, minValue: 0.5, maxValue: 1.5, displayName: "Tint Red"),
                 ShaderUniform(name: "tintG", defaultValue: 1.0, minValue: 0.5, maxValue: 1.5, displayName: "Tint Green"),
                 ShaderUniform(name: "tintB", defaultValue: 1.0, minValue: 0.5, maxValue: 1.5, displayName: "Tint Blue"),

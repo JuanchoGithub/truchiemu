@@ -262,8 +262,20 @@ class ShaderManager: ObservableObject {
         return Self.parameterStore.getSnapshot()
     }
 
+    // Optimized snapshot read for the renderer: returns a fresh dict copy only
+    // when the writer has mutated state since the caller's cachedGeneration.
+    // Otherwise returns nil (caller keeps its existing copy). The renderer
+    // stores the latest generation it has seen and only pays for a full dict
+    // copy when a real mutation has occurred (live shader edit slider tick or
+    // preset activation). During normal gameplay this means the snapshot is
+    // fetched once at the first frame after launch and never copied again.
+    nonisolated func getUniformSnapshotIfChanged(cachedGeneration: UInt64) -> (snapshot: [String: Float], generation: UInt64, didChange: Bool)? {
+        return Self.parameterStore.getSnapshotIfChanged(cachedGeneration: cachedGeneration)
+    }
+
     // Thread-safe way to get the current fragment function name for the renderer
     nonisolated func getCurrentFragmentFunctionName() -> String {
+
         return Self.parameterStore.getFragmentFunctionName()
     }
     
@@ -348,17 +360,26 @@ preset.recommendedSystems.contains(systemID)
 private class ShaderParameterStore {
     private var snapshot: [String: Float] = [:]
     private var currentFragmentFunctionName: String = "fragmentPassthrough"
+    // Monotonic version bumped on every mutation. Readers compare their
+    // cached generation against this to skip re-copying the snapshot when no
+    // change has occurred. During normal gameplay no mutations happen after
+    // launch, so the renderer copies the snapshot once and reads it free of
+    // cost on every subsequent frame. During live shader editing, mutations
+    // bump the generation and the renderer re-copies lazily on the next draw.
+    private var generation: UInt64 = 0
     private let lock = NSLock()
     
     func update(with values: [String: Float]) {
         lock.lock()
         snapshot = values
+        generation &+= 1
         lock.unlock()
     }
     
     func update(name: String, value: Float) {
         lock.lock()
         snapshot[name] = value
+        generation &+= 1
         lock.unlock()
     }
 
@@ -373,6 +394,38 @@ private class ShaderParameterStore {
         let copy = snapshot
         lock.unlock()
         return copy
+    }
+
+    // Returns the current generation (a lock-guarded Int read; effectively a
+    // cheap atomic). Readers use this to detect whether their cached snapshot
+    // is stale without paying for a full dict copy on every frame.
+    func currentGeneration() -> UInt64 {
+        lock.lock()
+        let gen = generation
+        lock.unlock()
+        return gen
+    }
+
+    // Optimized snapshot read for the renderer: returns the cached snapshot
+    // reference if the generation is unchanged since the last call, otherwise
+    // takes a fresh copy under lock. The caller stores the returned snapshot
+    // and passes the previous generation back in on the next call so we only
+    // pay for a dict copy when the writer actually mutated state.
+    func getSnapshotIfChanged(cachedGeneration: UInt64) -> (snapshot: [String: Float], generation: UInt64, didChange: Bool) {
+        lock.lock()
+        if generation == cachedGeneration {
+            // No change. We cannot hand back the live internal ref because the
+            // caller may read it concurrently with the next writer; callers
+            // that want the cheap path must hold their own copy. Fall through
+            // to return the caller's existing copy via the didChange=false flag.
+            let gen = generation
+            lock.unlock()
+            return (snapshot: [:], generation: gen, didChange: false)
+        }
+        let copy = snapshot
+        let gen = generation
+        lock.unlock()
+        return (snapshot: copy, generation: gen, didChange: true)
     }
 
     func getFragmentFunctionName() -> String {

@@ -1308,6 +1308,7 @@
   "shader.param.barrel_distortion": "Distorção de Barril",
   "shader.param.bezel_glow": "Brilho da Moldura",
   "shader.param.bezel_mask": "Máscara da Moldura",
+  "shader.param.bezel_reflection_blur": "Desfoque do Reflexo da Moldura",
   "shader.param.bezel_rounding": "Arredondamento da Moldura",
   "shader.param.brightness_boost": "Aumento de Brilho",
   "shader.param.crt_subpixel_mask": "Máscara de Subpixel CRT",

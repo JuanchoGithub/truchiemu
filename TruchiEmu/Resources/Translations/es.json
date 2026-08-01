@@ -1302,6 +1302,7 @@
   "shader.param.barrel_distortion": "Distorsión de barril",
   "shader.param.bezel_glow": "Brillo de marco",
   "shader.param.bezel_mask": "Máscara de marco",
+  "shader.param.bezel_reflection_blur": "Difuminado del reflejo del marco",
   "shader.param.bezel_rounding": "Bordes de marco",
   "shader.param.brightness_boost": "Brillo extra",
   "shader.param.crt_subpixel_mask": "Máscara subpíxel CRT",

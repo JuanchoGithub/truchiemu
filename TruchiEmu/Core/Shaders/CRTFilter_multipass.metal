@@ -33,6 +33,7 @@ struct CRTMultipassUniforms {
     float softnessAmount;    // FIXED: Now actively used
     float bezelRounding;
     float bezelGlow;
+    float bezelReflectionBlur;
     float tintR;
     float tintG;
     float tintB;

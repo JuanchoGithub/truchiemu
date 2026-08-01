@@ -224,9 +224,6 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
         runtime.onChallengeCancelled = { id in
             weakProxy2?.rcheevosChallengeCancelled(id: id)
         }
-        runtime.onRichPresence = { message in
-            weakProxy2?.rcheevosRichPresenceUpdate(message: message)
-        }
         rcheevosRuntime = runtime
         rcheevosRuntimePtr = Unmanaged.passUnretained(runtime).toOpaque()
 

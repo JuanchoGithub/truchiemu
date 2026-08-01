@@ -40,6 +40,7 @@ struct CRTUniforms {
     float softnessAmount;    // 0.0 - 0.01
     float bezelRounding;     // 0.0 - 0.1
     float bezelGlow;         // 0.0 - 1.0
+    float bezelReflectionBlur; // 0.0 - 0.1 (UV-space blur radius for the bezel reflection)
     float tintR;             // Color Tint R
     float tintG;             // Color Tint G
     float tintB;             // Color Tint B
@@ -174,7 +175,7 @@ static float3 applyScanlines(float3 rgb, float3 sourceColor, float uvY, float te
  * - rounding: 0.02 (Sharp) to 0.1 (Circular). 0.04 is typical.
  * - glowInt: Reflection intensity of the screen image against the plastic bezel.
  */
-static float3 applyMaskAndBezel(float3 rgb, float2 distortUV, float2 sampleUV, texture2d<float> tex, sampler s, float boost, float texX, float rounding, float glowInt, bool bezel) {
+static float3 applyMaskAndBezel(float3 rgb, float2 distortUV, float2 sampleUV, texture2d<float> tex, sampler s, float boost, float texX, float rounding, float glowInt, float reflectionBlur, bool bezel) {
     float2 maskEdge = abs(distortUV - 0.5) * 2.0;
     float2 m2 = maskEdge * maskEdge;
     float2 m4 = m2 * m2;
@@ -198,10 +199,11 @@ static float3 applyMaskAndBezel(float3 rgb, float2 distortUV, float2 sampleUV, t
 
     // Bezel reflection: Samples the texture with mirrors to fake "light spill" on the frame.
     if (bezel && tubeVis < 0.99) {
-        // 1. Calculate a normalized "Glow Distance" based on the texture width
-        // This ensures that 32 pixels of glow looks the same size on a 256px wide screen
-        // vs a 320px wide screen.
-        float glowWidth = 32.0 / texX;
+        // Glow band width is a fixed UV-space fraction so the reflection
+        // looks identical across consoles (NES 256, Genesis 320, PS1 320/640).
+        // Earlier revisions divided by the source texture width, which made
+        // the glow shrink on wider source resolutions.
+        float glowWidth = 0.12;
 
         // 2. Adjust the maskEdge to be aspect-aware
         // This prevents the "tall" 240p resolutions from eating the top/bottom glow
@@ -217,7 +219,20 @@ static float3 applyMaskAndBezel(float3 rgb, float2 distortUV, float2 sampleUV, t
             // bars), producing a "reflection" of things that are not on the screen.
             float2 clampedSampleUV = clamp(sampleUV, 0.0, 1.0);
             float2 mirUV = 1.0 - abs(1.0 - abs(clampedSampleUV));
-            output += tex.sample(s, mix(mirUV, clampedSampleUV, 0.08)).rgb * boost * bezelW * glowInt;
+
+            // Heavy blur so the reflection reads as a soft color glow on the
+            // plastic bezel, not a sharp mirrored image. A 5-tap cross spread
+            // blurs out fine detail and edges; radius is user-controlled via
+            // `bezelReflectionBlur` (UV-space, 0.0 sharp - 0.1 very diffuse).
+            float blur = reflectionBlur;
+            float3 reflected = tex.sample(s, mirUV).rgb;
+            reflected += tex.sample(s, mirUV + float2( blur, 0.0)).rgb;
+            reflected += tex.sample(s, mirUV + float2(-blur, 0.0)).rgb;
+            reflected += tex.sample(s, mirUV + float2(0.0,  blur)).rgb;
+            reflected += tex.sample(s, mirUV + float2(0.0, -blur)).rgb;
+            reflected /= 5.0;
+
+            output += reflected * boost * bezelW * glowInt;
         }
     }
     return output;
@@ -347,7 +362,7 @@ fragment float4 fragmentCRT(VertexOut in [[stage_in]],
     if (MASK) rgb = applyPhosphorMask(rgb, in.position.xy, u.maskPixelSpacingH, u.maskPixelSpacingV, MASK);
     
     // 5. Final Composite: Add bezel mask and glass glow.
-    float3 finalOut = applyMaskAndBezel(rgb, distortedUV, sampleUV, tex, s, u.colorBoost, u.texSizeX, u.bezelRounding, u.bezelGlow, BEZEL);
+    float3 finalOut = applyMaskAndBezel(rgb, distortedUV, sampleUV, tex, s, u.colorBoost, u.texSizeX, u.bezelRounding, u.bezelGlow, u.bezelReflectionBlur, BEZEL);
 
     return float4(saturate(finalOut), 1.0);
 }

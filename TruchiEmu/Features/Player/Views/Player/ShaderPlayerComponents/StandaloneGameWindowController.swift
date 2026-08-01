@@ -49,8 +49,16 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     private var trackedROM: ROM?
     // Accumulated playtime in seconds (only counts when game is running and not paused)
     var accumulatedPlaytime: TimeInterval = 0
-    // Timer that increments playtime every second while the game is active and not paused
-    var playtimeTimer: Timer?
+    // Wall-clock start of the current playing segment, or nil when paused/stopped.
+    // On pause/resume/close, the elapsed interval since playStart is folded into
+    // accumulatedPlaytime. Replaces the previous 1-second Timer.scheduledTimer
+    // which paced the Metal render loop at 1 Hz and caused a visible stutter.
+    // Internal access so the +Playtime.swift extension can fold segments.
+    var playStart: Date?
+    // Observe runner.isPaused to fold playtime intervals on pause transitions
+    // (replaces the periodic-timer polling that caused a per-second main-thread hop).
+    // Internal access so the +Playtime.swift extension can manage the subscription.
+    var pauseCancellable: AnyCancellable?
     
     // The currently running game's ROM. Published so the toolbar can observe it.
     @MainActor @Published public var currentGameROM: ROM?
@@ -1792,6 +1800,11 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
         GamepadNavigationManager.shared.suppressLeftStickInToolbar = false
 
         if RetroAchievementsService.shared.isEnabled {
+            // Single stop ping fired on a detached utility task (does not
+            // block window close). Replaces the per-120-frame RP ping loop
+            // previously driven by RcheevosRuntime.onRichPresence — see
+            // RcheevosRuntime.processFrame and BaseRunner for the removal.
+            RetroAchievementsService.shared.sendStopPing(rom: trackedROM)
             RetroAchievementsService.shared.refreshGameCacheAfterGameStop()
         }
 

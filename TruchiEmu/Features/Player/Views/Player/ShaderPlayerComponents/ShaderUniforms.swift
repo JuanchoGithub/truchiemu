@@ -21,6 +21,7 @@ struct CRTUniforms {
     var softnessAmount: Float
     var bezelRounding: Float
     var bezelGlow: Float
+    var bezelReflectionBlur: Float
     var tintR: Float
     var tintG: Float
     var tintB: Float
@@ -62,6 +63,7 @@ struct CRTMultipassUniforms {
     var softnessAmount: Float
     var bezelRounding: Float
     var bezelGlow: Float
+    var bezelReflectionBlur: Float
     var tintR: Float
     var tintG: Float
     var tintB: Float
