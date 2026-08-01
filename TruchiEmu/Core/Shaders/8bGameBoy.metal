@@ -9,11 +9,8 @@ struct EightBitGameBoyUniforms {
     float colorBoost;
     float4 sourceSize;
     float4 outputSize;
-    float showShell;
+    float showCase;
     float showStrip;
-    float showLens;
-    float showText;
-    float showLED;
     float lightPositionIndex;
     float lightStrength;
 };
@@ -81,9 +78,22 @@ fragment float4 fragment8bGameBoy(VertexOut in [[stage_in]],
     float stripW = 2.2;
     float2 lensPadding = float2(42.0, 24.0);
     float2 shellMargin = float2(32.0, 16.0);
-    
+
+    bool showCase = u.showCase > 0.5;
+    bool showStrip = u.showStrip > 0.5;
+
     // 2. ABSOLUTE SCALING
-    float2 assemblySize = gameRes + (lensPadding + shellMargin) * 2.0;
+    // When the external case is hidden, the screen is no longer constrained
+    // by the lens + shell margin; it grows as large as the viewport allows
+    // while keeping the 160x144 (10:9) aspect ratio. The inner strip still
+    // hugs the screen with stripW padding.
+    float2 casePadding = showCase ? (lensPadding + shellMargin) : float2(0.0);
+    // When the case is visible, the strip sits inside the lens and does not
+    // enlarge the assembly. When the case is hidden but the strip is on,
+    // the strip extends stripW beyond each screen edge on all four sides,
+    // contributing stripW * 2.0 to both width and height.
+    float2 stripPadding = (showStrip && !showCase) ? float2(stripW) : float2(0.0);
+    float2 assemblySize = gameRes + (casePadding + stripPadding) * 2.0;
     float scale = min(u.outputSize.x / assemblySize.x, u.outputSize.y / assemblySize.y);
     float intScale = max(1.0, floor(scale));
     float2 p = (in.position.xy - (u.outputSize.xy * 0.5)) / intScale;
@@ -94,46 +104,36 @@ fragment float4 fragment8bGameBoy(VertexOut in [[stage_in]],
     float stripSDF  = sdRoundRect(p, (gameRes * 0.5) + stripW, 2.8);
     float lensSDF   = sdLensBox(p, (gameRes * 0.5) + stripW + lensPadding, float4(8.0, 35.0, 8.0, 8.0));
 
-// 4. BEZEL COMPOSITING
+    // 4. BEZEL COMPOSITING (entire external case is gated by showCase)
     if (screenSDF > 0.0) {
         float3 col = float3(0.1, 0.1, 0.1); // Default background (hidden)
-        bool renderedBezel = false;
 
-        // --- LAYER 1: THE BEZEL (Grey Area) ---
-        // This is the area outside the strip but inside the lens
-        if (u.showShell > 0.5) {
+        if (showCase) {
+            // --- LAYER 1: THE BEZEL (Grey Area) ---
             col = float3(0.38, 0.39, 0.40);
             float noise = fract(sin(dot(gb, float2(12.9898, 78.233))) * 43758.5453);
             col += (noise - 0.5) * 0.012;
-            renderedBezel = true;
-        }
 
-        // --- LAYER 2: THE INNER STRIP (Greenish Ring) ---
-        // Original logic: If screenSDF > 0 AND stripSDF <= 0
-        if (u.showStrip > 0.5 && stripSDF <= 0.0) {
-            col = float3(0.51, 0.50, 0.12);
-            float shadow = max(smoothstep(0.0, -3.0, gb.y), smoothstep(160.0, 163.0, gb.x));
-            col *= mix(1.0, 0.25, shadow);
-            renderedBezel = true;
-        }
+            // --- LAYER 2: THE INNER STRIP (Greenish Ring) ---
+            if (showStrip && stripSDF <= 0.0) {
+                col = float3(0.51, 0.50, 0.12);
+                float shadow = max(smoothstep(0.0, -3.0, gb.y), smoothstep(160.0, 163.0, gb.x));
+                col *= mix(1.0, 0.25, shadow);
+            }
 
-        // --- LAYER 3: THE GLASS LENS (Outer Border) ---
-        if (u.showLens > 0.5 && lensSDF > 0.0) {
-            float borderMix = smoothstep(1.5, 0.0, lensSDF);
-            // Light grey shell vs Dark grey border
-            col = mix(float3(0.88, 0.88, 0.84), float3(0.18, 0.16, 0.14), borderMix);
-            renderedBezel = true;
-        }
+            // --- LAYER 3: THE GLASS LENS (Outer Border) ---
+            if (lensSDF > 0.0) {
+                float borderMix = smoothstep(1.5, 0.0, lensSDF);
+                col = mix(float3(0.88, 0.88, 0.84), float3(0.18, 0.16, 0.14), borderMix);
+            }
 
-        // --- LAYER 4: TEXT & LED ---
-        if (u.showText > 0.5 && renderedBezel) {
-            // Main Text (only if in the grey bezel area)
+            // --- LAYER 4: TEXT & LED ---
+            // Main Text (only in the grey bezel area)
             if (stripSDF > 0.0 && lensSDF <= 0.0) {
                 float textMain = drawString(float2(gb.x - 48.0, gb.y - (-18.0)), TEXT_MAIN, 28);
                 if (textMain > 0.0) {
                     col = mix(col, float3(0.68, 0.69, 0.65), textMain);
                 } else {
-                    // Purple/Blue accent lines
                     if (gb.y > -18.0 && gb.y < -12.5) {
                         bool isLeft = (gb.x >= -34.0 && gb.x <= 42.0);
                         bool isRight = (gb.x >= 166.0 && gb.x <= 192.0);
@@ -148,9 +148,8 @@ fragment float4 fragment8bGameBoy(VertexOut in [[stage_in]],
             // Battery Text
             float textBatt = drawString(float2(gb.x - (-36.0), gb.y - 57.0), TEXT_BATT, 7);
             if (textBatt > 0.0) col = mix(col, float3(0.65, 0.66, 0.65), textBatt);
-        }
 
-        if (u.showLED > 0.5 && renderedBezel) {
+            // Power LED
             float2 ledP = gb - float2(-28.5, 45.0);
             float ledD = length(ledP);
             if (ledD < 4.5) {
@@ -158,8 +157,15 @@ fragment float4 fragment8bGameBoy(VertexOut in [[stage_in]],
                 col = mix(col, float3(0.8, 0.05, 0.02), glow);
                 if (ledD < 1.6) col = mix(col, float3(1.0, 0.8, 0.6), 0.9);
             }
+        } else if (showStrip) {
+            // Case hidden but strip enabled: thin greenish ring hugs the screen.
+            if (stripSDF <= 0.0) {
+                col = float3(0.51, 0.50, 0.12);
+                float shadow = max(smoothstep(0.0, -3.0, gb.y), smoothstep(160.0, 163.0, gb.x));
+                col *= mix(1.0, 0.25, shadow);
+            }
         }
-        
+
         return float4(col, 1.0);
     }
 

@@ -127,11 +127,8 @@ struct EightBitGameBoyUniforms {
     var colorBoost: Float
     var sourceSize: SIMD4<Float>
     var outputSize: SIMD4<Float>
-    var showShell: Float
+    var showCase: Float
     var showStrip: Float
-    var showLens: Float
-    var showText: Float
-    var showLED: Float
     var lightPositionIndex: Float
     var lightStrength: Float
 }

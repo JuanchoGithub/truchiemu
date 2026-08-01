@@ -603,11 +603,8 @@ outputHeight: Float(drawHeight)
                             colorBoost: colorB,
                             sourceSize: SIMD4<Float>(fw, fh, 1.0/fw, 1.0/fh),
                             outputSize: SIMD4<Float>(vpW, vpH, 0.0, 0.0),
-                            showShell: getUniform("showShell", fallback: 1.0),
+                            showCase: getUniform("showCase", fallback: 1.0),
                             showStrip: getUniform("showStrip", fallback: 1.0),
-                            showLens: getUniform("showLens", fallback: 1.0),
-                            showText: getUniform("showText", fallback: 1.0),
-                            showLED: getUniform("showLED", fallback: 1.0),
                             lightPositionIndex: getUniform("lightPositionIndex", fallback: 0.0),
                             lightStrength: getUniform("lightStrength", fallback: 1.0)
                         )
