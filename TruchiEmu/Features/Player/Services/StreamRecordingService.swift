@@ -271,8 +271,8 @@ class StreamRecordingService: ObservableObject {
         Self.validAACSampleRates.min(by: { abs($0 - rate) < abs($1 - rate) }) ?? 44100
     }
 
-    nonisolated static func resampleInterleaved16(_ input: [Int16], from inputRate: Double, to outputRate: Double) -> [Int16] {
-        guard inputRate > 0, outputRate > 0, !input.isEmpty else { return input }
+    nonisolated static func resampleInterleaved16(_ input: UnsafeBufferPointer<Int16>, from inputRate: Double, to outputRate: Double) -> [Int16] {
+        guard inputRate > 0, outputRate > 0, !input.isEmpty else { return Array(input) }
         let ratio = inputRate / outputRate
         let outputCount = Int(Double(input.count) / ratio)
         guard outputCount > 0 else { return [] }
@@ -1103,8 +1103,16 @@ class StreamRecordingService: ObservableObject {
             if audioResampleScratch.count < needed {
                 audioResampleScratch = [Int16](repeating: 0, count: needed)
             }
-            let inputSlice = Array(audioReadScratch[..<count])
-            let resampled = Self.resampleInterleaved16(inputSlice, from: coreAudioSampleRate, to: outputAudioSampleRate)
+            let resampled = audioReadScratch.withUnsafeBufferPointer { buf -> [Int16] in
+                // Hand a borrowed buffer view of `audioReadScratch[0..<count]`
+                // to the resampler instead of allocating a fresh `Array` per
+                // 16ms tick. The rebased `UnsafeBufferPointer` is a contiguous
+                // prefix projection — zero allocation, lifetime bound to this
+                // closure, and `resampleInterleaved16` consumes it
+                // synchronously before returning.
+                let inputSlice = UnsafeBufferPointer(rebasing: buf[..<count])
+                return Self.resampleInterleaved16(inputSlice, from: coreAudioSampleRate, to: outputAudioSampleRate)
+            }
             audioResampleScratch.replaceSubrange(0..<resampled.count, with: resampled)
             resampledCount = resampled.count
         } else {

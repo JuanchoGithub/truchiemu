@@ -76,6 +76,7 @@ struct FamicomRFUniforms {
     float useBezel;
     float bezelRounding;
     float bezelGlow;
+    float bezelReflectionBlur;
     // Interference / glitch (repo: shock -> sync & burst loss)
     float interference;     // master glitch rate/strength 0..1
     float ghosting;         // RF multipath echo 0..1
@@ -391,10 +392,42 @@ fragment float4 fragmentFamicomRF(VertexOut in [[stage_in]],
         float cornerMask = (m8.x * m4.x) + (m8.y * m4.y);
         float tubeVis = 1.0 - smoothstep(1.0, 1.0 + u.bezelRounding, cornerMask);
         if (distortedUV.x < 0.0 || distortedUV.x > 1.0 || distortedUV.y < 0.0 || distortedUV.y > 1.0) tubeVis = 0.0;
-        rgb *= tubeVis;
-        if (tubeVis < 0.99) {
-            float2 mirUV = 1.0 - abs(1.0 - abs(sampleUV));
-            rgb += tex.sample(s, mix(mirUV, sampleUV, 0.08)).rgb * u.colorBoost * (1.0 - tubeVis) * u.bezelGlow;
+
+        // With bezel on, hard-clip the screen at the tube edge so un-mirrored
+        // content does not leak into the cut-off corners. Without bezel, fade
+        // smoothly to match the soft edge.
+        if (u.useBezel > 0.5) {
+            rgb *= step(0.99, tubeVis);
+        } else {
+            rgb *= tubeVis;
+        }
+
+        if (u.useBezel > 0.5 && tubeVis < 0.99) {
+            // Fixed UV-space glow band so the reflection thickness is consistent
+            // regardless of source resolution.
+            float glowWidth = 0.12;
+            float bezelW = (1.0 - tubeVis) * (1.0 - smoothstep(1.0, 1.0 + glowWidth, max(maskEdge.x, maskEdge.y)));
+
+            if (bezelW > 0.001) {
+                // Sample the nearest visible-screen pixel (no mirroring). A real
+                // CRT bezel shows a soft glow of the ADJACENT screen edge — not
+                // a mirror of the opposite side. The sawtooth mirror formula
+                // pulled in unrelated content (e.g. the ceiling after overscan
+                // trim) and produced duplicated imagery around the frame.
+                float2 edgeUV = clamp(sampleUV, 0.0, 1.0);
+
+                // 5-tap cross blur so the reflection reads as a soft color glow,
+                // not a sharp image.
+                float blur = u.bezelReflectionBlur;
+                float3 reflected = tex.sample(s, edgeUV).rgb;
+                reflected += tex.sample(s, edgeUV + float2( blur, 0.0)).rgb;
+                reflected += tex.sample(s, edgeUV + float2(-blur, 0.0)).rgb;
+                reflected += tex.sample(s, edgeUV + float2(0.0,  blur)).rgb;
+                reflected += tex.sample(s, edgeUV + float2(0.0, -blur)).rgb;
+                reflected /= 5.0;
+
+                rgb += reflected * u.colorBoost * bezelW * u.bezelGlow;
+            }
         }
     }
 

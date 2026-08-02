@@ -54,6 +54,11 @@ struct RfDisplayUniforms {
     float hHold;        // baseline horizontal-sync offset
     float vPos;         // static vertical picture nudge
     float hPos;         // static horizontal picture nudge
+    // Bezel tube mask + reflection glow (matches CRT Classic semantics).
+    float useBezel;
+    float bezelRounding;
+    float bezelGlow;
+    float bezelReflectionBlur;
 };
 
 struct ShaderContext {
@@ -181,7 +186,12 @@ fragment float4 fragmentRfDisplay(VertexOut in [[stage_in]],
 
     // Roll / shear / tear / bump glitch on the content UV, then sample.
     float2 cuv = applyInstability(uv, u);
-    float3 rgb = tex.sample(repeatS, cuv).rgb;
+    // Clamp the sample UV to the texture bounds so the analog-instability
+    // scroll never pulls in wrapped content from the opposite edge of the
+    // decoded frame. The instability math still runs (so vHold/rollOffset
+    // appear to move the picture, but only up to the texture edge), and the
+    // rest of the bezel reflection still operates on the wrapped UV if needed.
+    float3 rgb = tex.sample(repeatS, clamp(cuv, 0.0, 1.0)).rgb;
 
     // Bump glitch: RGB channel split + occasional dark rip.
     if (u.glitch > 0.001f) {
@@ -215,6 +225,50 @@ fragment float4 fragmentRfDisplay(VertexOut in [[stage_in]],
 
     if (VIG) {
         rgb *= saturate(1.0 - (ctx.distSq * u.vignetteStrength * u.vignetteStrength));
+    }
+
+    // Bezel tube mask + reflection. The wrapped `repeat` sampler is preserved
+    // for the analog-instability aesthetic (roll/shear/tear still scroll the
+    // picture inside the visible tube area), but anything that would spill
+    // past the rounded tube edge is hard-clipped and replaced by a soft glow
+    // sampled from the *clamped* (non-wrapped) screen edge.
+    if (u.useBezel > 0.5) {
+        float2 maskEdge = abs(in.texCoord - 0.5) * 2.0;
+        float2 m2 = maskEdge * maskEdge;
+        float2 m4 = m2 * m2;
+        float2 m8 = m4 * m4;
+        float cornerMask = (m8.x * m4.x) + (m8.y * m4.y);
+        float tubeVis = 1.0 - smoothstep(1.0, 1.0 + u.bezelRounding, cornerMask);
+        if (in.texCoord.x < 0.0 || in.texCoord.x > 1.0 ||
+            in.texCoord.y < 0.0 || in.texCoord.y > 1.0) tubeVis = 0.0;
+
+        rgb *= step(0.99, tubeVis);
+
+        if (tubeVis < 0.99) {
+            // Glow band: fixed UV-space fraction so reflection thickness is
+            // consistent across resolutions.
+            float glowWidth = 0.12;
+            float bezelW = (1.0 - tubeVis) * (1.0 - smoothstep(1.0, 1.0 + glowWidth, max(maskEdge.x, maskEdge.y)));
+
+            if (bezelW > 0.001) {
+                // Sample the nearest visible-screen pixel (no wrapping, no
+                // mirroring). A real CRT bezel is a soft glow of the adjacent
+                // screen edge — not a mirror of the opposite side. Using a
+                // clamped UV prevents the wrap behavior from leaking through
+                // the bezel reflection.
+                float2 clampedUV = clamp(cuv, 0.0, 1.0);
+
+                float blur = u.bezelReflectionBlur;
+                float3 reflected = tex.sample(repeatS, clampedUV).rgb;
+                reflected += tex.sample(repeatS, clampedUV + float2( blur, 0.0)).rgb;
+                reflected += tex.sample(repeatS, clampedUV + float2(-blur, 0.0)).rgb;
+                reflected += tex.sample(repeatS, clampedUV + float2(0.0,  blur)).rgb;
+                reflected += tex.sample(repeatS, clampedUV + float2(0.0, -blur)).rgb;
+                reflected /= 5.0;
+
+                rgb += reflected * u.colorBoost * bezelW * u.bezelGlow;
+            }
+        }
     }
 
     if (u.showOSD > 0.5) {

@@ -206,41 +206,64 @@ private func parameterSliderRow(for uniform: ShaderUniform) -> some View {
                    }
                } else {
                    let safeStep = uniform.step > 0 ? uniform.step : 0.001
-                   VStack(alignment: .leading, spacing: 4) {
-                       HStack(alignment: .firstTextBaseline) {
-                           VStack(alignment: .leading, spacing: 2) {
-                               Text(uniform.displayLabel)
-                                   .font(.subheadline)
-                 if let desc = uniform.description {
-                         Text(desc)
-                             .font(.caption2)
-                             .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
-                             .lineLimit(2)
-                         }
-                     }
-
-                     Spacer()
-
-                     Text(formatUniformValue(currentUniformValue(for: uniform)))
-                         .font(.caption)
-                         .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
-                         .monospacedDigit()
+                   let range = uniform.maxValue - uniform.minValue
+                   // Guard against malformed slang `#pragma parameter` values that would
+                   // trip SwiftUI's Slider precondition: inverted/empty range, step larger
+                   // than the range, or non-finite values from a third-party .slangp.
+                   let sliderValid = uniform.minValue.isFinite
+                       && uniform.maxValue.isFinite
+                       && safeStep.isFinite
+                       && range > 0
+                       && safeStep <= range
+                   if !sliderValid {
+                       HStack {
+                           Text(uniform.displayLabel)
+                               .font(.subheadline)
+                           Spacer()
+                           Text(formatUniformValue(currentUniformValue(for: uniform)))
+                               .font(.caption)
+                               .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                               .monospacedDigit()
                        }
+                   } else {
+                       let clampedValue = min(max(currentUniformValue(for: uniform), uniform.minValue), uniform.maxValue)
+                       VStack(alignment: .leading, spacing: 4) {
+                           HStack(alignment: .firstTextBaseline) {
+                               VStack(alignment: .leading, spacing: 2) {
+                                   Text(uniform.displayLabel)
+                                       .font(.subheadline)
+                                 if let desc = uniform.description {
+                                         Text(desc)
+                                             .font(.caption2)
+                                             .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                                             .lineLimit(2)
+                                     }
+                               }
 
-Slider(
-                            value: Binding(
-                                get: { currentUniformValue(for: uniform) },
-                                set: { newValue in
-                                    let steppedValue = (newValue / safeStep).rounded() * safeStep
-                                    uniformValues[uniform.name] = steppedValue
-                                    onUpdate?(uniform.name, steppedValue)
-                                }
-                            ),
-                            in: uniform.minValue...uniform.maxValue,
-                            step: safeStep,
-                            onEditingChanged: { _ in }
-                        )
-                       .controlSize(.small)
+                               Spacer()
+
+                               Text(formatUniformValue(clampedValue))
+                                   .font(.caption)
+                                   .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                                   .monospacedDigit()
+                             }
+
+        Slider(
+                               value: Binding(
+                                   get: { clampedValue },
+                                   set: { newValue in
+                                       let steppedValue = (newValue / safeStep).rounded() * safeStep
+                                       let clamped = min(max(steppedValue, uniform.minValue), uniform.maxValue)
+                                       uniformValues[uniform.name] = clamped
+                                       onUpdate?(uniform.name, clamped)
+                                   }
+                               ),
+                               in: uniform.minValue...uniform.maxValue,
+                               step: safeStep,
+                               onEditingChanged: { _ in }
+                           )
+                           .controlSize(.small)
+                       }
                    }
                }
            }

@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 
 struct GameTimeBarOverlay: View {
     @ObservedObject var runner: EmulatorRunner
@@ -12,8 +13,15 @@ struct GameTimeBarOverlay: View {
     @State private var sliderValue: Double = 0
     @State private var isDragging: Bool = false
     @State private var overlayEnabled: Bool = true
+    @State private var pollCancellable: AnyCancellable?
 
-    private let pollTimer = Timer.publish(every: 0.5, on: .main, in: .common).autoconnect()
+    // Timer that drives `updateBufferInfo()` while the bubble is visible.
+    // Deliberately NOT autoconnect(): during normal 1x gameplay the bubble is
+    // hidden and we don't want to fire this every 0.5s reading the rewind
+    // buffer state for nothing. `connectPollTimerIfNeeded` /
+    // `cancelPollTimerIfNeeded` connect/cancel it as `showBubble` flips via
+    // changes to `runner.isRewinding` / `runner.speedMultiplier`.
+    private let pollTimer = Timer.publish(every: 0.5, on: .main, in: .common)
 
     var body: some View {
         VStack {
@@ -22,8 +30,7 @@ struct GameTimeBarOverlay: View {
             // is genuinely being shown. Gating on `hasBuffer` alone would
             // leave an empty rounded-rect background visible (an artifact
             // the user noticed after exiting rewind/normal-speed).
-            let showBubble = overlayEnabled &&
-                (runner.isRewinding || runner.speedMultiplier != 1.0)
+            let showBubble = isOverlayVisible
             if showBubble {
                 VStack(spacing: 4) {
                     HStack(spacing: 8) {
@@ -166,15 +173,21 @@ struct GameTimeBarOverlay: View {
         .animation(.easeInOut(duration: 0.2), value: runner.speedMultiplier)
         .animation(.easeInOut(duration: 0.2), value: runner.isRewinding)
         .onReceive(pollTimer) { _ in
+            // Defensive guard: pollTimer is only connected while the overlay
+            // is visible (see `isOverlayVisible` gating below), but keep this
+            // cheap check anyway so a missed cancellation path can't spam
+            // `timeMachineBuffer` reads during normal 1x gameplay.
+            guard isOverlayVisible else { return }
             updateBufferInfo()
         }
         .onChange(of: runner.isRewinding) { _, isRewinding in
             // Refresh buffer snapshot whenever TM scrub mode is entered/exited.
-            // The pollTimer fires every 0.5s, but the user may re-enter scrub
-            // mode immediately after resuming — without this the overlay still
-            // shows the pre-truncate total (e.g., 20s instead of 10s) until the
-            // next poll cycle.
+            // The pollTimer fires every 0.5s while visible, but the user may
+            // re-enter scrub mode immediately after resuming — without this
+            // the overlay still shows the pre-truncate total (e.g., 20s
+            // instead of 10s) until the next poll cycle.
             updateBufferInfo()
+            updatePollTimerConnection()
             if isRewinding {
                 // Snap the slider's stored value to the live scrub position
                 // when entering scrub mode, so dragging starts from the
@@ -183,9 +196,44 @@ struct GameTimeBarOverlay: View {
                 sliderValue = scrubProgress
             }
         }
+        .onChange(of: runner.speedMultiplier) { _, _ in
+            // Speed changes (entering/leaving slowmo or FF) also flip overlay
+            // visibility, so the timer connection must be re-evaluated.
+            updatePollTimerConnection()
+        }
         .onAppear {
             overlayEnabled = AppSettings.getBool("timeMachine_overlayEnabled", defaultValue: true)
             updateBufferInfo()
+            updatePollTimerConnection()
+        }
+        .onDisappear {
+            // Release the timer cancellable when the overlay is removed
+            // (window close). Covers the case where the last visibility
+            // predicate change before tear-down never fired onChange.
+            pollCancellable?.cancel()
+            pollCancellable = nil
+        }
+    }
+
+    /// Visibility predicate for the bubble. Mirrors `showBubble` in the body
+    /// so the timer-gating logic and the render logic always agree.
+    private var isOverlayVisible: Bool {
+        overlayEnabled && (runner.isRewinding || runner.speedMultiplier != 1.0)
+    }
+
+    /// Connect `pollTimer` only while the overlay is visible, cancel it
+    /// otherwise. This is the whole point of not using `.autoconnect()`: a
+    /// connected `Timer.publish` fires its closure every 0.5s for the
+    /// lifetime of the view, and `updateBufferInfo()` reads
+    /// `runner.timeMachineBuffer` state — pointless work during normal 1x
+    /// gameplay where the bubble is hidden.
+    private func updatePollTimerConnection() {
+        if isOverlayVisible {
+            guard pollCancellable == nil else { return }
+            pollCancellable = AnyCancellable(pollTimer.connect())
+        } else {
+            pollCancellable?.cancel()
+            pollCancellable = nil
         }
     }
 

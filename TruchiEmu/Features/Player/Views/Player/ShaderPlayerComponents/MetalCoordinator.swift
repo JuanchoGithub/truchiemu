@@ -16,6 +16,26 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
     private var temporalTextures: [MTLTexture?] = [nil, nil, nil, nil, nil]
     private var temporalIndex: Int = 0 // Cycles 0-4, points to "current" frame
     private var frameCounter: UInt32 = 0
+    // Fragment shader names that require the post-encode temporal-feedback
+    // blit copy (rolling history copy of the source frame into T-1's slot).
+    // O(1) membership test used per-frame in draw(); replaces a four-way
+    // string equality chain.
+    private static let temporalFeedbackShaders: Set<String> = [
+        "fragment8BitGBC",
+        "fragmentGBAShader",
+        "fragmentPSPShader",
+        "fragmentCRTMultipass",
+    ]
+
+    // Cached "is runner.rom?.systemID a known system in SystemDatabase" —
+    // used by the per-frame viewport safety clamp (which caps targetAspect
+    // at 1.6 when the system is recognized AND the runtime targetAspect is
+    // wider than 1.7). `rom` is a `@MainActor @Published var` on EmulatorRunner
+    // assigned at launch and constant for the rest of the session, so we
+    // resolve this once on first frame after `rom` becomes non-nil and read
+    // the cached bool thereafter. Eliminates a linear scan of SystemDatabase
+    // per draw call on the hot path.
+    private var systemRecognizedCache: (systemID: String, recognized: Bool)?
 
     // Cached shader uniform snapshot. Only re-fetched from ShaderParameterStore
     // when its generation bumps (writer mutation: live shader edit slider tick
@@ -75,8 +95,6 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
         commandQueue = nil
         resizeTimer?.invalidate()
         resizeTimer = nil
-        aspectStableTimer?.invalidate()
-        aspectStableTimer = nil
         frameCounter = 0
         innerDrawCount = 0
         recordingTextureCache = nil
@@ -100,25 +118,6 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
         pendingNativeURL = nativeURL
         pendingWantsNative = (nativeURL != nil)
         pendingOnComplete = onComplete
-    }
-
-    // MARK: - Viewport Debouncing
-    private var lastStableAspect: CGFloat = 0.0
-    private var aspectStableTimer: Timer?
-    private var lastUsedDrawableSize: CGSize = .zero
-
-    private func shouldUpdateAspect(for view: MTKView) -> Bool {
-        // Return true if aspect should update, false if should keep stable
-        let currentSize = view.drawableSize
-
-        // If significantly different from last used, update
-        if abs(currentSize.width - lastUsedDrawableSize.width) > 50 ||
-           abs(currentSize.height - lastUsedDrawableSize.height) > 50 {
-            lastUsedDrawableSize = currentSize
-            return true
-        }
-
-        return false
     }
 
     private func ensureTemporalTextures(width: Int, height: Int, device: MTLDevice, sourceFormat: MTLPixelFormat) {
@@ -160,6 +159,21 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
 
     private func advanceTemporalIndex() {
         temporalIndex = (temporalIndex + 1) % 5
+    }
+
+    /// Resolve `SystemDatabase.system(forID: systemID) != nil`, cached per
+    /// systemID for the lifetime of the running ROM session. `rom` is bound
+    /// once at launch and the systemID is constant for the session, so the
+    /// first call resolves and caches; subsequent calls bypass the linear
+    /// scan over `SystemDatabase.systems`.
+    private func systemRecognized(forSystemID systemID: String) -> Bool {
+        if let cached = systemRecognizedCache,
+           cached.systemID == systemID {
+            return cached.recognized
+        }
+        let recognized = SystemDatabase.system(forID: systemID) != nil
+        systemRecognizedCache = (systemID: systemID, recognized: recognized)
+        return recognized
     }
 
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
@@ -272,9 +286,13 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
                     targetAspect = isRotated ? (frameH / frameW) : (frameW / frameH)
                 }
 
-                if let systemID = runner.rom?.systemID,
-                   SystemDatabase.system(forID: systemID) != nil,
-                   targetAspect > 1.7 {
+                // Wider-than-16:10 clamp: cap targetAspect at 16:10 when the
+                // ROM's system is recognized in SystemDatabase. The system
+                // lookup is cached (systemRecognizedCache) — resolved once on
+                // first frame, reused for the rest of the session.
+                if targetAspect > 1.7,
+                   let systemID = runner.rom?.systemID,
+                   systemRecognized(forSystemID: systemID) {
                     targetAspect = 1.6
                 }
 
@@ -378,9 +396,6 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
                     let frameH = CGFloat(frameTex.height)
                     var targetAspect: CGFloat
 
-                    // Track drawable size for aspect stability
-                    _ = shouldUpdateAspect(for: view)
-
                     // Try core-provided aspect ratio first (preferred for N64, PS1, etc.)
                     let coreAspect = XPCBridgeAdapter.shared.aspectRatio()
                     if coreAspect > 0.0 {
@@ -391,21 +406,16 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
                         targetAspect = isRotated ? (frameH / frameW) : (frameW / frameH)
                     }
 
-                    // Final fallback: for known console systems, use the system's canonical display aspect ratio
-                    // to prevent incorrect rendering when the core reports wrong or missing aspect info.
-                    // This catches cases where PS1 cores report non-4:3 internal resolutions (e.g. 368x240).
-                    if let systemID = runner.rom?.systemID,
-                       let systemInfo = SystemDatabase.system(forID: systemID) {
-                        _ = systemInfo.displayAspectRatio
-
-                        //If the aspect ratio is wider than the Macbook screen, force it to 16:10
-                        // FIXME: this should be an option in settings
-                        if targetAspect > 1.7 {
-                            targetAspect = 1.6
-                            #if LOG_EXTREME
-                            LoggerService.extreme(category: "Metal", "[Aspect Ratio] Core/pixel ratio \(String(format: "%.3f", targetAspect)) is wider than the macbook screen. Forcing aspect ratio to 16:10")
-                            #endif
-                        }
+                    // Wider-than-16:10 clamp: cap targetAspect at 16:10 when the
+                    // ROM's system is recognized in SystemDatabase. Same logic
+                    // as the slang path above; uses the same per-session cache.
+                    if targetAspect > 1.7,
+                       let systemID = runner.rom?.systemID,
+                       systemRecognized(forSystemID: systemID) {
+                        targetAspect = 1.6
+                        #if LOG_EXTREME
+                        LoggerService.extreme(category: "Metal", "[Aspect Ratio] Core/pixel ratio \(String(format: "%.3f", targetAspect)) is wider than the macbook screen. Forcing aspect ratio to 16:10")
+                        #endif
                     }
                     var drawWidth = viewWidth
                     var drawHeight = viewWidth / targetAspect
@@ -428,7 +438,6 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
                     let vpW = Float(view.drawableSize.width)
                     let vpH = Float(view.drawableSize.height)
                     let time = Float(CACurrentMediaTime().truncatingRemainder(dividingBy: 100))
-                    let fragmentName = getFragmentFunctionName()
 
                     // Helper: read a uniform from a per-coordinator cached
                     // snapshot. The previous implementation called
@@ -542,6 +551,7 @@ outputHeight: Float(drawHeight)
                             useBezel: getUniform("useBezel", fallback: 1.0),
                             bezelRounding: getUniform("bezelRounding", fallback: 0.05),
                             bezelGlow: getUniform("bezelGlow", fallback: 0.23),
+                            bezelReflectionBlur: getUniform("bezelReflectionBlur", fallback: 0.02),
                             interference: getUniform("interference", fallback: 0.2),
                             ghosting: getUniform("ghosting", fallback: 0.15),
                             tearing: getUniform("tearing", fallback: 0.1),
@@ -582,7 +592,11 @@ outputHeight: Float(drawHeight)
                             vHold: getUniform("vHold", fallback: 0.0),
                             hHold: getUniform("hHold", fallback: 0.0),
                             vPos: getUniform("vPos", fallback: 0.0),
-                            hPos: getUniform("hPos", fallback: 0.0)
+                            hPos: getUniform("hPos", fallback: 0.0),
+                            useBezel: getUniform("useBezel", fallback: 1.0),
+                            bezelRounding: getUniform("bezelRounding", fallback: 0.05),
+                            bezelGlow: getUniform("bezelGlow", fallback: 0.23),
+                            bezelReflectionBlur: getUniform("bezelReflectionBlur", fallback: 0.02)
                         )
                         enc.setFragmentBytes(&u, length: MemoryLayout<RfDisplayUniforms>.stride, index: 0)
                     case "fragmentDotMatrixLCD":
@@ -868,7 +882,7 @@ outputHeight: Float(drawHeight)
                     // For shaders with temporal feedback: maintain rolling history
                     // Must happen AFTER render encoder ends
                     // Advance first, then write to that slot (becomes T-1 for next frame)
-                    if fragmentName == "fragment8BitGBC" || fragmentName == "fragmentGBAShader" || fragmentName == "fragmentPSPShader" || fragmentName == "fragmentCRTMultipass" {
+                    if Self.temporalFeedbackShaders.contains(fragmentName) {
                         advanceTemporalIndex()
                         let blit = cmdBuffer.makeBlitCommandEncoder()
                         if let tex = temporalTextures[temporalIndex] {

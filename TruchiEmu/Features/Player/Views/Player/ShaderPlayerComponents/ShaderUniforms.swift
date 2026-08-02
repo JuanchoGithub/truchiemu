@@ -239,6 +239,7 @@ struct FamicomRFUniforms {
     var useBezel: Float
     var bezelRounding: Float
     var bezelGlow: Float
+    var bezelReflectionBlur: Float
     var interference: Float
     var ghosting: Float
     var tearing: Float
@@ -280,4 +281,8 @@ struct RfDisplayUniforms {
     var hHold: Float
     var vPos: Float
     var hPos: Float
+    var useBezel: Float
+    var bezelRounding: Float
+    var bezelGlow: Float
+    var bezelReflectionBlur: Float
 }

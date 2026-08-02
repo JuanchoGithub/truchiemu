@@ -320,6 +320,13 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     private var textureCache: MTLTexture? = nil
     private var rfTextureCache: MTLTexture? = nil
     private let rfDecoder = RfDecoderBridge()
+    // Generation-gated uniform cache for the RF decoder path, mirroring
+    // MetalCoordinator's pattern: the writer bumps `generation` only on
+    // shader-edit slider ticks or preset activation, so the renderer pays
+    // for a full dict copy only when the snapshot actually changed. During
+    // normal RF gameplay this is zero dict copies per frame after launch.
+    private var rfCachedUniformSnapshot: [String: Float] = [:]
+    private var rfCachedUniformGeneration: UInt64 = 0
     private let textureLock = NSLock()
     @MainActor @Published var rom: ROM?
     @MainActor @Published var lastError: GameError?
@@ -666,6 +673,8 @@ case "scummvm": runner = ScummVMRunner()
         textureCache = nil
         rfTextureCache = nil
         rfDecoder.reset()
+        rfCachedUniformSnapshot.removeAll()
+        rfCachedUniformGeneration = 0
         undoBuffer = nil
         SDLInputManager.shared.unregisterRunner()
     }
@@ -1878,7 +1887,17 @@ weak var metalCoordinator: MetalCoordinator?
     // of updateFrame() so first-frame / rotation handling stays consistent.
     private func processRfFrame(data: UnsafeRawPointer, width: Int, height: Int,
                                 pitch: Int, bpp: Int, format: Int) {
-        let snap = ShaderManager.shared.getUniformSnapshot()
+        // Generation-gated snapshot read: only pay for NSLock + dict copy when
+        // the writer (live shader editor slider tick or preset activation)
+        // has bumped generation since the last RF frame. During normal RF
+        // gameplay the snapshot is fetched once after launch and never
+        // copied again. Mirrors MetalCoordinator's pattern.
+        if let result = ShaderManager.shared.getUniformSnapshotIfChanged(cachedGeneration: rfCachedUniformGeneration),
+           result.didChange {
+            rfCachedUniformSnapshot = result.snapshot
+            rfCachedUniformGeneration = result.generation
+        }
+        let snap = rfCachedUniformSnapshot
         let getF: (String, Float) -> Float = { snap[$0] ?? $1 }
         rfDecoder.setSignalStrength(getF("signalStrength", 1.0),
                                     snow: getF("snowAmount", 0.0),

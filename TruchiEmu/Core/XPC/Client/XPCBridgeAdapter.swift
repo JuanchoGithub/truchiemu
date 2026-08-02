@@ -14,6 +14,23 @@ final class XPCBridgeAdapter {
     private var useSharedMemory: Bool = false
     private var hasLoggedPoll = false
 
+    // Cached `retro_system_av_info.aspect_ratio` for the XPC path.
+    // The core updates this only via the `onGeometryChanged` delegate path
+    // (level load, resolution switch); never during normal per-frame play.
+    // Without this cache, `aspectRatio()` performs a synchronous XPC round
+    // trip (DispatchSemaphore + 2s timeout) on every call — and the main
+    // render thread calls it 2-3 times per frame. The cache is invalidated
+    // both on `onGeometryChanged` (which delivers the new value directly as
+    // its third parameter — no extra XPC fetch needed) and on `stop()` (so
+    // a relaunch with a different ROM doesn't reuse the prior cache).
+    // Lock-guarded because `aspectRatio()` is read from the main render
+    // thread (`MetalCoordinator.draw()`, `BaseRunner.captureSize`) while
+    // `onGeometryChanged` is dispatched on the XPC connection's target
+    // queue. The non-XPC (`LibretroBridgeSwift`) branch skips the cache —
+    // the in-process call is a plain pointer dereference with no XPC cost.
+    private let aspectRatioCacheLock = NSLock()
+    private var cachedAspectRatio: Float?
+
     private init() {
         g_xpcModeActive = ObjCBool(useXPC)
     }
@@ -97,7 +114,14 @@ final class XPCBridgeAdapter {
         delegate.onCoreFailed = { message in
             onFailure?(message)
         }
-        delegate.onGeometryChanged = { [weak self] width, height, _ in
+        delegate.onGeometryChanged = { [weak self] width, height, aspectRatio in
+            // Cache the fresh aspect ratio so the main render thread's
+            // frequent `aspectRatio()` reads don't need a sync XPC round
+            // trip — the value is delivered directly here as the third
+            // parameter, no extra fetch needed.
+            self?.aspectRatioCacheLock.lock()
+            self?.cachedAspectRatio = aspectRatio
+            self?.aspectRatioCacheLock.unlock()
             guard let surface = self?.videoManager.createSurface(width: width, height: height, format: 1) else { return }
             XPCConnectionManager.shared.remoteProxy?.setIOSurfaceForVideo(surface) {}
         }
@@ -202,6 +226,13 @@ final class XPCBridgeAdapter {
         delegate.onRcheevosChallengeStarted = nil
         delegate.onRcheevosChallengeCancelled = nil
         gameLoadedHandler = nil
+
+        // Drop prior session's aspect cache so the next launch's stale
+        // value isn't returned before the new core fires its first
+        // `onGeometryChanged` callback.
+        aspectRatioCacheLock.lock()
+        cachedAspectRatio = nil
+        aspectRatioCacheLock.unlock()
         hasLoggedPoll = false
     }
 
@@ -604,6 +635,17 @@ final class XPCBridgeAdapter {
 
     func aspectRatio() -> Float {
         guard useXPC else { return LibretroBridgeSwift.aspectRatio() }
+        // Fast path: read the cached value set by `onGeometryChanged`.
+        // The cache is populated lazily on the first geometry-changed
+        // callback and updated on subsequent ones; until the first
+        // callback fires, fall through to the synchronous XPC fetch
+        // (which is also what populates the cache on miss so the next
+        // caller doesn't pay again).
+        aspectRatioCacheLock.lock()
+        let cached = cachedAspectRatio
+        aspectRatioCacheLock.unlock()
+        if let cached = cached { return cached }
+
         var result: Float = 0
         let sem = DispatchSemaphore(value: 0)
         XPCConnectionManager.shared.synchronousProxy?.getAspectRatio { ar in
@@ -611,6 +653,11 @@ final class XPCBridgeAdapter {
             sem.signal()
         }
         _ = sem.wait(timeout: .now() + .seconds(2))
+        if result > 0.0 {
+            aspectRatioCacheLock.lock()
+            cachedAspectRatio = result
+            aspectRatioCacheLock.unlock()
+        }
         return result
     }
 

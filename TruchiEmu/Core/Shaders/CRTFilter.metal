@@ -101,21 +101,25 @@ static float2 getDistortedUV(float2 screenUV, ShaderContext ctx, float amount, b
 }
 
 /**
- * applyPhosphorMask: CRT subpixel mask (RGB phosphor triad simulation)
+ * applyPhosphorMask: CRT subpixel mask (RGB phosphor triad simulation).
+ * Coordinates are in source pixels, so the mask grid aligns with the system
+ * pixel grid regardless of output upscale. The horizontal mask runs at 3
+ * stripes per source pixel (R/G/B triad).
  */
 static float3 applyPhosphorMask(float3 rgb, float2 fragCoord, float hGap, float vGap, bool active) {
     if (!active) return rgb;
-    
-    float phosphorX = sin(fragCoord.x * 1.5) * 0.5 + 0.5;
-    float phosphor = phosphorX;
+
+    // 3 horizontal phosphor stripes per source pixel.
+    float hPhase = sin(fragCoord.x * 6.28318 * 1.5) * 0.5 + 0.5;
+    float phosphor = hPhase;
     if (vGap > 0.01) {
-        float phosphorY = sin(fragCoord.y * 1.5) * 0.5 + 0.5;
-        phosphor = mix(phosphorX, phosphorX * phosphorY, vGap);
+        float vPhase = sin(fragCoord.y * 6.28318) * 0.5 + 0.5;
+        phosphor = mix(hPhase, hPhase * vPhase, vGap);
     }
-    
+
     float strength = clamp(hGap, 0.0, 0.9);
     float maskStr = mix(1.0, phosphor, strength);
-    
+
     return rgb * maskStr;
 }
 
@@ -156,7 +160,8 @@ static float3 applyAnalogFinishing(float3 rgb, ShaderContext ctx, float boost, f
  * - bloomStr: 1.0 (Static) | 1.5+ (Scanlines fade out in bright white areas).
  */
 static float3 applyScanlines(float3 rgb, float3 sourceColor, float uvY, float texH, float baseInt, float bloomStr, bool useBloom) {
-    float scanline = sin(uvY * texH * 3.14159) * 0.5 + 0.5;
+    // One dark gap per source pixel row: period = 1 source row.
+    float scanline = sin(uvY * texH * 6.28318) * 0.5 + 0.5;
     float intensity = baseInt;
     
     if (useBloom) {
@@ -213,23 +218,22 @@ static float3 applyMaskAndBezel(float3 rgb, float2 distortUV, float2 sampleUV, t
         float bezelW = (1.0 - tubeVis) * (1.0 - smoothstep(1.0, 1.0 + glowWidth, max(adjustedEdge.x, adjustedEdge.y)));
 
         if (bezelW > 0.001) {
-            // Mirror the sampleUV but CLAMP it to the visible tube region first.
-            // Without clamping, mirrored UVs from the rounded-corner region land
-            // outside the texture and pull in arbitrary content (e.g. letterbox
-            // bars), producing a "reflection" of things that are not on the screen.
-            float2 clampedSampleUV = clamp(sampleUV, 0.0, 1.0);
-            float2 mirUV = 1.0 - abs(1.0 - abs(clampedSampleUV));
+            // Sample the nearest visible-screen pixel (no mirroring). A real
+            // CRT bezel shows a soft glow of the ADJACENT screen edge — not a
+            // mirror of the opposite side. The sawtooth mirror formula pulled
+            // in unrelated content (e.g. the ceiling after overscan trim) and
+            // produced duplicated imagery around the frame.
+            float2 edgeUV = clamp(sampleUV, 0.0, 1.0);
 
             // Heavy blur so the reflection reads as a soft color glow on the
-            // plastic bezel, not a sharp mirrored image. A 5-tap cross spread
-            // blurs out fine detail and edges; radius is user-controlled via
+            // plastic bezel, not a sharp image. Radius is user-controlled via
             // `bezelReflectionBlur` (UV-space, 0.0 sharp - 0.1 very diffuse).
             float blur = reflectionBlur;
-            float3 reflected = tex.sample(s, mirUV).rgb;
-            reflected += tex.sample(s, mirUV + float2( blur, 0.0)).rgb;
-            reflected += tex.sample(s, mirUV + float2(-blur, 0.0)).rgb;
-            reflected += tex.sample(s, mirUV + float2(0.0,  blur)).rgb;
-            reflected += tex.sample(s, mirUV + float2(0.0, -blur)).rgb;
+            float3 reflected = tex.sample(s, edgeUV).rgb;
+            reflected += tex.sample(s, edgeUV + float2( blur, 0.0)).rgb;
+            reflected += tex.sample(s, edgeUV + float2(-blur, 0.0)).rgb;
+            reflected += tex.sample(s, edgeUV + float2(0.0,  blur)).rgb;
+            reflected += tex.sample(s, edgeUV + float2(0.0, -blur)).rgb;
             reflected /= 5.0;
 
             output += reflected * boost * bezelW * glowInt;
@@ -358,8 +362,10 @@ fragment float4 fragmentCRT(VertexOut in [[stage_in]],
     // SCANLINES: Horizontal darkened lines with adaptive bloom.
     if (SCAN) rgb = applyScanlines(rgb, mainColor, sampleUV.y, u.texSizeY, u.scanlineIntensity, u.bloomStrength, BLOOM);
     
-    // SUBPIXEL MASK: CRT phosphor mask
-    if (MASK) rgb = applyPhosphorMask(rgb, in.position.xy, u.maskPixelSpacingH, u.maskPixelSpacingV, MASK);
+    // SUBPIXEL MASK: CRT phosphor mask. Coordinates are in SOURCE pixels
+    // (UV * texSize), so the mask period stays aligned to the system pixel
+    // grid regardless of how much the output is upscaled.
+    if (MASK) rgb = applyPhosphorMask(rgb, sampleUV * float2(u.texSizeX, u.texSizeY), u.maskPixelSpacingH, u.maskPixelSpacingV, MASK);
     
     // 5. Final Composite: Add bezel mask and glass glow.
     float3 finalOut = applyMaskAndBezel(rgb, distortedUV, sampleUV, tex, s, u.colorBoost, u.texSizeX, u.bezelRounding, u.bezelGlow, u.bezelReflectionBlur, BEZEL);
