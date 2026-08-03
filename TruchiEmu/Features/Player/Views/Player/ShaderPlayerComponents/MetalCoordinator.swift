@@ -625,6 +625,7 @@ outputHeight: Float(viewport.height)
                             vPos: getUniform("vPos", fallback: 0.0),
                             hPos: getUniform("hPos", fallback: 0.0),
                             useBezel: getUniform("useBezel", fallback: 1.0),
+                            useBezelReflection: getUniform("useBezelReflection", fallback: 1.0),
                             bezelRounding: getUniform("bezelRounding", fallback: 0.05),
                             bezelGlow: getUniform("bezelGlow", fallback: 0.23),
                             bezelReflectionBlur: getUniform("bezelReflectionBlur", fallback: 0.02)

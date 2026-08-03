@@ -56,6 +56,7 @@ struct RfDisplayUniforms {
     float hPos;         // static horizontal picture nudge
     // Bezel tube mask + reflection glow (matches CRT Classic semantics).
     float useBezel;
+    float useBezelReflection;
     float bezelRounding;
     float bezelGlow;
     float bezelReflectionBlur;
@@ -258,19 +259,27 @@ fragment float4 fragmentRfDisplay(VertexOut in [[stage_in]],
 
         rgb *= step(0.99, tubeVis) * inScreen;
 
-        if (tubeVis < 0.99) {
+        // The rounded tube frame + reflection glow is drawn ON TOP of the seam
+        // (rather than leaving a hard black ring between content and glow), so
+        // the frame covers the barrel-wrapped region. Glow covers the tube-edge
+        // band *and* the wrapped seam, sampling the nearest visible-screen
+        // pixel (clamped, no wrapping/mirroring). Gated by useBezelReflection
+        // so the glow can be disabled while the black bezel seam remains.
+        float frameFrac = max(1.0 - tubeVis, 1.0 - inScreen);
+        if (u.useBezelReflection > 0.5 && frameFrac > 0.001) {
             // Glow band: fixed UV-space fraction so reflection thickness is
             // consistent across resolutions.
             float glowWidth = 0.12;
-            float bezelW = (1.0 - tubeVis) * (1.0 - smoothstep(1.0, 1.0 + glowWidth, max(maskEdge.x, maskEdge.y)));
+            float bezelW = frameFrac * (1.0 - smoothstep(1.0, 1.0 + glowWidth, max(maskEdge.x, maskEdge.y)));
 
             if (bezelW > 0.001) {
                 // Sample the nearest visible-screen pixel (no wrapping, no
                 // mirroring). A real CRT bezel is a soft glow of the adjacent
-                // screen edge — not a mirror of the opposite side. Using a
-                // clamped UV prevents the wrap behavior from leaking through
-                // the bezel reflection.
-                float2 clampedUV = clamp(cuv, 0.0, 1.0);
+                // screen edge — not a mirror of the opposite side. Sampling the
+                // *static* geometry (`geo`, before hold/scroll offsets) keeps
+                // the glow anchored to the screen edge so it reads as a CRT
+                // reflection instead of showing whatever content scrolls by.
+                float2 clampedUV = clamp(geo, 0.0, 1.0);
 
                 float blur = u.bezelReflectionBlur;
                 float3 reflected = tex.sample(repeatS, clampedUV).rgb;

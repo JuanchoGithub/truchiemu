@@ -282,6 +282,7 @@ struct RfDisplayUniforms {
     var vPos: Float
     var hPos: Float
     var useBezel: Float
+    var useBezelReflection: Float
     var bezelRounding: Float
     var bezelGlow: Float
     var bezelReflectionBlur: Float

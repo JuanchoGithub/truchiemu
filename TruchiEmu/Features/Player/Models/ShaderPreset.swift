@@ -369,6 +369,7 @@ globalUniforms: [
                 ShaderUniform(name: "bezelGlow", defaultValue: 0.23, minValue: 0.0, maxValue: 1.0, step: 0.001, displayName: "Bezel Glow"),
                 ShaderUniform(name: "bezelReflectionBlur", defaultValue: 0.02, minValue: 0.0, maxValue: 0.1, step: 0.001, displayName: "Bezel Reflection Blur"),
                 ShaderUniform(name: "useBezel", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Bezel Mask", type: .toggle),
+                ShaderUniform(name: "useBezelReflection", defaultValue: 1.0, minValue: 0.0, maxValue: 1.0, displayName: "Bezel Reflection", type: .toggle),
             ],
             description: "Runs the actual GOROman famicom-rf-hackrf-decoder SDR pipeline on the game's digital output: the frame is encoded to NTSC/RF IQ, then decoded through the real sync-search / AGC / per-line-burst DSP, yielding authentic snow, off-tune herringbone, multipath ghosting, dot-crawl and burst-drop gray. Shown via a tube-CRT pass with a CH1/CH2 readout.",
             recommendedSystems: ["nes", "snes", "n64", "genesis", "sms", "gg", "pce", "ngp", "ws", "vb", "a78", "lnx"]
