@@ -8,8 +8,18 @@ struct SlangPreset: Identifiable, Hashable {
     let parameters: [ShaderUniform]
     let parameterDefaults: [String: Float]
     var category: String
+    var group: String
+    var recommendedSystems: [String]
 
-    var displayName: String { name }
+    var displayName: String { friendlyName }
+    var displayCategory: String { category }
+
+    var friendlyName: String {
+        if group.hasPrefix("presets") && !name.contains(" (") {
+            return Self.prettifyName(name)
+        }
+        return name
+    }
 
     /// Returns true if the preset's chain expects a full-canvas viewport
     /// rather than a pre-letterboxed one. The signal: the chain references
@@ -111,6 +121,48 @@ struct SlangFilterChainRef {
 }
 
 extension SlangPreset {
+    /// Readable display name for a curated preset filename.
+    /// Splits on separators, drops known "signal" tokens ("color", "mod", "mp", ...),
+    /// Title-Cases the result. e.g. `gameboy-advance-dot-matrix-color` -> "Gameboy Advance Dot Matrix".
+    static func prettifyName(_ raw: String) -> String {
+        let separators = CharacterSet(charactersIn: "_-. \t")
+        let tokens = raw.split(whereSeparator: { char in
+            char.unicodeScalars.first.map { separators.contains($0) } ?? false
+        })
+        let ignored: Set<String> = ["color", "mod", "mp", "v1", "v2", "v3", "sgenpt"]
+        var kept: [String] = []
+        for token in tokens {
+            let t = token.lowercased()
+            if ignored.contains(t) { continue }
+            kept.append(token.capitalized)
+        }
+        if kept.isEmpty { return raw }
+        return kept.joined(separator: " ")
+    }
+
+    /// Maps curated filename keywords to the same lowercase system identifiers used by
+    /// `ShaderPreset.recommendedSystems`. Empty when no console can be inferred.
+    static func keywordsToSystems(_ raw: String) -> [String] {
+        let lower = raw.lowercased()
+        var systems: [String] = []
+        let pairs: [(token: String, system: String)] = [
+            ("gameboy-advance", "gba"), ("gba", "gba"),
+            ("gameboy-color", "gbc"), ("gbc", "gbc"),
+            ("gameboy", "gb"), ("gbmicro", "gb"),
+            ("nes", "nes"), ("snes", "snes"),
+            ("psp", "psp"), ("nds", "nds"), ("dslite", "ds"), ("3ds", "3ds"),
+            ("genesis", "genesis"), ("megadrive", "genesis"),
+            ("saturn", "saturn"), ("psx", "psx"), ("ps1", "psx"),
+            ("n64", "n64"), ("gg", "gg"), ("sms", "sms"), ("lynx", "lynx"),
+            ("pce", "pce"), ("ngp", "ngp"), ("ws", "ws"), ("vb", "vb"), ("a78", "a78"),
+            ("virtual-boy", "vb"), ("wonderswan", "ws")
+        ]
+        for pair in pairs where lower.contains(pair.token) {
+            if !systems.contains(pair.system) { systems.append(pair.system) }
+        }
+        return systems
+    }
+
     /// Set of separator characters librashader uses between qualification prefix tokens and
     /// inside internalized parameter identifiers.
     private static let paramSeparators = CharacterSet(charactersIn: "_-. \t")
@@ -452,10 +504,18 @@ extension SlangPreset {
         let (params, defaults) = reflectFromPreset(presetPtr) ?? ([], [:])
 
         let category: String
+        var group: String
         if let idx = components.lastIndex(of: "slang-shaders"), idx + 1 < components.count {
             category = components[idx + 1]
+            let rest = components[(idx + 1)...]
+            if category == "presets", rest.count > 2 {
+                group = "presets/\(rest[rest.startIndex + 1])"
+            } else {
+                group = category
+            }
         } else {
             category = "slang"
+            group = "slang"
         }
 
         return SlangPreset(
@@ -464,7 +524,9 @@ extension SlangPreset {
             path: path,
             parameters: params,
             parameterDefaults: defaults,
-            category: category
+            category: category,
+            group: group,
+            recommendedSystems: Self.keywordsToSystems(name)
         )
     }
 }

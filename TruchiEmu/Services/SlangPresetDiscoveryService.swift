@@ -5,17 +5,9 @@ import CryptoKit
 class SlangPresetDiscoveryService: ObservableObject {
     static let shared = SlangPresetDiscoveryService()
 
-    static let curatedRelativePaths: Set<String> = [
-        "crt/crt-royale.slangp",
-        "crt/crt-guest-advanced.slangp",
-        "crt/crt-geom.slangp",
-        "crt/crt-aperture.slangp",
-        "crt/crt-easymode.slangp",
-        "crt/crt-pi.slangp",
-        "crt/crt-hyllian.slangp",
-        "handheld/lcd-grid-v2.slangp",
-        "crt/crt-super-xbr.slangp",
-    ]
+    /// Presets under libretro's curated `presets/` folder (fully-composed, console-ready looks).
+    /// These are surfaced first in the picker as the "Curated" set.
+    static let curatedFolderPath = "presets"
 
     @Published private(set) var presets: [SlangPreset] = []
     @Published private(set) var categories: [String] = []
@@ -41,7 +33,7 @@ class SlangPresetDiscoveryService: ObservableObject {
     var curatedPresets: [SlangPreset] {
         presets.filter { preset in
             guard let relPath = relativePath(for: preset.path) else { return false }
-            return Self.curatedRelativePaths.contains(relPath)
+            return relPath.hasPrefix(Self.curatedFolderPath + "/")
         }
     }
 
@@ -50,6 +42,12 @@ class SlangPresetDiscoveryService: ObservableObject {
         guard let idx = components.lastIndex(of: "slang-shaders"),
               idx + 1 < components.count else { return nil }
         return components[(idx + 1)...].joined(separator: "/")
+    }
+
+    func presetsByGroup() -> [(group: String, presets: [SlangPreset])] {
+        let grouped = Dictionary(grouping: presets) { $0.group }
+        return grouped.map { ($0.key, $0.value) }
+            .sorted { $0.group < $1.group }
     }
 
     func presetsByCategory() -> [(category: String, presets: [SlangPreset])] {
@@ -91,23 +89,35 @@ class SlangPresetDiscoveryService: ObservableObject {
         guard let enumerator = FileManager.default.enumerator(at: directory, includingPropertiesForKeys: [.isRegularFileKey]) else {
             return []
         }
-        var raw: [(url: URL, basename: String, category: String, relPath: String)] = []
+        var raw: [(url: URL, basename: String, category: String, group: String, relPath: String, recommendedSystems: [String])] = []
         for case let fileURL as URL in enumerator {
             guard fileURL.pathExtension == "slangp" else { continue }
             let basename = fileURL.deletingPathExtension().lastPathComponent
 
             let components = fileURL.pathComponents
             let category: String
+            var group: String
             let relPath: String
             if let idx = components.lastIndex(of: "slang-shaders"), idx + 1 < components.count {
                 category = components[idx + 1]
                 relPath = components[(idx + 1)...].joined(separator: "/")
+                let rest = components[(idx + 1)...]
+                if category == Self.curatedFolderPath {
+                    group = rest.count > 2 ? "presets/\(rest[rest.startIndex + 1])" : "presets"
+                } else {
+                    group = category
+                }
             } else {
                 category = "slang"
+                group = "slang"
                 relPath = basename
             }
 
-            raw.append((url: fileURL, basename: basename, category: category, relPath: relPath))
+            let recommendedSystems = category == Self.curatedFolderPath
+                ? SlangPreset.keywordsToSystems(basename)
+                : []
+
+            raw.append((url: fileURL, basename: basename, category: category, group: group, relPath: relPath, recommendedSystems: recommendedSystems))
             enumerator.skipDescendants()
         }
 
@@ -148,7 +158,9 @@ class SlangPresetDiscoveryService: ObservableObject {
                 path: item.url,
                 parameters: [],
                 parameterDefaults: [:],
-                category: item.category
+                category: item.category,
+                group: item.group,
+                recommendedSystems: item.recommendedSystems
             ))
         }
         return results

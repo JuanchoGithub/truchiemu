@@ -1262,6 +1262,7 @@
   "shader.all": "Todos",
   "shader.saved": "Salvos",
   "shader.builtIn": "Integrados",
+  "shader.curated": "Predefinições selecionadas",
   "shader.noShadersFound": "Nenhum shader encontrado",
   "shader.noSavedPresets": "Nenhum perfil salvo",
   "shader.noMatchesFound": "Nenhuma correspondência encontrada",

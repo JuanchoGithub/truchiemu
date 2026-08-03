@@ -1264,6 +1264,7 @@
   "shader.all": "All",
   "shader.saved": "Saved",
   "shader.builtIn": "Built-in",
+  "shader.curated": "Curated Presets",
   "shader.noShadersFound": "No shaders found",
   "shader.noSavedPresets": "No saved presets",
   "shader.noMatchesFound": "No matches found",

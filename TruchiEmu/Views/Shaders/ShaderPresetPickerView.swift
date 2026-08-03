@@ -562,6 +562,7 @@ struct ShaderPresetPickerView: View {
 
 @State private var selectedCategory: CategoryFilter = .all
 @State private var searchText: String = ""
+@State private var expandedSlangGroups: Set<String> = []
 @State private var savedPresets: [SavedShaderPreset] = []
 @ObservedObject private var slangDiscovery = SlangPresetDiscoveryService.shared
 @ObservedObject private var slangService = SlangCompilerService.shared
@@ -1056,12 +1057,77 @@ controller.close()
                         .foregroundColor(AppColors.textSecondary(colorScheme))
                 }
                 .padding()
+            } else if searchText.isEmpty {
+                groupedSlangPresetsListContent
             } else {
                 ForEach(visibleSlangPresets, id: \.id) { preset in
                     slangPresetRow(preset: preset)
                 }
             }
         }
+    }
+
+    private var groupedSlangPresetsListContent: some View {
+        VStack(spacing: 0) {
+            let curated = slangDiscovery.curatedPresets
+            if !curated.isEmpty {
+                slangGroupHeader(group: "curated", count: curated.count)
+                if expandedSlangGroups.contains("curated") {
+                    ForEach(curated, id: \.id) { preset in
+                        slangPresetRow(preset: preset)
+                    }
+                }
+                Divider()
+                    .padding(.vertical, 8)
+            }
+
+            let grouped = slangDiscovery.presetsByGroup()
+            ForEach(grouped, id: \.group) { section in
+                if !curated.contains(where: { $0.group == section.group }) {
+                    slangGroupHeader(group: section.group, count: section.presets.count)
+                    if expandedSlangGroups.contains(section.group) {
+                        ForEach(section.presets, id: \.id) { preset in
+                            slangPresetRow(preset: preset)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private func slangGroupHeader(group: String, count: Int) -> some View {
+        let isExpanded = expandedSlangGroups.contains(group)
+        return Button {
+            withAnimation(.easeInOut(duration: 0.15)) {
+                if isExpanded {
+                    expandedSlangGroups.remove(group)
+                } else {
+                    expandedSlangGroups.insert(group)
+                }
+            }
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
+                    .font(.caption2)
+                Text(groupDisplayName(group))
+                    .font(.caption.bold())
+                Text("(\(count))")
+                    .font(.caption2)
+                    .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                Spacer()
+            }
+            .padding(.horizontal, 12)
+            .padding(.top, 10)
+            .padding(.bottom, 4)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .foregroundColor(AppColors.textPrimary(colorScheme))
+    }
+
+    private func groupDisplayName(_ group: String) -> String {
+        if group == "curated" || group == "presets" { return loc.localized("shader.curated") }
+        return group.replacingOccurrences(of: "/", with: " / ").capitalized
     }
 
     // MARK: - Preset Filtering
@@ -1109,7 +1175,9 @@ controller.close()
         let search = searchText.lowercased()
         return source.filter { preset in
             preset.displayName.lowercased().contains(search) ||
-            preset.category.lowercased().contains(search)
+            preset.category.lowercased().contains(search) ||
+            preset.group.lowercased().contains(search) ||
+            preset.recommendedSystems.contains { $0.lowercased().contains(search) }
         }
     }
 
