@@ -241,6 +241,12 @@ class ShaderManager: ObservableObject {
         if let slangPreset = SlangPresetDiscoveryService.shared.presets.first(where: { $0.path.path == saved.basePresetID }) {
             activateSlangPreset(slangPreset, overrides: saved.uniformValues)
         } else {
+            // If the saved base looks like a slang path but the lookup missed,
+            // the preset file was moved/deleted between launches or didn't
+            // survive a discovery-cache rebuild.
+            if saved.basePresetID.contains("slang-shaders") {
+                LoggerService.error(category: "ShaderManager", "activateSavedPreset: slang preset at \(saved.basePresetID) is no longer discoverable; falling back to built-in lookup")
+            }
             activatePresetWithOverrides(presetID: saved.basePresetID, overrides: saved.uniformValues)
         }
     }

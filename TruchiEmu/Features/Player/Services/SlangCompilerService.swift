@@ -10,6 +10,12 @@ class SlangCompilerService: ObservableObject {
     private var _filterChain: OpaquePointer?
     private var _queue: MTLCommandQueue?
 
+    /// Cached flag mirroring `activePreset?.usesAbsoluteFinalPass` so the
+    /// `nonisolated renderFrame` path can read it without touching the
+    /// `@MainActor`-bound `activePreset`. Updated synchronously inside
+    /// `loadAndActivatePreset` and `destroyFilterChain`.
+    nonisolated(unsafe) private var _finalPassIsAbsolute: Bool = false
+
     private init() {}
 
     func loadAndActivatePreset(at url: URL, queue: MTLCommandQueue) throws -> SlangPreset {
@@ -83,10 +89,18 @@ class SlangCompilerService: ObservableObject {
         chainLock.lock()
         _filterChain = chain
         _queue = queue
+        _finalPassIsAbsolute = slangPreset.usesAbsoluteFinalPass
         chainLock.unlock()
         activePreset = slangPreset
-        LoggerService.info(category: "Slang", "Chain created successfully for preset: \(slangPreset.name)")
+        LoggerService.info(category: "Slang", "Chain created successfully for preset: \(slangPreset.name) (final_pass_absolute=\(slangPreset.usesAbsoluteFinalPass))")
         return slangPreset
+    }
+
+    /// Nonisolated read of the cached `final_pass_is_absolute` flag for the
+    /// chain that is currently active. Read by `renderFrame`'s callers to
+    /// decide on a viewport strategy without touching `@MainActor` state.
+    nonisolated var finalPassIsAbsolute: Bool {
+        Self.shared.chainLock.withLock { Self.shared._finalPassIsAbsolute }
     }
 
     nonisolated func renderFrame(commandBuffer: MTLCommandBuffer,
@@ -104,9 +118,6 @@ class SlangCompilerService: ObservableObject {
             #endif
             return
         }
-        #if LOG_DEBUG
-        LoggerService.debug(category: "Slang", "renderFrame sizes: in=\(inputTexture.width)x\(inputTexture.height) out=\(outputTexture.width)x\(outputTexture.height) vp=\(UInt32(viewport.width))x\(UInt32(viewport.height)) ar=\(aspectRatio)")
-        #endif
 
         let libraVP = libra_viewport_t(
             x: Float(viewport.originX),
@@ -114,6 +125,10 @@ class SlangCompilerService: ObservableObject {
             width: UInt32(viewport.width),
             height: UInt32(viewport.height)
         )
+        // Visual rotation is applied at the CAMetalLayer level
+        // (MetalCoordinator.mtkView:drawableSizeWillChange:), mirroring
+        // the built-in shader path. We pass rotation=0 here so librashader
+        // does not double-rotate the chain's output texture.
         var frameOpts = frame_mtl_opt_t(
             version: 5,
             clear_history: false,
@@ -141,11 +156,13 @@ class SlangCompilerService: ObservableObject {
             nil,
             &frameOpts
         )
-        if renderErr != nil {
+        if let err = renderErr {
             var errStr: UnsafeMutablePointer<CChar>?
-            libra_error_write(renderErr, &errStr)
+            libra_error_write(err, &errStr)
             let msg = errStr.map { String(cString: $0) } ?? "unknown error"
             libra_error_free_string(&errStr)
+            var errCopy: OpaquePointer? = err
+            libra_error_free(&errCopy)
             LoggerService.error(category: "Slang", "renderFrame error: \(msg)")
         }
     }
@@ -155,9 +172,18 @@ class SlangCompilerService: ObservableObject {
             Self.shared._filterChain
         }) else { return }
         var chainVar: OpaquePointer? = chain
+        var setErr: OpaquePointer?
         name.withCString { cname in
-            slang_mtl_filter_chain_set_param(&chainVar, cname, value)
-            return ()
+            setErr = slang_mtl_filter_chain_set_param(&chainVar, cname, value)
+        }
+        if let err = setErr {
+            var errStr: UnsafeMutablePointer<CChar>?
+            libra_error_write(err, &errStr)
+            let msg = errStr.map { String(cString: $0) } ?? "unknown error"
+            libra_error_free_string(&errStr)
+            var errCopy: OpaquePointer? = err
+            libra_error_free(&errCopy)
+            LoggerService.error(category: "Slang", "setParameter(\(name)=\(value)) error: \(msg)")
         }
     }
 
@@ -166,10 +192,20 @@ class SlangCompilerService: ObservableObject {
         let chain = _filterChain
         _filterChain = nil
         _queue = nil
+        _finalPassIsAbsolute = false
         chainLock.unlock()
         if let chain = chain {
             var chainVar: OpaquePointer? = chain
-            slang_mtl_filter_chain_free(&chainVar)
+            let freeErr = slang_mtl_filter_chain_free(&chainVar)
+            if let err = freeErr {
+                var errStr: UnsafeMutablePointer<CChar>?
+                libra_error_write(err, &errStr)
+                let msg = errStr.map { String(cString: $0) } ?? "unknown error"
+                libra_error_free_string(&errStr)
+                var errCopy: OpaquePointer? = err
+                libra_error_free(&errCopy)
+                LoggerService.error(category: "Slang", "destroyFilterChain error: \(msg)")
+            }
         }
         activePreset = nil
     }
@@ -181,7 +217,14 @@ class SlangCompilerService: ObservableObject {
         chainLock.unlock()
         if let chain = chain {
             var chainVar: OpaquePointer? = chain
-            slang_mtl_filter_chain_free(&chainVar)
+            let freeErr = slang_mtl_filter_chain_free(&chainVar)
+            if let err = freeErr {
+                var errStr: UnsafeMutablePointer<CChar>?
+                libra_error_write(err, &errStr)
+                let msg = errStr.map { String(cString: $0) } ?? "unknown error"
+                libra_error_free_string(&errStr)
+                LoggerService.error(category: "Slang", "deinit chain free error: \(msg)")
+            }
         }
     }
 }

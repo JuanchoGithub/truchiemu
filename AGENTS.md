@@ -537,3 +537,25 @@ The app supports RetroArch `.slangp` shader presets via **librashader** (Rust li
 2. Add test files under `TruchiEmuTests/`
 3. Link `SwiftData` framework in the test target
 4. Some tests may require network access (LaunchBox, thumbnail services)
+
+### Slang shader audit
+
+An env-gated audit harness lives in `TruchiEmu/Features/Player/Services/SlangAuditRunner.swift`. It is **dead code** when the env var is unset; it only runs when launched with `TRUCHI_SLANG_AUDIT=1`.
+
+Run:
+```
+TRUCHI_SLANG_AUDIT=1 /path/to/TruchiEmu.app/Contents/MacOS/TruchiEmu
+```
+It runs in a `Task.detached(priority: .utility)` at launch, using its own `MTLDevice` + queue (no game ROM needed). It audits:
+- The 9 surviving `curatedRelativePaths` entries
+- One representative `.slangp` per top-level slang-shaders category folder
+
+For each preset it loads the chain via `SlangCompilerService.shared.loadAndActivatePreset`, renders one frame of a 256×224 synthetic pattern through an offscreen 1280×960 letterboxed viewport, then checks: not-black, not-pass-through, aspect-correct. Output goes to:
+```
+~/Library/Application Support/TruchiEmu/SlangAudit/
+├── report.md     # Summary + per-preset table with PNG links
+├── report.json   # Same data as JSON
+└── png/           # One PNG per audited preset
+```
+
+Use it after any change to `SlangCompilerService`, `slang_shader_bridge.mm`, `SlangPreset`, `SlangPresetDiscoveryService`, the slang branch of `MetalCoordinator.draw`, or after a `slang-shaders` submodule bump. A successful run reports `Healthy: 42` (or N where N = curated count + category count).

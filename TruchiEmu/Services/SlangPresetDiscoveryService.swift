@@ -1,4 +1,5 @@
 import Foundation
+import CryptoKit
 
 @MainActor
 class SlangPresetDiscoveryService: ObservableObject {
@@ -7,21 +8,12 @@ class SlangPresetDiscoveryService: ObservableObject {
     static let curatedRelativePaths: Set<String> = [
         "crt/crt-royale.slangp",
         "crt/crt-guest-advanced.slangp",
-        "crt/crt-lumes.slangp",
         "crt/crt-geom.slangp",
         "crt/crt-aperture.slangp",
         "crt/crt-easymode.slangp",
         "crt/crt-pi.slangp",
         "crt/crt-hyllian.slangp",
         "handheld/lcd-grid-v2.slangp",
-        "handheld/console-border/dmg-4x.slangp",
-        "handheld/gba-color.slangp",
-        "bezel/Mega_Bezel/presets/MegaBezel_Reflection.slangp",
-        "ntsc/ntsc-svideo.slangp",
-        "ntsc/ntsc-composite.slangp",
-        "crt/crt-blur-luts.slangp",
-        "presets/tvout+scalefx+bloom.slangp",
-        "xbrz/xbrz-freescale.slangp",
         "crt/crt-super-xbr.slangp",
     ]
 
@@ -71,10 +63,14 @@ class SlangPresetDiscoveryService: ObservableObject {
     }
 
     private func scanBundledSlangShaders() -> [SlangPreset]? {
-        guard let resourcePath = Bundle.main.resourcePath else { return nil }
+        guard let resourcePath = Bundle.main.resourcePath else {
+            LoggerService.error(category: "Slang", "scanBundledSlangShaders: Bundle.main.resourcePath is nil")
+            return nil
+        }
         let slangDir = (resourcePath as NSString).appendingPathComponent("slang-shaders")
         var isDir: ObjCBool = false
         guard FileManager.default.fileExists(atPath: slangDir, isDirectory: &isDir), isDir.boolValue else {
+            LoggerService.error(category: "Slang", "scanBundledSlangShaders: bundled slang-shaders directory missing at \(slangDir) — slang presets will be empty until the submodule is restored")
             return nil
         }
         return scanSlangpFiles(in: URL(fileURLWithPath: slangDir))
@@ -83,7 +79,11 @@ class SlangPresetDiscoveryService: ObservableObject {
     private func scanUserSlangPresets() -> [SlangPreset] {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         let dir = appSupport.appendingPathComponent("TruchiEmu/SlangPresets", isDirectory: true)
-        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        do {
+            try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        } catch {
+            LoggerService.warning(category: "Slang", "scanUserSlangPresets: failed to create user directory at \(dir.path): \(error.localizedDescription)")
+        }
         return scanSlangpFiles(in: dir)
     }
 
@@ -91,30 +91,65 @@ class SlangPresetDiscoveryService: ObservableObject {
         guard let enumerator = FileManager.default.enumerator(at: directory, includingPropertiesForKeys: [.isRegularFileKey]) else {
             return []
         }
-        var results: [SlangPreset] = []
+        var raw: [(url: URL, basename: String, category: String, relPath: String)] = []
         for case let fileURL as URL in enumerator {
             guard fileURL.pathExtension == "slangp" else { continue }
-            let id = "slang-\(fileURL.lastPathComponent)-\(fileURL.hashValue)"
-            let name = fileURL.deletingPathExtension().lastPathComponent
+            let basename = fileURL.deletingPathExtension().lastPathComponent
 
             let components = fileURL.pathComponents
             let category: String
+            let relPath: String
             if let idx = components.lastIndex(of: "slang-shaders"), idx + 1 < components.count {
                 category = components[idx + 1]
+                relPath = components[(idx + 1)...].joined(separator: "/")
             } else {
                 category = "slang"
+                relPath = basename
             }
 
-            let preset = SlangPreset(
+            raw.append((url: fileURL, basename: basename, category: category, relPath: relPath))
+            enumerator.skipDescendants()
+        }
+
+        // Detect bare-name collisions so we can disambiguate display names.
+        // The bundled slang-shaders tree has ~429 duplicate basenames
+        // (mostly `.slangp` presets under `bezel/Mega_Bezel/Presets/`),
+        // which make the picker unusable without disambiguation.
+        let basenameCounts = Dictionary(raw.map { ($0.basename, 1) }, uniquingKeysWith: +)
+
+        var results: [SlangPreset] = []
+        results.reserveCapacity(raw.count)
+        for item in raw {
+            // Use the immediate parent folder (the one inside the category
+            // tree) to disambiguate, falling back to bare basename.
+            let displayName: String
+            if basenameCounts[item.basename, default: 0] > 1 {
+                let parent = item.url.deletingLastPathComponent().lastPathComponent
+                if parent == "slang-shaders" || parent.isEmpty {
+                    displayName = "\(item.basename) (\(item.category))"
+                } else {
+                    displayName = "\(item.basename) (\(parent))"
+                }
+            } else {
+                displayName = item.basename
+            }
+
+            // Stable id: SHA-256 of the relative path, truncated. Replaces
+            // the earlier `URL.hashValue` (randomized per process) so ids
+            // survive app restarts and SwiftData/SavedShaderPreset lookups.
+            var hasher = SHA256()
+            hasher.update(data: Data(item.relPath.utf8))
+            let idHex = hasher.finalize().map { String(format: "%02x", $0) }.joined()
+            let id = "slang-\(item.basename)-\(String(idHex.prefix(16)))"
+
+            results.append(SlangPreset(
                 id: id,
-                name: name,
-                path: fileURL,
+                name: displayName,
+                path: item.url,
                 parameters: [],
                 parameterDefaults: [:],
-                category: category
-            )
-            results.append(preset)
-            enumerator.skipDescendants()
+                category: item.category
+            ))
         }
         return results
     }

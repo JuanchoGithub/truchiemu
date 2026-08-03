@@ -1,4 +1,5 @@
 import Foundation
+import CryptoKit
 
 struct SlangPreset: Identifiable, Hashable {
     let id: String
@@ -9,6 +10,95 @@ struct SlangPreset: Identifiable, Hashable {
     var category: String
 
     var displayName: String { name }
+
+    /// Returns true if the preset's chain expects a full-canvas viewport
+    /// rather than a pre-letterboxed one. The signal: the chain references
+    /// at least one shader with `border`, `bezel`, or `imgborder` in its
+    /// path AND has at least one `scale_type* = "absolute"` (which is how
+    /// bezel/border chains lock their layout dimensions).
+    ///
+    /// This discriminator was chosen because:
+    /// - Plain CRT presets (`crt-royale.slangp` etc.) have many absolute
+    ///   `scale_type` passes for fixed-size mask textures, but their
+    ///   shader paths are all CRT-related and don't contain `border` /
+    ///   `bezel` / `imgborder`. They want pre-letterboxing.
+    /// - Bezel/border presets (`gameboy-player-tvout.slangp`,
+    ///   `koko-aio-ng.slangp`, `gameboy-player-gba-color.slangp`,
+    ///   `Mega_Bezel/Presets/**` etc.) reference border-construction
+    ///   shaders AND use absolute scales for their layout passes. They
+    ///   want the full canvas as the viewport and handle their own
+    ///   internal layout.
+    ///
+    /// The check is permissive on the path substring (intentionally
+    /// matches `border`, `bezel`, and `imgborder` regardless of case) so
+    /// that future bezel presets added to the slang-shaders submodule get
+    /// the right behavior without further code changes.
+    var usesAbsoluteFinalPass: Bool {
+        return chainHasBezierStyle(at: path, depth: 0)
+    }
+
+    /// Walks the preset (and `#reference`-inherited chains up to 4 levels)
+    /// looking for any shader whose path contains `border`, `bezel`, or
+    /// `imgborder` AND any `scale_type* = "absolute"` directive.
+    private func chainHasBezierStyle(at url: URL, depth: Int) -> Bool {
+        guard depth < 4, let text = try? String(contentsOf: url, encoding: .utf8) else {
+            return false
+        }
+        var hasBorderShader = false
+        var hasAbsoluteScale = false
+        for line in text.split(whereSeparator: \.isNewline) {
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            guard let eq = trimmed.firstIndex(of: "=") else { continue }
+            let key = String(trimmed[..<eq]).trimmingCharacters(in: .whitespaces).lowercased()
+            let val = trimmed[trimmed.index(after: eq)...].trimmingCharacters(in: .whitespaces)
+            if key.hasPrefix("shader") {
+                let path = val.lowercased().trimmingCharacters(in: CharacterSet(charactersIn: "\"'"))
+                if path.contains("border") || path.contains("bezel") || path.contains("imgborder") {
+                    hasBorderShader = true
+                }
+            } else if key.hasPrefix("scale_type") && val.contains("absolute") {
+                hasAbsoluteScale = true
+            }
+            if hasBorderShader && hasAbsoluteScale { return true }
+        }
+        if let refPath = parseFirstReference(text),
+           refPath.hasSuffix(".slangp") {
+            let refURL = URL(fileURLWithPath: refPath, relativeTo: url.deletingLastPathComponent())
+            if chainHasBezierStyle(at: refURL, depth: depth + 1) { return true }
+        }
+        return false
+    }
+
+    /// Parses the first `#reference "path"` directive, returning the relative
+    /// string (or nil if absent).
+    private func parseFirstReference(_ text: String) -> String? {
+        for line in text.split(whereSeparator: \.isNewline) {
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            if trimmed.hasPrefix("#reference") {
+                let rest = trimmed.dropFirst("#reference".count).trimmingCharacters(in: .whitespaces)
+                let stripped = rest.trimmingCharacters(in: CharacterSet(charactersIn: "\"'"))
+                if !stripped.isEmpty { return stripped }
+            }
+        }
+        return nil
+    }
+
+    /// Parses `shaders = "N"` or `shaders = "N"` into an Int, defaulting to 0
+    /// when absent or unparseable.
+    private func parseShaderCount(_ text: String) -> Int {
+        for line in text.split(whereSeparator: \.isNewline) {
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            if trimmed.lowercased().hasPrefix("shaders") {
+                if let eq = trimmed.firstIndex(of: "=") {
+                    let val = trimmed[trimmed.index(after: eq)...]
+                        .trimmingCharacters(in: .whitespaces)
+                        .trimmingCharacters(in: CharacterSet(charactersIn: "\"'"))
+                    return Int(val) ?? 0
+                }
+            }
+        }
+        return 0
+    }
 }
 
 struct SlangFilterChainRef {
@@ -225,8 +315,20 @@ extension SlangPreset {
         let paramErr = withUnsafePointer(to: preset) { ptr in
             libra_preset_get_runtime_params(ptr, &paramsList)
         }
-        guard paramErr == nil, let buf = paramsList.parameters else {
+        if let err = paramErr {
+            var errStr: UnsafeMutablePointer<CChar>?
+            libra_error_write(err, &errStr)
+            let msg = errStr.map { String(cString: $0) } ?? "unknown error"
+            libra_error_free_string(&errStr)
+            var errCopy: OpaquePointer? = err
+            libra_error_free(&errCopy)
+            LoggerService.error(category: "Slang", "reflectFromPreset error: \(msg)")
             libra_preset_free_runtime_params(paramsList)
+            return nil
+        }
+        guard let buf = paramsList.parameters else {
+            libra_preset_free_runtime_params(paramsList)
+            LoggerService.error(category: "Slang", "reflectFromPreset: nil parameters buffer after successful call")
             return nil
         }
         let count = Int(paramsList.length)
@@ -304,9 +406,14 @@ extension SlangPreset {
                 libra_preset_create(cpath, outPtr)
             }
         }
-        if errRet != nil {
-            var errCopy: OpaquePointer? = errRet
+        if let err = errRet {
+            var errStr: UnsafeMutablePointer<CChar>?
+            libra_error_write(err, &errStr)
+            let msg = errStr.map { String(cString: $0) } ?? "unknown error"
+            libra_error_free_string(&errStr)
+            var errCopy: OpaquePointer? = err
             libra_error_free(&errCopy)
+            LoggerService.error(category: "Slang", "reflectParameters load error for \(path.lastPathComponent): \(msg)")
             return nil
         }
         guard let preset = presetPtr else { return nil }
@@ -320,12 +427,30 @@ extension SlangPreset {
     static func from(librashader presetPtr: OpaquePointer,
                      at path: URL,
                      queue: MTLCommandQueue) throws -> SlangPreset {
-        let id = "slang-\(path.lastPathComponent)-\(path.hashValue)"
+        // Stable id mirroring SlangPresetDiscoveryService.scanSlangpFiles:
+        // SHA-256 of the relative path within `slang-shaders/`, truncated
+        // to 16 hex chars. Falls back to the absolute path's basename if the
+        // preset is not under `slang-shaders/` (user presets in
+        // `~/Library/Application Support/TruchiEmu/SlangPresets/`).
+        let components = path.pathComponents
+        let relPath: String
+        if let idx = components.lastIndex(of: "slang-shaders"), idx + 1 < components.count {
+            relPath = components[(idx + 1)...].joined(separator: "/")
+        } else {
+            relPath = path.lastPathComponent
+        }
+        var hasher = SHA256()
+        hasher.update(data: Data(relPath.utf8))
+        let idHex = hasher.finalize().map { String(format: "%02x", $0) }.joined()
+        let id = "slang-\(path.deletingPathExtension().lastPathComponent)-\(String(idHex.prefix(16)))"
+
+        // Display name: bare basename is fine here — this constructor is only
+        // called when the user activates a preset the discovery service has
+        // already de-collided for display in the picker.
         let name = path.deletingPathExtension().lastPathComponent
 
         let (params, defaults) = reflectFromPreset(presetPtr) ?? ([], [:])
 
-        let components = path.pathComponents
         let category: String
         if let idx = components.lastIndex(of: "slang-shaders"), idx + 1 < components.count {
             category = components[idx + 1]

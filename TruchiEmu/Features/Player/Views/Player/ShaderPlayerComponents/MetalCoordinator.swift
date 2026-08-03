@@ -11,6 +11,7 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
     let runner: EmulatorRunner
     private var commandQueue: MTLCommandQueue?
     private var pipelineCache: [String: MTLRenderPipelineState] = [:]
+    private var forceAlphaPipelineCache: MTLRenderPipelineState?
     private var innerDrawCount = 0
     // 5-frame temporal buffer for CRT phosphor persistence (T-1, T-2, T-3, T-4, plus current frame passed directly to texture(0))
     private var temporalTextures: [MTLTexture?] = [nil, nil, nil, nil, nil]
@@ -85,6 +86,11 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
     private var pendingWantsNative: Bool = false
     private var pendingOnComplete: (([URL]) -> Void)?
 
+    /// Throttles the "slang path: no current frame texture" error log so it
+    /// fires once per null-frame run instead of spamming 60 Hz while the
+    /// libretro core has not yet produced its first frame.
+    private var hasLoggedSlangNullFrame: Bool = false
+
     init(runner: EmulatorRunner) {
         self.runner = runner
     }
@@ -92,6 +98,7 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
     func cleanup() {
         temporalTextures = [nil, nil, nil, nil, nil]
         pipelineCache.removeAll()
+        forceAlphaPipelineCache = nil
         commandQueue = nil
         resizeTimer?.invalidate()
         resizeTimer = nil
@@ -174,6 +181,52 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
         let recognized = SystemDatabase.system(forID: systemID) != nil
         systemRecognizedCache = (systemID: systemID, recognized: recognized)
         return recognized
+    }
+
+    /// Computes the target aspect ratio for the current frame, given the
+    /// libretro core's reported aspect (preferred) or the frame texture's
+    /// pixel dimensions (fallback). Caps the result at 16:10 when the ROM's
+    /// system is recognized in SystemDatabase but the computed ratio is
+    /// wider than the user's screen.
+    ///
+    /// Shared between the slang path and the built-in-shader path so the two
+    /// can't drift.
+    private func computeTargetAspect(frameTex: MTLTexture, isRotated: Bool, systemID: String?) -> CGFloat {
+        let frameW = CGFloat(frameTex.width)
+        let frameH = CGFloat(frameTex.height)
+        var targetAspect: CGFloat
+
+        let coreAspect = XPCBridgeAdapter.shared.aspectRatio()
+        if coreAspect > 0.0 {
+            targetAspect = isRotated ? (1.0 / CGFloat(coreAspect)) : CGFloat(coreAspect)
+        } else {
+            targetAspect = isRotated ? (frameH / frameW) : (frameW / frameH)
+        }
+
+        if targetAspect > 1.7, let systemID = systemID, systemRecognized(forSystemID: systemID) {
+            #if LOG_EXTREME
+            LoggerService.extreme(category: "Metal", "[Aspect Ratio] Core/pixel ratio \(String(format: "%.3f", targetAspect)) is wider than the macbook screen. Forcing aspect ratio to 16:10")
+            #endif
+            targetAspect = 1.6
+        }
+        return targetAspect
+    }
+
+    /// Letterboxes the given target aspect ratio inside the drawable, returning
+    /// a centered `MTLViewport` that preserves the aspect.
+    @inline(__always)
+    private func computeViewport(targetAspect: CGFloat, viewSize: CGSize) -> MTLViewport {
+        var drawWidth = viewSize.width
+        var drawHeight = viewSize.width / targetAspect
+        if drawHeight > viewSize.height {
+            drawHeight = viewSize.height
+            drawWidth = viewSize.height * targetAspect
+        }
+        let x = (viewSize.width - drawWidth) / 2.0
+        let y = (viewSize.height - drawHeight) / 2.0
+        return MTLViewport(originX: Double(x), originY: Double(y),
+                           width: Double(drawWidth), height: Double(drawHeight),
+                           znear: 0.0, zfar: 1.0)
     }
 
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
@@ -273,105 +326,119 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
 
         // Early path for slang shaders - use librashader filter chain
         if fragmentName == "slang" {
-            if let frameTex = runner.currentFrameTexture {
-                let isRotated = (runner.currentFrameRotation == 1 || runner.currentFrameRotation == 3)
-                let frameW = CGFloat(frameTex.width)
-                let frameH = CGFloat(frameTex.height)
-                var targetAspect: CGFloat
-
-                let coreAspect = XPCBridgeAdapter.shared.aspectRatio()
-                if coreAspect > 0.0 {
-                    targetAspect = isRotated ? (1.0 / CGFloat(coreAspect)) : CGFloat(coreAspect)
-                } else {
-                    targetAspect = isRotated ? (frameH / frameW) : (frameW / frameH)
+            guard let frameTex = runner.currentFrameTexture else {
+                if !hasLoggedSlangNullFrame {
+                    hasLoggedSlangNullFrame = true
+                    LoggerService.error(category: "Slang", "draw: slang branch skipped — runner.currentFrameTexture is nil (core has not produced a frame yet)")
                 }
+                cmdBuffer.present(drawable)
+                cmdBuffer.commit()
+                return
+            }
+            hasLoggedSlangNullFrame = false
 
-                // Wider-than-16:10 clamp: cap targetAspect at 16:10 when the
-                // ROM's system is recognized in SystemDatabase. The system
-                // lookup is cached (systemRecognizedCache) — resolved once on
-                // first frame, reused for the rest of the session.
-                if targetAspect > 1.7,
-                   let systemID = runner.rom?.systemID,
-                   systemRecognized(forSystemID: systemID) {
-                    targetAspect = 1.6
+            let isRotated = (runner.currentFrameRotation == 1 || runner.currentFrameRotation == 3)
+            let targetAspect = computeTargetAspect(
+                frameTex: frameTex,
+                isRotated: isRotated,
+                systemID: runner.rom?.systemID
+            )
+
+            // Two viewport strategies depending on the chain's final-pass
+            // scale type (parsed from the .slangp at activation time and
+            // cached on SlangCompilerService):
+            //
+            // - scale_type = "viewport" (default for plain CRT presets):
+            //   pre-letterbox the host viewport to the input's aspect.
+            //   The chain scales its output to fill that letterbox.
+            //
+            // - scale_type = "absolute" (bezel presets like
+            //   `gameboy-player-gba-color.slangp`, `Mega_Bezel` presets):
+            //   the chain outputs a fixed-size outer frame regardless of the
+            //   viewport. Pass the full drawable and the input's aspect; the
+            //   chain itself handles its outer-bezel layout and inner
+            //   aspect-correct picture placement.
+            let slangVP: MTLViewport
+            if SlangCompilerService.shared.finalPassIsAbsolute {
+                slangVP = MTLViewport(originX: 0, originY: 0,
+                                      width: Double(view.drawableSize.width),
+                                      height: Double(view.drawableSize.height),
+                                      znear: 0.0, zfar: 1.0)
+            } else {
+                slangVP = computeViewport(targetAspect: targetAspect, viewSize: view.drawableSize)
+            }
+            SlangCompilerService.shared.renderFrame(
+                commandBuffer: cmdBuffer,
+                inputTexture: frameTex,
+                outputTexture: drawable.texture,
+                frameCount: UInt64(frameCounter),
+                viewport: slangVP,
+                aspectRatio: Float(targetAspect)
+            )
+
+            // librashader's slang chain clears each render pass with clearColor
+            // alpha=0 and the slang fragment programs do not write alpha, so the
+            // drawable texture exits `renderFrame` with every pixel's alpha
+            // channel set to 0. With the window's transparent clearColor, the
+            // macOS compositor drops the fully transparent window and the user
+            // sees only the desktop behind it (or, in your screenshot test,
+            // pixel-perfect `(0, 0, 0, 0)`). Run a one-fragment pass that
+            // overwrites the alpha channel to 1 while preserving RGB.
+            forceAlphaOntoDrawable(device: device, commandBuffer: cmdBuffer,
+                                   drawable: drawable, descriptor: descriptor)
+
+            // Recording / rolling-buffer capture: built-in-shader path
+            // runs in the enc-scope block below; the slang path early-
+            // returns, so we capture here. Shares the helper with the
+            // built-in path so slang presets also produce a recorded
+            // stream (and the centered-sub-rect crop applies the same way,
+            // removing the alpha=0 black bars from the encoded frame).
+            let isRecording = StreamRecordingService.shared.isRecording
+            let needFrameCapture = isRecording || RollingVideoBufferService.shared.isEnabled
+            if needFrameCapture {
+                if isRecording && !wasRecordingFlag {
+                    recordingStartTime = CACurrentMediaTime()
+                    recordingFrameCount = 0
                 }
-
-                let viewWidth = view.drawableSize.width
-                let viewHeight = view.drawableSize.height
-                var drawWidth = viewWidth
-                var drawHeight = viewWidth / targetAspect
-                if drawHeight > viewHeight {
-                    drawHeight = viewHeight
-                    drawWidth = viewHeight * targetAspect
-                }
-                let slangX = (viewWidth - drawWidth) / 2.0
-                let slangY = (viewHeight - drawHeight) / 2.0
-
-                let slangVP = MTLViewport(originX: Double(slangX), originY: Double(slangY),
-                                          width: Double(drawWidth), height: Double(drawHeight),
-                                          znear: 0.0, zfar: 1.0)
-                SlangCompilerService.shared.renderFrame(
+                wasRecordingFlag = isRecording
+                recordingFrameCount += 1
+                performFrameCapture(
                     commandBuffer: cmdBuffer,
-                    inputTexture: frameTex,
-                    outputTexture: drawable.texture,
-                    frameCount: UInt64(frameCounter),
-                    viewport: slangVP,
-                    aspectRatio: Float(targetAspect)
+                    device: device,
+                    drawableTexture: drawable.texture,
+                    frameTex: frameTex
                 )
+            } else {
+                recordingStartTime = 0
+                wasRecordingFlag = false
+            }
 
-                // Recording / rolling-buffer capture: built-in-shader path
-                // runs in the enc-scope block below; the slang path early-
-                // returns, so we capture here. Shares the helper with the
-                // built-in path so slang presets also produce a recorded
-                // stream (and the centered-sub-rect crop applies the same way,
-                // removing the alpha=0 black bars from the encoded frame).
-                let isRecording = StreamRecordingService.shared.isRecording
-                let needFrameCapture = isRecording || RollingVideoBufferService.shared.isEnabled
-                if needFrameCapture {
-                    if isRecording && !wasRecordingFlag {
-                        recordingStartTime = CACurrentMediaTime()
-                        recordingFrameCount = 0
-                    }
-                    wasRecordingFlag = isRecording
-                    recordingFrameCount += 1
-                    performFrameCapture(
-                        commandBuffer: cmdBuffer,
-                        device: device,
-                        drawableTexture: drawable.texture,
-                        frameTex: frameTex
-                    )
-                } else {
-                    recordingStartTime = 0
-                    wasRecordingFlag = false
-                }
-
-                // Screenshot capture: built-in-shader path runs in the enc
-                // block below; the slang path early-returns, so we capture
-                // here using the same helper so slang presets also produce a
-                // saved PNG on screenshot hotkey/menu.
-                if pendingDisplayURL != nil {
-                    let displayURL = pendingDisplayURL
-                    let nativeURL = pendingNativeURL
-                    performScreenshotCapture(
-                        commandBuffer: cmdBuffer,
-                        device: device,
-                        drawable: drawable.texture,
-                        sourceNative: frameTex,
-                        displayURL: displayURL,
-                        nativeURL: nativeURL
-                    )
-                    pendingDisplayURL = nil
-                    pendingNativeURL = nil
-                    pendingWantsNative = false
-                    let cb = pendingOnComplete
-                    pendingOnComplete = nil
-                    if let cb = cb {
-                        cmdBuffer.addCompletedHandler { _ in
-                            var saved: [URL] = []
-                            if let u = displayURL { saved.append(u) }
-                            if let u = nativeURL { saved.append(u) }
-                            cb(saved)
-                        }
+            // Screenshot capture: built-in-shader path runs in the enc
+            // block below; the slang path early-returns, so we capture
+            // here using the same helper so slang presets also produce a
+            // saved PNG on screenshot hotkey/menu.
+            if pendingDisplayURL != nil {
+                let displayURL = pendingDisplayURL
+                let nativeURL = pendingNativeURL
+                performScreenshotCapture(
+                    commandBuffer: cmdBuffer,
+                    device: device,
+                    drawable: drawable.texture,
+                    sourceNative: frameTex,
+                    displayURL: displayURL,
+                    nativeURL: nativeURL
+                )
+                pendingDisplayURL = nil
+                pendingNativeURL = nil
+                pendingWantsNative = false
+                let cb = pendingOnComplete
+                pendingOnComplete = nil
+                if let cb = cb {
+                    cmdBuffer.addCompletedHandler { _ in
+                        var saved: [URL] = []
+                        if let u = displayURL { saved.append(u) }
+                        if let u = nativeURL { saved.append(u) }
+                        cb(saved)
                     }
                 }
             }
@@ -384,53 +451,17 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
         if let pipeline = pipeline {
             if let frameTex = runner.currentFrameTexture {
                 if let enc = cmdBuffer.makeRenderCommandEncoder(descriptor: descriptor) {
-                    // ASPECT RATIO — multi-tier fallback:
-                    // 1. Core-provided aspect ratio from retro_system_av_info (preferred for N64, PS1, etc.)
-                    // 2. Pixel dimensions from frame texture (frameW/frameH)
-                    // 3. System's known display aspect ratio (final fallback for consoles with fixed display output)
-                    // Use current drawable size for viewport (to maintain proper centering and scaling)
-                    let viewWidth = view.drawableSize.width
-                    let viewHeight = view.drawableSize.height
+                    // ASPECT RATIO — multi-tier fallback resolved by
+                    // computeTargetAspect (preferred source:
+                    // retro_system_av_info aspect; fallback to frame pixel
+                    // dimensions; optionally clamped to 16:10).
                     let isRotated = (runner.currentFrameRotation == 1 || runner.currentFrameRotation == 3)
-                    let frameW = CGFloat(frameTex.width)
-                    let frameH = CGFloat(frameTex.height)
-                    var targetAspect: CGFloat
-
-                    // Try core-provided aspect ratio first (preferred for N64, PS1, etc.)
-                    let coreAspect = XPCBridgeAdapter.shared.aspectRatio()
-                    if coreAspect > 0.0 {
-                        // Core provided a valid aspect ratio — use it directly
-                        targetAspect = isRotated ? (1.0 / CGFloat(coreAspect)) : CGFloat(coreAspect)
-                    } else {
-                        // Fall back to computing from pixel dimensions
-                        targetAspect = isRotated ? (frameH / frameW) : (frameW / frameH)
-                    }
-
-                    // Wider-than-16:10 clamp: cap targetAspect at 16:10 when the
-                    // ROM's system is recognized in SystemDatabase. Same logic
-                    // as the slang path above; uses the same per-session cache.
-                    if targetAspect > 1.7,
-                       let systemID = runner.rom?.systemID,
-                       systemRecognized(forSystemID: systemID) {
-                        targetAspect = 1.6
-                        #if LOG_EXTREME
-                        LoggerService.extreme(category: "Metal", "[Aspect Ratio] Core/pixel ratio \(String(format: "%.3f", targetAspect)) is wider than the macbook screen. Forcing aspect ratio to 16:10")
-                        #endif
-                    }
-                    var drawWidth = viewWidth
-                    var drawHeight = viewWidth / targetAspect
-
-                    if drawHeight > viewHeight {
-                        drawHeight = viewHeight
-                        drawWidth = viewHeight * targetAspect
-                    }
-
-                    let x = (viewWidth - drawWidth) / 2.0
-                    let y = (viewHeight - drawHeight) / 2.0
-
-                    let viewport = MTLViewport(originX: Double(x), originY: Double(y),
-                                               width: Double(drawWidth), height: Double(drawHeight),
-                                               znear: 0.0, zfar: 1.0)
+                    let targetAspect = computeTargetAspect(
+                        frameTex: frameTex,
+                        isRotated: isRotated,
+                        systemID: runner.rom?.systemID
+                    )
+                    let viewport = computeViewport(targetAspect: targetAspect, viewSize: view.drawableSize)
                     enc.setViewport(viewport)
 
                     let fw = Float(frameTex.width)
@@ -507,8 +538,8 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
                             maskSubpixelGap: getUniform("maskSubpixelGap", fallback: 0.3),
 useMask: getUniform("useMask", fallback: 0.0),
 
-outputWidth: Float(drawWidth),
-outputHeight: Float(drawHeight)
+outputWidth: Float(viewport.width),
+outputHeight: Float(viewport.height)
 )
                         enc.setFragmentBytes(&u, length: MemoryLayout<CRTUniforms>.stride, index: 0)
                     case "fragmentFamicomRF":
@@ -820,8 +851,8 @@ outputHeight: Float(drawHeight)
                             maskSubpixelGap: getUniform("maskSubpixelGap", fallback: 0.3),
 useMask: getUniform("useMask", fallback: 1.0),
 
-outputWidth: Float(drawWidth),
-outputHeight: Float(drawHeight)
+outputWidth: Float(viewport.width),
+outputHeight: Float(viewport.height)
 )
                         enc.setFragmentBytes(&u, length: MemoryLayout<CRTMultipassUniforms>.stride, index: 0)
                         enc.setFragmentTexture(frameTex, index: 0)
@@ -870,8 +901,8 @@ outputHeight: Float(drawHeight)
                             maskSubpixelGap: 0.3,
 useMask: 0.0,
 
-outputWidth: Float(drawWidth),
-outputHeight: Float(drawHeight)
+outputWidth: Float(viewport.width),
+outputHeight: Float(viewport.height)
 )
                         enc.setFragmentBytes(&u, length: MemoryLayout<CRTUniforms>.stride, index: 0)
                     }
@@ -1485,5 +1516,91 @@ outputHeight: Float(drawHeight)
         }
 
         return nil
+    }
+
+    // MARK: - Slang drawable alpha fix-up
+
+    /// Force the drawable's alpha channel to 1.0 after a slang render pass.
+    ///
+    /// librashader's Metal filter chain opens each render pass with a
+    /// `MTLLoadAction::Clear` whose `clearColor` has alpha=0, and the slang
+    /// fragment programs do not write to the alpha channel. Combined, that
+    /// produces a drawable whose RGB holds the shader's intended output but
+    /// whose alpha is 0 everywhere. With the window's transparent clearColor
+    /// and the macOS window compositor's behavior, a fully transparent
+    /// surface is dropped (visible as a black/dim window on the desktop and
+    /// as `(0, 0, 0, 0)` pixels in a drawn-frame screenshot).
+    ///
+    /// We fix this by running one render encoder that uses `loadAction:.load`
+    /// (preserves the slang-written RGB), binds a small fragment program
+    /// (`fragmentForceAlpha`) that samples the drawable and writes back
+    /// `vec4(rgb, 1.0)`. The drawable is sampled via a fresh texture view so
+    /// the same texture can be both the color attachment and a sampled input.
+    ///
+    /// This pass runs unconditionally for any slang render. It costs one
+    /// fullscreen draw with a tiny fragment program per frame; negligible
+    /// for any slang chain that already does multiple passes internally.
+    private func forceAlphaOntoDrawable(device: MTLDevice,
+                                       commandBuffer: MTLCommandBuffer,
+                                       drawable: CAMetalDrawable,
+                                       descriptor: MTLRenderPassDescriptor) {
+        guard let pipeline = forceAlphaPipeline(device: device) else { return }
+        // Capture the descriptor's loadAction/clearColor and restore them on
+        // exit so the next non-slang frame (which reuses this descriptor via
+        // getPipelineState path) keeps its alpha=0 transparent clear.
+        let originalLoadAction = descriptor.colorAttachments[0].loadAction
+        let originalClearColor = descriptor.colorAttachments[0].clearColor
+        let originalStoreAction = descriptor.colorAttachments[0].storeAction
+        descriptor.colorAttachments[0].loadAction = .load
+        descriptor.colorAttachments[0].clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 1)
+        descriptor.colorAttachments[0].storeAction = .store
+        defer {
+            descriptor.colorAttachments[0].loadAction = originalLoadAction
+            descriptor.colorAttachments[0].clearColor = originalClearColor
+            descriptor.colorAttachments[0].storeAction = originalStoreAction
+        }
+        guard let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: descriptor) else {
+            return
+        }
+        encoder.label = "forceAlphaFixup"
+        encoder.setRenderPipelineState(pipeline)
+        guard let drawableView = drawable.texture.makeTextureView(
+            pixelFormat: drawable.texture.pixelFormat
+        ) else {
+            encoder.endEncoding()
+            return
+        }
+        encoder.setFragmentTexture(drawableView, index: 0)
+        encoder.setViewport(MTLViewport(
+            originX: 0, originY: 0,
+            width: Double(drawable.texture.width),
+            height: Double(drawable.texture.height),
+            znear: 0, zfar: 1
+        ))
+        encoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
+        encoder.endEncoding()
+    }
+
+    /// Lazily-builds and caches the `fragmentForceAlpha` render pipeline.
+    /// The pipeline is keyed by pixel format so a window resize that changes
+    /// the drawable format produces a fresh pipeline on the next call.
+    private func forceAlphaPipeline(device: MTLDevice) -> MTLRenderPipelineState? {
+        if let cached = forceAlphaPipelineCache { return cached }
+        guard let library = loadShaderLibrary(device: device),
+              let vertexFunction = library.makeFunction(name: "vertexPassthrough"),
+              let fragmentFunction = library.makeFunction(name: "fragmentForceAlpha") else {
+            return nil
+        }
+        let desc = MTLRenderPipelineDescriptor()
+        desc.colorAttachments[0].pixelFormat = .bgra8Unorm
+        desc.vertexFunction = vertexFunction
+        desc.fragmentFunction = fragmentFunction
+        do {
+            let pipeline = try device.makeRenderPipelineState(descriptor: desc)
+            forceAlphaPipelineCache = pipeline
+            return pipeline
+        } catch {
+            return nil
+        }
     }
 }

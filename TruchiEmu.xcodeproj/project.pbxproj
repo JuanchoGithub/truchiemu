@@ -446,6 +446,7 @@
 		594DA226FECF6DC504289788 /* reicast_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = F6AC9D71CF30D6A8EC6BB1EA /* reicast_libretro_default.json */; };
 		59B2E4B654EC4B957A0E0582 /* input_coreLabels_gearsystem.json in Resources */ = {isa = PBXBuildFile; fileRef = 99583E44C2DDF9ED625A89DD /* input_coreLabels_gearsystem.json */; };
 		5A16B82D515FE1563EB350EF /* MAMEUnifiedService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE01BAE4649B80275FA1BBAB /* MAMEUnifiedService.swift */; };
+		5A3BBA9B5C6E51B4DB1CC154 /* SlangAuditRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3E75082D78B1B88C66D6618 /* SlangAuditRunner.swift */; };
 		5A3F9A411EA59DB442491CF0 /* TVModeSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A899083767EEC40F32FD7C4 /* TVModeSettings.swift */; };
 		5A715B466E5613FF4980B3A8 /* TVModeEntryTile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86C00E951DC0729BDE7FCDDA /* TVModeEntryTile.swift */; };
 		5A9DAD9CBF682A66474680D7 /* fightdata_samsho2.json in Resources */ = {isa = PBXBuildFile; fileRef = AD52F50F8DCDB124F31A0124 /* fightdata_samsho2.json */; };
@@ -494,6 +495,7 @@
 		63F7860126D2C8CDEB017BF0 /* input_systemLabels_dreamcast.json in Resources */ = {isa = PBXBuildFile; fileRef = 8D658DC4222E8866C4C9BB0C /* input_systemLabels_dreamcast.json */; };
 		642349523C9485B4208192C2 /* fightdata_avsp.json in Resources */ = {isa = PBXBuildFile; fileRef = 60C90827FAFCC0FC2A6642DB /* fightdata_avsp.json */; };
 		64538D605AB2E9CEAF85B385 /* input_coreLabels_bsnes_balanced.json in Resources */ = {isa = PBXBuildFile; fileRef = 18973687527A0FA4A857468A /* input_coreLabels_bsnes_balanced.json */; };
+		64A31E35B8643EB9EFF36707 /* ForceAlpha.metal in Sources */ = {isa = PBXBuildFile; fileRef = 61341295EE2B8A9A3EE7AF16 /* ForceAlpha.metal */; };
 		64EA6512E2C4E43C6DB66005 /* fightdata_dbz.json in Resources */ = {isa = PBXBuildFile; fileRef = 4FAE47A4BF61507A606383A7 /* fightdata_dbz.json */; };
 		64F688B9DBD6D98E1C3CF3C4 /* input_coreLabels_chailove.json in Resources */ = {isa = PBXBuildFile; fileRef = 6098B125A9032BDF87A15A96 /* input_coreLabels_chailove.json */; };
 		6510A0CE7E9A537036337F0B /* SUFAMI.png in Resources */ = {isa = PBXBuildFile; fileRef = 168A44C10928ECFB8C05A48B /* SUFAMI.png */; };
@@ -1812,6 +1814,7 @@
 		60E9D4F25604E1D8BD311933 /* fightdata_daraku.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_daraku.json; sourceTree = "<group>"; };
 		6106DEB15765EDB446958687 /* input_systemLabels_doom_3.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_doom_3.json; sourceTree = "<group>"; };
 		61128A5490F95F51CF67D3B9 /* GBA.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = GBA.metal; sourceTree = "<group>"; };
+		61341295EE2B8A9A3EE7AF16 /* ForceAlpha.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ForceAlpha.metal; sourceTree = "<group>"; };
 		6134273171A1D67C5727EC2A /* TVModeEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVModeEntry.swift; sourceTree = "<group>"; };
 		614D234FC284534283EEAB09 /* fightdata_tattass.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_tattass.json; sourceTree = "<group>"; };
 		616B37C3C13F2D2FE25473E2 /* ShaderPresetStorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderPresetStorageService.swift; sourceTree = "<group>"; };
@@ -2141,6 +2144,7 @@
 		A316856DC2D245997166CE52 /* fightdata_kof2000.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_kof2000.json; sourceTree = "<group>"; };
 		A39DD6DF363A2A9C56EE1CC4 /* TrainingInputManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingInputManager.swift; sourceTree = "<group>"; };
 		A3B40C7C6A8813B47954412E /* PerSystemSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerSystemSettingsView.swift; sourceTree = "<group>"; };
+		A3E75082D78B1B88C66D6618 /* SlangAuditRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlangAuditRunner.swift; sourceTree = "<group>"; };
 		A3FAC1959347AEA3B5972F5A /* input_systemLabels_ep128.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_ep128.json; sourceTree = "<group>"; };
 		A44B26B8EE68C310F60A6D4E /* GameContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameContainerView.swift; sourceTree = "<group>"; };
 		A45AB6F6F56F5EAC6991C29E /* fightdata_sfa3.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_sfa3.json; sourceTree = "<group>"; };
@@ -3068,6 +3072,7 @@
 				26D95B905CF18035469C4C59 /* CRTFilter.metal */,
 				BF7A3D8D17275C396BE21173 /* DotMatrixLCD.metal */,
 				625852EC0A71AE15C0A0F6AE /* FamicomRF.metal */,
+				61341295EE2B8A9A3EE7AF16 /* ForceAlpha.metal */,
 				61128A5490F95F51CF67D3B9 /* GBA.metal */,
 				EFD1D1521FD51B428CD6D464 /* LiteCRT.metal */,
 				3BD337DAF7B206DF941EB16D /* LottesCRT.metal */,
@@ -4012,6 +4017,7 @@
 				DBA93DD4CAFCA78A240B231A /* SDLInputManager.swift */,
 				F5999F97B4E6C47B228D2F1B /* SequenceRunner.swift */,
 				A46DC124EACC3CBF27EEA315 /* ShaderManager.swift */,
+				A3E75082D78B1B88C66D6618 /* SlangAuditRunner.swift */,
 				75EAFBBDCB8E845AC522DBA6 /* SlangCompilerService.swift */,
 				DEA0632F85C21D069D911532 /* StreamRecordingService.swift */,
 				DE971EA2E2A3B852CA7C7401 /* TapeDeck.swift */,
@@ -5946,6 +5952,7 @@
 				F1AA1B8F49F0A72048BB69A1 /* FamicomRF.metal in Sources */,
 				10A813FD9AC06B780E931816 /* FilterChipView.swift in Sources */,
 				92800B5A7288EC0F30C67F0B /* FocusableMTKView.swift in Sources */,
+				64A31E35B8643EB9EFF36707 /* ForceAlpha.metal in Sources */,
 				C5AB2A1C3ECF952779306356 /* FrameExpander.swift in Sources */,
 				EB9DE0AFDEF535ECC8B41C96 /* GBA.metal in Sources */,
 				7BBC725708886C21FC74045D /* GCButtonIdentifier.swift in Sources */,
@@ -6161,6 +6168,7 @@
 				B63B46E7193AA335087ADFF7 /* SharingTabView.swift in Sources */,
 				6FAFF68BB9E015BF89DE4977 /* SharpBilinear.metal in Sources */,
 				FDB561BB4DD761EA753FFA63 /* SidebarRowButton.swift in Sources */,
+				5A3BBA9B5C6E51B4DB1CC154 /* SlangAuditRunner.swift in Sources */,
 				1CEA121BE6907FBB9315DFE8 /* SlangCompilerService.swift in Sources */,
 				620EBDB01769693E7CADB30C /* SlangPreset.swift in Sources */,
 				EA2E07E56F10C0F232DAC18E /* SlangPresetDiscoveryService.swift in Sources */,

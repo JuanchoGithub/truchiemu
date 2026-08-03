@@ -50,6 +50,13 @@ struct TruchiEmuApp: App {
         CoreOverrideService.shared.syncBundledOverridesToAppSupport()
         BoxArtThumbnailService.shared.migrateOldThumbnailCache()
         
+        // Optional slang preset audit, env-gated: run with
+        //   TRUCHI_SLANG_AUDIT=1 /Applications/TruchiEmu.app/Contents/MacOS/TruchiEmu
+        // Writes a per-preset PNG + report.md under
+        // ~/Library/Application Support/TruchiEmu/SlangAudit/.
+        // Dead code path when the env var is unset.
+        SlangAuditRunner.runIfNeeded()
+
         // MAME dictionary loading is deferred to background tasks in ContentWithPrepopulationView
         // 1. Connect the Bridge to your existing LoggerService
 LibretroBridgeSwift.registerCoreLogger { message, level in
