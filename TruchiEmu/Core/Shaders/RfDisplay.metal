@@ -181,11 +181,22 @@ fragment float4 fragmentRfDisplay(VertexOut in [[stage_in]],
     // Manual picture position nudge (static), then manual sync-hold
     // (baseline V-roll / H-offset), then the random instability pass.
     uv += float2(u.hPos, u.vPos);
+
+    // The bezel mask is anchored to this static distorted geometry (before any
+    // hold/scroll offsets), so rotating V-Hold/H-Hold still tiles/repeats the
+    // texture like a real TV while only the barrel-wrapped screen edge is kept
+    // black. Hold offsets are intentionally NOT part of `geo`.
+    float2 geo = uv;
+
     uv.y = fract(uv.y + u.vHold);
     uv.x = fract(uv.x + u.hHold);
 
     // Roll / shear / tear / bump glitch on the content UV, then sample.
     float2 cuv = applyInstability(uv, u);
+
+    // 1.0 where the distorted geometry sits inside the decoded frame.
+    float inScreen = step(0.0, geo.x) * step(geo.x, 1.0)
+                   * step(0.0, geo.y) * step(geo.y, 1.0);
     // Clamp the sample UV to the texture bounds so the analog-instability
     // scroll never pulls in wrapped content from the opposite edge of the
     // decoded frame. The instability math still runs (so vHold/rollOffset
@@ -229,9 +240,12 @@ fragment float4 fragmentRfDisplay(VertexOut in [[stage_in]],
 
     // Bezel tube mask + reflection. The wrapped `repeat` sampler is preserved
     // for the analog-instability aesthetic (roll/shear/tear still scroll the
-    // picture inside the visible tube area), but anything that would spill
-    // past the rounded tube edge is hard-clipped and replaced by a soft glow
-    // sampled from the *clamped* (non-wrapped) screen edge.
+    // picture inside the visible tube area, and V-Hold/H-Hold tile the frame
+    // like a real TV), but the static `inScreen` mask blackens the barrel-
+    // wrapped seam where the distorted geometry leaves the decoded frame, so
+    // the bezel reads as a solid tube instead of repeating the opposite edge.
+    // Anything past the rounded tube edge is hard-clipped and replaced by a
+    // soft glow sampled from the *clamped* (non-wrapped) screen edge.
     if (u.useBezel > 0.5) {
         float2 maskEdge = abs(in.texCoord - 0.5) * 2.0;
         float2 m2 = maskEdge * maskEdge;
@@ -242,7 +256,7 @@ fragment float4 fragmentRfDisplay(VertexOut in [[stage_in]],
         if (in.texCoord.x < 0.0 || in.texCoord.x > 1.0 ||
             in.texCoord.y < 0.0 || in.texCoord.y > 1.0) tubeVis = 0.0;
 
-        rgb *= step(0.99, tubeVis);
+        rgb *= step(0.99, tubeVis) * inScreen;
 
         if (tubeVis < 0.99) {
             // Glow band: fixed UV-space fraction so reflection thickness is
