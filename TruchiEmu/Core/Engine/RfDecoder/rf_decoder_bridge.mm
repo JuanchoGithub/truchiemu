@@ -109,7 +109,7 @@ void convert_to_rgba8(const uint8_t* src, int w, int h, int pitch, int bpp,
         _cfg.mode = famidec::Config::Mode::Color;
         _cfg.saturation = 1.0f;
         _cfg.hue_deg = 0.0f;
-        _cfg.overscan = 0.047f;
+        _cfg.overscan = 0.0f;
         _mixer = std::make_unique<famidec::Nco>(_cfg.offset_hz, _cfg.sample_rate);
         _lpf = std::make_unique<famidec::FirFilterC>(
             famidec::design_lowpass(4.3e6, _cfg.sample_rate, 31));

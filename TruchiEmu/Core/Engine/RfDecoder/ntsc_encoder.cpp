@@ -90,7 +90,10 @@ void NtscRfEncoder::build_geometry(int w, int h) {
         }
         int al = line - params_.active_start_line;
         if (al < 0 || al >= params_.active_lines) continue;
-        if (al >= h) continue;
+
+        // All active lines take picture data: sy = al * h / active_lines
+        // already scales the (possibly shorter) source into the full active
+        // window, so never blank-fill trailing lines for h < active_lines.
 
         double frac = (us - kActiveStartUs) / kActiveSpanUs;
         int sx = static_cast<int>(frac * w);
