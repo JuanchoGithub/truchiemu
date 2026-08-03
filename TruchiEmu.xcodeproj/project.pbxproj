@@ -787,6 +787,7 @@
 		9848C59D1C12F39F2D7C6625 /* ButtonKeyResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16C99BD273FC88A6C2D9A000 /* ButtonKeyResolver.swift */; };
 		989A19E7C73505C5E79BBB6D /* Nintendo - Super Nintendo Entertainment System.dat in Resources */ = {isa = PBXBuildFile; fileRef = DBFA21A59E5959BCB5A24AE7 /* Nintendo - Super Nintendo Entertainment System.dat */; };
 		9960784514A579E14913AAD1 /* fightdata_vsav2.json in Resources */ = {isa = PBXBuildFile; fileRef = BAF04CD09DFB8519346C6DC1 /* fightdata_vsav2.json */; };
+		9987C5B6973B6498EBDCF0D3 /* ShaderEditorSidebar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B77D1D588802D70CFDE597 /* ShaderEditorSidebar.swift */; };
 		99B049AB137B01676D6EA272 /* InputStateTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C0A03394D956A91354E3574 /* InputStateTracker.swift */; };
 		9A050AB1F0F270546BC90A1E /* input_systemLabels_sms.json in Resources */ = {isa = PBXBuildFile; fileRef = 329419E38C68F3AC2AE5C3D6 /* input_systemLabels_sms.json */; };
 		9A15412EBDC930DB4F3ECD58 /* super_mario_64_japan.png in Resources */ = {isa = PBXBuildFile; fileRef = CC22A0575FAB26831CC547B9 /* super_mario_64_japan.png */; };
@@ -1990,6 +1991,7 @@
 		827E55E978215F285D7F5800 /* BezelModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelModels.swift; sourceTree = "<group>"; };
 		828A1DFED1A8F4C19CAE6952 /* gbc-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "gbc-cheats.zip"; sourceTree = "<group>"; };
 		8294E100B10B15DC13B85232 /* fightdata_aof3.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_aof3.json; sourceTree = "<group>"; };
+		82B77D1D588802D70CFDE597 /* ShaderEditorSidebar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderEditorSidebar.swift; sourceTree = "<group>"; };
 		82BFAF8699B366BF370E079E /* MoveNotationRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveNotationRenderer.swift; sourceTree = "<group>"; };
 		831A585E8E178AB813D2D8FD /* input_coreLabels_handy.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_handy.json; sourceTree = "<group>"; };
 		835D008691071F4C20E2BDC8 /* fightdata_denjinmk.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_denjinmk.json; sourceTree = "<group>"; };
@@ -3798,6 +3800,7 @@
 				7617E35BCF8ABD715F148725 /* MetalCoordinator.swift */,
 				EDF406E92B96D340152A60BA /* RecordingBadgeOverlay.swift */,
 				B5367CC043FEB8B24AF51BDA /* ScreenshotOverlayViews.swift */,
+				82B77D1D588802D70CFDE597 /* ShaderEditorSidebar.swift */,
 				5BB097566F19707A4AEDE0BF /* ShaderUniforms.swift */,
 				5F6FCC4037CB225E511FD3F5 /* StandaloneGameWindowController.swift */,
 				4AE14606B8972C36976457FB /* StandaloneGameWindowController+Bezel.swift */,
@@ -6156,6 +6159,7 @@
 				7434085E6FF5A204AA202F19 /* SetupWizardState.swift in Sources */,
 				33750BAB51750CB698493CB3 /* SetupWizardView.swift in Sources */,
 				45B66EECA434F3285FEC8AED /* Shader.swift in Sources */,
+				9987C5B6973B6498EBDCF0D3 /* ShaderEditorSidebar.swift in Sources */,
 				6ABC82537DE8675B429B507F /* ShaderGameOverrideView.swift in Sources */,
 				E7DE528E6B1FE12752FF94F3 /* ShaderManager.swift in Sources */,
 				E213A2100429C6C27FBF0C30 /* ShaderPreset.swift in Sources */,

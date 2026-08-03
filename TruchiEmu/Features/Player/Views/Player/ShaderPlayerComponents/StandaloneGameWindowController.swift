@@ -42,6 +42,9 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     private var coordinator: MetalCoordinator?
     private var pendingROM: ROM?
     private var pendingCoreID: String?
+    /// The game surface container. Kept as a strong reference so overlays and the
+    /// live shader editor sidebar can be added without depending on contentView.
+    var gameContainerView: GameContainerView?
     
     // Reference to the ROM library for updating playtime (weak to avoid retain cycles)
     weak var library: ROMLibrary?
@@ -137,6 +140,17 @@ private var p2JoinStatusCancellable: AnyCancellable?
     private var trainingConfigCancellable: AnyCancellable?
     private var timeMachineCancellable: AnyCancellable?
 var guideSidebarView: NSHostingView<AnyView>?
+    @MainActor @Published public var isShaderEditorShown: Bool = false
+    var shaderEditorView: SafeHostingView<AnyView>?
+    /// Full-window overlay that centers the save/discard confirmation over the game
+    /// screen (covers the sidebar too) when there are unsaved shader changes.
+    var shaderConfirmationOverlayView: NSHostingView<AnyView>?
+    private var shaderConfirmationCancellable: AnyCancellable?
+    /// Live shader edit session state shared with the sidebar.
+    @MainActor var shaderEditorSettings: ShaderWindowSettings?
+    @MainActor var shaderEditorOnApply: ((String, [String: Float]) -> Void)?
+    @MainActor var shaderEditorOnDiscard: (() -> Void)?
+    @MainActor var shaderEditorOnApplyAndClose: (() -> Void)?
     @MainActor lazy var trainingModeViewModel = TrainingModeOverlayViewModel()
 
     var toolbarBottomInset: CGFloat {
@@ -189,6 +203,8 @@ return MoveListOverlayViewModel(runner: runner)
         trainingConfigCancellable = nil
         guideSidebarView?.removeFromSuperview()
 guideSidebarView = nil
+        shaderEditorView?.removeFromSuperview()
+        shaderEditorView = nil
         loadingOverlayView?.removeFromSuperview()
         loadingOverlayView = nil
         hardcoreAlertOverlayView?.removeFromSuperview()
@@ -333,6 +349,7 @@ super.init(window: window)
         containerView.windowController = self
         containerView.autoresizingMask = [.width, .height]
         containerView.wantsLayer = true
+        self.gameContainerView = containerView
         // Black background on container shows through where Metal view doesn't cover
         containerView.layer?.backgroundColor = NSColor.black.cgColor
         
@@ -775,6 +792,12 @@ super.init(window: window)
     }
 
     func windowShouldClose(_ sender: NSWindow) -> Bool {
+        // If the live shader editor sidebar has unsaved changes, block the close
+        // and surface the save/discard confirmation instead of losing work.
+        if isShaderEditorShown, shaderEditorSettings?.hasPendingChanges == true {
+            shaderEditorSettings?.showUnsavedConfirmation = true
+            return false
+        }
         return true
     }
 
@@ -1668,6 +1691,156 @@ hostingView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
 hostingView.widthAnchor.constraint(equalToConstant: 320)
 ])
 }
+
+    @MainActor
+    private func installShaderEditorSidebar() {
+        guard shaderEditorView == nil, let containerView = gameContainerView else { return }
+
+        let hostingView = SafeHostingView(rootView: AnyView(
+            ShaderEditorSidebar(
+                settings: shaderEditorSettings ?? ShaderWindowSettings(),
+                windowController: self,
+                onApply: { [weak self] presetID, uniforms in
+                    self?.shaderEditorOnApply?(presetID, uniforms)
+                    self?.shaderEditorSettings?.markApplied()
+                },
+                onDiscard: { [weak self] in
+                    self?.shaderEditorOnDiscard?()
+                },
+                onApplyAndClose: { [weak self] in
+                    self?.shaderEditorOnApplyAndClose?()
+                }
+            )
+        ))
+        hostingView.translatesAutoresizingMaskIntoConstraints = false
+        hostingView.wantsLayer = true
+
+        if let toolbar = toolbarView {
+            containerView.addSubview(hostingView, positioned: .above, relativeTo: toolbar)
+        } else {
+            containerView.addSubview(hostingView, positioned: .above, relativeTo: nil)
+        }
+        self.shaderEditorView = hostingView
+
+        NSLayoutConstraint.activate([
+            hostingView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            hostingView.topAnchor.constraint(equalTo: containerView.topAnchor),
+            hostingView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
+            hostingView.widthAnchor.constraint(equalToConstant: 320)
+        ])
+
+        // Divide layout: shrink the Metal viewport so the sidebar doesn't cover the game.
+        shrinkGameFrameForSidebar()
+    }
+
+    /// Opens (or updates) the live shader editor sidebar using the given session state.
+    @MainActor
+    func showShaderEditor(settings: ShaderWindowSettings,
+                          onApply: @escaping (String, [String: Float]) -> Void,
+                          onDiscard: @escaping () -> Void,
+                          onApplyAndClose: @escaping () -> Void) {
+        shaderEditorSettings = settings
+        shaderEditorOnApply = onApply
+        shaderEditorOnDiscard = onDiscard
+        shaderEditorOnApplyAndClose = onApplyAndClose
+
+        guard shaderEditorView == nil else { return }
+        if gameGuideViewModel.isSidebarVisible {
+            hideGuideSidebarIfNeeded()
+        }
+        installShaderEditorSidebar()
+        isShaderEditorShown = true
+
+        // Present the save/discard confirmation as a full-window overlay centered on
+        // the game screen (not confined to the sidebar) whenever unsaved changes exist.
+        shaderConfirmationCancellable?.cancel()
+        shaderConfirmationCancellable = settings.$showUnsavedConfirmation
+            .dropFirst()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] show in
+                guard let self = self else { return }
+                if show {
+                    self.presentShaderConfirmationOverlay()
+                } else {
+                    self.dismissShaderConfirmationOverlay()
+                }
+            }
+    }
+
+    /// Shows the save/discard confirmation centered over the whole game window.
+    @MainActor
+    private func presentShaderConfirmationOverlay() {
+        guard shaderConfirmationOverlayView == nil,
+              let containerView = window?.contentView,
+              let settings = shaderEditorSettings else { return }
+
+        let hostingView = NSHostingView(rootView: AnyView(
+            UnsavedConfirmationView(
+                settings: settings,
+                onDiscard: { [weak self] in self?.shaderEditorOnDiscard?() },
+                onApplyAndClose: { [weak self] in self?.shaderEditorOnApplyAndClose?() }
+            )
+        ))
+        hostingView.translatesAutoresizingMaskIntoConstraints = false
+        hostingView.wantsLayer = true
+        containerView.addSubview(hostingView, positioned: .above, relativeTo: nil)
+
+        NSLayoutConstraint.activate([
+            hostingView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            hostingView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            hostingView.topAnchor.constraint(equalTo: containerView.topAnchor),
+            hostingView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
+        ])
+
+        shaderConfirmationOverlayView = hostingView
+    }
+
+    @MainActor
+    private func dismissShaderConfirmationOverlay() {
+        shaderConfirmationOverlayView?.removeFromSuperview()
+        shaderConfirmationOverlayView = nil
+    }
+
+    @MainActor
+    func hideGuideSidebarIfNeeded() {
+        if gameGuideViewModel.isSidebarVisible {
+            gameGuideViewModel.deactivate()
+            guideSidebarView?.removeFromSuperview()
+            guideSidebarView = nil
+        }
+    }
+
+    /// Closes the live shader editor sidebar and restores the full game viewport.
+    @MainActor
+    func dismissShaderEditor() {
+        shaderConfirmationCancellable?.cancel()
+        shaderConfirmationCancellable = nil
+        dismissShaderConfirmationOverlay()
+        shaderEditorView?.removeFromSuperview()
+        shaderEditorView = nil
+        shaderEditorSettings = nil
+        shaderEditorOnApply = nil
+        shaderEditorOnDiscard = nil
+        shaderEditorOnApplyAndClose = nil
+        isShaderEditorShown = false
+        restoreGameFrame()
+    }
+
+    /// Shrinks the Metal viewport width to leave room for the 320pt sidebar
+    /// (divide layout — the game is never covered).
+    private func shrinkGameFrameForSidebar() {
+        guard let containerView = gameContainerView else { return }
+        let w = max(containerView.bounds.width - 320, 0)
+        metalView?.frame = CGRect(x: 0, y: 0, width: w, height: containerView.bounds.height)
+    }
+
+    private func restoreGameFrame() {
+        if let bezelLayer = bezelBackgroundLayer, let playable = bezelLayer.playableAreaRect {
+            metalView?.frame = playable
+        } else if let containerView = gameContainerView {
+            metalView?.frame = containerView.bounds
+        }
+    }
 
     @MainActor
     private func installP2JoinStatusOverlay() {

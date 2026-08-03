@@ -354,6 +354,9 @@ preset.recommendedSystems.contains(systemID)
         if SlangPresetDiscoveryService.shared.presets.contains(where: { $0.path.path == presetID }) {
             return URL(fileURLWithPath: presetID).deletingPathExtension().lastPathComponent
         }
+        if let saved = ShaderPresetStorageService.shared.savedPresets.first(where: { $0.id.uuidString == presetID }) {
+            return saved.name
+        }
         return "None"
     }
 }

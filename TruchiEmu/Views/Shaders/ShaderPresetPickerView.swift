@@ -11,13 +11,20 @@ class ShaderWindowSettings: ObservableObject {
 @Published var notificationMessage: String?
 @Published var showUnsavedConfirmation = false
 
-let originalPresetID: String
-let originalUniformValues: [String: Float]
+private(set) var originalPresetID: String
+private(set) var originalUniformValues: [String: Float]
 let contextDescription: String?
 let contextImageData: Data?
 
 var hasPendingChanges: Bool {
 shaderPresetID != originalPresetID || uniformValues != originalUniformValues
+}
+
+/// Marks the current selection as the saved baseline so `hasPendingChanges`
+/// becomes false (used by the live-edit sidebar, where Apply keeps the panel open).
+func markApplied() {
+    originalPresetID = shaderPresetID
+    originalUniformValues = uniformValues
 }
 
 init(shaderPresetID: String = "",
@@ -1417,6 +1424,13 @@ struct UnsavedConfirmationView: View {
     @ObservedObject private var loc = LocalizationManager.shared
     @Environment(\.colorScheme) private var colorScheme
 
+    /// Discard changes and close. Defaults to closing the standalone window.
+    var onDiscard: (() -> Void)?
+    /// Apply changes and close. Defaults to the standalone window's onPresetChanged + close.
+    var onApplyAndClose: (() -> Void)?
+    /// Compact layout that fits the ~320pt live-edit sidebar. Standalone picker keeps wide layout.
+    var isCompact: Bool = false
+
     @State private var contextImage: NSImage?
 
     var body: some View {
@@ -1426,103 +1440,17 @@ struct UnsavedConfirmationView: View {
                 .onTapGesture { settings.showUnsavedConfirmation = false }
 
             VStack(spacing: 0) {
-                HStack(spacing: 20) {
-                    contextIcon
-                        .frame(width: 120, height: 120)
-                        .background(AppColors.cardBackground(colorScheme))
-                        .clipShape(RoundedRectangle(cornerRadius: 14))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 14)
-                                .stroke(AppColors.divider(colorScheme), lineWidth: 1)
-                        )
-                        .shadow(color: .black.opacity(0.15), radius: 6)
-
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(loc.localized("shader.unsavedChangesTitle"))
-                            .font(.title2.bold())
-
-                        if let context = settings.contextDescription {
-                            Text(String(format: loc.localized("shader.unsavedChangesFor"), context))
-                                .font(.subheadline)
-                                .foregroundColor(AppColors.textSecondary(colorScheme))
-                        }
-
-                        Divider()
-                            .padding(.vertical, 4)
-
-                        VStack(alignment: .leading, spacing: 6) {
-                            HStack(spacing: 10) {
-                                Text(loc.localized("shader.unsavedChangesCurrent"))
-                                    .font(.caption)
-                                    .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
-                                    .frame(width: 56, alignment: .trailing)
-                                Text(ShaderManager.displayName(for: settings.originalPresetID))
-                                    .font(.subheadline.weight(.medium))
-                                    .foregroundColor(AppColors.textPrimary(colorScheme))
-                            }
-
-                            HStack(spacing: 10) {
-                                Image(systemName: "arrowtriangle.down.fill")
-                                    .font(.caption2)
-                                    .foregroundColor(AppColors.brandAccent)
-                                    .frame(width: 56, alignment: .trailing)
-                            }
-
-                            HStack(spacing: 10) {
-                                Text(loc.localized("shader.unsavedChangesNew"))
-                                    .font(.caption)
-                                    .foregroundColor(AppColors.brandAccent)
-                                    .frame(width: 56, alignment: .trailing)
-                                Text(ShaderManager.displayName(for: settings.shaderPresetID))
-                                    .font(.subheadline.bold())
-                                    .foregroundColor(AppColors.brandAccent)
-                            }
-                        }
-                        .padding(.leading, 4)
-                    }
+                if isCompact {
+                    compactContent
+                } else {
+                    wideContent
                 }
-                .padding(24)
 
                 Divider()
 
-                HStack {
-                    Button {
-                        settings.showUnsavedConfirmation = false
-                    } label: {
-                        Text(loc.localized("shader.cancel"))
-                            .frame(minWidth: 80)
-                    }
-                    .controlSize(.regular)
-                    .keyboardShortcut(.escape)
-
-                    Spacer()
-
-                    Button(role: .destructive) {
-                        settings.showUnsavedConfirmation = false
-                        ShaderWindowController.shared?.close()
-                    } label: {
-                        Text(loc.localized("shader.discardChanges"))
-                            .frame(minWidth: 80)
-                    }
-                    .controlSize(.regular)
-
-                    Button {
-                        settings.showUnsavedConfirmation = false
-                        ShaderWindowController.shared?.onPresetChanged?(settings.shaderPresetID, settings.uniformValues, [])
-                        ShaderWindowController.shared?.close()
-                    } label: {
-                        Text(loc.localized("shader.applyAndClose"))
-                            .frame(minWidth: 100)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.regular)
-                    .keyboardShortcut(.defaultAction)
-                }
-                .padding(.horizontal, 24)
-                .padding(.vertical, 16)
-                .background(AppColors.cardBackgroundSubtle(colorScheme))
+                buttons
             }
-            .frame(width: 480)
+            .frame(width: isCompact ? 300 : 480)
             .background(AppColors.windowBackground(colorScheme, tinted: false))
             .clipShape(RoundedRectangle(cornerRadius: 16))
             .shadow(color: .black.opacity(0.25), radius: 24)
@@ -1533,6 +1461,146 @@ struct UnsavedConfirmationView: View {
         .onExitCommand {
             settings.showUnsavedConfirmation = false
         }
+    }
+
+    private var wideContent: some View {
+        HStack(spacing: 20) {
+            contextIcon
+                .frame(width: 120, height: 120)
+                .background(AppColors.cardBackground(colorScheme))
+                .clipShape(RoundedRectangle(cornerRadius: 14))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14)
+                        .stroke(AppColors.divider(colorScheme), lineWidth: 1)
+                )
+                .shadow(color: .black.opacity(0.15), radius: 6)
+
+            changesContent
+        }
+        .padding(24)
+    }
+
+    private var compactContent: some View {
+        VStack(spacing: 10) {
+            contextIcon
+                .frame(width: 64, height: 64)
+                .background(AppColors.cardBackground(colorScheme))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(AppColors.divider(colorScheme), lineWidth: 1)
+                )
+            changesContent
+        }
+        .padding(16)
+    }
+
+    private var changesContent: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(loc.localized("shader.unsavedChangesTitle"))
+                .font(.body.bold())
+
+            if let context = settings.contextDescription {
+                Text(String(format: loc.localized("shader.unsavedChangesFor"), context))
+                    .font(.caption)
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
+            }
+
+            Divider()
+                .padding(.vertical, 2)
+
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(spacing: 10) {
+                    Text(loc.localized("shader.unsavedChangesCurrent"))
+                        .font(.caption)
+                        .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                        .frame(width: 56, alignment: .trailing)
+                    Text(ShaderManager.displayName(for: settings.originalPresetID))
+                        .font(.subheadline.weight(.medium))
+                        .foregroundColor(AppColors.textPrimary(colorScheme))
+                        .lineLimit(2)
+                }
+
+                HStack(spacing: 10) {
+                    Image(systemName: "arrowtriangle.down.fill")
+                        .font(.caption2)
+                        .foregroundColor(AppColors.brandAccent)
+                        .frame(width: 56, alignment: .trailing)
+                }
+
+                HStack(spacing: 10) {
+                    Text(loc.localized("shader.unsavedChangesNew"))
+                        .font(.caption)
+                        .foregroundColor(AppColors.brandAccent)
+                        .frame(width: 56, alignment: .trailing)
+                    Text(ShaderManager.displayName(for: settings.shaderPresetID))
+                        .font(.subheadline.bold())
+                        .foregroundColor(AppColors.brandAccent)
+                        .lineLimit(2)
+                }
+            }
+        }
+    }
+
+    private var buttons: some View {
+        Group {
+            if isCompact {
+                VStack(spacing: 8) {
+                    buttonRow
+                }
+            } else {
+                buttonRow
+            }
+        }
+        .padding(isCompact ? 12 : 0)
+        .padding([.horizontal, .vertical], 8)
+        .background(AppColors.cardBackgroundSubtle(colorScheme))
+    }
+
+    private var buttonRow: some View {
+        HStack {
+            Button {
+                settings.showUnsavedConfirmation = false
+            } label: {
+                Text(loc.localized("shader.cancel"))
+                    .frame(minWidth: isCompact ? 64 : 80)
+            }
+            .controlSize(.regular)
+            .keyboardShortcut(.escape)
+
+            Spacer()
+
+            Button(role: .destructive) {
+                settings.showUnsavedConfirmation = false
+                if let onDiscard {
+                    onDiscard()
+                } else {
+                    ShaderWindowController.shared?.close()
+                }
+            } label: {
+                Text(loc.localized("shader.discardChanges"))
+                    .frame(minWidth: isCompact ? 64 : 80)
+            }
+            .controlSize(.regular)
+
+            Button {
+                settings.showUnsavedConfirmation = false
+                if let onApplyAndClose {
+                    onApplyAndClose()
+                } else {
+                    ShaderWindowController.shared?.onPresetChanged?(settings.shaderPresetID, settings.uniformValues, [])
+                    ShaderWindowController.shared?.close()
+                }
+            } label: {
+                Text(loc.localized("shader.applyAndClose"))
+                    .frame(minWidth: isCompact ? 72 : 100)
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.regular)
+            .keyboardShortcut(.defaultAction)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
     }
 
     @ViewBuilder
