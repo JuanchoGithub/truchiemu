@@ -1,0 +1,56 @@
+---
+layout: default
+title: v1.8.7 - Documentación de TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/es/changelog.html' | relative_url }}">Registro de cambios</a>
+        <span class="separator">/</span>
+        <span class="current">v1.8.7</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.8.7</h1>
+        <div class="release-meta">
+            <span class="release-date">3 de agosto de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Versión de gráficos y shaders: editor de shaders en vivo dentro del juego con confirmación de cambios sin guardar, el reflejo del bezel ahora se difumina en las scanlines/phosphor para las pantallas Famicom y RF, agrupación de presets Slang con IDs estables, y un overscan por defecto que mantiene el frame completo visible en la conversión RGBA.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destacados</h2>
+        <ul class="feature-list">
+            <li><strong>Editor de shaders en vivo:</strong> Abre una barra lateral dentro del juego para ajustar los parámetros del shader en vivo. Los cambios sin guardar se protegen con un overlay de confirmación, y los cambios se guardan mediante el manejo de parámetros de presets de shader con estado SwiftUI actualizado.</li>
+            <li><strong>Desenfoque del reflejo del bezel:</strong> Los reflejos del bezel ahora añaden un desenfoque adaptado al look CRT. Los shaders FamicomRF y RfDisplay mezclan <code>el bezel reflejado con el resultado de scanlines/phosphor</code> para un efecto CRT-sobre-pantalla-plana más realista.</li>
+            <li><strong>Agrupación de presets Slang e IDs estables:</strong> Los presets Slang se agrupan y desambiguación por ID estable derivado de SHA-256 para que presets con el mismo nombre ya no colisionen, con manejo de errores mejorado en la detección y un flag cacheado de pase final <code>__absolute</code> para decidir el escalado.</li>
+            <li><strong>Ajustes de overscan y encuadre:</strong> La ruta de conversión RGBA ajusta el overscan a cero por defecto para que la imagen fuente completa siga visible, y MetalCoordinator cachea el reconocimiento de sistema para un manejo de aspecto coherente entre estrategias de escalado.</li>
+            <li><strong>Pase de rendimiento de renderizado:</strong> Una caché de uniforms por generación en el decodificador RF evita copias de diccionario innecesarias durante el juego, y el alpha del drawable se reinicia tras el render de Slang para evitar artefactos de transparencia.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Cambios detallados</h2>
+        <ul>
+            <li>feat(shader): implementar editor de shaders en vivo con confirmación de cambios sin guardar — los cambios se reflejan al instante, el overlay de confirmación evita pérdida de datos, los parámetros persisten mediante el almacenamiento de presets de shader</li>
+            <li>feat: implementar desenfoque del reflejo del bezel para efectos visuales mejorados y optimizar el manejo de presencia enriquecida</li>
+            <li>feat: mejorar el manejo del reflejo del bezel en la función applyMaskAndBezel para una fidelidad visual mejorada</li>
+            <li>feat: mejorar el manejo de la máscara del bezel para una mejor fidelidad visual y estabilidad en la pantalla RF</li>
+            <li>feat: añadir soporte para el reflejo del bezel en RfDisplay y ShaderUniforms</li>
+            <li>Mejorar Slang Compiler y Metal Coordinator para mejor renderizado — flag cacheado <code>_finalPassIsAbsolute</code> sin main actor, tipos de escalado de aspect ratio/viewport según el pase final del preset, arreglo del manejo de alpha del drawable e IDs de preset estables basados en SHA-256</li>
+            <li>Mejorar shaders y rendimiento — caché de uniforms por generación para el decodificador RF, alineación de máscara de phosphor/scanlines con los píxeles fuente en CRTFilter.metal, aspect ratio cacheado en XPCBridgeAdapter para reducir sincronizaciones XPC, resampleo de audio optimizado con UnsafeBufferPointer y gestión eficiente de temporizadores en GameTimeBarOverlay</li>
+            <li>feat: ajustar el overscan a cero para una salida visual mejorada en la conversión RGBA</li>
+            <li>Refactorizar la estructura del código para mejorar la legibilidad y el mantenimiento</li>
+            <li>Subir la versión de marketing a 1.8.7 y el número de build a 30 en <code>project.yml</code>, los dos <code>Info.plist</code> y <code>docs/_config.yml</code></li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/es/changelog/v1.8.6.html' | relative_url }}" class="release-prev">&larr; v1.8.6</a>
+        <a href="{{ '/es/changelog.html' | relative_url }}" class="release-all">Todas las versiones</a>
+    </nav>
+</div>

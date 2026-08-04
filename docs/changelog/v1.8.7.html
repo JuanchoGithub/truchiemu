@@ -1,0 +1,56 @@
+---
+layout: default
+title: v1.8.7 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.8.7</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.8.7</h1>
+        <div class="release-meta">
+            <span class="release-date">August 3, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Graphics and shader release: live in-game shader editor with unsaved-change confirmation, bezel reflection now blurring into the CRT scanlines/phosphor for Famicom and RF displays, Slang preset grouping with stable hashed IDs, and an overscan default that keeps the full frame visible in RGBA conversion.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>Live shader editor sidebar:</strong> Open an in-game sidebar from the game window to tweak shader parameters live. Unsaved edits are guarded with a confirmation overlay, and changes persist via shader preset parameter handling with refreshing SwiftUI state.</li>
+            <li><strong>Bezel reflection blur:</strong> Bezel reflections now add a blur tailored to the CRT look. FamicomRF and RfDisplay shaders blend <code>the reflected bezel into the scanline/phosphor result</code> for a more realistic CRT-on-flat-panel effect.</li>
+            <li><strong>Slang preset grouping &amp; stable IDs:</strong> Slang presets are grouped and disambiguated by a SHA-256–derived stable ID so same-name presets no longer collide, with improved discovery error handling and a cached final-pass <code>__absolute</code> flag to drive scaling decisions.</li>
+            <li><strong>Overscan &amp; frame fit adjustments:</strong> The RGBA conversion path defaults overscan to zero so the full source image remains visible, and MetalCoordinator caches system recognition for consistent aspect-ratio handling across supervisor strategies.</li>
+            <li><strong>Rendering performance pass:</strong> A generation-gated uniform cache in the RF decoder avoids needless dictionary copies during gameplay, and drawable alpha is reset after Slang renders to prevent transparency artifacts.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>feat(shader): implement live shader editor sidebar with unsaved changes confirmation — changes reflect instantly, confirmation overlay prevents data loss, parameters persist through shader preset storage</li>
+            <li>feat: implement bezel reflection blur for enhanced visual effects and optimize rich presence handling</li>
+            <li>feat: enhance bezel reflection handling in applyMaskAndBezel function for improved visual fidelity</li>
+            <li>feat: enhance bezel mask handling for improved visual fidelity and stability in RF display</li>
+            <li>feat: add support for bezel reflection in RfDisplay and ShaderUniforms</li>
+            <li>Enhance Slang Compiler and Metal Coordinator for Improved Rendering — cached <code>_finalPassIsAbsolute</code> flag accessed without the main actor, aspect-ratio/viewport scaling types based on the preset's final pass, drawable alpha handling fix, and SHA-256–based preset ID disambiguation</li>
+            <li>Enhance shader and rendering performance — generation-gated uniform cache for the RF decoder, phosphor mask/scanline alignment to source pixels in CRTFilter.metal, cached aspect ratio in XPCBridgeAdapter to cut Hz sync rounds, optimized audio resampling with UnsafeBufferPointer, and efficient GameTimeBarOverlay timer management</li>
+            <li>feat: adjust overscan setting to zero for improved visual output in RGBA conversion</li>
+            <li>Refactor code structure for improved readability and maintainability</li>
+            <li>Bump marketing version to 1.8.7 and build number to 30 across <code>project.yml</code>, both Info.plists, and <code>docs/_config.yml</code></li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.8.6.html' | relative_url }}" class="release-prev">&larr; v1.8.6</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>
