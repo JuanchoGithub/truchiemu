@@ -545,6 +545,7 @@
 		6BD6BF15F314107230D2070E /* TI83.png in Resources */ = {isa = PBXBuildFile; fileRef = 8DEABF20B657D31D6DF07400 /* TI83.png */; };
 		6BDB6525F52667BF93E61A2D /* CoreDownloadSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 112A893BD9353D23D809A9EF /* CoreDownloadSheet.swift */; };
 		6CBEC44953FF94D0C5198E14 /* XPCConnectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CFC7C37DDAD22C0B5BF067 /* XPCConnectionManager.swift */; };
+		6D0251357C5D3BC981072614 /* ja.json in Resources */ = {isa = PBXBuildFile; fileRef = 952EF0234B18D7BA308ED49E /* ja.json */; };
 		6D21C6561E0D7D3635CD591B /* fightdata_tophuntr.json in Resources */ = {isa = PBXBuildFile; fileRef = 0D55AEF3DDD5FB4A3C8F540E /* fightdata_tophuntr.json */; };
 		6D478C3EDD22F19947D904F5 /* poke@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 70B077E4EEFEFF94C0EF6F75 /* poke@132w.png */; };
 		6D92CA8DC0096725EC9520AF /* atari800@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 5049F3EC03369C598CE5BBB2 /* atari800@132w.png */; };
@@ -2077,6 +2078,7 @@
 		948CE21AAEB52DD0237AA592 /* input_systemLabels_wii.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_wii.json; sourceTree = "<group>"; };
 		94CA0D3AC8E6419DFF67D363 /* GameOSDOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOSDOverlay.swift; sourceTree = "<group>"; };
 		94FDE0F388F6221A7090D7C2 /* LibraryMetadataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryMetadataStore.swift; sourceTree = "<group>"; };
+		952EF0234B18D7BA308ED49E /* ja.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ja.json; sourceTree = "<group>"; };
 		954E450BA7A6E836972893EA /* input_systemLabels_segacd.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_segacd.json; sourceTree = "<group>"; };
 		957E7564C726099C45EA7659 /* pce.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = pce.ico; sourceTree = "<group>"; };
 		9595683C509F8F3CF9F41CE4 /* 3ds.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = 3ds.ico; sourceTree = "<group>"; };
@@ -3531,6 +3533,7 @@
 			children = (
 				2618E56A6DB94B2ED6E6C68F /* en.json */,
 				DA92FF5F565391B09186FD35 /* es.json */,
+				952EF0234B18D7BA308ED49E /* ja.json */,
 				9A53F0EBF42B897DC4DA810A /* pt.json */,
 			);
 			path = Translations;
@@ -5614,6 +5617,7 @@
 				F2641ACD40A561AFD5D4CD43 /* input_systemOverrides_sms.json in Resources */,
 				07162B9B8CCB6C91E4FE8697 /* intellivision-cheats.zip in Resources */,
 				331E5D4313517BFC79FF693A /* itv@132w.png in Resources */,
+				6D0251357C5D3BC981072614 /* ja.json in Resources */,
 				860504A9AA0727C3A26ED1F6 /* jaguar-cheats.zip in Resources */,
 				0B3844C8731875EDB8151C93 /* jaguar.ico in Resources */,
 				5660C42EA9A8DCEC31B09197 /* jaguar.zip in Resources */,

@@ -459,6 +459,7 @@ private struct CustomThemeButton: View {
         case "en": return "English"
         case "es": return "Español"
         case "pt": return "Português"
+        case "ja": return "日本語"
         default: return lang.uppercased()
         }
     }
@@ -468,6 +469,7 @@ private struct CustomThemeButton: View {
         case "en": return "🇺🇸"
         case "es": return "🇦🇷"
         case "pt": return "🇧🇷"
+        case "ja": return "🇯🇵"
         default: return "🌐"
         }
     }
