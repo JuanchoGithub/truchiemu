@@ -11,7 +11,7 @@ When you need to research a topic or a solution, *never* try to go to URLs direc
 ## Localization method
 
 The app uses a **JSON‑based UI localization system**:
-- Translation files in `Resources/Translations/`: `en.json`, `es.json`, `pt.json`
+- Translation files in `Resources/Translations/`: `en.json`, `es.json`, `pt.json`, `ja.json`
 - `LocalizationManager` loads all JSON files at launch, auto-detects device language, supports runtime changes via `setLanguage(_:)`
 - **IMPORTANT:** `setLanguage()` persists to `AppSettings.set("systemLanguage", value: lang)`. Without this, language resets on next app launch
 
@@ -40,7 +40,7 @@ Text("settings.title") // Uses the Text extension, returns localized Text
 
 ### Adding new translations
 
-1. Add key to ALL language JSON files (`en.json`, `es.json`, `pt.json`) with the same key
+1. Add key to ALL language JSON files (`en.json`, `es.json`, `pt.json`, `ja.json`) with the same key
 2. Use consistent naming: `section.action` (e.g., `settings.saveStates`, `game.launch`)
 3. Update views to use `loc.localized("key")` instead of hardcoded strings
 4. Debug/internal messages are not translated
