@@ -165,6 +165,17 @@ class FocusableMTKView: MTKView {
     // MARK: - Keyboard Events
 
     override func keyDown(with event: NSEvent) {
+        // DOS/ScummVM/Wii/GameCube capture the keyboard and forward it to the
+        // core, so application hotkeys are disabled to avoid colliding with
+        // in-game keys. The toggle-capture (Cmd-M) and toggle-guide-sidebar
+        // (Cmd-V) hotkeys are handled by a separate monitor in
+        // StandaloneGameWindowController and remain functional so capture can
+        // still be released.
+        if shouldCaptureInputForCurrentGame() {
+            handleCapturedKeyboardEvent(event, down: true)
+            return
+        }
+
         let hotkeys = HotkeyConfigManager.shared
         let systemID = runner?.systemID
 
@@ -310,58 +321,12 @@ class FocusableMTKView: MTKView {
             return
         }
 
-        // For DOS/ScummVM games, bypass ALL TruchiEmu keyboard handling and send properly mapped keys to DOSBOX
-        if shouldCaptureInputForCurrentGame() {
-            #if LOG_DEBUG
-            LoggerService.debug(category: "InputCapture", "DOS/ScummVM keyDown event: keyCode=\(event.keyCode), characters='\(event.characters ?? "")', charactersIgnoringModifiers='\(event.charactersIgnoringModifiers ?? "")'")
-            #endif
-            
-            // Convert Mac key code to libretro key code using the proper mapper
-            let retroKey = RetroKeycodeMapper.retroKey(fromMacOS: event.keyCode)
-            guard retroKey != 0 else { 
-                #if LOG_DEBUG
-                LoggerService.debug(category: "InputCapture", "Unmapped key for DOS/ScummVM: keyCode=\(event.keyCode)")
-                #endif
-                return 
-            }
-            
-            // Convert modifiers to retro format
-            var modifiers: UInt32 = 0
-            if event.modifierFlags.contains(.shift) { modifiers |= 1 << 0 }
-            if event.modifierFlags.contains(.control) { modifiers |= 1 << 1 }
-            if event.modifierFlags.contains(.option) { modifiers |= 1 << 2 }
-            if event.modifierFlags.contains(.command) { modifiers |= 1 << 3 }
-            
-            // Get the proper character - if shift is pressed and it's a letter, use uppercase
-            var characterValue: UInt32 = 0
-            if let chars = event.charactersIgnoringModifiers {
-                if event.modifierFlags.contains(.shift) {
-                    // For shift+letter, convert to uppercase
-                    characterValue = UInt32(chars.uppercased().unicodeScalars.first?.value ?? 0)
-                } else {
-                    characterValue = UInt32(chars.unicodeScalars.first?.value ?? 0)
-                }
-            }
-            
-            #if LOG_DEBUG
-            // LoggerService.debug(category: "InputCapture", "DOS/ScummVM sending keyDown: retroKey=\(retroKey), modifiers=\(modifiers), character=\(characterValue)")
-            #endif
-            
-            // Send properly mapped key event directly to core
-            XPCBridgeAdapter.shared.dispatchKeyboardEvent(
-                keycode: retroKey,
-                character: characterValue,
-                modifiers: modifiers,
-                down: true
-            )
-        } else {
-            #if LOG_DEBUG
-            // LoggerService.debug(category: "InputCapture", "Mapped keyboard event for standard core: keyCode=\(event.keyCode)")
-            #endif
-            // For standard cores, use the normal mapped path
-            if let mapped = runner?.mapKey(event.keyCode) {
-                runner?.setKeyState(retroID: mapped.retroID, player: mapped.player, pressed: true)
-            }
+        // Standard cores: use the normal mapped path
+        #if LOG_DEBUG
+        // LoggerService.debug(category: "InputCapture", "Mapped keyboard event for standard core: keyCode=\(event.keyCode)")
+        #endif
+        if let mapped = runner?.mapKey(event.keyCode) {
+            runner?.setKeyState(retroID: mapped.retroID, player: mapped.player, pressed: true)
         }
     }
 
@@ -370,49 +335,10 @@ class FocusableMTKView: MTKView {
         // Rewind is now a toggle (press once to enter, again to exit). No
         // key-up handling needed.
 
-        // For DOS/ScummVM games, bypass ALL TruchiEmu keyboard handling and send properly mapped keys to DOSBOX
+        // For DOS/ScummVM/Wii/GameCube games, bypass ALL TruchiEmu keyboard
+        // handling and send properly mapped keys to the core.
         if shouldCaptureInputForCurrentGame() {
-            #if LOG_DEBUG
-            // LoggerService.debug(category: "InputCapture", "DOS/ScummVM keyUp event: keyCode=\(event.keyCode)")
-            #endif
-            
-            // Convert Mac key code to libretro key code using the proper mapper
-            let retroKey = RetroKeycodeMapper.retroKey(fromMacOS: event.keyCode)
-            guard retroKey != 0 else { 
-                #if LOG_DEBUG
-                // LoggerService.debug(category: "InputCapture", "Unmapped key for DOS/ScummVM: keyCode=\(event.keyCode)")
-                #endif
-                return 
-            }
-            
-            // Convert modifiers to retro format
-            var modifiers: UInt32 = 0
-            if event.modifierFlags.contains(.shift) { modifiers |= 1 << 0 }
-            if event.modifierFlags.contains(.control) { modifiers |= 1 << 1 }
-            if event.modifierFlags.contains(.option) { modifiers |= 1 << 2 }
-            if event.modifierFlags.contains(.command) { modifiers |= 1 << 3 }
-            
-            // Get the proper character - if shift is pressed and it's a letter, use uppercase
-            var characterValue: UInt32 = 0
-            if let chars = event.charactersIgnoringModifiers {
-                if event.modifierFlags.contains(.shift) {
-                    // For shift+letter, convert to uppercase
-                    characterValue = UInt32(chars.uppercased().unicodeScalars.first?.value ?? 0)
-                } else {
-                    characterValue = UInt32(chars.unicodeScalars.first?.value ?? 0)
-                }
-            }
-            
-            // Send properly mapped key event directly to core
-            #if LOG_DEBUG
-            // LoggerService.debug(category: "InputCapture", "DOS/ScummVM sending keyUp: retroKey=\(retroKey), modifiers=\(modifiers), character=\(characterValue)")
-            #endif
-            XPCBridgeAdapter.shared.dispatchKeyboardEvent(
-                keycode: retroKey,
-                character: characterValue,
-                modifiers: modifiers,
-                down: false
-            )
+            handleCapturedKeyboardEvent(event, down: false)
         } else {
             #if LOG_DEBUG
             // LoggerService.debug(category: "InputCapture", "Mapped keyUp event for standard core: keyCode=\(event.keyCode)")
@@ -422,6 +348,50 @@ class FocusableMTKView: MTKView {
                 runner?.setKeyState(retroID: mapped.retroID, player: mapped.player, pressed: false)
             }
         }
+    }
+
+    /// Sends a keyboard event directly to the core for games that fully
+    /// capture the keyboard (DOS/ScummVM/Wii/GameCube), bypassing ALL
+    /// TruchiEmu keyboard/hotkey handling.
+    private func handleCapturedKeyboardEvent(_ event: NSEvent, down: Bool) {
+        #if LOG_DEBUG
+        LoggerService.debug(category: "InputCapture", "DOS/ScummVM key\(down ? "Down" : "Up") event: keyCode=\(event.keyCode), characters='\(event.characters ?? "")', charactersIgnoringModifiers='\(event.charactersIgnoringModifiers ?? "")'")
+        #endif
+
+        // Convert Mac key code to libretro key code using the proper mapper
+        let retroKey = RetroKeycodeMapper.retroKey(fromMacOS: event.keyCode)
+        guard retroKey != 0 else {
+            #if LOG_DEBUG
+            LoggerService.debug(category: "InputCapture", "Unmapped key for DOS/ScummVM: keyCode=\(event.keyCode)")
+            #endif
+            return
+        }
+
+        // Convert modifiers to retro format
+        var modifiers: UInt32 = 0
+        if event.modifierFlags.contains(.shift) { modifiers |= 1 << 0 }
+        if event.modifierFlags.contains(.control) { modifiers |= 1 << 1 }
+        if event.modifierFlags.contains(.option) { modifiers |= 1 << 2 }
+        if event.modifierFlags.contains(.command) { modifiers |= 1 << 3 }
+
+        // Get the proper character - if shift is pressed and it's a letter, use uppercase
+        var characterValue: UInt32 = 0
+        if let chars = event.charactersIgnoringModifiers {
+            if event.modifierFlags.contains(.shift) {
+                // For shift+letter, convert to uppercase
+                characterValue = UInt32(chars.uppercased().unicodeScalars.first?.value ?? 0)
+            } else {
+                characterValue = UInt32(chars.unicodeScalars.first?.value ?? 0)
+            }
+        }
+
+        // Send properly mapped key event directly to core
+        XPCBridgeAdapter.shared.dispatchKeyboardEvent(
+            keycode: retroKey,
+            character: characterValue,
+            modifiers: modifiers,
+            down: down
+        )
     }
 
     private func dispatchKeyboardEvent(_ event: NSEvent, down: Bool) {
