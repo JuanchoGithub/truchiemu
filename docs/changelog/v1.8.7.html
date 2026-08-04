@@ -19,31 +19,47 @@ title: v1.8.7 - TruchiEmu Documentation
     </div>
 
     <div class="release-description">
-        <p>Graphics and shader release: live in-game shader editor with unsaved-change confirmation, bezel reflection now blurring into the CRT scanlines/phosphor for Famicom and RF displays, Slang preset grouping with stable hashed IDs, and an overscan default that keeps the full frame visible in RGBA conversion.</p>
+        <p>Two-track release. Graphics/shaders: a live in-game shader editor with unsaved-change confirmation, bezel reflections now blurring into the CRT scanline/phosphor result for Famicom and RF displays, Slang preset grouping with SHA-256 stable IDs, a cached final-pass scaling flag, an overscan default that keeps the full frame visible in RGBA conversion, and a rendering performance pass. Library & TV Mode: box art display modes with a blurred-fill background cache, a new GenreGroupingDiagram with per-genre counts, a refreshed context-menu look for cards and list rows, clearer TV Mode settings copy across languages, and adjusted TV Mode tile/layout dimensions.</p>
     </div>
 
     <section id="highlights">
         <h2>Highlights</h2>
         <ul class="feature-list">
-            <li><strong>Live shader editor sidebar:</strong> Open an in-game sidebar from the game window to tweak shader parameters live. Unsaved edits are guarded with a confirmation overlay, and changes persist via shader preset parameter handling with refreshing SwiftUI state.</li>
-            <li><strong>Bezel reflection blur:</strong> Bezel reflections now add a blur tailored to the CRT look. FamicomRF and RfDisplay shaders blend <code>the reflected bezel into the scanline/phosphor result</code> for a more realistic CRT-on-flat-panel effect.</li>
-            <li><strong>Slang preset grouping &amp; stable IDs:</strong> Slang presets are grouped and disambiguated by a SHA-256–derived stable ID so same-name presets no longer collide, with improved discovery error handling and a cached final-pass <code>__absolute</code> flag to drive scaling decisions.</li>
-            <li><strong>Overscan &amp; frame fit adjustments:</strong> The RGBA conversion path defaults overscan to zero so the full source image remains visible, and MetalCoordinator caches system recognition for consistent aspect-ratio handling across supervisor strategies.</li>
-            <li><strong>Rendering performance pass:</strong> A generation-gated uniform cache in the RF decoder avoids needless dictionary copies during gameplay, and drawable alpha is reset after Slang renders to prevent transparency artifacts.</li>
+            <li><strong>Live in-game shader editor sidebar:</strong> From the game window, open a sidebar to live-edit shader parameters. Unsaved edits are guarded with a confirmation overlay, and parameter changes persist into the shader preset with SwiftUI state refreshing automatically.</li>
+            <li><strong>Bezel reflection blur:</strong> Bezel reflections blend <code>the reflected bezel into the scanline/phosphor result</code> of FamicomRF and RfDisplay for a more realistic CRT-on-flat-panel effect. New uniform parameters control bezel rounding, glow, and reflection blur; mask handling is more stable in the RF display.</li>
+            <li><strong>Slang preset management & stable IDs:</strong> Presets are grouped on display, and name collisions are disambiguated by a SHA-256–derived stable preset ID. Discovery errors are handled and logged, and a cached <code>_finalPassIsAbsolute</code> flag drives aspect-ratio/viewport scaling without entering <code>@MainActor</code> context.</li>
+            <li><strong>Overscan & aspect-ratio handling:</strong> The RGBA conversion path defaults overscan to zero so the full source image remains visible, and <code>MetalCoordinator</code> caches system recognition for consistent aspect-ratio handling; <code>XPCBridgeAdapter</code> caches the aspect ratio to cut synchronous XPC round trips.</li>
+            <li><strong>Rendering performance pass:</strong> A generation-gated uniform cache in the RF decoder path avoids needless dictionary copies during gameplay; <code>CRTFilter.metal</code> aligns the phosphor mask/scanlines to source pixels regardless of output upscale; audio resampling in <code>StreamRecordingService</code> uses <code>UnsafeBufferPointer</code>; <code>GameTimeBarOverlay</code> connects its timers only when the overlay is visible; drawable alpha is reset after Slang renders to prevent transparency artifacts.</li>
+            <li><strong>Box art display modes:</strong> A new display-mode setting plus integration into <code>GameCardView</code>, <code>GridCollectionView</code>, and <code>LibraryGridView</code>, backed by a blurred-fill background image cache in <code>ImageCache</code> so cards render with a soft tinted backdrop derived from their own cover.</li>
+            <li><strong>Genre grouping diagram & per-genre counts:</strong> New <code>GenreGroupingDiagram</code> visualizes genre settings; <code>GenreManager</code> exposes counts and <code>GenrePickerView</code> shows them. New labels and descriptions are added in en/es/pt.</li>
+            <li><strong>Card/list-row context menu polish:</strong> <code>GameCardView</code> and <code>GameListRowView</code> get a refreshed context-menu appearance and structure.</li>
+            <li><strong>TV Mode copy & layout:</strong> TV Mode settings descriptions are rewritten for clarity and consistency across en/es/pt, and the TV Mode game tile and view layout dimensions are adjusted for better fit.</li>
+            <li><strong>8-bit GameBoy shader cleanup:</strong> Uniform variables in <code>8bGameBoy.metal</code> are renamed for consistency and clarity, with matching updates in <code>ShaderPreset</code>, <code>MetalCoordinator</code>, and <code>ShaderUniforms</code>.</li>
+            <li><strong>RA badge prefetch logging:</strong> Removed debug logging for existing badges during the prefetch pass.</li>
         </ul>
     </section>
 
     <section id="details">
         <h2>Detailed Changes</h2>
         <ul>
-            <li>feat(shader): implement live shader editor sidebar with unsaved changes confirmation — changes reflect instantly, confirmation overlay prevents data loss, parameters persist through shader preset storage</li>
+            <li>feat(shader): implement live shader editor sidebar with unsaved changes confirmation — <code>StandaloneGameWindowController</code> hosts the sidebar; parameters apply instantly; a confirmation overlay protects unsaved edits; preset handling refactored for seamless apply/persist; en/es/pt shader-key translations added</li>
             <li>feat: implement bezel reflection blur for enhanced visual effects and optimize rich presence handling</li>
-            <li>feat: enhance bezel reflection handling in applyMaskAndBezel function for improved visual fidelity</li>
-            <li>feat: enhance bezel mask handling for improved visual fidelity and stability in RF display</li>
-            <li>feat: add support for bezel reflection in RfDisplay and ShaderUniforms</li>
-            <li>Enhance Slang Compiler and Metal Coordinator for Improved Rendering — cached <code>_finalPassIsAbsolute</code> flag accessed without the main actor, aspect-ratio/viewport scaling types based on the preset's final pass, drawable alpha handling fix, and SHA-256–based preset ID disambiguation</li>
-            <li>Enhance shader and rendering performance — generation-gated uniform cache for the RF decoder, phosphor mask/scanline alignment to source pixels in CRTFilter.metal, cached aspect ratio in XPCBridgeAdapter to cut Hz sync rounds, optimized audio resampling with UnsafeBufferPointer, and efficient GameTimeBarOverlay timer management</li>
+            <li>feat: enhance bezel reflection handling in <code>applyMaskAndBezel</code> for improved visual fidelity</li>
+            <li>feat: enhance bezel mask handling for improved visual fidelity and stability in the RF display</li>
+            <li>feat: add support for bezel reflection in <code>RfDisplay</code> and <code>ShaderUniforms</code> — new uniform parameters: bezel rounding, glow, reflection blur</li>
+            <li>Enhance Slang Compiler and Metal Coordinator for improved rendering — cached <code>_finalPassIsAbsolute</code> accessed without <code>@MainActor</code>; aspect-ratio/viewport scaling strategies keyed off the preset's final pass type; final-pass state logged at activation; drawable alpha handling fix prevents transparency after Slang renders; <code>SlangPresetDiscoveryService</code> tracks errors and disambiguates names via SHA-256 stable IDs</li>
+            <li>Enhance shader and rendering performance — generation-gated uniform cache for the RF decoder path in <code>EmulatorRunner</code>; <code>CRTFilter.metal</code> aligns phosphor mask and scanlines to source pixels regardless of output upscale; <code>FamicomRF.metal</code> / <code>RfDisplay.metal</code> incorporate bezel reflection blur; cached aspect ratio in <code>XPCBridgeAdapter</code>; <code>StreamRecordingService</code> resamples audio with <code>UnsafeBufferPointer</code>; <code>GameTimeBarOverlay</code> manages timer connections by overlay visibility; <code>MetalCoordinator</code> caches system recognition for aspect-ratio decisions</li>
+            <li>feat: enhance Slang preset management with grouping and improved display handling</li>
             <li>feat: adjust overscan setting to zero for improved visual output in RGBA conversion</li>
+            <li>feat: add box art display mode options and integrate into library views — new display-mode options on <code>SystemInfo</code>; <code>GameCardView</code>, <code>GridCollectionView</code>, <code>LibraryGridView</code> updated; en/es/pt keys added</li>
+            <li>feat: implement blurred fill image caching for box art display mode — <code>ImageCache</code> grows a blurred-fill background cache; <code>GameCardView</code> uses it for soft tinted card backdrops</li>
+            <li>feat: add <code>GenreGroupingDiagram</code> and enhance genre grouping settings with new labels and descriptions — new 315-line diagram view, wired into <code>GenreSettingsView</code> and <code>SettingsCatalog</code>; en/es/pt labels added</li>
+            <li>feat: add genre count functionality to <code>GenreManager</code> and integrate with <code>GenrePickerView</code> — per-genre counts surfaced in the picker and the grid view</li>
+            <li>feat: enhance context menu appearance in <code>GameCardView</code> and <code>GameListRowView</code></li>
+            <li>feat: enhance TV Mode settings descriptions for clarity and consistency across languages — <code>TVModeMainSettingsView</code> rewrite; en/es/pt copy aligned</li>
+            <li>feat: adjust dimensions for TV Mode game tile and view layout — <code>TVModeGameTile</code> and <code>TVModeView</code> sizing pass</li>
+            <li>feat: rename shader uniform variables for consistency and clarity for 8-bit GameBoy shader — <code>8bGameBoy.metal</code>, <code>ShaderPreset</code>, <code>MetalCoordinator</code>, <code>ShaderUniforms</code> kept in sync</li>
+            <li>feat: remove debug logging for existing badges during the prefetching process — <code>RABadgeCacheService</code></li>
             <li>Refactor code structure for improved readability and maintainability</li>
             <li>Bump marketing version to 1.8.7 and build number to 30 across <code>project.yml</code>, both Info.plists, and <code>docs/_config.yml</code></li>
         </ul>
