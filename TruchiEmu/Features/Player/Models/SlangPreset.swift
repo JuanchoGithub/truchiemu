@@ -14,6 +14,22 @@ struct SlangPreset: Identifiable, Hashable {
     var displayName: String { friendlyName }
     var displayCategory: String { category }
 
+    /// Cached regex used by `stripLibrashaderParamPrefix`. Hoisted to a
+    /// `static let` so it is compiled once at process start instead of per
+    /// parameter (a 1000-param preset otherwise re-compiles this ~1000 times).
+    private static let paramPrefixRegex: NSRegularExpression = {
+        try! NSRegularExpression(
+            pattern: "^[Ss][Hh][Aa][Dd][Ee][Rr][_\\-.\\s]*[Pp][Aa][Rr][Aa][Mm][_\\-.\\s]*"
+        )
+    }()
+
+    /// Cached regex used by `firstBracketedContent`. Hoisted for the same
+    /// reason as `paramPrefixRegex` — it was previously recompiled per
+    /// parameter inside `classifyParam`.
+    private static let bracketedContentRegex: NSRegularExpression = {
+        try! NSRegularExpression(pattern: #"[\[\(]([^\]\)]*)[\]\)]"#)
+    }()
+
     var friendlyName: String {
         if group.hasPrefix("presets") && !name.contains(" (") {
             return Self.prettifyName(name)
@@ -171,9 +187,7 @@ extension SlangPreset {
     /// merging colliding parameters across multiple passes of a preset, plus any trailing
     /// separator run that follows it. Returns `(strippedValue, didStrip)`.
     private static func stripLibrashaderParamPrefix(_ raw: String) -> (String, Bool) {
-        guard let regex = try? NSRegularExpression(
-              pattern: "^[Ss][Hh][Aa][Dd][Ee][Rr][_\\-.\\s]*[Pp][Aa][Rr][Aa][Mm][_\\-.\\s]*"
-        ) else { return (raw, false) }
+        let regex = paramPrefixRegex
         let range = NSRange(location: 0, length: raw.utf16.count)
         if let match = regex.firstMatch(in: raw, options: [], range: range),
            match.range.length < raw.utf16.count {
@@ -253,9 +267,8 @@ extension SlangPreset {
 
     /// Returns the contents of the first `[ ... ]` or `( ... )` group in `s`, or nil.
     private static func firstBracketedContent(_ s: String) -> String? {
-        let pattern = #"[\[\(]([^\]\)]*)[\]\)]"#
-        guard let regex = try? NSRegularExpression(pattern: pattern),
-              let m = regex.firstMatch(in: s, range: NSRange(s.startIndex..., in: s)),
+        let regex = bracketedContentRegex
+        guard let m = regex.firstMatch(in: s, range: NSRange(s.startIndex..., in: s)),
               let r = Range(m.range(at: 1), in: s) else { return nil }
         return String(s[r])
     }
@@ -474,6 +487,16 @@ extension SlangPreset {
             libra_preset_free(&p)
         }
         return reflectFromPreset(preset)
+    }
+
+    /// Async variant of `reflectParameters(at:)`. Runs the parse + reflection
+    /// on a background executor so caller UIs (picker, sidebar) do not block
+    /// the main thread on big presets (CRT Royale etc. can spend seconds in
+    /// `libra_preset_create` reading hundreds of `.slang` files).
+    static func reflectParametersAsync(at path: URL) async -> (parameters: [ShaderUniform], defaults: [String: Float])? {
+        await Task.detached(priority: .userInitiated) {
+            reflectParameters(at: path)
+        }.value
     }
 
     static func from(librashader presetPtr: OpaquePointer,

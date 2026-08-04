@@ -19,9 +19,14 @@ class ShaderManager: ObservableObject {
     
     // Currently active slang preset (if any)
     @Published var activeSlangPreset: SlangPreset? = nil
-    
+
     // Current uniform values (updated by UI sliders)
     @Published private(set) var uniformValues: [String: Float] = [:]
+
+    // Monotonic counter bumped on every reflectSlangPreset call so that
+    // out-of-order background chain completions can detect they are stale
+    // and skip committing their results.
+    private var slangActivationToken: UInt64 = 0
     
     // Thread-safe storage for the renderer (nonisolated for thread-safe renderer access)
     private nonisolated(unsafe) static let parameterStore = ShaderParameterStore()
@@ -85,6 +90,81 @@ class ShaderManager: ObservableObject {
         SlangCompilerService.shared.destroyFilterChain()
         activeSlangPreset = nil
         resetToDefault()
+    }
+
+    /// Reflect-only path for picker/sidebar taps. Runs the slow parse-only
+    /// reflection (`SlangPreset.reflectParametersAsync` — `libra_preset_create`
+    /// can spend seconds reading hundreds of `.slang` files for big presets)
+    /// on a background task, then invokes `onReflect` on `@MainActor` when
+    /// the parameter list is ready.
+    ///
+    /// The filter-chain compile (`SlangCompilerService.loadAndActivatePreset`,
+    /// which calls `libra_mtl_filter_chain_create`) deliberately runs on the
+    /// `@MainActor`, NOT on the background task. It frees the previously-
+    /// installed librashader chain and drives the shared `MTLCommandQueue`;
+    /// doing either from a non-main thread races the main-thread
+    /// `MTKView.draw` callback (which calls `slang_mtl_filter_chain_frame`
+    /// against the same chain every frame) and violates Metal's
+    /// single-thread-per-queue contract. The SPIR-V/MSL pipeline is cached
+    /// on disk after the first run, so the on-main compile is only a few ms
+    /// on tap — far less than the parse we off-loaded.
+    ///
+    /// `onReflect` receives the reflected parameter list + default values
+    /// if reflection succeeded, or nil if it failed. Successful GPU
+    /// activation also surfaces via `activeSlangPreset` (the standard
+    /// `@Published` field) once the chain is built.
+    func reflectSlangPreset(
+        _ preset: SlangPreset,
+        overrides: [String: Float] = [:],
+        onReflect: @escaping ((parameters: [ShaderUniform], defaults: [String: Float])?) -> Void
+    ) {
+        slangActivationToken &+= 1
+        let token = slangActivationToken
+        let path = preset.path
+
+        guard let queue = self.commandQueue ?? self.device?.makeCommandQueue() else {
+            LoggerService.error(category: "ShaderManager", "reflectSlangPreset: no Metal device/command queue")
+            onReflect(nil)
+            return
+        }
+        if self.commandQueue == nil { self.commandQueue = queue }
+
+        Task.detached(priority: .userInitiated) {
+            let reflected = await SlangPreset.reflectParametersAsync(at: path)
+            await MainActor.run {
+                // If the user has selected another preset while we were
+                // parsing, drop this result — a newer call will arrive
+                // with its own reflection.
+                guard token == Self.shared.slangActivationToken else {
+                    onReflect(nil)
+                    return
+                }
+                if reflected == nil {
+                    LoggerService.error(category: "ShaderManager", "reflectSlangPreset: reflection failed for \(preset.name)")
+                }
+                onReflect(reflected)
+
+                // Chain compile runs on @MainActor so it cannot race
+                // MTKView.draw (also @MainActor) and shares its
+                // MTLCommandQueue thread contract.
+                do {
+                    let activated = try SlangCompilerService.shared.loadAndActivatePreset(at: path, queue: queue)
+                    Self.shared.activeSlangPreset = activated
+                    Self.shared.activePreset = ShaderPreset.defaultPreset
+                    Self.shared.clearPipelineCache()
+                    Self.parameterStore.updateFragmentFunctionName("slang")
+                    var values = activated.parameterDefaults
+                    for (name, value) in overrides {
+                        values[name] = value
+                        SlangCompilerService.shared.setParameter(name: name, value: value)
+                    }
+                    Self.shared.uniformValues = values
+                    LoggerService.info(category: "ShaderManager", "Activated slang shader preset: \(preset.name) (params=\(activated.parameters.count))")
+                } catch {
+                    LoggerService.error(category: "ShaderManager", "Slang chain compile failed for \(preset.name): \(error.localizedDescription)")
+                }
+            }
+        }
     }
 
     func resetToDefault() {

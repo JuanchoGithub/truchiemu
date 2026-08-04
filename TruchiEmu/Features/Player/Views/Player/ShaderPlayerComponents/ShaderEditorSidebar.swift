@@ -392,10 +392,74 @@ struct ShaderEditorSidebar: View {
                 Text("No slang shaders found")
                     .foregroundColor(AppColors.textSecondary(colorScheme))
                     .padding()
+            } else if searchText.isEmpty {
+                groupedSlangPresetsListContent
             } else {
                 ForEach(visibleSlangPresets, id: \.id) { slangPresetRow(preset: $0) }
             }
         }
+    }
+
+    /// Collapsible grouped slang list — mirrors the picker's
+    /// `groupedSlangPresetsListContent` so the live editor and the
+    /// standalone picker present slang presets identically.
+    private var groupedSlangPresetsListContent: some View {
+        VStack(spacing: 0) {
+            let curated = slangDiscovery.curatedPresets
+            if !curated.isEmpty {
+                slangGroupHeader(group: "curated", count: curated.count)
+                if expandedSlangGroups.contains("curated") {
+                    ForEach(curated, id: \.id) { slangPresetRow(preset: $0) }
+                }
+                Divider()
+                    .padding(.vertical, 8)
+            }
+
+            let grouped = slangDiscovery.presetsByGroup()
+            ForEach(grouped, id: \.group) { section in
+                if !curated.contains(where: { $0.group == section.group }) {
+                    slangGroupHeader(group: section.group, count: section.presets.count)
+                    if expandedSlangGroups.contains(section.group) {
+                        ForEach(section.presets, id: \.id) { slangPresetRow(preset: $0) }
+                    }
+                }
+            }
+        }
+    }
+
+    private func slangGroupHeader(group: String, count: Int) -> some View {
+        let isExpanded = expandedSlangGroups.contains(group)
+        return Button {
+            withAnimation(.easeInOut(duration: 0.15)) {
+                if isExpanded {
+                    expandedSlangGroups.remove(group)
+                } else {
+                    expandedSlangGroups.insert(group)
+                }
+            }
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
+                    .font(.caption2)
+                Text(groupDisplayName(group))
+                    .font(.caption.bold())
+                Text("(\(count))")
+                    .font(.caption2)
+                    .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                Spacer()
+            }
+            .padding(.horizontal, 12)
+            .padding(.top, 10)
+            .padding(.bottom, 4)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .foregroundColor(AppColors.textPrimary(colorScheme))
+    }
+
+    private func groupDisplayName(_ group: String) -> String {
+        if group == "curated" || group == "presets" { return loc.localized("shader.curated") }
+        return group.replacingOccurrences(of: "/", with: " / ").capitalized
     }
 
     private func sectionHeader(_ title: String) -> some View {
@@ -515,11 +579,23 @@ struct ShaderEditorSidebar: View {
                 var merged = live.parameterDefaults
                 for (n, v) in preset.uniformValues { merged[n] = v }
                 settings.uniformValues = merged
-            } else if let reflected = SlangPreset.reflectParameters(at: slangBase.path) {
-                reflectedSlangParams = reflected.parameters
-                var merged = reflected.defaults
-                for (n, v) in preset.uniformValues { merged[n] = v }
-                settings.uniformValues = merged
+            } else {
+                // Clear now; repopulate when the async reflection lands.
+                reflectedSlangParams = []
+                let path = slangBase.path
+                Task {
+                    let reflected = await SlangPreset.reflectParametersAsync(at: path)
+                    guard let reflected = reflected else { return }
+                    await MainActor.run {
+                        // Stale-check: user may have selected another preset
+                        // while we were parsing.
+                        guard preset.id.uuidString == self.settings.shaderPresetID else { return }
+                        self.reflectedSlangParams = reflected.parameters
+                        var merged = reflected.defaults
+                        for (n, v) in self.settings.uniformValues { merged[n] = v }
+                        self.settings.uniformValues = merged
+                    }
+                }
             }
         } else {
             reflectedSlangParams = []
@@ -532,17 +608,20 @@ struct ShaderEditorSidebar: View {
             return
         }
         settings.shaderPresetID = preset.path.path
-        ShaderManager.shared.activateSlangPreset(preset)
-        let live = SlangCompilerService.shared.activePreset
-        if live?.path.path == preset.path.path, let live {
-            reflectedSlangParams = live.parameters
-            settings.uniformValues = live.parameterDefaults
-        } else if let reflected = SlangPreset.reflectParameters(at: preset.path) {
-            reflectedSlangParams = reflected.parameters
-            settings.uniformValues = reflected.defaults
-        } else {
-            reflectedSlangParams = []
-            settings.uniformValues = [:]
+        // Clear immediately so the previous preset's sliders do not linger
+        // while we parse; the reflect-only callback repopulates them.
+        reflectedSlangParams = []
+        settings.uniformValues = [:]
+        ShaderManager.shared.reflectSlangPreset(preset) { [self] reflected in
+            guard let reflected = reflected else { return }
+            let live = SlangCompilerService.shared.activePreset
+            if live?.path.path == preset.path.path, let live {
+                reflectedSlangParams = live.parameters
+                settings.uniformValues = live.parameterDefaults
+            } else {
+                reflectedSlangParams = reflected.parameters
+                settings.uniformValues = reflected.defaults
+            }
         }
     }
 
@@ -633,11 +712,24 @@ struct ShaderEditorSidebar: View {
                 var values = settings.uniformValues
                 for (n, v) in live.parameterDefaults where values[n] == nil { values[n] = v }
                 settings.uniformValues = values
-            } else if let reflected = SlangPreset.reflectParameters(at: slangPreset.path) {
-                reflectedSlangParams = reflected.parameters
-                var values = settings.uniformValues
-                for (n, v) in reflected.defaults where values[n] == nil { values[n] = v }
-                settings.uniformValues = values
+            } else {
+                // Kick off async reflection; do nothing synchronously to
+                // avoid the main-thread hang on big slang shaders.
+                let path = slangPreset.path
+                let presetID = slangPreset.path.path
+                Task {
+                    let reflected = await SlangPreset.reflectParametersAsync(at: path)
+                    guard let reflected = reflected else { return }
+                    await MainActor.run {
+                        // Stale-check: only commit if the user is still on
+                        // the same preset that triggered this backfill.
+                        guard self.settings.shaderPresetID == presetID else { return }
+                        self.reflectedSlangParams = reflected.parameters
+                        var values = self.settings.uniformValues
+                        for (n, v) in reflected.defaults where values[n] == nil { values[n] = v }
+                        self.settings.uniformValues = values
+                    }
+                }
             }
         }
     }

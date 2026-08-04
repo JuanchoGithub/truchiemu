@@ -726,13 +726,23 @@ controller.close()
                         var merged = live.parameterDefaults
                         for (n, v) in savedPreset.uniformValues { merged[n] = v }
                         settings.uniformValues = merged
-                    } else if let reflected = SlangPreset.reflectParameters(at: slangPreset.path) {
-                        reflectedSlangParams = reflected.parameters
-                        var merged = reflected.defaults
-                        for (n, v) in savedPreset.uniformValues { merged[n] = v }
-                        settings.uniformValues = merged
                     } else {
-                        settings.uniformValues = savedPreset.uniformValues
+                        // Clear now; repopulate when the async reflection lands.
+                        reflectedSlangParams = []
+                        let path = slangPreset.path
+                        let savedID = savedPreset.id.uuidString
+                        Task {
+                            let reflected = await SlangPreset.reflectParametersAsync(at: path)
+                            guard let reflected = reflected else { return }
+                            await MainActor.run {
+                                // Stale-check: user may have selected another preset while we were parsing.
+                                guard self.settings.shaderPresetID == savedID else { return }
+                                self.reflectedSlangParams = reflected.parameters
+                                var merged = reflected.defaults
+                                for (n, v) in savedPreset.uniformValues { merged[n] = v }
+                                self.settings.uniformValues = merged
+                            }
+                        }
                     }
                 }
                 // Saved preset based on a built-in Metal preset - load uniforms as defaults, then apply saved overrides
@@ -758,12 +768,24 @@ controller.close()
                     var values = settings.uniformValues
                     for (n, v) in live.parameterDefaults where values[n] == nil { values[n] = v }
                     settings.uniformValues = values
-                } else if let reflected = SlangPreset.reflectParameters(at: slangPreset.path) {
-                    // No live chain: backfill persisted overrides with reflected defaults so sliders show.
-                    reflectedSlangParams = reflected.parameters
-                    var values = settings.uniformValues
-                    for (n, v) in reflected.defaults where values[n] == nil { values[n] = v }
-                    settings.uniformValues = values
+                } else {
+                    // Kick off async reflection; do nothing synchronously to
+                    // avoid the main-thread hang on big slang shaders.
+                    reflectedSlangParams = []
+                    let path = slangPreset.path
+                    let presetID = slangPreset.path.path
+                    Task {
+                        let reflected = await SlangPreset.reflectParametersAsync(at: path)
+                        guard let reflected = reflected else { return }
+                        await MainActor.run {
+                            // Stale-check: user may have selected another preset while we were parsing.
+                            guard self.settings.shaderPresetID == presetID else { return }
+                            self.reflectedSlangParams = reflected.parameters
+                            var values = self.settings.uniformValues
+                            for (n, v) in reflected.defaults where values[n] == nil { values[n] = v }
+                            self.settings.uniformValues = values
+                        }
+                    }
                 }
             }
         }
@@ -1238,11 +1260,23 @@ controller.close()
                             var merged = live.parameterDefaults
                             for (n, v) in preset.uniformValues { merged[n] = v }
                             settings.uniformValues = merged
-                        } else if let reflected = SlangPreset.reflectParameters(at: slangBase.path) {
-                            reflectedSlangParams = reflected.parameters
-                            var merged = reflected.defaults
-                            for (n, v) in preset.uniformValues { merged[n] = v }
-                            settings.uniformValues = merged
+                        } else {
+                            // Clear now; repopulate when the async reflection lands.
+                            reflectedSlangParams = []
+                            let path = slangBase.path
+                            let savedID = preset.id.uuidString
+                            Task {
+                                let reflected = await SlangPreset.reflectParametersAsync(at: path)
+                                guard let reflected = reflected else { return }
+                                await MainActor.run {
+                                    // Stale-check: user may have selected another preset while we were parsing.
+                                    guard self.settings.shaderPresetID == savedID else { return }
+                                    self.reflectedSlangParams = reflected.parameters
+                                    var merged = reflected.defaults
+                                    for (n, v) in self.settings.uniformValues { merged[n] = v }
+                                    self.settings.uniformValues = merged
+                                }
+                            }
                         }
                     } else {
                         reflectedSlangParams = []
@@ -1316,17 +1350,20 @@ controller.close()
             .contentShape(Rectangle())
             .onTapGesture {
                 settings.shaderPresetID = preset.path.path
-                ShaderManager.shared.activateSlangPreset(preset)
-                let live = SlangCompilerService.shared.activePreset
-                if live?.path.path == preset.path.path, let live = live {
-                    reflectedSlangParams = live.parameters
-                    settings.uniformValues = live.parameterDefaults
-                } else if let reflected = SlangPreset.reflectParameters(at: preset.path) {
-                    reflectedSlangParams = reflected.parameters
-                    settings.uniformValues = reflected.defaults
-                } else {
-                    reflectedSlangParams = []
-                    settings.uniformValues = [:]
+                // Clear immediately; the reflect-only callback repopulates
+                // the slider list when the background parse lands.
+                reflectedSlangParams = []
+                settings.uniformValues = [:]
+                ShaderManager.shared.reflectSlangPreset(preset) { reflected in
+                    guard let reflected = reflected else { return }
+                    let live = SlangCompilerService.shared.activePreset
+                    if live?.path.path == preset.path.path, let live = live {
+                        reflectedSlangParams = live.parameters
+                        settings.uniformValues = live.parameterDefaults
+                    } else {
+                        reflectedSlangParams = reflected.parameters
+                        settings.uniformValues = reflected.defaults
+                    }
                 }
             }
 
