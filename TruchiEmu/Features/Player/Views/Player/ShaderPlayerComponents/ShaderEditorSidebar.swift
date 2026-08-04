@@ -264,19 +264,40 @@ struct ShaderEditorSidebar: View {
             Divider()
 
             ScrollView {
-                LazyVStack(spacing: 2) {
-                    switch selectedCategory {
-                    case .saved:
-                        savedRows
-                    case .slang:
-                        slangRows
-                    case .all:
-                        allRows
-                    default:
-                        builtinRows
+                ScrollViewReader { proxy in
+                    LazyVStack(spacing: 2) {
+                        switch selectedCategory {
+                        case .saved:
+                            savedRows
+                        case .slang:
+                            slangRows
+                        case .all:
+                            allRows
+                        default:
+                            builtinRows
+                        }
+                    }
+                    .padding(8)
+                    .onAppear {
+                        // Restore scroll position to the selected row when
+                        // returning to the picker (e.g. after the user
+                        // tapped Parameter Configuration, then went back).
+                        // Without this, SwiftUI recreates this ScrollView
+                        // from scratch every time `step` flips back to
+                        // `.pick`, so the user always lands at the top and
+                        // has to scroll through ~1000 slang shaders to find
+                        // their selection. A short delay is used so the lazy
+                        // rows (and any newly-expanded slang group) actually
+                        // join the view tree before we ask to scroll to one.
+                        guard let id = selectedRowID else { return }
+                        if let group = selectedSlangGroup {
+                            expandedSlangGroups.insert(group)
+                        }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                            withAnimation(nil) { proxy.scrollTo(id, anchor: .center) }
+                        }
                     }
                 }
-                .padding(8)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -340,17 +361,17 @@ struct ShaderEditorSidebar: View {
         VStack(spacing: 0) {
             if !visibleSavedPresets.isEmpty {
                 sectionHeader(loc.localized("shader.saved"))
-                ForEach(visibleSavedPresets, id: \.id) { savedPresetRow(preset: $0) }
+                ForEach(visibleSavedPresets, id: \.id) { savedPresetRow(preset: $0).id($0.id.uuidString) }
             }
             if !visibleBuiltinPresets.isEmpty {
                 if !visibleSavedPresets.isEmpty { Divider().padding(.vertical, 4) }
                 sectionHeader(loc.localized("shader.builtIn"))
-                ForEach(visibleBuiltinPresets, id: \.id) { presetRow(preset: $0) }
+                ForEach(visibleBuiltinPresets, id: \.id) { presetRow(preset: $0).id($0.id) }
             }
             if !visibleSlangPresets.isEmpty {
                 if !visibleSavedPresets.isEmpty || !visibleBuiltinPresets.isEmpty { Divider().padding(.vertical, 4) }
                 sectionHeader("Slang")
-                ForEach(visibleSlangPresets, id: \.id) { slangPresetRow(preset: $0) }
+                ForEach(visibleSlangPresets, id: \.id) { slangPresetRow(preset: $0).id($0.path.path) }
             }
             if visibleSavedPresets.isEmpty && visibleBuiltinPresets.isEmpty && visibleSlangPresets.isEmpty {
                 Text(loc.localized("shader.noShadersFound"))
@@ -367,7 +388,7 @@ struct ShaderEditorSidebar: View {
                     .foregroundColor(AppColors.textSecondary(colorScheme))
                     .padding()
             } else {
-                ForEach(visibleBuiltinPresets, id: \.id) { presetRow(preset: $0) }
+                ForEach(visibleBuiltinPresets, id: \.id) { presetRow(preset: $0).id($0.id) }
             }
         }
     }
@@ -381,7 +402,7 @@ struct ShaderEditorSidebar: View {
                 }
                 .padding()
             } else {
-                ForEach(visibleSavedPresets, id: \.id) { savedPresetRow(preset: $0) }
+                ForEach(visibleSavedPresets, id: \.id) { savedPresetRow(preset: $0).id($0.id.uuidString) }
             }
         }
     }
@@ -395,7 +416,7 @@ struct ShaderEditorSidebar: View {
             } else if searchText.isEmpty {
                 groupedSlangPresetsListContent
             } else {
-                ForEach(visibleSlangPresets, id: \.id) { slangPresetRow(preset: $0) }
+                ForEach(visibleSlangPresets, id: \.id) { slangPresetRow(preset: $0).id($0.path.path) }
             }
         }
     }
@@ -409,7 +430,7 @@ struct ShaderEditorSidebar: View {
             if !curated.isEmpty {
                 slangGroupHeader(group: "curated", count: curated.count)
                 if expandedSlangGroups.contains("curated") {
-                    ForEach(curated, id: \.id) { slangPresetRow(preset: $0) }
+                    ForEach(curated, id: \.id) { slangPresetRow(preset: $0).id($0.path.path) }
                 }
                 Divider()
                     .padding(.vertical, 8)
@@ -420,7 +441,7 @@ struct ShaderEditorSidebar: View {
                 if !curated.contains(where: { $0.group == section.group }) {
                     slangGroupHeader(group: section.group, count: section.presets.count)
                     if expandedSlangGroups.contains(section.group) {
-                        ForEach(section.presets, id: \.id) { slangPresetRow(preset: $0) }
+                        ForEach(section.presets, id: \.id) { slangPresetRow(preset: $0).id($0.path.path) }
                     }
                 }
             }
@@ -654,6 +675,25 @@ struct ShaderEditorSidebar: View {
 
     private var isSlangPresetSelected: Bool {
         SlangPresetDiscoveryService.shared.presets.contains { $0.path.path == settings.shaderPresetID }
+    }
+
+    /// The `ScrollViewReader` row id that matches the currently-selected
+    /// preset, regardless of category. `nil` when no preset is selected.
+    /// Used to restore scroll position when the picker reappears.
+    private var selectedRowID: String? {
+        let id = settings.shaderPresetID
+        guard !id.isEmpty else { return nil }
+        return id
+    }
+
+    /// Slang group containing the currently-selected preset, if any.
+    /// Used to expand a collapsed group so `ScrollViewReader.scrollTo`
+    /// can reach the row (rows inside a collapsed group are not in the
+    /// view tree and cannot be scrolled to).
+    private var selectedSlangGroup: String? {
+        guard isSlangPresetSelected else { return nil }
+        return SlangPresetDiscoveryService.shared.presets
+            .first { $0.path.path == settings.shaderPresetID }?.group
     }
 
     // MARK: - Filtering

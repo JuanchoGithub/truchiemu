@@ -9,6 +9,34 @@ class SlangPresetDiscoveryService: ObservableObject {
     /// These are surfaced first in the picker as the "Curated" set.
     static let curatedFolderPath = "presets"
 
+    /// Relative paths of `.slangp` files that the discovery service does NOT
+    /// surface in the picker. These are reference fragments or build-block
+    /// presets that fail to parse standalone (they resolve shader paths
+    /// relative to a different directory than they live in, expecting to be
+    /// pulled in by a parent preset that overrides their `shaderN` lines).
+    /// Surfacing them only produces silent errors when the user taps the row.
+    private static let excludedRelativePaths: Set<String> = [
+        // crt/crt-effects/ fragments: paths resolve wrong relative to their
+        // own location (e.g. `../stock.slang` resolves to `crt/stock.slang`
+        // which does not exist; the real file is at the slang-shaders root).
+        "crt/crt-effects/glow_trails.slangp",
+        "crt/crt-effects/ray_traced_curvature.slangp",
+        "crt/crt-effects/royale-curve-append.slangp",
+    ]
+
+    /// Returns true if `relPath` (relative to `slang-shaders/`) should be
+    /// excluded from the picker.
+    private static func isExcludedSlangp(relPath: String) -> Bool {
+        if excludedRelativePaths.contains(relPath) { return true }
+        // Everything under `bezel/uborder/base_presets/` is a #reference
+        // fragment — top-level user-loadable uborder presets live one
+        // directory up (under `bezel/uborder/`) and pull these in via
+        // `#reference "base_presets/..."`. Surfacing fragments standalone
+        // in the picker only produces silent parse failures.
+        if relPath.hasPrefix("bezel/uborder/base_presets/") { return true }
+        return false
+    }
+
     @Published private(set) var presets: [SlangPreset] = []
     @Published private(set) var categories: [String] = []
 
@@ -101,6 +129,11 @@ class SlangPresetDiscoveryService: ObservableObject {
             if let idx = components.lastIndex(of: "slang-shaders"), idx + 1 < components.count {
                 category = components[idx + 1]
                 relPath = components[(idx + 1)...].joined(separator: "/")
+                // Skip reference fragment / build-block presets that fail to
+                // parse standalone. See `isExcludedSlangp(relPath:)` for the
+                // rationale. Skipping here keeps them out of the picker and
+                // out of the duplicate-basename disambiguation pass below.
+                if Self.isExcludedSlangp(relPath: relPath) { continue }
                 let rest = components[(idx + 1)...]
                 if category == Self.curatedFolderPath {
                     group = rest.count > 2 ? "presets/\(rest[rest.startIndex + 1])" : "presets"
