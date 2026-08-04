@@ -16,6 +16,14 @@ class SlangCompilerService: ObservableObject {
     /// `loadAndActivatePreset` and `destroyFilterChain`.
     nonisolated(unsafe) private var _finalPassIsAbsolute: Bool = false
 
+    /// Cached flag mirroring `activePreset?.hasPassFeedbackWithSourceScale`.
+    /// When true, the Metal coordinator must render the chain into a
+    /// source-sized offscreen texture instead of the host drawable, then
+    /// upscale to the drawable itself. This works around a librashader
+    /// Metal-runtime scissor bug for PassFeedback chains (see
+    /// `SlangPreset.hasPassFeedbackWithSourceScale` for details).
+    nonisolated(unsafe) private var _needsSourceSizedOutput: Bool = false
+
     private init() {}
 
     func loadAndActivatePreset(at url: URL, queue: MTLCommandQueue) throws -> SlangPreset {
@@ -90,9 +98,10 @@ class SlangCompilerService: ObservableObject {
         _filterChain = chain
         _queue = queue
         _finalPassIsAbsolute = slangPreset.usesAbsoluteFinalPass
+        _needsSourceSizedOutput = slangPreset.hasPassFeedbackWithSourceScale
         chainLock.unlock()
         activePreset = slangPreset
-        LoggerService.info(category: "Slang", "Chain created successfully for preset: \(slangPreset.name) (final_pass_absolute=\(slangPreset.usesAbsoluteFinalPass))")
+        LoggerService.info(category: "Slang", "Chain created successfully for preset: \(slangPreset.name) (final_pass_absolute=\(slangPreset.usesAbsoluteFinalPass), pass_feedback_source=\(slangPreset.hasPassFeedbackWithSourceScale))")
         return slangPreset
     }
 
@@ -101,6 +110,14 @@ class SlangCompilerService: ObservableObject {
     /// decide on a viewport strategy without touching `@MainActor` state.
     nonisolated var finalPassIsAbsolute: Bool {
         Self.shared.chainLock.withLock { Self.shared._finalPassIsAbsolute }
+    }
+
+    /// Nonisolated read of the cached `needs_source_sized_output` flag.
+    /// When true, the Metal coordinator must render the chain into a
+    /// source-sized offscreen texture instead of the host drawable (see
+    /// `_needsSourceSizedOutput` for the librashader scissor-bug rationale).
+    nonisolated var needsSourceSizedOutput: Bool {
+        Self.shared.chainLock.withLock { Self.shared._needsSourceSizedOutput }
     }
 
     nonisolated func renderFrame(commandBuffer: MTLCommandBuffer,
@@ -193,6 +210,7 @@ class SlangCompilerService: ObservableObject {
         _filterChain = nil
         _queue = nil
         _finalPassIsAbsolute = false
+        _needsSourceSizedOutput = false
         chainLock.unlock()
         if let chain = chain {
             var chainVar: OpaquePointer? = chain

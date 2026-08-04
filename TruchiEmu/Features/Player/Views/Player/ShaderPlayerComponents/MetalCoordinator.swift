@@ -86,6 +86,23 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
     private var pendingWantsNative: Bool = false
     private var pendingOnComplete: (([URL]) -> Void)?
 
+    /// Source-sized offscreen texture used as the slang chain's render
+    /// target when the active chain has `PassFeedback` binding with
+    /// `scale_type = source` (see `SlangPreset.hasPassFeedbackWithSourceScale`).
+    /// librashader's Metal runtime scissor rect overflows on those chains
+    /// when the host viewport is drawable-sized, so we route the chain
+    /// through this source-sized texture and then bilinearly letterbox it
+    /// into the drawable.
+    private var slangSourceSizedTexture: MTLTexture?
+    private var slangSourceSizedTextureWidth: Int = 0
+    private var slangSourceSizedTextureHeight: Int = 0
+    private var slangSourceSizedTextureFormat: MTLPixelFormat = .invalid
+    /// Cached render pipeline for the source-sized → drawable letterbox
+    /// blit (vertexPassthrough + fragmentLetterboxBlit, bilinear sampler).
+    /// Keyed by drawable pixel format so a window-resize format change
+    /// produces a fresh pipeline on next use.
+    private var slangLetterboxBlitPipelines: [MTLPixelFormat: MTLRenderPipelineState] = [:]
+
     /// Throttles the "slang path: no current frame texture" error log so it
     /// fires once per null-frame run instead of spamming 60 Hz while the
     /// libretro core has not yet produced its first frame.
@@ -111,6 +128,11 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
         pendingDisplayURL = nil
         pendingNativeURL = nil
         pendingOnComplete = nil
+        slangSourceSizedTexture = nil
+        slangSourceSizedTextureWidth = 0
+        slangSourceSizedTextureHeight = 0
+        slangSourceSizedTextureFormat = .invalid
+        slangLetterboxBlitPipelines.removeAll()
     }
 
     /// Request a screenshot capture on the next drawn frame.
@@ -367,25 +389,73 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
             } else {
                 slangVP = computeViewport(targetAspect: targetAspect, viewSize: view.drawableSize)
             }
-            SlangCompilerService.shared.renderFrame(
-                commandBuffer: cmdBuffer,
-                inputTexture: frameTex,
-                outputTexture: drawable.texture,
-                frameCount: UInt64(frameCounter),
-                viewport: slangVP,
-                aspectRatio: Float(targetAspect)
-            )
 
-            // librashader's slang chain clears each render pass with clearColor
-            // alpha=0 and the slang fragment programs do not write alpha, so the
-            // drawable texture exits `renderFrame` with every pixel's alpha
-            // channel set to 0. With the window's transparent clearColor, the
-            // macOS compositor drops the fully transparent window and the user
-            // sees only the desktop behind it (or, in your screenshot test,
-            // pixel-perfect `(0, 0, 0, 0)`). Run a one-fragment pass that
-            // overwrites the alpha channel to 1 while preserving RGB.
-            forceAlphaOntoDrawable(device: device, commandBuffer: cmdBuffer,
-                                   drawable: drawable, descriptor: descriptor)
+            // Workaround for a librashader Metal-runtime scissor bug on
+            // PassFeedback chains with `scale_type = source` (see
+            // `SlangPreset.hasPassFeedbackWithSourceScale` for the full
+            // rationale). librashader renders the final pass twice — first
+            // into a source-sized intermediate (to capture the feedback for
+            // the next frame), then into the host's drawable — and both
+            // renders use the host viewport's scissor. The intermediate is
+            // only source-sized, so a drawable-sized scissor aborts the
+            // process with `Set Scissor Rect Validation` when the game
+            // window is upscaled (the user-visible crash).
+            //
+            // Routing the chain into a source-sized offscreen texture
+            // (with a source-sized viewport) avoids the scissor overflow
+            // on the intermediate render. After the chain finishes we
+            // bilinearly letterbox the source-sized output into the
+            // drawable, replacing both the upscale and the alpha fixup
+            // in a single pass.
+            if SlangCompilerService.shared.needsSourceSizedOutput,
+               let chainOutput = ensureSlangSourceSizedTexture(
+                width: frameTex.width,
+                height: frameTex.height,
+                format: frameTex.pixelFormat,
+                device: device
+               ) {
+                let chainVP = MTLViewport(originX: 0, originY: 0,
+                                          width: Double(frameTex.width),
+                                          height: Double(frameTex.height),
+                                          znear: 0.0, zfar: 1.0)
+                SlangCompilerService.shared.renderFrame(
+                    commandBuffer: cmdBuffer,
+                    inputTexture: frameTex,
+                    outputTexture: chainOutput,
+                    frameCount: UInt64(frameCounter),
+                    viewport: chainVP,
+                    aspectRatio: Float(targetAspect)
+                )
+                blitSlangOutputToDrawable(
+                    device: device,
+                    commandBuffer: cmdBuffer,
+                    drawable: drawable,
+                    descriptor: descriptor,
+                    sourceTexture: chainOutput,
+                    drawableSize: view.drawableSize,
+                    targetAspect: targetAspect
+                )
+            } else {
+                SlangCompilerService.shared.renderFrame(
+                    commandBuffer: cmdBuffer,
+                    inputTexture: frameTex,
+                    outputTexture: drawable.texture,
+                    frameCount: UInt64(frameCounter),
+                    viewport: slangVP,
+                    aspectRatio: Float(targetAspect)
+                )
+
+                // librashader's slang chain clears each render pass with clearColor
+                // alpha=0 and the slang fragment programs do not write alpha, so the
+                // drawable texture exits `renderFrame` with every pixel's alpha
+                // channel set to 0. With the window's transparent clearColor, the
+                // macOS compositor drops the fully transparent window and the user
+                // sees only the desktop behind it (or, in your screenshot test,
+                // pixel-perfect `(0, 0, 0, 0)`). Run a one-fragment pass that
+                // overwrites the alpha channel to 1 while preserving RGB.
+                forceAlphaOntoDrawable(device: device, commandBuffer: cmdBuffer,
+                                       drawable: drawable, descriptor: descriptor)
+            }
 
             // Recording / rolling-buffer capture: built-in-shader path
             // runs in the enc-scope block below; the slang path early-
@@ -1541,6 +1611,55 @@ outputHeight: Float(viewport.height)
     /// This pass runs unconditionally for any slang render. It costs one
     /// fullscreen draw with a tiny fragment program per frame; negligible
     /// for any slang chain that already does multiple passes internally.
+    /// Bilinearly letterboxes a source-sized slang chain output into the
+    /// drawable, forcing alpha to 1 in the same pass. Replaces the alpha
+    /// fixup that the slang path normally runs after rendering directly
+    /// into the drawable — when the chain's output lives in a source-sized
+    /// offscreen texture, we need both an upscale and the alpha fixup, so
+    /// we do them together.
+    ///
+    /// Uses the descriptor's original `loadAction = .clear` so the drawable
+    /// is wiped to the view's transparent clear color outside the letterbox
+    /// area (the bezel / window background shows through). The fragment
+    /// shader overwrites alpha to 1 inside the letterbox so the window
+    /// compositor doesn't drop the surface.
+    private func blitSlangOutputToDrawable(device: MTLDevice,
+                                           commandBuffer: MTLCommandBuffer,
+                                           drawable: CAMetalDrawable,
+                                           descriptor: MTLRenderPassDescriptor,
+                                           sourceTexture: MTLTexture,
+                                           drawableSize: CGSize,
+                                           targetAspect: CGFloat) {
+        guard let pipeline = slangLetterboxBlitPipeline(
+            device: device,
+            drawableFormat: drawable.texture.pixelFormat
+        ) else {
+            return
+        }
+
+        guard let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: descriptor) else {
+            return
+        }
+        encoder.label = "slangSourceSizedBlit"
+        encoder.setRenderPipelineState(pipeline)
+
+        // Letterbox rect for the source-sized chain output, mirroring
+        // `computeViewport` so the visible game area lines up with the
+        // non-PassFeedback slang path.
+        let viewport = computeViewport(targetAspect: targetAspect, viewSize: drawableSize)
+        encoder.setViewport(viewport)
+
+        guard let sourceView = sourceTexture.makeTextureView(
+            pixelFormat: sourceTexture.pixelFormat
+        ) else {
+            encoder.endEncoding()
+            return
+        }
+        encoder.setFragmentTexture(sourceView, index: 0)
+        encoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
+        encoder.endEncoding()
+    }
+
     private func forceAlphaOntoDrawable(device: MTLDevice,
                                        commandBuffer: MTLCommandBuffer,
                                        drawable: CAMetalDrawable,
@@ -1599,6 +1718,67 @@ outputHeight: Float(viewport.height)
         do {
             let pipeline = try device.makeRenderPipelineState(descriptor: desc)
             forceAlphaPipelineCache = pipeline
+            return pipeline
+        } catch {
+            return nil
+        }
+    }
+
+    /// Lazily-allocates a source-sized texture sized to match the slang
+    /// chain's expected `OutputSize` (== input texture dimensions for
+    /// `scale_type = source` chains). The chain renders into this texture
+    /// to avoid librashader's Metal scissor-rect bug on PassFeedback chains
+    /// (see `SlangPreset.hasPassFeedbackWithSourceScale`).
+    ///
+    /// Cached and reused as long as `(width, height, format)` stays the
+    /// same. Recreated lazily on size/format change. Returns nil if the
+    /// device cannot allocate the texture.
+    private func ensureSlangSourceSizedTexture(width: Int,
+                                               height: Int,
+                                               format: MTLPixelFormat,
+                                               device: MTLDevice) -> MTLTexture? {
+        if let tex = slangSourceSizedTexture,
+           slangSourceSizedTextureWidth == width,
+           slangSourceSizedTextureHeight == height,
+           slangSourceSizedTextureFormat == format {
+            return tex
+        }
+        let descriptor = MTLTextureDescriptor.texture2DDescriptor(
+            pixelFormat: format,
+            width: width,
+            height: height,
+            mipmapped: false
+        )
+        descriptor.usage = [.shaderRead, .renderTarget]
+        descriptor.storageMode = .private
+        guard let tex = device.makeTexture(descriptor: descriptor) else {
+            return nil
+        }
+        slangSourceSizedTexture = tex
+        slangSourceSizedTextureWidth = width
+        slangSourceSizedTextureHeight = height
+        slangSourceSizedTextureFormat = format
+        return tex
+    }
+
+    /// Lazily-builds and caches the letterbox blit pipeline for the slang
+    /// PassFeedback workaround. Keyed by drawable pixel format so a window
+    /// format change produces a fresh pipeline on the next call.
+    private func slangLetterboxBlitPipeline(device: MTLDevice,
+                                            drawableFormat: MTLPixelFormat) -> MTLRenderPipelineState? {
+        if let cached = slangLetterboxBlitPipelines[drawableFormat] { return cached }
+        guard let library = loadShaderLibrary(device: device),
+              let vertexFunction = library.makeFunction(name: "vertexPassthrough"),
+              let fragmentFunction = library.makeFunction(name: "fragmentLetterboxBlit") else {
+            return nil
+        }
+        let desc = MTLRenderPipelineDescriptor()
+        desc.colorAttachments[0].pixelFormat = drawableFormat
+        desc.vertexFunction = vertexFunction
+        desc.fragmentFunction = fragmentFunction
+        do {
+            let pipeline = try device.makeRenderPipelineState(descriptor: desc)
+            slangLetterboxBlitPipelines[drawableFormat] = pipeline
             return pipeline
         } catch {
             return nil

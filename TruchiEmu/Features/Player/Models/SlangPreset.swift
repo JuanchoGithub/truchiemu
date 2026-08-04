@@ -63,6 +63,30 @@ struct SlangPreset: Identifiable, Hashable {
         return chainHasBezierStyle(at: path, depth: 0)
     }
 
+    /// True when the chain's final pass samples a previous-frame feedback
+    /// texture (e.g. `sampler2D PassFeedback0`, `sampler2D MainPassFeedback`,
+    /// or the matching `*Size` uniform) AND the final pass uses
+    /// `scale_type = source` (explicit or default).
+    ///
+    /// librashader renders the final pass twice when feedback is bound:
+    /// first into a source-sized intermediate (to capture the feedback for
+    /// the next frame), then into the host's drawable. Both renders read
+    /// the scissor/viewport from the host viewport. For
+    /// `scale_type = source` chains, the intermediate is source-sized, so
+    /// a drawable-sized host viewport (the upscaled-window case) trips
+    /// Metal's scissor validation and aborts the process. Routing the
+    /// chain through a source-sized offscreen texture avoids the bug.
+    ///
+    /// For `scale_type = viewport` / `scale_type = absolute` feedback
+    /// chains, the intermediate is sized to viewport / absolute — not
+    /// source — so the host viewport fits and the upstream behavior is
+    /// correct. We deliberately do NOT route those through the
+    /// offscreen path, since their upscale-aware shaders would lose
+    /// their final composite on a source-sized target.
+    var hasPassFeedbackWithSourceScale: Bool {
+        return chainHasPassFeedbackWithSourceScale(at: path, depth: 0)
+    }
+
     /// Walks the preset (and `#reference`-inherited chains up to 4 levels)
     /// looking for any shader whose path contains `border`, `bezel`, or
     /// `imgborder` AND any `scale_type* = "absolute"` directive.
@@ -107,6 +131,88 @@ struct SlangPreset: Identifiable, Hashable {
             }
         }
         return nil
+    }
+
+    /// Walks the preset (and `#reference`-inherited chains up to 4 levels)
+    /// looking for any shader that binds a previous-frame feedback texture
+    /// AND uses `scale_type = source` on the final pass. See
+    /// `hasPassFeedbackWithSourceScale` for the rationale.
+    private func chainHasPassFeedbackWithSourceScale(at url: URL, depth: Int) -> Bool {
+        guard depth < 4, let text = try? String(contentsOf: url, encoding: .utf8) else {
+            return false
+        }
+
+        var shaderPaths: [String] = []
+        var finalScaleIsSource: Bool? = nil
+        var finalShaderIndex: Int = -1
+        var maxShaderIndex: Int = -1
+
+        for line in text.split(whereSeparator: \.isNewline) {
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            guard let eq = trimmed.firstIndex(of: "=") else { continue }
+            let key = String(trimmed[..<eq]).trimmingCharacters(in: .whitespaces).lowercased()
+            let val = trimmed[trimmed.index(after: eq)...]
+                .trimmingCharacters(in: .whitespaces)
+                .trimmingCharacters(in: CharacterSet(charactersIn: "\"'"))
+
+            if key.hasPrefix("shader") {
+                // shaderN, shaderN_x, shaderN_y, etc. Capture the leading integer.
+                let digits = key.drop(while: { !$0.isNumber }).prefix(while: { $0.isNumber })
+                if let n = Int(digits) {
+                    if n > maxShaderIndex {
+                        maxShaderIndex = n
+                        finalShaderIndex = n
+                        finalScaleIsSource = nil  // reset until we see a scale line
+                    }
+                    shaderPaths.append(val)
+                }
+            } else if key.hasPrefix("scale_type") {
+                let digits = key.drop(while: { !$0.isNumber }).prefix(while: { $0.isNumber })
+                if let n = Int(digits), n == maxShaderIndex {
+                    // Final-pass scale_type. `source` is the librashader default
+                    // when no scale_type is specified.
+                    finalScaleIsSource = (val.lowercased() == "source")
+                }
+            }
+        }
+
+        // Final pass defaults to scale_type = source when not specified.
+        let usesSource = finalScaleIsSource ?? true
+
+        // Resolve each shader path relative to the .slangp and grep for the
+        // PassFeedback / MainPassFeedback binding marker. A shader is
+        // considered to use PassFeedback if its source contains either
+        // token as a sampler binding or as a *Size uniform name.
+        let baseDir = url.deletingLastPathComponent()
+        for path in shaderPaths {
+            let resolved: URL
+            if path.hasPrefix("/") {
+                resolved = URL(fileURLWithPath: path)
+            } else {
+                resolved = URL(fileURLWithPath: path, relativeTo: baseDir)
+            }
+            if let src = try? String(contentsOf: resolved, encoding: .utf8),
+               Self.shaderUsesPassFeedback(src) {
+                if usesSource { return true }
+            }
+        }
+
+        if let refPath = parseFirstReference(text),
+           refPath.hasSuffix(".slangp") {
+            let refURL = URL(fileURLWithPath: refPath, relativeTo: url.deletingLastPathComponent())
+            if chainHasPassFeedbackWithSourceScale(at: refURL, depth: depth + 1) {
+                return true
+            }
+        }
+        return false
+    }
+
+    /// True if the given .slang source binds a previous-frame feedback
+    /// texture (PassFeedback / PassFeedbackN / MainPassFeedback / MainPassFeedbackN).
+    /// Substring match is intentional and matches the same conventions
+    /// librashader reflects on the Metal side.
+    private static func shaderUsesPassFeedback(_ source: String) -> Bool {
+        return source.contains("PassFeedback")
     }
 
     /// Parses `shaders = "N"` or `shaders = "N"` into an Int, defaulting to 0
