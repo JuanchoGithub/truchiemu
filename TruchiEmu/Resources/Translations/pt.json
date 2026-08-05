@@ -1255,6 +1255,7 @@
   "cores.enabledSystems": "Sistemas Ativos",
   "cores.availableSystems": "Sistemas Disponíveis",
   "shader.parameters": "Parâmetros",
+  "shader.param.unused": "Não usado por este preset",
   "shader.parameterConfiguration": "Configuração de parâmetros",
   "shader.active": "Ativo",
   "shader.reset": "Redefinir",

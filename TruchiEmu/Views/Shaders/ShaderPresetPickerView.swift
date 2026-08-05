@@ -142,55 +142,58 @@ struct ShaderParameterSliders: View {
 private func parameterSliderRow(for uniform: ShaderUniform) -> some View {
           Group {
                let hasRange = uniform.minValue != uniform.maxValue
-               if uniform.type == .toggle {
-                   HStack(alignment: .center) {
-                       VStack(alignment: .leading, spacing: 2) {
-                           Text(uniform.displayLabel)
-                               .font(.subheadline)
-                           if let desc = uniform.description {
-                         Text(desc)
-                             .font(.caption2)
-                             .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
-                             .lineLimit(2)
-                         }
-                     }
+                if uniform.type == .toggle {
+                    HStack(alignment: .center) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(uniform.displayLabel)
+                                .font(.subheadline)
+                                .foregroundColor(uniform.disabled ? .secondary : .primary)
+                            if let desc = uniform.description {
+                          Text(desc)
+                              .font(.caption2)
+                              .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                              .lineLimit(2)
+                          }
+                      }
 
-                     Spacer()
+                      Spacer()
 
-                     Toggle("", isOn: Binding(
-                            get: { currentUniformValue(for: uniform) > 0.5 },
-                            set: { newValue in
-                                let v: Float = newValue ? 1.0 : 0.0
-                                uniformValues[uniform.name] = v
-                                onUpdate?(uniform.name, v)
-                            }
-                        ))
-                        .toggleStyle(.switch)
-                        .labelsHidden()
-                        .controlSize(.small)
-                   }
+                      Toggle("", isOn: Binding(
+                             get: { currentUniformValue(for: uniform) > 0.5 },
+                             set: { newValue in
+                                 let v: Float = newValue ? 1.0 : 0.0
+                                 uniformValues[uniform.name] = v
+                                 onUpdate?(uniform.name, v)
+                             }
+                         ))
+                         .toggleStyle(.switch)
+                         .labelsHidden()
+                         .controlSize(.small)
+                         .disabled(uniform.disabled)
+                    }
                 } else if uniform.type == .dropdown {
-                   VStack(alignment: .leading, spacing: 4) {
-                       HStack(alignment: .firstTextBaseline) {
-                           VStack(alignment: .leading, spacing: 2) {
-                               Text(uniform.displayLabel)
-                                   .font(.subheadline)
-             if let desc = uniform.description {
-                     Text(desc)
-                         .font(.caption2)
-                         .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
-                         .lineLimit(2)
-                     }
-                 }
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack(alignment: .firstTextBaseline) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(uniform.displayLabel)
+                                    .font(.subheadline)
+                                    .foregroundColor(uniform.disabled ? .secondary : .primary)
+              if let desc = uniform.description {
+                      Text(desc)
+                          .font(.caption2)
+                          .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                          .lineLimit(2)
+                      }
+                  }
 
-                 Spacer()
-             }
+                  Spacer()
+              }
 
-             let selectedValue = currentUniformValue(for: uniform)
-                        Picker("", selection: Binding(
-                            get: { selectedValue },
-                            set: { newValue in
-                                uniformValues[uniform.name] = newValue
+              let selectedValue = currentUniformValue(for: uniform)
+                         Picker("", selection: Binding(
+                             get: { selectedValue },
+                             set: { newValue in
+                                 uniformValues[uniform.name] = newValue
                                 onUpdate?(uniform.name, newValue)
                             }
                         )) {
@@ -198,9 +201,10 @@ private func parameterSliderRow(for uniform: ShaderUniform) -> some View {
                                  Text(option.displayLabel).tag(option.value)
                              }
                         }
-                        .pickerStyle(.menu)
-                        .controlSize(.small)
-                   }
+                         .pickerStyle(.menu)
+                         .controlSize(.small)
+                         .disabled(uniform.disabled)
+                    }
                } else if !hasRange {
                    HStack {
                        Text(uniform.displayLabel)
@@ -211,68 +215,71 @@ private func parameterSliderRow(for uniform: ShaderUniform) -> some View {
                            .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
                            .monospacedDigit()
                    }
-               } else {
-                   let safeStep = uniform.step > 0 ? uniform.step : 0.001
-                   let range = uniform.maxValue - uniform.minValue
-                   // Guard against malformed slang `#pragma parameter` values that would
-                   // trip SwiftUI's Slider precondition: inverted/empty range, step larger
-                   // than the range, or non-finite values from a third-party .slangp.
-                   let sliderValid = uniform.minValue.isFinite
-                       && uniform.maxValue.isFinite
-                       && safeStep.isFinite
-                       && range > 0
-                       && safeStep <= range
-                   if !sliderValid {
-                       HStack {
-                           Text(uniform.displayLabel)
-                               .font(.subheadline)
-                           Spacer()
-                           Text(formatUniformValue(currentUniformValue(for: uniform)))
-                               .font(.caption)
-                               .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
-                               .monospacedDigit()
-                       }
-                   } else {
-                       let clampedValue = min(max(currentUniformValue(for: uniform), uniform.minValue), uniform.maxValue)
-                       VStack(alignment: .leading, spacing: 4) {
-                           HStack(alignment: .firstTextBaseline) {
-                               VStack(alignment: .leading, spacing: 2) {
-                                   Text(uniform.displayLabel)
-                                       .font(.subheadline)
-                                 if let desc = uniform.description {
-                                         Text(desc)
-                                             .font(.caption2)
-                                             .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
-                                             .lineLimit(2)
-                                     }
-                               }
+    } else {
+                    let safeStep = uniform.step > 0 ? uniform.step : 0.001
+                    let range = uniform.maxValue - uniform.minValue
+                    // Guard against malformed slang `#pragma parameter` values that would
+                    // trip SwiftUI's Slider precondition: inverted/empty range, step larger
+                    // than the range, or non-finite values from a third-party .slangp.
+                    let sliderValid = uniform.minValue.isFinite
+                        && uniform.maxValue.isFinite
+                        && safeStep.isFinite
+                        && range > 0
+                        && safeStep <= range
+                    if !sliderValid {
+                        HStack {
+                            Text(uniform.displayLabel)
+                                .font(.subheadline)
+                                .foregroundColor(uniform.disabled ? .secondary : .primary)
+                            Spacer()
+                            Text(formatUniformValue(currentUniformValue(for: uniform)))
+                                .font(.caption)
+                                .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                                .monospacedDigit()
+                        }
+                    } else {
+                        let clampedValue = min(max(currentUniformValue(for: uniform), uniform.minValue), uniform.maxValue)
+                        VStack(alignment: .leading, spacing: 4) {
+                            HStack(alignment: .firstTextBaseline) {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(uniform.displayLabel)
+                                        .font(.subheadline)
+                                        .foregroundColor(uniform.disabled ? .secondary : .primary)
+                                  if let desc = uniform.description {
+                                          Text(desc)
+                                              .font(.caption2)
+                                              .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                                              .lineLimit(2)
+                                      }
+                                }
 
-                               Spacer()
+                                Spacer()
 
-                               Text(formatUniformValue(clampedValue))
-                                   .font(.caption)
-                                   .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
-                                   .monospacedDigit()
-                             }
+                                Text(formatUniformValue(clampedValue))
+                                    .font(.caption)
+                                    .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
+                                    .monospacedDigit()
+                              }
 
-        Slider(
-                               value: Binding(
-                                   get: { clampedValue },
-                                   set: { newValue in
-                                       let steppedValue = (newValue / safeStep).rounded() * safeStep
-                                       let clamped = min(max(steppedValue, uniform.minValue), uniform.maxValue)
-                                       uniformValues[uniform.name] = clamped
-                                       onUpdate?(uniform.name, clamped)
-                                   }
-                               ),
-                               in: uniform.minValue...uniform.maxValue,
-                               step: safeStep,
-                               onEditingChanged: { _ in }
-                           )
-                           .controlSize(.small)
-                       }
-                   }
-               }
+         Slider(
+                                value: Binding(
+                                    get: { clampedValue },
+                                    set: { newValue in
+                                        let steppedValue = (newValue / safeStep).rounded() * safeStep
+                                        let clamped = min(max(steppedValue, uniform.minValue), uniform.maxValue)
+                                        uniformValues[uniform.name] = clamped
+                                        onUpdate?(uniform.name, clamped)
+                                    }
+                                ),
+                                in: uniform.minValue...uniform.maxValue,
+                                step: safeStep,
+                                onEditingChanged: { _ in }
+                            )
+                            .controlSize(.small)
+                            .disabled(uniform.disabled)
+                        }
+                    }
+                }
            }
        }
 

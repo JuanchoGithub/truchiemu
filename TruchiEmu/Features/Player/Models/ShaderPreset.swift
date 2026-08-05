@@ -85,6 +85,14 @@ struct ShaderUniform: Codable, Hashable, Identifiable {
   var category: String?
   var type: ShaderUniformType = .slider
   var options: [ShaderUniformOption]? = nil
+  /// True when the parameter is declared in the preset chain (via `#pragma parameter`
+  /// in an `#include`d inc file) but no compiled pass actually references it (i.e. the
+  /// parameter name does not appear as `global.<name>` after textual `#include`
+  /// expansion of all the chain's pass sources). Such parameters cannot affect the
+  /// chain's output regardless of the value `set_param` writes — the compiled uniform
+  /// block has no binding for them. Surfacing this in the UI as a disabled slider
+  /// avoids the false impression of non-functional controls.
+  var disabled: Bool = false
 
   var displayLabel: String {
     if let displayName = displayName {

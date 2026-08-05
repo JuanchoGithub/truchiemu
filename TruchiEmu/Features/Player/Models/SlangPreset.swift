@@ -129,7 +129,7 @@ struct SlangPreset: Identifiable, Hashable {
             }
             if hasBorderShader && hasAbsoluteScale { return true }
         }
-        if let refPath = parseFirstReference(text),
+        if let refPath = Self.parseFirstReference(text),
            refPath.hasSuffix(".slangp") {
             let refURL = URL(fileURLWithPath: refPath, relativeTo: url.deletingLastPathComponent())
             if chainHasBezierStyle(at: refURL, depth: depth + 1) { return true }
@@ -139,7 +139,7 @@ struct SlangPreset: Identifiable, Hashable {
 
     /// Parses the first `#reference "path"` directive, returning the relative
     /// string (or nil if absent).
-    private func parseFirstReference(_ text: String) -> String? {
+    private static func parseFirstReference(_ text: String) -> String? {
         for line in text.split(whereSeparator: \.isNewline) {
             let trimmed = line.trimmingCharacters(in: .whitespaces)
             if trimmed.hasPrefix("#reference") {
@@ -215,7 +215,7 @@ struct SlangPreset: Identifiable, Hashable {
             }
         }
 
-        if let refPath = parseFirstReference(text),
+        if let refPath = Self.parseFirstReference(text),
            refPath.hasSuffix(".slangp") {
             let refURL = URL(fileURLWithPath: refPath, relativeTo: url.deletingLastPathComponent())
             if chainHasPassFeedbackWithSourceScale(at: refURL, depth: depth + 1) {
@@ -270,7 +270,7 @@ struct SlangPreset: Identifiable, Hashable {
 
         if usesSource { return true }
 
-        if let refPath = parseFirstReference(text),
+        if let refPath = Self.parseFirstReference(text),
            refPath.hasSuffix(".slangp") {
             let refURL = URL(fileURLWithPath: refPath, relativeTo: url.deletingLastPathComponent())
             if chainHasSourceSizedFinalPass(at: refURL, depth: depth + 1) {
@@ -278,6 +278,215 @@ struct SlangPreset: Identifiable, Hashable {
             }
         }
         return false
+    }
+
+    /// Walks the preset (and `#reference`-inherited chains up to 4 levels)
+    /// collecting the set of parameter names that any compiled pass actually
+    /// reads via `global.<name>`. The .slang file of every `shaderN` entry is
+    /// read; any `#include "..."` it pulls in is also read (a single level
+    /// deep — the mame_hlsl family only nests one .inc deep, and going
+    /// further risks runaway divergence on the picker pre-launch reflection
+    /// path). All `global.<identifier>` substrings are extracted via regex
+    /// and the identifier parts are returned as a set.
+    ///
+    /// This is what `SlangPreset.buildUniforms` uses to mark reflected
+    /// parameters as `disabled: true` when no compiled pass references them
+    /// (see `ShaderUniform.disabled` for the rationale).
+    private static func consumedParameterNames(at url: URL, depth: Int) -> Set<String> {
+        guard depth < 4, let text = try? String(contentsOf: url, encoding: .utf8) else {
+            return []
+        }
+
+        if depth == 0, let cached = consumedParameterNamesCache(for: url, text: text) {
+            return cached
+        }
+
+        var shaderPaths: [String] = []
+        let baseDir = url.deletingLastPathComponent()
+        var consumed = Set<String>()
+        var referencedFiles: [URL] = []
+
+        for line in text.split(whereSeparator: \.isNewline) {
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            guard let eq = trimmed.firstIndex(of: "=") else { continue }
+            let key = String(trimmed[..<eq]).trimmingCharacters(in: .whitespaces).lowercased()
+            let val = String(trimmed[trimmed.index(after: eq)...])
+                .trimmingCharacters(in: .whitespaces)
+                .trimmingCharacters(in: CharacterSet(charactersIn: "\"'"))
+            if key.hasPrefix("shader") {
+                let digits = key.drop(while: { !$0.isNumber }).prefix(while: { $0.isNumber })
+                if !digits.isEmpty || key == "shader" {
+                    shaderPaths.append(val)
+                }
+            }
+        }
+
+        /// Adds `global.X` identifier matches from `source` to `consumed`,
+        /// then recursively reads any `#include "..."` directive in
+        /// `source` and processes it too (one level deep — see header).
+        func consumeGlobals(in source: String, includeDepth: Int) {
+            // `global.<identifier>` where identifier is [A-Za-z_][A-Za-z0-9_]*
+            if let regex = try? NSRegularExpression(pattern: "global\\.([A-Za-z_][A-Za-z0-9_]*)") {
+                let ns = source as NSString
+                let range = NSRange(location: 0, length: ns.length)
+                regex.enumerateMatches(in: source, range: range) { match, _, _ in
+                    if let match = match, match.numberOfRanges >= 2 {
+                        let r = match.range(at: 1)
+                        if r.location != NSNotFound {
+                            let name = ns.substring(with: r)
+                            consumed.insert(name)
+                        }
+                    }
+                }
+            }
+            // `#include "..."` — one level deep only.
+            if includeDepth < 1 {
+                for line in source.split(whereSeparator: \.isNewline) {
+                    let trimmed = line.trimmingCharacters(in: .whitespaces)
+                    if trimmed.hasPrefix("#include") {
+                        let rest = trimmed.dropFirst("#include".count)
+                            .trimmingCharacters(in: .whitespaces)
+                            .trimmingCharacters(in: CharacterSet(charactersIn: "\"'"))
+                        if !rest.isEmpty {
+                            let incURL: URL
+                            if rest.hasPrefix("/") {
+                                incURL = URL(fileURLWithPath: rest)
+                            } else {
+                                incURL = URL(fileURLWithPath: rest, relativeTo: baseDir)
+                            }
+                            referencedFiles.append(incURL)
+                            if let inc = try? String(contentsOf: incURL, encoding: .utf8) {
+                                consumeGlobals(in: inc, includeDepth: includeDepth + 1)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        for path in shaderPaths {
+            let resolved: URL
+            if path.hasPrefix("/") {
+                resolved = URL(fileURLWithPath: path)
+            } else {
+                resolved = URL(fileURLWithPath: path, relativeTo: baseDir)
+            }
+            referencedFiles.append(resolved)
+            if let src = try? String(contentsOf: resolved, encoding: .utf8) {
+                consumeGlobals(in: src, includeDepth: 0)
+            }
+        }
+
+        if let refPath = Self.parseFirstReference(text),
+           refPath.hasSuffix(".slangp") {
+            let refURL = URL(fileURLWithPath: refPath, relativeTo: url.deletingLastPathComponent())
+            consumed.formUnion(consumedParameterNames(at: refURL, depth: depth + 1))
+        }
+
+        /// Built-in push-constant / size uniforms that librashader always
+        /// populates (they are not `#pragma parameter`s and never get
+        /// reflected into the UI; strip them so they don't accidentally
+        /// signal "in use" for unrelated params).
+        consumed.remove("MVP")
+        consumed.remove("OriginalSize")
+        consumed.remove("SourceSize")
+        consumed.remove("OutputSize")
+        consumed.remove("FinalViewportSize")
+        consumed.remove("FrameCount")
+        consumed.remove("FeedbackSize")
+        consumed.remove("FeedbackSizeN")
+        consumed.remove("FrameDirection")
+        consumed.remove("Rotation")
+        consumed.remove("TotalSubframes")
+        consumed.remove("CurrentSubframe")
+        consumed.remove("AspectRatio")
+        consumed.remove("FramesPerSecond")
+        consumed.remove("FrametimeDelta")
+        consumed.remove("ColorSpace")
+        consumed.remove("BrightnessNits")
+        consumed.remove("ExpandGamut")
+        consumed.remove("Gyroscope")
+        consumed.remove("Accelerometer")
+        consumed.remove("AccelerometerRest")
+
+        if depth == 0 {
+            storeConsumedParameterNamesCache(consumed, for: url, referencedFiles: referencedFiles)
+        }
+
+        return consumed
+    }
+
+    // MARK: - consumedParameterNames cache
+    //
+    // The picker / sidebar re-run `reflectParameters` (and therefore
+    // `consumedParameterNames`) on every selection change, every settings
+    // tweak, and during several view re-renders. For big presets (CRT
+    // Royale, mame_hlsl family) each call walked dozens of files and
+    // re-scanned the source text — that latency shows up in the picker
+    // as "Parameters" being slow to populate.
+    //
+    // We memoize the result keyed by path + a mtime "fingerprint" that
+    // covers the .slangp AND every referenced .slang / #include. A
+    // shader source edit invalidates exactly the affected entries and
+    // the next picker open recomputes them.
+
+    private static let consumedCacheLock = NSLock()
+    private static var consumedCache: [String: (fingerprint: UInt64, names: Set<String>)] = [:]
+
+    /// Combines the .slangp's mtime with the maximum mtime of every
+    /// referenced file into a single 64-bit fingerprint. mtime granularity
+    /// (1s on HFS+, 1ns on APFS) is more than enough for picker cache.
+    private static func fingerprint(for slangpURL: URL, referencedFiles: [URL]) -> UInt64 {
+        var combined: UInt64 = 0
+        let attrs = try? FileManager.default.attributesOfItem(atPath: slangpURL.path)
+        if let mtime = attrs?[.modificationDate] as? Date {
+            combined ^= UInt64(bitPattern: Int64(mtime.timeIntervalSince1970 * 1_000_000_000))
+        }
+        for f in referencedFiles {
+            let attrs = try? FileManager.default.attributesOfItem(atPath: f.path)
+            if let mtime = attrs?[.modificationDate] as? Date {
+                combined ^= UInt64(bitPattern: Int64(mtime.timeIntervalSince1970 * 1_000_000_000)) &+ 0x9E37_79B9_7F4A_7C15
+            }
+        }
+        return combined
+    }
+
+    private static func consumedParameterNamesCache(for url: URL, text: String) -> Set<String>? {
+        // Returns the cached names only if the fingerprint stored alongside
+        // them still matches the current mtimes; otherwise the cache entry
+        // is stale and we recompute.
+        let key = url.path
+        consumedCacheLock.lock()
+        defer { consumedCacheLock.unlock() }
+        guard let entry = consumedCache[key] else { return nil }
+        let refs = referencedFilesForPathCache[key] ?? []
+        if fingerprint(for: url, referencedFiles: refs) == entry.fingerprint {
+            return entry.names
+        }
+        consumedCache.removeValue(forKey: key)
+        return nil
+    }
+
+    private static var referencedFilesForPathCache: [String: [URL]] = [:]
+
+    private static func storeConsumedParameterNamesCache(_ names: Set<String>,
+                                                         for url: URL,
+                                                         referencedFiles: [URL]) {
+        let key = url.path
+        let fp = fingerprint(for: url, referencedFiles: referencedFiles)
+        consumedCacheLock.lock()
+        consumedCache[key] = (fp, names)
+        referencedFilesForPathCache[key] = referencedFiles
+        consumedCacheLock.unlock()
+    }
+
+    /// Public for tests and shader-edit hot-reload. Drops all cached
+    /// entries; the next reflection call will recompute them.
+    static func clearConsumedParameterNamesCache() {
+        consumedCacheLock.lock()
+        consumedCache.removeAll(keepingCapacity: true)
+        referencedFilesForPathCache.removeAll(keepingCapacity: true)
+        consumedCacheLock.unlock()
     }
 
     /// True if the given .slang source binds a previous-frame feedback
@@ -553,8 +762,16 @@ extension SlangPreset {
     }
 
     /// Reads the runtime-parameter list from an already-parsed librashader preset (no GPU
-    /// compilation required) and converts it into `ShaderUniform`s.
-    private static func reflectFromPreset(_ preset: OpaquePointer) -> (parameters: [ShaderUniform], defaults: [String: Float])? {
+    /// compilation required) and converts it into `ShaderUniform`s. The
+    /// `consumedNames` set identifies which parameter names are actually
+    /// reachable as `global.<name>` references in any of the chain's compiled
+    /// pass sources (after textual `#include` expansion). Parameters not in
+    /// this set are marked `disabled: true` so the UI can surface them as
+    /// inert sliders instead of false-functional controls.
+    private static func reflectFromPreset(
+        _ preset: OpaquePointer,
+        consumedNames: Set<String> = []
+    ) -> (parameters: [ShaderUniform], defaults: [String: Float])? {
         var paramsList = libra_preset_param_list_t(parameters: nil, length: 0)
         let paramErr = withUnsafePointer(to: preset) { ptr in
             libra_preset_get_runtime_params(ptr, &paramsList)
@@ -589,7 +806,7 @@ extension SlangPreset {
             ))
         }
         libra_preset_free_runtime_params(paramsList)
-        return buildUniforms(raw)
+        return buildUniforms(raw, consumedNames: consumedNames)
     }
 
     /// Converts raw reflected parameters into user-facing `ShaderUniform`s, handling three
@@ -599,7 +816,12 @@ extension SlangPreset {
     /// - A boolean parameter (`min == 0`, `max == 1`, `step == 1`) becomes a toggle.
     /// - A `Category - Param` description (or internalized `cat_-_param` name) is split into a
     ///   category group plus a cleaned parameter label.
-    private static func buildUniforms(_ raw: [RawSlangParam]) -> ([ShaderUniform], [String: Float]) {
+    /// Parameters whose names are not in `consumedNames` are marked `disabled: true` so the
+    /// UI can surface them as inert (no compiled pass reads `global.<name>` for them).
+    private static func buildUniforms(
+        _ raw: [RawSlangParam],
+        consumedNames: Set<String> = []
+    ) -> ([ShaderUniform], [String: Float]) {
         var params: [ShaderUniform] = []
         var defaults: [String: Float] = [:]
         var seenNames = Set<String>()
@@ -622,6 +844,10 @@ extension SlangPreset {
                 minimum: r.minimum, maximum: r.maximum, step: r.step
             )
             let effectiveCategory = category ?? currentHeader
+            // `consumedNames` is empty for built-in Metal shaders (no slang
+            // pass-source walk) — in that case we leave `disabled` at its
+            // default `false` so all built-in uniforms remain interactive.
+            let isDisabled = !consumedNames.isEmpty && !consumedNames.contains(r.name)
             let uniform = ShaderUniform(
                 name: r.name,
                 defaultValue: r.initial,
@@ -631,7 +857,8 @@ extension SlangPreset {
                 displayName: displayName,
                 category: effectiveCategory,
                 type: type,
-                options: options
+                options: options,
+                disabled: isDisabled
             )
             params.append(uniform)
             defaults[r.name] = r.initial
@@ -665,7 +892,8 @@ extension SlangPreset {
             var p: OpaquePointer? = preset
             libra_preset_free(&p)
         }
-        return reflectFromPreset(preset)
+        let consumed = Self.consumedParameterNames(at: path, depth: 0)
+        return reflectFromPreset(preset, consumedNames: consumed)
     }
 
     /// Async variant of `reflectParameters(at:)`. Runs the parse + reflection
@@ -703,7 +931,7 @@ extension SlangPreset {
         // already de-collided for display in the picker.
         let name = path.deletingPathExtension().lastPathComponent
 
-        let (params, defaults) = reflectFromPreset(presetPtr) ?? ([], [:])
+        let (params, defaults) = reflectFromPreset(presetPtr, consumedNames: Self.consumedParameterNames(at: path, depth: 0)) ?? ([], [:])
 
         let category: String
         var group: String
