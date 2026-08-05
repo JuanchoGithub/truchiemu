@@ -1449,6 +1449,8 @@
   "shader.desc.builtin-smooth-upscale": "High-quality pixel art upscaler that smooths edges while maintaining detail.",
   "shader.desc.builtin-none": "No post-processing. Integer-scaled raw pixels.",
   "gameOverride.title": "Override Game Shaders",
+  "gameOverride.explanation": "You changed the system shader to %@. The following games have their own custom shader. Select which games should be overridden to use the new system shader.",
+  "gameOverride.override": "Override",
   "gameOverride.selectAll": "Select All",
   "gameOverride.deselectAll": "Deselect All",
   "gameOverride.gamesWithCustomShaders": "%d game(s) with custom shaders",

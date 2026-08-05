@@ -11,7 +11,6 @@ let games: [ROM]
 }
 
 struct ContentView: View {
-    @Environment(\.modelContext) var modelContext
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
     @Environment(\.openSettings) private var openSettings
@@ -251,53 +250,6 @@ games: gamesWithCustomShaders
 }
 ShaderWindowController.shared = shaderController
 shaderController?.show()
-case .defaultShadersForDefaults(let systemID, let shaderID):
-                                  systemDatabase.updateSystemShaderPreset(systemID: systemID, presetID: shaderID)
-                                   
-                                   let descriptor = FetchDescriptor<ROMEntry>(predicate: #Predicate { $0.systemID == systemID })
-                                   if let entries = try? modelContext.fetch(descriptor) {
-                                       let encoder = JSONEncoder()
-                                       let decoder = JSONDecoder()
-                                       let oldSystemDefault = systemDatabase.system(forID: systemID)?.defaultShaderPresetID ?? ""
-                                      for entry in entries {
-                                          var settings: ROMSettings
-                                          if let json = entry.settingsJSON, let data = json.data(using: .utf8), let decoded = try? decoder.decode(ROMSettings.self, from: data) {
-                                              settings = decoded
-                                          } else {
-                                              settings = ROMSettings()
-                                          }
-                                          
-                                          if settings.shaderPresetID == oldSystemDefault || settings.shaderPresetID.isEmpty {
-                                              settings.shaderPresetID = shaderID
-                                              if let encoded = try? encoder.encode(settings), let json = String(data: encoded, encoding: .utf8) {
-                                                  entry.settingsJSON = json
-                                              }
-                                          }
-                                      }
-                                      try? modelContext.save()
-                                  }
-case .defaultShadersForAll(let systemID, let shaderID):
-                                  systemDatabase.updateSystemShaderPreset(systemID: systemID, presetID: shaderID)
-                                  
-                                  let descriptor = FetchDescriptor<ROMEntry>(predicate: #Predicate { $0.systemID == systemID })
-                                  if let entries = try? modelContext.fetch(descriptor) {
-                                      let encoder = JSONEncoder()
-                                      let decoder = JSONDecoder()
-                                      for entry in entries {
-                                          var settings: ROMSettings
-                                          if let json = entry.settingsJSON, let data = json.data(using: .utf8), let decoded = try? decoder.decode(ROMSettings.self, from: data) {
-                                              settings = decoded
-                                          } else {
-                                              settings = ROMSettings()
-                                          }
-                                          
-                                          settings.shaderPresetID = shaderID
-                                          if let encoded = try? encoder.encode(settings), let json = String(data: encoded, encoding: .utf8) {
-                                              entry.settingsJSON = json
-                                          }
-                                      }
-                                      try? modelContext.save()
-                                  }
 case .library:
                               selectedFilter = .system(system)
                           }
@@ -398,7 +350,7 @@ systemID: data.systemID,
 newShaderPresetID: data.newShaderPresetID,
 games: data.games
 ) { selectedGameIDs in
-applyShaderOverrides(systemID: data.systemID, shaderID: data.newShaderPresetID, selectedGameIDs: selectedGameIDs)
+applyShaderOverrides(systemID: data.systemID, selectedGameIDs: selectedGameIDs)
 }
 .gamepadDismissable { shaderOverrideData = nil }
 }
@@ -452,7 +404,7 @@ private func celebrateFirstScanIfNeeded(addedCount: Int) {
     )
 }
 
-private func applyShaderOverrides(systemID: String, shaderID: String, selectedGameIDs: Set<UUID>) {
+private func applyShaderOverrides(systemID: String, selectedGameIDs: Set<UUID>) {
 let modelContext = SwiftDataContainer.shared.container.mainContext
 
 let descriptor = FetchDescriptor<ROMEntry>(predicate: #Predicate { $0.systemID == systemID })
@@ -471,7 +423,7 @@ settings = decoded
 settings = ROMSettings()
 }
 
-settings.shaderPresetID = shaderID
+settings.resetShaderSettings()
 
 if let encoded = try? encoder.encode(settings), let json = String(data: encoded, encoding: .utf8) {
 entry.settingsJSON = json

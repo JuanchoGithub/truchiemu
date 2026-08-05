@@ -250,6 +250,19 @@ struct ROMSettings: Codable, Hashable {
     var cheatsEnabled: Bool? = nil
     var hardcoreMode: Bool? = nil
     var analogMouseEnabled: Bool? = nil
+
+    mutating func resetShaderSettings() {
+        crtEnabled = true
+        scanlinesEnabled = true
+        scanlineIntensity = 0.35
+        barrelEnabled = true
+        barrelAmount = 0.12
+        phosphorEnabled = true
+        scanlineSmooth = false
+        colorBoost = 1.0
+        shaderPresetID = ""
+        shaderUniformOverrides = [:]
+    }
 }
 
 struct ROMMetadata: Codable, Hashable {

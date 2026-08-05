@@ -1,5 +1,4 @@
 import SwiftUI
-import SwiftData
 
 extension GameDetailView {
     var shaderSection: some View {
@@ -81,7 +80,7 @@ HStack {
                         Text(loc.localized("shader.resetToDefault")).font(.caption).foregroundColor(AppColors.textTertiary(colorScheme))
                     }
                     Spacer()
-        Button { updateSettings { $0.shaderPresetID = systemDefaultShaderID } } label: {
+        Button { updateSettings { $0.resetShaderSettings() } } label: {
             Text(loc.localized("shader.useDefault"))
                 .font(.caption)
                 .foregroundColor(AppColors.brandAccent)
@@ -188,59 +187,6 @@ ShaderWindowController.shared?.close()
             library: library,
             shaderUniformOverrides: currentROM.settings.shaderUniformOverrides
         )
-    }
-
-    private func applyToAllGamesInSystem(systemID: String, presetID: String, uniforms: [String: Float]) {
-        let decoder = JSONDecoder()
-        let encoder = JSONEncoder()
-        let modelContext = SwiftDataContainer.shared.container.mainContext
-        
-        let descriptor = FetchDescriptor<ROMEntry>(predicate: #Predicate { $0.systemID == systemID })
-        guard let entries = try? modelContext.fetch(descriptor) else { 
-            LoggerService.error(category: "ShaderPicker", "Failed to fetch ROM entries for systemID: \(systemID)")
-            return 
-        }
-        
-        #if LOG_DEBUG
-        LoggerService.debug(category: "ShaderPicker", "applyToAllGamesInSystem: systemID=\(systemID), entries found=\(entries.count)")
-        #endif
-        
-        for entry in entries {
-            var settings: ROMSettings
-            if let json = entry.settingsJSON, let data = json.data(using: .utf8),
-               let decoded = try? decoder.decode(ROMSettings.self, from: data) {
-                settings = decoded
-            } else {
-                settings = ROMSettings()
-            }
-            
-            // Override even custom settings
-            settings.shaderPresetID = presetID
-            applyUniformValues(uniforms, to: &settings)
-            
-            if let encoded = try? encoder.encode(settings),
-               let json = String(data: encoded, encoding: .utf8) {
-                entry.settingsJSON = json
-                
-                // Also update in-memory library for each ROM
-                if let rom = library.roms.first(where: { $0.id == entry.id }) {
-                    var updatedROM = rom
-                    updatedROM.settings.shaderPresetID = presetID
-                    applyUniformValues(uniforms, to: &updatedROM.settings)
-                    library.updateROM(updatedROM, persist: false, silent: true)
-                }
-            }
-        }
-        
-        do {
-            try modelContext.save()
-            LibraryMetadataStore.shared.flushDirtyToSwiftData()
-            #if LOG_DEBUG
-            LoggerService.debug(category: "ShaderPicker", "Saved \(entries.count) entries with shader: \(presetID)")
-            #endif
-        } catch {
-            LoggerService.error(category: "ShaderPicker", "Failed to save: \(error.localizedDescription)")
-        }
     }
 
     func extractUniformValues(from settings: ROMSettings) -> [String: Float] {

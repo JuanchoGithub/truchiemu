@@ -1447,6 +1447,8 @@
   "shader.desc.builtin-smooth-upscale": "Escalonador de pixel art de alta qualidade que suaviza bordas mantendo detalhes.",
   "shader.desc.builtin-none": "Sem pós-processamento. Pixels crus com escala inteira.",
   "gameOverride.title": "Substituir Shaders do Jogo",
+  "gameOverride.explanation": "Você alterou o shader do sistema para %@. Os jogos a seguir têm seu próprio shader personalizado. Selecione quais jogos devem ser substituídos para usar o novo shader do sistema.",
+  "gameOverride.override": "Substituir",
   "gameOverride.selectAll": "Selecionar Tudo",
   "gameOverride.deselectAll": "Desmarcar Tudo",
   "gameOverride.gamesWithCustomShaders": "%d jogo(s) com shaders personalizados",

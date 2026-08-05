@@ -25,6 +25,12 @@ self._selectedGameIDs = State(initialValue: Set(games.map { $0.id }))
             Text(loc.localized("gameOverride.title"))
                 .font(.headline)
 
+            Text(loc.localized("gameOverride.explanation", ShaderManager.displayName(for: newShaderPresetID)))
+                .font(.subheadline)
+                .foregroundColor(AppColors.textSecondary(colorScheme))
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+
             HStack(spacing: 12) {
                 Button(loc.localized("gameOverride.selectAll")) {
                     selectedGameIDs = Set(games.map { $0.id })
@@ -38,7 +44,7 @@ self._selectedGameIDs = State(initialValue: Set(games.map { $0.id }))
 
                 Spacer()
 
-Text(loc.localized("gameOverride.gamesWithCustomShaders"))
+Text(loc.localized("gameOverride.gamesWithCustomShaders", games.count))
                 .font(.caption)
                 .foregroundColor(AppColors.textSecondary(colorScheme))
             }
@@ -55,13 +61,17 @@ List(games) { game in
 HStack {
 Text(game.displayName)
 .lineLimit(1)
+Text("(\(currentShaderName(for: game)))")
+.font(.caption)
+.foregroundColor(AppColors.textSecondary(colorScheme))
+.lineLimit(1)
 
                         Spacer()
 
-Text(currentShaderName(for: game))
+Text(loc.localized("gameOverride.override"))
                         .font(.caption)
                         .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
-                            .lineLimit(1)
+                        .lineLimit(1)
 
                         Toggle("", isOn: Binding(
                             get: { selectedGameIDs.contains(game.id) },

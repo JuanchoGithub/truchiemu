@@ -1446,6 +1446,8 @@
   "shader.desc.builtin-smooth-upscale": "細部を保ちながらエッジを滑らかにする高品質ピクセルアートアップスケーラー。",
   "shader.desc.builtin-none": "後処理なし。整数倍スケーリングされた生のピクセル。",
   "gameOverride.title": "ゲームシェーダーを上書き",
+  "gameOverride.explanation": "システムシェーダーを %@ に変更しました。以下のゲームには独自のカスタムシェーダーがあります。新しいシステムシェーダーを使用するゲームを選択してください。",
+  "gameOverride.override": "上書き",
   "gameOverride.selectAll": "すべて選択",
   "gameOverride.deselectAll": "すべて選択解除",
   "gameOverride.gamesWithCustomShaders": "カスタムシェーダーを持つゲーム: %d",

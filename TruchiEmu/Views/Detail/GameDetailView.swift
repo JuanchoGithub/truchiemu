@@ -119,7 +119,9 @@ struct GameDetailView: View {
     var systemDefaultShaderID: String {
         SystemDatabase.system(forID: currentROM.systemID ?? "")?.defaultShaderPresetID ?? ""
     }
-    var isShaderCustomized: Bool { currentROM.settings.shaderPresetID != systemDefaultShaderID }
+    var isShaderCustomized: Bool {
+        !currentROM.settings.shaderPresetID.isEmpty && currentROM.settings.shaderPresetID != systemDefaultShaderID
+    }
 
     @ViewBuilder
     var mainContentArea: some View {
