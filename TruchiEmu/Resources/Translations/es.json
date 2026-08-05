@@ -2197,6 +2197,7 @@
     "hotkeys.action.slot9": "Ranura 9",
     "hotkeys.action.toggleInputCapture": "Alternar Captura de Entrada",
   "hotkeys.action.toggleGuideSidebar": "Alternar Guía del Juego",
+    "hotkeys.action.fullscreen": "Alternar Pantalla Completa",
     "hotkeys.action.trainingReset": "Reinicio Instantáneo de Entrenamiento",
     "hotkeys.action.trainingToggleRecording": "Alternar Grabación de Cinta",
     "hotkeys.action.trainingStartPlayback": "Iniciar Reproducción de Cinta",

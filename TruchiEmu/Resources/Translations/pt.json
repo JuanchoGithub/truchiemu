@@ -2203,6 +2203,7 @@
     "hotkeys.action.slot9": "Slot 9",
     "hotkeys.action.toggleInputCapture": "Alternar Captura de Entrada",
   "hotkeys.action.toggleGuideSidebar": "Alternar Guia do Jogo",
+    "hotkeys.action.fullscreen": "Alternar Tela Cheia",
     "hotkeys.action.trainingReset": "Reinício Instantâneo do Treinamento",
     "hotkeys.action.trainingToggleRecording": "Alternar Gravação de Fita",
     "hotkeys.action.trainingStartPlayback": "Iniciar Reprodução de Fita",

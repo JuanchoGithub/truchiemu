@@ -2205,6 +2205,7 @@
     "hotkeys.action.slot9": "Slot 9",
     "hotkeys.action.toggleInputCapture": "Toggle Input Capture",
   "hotkeys.action.toggleGuideSidebar": "Toggle Game Guide",
+    "hotkeys.action.fullscreen": "Toggle Fullscreen",
     "hotkeys.action.trainingReset": "Training Instant Reset",
     "hotkeys.action.trainingToggleRecording": "Toggle Tape Recording",
     "hotkeys.action.trainingStartPlayback": "Start Tape Playback",

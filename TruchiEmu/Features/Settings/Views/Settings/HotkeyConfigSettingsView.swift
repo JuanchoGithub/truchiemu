@@ -165,8 +165,8 @@ struct HotkeyConfigSettingsView: View {
                 id: "general",
                 titleKey: "hotkeys.general",
                 icon: "keyboard",
-                actions: [.saveState, .loadState, .undoLoadState, .slotNext, .slotPrev, .toggleInputCapture, .toggleGuideSidebar],
-                searchKeywords: "hotkeys keyboard shortcuts save load slot undo training input capture guide sidebar"
+                actions: [.saveState, .loadState, .undoLoadState, .slotNext, .slotPrev, .toggleInputCapture, .toggleGuideSidebar, .fullscreen],
+                searchKeywords: "hotkeys keyboard shortcuts save load slot undo training input capture guide sidebar fullscreen"
             ),
             SectionDescriptor(
                 id: "slots",

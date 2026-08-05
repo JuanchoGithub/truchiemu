@@ -2199,6 +2199,7 @@
   "hotkeys.action.slot9": "スロット 9",
   "hotkeys.action.toggleInputCapture": "入力キャプチャを切り替え",
   "hotkeys.action.toggleGuideSidebar": "ゲームガイドを切り替え",
+  "hotkeys.action.fullscreen": "全画面表示の切り替え",
   "hotkeys.action.trainingReset": "トレーニング即時リセット",
   "hotkeys.action.trainingToggleRecording": "テープ録画を切り替え",
   "hotkeys.action.trainingStartPlayback": "テープ再生を開始",

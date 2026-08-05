@@ -2286,6 +2286,10 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
                 return nil
             }
         }
+        if hotkeys.matches(.fullscreen, systemID: systemID, event: event) {
+            self?.toggleFullscreen()
+            return nil
+        }
         return event
         }
     }
