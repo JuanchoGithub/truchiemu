@@ -1,6 +1,7 @@
 import Foundation
 import Combine
 import SwiftData
+import AppKit
 
 @MainActor
 class BoxArtService: ObservableObject {
@@ -391,6 +392,50 @@ class BoxArtService: ObservableObject {
             // Timeout, connection drop, DNS failure — transient, retry soon.
             return .transient
         }
+    }
+
+    // Imports a user-picked local image file as box art for a ROM. The file is
+    // decoded with AppKit (system framework, no external dependencies) and
+    // re-encoded as PNG, matching the naming convention used by downloads
+    // ({stem}_boxart.png), then processed exactly like a downloaded image
+    // (thumbnails regenerated, caches evicted). Returns the destination URL,
+    // or nil if the file is not a valid image.
+    func importLocalImage(from sourceURL: URL, for rom: ROM) async -> URL? {
+        let boxartDir = rom.path.deletingLastPathComponent().appendingPathComponent("boxart", isDirectory: true)
+        try? FileManager.default.createDirectory(at: boxartDir, withIntermediateDirectories: true)
+
+        let romNameWithoutExt: String
+        if let inner = rom.innerROMPath {
+            romNameWithoutExt = URL(fileURLWithPath: inner).deletingPathExtension().lastPathComponent
+        } else {
+            romNameWithoutExt = rom.path.deletingPathExtension().lastPathComponent
+        }
+
+        let destination = boxartDir.appendingPathComponent("\(romNameWithoutExt)_boxart.png")
+
+        // Decode the source with AppKit — this accepts any format the OS can
+        // read (PNG, JPEG, HEIC, WEBP, GIF, BMP, TIFF, ...) and doubles as
+        // validation: if the file isn't a decodable image, we return nil.
+        guard let image = NSImage(contentsOf: sourceURL),
+              let tiff = image.tiffRepresentation,
+              let rep = NSBitmapImageRep(data: tiff),
+              let pngData = rep.representation(using: .png, properties: [:]) else { return nil }
+
+        if FileManager.default.fileExists(atPath: destination.path) {
+            try? FileManager.default.removeItem(at: destination)
+        }
+
+        do {
+            try pngData.write(to: destination, options: .atomic)
+        } catch {
+            return nil
+        }
+
+        BoxArtThumbnailService.deleteThumbnails(for: destination)
+        await ImageCache.shared.removeImage(for: destination)
+        await ImageCache.shared.removeThumbnail(for: destination)
+        BoxArtThumbnailService.generateThumbnailsSynchronously(forOriginal: destination)
+        return destination
     }
 
     // MARK: - Libretro thumbnails CDN

@@ -1578,7 +1578,7 @@
   "genre.selectedCount": "%d selected",
   "boxArt.searchQuery": "Search query...",
   "boxArt.engine": "Engine",
-  "boxArt.rightClickInfo": "Right-click any image to use it as box art",
+  "boxArt.pickLocalFile": "Pick a File from my Mac…",
   "boxArt.close": "Close",
   "boxArt.pickTip": "Tip: Right-click any cover in the results to set it as box art.",
   "boxArt.pickerTitle": "Search Box Art",

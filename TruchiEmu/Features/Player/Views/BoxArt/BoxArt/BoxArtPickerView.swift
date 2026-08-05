@@ -13,6 +13,7 @@ struct BoxArtPickerView: View {
 
     @State private var appliedSearchText: String = ""
     @State private var coachDismissed: Bool = AppSettings.getBool("boxArtPickerCoachDismissed", defaultValue: false)
+    @State private var showLocalFilePicker = false
 
     enum SearchEngine: String, CaseIterable {
         case duckduckgo = "DuckDuckGo"
@@ -56,19 +57,6 @@ struct BoxArtPickerView: View {
                         .frame(width: 180) 
                     }
                 }
-
-                HStack(spacing: 6) {
-                    Image(systemName: "hand.point.up.left.fill")
-                        .font(.caption)
-                    Text(loc.localized("boxArt.rightClickInfo"))
-                        .font(.caption)
-                }
-                .foregroundColor(AppColors.textSecondary(colorScheme))
-                .padding(.horizontal, 10)
-                .padding(.vertical, 6)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(AppColors.cardBackgroundSubtle(colorScheme))
-                .cornerRadius(8)
             }
             .padding()
 
@@ -76,6 +64,16 @@ struct BoxArtPickerView: View {
         }
         .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
         .frame(width: 800, height: 600)
+        .fileImporter(isPresented: $showLocalFilePicker, allowedContentTypes: [.image], allowsMultipleSelection: false) { result in
+            switch result {
+            case .success(let urls):
+                if let url = urls.first {
+                    importLocalFile(url)
+                }
+            case .failure:
+                break
+            }
+        }
         .onAppear {
             let cleanName = rom.name.replacingOccurrences(of: "_", with: " ")
             let systemID = rom.systemID?.uppercased() ?? ""
@@ -125,6 +123,8 @@ struct BoxArtPickerView: View {
                 .foregroundColor(AppColors.textSecondaryNeutral(colorScheme))
             }
             Spacer()
+            Button(loc.localized("boxArt.pickLocalFile")) { showLocalFilePicker = true }
+                .buttonStyle(.bordered)
             Button(loc.localized("core.cancel")) { dismiss() }
                 .buttonStyle(.bordered)
             Button(loc.localized("boxArt.close")) { dismiss() }
@@ -150,6 +150,22 @@ struct BoxArtPickerView: View {
                 // Evict any in-memory thumbnails before dismissing so the detail
                 // view reloads the new image immediately (signalBoxArtUpdated
                 // schedules the eviction in a fire-and-forget Task).
+                await ImageCache.shared.removeImage(for: resolvedURL)
+                await ImageCache.shared.removeThumbnail(for: resolvedURL)
+
+                dismiss()
+            }
+        }
+    }
+
+    private func importLocalFile(_ url: URL) {
+        Task {
+            if let savedURL = await BoxArtService.shared.importLocalImage(from: url, for: rom) {
+                library.updateROM(rom)
+
+                let resolvedURL = rom.boxArtLocalPath
+                BoxArtService.shared.signalBoxArtUpdated(for: rom.id, boxArtURL: resolvedURL)
+
                 await ImageCache.shared.removeImage(for: resolvedURL)
                 await ImageCache.shared.removeThumbnail(for: resolvedURL)
 

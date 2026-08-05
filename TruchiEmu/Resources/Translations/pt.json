@@ -1576,7 +1576,7 @@
   "genre.selectedCount": "%d selecionados",
   "boxArt.searchQuery": "Consulta de busca...",
   "boxArt.engine": "Motor",
-  "boxArt.rightClickInfo": "Clique com o botão direito em qualquer imagem para usá-la como capa",
+  "boxArt.pickLocalFile": "Escolher um arquivo do meu Mac…",
   "boxArt.close": "Fechar",
   "boxArt.pickTip": "Dica: clique com o botão direito em qualquer capa dos resultados para usá-la.",
   "boxArt.pickerTitle": "Buscar capa",

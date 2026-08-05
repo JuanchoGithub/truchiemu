@@ -1575,7 +1575,7 @@
   "genre.selectedCount": "%d 個選択",
   "boxArt.searchQuery": "検索クエリ...",
   "boxArt.engine": "エンジン",
-  "boxArt.rightClickInfo": "任意の画像を右クリックしてボックスアートとして使用",
+  "boxArt.pickLocalFile": "Macからファイルを選択…",
   "boxArt.close": "閉じる",
   "boxArt.pickTip": "ヒント: 結果内の任意のカバーを右クリックしてボックスアートに設定できます。",
   "boxArt.pickerTitle": "ボックスアートを検索",
