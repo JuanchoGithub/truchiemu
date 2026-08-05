@@ -407,11 +407,37 @@ class MetalCoordinator: NSObject, MTKViewDelegate {
             // bilinearly letterbox the source-sized output into the
             // drawable, replacing both the upscale and the alpha fixup
             // in a single pass.
-            if SlangCompilerService.shared.needsSourceSizedOutput,
+            //
+            // The same route is taken when the chain's final pass declares
+            // (or defaults to) `scale_type = source` even without pass
+            // feedback (`needsSourceSizedIntermediate`). Multi-pass presets
+            // like `ntsc-md-rainbows` compile shaders that read
+            // `params.OutputSize`; routing straight to a drawable-sized
+            // output makes `OutputSize` resolve to the window dimensions,
+            // breaking the chain's dimensioned math (NTSC `TimePerSample`,
+            // `VScale`, etc.). Going through the source-sized intermediate
+            // keeps `OutputSize` source-sized as the shader authors
+            // expected, matching the RetroArch composite-then-upscale path.
+            //
+            // librashader's Metal runtime compiles its per-pass pipelines
+            // against a fixed `MTLPixelFormatBGRA8Unorm` color attachment
+            // (independent of the chain output we hand at frame time), but
+            // allocates intermediate pass textures in the format of the
+            // chain output we provide. Mismatching the two trips Metal's
+            // `setRenderPipelineState` validation abort. The
+            // `needsSourceSizedIntermediate` route must therefore use
+            // `.bgra8Unorm`. The existing `needsSourceSizedOutput` route
+            // (PassFeedback workaround) was already validated against
+            // `frameTex.pixelFormat`, so we preserve its behavior.
+            let sourceSizedFormat: MTLPixelFormat = SlangCompilerService.shared.needsSourceSizedIntermediate
+                ? .bgra8Unorm
+                : frameTex.pixelFormat
+            if (SlangCompilerService.shared.needsSourceSizedOutput
+                || SlangCompilerService.shared.needsSourceSizedIntermediate),
                let chainOutput = ensureSlangSourceSizedTexture(
                 width: frameTex.width,
                 height: frameTex.height,
-                format: frameTex.pixelFormat,
+                format: sourceSizedFormat,
                 device: device
                ) {
                 let chainVP = MTLViewport(originX: 0, originY: 0,

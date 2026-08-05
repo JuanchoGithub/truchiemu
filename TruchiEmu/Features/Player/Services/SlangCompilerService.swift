@@ -15,6 +15,7 @@ class SlangCompilerService: ObservableObject {
     /// `@MainActor`-bound `activePreset`. Updated synchronously inside
     /// `loadAndActivatePreset` and `destroyFilterChain`.
     nonisolated(unsafe) private var _finalPassIsAbsolute: Bool = false
+    nonisolated(unsafe) private var _needsSourceSizedIntermediate: Bool = false
 
     /// Cached flag mirroring `activePreset?.hasPassFeedbackWithSourceScale`.
     /// When true, the Metal coordinator must render the chain into a
@@ -99,9 +100,10 @@ class SlangCompilerService: ObservableObject {
         _queue = queue
         _finalPassIsAbsolute = slangPreset.usesAbsoluteFinalPass
         _needsSourceSizedOutput = slangPreset.hasPassFeedbackWithSourceScale
+        _needsSourceSizedIntermediate = slangPreset.hasSourceSizedFinalPass
         chainLock.unlock()
         activePreset = slangPreset
-        LoggerService.info(category: "Slang", "Chain created successfully for preset: \(slangPreset.name) (final_pass_absolute=\(slangPreset.usesAbsoluteFinalPass), pass_feedback_source=\(slangPreset.hasPassFeedbackWithSourceScale))")
+        LoggerService.info(category: "Slang", "Chain created successfully for preset: \(slangPreset.name) (final_pass_absolute=\(slangPreset.usesAbsoluteFinalPass), pass_feedback_source=\(slangPreset.hasPassFeedbackWithSourceScale), source_sized_intermediate=\(slangPreset.hasSourceSizedFinalPass))")
         return slangPreset
     }
 
@@ -118,6 +120,17 @@ class SlangCompilerService: ObservableObject {
     /// `_needsSourceSizedOutput` for the librashader scissor-bug rationale).
     nonisolated var needsSourceSizedOutput: Bool {
         Self.shared.chainLock.withLock { Self.shared._needsSourceSizedOutput }
+    }
+
+    /// Nonisolated read of the cached `needs_source_sized_intermediate` flag.
+    /// When true, the chain's final pass declares (or defaults to)
+    /// `scale_type = source`, so the host must route the chain through a
+    /// source-sized offscreen texture before the host blits to the drawable
+    /// — otherwise shaders reading `params.OutputSize` get the window
+    /// dimensions instead of the source dimensions and break their math
+    /// (see `SlangPreset.hasSourceSizedFinalPass` for the rationale).
+    nonisolated var needsSourceSizedIntermediate: Bool {
+        Self.shared.chainLock.withLock { Self.shared._needsSourceSizedIntermediate }
     }
 
     nonisolated func renderFrame(commandBuffer: MTLCommandBuffer,
@@ -211,6 +224,7 @@ class SlangCompilerService: ObservableObject {
         _queue = nil
         _finalPassIsAbsolute = false
         _needsSourceSizedOutput = false
+        _needsSourceSizedIntermediate = false
         chainLock.unlock()
         if let chain = chain {
             var chainVar: OpaquePointer? = chain

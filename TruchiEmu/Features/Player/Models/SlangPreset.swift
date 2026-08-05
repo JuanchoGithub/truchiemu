@@ -87,6 +87,24 @@ struct SlangPreset: Identifiable, Hashable {
         return chainHasPassFeedbackWithSourceScale(at: path, depth: 0)
     }
 
+    /// True when the chain's final pass declares (or defaults to)
+    /// `scale_type = source`. Such chains expect their last pass to write
+    /// into a source-sized target before the host upscales the result to
+    /// the drawable.
+    ///
+    /// When this is `true` and the host writes the chain output straight to
+    /// a drawable-sized texture, shaders that read `params.OutputSize`
+    /// (or any `*Size` uniform) get the window dimensions instead of the
+    /// source dimensions, breaking dimensioned math (e.g. mame_ntsc's
+    /// `TimePerSample = ScanTime / (OutputSize.x * 4)`). Routing the chain
+    /// through a source-sized offscreen texture preserves the dimensions
+    /// the shader math was authored against, matching the RetroArch
+    /// behavior of compositing the final `scale_type = source` pass at
+    /// source size before upscaling.
+    var hasSourceSizedFinalPass: Bool {
+        return chainHasSourceSizedFinalPass(at: path, depth: 0)
+    }
+
     /// Walks the preset (and `#reference`-inherited chains up to 4 levels)
     /// looking for any shader whose path contains `border`, `bezel`, or
     /// `imgborder` AND any `scale_type* = "absolute"` directive.
@@ -201,6 +219,61 @@ struct SlangPreset: Identifiable, Hashable {
            refPath.hasSuffix(".slangp") {
             let refURL = URL(fileURLWithPath: refPath, relativeTo: url.deletingLastPathComponent())
             if chainHasPassFeedbackWithSourceScale(at: refURL, depth: depth + 1) {
+                return true
+            }
+        }
+        return false
+    }
+
+    /// Walks the preset (and `#reference`-inherited chains up to 4 levels)
+    /// looking at the FINAL declared pass's `scale_type`. Returns `true`
+    /// when that pass uses `scale_type = source` (explicitly set or
+    /// defaulted, since `source` is the librashader default when no
+    /// `scale_type` is specified).
+    ///
+    /// See `hasSourceSizedFinalPass` for the rationale.
+    private func chainHasSourceSizedFinalPass(at url: URL, depth: Int) -> Bool {
+        guard depth < 4, let text = try? String(contentsOf: url, encoding: .utf8) else {
+            return false
+        }
+
+        var finalScaleIsSource: Bool? = nil
+        var maxShaderIndex: Int = -1
+
+        for line in text.split(whereSeparator: \.isNewline) {
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            guard let eq = trimmed.firstIndex(of: "=") else { continue }
+            let key = String(trimmed[..<eq]).trimmingCharacters(in: .whitespaces).lowercased()
+            let val = trimmed[trimmed.index(after: eq)...]
+                .trimmingCharacters(in: .whitespaces)
+                .trimmingCharacters(in: CharacterSet(charactersIn: "\"'"))
+
+            if key.hasPrefix("shader") {
+                // shaderN, shaderN_x, shaderN_y, etc. Capture the leading integer.
+                let digits = key.drop(while: { !$0.isNumber }).prefix(while: { $0.isNumber })
+                if let n = Int(digits), n > maxShaderIndex {
+                    maxShaderIndex = n
+                    finalScaleIsSource = nil  // reset until we see a scale line
+                }
+            } else if key.hasPrefix("scale_type") {
+                let digits = key.drop(while: { !$0.isNumber }).prefix(while: { $0.isNumber })
+                if let n = Int(digits), n == maxShaderIndex {
+                    // Final-pass scale_type. `source` is the librashader default
+                    // when no scale_type is specified.
+                    finalScaleIsSource = (val.lowercased() == "source")
+                }
+            }
+        }
+
+        // Final pass defaults to scale_type = source when not specified.
+        let usesSource = finalScaleIsSource ?? true
+
+        if usesSource { return true }
+
+        if let refPath = parseFirstReference(text),
+           refPath.hasSuffix(".slangp") {
+            let refURL = URL(fileURLWithPath: refPath, relativeTo: url.deletingLastPathComponent())
+            if chainHasSourceSizedFinalPass(at: refURL, depth: depth + 1) {
                 return true
             }
         }
