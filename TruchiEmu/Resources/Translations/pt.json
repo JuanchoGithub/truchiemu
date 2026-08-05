@@ -1988,6 +1988,7 @@
 "guide.prefetching": "Pré-carregando dicas...",
 "input.escapeToast.captured": "ESC\u00d73 ou Cmd-M para liberar o mouse",
 "input.escapeToast.released": "Mouse liberado — clique no jogo para recapturar",
+"input.escapeHint": "Pressione ESC 3 vezes ou Cmd-M uma vez para liberar os controles",
   "training.wakeUpTech": "Técnica de Levantada",
   "training.wakeUp.none": "Nenhuma",
   "training.wakeUp.quickRecovery": "Recuperação Rápida",

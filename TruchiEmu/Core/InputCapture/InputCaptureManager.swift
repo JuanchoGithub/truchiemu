@@ -30,6 +30,10 @@ class InputCaptureManager: NSObject, ObservableObject {
     @Published private(set) var lastEscapeToastMessage: String? = nil
     @Published private(set) var captureStartTime: Date? = nil
 
+    // Single ESC press expands the capture indicator with an escape hint
+    @Published private(set) var showEscapeHint: Bool = false
+    private var escapeHintHideTask: DispatchWorkItem?
+
     // MARK: - Accessibility Permissions
 
     var hasAccessibilityPermissions: Bool {
@@ -95,6 +99,7 @@ class InputCaptureManager: NSObject, ObservableObject {
 
         isCapturing = false
         captureStartTime = nil
+        dismissEscapeHint()
 
         // Show the cursor again
         NSCursor.unhide()
@@ -205,9 +210,28 @@ class InputCaptureManager: NSObject, ObservableObject {
 
         if escapePressTimestamps.count >= 3 {
             escapePressTimestamps.removeAll()
+            dismissEscapeHint()
             stopCapture(reason: "ESC×3 escape combo")
             showEscapeToast(captured: false)
+        } else {
+            presentEscapeHint()
         }
+    }
+
+    private func presentEscapeHint() {
+        escapeHintHideTask?.cancel()
+        showEscapeHint = true
+        let task = DispatchWorkItem { [weak self] in
+            self?.showEscapeHint = false
+        }
+        escapeHintHideTask = task
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0, execute: task)
+    }
+
+    private func dismissEscapeHint() {
+        escapeHintHideTask?.cancel()
+        escapeHintHideTask = nil
+        showEscapeHint = false
     }
 
     private func showEscapeToast(captured: Bool) {

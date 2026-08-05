@@ -1982,6 +1982,7 @@
 "guide.prefetching": "Cargando pistas...",
 "input.escapeToast.captured": "ESC\u00d73 o Cmd-M para liberar el ratón",
 "input.escapeToast.released": "Ratón liberado — haz clic en el juego para recapturarlo",
+"input.escapeHint": "Presiona ESC 3 veces o Cmd-M una vez para liberar los controles",
   "training.wakeUpTech": "Técnica de Levantarse",
   "training.wakeUp.none": "Ninguna",
   "training.wakeUp.quickRecovery": "Recuperación Rápida",

@@ -1990,6 +1990,7 @@
 "guide.prefetching": "Pre-loading hints...",
 "input.escapeToast.captured": "ESC\u00d73 or Cmd-M to release mouse",
 "input.escapeToast.released": "Mouse released \u2014 click game to recapture",
+"input.escapeHint": "Press ESC three times or Cmd-M once to free controls",
   "training.wakeUpTech": "Wake-up Tech",
   "training.wakeUp.none": "None",
   "training.wakeUp.quickRecovery": "Quick Recovery",

@@ -35,6 +35,7 @@ struct EscapeToastOverlay: View {
         }
         .animation(.easeInOut(duration: 0.4), value: captureManager.isCapturing)
         .animation(.easeInOut(duration: 0.3), value: captureManager.lastEscapeToastMessage != nil)
+        .animation(.easeInOut(duration: 0.3), value: captureManager.showEscapeHint)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .allowsHitTesting(false)
         .onChange(of: captureManager.captureStartTime) {
@@ -51,26 +52,32 @@ struct EscapeToastOverlay: View {
     }
 
     private var captureIndicator: some View {
-        HStack(spacing: movedToCorner ? 4 : 8) {
+        let hint = captureManager.showEscapeHint
+        let corner = hint || movedToCorner
+        return HStack(spacing: hint ? 6 : (movedToCorner ? 4 : 8)) {
             Image(systemName: "keyboard")
-                .font(movedToCorner ? .system(size: 10) : .system(size: 13))
+                .font(hint ? .system(size: 12) : (movedToCorner ? .system(size: 10) : .system(size: 13)))
             Image(systemName: "lock.fill")
-                .font(movedToCorner ? .system(size: 9) : .system(size: 12))
-            if !movedToCorner {
+                .font(hint ? .system(size: 11) : (movedToCorner ? .system(size: 9) : .system(size: 12)))
+            if hint {
+                Text(verbatim: loc.localized("input.escapeHint"))
+                    .font(.caption2)
+                    .fontWeight(.medium)
+            } else if !movedToCorner {
                 Text(loc.localized("toolbar.inputCaptured"))
                     .font(.caption)
                     .fontWeight(.medium)
             }
         }
         .foregroundColor(.white.opacity(0.9))
-        .padding(.horizontal, movedToCorner ? 6 : 12)
-        .padding(.vertical, movedToCorner ? 4 : 6)
+        .padding(.horizontal, hint ? 10 : (movedToCorner ? 6 : 12))
+        .padding(.vertical, hint ? 6 : (movedToCorner ? 4 : 6))
         .background(
-            RoundedRectangle(cornerRadius: movedToCorner ? 6 : 8)
-                .fill(Color.black.opacity(movedToCorner ? 0.6 : 0.8))
+            RoundedRectangle(cornerRadius: hint ? 8 : (movedToCorner ? 6 : 8))
+                .fill(Color.black.opacity(hint ? 0.8 : (movedToCorner ? 0.6 : 0.8)))
         )
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: movedToCorner ? .topLeading : .top)
-        .padding(.top, movedToCorner ? 8 : 16)
-        .padding(.leading, movedToCorner ? 8 : 0)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: corner ? .topLeading : .top)
+        .padding(.top, corner ? 8 : 16)
+        .padding(.leading, corner ? 8 : 0)
     }
 }

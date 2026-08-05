@@ -1986,6 +1986,7 @@
   "guide.prefetching": "ヒントを事前読み込み中...",
   "input.escapeToast.captured": "ESC×3 または Cmd-M でマウスを解放",
   "input.escapeToast.released": "マウスを解放しました — クリックで再キャプチャ",
+  "input.escapeHint": "ESCを3回押すか、Cmd-Mを1回押すとコントロールを解放できます",
   "training.wakeUpTech": "起き攻めテク",
   "training.wakeUp.none": "なし",
   "training.wakeUp.quickRecovery": "クイック起き上がり",
