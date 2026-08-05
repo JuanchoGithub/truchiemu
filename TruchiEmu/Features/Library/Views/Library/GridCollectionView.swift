@@ -110,6 +110,7 @@ final class GridCollectionViewCoordinator: NSObject {
     fileprivate var previousRomsCount: Int = 0
     fileprivate var previousRomsFingerprint: [String] = []
     fileprivate var previousZoomLevel: Double = 0.5
+    fileprivate var previousBoxArtVersion: UUID = UUID()
     fileprivate var previousSelection: Set<UUID> = []
 
     var onSelectionChanged: (([UUID]) -> Void)?
@@ -346,6 +347,7 @@ struct GridCollectionViewRepresentable: NSViewRepresentable {
     var filter: LibraryFilter?
     var raEnabled: Bool
     var gridPadding: EdgeInsets
+    var boxArtVersion: UUID
     var onDoubleClick: ((ROM) -> Void)?
     var onTap: ((ROM, Int) -> Void)?
     var contextMenuProvider: ((ROM) -> AnyView)?
@@ -391,6 +393,7 @@ struct GridCollectionViewRepresentable: NSViewRepresentable {
         c.previousRomsCount = roms.count
         c.previousRomsFingerprint = roms.map { "\($0.id)|\($0.raMatchStatus ?? "")|\($0.raGameId ?? 0)" }
         c.previousZoomLevel = zoomLevel
+        c.previousBoxArtVersion = boxArtVersion
         c.previousSelection = selection
 
         let scrollView = makeCollectionScrollView(coordinator: c)
@@ -405,7 +408,8 @@ struct GridCollectionViewRepresentable: NSViewRepresentable {
         let newFingerprint = roms.map { "\($0.id)|\($0.raMatchStatus ?? "")|\($0.raGameId ?? 0)" }
         let dataChanged = roms.count != c.previousRomsCount || newFingerprint != c.previousRomsFingerprint
         let zoomChanged = zoomLevel != c.previousZoomLevel
-        let needsReload = dataChanged || zoomChanged
+        let boxArtChanged = boxArtVersion != c.previousBoxArtVersion
+        let needsReload = dataChanged || zoomChanged || boxArtChanged
 
         c.roms = roms
         c.zoomLevel = zoomLevel
@@ -420,6 +424,7 @@ struct GridCollectionViewRepresentable: NSViewRepresentable {
         c.previousRomsCount = roms.count
         c.previousRomsFingerprint = newFingerprint
         c.previousZoomLevel = zoomLevel
+        c.previousBoxArtVersion = boxArtVersion
 
         let oldSelection = c.previousSelection
         let selectionChanged = selection != oldSelection

@@ -21,6 +21,7 @@ struct LibraryGridView: View {
     @StateObject private var dragState = GameDragState.shared
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var raService = RetroAchievementsService.shared
+    @ObservedObject private var boxArtService = BoxArtService.shared
     @Binding var showCreateCategorySheet: Bool
     @Binding var filter: LibraryFilter
     @Binding var selectedROM: ROM?
@@ -784,6 +785,7 @@ viewModel.updateFilters(
             filter: filter,
             raEnabled: raService.isEnabled,
             gridPadding: gridPadding,
+            boxArtVersion: boxArtService.boxArtUpdated,
             onDoubleClick: { rom in
                 Task { await launchGame(rom) }
             },

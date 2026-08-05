@@ -16,6 +16,7 @@ struct GameListRowView: View {
     @State private var thumb: NSImage?
     @State private var isHovered = false
     @State private var raProgress: (earned: Int, total: Int)?
+    @ObservedObject private var boxArtService = BoxArtService.shared
     @EnvironmentObject var library: ROMLibrary
     @EnvironmentObject var categoryManager: CategoryManager
     
@@ -249,7 +250,7 @@ Text(sys.name)
                 }
             }
         }
-        .task(id: rom.id) {
+        .task(id: "\(rom.id)-\(boxArtService.boxArtUpdated)") {
             // rom.boxArtLocalPath is authoritative and rom.hasBoxArt is correct
             // (resolved during the off-scroll pipeline), so this is zero
             // main-thread I/O. Art-less ROMs show the system placeholder.
