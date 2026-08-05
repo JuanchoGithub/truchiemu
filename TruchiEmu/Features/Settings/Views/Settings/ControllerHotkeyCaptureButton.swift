@@ -121,6 +121,7 @@ private final class ControllerHotkeyCaptureContainer: NSView {
 
         innerStack.orientation = .horizontal
         innerStack.spacing = 2
+        innerStack.detachesHiddenViews = false
         innerStack.addView(button, in: .leading)
         innerStack.addView(clearButton, in: .leading)
         innerStack.translatesAutoresizingMaskIntoConstraints = false

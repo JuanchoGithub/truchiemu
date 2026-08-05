@@ -114,22 +114,22 @@ struct HotkeyActionRow: View {
                     }
                 }
             )
-            if modified {
-                Button {
-                    hotkeyManager.resetActionToDefaults(action)
-                    listeningAction = nil
-                    if listeningControllerAction == action {
-                        controllerCaptureCoordinator.cancel()
-                        listeningControllerAction = nil
-                    }
-                } label: {
-                    Image(systemName: "arrow.counterclockwise")
-                        .imageScale(.small)
+            Button {
+                hotkeyManager.resetActionToDefaults(action)
+                listeningAction = nil
+                if listeningControllerAction == action {
+                    controllerCaptureCoordinator.cancel()
+                    listeningControllerAction = nil
                 }
-                .buttonStyle(.borderless)
-                .help(loc.localized("hotkeys.resetActionToDefaultsTooltip"))
-                .opacity(0.6)
+            } label: {
+                Image(systemName: "arrow.counterclockwise")
+                    .imageScale(.small)
             }
+            .buttonStyle(.borderless)
+            .help(loc.localized("hotkeys.resetActionToDefaultsTooltip"))
+            .opacity(modified ? 0.6 : 0)
+            .disabled(!modified)
+            .frame(width: 24, height: 24)
         }
     }
 }

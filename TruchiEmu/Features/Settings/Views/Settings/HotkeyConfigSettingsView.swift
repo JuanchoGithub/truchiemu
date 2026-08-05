@@ -496,6 +496,7 @@ private class HotkeyCaptureContainer: NSView {
         super.init(frame: frameRect)
         stackView.orientation = .horizontal
         stackView.spacing = 2
+        stackView.detachesHiddenViews = false
         stackView.addView(button, in: .leading)
         stackView.addView(clearButton, in: .leading)
         stackView.translatesAutoresizingMaskIntoConstraints = false
