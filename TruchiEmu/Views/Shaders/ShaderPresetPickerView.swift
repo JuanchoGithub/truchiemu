@@ -581,6 +581,7 @@ struct ShaderPresetPickerView: View {
 @ObservedObject private var slangDiscovery = SlangPresetDiscoveryService.shared
 @ObservedObject private var slangService = SlangCompilerService.shared
 @State private var reflectedSlangParams: [ShaderUniform] = []
+@State private var isReflectingParameters: Bool = false
 @State private var showSaveDialog = false
 @State private var savePresetName: String = ""
 @State private var showImportPicker = false
@@ -693,6 +694,22 @@ controller.close()
                             savePresetBar
                         }
                         .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
+                    } else if isSlangPresetSelected && isReflectingParameters {
+                        // Reflection is in flight; show a spinner so the user
+                        // knows parameters are loading rather than staring at
+                        // an empty panel (especially slow on big presets like
+                        // crt-royale where libra_preset_create reads hundreds
+                        // of .slang files).
+                        VStack(spacing: 12) {
+                            Spacer()
+                            ProgressView()
+                                .controlSize(.small)
+                            Text(loc.localized("shader.parameters.loading"))
+                                .font(.subheadline)
+                                .foregroundColor(AppColors.textSecondary(colorScheme))
+                            Spacer()
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                     } else {
                         VStack {
                             Spacer()
@@ -736,18 +753,24 @@ controller.close()
                     } else {
                         // Clear now; repopulate when the async reflection lands.
                         reflectedSlangParams = []
+                        isReflectingParameters = true
                         let path = slangPreset.path
                         let savedID = savedPreset.id.uuidString
                         Task {
                             let reflected = await SlangPreset.reflectParametersAsync(at: path)
-                            guard let reflected = reflected else { return }
                             await MainActor.run {
                                 // Stale-check: user may have selected another preset while we were parsing.
-                                guard self.settings.shaderPresetID == savedID else { return }
-                                self.reflectedSlangParams = reflected.parameters
-                                var merged = reflected.defaults
-                                for (n, v) in savedPreset.uniformValues { merged[n] = v }
-                                self.settings.uniformValues = merged
+                                guard self.settings.shaderPresetID == savedID else {
+                                    self.isReflectingParameters = false
+                                    return
+                                }
+                                if let reflected = reflected {
+                                    self.reflectedSlangParams = reflected.parameters
+                                    var merged = reflected.defaults
+                                    for (n, v) in savedPreset.uniformValues { merged[n] = v }
+                                    self.settings.uniformValues = merged
+                                }
+                                self.isReflectingParameters = false
                             }
                         }
                     }
@@ -779,18 +802,24 @@ controller.close()
                     // Kick off async reflection; do nothing synchronously to
                     // avoid the main-thread hang on big slang shaders.
                     reflectedSlangParams = []
+                    isReflectingParameters = true
                     let path = slangPreset.path
                     let presetID = slangPreset.path.path
                     Task {
                         let reflected = await SlangPreset.reflectParametersAsync(at: path)
-                        guard let reflected = reflected else { return }
                         await MainActor.run {
                             // Stale-check: user may have selected another preset while we were parsing.
-                            guard self.settings.shaderPresetID == presetID else { return }
-                            self.reflectedSlangParams = reflected.parameters
-                            var values = self.settings.uniformValues
-                            for (n, v) in reflected.defaults where values[n] == nil { values[n] = v }
-                            self.settings.uniformValues = values
+                            guard self.settings.shaderPresetID == presetID else {
+                                self.isReflectingParameters = false
+                                return
+                            }
+                            if let reflected = reflected {
+                                self.reflectedSlangParams = reflected.parameters
+                                var values = self.settings.uniformValues
+                                for (n, v) in reflected.defaults where values[n] == nil { values[n] = v }
+                                self.settings.uniformValues = values
+                            }
+                            self.isReflectingParameters = false
                         }
                     }
                 }
@@ -1270,18 +1299,24 @@ controller.close()
                         } else {
                             // Clear now; repopulate when the async reflection lands.
                             reflectedSlangParams = []
+                            isReflectingParameters = true
                             let path = slangBase.path
                             let savedID = preset.id.uuidString
                             Task {
                                 let reflected = await SlangPreset.reflectParametersAsync(at: path)
-                                guard let reflected = reflected else { return }
                                 await MainActor.run {
                                     // Stale-check: user may have selected another preset while we were parsing.
-                                    guard self.settings.shaderPresetID == savedID else { return }
-                                    self.reflectedSlangParams = reflected.parameters
-                                    var merged = reflected.defaults
-                                    for (n, v) in self.settings.uniformValues { merged[n] = v }
-                                    self.settings.uniformValues = merged
+                                    guard self.settings.shaderPresetID == savedID else {
+                                        self.isReflectingParameters = false
+                                        return
+                                    }
+                                    if let reflected = reflected {
+                                        self.reflectedSlangParams = reflected.parameters
+                                        var merged = reflected.defaults
+                                        for (n, v) in self.settings.uniformValues { merged[n] = v }
+                                        self.settings.uniformValues = merged
+                                    }
+                                    self.isReflectingParameters = false
                                 }
                             }
                         }

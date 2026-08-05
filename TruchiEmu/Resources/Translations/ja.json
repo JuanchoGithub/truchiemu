@@ -1257,6 +1257,7 @@
   "cores.availableSystems": "利用可能なシステム",
   "shader.parameters": "パラメーター",
   "shader.param.unused": "このプリセットでは使用されません",
+  "shader.parameters.loading": "パラメーターを読み込み中...",
   "shader.parameterConfiguration": "パラメーター設定",
   "shader.active": "アクティブ",
   "shader.reset": "リセット",

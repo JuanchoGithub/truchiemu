@@ -34,6 +34,7 @@ struct ShaderEditorSidebar: View {
     @State private var expandedSlangGroups: Set<String> = []
     @State private var savedPresets: [SavedShaderPreset] = []
     @State private var reflectedSlangParams: [ShaderUniform] = []
+    @State private var isReflectingParameters: Bool = false
     @State private var showSaveDialog = false
     @State private var savePresetName = ""
 
@@ -206,6 +207,15 @@ struct ShaderEditorSidebar: View {
                     .padding(.horizontal, 8)
                     .padding(.vertical, 8)
                 }
+            } else if isSlangPresetSelected && isReflectingParameters {
+                VStack(spacing: 8) {
+                    ProgressView()
+                        .controlSize(.small)
+                    Text(loc.localized("shader.parameters.loading"))
+                        .font(.caption)
+                        .foregroundColor(AppColors.textSecondary(colorScheme))
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 Spacer()
                 Text("No adjustable parameters for this shader.")
@@ -753,21 +763,27 @@ struct ShaderEditorSidebar: View {
                 for (n, v) in live.parameterDefaults where values[n] == nil { values[n] = v }
                 settings.uniformValues = values
             } else {
-                // Kick off async reflection; do nothing synchronously to
-                // avoid the main-thread hang on big slang shaders.
+                // Clear now; repopulate when the async reflection lands.
+                reflectedSlangParams = []
+                isReflectingParameters = true
                 let path = slangPreset.path
                 let presetID = slangPreset.path.path
                 Task {
                     let reflected = await SlangPreset.reflectParametersAsync(at: path)
-                    guard let reflected = reflected else { return }
                     await MainActor.run {
-                        // Stale-check: only commit if the user is still on
-                        // the same preset that triggered this backfill.
-                        guard self.settings.shaderPresetID == presetID else { return }
-                        self.reflectedSlangParams = reflected.parameters
-                        var values = self.settings.uniformValues
-                        for (n, v) in reflected.defaults where values[n] == nil { values[n] = v }
-                        self.settings.uniformValues = values
+                        // Stale-check: user may have selected another preset
+                        // while we were parsing.
+                        guard presetID == self.settings.shaderPresetID else {
+                            self.isReflectingParameters = false
+                            return
+                        }
+                        if let reflected = reflected {
+                            self.reflectedSlangParams = reflected.parameters
+                            var values = self.settings.uniformValues
+                            for (n, v) in reflected.defaults where values[n] == nil { values[n] = v }
+                            self.settings.uniformValues = values
+                        }
+                        self.isReflectingParameters = false
                     }
                 }
             }
