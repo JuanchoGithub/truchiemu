@@ -59,6 +59,12 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
 	private var isRunning = false
 	private var hasStopped = false
 
+    // Serial queue for launch-time iCloud materialization + core boot. Runs the
+    // blocking download work off the XPC connection queue so the service stays
+    // responsive (stop/ping/getSaveRAMData) while a slow iCloud download runs —
+    // a busy connection queue previously froze the client's stop path.
+    private let materializeQueue = DispatchQueue(label: "truchiemu.materialize")
+
     // rcheevos lives here in the XPC service so its peek callback can read
     // libretro memory through the same `g_instance` that the core uses.
     private var rcheevosRuntime: RcheevosRuntime?
@@ -127,8 +133,11 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
                 LoggerService.info(category: "PS2-MemCard", "Ensured Play! memory card directory: \(cardDir.path)")
                 // Documents is iCloud-synced by default. Existing card contents
                 // may be dataless placeholders that read as empty/corrupt — pull
-                // them down before the core opens the card.
-                ICloudMaterializer.ensureDirectoryMaterialized(at: cardDir)
+                // them down before the core opens the card. Cards are
+                // directory-backed, so a card that stays evicted just reads as a
+                // blank card; keep the walk budget short so a slow download can't
+                // stall the core boot.
+                ICloudMaterializer.ensureDirectoryMaterialized(at: cardDir, budget: 8)
             } catch {
                 LoggerService.error(category: "PS2-MemCard", "Failed to create \(cardDir.path): \(error.localizedDescription)")
             }
@@ -175,89 +184,105 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
 
         SaveDirectoryBridge.setSavePath(saveDirectory)
         SaveDirectoryBridge.setSystemPath(systemDirectory)
-
-        // Any of these paths may be iCloud-synced (Desktop & Documents sync, or
-        // a user-chosen library folder). A dataless placeholder reads as
-        // empty/corrupt to the core, so download the bytes before launch. The
-        // ROM is materialized as a single file; system dir (BIOS, etc.) is
-        // walked because the core reads specific files from it on demand.
-        ICloudMaterializer.ensureMaterialized(at: URL(fileURLWithPath: romPath), timeout: 120)
-        ICloudMaterializer.ensureDirectoryMaterialized(at: URL(fileURLWithPath: systemDirectory))
-
-        // Play! (PS2) ignores GET_SAVE_DIRECTORY/GET_SYSTEM_DIRECTORY and stores
-        // its virtual memory cards under NSDocumentDirectory/Play Data Files/vfs/
-        // {mc0,mc1}. It only EnsurePathExists() during CPS2VM construction, so a
-        // launch that aborts early (e.g. the old serialize crash) leaves the base
-        // folder without the mc0/mc1 subdirs and the HLE BIOS reports "no memory
-        // cards". Pre-create them here so a card is always present. These are
-        // directory-backed cards — an empty directory is a valid blank card.
-        if coreID.lowercased().contains("play_libretro") {
-            Self.ensurePlayMemoryCardDirectories()
-        }
-
-		LibretroBridge.setLanguage(Int32(language))
-		LibretroBridge.setLogLevel(Int32(logLevel))
-        LibretroBridge.setPaused(false)
         isRunning = true
-        Self.logMemoryFootprint(label: "pre-launch")
 
-        let weakProxy = clientProxy
-        LibretroBridge.registerGameLoadedCallback { romPath in
-            let pathStr = String(cString: romPath)
-            weakProxy?.gameLoaded(romPath: pathStr)
-        }
+        // Materialization can busy-wait on iCloud downloads for seconds. Run it —
+        // and the core boot that depends on it — on a dedicated queue so this XPC
+        // handler never blocks the connection queue. While the queue was blocked,
+        // the service could not answer stop()/ping()/getSaveRAMData(), which froze
+        // the client's main thread on window close when Play! cards were evicted.
+        materializeQueue.async { [weak self] in
+            guard let self else { return }
 
-        // Spin up the rcheevos runtime here so its peek callback reads through
-        // the XPC service's `g_instance`. Triggers are loaded by the main app
-        // via `loadRcheevosAchievements` once it has them.
-        rcheevosSystemID = systemID
-        let runtime = RcheevosRuntime(systemID: systemID)
-        let weakProxy2 = clientProxy
-        runtime.onAchievementTriggered = { id in
-            weakProxy2?.rcheevosAchievementTriggered(id: id)
-        }
-        runtime.onAchievementProgress = { id, value in
-            weakProxy2?.rcheevosAchievementProgress(id: id, value: value)
-        }
-        runtime.onChallengeStarted = { id in
-            weakProxy2?.rcheevosChallengeStarted(id: id)
-        }
-        runtime.onChallengeCancelled = { id in
-            weakProxy2?.rcheevosChallengeCancelled(id: id)
-        }
-        rcheevosRuntime = runtime
-        rcheevosRuntimePtr = Unmanaged.passUnretained(runtime).toOpaque()
+            // Any of these paths may be iCloud-synced (Desktop & Documents sync, or
+            // a user-chosen library folder). A dataless placeholder reads as
+            // empty/corrupt to the core, so download the bytes before launch. The
+            // ROM is materialized as a single file; system dir (BIOS, etc.) is
+            // walked because the core reads specific files from it on demand.
+            ICloudMaterializer.ensureMaterialized(at: URL(fileURLWithPath: romPath), timeout: 120)
+            ICloudMaterializer.ensureDirectoryMaterialized(at: URL(fileURLWithPath: systemDirectory))
 
-        if let pending = pendingRcheevosTriggers {
-            runtime.loadGame(triggers: pending)
-            LoggerService.info(category: "XPC-Service", "Applied \(pending.count) stashed rcheevos triggers")
-            if let script = pendingRichPresenceScript {
-                runtime.activateRichPresence(script: script)
-                LoggerService.info(category: "XPC-Service", "Applied stashed rich presence script")
+            // Play! (PS2) ignores GET_SAVE_DIRECTORY/GET_SYSTEM_DIRECTORY and stores
+            // its virtual memory cards under NSDocumentDirectory/Play Data Files/vfs/
+            // {mc0,mc1}. It only EnsurePathExists() during CPS2VM construction, so a
+            // launch that aborts early (e.g. the old serialize crash) leaves the base
+            // folder without the mc0/mc1 subdirs and the HLE BIOS reports "no memory
+            // cards". Pre-create them here so a card is always present. These are
+            // directory-backed cards — an empty directory is a valid blank card.
+            if coreID.lowercased().contains("play_libretro") {
+                Self.ensurePlayMemoryCardDirectories()
             }
-            pendingRcheevosTriggers = nil
-            pendingRichPresenceScript = nil
+
+            // A stop() issued while we were materializing means the client already
+            // tore the session down — do not boot a core that is about to be stopped.
+            if self.hasStopped {
+                reply(false, "Launch cancelled")
+                return
+            }
+
+            LibretroBridge.setLanguage(Int32(language))
+            LibretroBridge.setLogLevel(Int32(logLevel))
+            LibretroBridge.setPaused(false)
+            Self.logMemoryFootprint(label: "pre-launch")
+
+            let weakProxy = self.clientProxy
+            LibretroBridge.registerGameLoadedCallback { romPath in
+                let pathStr = String(cString: romPath)
+                weakProxy?.gameLoaded(romPath: pathStr)
+            }
+
+            // Spin up the rcheevos runtime here so its peek callback reads through
+            // the XPC service's `g_instance`. Triggers are loaded by the main app
+            // via `loadRcheevosAchievements` once it has them.
+            self.rcheevosSystemID = systemID
+            let runtime = RcheevosRuntime(systemID: systemID)
+            let weakProxy2 = self.clientProxy
+            runtime.onAchievementTriggered = { id in
+                weakProxy2?.rcheevosAchievementTriggered(id: id)
+            }
+            runtime.onAchievementProgress = { id, value in
+                weakProxy2?.rcheevosAchievementProgress(id: id, value: value)
+            }
+            runtime.onChallengeStarted = { id in
+                weakProxy2?.rcheevosChallengeStarted(id: id)
+            }
+            runtime.onChallengeCancelled = { id in
+                weakProxy2?.rcheevosChallengeCancelled(id: id)
+            }
+            self.rcheevosRuntime = runtime
+            self.rcheevosRuntimePtr = Unmanaged.passUnretained(runtime).toOpaque()
+
+            if let pending = self.pendingRcheevosTriggers {
+                runtime.loadGame(triggers: pending)
+                LoggerService.info(category: "XPC-Service", "Applied \(pending.count) stashed rcheevos triggers")
+                if let script = self.pendingRichPresenceScript {
+                    runtime.activateRichPresence(script: script)
+                    LoggerService.info(category: "XPC-Service", "Applied stashed rich presence script")
+                }
+                self.pendingRcheevosTriggers = nil
+                self.pendingRichPresenceScript = nil
+            }
+
+            var failureMsg: String?
+            let videoCallback: (UnsafeRawPointer?, Int32, Int32, Int32, Int32) -> Void = { [weak self] data, w, h, pitch, format in
+                self?.handleVideoFrame(data: data, width: Int(w), height: Int(h), pitch: Int(pitch), format: Int(format))
+            }
+
+            LibretroBridge.launch(withDylibPath: dylibPath,
+                                  romPath: romPath,
+                                  shaderDir: shaderDir,
+                                  videoCallback: videoCallback,
+                                  coreID: coreID,
+                                  systemID: systemID,
+                                  romFilename: romFilename,
+                                  wiiControllerType: Int32(wiiControllerType),
+                                  dosDeviceType: UInt32(dosDeviceType)) { msg in
+                failureMsg = msg
+            }
+            Self.logMemoryFootprint(label: "post-launch")
+
+            reply(failureMsg == nil, failureMsg)
         }
-
-        var failureMsg: String?
-        let videoCallback: (UnsafeRawPointer?, Int32, Int32, Int32, Int32) -> Void = { [weak self] data, w, h, pitch, format in
-            self?.handleVideoFrame(data: data, width: Int(w), height: Int(h), pitch: Int(pitch), format: Int(format))
-        }
-
-		LibretroBridge.launch(withDylibPath: dylibPath,
-							  romPath: romPath,
-							  shaderDir: shaderDir,
-							  videoCallback: videoCallback,
-							  coreID: coreID,
-							  systemID: systemID,
-							  romFilename: romFilename,
-							  wiiControllerType: Int32(wiiControllerType),
-							  dosDeviceType: UInt32(dosDeviceType)) { msg in
-			failureMsg = msg
-		}
-		Self.logMemoryFootprint(label: "post-launch")
-
-        reply(failureMsg == nil, failureMsg)
     }
 
     private var hasLoggedVideoFrame = false

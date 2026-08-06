@@ -19,6 +19,9 @@ final class XPCConnectionManager: ObservableObject {
     private var watchdogTimer: DispatchSourceTimer?
     private let watchdogQueue = DispatchQueue(label: "truchiemu.xpc.watchdog", qos: .background)
     private var lastPingResponse: Date = .distantPast
+    // When the watchdog armed; used to bound how long we tolerate a service that
+    // never answers its first ping before SIGKILLing it (see watchdogTick).
+    private var watchdogStart: Date = .distantPast
     private var servicePID: Int32 = 0
 
     @Published var connectionState: ConnectionState = .disconnected
@@ -111,13 +114,6 @@ final class XPCConnectionManager: ObservableObject {
         return _hostProxy
     }
 
-    var synchronousProxy: CoreHostProtocol? {
-        lock.lock()
-        defer { lock.unlock() }
-        guard _isConnected, let connection = connection else { return nil }
-        return connection.synchronousRemoteObjectProxyWithErrorHandler({ _ in }) as? CoreHostProtocol
-    }
-
     private func handleDisconnect(_ state: ConnectionState) {
         // Set immediately from this thread (XPC queue) so SafeHostingView can
         // short-circuit layout before the main-thread cleanup runs.
@@ -205,6 +201,11 @@ final class XPCConnectionManager: ObservableObject {
 	private func startWatchdog() {
 		stopWatchdog()
 		lastPingResponse = Date.distantPast
+		watchdogStart = Date()
+		// Capture the PID up front so the watchdog can kill even a service that
+		// hangs before answering its first ping (captureServicePID normally runs
+		// in the ping reply, which never arrives in that case).
+		captureServicePID()
 		let timer = DispatchSource.makeTimerSource(queue: watchdogQueue)
 		timer.schedule(deadline: .now() + 1, repeating: .seconds(1), leeway: .milliseconds(500))
 		timer.setEventHandler { [weak self] in
@@ -220,11 +221,25 @@ final class XPCConnectionManager: ObservableObject {
     }
 
 	private func watchdogTick() {
-		let elapsed = Date().timeIntervalSince(lastPingResponse)
-		if elapsed > 6 && lastPingResponse != .distantPast {
-			LoggerService.error(category: "XPC", "Watchdog: no ping response for \(Int(elapsed))s — killing service PID \(servicePID)")
-			killService()
-			return
+		if lastPingResponse == .distantPast {
+			// Never answered a ping since the watchdog armed. This used to mean
+			// "never kill", which left a service hung before its first response
+			// alive forever. Give it a generous window — the service may be
+			// legitimately slow during launch-time iCloud materialization — then
+			// kill.
+			let elapsedSinceStart = Date().timeIntervalSince(watchdogStart)
+			if elapsedSinceStart > 30 {
+				LoggerService.error(category: "XPC", "Watchdog: service never responded for \(Int(elapsedSinceStart))s — killing service PID \(servicePID)")
+				killService()
+				return
+			}
+		} else {
+			let elapsed = Date().timeIntervalSince(lastPingResponse)
+			if elapsed > 6 {
+				LoggerService.error(category: "XPC", "Watchdog: no ping response for \(Int(elapsed))s — killing service PID \(servicePID)")
+				killService()
+				return
+			}
 		}
 		remoteProxy?.ping { [weak self] in
 			self?.lastPingResponse = Date()

@@ -2,6 +2,20 @@ import Foundation
 import IOSurface
 import Metal
 
+/// Heap-allocated result holder for the synchronous XPC helpers. The reply
+/// block must be able to write its value even if it arrives after the caller's
+/// semaphore timed out and the caller returned — a stack local would then be
+/// written past its lifetime. The box is retained by the closure, so the write
+/// is always valid; the lock makes the timeout-race read safe.
+private final class ResultBox<T> {
+    private let lock = NSLock()
+    private var _value: T?
+    var value: T? {
+        get { lock.lock(); defer { lock.unlock() }; return _value }
+        set { lock.lock(); defer { lock.unlock() }; _value = newValue }
+    }
+}
+
 final class XPCBridgeAdapter {
     static let shared = XPCBridgeAdapter()
 
@@ -610,14 +624,14 @@ final class XPCBridgeAdapter {
             return shm.pointee.isPaused
         }
         guard useXPC else { return LibretroBridgeSwift.isPaused() }
-        var result = false
+        let box = ResultBox<Bool>()
         let sem = DispatchSemaphore(value: 0)
-        XPCConnectionManager.shared.synchronousProxy?.isPaused { paused in
-            result = paused
+        XPCConnectionManager.shared.remoteProxy?.isPaused { paused in
+            box.value = paused
             sem.signal()
         }
         _ = sem.wait(timeout: .now() + .milliseconds(500))
-        return result
+        return box.value ?? false
     }
 
     func currentRotation() -> Int {
@@ -625,14 +639,14 @@ final class XPCBridgeAdapter {
             return Int(shm.pointee.currentRotation)
         }
         guard useXPC else { return LibretroBridgeSwift.currentRotation() }
-        var result = 0
+        let box = ResultBox<Int>()
         let sem = DispatchSemaphore(value: 0)
-        XPCConnectionManager.shared.synchronousProxy?.getCurrentRotation { rot in
-            result = Int(rot)
+        XPCConnectionManager.shared.remoteProxy?.getCurrentRotation { rot in
+            box.value = Int(rot)
             sem.signal()
         }
         _ = sem.wait(timeout: .now() + .milliseconds(500))
-        return result
+        return box.value ?? 0
     }
 
     func aspectRatio() -> Float {
@@ -648,95 +662,95 @@ final class XPCBridgeAdapter {
         aspectRatioCacheLock.unlock()
         if let cached = cached { return cached }
 
-        var result: Float = 0
+        let box = ResultBox<Float>()
         let sem = DispatchSemaphore(value: 0)
-        XPCConnectionManager.shared.synchronousProxy?.getAspectRatio { ar in
-            result = ar
+        XPCConnectionManager.shared.remoteProxy?.getAspectRatio { ar in
+            box.value = ar
             sem.signal()
         }
         _ = sem.wait(timeout: .now() + .seconds(2))
-        if result > 0.0 {
+        if let result = box.value, result > 0.0 {
             aspectRatioCacheLock.lock()
             cachedAspectRatio = result
             aspectRatioCacheLock.unlock()
         }
-        return result
+        return box.value ?? 0
     }
 
     func audioSampleRate() -> Double {
         guard useXPC else { return LibretroBridgeSwift.audioSampleRate() }
-        var result: Double = 44100.0
+        let box = ResultBox<Double>()
         let sem = DispatchSemaphore(value: 0)
-        XPCConnectionManager.shared.synchronousProxy?.getAudioSampleRate { rate in
-            result = rate
+        XPCConnectionManager.shared.remoteProxy?.getAudioSampleRate { rate in
+            box.value = rate
             sem.signal()
         }
         _ = sem.wait(timeout: .now() + .seconds(2))
-        return result
+        return box.value ?? 44100.0
     }
 
     // MARK: - Save States (XPC async with semaphore for sync needs)
 
     func serializeSize() -> Int {
         guard useXPC else { return LibretroBridgeSwift.serializeSize() }
-        var result: Int = 0
+        let box = ResultBox<Int>()
         let sem = DispatchSemaphore(value: 0)
-        XPCConnectionManager.shared.synchronousProxy?.serializeSize { size in
-            result = size
+        XPCConnectionManager.shared.remoteProxy?.serializeSize { size in
+            box.value = size
             sem.signal()
         }
         _ = sem.wait(timeout: .now() + .seconds(2))
-        return result
+        return box.value ?? 0
     }
 
     func serializeState() -> Data? {
         guard useXPC else { return LibretroBridgeSwift.serializeState() }
-        var result: Data?
+        let box = ResultBox<Data>()
         let sem = DispatchSemaphore(value: 0)
-        XPCConnectionManager.shared.synchronousProxy?.serializeState { data in
-            result = data
+        XPCConnectionManager.shared.remoteProxy?.serializeState { data in
+            box.value = data
             sem.signal()
         }
         _ = sem.wait(timeout: .now() + .seconds(2))
-        return result
+        return box.value
     }
 
     func unserializeState(_ data: Data) -> Bool {
         guard useXPC else { return LibretroBridgeSwift.unserializeState(data) }
-        var result: Bool = false
+        let box = ResultBox<Bool>()
         let sem = DispatchSemaphore(value: 0)
-        XPCConnectionManager.shared.synchronousProxy?.unserializeState(data) { success in
-            result = success
+        XPCConnectionManager.shared.remoteProxy?.unserializeState(data) { success in
+            box.value = success
             sem.signal()
         }
         _ = sem.wait(timeout: .now() + .seconds(2))
-        return result
+        return box.value ?? false
     }
 
     // MARK: - SRAM
 
     func getSaveRAMData() -> Data? {
         guard useXPC else { return LibretroBridgeSwift.getSaveRAMData() }
-        var result: Data?
+        let box = ResultBox<Data>()
         let sem = DispatchSemaphore(value: 0)
-        XPCConnectionManager.shared.synchronousProxy?.getSaveRAMData { data in
-            result = data
+        XPCConnectionManager.shared.remoteProxy?.getSaveRAMData { data in
+            box.value = data
             sem.signal()
         }
         _ = sem.wait(timeout: .now() + .seconds(2))
-        return result
+        return box.value
     }
 
     func loadSaveRAMData(_ data: Data) -> Bool {
         guard useXPC else { return LibretroBridgeSwift.loadSaveRAMData(data) }
-        var result: Bool = false
+        let box = ResultBox<Bool>()
         let sem = DispatchSemaphore(value: 0)
-        XPCConnectionManager.shared.synchronousProxy?.loadSaveRAMData(data) { success in
-            result = success
+        XPCConnectionManager.shared.remoteProxy?.loadSaveRAMData(data) { success in
+            box.value = success
             sem.signal()
         }
         _ = sem.wait(timeout: .now() + .seconds(2))
-        return result
+        return box.value ?? false
     }
 
     func saveDirectoryPath() -> String {
@@ -747,14 +761,14 @@ final class XPCBridgeAdapter {
 
     func getOptionValue(forKey key: String) -> String? {
         guard useXPC else { return LibretroBridgeSwift.getOptionValue(forKey: key) }
-        var result: String?
+        let box = ResultBox<String>()
         let sem = DispatchSemaphore(value: 0)
-        XPCConnectionManager.shared.synchronousProxy?.getOptionValue(forKey: key) { value in
-            result = value
+        XPCConnectionManager.shared.remoteProxy?.getOptionValue(forKey: key) { value in
+            box.value = value
             sem.signal()
         }
         _ = sem.wait(timeout: .now() + .seconds(2))
-        return result
+        return box.value
     }
 
     func setOptionValue(_ value: String, forKey key: String) {
@@ -817,38 +831,38 @@ final class XPCBridgeAdapter {
 
     func getOptionsDictionary() -> [String: Any]? {
         guard useXPC else { return LibretroBridgeSwift.getOptionsDictionary() }
-        var result: [String: Any]?
+        let box = ResultBox<[String: Any]>()
         let sem = DispatchSemaphore(value: 0)
-        XPCConnectionManager.shared.synchronousProxy?.getOptionsDictionary { dict in
-            result = dict
+        XPCConnectionManager.shared.remoteProxy?.getOptionsDictionary { dict in
+            box.value = dict
             sem.signal()
         }
         _ = sem.wait(timeout: .now() + .seconds(2))
-        return result
+        return box.value
     }
 
     func getCategoriesDictionary() -> [String: Any]? {
         guard useXPC else { return LibretroBridgeSwift.getCategoriesDictionary() }
-        var result: [String: Any]?
+        let box = ResultBox<[String: Any]>()
         let sem = DispatchSemaphore(value: 0)
-        XPCConnectionManager.shared.synchronousProxy?.getCategoriesDictionary { dict in
-            result = dict
+        XPCConnectionManager.shared.remoteProxy?.getCategoriesDictionary { dict in
+            box.value = dict
             sem.signal()
         }
         _ = sem.wait(timeout: .now() + .seconds(2))
-        return result
+        return box.value
     }
 
     func getInputDescriptorsDictionary() -> [String: Any]? {
         guard useXPC else { return LibretroBridge.getInputDescriptorsDictionary() }
-        var result: [String: Any]?
+        let box = ResultBox<[String: Any]>()
         let sem = DispatchSemaphore(value: 0)
-        XPCConnectionManager.shared.synchronousProxy?.getInputDescriptorsDictionary { dict in
-            result = dict
+        XPCConnectionManager.shared.remoteProxy?.getInputDescriptorsDictionary { dict in
+            box.value = dict
             sem.signal()
         }
         _ = sem.wait(timeout: .now() + .seconds(2))
-        return result
+        return box.value
     }
 
     func loadCoreForOptions(dylibPath: String, coreID: String, romPath: String?) {
@@ -860,7 +874,7 @@ final class XPCBridgeAdapter {
             XPCConnectionManager.shared.connect()
         }
         let sem = DispatchSemaphore(value: 0)
-        XPCConnectionManager.shared.synchronousProxy?.loadCoreForOptions(dylibPath: dylibPath, coreID: coreID, romPath: romPath) {
+        XPCConnectionManager.shared.remoteProxy?.loadCoreForOptions(dylibPath: dylibPath, coreID: coreID, romPath: romPath) {
             sem.signal()
         }
         _ = sem.wait(timeout: .now() + .seconds(5))
@@ -868,14 +882,14 @@ final class XPCBridgeAdapter {
 
     func isCoreLoadedForOptions() -> Bool {
         guard useXPC else { return LibretroBridgeSwift.isCoreLoadedForOptions() }
-        var result = false
+        let box = ResultBox<Bool>()
         let sem = DispatchSemaphore(value: 0)
-        XPCConnectionManager.shared.synchronousProxy?.isCoreLoadedForOptions { loaded in
-            result = loaded
+        XPCConnectionManager.shared.remoteProxy?.isCoreLoadedForOptions { loaded in
+            box.value = loaded
             sem.signal()
         }
         _ = sem.wait(timeout: .now() + .seconds(2))
-        return result
+        return box.value ?? false
     }
 
     // MARK: - Cheats

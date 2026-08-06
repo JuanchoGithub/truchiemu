@@ -37,6 +37,10 @@ enum ICloudMaterializer {
     ///   if it does not exist or could not be downloaded within `timeout`.
     @discardableResult
     static func ensureMaterialized(at url: URL, timeout: TimeInterval = 30) -> Bool {
+        return ensureMaterialized(at: url, deadline: Date().addingTimeInterval(timeout))
+    }
+
+    private static func ensureMaterialized(at url: URL, deadline: Date) -> Bool {
         let fm = FileManager.default
         guard fm.fileExists(atPath: url.path) else { return false }
         guard isDataless(url) else { return true }
@@ -49,7 +53,6 @@ enum ICloudMaterializer {
             return false
         }
 
-        let deadline = Date().addingTimeInterval(timeout)
         while Date() < deadline {
             if !isDataless(url) {
                 LoggerService.info(category: "iCloud", "Materialized: \(url.path)")
@@ -65,25 +68,32 @@ enum ICloudMaterializer {
     /// Directories in iCloud can also contain evicted children (e.g. an entire
     /// PS2 memory-card folder), so this walks the tree and downloads each item.
     ///
+    /// `budget` is shared across the whole walk — it bounds the total wait rather
+    /// than applying a per-item timeout. A directory with many evicted children
+    /// therefore can't stall the caller for minutes (which previously blocked the
+    /// XPC service's connection queue while it was mid-launch).
+    ///
     /// - Returns: `true` if the directory exists and all encountered items are
     ///   materialized, `false` if it does not exist or something timed out.
     @discardableResult
-    static func ensureDirectoryMaterialized(at directory: URL, timeout: TimeInterval = 30) -> Bool {
+    static func ensureDirectoryMaterialized(at directory: URL, budget: TimeInterval = 15) -> Bool {
         let fm = FileManager.default
         var isDir: ObjCBool = false
         guard fm.fileExists(atPath: directory.path, isDirectory: &isDir), isDir.boolValue else {
             return false
         }
 
+        let deadline = Date().addingTimeInterval(budget)
         var allOK = true
         let keys: [URLResourceKey] = [.isDirectoryKey]
         guard let enumerator = fm.enumerator(at: directory, includingPropertiesForKeys: keys) else {
-            return ensureMaterialized(at: directory, timeout: timeout)
+            return ensureMaterialized(at: directory, deadline: deadline)
         }
         for case let child as URL in enumerator {
+            if Date() >= deadline { break }
             let values = try? child.resourceValues(forKeys: Set(keys))
             if values?.isDirectory == true { continue }
-            if !ensureMaterialized(at: child, timeout: timeout) {
+            if !ensureMaterialized(at: child, deadline: deadline) {
                 allOK = false
             }
         }
