@@ -176,22 +176,29 @@ LOAD_SYM(retro_get_memory_data)
       goto shutdown;
   }
 
-  // Apply controller port device types *between* retro_init and retro_load_game.
-  // The libretro spec expects the host to call retro_set_controller_port_device
-  // here; doing it after retro_load_game runs into a race where DOSBox-Pure
-  // (and other cores) cache the default MODE_MAPPER / Generic Keyboard state
-  // during the initial SetInputDescriptors(true) call inside retro_load_game,
-  // so the in-game joystick probe (e.g. FIFA's setup utility) sees "no
-  // joystick" before our device-type change takes effect. Setting the mode
-  // here still records the chosen mode in dbp_port_mode (the early-return
-  // guard only skips the bind refresh when dbp_state == DBPSTATE_BOOT), so
-  // retro_load_game's own SetInputDescriptors(true) picks it up and the
-  // initial JOYSTICK_Enable reflects the correct joystick state.
+  // Apply controller port device types *between* retro_init and retro_load_game
+  // ONLY for DOSBox-Pure, which seeds `dbp_port_mode` here so that
+  // retro_load_game's SetInputDescriptors(true) picks it up and the initial
+  // JOYSTICK_Enable reflects the correct joystick state.
+  //
+  // Calling retro_set_controller_port_device before retro_load_game is unsafe
+  // for cores that lazily initialize the structures the call touches inside
+  // retro_load_game:
+  //   - Dolphin dereferences Config::Layer (only created during boot) -> crash
+  //     in Config::Layer::Set
+  //   - Mednafen_PSX / pcsx_rearmed instantiate pad objects during
+  //     retro_load_game -> null deref
+  // The libretro spec publishes RETRO_ENVIRONMENT_SET_CONTROLLER_INFO in
+  // retro_load_game; RetroArch itself only calls retro_set_controller_port_device
+  // after retro_load_game. All non-DOSBox cores get the post-load call below.
   if (didInit) {
-      [self setControllerPortDevice:0 device:1];
-      [self setControllerPortDevice:1 device:1];
-      [self setControllerPortDevice:2 device:1];
-      [self setControllerPortDevice:3 device:1];
+      BOOL isDOSBox = (g_coreID && [[g_coreID lowercaseString] containsString:@"dosbox"]);
+      if (isDOSBox) {
+          [self setControllerPortDevice:0 device:1];
+          [self setControllerPortDevice:1 device:1];
+          [self setControllerPortDevice:2 device:1];
+          [self setControllerPortDevice:3 device:1];
+      }
   }
 
   memset(&gi, 0, sizeof(gi));
@@ -254,10 +261,18 @@ LOAD_SYM(retro_get_memory_data)
     goto shutdown;
   } @catch (...) {
     goto shutdown;
-  }[self setControllerPortDevice:0 device:device_type];
-    [self setControllerPortDevice:1 device:device_type];
-    [self setControllerPortDevice:2 device:device_type];
-    [self setControllerPortDevice:3 device:device_type];
+  } @try {
+      [self setControllerPortDevice:0 device:device_type];
+      [self setControllerPortDevice:1 device:device_type];
+      [self setControllerPortDevice:2 device:device_type];
+      [self setControllerPortDevice:3 device:device_type];
+  } @catch (NSException *portDeviceException) {
+      bridge_log_printf(RETRO_LOG_ERROR,
+          "[Bridge] retro_set_controller_port_device threw post-load (coreID=%s device_type=%u): %@",
+          g_coreID ? g_coreID.UTF8String : "(null)",
+          device_type,
+          portDeviceException.reason ?: @"(no reason)");
+  }
     NSLog(@"[Bridge] WiiDeviceApply device_type=%u for dolphin ports 0-3", device_type);
 
     // Signal variables updated for Flycast cores so retro_run() triggers

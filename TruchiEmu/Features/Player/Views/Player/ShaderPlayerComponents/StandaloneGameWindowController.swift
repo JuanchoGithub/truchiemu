@@ -12,6 +12,7 @@ import Combine
 class SafeHostingView<Content: View>: NSHostingView<Content> {
 @objc var isPassThroughOverlay = false
 @objc var passesThroughEmptyAreas = false
+@objc var isGuideSidebar = false
 
 override func layout() {
     guard !XPCConnectionManager.isShuttingDown else { return }
@@ -1676,6 +1677,7 @@ hostingView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
             GameGuideSidebar(viewModel: gameGuideViewModel, windowController: self)
         ))
         hostingView.translatesAutoresizingMaskIntoConstraints = false
+        hostingView.isGuideSidebar = true
 
 if let toolbar = toolbarView {
 containerView.addSubview(hostingView, positioned: .below, relativeTo: toolbar)

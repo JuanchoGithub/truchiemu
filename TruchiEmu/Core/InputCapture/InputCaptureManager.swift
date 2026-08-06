@@ -146,15 +146,15 @@ class InputCaptureManager: NSObject, ObservableObject {
 
     private func setupClickOutsideMonitor() {
         // Monitor for left mouse down events globally
-        clickMonitor = NSEvent.addGlobalMonitorForEvents(matching: .leftMouseDown) { [weak self] event in
+        clickMonitor = NSEvent.addGlobalMonitorForEvents(matching: .leftMouseDown) { [weak self] _ in
             guard let self = self, let window = self.capturedWindow else { return }
 
-            // Check if the click is outside our window
-            let clickLocation = event.locationInWindow
-            let windowFrame = window.frame
-
-            // Convert click location from screen coordinates
-            if !windowFrame.contains(clickLocation) {
+            // Use the global mouse location (screen coordinates) for the
+            // containment check. The captured event's locationInWindow is in
+            // window-local coordinates and is not directly comparable to
+            // window.frame, which is in screen coordinates.
+            let clickLocation = NSEvent.mouseLocation
+            if !window.frame.contains(clickLocation) {
                 // Click is outside - stop capture
                 Task { @MainActor in
                     self.stopCapture(reason: "Click outside window")
@@ -190,8 +190,13 @@ class InputCaptureManager: NSObject, ObservableObject {
         if let escapeHandle = NSEvent.addLocalMonitorForEvents(matching: .keyDown, handler: { [weak self] event in
             guard let self = self, self.isCapturing else { return event }
             if event.keyCode == 53 {
+                // Track the ESC press for the triple-press release combo and
+                // the escape-hint toast, but do NOT swallow the event. Games
+                // like DOSBox/ScummVM use ESC as a normal in-game key (menu,
+                // back, joystick fire), so it must reach the core via the
+                // regular keyDown path in FocusableMTKView.
                 self.handleEscapePress()
-                return nil
+                return event
             }
             // `.toggleInputCapture` (default Cmd-M) is handled by
             // StandaloneGameWindowController.setupInputCaptureHotkey via
@@ -275,16 +280,17 @@ class InputCaptureManager: NSObject, ObservableObject {
     }
     
     private func isClickOnGuideSidebar(_ event: NSEvent, in window: NSWindow) -> Bool {
-        guard let contentView = window.contentView else { return false }
+        guard let containerView = window.contentView else { return false }
         let clickInWindow = event.locationInWindow
-        for view in contentView.subviews {
-            if view.responds(to: Selector(("isPassThroughOverlay"))) {
-                if let isPassThrough = view.value(forKey: "isPassThroughOverlay") as? Bool, !isPassThrough {
-                    let clickInView = view.convert(clickInWindow, from: nil)
-                    if view.bounds.contains(clickInView) {
-                        return true
-                    }
-                }
+        for view in containerView.subviews {
+            guard view.responds(to: Selector(("isGuideSidebar"))),
+              let isGuideSidebar = view.value(forKey: "isGuideSidebar") as? Bool,
+              isGuideSidebar else {
+                continue
+            }
+            let clickInView = view.convert(clickInWindow, from: nil)
+            if view.bounds.contains(clickInView) {
+                return true
             }
         }
         return false

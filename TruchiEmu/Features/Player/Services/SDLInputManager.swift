@@ -649,6 +649,9 @@ class SDLInputManager: ObservableObject {
 
     private nonisolated func handleJoyHatEvent(_ event: SDL_JoyHatEvent) {
         let hat = event.value
+        #if LOG_DEBUG
+        LoggerService.debug(category: "SDL", "handleJoyHatEvent which=\(event.which) hat=\(hat) (Up:\((hat & UInt8(SDL_HAT_UP)) != 0) Right:\((hat & UInt8(SDL_HAT_RIGHT)) != 0) Down:\((hat & UInt8(SDL_HAT_DOWN)) != 0) Left:\((hat & UInt8(SDL_HAT_LEFT)) != 0))")
+        #endif
         setNavButton(.dpadUp, pressed: (hat & UInt8(SDL_HAT_UP)) != 0)
         setNavButton(.dpadDown, pressed: (hat & UInt8(SDL_HAT_DOWN)) != 0)
         setNavButton(.dpadLeft, pressed: (hat & UInt8(SDL_HAT_LEFT)) != 0)
@@ -684,6 +687,9 @@ class SDLInputManager: ObservableObject {
     // MARK: - Input Dispatch
 
     private nonisolated func dispatchButton(retroID: Int, instanceID: Int32, pressed: Bool) {
+        #if LOG_DEBUG
+        LoggerService.debug(category: "SDL", "dispatchButton retroID=\(retroID) instanceID=\(instanceID) pressed=\(pressed)")
+        #endif
         weak var runner: EmulatorRunner?
         runnerLock.lock()
         runner = _activeRunner
