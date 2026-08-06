@@ -319,12 +319,13 @@ struct LibraryGridView: View {
             let scale = value / lastMagnification
             let zoomDelta = (scale - 1.0) * 0.8
             continuousZoom = max(0, min(1, continuousZoom + zoomDelta))
+            updateColumnCountFromZoom()
             lastMagnification = value
         }
         .onEnded { _ in
-            let snapped = round(continuousZoom * 7.0) / 7.0
-            continuousZoom = snapped
-            columnCount = max(1, min(8, Int(round((1.0 - snapped) * 7.0) + 1)))
+            withAnimation(.interpolatingSpring(stiffness: 150, damping: 20)) {
+                updateColumnCountFromZoom()
+            }
             lastMagnification = 1.0
         }
 )
