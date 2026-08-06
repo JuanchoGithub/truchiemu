@@ -145,7 +145,7 @@ final class GamepadSheetContext: GamepadNavContext {
 
 @MainActor
 final class GamepadGameToolbarContext: GamepadNavContext {
-    override var priority: Int { 50 }
+    override var priority: Int { 70 }
 
     var itemCount: Int = 0
     /// Indices of toolbar buttons that are not currently visible (e.g. a
