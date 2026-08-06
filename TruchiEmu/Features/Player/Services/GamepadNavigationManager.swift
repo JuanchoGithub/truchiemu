@@ -290,7 +290,7 @@ final class GamepadNavigationManager: ObservableObject {
         let sdlButtons = SDLInputManager.shared.pollNavButtons()
 
         guard !gamepads.isEmpty || !sdlButtons.isEmpty else {
-            if isGamepadActive { isGamepadActive = false }
+            resetNavState()
             return
         }
 
