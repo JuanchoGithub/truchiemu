@@ -24,6 +24,12 @@ enum TVModeMetrics {
     /// TV Mode view actually fills.
     static var scale: CGFloat {
         guard let screen = NSScreen.main else { return 1.0 }
+        return scale(for: screen)
+    }
+
+    /// Scale factor for a specific screen. Reads logical points
+    /// (`screen.frame.height`), not backing pixels.
+    static func scale(for screen: NSScreen) -> CGFloat {
         let logicalHeight = screen.frame.height
         let raw = logicalHeight / 982.0
         return min(max(raw, 1.0), 2.5)

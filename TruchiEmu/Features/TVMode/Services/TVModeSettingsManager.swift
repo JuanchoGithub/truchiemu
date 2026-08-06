@@ -35,16 +35,28 @@ final class TVModeSettingsManager: ObservableObject {
     /// so the main-window launch behavior is unchanged.
     private var priorAutoFullscreen: Bool?
 
+    /// Set when the app cold-starts in TV-mode. The main window doesn't exist
+    /// yet during `init`, so any synchronous screen move/fullscreen silently
+    /// no-ops. `TVModeView` resolves this once its window is actually up (via
+    /// `resolveColdStartScreenSelectionIfNeeded()`).
+    private var coldStartPendingScreenSelection = false
+
     private init() {
         // Resume the last TV-mode session. The `currentlyActive` key is written
         // on every `isActive` change, so it reflects what the user was doing at
         // quit. Fall back to the `launchInTVMode` user preference only when no
         // prior session exists (i.e. truly first launch).
-        if AppSettingsCache.shared.getData("tvMode_currentlyActive") != nil {
-            self.isActive = AppSettings.getBool("tvMode_currentlyActive", defaultValue: false)
-        } else {
-            self.isActive = TVModeSettings.launchInTVMode
-        }
+        let hasPriorSession = AppSettingsCache.shared.getData("tvMode_currentlyActive") != nil
+        let priorSessionActive = hasPriorSession && AppSettings.getBool("tvMode_currentlyActive", defaultValue: false)
+
+        // Don't resume a TV-mode session when the display it was last shown on
+        // is no longer attached (external monitor/TV unplugged between
+        // launches). The app should "come back to normal" once the big screen
+        // is gone rather than drop the user back into TV Mode on the Mac.
+        self.isActive = priorSessionActive
+            ? Self.isRememberedScreenStillAttached()
+            : TVModeSettings.launchInTVMode
+
         if isActive {
             // Started in TV-mode (persisted launch flag) — mirror enter()'s
             // autoFs save/restore so the main-window behavior is restored
@@ -52,10 +64,42 @@ final class TVModeSettingsManager: ObservableObject {
             priorAutoFullscreen = AppSettings.getBool("autoFullscreenEnabled", defaultValue: false)
             AppSettings.setBool("autoFullscreenEnabled", value: true)
             // Cold-start bypasses the picker — there's no view to mount it
-            // on yet. Resolve directly via the user's mode (remembered >
-            // main) and stash origin so a later exit can still restore.
-            requestScreenSelection(allowPicker: false)
+            // on yet. Defer the screen resolve until the main window exists
+            // (see `resolveColdStartScreenSelectionIfNeeded()`); calling
+            // `requestScreenSelection()` synchronously here finds no window
+            // and leaves TV-mode on whatever screen the app happens to launch
+            // on instead of the remembered display.
+            coldStartPendingScreenSelection = true
         }
+    }
+
+    /// Runs the cold-start screen selection the first time the TV-mode view
+    /// appears (where the main window provably exists). No-op on any other
+    /// entry path — those call `enter()`, which resolves the screen directly.
+    func resolveColdStartScreenSelectionIfNeeded() {
+        guard coldStartPendingScreenSelection else { return }
+        // The window can still be mid-arrival when `onAppear` fires (a titled,
+        // visible, non-fullscreen window is what `commitScreenSelection` moves).
+        // If it isn't there yet, keep the request pending and retry shortly.
+        let hasMovableWindow = NSApp.windows.contains {
+            $0.isVisible && $0.styleMask.contains(.titled) && !$0.styleMask.contains(.fullScreen)
+        }
+        guard hasMovableWindow else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+                self?.resolveColdStartScreenSelectionIfNeeded()
+            }
+            return
+        }
+        coldStartPendingScreenSelection = false
+        requestScreenSelection(allowPicker: false)
+    }
+
+    /// True when the screen TV Mode was last shown on is still connected, or
+    /// when no screen was remembered. Used at cold start to avoid resuming a
+    /// session whose display (e.g. an external TV) is no longer attached.
+    private static func isRememberedScreenStillAttached() -> Bool {
+        guard let stored = TVModeSettings.rememberedScreenID else { return true }
+        return NSScreen.screens.contains { idString(for: $0) == stored }
     }
 
     /// Guard: when the app cold-starts in TV-mode, the user almost certainly

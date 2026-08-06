@@ -165,7 +165,20 @@ struct TVModeView: View {
         .environment(\.tvModeScale, scale)
         .animation(.easeInOut(duration: 0.2), value: coreManager.pendingDownload)
         .onAppear {
-            scale = TVModeMetrics.scale
+            refreshScale()
+            // Cold-start resume: the main window exists now, so run the screen
+            // selection (move to remembered display + fullscreen) that init
+            // deferred because no window was up yet.
+            tvModeSettings.resolveColdStartScreenSelectionIfNeeded()
+            // Re-assert the scale a beat after appear: the cold-start
+            // fullscreen transition / display settle can land after the
+            // immediate read, and a stale launch-time `NSScreen.main` read
+            // freezes TV-sized icons on the wrong screen. Refreshing once the
+            // transition has landed keeps the icons at the size the current
+            // display needs.
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [self] in
+                refreshScale()
+            }
             navContext.handler = { [self] action in handle(action: action) }
             // Honor an already-running game so we don't double-rout `select` /
             // `launchGame` into the launch pipeline and surface a duplicate-
@@ -177,9 +190,10 @@ struct TVModeView: View {
             }
             GamepadNavContextStack.shared.push(navContext)
             // Screen selection (target resolve + picker + fullscreen) is
-            // driven by `TVModeSettingsManager.enter()` so every entry path
-            // — menu, gamepad combo, library grid, cold-start — uses the
-            // exact same flow. Nothing to do here.
+            // driven by `TVModeSettingsManager.enter()` for live entry paths
+            // (menu, gamepad combo, library grid). Cold-start resume defers it
+            // to here via `resolveColdStartScreenSelectionIfNeeded()` above —
+            // the window only exists once this view appears.
         }
         .onDisappear {
             GamepadNavContextStack.shared.remove(navContext)
@@ -194,6 +208,26 @@ struct TVModeView: View {
         // Live re-load if the user changes TV mode settings from elsewhere.
         .onReceive(NotificationCenter.default.publisher(for: .tvModeSettingsChanged)) { _ in
             viewModel.reloadSettings()
+        }
+        // Recompute the scale whenever the display setup changes (external
+        // monitor plugged in / unplugged, resolution change) so the icons
+        // track the screen the TV-mode window actually fills instead of the
+        // value captured at launch.
+        .onChange(of: screenCatalog.screens) { _, _ in
+            refreshScale()
+        }
+        .onChange(of: screenCatalog.mainScreenID) { _, _ in
+            refreshScale()
+        }
+        // The TV-mode window moves between screens (screen selection, fullscreen
+        // transition, display re-arrangement) without necessarily posting a
+        // display-parameters change — recompute the scale off the window's own
+        // screen in those cases so the icons always match where the window is.
+        .onReceive(NotificationCenter.default.publisher(for: NSWindow.didChangeScreenNotification)) { _ in
+            refreshScale()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSWindow.didEnterFullScreenNotification)) { _ in
+            refreshScale()
         }
         // Suspend the TV-mode gamepad nav context while a game window is
         // active so its higher priority (60) doesn't outrank the game window's
@@ -239,6 +273,21 @@ struct TVModeView: View {
             return rom
         }
         return viewModel.selectedGame
+    }
+
+    /// Recomputed from the screen the TV-mode window actually sits on. More
+    /// reliable than `TVModeMetrics.scale` (which reads `NSScreen.main`) during
+    /// cold start and fullscreen transitions, when `NSScreen.main` can still
+    /// report the screen the app launched on rather than where the window ended
+    /// up. Falls back to `NSScreen.main` when no window is resolvable.
+    private func refreshScale() {
+        let window = NSApp.windows.first { $0.styleMask.contains(.fullScreen) }
+            ?? NSApp.mainWindow
+        if let screen = window?.screen {
+            scale = TVModeMetrics.scale(for: screen)
+        } else {
+            scale = TVModeMetrics.scale
+        }
     }
 
     @ViewBuilder
