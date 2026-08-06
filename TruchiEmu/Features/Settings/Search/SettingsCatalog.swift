@@ -179,6 +179,13 @@ enum SettingsCatalog {
             ),
 
             SettingsCatalogEntry(
+                page: .dosJoystick, sectionID: "dosJoystick",
+                sectionTitle: "DOS Joystick",
+                optionTitles: ["Joystick Preset"],
+                keywords: ["dos", "joystick", "gamepad", "game", "controller", "gravis", "dosbox", "pure", "thrustmaster", "flight", "stick", "hat", "buttons", "plugged"]
+            ),
+
+            SettingsCatalogEntry(
                 page: .boxArt, sectionID: "libretroCDN",
                 sectionTitle: "Libretro Thumbnails",
                 keywords: ["libretro", "thumbnail", "cdn", "url", "source"]

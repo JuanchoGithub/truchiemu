@@ -176,6 +176,24 @@ LOAD_SYM(retro_get_memory_data)
       goto shutdown;
   }
 
+  // Apply controller port device types *between* retro_init and retro_load_game.
+  // The libretro spec expects the host to call retro_set_controller_port_device
+  // here; doing it after retro_load_game runs into a race where DOSBox-Pure
+  // (and other cores) cache the default MODE_MAPPER / Generic Keyboard state
+  // during the initial SetInputDescriptors(true) call inside retro_load_game,
+  // so the in-game joystick probe (e.g. FIFA's setup utility) sees "no
+  // joystick" before our device-type change takes effect. Setting the mode
+  // here still records the chosen mode in dbp_port_mode (the early-return
+  // guard only skips the bind refresh when dbp_state == DBPSTATE_BOOT), so
+  // retro_load_game's own SetInputDescriptors(true) picks it up and the
+  // initial JOYSTICK_Enable reflects the correct joystick state.
+  if (didInit) {
+      [self setControllerPortDevice:0 device:1];
+      [self setControllerPortDevice:1 device:1];
+      [self setControllerPortDevice:2 device:1];
+      [self setControllerPortDevice:3 device:1];
+  }
+
   memset(&gi, 0, sizeof(gi));
   gi.path = _retainedRomPath.UTF8String;
 
@@ -210,8 +228,11 @@ LOAD_SYM(retro_get_memory_data)
        device_type = 1;
 } else if ((g_coreID && [[g_coreID lowercaseString] containsString:@"mame"]) ||
                (g_coreID && [[g_coreID lowercaseString] containsString:@"dosbox"])) {
-         device_type = 1; // RETRO_DEVICE_JOYPAD - DOSBox-Pure supports gamepad natively
-    } else if ((g_coreID && [[g_coreID lowercaseString] containsString:@"mupen64"]) ||
+         device_type = (g_dosDeviceType != 0) ? g_dosDeviceType : 1; // RETRO_DEVICE_JOYPAD — DOSBox-Pure exposes a guest joystick only when a joystick subclass is set (0 keeps the Generic Keyboard default)
+         bridge_log_printf(RETRO_LOG_INFO, "[Bridge] DOSDeviceProbe coreID=%s g_dosDeviceType=%u device_type=%u",
+                           g_coreID ? g_coreID.UTF8String : "(null)",
+                           g_dosDeviceType, device_type);
+     } else if ((g_coreID && [[g_coreID lowercaseString] containsString:@"mupen64"]) ||
               (g_coreID && [[g_coreID lowercaseString] containsString:@"parallel_n64"])) {
         device_type = 5; // RETRO_DEVICE_ANALOG for proper N64 analog + digital input
   } else if (g_coreID && ([[g_coreID lowercaseString] containsString:@"genesis_plus_gx"] ||

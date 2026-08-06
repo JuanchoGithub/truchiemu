@@ -250,6 +250,7 @@ struct ROMSettings: Codable, Hashable {
     var cheatsEnabled: Bool? = nil
     var hardcoreMode: Bool? = nil
     var analogMouseEnabled: Bool? = nil
+    var dosJoystickPreset: DOSJoystickPreset? = nil
 
     mutating func resetShaderSettings() {
         crtEnabled = true

@@ -2290,6 +2290,15 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
             self?.toggleFullscreen()
             return nil
         }
+        if hotkeys.matches(.toggleDOSJoystick, systemID: systemID, event: event) {
+            if let self, let dosRunner = self.runner as? DOSRunner {
+                dosRunner.toggleJoystickMode()
+                if let rom = dosRunner.rom {
+                    self.library?.updateROM(rom)
+                }
+            }
+            return nil
+        }
         return event
         }
     }

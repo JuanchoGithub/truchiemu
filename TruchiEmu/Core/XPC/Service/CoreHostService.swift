@@ -162,15 +162,16 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
     func launch(dylibPath: String,
                  romPath: String,
                  coreID: String,
-                 systemID: String?,
-                 romFilename: String?,
-                 shaderDir: String?,
-                 saveDirectory: String,
-                 systemDirectory: String,
-                 language: Int,
-                 logLevel: Int,
-                 wiiControllerType: Int,
-                 reply: @escaping (Bool, String?) -> Void) {
+                  systemID: String?,
+                  romFilename: String?,
+                  shaderDir: String?,
+                  saveDirectory: String,
+                  systemDirectory: String,
+                  language: Int,
+                  logLevel: Int,
+                  wiiControllerType: Int,
+                  dosDeviceType: Int,
+                  reply: @escaping (Bool, String?) -> Void) {
 
         SaveDirectoryBridge.setSavePath(saveDirectory)
         SaveDirectoryBridge.setSystemPath(systemDirectory)
@@ -250,7 +251,8 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
 							  coreID: coreID,
 							  systemID: systemID,
 							  romFilename: romFilename,
-							  wiiControllerType: Int32(wiiControllerType)) { msg in
+							  wiiControllerType: Int32(wiiControllerType),
+							  dosDeviceType: UInt32(dosDeviceType)) { msg in
 			failureMsg = msg
 		}
 		Self.logMemoryFootprint(label: "post-launch")
@@ -517,6 +519,12 @@ class CoreHostImplementation: NSObject, CoreHostProtocol {
     func setWiiControllerType(_ deviceType: Int, reply: @escaping () -> Void) {
         LoggerService.info(category: "CoreHostService", "setWiiControllerType received deviceType=\(deviceType)")
         LibretroBridge.setWiiControllerType(UInt32(deviceType))
+        reply()
+    }
+
+    func setDOSDeviceType(_ deviceType: Int, reply: @escaping () -> Void) {
+        LoggerService.info(category: "CoreHostService", "setDOSDeviceType received deviceType=\(deviceType)")
+        LibretroBridge.setDOSDeviceType(UInt32(deviceType))
         reply()
     }
 

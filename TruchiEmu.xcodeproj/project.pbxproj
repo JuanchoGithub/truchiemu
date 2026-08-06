@@ -1030,6 +1030,7 @@
 		C7B614C0D64568EA01CC5C75 /* TrainingModeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D832E76DC170355207B293CE /* TrainingModeManager.swift */; };
 		C7EB911EA85AD7A8D9DA113F /* DOS.png in Resources */ = {isa = PBXBuildFile; fileRef = 3E7338C371E12B371E8C32EE /* DOS.png */; };
 		C818A9A30E1776E89896B515 /* cps1@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 5B75DCBF03080C5A3D54BFAB /* cps1@132w.png */; };
+		C82C7323776C0F8CDDA4804E /* DOSJoystick.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DD356AFB297E7357F9435E /* DOSJoystick.swift */; };
 		C859879DFE4BE2B0AC1E85D9 /* NotificationRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7C4618D4B79CF36C814C4D /* NotificationRowView.swift */; };
 		C865E294B543D87C24D91D9C /* dreamcast.ico in Resources */ = {isa = PBXBuildFile; fileRef = 982FAA7861CA35D95681DEB7 /* dreamcast.ico */; };
 		C89D895A0684B41688FF2FD4 /* HotkeyConfigSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCE1CD3383AD9599F73EA5E /* HotkeyConfigSettingsView.swift */; };
@@ -1111,6 +1112,7 @@
 		DA94BAE9800BC86097DC6138 /* sfc@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D9174F064E6B3F316C9AFDB /* sfc@132w.png */; };
 		DAA7D00D03C90DDF0DD7D031 /* AchievementToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B45C4797CC22995053ADA4 /* AchievementToastView.swift */; };
 		DAB669E3BDEA87EADF3AF042 /* gb.ico in Resources */ = {isa = PBXBuildFile; fileRef = AFE2965FAA27F897E6415688 /* gb.ico */; };
+		DAFE857499FFE1F3765B1593 /* DOSJoystickSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA27E493562B273F8D1C121 /* DOSJoystickSettingsView.swift */; };
 		DB0A6A98E6E40A9838E49ECD /* input_systemLabels_colecovision.json in Resources */ = {isa = PBXBuildFile; fileRef = 0131AF2732320A89574B49A3 /* input_systemLabels_colecovision.json */; };
 		DB9C6B84818F0494C9D193F9 /* LibretroBridgeImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5C71FA314D9C45318540B2DB /* LibretroBridgeImpl.mm */; };
 		DC04E65A0A0068C4291426D5 /* TruchiEmuApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 460DFA8410763ED490E94E83 /* TruchiEmuApp.swift */; };
@@ -1152,6 +1154,7 @@
 		E317973A7B9CCD95761A632D /* NESRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22D1B16C6AA1228BE917DC86 /* NESRunner.swift */; };
 		E34BEA59A54D1BCCB8C6A7F5 /* NEOCD.png in Resources */ = {isa = PBXBuildFile; fileRef = B5CA00A8090C98179839D7C0 /* NEOCD.png */; };
 		E3AC85C8FF932DF820783FBC /* fightdata_sams64_2.json in Resources */ = {isa = PBXBuildFile; fileRef = 85B3B44BBDB415B6AD99E93B /* fightdata_sams64_2.json */; };
+		E3B1B7AABF98E84143040010 /* DOSJoystickPreset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A88EF4D77E55B94A239B343 /* DOSJoystickPreset.swift */; };
 		E3D7B920ADF18FBC99336236 /* TVModeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D41B70CA0953A752789E4CC1 /* TVModeViewModel.swift */; };
 		E3E1027FADE7DA38195B445B /* appIcon512.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 2AEE13522E270C97DAE418DC /* appIcon512.jpg */; };
 		E3E1E33DEA7FC17D282FB9E0 /* NotationTokenImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D2689389A8F41C564E8983 /* NotationTokenImageCache.swift */; };
@@ -1778,6 +1781,7 @@
 		5A32D090BDCC70201F06FE5A /* vectrex@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vectrex@132w.png"; sourceTree = "<group>"; };
 		5A6FF56C23A80B7D68EA5193 /* input_coreLabels_beetle_bsnes.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_beetle_bsnes.json; sourceTree = "<group>"; };
 		5A70807FC6C49F96FD77612C /* CoreHost.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CoreHost.entitlements; sourceTree = "<group>"; };
+		5A88EF4D77E55B94A239B343 /* DOSJoystickPreset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOSJoystickPreset.swift; sourceTree = "<group>"; };
 		5A899083767EEC40F32FD7C4 /* TVModeSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVModeSettings.swift; sourceTree = "<group>"; };
 		5AE1CBC695D134E3FF153854 /* ms@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ms@132w.png"; sourceTree = "<group>"; };
 		5AE2907879D793D5504FE9FC /* pcsx_rearmed_libretro_default.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = pcsx_rearmed_libretro_default.json; sourceTree = "<group>"; };
@@ -1957,6 +1961,7 @@
 		7AC843AA627555719FFBEBD0 /* libretro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = libretro.h; sourceTree = "<group>"; };
 		7B707D7D22EB7ACF2A81F4EB /* fightdata_ggxxrl.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_ggxxrl.json; sourceTree = "<group>"; };
 		7B9A192F2BDD7DB5E61737FE /* input_coreOverrides_ecwolf.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_ecwolf.json; sourceTree = "<group>"; };
+		7BA27E493562B273F8D1C121 /* DOSJoystickSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOSJoystickSettingsView.swift; sourceTree = "<group>"; };
 		7BB4D897239AF20C30DBDE57 /* input_coreLabels_reminiscence.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_reminiscence.json; sourceTree = "<group>"; };
 		7BE05BB15313DA90F5BFFC94 /* input_coreOverrides_mupen64plus.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_mupen64plus.json; sourceTree = "<group>"; };
 		7CC6E52ACF63E0F4B9AD638C /* 8bGameBoy.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = 8bGameBoy.metal; sourceTree = "<group>"; };
@@ -2429,6 +2434,7 @@
 		D896B5C23A1A5DC2812951B1 /* HotkeyConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyConfig.swift; sourceTree = "<group>"; };
 		D9B6232A6D7429EBB110422E /* picodrive_libretro_megadrive.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = picodrive_libretro_megadrive.json; sourceTree = "<group>"; };
 		D9CE94667031F54D1573ACBE /* pce@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pce@132w.png"; sourceTree = "<group>"; };
+		D9DD356AFB297E7357F9435E /* DOSJoystick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOSJoystick.swift; sourceTree = "<group>"; };
 		DA0E58E94D4CF64992683139 /* input_coreOverrides_crocods.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_crocods.json; sourceTree = "<group>"; };
 		DA8729DB9F6FECA28AB753C1 /* CoreDownloadStatusBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDownloadStatusBar.swift; sourceTree = "<group>"; };
 		DA92FF5F565391B09186FD35 /* es.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = es.json; sourceTree = "<group>"; };
@@ -2948,6 +2954,7 @@
 				E07C31C568B8140ACE5C6ABD /* CoreOptionsSection.swift */,
 				A75E11DE818FADB9C12751AD /* DetailBoxArtComponents.swift */,
 				5C0861586830102C1E785A85 /* DetailSection.swift */,
+				D9DD356AFB297E7357F9435E /* DOSJoystick.swift */,
 				312DD29D6B77A5CC9B13F942 /* Header.swift */,
 				EE3376B3A01ADAEEAA96F108 /* ManualActionStatus.swift */,
 				76A50CEAE48F1F659CE03FFC /* MetadataRow.swift */,
@@ -4372,6 +4379,7 @@
 				2EB63FBDD677CD02C8E222A8 /* ControllerGamepadMapping.swift */,
 				CFD762AF10BDB023C7F0DB26 /* ControllerIdentityKey.swift */,
 				72FFFDC3B0AE8A595EB1A77B /* CoreButtonOverride.swift */,
+				5A88EF4D77E55B94A239B343 /* DOSJoystickPreset.swift */,
 				90136857D881B5C8AEE538D0 /* GameMappingProfile.swift */,
 				F73EE592565F9E5482E0CB9B /* GamepadNavConfig.swift */,
 				21AF9514AC0158E5A5AC06ED /* GCButtonIdentifier.swift */,
@@ -4428,6 +4436,7 @@
 				3230EB435232A6B5AC4FBC1E /* ControllerSettingsViewGroup.swift */,
 				8CFD1DFC1E63A628D89B5DF7 /* CoreOptionsView.swift */,
 				50F0C395AC7AC42E3144C256 /* CoreSettingsViewGroup.swift */,
+				7BA27E493562B273F8D1C121 /* DOSJoystickSettingsView.swift */,
 				17ACE1CD476919F03307CB20 /* ExtractedROMCacheSettingsView.swift */,
 				84CF94E42B2B1161FDE2DB55 /* GamepadNavSettingsView.swift */,
 				B0135BC846E6477A8389B7FC /* GeneralSettingsView.swift */,
@@ -5946,6 +5955,9 @@
 				2C0B2084279F991E2305FE51 /* CursorAutoHideManager.swift in Sources */,
 				EADF41111698CC0392927C13 /* CurvedRowLayout.swift in Sources */,
 				DC6B2F5F12C81B3FD59F2FA1 /* DATPrepopulationService.swift in Sources */,
+				C82C7323776C0F8CDDA4804E /* DOSJoystick.swift in Sources */,
+				E3B1B7AABF98E84143040010 /* DOSJoystickPreset.swift in Sources */,
+				DAFE857499FFE1F3765B1593 /* DOSJoystickSettingsView.swift in Sources */,
 				53610C7E863EC39935522D46 /* DOSRunner.swift in Sources */,
 				093A0D5881AA5FCDDD7AEDFF /* DesignSystem.swift in Sources */,
 				487D415E3A60D766E5C55314 /* DetailBoxArtComponents.swift in Sources */,

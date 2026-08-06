@@ -34,7 +34,7 @@ struct SettingsView: View {
     enum Page: Hashable, Codable, RawRepresentable, Identifiable {
 
         var id: String { rawValue }
-        case general, saves, library, controllers, analogMouse, boxArt, cheats, bezels, retroAchievements, genre, logging, moveList, hotkeys, timeMachine, perSystem, streaming, tvMode, help, about, reset
+        case general, saves, library, controllers, analogMouse, dosJoystick, boxArt, cheats, bezels, retroAchievements, genre, logging, moveList, hotkeys, timeMachine, perSystem, streaming, tvMode, help, about, reset
 
         var rawValue: String {
             switch self {
@@ -43,6 +43,7 @@ struct SettingsView: View {
             case .library: return "library"
             case .controllers: return "controllers"
             case .analogMouse: return "analogMouse"
+            case .dosJoystick: return "dosJoystick"
             case .boxArt: return "boxArt"
             case .cheats: return "cheats"
             case .bezels: return "bezels"
@@ -68,6 +69,7 @@ struct SettingsView: View {
             case "library": self = .library
             case "controllers": self = .controllers
             case "analogMouse": self = .analogMouse
+            case "dosJoystick": self = .dosJoystick
             case "boxArt": self = .boxArt
             case "cheats": self = .cheats
             case "bezels": self = .bezels
@@ -91,7 +93,7 @@ struct SettingsView: View {
             switch self {
             case .general, .saves, .boxArt, .bezels, .perSystem, .tvMode:
                 return .general
-            case .library, .controllers, .analogMouse, .hotkeys:
+            case .library, .controllers, .analogMouse, .dosJoystick, .hotkeys:
                 return .library
             case .cheats, .streaming, .retroAchievements, .moveList, .genre, .timeMachine:
                 return .gameplay
@@ -107,6 +109,7 @@ struct SettingsView: View {
             case .library: return "book.fill"
             case .controllers: return "gamecontroller.fill"
             case .analogMouse: return "computermouse.fill"
+            case .dosJoystick: return "gamecontroller.fill"
             case .boxArt: return "photo.stack.fill"
             case .cheats: return "wand.and.stars"
             case .bezels: return "rectangle.on.rectangle"
@@ -132,6 +135,7 @@ struct SettingsView: View {
             case .library: return LocalizationManager.shared.localized("settings.library")
             case .controllers: return LocalizationManager.shared.localized("settings.controllers")
             case .analogMouse: return LocalizationManager.shared.localized("settings.analogMouse")
+            case .dosJoystick: return LocalizationManager.shared.localized("settings.dosJoystick")
             case .boxArt: return LocalizationManager.shared.localized("settings.boxArt")
             case .cheats: return LocalizationManager.shared.localized("settings.cheats")
             case .bezels: return LocalizationManager.shared.localized("settings.bezels")
@@ -162,6 +166,8 @@ struct SettingsView: View {
                 return "controllers gamepad keyboard mapping player buttons input"
             case .analogMouse:
                 return "analog mouse stick controller sensitivity deadzone dos scummvm pointer cursor"
+            case .dosJoystick:
+                return "dos joystick gamepad game controller gravis dosbox pure thrustmaster flight stick hat buttons plugged"
             case .boxArt:
                 return "box art thumbnail images pictures cover"
             case .cheats:
@@ -209,7 +215,7 @@ struct SettingsView: View {
 
     static let allPages: [Page] = [
         .general, .saves, .boxArt, .bezels, .perSystem, .tvMode,
-        .library, .controllers, .analogMouse, .hotkeys,
+        .library, .controllers, .analogMouse, .dosJoystick, .hotkeys,
         .cheats, .retroAchievements, .moveList, .streaming, .genre, .timeMachine,
         .logging, .reset, .help, .about
     ]
@@ -624,6 +630,7 @@ struct SettingsView: View {
             case .library:     LibrarySettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
             case .controllers: ControllerSettingsView(systemID: effectiveSystemID, searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
             case .analogMouse: AnalogMouseSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
+            case .dosJoystick: DOSJoystickSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
             case .boxArt: BoxArtSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
             case .cheats:      CheatSettingsView(systemID: effectiveSystemID, searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
             case .bezels:     BezelSettingsView(systemID: effectiveSystemID, searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)

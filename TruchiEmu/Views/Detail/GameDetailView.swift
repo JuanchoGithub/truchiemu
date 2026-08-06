@@ -150,6 +150,7 @@ struct GameDetailView: View {
         case .bezels: bezelsSection
         case .controls: controlsSection
         case .analogMouse: analogMouseSection
+        case .dosJoystick: dosJoystickSection
         case .coreOptions: coreOptionsSection
         case .savedStates: savedStatesSection
         case .cheats: cheatsSection
@@ -332,6 +333,9 @@ struct GameDetailView: View {
         sections.append(contentsOf: [.cheats, .shader, .bezels, .controls])
         if let sysID = currentROM.systemID, sysID == "dos" || sysID == "scummvm" {
             sections.append(.analogMouse)
+        }
+        if currentROM.systemID == "dos" {
+            sections.append(.dosJoystick)
         }
         if currentROM.systemID == "gb" || currentROM.systemID == "gbc" {
             sections.append(.coreOptions)

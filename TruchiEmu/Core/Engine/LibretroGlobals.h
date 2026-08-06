@@ -50,6 +50,7 @@ void parseInputDescriptors(const struct retro_input_descriptor *descriptors);
 
 extern BOOL g_variablesUpdated;
 extern unsigned g_genesisDeviceType;
+extern unsigned g_dosDeviceType;
 extern int g_wiiControllerType;
 
 #ifndef XPC_SERVICE

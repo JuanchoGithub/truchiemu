@@ -7,12 +7,13 @@ import Foundation
                 systemID: String?,
                 romFilename: String?,
                 shaderDir: String?,
-                saveDirectory: String,
-                systemDirectory: String,
-                language: Int,
-                logLevel: Int,
-                wiiControllerType: Int,
-                reply: @escaping (Bool, String?) -> Void)
+                 saveDirectory: String,
+                 systemDirectory: String,
+                 language: Int,
+                 logLevel: Int,
+                 wiiControllerType: Int,
+                 dosDeviceType: Int,
+                 reply: @escaping (Bool, String?) -> Void)
 
     func stop(reply: @escaping () -> Void)
     func setPaused(_ paused: Bool, reply: @escaping () -> Void)
@@ -56,6 +57,7 @@ import Foundation
     func setControllerPortDevice(port: Int, device: Int, reply: @escaping () -> Void)
     func setGenesisDeviceType(_ deviceType: Int, reply: @escaping () -> Void)
     func setWiiControllerType(_ deviceType: Int, reply: @escaping () -> Void)
+    func setDOSDeviceType(_ deviceType: Int, reply: @escaping () -> Void)
     func setVariablesUpdated(reply: @escaping () -> Void)
 
     func loadCoreForOptions(dylibPath: String, coreID: String, romPath: String?, reply: @escaping () -> Void)

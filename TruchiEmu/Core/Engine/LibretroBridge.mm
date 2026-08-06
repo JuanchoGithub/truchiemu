@@ -97,8 +97,9 @@ g_frame_poll_callback = callback;
  coreID:(NSString *)coreID
  systemID:(nullable NSString *)systemID
  romFilename:(nullable NSString *)romFilename
- wiiControllerType:(int)wiiControllerType
- failureCallback:(nullable void (^)(NSString *))failureCb {
+  wiiControllerType:(int)wiiControllerType
+  dosDeviceType:(unsigned)dosDeviceType
+  failureCallback:(nullable void (^)(NSString *))failureCb {
 
 #ifndef XPC_SERVICE
     extern BOOL g_xpcModeActive;
@@ -115,6 +116,13 @@ g_frame_poll_callback = callback;
     // the global may still be 0, falling back to plain Wiimote. Embedding the
     // device type in the launch call guarantees it's set before launchROM.
     g_wiiControllerType = wiiControllerType;
+
+    // Same pattern for the DOSBox-Pure joystick subtype (Gravis / 2-button /
+    // ThrustMaster / Both). The fire-and-forget setDOSDeviceType XPC message
+    // raced launch and g_dosDeviceType arrived as 0, so DOSBox-Pure fell back
+    // to RETRO_DEVICE_JOYPAD (Generic Keyboard) and no Dos joystick was
+    // exposed to the guest. Embedding it here is deterministic.
+    g_dosDeviceType = dosDeviceType;
 
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -527,6 +535,10 @@ g_frame_poll_callback = callback;
 
 + (void)setWiiControllerType:(unsigned)deviceType {
     g_wiiControllerType = (int)deviceType;
+}
+
++ (void)setDOSDeviceType:(unsigned)deviceType {
+    g_dosDeviceType = deviceType;
 }
 
 + (NSDictionary<NSString *, NSArray *> *)getInputDescriptorsDictionary {

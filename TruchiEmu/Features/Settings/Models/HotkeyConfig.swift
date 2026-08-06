@@ -73,6 +73,7 @@ enum HotkeyAction: String, Codable, CaseIterable, Identifiable {
     case slot9
     case toggleInputCapture
     case toggleGuideSidebar
+    case toggleDOSJoystick
     case fullscreen
     case trainingReset
     case trainingToggleRecording
@@ -233,6 +234,7 @@ final class HotkeyConfigManager: ObservableObject {
         .slot9:                   HotkeyConfig(primary: .command(26),  secondary: .none),         // ⌘9
         .toggleInputCapture:      HotkeyConfig(primary: .command(46),  secondary: .none),         // ⌘M
         .toggleGuideSidebar:      HotkeyConfig(primary: .command(9),   secondary: .none),         // ⌘V
+        .toggleDOSJoystick:       HotkeyConfig(primary: .command(38),  secondary: .none),         // ⌘J
         .fullscreen:              HotkeyConfig(primary: .command(36),  secondary: .none),         // ⌘↩
         .trainingReset:           HotkeyConfig(primary: .command(17),  secondary: .plain(100)),   // ⌘T, F8
         .trainingToggleRecording: HotkeyConfig(primary: .plain(101),   secondary: .none),         // F9

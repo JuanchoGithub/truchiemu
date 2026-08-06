@@ -432,6 +432,25 @@ enum AppSettings {
         guard let data = try? JSONEncoder().encode(type) else { return }
         setData(WiiControllerKey.controllerType, value: data)
     }
+
+    // MARK: - DOS Joystick
+
+    enum DOSJoystickKey {
+        static let preset = "dosJoystick_preset_dos"
+    }
+
+    static func getDOSJoystickPreset() -> DOSJoystickPreset {
+        guard let data = getData(DOSJoystickKey.preset),
+              let preset = try? JSONDecoder().decode(DOSJoystickPreset.self, from: data) else {
+            return .off
+        }
+        return preset
+    }
+
+    static func setDOSJoystickPreset(_ preset: DOSJoystickPreset) {
+        guard let data = try? JSONEncoder().encode(preset) else { return }
+        setData(DOSJoystickKey.preset, value: data)
+    }
 }
 
 // MARK: - Notification Names

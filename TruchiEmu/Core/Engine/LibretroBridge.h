@@ -17,13 +17,14 @@ typedef void (*FramePollCallbackType)(void);
 + (void)launchWithDylibPath:(NSString *)dylibPath
                     romPath:(NSString *)romPath
                   shaderDir:(nullable NSString *)shaderDir
-              videoCallback:(void (^)(const void *data, int width, int height,
-                                      int pitch, int format))cb
-                     coreID:(NSString *)coreID
-                   systemID:(nullable NSString *)systemID
-                romFilename:(nullable NSString *)romFilename
-           wiiControllerType:(int)wiiControllerType
-            failureCallback:(nullable void (^)(NSString *message))failureCb;
+               videoCallback:(void (^)(const void *data, int width, int height,
+                                       int pitch, int format))cb
+                      coreID:(NSString *)coreID
+                    systemID:(nullable NSString *)systemID
+                 romFilename:(nullable NSString *)romFilename
+            wiiControllerType:(int)wiiControllerType
+             dosDeviceType:(unsigned)dosDeviceType
+             failureCallback:(nullable void (^)(NSString *message))failureCb;
 
 + (void)stop;
 + (void)waitForCompletion;
@@ -77,6 +78,11 @@ typedef void (*FramePollCallbackType)(void);
 
 /* Set the Wii (Dolphin) controller device type for auto mode (0=auto, 513=Wiimote+Classic, 514=Wii U Pro) */
 + (void)setWiiControllerType:(unsigned)deviceType;
+
+/* Set the DOSBox-Pure controller device type (0=auto/Generic Keyboard, otherwise a
+ * RETRO_DEVICE_SUBCLASS(RETRO_DEVICE_JOYPAD, n) value such as the Gravis GamePad,
+ * 2-button joystick, ThrustMaster or Both DOS joysticks presets). */
++ (void)setDOSDeviceType:(unsigned)deviceType;
 
 /* Geometry — returns the core-provided display aspect ratio from
  * retro_system_av_info */

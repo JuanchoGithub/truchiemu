@@ -6,6 +6,7 @@ enum DetailSection: String, CaseIterable {
     case bezels = "Bezels"
     case controls = "Controls"
     case analogMouse = "Analog Mouse"
+    case dosJoystick = "DOS Joystick"
     case coreOptions = "Core Options"
     case savedStates = "Saved States"
     case cheats = "Cheats"
@@ -20,6 +21,7 @@ enum DetailSection: String, CaseIterable {
         case .bezels: return LocalizationManager.shared.localized("gameDetail.bezels")
         case .controls: return LocalizationManager.shared.localized("gameDetail.controls")
         case .analogMouse: return LocalizationManager.shared.localized("gameDetail.analogMouse")
+        case .dosJoystick: return LocalizationManager.shared.localized("gameDetail.dosJoystick")
         case .coreOptions: return LocalizationManager.shared.localized("gameDetail.coreOptions")
         case .savedStates: return LocalizationManager.shared.localized("gameDetail.savedStates")
         case .cheats: return LocalizationManager.shared.localized("gameDetail.cheats")
@@ -41,6 +43,8 @@ enum DetailSection: String, CaseIterable {
             return LocalizationManager.shared.localized("gameDetail.controlsHelp")
         case .analogMouse:
             return LocalizationManager.shared.localized("gameDetail.analogMouseHelp")
+        case .dosJoystick:
+            return LocalizationManager.shared.localized("gameDetail.dosJoystickHelp")
         case .coreOptions:
             return LocalizationManager.shared.localized("gameDetail.coreOptionsHelp")
         case .savedStates:
@@ -67,6 +71,7 @@ enum DetailSection: String, CaseIterable {
         case .bezels: return "photo.on.rectangle.angled"
         case .controls: return "gamecontroller"
         case .analogMouse: return "computermouse"
+        case .dosJoystick: return "gamecontroller"
         case .coreOptions: return "cpu"
         case .savedStates: return "externaldrive"
         case .cheats: return "wand.and.stars"

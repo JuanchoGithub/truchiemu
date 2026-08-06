@@ -291,6 +291,13 @@ class EmulatorRunner: ObservableObject, @unchecked Sendable {
     var systemID: String = "default"
     var activeCoreID: String = ""
 
+    // When true, digital joypad buttons are sent to the core using their
+    // identity retro IDs (ignoring per-core input overrides). Used by
+    // DOSRunner joystick mode so physical A/B/X/Y match DOSBox-Pure's
+    // joystick preset button layout (B=Button 1, Y=Button 2, A=Button 3,
+    // X=Button 4 for the Gravis GamePad).
+    var useIdentityRetroIDs: Bool = false
+
     var analogMouseTimer: Timer?
     var analogMouseButtonLeft: String = "a"
     var analogMouseButtonDownRight: String = "b"
@@ -527,6 +534,13 @@ case "scummvm": runner = ScummVMRunner()
         let genesisControllerType = AppSettings.getGenesisControllerType()
         let wiiControllerType = AppSettings.getWiiControllerType()
         let hasRealController = !ControllerService.shared.connectedControllers.contains { !$0.isKeyboard }
+        // DOSBox-Pure joystick subtype — embedded in the launch payload so it
+        // reaches the XPC service deterministically. A separate fire-and-forget
+        // setDOSDeviceType XPC message races the launch dispatch (same race the
+        // Wii path warns about above) and was observed arriving as 0, so DOSBox
+        // fell back to Generic Keyboard and no DOS joystick was exposed.
+        let dosPreset: DOSJoystickPreset = (rom?.settings.dosJoystickPreset) ?? AppSettings.getDOSJoystickPreset()
+        let dosDeviceForLaunch: UInt32 = dosPreset.deviceValue
 
         emulationQueue.async { [cachedAchievements, genesisControllerType] in
             XPCBridgeAdapter.shared.setLanguage(selectedLang)
@@ -581,6 +595,15 @@ case "scummvm": runner = ScummVMRunner()
             } else {
                 XPCBridgeAdapter.shared.setWiiControllerType(0)
             }
+
+            // DOSBox-Pure: tell the core which guest joystick subtype to expose.
+            // 0 = auto (Generic Keyboard via Pad Mapper); a Gravis / 2-button /
+            // ThrustMaster / Both value selects the matching DOSBox-Pure preset
+            // and activates JOYSTICK_Enable on the DOS side.
+            let isDOSBoxCore = lowerCoreID.contains("dosbox")
+            if isDOSBoxCore {
+                LoggerService.info(category: "BaseRunner", "DOSDeviceResolve preset=\(dosPreset.rawValue) device=\(dosDeviceForLaunch)")
+            }
             // Set up rcheevos achievement detection. The runtime lives in the
             // XPC service; we just feed triggers in and listen for events.
             if !cachedAchievements.isEmpty {
@@ -612,6 +635,7 @@ case "scummvm": runner = ScummVMRunner()
                 if needsReset { XPCBridgeAdapter.shared.resetRcheevosTriggers() }
                 },
                 wiiControllerType: wiiDeviceForLaunch,
+                dosDeviceType: dosDeviceForLaunch,
                 onFailure: { [weak self] message in
                     Task { @MainActor in
                         LoggerService.error(category: "Runner", "Core launch failed: \(message)")
@@ -2262,8 +2286,15 @@ weak var metalCoordinator: MetalCoordinator?
         }
 
         // 2. Handle Digital Joypad Buttons (ID 0 to 15)
-        else if btn.retroID(for: self.systemID, coreID: self.activeCoreID) >= 0 {
-            let retroID = Int(btn.retroID(for: self.systemID, coreID: self.activeCoreID))
+        // In DOS joystick mode we bypass per-core overrides and use the
+        // identity retro IDs so physical A/B/X/Y match the DOSBox-Pure
+        // joystick preset button layout.
+        else if (useIdentityRetroIDs
+                    ? (CoreButtonOverride.identityID(for: btn) ?? Int32(-1))
+                    : btn.retroID(for: self.systemID, coreID: self.activeCoreID)) >= 0 {
+            let retroID = Int(useIdentityRetroIDs
+                                ? (CoreButtonOverride.identityID(for: btn) ?? Int32(-1))
+                                : btn.retroID(for: self.systemID, coreID: self.activeCoreID))
                 
                 if let btnElement = element as? GCControllerButtonInput {
                     // Send analog value for L2/R2 triggers (used by Flycast for Dreamcast analog triggers)

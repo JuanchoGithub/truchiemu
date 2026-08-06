@@ -68,6 +68,7 @@ final class XPCBridgeAdapter {
     func launch(dylibPath: String, romPath: String, coreID: String, systemID: String?, romFilename: String?,
                  shaderDir: String?, videoCallback: @escaping (UnsafeRawPointer?, Int, Int, Int, Int) -> Void,
                  wiiControllerType: Int = 0,
+                 dosDeviceType: UInt32 = 0,
                  onFailure: ((String) -> Void)? = nil) {
         guard useXPC else {
             LoggerService.warning(category: "XPCBridgeAdapter", "launch() — XPC DISABLED, launching in-process (useXPC=false)")
@@ -75,6 +76,7 @@ final class XPCBridgeAdapter {
                 dylibPath: dylibPath, romPath: romPath, coreID: coreID,
                 systemID: systemID, romFilename: romFilename, shaderDir: shaderDir,
                 wiiControllerType: wiiControllerType,
+                dosDeviceType: dosDeviceType,
                 videoCallback: videoCallback, onFailure: onFailure
             )
             return
@@ -145,7 +147,7 @@ final class XPCBridgeAdapter {
         dylibPath: dylibPath, romPath: romPath, coreID: coreID,
         systemID: systemID, romFilename: romFilename, shaderDir: shaderDir,
         saveDirectory: saveDir, systemDirectory: sysDir,
-        language: lang, logLevel: logLevel, wiiControllerType: wiiControllerType
+        language: lang, logLevel: logLevel, wiiControllerType: wiiControllerType, dosDeviceType: Int(dosDeviceType)
         ) { success, errorMessage in
             if !success {
                 onFailure?(errorMessage ?? "Unknown error")
@@ -793,6 +795,14 @@ final class XPCBridgeAdapter {
             return
         }
         XPCConnectionManager.shared.remoteProxy?.setWiiControllerType(Int(deviceType)) {}
+    }
+
+    func setDOSDeviceType(_ deviceType: UInt32) {
+        guard useXPC else {
+            LibretroBridgeSwift.setDOSDeviceType(deviceType)
+            return
+        }
+        XPCConnectionManager.shared.remoteProxy?.setDOSDeviceType(Int(deviceType)) {}
     }
 
     func setOptions(_ options: [String: String]) {
