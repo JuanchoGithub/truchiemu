@@ -1,0 +1,78 @@
+---
+layout: default
+title: v1.8.8 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.8.8</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.8.8</h1>
+        <div class="release-meta">
+            <span class="release-date">August 6, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>A release focused on input, shaders, and library ergonomics. Input &amp; TV Mode: DOS games can now see your joystick, with new configuration options, improved controller-port handling for DOSBox-Pure and better mouse-click monitoring. Gamepad fixes make consecutive presses register reliably, the toolbar overlay (L3+R3 / Start+Select) works while another app is focused, and the Stop dialog can be confirmed with the A button in TV Mode. TV Mode also picks the right screen on first launch, and a new external display prompt hands the game over with a brief warm-up before the switch. Shaders: parameters that had no effect are now greyed out, switching between complex shaders is faster with a spinner instead of a blank panel, and presets that emulate composite/NTSC video now render the way they should. Library: custom box art from a local file, dynamic box art refresh across the library, and pinch-to-zoom with live column reflow in the library grid.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>DOS games can now see your joystick:</strong> Your connected controller is now visible to DOS games via DOSBox-Pure, with new options to pick the joystick preset per game or system, a hotkey to toggle it, and improved controller-port and mouse-click handling.</li>
+            <li><strong>Only working shader sliders shown:</strong> Shader parameters that had no effect on the picture are now greyed out — you only see sliders that actually change something.</li>
+            <li><strong>Faster shader switching:</strong> Switching between complex shaders no longer shows a blank "No parameters" panel; parameters load in the background with a spinner.</li>
+            <li><strong>Fixed CRT shader rendering:</strong> Presets that emulate composite/NTSC video (like <code>ntsc-md-rainbows</code>) now render the way they should.</li>
+            <li><strong>Custom box art:</strong> Set your own box art from a local file, and box art now refreshes dynamically across the library.</li>
+            <li><strong>Pinch to zoom the library:</strong> Trackpad pinch zoom with live column reflow in the library grid.</li>
+            <li><strong>External display handoff:</strong> Connect a display and TruchiEmu offers to move the game over, with a brief warm-up before the switch — and TV Mode now picks the right screen on first launch.</li>
+            <li><strong>Gamepad &amp; TV Mode fixes:</strong> Consecutive button presses register reliably, the gamepad toolbar (L3+R3 / Start+Select) works while another app is focused, and you can confirm the Stop dialog with the A button in TV Mode.</li>
+            <li><strong>Hotkey polish:</strong> New fullscreen toggle, Escape hint when the keyboard is captured, a stable hotkey-row layout, and app hotkeys disabled while keyboard is captured for DOS/ScummVM.</li>
+            <li><strong>Stability:</strong> Stopping a game no longer freezes the app while iCloud is syncing files.</li>
+            <li><strong>Menu bar icons:</strong> Custom menu bar items now show proper icons instead of plain text.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>feat: add DOS joystick support and configuration options — <code>DOSJoystickPreset</code> enum, AppSettings persistence, <code>DOSJoystickSettingsView</code> wired into GameDetailView, hotkey toggle, en/es/pt/ja translations, XPC bridge support for DOS joystick types</li>
+            <li>feat: enhance controller port device handling for DOSBox-Pure and improve mouse click monitoring</li>
+            <li>fix: disable inert slang shader parameters in UI — compute consumed-names set once per chain, stamp <code>ShaderUniform.disabled</code>, cache by preset path + mtime fingerprint</li>
+            <li>feat: implement async reflection for slang presets in ShaderManager and ShaderEditorSidebar; subsequent fixes land in later commits</li>
+            <li>feat: show loading indicator while shader parameters reflect — <code>isReflectingParameters</code> state in <code>ShaderPresetPickerView</code> and <code>ShaderEditorSidebar</code>; a reflection failure can no longer leave the spinner stuck</li>
+            <li>fix: route <code>scale_type=source</code> slang presets through a source-sized intermediate — <code>hasSourceSizedFinalPass</code> detection, <code>needsSourceSizedIntermediate</code>, pinned to <code>.bgra8Unorm</code> to satisfy Metal validation</li>
+            <li>feat: implement source-sized offscreen texture handling for PassFeedback chains and enhance the rendering pipeline</li>
+            <li>feat: point slang-shaders submodule to a fork with macOS path fixes</li>
+            <li>feat: enhance ShaderEditorSidebar with ScrollViewReader for scroll position restoration</li>
+            <li>fix: clear per-game shader override when accepting the system shader</li>
+            <li>feat: add local file picker for box art and update translations</li>
+            <li>feat: integrate BoxArtService for dynamic box art updates in UI components</li>
+            <li>feat: smooth pinch zoom with live column reflow in the library grid</li>
+            <li>feat: add external display prompt with warm-up pill and game handoff</li>
+            <li>fix: resolve TV mode cold-start screen selection after window is up</li>
+            <li>fix: clear stale gamepad nav button state when all buttons released — reset transient poll state on the idle path so repeated presses produce rising edges</li>
+            <li>fix: gamepad toolbar context outranks TV mode nav so Stop confirm receives the A press</li>
+            <li>fix: trigger gamepad toolbar overlay (L3+R3 / Start+Select) while the app is not focused — bypasses the key-window filter that silently paused the runner</li>
+            <li>feat: add fullscreen toggle hotkey and update translations</li>
+            <li>feat: add escape hint functionality and update translations</li>
+            <li>fix: keep hotkey row layout stable when reset and clear buttons appear</li>
+            <li>fix: disable app hotkeys while keyboard is captured for DOS/ScummVM</li>
+            <li>refactor: simplify card background and stroke color logic in GameCardView</li>
+            <li>feat: add SF Symbol icons to all custom menu bar items</li>
+            <li>fix: prevent UI freeze on game stop from iCloud materialization — async XPC proxy with real timeout, launch-time materialization off the connection queue, shared directory-walk budget</li>
+            <li>Bump marketing version to 1.8.8 and build number to 31 across <code>project.yml</code>, both Info.plists, and <code>docs/_config.yml</code></li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.8.7.html' | relative_url }}" class="release-prev">&larr; v1.8.7</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>

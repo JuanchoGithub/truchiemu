@@ -1,0 +1,78 @@
+---
+layout: default
+title: v1.8.8 - Documentação do TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/pt/changelog.html' | relative_url }}">Registro de mudanças</a>
+        <span class="separator">/</span>
+        <span class="current">v1.8.8</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.8.8</h1>
+        <div class="release-meta">
+            <span class="release-date">6 de agosto de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Uma versão focada em entrada, shaders e ergonomia da biblioteca. Entrada e Modo TV: os jogos de DOS agora podem ver seu joystick, com novas opções de configuração, melhor tratamento de portas de controle para DOSBox-Pure e melhor monitoramento de cliques de mouse. As correções de gamepad fazem com que pressionamentos consecutivos sejam registrados de forma confiável, a sobreposição da barra de ferramentas (L3+R3 / Start+Select) funciona enquanto outro app está focado, e a caixa de diálogo de Stop pode ser confirmada com o botão A no Modo TV. O Modo TV também escolhe a tela correta na primeira inicialização, e um novo aviso de tela externa passa o jogo com uma breve espera antes da troca. Shaders: parâmetros que não tinham efeito agora aparecem esmaecidos, trocar entre shaders complexos é mais rápido com um spinner em vez de um painel vazio, e presets que emulam vídeo composto/NTSC agora renderizam como deveriam. Biblioteca: capas personalizadas a partir de um arquivo local, atualização dinâmica de capas em toda a biblioteca e pinch-to-zoom com reflow de colunas ao vivo na grade.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destaques</h2>
+        <ul class="feature-list">
+            <li><strong>Os jogos de DOS agora podem ver seu joystick:</strong> Seu controle conectado agora é visível para os jogos de DOS via DOSBox-Pure, com novas opções para escolher o preset de joystick por jogo ou sistema, um hotkey para ativá-lo e melhor tratamento de portas de controle e cliques de mouse.</li>
+            <li><strong>Somente os sliders de shader que funcionam são mostrados:</strong> Parâmetros de shader que não tinham efeito sobre a imagem agora aparecem esmaecidos — você só vê os sliders que realmente mudam algo.</li>
+            <li><strong>Troca de shaders mais rápida:</strong> Trocar entre shaders complexos não mostra mais um painel vazio de "Sem parâmetros"; os parâmetros carregam em segundo plano com um spinner.</li>
+            <li><strong>Renderização CRT corrigida:</strong> Presets que emulam vídeo composto/NTSC (como <code>ntsc-md-rainbows</code>) agora renderizam como deveriam.</li>
+            <li><strong>Capas personalizadas:</strong> Defina sua própria capa a partir de um arquivo local, e as capas agora são atualizadas dinamicamente em toda a biblioteca.</li>
+            <li><strong>Pinch to zoom na biblioteca:</strong> Zoom por pinça no trackpad com reflow de colunas ao vivo na grade da biblioteca.</li>
+            <li><strong>Transição para tela externa:</strong> Conecte uma tela e o TruchiEmu se oferece para mover o jogo, com uma breve espera antes da troca — e o Modo TV agora escolhe a tela correta na primeira inicialização.</li>
+            <li><strong>Correções de gamepad e Modo TV:</strong> Pressionamentos consecutivos de botões são registrados de forma confiável, a barra de ferramentas de gamepad (L3+R3 / Start+Select) funciona enquanto outro app está focado, e você pode confirmar a caixa de diálogo de Stop com o botão A no Modo TV.</li>
+            <li><strong>Polimento de hotkeys:</strong> Novo hotkey de tela cheia, dica de Escape quando o teclado está capturado, layout estável da linha de hotkeys e hotkeys do app desativados enquanto o teclado está capturado para DOS/ScummVM.</li>
+            <li><strong>Estabilidade:</strong> Parar um jogo não congela mais o app enquanto o iCloud sincroniza arquivos.</li>
+            <li><strong>Ícones na barra de menu:</strong> Os itens personalizados da barra de menu agora mostram ícones adequados em vez de texto simples.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Mudanças detalhadas</h2>
+        <ul>
+            <li>feat: adicionar suporte a joystick para DOS e opções de configuração — enum <code>DOSJoystickPreset</code>, persistência em AppSettings, <code>DOSJoystickSettingsView</code> integrada ao GameDetailView, hotkey de ativação, traduções en/es/pt/ja, suporte XPC para tipos de joystick DOS</li>
+            <li>feat: melhorar o tratamento de portas de controle para DOSBox-Pure e o monitoramento de cliques de mouse</li>
+            <li>fix: desativar parâmetros de shader slang inertes na UI — calcular o conjunto de nomes consumidos uma vez por cadeia, marcar <code>ShaderUniform.disabled</code>, cachear por caminho de preset + fingerprint de mtime</li>
+            <li>feat: implementar reflexão assíncrona de presets slang no ShaderManager e no ShaderEditorSidebar; as correções posteriores chegam nos commits seguintes</li>
+            <li>feat: mostrar indicador de carregamento enquanto os parâmetros de shader são refletidos — estado <code>isReflectingParameters</code> em <code>ShaderPresetPickerView</code> e <code>ShaderEditorSidebar</code>; uma falha de reflexão não pode mais deixar o spinner girando</li>
+            <li>fix: rotear presets slang <code>scale_type=source</code> por um intermediário do tamanho da fonte — detecção <code>hasSourceSizedFinalPass</code>, <code>needsSourceSizedIntermediate</code>, fixado em <code>.bgra8Unorm</code> para satisfazer a validação do Metal</li>
+            <li>feat: implementar tratamento de texturas fora de tela do tamanho da fonte para cadeias PassFeedback e melhorar o pipeline de renderização</li>
+            <li>feat: apontar o submódulo slang-shaders para um fork com correções de caminhos no macOS</li>
+            <li>feat: melhorar o ShaderEditorSidebar com ScrollViewReader para restaurar a posição de scroll</li>
+            <li>fix: limpar o override de shader por jogo ao aceitar o shader do sistema</li>
+            <li>feat: adicionar seletor de arquivo local para capas e atualizar traduções</li>
+            <li>feat: integrar o BoxArtService para atualizações dinâmicas de capas nos componentes da UI</li>
+            <li>feat: pinch-to-zoom suave com reflow de colunas ao vivo na grade da biblioteca</li>
+            <li>feat: adicionar aviso de tela externa com pílula de aquecimento e transição do jogo</li>
+            <li>fix: resolver a seleção de tela na inicialização a frio do Modo TV depois que a janela está aberta</li>
+            <li>fix: limpar o estado de navegação de gamepad obsoleto quando todos os botões são soltos — redefinir o estado transitório de poll no caminho inativo para que pressionamentos repetidos produzam bordas de subida</li>
+            <li>fix: o contexto da barra de ferramentas de gamepad supera a navegação do Modo TV para que a confirmação de Stop receba o pressionamento de A</li>
+            <li>fix: acionar a sobreposição da barra de ferramentas de gamepad (L3+R3 / Start+Select) enquanto o app não está focado — evita o filtro de key-window que pausava silenciosamente o runner</li>
+            <li>feat: adicionar hotkey de tela cheia e atualizar traduções</li>
+            <li>feat: adicionar funcionalidade de dica de Escape e atualizar traduções</li>
+            <li>fix: manter estável o layout da linha de hotkeys quando os botões reset e clear aparecem</li>
+            <li>fix: desativar os hotkeys do app enquanto o teclado está capturado para DOS/ScummVM</li>
+            <li>refactor: simplificar a lógica de fundo e cor de traço no GameCardView</li>
+            <li>feat: adicionar ícones SF Symbol a todos os itens personalizados da barra de menu</li>
+            <li>fix: evitar o congelamento da UI ao parar o jogo por materialização do iCloud — proxy XPC assíncrono com timeout real, materialização de inicialização fora da fila de conexão, orçamento compartilhado para o percurso de diretórios</li>
+            <li>Subir a versão de marketing para 1.8.8 e o número de build para 31 em <code>project.yml</code>, nos dois <code>Info.plist</code> e em <code>docs/_config.yml</code></li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/pt/changelog/v1.8.7.html' | relative_url }}" class="release-prev">&larr; v1.8.7</a>
+        <a href="{{ '/pt/changelog.html' | relative_url }}" class="release-all">Todas as versões</a>
+    </nav>
+</div>
