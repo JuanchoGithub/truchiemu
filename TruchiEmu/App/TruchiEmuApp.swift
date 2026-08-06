@@ -272,7 +272,7 @@ var body: some Scene {
             CommandGroup(before: .appTermination) {
                 Divider()
 
-                Button(loc.localized("update.checkForUpdates")) {
+                Button(loc.localized("update.checkForUpdates"), systemImage: "arrow.down.circle") {
                     AppSettings.set("settings_selectedTab", value: "about")
                     NotificationCenter.default.post(name: .openAppSettings, object: nil)
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -280,7 +280,7 @@ var body: some Scene {
                     }
                 }
 
-                Button(loc.localized("update.whatsNew")) {
+                Button(loc.localized("update.whatsNew"), systemImage: "sparkles") {
                     AppSettings.set("settings_selectedTab", value: "about")
                     NotificationCenter.default.post(name: .openAppSettings, object: nil)
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -288,7 +288,7 @@ var body: some Scene {
                     }
                 }
 
-                Button(loc.localized("update.changelog")) {
+                Button(loc.localized("update.changelog"), systemImage: "scroll") {
                     AppSettings.set("settings_selectedTab", value: "about")
                     NotificationCenter.default.post(name: .openAppSettings, object: nil)
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -303,19 +303,19 @@ var body: some Scene {
                     
                     // View Mode
                     Section(loc.localized("app.viewMode")) {
-                        Button(loc.localized("app.grid")) {
+                        Button(loc.localized("app.grid"), systemImage: "square.grid.2x2") {
                             AppSettings.set("gridViewMode", value: "grid")
                             NotificationCenter.default.post(name: .viewModeChanged, object: "grid")
                         }
                         .keyboardShortcut("1", modifiers: .command)
 
-                        Button(loc.localized("app.list")) {
+                        Button(loc.localized("app.list"), systemImage: "list.bullet") {
                             AppSettings.set("gridViewMode", value: "list")
                             NotificationCenter.default.post(name: .viewModeChanged, object: "list")
                         }
                         .keyboardShortcut("2", modifiers: .command)
 
-                        Button(loc.localized("tvMode.title")) {
+                        Button(loc.localized("tvMode.title"), systemImage: "tv") {
                             TVModeSettingsManager.shared.toggle()
                         }
                         .keyboardShortcut("t", modifiers: [.command, .shift])
@@ -324,8 +324,8 @@ var body: some Scene {
                     Divider()
                     
                     // Box Art
-                    Menu(loc.localized("app.boxArt")) {
-                        Button(AppSettings.getBool("showBoxArt", defaultValue: true) ? loc.localized("app.hideBoxArt") : loc.localized("app.showBoxArt")) {
+                    Menu {
+                        Button(loc.localized(AppSettings.getBool("showBoxArt", defaultValue: true) ? "app.hideBoxArt" : "app.showBoxArt"), systemImage: AppSettings.getBool("showBoxArt", defaultValue: true) ? "eye" : "eye.slash") {
                             let current = AppSettings.getBool("showBoxArt", defaultValue: true)
                             AppSettings.setBool("showBoxArt", value: !current)
                             NotificationCenter.default.post(name: .boxArtVisibilityChanged, object: nil)
@@ -335,91 +335,99 @@ var body: some Scene {
                         Divider()
 
                         ForEach(BoxType.allCases) { type in
-                            Button(type.rawValue) {
+                            Button(type.rawValue, systemImage: type.iconName) {
                                 AppSettings.set("defaultBoxType", value: type.rawValue)
                                 NotificationCenter.default.post(name: .boxArtStyleChanged, object: nil)
                             }
                         }
+                    } label: {
+                        Label(loc.localized("app.boxArt"), systemImage: "photo.stack")
                     }
                     
                     Divider()
                     
                     // Sort
-                    Menu(loc.localized("app.sortBy")) {
-                        Button(loc.localized("app.lastPlayed")) {
+                    Menu {
+                        Button(loc.localized("app.lastPlayed"), systemImage: "clock") {
                             let current = AppSettings.getBool("sortByLastPlayed", defaultValue: false)
                             AppSettings.setBool("sortByLastPlayed", value: !current)
                             NotificationCenter.default.post(name: .sortChanged, object: nil)
                         }
                         .keyboardShortcut("P", modifiers: [.command, .shift])
 
-                        Button(loc.localized("app.lastAdded")) {
+                        Button(loc.localized("app.lastAdded"), systemImage: "calendar") {
                             let current = AppSettings.getBool("sortByLastAdded", defaultValue: false)
                             AppSettings.setBool("sortByLastAdded", value: !current)
                             NotificationCenter.default.post(name: .sortChanged, object: nil)
                         }
                         .keyboardShortcut("A", modifiers: [.command, .shift])
+                    } label: {
+                        Label(loc.localized("app.sortBy"), systemImage: "arrow.up.arrow.down")
                     }
                     
                     Divider()
                     
                     // Filters
-                    Menu(loc.localized("app.filters")) {
+                    Menu {
                         ForEach(GameFilterOption.allCases) { option in
-                            Button(option.label) {
+                            Button(option.label, systemImage: option.icon) {
                                 NotificationCenter.default.post(name: .filterToggled, object: option.rawValue)
                             }
                         }
+                    } label: {
+                        Label(loc.localized("app.filters"), systemImage: "line.3.horizontal.decrease.circle")
                     }
                     
                     Divider()
                     
-                    Menu(loc.localized("app.language")) {
+                    Menu {
                         ForEach(loc.availableLanguages, id: \.self) { lang in
-                            Button(languageDisplayName(for: lang)) {
+                            Button(languageDisplayName(for: lang), systemImage: "globe") {
                                 loc.setLanguage(lang)
                                 NotificationCenter.default.post(name: .languageChanged, object: nil)
                             }
                         }
+                    } label: {
+                        Label(loc.localized("app.language"), systemImage: "globe")
                     }
                 }
                 
                 CommandGroup(replacing: .help) {
-        Button(loc.localized("help.menu.documentation")) {
+        Button(loc.localized("help.menu.documentation"), systemImage: "book") {
           if let url = URL(string: HelpContent.docsBaseURL) { NSWorkspace.shared.open(url) }
         }
-        Button(loc.localized("help.menu.gettingStarted")) {
+        Button(loc.localized("help.menu.gettingStarted"), systemImage: "figure.walk") {
           if let url = URL(string: "\(HelpContent.docsBaseURL)/getting-started.html") { NSWorkspace.shared.open(url) }
         }
-        Button(loc.localized("help.menu.troubleshooting")) {
+        Button(loc.localized("help.menu.troubleshooting"), systemImage: "wrench.and.screwdriver") {
           if let url = URL(string: "\(HelpContent.docsBaseURL)/troubleshooting.html") { NSWorkspace.shared.open(url) }
         }
-        Button(loc.localized("help.menu.supportedSystems")) {
+        Button(loc.localized("help.menu.supportedSystems"), systemImage: "gamecontroller") {
           if let url = URL(string: "\(HelpContent.docsBaseURL)/systems.html") { NSWorkspace.shared.open(url) }
         }
 
         Divider()
 
-        Button(loc.localized("help.menu.keyboardShortcuts")) {
+        Button(loc.localized("help.menu.keyboardShortcuts"), systemImage: "keyboard") {
           openHelpWindow()
         }
         .keyboardShortcut("/", modifiers: .command)
 
         Divider()
 
-        Button(loc.localized("help.menu.github")) {
+        Button(loc.localized("help.menu.github"), systemImage: "chevron.left.forwardslash.chevron.right") {
           if let url = URL(string: "https://github.com/JuanchoGithub/truchiemu") { NSWorkspace.shared.open(url) }
         }
       }
 
       // Library Menu (rename to something unique to avoid conflict with macOS default)
                 CommandMenu(loc.localized("app.games")) {
-                    Button(loc.localized("app.addROMFolder")) {
+                    Button(loc.localized("app.addROMFolder"), systemImage: "folder.badge.plus") {
                         NotificationCenter.default.post(name: .addROMFolder, object: nil)
                     }
                     .keyboardShortcut("O", modifiers: [.command, .shift])
 
-                    Button(loc.localized("app.rescanLibrary")) {
+                    Button(loc.localized("app.rescanLibrary"), systemImage: "arrow.clockwise") {
                         Task { await library.fullRescan() }
                     }
                     .keyboardShortcut("R", modifiers: [.command, .shift])
@@ -429,21 +437,21 @@ var body: some Scene {
 
                     // Navigation section
                     Section(loc.localized("app.library")) {
-                        Button(loc.localized("app.allGames")) {
+                        Button(loc.localized("app.allGames"), systemImage: "rectangle.stack") {
                             NotificationCenter.default.post(name: .navigateToFilter, object: "all")
                         }
 
-                        Button(loc.localized("app.favorites")) {
+                        Button(loc.localized("app.favorites"), systemImage: "star.fill") {
                             NotificationCenter.default.post(name: .navigateToFilter, object: "favorites")
                         }
 
-                        Button(loc.localized("app.recent")) {
+                        Button(loc.localized("app.recent"), systemImage: "clock") {
                             NotificationCenter.default.post(name: .navigateToFilter, object: "recent")
                         }
 
                         Divider()
 
-                        Button(loc.localized("app.playHistory")) {
+                        Button(loc.localized("app.playHistory"), systemImage: "clock.arrow.circlepath") {
                             NotificationCenter.default.post(name: .navigateToFilter, object: "playHistory")
                         }
                         .keyboardShortcut("H", modifiers: [.command, .shift])
@@ -452,7 +460,7 @@ var body: some Scene {
                     Divider()
 
                     // Systems submenu - only show systems that have games
-                    Menu(loc.localized("app.systems")) {
+                    Menu {
                         let ids = Set(library.roms.compactMap { $0.systemID })
                         let displaySystems = SystemDatabase.systemsForDisplay.filter { system in
                             let internalIDs = SystemDatabase.allInternalIDs(forDisplayID: system.id)
@@ -460,43 +468,47 @@ var body: some Scene {
                         }.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
 
                         ForEach(displaySystems) { system in
-                            Button(system.name) {
+                            Button(system.name, systemImage: system.iconName) {
                                 NotificationCenter.default.post(name: .navigateToFilter, object: "system-\(system.id)")
                             }
                         }
+                    } label: {
+                        Label(loc.localized("app.systems"), systemImage: "gamecontroller")
                     }
 
                     Divider()
 
                     // Settings submenu
-                    Menu(loc.localized("app.settings")) {
-        Button(loc.localized("app.controllers")) {
+                    Menu {
+        Button(loc.localized("app.controllers"), systemImage: "gamecontroller") {
                 AppSettings.set("settings_selectedTab", value: "controllers")
                 NotificationCenter.default.post(name: .openAppSettings, object: nil)
             }
 
-            Button(loc.localized("app.boxArtSettings")) {
+            Button(loc.localized("app.boxArtSettings"), systemImage: "photo.on.rectangle.angled") {
                 AppSettings.set("settings_selectedTab", value: "boxArt")
                 NotificationCenter.default.post(name: .openAppSettings, object: nil)
             }
 
-            Button(loc.localized("app.cheats")) {
+            Button(loc.localized("app.cheats"), systemImage: "wand.and.stars") {
                 AppSettings.set("settings_selectedTab", value: "cheats")
                 NotificationCenter.default.post(name: .openAppSettings, object: nil)
             }
 
-            Button(loc.localized("app.bezels")) {
+            Button(loc.localized("app.bezels"), systemImage: "rectangle.inset.filled") {
                 AppSettings.set("settings_selectedTab", value: "bezels")
                 NotificationCenter.default.post(name: .openAppSettings, object: nil)
             }
 
             Divider()
 
-            Button(loc.localized("app.cores")) {
+            Button(loc.localized("app.cores"), systemImage: "cpu") {
                 AppSettings.set("settings_selectedTab", value: "perSystem")
                 NotificationCenter.default.post(name: .openAppSettings, object: nil)
             }
 
+            } label: {
+                Label(loc.localized("app.settings"), systemImage: "gearshape")
             }
                 }
             }
