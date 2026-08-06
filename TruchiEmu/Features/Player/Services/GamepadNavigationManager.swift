@@ -106,17 +106,16 @@ final class GamepadNavigationManager: ObservableObject {
     }
 
     private func observeAppActivation() {
+        // Polling stays alive for the lifetime of the app process; the per-tick
+        // `NSApp.isActive` / key-window checks inside `poll()` gate every
+        // action except the toolbar-rescue branch (which needs to run while
+        // another app is frontmost so L3+R3 / Start+Select can bring the game
+        // window forward). Tearing the timer down on resign-active used to
+        // drop that combo because no poll tick ever fired while unfocused.
         NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.startPolling()
-            }
-            .store(in: &cancellables)
-
-        NotificationCenter.default.publisher(for: NSApplication.didResignActiveNotification)
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                self?.stopPolling()
             }
             .store(in: &cancellables)
 
@@ -260,26 +259,16 @@ final class GamepadNavigationManager: ObservableObject {
     }
 
     private func poll() {
-        guard NSApp.isActive else { return }
+        // The toolbar-rescue path below intentionally runs even when the app
+        // is not active or our window is not key, so the user can press
+        // L3+R3 / Start+Select from the couch and bring the game window
+        // forward. Every other action is still gated by the checks below.
         guard GamepadNavConfigManager.shared.isEnabled else {
             if isGamepadActive { isGamepadActive = false }
             return
         }
 
         let topContext = GamepadNavContextStack.shared.topActive()
-
-        // Never synthesize navigation directed at a window that isn't key.
-        // A context that owns a particular window (gameplay, dedicated windows)
-        // only acts when its window is the key window. Global contexts (sheets,
-        // the TV-mode overlay, the library) have `ownedWindow == nil` and are
-        // dispatched regardless — which is what keeps the gamepad alive on a
-        // fullscreen TV-mode window whose `keyWindow` status can be transiently
-        // `nil` after a SwiftUI sheet is torn down. `NSApp.isActive` above
-        // already filters the "no window of ours has focus at all" case.
-        if let owned = topContext?.ownedWindow, owned !== NSApp.keyWindow {
-            resetNavState()
-            return
-        }
 
         // While a game is running the gamepad drives the running game, so library
         // UI navigation must never fire. Without this guard the controller is
@@ -353,6 +342,48 @@ final class GamepadNavigationManager: ObservableObject {
 
         let justPressed = newlyPressed.subtracting(pressedButtons)
         let justReleased = pressedButtons.subtracting(newlyPressed)
+
+        // Toolbar rescue: if the user pressed the configured "Show Game Toolbar"
+        // binding while another app is frontmost or our window isn't key,
+        // bring the running-game window forward and fire the action. This is
+        // the only path that bypasses the focus gates below — it exists so
+        // L3+R3 / Start+Select works from the couch even when the user has
+        // clicked away. We look up the running-game context directly via
+        // `firstActive(of:)` (bypassing `topActive()`'s key-window filter,
+        // which would return the library context while unfocused) so the fire
+        // routes to `GamepadGameRunningContext.handleAction` and its
+        // `onShowToolbar` closure, NOT to the library coordinator which would
+        // pause the runner without bringing a window forward. Mirrors the
+        // `keyWindow.makeKeyAndOrderFront(nil)` precedent used by
+        // `GamepadTwoZoneContext.moveFocus` (GamepadNavContext.swift:296).
+        if let toolbarBinding = config[.showGameToolbar]?.binding.button,
+           justPressed.contains(toolbarBinding),
+           let gameCtx = GamepadNavContextStack.shared.firstActive(of: GamepadGameRunningContext.self) {
+            if !NSApp.isActive {
+                NSApp.activate(ignoringOtherApps: true)
+            }
+            if let owned = gameCtx.ownedWindow, owned !== NSApp.keyWindow {
+                owned.makeKeyAndOrderFront(nil)
+            }
+            gameCtx.handleAction(.showGameToolbar)
+            pressedButtons = newlyPressed
+            return
+        }
+
+        // From here on, only dispatch nav when the app is active AND the
+        // context's owned window (if any) is the key window. Global contexts
+        // (sheets, TV-mode overlay, library) have `ownedWindow == nil` and so
+        // are still dispatched — which keeps the gamepad alive on a fullscreen
+        // TV-mode window whose `keyWindow` status can be transiently `nil`
+        // after a SwiftUI sheet is torn down.
+        guard NSApp.isActive else {
+            resetNavState()
+            return
+        }
+        if let owned = topContext?.ownedWindow, owned !== NSApp.keyWindow {
+            resetNavState()
+            return
+        }
 
         // During gameplay (no toolbar/sheet), swallow all library navigation and
         // its logs so the controller belongs to the game. The only action that

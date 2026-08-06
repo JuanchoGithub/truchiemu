@@ -54,6 +54,15 @@ final class GamepadNavContextStack {
         }
         return nilOwned.max(by: { $0.priority < $1.priority }) ?? activeContexts.max(by: { $0.priority < $1.priority })
     }
+
+    /// Returns the first active context of the given type, regardless of which
+    /// window owns it. Unlike `topActive()`, this is not filtered by
+    /// `NSApp.keyWindow`, so it still resolves while another app is frontmost
+    /// (and `keyWindow` is `nil`). Used by the toolbar-rescue path which must
+    /// find the running-game context even when the user has clicked away.
+    func firstActive<T: GamepadNavContext>(of type: T.Type) -> T? {
+        contexts.compactMap { $0 as? T }.first { $0.isActive }
+    }
 }
 
 @MainActor
