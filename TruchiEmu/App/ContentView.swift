@@ -43,6 +43,7 @@ struct ContentView: View {
 
 @ObservedObject private var tvModeSettings = TVModeSettingsManager.shared
 @State private var showTVModeSettings: Bool = false
+@ObservedObject private var externalDisplayPrompt = ExternalDisplayPromptManager.shared
 
     var body: some View {
         Group {
@@ -126,6 +127,12 @@ struct ContentView: View {
             // `mainInterface` only), so TVModeViewModel saw no games until the
             // user exited TV-mode and triggered the main-interface `.task`.
             library.initializeIfNeeded()
+        }
+        // External-display prompt overlay. Renders nothing when
+        // `ExternalDisplayPromptManager` is idle; the manager never prompts
+        // while TV Mode is active, so this never overlaps `TVModeView`.
+        .overlay {
+            ExternalDisplayPromptView()
         }
     }
 

@@ -8,6 +8,13 @@ class GamepadNavContext: ObservableObject {
     var priority: Int { 0 }
     weak var ownedWindow: NSWindow?
 
+    /// When true, `GamepadNavigationManager.poll()` keeps routing nav actions to
+    /// this context even while a game is running, skipping the gameplay
+    /// suppression that normally hands the gamepad to the game. Used by modal
+    /// overlays that must stay operable mid-game (e.g. the external-display
+    /// prompt, which needs A/B while a game is paused behind it).
+    var bypassesGameplaySuppression: Bool { false }
+
     func handleAction(_ action: GamepadNavAction) {}
 }
 

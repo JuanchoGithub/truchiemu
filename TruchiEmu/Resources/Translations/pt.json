@@ -2502,5 +2502,13 @@
     "tvMode.coreDownload.actions": "Alternar ação",
     "tvMode.coreDownload.confirm": "Confirmar",
     "tvMode.coreDownload.cancel": "Cancelar",
-    "tvMode.sortHUD.alphabetical": "Nome"
+    "tvMode.sortHUD.alphabetical": "Nome",
+    "externalDisplay.prompt.title": "Abrir o app em %@?",
+    "externalDisplay.prompt.accept": "A — Continuar",
+    "externalDisplay.prompt.decline": "B — Cancelar",
+    "externalDisplay.resume.title": "Jogo em pausa",
+    "externalDisplay.resume.body": "Pressione A para retomar",
+    "externalDisplay.resume.auto": "Retomando automaticamente em %d…",
+    "externalDisplay.warmUp.title": "Tela detectada %@",
+    "externalDisplay.warmUp.countdown": "Modo TV em %d s"
 }

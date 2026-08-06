@@ -2486,5 +2486,13 @@
   "tvMode.coreDownload.actions": "アクションを切り替え",
   "tvMode.coreDownload.confirm": "確認",
   "tvMode.coreDownload.cancel": "キャンセル",
-  "tvMode.sortHUD.alphabetical": "名前"
+  "tvMode.sortHUD.alphabetical": "名前",
+  "externalDisplay.prompt.title": "%@ でアプリを開きますか？",
+  "externalDisplay.prompt.accept": "A — 続行",
+  "externalDisplay.prompt.decline": "B — キャンセル",
+  "externalDisplay.resume.title": "ゲームを一時停止中",
+  "externalDisplay.resume.body": "A を押して再開",
+  "externalDisplay.resume.auto": "%d 秒後に自動再開…",
+  "externalDisplay.warmUp.title": "画面 %@ を検出しました",
+  "externalDisplay.warmUp.countdown": "TV モードまで %d 秒"
 }

@@ -2504,5 +2504,13 @@
     "tvMode.coreDownload.actions": "Switch action",
     "tvMode.coreDownload.confirm": "Confirm",
     "tvMode.coreDownload.cancel": "Cancel",
-    "tvMode.sortHUD.alphabetical": "Name"
+    "tvMode.sortHUD.alphabetical": "Name",
+    "externalDisplay.prompt.title": "Open app in %@?",
+    "externalDisplay.prompt.accept": "A — Continue",
+    "externalDisplay.prompt.decline": "B — Cancel",
+    "externalDisplay.resume.title": "Game paused",
+    "externalDisplay.resume.body": "Press A to resume",
+    "externalDisplay.resume.auto": "Resuming automatically in %d…",
+    "externalDisplay.warmUp.title": "Detected screen %@",
+    "externalDisplay.warmUp.countdown": "TV mode in %d s"
 }

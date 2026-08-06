@@ -281,6 +281,7 @@ final class GamepadNavigationManager: ObservableObject {
         let gameRunningNavSuppressed = RunningGamesTracker.shared.isGameRunning
             && !(topContext is GamepadGameToolbarContext)
             && !(topContext is GamepadSheetContext)
+            && !(topContext?.bypassesGameplaySuppression ?? false)
 
         let controllers = ControllerService.shared.connectedControllers
         let gamepads = controllers.compactMap { $0.isKeyboard ? nil : $0.gcController?.extendedGamepad }

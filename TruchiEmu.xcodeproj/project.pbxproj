@@ -306,6 +306,7 @@
 		37960EC714E081D43F165C71 /* input_coreOverrides_dolphin.json in Resources */ = {isa = PBXBuildFile; fileRef = E8C0B309CDF7F5C3FA06E6B7 /* input_coreOverrides_dolphin.json */; };
 		37BAACC5CDE0D05AF0BE7D5D /* ntsc_encoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1D4A22BB19D522A22BE8F5B /* ntsc_encoder.cpp */; settings = {COMPILER_FLAGS = "-O3"; }; };
 		37E503A31525F302675202E8 /* tic80-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 39463E20150756E0CA0D4DFA /* tic80-cheats.zip */; };
+		3857DC8DDF88D59947F37E9C /* ExternalDisplayPromptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0456AFF112B9AE6172688C2F /* ExternalDisplayPromptView.swift */; };
 		38C1BBC41F5DDF37E99D82C5 /* AccentSegmentedControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A290509C1D20EA2265610 /* AccentSegmentedControl.swift */; };
 		38F65EBA27880E54486368AB /* input_coreLabels_bsnes_mercury_accuracy.json in Resources */ = {isa = PBXBuildFile; fileRef = 3ADA8797ACD3483D9EB680FC /* input_coreLabels_bsnes_mercury_accuracy.json */; };
 		391B9B7C2EA7CFCA2A157747 /* PSP.png in Resources */ = {isa = PBXBuildFile; fileRef = FFD0AF7532FC4393B76C50D2 /* PSP.png */; };
@@ -1056,6 +1057,7 @@
 		CDB16BD1C1887BD7AD4E99F8 /* input_coreLabels_vemulator.json in Resources */ = {isa = PBXBuildFile; fileRef = A6985776C0054F68DA884F39 /* input_coreLabels_vemulator.json */; };
 		CDC8133D2C03E637999E2155 /* CheatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD4DF5D2F13617BDA825F6F3 /* CheatSettingsView.swift */; };
 		CE0CB7B49E978CFA4F591675 /* PC98.png in Resources */ = {isa = PBXBuildFile; fileRef = 7A121397290660B21B099AD4 /* PC98.png */; };
+		CE1E5958D5DFA5649624A6B0 /* ExternalDisplayPromptManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63329F8A5AAC634E147BB91 /* ExternalDisplayPromptManager.swift */; };
 		CEC21EB428BB7D5F007C34F2 /* virtualboy.ico in Resources */ = {isa = PBXBuildFile; fileRef = 6069F75B4546F64B16E338E2 /* virtualboy.ico */; };
 		CEDEE26F9187602FC4A1BEEA /* MAMEMissingROMsAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = C15804655F28F2866DFA7C49 /* MAMEMissingROMsAlert.swift */; };
 		CF2022F4F944C17F5741AE01 /* CAVESTORY.png in Resources */ = {isa = PBXBuildFile; fileRef = B046DA0D84C6F163569AF09D /* CAVESTORY.png */; };
@@ -1338,6 +1340,7 @@
 		02CF8EF66CB8C3E5967901A7 /* SettingsSearchable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsSearchable.swift; sourceTree = "<group>"; };
 		0332CB1FAB59B41322608406 /* fightdata_samsptk.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_samsptk.json; sourceTree = "<group>"; };
 		037D149BE1ADE5FB4FDC4054 /* fightdata_jchan.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_jchan.json; sourceTree = "<group>"; };
+		0456AFF112B9AE6172688C2F /* ExternalDisplayPromptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalDisplayPromptView.swift; sourceTree = "<group>"; };
 		047139B91B642624AEC2480F /* LibretroBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LibretroBridge.h; sourceTree = "<group>"; };
 		04750B20FADB6525DAFEEF63 /* input_coreOverrides_stella.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_stella.json; sourceTree = "<group>"; };
 		059B489FC9D5EFEFA26D850F /* TimeMachineSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeMachineSettingsView.swift; sourceTree = "<group>"; };
@@ -2332,6 +2335,7 @@
 		C5C3E57020AB94499BF98B56 /* fightdata_capsnk.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_capsnk.json; sourceTree = "<group>"; };
 		C604EF864E31A2BD810A2345 /* jaguar-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "jaguar-cheats.zip"; sourceTree = "<group>"; };
 		C61A9A36D430D34E4C3ABDE0 /* GameLoadingOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLoadingOverlay.swift; sourceTree = "<group>"; };
+		C63329F8A5AAC634E147BB91 /* ExternalDisplayPromptManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalDisplayPromptManager.swift; sourceTree = "<group>"; };
 		C6390D2AB62AB2F0DFD55B70 /* PSPMINIS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PSPMINIS.png; sourceTree = "<group>"; };
 		C67F121E078838D4056A40D2 /* AppHaptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppHaptics.swift; sourceTree = "<group>"; };
 		C6A669A1E4230EBBC0D9A2F4 /* RcheevosWrapper.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = RcheevosWrapper.c; sourceTree = "<group>"; };
@@ -3450,6 +3454,7 @@
 		74ACAB644A269C737DC826A2 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				C63329F8A5AAC634E147BB91 /* ExternalDisplayPromptManager.swift */,
 				F5F26EC044E2537040F0323F /* ScreenCatalog.swift */,
 				AB1B584EF2D58664FDD12C57 /* TVModeSettingsManager.swift */,
 			);
@@ -4336,6 +4341,7 @@
 			isa = PBXGroup;
 			children = (
 				68FD211A72F4862B10F9258C /* CurvedRowLayout.swift */,
+				0456AFF112B9AE6172688C2F /* ExternalDisplayPromptView.swift */,
 				F00C70234047FB1BDBC3941E /* TVModeAnimatedAccentBackground.swift */,
 				91A69D413971061EA36A4532 /* TVModeBoxartBackdrop.swift */,
 				0902A78AB9003E62065EFAFF /* TVModeCoreDownloadOverlay.swift */,
@@ -5967,6 +5973,8 @@
 				5283D5F00AED8BC54D66A48F /* DragPreviewStack.swift in Sources */,
 				C25037436138043A3C12B4C7 /* DreamcastBIOSService.swift in Sources */,
 				DE29E5DDC33BE3F03B33B621 /* EscapeToastOverlay.swift in Sources */,
+				CE1E5958D5DFA5649624A6B0 /* ExternalDisplayPromptManager.swift in Sources */,
+				3857DC8DDF88D59947F37E9C /* ExternalDisplayPromptView.swift in Sources */,
 				2092982EBE4E3207136DC2C0 /* ExtractedROMCacheSettingsView.swift in Sources */,
 				F1AA1B8F49F0A72048BB69A1 /* FamicomRF.metal in Sources */,
 				10A813FD9AC06B780E931816 /* FilterChipView.swift in Sources */,

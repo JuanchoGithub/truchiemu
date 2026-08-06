@@ -136,6 +136,10 @@ var achievementToastOverlayView: NSHostingView<AnyView>?
     var osdOverlayView: SafeHostingView<AnyView>?
     var timeBarOverlayView: SafeHostingView<AnyView>?
     var trainingModeOverlayView: NSHostingView<AnyView>?
+    /// Full-window overlay for the external-display prompt / resume gate. Owned
+    /// and shown/hidden by `ExternalDisplayPromptManager` when a TV is plugged
+    /// in and a game is running.
+    var externalPromptOverlayView: SafeHostingView<AnyView>?
 var p2JoinStatusOverlayView: NSHostingView<AnyView>?
 private var p2JoinStatusCancellable: AnyCancellable?
     private var trainingConfigCancellable: AnyCancellable?
@@ -214,6 +218,8 @@ guideSidebarView = nil
         errorOverlayView = nil
         timeBarOverlayView?.removeFromSuperview()
         timeBarOverlayView = nil
+        externalPromptOverlayView?.removeFromSuperview()
+        externalPromptOverlayView = nil
     }
 
     @MainActor
@@ -1389,6 +1395,30 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         runner?.isPaused = false
         metalView?.isPaused = false
         XPCBridgeAdapter.shared.setPaused(false)
+    }
+
+    // MARK: - External-display prompt overlay
+
+    /// Shows the external-display prompt / resume-gate overlay over this game
+    /// window (e.g. when a TV is plugged in and the app asks whether to hand
+    /// the running game to it). The overlay observes
+    /// `ExternalDisplayPromptManager.shared` and renders whatever phase is
+    /// active; input is handled by the manager's key monitor + nav context.
+    @MainActor
+    func showExternalPromptOverlay() {
+        guard externalPromptOverlayView == nil, let containerView = window?.contentView else { return }
+        let hostingView = SafeHostingView(rootView: AnyView(ExternalDisplayPromptView()))
+        hostingView.autoresizingMask = [.width, .height]
+        hostingView.frame = containerView.bounds
+        hostingView.wantsLayer = true
+        containerView.addSubview(hostingView, positioned: .above, relativeTo: nil)
+        externalPromptOverlayView = hostingView
+    }
+
+    @MainActor
+    func hideExternalPromptOverlay() {
+        externalPromptOverlayView?.removeFromSuperview()
+        externalPromptOverlayView = nil
     }
 
     // MARK: - Cheats

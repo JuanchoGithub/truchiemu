@@ -110,7 +110,7 @@ final class TVModeSettingsManager: ObservableObject {
     /// Cold-start intentionally bypasses the picker — no SwiftUI view is
     /// mounted yet to render it. The user can change screens by exiting and
     /// re-entering TV Mode from the menu once the UI is up.
-    private func requestScreenSelection(allowPicker: Bool) {
+    private func requestScreenSelection(allowPicker: Bool, forcedScreen: ScreenDescriptor? = nil) {
         let catalog = ScreenCatalog.shared
         catalog.refresh()
         let screens = catalog.screens
@@ -119,6 +119,14 @@ final class TVModeSettingsManager: ObservableObject {
         //    path can put the user back where they came from.
         if let current = currentWindowScreenID() {
             TVModeSettings.setOriginScreenID(current)
+        }
+
+        // A caller-supplied screen (e.g. the external-display prompt) skips the
+        // mode/picker resolution entirely and commits directly — the user has
+        // already chosen which display TV Mode should use.
+        if let forcedScreen {
+            commitScreenSelection(forcedScreen)
+            return
         }
 
         // 2. Resolve a target based on the user's mode. `.ask` shows the
@@ -154,9 +162,22 @@ final class TVModeSettingsManager: ObservableObject {
     /// own `screen` when available (which AppKit updates automatically when
     /// the window moves); falls back to `NSScreen.main`.
     private func currentWindowScreenID() -> String? {
-        let window = NSApp.windows.first(where: { $0.isVisible && $0.styleMask.contains(.titled) })
-            ?? NSApp.windows.first
+        let window = hostWindow ?? NSApp.windows.first
         return Self.idString(for: window?.screen)
+    }
+
+    /// The app's primary library window — the first visible, titled, windowed
+    /// window that isn't a running-game window (`StandaloneGameWindowController`).
+    /// TV Mode moves and fullscreens THIS window; game windows are separate
+    /// surfaces that must never be hijacked by the screen-selection logic
+    /// (e.g. while the external-display prompt hands a game to the TV).
+    private var hostWindow: NSWindow? {
+        NSApp.windows.first {
+            $0.isVisible
+                && $0.styleMask.contains(.titled)
+                && !$0.styleMask.contains(.fullScreen)
+                && !($0.windowController is StandaloneGameWindowController)
+        }
     }
 
     private static func idString(for screen: NSScreen?) -> String? {
@@ -214,13 +235,11 @@ final class TVModeSettingsManager: ObservableObject {
     /// `toggleFullScreen` on the next runloop (issuing both synchronously
     /// races and can land the fullscreen on the wrong display).
     func commitScreenSelection(_ screen: ScreenDescriptor) {
-        guard let window = NSApp.windows.first(where: {
-            $0.isVisible && $0.styleMask.contains(.titled) && !$0.styleMask.contains(.fullScreen)
-        }) else {
+        guard let window = hostWindow else {
             enterFullscreenOnCurrentScreen()
             return
         }
-        moveWindowOntoScreen(window, screen: screen, fillingVisibleFrame: true)
+        moveWindowOntoScreen(window, screen: screen)
         DispatchQueue.main.async {
             window.toggleFullScreen(nil)
         }
@@ -234,9 +253,7 @@ final class TVModeSettingsManager: ObservableObject {
     /// on (the existing v1 behavior). Used when no resolvable screen exists
     /// or the main window can't be found by the title/style-mask filter.
     func enterFullscreenOnCurrentScreen() {
-        guard let window = NSApp.windows.first(where: {
-            $0.isVisible && $0.styleMask.contains(.titled) && !$0.styleMask.contains(.fullScreen)
-        }), window.contentViewController != nil || window.contentView != nil else { return }
+        guard let window = hostWindow, window.contentViewController != nil || window.contentView != nil else { return }
         DispatchQueue.main.async {
             window.toggleFullScreen(nil)
         }
@@ -255,8 +272,12 @@ final class TVModeSettingsManager: ObservableObject {
     /// host-screen check, which causes the window's `screen` property to
     /// re-bind to the target. Only then do we expand to the final frame.
     /// Doing the resize before the re-bind is what gets the move rejected.
-    private func moveWindowOntoScreen(_ window: NSWindow, screen: ScreenDescriptor, fillingVisibleFrame: Bool) {
-        let target = screen.visibleFrame
+    ///
+    /// `finalFrame` lets callers place the window at an arbitrary rect (e.g. a
+    /// running game window keeping its size, centered on the target). When nil,
+    /// the window fills the target's visible frame.
+    private func moveWindowOntoScreen(_ window: NSWindow, screen: ScreenDescriptor, finalFrame: CGRect? = nil) {
+        let target = finalFrame ?? screen.visibleFrame
         guard target.width > 0, target.height > 0 else { return }
 
         // Tiny rect centered inside the target screen. 100×100 is small
@@ -270,11 +291,19 @@ final class TVModeSettingsManager: ObservableObject {
         )
         window.setFrame(tiny, display: true)
 
-        // Now that the window's host screen is the target, expand to fill
-        // the visible frame (or to whatever final rect the caller wants).
-        if fillingVisibleFrame {
-            window.setFrame(target, display: true)
-        }
+        // Now that the window's host screen is the target, expand to the final
+        // rect (the visible frame by default).
+        window.setFrame(target, display: true)
+    }
+
+    /// Moves an arbitrary window (e.g. a running game window being handed to
+    /// an external display) onto a screen using the same cross-screen-safe
+    /// technique as the host-window move. When `finalFrame` is nil the window
+    /// fills the target's visible frame; otherwise it lands at that exact rect.
+    /// Game windows must be moved while windowed — a fullscreen window is a
+    /// Space and ignores `setFrame` (see `ExternalDisplayPromptManager`).
+    func moveWindow(_ window: NSWindow, onto screen: ScreenDescriptor, finalFrame: CGRect? = nil) {
+        moveWindowOntoScreen(window, screen: screen, finalFrame: finalFrame)
     }
 
     /// Installs a transient `NSWindowDelegate` on the fullscreen window that
@@ -340,6 +369,21 @@ final class TVModeSettingsManager: ObservableObject {
         // Picker is mounted by `TVModeView`; that's the only entry path
         // that actually has a SwiftUI surface to render it on.
         requestScreenSelection(allowPicker: true)
+    }
+
+    /// Enters TV Mode directly on a specific screen, bypassing the picker and
+    /// the `screenSelectionMode` resolution. Used by the external-display
+    /// prompt, where the user has already chosen which display to use. Also
+    /// remembers the pick so `.lastUsed` and cold-start resume keep targeting
+    /// the same display on future launches.
+    func enter(on screen: ScreenDescriptor) {
+        guard !isActive else { return }
+        if priorAutoFullscreen == nil {
+            priorAutoFullscreen = AppSettings.getBool("autoFullscreenEnabled", defaultValue: false)
+        }
+        AppSettings.setBool("autoFullscreenEnabled", value: true)
+        isActive = true
+        requestScreenSelection(allowPicker: false, forcedScreen: screen)
     }
 
     func exitMode() {
