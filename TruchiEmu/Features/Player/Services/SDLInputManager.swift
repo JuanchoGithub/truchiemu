@@ -586,6 +586,9 @@ class SDLInputManager: ObservableObject {
         guard !isGC, port != nil else { return }
         guard let retroID = Self.joystickButtonMap[Int(event.button)] else { return }
         dispatchButton(retroID: retroID, instanceID: event.which, pressed: pressed)
+        if retroID == 12 || retroID == 13 {
+            dispatchAnalogButton(retroID: retroID, value: pressed ? Int16.max : 0, instanceID: event.which)
+        }
     }
 
     private nonisolated func handleJoyAxisEvent(_ event: SDL_JoyAxisEvent) {

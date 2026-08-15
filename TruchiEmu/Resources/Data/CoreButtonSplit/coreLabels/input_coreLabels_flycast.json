@@ -32,6 +32,12 @@
   "r1": {
     "label": "R (weak)"
   },
+  "l2": {
+    "label": "L Trigger"
+  },
+  "r2": {
+    "label": "R Trigger"
+  },
   "lStickLeft": {
     "label": "Left Stick Analog X ←"
   },
