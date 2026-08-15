@@ -62,7 +62,7 @@ final class TVModeViewModel: ObservableObject {
     /// window when TV-mode was opened. Drives the initial selectedEntryIndex
     /// so TV-mode opens at the same system/filter the main window was on
     /// instead of always jumping to "All Games".
-    private let initialEntryID: String?
+    private var initialEntryID: String?
 
     init(library: ROMLibrary, systemDatabase: SystemDatabaseWrapper, initialEntryID: String? = nil) {
         self.library = library
@@ -327,8 +327,13 @@ final class TVModeViewModel: ObservableObject {
         if let initialEntryID,
            let index = entries.firstIndex(where: { $0.id == initialEntryID }) {
             // Restore the same filter the main window was on when the
-            // user opened TV mode.
+            // user opened TV mode. This is a one-shot seed: consume it
+            // so subsequent rebuilds (triggered by library.roms publishes
+            // from markPlayed at launch / recordPlaySession at exit) do not
+            // snap the user's row-1 navigation back to the entry they
+            // opened TV mode on.
             selectedEntryIndex = index
+            self.initialEntryID = nil
         } else if selectedEntryIndex >= entries.count {
             selectedEntryIndex = max(0, entries.count - 1)
         }
