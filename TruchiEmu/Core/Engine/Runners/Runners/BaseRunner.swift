@@ -666,8 +666,44 @@ case "scummvm": runner = ScummVMRunner()
     }
 
     // MARK: - Pause State
-    @MainActor @Published var isPaused: Bool = false
-    
+
+    /// The combined pause + Time Machine scrub state. This is the single
+    /// source of truth: `isPaused`, `isRewinding`, and `isRewindingStorage`
+    /// are derived outputs that only `applyPauseState` ever writes.
+    @MainActor
+    enum PauseState: Equatable {
+        case running
+        case paused
+        case scrubbing
+        case scrubbingOverPaused
+    }
+
+    @MainActor @Published private(set) var pauseState: PauseState = .running
+
+    /// Derived from `pauseState`: true while paused, including scrub mode.
+    @MainActor @Published private(set) var isPaused: Bool = false
+
+    /// Derived from `pauseState`: true while in Time Machine scrub mode.
+    @MainActor @Published private(set) var isRewinding: Bool = false
+
+    @MainActor
+    private func applyPauseState(_ newState: PauseState) {
+        pauseState = newState
+        isRewinding = (newState == .scrubbing || newState == .scrubbingOverPaused)
+        isPaused = (newState != .running)
+        isRewindingStorage = isRewinding
+        XPCBridgeAdapter.shared.setPaused(isPaused)
+    }
+
+    /// Pause or resume the game. No-op while in Time Machine scrub mode:
+    /// scrub mode owns the paused state, so UI-layer pause requests are
+    /// ignored until the user exits scrub.
+    @MainActor
+    func setPaused(_ paused: Bool) {
+        guard !isRewinding else { return }
+        applyPauseState(paused ? .paused : .running)
+    }
+
     @MainActor
     func stop() {
         LoggerService.info(category: "Runner", "Stopping emulation thread")
@@ -794,9 +830,10 @@ case "scummvm": runner = ScummVMRunner()
     // Toggle pause state
     @MainActor
     func togglePause() {
-        isPaused.toggle()
-        XPCBridgeAdapter.shared.setPaused(isPaused)
-        osdMessage = isPaused ? LocalizationManager.shared.localized("osd.paused") : LocalizationManager.shared.localized("osd.resumed")
+        guard !isRewinding else { return }
+        let paused = !isPaused
+        applyPauseState(paused ? .paused : .running)
+        osdMessage = paused ? LocalizationManager.shared.localized("osd.paused") : LocalizationManager.shared.localized("osd.resumed")
         
         Task {
             try? await Task.sleep(nanoseconds: 2_000_000_000)
@@ -806,8 +843,7 @@ case "scummvm": runner = ScummVMRunner()
     
     @MainActor
     func reloadGame() {
-        isPaused = false
-        XPCBridgeAdapter.shared.setPaused(false)
+        applyPauseState(.running)
         XPCBridgeAdapter.shared.resetGame()
         rcheevosLock.lock()
         _needsRcheevosReset = true
@@ -825,7 +861,6 @@ case "scummvm": runner = ScummVMRunner()
     // MARK: - Time Machine & Speed Control
 
     @MainActor @Published var speedMultiplier: Float = 1.0
-    @MainActor @Published var isRewinding: Bool = false
 
     /// Live playhead frame index while in Time Machine scrub mode. The
     /// timeline overlay reads this; left/right arrows on the keyboard or
@@ -835,9 +870,9 @@ case "scummvm": runner = ScummVMRunner()
     // Mirror of `isRewinding` for the GCController valueChangedHandler, which
     // fires on a non-MainActor queue. The main-actor `@Published` is poorly
     // suited for cross-thread reads; this `nonisolated(unsafe)` Bool is set
-    // in lockstep with `isRewinding` on the main actor and read atomically
-    // from the gamepad thread. This matches how `ShaderParameterStore` and
-    // MAME lookup tables expose data to non-MainActor code.
+    // by `applyPauseState` on the main actor and read atomically from the
+    // gamepad thread. This matches how `ShaderParameterStore` and MAME lookup
+    // tables expose data to non-MainActor code.
     nonisolated(unsafe) var isRewindingStorage: Bool = false
 
     // Settings availability helpers. Read at action time so mid-game
@@ -889,7 +924,7 @@ case "scummvm": runner = ScummVMRunner()
             rcheevosLock.lock()
             _needsRcheevosReset = true
             rcheevosLock.unlock()
-            XPCBridgeAdapter.shared.setPaused(!resumeAfter)
+            setPaused(!resumeAfter)
             speedMultiplier = 1.0
             XPCBridgeAdapter.shared.setSpeedMultiplier(1.0)
         }
@@ -931,12 +966,11 @@ case "scummvm": runner = ScummVMRunner()
             }
             return
         }
-        isRewinding = true
-        isRewindingStorage = true
         speedMultiplier = 1.0
         XPCBridgeAdapter.shared.setSpeedMultiplier(1.0)
-        XPCBridgeAdapter.shared.setPaused(true)
-        isPaused = true
+        // Enter scrub paused. If the game was already paused, remember that
+        // so exiting scrub returns to the paused state instead of resuming.
+        applyPauseState(isPaused ? .scrubbingOverPaused : .scrubbing)
         timeMachineScrubFrameIndex = newest
         osdMessage = LocalizationManager.shared.localized("osd.rewind")
         // Suspend recording appends while emulation is paused so the captured
@@ -949,12 +983,14 @@ case "scummvm": runner = ScummVMRunner()
     @MainActor
     func exitTimeMachineMode() {
         guard isRewinding else { return }
+        // Restore the pause state that was in effect before scrub mode began.
+        // Scrubbing over an already-paused game keeps it paused on exit;
+        // scrubbing over a running game resumes it.
+        let wasPausedBeforeScrub = pauseState == .scrubbingOverPaused
         let exitScrubFrame = timeMachineScrubFrameIndex
         let preTruncateOldest = timeMachineBuffer.oldestFrameIndex ?? 0
         let preTruncateNewest = timeMachineBuffer.newestFrameIndex ?? 0
         let preTruncateCount = timeMachineBuffer.entryCount
-        isRewinding = false
-        isRewindingStorage = false
         speedMultiplier = 1.0
         XPCBridgeAdapter.shared.setSpeedMultiplier(1.0)
         // Drop entries past the playhead so the timeline's total duration
@@ -975,8 +1011,7 @@ case "scummvm": runner = ScummVMRunner()
         // number before the rewind arrived, leaking out-of-range captures
         // into the queue that drainCapturedState would then reject.
         XPCBridgeAdapter.shared.setFrameCount(exitScrubFrame)
-        XPCBridgeAdapter.shared.setPaused(false)
-        isPaused = false
+        applyPauseState(wasPausedBeforeScrub ? .paused : .running)
         let postTruncateOldest = timeMachineBuffer.oldestFrameIndex ?? 0
         let postTruncateNewest = timeMachineBuffer.newestFrameIndex ?? 0
         let postTruncateCount = timeMachineBuffer.entryCount
@@ -1122,10 +1157,10 @@ case "scummvm": runner = ScummVMRunner()
             XPCBridgeAdapter.shared.setSpeedMultiplier(1.0)
             if isRewinding {
                 timeMachineScrubFrameIndex = entry.frameIndex
-                // Stay paused while scrubbing.
-                XPCBridgeAdapter.shared.setPaused(true)
+                // Stay paused while scrubbing — scrub mode owns the paused
+                // state, so nothing else to do here.
             } else {
-                XPCBridgeAdapter.shared.setPaused(false)
+                setPaused(false)
             }
         }
         return success

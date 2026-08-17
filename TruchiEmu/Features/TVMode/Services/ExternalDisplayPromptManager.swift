@@ -323,13 +323,13 @@ final class ExternalDisplayPromptManager: ObservableObject {
         gameControllers = []
     }
 
-    /// Pauses/unpauses every captured game window via the pause triple
-    /// (runner + metal view + XPC bridge, mirroring `HardcoreViolationAlert`).
+    /// Pauses/unpauses every captured game window via the runner-owned pause
+    /// state (which drives the XPC bridge) plus the metal view, mirroring
+    /// `HardcoreViolationAlert`.
     private func setGamesPaused(_ paused: Bool) {
         for controller in gameControllers {
-            controller.runner?.isPaused = paused
+            controller.runner?.setPaused(paused)
             controller.metalView?.isPaused = paused
-            XPCBridgeAdapter.shared.setPaused(paused)
         }
     }
 

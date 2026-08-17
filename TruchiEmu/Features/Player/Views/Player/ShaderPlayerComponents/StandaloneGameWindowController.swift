@@ -93,6 +93,7 @@ class StandaloneGameWindowController: NSWindowController, NSWindowDelegate, Obse
     @MainActor @Published var isCheatPickerShown: Bool = false
     @MainActor var gameToolbarNavContext: GamepadGameToolbarContext?
     @MainActor var gameRunningNavContext: GamepadGameRunningContext?
+    @MainActor var wasPausedBeforeGamepadToolbar: Bool = false
     @MainActor @Published var isFullscreen: Bool = false
     @MainActor @Published var autoFullscreenEnabled: Bool = false
     private var isWaitingForFullscreenAnimation = false
@@ -693,8 +694,7 @@ super.init(window: window)
             existingStateOverlay?.removeFromSuperview()
             stateLoadOverlayView = fullscreenOverlayView
             fullscreenOverlayView = nil
-            runner?.isPaused = true
-            XPCBridgeAdapter.shared.setPaused(true)
+            runner?.setPaused(true)
         } else {
             existingStateOverlay?.removeFromSuperview()
             fullscreenOverlayView?.removeFromSuperview()
@@ -1166,8 +1166,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
                 stateLoadOverlayView = overlay
             }
             // Pause the runner so the game doesn't advance before state load
-            runner?.isPaused = true
-            XPCBridgeAdapter.shared.setPaused(true)
+            runner?.setPaused(true)
         }
 
         // Remove loading overlay after fade-out animation completes
@@ -1350,8 +1349,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         }
 
         // Resume emulation
-        runner?.isPaused = false
-        XPCBridgeAdapter.shared.setPaused(false)
+        runner?.setPaused(false)
         metalView?.isPaused = false
         metalView?.needsDisplay = true
 
@@ -1375,9 +1373,8 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
     @MainActor
     private func showHardcoreViolationAlert() {
         guard let containerView = window?.contentView else { return }
-        runner?.isPaused = true
+        runner?.setPaused(true)
         metalView?.isPaused = true
-        XPCBridgeAdapter.shared.setPaused(true)
 
         let alertView = SafeHostingView(rootView: AnyView(HardcoreViolationAlert().environment(SystemDatabaseWrapper.shared)))
         alertView.autoresizingMask = [.width, .height]
@@ -1392,9 +1389,8 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
     private func hideHardcoreViolationAlert() {
         hardcoreAlertOverlayView?.removeFromSuperview()
         hardcoreAlertOverlayView = nil
-        runner?.isPaused = false
+        runner?.setPaused(false)
         metalView?.isPaused = false
-        XPCBridgeAdapter.shared.setPaused(false)
     }
 
     // MARK: - External-display prompt overlay
@@ -1485,8 +1481,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
             Task { @MainActor in
                 self?.cheatManagerSheetWindow = nil
                 // Resume the game if it was paused for the sheet
-            self?.runner?.isPaused = false
-            XPCBridgeAdapter.shared.setPaused(false)
+                self?.runner?.setPaused(false)
             }
         }
     }
@@ -1497,8 +1492,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         guard let sheetWindow = cheatManagerSheetWindow, let window = window else { return }
         window.endSheet(sheetWindow)
         cheatManagerSheetWindow = nil
-        runner?.isPaused = false
-        XPCBridgeAdapter.shared.setPaused(false)
+        runner?.setPaused(false)
     }
 
     @MainActor
@@ -1508,16 +1502,14 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
             MoveListService.shared.clearSelectedCharacter()
             removeMoveListOverlay()
             if runner?.isPaused == true {
-                runner?.isPaused = false
-                XPCBridgeAdapter.shared.setPaused(false)
+                runner?.setPaused(false)
             }
             showToolbar()
             persistFightOverlayState()
             return
         }
 
-        runner?.isPaused = true
-        XPCBridgeAdapter.shared.setPaused(true)
+        runner?.setPaused(true)
 
         moveListViewModel.activate()
         installMoveListOverlay()
@@ -1532,8 +1524,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         }
         if moveListViewModel.isOverlayVisible {
             if runner?.isPaused == true {
-                runner?.isPaused = false
-                XPCBridgeAdapter.shared.setPaused(false)
+                runner?.setPaused(false)
             }
             persistFightOverlayState()
         }
@@ -1545,8 +1536,7 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         trainingModeViewModel.enabledCharacterName = character.name
         if moveListViewModel.isOverlayVisible {
             if runner?.isPaused == true {
-                runner?.isPaused = false
-                XPCBridgeAdapter.shared.setPaused(false)
+                runner?.setPaused(false)
             }
             persistFightOverlayState()
         }
@@ -1933,7 +1923,7 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
         // instead of leaving a corrupt mp4 (#30).
         StreamRecordingService.shared.stop()
 
-        XPCBridgeAdapter.shared.setPaused(true)
+        runner?.setPaused(true)
 
         isClosingWindow = true
 

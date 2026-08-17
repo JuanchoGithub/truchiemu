@@ -36,9 +36,12 @@ extension StandaloneGameWindowController {
         // mouse-activity auto-hide timer dismiss it during couch play.
         hideToolbarTimer?.invalidate()
         hideToolbarTimer = nil
-        if let r = runner, !r.isPaused {
-            r.isPaused = true
-            XPCBridgeAdapter.shared.setPaused(true)
+        // Pause the game while navigating the toolbar. Remember whether it was
+        // already paused so exiting the toolbar restores that state instead of
+        // unconditionally resuming.
+        if let r = runner {
+            wasPausedBeforeGamepadToolbar = r.isPaused
+            r.setPaused(true)
         }
     }
 
@@ -57,9 +60,8 @@ extension StandaloneGameWindowController {
         let nav = GamepadNavigationManager.shared
         nav.suppressLeftStickInToolbar = false
         if let r = runner {
-            r.isPaused = false
+            r.setPaused(wasPausedBeforeGamepadToolbar)
         }
-        XPCBridgeAdapter.shared.setPaused(false)
         scheduleHideToolbar()
     }
 

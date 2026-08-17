@@ -47,10 +47,10 @@ Read-only audit of the full repository (28 subsystems, HEAD `632e0825`) produced
 
 ### B1. Pause/scrub state machine (F1) — single most impactful behavioral change
 
-- [ ] Add one `PauseState` (idle / scrubbing / paused / scrubbingOverPaused) to `BaseRunner`
-- [ ] `enter/exitTimeMachineMode` preserve prior pause (currently `exitTimeMachineMode` unconditionally `setPaused(false)` → scrubbing over a pause un-pauses)
-- [ ] Window controller writes only `runner.isPaused`; derive XPC + MTKView state from it (remove ~15 direct triple-writes)
-- [ ] Remove `isRewindingStorage` manual mirror; keep one published source
+- [x] Add one `PauseState` (idle / scrubbing / paused / scrubbingOverPaused) to `BaseRunner`
+- [x] `enter/exitTimeMachineMode` preserve prior pause (currently `exitTimeMachineMode` unconditionally `setPaused(false)` → scrubbing over a pause un-pauses)
+- [x] Window controller writes only `runner.isPaused`; derive XPC + MTKView state from it (remove ~15 direct triple-writes)
+- [x] Remove `isRewindingStorage` manual mirror; keep one published source
 
 **Evidence:** `BaseRunner.swift:324,669,828,841` (state fields), `:916-946` (enter — sets `isRewinding`, not `isPaused`), `:977` (exit — unconditional `setPaused(false)`); triple-writes at `StandaloneGameWindowController.swift:333,663,696-697,964,1169-1170,1353-1354`, `+GamepadNav.swift:39-42,59-62`; read at `GameButtons.swift:239`.
 **Scope:** `BaseRunner.swift`, `StandaloneGameWindowController.swift`, `+GamepadNav.swift`, `ExternalDisplayPromptManager.swift`.
