@@ -234,6 +234,25 @@ class StreamRecordingService: ObservableObject {
     /// `buildAudioSampleBuffer`) and subtracted from the raw wall-clock PTS.
     nonisolated var currentRewindPtsOffset: CFTimeInterval { rewindPtsOffset }
 
+    /// Resets the session-level bookkeeping that every teardown path (user
+    /// stop, forced stop, streaming disconnect, rolling-buffer finalization)
+    /// must clear. Writer/streaming-service teardown is the caller's job.
+    func resetSession() {
+        isRecording = false
+        isUserRecording = false
+        currentInitiator = nil
+        recordingStartTime = nil
+        streamStatus = .idle
+        audioSessionAnchor = 0
+        isRewindPaused = false
+        rewindPtsOffset = 0
+        lastVideoPTS = .invalid
+        lastAudioPTS = .invalid
+        rewindEnterWallTime = 0
+        pixelBufferPool = nil
+        stopAudioCapture()
+    }
+
     /// Video dims used by the streaming pipe-write path. Set at session start
     /// (MainActor), read on the recording thread to compute row stride for
     /// raw BGRA writes to the ffmpeg stdin pipe.
@@ -790,20 +809,8 @@ class StreamRecordingService: ObservableObject {
             return
         }
         let wasUserInitiated = (currentInitiator == .user)
-        isRecording = false
-        isUserRecording = false
-        currentInitiator = nil
-        streamStatus = .idle
-        recordingStartTime = nil
-        audioSessionAnchor = 0
-        isRewindPaused = false
-        rewindPtsOffset = 0
-        lastVideoPTS = .invalid
-        lastAudioPTS = .invalid
-        rewindEnterWallTime = 0
         streamingService = nil
-        pixelBufferPool = nil
-        stopAudioCapture()
+        resetSession()
         if wasUserInitiated, RollingVideoBufferService.shared.isEnabled {
             RollingVideoBufferService.shared.startCaptureIfReady()
         }
@@ -878,7 +885,6 @@ class StreamRecordingService: ObservableObject {
             Task { @MainActor in
                 await streamingService?.stop()
                 streamingService = nil
-                streamStatus = .idle
             }
         }
         if let writer = assetWriter {
@@ -889,25 +895,13 @@ class StreamRecordingService: ObservableObject {
             videoInput = nil
             audioInput = nil
             pixelBufferAdaptor = nil
-            pixelBufferPool = nil
-            isUserRecording = false
-            currentInitiator = nil
-            recordingStartTime = nil
-            audioSessionAnchor = 0
             w.finishWriting {
                 if let e = w.error {
-                    LoggerService.error(category: "Recording", "forceStop writer error: \(e.localizedDescription)")
+                    LoggerService.error(category: "Recording", "forceStop writer error: \(e.localizedDescription) status=\(w.status.rawValue)")
                 }
             }
         }
-        pixelBufferPool = nil
-        isRewindPaused = false
-        rewindPtsOffset = 0
-        lastVideoPTS = .invalid
-        lastAudioPTS = .invalid
-        rewindEnterWallTime = 0
-        stopAudioCapture()
-        streamStatus = .idle
+        resetSession()
     }
 
     func stop() {
@@ -917,19 +911,7 @@ class StreamRecordingService: ObservableObject {
         }
 
         let wasUserInitiated = (currentInitiator == .user)
-        isRecording = false
-        isUserRecording = false
-        currentInitiator = nil
-        streamStatus = .idle
-        recordingStartTime = nil
-        audioSessionAnchor = 0
-        isRewindPaused = false
-        rewindPtsOffset = 0
-        lastVideoPTS = .invalid
-        lastAudioPTS = .invalid
-        rewindEnterWallTime = 0
-
-        stopAudioCapture()
+        resetSession()
 
         if streamingService != nil {
             stopStreaming()
@@ -962,9 +944,9 @@ class StreamRecordingService: ObservableObject {
 
          writer.finishWriting {
             if let error = writerRef.error {
-                LoggerService.error(category: "Recording", "AVAssetWriter error: \(error.localizedDescription)")
+                LoggerService.error(category: "Recording", "AVAssetWriter error: \(error.localizedDescription) status=\(writerRef.status.rawValue)")
             } else {
-                LoggerService.info(category: "Recording", "Recording saved")
+                LoggerService.info(category: "Recording", "Recording saved (status=\(writerRef.status.rawValue))")
             }
         }
     }
@@ -972,7 +954,6 @@ class StreamRecordingService: ObservableObject {
     private func stopStreaming() {
         guard let service = streamingService else { return }
         streamingService = nil
-        pixelBufferPool = nil
 
         Task { @MainActor in
             await service.stop()
@@ -1046,7 +1027,9 @@ class StreamRecordingService: ObservableObject {
             LoggerService.debug(category: "Recording", "appendVideoFrame: PTS clamped \(time.value)→\(monotonicPTS.value) (was ≤ last=\(lastVideoPTS.value))")
             #endif
         }
-        adaptor.append(pixelBuffer, withPresentationTime: monotonicPTS)
+        if !adaptor.append(pixelBuffer, withPresentationTime: monotonicPTS) {
+            LoggerService.info(category: "Recording", "appendVideoFrame: adaptor.append REJECTED frame #\(frameCount) pts=\(monotonicPTS.value) ptsScale=\(monotonicPTS.timescale) size=\(CVPixelBufferGetWidth(pixelBuffer))x\(CVPixelBufferGetHeight(pixelBuffer))")
+        }
         lastVideoPTS = monotonicPTS
         frameCount &+= 1
     }

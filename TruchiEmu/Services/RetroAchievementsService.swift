@@ -10,10 +10,25 @@ import SwiftData
 @MainActor
 class RetroAchievementsService: ObservableObject {
     static let shared = RetroAchievementsService()
-    
+
+    // MARK: - Auth State
+
+    // Single source of truth for authentication. `.loggedIn` means the Web API
+    // key has been validated and (when a password was supplied) a login token was
+    // obtained. Any definitive token failure transitions back to `.loggedOut` so
+    // the UI and all RA operations agree on a single state instead of a boolean
+    // pair that could disagree (`isLoggedIn` true while `isLoggedOutByTokenFailure`
+    // true).
+    enum AuthState: Equatable {
+        case loggedOut
+        case loggedIn
+    }
+
+    @Published private(set) var authState: AuthState = .loggedOut
+    var isLoggedIn: Bool { authState == .loggedIn }
+
     // MARK: - Published State
     
-    @Published var isLoggedIn = false
     @Published var username: String?
     
     private func shouldFetch(cachedAt: Date?, isUserInitiated: Bool) -> Bool {
@@ -84,11 +99,6 @@ class RetroAchievementsService: ObservableObject {
     private var lastKnownLoginToken: String?
     private var isRefreshingToken = false
 
-    // Set to true when the server definitively rejects our token (invalid_credentials
-    // or expired_token that can't be refreshed). While true, all RA write operations
-    // (unlock, ping, start session, patch fetch) bail early. Cleared on a successful
-    // re-login via loginWithWebApiKey.
-    private var isLoggedOutByTokenFailure = false
     // Guards the "re-login needed" notification so it fires at most once per session.
     private var hasSurfacedTokenReloginNeeded = false
 
@@ -137,6 +147,25 @@ class RetroAchievementsService: ObservableObject {
         self.username = username
         self.webApiKey = webApiKey
     }
+
+    /// Clears all credentials and transitions to `.loggedOut`. Used by the settings
+    /// UI "Logout" button and on definitive token failure.
+    func logout() {
+        authState = .loggedOut
+        username = nil
+        userInfo = nil
+        currentGame = nil
+        richPresence = nil
+        webApiKey = ""
+        loginToken = nil
+        lastKnownLoginToken = nil
+        isRefreshingToken = false
+        hasSurfacedTokenReloginNeeded = false
+        AppSettings.remove("ra_username")
+        AppSettings.remove("ra_web_api_key")
+        AppSettings.remove("ra_login_token")
+        LoggerService.info(category: "RetroAchievements", "Logged out; credentials cleared.")
+    }
     
     func setHardcoreMode(_ enabled: Bool) {
         hardcoreMode = enabled
@@ -162,10 +191,9 @@ class RetroAchievementsService: ObservableObject {
             let response = try await requestUserSummary(username: username)
 
             await MainActor.run {
-                self.isLoggedIn = true
+                self.authState = .loggedIn
                 self.username = username
                 self.userInfo = response
-                self.isLoggedOutByTokenFailure = false
                 self.hasSurfacedTokenReloginNeeded = false
                 self.saveSettings(username: username, webApiKey: webApiKey)
             }
@@ -205,7 +233,7 @@ class RetroAchievementsService: ObservableObject {
             await MainActor.run {
                 self.webApiKey = ""
                 self.loginToken = nil
-                self.isLoggedIn = false
+                self.authState = .loggedOut
             }
             LoggerService.error(category: "RetroAchievements", "Login failed: \(error.localizedDescription)")
             throw error
@@ -2187,7 +2215,7 @@ func refreshGameCacheAfterGameStop() {
         // is still server-side valid. Without this, the user would have to re-enter
         // their password every time the token expires.
         if isRefreshingToken { return nil }
-        if isLoggedOutByTokenFailure { return nil }
+        if authState == .loggedOut { return nil }
         guard let cached = lastKnownLoginToken, let username, !username.isEmpty else {
             surfaceReloginNeeded(reason: "missing")
             return nil
@@ -2197,11 +2225,11 @@ func refreshGameCacheAfterGameStop() {
 
     // Called when we know the token cannot be refreshed (server returned
     // invalid_credentials or expired_token, or there is no stored token to try).
-    // Marks the service as effectively logged out for dorequest calls and posts a
-    // user-visible notification at most once per session.
+    // Transitions the service to `.loggedOut` so the UI and all RA operations agree
+    // the user must re-authenticate, then posts a user-visible notification at most
+    // once per session.
     private func surfaceReloginNeeded(reason: String) {
-        let prevLoggedOut = isLoggedOutByTokenFailure
-        isLoggedOutByTokenFailure = true
+        authState = .loggedOut
         if hasSurfacedTokenReloginNeeded { return }
         hasSurfacedTokenReloginNeeded = true
         LoggerService.error(category: "RetroAchievements", "Re-login required (reason: \(reason)). Most Recently Played and achievement awards will not work until the user logs in again under Settings → RetroAchievements.")
@@ -2211,7 +2239,6 @@ func refreshGameCacheAfterGameStop() {
             body: loc.localized("retroAchievements.reloginNeededBody"),
             userInfo: ["raReloginNeeded": true]
         )
-        _ = prevLoggedOut // suppress unused-warning noise if any
     }
 
     private func refreshLoginToken(username: String, existingToken: String) async -> String? {

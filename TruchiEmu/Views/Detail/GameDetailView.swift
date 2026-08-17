@@ -294,7 +294,7 @@ struct GameDetailView: View {
     AppSettings.setString(newValue.rawValue, value: newValue.rawValue)
     AppSettings.setString("achievementViewMode_\(currentROM.id.uuidString)", value: newValue.rawValue)
 }
-        .onChange(of: achievementsService.isLoggedIn) { _, _ in
+        .onChange(of: achievementsService.authState) { _, _ in
             if achievementsService.isLoggedIn && achievementsService.isEnabled {
                 loadAchievements()
             } else {

@@ -407,9 +407,7 @@ final class RollingVideoBufferService: ObservableObject {
             srs.videoInput = nil
             srs.audioInput = nil
             srs.pixelBufferAdaptor = nil
-            srs.isRecording = false
-            srs.isUserRecording = false
-            srs.recordingStartTime = nil
+            srs.resetSession()
 
             writer.finishWriting {
                 cont.resume()

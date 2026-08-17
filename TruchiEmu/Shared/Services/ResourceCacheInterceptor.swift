@@ -37,12 +37,13 @@ class ResourceCacheInterceptor: ObservableObject {
         }
 
         if let entry = cacheRepo.getEntry(cacheKey: cacheKey) {
-            if entry.responseStatus == 404 {
+            let isCached404 = entry.responseStatus == 404
+            if isCached404 && !entry.isExpired {
                 LoggerService.info(category: "ResourceCache", "Cache hit (404 cached): \(cacheKey) — skipping network call")
                 throw ResourceCacheInterceptorError.cachedMiss(httpStatus: 404, url: url.absoluteString)
             }
 
-            if !entry.isExpired, let localPath = entry.localPath {
+            if !isCached404, !entry.isExpired, let localPath = entry.localPath {
                 let localURL = URL(fileURLWithPath: localPath)
                 if let cachedData = try? Data(contentsOf: localURL) {
                     LoggerService.info(category: "ResourceCache", "Cache hit (local file): \(cacheKey) — returning cached data")

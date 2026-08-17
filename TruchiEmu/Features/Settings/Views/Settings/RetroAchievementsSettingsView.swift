@@ -270,9 +270,7 @@ struct RetroAchievementsSettingsView: View {
                 .buttonStyle(.bordered)
                 .help(loc.localized("retroAchievements.refreshStats"))
                 Button(loc.localized("retroAchievements.logout")) {
-                    raService.saveSettings(username: "", webApiKey: "")
-                    raService.isLoggedIn = false
-                    raService.userInfo = nil
+                    raService.logout()
                     username = ""
                     webApiKey = ""
                 }

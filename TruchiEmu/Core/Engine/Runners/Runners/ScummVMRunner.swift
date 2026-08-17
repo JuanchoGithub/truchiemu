@@ -187,53 +187,17 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
     }
     
     // MARK: - Game ID Detection
-    
-    // Detect the ScummVM game ID by scanning files in the extracted folder
+
+    // The scummvm_libretro core's `ScummVM.dat` provides game detection from
+    // a folder's contents; we no longer try to derive a shortname here.
+    // Returning nil routes the launch to `findAnyGameFile` + auto-detect.
+    // Kept as a stub for call-site compatibility.
     func detectGameID(in folder: URL) -> String? {
-        do {
-            let files = try FileManager.default.contentsOfDirectory(atPath: folder.path)
-            
-            // First pass: look for known game file patterns
-            for file in files {
-                let upperFile = file.uppercased()
-                _ = (upperFile as NSString).deletingPathExtension               
-            }
-            
-            // Second pass: check for audio/data files to confirm it's ScummVM
-            let hasAudioFiles = files.contains { file in
-                let ext = (file as NSString).pathExtension.lowercased()
-                return Self.scummVMAudioExtensions.contains(ext)
-            }
-            
-            let hasDataFiles = files.contains { file in
-                let ext = (file as NSString).pathExtension.lowercased()
-                return Self.scummVMDataExtensions.contains(ext)
-            }
-            
-            if hasAudioFiles || hasDataFiles {
-                // We have ScummVM game files but couldn't detect specific game
-                #if LOG_DEBUG
-                LoggerService.debug(category: "ScummVM", "Detected ScummVM data files but no specific game ID")
-                #endif
-            }
-            
-        } catch {
-            LoggerService.info(category: "ScummVM", "Failed to read extracted folder: \(error)")
-        }
-        
-        // Fallback: derive game ID from the folder/ZIP name
-        _ = (folder.lastPathComponent as NSString).deletingPathExtension
-            .lowercased()
-            .replacingOccurrences(of: " ", with: "")
-            .replacingOccurrences(of: "(", with: "")
-            .replacingOccurrences(of: ")", with: "")
-        
         // We do not fallback to a cleaned folder name because passing an invalid
         // shortname via the hook file causes ScummVM to open the launcher GUI.
-        LoggerService.info(category: "ScummVM", "Could not confidently detect game ID, will use auto-detect.")
         return nil
     }
-    
+
     // MARK: - Hook File Generation
     
     // Create a .scummvm hook file in the game folder

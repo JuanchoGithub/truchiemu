@@ -1911,6 +1911,17 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
     }
 
     func windowWillClose(_ notification: Notification) {
+        // Leave Time Machine scrub mode first if the window is closing while
+        // the user is still scrubbing. `exitTimeMachineMode()` releases
+        // `StreamRecordingService.isRewindPaused`, which gates ALL video/audio
+        // appends. If we skip this, the flag stays engaged forever: `stop()`
+        // below early-returns when no recording is active (never calling
+        // `resetSession()`), so the NEXT recording session silently drops every
+        // frame and produces a 0-byte file. See AUDIT_PLAN.md F1/B1.
+        if let runner, runner.isRewinding {
+            runner.exitTimeMachineMode()
+        }
+
         // Stop recording BEFORE tearing down the libretro core / XPC shared
         // memory. The audio capture timer runs on a serial writing queue and
         // reads from the shared audio ring buffer via

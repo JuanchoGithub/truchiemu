@@ -300,46 +300,23 @@ let idsToPurge = orphans.map { $0.id }
     }
 
 
-    // 2. The new "Incremental" one (Used for adding new ROMs)
-    func updateCounts(for newROMs: [ROM]? = nil) {
-        if let roms = newROMs { 
-            
-            // Perform incremental updates on your dictionary
-            for rom in roms where !rom.isHidden {
-                romCounts["all", default: 0] += 1
-                if rom.isFavorite { romCounts["favorites", default: 0] += 1 }
-                if rom.lastPlayed != nil { romCounts["recent", default: 0] += 1 }
-                
-                let sysID = rom.systemID ?? "unknown"
-                if sysID == "mame" {
-                    if rom.mameRomType == "game" || rom.mameRomType == nil {
-                        romCounts[sysID, default: 0] += 1
-                    }
-                } else {
-                    romCounts[sysID, default: 0] += 1
-                }
-            }
-            // If we have no ROMs, just do a full update
-        } else {
-            var counts: [String: Int] = [:]
-            counts["all"] = roms.filter { !$0.isHidden }.count
-            counts["favorites"] = roms.filter { $0.isFavorite && !$0.isHidden }.count
-            counts["recent"] = roms.filter { $0.lastPlayed != nil && !$0.isHidden }.count
-            counts["hidden"] = roms.filter { $0.isHidden }.count
-            counts["mameNonGames"] = roms.filter { $0.systemID == "mame" && $0.mameRomType != nil && $0.mameRomType != "game" }.count
+    func updateCounts() {
+        var counts: [String: Int] = [:]
+        counts["all"] = roms.filter { !$0.isHidden }.count
+        counts["favorites"] = roms.filter { $0.isFavorite && !$0.isHidden }.count
+        counts["recent"] = roms.filter { $0.lastPlayed != nil && !$0.isHidden }.count
+        counts["hidden"] = roms.filter { $0.isHidden }.count
+        counts["mameNonGames"] = roms.filter { $0.systemID == "mame" && $0.mameRomType != nil && $0.mameRomType != "game" }.count
 
-            let grouped = Dictionary(grouping: roms) { $0.systemID ?? "unknown" }
-            for (sysID, list) in grouped {
-                var visible = list.filter { !$0.isHidden }
-                if sysID == "mame" { visible = visible.filter { $0.mameRomType == "game" || $0.mameRomType == nil } }
-                counts[sysID] = visible.count
-            }
-            self.romCounts = counts
-            self.updateFolderROMCounts()
-            return
+        let grouped = Dictionary(grouping: roms) { $0.systemID ?? "unknown" }
+        for (sysID, list) in grouped {
+            var visible = list.filter { !$0.isHidden }
+            if sysID == "mame" { visible = visible.filter { $0.mameRomType == "game" || $0.mameRomType == nil } }
+            counts[sysID] = visible.count
         }
+        self.romCounts = counts
+        self.updateFolderROMCounts()
         self.lastChangeDate = Date()
-        self.updateCounts() 
     }
 
     func updateFolderROMCounts() {
@@ -485,7 +462,7 @@ let idsToPurge = orphans.map { $0.id }
             self.roms.append(contentsOf: processedROMs)
             self.lastAddedROMs = processedROMs
             self.roms.sort { $0.displayName < $1.displayName }
-            self.updateCounts(for: processedROMs)
+            self.updateCounts()
 
             // 5. Persist only the new items (one batch save — single context.save())
             repository.saveROMs(processedROMs)

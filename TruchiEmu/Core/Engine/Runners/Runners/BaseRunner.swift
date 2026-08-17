@@ -936,6 +936,7 @@ case "scummvm": runner = ScummVMRunner()
         speedMultiplier = 1.0
         XPCBridgeAdapter.shared.setSpeedMultiplier(1.0)
         XPCBridgeAdapter.shared.setPaused(true)
+        isPaused = true
         timeMachineScrubFrameIndex = newest
         osdMessage = LocalizationManager.shared.localized("osd.rewind")
         // Suspend recording appends while emulation is paused so the captured
@@ -975,6 +976,7 @@ case "scummvm": runner = ScummVMRunner()
         // into the queue that drainCapturedState would then reject.
         XPCBridgeAdapter.shared.setFrameCount(exitScrubFrame)
         XPCBridgeAdapter.shared.setPaused(false)
+        isPaused = false
         let postTruncateOldest = timeMachineBuffer.oldestFrameIndex ?? 0
         let postTruncateNewest = timeMachineBuffer.newestFrameIndex ?? 0
         let postTruncateCount = timeMachineBuffer.entryCount

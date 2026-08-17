@@ -11,24 +11,21 @@ final class MAMEVerificationRecord {
     var shortName: String
     var crc32: String?
     var verificationStatus: String  // "pending", "verified", "notMame", "error"
-    var isVerified: Bool
     var verifiedAt: Date?
     var innerFiles: String?  // JSON array of files inside ZIP (for debugging)
     var lastAttemptAt: Date?
     var attemptCount: Int
-    
+
     init(
         romPath: String,
         shortName: String,
         verificationStatus: String = "pending",
-        isVerified: Bool = false,
         crc32: String? = nil,
         innerFiles: String? = nil
     ) {
         self.romPath = romPath
         self.shortName = shortName
         self.verificationStatus = verificationStatus
-        self.isVerified = isVerified
         self.crc32 = crc32
         self.innerFiles = innerFiles
         self.attemptCount = 0
@@ -71,7 +68,6 @@ extension MAMEVerificationRecord {
     func markVerified(crc32: String, innerFiles: [String]? = nil) {
         self.crc32 = crc32
         self.verificationStatus = Status.verified.rawValue
-        self.isVerified = true
         self.verifiedAt = Date()
         self.lastAttemptAt = Date()
         self.attemptCount += 1
@@ -79,19 +75,17 @@ extension MAMEVerificationRecord {
             self.innerFiles = try? JSONEncoder().encode(innerFiles).base64EncodedString()
         }
     }
-    
+
     func markNotMame(crc32: String) {
         self.crc32 = crc32
         self.verificationStatus = Status.notMame.rawValue
-        self.isVerified = false
         self.verifiedAt = Date()
         self.lastAttemptAt = Date()
         self.attemptCount += 1
     }
-    
+
     func markError(_ error: String) {
         self.verificationStatus = Status.error.rawValue
-        self.isVerified = false
         self.lastAttemptAt = Date()
         self.attemptCount += 1
     }
