@@ -47,7 +47,7 @@ struct ContentView: View {
 
     var body: some View {
         Group {
-            if !library.hasCompletedOnboarding && !wizard.hasCompletedWizard {
+            if !library.hasCompletedOnboarding {
                 // Show the setup wizard for first-time users
             SetupWizardView(wizard: wizard)
                 .environmentObject(library)

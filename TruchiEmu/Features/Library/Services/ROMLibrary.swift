@@ -358,12 +358,6 @@ let idsToPurge = orphans.map { $0.id }
 
     // MARK: - Onboarding & Library Folders
 
-    func completeOnboarding(folderURL: URL) {
-        addPrimaryFolder(url: folderURL)
-        hasCompletedOnboarding = true
-        AppSettings.setBool("has_completed_onboarding", value: true)
-    }
-
     func addLibraryFolder(url: URL) { addPrimaryFolder(url: url) }
 
     /// All folder paths currently registered (primary + subfolders), excluding

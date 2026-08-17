@@ -146,11 +146,10 @@ final class SetupWizardState: ObservableObject {
     @Published var cheatDownloadProgress: Double = 0
     @Published var isDownloadingCheats: Bool = false
     
-    // Completion state
-    var hasCompletedWizard: Bool {
-        get { AppSettings.getBool("has_completed_full_setup", defaultValue: false) }
-        set { AppSettings.setBool("has_completed_full_setup", value: newValue) }
-    }
+    // Completion state: the single source is `has_completed_onboarding`
+    // (persisted via AppSettings), mirrored by `ROMLibrary.hasCompletedOnboarding`.
+    // There is intentionally no second flag here — `has_completed_full_setup`
+    // was removed to avoid two independently-written completions drifting.
     
     private var controllerCancellables = Set<AnyCancellable>()
     

@@ -127,7 +127,6 @@ Button(loc.localized("wizard.skip")) {
     }
 
     private func finishSetup() {
-        wizard.hasCompletedWizard = true
         library.hasCompletedOnboarding = true
         AppSettings.setBool("has_completed_onboarding", value: true)
 

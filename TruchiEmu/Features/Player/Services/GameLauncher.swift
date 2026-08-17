@@ -53,27 +53,20 @@ class GameLauncher: ObservableObject {
     struct LaunchConfig {
         let rom: ROM
         let coreID: String
-        let slotToLoad: Int?
         let shaderPresetID: String
         let shaderUniformOverrides: [String: Float]
         let achievementsEnabled: Bool
-        let hardcoreMode: Bool
         let cheatsEnabled: Bool
-        let coreOptions: [String: String]
         let autoLoad: Bool
         let autoSave: Bool
-        let bezelFileName: String
         
         init(
             rom: ROM,
             coreID: String,
-            slotToLoad: Int? = nil,
             shaderPresetID: String? = nil,
             shaderUniformOverrides: [String: Float] = [:],
             achievementsEnabled: Bool? = nil,
-            hardcoreMode: Bool? = nil,
             cheatsEnabled: Bool? = nil,
-            coreOptions: [String: String]? = nil,
             autoLoad: Bool? = nil,
             autoSave: Bool? = nil
         ) {
@@ -82,7 +75,6 @@ class GameLauncher: ObservableObject {
             #endif
             self.rom = rom
             self.coreID = coreID
-            self.slotToLoad = slotToLoad
             self.shaderUniformOverrides = shaderUniformOverrides
             
              // Resolve shader preset
@@ -98,30 +90,11 @@ class GameLauncher: ObservableObject {
             #if LOG_EXTREME
             LoggerService.extreme(category: "GameLauncher", "Resolved achievements enabled: \(self.achievementsEnabled)")
             #endif
-            self.hardcoreMode = hardcoreMode ?? HardcoreModeManager.shared.isHardcoreActive(for: rom)
-            #if LOG_EXTREME
-            LoggerService.extreme(category: "GameLauncher", "Resolved hardcore mode: \(self.hardcoreMode)")
-            #endif
             
             // Resolve cheats
             self.cheatsEnabled = cheatsEnabled ?? rom.settings.cheatsEnabled ?? AppSettings.getBool("cheats_enabled", defaultValue: false)
             #if LOG_EXTREME
             LoggerService.extreme(category: "GameLauncher", "Resolved cheats enabled: \(self.cheatsEnabled)")
-            #endif
-            
-        // Resolve core options (system-level + game-level overrides)
-        let resolvedSystemID = rom.systemID ?? "default"
-        self.coreOptions = coreOptions ?? {
-            var result = CoreOptionsManager.shared.loadSystemOverrides(for: coreID, systemID: resolvedSystemID)
-            let gameFilename = rom.filenameWithoutExtension
-            if !gameFilename.isEmpty {
-                let gameOverrides = CoreOptionsManager.shared.loadGameOverrides(for: coreID, systemID: resolvedSystemID, gameFilename: gameFilename)
-                result.merge(gameOverrides) { _, new in new }
-            }
-            return result
-        }()
-            #if LOG_EXTREME
-            LoggerService.extreme(category: "GameLauncher", "Resolved core options: \(self.coreOptions)")
             #endif
             
             // Resolve auto save/load
@@ -132,12 +105,6 @@ class GameLauncher: ObservableObject {
             self.autoSave = autoSave ?? AppSettings.getBool("saveState_autoSaveOnExit", defaultValue: false)
             #if LOG_EXTREME
             LoggerService.extreme(category: "GameLauncher", "Resolved auto save: \(self.autoSave)")
-            #endif
-            
-            // Resolve bezel
-            self.bezelFileName = rom.settings.bezelFileName
-            #if LOG_EXTREME
-            LoggerService.extreme(category: "GameLauncher", "Resolved bezel file name: \(self.bezelFileName)")
             #endif
         }
     }
@@ -274,7 +241,6 @@ func launchGame(
         let config = LaunchConfig(
             rom: rom,
             coreID: coreID,
-            slotToLoad: slotToLoad,
             shaderUniformOverrides: shaderUniformOverrides
         )
         
@@ -294,13 +260,10 @@ func launchGame(
         LoggerService.debug(category: "GameLauncher", "Shader: \(config.shaderPresetID), Uniform overrides: \(config.shaderUniformOverrides.count)")
         #endif
         #if LOG_DEBUG
-        LoggerService.debug(category: "GameLauncher", "Bezel: \(config.bezelFileName.isEmpty ? "auto-match" : (config.bezelFileName == "none" ? "disabled" : config.bezelFileName))")
+        LoggerService.debug(category: "GameLauncher", "Achievements: \(config.achievementsEnabled)")
         #endif
         #if LOG_DEBUG
-        LoggerService.debug(category: "GameLauncher", "Achievements: \(config.achievementsEnabled), Hardcore: \(config.hardcoreMode)")
-        #endif
-        #if LOG_DEBUG
-        LoggerService.debug(category: "GameLauncher", "Cheats: \(config.cheatsEnabled), Core options: \(config.coreOptions.count) override(s)")
+        LoggerService.debug(category: "GameLauncher", "Cheats: \(config.cheatsEnabled)")
         #endif
         #if LOG_DEBUG
         LoggerService.debug(category: "GameLauncher", "Auto-load: \(config.autoLoad), Auto-save: \(config.autoSave)")
@@ -582,10 +545,6 @@ func launchGame(
             }
         }
 
-        // 3. Apply auto-load/save preferences
-        AppSettings.setBool("saveState_autoLoadOnStart", value: config.autoLoad)
-        AppSettings.setBool("saveState_autoSaveOnExit", value: config.autoSave)
-        
         // 4. Apply achievements setting
         AppSettings.setBool("ra_enabled", value: config.achievementsEnabled)
         

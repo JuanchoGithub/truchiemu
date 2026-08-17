@@ -193,7 +193,7 @@ var body: some View {
                       ) {
                           Button(loc.localized("library.runSetupWizardConfirm")) {
                               library.hasCompletedOnboarding = false
-                              SetupWizardState.shared.hasCompletedWizard = false
+                              AppSettings.setBool("has_completed_onboarding", value: false)
                               SetupWizardState.shared.resetForReRun()
                               NotificationCenter.default.post(name: .closeAppSettings, object: nil)
                           }

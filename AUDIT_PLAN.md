@@ -58,9 +58,9 @@ Read-only audit of the full repository (28 subsystems, HEAD `632e0825`) produced
 
 ### B2. LaunchConfig dead fields (F9 + F8)
 
-- [ ] Delete `slotToLoad`, `coreOptions`, `bezelFileName` from LaunchConfig (never read; only logged)
-- [ ] Delete no-op write-backs `AppSettings.setBool("saveState_autoLoadOnStart"/"saveState_autoSaveOnExit")` at `GameLauncher.swift:586-587`
-- [ ] Delete `hardcoreMode` snapshot; enforcement stays on live `HardcoreModeManager` reads
+- [x] Delete `slotToLoad`, `coreOptions`, `bezelFileName` from LaunchConfig (never read; only logged)
+- [x] Delete no-op write-backs `AppSettings.setBool("saveState_autoLoadOnStart"/"saveState_autoSaveOnExit")` at `GameLauncher.swift:586-587`
+- [x] Delete `hardcoreMode` snapshot; enforcement stays on live `HardcoreModeManager` reads
 
 **Evidence:** `GameLauncher.swift:52-143` (config), `:297,:303` (only logged), `:510` (real slot via param, not config), `:586-590` (write-backs); live reads `StandaloneGameWindowController.swift:1046,1126,1232,1971,2077`.
 **Scope:** `GameLauncher.swift` (+ any LaunchConfig callers).
@@ -68,8 +68,10 @@ Read-only audit of the full repository (28 subsystems, HEAD `632e0825`) produced
 
 ### B3. Setup-wizard dual flags (F10)
 
-- [ ] One flag (keep `has_completed_onboarding`), one writer
-- [ ] Delete dead `completeOnboarding` setter
+- [x] One flag (keep `has_completed_onboarding`), one writer
+- [x] Delete dead `completeOnboarding` setter
+
+> **UNTESTED:** B3 code is committed but not yet manually verified. To test: fresh install shows wizard → complete it → relaunch lands on library → Settings "Run setup wizard again" re-shows wizard.
 
 **Evidence:** `SetupWizardState.swift:150-153` vs `ROMLibrary.swift:108,155,387`; both written `SetupWizardView.swift:130-132`; conjunction gate `ContentView.swift:50`; dead setter `ROMLibrary.swift:384-388`.
 **Scope:** `SetupWizardState.swift`, `ROMLibrary.swift`, `ContentView.swift`, `SetupWizardView.swift`, `LibrarySettingsViewGroup.swift:195-196`.
