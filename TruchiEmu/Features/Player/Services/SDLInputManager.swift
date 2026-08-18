@@ -78,32 +78,13 @@ class SDLInputManager: ObservableObject {
         gcControllerVendors.contains(vendorID)
     }
 
-    // Tracks how many SDL game controllers with a given name have already
-    // been accepted (not skipped). Used by isDuplicateGCController below to
-    // avoid blocking a second controller of the same model when macOS only
-    // exposes one of them as a GCController (e.g. two 8BitDo controllers).
-    nonisolated(unsafe) private var acceptedSDLCountByName: [String: Int] = [:]
-
     // Check whether this SDL controller is already handled by GCController.
     // macOS can recognise controllers (e.g. 8BitDo) whose vendor ID isn't in
     // gcControllerVendors. Since GCController doesn't expose USB identifiers
     // on macOS, we match on the HID device name — both APIs read the same
     // descriptor, so the same physical device reports the same string.
-    //
-    // To handle the case where a user has two of the same model (e.g. two
-    // 8BitDo Pro 2) but only one appears as a GCController, we only skip if
-    // the number of GC controllers with this name exceeds the number of SDL
-    // controllers with that name we've already accepted.
-    private nonisolated func isDuplicateGCController(vendorID: UInt16, sdlName: String) -> Bool {
-        guard vendorID != 0 else { return false }
-        let gcCount = GCController.controllers().filter { $0.vendorName == sdlName }.count
-        guard gcCount > 0 else { return false }
-
-        sdlDataLock.lock()
-        let accepted = acceptedSDLCountByName[sdlName, default: 0]
-        sdlDataLock.unlock()
-
-        return accepted < gcCount
+    private nonisolated func isDuplicateGCController(sdlName: String) -> Bool {
+        GCController.controllers().contains { $0.vendorName == sdlName }
     }
 
 
@@ -326,7 +307,7 @@ class SDLInputManager: ObservableObject {
 
             let sdlName: String? = SDL_GameControllerName(controller).map { String(cString: $0) }
             let isKnownGCVendor = vendor != 0 && Self.isKnownGCVendor(vendorID: vendor)
-            let isGCCDuplicate = vendor != 0 && sdlName != nil && isDuplicateGCController(vendorID: vendor, sdlName: sdlName!)
+            let isGCCDuplicate = sdlName != nil && isDuplicateGCController(sdlName: sdlName!)
 
             if isKnownGCVendor || isGCCDuplicate {
                 let version = SDL_JoystickGetProductVersion(joystick)
@@ -343,9 +324,6 @@ class SDLInputManager: ObservableObject {
             }
 
             sdlDataLock.lock()
-            if let name = sdlName {
-                acceptedSDLCountByName[name, default: 0] += 1
-            }
             gameControllers[instanceID] = controller
             joystickIsGameController.insert(instanceID)
             let port = assignPortLocked(for: instanceID)
@@ -425,6 +403,40 @@ class SDLInputManager: ObservableObject {
         DispatchQueue.main.async {
             NotificationCenter.default.post(name: .sdlControllerDisconnected, object: nil)
         }
+    }
+
+    // Closes any open SDL game controller whose name is also reported by a
+    // connected GCController. GCController can register a controller a moment
+    // after SDL's poll loop has already accepted it (the connect race, which
+    // is common on reconnect), leaving the device listed as both GCC and SDL.
+    // Called from ControllerService on GC/SDL connect notifications so the
+    // duplicate is removed regardless of which system registers the device
+    // first.
+    @MainActor
+    func reconcileWithGCControllers() {
+        let gcNames = Set(GCController.controllers().compactMap { $0.vendorName })
+        guard !gcNames.isEmpty else { return }
+
+        var toClose: [(instanceID: Int32, controller: OpaquePointer)] = []
+        sdlDataLock.lock()
+        for (instanceID, ctrl) in gameControllers {
+            if let name = SDL_GameControllerName(ctrl).map({ String(cString: $0) }),
+               gcNames.contains(name) {
+                gameControllers.removeValue(forKey: instanceID)
+                joystickIsGameController.remove(instanceID)
+                portForInstance.removeValue(forKey: instanceID)
+                toClose.append((instanceID, ctrl))
+            }
+        }
+        sdlDataLock.unlock()
+
+        guard !toClose.isEmpty else { return }
+        sdlQueue.async {
+            for item in toClose { SDL_GameControllerClose(item.controller) }
+        }
+        let instances = toClose.map { "\($0.instanceID)" }.joined(separator: ", ")
+        LoggerService.info(category: "SDL", "Reconciled with GCController: closed \(toClose.count) duplicate SDL game controller(s) — instance \(instances)")
+        NotificationCenter.default.post(name: .sdlControllerDisconnected, object: nil)
     }
 
     // Caller must hold sdlDataLock

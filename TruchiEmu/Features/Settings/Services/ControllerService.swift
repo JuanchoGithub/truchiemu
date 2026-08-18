@@ -91,7 +91,10 @@ class ControllerService: ObservableObject {
 
     private func setupControllerNotifications() {
         NotificationCenter.default.publisher(for: .GCControllerDidConnect)
-            .sink { [weak self] _ in self?.refreshConnectedControllers() }
+            .sink { [weak self] _ in
+                SDLInputManager.shared.reconcileWithGCControllers()
+                self?.refreshConnectedControllers()
+            }
             .store(in: &cancellables)
 
         NotificationCenter.default.publisher(for: .GCControllerDidDisconnect)
@@ -99,7 +102,10 @@ class ControllerService: ObservableObject {
             .store(in: &cancellables)
 
         NotificationCenter.default.publisher(for: .sdlControllerConnected)
-            .sink { [weak self] _ in self?.refreshConnectedControllers() }
+            .sink { [weak self] _ in
+                SDLInputManager.shared.reconcileWithGCControllers()
+                self?.refreshConnectedControllers()
+            }
             .store(in: &cancellables)
 
         NotificationCenter.default.publisher(for: .sdlControllerDisconnected)
