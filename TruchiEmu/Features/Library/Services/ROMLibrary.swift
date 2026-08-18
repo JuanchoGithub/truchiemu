@@ -837,9 +837,23 @@ let idsToPurge = orphans.map { $0.id }
         try? xml.xmlData(options: .nodePrettyPrint).write(to: xmlPath)
     }
 
-    func markPlayed(_ rom: ROM) { var updated = rom; updated.lastPlayed = Date(); updateROM(updated) }
+    // Playtime bookkeeping merges into the CURRENT library entry rather than
+    // replacing it with the caller's `rom` snapshot. The snapshot (e.g. the
+    // window controller's launch-time `trackedROM`) can be stale and would
+    // otherwise revert in-session edits like live shader Apply.
+    func markPlayed(_ rom: ROM) {
+        guard let idx = roms.firstIndex(where: { $0.id == rom.id }) else { return }
+        var updated = roms[idx]
+        updated.lastPlayed = Date()
+        updateROM(updated)
+    }
     func recordPlaySession(_ rom: ROM, duration: TimeInterval) {
-        var updated = rom; updated.lastPlayed = Date(); updated.timesPlayed += 1; updated.totalPlaytimeSeconds += duration; updateROM(updated)
+        guard let idx = roms.firstIndex(where: { $0.id == rom.id }) else { return }
+        var updated = roms[idx]
+        updated.lastPlayed = Date()
+        updated.timesPlayed += 1
+        updated.totalPlaytimeSeconds += duration
+        updateROM(updated)
     }
 
     // MARK: - SwiftData Persistence

@@ -1282,6 +1282,7 @@
   "shader.save": "Save",
   "shader.import": "Import...",
   "shader.apply": "Apply",
+  "shader.applyAndSave": "Apply & Save",
   "shader.renamePreset": "Rename Preset",
   "shader.newName": "New name",
   "shader.rename": "Rename",

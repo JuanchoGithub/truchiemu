@@ -1281,6 +1281,7 @@
   "shader.save": "保存",
   "shader.import": "インポート...",
   "shader.apply": "適用",
+  "shader.applyAndSave": "適用して保存",
   "shader.renamePreset": "プリセット名を変更",
   "shader.newName": "新しい名前",
   "shader.rename": "名前を変更",
