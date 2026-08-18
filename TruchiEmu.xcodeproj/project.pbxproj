@@ -826,6 +826,7 @@
 		9F4D0C7864E66123DA7F9CEA /* gbc@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = CB1B9C3D41BC2F6BE626F54D /* gbc@132w.png */; };
 		9F532EFC0F712F2A76BA5CFF /* input_coreLabels_nxengine.json in Resources */ = {isa = PBXBuildFile; fileRef = 7416C41D936AA57A67C27159 /* input_coreLabels_nxengine.json */; };
 		9F6A89584FDFE1ED6ED4B7E8 /* fightdata_mace.json in Resources */ = {isa = PBXBuildFile; fileRef = 427B5599A80B29D8276CEBE2 /* fightdata_mace.json */; };
+		9F941DCE595F9C3AA5B0A863 /* DisplaySleepManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F51EE5B8DD3B40994322BB39 /* DisplaySleepManager.swift */; };
 		9FAFCDFAEA4368349256DE82 /* PCECD.png in Resources */ = {isa = PBXBuildFile; fileRef = D58ADFC9D5F59660DB53A581 /* PCECD.png */; };
 		9FB898083A3648372DE4BDD7 /* input_coreLabels_ppsspp.json in Resources */ = {isa = PBXBuildFile; fileRef = 6737B76F63802C95CA429F38 /* input_coreLabels_ppsspp.json */; };
 		9FC2B24BAA4EEC9B12CEBA39 /* input_systemLabels_dinothawr.json in Resources */ = {isa = PBXBuildFile; fileRef = 7F94C37483E9492C34153716 /* input_systemLabels_dinothawr.json */; };
@@ -2557,6 +2558,7 @@
 		F4F8836894A024F9525607DA /* input_coreOverrides_puae.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_puae.json; sourceTree = "<group>"; };
 		F502D499AC8073224A06F944 /* atari800-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "atari800-cheats.zip"; sourceTree = "<group>"; };
 		F51E4C962081D3A3C9E0784B /* Sony - PlayStation 2.dat */ = {isa = PBXFileReference; path = "Sony - PlayStation 2.dat"; sourceTree = "<group>"; };
+		F51EE5B8DD3B40994322BB39 /* DisplaySleepManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplaySleepManager.swift; sourceTree = "<group>"; };
 		F5324FC711713455B3AFAC54 /* psp@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "psp@132w.png"; sourceTree = "<group>"; };
 		F5369A161FCED90D05A60B6A /* CPLUS4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CPLUS4.png; sourceTree = "<group>"; };
 		F54FE75C7494DC94970ADDC0 /* ws@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ws@132w.png"; sourceTree = "<group>"; };
@@ -3624,6 +3626,7 @@
 				0FF63BFF980BE337C49CF0B7 /* CoreOverrideService.swift */,
 				3923EC666D7D2EBA025850F5 /* DATPrepopulationService.swift */,
 				8E47DE987F403D82F4294F3B /* DiscHeaderReader.swift */,
+				F51EE5B8DD3B40994322BB39 /* DisplaySleepManager.swift */,
 				02AF500782AB016FB6164846 /* DreamcastBIOSService.swift */,
 				EB775F5E7D4CB3DFCACA89A5 /* GameDragState.swift */,
 				3785C1F47A9C4D765D471039 /* GameModeManager.swift */,
@@ -5919,6 +5922,7 @@
 				487D415E3A60D766E5C55314 /* DetailBoxArtComponents.swift in Sources */,
 				92931B26614CCBD73F498965 /* DetailSection.swift in Sources */,
 				95003D500A633FFBC2877CCB /* DiscHeaderReader.swift in Sources */,
+				9F941DCE595F9C3AA5B0A863 /* DisplaySleepManager.swift in Sources */,
 				FC372B713FBF4FAF94510511 /* DotMatrixLCD.metal in Sources */,
 				5283D5F00AED8BC54D66A48F /* DragPreviewStack.swift in Sources */,
 				C25037436138043A3C12B4C7 /* DreamcastBIOSService.swift in Sources */,

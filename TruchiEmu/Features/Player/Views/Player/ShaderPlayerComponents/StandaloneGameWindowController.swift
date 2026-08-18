@@ -969,6 +969,9 @@ private func _doLaunch(rom: ROM, coreID: String, slotToLoad: Int? = nil) {
         // Enable Game Mode before launching the game (must be set before game process starts)
         GameModeManager.shared.start()
 
+        // Prevent display/system sleep while the game runs
+        DisplaySleepManager.shared.start()
+
         // Launch the game with current shader uniforms
         runner?.launch(rom: rom, coreID: coreID, shaderUniformOverrides: shaderUniforms)
         // Observe game-loaded notification to update launch phase
@@ -1980,6 +1983,7 @@ hostingView.widthAnchor.constraint(equalToConstant: 320)
             }
         }
         GameModeManager.shared.stop()
+        DisplaySleepManager.shared.stop()
         runner?.stop()
         GamepadNavigationManager.shared.setGameRunning(false)
         if let ctx = gameRunningNavContext {
