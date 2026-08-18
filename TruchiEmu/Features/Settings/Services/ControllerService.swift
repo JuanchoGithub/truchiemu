@@ -399,55 +399,58 @@ class ControllerService: ObservableObject {
         }
     }
 
-    func assignController(_ controller: GCController, to slot: Int) {
-        guard slot >= 1 && slot <= 4 else { return }
-        let key = ObjectIdentifier(controller)
+    // MARK: - Slot Assignment (shared mutation primitives)
 
-        var newSlots = sessionSlotAssignments[key] ?? []
+    // Shared toggle semantics for a single device's slot set (GC, SDL, or
+    // keyboard): remove the slot if present — never leaving the device with
+    // zero slots (falls back to P1) — otherwise add it, then guarantee P1 is
+    // still assigned somewhere.
+    private func togglingSlot(_ slot: Int, in slots: Set<Int>) -> Set<Int> {
+        var result = slots
+        if result.contains(slot) {
+            if result.count == 1 && slot == 1 { return result }
+            result.remove(slot)
+            if result.isEmpty { result.insert(1) }
+        } else {
+            result.insert(slot)
+        }
+        if !result.contains(1) { ensureP1Exists() }
+        return result
+    }
+
+    // Shared assign logic: move a device's primary slot to `slot`, evicting
+    // `slot` from every device in `others` — each falls back to the moving
+    // device's old primary slot when it would otherwise be left empty. Applied
+    // to both the GC and SDL slot maps.
+    private func assigning<Key: Hashable>(key: Key, to slot: Int, map: inout [Key: Set<Int>], others: [Key]) {
+        var newSlots = map[key] ?? []
         let oldPrimary = newSlots.min() ?? 1
-
         newSlots.remove(oldPrimary)
         newSlots.insert(slot)
 
-        let controllersInSlot = controllersAtSlot(slot)
-        for other in controllersInSlot where ObjectIdentifier(other) != key {
-            let otherKey = ObjectIdentifier(other)
-            var otherSlots = sessionSlotAssignments[otherKey] ?? []
+        for other in others where other != key {
+            var otherSlots = map[other] ?? []
             otherSlots.remove(slot)
-            if otherSlots.isEmpty {
-                otherSlots.insert(oldPrimary)
-            }
-            sessionSlotAssignments[otherKey] = otherSlots
+            if otherSlots.isEmpty { otherSlots.insert(oldPrimary) }
+            map[other] = otherSlots
         }
 
-        if !newSlots.contains(1) {
-            ensureP1Exists()
-        }
+        if !newSlots.contains(1) { ensureP1Exists() }
+        map[key] = newSlots
+    }
 
-        sessionSlotAssignments[key] = newSlots
+    func assignController(_ controller: GCController, to slot: Int) {
+        guard slot >= 1 && slot <= 4 else { return }
+        let key = ObjectIdentifier(controller)
+        let others = controllersAtSlot(slot).map { ObjectIdentifier($0) }
+        assigning(key: key, to: slot, map: &sessionSlotAssignments, others: others)
         refreshConnectedControllers()
     }
 
     func toggleController(_ controller: GCController, player slot: Int) {
         guard slot >= 1 && slot <= 4 else { return }
         let key = ObjectIdentifier(controller)
-        var slots = sessionSlotAssignments[key] ?? []
-
-        if slots.contains(slot) {
-            if slots.count == 1 && slot == 1 { return }
-            slots.remove(slot)
-            if slots.isEmpty {
-                slots.insert(1)
-            }
-        } else {
-            slots.insert(slot)
-        }
-
-        if !slots.contains(1) {
-            ensureP1Exists()
-        }
-
-        sessionSlotAssignments[key] = slots
+        sessionSlotAssignments[key] = togglingSlot(slot, in: sessionSlotAssignments[key] ?? [])
         refreshConnectedControllers()
     }
 
@@ -465,18 +468,7 @@ class ControllerService: ObservableObject {
 
     func toggleKeyboardSlot(_ slot: Int) {
         guard slot >= 1 && slot <= 4 else { return }
-        var slots = keyboardAssignedPlayers
-        if slots.contains(slot) {
-            if slots.count == 1 && slot == 1 { return }
-            slots.remove(slot)
-            if slots.isEmpty { slots.insert(1) }
-        } else {
-            slots.insert(slot)
-        }
-        if !slots.contains(1) {
-            ensureP1Exists()
-        }
-        keyboardAssignedPlayers = slots
+        keyboardAssignedPlayers = togglingSlot(slot, in: keyboardAssignedPlayers)
         refreshConnectedControllers()
     }
 
@@ -515,16 +507,7 @@ class ControllerService: ObservableObject {
 
     func toggleSDLController(_ instanceID: Int32, player slot: Int) {
         guard slot >= 1 && slot <= 4 else { return }
-        var slots = sdlSlotAssignments[instanceID] ?? []
-        if slots.contains(slot) {
-            if slots.count == 1 && slot == 1 { return }
-            slots.remove(slot)
-            if slots.isEmpty { slots.insert(1) }
-        } else {
-            slots.insert(slot)
-        }
-        if !slots.contains(1) { ensureP1Exists() }
-        sdlSlotAssignments[instanceID] = slots
+        sdlSlotAssignments[instanceID] = togglingSlot(slot, in: sdlSlotAssignments[instanceID] ?? [])
         refreshConnectedControllers()
     }
 
@@ -536,18 +519,8 @@ class ControllerService: ObservableObject {
 
     func assignSDLController(_ instanceID: Int32, to slot: Int) {
         guard slot >= 1 && slot <= 4 else { return }
-        var newSlots = sdlSlotAssignments[instanceID] ?? []
-        let oldPrimary = newSlots.min() ?? 1
-        newSlots.remove(oldPrimary)
-        newSlots.insert(slot)
-
-        for (otherID, var otherSlots) in sdlSlotAssignments where otherID != instanceID {
-            otherSlots.remove(slot)
-            if otherSlots.isEmpty { otherSlots.insert(oldPrimary) }
-            sdlSlotAssignments[otherID] = otherSlots
-        }
-        if !newSlots.contains(1) { ensureP1Exists() }
-        sdlSlotAssignments[instanceID] = newSlots
+        let others = Array(sdlSlotAssignments.keys)
+        assigning(key: instanceID, to: slot, map: &sdlSlotAssignments, others: others)
         refreshConnectedControllers()
     }
 

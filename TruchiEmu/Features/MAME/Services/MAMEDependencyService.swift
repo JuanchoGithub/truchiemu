@@ -281,14 +281,11 @@ final class MAMEDependencyService: ObservableObject {
     // UserDefaults key tracking cores whose XML fetch failed (for retry)
     private static let failedFetchKey = "MAMEDependencyService_failedFetchCores"
     
-    // Bundled JSON fallback URL
-    private static let fallbackJSONPath = "mame_rom_data.json"
+    // Bundled unified database is the single MAME data source (see MAMEUnifiedService).
     
     init() {
         try? FileManager.default.createDirectory(at: storageURL, withIntermediateDirectories: true)
         loadCachedDatabases()
-        // Also try loading the bundled JSON as a fallback
-        loadFallbackFromBundle()
     }
     
     // MARK: - Fetch & Parse
@@ -398,9 +395,9 @@ final class MAMEDependencyService: ObservableObject {
             // Fallback: try using bundled JSON if no cached database exists
             LoggerService.mameDepsWarn("XML fetch FAILED for \(baseID): \(error.localizedDescription). Falling back to bundled database.")
             
-            // The bundled fallback is already loaded in init() with coreID "mame_fallback"
-            // For now, we just log the error. The game will still work but won't have
-            // precise per-core dependency data.
+            // The unified database (MAMEUnifiedService) provides the fallback for
+            // games in this core. The game will still work but won't have precise
+            // per-core dependency data.
         }
     }
     
@@ -534,30 +531,6 @@ func checkMissingDependencies(for shortName: String, coreID: String, romsDirecto
         return missing
     }
     
-    // No database - try to use fallback database which is loaded at startup
-    if let fallback = dependencyCache["mame_fallback"],
-       let deps = fallback.games[shortName] {
-        var missing: [MissingROMItem] = []
-        var requiredZIPs: Set<String> = [deps.romOf ?? shortName]
-        if let sampleOf = deps.sampleOf, !sampleOf.isEmpty {
-            requiredZIPs.insert(sampleOf)
-        }
-        
-        for zipName in requiredZIPs.sorted() {
-            let zipURL = romsDirectory.appendingPathComponent("\(zipName).zip")
-            if !FileManager.default.fileExists(atPath: zipURL.path) {
-                missing.append(MissingROMItem(
-                    romName: zipName,
-                    sourceZIP: "\(zipName).zip",
-                    crc: nil,
-                    size: nil
-                ))
-            }
-        }
-        
-        return missing
-    }
-    
     // No data available - skip check to avoid blocking (MAME will report at runtime)
     return []
 }
@@ -596,74 +569,6 @@ func checkMissingDependencies(for shortName: String, coreID: String, romsDirecto
         
         if !self.dependencyCache.isEmpty {
             LoggerService.mameDeps("Loaded \(self.dependencyCache.count) cached MAME dependency databases")
-        }
-    }
-    
-    // MARK: - Fallback JSON Loading
-    
-    // Load the bundled mame_rom_data.json as a fallback dependency database.
-    // This ensures we always have at least basic game descriptions and runnable status.
-    private func loadFallbackFromBundle() {
-        // Try app bundle first (production)
-        if let bundleURL = Bundle.main.url(forResource: "mame_rom_data", withExtension: "json") {
-            loadFallbackJSON(from: bundleURL)
-            return
-        }
-        
-        // Try development paths
-        let searchPaths = [
-            "scripts/mame_lookup/mame_rom_data.json",
-            "\(NSHomeDirectory())/Downloads/mame_rom_data.json"
-        ]
-        
-        for path in searchPaths {
-            let url = URL(fileURLWithPath: path)
-            if FileManager.default.fileExists(atPath: url.path) {
-                loadFallbackJSON(from: url)
-                return
-            }
-        }
-        LoggerService.mameDepsWarn("No fallback MAME JSON found")
-    }
-    
-    // Parse the bundled JSON and add any cores that don't have cached databases.
-    private func loadFallbackJSON(from url: URL) {
-        do {
-            let data = try Data(contentsOf: url)
-            guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-                  let roms = json["roms"] as? [String: Any] else {
-                LoggerService.mameDepsError("Failed to parse fallback MAME JSON")
-                return
-            }
-            
-            var games: [String: MAMEGameDependencies] = [:]
-            for (shortName, rawValue) in roms {
-                guard let entry = rawValue as? [String: Any] else { continue }
-                games[shortName] = MAMEGameDependencies(
-                    description: entry["description"] as? String ?? shortName,
-                    isRunnable: entry["isRunnable"] as? Bool ?? true,
-                    driverStatus: nil,
-                    parentROM: entry["parent"] as? String,
-                    romOf: entry["parent"] as? String,
-                    sampleOf: nil,
-                    mergedROMs: nil
-                )
-            }
-            
-            // Use "mame_fallback" as the core ID for the bundled database
-            let fallbackCoreID = "mame_fallback"
-            if dependencyCache[fallbackCoreID] == nil {
-                let db = MAMEDependencyDB(
-                    coreID: fallbackCoreID,
-                    version: "bundled",
-                    fetchedAt: Date(),
-                    games: games
-                )
-                dependencyCache[fallbackCoreID] = db
-                LoggerService.mameDeps("Loaded bundled MAME dependency database (\(games.count) entries)")
-            }
-        } catch {
-            LoggerService.mameDepsError("Failed to load fallback MAME JSON: \(error.localizedDescription)")
         }
     }
     

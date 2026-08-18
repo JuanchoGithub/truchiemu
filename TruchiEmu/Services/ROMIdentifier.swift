@@ -62,6 +62,20 @@ enum ROMIdentifier {
         return Set(counts.filter { $0.value > 1 }.map { $0.key })
     }()
 
+    // Precomputed normalized-extension → systems index. Built once at first
+    // use so the per-file linear scans (systems × extensions, with a normalize()
+    // allocation per entry) collapse to a single dictionary lookup. Order
+    // preserves `cachedSystems` order, so `first(where:)` semantics are unchanged.
+    private static let systemsByExtension: [String: [SystemInfo]] = {
+        var index: [String: [SystemInfo]] = [:]
+        for system in cachedSystems {
+            for ext in system.extensions {
+                index[normalize(extension: ext), default: []].append(system)
+            }
+        }
+        return index
+    }()
+
     // MARK: - Public Entry Point
 
     static func identifySystem(url: URL, extension ext: String, pathContextURL: URL? = nil, skipMAMEScoring: Bool = false, skipCRC: Bool = false) async -> SystemInfo? {
@@ -89,9 +103,7 @@ enum ROMIdentifier {
         // If the extension belongs to exactly ONE system, we can instantly return it
         // and bypass all string allocations, path parsing, and I/O reads entirely.
         if !ambiguousExtensions.contains(extLower) {
-            if let uniqueSystem = cachedSystems.first(where: { system in
-                system.extensions.contains { normalize(extension: $0) == extLower }
-            }) {
+            if let uniqueSystem = systemsByExtension[extLower]?.first {
                 #if LOG_DEBUG
                 LoggerService.debug(category: "ROMIdentifier", "Fast Path: \(filename) exactly matched \(uniqueSystem.id) via unique extension '.\(extLower)'")
                 #endif
@@ -128,9 +140,7 @@ enum ROMIdentifier {
 
         // 3. Magic Headers (Cheap I/O: 100 pts — always check for ambiguous extensions)
         if ambiguousExtensions.contains(extLower) {
-            let ambiguousSystems = cachedSystems.filter { system in
-                system.extensions.contains { normalize(extension: $0) == extLower }
-            }
+            let ambiguousSystems = systemsByExtension[extLower] ?? []
             if !ambiguousSystems.isEmpty {
                 if let headerID = peekSystemID(url: url, systems: ambiguousSystems) {
                     candidates[headerID, default: 0] += 100
@@ -266,9 +276,7 @@ enum ROMIdentifier {
         #if LOG_DEBUG
         LoggerService.debug(category: "ROMIdentifier", "Fallback: Standard extension lookup for \(filename)")
         #endif
-        return cachedSystems.first { system in
-            system.extensions.contains { normalize(extension: $0) == extLower }
-        } ?? SystemDatabase.system(forExtension: extLower)
+        return systemsByExtension[extLower]?.first ?? SystemDatabase.system(forExtension: extLower)
     }
 
     // MARK: - Inner ROM Listing for Archives
@@ -296,9 +304,7 @@ enum ROMIdentifier {
             if URL(fileURLWithPath: entry).lastPathComponent.hasPrefix("._") { continue }
 
             let normalizedExt = normalize(extension: fileExt)
-            let systemsWithExt = cachedSystems.filter { system in
-                system.extensions.contains { normalize(extension: $0) == normalizedExt }
-            }
+            let systemsWithExt = systemsByExtension[normalizedExt] ?? []
 
             if systemsWithExt.count == 1 {
                 results.append(InnerROMEntry(relativePath: entry, systemID: systemsWithExt[0].id, isAmbiguous: false))
@@ -503,12 +509,8 @@ enum ROMIdentifier {
 
     // MARK: - Scoring Methods
     private static func scoreByMetadata(url: URL, extLower: String, parentNames: [String], candidates: inout [String: Int]) {
-        let allSystems = cachedSystems
-        
         // A. Extension Matching
-        let systemsWithExt = allSystems.filter { system in 
-            system.extensions.contains { normalize(extension: $0) == extLower } 
-        }
+        let systemsWithExt = systemsByExtension[extLower] ?? []
         let isUniqueExt = systemsWithExt.count == 1
         
         for system in systemsWithExt {
@@ -625,9 +627,7 @@ enum ROMIdentifier {
             guard !fileExt.isEmpty, !skipExts.contains(fileExt), !file.hasSuffix(".metadata.json") else { continue }
             if URL(fileURLWithPath: file).lastPathComponent.hasPrefix("._") { continue }
             let normalizedExt = normalize(extension: fileExt)
-            let systemsWithExt = cachedSystems.filter { system in
-                system.extensions.contains { normalize(extension: $0) == normalizedExt }
-            }
+            let systemsWithExt = systemsByExtension[normalizedExt] ?? []
             for system in systemsWithExt where !archiveAwareIDs.contains(system.id) {
                 consoleSystems.insert(system.id)
             }
@@ -911,9 +911,7 @@ enum ROMIdentifier {
             var innerScores: [String: Int] = [:]
             for romExt in romExtSet {
                 let count = romExts.filter { $0 == romExt }.count
-                let systemsWithExt = cachedSystems.filter { system in
-                    system.extensions.contains { normalize(extension: $0) == romExt }
-                }
+                let systemsWithExt = systemsByExtension[romExt] ?? []
 
                 if systemsWithExt.count == 1 {
                     let systemID = systemsWithExt[0].id

@@ -132,7 +132,7 @@ LOAD_SYM(retro_get_memory_data)
   _retro_set_input_poll(bridge_input_poll);
   _retro_set_input_state(bridge_input_state);
 
-  _isMameLaunch = (g_coreID && [[g_coreID lowercaseString] containsString:@"mame"]);
+  _isMameLaunch = g_coreCapabilities.isMame;
   if (_isMameLaunch) {
     _pixelFormat = 1; 
   }
@@ -192,7 +192,7 @@ LOAD_SYM(retro_get_memory_data)
   // retro_load_game; RetroArch itself only calls retro_set_controller_port_device
   // after retro_load_game. All non-DOSBox cores get the post-load call below.
   if (didInit) {
-      BOOL isDOSBox = (g_coreID && [[g_coreID lowercaseString] containsString:@"dosbox"]);
+BOOL isDOSBox = g_coreCapabilities.isDOSBox;
       if (isDOSBox) {
           [self setControllerPortDevice:0 device:1];
           [self setControllerPortDevice:1 device:1];
@@ -222,28 +222,28 @@ LOAD_SYM(retro_get_memory_data)
                     g_wiiControllerType,
                     _retainedRomPath ? _retainedRomPath.UTF8String : "(null)");
 
-  if (g_coreID && [[g_coreID lowercaseString] containsString:@"dolphin"]) {
+  if (g_coreCapabilities.isDolphin) {
     NSString *ext = [_retainedRomPath.pathExtension lowercaseString];
     if ([ext isEqualToString:@"wbfs"] || [ext isEqualToString:@"wad"] || [ext isEqualToString:@"wia"] ||[ext isEqualToString:@"rvz"]) {
       // 0 = auto (Swift resolves to Wiimote+Classic when a controller is connected,
       // otherwise plain Wiimote); non-zero = explicit override device value.
       device_type = (g_wiiControllerType != 0) ? (unsigned)g_wiiControllerType : 1;
     }
-} else if ((g_coreID && [[g_coreID lowercaseString] containsString:@"swanstation"]) ||
-              (g_coreID && [[g_coreID lowercaseString] containsString:@"mednafen_psx"]) ||
-              (g_coreID && [[g_coreID lowercaseString] containsString:@"pcsx"])) {
+} else if (g_coreCapabilities.isSwanStation ||
+              g_coreCapabilities.isMednafenPSX ||
+              g_coreCapabilities.isPCSX) {
        device_type = 1;
-} else if ((g_coreID && [[g_coreID lowercaseString] containsString:@"mame"]) ||
-               (g_coreID && [[g_coreID lowercaseString] containsString:@"dosbox"])) {
+} else if (g_coreCapabilities.isMame ||
+               g_coreCapabilities.isDOSBox) {
          device_type = (g_dosDeviceType != 0) ? g_dosDeviceType : 1; // RETRO_DEVICE_JOYPAD — DOSBox-Pure exposes a guest joystick only when a joystick subclass is set (0 keeps the Generic Keyboard default)
          bridge_log_printf(RETRO_LOG_INFO, "[Bridge] DOSDeviceProbe coreID=%s g_dosDeviceType=%u device_type=%u",
                            g_coreID ? g_coreID.UTF8String : "(null)",
                            g_dosDeviceType, device_type);
-     } else if ((g_coreID && [[g_coreID lowercaseString] containsString:@"mupen64"]) ||
-              (g_coreID && [[g_coreID lowercaseString] containsString:@"parallel_n64"])) {
+     } else if (g_coreCapabilities.isMupen64 ||
+              g_coreCapabilities.isParallelN64) {
         device_type = 5; // RETRO_DEVICE_ANALOG for proper N64 analog + digital input
-  } else if (g_coreID && ([[g_coreID lowercaseString] containsString:@"genesis_plus_gx"] ||
-                          [[g_coreID lowercaseString] containsString:@"picodrive"])) {
+  } else if (g_coreCapabilities.isGenesisPlusGX ||
+                          g_coreCapabilities.isPicodrive) {
     if (g_genesisDeviceType != 0) {
       device_type = g_genesisDeviceType;
     }
@@ -278,7 +278,7 @@ LOAD_SYM(retro_get_memory_data)
     // Signal variables updated for Flycast cores so retro_run() triggers
     // update_variables() with first_startup=false, which processes device
     // port options (reicast_device_port*_slot*) that are skipped on first init
-    if (g_coreID && [[g_coreID lowercaseString] containsString:@"flycast"]) {
+    if (g_coreCapabilities.isFlycast) {
         g_variablesUpdated = YES;
         bridge_log_printf(RETRO_LOG_INFO, "[LibretroCore] Set g_variablesUpdated=YES for Flycast device port override");
     }
@@ -456,9 +456,9 @@ shutdown:
   if ([_audioEngine isRunning]) {[_audioEngine stop];}[_coreLock lock];
   if (_hwRenderEnabled && _glContext) CGLSetCurrentContext(_glContext);
 
-  BOOL isBuggyShutdown = (g_coreID && [[g_coreID lowercaseString] containsString:@"ppsspp"]) ||
-                         (g_coreID && [[g_coreID lowercaseString] containsString:@"swanstation"]) ||
-                         (g_coreID && [[g_coreID lowercaseString] containsString:@"duckstation"]);
+  BOOL isBuggyShutdown = g_coreCapabilities.isPSP ||
+                       g_coreCapabilities.isSwanStation ||
+                       g_coreCapabilities.isDuckStation;
 
   if (isBuggyShutdown && _hwRenderEnabled && _hw_callback.context_destroy) {
       @try {
@@ -896,14 +896,14 @@ shutdown:
   glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 
   uint32_t *pixels = (uint32_t *)_hwReadbackBuffer;
-  BOOL isPSP = (g_coreID && [[g_coreID lowercaseString] containsString:@"ppsspp"]);
-  BOOL isPS1_swanstation = (g_coreID && [[g_coreID lowercaseString] containsString:@"swanstation"]);
-  BOOL isPS2_play = (g_coreID && [[g_coreID lowercaseString] containsString:@"play_libretro"]);
-  BOOL isDolphin = (g_coreID && [[g_coreID lowercaseString] containsString:@"dolphin"]);
-  BOOL isDOSBox = (g_coreID && [[g_coreID lowercaseString] containsString:@"dosbox"]);
-  BOOL isDreamcast = (g_coreID && [[g_coreID lowercaseString] containsString:@"flycast"]);
-  BOOL is3DS = (g_coreID && [[g_coreID lowercaseString] containsString:@"panda3ds"]);
-  BOOL isN64 = (g_coreID && [[g_coreID lowercaseString] containsString:@"mupen64"]);
+  BOOL isPSP = g_coreCapabilities.isPSP;
+  BOOL isPS1_swanstation = g_coreCapabilities.isSwanStation;
+  BOOL isPS2_play = g_coreCapabilities.isPS2Play;
+  BOOL isDolphin = g_coreCapabilities.isDolphin;
+  BOOL isDOSBox = g_coreCapabilities.isDOSBox;
+  BOOL isDreamcast = g_coreCapabilities.isFlycast;
+  BOOL is3DS = g_coreCapabilities.is3DS;
+  BOOL isN64 = g_coreCapabilities.isMupen64;
 
   if (isPSP || 
       isPS2_play || 

@@ -127,6 +127,7 @@ struct ContentView: View {
             // `mainInterface` only), so TVModeViewModel saw no games until the
             // user exited TV-mode and triggered the main-interface `.task`.
             library.initializeIfNeeded()
+            BootSmokeRunner.runIfNeeded(library: library)
         }
         // External-display prompt overlay. Renders nothing when
         // `ExternalDisplayPromptManager` is idle; the manager never prompts

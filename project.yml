@@ -115,10 +115,6 @@ targets:
       - "Info.plist"
       - "TruchiEmu.entitlements"
       buildPhase: resources
-    - path: scripts/mame_lookup
-      excludes:
-      - "mame_unified.json"
-      buildPhase: resources
 
     postBuildScripts:
       - name: Embed librashader dylib

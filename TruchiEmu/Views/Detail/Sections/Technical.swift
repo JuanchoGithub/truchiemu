@@ -163,7 +163,7 @@ extension GameDetailView {
     var identifyButton: some View {
         Button {
             Task {
-                manualActionStatus = .working("Identifying from No-Intro database…")
+                manualAction.showWorking("Identifying from No-Intro database…")
                 let result = await library.identifyROM(currentROM, preferNameMatch: false)
                 switch result {
                 case .identified(let info):
@@ -215,7 +215,7 @@ extension GameDetailView {
             }
         } label: {
             HStack(spacing: 6) {
-                if case .working = manualActionStatus { ProgressView().controlSize(.small) } else { Image(systemName: "qrcode.viewfinder") }
+                if manualAction.isWorking { ProgressView().controlSize(.small) } else { Image(systemName: "qrcode.viewfinder") }
                 Text(loc.localized("gameInfo.identifyGame"))
             }
             .font(.subheadline)
@@ -231,7 +231,7 @@ extension GameDetailView {
 
     var fetchMetadataButton: some View {
         Group {
-            switch fetchMetadataStatus {
+            switch fetchMetadata.status {
             case .hidden:
                 Button { Task { await fetchMetadata() } } label: {
                     HStack(spacing: 6) {
@@ -274,35 +274,27 @@ extension GameDetailView {
     }
 
     func fetchMetadata() async {
-        await MainActor.run { fetchMetadataStatus = .working(loc.localized("gameInfo.searchingLaunchBox")) }
+        fetchMetadata.showWorking(loc.localized("gameInfo.searchingLaunchBox"))
         let success = await LaunchBoxGamesDBService.shared.fetchAndApplyMetadata(for: currentROM, library: library)
-        fetchMetadataAutoDismiss?.cancel()
-        fetchMetadataAutoDismiss = Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 10_000_000_000)
-            guard !Task.isCancelled else { return }
-            if case .result = fetchMetadataStatus { fetchMetadataStatus = .hidden }
-        }
         if success {
             await MainActor.run {
-                fetchMetadataStatus = .result(loc.localized("gameInfo.metadataUpdated"), tone: .success)
+                fetchMetadata.showResult(loc.localized("gameInfo.metadataUpdated"), tone: .success, autoDismissAfter: 10_000_000_000)
                 loadBoxArt()
                 loadTitleScreen()
                 loadScreenshots()
             }
         } else {
-            await MainActor.run { fetchMetadataStatus = .result(loc.localized("gameInfo.noMetadataFound"), tone: .warning) }
+            await MainActor.run { fetchMetadata.showResult(loc.localized("gameInfo.noMetadataFound"), tone: .warning, autoDismissAfter: 10_000_000_000) }
         }
     }
 
     func clearFetchMetadataStatus() {
-        fetchMetadataAutoDismiss?.cancel()
-        fetchMetadataAutoDismiss = nil
-        fetchMetadataStatus = .hidden
+        fetchMetadata.clear()
     }
 
     var fetchBoxArtButton: some View {
         Group {
-            switch fetchBoxArtStatus {
+            switch fetchBoxArt.status {
             case .hidden:
                 Button { Task { await fetchBoxArt() } } label: {
                     HStack(spacing: 6) {
@@ -343,7 +335,7 @@ extension GameDetailView {
     }
 
     func fetchBoxArt() async {
-        await MainActor.run { fetchBoxArtStatus = .working(loc.localized("gameInfo.searching")) }
+        fetchBoxArt.showWorking(loc.localized("gameInfo.searching"))
         if await BoxArtService.shared.fetchBoxArt(for: currentROM) != nil {
             var u = currentROM
             u.hasBoxArt = true
@@ -351,22 +343,14 @@ extension GameDetailView {
             loadBoxArt()
             loadTitleScreen()
             loadScreenshots()
-            fetchBoxArtAutoDismiss?.cancel()
-            fetchBoxArtAutoDismiss = Task { @MainActor in
-                try? await Task.sleep(nanoseconds: 10_000_000_000)
-                guard !Task.isCancelled else { return }
-                if case .result = fetchBoxArtStatus { fetchBoxArtStatus = .hidden }
-            }
-            await MainActor.run { fetchBoxArtStatus = .result(loc.localized("gameInfo.artFound"), tone: .success) }
+            await MainActor.run { fetchBoxArt.showResult(loc.localized("gameInfo.artFound"), tone: .success, autoDismissAfter: 10_000_000_000) }
         } else {
-            await MainActor.run { fetchBoxArtStatus = .result(loc.localized("gameInfo.noCoverArtFound"), tone: .warning) }
+            await MainActor.run { fetchBoxArt.showResult(loc.localized("gameInfo.noCoverArtFound"), tone: .warning, autoDismissAfter: 10_000_000_000) }
         }
     }
 
     func clearFetchBoxArtStatus() {
-        fetchBoxArtAutoDismiss?.cancel()
-        fetchBoxArtAutoDismiss = nil
-        fetchBoxArtStatus = .hidden
+        fetchBoxArt.clear()
     }
 
     func esrbBadgeColor(for rating: String) -> Color {

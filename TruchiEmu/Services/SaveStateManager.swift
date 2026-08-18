@@ -157,16 +157,7 @@ return sysDir.appendingPathComponent(fileName)
     // Returns info for all user slots (0-9) plus auto slot (-1)
     // Uses progressive saves as the source of truth; marks slot as existing if any progressive version exists
     func allSlotInfo(gameName: String, systemID: String) -> [SlotInfo] {
-        return (-1...9).map { slot in
-            let versions = progressiveSlotVersions(gameName: gameName, systemID: systemID, slot: slot)
-            if !versions.isEmpty {
-                let newestVersion = versions.max() ?? 1
-                let info = progressiveSlotInfo(gameName: gameName, systemID: systemID, slot: slot, version: newestVersion)
-                return SlotInfo(id: slot, exists: true, fileSize: info.fileSize, modificationDate: info.modificationDate, progressiveVersion: nil, customName: loadSlotName(gameName: gameName, systemID: systemID, slot: slot))
-            }
-            // Fallback: check base file
-            return slotInfo(gameName: gameName, systemID: systemID, slot: slot)
-        }
+        return gameSaveSet(gameName: gameName, systemID: systemID).slotList
     }
     
     // Returns only user slots with existing save files, useful for cleanup
@@ -178,27 +169,7 @@ return sysDir.appendingPathComponent(fileName)
     // (auto -1 through 9) including every progressive version. Used to power
     // a "Continue" affordance that jumps straight to the newest save.
     func mostRecentSaveState(gameName: String, systemID: String) -> SlotInfo? {
-        let slots = allSlotInfo(gameName: gameName, systemID: systemID)
-        var best: SlotInfo?
-        var bestDate: Date = .distantPast
-
-        for slot in slots {
-            let versions = progressiveSlotVersions(gameName: gameName, systemID: systemID, slot: slot.id)
-            if !versions.isEmpty {
-                for v in versions {
-                    let info = progressiveSlotInfo(gameName: gameName, systemID: systemID, slot: slot.id, version: v)
-                    if info.exists, let date = info.modificationDate, date > bestDate {
-                        bestDate = date
-                        best = info
-                    }
-                }
-            }
-            if slot.exists, let date = slot.modificationDate, date > bestDate {
-                bestDate = date
-                best = slot
-            }
-        }
-        return best
+        return gameSaveSet(gameName: gameName, systemID: systemID).mostRecentSlot
     }
     
     // MARK: - File Operations
@@ -595,18 +566,101 @@ func deleteProgressiveState(gameName: String, systemID: String, slot: Int, versi
 
 // Returns all progressive versions for a game, grouped by slot
 func allProgressiveSlots(gameName: String, systemID: String) -> [Int: [SlotInfo]] {
-    var result: [Int: [SlotInfo]] = [:]
-    // Check slots -1 through 9
-    for slot in (-1...9) {
-        let versions = progressiveSlotVersions(gameName: gameName, systemID: systemID, slot: slot)
-        if !versions.isEmpty {
-            result[slot] = versions.map { progressiveSlotInfo(gameName: gameName, systemID: systemID, slot: slot, version: $0) }
-        }
-    }
-    return result
+    return gameSaveSet(gameName: gameName, systemID: systemID).progressiveSlotList
 }
 
 // MARK: - Save Discovery
+
+// Builds a GameSaveSet snapshot for a game from a single directory read.
+// All read-only slot queries route through this so a refresh touches the
+// filesystem once instead of re-listing the system directory per slot.
+func gameSaveSet(gameName: String, systemID: String) -> GameSaveSet {
+    let sysDir = systemDirectory(systemID: systemID)
+    let safeName = safeGameStateName(gameName)
+    let fm = FileManager.default
+
+    guard let files = try? fm.contentsOfDirectory(atPath: sysDir.path) else {
+        return GameSaveSet(gameName: gameName, systemID: systemID, safeName: safeName, baseFiles: [:], progressiveFiles: [:], slotNames: [:])
+    }
+
+    var baseFiles: [Int: SlotInfo] = [:]
+    var progressiveFiles: [Int: [Int: SlotInfo]] = [:]
+    var slotNames: [Int: String] = [:]
+
+    let prefix = "\(safeName)__"
+    for file in files {
+        guard file.hasPrefix(prefix) else { continue }
+
+        // Custom name sidecars carry the user-defined display name.
+        if file.hasSuffix(".meta.json") {
+            if let slot = parseSlotNameSidecar(file, safeName: safeName) {
+                let url = sysDir.appendingPathComponent(file)
+                if let data = try? Data(contentsOf: url),
+                   let payload = try? JSONDecoder().decode(SaveSlotMetaPayload.self, from: data),
+                   let name = payload.name, !name.isEmpty {
+                    slotNames[slot] = name
+                }
+            }
+            continue
+        }
+
+        // Thumbnails are PNGs; skip them.
+        if file.hasSuffix(".png") { continue }
+
+        guard let (slot, version) = parseStateFileName(file, safeName: safeName) else { continue }
+        let url = sysDir.appendingPathComponent(file)
+        guard let attrs = try? fm.attributesOfItem(atPath: url.path) else { continue }
+        let info = SlotInfo(
+            id: slot,
+            exists: true,
+            fileSize: attrs[.size] as? Int64,
+            modificationDate: attrs[.modificationDate] as? Date,
+            progressiveVersion: version,
+            customName: nil
+        )
+        if let version {
+            progressiveFiles[slot, default: [:]][version] = info
+        } else {
+            baseFiles[slot] = info
+        }
+    }
+
+    return GameSaveSet(gameName: gameName, systemID: systemID, safeName: safeName, baseFiles: baseFiles, progressiveFiles: progressiveFiles, slotNames: slotNames)
+}
+
+// Parses a state filename into (slot, version). Slot -1 is autosave.
+// Handles "<safe>__autosave", "<safe>__slot_N", "<safe>__autosave__vN" and
+// "<safe>__slot_N__vN". Returns nil for thumbnails/other files.
+private func parseStateFileName(_ name: String, safeName: String) -> (slot: Int, version: Int?)? {
+    let prefix = "\(safeName)__"
+    guard name.hasPrefix(prefix) else { return nil }
+    let rest = String(name.dropFirst(prefix.count))
+
+    if rest.hasPrefix("autosave") {
+        let after = String(rest.dropFirst("autosave".count))
+        if after.isEmpty { return (-1, nil) }
+        if after.hasPrefix("__v"), let v = Int(after.dropFirst(3)) { return (-1, v) }
+        return nil
+    }
+
+    guard rest.hasPrefix("slot_") else { return nil }
+    let afterSlot = String(rest.dropFirst("slot_".count))
+    let digits = afterSlot.prefix(while: { $0.isNumber })
+    guard let slot = Int(digits), digits.count > 0 else { return nil }
+    let after = String(afterSlot.dropFirst(digits.count))
+    if after.isEmpty { return (slot, nil) }
+    if after.hasPrefix("__v"), let v = Int(after.dropFirst(3)) { return (slot, v) }
+    return nil
+}
+
+// Parses a ".meta.json" sidecar filename into its slot number, or nil if it
+// doesn't belong to this game.
+private func parseSlotNameSidecar(_ name: String, safeName: String) -> Int? {
+    let prefix = "\(safeName)__slot_"
+    guard name.hasPrefix(prefix) else { return nil }
+    let digits = name.dropFirst(prefix.count).prefix(while: { $0.isNumber })
+    return Int(digits)
+}
 
 // Extract game name from a save state filename
 private func extractGameName(from stateFile: String) -> String {
@@ -798,6 +852,78 @@ func allFilesForGame(gameName: String, systemID: String) -> ([SlotInfo], [URL]) 
             // Not compressed (raw state data or old format without header)
             return data
         }
+    }
+}
+
+// MARK: - Game Save Set Snapshot
+
+// A snapshot of every save-state file for one game in one system, captured
+// from a single directory read. The read-only queries (slotList,
+// progressiveSlotList, mostRecentSlot) derive their results from this
+// snapshot instead of re-listing the system directory once per slot.
+struct GameSaveSet {
+    let gameName: String
+    let systemID: String
+    let safeName: String
+    // Base (non-versioned) state files: slot -> info. Slot -1 is autosave.
+    let baseFiles: [Int: SlotInfo]
+    // Progressive state files: slot -> [version: info].
+    let progressiveFiles: [Int: [Int: SlotInfo]]
+    // User-defined slot names read from `.meta.json` sidecars.
+    let slotNames: [Int: String]
+}
+
+extension GameSaveSet {
+    // Info for a single slot: the newest progressive version when present,
+    // otherwise the base file (or a non-existent slot).
+    func slotInfo(for slot: Int) -> SlotInfo {
+        let name = slotNames[slot]
+        if let versions = progressiveFiles[slot], !versions.isEmpty {
+            let newestVersion = versions.keys.max() ?? 1
+            if let info = versions[newestVersion] {
+                return SlotInfo(id: slot, exists: true, fileSize: info.fileSize, modificationDate: info.modificationDate, progressiveVersion: nil, customName: name)
+            }
+        }
+        if let base = baseFiles[slot] {
+            return SlotInfo(id: slot, exists: true, fileSize: base.fileSize, modificationDate: base.modificationDate, progressiveVersion: nil, customName: name)
+        }
+        return SlotInfo(id: slot, exists: false, fileSize: nil, modificationDate: nil, progressiveVersion: nil, customName: name)
+    }
+
+    // Info for all user slots (0-9) plus auto slot (-1).
+    var slotList: [SlotInfo] {
+        return (-1...9).map { slotInfo(for: $0) }
+    }
+
+    // All progressive versions, grouped by slot (versions ascending).
+    var progressiveSlotList: [Int: [SlotInfo]] {
+        var result: [Int: [SlotInfo]] = [:]
+        for (slot, versions) in progressiveFiles where !versions.isEmpty {
+            result[slot] = versions.sorted { $0.key < $1.key }.map { $0.value }
+        }
+        return result
+    }
+
+    // The single most recently-modified save state across ALL slots and
+    // versions (auto -1 through 9). Progressive slots only consider their
+    // versions; base files are considered only for slots without versions.
+    var mostRecentSlot: SlotInfo? {
+        var best: SlotInfo?
+        var bestDate: Date = .distantPast
+        for slot in (-1...9) {
+            if let versions = progressiveFiles[slot], !versions.isEmpty {
+                for info in versions.values {
+                    if info.exists, let date = info.modificationDate, date > bestDate {
+                        bestDate = date
+                        best = info
+                    }
+                }
+            } else if let base = baseFiles[slot], let date = base.modificationDate, date > bestDate {
+                bestDate = date
+                best = base
+            }
+        }
+        return best
     }
 }
 

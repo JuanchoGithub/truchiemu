@@ -16,9 +16,12 @@ class ShaderManager: ObservableObject {
     
     // Current active preset
     @Published var activePreset: ShaderPreset = .defaultPreset
-    
-    // Currently active slang preset (if any)
-    @Published var activeSlangPreset: SlangPreset? = nil
+
+    // Currently active slang preset, if any. Single source of truth lives on
+    // SlangCompilerService.shared.activePreset — the compiler owns the chain
+    // lifecycle, so the two cannot drift. This property exists only to keep
+    // callers that want a quick "is a slang chain live?" check on ShaderManager.
+    var activeSlangPreset: SlangPreset? { SlangCompilerService.shared.activePreset }
 
     // Current uniform values (updated by UI sliders)
     @Published private(set) var uniformValues: [String: Float] = [:]
@@ -68,7 +71,6 @@ class ShaderManager: ObservableObject {
     func activateSlangPreset(_ preset: SlangPreset, overrides: [String: Float] = [:]) {
         do {
             let reflected = try SlangCompilerService.shared.loadAndActivatePreset(at: preset.path, queue: commandQueue ?? device!.makeCommandQueue()!)
-            activeSlangPreset = reflected
             activePreset = ShaderPreset.defaultPreset
             clearPipelineCache()
             Self.parameterStore.updateFragmentFunctionName("slang")
@@ -88,7 +90,6 @@ class ShaderManager: ObservableObject {
 
     func deactivateSlangPreset() {
         SlangCompilerService.shared.destroyFilterChain()
-        activeSlangPreset = nil
         resetToDefault()
     }
 
@@ -111,8 +112,8 @@ class ShaderManager: ObservableObject {
     ///
     /// `onReflect` receives the reflected parameter list + default values
     /// if reflection succeeded, or nil if it failed. Successful GPU
-    /// activation also surfaces via `activeSlangPreset` (the standard
-    /// `@Published` field) once the chain is built.
+    /// activation also surfaces via `SlangCompilerService.shared.activePreset`
+    /// (the single source of truth) once the chain is built.
     func reflectSlangPreset(
         _ preset: SlangPreset,
         overrides: [String: Float] = [:],
@@ -149,7 +150,6 @@ class ShaderManager: ObservableObject {
                 // MTLCommandQueue thread contract.
                 do {
                     let activated = try SlangCompilerService.shared.loadAndActivatePreset(at: path, queue: queue)
-                    Self.shared.activeSlangPreset = activated
                     Self.shared.activePreset = ShaderPreset.defaultPreset
                     Self.shared.clearPipelineCache()
                     Self.parameterStore.updateFragmentFunctionName("slang")

@@ -129,53 +129,79 @@ class CoreOptionsManager: ObservableObject {
 
     // MARK: - Override Layer Application
 
-    private func applyOverrideLayers(to option: inout CoreOption, coreID: String) {
-        let coreDefault = option.defaultValue
-        var currentValue = coreDefault
+    private struct BaseValueResult {
+        let value: String
+        let source: OverrideSource
+        let previousLayerValue: String
+    }
+
+    // Single 5-layer precedence walk shared by applyOverrideLayers,
+    // computeBaseValue, and resolveEffectiveValue. Layers (lower overridden
+    // by higher):
+    //   1. coreDefault            — value baked into the core definition
+    //   2. appDefault             — bundled app-wide override
+    //   3. appSystemDefault       — bundled override for a system
+    //   4. systemOverride         — user override for a system
+    //   5. gameOverride           — user override for a specific game
+    // Passing gameFilename == nil skips layer 5, which computeBaseValue uses to
+    // compute the value below the current game scope.
+    private nonisolated func walkOverrideLayers(key: String, coreDefault: String, coreID: String, systemID: String?, gameFilename: String?) -> BaseValueResult {
+        var value = coreDefault
         var source: OverrideSource = .coreDefault
         var previousLayerValue = coreDefault
 
-        // Layer 1: Bundled app defaults
+        // Layer 2: Bundled app-wide defaults
         let appDefaults = CoreOverrideService.shared.getOverrides(for: coreID, scope: "default")
-        if let appValue = appDefaults[option.key] {
-            currentValue = appValue
+        if let appValue = appDefaults[key] {
+            previousLayerValue = value
+            value = appValue
             source = .appDefault
-            previousLayerValue = coreDefault
         }
 
-        // Layer 2: Bundled system-specific overrides (e.g., gambatte_gb.json)
-        if let sysID = currentSystemID {
+        // Layer 3: Bundled system-specific overrides (e.g., gambatte_gb.json)
+        if let sysID = systemID {
             let systemOverrides = CoreOverrideService.shared.getOverrides(for: coreID, scope: sysID)
-            if let sysValue = systemOverrides[option.key] {
-                previousLayerValue = currentValue
-                currentValue = sysValue
+            if let sysValue = systemOverrides[key] {
+                previousLayerValue = value
+                value = sysValue
                 source = .appSystemDefault
             }
         }
 
-        // Layer 3: User system-level overrides
-        if let sysID = currentSystemID {
+        // Layer 4: User system-level overrides
+        if let sysID = systemID {
             let userSystem = loadSystemOverrides(for: coreID, systemID: sysID)
-            if let userSysValue = userSystem[option.key] {
-                previousLayerValue = currentValue
-                currentValue = userSysValue
+            if let userSysValue = userSystem[key] {
+                previousLayerValue = value
+                value = userSysValue
                 source = .systemOverride
             }
         }
 
-        // Layer 4: User game-level overrides
-        if let gameFilename = currentGameFilename, let sysID = currentSystemID {
+        // Layer 5: User game-level overrides
+        if let gameFilename, let sysID = systemID {
             let userGame = loadGameOverrides(for: coreID, systemID: sysID, gameFilename: gameFilename)
-            if let gameValue = userGame[option.key] {
-                previousLayerValue = currentValue
-                currentValue = gameValue
+            if let gameValue = userGame[key] {
+                previousLayerValue = value
+                value = gameValue
                 source = .gameOverride
             }
         }
 
-        option.currentValue = currentValue
-        option.overrideSource = source
-        option.previousLayerValue = previousLayerValue
+        return BaseValueResult(value: value, source: source, previousLayerValue: previousLayerValue)
+    }
+
+    private func applyOverrideLayers(to option: inout CoreOption, coreID: String) {
+        let baseResult = walkOverrideLayers(
+            key: option.key,
+            coreDefault: option.defaultValue,
+            coreID: coreID,
+            systemID: currentSystemID,
+            gameFilename: currentGameFilename
+        )
+        option.currentValue = baseResult.value
+        option.overrideSource = baseResult.source
+        option.previousLayerValue = baseResult.previousLayerValue
     }
 
     // Loads definitions and overrides from disk for a specific core.
@@ -441,12 +467,6 @@ class CoreOptionsManager: ObservableObject {
         XPCBridgeAdapter.shared.setOptionValue(value, forKey: key)
     }
 
-    private struct BaseValueResult {
-        let value: String
-        let source: OverrideSource
-        let previousLayerValue: String
-    }
-
     private func computeBaseValue(for key: String) -> BaseValueResult {
         guard let coreID = currentCoreID else {
             return BaseValueResult(value: "", source: .coreDefault, previousLayerValue: "")
@@ -460,34 +480,15 @@ class CoreOptionsManager: ObservableObject {
             return BaseValueResult(value: "", source: .coreDefault, previousLayerValue: "")
         }
 
-        var value = coreDefault
-        var source: OverrideSource = .coreDefault
-        var prevLayer = coreDefault
-
-        let appDefaults = CoreOverrideService.shared.getOverrides(for: coreID, scope: "default")
-        if let appValue = appDefaults[key] {
-            prevLayer = value
-            value = appValue
-            source = .appDefault
-        }
-
-        if let sysID = currentSystemID {
-            let systemOverrides = CoreOverrideService.shared.getOverrides(for: coreID, scope: sysID)
-            if let sysValue = systemOverrides[key] {
-                prevLayer = value
-                value = sysValue
-                source = .appSystemDefault
-            }
-
-            let userSystem = loadSystemOverrides(for: coreID, systemID: sysID)
-            if let userSysValue = userSystem[key] {
-                prevLayer = value
-                value = userSysValue
-                source = .systemOverride
-            }
-        }
-
-        return BaseValueResult(value: value, source: source, previousLayerValue: prevLayer)
+        // Base = layers below the current scope. Passing nil for gameFilename
+        // skips the game layer, so restore/revert reveals the underlying value.
+        return walkOverrideLayers(
+            key: key,
+            coreDefault: coreDefault,
+            coreID: coreID,
+            systemID: currentSystemID,
+            gameFilename: nil
+        )
     }
 
     func restoreToPreviousLayer(key: String) {
@@ -640,38 +641,14 @@ class CoreOptionsManager: ObservableObject {
             return (value: "", source: .coreDefault)
         }
 
-        var value = defVal
-        var source: OverrideSource = .coreDefault
-
-        let appDefaults = CoreOverrideService.shared.getOverrides(for: coreID, scope: "default")
-        if let appValue = appDefaults[key] {
-            value = appValue
-            source = .appDefault
-        }
-
-        if let sysID = systemID {
-            let systemOverrides = CoreOverrideService.shared.getOverrides(for: coreID, scope: sysID)
-            if let sysValue = systemOverrides[key] {
-                value = sysValue
-                source = .appSystemDefault
-            }
-
-            let userSystem = loadSystemOverrides(for: coreID, systemID: sysID)
-            if let userSysValue = userSystem[key] {
-                value = userSysValue
-                source = .systemOverride
-            }
-
-            if let game = gameFilename {
-                let userGame = loadGameOverrides(for: coreID, systemID: sysID, gameFilename: game)
-                if let gameValue = userGame[key] {
-                    value = gameValue
-                    source = .gameOverride
-                }
-            }
-        }
-
-        return (value: value, source: source)
+        let resolved = walkOverrideLayers(
+            key: key,
+            coreDefault: defVal,
+            coreID: coreID,
+            systemID: systemID,
+            gameFilename: gameFilename
+        )
+        return (value: resolved.value, source: resolved.source)
     }
 
     // MARK: - Auto-Discovery Helpers

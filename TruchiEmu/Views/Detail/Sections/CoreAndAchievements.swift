@@ -153,9 +153,9 @@ extension GameDetailView {
                 Divider().overlay(AppColors.divider(colorScheme))
             }
 
-            if raVerificationStatus.isVisible {
+            if raVerification.isVisible {
                 HStack(spacing: AppSpacing.sm) {
-                    switch raVerificationStatus {
+                    switch raVerification.status {
                     case .working(let title):
                         ProgressView().controlSize(.small)
                         Text(title).font(.caption).foregroundColor(AppColors.textSecondary(colorScheme))
@@ -171,9 +171,9 @@ extension GameDetailView {
                         EmptyView()
                     }
                     Spacer()
-                    if case .result = raVerificationStatus {
+                    if case .result = raVerification.status {
                         Button {
-                            raVerificationStatus = .hidden
+                            raVerification.clear()
                         } label: {
                             Image(systemName: "xmark.circle.fill")
                             .font(.caption2)

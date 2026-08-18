@@ -795,6 +795,25 @@ class CheatDownloadService: ObservableObject {
         return downloaded
     }
     
+    // Shared finalization for a single file download: decrements the active
+    // thread counter and flips the in-progress log entry to its final status.
+    // Every exit path of `downloadFile` funnels through here so the counter
+    // and the log cannot drift apart.
+    private func finalizeDownload(fileName: String, systemName: String, status: CheatDownloadLogEntry.DownloadStatus, message: String) async {
+        await MainActor.run {
+            currentlyDownloadingCount -= 1
+            if let lastIndex = downloadLog.indices.last, downloadLog[lastIndex].status == .inProgress {
+                downloadLog[lastIndex] = CheatDownloadLogEntry(
+                    timestamp: Date(),
+                    systemName: systemName,
+                    fileName: fileName,
+                    status: status,
+                    message: message
+                )
+            }
+        }
+    }
+
     // Download a single file
     private func downloadFile(_ content: GitHubContent, to destination: URL, systemName: String) async throws {
         // Log start of download
@@ -833,19 +852,7 @@ class CheatDownloadService: ObservableObject {
         // may contain unencoded special characters that cause issues with URLSession
         guard let url = URL(string: rawURL) else {
             LoggerService.info(category: "CheatDownloadService", "Raw download URL construction failed for \(content.name): \(rawURL)")
-            await MainActor.run {
-                currentlyDownloadingCount -= 1
-                // Update the in-progress entry to failed
-                if let lastIndex = downloadLog.indices.last, downloadLog[lastIndex].status == .inProgress {
-                    downloadLog[lastIndex] = CheatDownloadLogEntry(
-                        timestamp: Date(),
-                        systemName: systemName,
-                        fileName: content.name,
-                        status: .failed("Invalid URL"),
-                        message: "Failed: Invalid URL for \(content.name)"
-                    )
-                }
-            }
+            await finalizeDownload(fileName: content.name, systemName: systemName, status: .failed("Invalid URL"), message: "Failed: Invalid URL for \(content.name)")
             return
         }
         
@@ -857,53 +864,20 @@ class CheatDownloadService: ObservableObject {
             
             guard let httpResp = response as? HTTPURLResponse else {
                 LoggerService.info(category: "CheatDownloadService", "Failed to download \(content.name): invalid response")
-                await MainActor.run {
-                    currentlyDownloadingCount -= 1
-                    if let lastIndex = downloadLog.indices.last, downloadLog[lastIndex].status == .inProgress {
-                        downloadLog[lastIndex] = CheatDownloadLogEntry(
-                            timestamp: Date(),
-                            systemName: systemName,
-                            fileName: content.name,
-                            status: .failed("Invalid response"),
-                            message: "Failed: Invalid response for \(content.name)"
-                        )
-                    }
-                }
+                await finalizeDownload(fileName: content.name, systemName: systemName, status: .failed("Invalid response"), message: "Failed: Invalid response for \(content.name)")
                 return
             }
             
             guard httpResp.statusCode == 200 else {
                 LoggerService.info(category: "CheatDownloadService", "Failed to download \(content.name): HTTP \(httpResp.statusCode)")
-                await MainActor.run {
-                    currentlyDownloadingCount -= 1
-                    if let lastIndex = downloadLog.indices.last, downloadLog[lastIndex].status == .inProgress {
-                        downloadLog[lastIndex] = CheatDownloadLogEntry(
-                            timestamp: Date(),
-                            systemName: systemName,
-                            fileName: content.name,
-                            status: .failed("HTTP \(httpResp.statusCode)"),
-                            message: "Failed: HTTP \(httpResp.statusCode) for \(content.name)"
-                        )
-                    }
-                }
+                await finalizeDownload(fileName: content.name, systemName: systemName, status: .failed("HTTP \(httpResp.statusCode)"), message: "Failed: HTTP \(httpResp.statusCode) for \(content.name)")
                 return
             }
             
             // Verify we got actual data and it's not empty
             guard !data.isEmpty else {
                 LoggerService.info(category: "CheatDownloadService", "Failed to download \(content.name): empty data received")
-                await MainActor.run {
-                    currentlyDownloadingCount -= 1
-                    if let lastIndex = downloadLog.indices.last, downloadLog[lastIndex].status == .inProgress {
-                        downloadLog[lastIndex] = CheatDownloadLogEntry(
-                            timestamp: Date(),
-                            systemName: systemName,
-                            fileName: content.name,
-                            status: .failed("Empty data"),
-                            message: "Failed: Empty data for \(content.name)"
-                        )
-                    }
-                }
+                await finalizeDownload(fileName: content.name, systemName: systemName, status: .failed("Empty data"), message: "Failed: Empty data for \(content.name)")
                 return
             }
             
@@ -911,18 +885,7 @@ class CheatDownloadService: ObservableObject {
             let preview = String(data: data.prefix(50), encoding: .utf8) ?? ""
             if preview.hasPrefix("<!DOCTYPE") || preview.hasPrefix("<html") {
                 LoggerService.info(category: "CheatDownloadService", "Failed to download \(content.name): received HTML instead of cheat file")
-                await MainActor.run {
-                    currentlyDownloadingCount -= 1
-                    if let lastIndex = downloadLog.indices.last, downloadLog[lastIndex].status == .inProgress {
-                        downloadLog[lastIndex] = CheatDownloadLogEntry(
-                            timestamp: Date(),
-                            systemName: systemName,
-                            fileName: content.name,
-                            status: .failed("HTML response"),
-                            message: "Failed: HTML response for \(content.name)"
-                        )
-                    }
-                }
+                await finalizeDownload(fileName: content.name, systemName: systemName, status: .failed("HTML response"), message: "Failed: HTML response for \(content.name)")
                 return
             }
             
@@ -932,32 +895,10 @@ class CheatDownloadService: ObservableObject {
             try data.write(to: destURL, options: .atomic)
             
             // Log success
-            await MainActor.run {
-                currentlyDownloadingCount -= 1
-                if let lastIndex = downloadLog.indices.last, downloadLog[lastIndex].status == .inProgress {
-                    downloadLog[lastIndex] = CheatDownloadLogEntry(
-                        timestamp: Date(),
-                        systemName: systemName,
-                        fileName: content.name,
-                        status: .success,
-                        message: "Successfully downloaded \(content.name)"
-                    )
-                }
-            }
+            await finalizeDownload(fileName: content.name, systemName: systemName, status: .success, message: "Successfully downloaded \(content.name)")
         } catch {
             LoggerService.error(category: "CheatDownloadService", "Failed to download \(content.name): \(error.localizedDescription)")
-            await MainActor.run {
-                currentlyDownloadingCount -= 1
-                if let lastIndex = downloadLog.indices.last, downloadLog[lastIndex].status == .inProgress {
-                    downloadLog[lastIndex] = CheatDownloadLogEntry(
-                        timestamp: Date(),
-                        systemName: systemName,
-                        fileName: content.name,
-                        status: .failed(error.localizedDescription),
-                        message: "Failed: \(error.localizedDescription) for \(content.name)"
-                    )
-                }
-            }
+            await finalizeDownload(fileName: content.name, systemName: systemName, status: .failed(error.localizedDescription), message: "Failed: \(error.localizedDescription) for \(content.name)")
             throw error
         }
     }

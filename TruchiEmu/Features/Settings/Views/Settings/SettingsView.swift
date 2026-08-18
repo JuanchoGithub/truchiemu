@@ -238,11 +238,7 @@ struct SettingsView: View {
     @State private var applyRequest: Int = 0
     @State private var showThemeChangeConfirmation: Bool = false
     @State private var pendingPageChange: Page?
-    @State private var activePendingTheme: AccentColorTheme = .samus
-    @State private var activePendingCustomColor: Color = Color(.sRGB, red: 0.031, green: 0.569, blue: 0.698)
-    @State private var activePendingToolbarAccent: Bool = true
-    @State private var activePendingTintedSurfaces: Bool = true
-    @State private var activePendingAppearanceMode: AppearanceMode = .automatic
+    @State private var activePending = PendingThemeSettings()
 
     let system: SystemInfo?
 
@@ -422,11 +418,7 @@ struct SettingsView: View {
         .background(WindowCloseInterceptor(
             hasPendingChanges: hasPendingThemeChanges,
             onRevert: { revertRequest += 1 },
-        pendingTheme: activePendingTheme,
-        pendingCustomColor: activePendingCustomColor,
-        pendingToolbarAccent: activePendingToolbarAccent,
-        pendingTintedSurfaces: activePendingTintedSurfaces,
-        pendingAppearanceMode: activePendingAppearanceMode
+        pending: activePending
         ))
     }
 
@@ -620,11 +612,7 @@ struct SettingsView: View {
                 hasPendingChanges: $hasPendingThemeChanges,
                 revertRequest: $revertRequest,
                 applyRequest: $applyRequest,
-                activePendingTheme: $activePendingTheme,
-                activePendingCustomColor: $activePendingCustomColor,
-                activePendingToolbarAccent: $activePendingToolbarAccent,
-                activePendingTintedSurfaces: $activePendingTintedSurfaces,
-                activePendingAppearanceMode: $activePendingAppearanceMode
+                activePending: $activePending
             )
             case .saves:       SavesSettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
             case .library:     LibrarySettingsView(searchText: $searchText, focusedSectionID: $focusedSectionID, scopedSectionID: $scopedSectionID)
@@ -692,11 +680,7 @@ struct SettingsView: View {
 private struct WindowCloseInterceptor: NSViewRepresentable {
     let hasPendingChanges: Bool
     let onRevert: () -> Void
-    let pendingTheme: AccentColorTheme
-    let pendingCustomColor: Color
-    let pendingToolbarAccent: Bool
-    let pendingTintedSurfaces: Bool
-    let pendingAppearanceMode: AppearanceMode
+    let pending: PendingThemeSettings
 
     func makeNSView(context: Context) -> NSView {
         let view = CloseInterceptorView()
@@ -714,11 +698,7 @@ private struct WindowCloseInterceptor: NSViewRepresentable {
     func updateNSView(_ nsView: NSView, context: Context) {
         context.coordinator.hasPendingChanges = hasPendingChanges
         context.coordinator.onRevert = onRevert
-        context.coordinator.pendingTheme = pendingTheme
-        context.coordinator.pendingCustomColor = pendingCustomColor
-        context.coordinator.pendingToolbarAccent = pendingToolbarAccent
-        context.coordinator.pendingTintedSurfaces = pendingTintedSurfaces
-        context.coordinator.pendingAppearanceMode = pendingAppearanceMode
+        context.coordinator.pending = pending
         if let window = nsView.window, !window.styleMask.contains(.resizable) {
             window.styleMask.insert(.resizable)
         }
@@ -728,31 +708,19 @@ private struct WindowCloseInterceptor: NSViewRepresentable {
         Coordinator(
             hasPendingChanges: hasPendingChanges,
             onRevert: onRevert,
-            pendingTheme: pendingTheme,
-            pendingCustomColor: pendingCustomColor,
-            pendingToolbarAccent: pendingToolbarAccent,
-            pendingTintedSurfaces: pendingTintedSurfaces,
-            pendingAppearanceMode: pendingAppearanceMode
+            pending: pending
         )
     }
 
     class Coordinator: NSObject, NSWindowDelegate {
         var hasPendingChanges: Bool
         var onRevert: () -> Void
-        var pendingTheme: AccentColorTheme
-        var pendingCustomColor: Color
-        var pendingToolbarAccent: Bool
-        var pendingTintedSurfaces: Bool
-        var pendingAppearanceMode: AppearanceMode
+        var pending: PendingThemeSettings
 
-        init(hasPendingChanges: Bool, onRevert: @escaping () -> Void, pendingTheme: AccentColorTheme, pendingCustomColor: Color, pendingToolbarAccent: Bool, pendingTintedSurfaces: Bool, pendingAppearanceMode: AppearanceMode) {
+        init(hasPendingChanges: Bool, onRevert: @escaping () -> Void, pending: PendingThemeSettings) {
             self.hasPendingChanges = hasPendingChanges
             self.onRevert = onRevert
-            self.pendingTheme = pendingTheme
-            self.pendingCustomColor = pendingCustomColor
-            self.pendingToolbarAccent = pendingToolbarAccent
-            self.pendingTintedSurfaces = pendingTintedSurfaces
-            self.pendingAppearanceMode = pendingAppearanceMode
+            self.pending = pending
         }
 
         func windowShouldClose(_ sender: NSWindow) -> Bool {
@@ -768,10 +736,10 @@ private struct WindowCloseInterceptor: NSViewRepresentable {
             switch response {
             case .alertFirstButtonReturn:
                 let tm = ThemeManager.shared
-                tm.applyTheme(pendingTheme, customColor: pendingTheme == .custom ? pendingCustomColor : nil)
-                tm.setToolbarAccent(pendingToolbarAccent)
-                tm.setTintedSurfaces(pendingTintedSurfaces)
-                tm.applyAppearanceMode(pendingAppearanceMode)
+                tm.applyTheme(pending.theme, customColor: pending.theme == .custom ? pending.customColor : nil)
+                tm.setToolbarAccent(pending.toolbarAccent)
+                tm.setTintedSurfaces(pending.tintedSurfaces)
+                tm.applyAppearanceMode(pending.appearanceMode)
                 ThemeManager.relaunchApp()
                 return false
             case .alertSecondButtonReturn:

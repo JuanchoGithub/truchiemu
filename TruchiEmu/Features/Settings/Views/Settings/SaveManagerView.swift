@@ -707,26 +707,24 @@ struct SaveManagerView: View {
         let systemID = game.systemID
 
         // Collect all state files from progressive versions
+        let set = saveManager.gameSaveSet(gameName: gameName, systemID: systemID)
         var slots: [SaveManagerSlot] = []
         for slot in (-1...9) {
-            let versions = saveManager.progressiveSlotVersions(gameName: gameName, systemID: systemID, slot: slot)
-            for v in versions {
-                let pInfo = saveManager.progressiveSlotInfo(gameName: gameName, systemID: systemID, slot: slot, version: v)
+            for (version, pInfo) in set.progressiveFiles[slot]?.sorted(by: { $0.key < $1.key }) ?? [] {
                 if pInfo.exists {
-                    let pThumb = saveManager.loadProgressiveThumbnail(gameName: gameName, systemID: systemID, slot: slot, version: v)
+                    let pThumb = saveManager.loadProgressiveThumbnail(gameName: gameName, systemID: systemID, slot: slot, version: version)
                     slots.append(SaveManagerSlot(
-                        id: "slot_\(slot)_p\(v)",
+                        id: "slot_\(slot)_p\(version)",
                         slot: slot,
                         isProgressive: true,
-                        progressiveVersion: v,
+                        progressiveVersion: version,
                         slotInfo: pInfo,
                         thumbnail: pThumb
                     ))
                 }
             }
             // Also check for legacy base file
-            let baseInfo = saveManager.slotInfo(gameName: gameName, systemID: systemID, slot: slot)
-            if baseInfo.exists {
+            if let baseInfo = set.baseFiles[slot], baseInfo.exists {
                 let thumb = saveManager.loadThumbnail(gameName: gameName, systemID: systemID, slot: slot)
                 slots.append(SaveManagerSlot(
                     id: "slot_\(slot)",

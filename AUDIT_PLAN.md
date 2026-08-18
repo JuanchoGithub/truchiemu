@@ -81,38 +81,38 @@ Read-only audit of the full repository (28 subsystems, HEAD `632e0825`) produced
 
 ## Slice C — Dead-code removal (trivially safe)
 
-- [ ] **C1 (F5):** Delete `SequenceRunner.swift` + `TrainingInputManager.perFrameTick`; keep `TrainingFramePollDriver` as the one frame driver. **Evidence:** `SequenceRunner.swift:80-221` duplicates `TrainingModeManager.swift:652-754`; `perFrameTick` (`TrainingInputManager.swift:124`) has zero callers; live path `LibretroCallbacks.mm:447`. **Verify:** training FMD/delay cards in an arcade game; move list playback.
-- [ ] **C2 (F14):** Delete dead ScummVM game-ID detection branch in `ScummVMRunner`. **Verify:** ScummVM games boot normally.
-- [ ] **C3 (F23):** Delete dead incremental branch in `ROMLibrary.updateCounts(for:)` (`:305-342`, sole call `:488`). **Verify:** library counts correct after scan/delete.
-- [ ] **C4 (F28):** Remove write-only `isVerified` from `MAMEVerificationRecord` (`:13-14,71-97`; never read externally). Add `didSet` compat shim or accept SwiftData auto-migration. **Verify:** MAME verification UI unchanged; rebuild passes.
-- [ ] **C5 (F24):** Remove `cachedBezels` mirror in `BezelBrowserView` (`:20,446,450,468-482`); final writes go through `BezelAPIService.swift:366-369,397`. **Verify:** bezel install/remove/uninstall updates the browser list correctly.
+- [x] **C1 (F5):** Delete `SequenceRunner.swift` + `TrainingInputManager.perFrameTick`; keep `TrainingFramePollDriver` as the one frame driver. **Evidence:** `SequenceRunner.swift:80-221` duplicates `TrainingModeManager.swift:652-754`; `perFrameTick` (`TrainingInputManager.swift:124`) has zero callers; live path `LibretroCallbacks.mm:447`. **Verify:** training FMD/delay cards in an arcade game; move list playback. *(Done in `bf783806`.)*
+- [x] **C2 (F14):** Delete dead ScummVM game-ID detection branch in `ScummVMRunner`. **Verify:** ScummVM games boot normally. *(Done in `bf783806`.)*
+- [x] **C3 (F23):** Delete dead incremental branch in `ROMLibrary.updateCounts(for:)` (`:305-342`, sole call `:488`). **Verify:** library counts correct after scan/delete. *(Done in `bf783806`.)*
+- [x] **C4 (F28):** Remove write-only `isVerified` from `MAMEVerificationRecord` (`:13-14,71-97`; never read externally). Add `didSet` compat shim or accept SwiftData auto-migration. **Verify:** MAME verification UI unchanged; rebuild passes. *(Done in `bf783806`.)*
+- [ ] **C5 (F24):** Remove `cachedBezels` mirror in `BezelBrowserView` (`:20,446,450,468-482`); final writes go through `BezelAPIService.swift:366-369,397`. **Verify:** bezel install/remove/uninstall updates the browser list correctly. *(Cancelled by design — kept in commit `bf783806`.)*
 
 ---
 
 ## Slice D — Hot-path cost
 
-- [ ] **D1 (F6):** One per-launch `CoreCapabilities` struct replaces per-frame substring scans. **Evidence:** `LibretroBridgeImpl.mm:899-906` (7 `containsString` per frame in `readHWRenderedPixels`), plus `:135,195,225-250,281,459-461`, `LibretroCallbacks.mm:306`. **Verify:** boot PSP/PS2/Dolphin/N64/DOS games; HW render + shutdown paths correct.
-- [ ] **D2 (F4):** One directory read per refresh → `[GameSaveSet]` snapshot. **Evidence:** `SaveStateManager.swift:159-170,180-202,597-607` (~22 listings), consumers `GameDetailView.swift:27-28,433-438`, `SaveManagerView.swift:700-765`, `BaseRunner.swift:1363-1376`. **Verify:** save/load from detail view + saved-states sheet + auto-load + most-recent.
-- [ ] **D3 (F7):** One generic synchronous XPC reply helper; convert `setSpeedMultiplier`. **Evidence:** `XPCBridgeAdapter.swift:622-893` (14 copies), drift `:426-447`. **Verify:** launch, pause, save-state, rewind, cheats, core options over XPC; no stuck-sync timeouts in log.
-- [ ] **D4 (F22):** Precompute normalized-extension→systems index in `ROMIdentifier`; reuse `SystemSearchIndex` cache. **Evidence:** `ROMIdentifier.swift:93,131,269,299,509-511,628,914`. **Verify:** library scan performance; identification results unchanged.
+- [x] **D1 (F6):** One per-launch `CoreCapabilities` struct replaces per-frame substring scans. **Evidence:** `LibretroBridgeImpl.mm:899-906` (7 `containsString` per frame in `readHWRenderedPixels`), plus `:135,195,225-250,281,459-461`, `LibretroCallbacks.mm:306`. **Verify:** boot PSP/PS2/Dolphin/N64/DOS games; HW render + shutdown paths correct.
+- [x] **D2 (F4):** One directory read per refresh → `[GameSaveSet]` snapshot. **Evidence:** `SaveStateManager.swift:159-170,180-202,597-607` (~22 listings), consumers `GameDetailView.swift:27-28,433-438`, `SaveManagerView.swift:700-765`, `BaseRunner.swift:1363-1376`. **Verify:** save/load from detail view + saved-states sheet + auto-load + most-recent.
+- [x] **D3 (F7):** One generic synchronous XPC reply helper; convert `setSpeedMultiplier`. **Evidence:** `XPCBridgeAdapter.swift:622-893` (14 copies), drift `:426-447`. **Verify:** launch, pause, save-state, rewind, cheats, core options over XPC; no stuck-sync timeouts in log.
+- [x] **D4 (F22):** Precompute normalized-extension→systems index in `ROMIdentifier`; reuse `SystemSearchIndex` cache. **Evidence:** `ROMIdentifier.swift:93,131,269,299,509-511,628,914`. **Verify:** library scan performance; identification results unchanged.
 
 ---
 
 ## Slice E — Data-structure consolidation
 
-- [ ] **E1 (F19):** One 5-layer precedence walk in `CoreOptionsManager`. **Evidence:** `:132-179,450-491,633-675`; 9 call sites `CoreOptionsSection.swift:232-293`. **Verify:** core options override behavior per game/system unchanged.
-- [ ] **E2 (F18):** Collapse three parallel device→slot maps in `ControllerService`. **Evidence:** `:15,41,330-343`; 6 near-identical mutation funcs `:402-552`. **Verify:** 4-player connect/disconnect, gamepad remap, keyboard slot assignment.
-- [ ] **E3 (F20):** Single source for "active slang preset". **Evidence:** `ShaderManager.swift:21,71-72,152-153` + `SlangCompilerService.swift:7,105`. **Verify:** slang preset switch, shader editor, game relaunch retains preset.
-- [ ] **E4 (F21):** One finalization path for per-file cheat-download state. **Evidence:** `CheatDownloadService.swift:801-811` + seven decrement blocks `:836-960`; counter `CheatSettingsView.swift:260-261`. **Verify:** download multiple cheats, cancel one, counter correct.
-- [ ] **E5 (F13):** Canonical `raMatchStatus` values (empty/"matched"/"mismatch") instead of `"mismatch:\(hash)"`. **Evidence:** `SwiftDataModels.swift:35`; writes `RetroAchievementsService.swift:1055,1065,1080`; consumers `GameLauncher.swift:410`, `LibraryViewModel.swift:227`, `SystemSidebarView.swift:130`, `CoreAndAchievements.swift:200`, `GameInfoWindow.swift:67`. **Verify:** achievement match status shown correctly after refresh.
-- [ ] **E6 (F25):** `PendingThemeSettings` struct for the five-field pending-theme cluster. **Evidence:** `GeneralSettingsView.swift:9-22,299-334`; `SettingsView.swift:236-245,618-628,692-736,769-775`. **Verify:** theme/color/appearance change → relaunch prompt → persists.
-- [ ] **E7 (F27):** `ManualStatusController` for the 4× (status + Task) pairs. **Evidence:** `GameDetailView.swift:45-46,59-62,79-80`; `Technical.swift:280-284,297-301,366-370`. **Verify:** delete-ROM, sync, refresh actions show/cancel status correctly.
+- [x] **E1 (F19):** One 5-layer precedence walk in `CoreOptionsManager`. **Evidence:** `:132-179,450-491,633-675`; 9 call sites `CoreOptionsSection.swift:232-293`. **Verify:** core options override behavior per game/system unchanged.
+- [x] **E2 (F18):** Collapse three parallel device→slot maps in `ControllerService`. **Evidence:** `:15,41,330-343`; 6 near-identical mutation funcs `:402-552`. **Verify:** 4-player connect/disconnect, gamepad remap, keyboard slot assignment.
+- [x] **E3 (F20):** Single source for "active slang preset". **Evidence:** `ShaderManager.swift:21,71-72,152-153` + `SlangCompilerService.swift:7,105`. **Verify:** slang preset switch, shader editor, game relaunch retains preset.
+- [x] **E4 (F21):** One finalization path for per-file cheat-download state. **Evidence:** `CheatDownloadService.swift:801-811` + seven decrement blocks `:836-960`; counter `CheatSettingsView.swift:260-261`. **Verify:** download multiple cheats, cancel one, counter correct.
+- [x] **E5 (F13):** Canonical `raMatchStatus` values (empty/"matched"/"mismatch") instead of `"mismatch:\(hash)"`. **Evidence:** `SwiftDataModels.swift:35`; writes `RetroAchievementsService.swift:1055,1065,1080`; consumers `GameLauncher.swift:410`, `LibraryViewModel.swift:227`, `SystemSidebarView.swift:130`, `CoreAndAchievements.swift:200`, `GameInfoWindow.swift:67`. **Verify:** achievement match status shown correctly after refresh.
+- [x] **E6 (F25):** `PendingThemeSettings` struct for the five-field pending-theme cluster. **Evidence:** `GeneralSettingsView.swift:9-22,299-334`; `SettingsView.swift:236-245,618-628,692-736,769-775`. **Verify:** theme/color/appearance change → relaunch prompt → persists.
+- [x] **E7 (F27):** `ManualStatusController` for the 4× (status + Task) pairs. **Evidence:** `GameDetailView.swift:45-46,59-62,79-80`; `Technical.swift:280-284,297-301,366-370`. **Verify:** delete-ROM, sync, refresh actions show/cancel status correctly.
 
 ---
 
 ## Slice F — Tooling
 
-- [ ] **F-sl (F12):** One shared MAME DAT/XML parser module under `scripts/mame_lookup/`. **Evidence:** `build_mame_unified.py:240-251` == `build_mame_2003_plus.py:167-178`; four more divergent parsers `download_and_parse.py:260-384`, `download_all_dats.py:167-229`, `rom_matching_tester.py:472-505`; BIOS divergence `build_mame_unified.py:272-291` vs `build_mame_2003_plus.py:199-217`. **Verify:** regenerate `mame_unified.json`; diff against committed file; re-run `rom_matching_tester`.
+- [x] **F-sl (F12):** Identify the definitive MAME DB builder (`build_mame_unified.py`) and retire outdated scripts/JSONs by archiving them with a detailed README. Per user direction, the 10 retired files (7 scripts + `mame_2003_plus.json` + `mame_rom_data.json` + `coverage_report.json`) were moved into `scripts/mame_lookup/archive/` rather than unified into a shared parser module. The `scripts/mame_lookup` resources build phase was dropped from `project.yml` (mame_unified.json continues to bundle via `TruchiEmu/Resources/Data/`), and the dead `mame_fallback` path (`loadFallbackFromBundle`/`loadFallbackJSON`/`fallbackJSONPath`/`dependencyCache["mame_fallback"]`) was removed from `MAMEDependencyService`. **Evidence:** `scripts/mame_lookup/build_mame_unified.py` (kept); `scripts/mame_lookup/archive/{build_mame_2003_plus,download_and_parse,merge_sources,add_missing_entries,analyze_coverage,check_coverage,analyze_unknown_zips}.py` + `{mame_2003_plus,mame_rom_data}.json` + `coverage_report.json` (archived); `project.yml:118-121` (removed); `MAMEDependencyService.swift:285,291,606-668` (removed); `checkMissingDependencies` `mame_fallback` branch (removed). **Verify:** Build green; bundle has `mame_unified.json` (75M), dead resources absent; `build_mame_unified.py` syntax-OK. (Regenerating the 78MB committed `mame_unified.json` was not requested and not performed — that's a data-update task separate from this consolidation.)
 
 ---
 

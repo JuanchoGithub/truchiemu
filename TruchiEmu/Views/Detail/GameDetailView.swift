@@ -42,8 +42,7 @@ struct GameDetailView: View {
     @State var useCustomCore: Bool = false
     @State var selectedCoreID: String? = nil
     @State var applyCoreToSystem: Bool = false
-    @State var manualActionStatus: ManualActionStatus = .hidden
-    @State var manualStatusAutoDismiss: Task<Void, Never>?
+    @StateObject var manualAction = ManualStatusController()
 
     @State var shaderWindowSettings: ShaderWindowSettings?
     @State var selectedSection: DetailSection = .gameInfo
@@ -56,10 +55,8 @@ struct GameDetailView: View {
 
     @ObservedObject var loc = LocalizationManager.shared
 
-    @State var fetchMetadataStatus: ManualActionStatus = .hidden
-    @State var fetchMetadataAutoDismiss: Task<Void, Never>?
-    @State var fetchBoxArtStatus: ManualActionStatus = .hidden
-    @State var fetchBoxArtAutoDismiss: Task<Void, Never>?
+    @StateObject var fetchMetadata = ManualStatusController()
+    @StateObject var fetchBoxArt = ManualStatusController()
     @State var currentBezelImage: NSImage? = nil
     @StateObject var cheatManagerService = CheatManagerService.shared
     @State var isLaunchingGame = false
@@ -76,8 +73,7 @@ struct GameDetailView: View {
 @State var isFindingRAGame = false
 @State var raComparisonError: String?
 @State var raComparisonNameMatches: [RAHashComparisonContent.NameMatchItem] = []
-@State var raVerificationStatus: ManualActionStatus = .hidden
-@State var raVerificationAutoDismiss: Task<Void, Never>?
+@StateObject var raVerification = ManualStatusController()
 @State var raComparisonShowDownloadOption = false
 
     var currentROM: ROM {
@@ -108,7 +104,7 @@ struct GameDetailView: View {
     }
 
     var isIdentifyWorking: Bool {
-        if case .working = manualActionStatus { return true }
+        if manualAction.isWorking { return true }
         return false
     }
 
@@ -207,13 +203,13 @@ struct GameDetailView: View {
                 }
                 .frame(maxHeight: .infinity)
 
-                if manualActionStatus.isVisible {
+                if manualAction.isVisible {
                     manualActionStatusBar
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }
             .background(AppColors.windowBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled))
-            .animation(.easeInOut(duration: 0.2), value: manualActionStatus.isVisible)
+            .animation(.easeInOut(duration: 0.2), value: manualAction.isVisible)
         }
 	.onAppear {
 		if let initial = initialSection {
@@ -221,7 +217,6 @@ struct GameDetailView: View {
 		}
 		loadBoxArt()
             loadSlotInfo()
-            loadMostRecentSaveState()
             loadTitleScreen()
             // Only load achievements if we're logged in and RA is enabled
             if achievementsService.isLoggedIn && achievementsService.isEnabled {
@@ -237,9 +232,8 @@ struct GameDetailView: View {
       teardownGamepadNavContext()
   }
     .onChange(of: currentROM.id) { _, _ in
-        clearManualStatus()
+        manualAction.clear()
         loadSlotInfo()
-        loadMostRecentSaveState()
         loadTitleScreen()
         if achievementsService.isLoggedIn && achievementsService.isEnabled {
           loadAchievements()
@@ -433,14 +427,16 @@ struct GameDetailView: View {
     func loadSlotInfo() {
         let gameName = "\(currentROM.displayName)__\(currentROM.id.uuidString.prefix(8))"
         let systemID = currentROM.systemID ?? ""
-        slotInfoList = saveStateManager.allSlotInfo(gameName: gameName, systemID: systemID)
-        progressiveSlots = saveStateManager.allProgressiveSlots(gameName: gameName, systemID: systemID)
+        let set = saveStateManager.gameSaveSet(gameName: gameName, systemID: systemID)
+        slotInfoList = set.slotList
+        progressiveSlots = set.progressiveSlotList
+        mostRecentSaveSlot = set.mostRecentSlot
     }
 
     func loadMostRecentSaveState() {
         let gameName = "\(currentROM.displayName)__\(currentROM.id.uuidString.prefix(8))"
         let systemID = currentROM.systemID ?? ""
-        mostRecentSaveSlot = saveStateManager.mostRecentSaveState(gameName: gameName, systemID: systemID)
+        mostRecentSaveSlot = saveStateManager.gameSaveSet(gameName: gameName, systemID: systemID).mostRecentSlot
     }
 
     func loadTitleScreen() {
@@ -544,7 +540,7 @@ struct GameDetailView: View {
         raComparisonError = nil
         raComparisonTitle = currentROM.displayName
         raComparisonShowDownloadOption = false
-        raVerificationStatus = .working(loc.localized("achievement.loadingAchievements"))
+        raVerification.showWorking(loc.localized("achievement.loadingAchievements"))
 
         let raConsoleID = achievementsService.mapSystemIDToRAConsoleID(systemID)
         let sysName = systemName
@@ -553,7 +549,7 @@ struct GameDetailView: View {
             raComparisonError = "This system is not supported by RetroAchievements"
             isFindingRAGame = false
             showRAHashComparison = true
-            raVerificationStatus = .hidden
+            raVerification.clear()
             return
         }
 
@@ -568,7 +564,7 @@ struct GameDetailView: View {
                     raComparisonMatchedHash = nil
                     isFindingRAGame = false
                     showRAHashComparison = true
-                    raVerificationStatus = .hidden
+                    raVerification.clear()
                     NotificationHistoryManager.shared.post(
                         icon: "xmark.octagon",
                         title: loc.localized("raHash.title"),
@@ -610,13 +606,7 @@ struct GameDetailView: View {
                     isFindingRAGame = false
                     let raURL = "https://retroachievements.org/game/\(cachedGame.id)"
                     if achievementCount > 0 {
-                        raVerificationStatus = .result(loc.localized("achievement.romVerified"), tone: .success)
-                        raVerificationAutoDismiss?.cancel()
-                        raVerificationAutoDismiss = Task { @MainActor in
-                            try? await Task.sleep(nanoseconds: 5_000_000_000)
-                            guard !Task.isCancelled else { return }
-                            raVerificationStatus = .hidden
-                        }
+                        raVerification.showResult(loc.localized("achievement.romVerified"), tone: .success, autoDismissAfter: 5_000_000_000)
                         NotificationHistoryManager.shared.post(
                             icon: "trophy.fill",
                             title: loc.localized("raHash.notificationMatchTitle"),
@@ -628,13 +618,7 @@ struct GameDetailView: View {
                             actionPayload: OpenURLActionPayload(url: raURL)
                         )
                     } else {
-                        raVerificationStatus = .result(loc.localized("achievement.romMatchedNoAchievements"), tone: .info)
-                        raVerificationAutoDismiss?.cancel()
-                        raVerificationAutoDismiss = Task { @MainActor in
-                            try? await Task.sleep(nanoseconds: 6_000_000_000)
-                            guard !Task.isCancelled else { return }
-                            raVerificationStatus = .hidden
-                        }
+                        raVerification.showResult(loc.localized("achievement.romMatchedNoAchievements"), tone: .info, autoDismissAfter: 6_000_000_000)
                         NotificationHistoryManager.shared.post(
                             icon: "trophy",
                             title: loc.localized("raHash.pillZeroAchievementsTitle"),
@@ -659,7 +643,7 @@ struct GameDetailView: View {
                     await MainActor.run {
                         raComparisonShowDownloadOption = true
                         isFindingRAGame = false
-                        raVerificationStatus = .hidden
+                        raVerification.clear()
                         showRAHashComparison = true
                     }
                     return
@@ -675,7 +659,7 @@ struct GameDetailView: View {
                     }
                     raComparisonNameMatches = nameMatches.map { RAHashComparisonContent.NameMatchItem(id: $0.id, title: $0.title, hashes: $0.hashes) }
                     isFindingRAGame = false
-                    raVerificationStatus = .hidden
+                    raVerification.clear()
                     raComparisonShowDownloadOption = false
                     showRAHashComparison = true
 
@@ -750,7 +734,7 @@ struct GameDetailView: View {
 
     var manualActionStatusBar: some View {
         HStack(alignment: .top, spacing: 10) {
-            switch manualActionStatus {
+            switch manualAction.status {
             case .hidden:
                 EmptyView()
             case .working(let title):
@@ -767,9 +751,9 @@ struct GameDetailView: View {
                     .textSelection(.enabled)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
-            if case .result = manualActionStatus {
+            if case .result = manualAction.status {
                 Button {
-                    clearManualStatus()
+                    manualAction.clear()
                 } label: {
                     Image(systemName: "xmark.circle.fill").foregroundStyle(AppColors.textMuted(colorScheme))
                 }
@@ -786,22 +770,8 @@ struct GameDetailView: View {
         }
     }
 
-    func clearManualStatus() {
-        manualStatusAutoDismiss?.cancel()
-        manualStatusAutoDismiss = nil
-        manualActionStatus = .hidden
-    }
-
     func showManualResult(_ message: String, tone: ManualStatusTone) {
-        manualStatusAutoDismiss?.cancel()
-        manualActionStatus = .result(message, tone: tone)
-        manualStatusAutoDismiss = Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 12_000_000_000)
-            guard !Task.isCancelled else { return }
-            if case .result = manualActionStatus {
-                manualActionStatus = .hidden
-            }
-        }
+        manualAction.showResult(message, tone: tone, autoDismissAfter: 12_000_000_000)
     }
 
     func updateSettings(_ action: (inout ROMSettings) -> Void) {

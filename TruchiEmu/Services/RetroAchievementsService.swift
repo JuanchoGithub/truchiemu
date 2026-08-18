@@ -1080,7 +1080,7 @@ class RetroAchievementsService: ObservableObject {
                     if result.id == raGameId {
                         romEntry.raMatchStatus = "matched"
                     } else {
-                        romEntry.raMatchStatus = "mismatch:\(romHash)"
+                        romEntry.raMatchStatus = "mismatch"
                         romEntry.raGameId = result.id // Update to the correct ID if local hash points elsewhere
                     }
                 } else if let altID = altConsoleID {
@@ -1090,7 +1090,7 @@ class RetroAchievementsService: ObservableObject {
                             romEntry.raMatchStatus = "matched"
                             matchedOnAltConsole = true
                         } else {
-                            romEntry.raMatchStatus = "mismatch:\(romHash)"
+                            romEntry.raMatchStatus = "mismatch"
                             romEntry.raGameId = result.id
                             matchedOnAltConsole = true
                         }
@@ -1101,14 +1101,14 @@ class RetroAchievementsService: ObservableObject {
                      for library scanning. All identification MUST be done via the local JSON cache lists 
                      (API_GetGameList.php?h=1) to avoid server strain.
                      
-                     if let raGameIDFromHash = try? await resolveHash(hash: romHash) {
-                         if raGameIDFromHash == raGameId {
-                             romEntry.raMatchStatus = "matched"
-                         } else {
-                             romEntry.raMatchStatus = "mismatch:\(romHash)"
-                             romEntry.raGameId = raGameIDFromHash
-                         }
-                     }
+if let raGameIDFromHash = try? await resolveHash(hash: romHash) {
+                          if raGameIDFromHash == raGameId {
+                              romEntry.raMatchStatus = "matched"
+                          } else {
+                              romEntry.raMatchStatus = "mismatch"
+                              romEntry.raGameId = raGameIDFromHash
+                          }
+                      }
                     */
                 }
             }

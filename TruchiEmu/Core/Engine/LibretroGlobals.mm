@@ -20,6 +20,27 @@ int g_wiiControllerType = 0; // 0=auto, 1=Wiimote, 513=Sideways, 1025=Wiimote+Cl
 int g_currentRotation = 0; 
 GLuint g_hwFBO = 0;
 
+CoreCapabilities g_coreCapabilities = {0};
+
+void updateCoreCapabilities(NSString *coreID) {
+    NSString *lower = [coreID lowercaseString];
+    g_coreCapabilities.isMame          = [lower containsString:@"mame"];
+    g_coreCapabilities.isDOSBox        = [lower containsString:@"dosbox"];
+    g_coreCapabilities.isDolphin       = [lower containsString:@"dolphin"];
+    g_coreCapabilities.isSwanStation   = [lower containsString:@"swanstation"];
+    g_coreCapabilities.isMednafenPSX   = [lower containsString:@"mednafen_psx"];
+    g_coreCapabilities.isPCSX          = [lower containsString:@"pcsx"];
+    g_coreCapabilities.isMupen64       = [lower containsString:@"mupen64"];
+    g_coreCapabilities.isParallelN64   = [lower containsString:@"parallel_n64"];
+    g_coreCapabilities.isGenesisPlusGX = [lower containsString:@"genesis_plus_gx"];
+    g_coreCapabilities.isPicodrive     = [lower containsString:@"picodrive"];
+    g_coreCapabilities.isFlycast       = [lower containsString:@"flycast"];
+    g_coreCapabilities.isPSP           = [lower containsString:@"ppsspp"];
+    g_coreCapabilities.isPS2Play       = [lower containsString:@"play_libretro"];
+    g_coreCapabilities.is3DS           = [lower containsString:@"panda3ds"];
+    g_coreCapabilities.isDuckStation   = [lower containsString:@"duckstation"];
+}
+
 NSMutableDictionary<NSString *, NSString *> *g_optValues = nil;
 NSDictionary<NSString *, NSDictionary *> *g_optDefinitions = nil;
 NSDictionary<NSString *, NSDictionary *> *g_optCategories = nil;

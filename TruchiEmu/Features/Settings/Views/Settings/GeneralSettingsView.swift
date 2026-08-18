@@ -6,20 +6,12 @@ struct GeneralSettingsView: View {
     @State private var autoCheckUpdates: Bool = true
     @State private var notificationsEnabled: Bool = false
 
-    @State private var pendingTheme: AccentColorTheme = .samus
-    @State private var pendingAppearanceMode: AppearanceMode = .automatic
-    @State private var pendingCustomColor: Color = Color(.sRGB, red: 0.031, green: 0.569, blue: 0.698)
-    @State private var pendingToolbarAccent: Bool = true
-    @State private var pendingTintedSurfaces: Bool = true
+    @State private var pending = PendingThemeSettings()
     @State private var showRestartConfirmation = false
     @Binding var hasPendingChanges: Bool
     @Binding var revertRequest: Int
     @Binding var applyRequest: Int
-    @Binding var activePendingTheme: AccentColorTheme
-    @Binding var activePendingCustomColor: Color
-    @Binding var activePendingToolbarAccent: Bool
-    @Binding var activePendingTintedSurfaces: Bool
-    @Binding var activePendingAppearanceMode: AppearanceMode
+    @Binding var activePending: PendingThemeSettings
 
     @State private var contentLoaded = false
 
@@ -37,22 +29,14 @@ struct GeneralSettingsView: View {
          hasPendingChanges: Binding<Bool> = .constant(false),
          revertRequest: Binding<Int> = .constant(0),
          applyRequest: Binding<Int> = .constant(0),
-         activePendingTheme: Binding<AccentColorTheme> = .constant(.samus),
-         activePendingCustomColor: Binding<Color> = .constant(Color(.sRGB, red: 0.031, green: 0.569, blue: 0.698)),
-        activePendingToolbarAccent: Binding<Bool> = .constant(true),
-        activePendingTintedSurfaces: Binding<Bool> = .constant(true),
-        activePendingAppearanceMode: Binding<AppearanceMode> = .constant(.automatic)) {
+         activePending: Binding<PendingThemeSettings> = .constant(PendingThemeSettings())) {
         self._searchText = searchText
         self._focusedSectionID = focusedSectionID
         self._scopedSectionID = scopedSectionID
         self._hasPendingChanges = hasPendingChanges
         self._revertRequest = revertRequest
         self._applyRequest = applyRequest
-        self._activePendingTheme = activePendingTheme
-        self._activePendingCustomColor = activePendingCustomColor
-        self._activePendingToolbarAccent = activePendingToolbarAccent
-        self._activePendingTintedSurfaces = activePendingTintedSurfaces
-        self._activePendingAppearanceMode = activePendingAppearanceMode
+        self._activePending = activePending
     }
 
     private var isSearching: Bool {
@@ -111,8 +95,8 @@ struct GeneralSettingsView: View {
                             .foregroundStyle(AppColors.textSecondary(colorScheme))
 
                         Picker(loc.localized("settings.appearance"), selection: Binding<AppearanceMode>(
-                            get: { pendingAppearanceMode },
-                            set: { pendingAppearanceMode = $0 }
+                            get: { pending.appearanceMode },
+                            set: { pending.appearanceMode = $0 }
                         )) {
                             ForEach(AppearanceMode.allCases, id: \.self) { mode in
                                 Label(mode.displayName, systemImage: mode.systemImageName).tag(mode)
@@ -122,8 +106,8 @@ struct GeneralSettingsView: View {
         }
 
 LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
-            CustomThemeButton(isSelected: pendingTheme == .custom) {
-                pendingTheme = .custom
+            CustomThemeButton(isSelected: pending.theme == .custom) {
+                pending.theme = .custom
             }
 
             ForEach(AccentColorTheme.allCases.filter { !$0.isCustom }, id: \.self) { theme in
@@ -131,14 +115,14 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
             }
         }
 
-        if pendingTheme == .custom {
-            ColorPicker(loc.localized("settings.customColor"), selection: $pendingCustomColor, supportsOpacity: false)
+        if pending.theme == .custom {
+            ColorPicker(loc.localized("settings.customColor"), selection: $pending.customColor, supportsOpacity: false)
         }
 
                     HStack(alignment: .firstTextBaseline, spacing: AppSpacing.xl) {
-                        Toggle(loc.localized("settings.toolbarAccent"), isOn: $pendingToolbarAccent)
+                        Toggle(loc.localized("settings.toolbarAccent"), isOn: $pending.toolbarAccent)
                         Spacer(minLength: AppSpacing.md)
-                        Toggle(loc.localized("settings.tintedSurfaces"), isOn: $pendingTintedSurfaces)
+                        Toggle(loc.localized("settings.tintedSurfaces"), isOn: $pending.tintedSurfaces)
                     }
                     HStack(alignment: .top, spacing: AppSpacing.xl) {
                         Text(loc.localized("settings.toolbarAccentDescription"))
@@ -161,8 +145,8 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
                 accentDimmed: previewAccentDimmed,
                 accentDark: previewAccentDark,
                 accentSecondary: previewAccentSecondary,
-                mode: pendingAppearanceMode,
-                tinted: pendingTintedSurfaces
+                mode: pending.appearanceMode,
+                tinted: pending.tintedSurfaces
             )
         }
         }
@@ -170,9 +154,9 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
         // Apply
         Section {
         Button(loc.localized("settings.theme.applyTheme")) {
-                themeManager.applyTheme(pendingTheme, customColor: pendingTheme == .custom ? pendingCustomColor : nil)
-                themeManager.setToolbarAccent(pendingToolbarAccent)
-                themeManager.applyAppearanceMode(pendingAppearanceMode)
+                themeManager.applyTheme(pending.theme, customColor: pending.theme == .custom ? pending.customColor : nil)
+                themeManager.setToolbarAccent(pending.toolbarAccent)
+                themeManager.applyAppearanceMode(pending.appearanceMode)
                 hasPendingChanges = false
                 showRestartConfirmation = true
             }
@@ -278,16 +262,12 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
         NotificationService.shared.refreshAuthorizationStatus()
         autoCheckUpdates = AppUpdateService.shared.autoCheckEnabled
         notificationsEnabled = NotificationService.shared.isAuthorized
-            pendingTheme = themeManager.currentTheme
-            pendingAppearanceMode = themeManager.appearanceMode
-            pendingCustomColor = themeManager.customAccentColor
-        pendingToolbarAccent = themeManager.toolbarAccentEnabled
-        pendingTintedSurfaces = themeManager.tintedSurfacesEnabled
-        activePendingTheme = pendingTheme
-        activePendingAppearanceMode = pendingAppearanceMode
-        activePendingCustomColor = pendingCustomColor
-        activePendingToolbarAccent = pendingToolbarAccent
-        activePendingTintedSurfaces = pendingTintedSurfaces
+            pending.theme = themeManager.currentTheme
+            pending.appearanceMode = themeManager.appearanceMode
+            pending.customColor = themeManager.customAccentColor
+        pending.toolbarAccent = themeManager.toolbarAccentEnabled
+        pending.tintedSurfaces = themeManager.tintedSurfacesEnabled
+        activePending = pending
         hasPendingChanges = false
         DispatchQueue.main.async {
             contentLoaded = true
@@ -296,40 +276,40 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
         .onChange(of: autoCheckUpdates) { _, newValue in
             AppUpdateService.shared.autoCheckEnabled = newValue
         }
-        .onChange(of: pendingTheme) { _, _ in
-            activePendingTheme = pendingTheme
+        .onChange(of: pending.theme) { _, _ in
+            activePending.theme = pending.theme
             hasPendingChanges = themeHasChanged
         }
-        .onChange(of: pendingAppearanceMode) { _, _ in
-            activePendingAppearanceMode = pendingAppearanceMode
+        .onChange(of: pending.appearanceMode) { _, _ in
+            activePending.appearanceMode = pending.appearanceMode
             hasPendingChanges = themeHasChanged
         }
-        .onChange(of: pendingCustomColor) { _, _ in
-            activePendingCustomColor = pendingCustomColor
+        .onChange(of: pending.customColor) { _, _ in
+            activePending.customColor = pending.customColor
             hasPendingChanges = themeHasChanged
         }
-        .onChange(of: pendingToolbarAccent) { _, _ in
-            activePendingToolbarAccent = pendingToolbarAccent
+        .onChange(of: pending.toolbarAccent) { _, _ in
+            activePending.toolbarAccent = pending.toolbarAccent
             hasPendingChanges = themeHasChanged
         }
-        .onChange(of: pendingTintedSurfaces) { _, _ in
-            activePendingTintedSurfaces = pendingTintedSurfaces
+        .onChange(of: pending.tintedSurfaces) { _, _ in
+            activePending.tintedSurfaces = pending.tintedSurfaces
             hasPendingChanges = themeHasChanged
         }
         .onChange(of: revertRequest) { _, _ in
-            pendingTheme = themeManager.currentTheme
-            pendingAppearanceMode = themeManager.appearanceMode
-            pendingCustomColor = themeManager.customAccentColor
-            pendingToolbarAccent = themeManager.toolbarAccentEnabled
-            pendingTintedSurfaces = themeManager.tintedSurfacesEnabled
+            pending.theme = themeManager.currentTheme
+            pending.appearanceMode = themeManager.appearanceMode
+            pending.customColor = themeManager.customAccentColor
+            pending.toolbarAccent = themeManager.toolbarAccentEnabled
+            pending.tintedSurfaces = themeManager.tintedSurfacesEnabled
             hasPendingChanges = false
         }
         .onChange(of: applyRequest) { _, _ in
             guard themeHasChanged else { return }
-            themeManager.applyTheme(pendingTheme, customColor: pendingTheme == .custom ? pendingCustomColor : nil)
-            themeManager.setToolbarAccent(pendingToolbarAccent)
-            themeManager.setTintedSurfaces(pendingTintedSurfaces)
-            themeManager.applyAppearanceMode(pendingAppearanceMode)
+            themeManager.applyTheme(pending.theme, customColor: pending.theme == .custom ? pending.customColor : nil)
+            themeManager.setToolbarAccent(pending.toolbarAccent)
+            themeManager.setTintedSurfaces(pending.tintedSurfaces)
+            themeManager.applyAppearanceMode(pending.appearanceMode)
             hasPendingChanges = false
             ThemeManager.relaunchApp()
         }
@@ -341,10 +321,10 @@ LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 2) {
         ThemeIconButton(
         iconName: theme.iconAssetName,
         label: theme.displayName,
-        isSelected: pendingTheme == theme,
+        isSelected: pending.theme == theme,
         colorScheme: colorScheme
         ) {
-            pendingTheme = theme
+            pending.theme = theme
         }
 }
 
@@ -420,31 +400,31 @@ private struct CustomThemeButton: View {
 }
 
     private var previewAccent: Color {
-        if pendingTheme == .custom { return pendingCustomColor }
-        return pendingTheme.accent
+        if pending.theme == .custom { return pending.customColor }
+        return pending.theme.accent
     }
 
     private var previewAccentDimmed: Color {
-        if pendingTheme == .custom { return AccentColorTheme.dimmedColor(from: pendingCustomColor) }
-        return pendingTheme.accentDimmed
+        if pending.theme == .custom { return AccentColorTheme.dimmedColor(from: pending.customColor) }
+        return pending.theme.accentDimmed
     }
 
     private var previewAccentDark: Color {
-        if pendingTheme == .custom { return AccentColorTheme.darkColor(from: pendingCustomColor) }
-        return pendingTheme.accentDark
+        if pending.theme == .custom { return AccentColorTheme.darkColor(from: pending.customColor) }
+        return pending.theme.accentDark
     }
 
     private var previewAccentSecondary: Color {
-        if pendingTheme == .custom { return pendingCustomColor }
-        return pendingTheme.secondaryAccent
+        if pending.theme == .custom { return pending.customColor }
+        return pending.theme.secondaryAccent
     }
 
     private var themeHasChanged: Bool {
-        let themeChanged = pendingTheme != themeManager.currentTheme
-        let customColorChanged = pendingTheme == .custom && pendingCustomColor != themeManager.customAccentColor
-        let toolbarChanged = pendingToolbarAccent != themeManager.toolbarAccentEnabled
-        let tintedSurfacesChanged = pendingTintedSurfaces != themeManager.tintedSurfacesEnabled
-        let appearanceChanged = pendingAppearanceMode != themeManager.appearanceMode
+        let themeChanged = pending.theme != themeManager.currentTheme
+        let customColorChanged = pending.theme == .custom && pending.customColor != themeManager.customAccentColor
+        let toolbarChanged = pending.toolbarAccent != themeManager.toolbarAccentEnabled
+        let tintedSurfacesChanged = pending.tintedSurfaces != themeManager.tintedSurfacesEnabled
+        let appearanceChanged = pending.appearanceMode != themeManager.appearanceMode
         return themeChanged || customColorChanged || toolbarChanged || tintedSurfacesChanged || appearanceChanged
     }
 

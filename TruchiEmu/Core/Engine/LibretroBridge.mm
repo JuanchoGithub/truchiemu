@@ -137,6 +137,7 @@ g_frame_poll_callback = callback;
         cleanCoreID = [cleanCoreID stringByDeletingPathExtension];
     }
     g_coreID = [cleanCoreID copy];
+    updateCoreCapabilities(g_coreID);
     NSLog(@"[Bridge] Active CoreID set to: '%@'", g_coreID);
     g_shaderDir = [shaderDir copy];
     g_systemID = [systemID copy] ?: nil;
@@ -218,6 +219,7 @@ g_frame_poll_callback = callback;
     g_romFilename = nil;
     g_shaderDir = nil;
     g_bridgeCompletionSemaphore = nil;
+    updateCoreCapabilities(nil);
 }
 
 + (void)saveState { if (g_instance) [g_instance saveState]; }
@@ -299,6 +301,7 @@ g_frame_poll_callback = callback;
         cleanCoreID = [cleanCoreID stringByDeletingPathExtension];
     }
     g_coreID = [cleanCoreID copy];
+    updateCoreCapabilities(g_coreID);
     g_optionsDylibPath = [dylibPath copy];
     g_optValues = nil;
     g_optDefinitions = nil;

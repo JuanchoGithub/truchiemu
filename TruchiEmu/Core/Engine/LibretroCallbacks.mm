@@ -303,7 +303,7 @@ case RETRO_ENVIRONMENT_SET_CORE_OPTIONS: {
     // PPSSPP's GL rendering goes through its own context + FBOs that don't
     // share with ours — the result is always a black frame.  Force it to use
     // the software fallback which sends pixel data directly to video_cb.
-    if (g_coreID && [[g_coreID lowercaseString] containsString:@"ppsspp"]) {
+    if (g_coreCapabilities.isPSP) {
       bridge_log_printf(RETRO_LOG_INFO, "[PPSSPP] Rejecting HW render — forcing software renderer");
       return false;
     }

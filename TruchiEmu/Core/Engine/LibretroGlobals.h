@@ -33,6 +33,31 @@ extern BOOL g_isPaused;
 extern int g_currentRotation;
 extern GLuint g_hwFBO;
 
+// Per-launch core capability flags, computed ONCE from `g_coreID` instead of
+// re-running `containsString` per frame (the old readHWRenderedPixels hot path
+// did 7 substring scans per frame). Zeroed whenever `g_coreID` is nil/cleared.
+typedef struct {
+    BOOL isMame;
+    BOOL isDOSBox;
+    BOOL isDolphin;
+    BOOL isSwanStation;
+    BOOL isMednafenPSX;
+    BOOL isPCSX;
+    BOOL isMupen64;
+    BOOL isParallelN64;
+    BOOL isGenesisPlusGX;
+    BOOL isPicodrive;
+    BOOL isFlycast;
+    BOOL isPSP;
+    BOOL isPS2Play;
+    BOOL is3DS;
+    BOOL isDuckStation;
+} CoreCapabilities;
+extern CoreCapabilities g_coreCapabilities;
+/// Recompute `g_coreCapabilities` from a core ID string (nil → all flags off).
+/// Call whenever `g_coreID` is assigned or cleared.
+void updateCoreCapabilities(NSString *coreID);
+
 extern NSMutableDictionary<NSString *, NSString *> *g_optValues;
 extern NSDictionary<NSString *, NSDictionary *> *g_optDefinitions;
 extern NSDictionary<NSString *, NSDictionary *> *g_optCategories;
