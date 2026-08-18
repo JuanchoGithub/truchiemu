@@ -30,11 +30,13 @@ class ControllerService: ObservableObject {
     private let kbMappingKey = "keyboard_mapping_v1"
     private let identityMappingKey = "controller_identities_v1"
     private let identitySDLMappingKey = "sdl_controller_identities_v1"
+    private let calibrationKey = "controller_calibration_v1"
     private let keyboardAssignedPlayersKey = "keyboard_assigned_players"
     private var savedMappings: [String: [String: ControllerGamepadMapping]] = [:]
     private var savedSDLMappings: [String: [String: SDLControllerMapping]] = [:]
     private var savedIdentityMappings: [String: [String: ControllerGamepadMapping]] = [:]
     private var savedIdentitySDLMappings: [String: [String: SDLControllerMapping]] = [:]
+    private var savedCalibrations: [String: ControllerCalibration] = [:]
     private var bundledGC: [String: ControllerGamepadMapping] = [:]
     private var bundledSDL: [String: SDLControllerMapping] = [:]
 
@@ -705,6 +707,46 @@ class ControllerService: ObservableObject {
         saveIdentitySDLMappings()
     }
 
+    // MARK: - Analog Stick Calibration
+
+    /// Hardware-level stick range calibration for a controller identity. Stored
+    /// separately from per-system mappings because it is a physical property of
+    /// the controller, not of any system. Missing entries return no-op defaults.
+    func calibration(for identity: ControllerIdentityKey) -> ControllerCalibration {
+        savedCalibrations[identity.compositeKey] ?? ControllerCalibration()
+    }
+
+    func calibration(forGC controller: GCController) -> ControllerCalibration {
+        calibration(for: identityKey(for: controller))
+    }
+
+    func calibration(forSDL instanceID: Int32) -> ControllerCalibration {
+        guard let identity = identityKey(forSDL: instanceID) else {
+            return ControllerCalibration()
+        }
+        return calibration(for: identity)
+    }
+
+    func saveCalibration(_ calibration: ControllerCalibration, for identity: ControllerIdentityKey) {
+        if calibration.isDefault {
+            savedCalibrations.removeValue(forKey: identity.compositeKey)
+        } else {
+            savedCalibrations[identity.compositeKey] = calibration
+        }
+        saveCalibrations()
+    }
+
+    func clearCalibration(for identity: ControllerIdentityKey) {
+        savedCalibrations.removeValue(forKey: identity.compositeKey)
+        saveCalibrations()
+    }
+
+    private func saveCalibrations() {
+        if let data = try? JSONEncoder().encode(savedCalibrations) {
+            AppSettings.setData(calibrationKey, value: data)
+        }
+    }
+
     private func resolveForSystem(_ globalMapping: ControllerGamepadMapping, vendorName: String, systemID: String) -> ControllerGamepadMapping {
         guard systemID != "default" else { return globalMapping }
         let availableButtons = RetroButton.availableButtons(for: systemID)
@@ -855,6 +897,11 @@ class ControllerService: ObservableObject {
         if let data = AppSettings.getData(identitySDLMappingKey),
            let saved = try? JSONDecoder().decode([String: [String: SDLControllerMapping]].self, from: data) {
             savedIdentitySDLMappings = saved
+        }
+
+        if let data = AppSettings.getData(calibrationKey),
+           let saved = try? JSONDecoder().decode([String: ControllerCalibration].self, from: data) {
+            savedCalibrations = saved
         }
 
         if let data = AppSettings.getData(kbMappingKey),

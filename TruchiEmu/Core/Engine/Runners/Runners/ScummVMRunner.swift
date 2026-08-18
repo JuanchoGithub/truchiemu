@@ -485,7 +485,9 @@ class ScummVMRunner: EmulatorRunner, @unchecked Sendable {
             let secondaryStick = stickString == "right" ? extendedGamepad.leftThumbstick : extendedGamepad.rightThumbstick
 
             setupAnalogMouseTimer(primaryStick: primaryStick, secondaryStick: secondaryStick,
-                                  sensitivity: sensitivity, deadZone: deadZone)
+                                  sensitivity: sensitivity, deadZone: deadZone,
+                                  calibration: cs.calibration(forGC: controller),
+                                  primaryIsLeft: stickString != "right")
 
             extendedGamepad.valueChangedHandler = { [weak self] _, element in
                 guard let self = self else { return }

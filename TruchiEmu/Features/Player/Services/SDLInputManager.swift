@@ -727,15 +727,27 @@ class SDLInputManager: ObservableObject {
             let player = resolvePlayerPort(for: instanceID)
 
             let deadzone: Float
+            let calibration: ControllerCalibration
             if let identity = ControllerService.shared.identityKey(forSDL: instanceID) {
                 let m = ControllerService.shared.sdlMapping(forIdentity: identity, systemID: sysID)
                 deadzone = index == 0 ? m.leftStickDeadzone : m.rightStickDeadzone
+                calibration = ControllerService.shared.calibration(for: identity)
             } else {
                 let vendor = SDLInputManager.shared.sdlVendorName(for: instanceID)
                 let m = ControllerService.shared.sdlMapping(for: vendor, systemID: sysID)
                 deadzone = index == 0 ? m.leftStickDeadzone : m.rightStickDeadzone
+                calibration = ControllerService.shared.calibration(forSDL: instanceID)
             }
-            let scaled = AnalogDeadZone(radial: deadzone, anti: 0.0).apply(raw)
+
+            // Apply stick range calibration before the deadzone remap. The Y
+            // axis is inverted between SDL raw values (positive = down) and
+            // the GC convention (positive = up) the calibration is captured
+            // in, so convert there and back; the sign handed to the core is
+            // preserved.
+            let stickCal = index == 0 ? calibration.leftStick : calibration.rightStick
+            let calibrated = id == 1 ? -stickCal.applyY(-raw) : stickCal.applyX(raw)
+
+            let scaled = AnalogDeadZone(radial: deadzone, anti: 0.0).apply(calibrated)
             let retroValue = Int32(scaled * 32767.0)
             XPCBridgeAdapter.shared.setAnalogState(index, id: id, value: retroValue, player: player)
         }

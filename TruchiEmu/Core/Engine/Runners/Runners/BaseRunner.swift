@@ -2097,6 +2097,12 @@ weak var metalCoordinator: MetalCoordinator?
             } else {
                 mapping = cs.mapping(for: controller.vendorName ?? "Unknown", systemID: sysID)
             }
+            let calibration: ControllerCalibration
+            if let identity = player.identityKey {
+                calibration = cs.calibration(for: identity)
+            } else {
+                calibration = cs.calibration(forGC: controller)
+            }
             let ports = player.assignedPlayers.map { $0 - 1 }
 
             for port in ports {
@@ -2227,13 +2233,13 @@ weak var metalCoordinator: MetalCoordinator?
 
                 for port in ports {
                     if let dpad = element as? GCControllerDirectionPad {
-                        self.updateGamepadButton(dpad.up, in: mapping, extendedGamepad: extendedGamepad, player: port)
-                        self.updateGamepadButton(dpad.down, in: mapping, extendedGamepad: extendedGamepad, player: port)
-                        self.updateGamepadButton(dpad.left, in: mapping, extendedGamepad: extendedGamepad, player: port)
-                        self.updateGamepadButton(dpad.right, in: mapping, extendedGamepad: extendedGamepad, player: port)
-                        self.updateGamepadButton(dpad, in: mapping, extendedGamepad: extendedGamepad, player: port)
+                        self.updateGamepadButton(dpad.up, in: mapping, extendedGamepad: extendedGamepad, player: port, calibration: calibration)
+                        self.updateGamepadButton(dpad.down, in: mapping, extendedGamepad: extendedGamepad, player: port, calibration: calibration)
+                        self.updateGamepadButton(dpad.left, in: mapping, extendedGamepad: extendedGamepad, player: port, calibration: calibration)
+                        self.updateGamepadButton(dpad.right, in: mapping, extendedGamepad: extendedGamepad, player: port, calibration: calibration)
+                        self.updateGamepadButton(dpad, in: mapping, extendedGamepad: extendedGamepad, player: port, calibration: calibration)
                     } else {
-                        self.updateGamepadButton(element, in: mapping, extendedGamepad: extendedGamepad, player: port)
+                        self.updateGamepadButton(element, in: mapping, extendedGamepad: extendedGamepad, player: port, calibration: calibration)
                     }
                 }
             }
@@ -2277,7 +2283,7 @@ weak var metalCoordinator: MetalCoordinator?
         return 0
     }
 
-    func updateGamepadButton(_ element: GCControllerElement, in mapping: ControllerGamepadMapping, extendedGamepad: GCExtendedGamepad? = nil, player: Int = 0) {
+    func updateGamepadButton(_ element: GCControllerElement, in mapping: ControllerGamepadMapping, extendedGamepad: GCExtendedGamepad? = nil, player: Int = 0, calibration: ControllerCalibration? = nil) {
         for (btn, btnMapping) in mapping.buttons {
             guard elementMatches(element, mapping: btnMapping, extendedGamepad: extendedGamepad) else { continue }
             
@@ -2291,6 +2297,19 @@ weak var metalCoordinator: MetalCoordinator?
                 } else if let stick = element as? GCControllerDirectionPad {
                     let axisVal = (info.id == 0) ? stick.xAxis.value : stick.yAxis.value
                     value = abs(axisVal)
+                }
+
+                // Apply per-direction stick range calibration to the raw
+                // magnitude before it enters the axis aggregation.
+                if let cal = calibration {
+                    let stickCal = info.index == 0 ? cal.leftStick : cal.rightStick
+                    switch btn {
+                    case .lStickUp, .rStickUp, .cUp: value = stickCal.scalingUp(value)
+                    case .lStickDown, .rStickDown, .cDown: value = stickCal.scalingDown(value)
+                    case .lStickLeft, .rStickLeft, .cLeft: value = stickCal.scalingLeft(value)
+                    case .lStickRight, .rStickRight, .cRight: value = stickCal.scalingRight(value)
+                    default: break
+                    }
                 }
                 
                 analogButtonStates[btn] = value
@@ -2378,25 +2397,26 @@ weak var metalCoordinator: MetalCoordinator?
     }
 
     func setupAnalogMouseTimer(primaryStick: GCControllerDirectionPad, secondaryStick: GCControllerDirectionPad,
-                                sensitivity: Float, deadZone: Float) {
+                                sensitivity: Float, deadZone: Float, calibration: ControllerCalibration = ControllerCalibration(), primaryIsLeft: Bool = true) {
         analogMouseTimer?.invalidate()
         analogMouseAccumulatedDX = 0
         analogMouseAccumulatedDY = 0
+
+        let primaryCal = primaryIsLeft ? calibration.leftStick : calibration.rightStick
+        let secondaryCal = primaryIsLeft ? calibration.rightStick : calibration.leftStick
 
         analogMouseTimer = Timer.scheduledTimer(withTimeInterval: 1.0 / 60.0, repeats: true) { [weak self] _ in
             guard let self else { return }
 
         if GameGuideViewModel.isGuideSidebarOpen {
-            let pX = primaryStick.xAxis.value
-            let pY = primaryStick.yAxis.value
-            let sX = secondaryStick.xAxis.value
-            let sY = secondaryStick.yAxis.value
+            let p = primaryCal.apply(x: primaryStick.xAxis.value, y: primaryStick.yAxis.value)
+            let s = secondaryCal.apply(x: secondaryStick.xAxis.value, y: secondaryStick.yAxis.value)
             var moveX: CGFloat = 0
             var moveY: CGFloat = 0
-            if fabsf(pX) >= deadZone { moveX += CGFloat(pX * sensitivity * 12.0) }
-            if fabsf(pY) >= deadZone { moveY += CGFloat(pY * sensitivity * 12.0) }
-            if fabsf(sX) >= deadZone { moveX += CGFloat(sX * sensitivity * 6.0) }
-            if fabsf(sY) >= deadZone { moveY += CGFloat(sY * sensitivity * 6.0) }
+            if fabsf(p.0) >= deadZone { moveX += CGFloat(p.0 * sensitivity * 12.0) }
+            if fabsf(p.1) >= deadZone { moveY += CGFloat(p.1 * sensitivity * 12.0) }
+            if fabsf(s.0) >= deadZone { moveX += CGFloat(s.0 * sensitivity * 6.0) }
+            if fabsf(s.1) >= deadZone { moveY += CGFloat(s.1 * sensitivity * 6.0) }
 
             if moveX != 0 || moveY != 0 {
                 if self.sidebarCursorX == nil {
@@ -2418,18 +2438,18 @@ weak var metalCoordinator: MetalCoordinator?
             self.sidebarCursorX = nil
             self.sidebarCursorY = nil
 
-            var xVal = primaryStick.xAxis.value
-            var yVal = primaryStick.yAxis.value
+            let p = primaryCal.apply(x: primaryStick.xAxis.value, y: primaryStick.yAxis.value)
+            var xVal = p.0
+            var yVal = p.1
             if fabsf(xVal) < deadZone { xVal = 0 }
             if fabsf(yVal) < deadZone { yVal = 0 }
 
             var fdx = Float(xVal) * sensitivity * 8.0
             var fdy = Float(-yVal) * sensitivity * 8.0
 
-            let x2 = secondaryStick.xAxis.value
-            let y2 = secondaryStick.yAxis.value
-            if fabsf(x2) >= deadZone { fdx += Float(x2) * sensitivity * 8.0 * 0.2 }
-            if fabsf(y2) >= deadZone { fdy += Float(-y2) * sensitivity * 8.0 * 0.2 }
+            let s = secondaryCal.apply(x: secondaryStick.xAxis.value, y: secondaryStick.yAxis.value)
+            if fabsf(s.0) >= deadZone { fdx += Float(s.0) * sensitivity * 8.0 * 0.2 }
+            if fabsf(s.1) >= deadZone { fdy += Float(-s.1) * sensitivity * 8.0 * 0.2 }
 
             self.analogMouseAccumulatedDX += fdx
             self.analogMouseAccumulatedDY += fdy

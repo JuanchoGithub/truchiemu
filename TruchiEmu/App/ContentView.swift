@@ -148,13 +148,7 @@ struct ContentView: View {
                           searchText: $searchText,
                           searchFocused: $searchFocused,
                          onRefresh: { system in
-                             let romsForSystem = library.roms.filter { $0.systemID == system.id }
-                             let uniqueFolders = Set(romsForSystem.map { $0.path.deletingLastPathComponent() })
-                             Task {
-                                 for folder in uniqueFolders {
-                                     await library.refreshFolder(at: folder)
-                                 }
-                             }
+                             Task { await library.refreshAll() }
                          },
             onSettings: { systemID in
                 let coreID = SystemDatabase.system(forID: systemID)?.defaultCoreID ?? ""
@@ -163,14 +157,8 @@ struct ContentView: View {
                           onSystemAction: { system, action, targetID in
                               let resolvedSystemID = targetID ?? system.id
                               switch action {
-                              case .refresh:
-                                  let romsForSystem = library.roms.filter { $0.systemID == resolvedSystemID }
-                                  let uniqueFolders = Set(romsForSystem.map { $0.path.deletingLastPathComponent() })
-                                  Task {
-                                      for folder in uniqueFolders {
-                                          await library.refreshFolder(at: folder)
-                                      }
-                                  }
+                               case .refresh:
+                                   Task { await library.refreshAll() }
             case .settings:
                 let coreID = SystemDatabase.system(forID: resolvedSystemID)?.defaultCoreID ?? ""
                 openWindow(id: "core-options", value: CoreOptionsContext(coreID: coreID, systemID: resolvedSystemID, gameFilename: nil))

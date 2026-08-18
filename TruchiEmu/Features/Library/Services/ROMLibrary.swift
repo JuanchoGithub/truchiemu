@@ -1134,6 +1134,12 @@ let idsToPurge = orphans.map { $0.id }
         isScanning = false
     }
 
+    @MainActor func refreshAll() async {
+        for folder in libraryFolders {
+            await refreshFolder(at: folder)
+        }
+    }
+
     @MainActor func rebuildFolder(folder: ROMLibraryFolder, option: RebuildOption) async { await rebuildLibrary(modes: [option]) }
 
     func fillMetadataForExistingROMs() async {

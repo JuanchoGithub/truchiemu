@@ -1049,6 +1049,7 @@
 		CC72CDCF89AF32CBCD610FED /* RAHashComparisonSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C94E2C81D0A16F3F9DCA9E6B /* RAHashComparisonSheet.swift */; };
 		CCD785047268A2F0EA19391B /* input_coreOverrides_dosbox.json in Resources */ = {isa = PBXBuildFile; fileRef = 813F9D66696089B615C982B7 /* input_coreOverrides_dosbox.json */; };
 		CCEBE37645478E3B8F8668BD /* arduboy@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDFFDFCC5969E427805C3248 /* arduboy@132w.png */; };
+		CDA240EB212C79641284B8E9 /* StickCalibration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77040D787DFCB5DECE030997 /* StickCalibration.swift */; };
 		CDB16BD1C1887BD7AD4E99F8 /* input_coreLabels_vemulator.json in Resources */ = {isa = PBXBuildFile; fileRef = A6985776C0054F68DA884F39 /* input_coreLabels_vemulator.json */; };
 		CDC8133D2C03E637999E2155 /* CheatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD4DF5D2F13617BDA825F6F3 /* CheatSettingsView.swift */; };
 		CE0CB7B49E978CFA4F591675 /* PC98.png in Resources */ = {isa = PBXBuildFile; fileRef = 7A121397290660B21B099AD4 /* PC98.png */; };
@@ -1931,6 +1932,7 @@
 		76645A5704981F18974409CD /* gba-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "gba-cheats.zip"; sourceTree = "<group>"; };
 		76A50CEAE48F1F659CE03FFC /* MetadataRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataRow.swift; sourceTree = "<group>"; };
 		76AA9026EF2024FE01AA7B4E /* mednafen_psx_hw_libretro_default.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = mednafen_psx_hw_libretro_default.json; sourceTree = "<group>"; };
+		77040D787DFCB5DECE030997 /* StickCalibration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickCalibration.swift; sourceTree = "<group>"; };
 		773ACBC3221E440B0363F02D /* cps3@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cps3@132w.png"; sourceTree = "<group>"; };
 		7745F5C3FF3C2D8BDD161129 /* input_systemLabels_chailove.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_chailove.json; sourceTree = "<group>"; };
 		775DB753C52AB2118F1AD9E1 /* HaishinKitLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HaishinKitLogger.swift; sourceTree = "<group>"; };
@@ -4360,6 +4362,7 @@
 				8E6AF76D7552E90F0C9FEAD1 /* SDLControllerMapping.swift */,
 				02CF8EF66CB8C3E5967901A7 /* SettingsSearchable.swift */,
 				D2E2582EB9B74BCB1D041C88 /* SettingsSearchProfile.swift */,
+				77040D787DFCB5DECE030997 /* StickCalibration.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -6162,6 +6165,7 @@
 				BDF013132E527E54C1122A15 /* StandaloneGameWindowController+Playtime.swift in Sources */,
 				2E8FB37D7C4E33AA2B2626C0 /* StandaloneGameWindowController+Toolbar.swift in Sources */,
 				0EC966AB34C9316BEB777009 /* StandaloneGameWindowController.swift in Sources */,
+				CDA240EB212C79641284B8E9 /* StickCalibration.swift in Sources */,
 				FFFB6768E361E3C99D466809 /* StreamRecordingService.swift in Sources */,
 				7B257DDD0043D36F901EE44E /* StreamingDestinationSections.swift in Sources */,
 				0388CE552DA4F28D8C38B7D1 /* StreamingMediaSettingsView.swift in Sources */,

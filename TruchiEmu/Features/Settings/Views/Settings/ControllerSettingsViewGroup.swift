@@ -955,6 +955,125 @@ private struct DeadzoneSliderRow: View {
     }
 }
 
+// MARK: - Stick Calibration Section
+struct StickCalibrationSection: View {
+    @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject var controllerService: ControllerService
+    let systemID: String
+    let selectedControllerId: UUID
+    @ObservedObject var session: StickCalibrationSession
+    @ObservedObject private var loc = LocalizationManager.shared
+
+    private var selectedPlayer: PlayerController? {
+        controllerService.connectedControllers.first(where: { $0.id == selectedControllerId })
+    }
+
+    private var storedCalibration: ControllerCalibration {
+        guard let player = selectedPlayer else { return ControllerCalibration() }
+        if let identity = player.identityKey {
+            return controllerService.calibration(for: identity)
+        }
+        if let gc = player.gcController {
+            return controllerService.calibration(forGC: gc)
+        }
+        return controllerService.calibration(forSDL: player.sdlInstanceID ?? 0)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 6) {
+                Text(loc.localized("controllers.calibrateSticks"))
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundColor(AppColors.textPrimary(colorScheme))
+                Spacer()
+                if session.isActive {
+                    Button(loc.localized("controllers.calibrateCancel")) { session.stop() }
+                        .buttonStyle(.bordered)
+                        .controlSize(.mini)
+                        .tint(AppColors.textSecondary(colorScheme))
+                    Button(loc.localized("controllers.calibrateSave")) { save() }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.mini)
+                        .tint(AppColors.brandAccent)
+                } else {
+                    Button(loc.localized("controllers.calibrate")) { session.start() }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.mini)
+                        .tint(AppColors.brandAccent)
+                    if !storedCalibration.isDefault {
+                        Button(loc.localized("controllers.calibrateReset")) { reset() }
+                            .buttonStyle(.bordered)
+                            .controlSize(.mini)
+                            .tint(AppColors.error(colorScheme))
+                    }
+                }
+            }
+
+            if session.isActive {
+                Text(loc.localized("controllers.calibrateInstructions"))
+                    .font(.system(size: 9))
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
+                HStack(spacing: 16) {
+                    calibrationColumn(label: "L", cal: session.leftStick)
+                    calibrationColumn(label: "R", cal: session.rightStick)
+                }
+            } else if !storedCalibration.isDefault {
+                Text(loc.localized("controllers.calibratedStatus"))
+                    .font(.system(size: 9))
+                    .foregroundColor(AppColors.textSecondary(colorScheme))
+            }
+        }
+        .padding(.horizontal, 6)
+    }
+
+    private func calibrationColumn(label: String, cal: StickCalibration) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(label)
+                .font(.system(size: 9, weight: .semibold))
+                .foregroundColor(AppColors.textSecondary(colorScheme))
+            calibrationRow("↑", value: cal.up)
+            calibrationRow("↓", value: cal.down)
+            calibrationRow("←", value: cal.left)
+            calibrationRow("→", value: cal.right)
+        }
+    }
+
+    private func calibrationRow(_ arrow: String, value: Float) -> some View {
+        HStack(spacing: 4) {
+            Text(arrow)
+                .font(.system(size: 8))
+                .foregroundColor(AppColors.textSecondary(colorScheme))
+            Text(String(format: "%.2f", value))
+                .font(.system(size: 8, design: .monospaced))
+                .foregroundColor(value < 1.0 ? AppColors.warning(colorScheme) : AppColors.textSecondary(colorScheme))
+        }
+    }
+
+    private func save() {
+        guard let player = selectedPlayer else { return }
+        let calibration = ControllerCalibration(leftStick: session.leftStick, rightStick: session.rightStick)
+        if let identity = player.identityKey {
+            controllerService.saveCalibration(calibration, for: identity)
+        } else if let gc = player.gcController {
+            controllerService.saveCalibration(calibration, for: controllerService.identityKey(for: gc))
+        } else if let identity = controllerService.identityKey(forSDL: player.sdlInstanceID ?? 0) {
+            controllerService.saveCalibration(calibration, for: identity)
+        }
+        session.stop()
+    }
+
+    private func reset() {
+        guard let player = selectedPlayer else { return }
+        if let identity = player.identityKey {
+            controllerService.clearCalibration(for: identity)
+        } else if let gc = player.gcController {
+            controllerService.clearCalibration(for: controllerService.identityKey(for: gc))
+        } else if let identity = controllerService.identityKey(forSDL: player.sdlInstanceID ?? 0) {
+            controllerService.clearCalibration(for: identity)
+        }
+    }
+}
+
 private struct IRSettingSlider: View {
     @Environment(\.colorScheme) private var colorScheme
     let label: String
@@ -1031,10 +1150,15 @@ struct StickVisualizerView: View {
     @Environment(\.colorScheme) private var colorScheme
     let systemID: String
     let selectedControllerId: UUID
-    @State private var lX: Double = 0
-    @State private var lY: Double = 0
-    @State private var rX: Double = 0
-    @State private var rY: Double = 0
+    var calibrationSession: StickCalibrationSession? = nil
+    @State private var effLX: Double = 0
+    @State private var effLY: Double = 0
+    @State private var effRX: Double = 0
+    @State private var effRY: Double = 0
+    @State private var rawLX: Double = 0
+    @State private var rawLY: Double = 0
+    @State private var rawRX: Double = 0
+    @State private var rawRY: Double = 0
     // Tracks the GCController whose thumbstick valueChangedHandler closures
     // are currently attached to this view's @State. Required because
     // valueChangedHandler is persistent on the controller — switching the
@@ -1080,6 +1204,28 @@ struct StickVisualizerView: View {
         return (currentGCMapping.leftStickDeadzone, currentGCMapping.rightStickDeadzone)
     }
 
+    private var storedCalibration: ControllerCalibration {
+        guard let player = selectedPlayer else { return ControllerCalibration() }
+        if let identity = player.identityKey {
+            return controllerService.calibration(for: identity)
+        }
+        if let gc = player.gcController {
+            return controllerService.calibration(forGC: gc)
+        }
+        return controllerService.calibration(forSDL: player.sdlInstanceID ?? 0)
+    }
+
+    /// The calibration used for display. During a live calibration session the
+    /// in-progress maxima drive the red arcs so the user sees them grow;
+    /// otherwise the stored calibration is used.
+    private func displayCalibration(stick: Int) -> StickCalibration {
+        let stored = storedCalibration
+        if let session = calibrationSession, session.isActive {
+            return stick == 0 ? session.leftStick : session.rightStick
+        }
+        return stick == 0 ? stored.leftStick : stored.rightStick
+    }
+
     var body: some View {
         VStack(spacing: 6) {
             Text(loc.localized("controllers.sticks"))
@@ -1087,8 +1233,18 @@ struct StickVisualizerView: View {
                 .fontWeight(.semibold)
                 .foregroundColor(AppColors.textSecondary(colorScheme))
             HStack(spacing: 12) {
-                CompactStickView(x: lX, y: lY, label: "L", deadZone: Double(deadzones.left))
-                CompactStickView(x: rX, y: rY, label: "R", deadZone: Double(deadzones.right))
+                CompactStickView(
+                    x: rawLX, y: rawLY, label: "L", deadZone: Double(deadzones.left),
+                    calibrationMax: displayCalibration(stick: 0),
+                    effectiveX: effLX, effectiveY: effLY,
+                    isRecording: calibrationSession?.isActive == true
+                )
+                CompactStickView(
+                    x: rawRX, y: rawRY, label: "R", deadZone: Double(deadzones.right),
+                    calibrationMax: displayCalibration(stick: 1),
+                    effectiveX: effRX, effectiveY: effRY,
+                    isRecording: calibrationSession?.isActive == true
+                )
             }
         }
         .onAppear { monitorSelectedController() }
@@ -1118,17 +1274,34 @@ struct StickVisualizerView: View {
         guard let player = selectedPlayer else { return }
         if let gc = player.gcController, let gamepad = gc.extendedGamepad {
             gamepad.leftThumbstick.valueChangedHandler = { _, x, y in
-                DispatchQueue.main.async { lX = Double(x); lY = Double(y) }
+                DispatchQueue.main.async {
+                    let raw = (Float(x), Float(y))
+                    rawLX = Double(raw.0); rawLY = Double(raw.1)
+                    calibrationSession?.record(x: raw.0, y: raw.1, stick: 0)
+                    let cal = displayCalibration(stick: 0).apply(x: raw.0, y: raw.1)
+                    effLX = Double(cal.0); effLY = Double(cal.1)
+                }
             }
             gamepad.rightThumbstick.valueChangedHandler = { _, x, y in
-                DispatchQueue.main.async { rX = Double(x); rY = Double(y) }
+                DispatchQueue.main.async {
+                    let raw = (Float(x), Float(y))
+                    rawRX = Double(raw.0); rawRY = Double(raw.1)
+                    calibrationSession?.record(x: raw.0, y: raw.1, stick: 1)
+                    let cal = displayCalibration(stick: 1).apply(x: raw.0, y: raw.1)
+                    effRX = Double(cal.0); effRY = Double(cal.1)
+                }
             }
             attachedGCController = gc
         } else if player.isSDL {
             let instanceID = player.sdlInstanceID ?? 0
             SDLInputManager.shared.startAxisObservation(instanceID: instanceID) { lx, ly, rx, ry in
                 DispatchQueue.main.async {
-                    lX = Double(lx); lY = Double(ly); rX = Double(rx); rY = Double(ry)
+                    rawLX = Double(lx); rawLY = Double(ly); rawRX = Double(rx); rawRY = Double(ry)
+                    calibrationSession?.record(x: lx, y: ly, stick: 0)
+                    calibrationSession?.record(x: rx, y: ry, stick: 1)
+                    let l = displayCalibration(stick: 0).apply(x: lx, y: ly)
+                    let r = displayCalibration(stick: 1).apply(x: rx, y: ry)
+                    effLX = Double(l.0); effLY = Double(l.1); effRX = Double(r.0); effRY = Double(r.1)
                 }
             }
         }
@@ -1136,7 +1309,8 @@ struct StickVisualizerView: View {
         // Reset dot positions so stale state from the previous selection
         // doesn't linger on-screen if the newly-selected controller hasn't
         // reported an axis event yet.
-        lX = 0; lY = 0; rX = 0; rY = 0
+        effLX = 0; effLY = 0; effRX = 0; effRY = 0
+        rawLX = 0; rawLY = 0; rawRX = 0; rawRY = 0
     }
 }
 
@@ -1149,6 +1323,7 @@ struct ButtonMappingList: View {
     @State private var listeningFor: RetroButton? = nil
     @State private var currentMapping: ControllerGamepadMapping
     @State private var currentSDKMapping: SDLControllerMapping?
+    @StateObject private var calibrationSession = StickCalibrationSession()
     @ObservedObject private var loc = LocalizationManager.shared
 
     init(systemID: String, player: PlayerController, controllerService: ControllerService) {
@@ -1252,13 +1427,19 @@ struct ButtonMappingList: View {
                     Divider()
                         .padding(.horizontal, 12)
 
-                    StickVisualizerView(systemID: systemID, selectedControllerId: player.id)
+                    StickVisualizerView(systemID: systemID, selectedControllerId: player.id, calibrationSession: calibrationSession)
                         .padding(.vertical, 8)
 
                     Divider()
                         .padding(.horizontal, 12)
 
                     DeadzoneSlidersSection(systemID: systemID, selectedControllerId: player.id)
+                        .padding(.vertical, 8)
+
+                    Divider()
+                        .padding(.horizontal, 12)
+
+                    StickCalibrationSection(systemID: systemID, selectedControllerId: player.id, session: calibrationSession)
                         .padding(.vertical, 8)
                 }
             }
@@ -1423,10 +1604,21 @@ struct MappingRowView: View {
 // MARK: - Compact Stick View
 struct CompactStickView: View {
     @Environment(\.colorScheme) private var colorScheme
+    /// Physical stick position (unscaled), drawn as the main dot.
     let x: Double
     let y: Double
     let label: String
     var deadZone: Double = 0.15
+    /// Captured stick range (up/down/left/right maxima). When present, red arcs
+    /// are drawn at the physical edges the stick reaches.
+    var calibrationMax: StickCalibration? = nil
+    /// Calibrated output position. When a calibration is stored a hollow ring
+    /// is drawn here showing where the stick's output lands after scaling.
+    var effectiveX: Double? = nil
+    var effectiveY: Double? = nil
+    /// True during a live calibration session — the dot is drawn amber to
+    /// signal the recording state.
+    var isRecording: Bool = false
 
     var body: some View {
         VStack(spacing: 6) {
@@ -1438,6 +1630,13 @@ struct CompactStickView: View {
                     .stroke(AppColors.divider(colorScheme).opacity(0.3), lineWidth: 1)
                     .frame(width: 80, height: 80)
 
+                if let cal = calibrationMax {
+                    if cal.right > 0.05 { edgeArc(radius: cal.right, start: -25, end: 25) }
+                    if cal.left > 0.05 { edgeArc(radius: cal.left, start: 155, end: 205) }
+                    if cal.up > 0.05 { edgeArc(radius: cal.up, start: -115, end: -65) }
+                    if cal.down > 0.05 { edgeArc(radius: cal.down, start: 65, end: 115) }
+                }
+
                 Circle()
                     .fill(AppColors.textSecondary(colorScheme).opacity(0.15))
                     .stroke(AppColors.textSecondary(colorScheme).opacity(0.4), lineWidth: 1.5)
@@ -1446,8 +1645,16 @@ struct CompactStickView: View {
                 Rectangle().fill(AppColors.divider(colorScheme).opacity(0.1)).frame(width: 80, height: 1)
                 Rectangle().fill(AppColors.divider(colorScheme).opacity(0.1)).frame(width: 1, height: 80)
 
+                if !isRecording, calibrationMax?.isDefault == false,
+                   let ex = effectiveX, let ey = effectiveY {
+                    Circle()
+                        .stroke(AppColors.brandAccent.opacity(0.7), lineWidth: 1.5)
+                        .frame(width: 7, height: 7)
+                        .offset(x: CGFloat(ex * 34), y: CGFloat(ey * -34))
+                }
+
                 Circle()
-                    .fill(AppColors.brandAccent)
+                    .fill(isRecording ? AppColors.warning(colorScheme) : AppColors.brandAccent)
                     .frame(width: 3, height: 3)
                     .offset(x: CGFloat(x * 34), y: CGFloat(y * -34))
                     .shadow(color: AppColors.brandAccent.opacity(0.4), radius: 2)
@@ -1462,6 +1669,22 @@ struct CompactStickView: View {
                 .font(.system(size: 9, design: .monospaced))
                 .foregroundColor(AppColors.divider(colorScheme).opacity(0.7))
         }
+    }
+
+    /// Red arc showing the captured max edge for one direction of the stick.
+    /// Uses the same scale as the dot (34 of radius 40) so the raw dot rides
+    /// exactly along the captured edge. Angles use the shape's y-down
+    /// coordinate space: 0° = right, -90° = up.
+    private func edgeArc(radius: Float, start: Double, end: Double) -> some View {
+        Path { path in
+            path.addArc(center: CGPoint(x: 40, y: 40),
+                        radius: CGFloat(radius * 34),
+                        startAngle: .degrees(start),
+                        endAngle: .degrees(end),
+                        clockwise: false)
+        }
+        .stroke(AppColors.error(colorScheme).opacity(0.9), lineWidth: 2)
+        .frame(width: 80, height: 80)
     }
 }
 
