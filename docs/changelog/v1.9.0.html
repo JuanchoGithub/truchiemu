@@ -1,0 +1,59 @@
+---
+layout: default
+title: v1.9.0 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.9.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.9.0</h1>
+        <div class="release-meta">
+            <span class="release-date">August 18, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>This release adds controller stick calibration and a broad internal quality pass. Controllers: calibrate the analog stick range of each controller with live visual feedback, persisted per controller, plus fixes for SDL controllers — digital L2/R2 now drive analog triggers for cores like Flycast, and duplicate controllers after a reconnect are reconciled. While a game runs, the display and system stay awake. The live shader editor's Apply now survives relaunching the same game, and TV Mode keeps the system you selected after exiting a game. Under the hood, pause state was consolidated into a single enum (fixing scrub and recording bugs), core options follow a single five-layer precedence walk, controller mappings share one source of truth, and a new automated smoke-test harness boots 11 ROMs through the real launch pipeline to verify stability.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>Stick calibration:</strong> Calibrate each controller's analog stick range per direction with a live calibration session and visual feedback, applied to all your games and persisted per controller.</li>
+            <li><strong>No sleep while gaming:</strong> The display and system are kept awake while a game is running, so play sessions are never interrupted by your Mac falling asleep.</li>
+            <li><strong>Live shader Apply persists:</strong> Shader changes applied with the in-game shader editor survive relaunching the same game instead of reverting to the stale snapshot.</li>
+            <li><strong>TV Mode keeps its system:</strong> After exiting a game, TV Mode stays on the system you selected rather than snapping back to Recent.</li>
+            <li><strong>SDL controller fixes:</strong> Digital L2/R2 buttons now drive the analog trigger state (fixing Dreamcast controls in Flycast), and duplicate controllers are reconciled when GameControllerKit reconnects a device SDL already accepted.</li>
+            <li><strong>Consolidated pause state:</strong> Rewind, scrub, and pause now share a single state machine — scrubbing over a paused game keeps it paused on exit, and gamepad navigation restores the prior pause state.</li>
+            <li><strong>Automated smoke tests:</strong> A new boot-smoke harness launches 11 ROMs (NES to MAME) through the real launch pipeline and asserts the first frame renders, with the slang shader audit still healthy.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>feat: implement stick calibration for controllers — <code>StickCalibration</code> and <code>ControllerCalibration</code> models for per-direction analog stick range, <code>StickCalibrationSession</code> for live capture, SDLInputManager applies calibration, runners (DOSRunner, ScummVMRunner) consume it, calibration UI in ControllerSettingsViewGroup, en/es/ja/pt translations, plus a <code>ROMLibrary.refreshAll</code> bulk-refresh refactor</li>
+            <li>fix: prevent SDL duplicate when GCController registers a controller after reconnect — reconcile on GC/SDL connect notifications by closing the duplicate SDL handle; drop the never-decremented <code>acceptedSDLCountByName</code> counter that made the name-based guard permanently fail</li>
+            <li>fix: preserve live shader Apply across game relaunch — merge playtime bookkeeping into the current library entry instead of the stale launch-time snapshot; add the missing <code>shader.applyAndSave</code> key to all translation files</li>
+            <li>fix: prevent display and system sleep while a game is running</li>
+            <li>refactor: apply audit slices D, E and F-sl — launch-path work deduplication (cached <code>CoreCapabilities</code>, save-list snapshot, generic XPC reply helper, normalized extension index), state/precedence consolidation (5-layer core-option walk, single controller mapping map, ShaderManager as the single slang-preset source, canonical RA match status, pending-theme cluster, ManualStatusController), and tooling (11-ROM boot-smoke matrix via <code>TRUCHI_SMOKE_ROM</code>, slang audit, retired outdated MAME scripts)</li>
+            <li>refactor: remove dead LaunchConfig fields and single wizard flag — <code>slotToLoad</code>/<code>coreOptions</code>/<code>bezelFileName</code>/<code>hardcoreMode</code> deleted; <code>hasCompletedWizard</code> dropped in favor of <code>has_completed_onboarding</code></li>
+            <li>refactor: consolidate pause state into a single <code>PauseState</code> enum — replaces the manually-synced isPaused/isRewinding triple; scrub over paused keeps paused on exit, gamepad toolbar restores prior pause state, setPaused no-ops during scrub</li>
+            <li>refactor: apply audit slices A+C — single <code>AuthState</code> enum, recording session reset on all teardown paths, honor 404 negative-cache expiry, remove dead SequenceRunner engine and write-only flags; fix scrub/empty-recording bugs</li>
+            <li>fix: send analog trigger state for SDL digital L2/R2 buttons — pure SDL controllers only set the digital key state; cores like Flycast read Dreamcast triggers from the analog state; add l2/r2 to the flycast core button overrides and labels</li>
+            <li>fix: keep TV mode on selected system after game exit — make <code>initialEntryID</code> a one-shot seed so rebuilds no longer snap row-1 selection back to the entry TV mode opened on</li>
+            <li>Bump marketing version to 1.9.0 and build number to 32 across <code>project.yml</code>, both Info.plists, and <code>docs/_config.yml</code></li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.8.8.html' | relative_url }}" class="release-prev">&larr; v1.8.8</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>

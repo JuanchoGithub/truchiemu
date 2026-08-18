@@ -1,0 +1,59 @@
+---
+layout: default
+title: v1.9.0 - Documentación de TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/es/changelog.html' | relative_url }}">Registro de cambios</a>
+        <span class="separator">/</span>
+        <span class="current">v1.9.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.9.0</h1>
+        <div class="release-meta">
+            <span class="release-date">18 de agosto de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Esta versión añade la calibración del stick del control y una amplia mejora interna de calidad. Controles: calibra el rango del stick analógico de cada control con retroalimentación visual en vivo, guardada por control, más arreglos para controles SDL — el L2/R2 digital ahora activa los gatillos analógicos para núcleos como Flycast, y los controles duplicados tras una reconexión se reconcilian. Mientras un juego se ejecuta, la pantalla y el sistema permanecen despiertos. El Apply del editor de shaders en vivo ahora sobrevive al relanzar el mismo juego, y el Modo TV mantiene el sistema que seleccionaste después de salir de un juego. Bajo el capó, el estado de pausa se consolidó en un solo enum (arreglando bugs de scrub y grabación), las opciones de núcleo siguen un único recorrido de precedencia de cinco capas, las asignaciones de controles comparten una sola fuente de verdad, y un nuevo harness de smoke tests automatizado arranca 11 ROMs a través del pipeline de lanzamiento real para verificar la estabilidad.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destacados</h2>
+        <ul class="feature-list">
+            <li><strong>Calibración del stick:</strong> Calibra el rango del stick analógico de cada control por dirección con una sesión de calibración en vivo y retroalimentación visual, aplicada a todos tus juegos y guardada por control.</li>
+            <li><strong>Sin suspensión mientras juegas:</strong> La pantalla y el sistema se mantienen despiertos mientras un juego se ejecuta, así las sesiones de juego nunca se interrumpen porque tu Mac se suspenda.</li>
+            <li><strong>El Apply de shaders en vivo persiste:</strong> Los cambios de shader aplicados con el editor de shaders en juego sobreviven al relanzar el mismo juego en lugar de revertirse al snapshot obsoleto.</li>
+            <li><strong>El Modo TV mantiene su sistema:</strong> Después de salir de un juego, el Modo TV permanece en el sistema que seleccionaste en lugar de volver a Recientes.</li>
+            <li><strong>Arreglos de controles SDL:</strong> Los botones digitales L2/R2 ahora activan el estado analógico de los gatillos (arreglando los controles de Dreamcast en Flycast), y los controles duplicados se reconcilian cuando GameControllerKit reconecta un dispositivo que SDL ya había aceptado.</li>
+            <li><strong>Estado de pausa consolidado:</strong> Rewind, scrub y pausa ahora comparten una sola máquina de estados — scrubbing sobre un juego pausado lo mantiene pausado al salir, y la navegación de gamepad restaura el estado de pausa anterior.</li>
+            <li><strong>Smoke tests automatizados:</strong> Un nuevo harness de boot-smoke lanza 11 ROMs (de NES a MAME) a través del pipeline de lanzamiento real y verifica que el primer frame se renderice, con la auditoría de shaders slang aún saludable.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Cambios detallados</h2>
+        <ul>
+            <li>feat: implementar la calibración del stick para controles — modelos <code>StickCalibration</code> y <code>ControllerCalibration</code> para el rango del stick analógico por dirección, <code>StickCalibrationSession</code> para captura en vivo, SDLInputManager aplica la calibración, los runners (DOSRunner, ScummVMRunner) la consumen, UI de calibración en ControllerSettingsViewGroup, traducciones en/es/ja/pt, además de un refactor de refresco masivo <code>ROMLibrary.refreshAll</code></li>
+            <li>fix: evitar el duplicado de SDL cuando GameControllerKit registra un control tras una reconexión — reconciliar en las notificaciones de conexión GC/SDL cerrando el handle SDL duplicado; eliminar el contador <code>acceptedSDLCountByName</code> que nunca se decrementaba y hacía fallar permanentemente la guardia por nombre</li>
+            <li>fix: preservar el Apply de shaders en vivo al relanzar el juego — fusionar la contabilidad de tiempo de juego en la entrada actual de la biblioteca en lugar del snapshot obsoleto del lanzamiento; añadir la clave <code>shader.applyAndSave</code> que faltaba a todos los archivos de traducción</li>
+            <li>fix: evitar que la pantalla y el sistema duerman mientras un juego se ejecuta</li>
+            <li>refactor: aplicar los slices D, E y F-sl de la auditoría — deduplicación del trabajo en el lanzamiento (<code>CoreCapabilities</code> cacheadas, snapshot de listas de guardado, helper XPC genérico, índice de extensiones normalizado), consolidación de estado y precedencia (recorrido de 5 capas de opciones de núcleo, mapa único de asignaciones de controles, ShaderManager como única fuente del preset slang, estado RA canónico, cluster de tema pendiente, ManualStatusController) y herramientas (matriz de boot-smoke de 11 ROMs vía <code>TRUCHI_SMOKE_ROM</code>, auditoría slang, scripts MAME obsoletos retirados)</li>
+            <li>refactor: eliminar campos muertos de LaunchConfig y un flag de wizard — se eliminan <code>slotToLoad</code>/<code>coreOptions</code>/<code>bezelFileName</code>/<code>hardcoreMode</code>; <code>hasCompletedWizard</code> se sustituye por <code>has_completed_onboarding</code></li>
+            <li>refactor: consolidar el estado de pausa en un solo enum <code>PauseState</code> — reemplaza el triple isPaused/isRewinding sincronizado a mano; scrub sobre pausado mantiene pausado al salir, la barra de herramientas de gamepad restaura el estado anterior, setPaused no-op durante el scrub</li>
+            <li>refactor: aplicar los slices A+C de la auditoría — enum único <code>AuthState</code>, reset de sesión de grabación en todas las rutas de teardown, respetar el expiry del caché negativo 404, eliminar el motor SequenceRunner muerto y flags de solo escritura; arreglar bugs de scrub/grabación vacía</li>
+            <li>fix: enviar el estado analógico de los gatillos para los botones digitales L2/R2 de SDL — los controles SDL puros solo establecían el estado digital de teclas; núcleos como Flycast leen los gatillos de Dreamcast del estado analógico; añadir l2/r2 a los overrides y etiquetas de botones del núcleo flycast</li>
+            <li>fix: mantener el Modo TV en el sistema seleccionado tras salir de un juego — hacer <code>initialEntryID</code> una semilla de un solo uso para que los rebuilds ya no devuelvan la selección de la fila 1 a la entrada donde se abrió el Modo TV</li>
+            <li>Subir la versión de marketing a 1.9.0 y el número de build a 32 en <code>project.yml</code>, los dos <code>Info.plist</code> y <code>docs/_config.yml</code></li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/es/changelog/v1.8.8.html' | relative_url }}" class="release-prev">&larr; v1.8.8</a>
+        <a href="{{ '/es/changelog.html' | relative_url }}" class="release-all">Todas las versiones</a>
+    </nav>
+</div>
