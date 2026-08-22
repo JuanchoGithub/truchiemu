@@ -1,0 +1,49 @@
+---
+layout: default
+title: v1.10.0 - TruchiEmu Documentation
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/changelog.html' | relative_url }}">Changelog</a>
+        <span class="separator">/</span>
+        <span class="current">v1.10.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.10.0</h1>
+        <div class="release-meta">
+            <span class="release-date">August 22, 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>This release brings the Holo card effects — a liquid-glass sheen and glass-orb play button — alongside a new hue-cycles setting that controls how many rainbow rotations play across a card as the cursor moves, with effects suppressed during scrolling for smoothness. Custom cheats are now persisted to the per-game file and can be deleted per row, surviving reload and restart.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Highlights</h2>
+        <ul class="feature-list">
+            <li><strong>Holo effects:</strong> A new liquid-glass sheen view modifier and a glass-orb play button bring a dimensional, glassy look to library cards and controls.</li>
+            <li><strong>Hue cycles setting:</strong> A new Holo setting controls how many rainbow hue rotations sweep across a card as the cursor moves, with translations in English, Spanish, Japanese, and Portuguese.</li>
+            <li><strong>Smoother scrolling:</strong> Holo effects are now suppressed while the library is scrolling, keeping interaction fluid on large collections.</li>
+            <li><strong>Persistent custom cheats:</strong> Custom cheats are written to the per-game .cht file and survive reload and app restart, and each cheat row now has a delete button.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Detailed Changes</h2>
+        <ul>
+            <li>Add Holo feature support and UI enhancements — LiquidGlassSheen view modifier and GlassOrbPlayButton, Holo settings wired into Spanish/Japanese/Portuguese translations, BoxArtService resets holo masks when box art updates, the BoxArtLayers dependency added to the project, plus a bounding-box analysis script</li>
+            <li>feat: add hue cycles setting for Holo effects — HoloSettingsStore and HoloSettingsSnapshot gain a hueCycles value; HoloGameCardView suppresses effects during scrolling; HoloBumpRenderer handles invalid texture sizes gracefully; translations added across languages</li>
+            <li>fix: persist and allow deletion of custom cheats — CheatManagerService.addCheat/removeCheat persist to the per-game custom .cht file so custom cheats survive reload and restart; a delete (trash) button added to each cheat row; CheatAutoLoader.saveCustomCheats simplified to write a single canonical .cht per game (fixes #34)</li>
+            <li>Bump marketing version to 1.10.0 and build number to 33 across project.yml, both Info.plists, and docs/_config.yml</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/changelog/v1.9.0.html' | relative_url }}" class="release-prev">&larr; v1.9.0</a>
+        <a href="{{ '/changelog.html' | relative_url }}" class="release-all">All Releases</a>
+    </nav>
+</div>

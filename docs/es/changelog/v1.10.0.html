@@ -1,0 +1,49 @@
+---
+layout: default
+title: v1.10.0 - Documentación de TruchiEmu
+
+---
+
+<div class="feature-docs">
+    <nav class="breadcrumbs">
+        <a href="{{ '/es/changelog.html' | relative_url }}">Registro de cambios</a>
+        <span class="separator">/</span>
+        <span class="current">v1.10.0</span>
+    </nav>
+
+    <div class="release-header">
+        <h1>v1.10.0</h1>
+        <div class="release-meta">
+            <span class="release-date">22 de agosto de 2026</span>
+        </div>
+    </div>
+
+    <div class="release-description">
+        <p>Esta versión trae los efectos Holo de las tarjetas — un brillo de cristal líquido y un botón de reproducción con orbes de vidrio — junto con un nuevo ajuste de ciclos de tono que controla cuántas rotaciones del arcoíris recorren la tarjeta según se mueve el cursor, con los efectos suprimidos durante el desplazamiento para mayor fluidez. Los cheats personalizados ahora se guardan en el archivo .cht por juego y se pueden eliminar por fila, sobreviviendo a la recarga y al reinicio.</p>
+    </div>
+
+    <section id="highlights">
+        <h2>Destacados</h2>
+        <ul class="feature-list">
+            <li><strong>Efectos Holo:</strong> Un nuevo modificador de vista de brillo de cristal líquido y un botón de reproducción con orbes de vidrio aportan un aspecto vítreo y dimensional a las tarjetas y controles de la biblioteca.</li>
+            <li><strong>Ajuste de ciclos de tono:</strong> Un nuevo ajuste Holo controla cuántas rotaciones del arcoíris barren la tarjeta según se mueve el cursor, con traducciones en inglés, español, japonés y portugués.</li>
+            <li><strong>Desplazamiento más fluido:</strong> Los efectos Holo ahora se suprimen mientras la biblioteca se desplaza, manteniendo la interacción fluida en colecciones grandes.</li>
+            <li><strong>Cheats personalizados persistentes:</strong> Los cheats personalizados se escriben en el archivo .cht por juego y sobreviven a la recarga y al reinicio, y cada fila de cheat ahora tiene un botón de eliminar.</li>
+        </ul>
+    </section>
+
+    <section id="details">
+        <h2>Cambios detallados</h2>
+        <ul>
+            <li>Add Holo feature support and UI enhancements — modificador de vista LiquidGlassSheen y GlassOrbPlayButton, ajustes Holo conectados en las traducciones español/japonés/portugués, BoxArtService reinicia las máscaras holo al actualizar la carátula, dependencia BoxArtLayers añadida al proyecto, más un script de análisis de cajas delimitadoras</li>
+            <li>feat: add hue cycles setting for Holo effects — HoloSettingsStore y HoloSettingsSnapshot ganan un valor hueCycles; HoloGameCardView suprime los efectos durante el desplazamiento; HoloBumpRenderer maneja tamaños de textura inválidos con elegancia; traducciones añadidas en todos los idiomas</li>
+            <li>fix: persist and allow deletion of custom cheats — CheatManagerService.addCheat/removeCheat persisten en el archivo .cht personalizado por juego para que sobrevivan a la recarga y al reinicio; se añade un botón de eliminar (papelera) a cada fila de cheat; CheatAutoLoader.saveCustomCheats simplificado para escribir un único .cht canónico por juego (corrige #34)</li>
+            <li>Bump marketing version to 1.10.0 and build number to 33 across project.yml, both Info.plists, and docs/_config.yml</li>
+        </ul>
+    </section>
+
+    <nav class="release-nav">
+        <a href="{{ '/es/changelog/v1.9.0.html' | relative_url }}" class="release-prev">&larr; v1.9.0</a>
+        <a href="{{ '/es/changelog.html' | relative_url }}" class="release-all">Todas las versiones</a>
+    </nav>
+</div>

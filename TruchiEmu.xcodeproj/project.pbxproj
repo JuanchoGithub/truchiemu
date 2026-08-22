@@ -3455,7 +3455,6 @@
 				46789EEF6D67F1A3F1C20E60 /* arcade_button_mappings.json */,
 				2CE4818DFC09EC160E87FC48 /* Assets.xcassets */,
 				18A378D98313D80173A8B0B0 /* AppIcons */,
-				AE183271815DDA34E03A113A /* BIOS */,
 				D0CDC1D3C0773FC9C8698346 /* BoxArtSamples */,
 				FE700291499B346B34E3C68A /* cheats */,
 				76456D83E1C30F476B43170E /* ControllerIcons */,
@@ -3801,13 +3800,6 @@
 				86D467EC70EF33E265BAF765 /* ResourceCacheModels.swift */,
 			);
 			path = Models;
-			sourceTree = "<group>";
-		};
-		AE183271815DDA34E03A113A /* BIOS */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = BIOS;
 			sourceTree = "<group>";
 		};
 		AE83B388D11F6EB80FFF6EB1 /* Engine */ = {
