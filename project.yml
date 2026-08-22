@@ -21,6 +21,8 @@ packages:
   logboard:
     url: https://github.com/shogo4405/Logboard.git
     from: 2.6.0
+  boxartlayers:
+    path: BoxArtLayers
 
 targets:
   TruchiEmu:
@@ -38,6 +40,8 @@ targets:
       product: HaishinKit
     - package: logboard
       product: Logboard
+    - package: boxartlayers
+      product: BoxArtLayers
 
     frameworks:
     - SwiftData

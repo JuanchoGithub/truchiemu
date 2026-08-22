@@ -313,6 +313,7 @@ private struct ProgressiveSaveStateExpandedView: View {
                     .foregroundColor(AppColors.brandAccent)
             }
             .buttonStyle(.plain)
+            .liquidGlassSheen()
         }
         .padding(.vertical, 4)
     }

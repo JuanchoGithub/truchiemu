@@ -205,7 +205,7 @@ struct LibraryGridView: View {
     @State private var currentDownloadGameName: String? = nil
     @State private var carouselBoxArtURLs: [URL] = []
     @State private var marqueeOffset: CGFloat = 0
-    private enum ViewMode: String { case grid, list, tv }
+    private enum ViewMode: String { case grid, list, holo, tv }
     private var previousViewMode: ViewMode { get { _previousViewMode } set { _previousViewMode = newValue } }
     @State private var _previousViewMode: ViewMode = .grid
 
@@ -295,6 +295,8 @@ struct LibraryGridView: View {
                         emptyState
                     } else if viewMode == .grid {
                         gridView
+                    } else if viewMode == .holo {
+                        holoGridView
                     } else {
                         listView
                     }
@@ -304,11 +306,19 @@ struct LibraryGridView: View {
 .modifier(GamepadNavReceiver(
     onLaunch: { [self] in if let rom = selectedROM { Task { await launchGame(rom) } } },
     onFocusSearch: { [self] in searchFocused.wrappedValue = true },
-    onNavigateUp: { [self] in handleGamepadNavUp(columnCount: viewMode == .grid ? columnCount : 1, totalCount: viewModel.displayedROMs.count) },
-    onNavigateDown: { [self] in handleGamepadNavDown(columnCount: viewMode == .grid ? columnCount : 1, totalCount: viewModel.displayedROMs.count) },
+    onNavigateUp: { [self] in handleGamepadNavUp(columnCount: (viewMode == .grid || viewMode == .holo) ? columnCount : 1, totalCount: viewModel.displayedROMs.count) },
+    onNavigateDown: { [self] in handleGamepadNavDown(columnCount: (viewMode == .grid || viewMode == .holo) ? columnCount : 1, totalCount: viewModel.displayedROMs.count) },
     onNavigateLeft: { [self] in handleGamepadNavLeft() },
     onNavigateRight: { [self] in handleGamepadNavRight(totalCount: viewModel.displayedROMs.count) },
-    onToggleViewMode: { [self] in viewMode = viewMode == .grid ? .list : .grid },
+    onToggleViewMode: { [self] in 
+        if viewMode == .grid {
+            viewMode = .list
+        } else if viewMode == .list {
+            viewMode = .holo
+        } else if viewMode == .holo {
+            viewMode = .grid
+        }
+    },
     onCycleSortOrder: { [self] in handleGamepadCycleSort() },
     onShowContextMenu: { [self] in handleGamepadContextMenu() },
     onShowNotifications: { [self] in showNotificationPopover = true }
@@ -417,10 +427,10 @@ struct LibraryGridView: View {
             ToolbarItem(placement: .primaryAction) {
                 AccentSegmentedControl(
                     selection: $viewMode,
-                    options: [(ViewMode.grid, "square.grid.2x2"), (ViewMode.list, "list.bullet"), (ViewMode.tv, "tv")],
+                    options: [(ViewMode.grid, "square.grid.2x2"), (ViewMode.list, "list.bullet"), (ViewMode.holo, "sparkles"), (ViewMode.tv, "tv")],
                     accentColor: ThemeManager.shared.toolbarAccentEnabled ? AppColors.brandAccent : .blue
                 )
-                .frame(width: 120)
+                .frame(width: 160)
                 .help(loc.localized("toolbar.switchViewMode"))
             }
             ToolbarItem(placement: .primaryAction) {
@@ -776,6 +786,39 @@ viewModel.updateFilters(
     
     private var gridView: some View {
         GridCollectionViewRepresentable(
+            roms: $viewModel.displayedROMs,
+            selection: $selectedROMs,
+            primarySelection: Binding(
+                get: { selectedROM },
+                set: { selectedROM = $0 }
+            ),
+            zoomLevel: continuousZoom,
+            filter: filter,
+            raEnabled: raService.isEnabled,
+            gridPadding: gridPadding,
+            boxArtVersion: boxArtService.boxArtUpdated,
+            onDoubleClick: { rom in
+                Task { await launchGame(rom) }
+            },
+            onTap: { [self] rom, index in
+                handleTap(on: rom, at: index)
+            },
+            contextMenuProvider: { [self] rom in contextMenu(for: rom) },
+            library: library,
+            categoryManager: categoryManager
+        )
+        .onChange(of: gamepadNav.contentIndex) { _, newIndex in
+            guard gamepadNav.activeZone == .content else { return }
+            gridScrollTarget = newIndex
+        }
+        .onChange(of: gridScrollTarget) { _, newIndex in
+            guard newIndex != nil else { return }
+            gridScrollTarget = nil
+        }
+    }
+    
+    private var holoGridView: some View {
+        HoloGridCollectionViewRepresentable(
             roms: $viewModel.displayedROMs,
             selection: $selectedROMs,
             primarySelection: Binding(

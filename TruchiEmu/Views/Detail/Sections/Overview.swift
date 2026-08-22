@@ -184,6 +184,7 @@ extension GameDetailView {
                         .clipShape(Capsule())
                     }
                     .buttonStyle(.plain)
+                    .liquidGlassSheen()
                 }
             }
         }
@@ -262,6 +263,7 @@ extension GameDetailView {
                         .clipShape(Capsule())
                     }
                     .buttonStyle(.plain)
+                    .liquidGlassSheen()
                 }
             }
         )

@@ -10,6 +10,7 @@ struct SystemSidebarView: View {
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var raService = RetroAchievementsService.shared
     @ObservedObject private var gamepadNav = GamepadNavigationManager.shared
+    @ObservedObject private var holo = HoloSaliencyService.shared
     @Binding var selectedFilter: LibraryFilter
     @Binding var showCreateCategorySheet: Bool
     @Binding var editingCategory: GameCategory?
@@ -133,6 +134,7 @@ struct SystemSidebarView: View {
     }
 
     var body: some View {
+        VStack(spacing: 0) {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 0, pinnedViews: [.sectionHeaders]) {
                 Section {
@@ -233,6 +235,26 @@ struct SystemSidebarView: View {
             .padding(.vertical, 12)
         }
         .scrollContentBackground(.hidden)
+
+        if holo.activeDecomposeCount > 0 {
+            VStack(alignment: .leading, spacing: 4) {
+                BouncingProgressBar()
+                    .frame(height: 4)
+                HStack(spacing: 6) {
+                    Text(loc.localized("holo.generatingMasks"))
+                        .font(.caption2)
+                        .foregroundStyle(AppColors.textSecondaryNeutral(colorScheme))
+                    if holo.activeDecomposeCount > 1 {
+                        Text("(\(holo.activeDecomposeCount))")
+                            .font(.caption2)
+                            .foregroundStyle(AppColors.textTertiary(colorScheme))
+                    }
+                }
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 10)
+        }
+        }
         .background(
             ZStack {
                 AppColors.sidebarBackground(colorScheme, tinted: ThemeManager.shared.tintedSurfacesEnabled)

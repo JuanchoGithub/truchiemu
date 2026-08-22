@@ -7,6 +7,14 @@ struct GameCardView: View {
     let isSelected: Bool
     let isMultiSelected: Bool
     let zoomLevel: Double
+
+    // Play-button diameter follows the box art (grid zoom) size: at ≤50% zoom
+    // it stays at the base size; from 50%→100% it scales up to 2× the base.
+    private var playButtonDiameter: CGFloat {
+        let base: CGFloat = 46
+        let factor = zoomLevel <= 0.5 ? 1.0 : 1.0 + (zoomLevel - 0.5) * 2.0
+        return base * factor
+    }
     let filter: LibraryFilter?
     let raEnabled: Bool
     let onTap: (() -> Void)?
@@ -20,6 +28,7 @@ struct GameCardView: View {
     @State private var image: NSImage?
     @State private var blurredFillImage: NSImage?
     @State private var zoomReloadToken: UUID = UUID()
+    @State private var artworkFrameInCard: CGRect = .zero
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var prefs = SystemPreferences.shared
     @ObservedObject private var dragState = GameDragState.shared
@@ -187,6 +196,7 @@ struct GameCardView: View {
 
     var body: some View {
         cardContent
+        .coordinateSpace(name: "gameCard")
         .scaleEffect(isPressed ? 0.97 : (isLaunching ? 1.05 : (isHovered ? 1.02 : 1.0)))
         .animation(AppMotion.micro, value: isHovered)
         .animation(AppMotion.feedback, value: isPressed)
@@ -303,6 +313,13 @@ struct GameCardView: View {
             ZStack(alignment: .bottomTrailing) {
                 ZStack(alignment: .topTrailing) {
                     artworkView
+                    .background(
+                        GeometryReader { geo in
+                            Color.clear
+                                .onAppear { artworkFrameInCard = geo.frame(in: .named("gameCard")) }
+                                .onChange(of: geo.frame(in: .named("gameCard"))) { _, new in artworkFrameInCard = new }
+                        }
+                    )
                     .clipped()
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)
@@ -451,17 +468,23 @@ struct GameCardView: View {
         }
             .overlay(alignment: .center) {
                 if isHovered, !isLaunching {
-                Button {
-                    onDoubleClick?()
-                } label: {
-                    Image(systemName: "play.fill")
-                        .font(.system(size: 18, weight: .bold))
-                        .foregroundColor(.white)
-                        .padding(11)
-                        .background(Circle().fill(AppColors.brandAccent))
-                        .shadow(color: .black.opacity(0.35), radius: 4, y: 2)
-                }
-                .buttonStyle(.plain)
+                GlassOrbPlayButton(
+                    content: {
+                        if let nsImage = image {
+                            Image(nsImage: nsImage)
+                                .resizable()
+                                .scaledToFill()
+                        } else {
+                            Color.secondary.opacity(0.3)
+                        }
+                    },
+                    accent: AppColors.brandAccent,
+                    action: { onDoubleClick?() },
+                    diameter: playButtonDiameter,
+                    externalPointer: nil,
+                    artworkFrame: artworkFrameInCard,
+                    coordinateSpaceName: "gameCard"
+                )
                 .transition(.opacity)
                 .accessibilityLabel(Text("Launch " + rom.displayName))
             }

@@ -213,6 +213,18 @@ enum SettingsCatalog {
             ),
 
             SettingsCatalogEntry(
+                page: .holo, sectionID: "masks",
+                sectionTitle: "Holo Masks",
+                keywords: ["holo", "holographic", "foil", "mask", "masks", "folder", "reveal", "finder", "cache", "vision", "layer"]
+            ),
+
+            SettingsCatalogEntry(
+                page: .holo, sectionID: "levels",
+                sectionTitle: "Holo Levels",
+                keywords: ["holo", "holographic", "foil", "intensity", "strength", "pattern", "texture", "title", "chrome", "hero", "background", "randomize", "per-card"]
+            ),
+
+            SettingsCatalogEntry(
                 page: .bezels, sectionID: "storage",
                 sectionTitle: "Bezel Storage",
                 keywords: ["storage", "path", "folder", "directory"]

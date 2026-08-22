@@ -54,6 +54,7 @@ struct ModernSaveStateSlotView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
                     .buttonStyle(.plain)
+                    .liquidGlassSheen(cornerRadius: 8)
                     .transition(.opacity)
                 }
             }

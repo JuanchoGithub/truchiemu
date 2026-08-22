@@ -1044,6 +1044,10 @@ class BoxArtService: ObservableObject {
         // when library.updateROM mutates the affected rom(s).
         if romID != UUID() {
             ResultCache.shared.remove(romID)
+            // The holo foil masks are keyed only by romID, so replacing the
+            // box art leaves stale masks behind. Drop them so the next
+            // `holoMasks` call re-decomposes the new image.
+            HoloSaliencyService.shared.resetMasks(romID: romID.uuidString)
         }
         boxArtUpdated = UUID()
     }

@@ -50,6 +50,7 @@
 		08122F4305BEC84133D0793B /* fightdata_sf2hf.json in Resources */ = {isa = PBXBuildFile; fileRef = 56C1CCC370F61E8A198FE0FD /* fightdata_sf2hf.json */; };
 		08724A1C5294340425F2DA9A /* LoggerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CC526A551953B4E9BB08C9 /* LoggerService.swift */; };
 		08B5DC4072EE0BF4F53673B5 /* SettingsCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB2874E76788F8B07928F378 /* SettingsCatalog.swift */; };
+		08EC743DFCF5B42618FB4B87 /* LiquidGlassSheen.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD952A2B5F85CAEF3404A82C /* LiquidGlassSheen.swift */; };
 		092218AA2BA476F8746B2B1A /* input_coreLabels_beetle_psx_hw.json in Resources */ = {isa = PBXBuildFile; fileRef = B666AFBA89C9094D3D77ADBE /* input_coreLabels_beetle_psx_hw.json */; };
 		093A0D5881AA5FCDDD7AEDFF /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABE60205F14183C120DDC8AA /* DesignSystem.swift */; };
 		096CA59BF84AD898558DC0BA /* sgb@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = 2231DAB08AA4E579AE706E39 /* sgb@132w.png */; };
@@ -57,6 +58,7 @@
 		09A0CB6BBE4343272B4A0C09 /* sms-cheats.zip in Resources */ = {isa = PBXBuildFile; fileRef = 36595021E981B9F32234B307 /* sms-cheats.zip */; };
 		09A4E91B96AD2C160CB5872B /* SavesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5307A2424529A50C5E6BF26 /* SavesSettingsView.swift */; };
 		09E4EEA593CB6502548B5B5B /* 8bGameBoyColor.metal in Sources */ = {isa = PBXBuildFile; fileRef = 2FF46494B22F41F5D1CD519B /* 8bGameBoyColor.metal */; };
+		09FD8E39FF58D9B6B33EFAE7 /* HoloPatternStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94B1536361C39252F23DE3C /* HoloPatternStore.swift */; };
 		0A1D04699ECD980B2EE765EA /* input_coreLabels_jaxe.json in Resources */ = {isa = PBXBuildFile; fileRef = 9720B57FECB78B265F5FAD8E /* input_coreLabels_jaxe.json */; };
 		0A3417545FCAA84FD9E59357 /* input_systemLabels_jaguar.json in Resources */ = {isa = PBXBuildFile; fileRef = 522BBE4DFA7545981CCBBA57 /* input_systemLabels_jaguar.json */; };
 		0A908C8354097A01383EE585 /* input_coreLabels_caprice32.json in Resources */ = {isa = PBXBuildFile; fileRef = 1D979080123BBE87ECABDC00 /* input_coreLabels_caprice32.json */; };
@@ -119,6 +121,7 @@
 		1467407A77D08682F8195B42 /* HelpContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA24A7B42B3C58E4CD5125EC /* HelpContent.swift */; };
 		1471E66EA479C2A887D47B15 /* PCE.png in Resources */ = {isa = PBXBuildFile; fileRef = 764D6A71F6401BE53D60A3FE /* PCE.png */; };
 		14B0E6739ECD3D9180CBBF0C /* SystemDatabase.json in Resources */ = {isa = PBXBuildFile; fileRef = 52EF17FAC9C9F438B0FAC30E /* SystemDatabase.json */; };
+		14C0F58E0BBFCC6FFC607F1B /* holo_illusion2.png in Resources */ = {isa = PBXBuildFile; fileRef = 37C93683DE17C73F5933064B /* holo_illusion2.png */; };
 		14C338381382A9CAC6860ECA /* mgba_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = 31496D3D05A64CD62A82B014 /* mgba_libretro_default.json */; };
 		14CAB60C0C69B245D7BD3985 /* ps2.ico in Resources */ = {isa = PBXBuildFile; fileRef = 2E295E38DEA6618AF57F3C20 /* ps2.ico */; };
 		14E2C0C08F45EB8F76C39A80 /* super_mario_64_usa.png in Resources */ = {isa = PBXBuildFile; fileRef = 172791D2FD0C2A8D08F33F65 /* super_mario_64_usa.png */; };
@@ -139,6 +142,7 @@
 		1741C362D3DEC0F8D856EEE2 /* n64@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = B7AEE24751C8A0337877A2E0 /* n64@132w.png */; };
 		175914AA2909F5BE44E29AF4 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDFDD053E0B69ACF2A0BBE22 /* main.swift */; };
 		1764FB5120C4E768BDBB8A50 /* SearchMatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C21A6516E56F19973BF82B7 /* SearchMatch.swift */; };
+		1766EDF8EB00B0B79DD51AAB /* HoloBumpRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3EC54C5F00E0137DF7FD10 /* HoloBumpRenderer.swift */; };
 		177BE0DC2254927EF27416DD /* fightdata_plsmaswd.json in Resources */ = {isa = PBXBuildFile; fileRef = 4F9FC5972102623C25005D1B /* fightdata_plsmaswd.json */; };
 		180EFFC22EA4AFA6DFF975E2 /* input_coreLabels_snes9x_2010.json in Resources */ = {isa = PBXBuildFile; fileRef = 2DE7D61AD683C83AD4BE33A7 /* input_coreLabels_snes9x_2010.json */; };
 		18812A0E92FC9F07A95CFE9C /* slang_shader_bridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = C4BFFB66CF03271089D7FED6 /* slang_shader_bridge.mm */; };
@@ -169,6 +173,7 @@
 		1D56B2305EF0DA5A06F98BE4 /* CelebrationPillOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1D3F92500152FBBD78B02A2 /* CelebrationPillOverlay.swift */; };
 		1D74BFC265809AEF5ED3C30F /* RetroKeycodeMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC607903568B8A010CB23C1 /* RetroKeycodeMapper.swift */; };
 		1D84A133A736F7D1EB7635A1 /* input_coreLabels_mesen.json in Resources */ = {isa = PBXBuildFile; fileRef = 8E9D22D49CF8F9E8909D1BBD /* input_coreLabels_mesen.json */; };
+		1DAF09ADF0EFB4AADCB167DD /* holo_illusion.png in Resources */ = {isa = PBXBuildFile; fileRef = 6116D1988280340437127D72 /* holo_illusion.png */; };
 		1DFCEC2B4EF22A2231076113 /* Nintendo - Game Boy Advance.dat in Resources */ = {isa = PBXBuildFile; fileRef = 357A347AE1F2ED3C616BC49B /* Nintendo - Game Boy Advance.dat */; };
 		1E5F466E95292EC4EDA52AC5 /* input_coreOverrides_uzem.json in Resources */ = {isa = PBXBuildFile; fileRef = 6EC5C401683A3FA0F73FBBC0 /* input_coreOverrides_uzem.json */; };
 		1E9468BF7FD245AE5B2A4F85 /* input_coreOverrides_tyrquake.json in Resources */ = {isa = PBXBuildFile; fileRef = A99C803343A6D4E28B5A6BBA /* input_coreOverrides_tyrquake.json */; };
@@ -239,6 +244,7 @@
 		29CE32FC2F6F901B6183456D /* SATURN.png in Resources */ = {isa = PBXBuildFile; fileRef = F6BC2D971B660ACD5CC70339 /* SATURN.png */; };
 		2A4C1FDA0C8991B98B6E9CBA /* NDS.png in Resources */ = {isa = PBXBuildFile; fileRef = 1F755B4BB35962969772AE5B /* NDS.png */; };
 		2A50A46038AEC931AF677648 /* fightdata_cvsgd.json in Resources */ = {isa = PBXBuildFile; fileRef = B6FF84899910D3F6FAD36B4C /* fightdata_cvsgd.json */; };
+		2AB42E1F6D46FB04C3519B83 /* HoloVariantRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2040211263BC01B0D3C0F77 /* HoloVariantRenderer.swift */; };
 		2AF1B55372468A96B71ED2E9 /* input_coreLabels_citra.json in Resources */ = {isa = PBXBuildFile; fileRef = 3D753FA56AF8BCFA8A0D6EF5 /* input_coreLabels_citra.json */; };
 		2AFFF2EF4EC7172112642106 /* input_coreLabels_beetle_psx.json in Resources */ = {isa = PBXBuildFile; fileRef = B8134FC42DEC42B68A323F1A /* input_coreLabels_beetle_psx.json */; };
 		2B2B0A84C8FA0EC3F94F0ADB /* InputCaptureManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E4F7172EFA2D0F141FFA63 /* InputCaptureManager.swift */; };
@@ -293,6 +299,7 @@
 		35967BF2295B9DEF7EF76932 /* MAME2003PLUS.png in Resources */ = {isa = PBXBuildFile; fileRef = 395F149C0EF853E27D8FA5EC /* MAME2003PLUS.png */; };
 		35A94F53CC6111EDD2350BB0 /* input_systemLabels_dice.json in Resources */ = {isa = PBXBuildFile; fileRef = 51E0AB11BDD9C3E5EDF00912 /* input_systemLabels_dice.json */; };
 		35CD70D71DE0C18534C34292 /* input_coreLabels_gearboy.json in Resources */ = {isa = PBXBuildFile; fileRef = 0A905CA00DBF955F92929F34 /* input_coreLabels_gearboy.json */; };
+		360E85B47542945CD6FE2D16 /* HoloGameCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421CBFE4EB42D273FCE87B34 /* HoloGameCardView.swift */; };
 		367438AF41A2E4277D7605FE /* input_coreOverrides_pd777.json in Resources */ = {isa = PBXBuildFile; fileRef = 06F8D392772FF18175464C4F /* input_coreOverrides_pd777.json */; };
 		3699BC8E1AF90F686AA00486 /* fightdata_sfz3ugd.json in Resources */ = {isa = PBXBuildFile; fileRef = 33D4B52F0853356C3AA57C59 /* fightdata_sfz3ugd.json */; };
 		36BCFA5CE92E1BA8EE9CD75C /* Nintendo - Nintendo Entertainment System.dat in Resources */ = {isa = PBXBuildFile; fileRef = 55A0C232023C7657365528C8 /* Nintendo - Nintendo Entertainment System.dat */; };
@@ -352,6 +359,7 @@
 		452E0E7F7A9630C725D08395 /* RetroAchievementsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 335FB3D776E0D41A27C64844 /* RetroAchievementsSettingsView.swift */; };
 		4596D0538A126CE340A86004 /* Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = 312DD29D6B77A5CC9B13F942 /* Header.swift */; };
 		45B66EECA434F3285FEC8AED /* Shader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CE8DDABCE1ABFA58C62123 /* Shader.swift */; };
+		45EE5A222618B1A5B72A1EFD /* HoloGridCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D3B5D16F868D592F38DD258 /* HoloGridCollectionView.swift */; };
 		468C4859F176F6A621F5E335 /* RTMPStreamingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFCF99B1E8C5D1C076C32D31 /* RTMPStreamingService.swift */; };
 		469AF9FDF3E5581B31C6C69C /* input_coreLabels_gw.json in Resources */ = {isa = PBXBuildFile; fileRef = 8E892D0AA9633E0476542B9F /* input_coreLabels_gw.json */; };
 		472E426C725F6C13D0B30C4A /* input_coreLabels_ecwolf.json in Resources */ = {isa = PBXBuildFile; fileRef = 59CBFB7172EA714171C66600 /* input_coreLabels_ecwolf.json */; };
@@ -420,6 +428,7 @@
 		53610C7E863EC39935522D46 /* DOSRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0173607FC9D5E57349DD932 /* DOSRunner.swift */; };
 		5378C783DC1126D55E54B682 /* fightdata_sgemf.json in Resources */ = {isa = PBXBuildFile; fileRef = 8D81EC76BF3E62E5BD7D2461 /* fightdata_sgemf.json */; };
 		539C875A3EAB3D07EB574739 /* Atari - 7800.dat in Resources */ = {isa = PBXBuildFile; fileRef = 91841A7C7B2DD9EC9AE7FF7F /* Atari - 7800.dat */; };
+		541A7E28F13591BF9CFAA1C8 /* holo_angular.png in Resources */ = {isa = PBXBuildFile; fileRef = F963CBD06E90F51C6DB3B43D /* holo_angular.png */; };
 		543B34C593F66B5B4A04DE1A /* ScaleSmooth.metal in Sources */ = {isa = PBXBuildFile; fileRef = DB371ABEE63BE1D87FA4114E /* ScaleSmooth.metal */; };
 		5446550872E0129CC0BE3722 /* input_coreOverrides_gam4980.json in Resources */ = {isa = PBXBuildFile; fileRef = A487B63C4BA991FFD20139C0 /* input_coreOverrides_gam4980.json */; };
 		545259B14327244109A4047F /* PS.png in Resources */ = {isa = PBXBuildFile; fileRef = 7A50556F28AD971D0494AD88 /* PS.png */; };
@@ -521,6 +530,7 @@
 		68E1F6B1CBA2D8E8AE9B71DD /* fightdata_lastbld2.json in Resources */ = {isa = PBXBuildFile; fileRef = 65BC582864925AB3A4FC0ECE /* fightdata_lastbld2.json */; };
 		68E7B7AC1A2FEE8DEE9F54E8 /* input_systemLabels_gb.json in Resources */ = {isa = PBXBuildFile; fileRef = 570BA8A605096B17E53CCE3C /* input_systemLabels_gb.json */; };
 		69896470D8890B7E182B3FA6 /* fightdata_denjinmk.json in Resources */ = {isa = PBXBuildFile; fileRef = 835D008691071F4C20E2BDC8 /* fightdata_denjinmk.json */; };
+		69D49EB40BE882E58B8B6B37 /* holo_stylish2.png in Resources */ = {isa = PBXBuildFile; fileRef = AE2C6C9DA37D7576957EF710 /* holo_stylish2.png */; };
 		69D552FFB99EC4C2A205E265 /* fightdata_dragoona.json in Resources */ = {isa = PBXBuildFile; fileRef = D217F32E29657D0D74CD7EC1 /* fightdata_dragoona.json */; };
 		69E40E2C9F056BCC2855E413 /* input_coreLabels_vba_m.json in Resources */ = {isa = PBXBuildFile; fileRef = 1E91F2160C588EAA6CCDBF38 /* input_coreLabels_vba_m.json */; };
 		69FC8A732020D479AF5C05C0 /* input_systemLabels_tic80.json in Resources */ = {isa = PBXBuildFile; fileRef = 30AEE98B6230EBC5113EDB96 /* input_systemLabels_tic80.json */; };
@@ -572,6 +582,8 @@
 		714D657AEDB409F1DFA924E8 /* HotkeyActionRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1454A3CD638307C2DD9561DA /* HotkeyActionRow.swift */; };
 		717AAF26840E1DE390B8BC42 /* snes.ico in Resources */ = {isa = PBXBuildFile; fileRef = CBBBBE931B6BD349FC47C4F8 /* snes.ico */; };
 		71E0838C7961379AF8CFAD4A /* input_coreOverrides_mesen.json in Resources */ = {isa = PBXBuildFile; fileRef = 40A7B97302EE7EAFEA6F62ED /* input_coreOverrides_mesen.json */; };
+		722EB4FE9C71931649999615 /* holo_stylish.png in Resources */ = {isa = PBXBuildFile; fileRef = C708C6081B22F03E4E6AA0BE /* holo_stylish.png */; };
+		7252CF2763DB1CB60A31BE8E /* HoloCardLayers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E1F8977ED21416EA5C44A5C /* HoloCardLayers.swift */; };
 		7283B053DC245FB74C2A55F6 /* input_systemLabels_3do.json in Resources */ = {isa = PBXBuildFile; fileRef = A9747E1374E8440042D0FF33 /* input_systemLabels_3do.json */; };
 		72ABDF783EDAAF4BDD1D793A /* fightdata_arabianm.json in Resources */ = {isa = PBXBuildFile; fileRef = 2D56ED71DDB9C818FE8EE657 /* fightdata_arabianm.json */; };
 		72AE97FE14866498426AF742 /* input_systemLabels_mame.json in Resources */ = {isa = PBXBuildFile; fileRef = 356DA337A39EEB272E9E98D7 /* input_systemLabels_mame.json */; };
@@ -782,6 +794,8 @@
 		983F2D89FAADABA8BE2117DF /* CoreClientDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B492CEDD65E3E05C1185E321 /* CoreClientDelegate.swift */; };
 		9848C59D1C12F39F2D7C6625 /* ButtonKeyResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16C99BD273FC88A6C2D9A000 /* ButtonKeyResolver.swift */; };
 		989A19E7C73505C5E79BBB6D /* Nintendo - Super Nintendo Entertainment System.dat in Resources */ = {isa = PBXBuildFile; fileRef = DBFA21A59E5959BCB5A24AE7 /* Nintendo - Super Nintendo Entertainment System.dat */; };
+		98B0A36C967C944AC55A33C2 /* BoxArtLayers in Frameworks */ = {isa = PBXBuildFile; productRef = 31E4CFF90F8A2CEA3492D843 /* BoxArtLayers */; };
+		9931AAD078367371520605C3 /* HoloSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F74CF57BF531C249CBE72DB /* HoloSettingsView.swift */; };
 		9960784514A579E14913AAD1 /* fightdata_vsav2.json in Resources */ = {isa = PBXBuildFile; fileRef = BAF04CD09DFB8519346C6DC1 /* fightdata_vsav2.json */; };
 		9987C5B6973B6498EBDCF0D3 /* ShaderEditorSidebar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B77D1D588802D70CFDE597 /* ShaderEditorSidebar.swift */; };
 		99B049AB137B01676D6EA272 /* InputStateTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C0A03394D956A91354E3574 /* InputStateTracker.swift */; };
@@ -790,6 +804,7 @@
 		9A20252FD5A94F429367B691 /* LibraryGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C15A861E2696512846B9609 /* LibraryGridView.swift */; };
 		9A51286BE3E544F3EB1C86E5 /* input_systemLabels_gbc.json in Resources */ = {isa = PBXBuildFile; fileRef = 1E94765F417306042D759EAA /* input_systemLabels_gbc.json */; };
 		9A8549087B5607288432E8CD /* input_coreOverrides_ecwolf.json in Resources */ = {isa = PBXBuildFile; fileRef = 7B9A192F2BDD7DB5E61737FE /* input_coreOverrides_ecwolf.json */; };
+		9A9F57B6AB7FA7D121E8D24D /* HoloVariants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48CD6D977DCA38ED6A7DC895 /* HoloVariants.swift */; };
 		9AD4CF3DEA500B948D9EF661 /* GameDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6983EA32B13EE9D1F93A6893 /* GameDetailView.swift */; };
 		9AF9814776ED9604B34D33B9 /* input_coreLabels_beetle_sgx.json in Resources */ = {isa = PBXBuildFile; fileRef = 8E620C09D44B588F017C7B16 /* input_coreLabels_beetle_sgx.json */; };
 		9B3B828960D33C81D8E6AF17 /* sufami@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = E3E2B860B54481BF16012387 /* sufami@132w.png */; };
@@ -837,6 +852,7 @@
 		A09C8307DE97887156851C76 /* GitHubAPIModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD476D63A6BB92961004D98F /* GitHubAPIModels.swift */; };
 		A0A02C476DBC53C57AF72F39 /* input_coreOverrides_prboom.json in Resources */ = {isa = PBXBuildFile; fileRef = 0BB2C09C2DA9168C7B2E11CE /* input_coreOverrides_prboom.json */; };
 		A0B21CD02FE1D5AF76AA444A /* fightdata_ggxxrl.json in Resources */ = {isa = PBXBuildFile; fileRef = 7B707D7D22EB7ACF2A81F4EB /* fightdata_ggxxrl.json */; };
+		A0C2858225411C93E8B52043 /* holo_geometric.png in Resources */ = {isa = PBXBuildFile; fileRef = 02B028190C3BC8A66CC3B62E /* holo_geometric.png */; };
 		A18B9403F6755E6DE8F9DDE3 /* fightdata_dbz2.json in Resources */ = {isa = PBXBuildFile; fileRef = 2617937EC8AD6A8E1B5E6DEE /* fightdata_dbz2.json */; };
 		A2220A22D5B0D2170D33251E /* fightdata_aof.json in Resources */ = {isa = PBXBuildFile; fileRef = 38D9797E060F13CE08CCB254 /* fightdata_aof.json */; };
 		A26ACC8D96E3331141948232 /* SaveDirectoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1243D5911A71789DFD45D8CA /* SaveDirectoryManager.swift */; };
@@ -863,6 +879,7 @@
 		A636A60074D52DB1ED1F37DB /* MoveDataUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96619349B830F47B3655D652 /* MoveDataUtilities.swift */; };
 		A65710823C4D0A6B42F7EA87 /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8935D40F11BF986BE60A840 /* ThemeManager.swift */; };
 		A678CBDA96799531823BED45 /* input_systemLabels_psp.json in Resources */ = {isa = PBXBuildFile; fileRef = 2291C05C19886586122BCAC3 /* input_systemLabels_psp.json */; };
+		A699B8997F87105490413BC8 /* GlassOrb.metal in Sources */ = {isa = PBXBuildFile; fileRef = 3C9C7DF8B3C788A24004D789 /* GlassOrb.metal */; };
 		A6EB5C639841F4B3DB026DB9 /* input_coreLabels_fceumm.json in Resources */ = {isa = PBXBuildFile; fileRef = F1FC27A5C1F866F0F0C1F520 /* input_coreLabels_fceumm.json */; };
 		A7278EBCDED05652CE85EED6 /* fightdata_mvsc2.json in Resources */ = {isa = PBXBuildFile; fileRef = C9F54364D05E25E6DB8E0D89 /* fightdata_mvsc2.json */; };
 		A73CD8FC11A30FE6195AC14F /* ICloudMaterializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94E70E2B12D7C50F36C7881 /* ICloudMaterializer.swift */; };
@@ -1049,6 +1066,7 @@
 		CC72CDCF89AF32CBCD610FED /* RAHashComparisonSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C94E2C81D0A16F3F9DCA9E6B /* RAHashComparisonSheet.swift */; };
 		CCD785047268A2F0EA19391B /* input_coreOverrides_dosbox.json in Resources */ = {isa = PBXBuildFile; fileRef = 813F9D66696089B615C982B7 /* input_coreOverrides_dosbox.json */; };
 		CCEBE37645478E3B8F8668BD /* arduboy@132w.png in Resources */ = {isa = PBXBuildFile; fileRef = DDFFDFCC5969E427805C3248 /* arduboy@132w.png */; };
+		CCF3EE1346F3B310A58EA263 /* GlassOrbPlayButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 835F9E18B39630BAF0491B78 /* GlassOrbPlayButton.swift */; };
 		CDA240EB212C79641284B8E9 /* StickCalibration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77040D787DFCB5DECE030997 /* StickCalibration.swift */; };
 		CDB16BD1C1887BD7AD4E99F8 /* input_coreLabels_vemulator.json in Resources */ = {isa = PBXBuildFile; fileRef = A6985776C0054F68DA884F39 /* input_coreLabels_vemulator.json */; };
 		CDC8133D2C03E637999E2155 /* CheatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD4DF5D2F13617BDA825F6F3 /* CheatSettingsView.swift */; };
@@ -1059,6 +1077,7 @@
 		CF2022F4F944C17F5741AE01 /* CAVESTORY.png in Resources */ = {isa = PBXBuildFile; fileRef = B046DA0D84C6F163569AF09D /* CAVESTORY.png */; };
 		CF304079A8662B14B2BF9D27 /* input_coreLabels_mame.json in Resources */ = {isa = PBXBuildFile; fileRef = FA7BBD418F0D1637767DE7CA /* input_coreLabels_mame.json */; };
 		CF6F7A342B60A94D30A8C004 /* fightdata_svg.json in Resources */ = {isa = PBXBuildFile; fileRef = DFB716FDB9E08D61BB411959 /* fightdata_svg.json */; };
+		CF77D60BAABDAA58C115562D /* holo_illusion-mask.png in Resources */ = {isa = PBXBuildFile; fileRef = 6669CB8EDA7D41DC0623C89C /* holo_illusion-mask.png */; };
 		CFA32E280A0EBDCB7AF3095D /* fightdata_dbzsb.json in Resources */ = {isa = PBXBuildFile; fileRef = FF0214363F4B0E9296DB8AC5 /* fightdata_dbzsb.json */; };
 		CFA35C123220A5F1765ED1F0 /* controllerPreset_xbox-wireless-controller-xbox-wireless-controller.json in Resources */ = {isa = PBXBuildFile; fileRef = 01806BCFD8672293F4457A33 /* controllerPreset_xbox-wireless-controller-xbox-wireless-controller.json */; };
 		CFE1925DEA7686C5B3D76A98 /* input_coreLabels_holani.json in Resources */ = {isa = PBXBuildFile; fileRef = D55982DD468036597081950E /* input_coreLabels_holani.json */; };
@@ -1089,6 +1108,8 @@
 		D66B93781AA1F09200B679BE /* MSX.png in Resources */ = {isa = PBXBuildFile; fileRef = 7593A3081245E3AFB23AD3B9 /* MSX.png */; };
 		D66D18734803DF49EBD1B61B /* appIcon128.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 2E4D9A8F1E7FEDBCD0A9B62D /* appIcon128.jpg */; };
 		D6737C5333699754970E51E8 /* input_systemLabels_pokemon_mini.json in Resources */ = {isa = PBXBuildFile; fileRef = 7ABD85DBD8EF91C89DA606BB /* input_systemLabels_pokemon_mini.json */; };
+		D6AE742A1E61C54218E15183 /* holo_metal.png in Resources */ = {isa = PBXBuildFile; fileRef = 8EB2FA18857A750DDA8C676A /* holo_metal.png */; };
+		D6F2FCD149D20173B079DB9E /* holo_crossover.png in Resources */ = {isa = PBXBuildFile; fileRef = CBE0822EF493F2A3F9EFA369 /* holo_crossover.png */; };
 		D6FF09E31ACA00FC7494B9E0 /* fightdata_soulclbr.json in Resources */ = {isa = PBXBuildFile; fileRef = F627444ABF1C6A5C798EC26F /* fightdata_soulclbr.json */; };
 		D720E5BECA4BAE2B078C1852 /* fightdata_ggxxac.json in Resources */ = {isa = PBXBuildFile; fileRef = CF35AE3379CB76C025162E52 /* fightdata_ggxxac.json */; };
 		D7215BC8C6DC025146779C3E /* input_coreOverrides_desmume_2015.json in Resources */ = {isa = PBXBuildFile; fileRef = 632520A7FB69D6AA71C8C09A /* input_coreOverrides_desmume_2015.json */; };
@@ -1150,6 +1171,7 @@
 		E1AE3C3EC0B252998D335C81 /* input_coreLabels_play.json in Resources */ = {isa = PBXBuildFile; fileRef = 91C169256CD85D2378D91110 /* input_coreLabels_play.json */; };
 		E1DC04BBB50C8F4B597931CC /* AchievementBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0A29E765851D2607353290 /* AchievementBadgeView.swift */; };
 		E213A2100429C6C27FBF0C30 /* ShaderPreset.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB105E50D82536CAF16A0A2F /* ShaderPreset.swift */; };
+		E24F330DB7780A2C7C91B051 /* holo_trainerbg.png in Resources */ = {isa = PBXBuildFile; fileRef = D5D5817A7BE45841C902F2E4 /* holo_trainerbg.png */; };
 		E317973A7B9CCD95761A632D /* NESRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22D1B16C6AA1228BE917DC86 /* NESRunner.swift */; };
 		E34BEA59A54D1BCCB8C6A7F5 /* NEOCD.png in Resources */ = {isa = PBXBuildFile; fileRef = B5CA00A8090C98179839D7C0 /* NEOCD.png */; };
 		E3AC85C8FF932DF820783FBC /* fightdata_sams64_2.json in Resources */ = {isa = PBXBuildFile; fileRef = 85B3B44BBDB415B6AD99E93B /* fightdata_sams64_2.json */; };
@@ -1164,11 +1186,13 @@
 		E5519A0880D1360BA2982973 /* es.json in Resources */ = {isa = PBXBuildFile; fileRef = DA92FF5F565391B09186FD35 /* es.json */; };
 		E5CC519C7E8FD26D9228AA3C /* RcheevosCDReader.c in Sources */ = {isa = PBXBuildFile; fileRef = 8614000262ED93A0CCA2760E /* RcheevosCDReader.c */; };
 		E5DF81ECE7A293F0F403D992 /* mame2010_libretro.json in Resources */ = {isa = PBXBuildFile; fileRef = 4AD390216F957165FC9494EE /* mame2010_libretro.json */; };
+		E5EA48161580AAA1ABFA685A /* holo_glitter.png in Resources */ = {isa = PBXBuildFile; fileRef = 8222819FE1DDAF0DE92707FE /* holo_glitter.png */; };
 		E602AB588AE44CE5C78E87FD /* input_systemLabels_vircon32.json in Resources */ = {isa = PBXBuildFile; fileRef = 0852DBE1836B35F40C72AC9B /* input_systemLabels_vircon32.json */; };
 		E62EBD0220FD96647B367212 /* fightdata_fatfury2.json in Resources */ = {isa = PBXBuildFile; fileRef = BB2C4C158DD334B72241DBD2 /* fightdata_fatfury2.json */; };
 		E66FC435AF2AE3E864ABE0D2 /* super_mario_64_europe.png in Resources */ = {isa = PBXBuildFile; fileRef = C58E9C2F295E1E1E653F103C /* super_mario_64_europe.png */; };
 		E6DA83DD276F510920FF5649 /* ArchiveExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44CE66A9E7C20983A7AD9D5A /* ArchiveExtractor.swift */; };
 		E73E127C7D9D53CC6CC9A4E4 /* fightdata_breakers.json in Resources */ = {isa = PBXBuildFile; fileRef = 8B9DBDDFF0888D2FDBE11C8D /* fightdata_breakers.json */; };
+		E7625A35543ED867C55F1E47 /* holo_wave.png in Resources */ = {isa = PBXBuildFile; fileRef = 7A11549D9D348C11946BFA59 /* holo_wave.png */; };
 		E77642038E0B1B138CE591BB /* LogManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA440915145AB1C4D850872 /* LogManager.swift */; };
 		E78A8A6B927466965263E8A1 /* GameGuideSidebar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812B950A5FCB555990A28D2A /* GameGuideSidebar.swift */; };
 		E7CA2ACAAC320C870E65EF61 /* BezelSelectorWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6253DADF3E4A0EAA610ADE01 /* BezelSelectorWindow.swift */; };
@@ -1247,8 +1271,11 @@
 		F49F3B3F2418B2B8C6A26783 /* input_systemLabels_ep128.json in Resources */ = {isa = PBXBuildFile; fileRef = A3FAC1959347AEA3B5972F5A /* input_systemLabels_ep128.json */; };
 		F4D71882261926BDE9266F6F /* fightdata_ggxxsla.json in Resources */ = {isa = PBXBuildFile; fileRef = CD7E630F116CE2B0716A34EE /* fightdata_ggxxsla.json */; };
 		F50147245F97B94933596430 /* input_systemLabels_craft.json in Resources */ = {isa = PBXBuildFile; fileRef = E8AF3225C83E5D89BC360652 /* input_systemLabels_craft.json */; };
+		F5476C3DB666A0A473FB2C30 /* HoloBump.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9B697EA2D197AF7DAFA8D2BE /* HoloBump.metal */; };
 		F54BB5EB3F6026F1E1C323E2 /* fightdata_timekill.json in Resources */ = {isa = PBXBuildFile; fileRef = 719F002A9D487082ED007A6A /* fightdata_timekill.json */; };
+		F554BFFDE3B73BE6C45D014F /* HoloSaliencyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3106E014AE1B506B650D96BA /* HoloSaliencyService.swift */; };
 		F555AB9C5D57234DBE573822 /* fightdata_captcomm.json in Resources */ = {isa = PBXBuildFile; fileRef = 24CA44B3215148A4B9D3912B /* fightdata_captcomm.json */; };
+		F56E9E30C13014A97069EE60 /* holo_ancient.png in Resources */ = {isa = PBXBuildFile; fileRef = 94B97B593318B9C1F4557F51 /* holo_ancient.png */; };
 		F62933F7B93123D3C48B2565 /* TVModeGameTile.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9B612171274CE268934F30 /* TVModeGameTile.swift */; };
 		F63C72BAE0582C9EA6137677 /* swanstation_libretro_default.json in Resources */ = {isa = PBXBuildFile; fileRef = A15C813DB04B6B840363A592 /* swanstation_libretro_default.json */; };
 		F6487E3CD98C473D58ABBD61 /* fightdata_primrag2.json in Resources */ = {isa = PBXBuildFile; fileRef = C0349B304BE92D91285B9433 /* fightdata_primrag2.json */; };
@@ -1331,6 +1358,7 @@
 		01806BCFD8672293F4457A33 /* controllerPreset_xbox-wireless-controller-xbox-wireless-controller.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "controllerPreset_xbox-wireless-controller-xbox-wireless-controller.json"; sourceTree = "<group>"; };
 		028968D965BBF8007BE1DC73 /* ATARI800.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ATARI800.png; sourceTree = "<group>"; };
 		02AF500782AB016FB6164846 /* DreamcastBIOSService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DreamcastBIOSService.swift; sourceTree = "<group>"; };
+		02B028190C3BC8A66CC3B62E /* holo_geometric.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = holo_geometric.png; sourceTree = "<group>"; };
 		02CF8EF66CB8C3E5967901A7 /* SettingsSearchable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsSearchable.swift; sourceTree = "<group>"; };
 		0332CB1FAB59B41322608406 /* fightdata_samsptk.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_samsptk.json; sourceTree = "<group>"; };
 		037D149BE1ADE5FB4FDC4054 /* fightdata_jchan.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_jchan.json; sourceTree = "<group>"; };
@@ -1454,6 +1482,7 @@
 		1DDAC49B62FA6270AEA1A1A0 /* ody@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ody@132w.png"; sourceTree = "<group>"; };
 		1DDF81D808FDA57B2B4BA3EE /* fightdata_ggx.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_ggx.json; sourceTree = "<group>"; };
 		1DEBDA2FB6A139BF3A49E636 /* input_coreOverrides_flycast.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_flycast.json; sourceTree = "<group>"; };
+		1E1F8977ED21416EA5C44A5C /* HoloCardLayers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoloCardLayers.swift; sourceTree = "<group>"; };
 		1E2B15ECD4A7DD005132B14C /* input_coreLabels_bsnes_mercury_performance.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_bsnes_mercury_performance.json; sourceTree = "<group>"; };
 		1E2D936B5C0CCDBBFB77FDA5 /* dc@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dc@132w.png"; sourceTree = "<group>"; };
 		1E91F2160C588EAA6CCDBF38 /* input_coreLabels_vba_m.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_vba_m.json; sourceTree = "<group>"; };
@@ -1567,6 +1596,7 @@
 		30CC526A551953B4E9BB08C9 /* LoggerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggerService.swift; sourceTree = "<group>"; };
 		30F5DD7E624A4F3DC3E831ED /* input_coreOverrides_smsplus.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_smsplus.json; sourceTree = "<group>"; };
 		31018212011E14042F08F694 /* ngp@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ngp@132w.png"; sourceTree = "<group>"; };
+		3106E014AE1B506B650D96BA /* HoloSaliencyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoloSaliencyService.swift; sourceTree = "<group>"; };
 		312DD29D6B77A5CC9B13F942 /* Header.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Header.swift; sourceTree = "<group>"; };
 		31496D3D05A64CD62A82B014 /* mgba_libretro_default.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = mgba_libretro_default.json; sourceTree = "<group>"; };
 		3163ABB66BACBA8035AE394E /* fightdata_sfex2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_sfex2.json; sourceTree = "<group>"; };
@@ -1600,6 +1630,7 @@
 		36F405FCC5148CACA78ACD58 /* input_coreOverrides_cannonball.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_cannonball.json; sourceTree = "<group>"; };
 		3785C1F47A9C4D765D471039 /* GameModeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameModeManager.swift; sourceTree = "<group>"; };
 		37C4859B682A869506B406B2 /* SavedStates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedStates.swift; sourceTree = "<group>"; };
+		37C93683DE17C73F5933064B /* holo_illusion2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = holo_illusion2.png; sourceTree = "<group>"; };
 		3808F4606AB93A4AE90A030F /* LibretroBridgeImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LibretroBridgeImpl.h; sourceTree = "<group>"; };
 		380B3A9A0CDC45FD5FE88630 /* Sega - Dreamcast.dat */ = {isa = PBXFileReference; path = "Sega - Dreamcast.dat"; sourceTree = "<group>"; };
 		38D9797E060F13CE08CCB254 /* fightdata_aof.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_aof.json; sourceTree = "<group>"; };
@@ -1623,6 +1654,7 @@
 		3BE49C585633F028422B60E3 /* SFCMSU.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SFCMSU.png; sourceTree = "<group>"; };
 		3C81E516A57892669DA74C24 /* fightdata_ringdest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_ringdest.json; sourceTree = "<group>"; };
 		3C9A0ED4F14D4BDE0F914812 /* input_systemLabels_ps2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_ps2.json; sourceTree = "<group>"; };
+		3C9C7DF8B3C788A24004D789 /* GlassOrb.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = GlassOrb.metal; sourceTree = "<group>"; };
 		3D5122C0BA2C8EE43B5E3F24 /* gearboy_libretro_gb.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = gearboy_libretro_gb.json; sourceTree = "<group>"; };
 		3D753FA56AF8BCFA8A0D6EF5 /* input_coreLabels_citra.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_citra.json; sourceTree = "<group>"; };
 		3D9174F064E6B3F316C9AFDB /* sfc@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sfc@132w.png"; sourceTree = "<group>"; };
@@ -1655,6 +1687,7 @@
 		41B8041BB380687A2394C483 /* rf_decoder_bridge.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = rf_decoder_bridge.mm; sourceTree = "<group>"; };
 		41C226E2DACE6752012A3848 /* input_coreLabels_stella.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_stella.json; sourceTree = "<group>"; };
 		41FF1637DD9235B253AB5FC0 /* neogeo@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "neogeo@132w.png"; sourceTree = "<group>"; };
+		421CBFE4EB42D273FCE87B34 /* HoloGameCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoloGameCardView.swift; sourceTree = "<group>"; };
 		42295729EC633AC1ABE32DBF /* 32X@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "32X@132w.png"; sourceTree = "<group>"; };
 		42388487227F2DC60AC9BACA /* ShareButtonConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareButtonConfig.swift; sourceTree = "<group>"; };
 		427B5599A80B29D8276CEBE2 /* fightdata_mace.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_mace.json; sourceTree = "<group>"; };
@@ -1685,6 +1718,7 @@
 		47C0E5F83D9F3C91BA7B9595 /* GW.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = GW.png; sourceTree = "<group>"; };
 		48C6E114A5242CDC824D54E9 /* atari@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "atari@132w.png"; sourceTree = "<group>"; };
 		48C98C7FCED4E670B826D7E7 /* input_coreOverrides_mkxp-z.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "input_coreOverrides_mkxp-z.json"; sourceTree = "<group>"; };
+		48CD6D977DCA38ED6A7DC895 /* HoloVariants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoloVariants.swift; sourceTree = "<group>"; };
 		48DC654FE1A1A438A8E17D0A /* input_coreLabels_opera.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_opera.json; sourceTree = "<group>"; };
 		48EC2BF08A118C9E0FDC4593 /* n64_unreleased-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "n64_unreleased-cheats.zip"; sourceTree = "<group>"; };
 		48F647BB052673C2E8DCD7FC /* rf_decoder_bridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rf_decoder_bridge.h; sourceTree = "<group>"; };
@@ -1705,6 +1739,7 @@
 		4CB8D85B3EE52977B0324896 /* gamegear.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = gamegear.ico; sourceTree = "<group>"; };
 		4CCBCE020AE481CD1A7F004F /* input_coreLabels_stone_soup.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_stone_soup.json; sourceTree = "<group>"; };
 		4D0CC7F9B8824DFF3250BFB2 /* fightdata_blandia.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_blandia.json; sourceTree = "<group>"; };
+		4D3B5D16F868D592F38DD258 /* HoloGridCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoloGridCollectionView.swift; sourceTree = "<group>"; };
 		4D90AF78F9CB2BB5DFA4EA42 /* LibretroBridge.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = LibretroBridge.mm; sourceTree = "<group>"; };
 		4D9A56AED1C74C8EE30DF3C0 /* fightdata_nwarr.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_nwarr.json; sourceTree = "<group>"; };
 		4DAB30E2932C1B1075A8FD59 /* SaturnRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaturnRunner.swift; sourceTree = "<group>"; };
@@ -1772,6 +1807,7 @@
 		596FC72EF305521FB589153D /* InputDeviceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputDeviceType.swift; sourceTree = "<group>"; };
 		59CBFB7172EA714171C66600 /* input_coreLabels_ecwolf.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_ecwolf.json; sourceTree = "<group>"; };
 		5A32D090BDCC70201F06FE5A /* vectrex@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vectrex@132w.png"; sourceTree = "<group>"; };
+		5A3F53EB13F1207F1D8399A9 /* BoxArtLayers */ = {isa = PBXFileReference; lastKnownFileType = folder; name = BoxArtLayers; path = BoxArtLayers; sourceTree = SOURCE_ROOT; };
 		5A6FF56C23A80B7D68EA5193 /* input_coreLabels_beetle_bsnes.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_beetle_bsnes.json; sourceTree = "<group>"; };
 		5A70807FC6C49F96FD77612C /* CoreHost.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CoreHost.entitlements; sourceTree = "<group>"; };
 		5A88EF4D77E55B94A239B343 /* DOSJoystickPreset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOSJoystickPreset.swift; sourceTree = "<group>"; };
@@ -1796,6 +1832,7 @@
 		5D2ACABD070C032CF81B99A6 /* Nintendo - Family Computer Disk System.dat */ = {isa = PBXFileReference; path = "Nintendo - Family Computer Disk System.dat"; sourceTree = "<group>"; };
 		5D70975DBD07119CF82935ED /* fightdata_sf2ce.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_sf2ce.json; sourceTree = "<group>"; };
 		5DD14108CB59DFA0DA852B43 /* PORTS.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PORTS.png; sourceTree = "<group>"; };
+		5E3EC54C5F00E0137DF7FD10 /* HoloBumpRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoloBumpRenderer.swift; sourceTree = "<group>"; };
 		5E5551604B613874ED01F84F /* fightdata_fghthist.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_fghthist.json; sourceTree = "<group>"; };
 		5E87F33C253900ECEF327206 /* MoveListOverlayViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveListOverlayViewModel.swift; sourceTree = "<group>"; };
 		5E90C52AEDC3AC23BA35B915 /* vb@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vb@132w.png"; sourceTree = "<group>"; };
@@ -1813,6 +1850,7 @@
 		60E9D4F25604E1D8BD311933 /* fightdata_daraku.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_daraku.json; sourceTree = "<group>"; };
 		6106DEB15765EDB446958687 /* input_systemLabels_doom_3.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_doom_3.json; sourceTree = "<group>"; };
 		61128A5490F95F51CF67D3B9 /* GBA.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = GBA.metal; sourceTree = "<group>"; };
+		6116D1988280340437127D72 /* holo_illusion.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = holo_illusion.png; sourceTree = "<group>"; };
 		61341295EE2B8A9A3EE7AF16 /* ForceAlpha.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ForceAlpha.metal; sourceTree = "<group>"; };
 		6134273171A1D67C5727EC2A /* TVModeEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVModeEntry.swift; sourceTree = "<group>"; };
 		614D234FC284534283EEAB09 /* fightdata_tattass.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_tattass.json; sourceTree = "<group>"; };
@@ -1844,6 +1882,7 @@
 		65BC582864925AB3A4FC0ECE /* fightdata_lastbld2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_lastbld2.json; sourceTree = "<group>"; };
 		65C067FA21A2CFE61996BB6F /* fightdata_vhunt2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_vhunt2.json; sourceTree = "<group>"; };
 		663082132505D8BF64B9F883 /* fightdata_mk2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_mk2.json; sourceTree = "<group>"; };
+		6669CB8EDA7D41DC0623C89C /* holo_illusion-mask.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "holo_illusion-mask.png"; sourceTree = "<group>"; };
 		66754553122E2FE54E346479 /* input_coreLabels_flycast.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_flycast.json; sourceTree = "<group>"; };
 		66874C37C2C8AC2873730684 /* input_systemLabels_dos.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_dos.json; sourceTree = "<group>"; };
 		6688398EC9355AEE4D0D4F13 /* fightdata_kof2001.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_kof2001.json; sourceTree = "<group>"; };
@@ -1944,6 +1983,7 @@
 		794825E4A27DACE1EB61F442 /* easyrpg@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "easyrpg@132w.png"; sourceTree = "<group>"; };
 		79F9C29D41593BD0666D4215 /* CoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreManager.swift; sourceTree = "<group>"; };
 		7A0A290509C1D20EA2265610 /* AccentSegmentedControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccentSegmentedControl.swift; sourceTree = "<group>"; };
+		7A11549D9D348C11946BFA59 /* holo_wave.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = holo_wave.png; sourceTree = "<group>"; };
 		7A119E4B19856B61DDCE4AEA /* SlangPresetDiscoveryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlangPresetDiscoveryService.swift; sourceTree = "<group>"; };
 		7A121397290660B21B099AD4 /* PC98.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PC98.png; sourceTree = "<group>"; };
 		7A22B6773AC50CA6AD962E3E /* input_coreLabels_2048.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_2048.json; sourceTree = "<group>"; };
@@ -1987,6 +2027,7 @@
 		816EC3B058096F41BD785C25 /* WSC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = WSC.png; sourceTree = "<group>"; };
 		81CE6669515EBF7037DB57EE /* fightdata_kofnw.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_kofnw.json; sourceTree = "<group>"; };
 		81E3982CE81B01C2BAF683D4 /* input_coreLabels_prosystem.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_prosystem.json; sourceTree = "<group>"; };
+		8222819FE1DDAF0DE92707FE /* holo_glitter.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = holo_glitter.png; sourceTree = "<group>"; };
 		823B1FD3E319074A9926700C /* TruchiEmu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TruchiEmu.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		827E55E978215F285D7F5800 /* BezelModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelModels.swift; sourceTree = "<group>"; };
 		828A1DFED1A8F4C19CAE6952 /* gbc-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "gbc-cheats.zip"; sourceTree = "<group>"; };
@@ -1996,6 +2037,7 @@
 		831A585E8E178AB813D2D8FD /* input_coreLabels_handy.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_handy.json; sourceTree = "<group>"; };
 		835D008691071F4C20E2BDC8 /* fightdata_denjinmk.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_denjinmk.json; sourceTree = "<group>"; };
 		835D932CF0B22A2AACA96CC6 /* input_systemLabels_zx_spectrum.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_zx_spectrum.json; sourceTree = "<group>"; };
+		835F9E18B39630BAF0491B78 /* GlassOrbPlayButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassOrbPlayButton.swift; sourceTree = "<group>"; };
 		8383611EAFAFBDD5EBF6D51E /* fightdata_batcir.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_batcir.json; sourceTree = "<group>"; };
 		83F1EFBDD0AE4C0DBA2E5821 /* input_systemLabels_wonderswan.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_wonderswan.json; sourceTree = "<group>"; };
 		8422707E4EFAF2631E115415 /* BezelSystemMapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezelSystemMapping.swift; sourceTree = "<group>"; };
@@ -2051,10 +2093,12 @@
 		8E892D0AA9633E0476542B9F /* input_coreLabels_gw.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_gw.json; sourceTree = "<group>"; };
 		8E9D22D49CF8F9E8909D1BBD /* input_coreLabels_mesen.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_mesen.json; sourceTree = "<group>"; };
 		8EB1089496821919AE109306 /* input_coreLabels_sameboy.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_sameboy.json; sourceTree = "<group>"; };
+		8EB2FA18857A750DDA8C676A /* holo_metal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = holo_metal.png; sourceTree = "<group>"; };
 		8EECD5E5425F98599E3FEE0C /* satellaview-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "satellaview-cheats.zip"; sourceTree = "<group>"; };
 		8EF0E4BB2D485D8AD82D50B3 /* segacd-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "segacd-cheats.zip"; sourceTree = "<group>"; };
 		8F335963F669B717AE38BB24 /* SaveStateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveStateManager.swift; sourceTree = "<group>"; };
 		8F442C51C91A87E9FE4913C0 /* fightdata_mbombrd.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_mbombrd.json; sourceTree = "<group>"; };
+		8F74CF57BF531C249CBE72DB /* HoloSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoloSettingsView.swift; sourceTree = "<group>"; };
 		9002F2B47556DFEE2E9FFDD4 /* fightdata_dstlk.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_dstlk.json; sourceTree = "<group>"; };
 		90136857D881B5C8AEE538D0 /* GameMappingProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameMappingProfile.swift; sourceTree = "<group>"; };
 		9069327937C4BD5B3CED4E12 /* MoveForest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveForest.swift; sourceTree = "<group>"; };
@@ -2075,6 +2119,7 @@
 		944B0903687B28CB8F29FCD9 /* RecordingTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingTabView.swift; sourceTree = "<group>"; };
 		94845A1C0EFE2888D25532CC /* input_coreLabels_emux_gb.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_emux_gb.json; sourceTree = "<group>"; };
 		948CE21AAEB52DD0237AA592 /* input_systemLabels_wii.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_wii.json; sourceTree = "<group>"; };
+		94B97B593318B9C1F4557F51 /* holo_ancient.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = holo_ancient.png; sourceTree = "<group>"; };
 		94CA0D3AC8E6419DFF67D363 /* GameOSDOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOSDOverlay.swift; sourceTree = "<group>"; };
 		94FDE0F388F6221A7090D7C2 /* LibraryMetadataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryMetadataStore.swift; sourceTree = "<group>"; };
 		952EF0234B18D7BA308ED49E /* ja.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ja.json; sourceTree = "<group>"; };
@@ -2106,6 +2151,7 @@
 		99D154B5B635E5C1ED3F2CBC /* input_coreLabels_quasi88.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_quasi88.json; sourceTree = "<group>"; };
 		9A53F0EBF42B897DC4DA810A /* pt.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = pt.json; sourceTree = "<group>"; };
 		9B06488DE005018FB65D9950 /* input_coreLabels_mesen-s.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "input_coreLabels_mesen-s.json"; sourceTree = "<group>"; };
+		9B697EA2D197AF7DAFA8D2BE /* HoloBump.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = HoloBump.metal; sourceTree = "<group>"; };
 		9B9365CD6FC031FDA5FC4E59 /* CPS1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CPS1.png; sourceTree = "<group>"; };
 		9C0E8F85B2C2893C2F36FAB0 /* MoveDataGamesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveDataGamesView.swift; sourceTree = "<group>"; };
 		9C2D4457E6499AA2F5779FF4 /* input_systemOverrides_segacd.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemOverrides_segacd.json; sourceTree = "<group>"; };
@@ -2207,11 +2253,13 @@
 		AD0CFE0A2FFE87D74FE69FCB /* input_coreLabels_hatari.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_hatari.json; sourceTree = "<group>"; };
 		AD52F50F8DCDB124F31A0124 /* fightdata_samsho2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_samsho2.json; sourceTree = "<group>"; };
 		AD6938F8ED0978C59811FFE9 /* input_systemLabels_32x.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_32x.json; sourceTree = "<group>"; };
+		AD952A2B5F85CAEF3404A82C /* LiquidGlassSheen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassSheen.swift; sourceTree = "<group>"; };
 		AD9DDC02CE4528E2001A87B1 /* fightdata_sfex.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_sfex.json; sourceTree = "<group>"; };
 		ADDF41CC3604E9BF6ADA9D85 /* fightdata_holo.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_holo.json; sourceTree = "<group>"; };
 		ADE34CAD80144C808D1FC81D /* OPENBOR.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = OPENBOR.png; sourceTree = "<group>"; };
 		ADEF8D2F898EB866CFCB4B7D /* input_coreOverrides_lrps2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreOverrides_lrps2.json; sourceTree = "<group>"; };
 		AE2C09D3C56810B2B9CCD08F /* LibretroGlobals.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = LibretroGlobals.mm; sourceTree = "<group>"; };
+		AE2C6C9DA37D7576957EF710 /* holo_stylish2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = holo_stylish2.png; sourceTree = "<group>"; };
 		AE565CF1103447CBA9B353C0 /* LibretroCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibretroCore.swift; sourceTree = "<group>"; };
 		AE6DD9F2D88F252E2CECD2CC /* LibraryAnimations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryAnimations.swift; sourceTree = "<group>"; };
 		AE88DE36C63C7988B726B538 /* ModernSaveStateSlotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModernSaveStateSlotView.swift; sourceTree = "<group>"; };
@@ -2329,6 +2377,7 @@
 		C6A669A1E4230EBBC0D9A2F4 /* RcheevosWrapper.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = RcheevosWrapper.c; sourceTree = "<group>"; };
 		C6B902C8D11765B90604510E /* input_coreLabels_beetle_saturn.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_beetle_saturn.json; sourceTree = "<group>"; };
 		C6E39A1DA6685C2C22E7F0E9 /* UpdateAvailableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateAvailableView.swift; sourceTree = "<group>"; };
+		C708C6081B22F03E4E6AA0BE /* holo_stylish.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = holo_stylish.png; sourceTree = "<group>"; };
 		C72372490BF3D6F53F7ADEEC /* ShaderPresetPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderPresetPickerView.swift; sourceTree = "<group>"; };
 		C7CD3A2622E5EB85414BAD77 /* input_systemLabels_3ds.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_3ds.json; sourceTree = "<group>"; };
 		C7EBF5DE7A5D6623BDB398DE /* MediaHotkeyBindingRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaHotkeyBindingRow.swift; sourceTree = "<group>"; };
@@ -2355,6 +2404,7 @@
 		CB274110F7281D8DBC58FA5C /* itv@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "itv@132w.png"; sourceTree = "<group>"; };
 		CB6C88486821941C90609217 /* genesis-cheats.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "genesis-cheats.zip"; sourceTree = "<group>"; };
 		CBBBBE931B6BD349FC47C4F8 /* snes.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = snes.ico; sourceTree = "<group>"; };
+		CBE0822EF493F2A3F9EFA369 /* holo_crossover.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = holo_crossover.png; sourceTree = "<group>"; };
 		CBFE3A9E877C2D62FEDDB15E /* SetupWizardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupWizardView.swift; sourceTree = "<group>"; };
 		CC22A0575FAB26831CC547B9 /* super_mario_64_japan.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = super_mario_64_japan.png; sourceTree = "<group>"; };
 		CC6AB7FF503B33DE09A41088 /* DragPreviewStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragPreviewStack.swift; sourceTree = "<group>"; };
@@ -2407,6 +2457,7 @@
 		D55982DD468036597081950E /* input_coreLabels_holani.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_holani.json; sourceTree = "<group>"; };
 		D58ADFC9D5F59660DB53A581 /* PCECD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PCECD.png; sourceTree = "<group>"; };
 		D5B2F7AE141392E7AA767BF3 /* SystemPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemPickerView.swift; sourceTree = "<group>"; };
+		D5D5817A7BE45841C902F2E4 /* holo_trainerbg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = holo_trainerbg.png; sourceTree = "<group>"; };
 		D5EA7A9B9DAF119BC3A9EAFB /* input_coreLabels_puae.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_puae.json; sourceTree = "<group>"; };
 		D605FAA1A390ADB88CF8EDC4 /* ntsc_decoder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ntsc_decoder.cpp; sourceTree = "<group>"; };
 		D6078CA03728BBBDB883C5EE /* fightdata_vf2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_vf2.json; sourceTree = "<group>"; };
@@ -2467,6 +2518,7 @@
 		E157F75F5D3ED38A10662065 /* fightdata_index.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_index.json; sourceTree = "<group>"; };
 		E17D761AD77BAABC32070FEA /* input_coreLabels_bsnes_accuracy.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_coreLabels_bsnes_accuracy.json; sourceTree = "<group>"; };
 		E1BF10D1500946FC0D877ABC /* TrainingModeOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingModeOverlay.swift; sourceTree = "<group>"; };
+		E2040211263BC01B0D3C0F77 /* HoloVariantRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoloVariantRenderer.swift; sourceTree = "<group>"; };
 		E28C9FC682FA4AC974FC7375 /* satella@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "satella@132w.png"; sourceTree = "<group>"; };
 		E31FD522297D20DF9F6C466F /* col@132w.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "col@132w.png"; sourceTree = "<group>"; };
 		E3BFA1246A6786356AD01A21 /* SaveManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveManagerView.swift; sourceTree = "<group>"; };
@@ -2585,6 +2637,8 @@
 		F8AEDBF02AB7BFEEBFD3B243 /* fightdata_svc.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_svc.json; sourceTree = "<group>"; };
 		F8AEF8953B8BA54E445A5975 /* fightdata_kabukikl.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_kabukikl.json; sourceTree = "<group>"; };
 		F931A653951E17D19F105A64 /* input_systemLabels_xrick.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = input_systemLabels_xrick.json; sourceTree = "<group>"; };
+		F94B1536361C39252F23DE3C /* HoloPatternStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoloPatternStore.swift; sourceTree = "<group>"; };
+		F963CBD06E90F51C6DB3B43D /* holo_angular.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = holo_angular.png; sourceTree = "<group>"; };
 		F9C5B0740DCBC111CE5503A2 /* fightdata_btlkroad.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fightdata_btlkroad.json; sourceTree = "<group>"; };
 		F9E6973D2682AC9B98A71D5A /* TruchiEmu-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TruchiEmu-Bridging-Header.h"; sourceTree = "<group>"; };
 		F9EC7D9ADEF9D2B4EA006F44 /* rf_dynamic_state.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rf_dynamic_state.h; sourceTree = "<group>"; };
@@ -2633,6 +2687,7 @@
 				B6D65ED10DFC44D614E093F0 /* RTMPHaishinKit in Frameworks */,
 				8D86271749065720D1A63F61 /* HaishinKit in Frameworks */,
 				36C6CDE1F4E34A950B5CDC64 /* Logboard in Frameworks */,
+				98B0A36C967C944AC55A33C2 /* BoxArtLayers in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2801,6 +2856,14 @@
 			path = 132;
 			sourceTree = "<group>";
 		};
+		10E19FB845FF99D10CEF235C /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				5A3F53EB13F1207F1D8399A9 /* BoxArtLayers */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
 		1128BD0262A6AA67827DC4DA /* Services */ = {
 			isa = PBXGroup;
 			children = (
@@ -2831,6 +2894,8 @@
 				A14A3003974DDDF09684961B /* CategoryManager.swift */,
 				DF68254BB5CE5328745136C2 /* GamepadNavCoordinator.swift */,
 				34377D9B77D3186AEB2B669A /* GenreManager.swift */,
+				F94B1536361C39252F23DE3C /* HoloPatternStore.swift */,
+				3106E014AE1B506B650D96BA /* HoloSaliencyService.swift */,
 				655A4E06046E79930EEE2443 /* LibraryAutomationCoordinator.swift */,
 				930A7FE7A4D56153499E8A64 /* ROMLibrary.swift */,
 				181CF812FAA2BD9DF45042BF /* ROMScanner.swift */,
@@ -3078,6 +3143,8 @@
 				625852EC0A71AE15C0A0F6AE /* FamicomRF.metal */,
 				61341295EE2B8A9A3EE7AF16 /* ForceAlpha.metal */,
 				61128A5490F95F51CF67D3B9 /* GBA.metal */,
+				3C9C7DF8B3C788A24004D789 /* GlassOrb.metal */,
+				9B697EA2D197AF7DAFA8D2BE /* HoloBump.metal */,
 				EFD1D1521FD51B428CD6D464 /* LiteCRT.metal */,
 				3BD337DAF7B206DF941EB16D /* LottesCRT.metal */,
 				2181ADA6355FD20750F4E018 /* Passthrough.metal */,
@@ -3301,6 +3368,7 @@
 		506758847A6693C7EC49B415 = {
 			isa = PBXGroup;
 			children = (
+				10E19FB845FF99D10CEF235C /* Packages */,
 				489FE131C30B6A8C5A523FE0 /* TruchiEmu */,
 				DFFF9FFBB78EA64551D01B64 /* Products */,
 			);
@@ -3396,6 +3464,7 @@
 				35AF3E1D0EA8DD7BDA67C06A /* Data */,
 				0CBD37D03C917E1671224137 /* EmulatorIcons */,
 				FB84C6DEBBF6DD736FF3B564 /* FightData */,
+				7BCD0394A17EF0807F79BAF9 /* HoloPatterns */,
 				422DEDE00C8B12820B215CCB /* InputDescriptors */,
 				00DD5E5610D92A41D1BD67D7 /* System */,
 				54FD9E210FE30BDD7A83138A /* ThumbnailManifests */,
@@ -3430,6 +3499,8 @@
 		65C5C9C4F778132F28C02EF8 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				835F9E18B39630BAF0491B78 /* GlassOrbPlayButton.swift */,
+				AD952A2B5F85CAEF3404A82C /* LiquidGlassSheen.swift */,
 				5942ABB5ECC5CEF036487EB1 /* AppUpdateMode */,
 				1F92234FC7D9A5FE968934E4 /* CoreDownload */,
 				399D59B6C48CDCB07A57E82C /* Detail */,
@@ -3483,6 +3554,26 @@
 				A65D19621F30226A183FD4EA /* xbox360.ico */,
 			);
 			path = ControllerIcons;
+			sourceTree = "<group>";
+		};
+		7BCD0394A17EF0807F79BAF9 /* HoloPatterns */ = {
+			isa = PBXGroup;
+			children = (
+				94B97B593318B9C1F4557F51 /* holo_ancient.png */,
+				F963CBD06E90F51C6DB3B43D /* holo_angular.png */,
+				CBE0822EF493F2A3F9EFA369 /* holo_crossover.png */,
+				02B028190C3BC8A66CC3B62E /* holo_geometric.png */,
+				8222819FE1DDAF0DE92707FE /* holo_glitter.png */,
+				6669CB8EDA7D41DC0623C89C /* holo_illusion-mask.png */,
+				6116D1988280340437127D72 /* holo_illusion.png */,
+				37C93683DE17C73F5933064B /* holo_illusion2.png */,
+				8EB2FA18857A750DDA8C676A /* holo_metal.png */,
+				C708C6081B22F03E4E6AA0BE /* holo_stylish.png */,
+				AE2C6C9DA37D7576957EF710 /* holo_stylish2.png */,
+				D5D5817A7BE45841C902F2E4 /* holo_trainerbg.png */,
+				7A11549D9D348C11946BFA59 /* holo_wave.png */,
+			);
+			path = HoloPatterns;
 			sourceTree = "<group>";
 		};
 		7E0E6862E5E7BA5A95182078 /* Views */ = {
@@ -3575,6 +3666,11 @@
 				07A377CFF1945DD917DC921B /* GameListRowView.swift */,
 				AC76D35E66386E6C5D242961 /* GenrePickerView.swift */,
 				A7DC866436BB8788D4ED66A9 /* GridCollectionView.swift */,
+				1E1F8977ED21416EA5C44A5C /* HoloCardLayers.swift */,
+				421CBFE4EB42D273FCE87B34 /* HoloGameCardView.swift */,
+				4D3B5D16F868D592F38DD258 /* HoloGridCollectionView.swift */,
+				E2040211263BC01B0D3C0F77 /* HoloVariantRenderer.swift */,
+				48CD6D977DCA38ED6A7DC895 /* HoloVariants.swift */,
 				A0A1BBAF236A7482126D4923 /* IconPickerView.swift */,
 				ED22E0198CFE81289DAC573E /* ImageCropView.swift */,
 				AE6DD9F2D88F252E2CECD2CC /* LibraryAnimations.swift */,
@@ -3995,6 +4091,7 @@
 				9ED1634F62412DF880052D27 /* GameLauncher.swift */,
 				F41E405D5837D8139B4A0C69 /* GamepadNavContext.swift */,
 				C9AAF3924EF31E5708D15DD4 /* GamepadNavigationManager.swift */,
+				5E3EC54C5F00E0137DF7FD10 /* HoloBumpRenderer.swift */,
 				8C0A03394D956A91354E3574 /* InputStateTracker.swift */,
 				348FC44E8233983FBBE7319B /* MotionDetector.swift */,
 				9069327937C4BD5B3CED4E12 /* MoveForest.swift */,
@@ -4415,6 +4512,7 @@
 				9CBD9194B4C14F777B32C4CD /* GenreGroupingDiagram.swift */,
 				B5E3E5DB793CCE1800B8C7BE /* GenreSettingsView.swift */,
 				D12FCF47C4E8A17755ADDBE1 /* HelpSettingsView.swift */,
+				8F74CF57BF531C249CBE72DB /* HoloSettingsView.swift */,
 				1454A3CD638307C2DD9561DA /* HotkeyActionRow.swift */,
 				EFCE1CD3383AD9599F73EA5E /* HotkeyConfigSettingsView.swift */,
 				A6DA1A056535CC2F61A60BF4 /* InstallDragView.swift */,
@@ -4782,6 +4880,7 @@
 				DC74D16AE80CA370A1A276F7 /* RTMPHaishinKit */,
 				49E474BBA25302DCEC501745 /* HaishinKit */,
 				F2FB6D032347AAC1FFC676F8 /* Logboard */,
+				31E4CFF90F8A2CEA3492D843 /* BoxArtLayers */,
 			);
 			productName = TruchiEmu;
 			productReference = 823B1FD3E319074A9926700C /* TruchiEmu.app */;
@@ -4817,6 +4916,7 @@
 				3F899B38F7D2B48CDFA0DF51 /* XCRemoteSwiftPackageReference "HaishinKit.swift" */,
 				F6F9529E472C4F7004F1A61B /* XCRemoteSwiftPackageReference "Logboard" */,
 				C54ED9FB72F98EE7C187B853 /* XCRemoteSwiftPackageReference "rcheevos" */,
+				5D9856435B54F817220392D7 /* XCLocalSwiftPackageReference "BoxArtLayers" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = DFFF9FFBB78EA64551D01B64 /* Products */;
@@ -5286,6 +5386,19 @@
 				9C4953DA8A9873CAA8622D6B /* gg-cheats.zip in Resources */,
 				B0675F58E064469C5C75A06E /* gg@132w.png in Resources */,
 				2FB5053BAF95CD050D0864DD /* gw@132w.png in Resources */,
+				F56E9E30C13014A97069EE60 /* holo_ancient.png in Resources */,
+				541A7E28F13591BF9CFAA1C8 /* holo_angular.png in Resources */,
+				D6F2FCD149D20173B079DB9E /* holo_crossover.png in Resources */,
+				A0C2858225411C93E8B52043 /* holo_geometric.png in Resources */,
+				E5EA48161580AAA1ABFA685A /* holo_glitter.png in Resources */,
+				CF77D60BAABDAA58C115562D /* holo_illusion-mask.png in Resources */,
+				1DAF09ADF0EFB4AADCB167DD /* holo_illusion.png in Resources */,
+				14C0F58E0BBFCC6FFC607F1B /* holo_illusion2.png in Resources */,
+				D6AE742A1E61C54218E15183 /* holo_metal.png in Resources */,
+				722EB4FE9C71931649999615 /* holo_stylish.png in Resources */,
+				69D49EB40BE882E58B8B6B37 /* holo_stylish2.png in Resources */,
+				E24F330DB7780A2C7C91B051 /* holo_trainerbg.png in Resources */,
+				E7625A35543ED867C55F1E47 /* holo_wave.png in Resources */,
 				2424758D7F2AE14258968E08 /* input_coreLabels_2048.json in Resources */,
 				3D949A279B978EA924B07E42 /* input_coreLabels_3d_engine.json in Resources */,
 				9E8B5C0BD9B9B121DAC3D6DA /* input_coreLabels_amiarcadia.json in Resources */,
@@ -5974,6 +6087,8 @@
 				749F189B703826A160DAAD4E /* GenrePickerView.swift in Sources */,
 				D4A5C3EA0A548DBEF9EDE4AE /* GenreSettingsView.swift in Sources */,
 				A09C8307DE97887156851C76 /* GitHubAPIModels.swift in Sources */,
+				A699B8997F87105490413BC8 /* GlassOrb.metal in Sources */,
+				CCF3EE1346F3B310A58EA263 /* GlassOrbPlayButton.swift in Sources */,
 				40235C6A5048EAABFCDA1EB0 /* GridCollectionView.swift in Sources */,
 				DA7758EF636546C3E8211BFF /* HaishinKitLogger.swift in Sources */,
 				BCF6E7FD69063759D0607C29 /* HardcoreModeManager.swift in Sources */,
@@ -5983,6 +6098,16 @@
 				104D7496A5BF50D24818AE3E /* HelpSheetView.swift in Sources */,
 				9E0E1EB96CD993ECBD2873AE /* HelpWindowView.swift in Sources */,
 				1A46304E3641B352E5FA9B18 /* HintTree.swift in Sources */,
+				F5476C3DB666A0A473FB2C30 /* HoloBump.metal in Sources */,
+				1766EDF8EB00B0B79DD51AAB /* HoloBumpRenderer.swift in Sources */,
+				7252CF2763DB1CB60A31BE8E /* HoloCardLayers.swift in Sources */,
+				360E85B47542945CD6FE2D16 /* HoloGameCardView.swift in Sources */,
+				45EE5A222618B1A5B72A1EFD /* HoloGridCollectionView.swift in Sources */,
+				09FD8E39FF58D9B6B33EFAE7 /* HoloPatternStore.swift in Sources */,
+				F554BFFDE3B73BE6C45D014F /* HoloSaliencyService.swift in Sources */,
+				9931AAD078367371520605C3 /* HoloSettingsView.swift in Sources */,
+				2AB42E1F6D46FB04C3519B83 /* HoloVariantRenderer.swift in Sources */,
+				9A9F57B6AB7FA7D121E8D24D /* HoloVariants.swift in Sources */,
 				714D657AEDB409F1DFA924E8 /* HotkeyActionRow.swift in Sources */,
 				FDE92E115DEE8FE3BE7318EF /* HotkeyConfig.swift in Sources */,
 				C89D895A0684B41688FF2FD4 /* HotkeyConfigSettingsView.swift in Sources */,
@@ -6017,6 +6142,7 @@
 				F6BCD9E30F0D6EC1CA4B9F0C /* LibretroRDBParser.swift in Sources */,
 				76CC37645550ACEC08D6927C /* LibretroThumbnailManifestService.swift in Sources */,
 				803EACFA754C4D83757A278A /* LibretroThumbnailResolver.swift in Sources */,
+				08EC743DFCF5B42618FB4B87 /* LiquidGlassSheen.swift in Sources */,
 				81294D07B34834F13769FF30 /* LiteCRT.metal in Sources */,
 				3B1D8F388512C8144989EF8B /* LiveShaderEditManager.swift in Sources */,
 				FCEF9884E35FD07E00639CC1 /* LocalizationManager.swift in Sources */,
@@ -6496,6 +6622,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		5D9856435B54F817220392D7 /* XCLocalSwiftPackageReference "BoxArtLayers" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = BoxArtLayers;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		3F899B38F7D2B48CDFA0DF51 /* XCRemoteSwiftPackageReference "HaishinKit.swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -6524,6 +6657,10 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		31E4CFF90F8A2CEA3492D843 /* BoxArtLayers */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BoxArtLayers;
+		};
 		49E474BBA25302DCEC501745 /* HaishinKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 3F899B38F7D2B48CDFA0DF51 /* XCRemoteSwiftPackageReference "HaishinKit.swift" */;

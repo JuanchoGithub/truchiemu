@@ -717,6 +717,11 @@ enum AppMotion {
     
     /// Quick feedback: press, tap, dismiss
     static let feedback: Animation = .easeOut(duration: 0.12)
+    
+    /// 3D card tilt: springy chase toward the cursor (like simeydotme's
+    /// pokemon-cards-css `.card__rotator` springs). Slightly softer than
+    /// `micro` so the tilt eases instead of snapping to the pointer.
+    static let tilt: Animation = .interpolatingSpring(stiffness: 170, damping: 22)
 }
 
 // MARK: - Typography Scale

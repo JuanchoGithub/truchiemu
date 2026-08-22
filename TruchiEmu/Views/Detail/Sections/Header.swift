@@ -156,6 +156,7 @@ extension GameDetailView {
             .shadow(color: .black.opacity(0.3), radius: 6, y: 2)
         }
         .buttonStyle(LaunchButtonStyle())
+        .liquidGlassSheen()
     }
 
     private func continueButton(slot: SlotInfo) -> some View {
@@ -186,6 +187,7 @@ extension GameDetailView {
             )
         }
         .buttonStyle(.plain)
+        .liquidGlassSheen()
     }
 
     var placeholderArt: some View {
