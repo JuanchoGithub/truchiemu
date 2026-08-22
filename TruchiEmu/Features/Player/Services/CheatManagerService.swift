@@ -86,6 +86,7 @@ class CheatManagerService: ObservableObject {
         cheats.append(cheat)
         allCheats[rom.runningKey] = cheats
         saveEnabledIndices(for: rom, cheats: cheats)
+        _ = CheatAutoLoader.saveCustomCheats(cheats, for: rom)
         LoggerService.info(category: "CheatManagerService", "Added cheat: \(cheat.displayName) for \(rom.displayName)")
     }
     
@@ -95,6 +96,7 @@ class CheatManagerService: ObservableObject {
         cheats.removeAll { $0.id == cheat.id }
         allCheats[rom.runningKey] = cheats
         saveEnabledIndices(for: rom, cheats: cheats)
+        _ = CheatAutoLoader.saveCustomCheats(cheats, for: rom)
         LoggerService.info(category: "CheatManagerService", "Removed cheat: \(cheat.displayName) from \(rom.displayName)")
     }
     

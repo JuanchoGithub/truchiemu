@@ -285,6 +285,9 @@ struct CheatBrowserList: View {
                                 cheatManager.updateCheat(updated, for: rom)
                                 loadCheats()
                                 applyEnabledCheats()
+                            } onDelete: {
+                                cheatManager.removeCheat(cheat, for: rom)
+                                loadCheats()
                             }
                         }
                     }

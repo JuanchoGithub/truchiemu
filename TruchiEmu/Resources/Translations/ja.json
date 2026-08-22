@@ -338,6 +338,7 @@
   "cheat.cheatsForGame": "{0} のチート",
   "cheat.enabledCount": "{0} / {1} 個のチートが有効",
   "cheat.close": "閉じる",
+  "cheat.delete": "削除",
   "cheat.addCustomCheatHelp": "カスタムチートコードを追加",
   "cheat.importFile": "ファイルをインポート",
   "cheat.importFileHelp": ".cht ファイルをインポート",

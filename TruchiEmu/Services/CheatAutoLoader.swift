@@ -202,16 +202,11 @@ class CheatAutoLoader {
             }
         }
         
-        // Save to all possible filenames - ensures we find it on next load
-        var anySuccess = false
-        for name in possibleNames {
-            let chtPath = customDir.appendingPathComponent("\(name).cht")
-            if saveCheatsToFile(cheats, url: chtPath) {
-                anySuccess = true
-            }
-        }
-        
-        return anySuccess
+        // Save under the canonical ROM filename. loadCheatsForROM resolves the
+        // same possibleFilenames set, so a single stable name is sufficient.
+        guard let name = possibleNames.first else { return false }
+        let chtPath = customDir.appendingPathComponent("\(name).cht")
+        return saveCheatsToFile(cheats, url: chtPath)
     }
     
     // Save cheats to a specific .cht file

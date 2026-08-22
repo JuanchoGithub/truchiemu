@@ -338,6 +338,7 @@
   "cheat.cheatsForGame": "Cheats para {0}",
   "cheat.enabledCount": "{0} de {1} cheats ativados",
   "cheat.close": "Fechar",
+  "cheat.delete": "Excluir",
   "cheat.addCustomCheatHelp": "Adicionar código de cheat personalizado",
   "cheat.importFile": "Importar Arquivo",
   "cheat.importFileHelp": "Importar arquivo .cht",

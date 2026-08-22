@@ -4,6 +4,7 @@ struct CheatListRowView: View {
     let cheat: Cheat
     let isOn: Bool
     var onToggle: () -> Void
+    var onDelete: (() -> Void)? = nil
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject private var loc = LocalizationManager.shared
 
@@ -28,13 +29,24 @@ struct CheatListRowView: View {
 
             Spacer()
 
-Text(cheat.format.displayName)
-      .font(.caption)
-      .padding(.horizontal, 6)
-      .padding(.vertical, 2)
-      .background(AppColors.accentTertiary.opacity(0.3))
-      .foregroundColor(AppColors.accentTertiary)
-      .cornerRadius(4)
+            HStack(spacing: 6) {
+                Text(cheat.format.displayName)
+                    .font(.caption)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(AppColors.accentTertiary.opacity(0.3))
+                    .foregroundColor(AppColors.accentTertiary)
+                    .cornerRadius(4)
+
+                if let onDelete {
+                    Button(action: onDelete) {
+                        Image(systemName: "trash")
+                            .foregroundColor(AppColors.error(colorScheme))
+                    }
+                    .buttonStyle(.plain)
+                    .help(loc.localized("cheat.delete"))
+                }
+            }
         }
         .padding(.vertical, 6)
         .padding(.horizontal, 8)
