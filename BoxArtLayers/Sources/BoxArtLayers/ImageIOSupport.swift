@@ -254,7 +254,19 @@ enum ImageIOSupport {
             return base.load(fromByteOffset: y * stride + x, as: UInt8.self)
         case kCVPixelFormatType_OneComponent16Half:
             let bits = base.load(fromByteOffset: y * stride + x * 2, as: UInt16.self)
-            let f = max(0, min(1, Float(Float16(bitPattern: bits))))
+            let sign: Float = (bits & 0x8000) != 0 ? -1.0 : 1.0
+            let exp = Int(bits >> 10) & 0x1F
+            let mant = Int(bits & 0x3FF)
+            var value: Float
+            if exp == 0 {
+                value = Float(mant) * Float(pow(2.0, -24.0))
+            } else if exp == 31 {
+                value = mant == 0 ? .infinity : .nan
+            } else {
+                value = Float(mant + 1024) * Float(pow(2.0, Double(exp) - 25.0))
+            }
+            value *= sign
+            let f = max(0, min(1, value))
             return UInt8(clamping: Int((f * 255).rounded()))
         case kCVPixelFormatType_OneComponent32Float:
             let value = base.load(fromByteOffset: y * stride + x * 4, as: Float32.self)
