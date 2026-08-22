@@ -146,7 +146,7 @@ final class HoloSaliencyService: @unchecked Sendable, ObservableObject {
         //    missing, the Vision decompose on a background queue. The Task is
         //    registered in `inFlight` *before* returning so concurrent callers
         //    dedupe via the inFlight check above.
-        let task = Task.detached(priority: .userInitiated) { [weak self] () -> HoloMaskSet? in
+        let task = Task.detached(priority: .utility) { [weak self] () -> HoloMaskSet? in
             guard let self else { return nil }
             // Always clear the inFlight entry, even on cancellation, so a
             // late caller for the same romID doesn't pick up a dead task.
@@ -290,7 +290,7 @@ final class HoloSaliencyService: @unchecked Sendable, ObservableObject {
         let backgroundURL = maskFileURL(for: romID, role: "background")
         let metaURL = metaFileURL(for: romID)
 
-        let task = Task.detached(priority: .userInitiated) { () -> HoloMaskSet? in
+        let task = Task.detached(priority: .utility) { () -> HoloMaskSet? in
             if Task.isCancelled { return nil }
             let hero = loadMaskSync(from: heroURL)
             let title = loadMaskSync(from: titleURL)

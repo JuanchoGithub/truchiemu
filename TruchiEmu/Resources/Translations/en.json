@@ -1159,6 +1159,8 @@
   "holo.maskDeviationChanceDescription": "Chance (0–100%) that a section (title/chrome/hero) deviates from the background's randomized mask. The background is always randomized per card. At 0%, every section follows the background; at 100%, every section rolls its own holo.",
   "holo.showPlayButton": "Show Play Button",
   "holo.showPlayButtonDescription": "Display the glass-orb play button on holo grid cards when hovering. Off by default so the holo artwork stays unobstructed.",
+  "holo.hueCycles": "Hue Cycles",
+  "holo.hueCyclesDescription": "Number of full rainbow hue rotations as the cursor moves from one card edge to the opposite edge, per axis. 0 disables the hue shift; higher values cycle the rainbow more times across the artwork.",
   "holo.backgroundIntensity": "Background Holo",
   "holo.backgroundIntensityDescription": "How strongly the background / sky shimmers (heavy by default).",
   "holo.backgroundPattern": "Background Pattern",

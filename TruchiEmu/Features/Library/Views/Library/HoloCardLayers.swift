@@ -189,6 +189,11 @@ struct HoloFoilLayers: View, Equatable {
     /// render it for the hovered card — every other card falls back to the
     /// cheap parallax layer (or nothing in pure-bump mode).
     var isHovered: Bool = false
+    /// Allow the Metal bump pass. Disabled for tiny secondary reflections
+    /// (e.g. the holo card's own glass-orb play button), where the bump
+    /// relief is invisible at that scale and re-running the renderer
+    /// concurrently with the card's own pass is wasteful and unsafe.
+    var allowBump: Bool = true
 
     var body: some View {
         ZStack {
@@ -310,12 +315,15 @@ struct HoloFoilLayers: View, Equatable {
         // bright pixels LIGHTENS the art holographically. The card never
         // darkens — colorDodge only adds light.
         .blendMode(.colorDodge)
-        // Angular hue shift: rotate the whole rainbow as the cursor moves —
-        // ±60° over the card horizontally and ±60° vertically (both axes
-        // contribute, so moving up/down shifts hue just like left/right).
-        // Pure GPU color filter on the pre-rendered tiles — no re-render per
-        // cursor event.
-        .hueRotation(.degrees((pointerX - 0.5) * 120 + (pointerY - 0.5) * 120))
+        // Angular hue shift: rotate the whole rainbow as the cursor moves.
+        // `settings.hueCycles` full 360° rotations occur as the cursor travels
+        // from one edge to the opposite edge along each axis (both axes
+        // contribute, so moving diagonally shifts hue on both), matching the
+        // `hueShiftDegrees` fed to the Metal bump shader below. 0 disables the
+        // shift; the default of 4 makes the rainbow cycle four times across the
+        // card. Pure GPU color filter on the pre-rendered tiles — no re-render
+        // per cursor event.
+        .hueRotation(.degrees((pointerX - 0.5) * settings.hueCycles * 360 + (pointerY - 0.5) * settings.hueCycles * 360))
     }
 
     /// Normalized distance from the artwork center (0 at center, 1 at corner).
@@ -435,7 +443,7 @@ struct HoloFoilLayers: View, Equatable {
             // normal map + a synthesized rainbow via the HoloBump shader.
             // When mode is .parallax this layer is invisible (no renderer
             // call) and the parallax stack takes over.
-            if settings.depthMode != .parallax, isHovered {
+            if settings.depthMode != .parallax, isHovered, allowBump {
                 bumpLayer(pattern: pattern, variant: variant, mask: mask, textureTile: textureTile, w: w, h: h, intensity: intensity)
             }
             if settings.depthMode != .bump {
@@ -516,7 +524,8 @@ struct HoloFoilLayers: View, Equatable {
             tiltY: tiltY,
             specularPower: settings.specularPower,
             cursorInfluence: settings.cursorInfluence,
-            tiltInfluence: settings.tiltInfluence
+            tiltInfluence: settings.tiltInfluence,
+            hueCycles: settings.hueCycles
         )
     }
 }
@@ -541,6 +550,7 @@ private struct HoloBumpImageView: View {
     let specularPower: Double
     let cursorInfluence: Double
     let tiltInfluence: Double
+    let hueCycles: Double
 
     @State private var renderedImage: NSImage?
     @State private var lastSig: String = ""
@@ -561,6 +571,13 @@ private struct HoloBumpImageView: View {
                     .allowsHitTesting(false)
             }
         }
+        // The bump pass runs asynchronously off the main thread, so the first
+        // valid image arrives a frame or two after the layer appears. Fade it
+        // in (rather than hard-popping) so the first rendered frame — which is
+        // computed at the cursor's hover-entry position and can look briefly
+        // over-bright/warped — eases in instead of snapping the whole card.
+        .opacity(renderedImage != nil ? 1 : 0)
+        .animation(.easeOut(duration: 0.18), value: renderedImage != nil)
         .onAppear { trigger() }
         .onChange(of: signature) { _, _ in trigger() }
     }
@@ -582,7 +599,7 @@ private struct HoloBumpImageView: View {
             tiltY: tiltY,
             specularPower: specularPower,
             intensity: intensity,
-            hueShiftDegrees: Double((pointerX - 0.5) * 120 + (pointerY - 0.5) * 120),
+            hueShiftDegrees: Double((pointerX - 0.5) * hueCycles * 360 + (pointerY - 0.5) * hueCycles * 360),
             saturation: 0.65,
             cursorInfluence: cursorInfluence,
             tiltInfluence: tiltInfluence

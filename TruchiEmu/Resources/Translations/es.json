@@ -1151,6 +1151,8 @@
   "holo.maskDeviationChanceDescription": "Probabilidad (0–100%) de que una sección (título/cromo/héroe) se desvíe de la máscara aleatoria del fondo. El fondo siempre se aleatoriza por carta. Al 0%, cada sección sigue al fondo; al 100%, cada sección genera su propio holo.",
   "holo.showPlayButton": "Mostrar botón de reproducción",
   "holo.showPlayButtonDescription": "Muestra el botón de reproducción de orbe de cristal en las cartas holográficas de la cuadrícula al pasar el cursor. Desactivado por defecto para no obstruir el arte holográfico.",
+  "holo.hueCycles": "Ciclos de tono",
+  "holo.hueCyclesDescription": "Número de rotaciones completas del tono del arcoíris al mover el cursor de un borde de la carta al opuesto, por eje. 0 desactiva el cambio de tono; valores mayores ciclan el arcoíris más veces sobre el arte.",
   "holo.backgroundIntensity": "Holo del fondo",
   "holo.backgroundIntensityDescription": "Fuerza del brillo en el fondo / cielo (intenso por defecto).",
   "holo.backgroundPattern": "Patrón del fondo",

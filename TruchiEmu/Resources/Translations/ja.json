@@ -1158,6 +1158,8 @@
   "holo.maskDeviationChanceDescription": "セクション（タイトル/クローム/ヒーロー）が背景のランダムマスクから逸脱する確率（0〜100%）。背景は常にカードごとにランダム化されます。0%では各セクションが背景に従い、100%では各セクションが独自のホロを生成します。",
   "holo.showPlayButton": "再生ボタンを表示",
   "holo.showPlayButtonDescription": "ホログラムグリッドカードにカーソルを合わせたとき、ガラスオーブの再生ボタンを表示します。ホロアートを妨げないよう、既定ではオフです。",
+  "holo.hueCycles": "色相サイクル数",
+  "holo.hueCyclesDescription": "カーソルがカードの一端から反対側の端まで移動するときの、虹色の色相回転の回数（軸あたり）。0 で色相シフトを無効にします。値を大きくするとアート全体で虹がより多く循環します。",
   "holo.backgroundIntensity": "背景のホロ",
   "holo.backgroundIntensityDescription": "背景・空領域の輝きの強さ（既定では強め）。",
   "holo.backgroundPattern": "背景のパターン",

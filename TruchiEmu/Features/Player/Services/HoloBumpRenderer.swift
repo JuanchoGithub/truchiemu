@@ -149,6 +149,8 @@ final class HoloBumpRenderer {
         // visibly wrong. Bound the longest side only to keep the GPU pass
         // sane for very large cards.
         let maxDim = 1024
+        guard size.width.isFinite, size.height.isFinite,
+              size.width > 0, size.height > 0 else { return nil }
         let longest = max(Double(size.width), Double(size.height))
         let scale = min(1.0, Double(maxDim) / longest)
         let width = max(1, Int((size.width * CGFloat(scale)).rounded()))
@@ -271,10 +273,28 @@ final class HoloBumpRenderer {
     // MARK: - Helpers
 
     private func makeTexture(from cg: CGImage, device: MTLDevice) -> MTLTexture? {
-        let width = cg.width
-        let height = cg.height
+        let maxDim = 2048
+        let srcW = cg.width
+        let srcH = cg.height
+        // Metal traps (aborts the process) on an invalid texture descriptor
+        // rather than returning nil, so reject degenerate inputs up front.
+        guard srcW > 0, srcH > 0 else { return nil }
+        // Clamp to the device's max 2D dimension. The foil source is a cached
+        // holo tile rendered at `scale = 2` over a `2w × 2h` area, so its
+        // pixel size can exceed the GPU limit on some machines — that makes
+        // `validateWithDevice:` trap and kill the app. Redraw scaled so the
+        // descriptor is always valid.
+        let scale = min(1.0, Double(maxDim) / Double(max(srcW, srcH)))
+        let width = max(1, Int((Double(srcW) * scale).rounded()))
+        let height = max(1, Int((Double(srcH) * scale).rounded()))
+        #if LOG_DEBUG
+        if scale < 1.0 {
+            LoggerService.debug("HoloBump: foil \(srcW)x\(srcH) clamped to \(width)x\(height) (maxDim \(maxDim))")
+        }
+        #endif
         let bytesPerRow = width * 4
         let totalBytes = bytesPerRow * height
+        guard totalBytes > 0 else { return nil }
         var pixels = [UInt8](repeating: 0, count: totalBytes)
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         guard let ctx = CGContext(

@@ -1,6 +1,19 @@
 import SwiftUI
 import AppKit
 
+// MARK: - Scroll state
+
+/// Shared flag indicating whether the holo library grid is currently
+/// scrolling. Holo card effects (foil, glare, tilt, bump) are suppressed
+/// while this is true so cards don't light up mid-scroll — they only engage
+/// once the scroll settles. A single shared instance is updated by the grid's
+/// scroll-wheel monitor and observed by each `HoloGameCardView`. All updates
+/// happen on the main runloop, so no actor isolation is needed.
+final class LibraryScrollState: ObservableObject {
+    static let shared = LibraryScrollState()
+    @Published var isScrolling: Bool = false
+}
+
 // MARK: - NSCollectionViewItem wrapping HoloGameCardView
 
 final class HoloGridCollectionViewItem: NSCollectionViewItem {
@@ -137,12 +150,30 @@ final class HoloGridCollectionViewCoordinator: NSObject {
     fileprivate var previousZoomLevel: Double = 0.5
     fileprivate var previousBoxArtVersion: UUID = UUID()
     fileprivate var previousSelection: Set<UUID> = []
+    fileprivate var scrollResetTimer: Timer?
+    var scrollMonitor: Any?
     
     var onSelectionChanged: (([UUID]) -> Void)?
     var onPrimarySelectionChanged: ((UUID?) -> Void)?
     var onDoubleClick: ((ROM) -> Void)?
     var onTap: ((ROM, Int) -> Void)?
     var contextMenuProvider: ((ROM) -> AnyView)?
+    
+    // MARK: Scroll detection
+    //
+    // The enclosing NSScrollView's delegate is set to this coordinator so we
+    // can observe scrolling and flag it on `LibraryScrollState`. A short
+    // debounce (matching `LibraryGridView`'s scroll-wheel monitor) keeps the
+    // flag true for 0.3s after the last scroll event, so the holo effects
+    // only resume once the scroll has genuinely stopped.
+    fileprivate func markScrolling() {
+        LibraryScrollState.shared.isScrolling = true
+        scrollResetTimer?.invalidate()
+        scrollResetTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] _ in
+            LibraryScrollState.shared.isScrolling = false
+            self?.scrollResetTimer = nil
+        }
+    }
     
     private weak var collectionView: NSCollectionView?
     private let itemID = NSUserInterfaceItemIdentifier("HoloGridCollectionViewItem")
@@ -421,7 +452,24 @@ struct HoloGridCollectionViewRepresentable: NSViewRepresentable {
         
         let scrollView = makeHoloCollectionScrollView(coordinator: c)
         c.reloadData()
+        
+        // Track scrolling so holo cards can suppress their effects mid-scroll
+        // (they only engage once the scroll settles). Mirrors the scroll-wheel
+        // monitor used by `LibraryGridView`.
+        c.scrollMonitor = NSEvent.addLocalMonitorForEvents(matching: [.scrollWheel]) { event in
+            c.markScrolling()
+            return event
+        }
+        
         return scrollView
+    }
+    
+    static func dismantleNSView(_ nsView: NSScrollView, coordinator: HoloGridCollectionViewCoordinator) {
+        if let monitor = coordinator.scrollMonitor {
+            NSEvent.removeMonitor(monitor)
+            coordinator.scrollMonitor = nil
+        }
+        coordinator.scrollResetTimer?.invalidate()
     }
     
     func updateNSView(_ nsView: NSScrollView, context: Context) {

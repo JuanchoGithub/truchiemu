@@ -25,6 +25,7 @@ struct HoloSettingsView: View {
     @State private var tiltInfluence: Double = HoloSettings.tiltInfluence
     @State private var parallaxStrength: Double = HoloSettings.parallaxStrength
     @State private var showPlayButton: Bool = HoloSettings.showPlayButton
+    @State private var hueCycles: Double = HoloSettings.hueCycles
     @State private var variantWeights: [HoloVariant: Double] = HoloSettingsStore.shared.variantWeights
 
     init(searchText: Binding<String> = .constant(""),
@@ -305,6 +306,22 @@ struct HoloSettingsView: View {
                         }
                         .onChange(of: parallaxStrength) { _, newValue in
                             HoloSettings.parallaxStrength = newValue
+                        }
+                    }
+                    SettingsRow(
+                        loc.localized("holo.hueCycles"),
+                        description: loc.localized("holo.hueCyclesDescription")
+                    ) {
+                        HStack(spacing: 8) {
+                            Slider(value: $hueCycles, in: 0.0...10.0, step: 1.0)
+                                .frame(width: 140)
+                            Text("\(Int(hueCycles.rounded()))")
+                                .font(.system(size: 12, weight: .medium, design: .rounded))
+                                .foregroundStyle(AppColors.textSecondary(colorScheme))
+                                .frame(width: 36, alignment: .trailing)
+                        }
+                        .onChange(of: hueCycles) { _, newValue in
+                            HoloSettings.hueCycles = newValue
                         }
                     }
                 } header: {

@@ -376,15 +376,16 @@ struct GameCardView: View {
                             .strokeBorder(Color.white.opacity(0.25), lineWidth: 0.5)
                     )
                     .shadow(color: AppColors.brandAccent.opacity(0.4), radius: 4, y: 2)
-                    .opacity(0.7)
                     .overlay(
                         Menu { menuContent() } label: {
-                            Color.clear
+                            Circle()
+                                .fill(Color.clear)
                                 .contentShape(Circle())
                         }
                         .menuStyle(.borderlessButton)
                         .menuIndicator(.hidden)
                     )
+                    .opacity(0.7)
                     .padding(8)
                     .transition(.opacity.combined(with: .scale))
                 }

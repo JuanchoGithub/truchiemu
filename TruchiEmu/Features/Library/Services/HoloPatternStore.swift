@@ -176,6 +176,7 @@ final class HoloSettingsStore: ObservableObject {
     static let tiltInfluenceKey = "holo_tilt_influence"
     static let parallaxStrengthKey = "holo_parallax_strength"
     static let showPlayButtonKey = "holo_show_play_button"
+    static let hueCyclesKey = "holo_hue_cycles"
 
     @Published var titleIntensity: Double {
         didSet { AppSettings.setDouble(Self.titleIntensityKey, value: titleIntensity) }
@@ -245,6 +246,12 @@ final class HoloSettingsStore: ObservableObject {
     @Published var showPlayButton: Bool {
         didSet { AppSettings.set(Self.showPlayButtonKey, value: showPlayButton) }
     }
+    // Number of full hue-rotation cycles applied as the cursor travels from one
+    // edge of the card to the opposite edge (per axis). 0 = no hue shift;
+    // higher = the rainbow cycles more times across the artwork. Default 4.
+    @Published var hueCycles: Double {
+        didSet { AppSettings.setDouble(Self.hueCyclesKey, value: hueCycles) }
+    }
 
     /// Per-variant probability weight (0..1 share). A card rolls a variant
     /// against these weights; the chosen variant stays for the session.
@@ -272,6 +279,7 @@ final class HoloSettingsStore: ObservableObject {
         self.tiltInfluence = AppSettings.getDouble(Self.tiltInfluenceKey, defaultValue: 0.8)
         self.parallaxStrength = AppSettings.getDouble(Self.parallaxStrengthKey, defaultValue: 1.0)
         self.showPlayButton = AppSettings.getBool(Self.showPlayButtonKey, defaultValue: false)
+        self.hueCycles = AppSettings.getDouble(Self.hueCyclesKey, defaultValue: 4.0)
     }
 
     /// Load the per-variant weight dictionary from AppSettings. Stored as a
@@ -458,6 +466,10 @@ enum HoloSettings {
         get { HoloSettingsStore.shared.showPlayButton }
         set { HoloSettingsStore.shared.showPlayButton = newValue }
     }
+    static var hueCycles: Double {
+        get { HoloSettingsStore.shared.hueCycles }
+        set { HoloSettingsStore.shared.hueCycles = newValue }
+    }
 }
 
 // Value snapshot of the holo settings that the static foil depends on.
@@ -479,6 +491,7 @@ struct HoloSettingsSnapshot: Equatable {
     var cursorInfluence: Double
     var tiltInfluence: Double
     var parallaxStrength: Double
+    var hueCycles: Double
     // Per-launch, per-card randomized holo appearance. Non-nil only when the
     // card's `maskDeviationChance` roll succeeds; drives that card's per-zone
     // mask chance, intensity, and pattern (see `HoloCardRandomization`).
@@ -500,6 +513,7 @@ struct HoloSettingsSnapshot: Equatable {
         self.cursorInfluence = store.cursorInfluence
         self.tiltInfluence = store.tiltInfluence
         self.parallaxStrength = store.parallaxStrength
+        self.hueCycles = store.hueCycles
         self.randomization = nil
     }
 

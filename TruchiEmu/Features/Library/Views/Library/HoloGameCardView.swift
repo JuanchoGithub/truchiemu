@@ -1,6 +1,28 @@
 import SwiftUI
 import AppKit
 
+// Applies the hover/pointer-tracking modifiers only when `active` is true.
+// While the grid is scrolling we drop them entirely so SwiftUI does no hover
+// hit-testing on the card under the cursor — otherwise every card that scrolls
+// under a stationary pointer flips its hover preference and recomputes the
+// (heavy) holo body on each crossing, which janks the scroll.
+fileprivate extension View {
+    @ViewBuilder
+    func holoHoverWhenNotScrolling(
+        active: Bool,
+        onHover: @escaping (Bool) -> Void,
+        onContinuous: @escaping (HoverPhase) -> Void
+    ) -> some View {
+        if active {
+            self
+                .onHover(perform: onHover)
+                .onContinuousHover(perform: onContinuous)
+        } else {
+            self
+        }
+    }
+}
+
 // Optimized holo game card view for the library grid.
 // Replicates the Pokemon TCG holographic card effect using SwiftUI blend modes and 3D transforms.
 struct HoloGameCardView: View {
@@ -37,6 +59,7 @@ struct HoloGameCardView: View {
     @ObservedObject private var holoSettings = HoloSettingsStore.shared
     @EnvironmentObject private var library: ROMLibrary
     @EnvironmentObject private var categoryManager: CategoryManager
+    @ObservedObject private var scrollState = LibraryScrollState.shared
     @State private var lastDecomposedROMID: UUID?
 
     // Inside-the-card mouse position from `.onContinuousHover`. Drives the
@@ -121,9 +144,9 @@ struct HoloGameCardView: View {
     
     private var textBlockFixedPadding: CGFloat {
         switch boxType {
-        case .vertical: return 8
-        case .box: return 4
-        case .landscape: return 4
+        case .vertical: return 14
+        case .box: return 10
+        case .landscape: return 10
         }
     }
     
@@ -267,15 +290,23 @@ struct HoloGameCardView: View {
             hypot(tiltRotationX, tiltRotationY) / (maxTiltAngle * 1.41421356),
             1
         )
-        return holoOpacity * tiltMag
+        return effectsActive ? holoOpacity * tiltMag : 0
+    }
+
+    // True only while the cursor is over the card AND the grid is not
+    // scrolling. All holo effects (foil, glare, tilt, bump, scale, play
+    // button) are gated on this so they don't fire mid-scroll — they only
+    // engage once the scroll settles (see `LibraryScrollState`).
+    private var effectsActive: Bool {
+        isHovered && !scrollState.isScrolling
     }
 
     private var translateY: CGFloat {
-        isHovered ? -10 : 0
+        effectsActive ? -10 : 0
     }
 
     private var scale: CGFloat {
-        isPressed ? 0.97 : (isLaunching ? 1.05 : (isHovered ? 1.1 : 1.0))
+        isPressed ? 0.97 : (isLaunching ? 1.05 : (effectsActive ? 1.1 : 1.0))
     }
 
     private var zTranslation: CGFloat {
@@ -294,34 +325,37 @@ struct HoloGameCardView: View {
             // decided by `isOverArtwork`. The 3D tilt below is applied to this
             // untransformed card, so rotating it doesn't move the hit region
             // either; the cursor drives the tilt AND the glare spotlight.
-            .onHover { hovering in
-                isHovered = hovering
-                if !hovering { mousePosition = nil }
-                // Ease the card back to flat on exit.
-                withAnimation(AppMotion.tilt) {
-                    tiltRotationX = 0
-                    tiltRotationY = 0
-                }
-            }
-            .onContinuousHover { phase in
-                switch phase {
-                case .active(let location):
-                    mousePosition = location
-                    // Spring the 3D tilt toward the cursor. Scoped to the
-                    // tilt state only — the glare reads `mousePosition`
-                    // directly so it keeps crisp 1:1 tracking.
-                    withAnimation(AppMotion.tilt) {
-                        tiltRotationX = tiltTargetRotationX
-                        tiltRotationY = tiltTargetRotationY
-                    }
-                case .ended:
-                    mousePosition = nil
+            .holoHoverWhenNotScrolling(
+                active: !scrollState.isScrolling,
+                onHover: { hovering in
+                    isHovered = hovering
+                    if !hovering { mousePosition = nil }
+                    // Ease the card back to flat on exit.
                     withAnimation(AppMotion.tilt) {
                         tiltRotationX = 0
                         tiltRotationY = 0
                     }
+                },
+                onContinuous: { phase in
+                    switch phase {
+                    case .active(let location):
+                        mousePosition = location
+                        // Spring the 3D tilt toward the cursor. Scoped to the
+                        // tilt state only — the glare reads `mousePosition`
+                        // directly so it keeps crisp 1:1 tracking.
+                        withAnimation(AppMotion.tilt) {
+                            tiltRotationX = tiltTargetRotationX
+                            tiltRotationY = tiltTargetRotationY
+                        }
+                    case .ended:
+                        mousePosition = nil
+                        withAnimation(AppMotion.tilt) {
+                            tiltRotationX = 0
+                            tiltRotationY = 0
+                        }
+                    }
                 }
-            }
+            )
             .onChange(of: isOverArtwork) { _, over in
                 // Foil + glare both fade on hover-binary, but only while the
                 // cursor is over the box art itself (not the title text below).
@@ -334,6 +368,19 @@ struct HoloGameCardView: View {
                     glareIntensity = over ? 1 : 0
                 }
             }
+            .onChange(of: scrollState.isScrolling) { _, scrolling in
+                // While the grid scrolls, drop all hover-driven state so the
+                // heavy holo view doesn't recompute on every scroll event.
+                // Effects re-engage when the cursor moves after scrolling settles.
+                if scrolling {
+                    isHovered = false
+                    mousePosition = nil
+                    tiltRotationX = 0
+                    tiltRotationY = 0
+                    holoOpacity = 0
+                    glareIntensity = 0
+                }
+            }
             // 3D tilt toward the cursor is applied to the ARTWORK ONLY (see
             // cardContent) so only the boxart pivots around its own center —
             // the title text below stays flat, matching simeydotme's
@@ -341,9 +388,10 @@ struct HoloGameCardView: View {
             // The scale/offset below compose on top of the tilted artwork.
             .scaleEffect(scale)
             .offset(y: isPressed ? -4 : translateY)
-            .zIndex(isHovered || isLaunching ? 100 : 0)
+            .zIndex(effectsActive || isLaunching ? 100 : 0)
             .animation(AppMotion.micro, value: isHovered)
             .animation(AppMotion.feedback, value: isPressed)
+            .animation(.easeOut(duration: 0.2), value: effectsActive)
             .animation(nil, value: isLaunching)
             .onTapGesture {
                 onTap?()
@@ -393,6 +441,15 @@ struct HoloGameCardView: View {
                     lastDecomposedROMID = nil
                     return
                 }
+                // Defer the (CPU-heavy) Vision decompose until the grid is not
+                // actively scrolling. Generating masks mid-scroll pins cores and
+                // stalls the scroll; the holo FX are suppressed during scroll
+                // anyway, so there's no reason to pay the cost until it settles.
+                while scrollState.isScrolling {
+                    if Task.isCancelled { return }
+                    try? await Task.sleep(nanoseconds: 150_000_000)
+                }
+                if Task.isCancelled { return }
                 // Fast path: if the saliency service already has the masks in
                 // memory for this romID, take them immediately and skip the
                 // whole async pipeline. Avoids touching the actor at all when
@@ -459,15 +516,15 @@ struct HoloGameCardView: View {
                     // artwork alone, so the boxart pivots around its own
                     // center exactly like simeydotme's `.card__rotator` — the
                     // title text below stays flat and nothing stretches.
-                    holoArtworkView
+                    holoArtworkView()
                         .clipped()
                         .overlay(
                             RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.black.opacity(isHovered ? 0.08 : 0))
+                                .fill(Color.black.opacity(effectsActive ? 0.08 : 0))
                         )
                         .opacity(isHiddenItem ? 0.55 : 1)
                         .rotation3DEffect(
-                            .degrees(tiltCombinedAngle),
+                            .degrees(effectsActive ? tiltCombinedAngle : 0),
                             axis: tiltCombinedAxis,
                             anchor: .center,
                             perspective: tiltPerspective
@@ -520,15 +577,16 @@ struct HoloGameCardView: View {
                                 .strokeBorder(Color.white.opacity(0.25), lineWidth: 0.5)
                         )
                         .shadow(color: brandAccent.opacity(0.4), radius: 4, y: 2)
-                        .opacity(0.7)
                         .overlay(
                             Menu { menuContent() } label: {
-                                Color.clear
+                                Circle()
+                                    .fill(Color.clear)
                                     .contentShape(Circle())
                             }
                             .menuStyle(.borderlessButton)
                             .menuIndicator(.hidden)
                         )
+                        .opacity(0.7)
                         .padding(8)
                         .transition(.opacity.combined(with: .scale))
                     }
@@ -557,8 +615,7 @@ struct HoloGameCardView: View {
                     }
                 )
                 
-                Spacer()
-                    .frame(height: textBlockFixedPadding)
+                Spacer(minLength: textBlockFixedPadding)
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(rom.displayName)
@@ -590,12 +647,6 @@ struct HoloGameCardView: View {
                 .padding(.horizontal, 8)
                 .padding(.bottom, 6)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                
-                if isSingleBoxTypeView {
-                    Spacer(minLength: 0)
-                } else {
-                    Spacer()
-                }
             }
             .padding(.horizontal, 8)
             .padding(.top, 8)
@@ -613,9 +664,9 @@ struct HoloGameCardView: View {
                 }
             }
             .overlay(alignment: .center) {
-                if holoSettings.showPlayButton, isHovered, !isLaunching {
+                if holoSettings.showPlayButton, effectsActive, !isLaunching {
                     GlassOrbPlayButton(
-                        content: { holoArtworkView },
+                        content: { holoArtworkView(allowBump: false) },
                         accent: brandAccent,
                         action: { onDoubleClick?() },
                         diameter: playButtonDiameter,
@@ -638,7 +689,7 @@ struct HoloGameCardView: View {
                     ? brandAccent.opacity(0.4)
                     : isSelected
                     ? brandAccent.opacity(0.30)
-                    : isHovered
+                    : effectsActive
                     ? brandAccent.opacity(0.28)
                     : Color.black.opacity(0.14),
                 radius: isLaunching ? 14 : isSelected ? 9 : isHovered ? 12 : 7,
@@ -654,19 +705,19 @@ struct HoloGameCardView: View {
     }
     
     @ViewBuilder
-    private var holoArtworkView: some View {
+    private func holoArtworkView(allowBump: Bool = true) -> some View {
         if isGroupView, let nsImage = image {
             switch displayMode {
             case .fillBlurred: holoArtworkFillBlurred(nsImage)
             case .cropSquare:  holoArtworkCropSquare(nsImage)
             }
         } else {
-            holoArtworkDefault
+            holoArtworkDefault(allowBump: allowBump)
         }
     }
     
     // Default artwork with holo layers
-    private var holoArtworkDefault: some View {
+    private func holoArtworkDefault(allowBump: Bool = true) -> some View {
         GeometryReader { geometry in
             let w = geometry.size.width
             let h = geometry.size.height
@@ -687,7 +738,7 @@ struct HoloGameCardView: View {
                 
                 // Colored foil — proximity-driven. Barely visible at rest,
                 // ramps to full color as the cursor approaches the card.
-                holoLayers(width: w, height: h)
+                holoLayers(width: w, height: h, allowBump: allowBump)
                     .opacity(holoIntensity)
 
                 // Cursor spotlight — hover-binary. Small radial highlight
@@ -695,7 +746,7 @@ struct HoloGameCardView: View {
                 // not hovering. This is the "light the mouse shines on the
                 // card" from the simeydotme pokemon-cards-css example.
                 holoGlare(width: w, height: h)
-                    .opacity(glareIntensity)
+                    .opacity(effectsActive ? glareIntensity : 0)
             }
             .frame(width: w, height: h)
         }
@@ -714,7 +765,7 @@ struct HoloGameCardView: View {
     // across the masked regions, both following the cursor (see
     // `HoloFoilLayers`).
     @ViewBuilder
-    private func holoLayers(width w: CGFloat, height h: CGFloat) -> some View {
+    private func holoLayers(width w: CGFloat, height h: CGFloat, allowBump: Bool = true) -> some View {
         ZStack {
             HoloFoilLayers(
                 masks: holoMasks,
@@ -724,7 +775,8 @@ struct HoloGameCardView: View {
                 pointerY: normalizedMouseY,
                 tiltX: tiltRotationX,
                 tiltY: tiltRotationY,
-                isHovered: isHovered
+                isHovered: effectsActive,
+                allowBump: allowBump
             )
             HoloScratchLayer(w: w, h: h)
         }
@@ -737,12 +789,17 @@ struct HoloGameCardView: View {
     // center fallback is invisible when the cursor is away.
     private func holoGlareX(_ w: CGFloat) -> CGFloat {
         guard let mp = mousePosition, artworkFrameInCard.width > 0 else { return 0.5 }
-        return min(max((mp.x - artworkFrameInCard.minX) / artworkFrameInCard.width, 0), 1)
+        // The glare view is the box art's fitted rect, centered within the
+        // card's artwork frame — normalize the cursor against that rect, not
+        // the whole (letterboxed) card.
+        let boxartMinX = artworkFrameInCard.minX + (artworkFrameInCard.width - w) / 2
+        return min(max((mp.x - boxartMinX) / w, 0), 1)
     }
 
     private func holoGlareY(_ h: CGFloat) -> CGFloat {
         guard let mp = mousePosition, artworkFrameInCard.height > 0 else { return 0.5 }
-        return min(max((mp.y - artworkFrameInCard.minY) / artworkFrameInCard.height, 0), 1)
+        let boxartMinY = artworkFrameInCard.minY + (artworkFrameInCard.height - h) / 2
+        return min(max((mp.y - boxartMinY) / h, 0), 1)
     }
 
     // The cursor spotlight — a small radial highlight that tracks the
@@ -764,12 +821,36 @@ struct HoloGameCardView: View {
             .allowsHitTesting(false)
     }
 
+    // Size the box art occupies when `scaledToFit` into a `w`×`h` frame.
+    // Used to confine the holo foil/glare (and their masks, generated from the
+    // original art) to the actual displayed art rect instead of the whole card.
+    private static func fittedBoxartSize(image: NSImage?, w: CGFloat, h: CGFloat) -> CGSize {
+        guard let img = image, img.size.width > 0, img.size.height > 0 else {
+            return CGSize(width: w, height: h)
+        }
+        let artAspect = img.size.width / img.size.height
+        let cardAspect = w / h
+        if artAspect > cardAspect {
+            return CGSize(width: w, height: w / artAspect)
+        }
+        return CGSize(width: h * artAspect, height: h)
+    }
+
     // Fill blurred (Method 1) with holo layers
     private func holoArtworkFillBlurred(_ nsImage: NSImage) -> some View {
         GeometryReader { geometry in
             let w = geometry.size.width
             let h = geometry.size.height
-            
+
+            // The sharp box art is `scaledToFit` into the card, so it occupies a
+            // centered sub-rectangle rather than the full (letterboxed) card.
+            // The holo masks are generated from the ORIGINAL box art, so the
+            // foil + glare must be confined to that same fitted rect — otherwise
+            // the masks get stretched across the whole card and drift off the
+            // displayed art. (Also more correct: the holo is a property of the
+            // art, not the blurred fill behind it.)
+            let artSize = Self.fittedBoxartSize(image: image, w: w, h: h)
+
             ZStack {
                 // Blurred background fills the card
                 if let nsImage = image {
@@ -781,9 +862,9 @@ struct HoloGameCardView: View {
                         .opacity(0.85)
                         .blur(radius: max(10, min(h, 280) * 0.08))
                 }
-                
+
                 Color.black.opacity(0.25)
-                
+
                 // Sharp box art on top (base for holo blend modes)
                 if let nsImage = image {
                     Image(nsImage: nsImage)
@@ -792,14 +873,18 @@ struct HoloGameCardView: View {
                         .frame(width: w, height: h)
                         .scaleEffect(isPressed ? 1.05 : 1)
                 }
-                
-                // Holo effect layers blend with the sharp box art
-                holoLayers(width: w, height: h)
-                    .opacity(holoIntensity)
-                holoGlare(width: w, height: h)
-                    .opacity(glareIntensity)
             }
             .frame(width: w, height: h)
+            .overlay(
+                holoLayers(width: artSize.width, height: artSize.height)
+                    .opacity(holoIntensity)
+                    .frame(width: artSize.width, height: artSize.height)
+            )
+            .overlay(
+                holoGlare(width: artSize.width, height: artSize.height)
+                    .opacity(glareIntensity)
+                    .frame(width: artSize.width, height: artSize.height)
+            )
         }
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .shadow(color: Color.black.opacity(isPressed ? 0.35 : 0.20), radius: isPressed ? 9 : 5, x: 0, y: isPressed ? 5 : 3)
