@@ -722,18 +722,27 @@ struct HoloGameCardView: View {
             let w = geometry.size.width
             let h = geometry.size.height
             
+            let artShift = min(w, h) * 0.03
+            let artPX = (0.5 - normalizedMouseX) * artShift
+            let artPY = (0.5 - normalizedMouseY) * artShift
             ZStack {
-                // Box art fills the entire card (base layer for blend modes)
+                // Box art fills the entire card (base layer for blend modes).
+                // Art parallax: the artwork slides *opposite* the cursor while
+                // the holo foil above tracks it — the source's `--background-x/
+                // y` depth trick. Scale is bumped so the shift never reveals an
+                // empty edge.
                 if let nsImage = image {
                     Image(nsImage: nsImage)
                         .resizable()
                         .scaledToFill()
                         .frame(width: w, height: h)
+                        .scaleEffect(isPressed ? 1.08 : 1.06)
+                        .offset(x: artPX, y: artPY)
                         .clipped()
-                        .scaleEffect(isPressed ? 1.05 : 1)
                 } else {
                     placeholderArt
-                        .scaleEffect(isPressed ? 1.02 : 1)
+                        .scaleEffect(isPressed ? 1.05 : 1.03)
+                        .offset(x: artPX, y: artPY)
                 }
                 
                 // Colored foil — proximity-driven. Barely visible at rest,

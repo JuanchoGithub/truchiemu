@@ -494,7 +494,14 @@ struct HoloFoilLayers: View, Equatable {
         .frame(width: w, height: h, alignment: .center)
         .clipped()
         .mask(maskView(mask, w: w, h: h))
-        .opacity(intensity)
+        // Edge-fade: source reverse-holo.css sets
+        //   opacity: calc((1.5 * card-opacity) - pointer-from-center)
+        // so the foil is strongest at the cursor-centre and fades toward the
+        // card edges as the pointer moves out. Applied to Reverse Holo only
+        // (the base `.card__shine` has no pointer-distance fade).
+        .opacity(isReverse
+            ? min(1.0, max(0.0, intensity * (1.5 - pointerFromCenter)))
+            : intensity)
     }
 
     /// Parallax illusion layer — the existing source-faithful rainbow tile
