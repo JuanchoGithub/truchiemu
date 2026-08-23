@@ -586,49 +586,83 @@ struct HoloFoilLayers: View, Equatable {
             // rainbow's hue is added as a separate lit-area overlay below).
             reverseFoil(period: period, w: w, h: h)
 
-            // Layer 2 — the moving diagonal light ray, difference-blended over
-            // the foil. White centre inverts the lattice (bright<->dark flip);
-            // black ends leave it untouched. This is the source's `difference`.
-            LinearGradient(
-                stops: [
-                    Gradient.Stop(color: .black, location: 0.15),
-                    Gradient.Stop(color: .white, location: 0.5),
-                    Gradient.Stop(color: .black, location: 0.85),
-                ],
-                startPoint: .bottomLeading,
-                endPoint: .topTrailing
-            )
-            .blendMode(.difference)
-            .frame(width: w * 3, height: h * 3)
-            .offset(rayOffset)
+            // Layers 2 + 1 (the moving light/dark sweep). For rainbow these are
+            // masked by the foil heightmap so they ONLY play on the lit cells —
+            // the dark (non-hue) cells get zero light/dark change (the card
+            // shows through untouched). Other modes keep the full sweep.
+            ZStack {
+                // Layer 2 — the moving diagonal light ray, difference-blended
+                // over the foil. White centre inverts the lattice (bright<->dark
+                // flip); black ends leave it untouched. This is the source's
+                // `difference`.
+                LinearGradient(
+                    stops: [
+                        Gradient.Stop(color: .black, location: 0.15),
+                        Gradient.Stop(color: .white, location: 0.5),
+                        Gradient.Stop(color: .black, location: 0.85),
+                    ],
+                    startPoint: .bottomLeading,
+                    endPoint: .topTrailing
+                )
+                .blendMode(.difference)
+                .frame(width: w * 3, height: h * 3)
+                .offset(rayOffset)
 
-            // Layer 1 — cursor radial glow, soft-light (source-faithful).
-            // softLight with BLACK squares the foil (a -> a^2), which is perfect
-            // for solid/background (dark + highlights) but crushes rainbow's
-            // dark cells to near-black. For rainbow, lift the mid-stop to a
-            // mid-grey so the glow stays without nuking the colour.
-            RadialGradient(
-                stops: [
-                    Gradient.Stop(color: .white, location: 0.05),
-                    Gradient.Stop(color: mode == .rainbow ? Color(white: 0.55) : .black, location: 0.5),
-                    Gradient.Stop(color: .white, location: 0.8),
-                ],
-                center: UnitPoint(x: pointerX, y: pointerY),
-                startRadius: 0,
-                endRadius: max(w, h) * 0.75
-            )
-            .blendMode(.softLight)
-            .frame(width: w * 2, height: h * 2)
+                // Layer 1 — cursor radial glow, soft-light (source-faithful).
+                // softLight with BLACK squares the foil (a -> a^2), which is
+                // perfect for solid/background (dark + highlights) but crushes
+                // rainbow's dark cells to near-black. For rainbow, lift the
+                // mid-stop to a mid-grey so the glow stays without nuking the
+                // colour.
+                RadialGradient(
+                    stops: [
+                        Gradient.Stop(color: .white, location: 0.05),
+                        Gradient.Stop(color: mode == .rainbow ? Color(white: 0.55) : .black, location: 0.5),
+                        Gradient.Stop(color: .white, location: 0.8),
+                    ],
+                    center: UnitPoint(x: pointerX, y: pointerY),
+                    startRadius: 0,
+                    endRadius: max(w, h) * 0.75
+                )
+                .blendMode(.softLight)
+                .frame(width: w * 2, height: h * 2)
+            }
+            .mask(mode == .rainbow
+                  ? AnyView(foilLuminanceMask(period: period, w: w, h: h))
+                  : AnyView(Color.white.frame(width: w * 6, height: h * 6)))
         }
         .compositingGroup()
         // source: filter: brightness(.55) contrast(1.5) saturate(1).
-        // Rainbow keeps a slightly lifted radial + gentle contrast so its
-        // lit-area hue overlay reads as colour rather than being crushed.
+        // Rainbow's dark areas are now fully transparent (the metallic base is
+        // dropped), so there is no dark/light artifact to compensate for — we
+        // keep the same faithful filter as the rest.
         .colorMultiply(Color(white: mode == .rainbow ? 0.85 : 0.55))
         .contrast(mode == .rainbow ? 1.15 : 1.5)
         .brightness(mode == .rainbow ? 0.1 : 0.0)
         .saturation(mode == .rainbow ? 1.4 : 1.0)
         .frame(width: w * 2, height: h * 2)
+    }
+
+    /// Foil heightmap as an alpha mask, shared by the rainbow hue and the
+    /// light/dark sweep. Dark foil areas -> transparent (alpha 0); bright areas
+    /// -> opaque. So both the hue AND the moving ray/radial only touch the
+    /// texture's lit cells — the dark cells stay untouched (card shows through).
+    @ViewBuilder
+    private func foilLuminanceMask(period: CGFloat, w: CGFloat, h: CGFloat) -> some View {
+        if settings.reverseTextureMode != .generated,
+           let p = settings.reverseTexturePattern,
+           let m = HoloPatternStore.shared.tiledAlphaMask(for: p, size: NSSize(width: w * 2, height: h * 2), scale: settings.reverseTextureScale) {
+            Image(nsImage: m)
+                .resizable()
+                .frame(width: w * 2, height: h * 2)
+        } else {
+            ZStack {
+                RepeatingLinearGradientView(colors: [.white, .clear], angle: 45, period: period)
+                RepeatingLinearGradientView(colors: [.white, .clear], angle: -45, period: period)
+                    .blendMode(.multiply)
+            }
+            .frame(width: w * 2, height: h * 2)
+        }
     }
 
     /// Rainbow hue for Reverse Holo: a smooth spectrum gated by the FOIL's
@@ -648,24 +682,10 @@ struct HoloFoilLayers: View, Equatable {
         // Heightmap mask: the etch's luminance (alpha) when a bundled texture is
         // used, otherwise the generated lattice's bright diamonds. Both give
         // transparent darks -> no hue, opaque/alpha brights -> hue.
-        let mask: AnyView = {
-            if settings.reverseTextureMode != .generated,
-               let p = settings.reverseTexturePattern,
-               let m = HoloPatternStore.shared.tiledAlphaMask(for: p, size: NSSize(width: w * 2, height: h * 2), scale: settings.reverseTextureScale) {
-                return AnyView(Image(nsImage: m))
-            }
-            return AnyView(
-                ZStack {
-                    RepeatingLinearGradientView(colors: [.white, .clear], angle: 45, period: period)
-                    RepeatingLinearGradientView(colors: [.white, .clear], angle: -45, period: period)
-                        .blendMode(.multiply)
-                }
-            )
-        }()
         spectrum
             .blendMode(.screen)
             .opacity(settings.reverseRainbowIntensity)
-            .mask(mask)
+            .mask(foilLuminanceMask(period: period, w: w, h: h))
             .frame(width: w * 2, height: h * 2)
     }
 
@@ -689,46 +709,46 @@ struct HoloFoilLayers: View, Equatable {
         if !forceLattice,
            let p1 = settings.reverseTexturePattern,
            let img1 = HoloPatternStore.shared.tiledImage(for: p1, size: NSSize(width: w * 2, height: h * 2), scale: settings.reverseTextureScale) {
-            ZStack {
-                // Rainbow keeps the greyscale etch (same as background); the hue
-                // is added later in reverseShine only to the lit areas. So the
-                // etch shows as a neutral metallic, never a rainbow pattern.
-                Image(nsImage: img1)
-                    .resizable()
-                    .frame(width: w * 2, height: h * 2)
-                    .blendMode(.normal)
-                if let p2 = settings.reverseTexturePattern2,
-                   let img2 = HoloPatternStore.shared.tiledImage(for: p2, size: NSSize(width: w * 2, height: h * 2), scale: settings.reverseTextureScale2) {
-                    Image(nsImage: img2)
+            if mode == .rainbow {
+                // Rainbow: show ONLY the luminance-gated hue. The dark etch
+                // areas (no hue) become fully transparent so the card art shows
+                // through — there is no metallic base to go dark/light. Bright
+                // texture areas light up in the rainbow hue, exactly as wanted.
+                rainbowHue(period: period, w: w, h: h)
+            } else {
+                ZStack {
+                    Image(nsImage: img1)
                         .resizable()
                         .frame(width: w * 2, height: h * 2)
-                        .blendMode(settings.reverseTextureBlend2.blendMode)
+                        .blendMode(.normal)
+                    if let p2 = settings.reverseTexturePattern2,
+                       let img2 = HoloPatternStore.shared.tiledImage(for: p2, size: NSSize(width: w * 2, height: h * 2), scale: settings.reverseTextureScale2) {
+                        Image(nsImage: img2)
+                            .resizable()
+                            .frame(width: w * 2, height: h * 2)
+                            .blendMode(settings.reverseTextureBlend2.blendMode)
+                    }
                 }
-                if mode == .rainbow {
-                    rainbowHue(period: period, w: w, h: h)
-                }
+                .frame(width: w * 2, height: h * 2)
+                .colorMultiply(mode == .solid ? settings.reverseSolidColor : Color.white)
             }
-            .frame(width: w * 2, height: h * 2)
-            .colorMultiply(mode == .solid ? settings.reverseSolidColor : Color.white)
         } else {
             // Built-in generated diamond lattice (default Reverse Holo foil).
             switch mode {
-            case .rainbow, .background:
-                // Rainbow keeps the SAME greyscale metallic lattice as
-                // background, with the hue gated by the lattice heightmap (dark
-                // gaps -> no hue) so there are no rainbow-coloured diagonal
-                // lines — just a hue shift on the bright metal.
+            case .rainbow:
+                // Rainbow: only the hue, gated by the lattice heightmap (dark
+                // gaps -> transparent, so the card art shows through; no
+                // rainbow-coloured diagonals, just a hue on the bright metal).
+                rainbowHue(period: period, w: w, h: h)
+            case .background:
+                // Same greyscale metallic lattice as rainbow's base, but shown
+                // (no hue) so the background variant reads as neutral metal.
                 ZStack {
-                    ZStack {
-                        RepeatingLinearGradientView(colors: [.white, Color(white: 0.3)], angle: 45, period: period)
-                        RepeatingLinearGradientView(colors: [.white, Color(white: 0.3)], angle: -45, period: period)
-                            .blendMode(.multiply)
-                    }
-                    .frame(width: w * 2, height: h * 2)
-                    if mode == .rainbow {
-                        rainbowHue(period: period, w: w, h: h)
-                    }
+                    RepeatingLinearGradientView(colors: [.white, Color(white: 0.3)], angle: 45, period: period)
+                    RepeatingLinearGradientView(colors: [.white, Color(white: 0.3)], angle: -45, period: period)
+                        .blendMode(.multiply)
                 }
+                .frame(width: w * 2, height: h * 2)
             case .solid:
                 ZStack {
                     RepeatingLinearGradientView(colors: [.white, Color(white: 0.3)], angle: 45, period: period)
