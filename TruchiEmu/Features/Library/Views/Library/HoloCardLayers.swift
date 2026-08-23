@@ -616,9 +616,9 @@ struct HoloFoilLayers: View, Equatable {
                 // colour.
                 RadialGradient(
                     stops: [
-                        Gradient.Stop(color: .white, location: 0.05),
-                        Gradient.Stop(color: mode == .rainbow ? Color(white: 0.55) : .black, location: 0.5),
-                        Gradient.Stop(color: .white, location: 0.8),
+                    Gradient.Stop(color: .white, location: 0.05),
+                    Gradient.Stop(color: mode == .rainbow ? Color(white: 0.45) : .black, location: 0.5),
+                    Gradient.Stop(color: .white, location: 0.8),
                     ],
                     center: UnitPoint(x: pointerX, y: pointerY),
                     startRadius: 0,
@@ -633,13 +633,15 @@ struct HoloFoilLayers: View, Equatable {
         }
         .compositingGroup()
         // source: filter: brightness(.55) contrast(1.5) saturate(1).
-        // Rainbow's dark areas are now fully transparent (the metallic base is
-        // dropped), so there is no dark/light artifact to compensate for — we
-        // keep the same faithful filter as the rest.
-        .colorMultiply(Color(white: mode == .rainbow ? 0.85 : 0.55))
-        .contrast(mode == .rainbow ? 1.15 : 1.5)
-        .brightness(mode == .rainbow ? 0.1 : 0.0)
-        .saturation(mode == .rainbow ? 1.4 : 1.0)
+        // Rainbow's dark areas are fully transparent (metallic base dropped),
+        // so there's no dark/light artifact. colour-dodge blows bright hues to
+        // white, so for rainbow we KEEP saturation cranked and AVOID lightening
+        // (low/no brightness lift, lower multiply) so the dodge preserves colour
+        // instead of washing it out.
+        .colorMultiply(Color(white: mode == .rainbow ? 0.8 : 0.55))
+        .contrast(mode == .rainbow ? 1.5 : 1.5)
+        .brightness(mode == .rainbow ? 0.0 : 0.0)
+        .saturation(mode == .rainbow ? 3.0 : 1.0)
         .frame(width: w * 2, height: h * 2)
     }
 
