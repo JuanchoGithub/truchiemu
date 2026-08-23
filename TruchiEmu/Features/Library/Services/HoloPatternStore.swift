@@ -47,6 +47,11 @@ enum HoloPattern: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
+    /// Patterns permitted as the SECOND (overlay) etch in Reverse Holo. Only
+    /// these may be layered on top of another pattern, and they themselves are
+    /// never given a second pattern (exclusive to the overlay role).
+    static let secondPatternWhitelist: [HoloPattern] = [.galaxy, .glitter]
+
     /// Bundle filename. Resources are flattened at build time, so the
     /// `holo_` prefix keeps these unambiguous at the bundle root.
     var resourceName: String { "holo_\(rawValue)" }
@@ -207,8 +212,41 @@ final class HoloPatternStore: ObservableObject {
             }
             return true
         }
-        tiledImages[key] = out
+            tiledImages[key] = out
         return out
+    }
+
+    /// Luminance→alpha mask of a tiled etch, at the SAME (pattern, scale, size)
+    /// as `tiledImage` so it aligns 1:1 with the foil. Dark etch pixels become
+    /// transparent (zero hue), bright pixels opaque (full hue) — the heightmap
+    /// the Reverse Holo rainbow is gated by. Cached so it is built once per card,
+    /// not on every cursor frame.
+    private var tiledAlphaMasks: [TiledImageKey: NSImage] = [:]
+    func tiledAlphaMask(for pattern: HoloPattern, size: NSSize, scale: CGFloat) -> NSImage? {
+        guard size.width > 0, size.height > 0 else { return nil }
+        let key = TiledImageKey(
+            pattern: pattern,
+            scaleBucket: Int((scale * 200).rounded()),
+            width: Int(size.width),
+            height: Int(size.height)
+        )
+        if let cached = tiledAlphaMasks[key] { return cached }
+        guard let tiled = tiledImage(for: pattern, size: size, scale: scale) else { return nil }
+        // `tiledImage` is a block-drawn NSImage, which does NOT reliably vend a
+        // CGImage via `cgImage(forProposedRect:)` (unlike the bundle PNGs). If we
+        // let that return nil here, the rainbow falls back to the 1x lattice
+        // mask and prints at full size while the foil texture is tiled small.
+        // Rasterise through a bitmap rep so the luminance->alpha conversion is
+        // dependable and stays aligned with the tiled foil.
+        guard let tiff = tiled.tiffRepresentation,
+              let rep = NSBitmapImageRep(data: tiff),
+              let cg = rep.cgImage else { return nil }
+        let ci = CIImage(cgImage: cg).applyingFilter("CIMaskToAlpha")
+        let context = CIContext()
+        guard let out = context.createCGImage(ci, from: ci.extent) else { return nil }
+        let mask = NSImage(cgImage: out, size: NSSize(width: cg.width, height: cg.height))
+        tiledAlphaMasks[key] = mask
+        return mask
     }
 }
 
@@ -813,8 +851,17 @@ struct HoloSettingsSnapshot: Equatable {
         var p2: HoloPattern? = nil
         var s2: CGFloat = 1.0
         var blend2: HoloTextureBlend = .overlay
-        if variation, Int((seed >> 20) % 100) < 35 {
-            p2 = all[Int((seed >> 40) % UInt64(all.count))]
+
+        // Second-pattern rules:
+        //   - p1 may be ANY pattern.
+        //   - p2, when present, may ONLY be a whitelisted pattern (galaxy /
+        //     glitter).
+        //   - galaxy / glitter NEVER get a second pattern, so if p1 is one of
+        //     them, p2 stays nil.
+        let whitelist = HoloPattern.secondPatternWhitelist
+        let p1IsWhitelisted = whitelist.contains(p1)
+        if variation, !p1IsWhitelisted, !whitelist.isEmpty, Int((seed >> 20) % 100) < 35 {
+            p2 = whitelist[Int((seed >> 40) % UInt64(whitelist.count))]
             s2 = CGFloat(0.1 + Double((seed >> 10) % 1000) / 1000.0 * 0.9)
             blend2 = HoloTextureBlend.allCases[Int((seed >> 50) % UInt64(HoloTextureBlend.allCases.count))]
         }
